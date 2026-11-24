@@ -21,6 +21,7 @@
 #include "extensions/renderer/bindings/api_type_reference_map.h"
 #include "extensions/renderer/bindings/binding_access_checker.h"
 #include "extensions/renderer/bindings/exception_handler.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 
 namespace extensions {
 class APIBindingHooks;
@@ -67,6 +68,12 @@ class APIBindingsSystem {
   // with `response`. If `error` is non-empty, sets the last error.
   void CompleteRequest(int request_id,
                        const base::ListValue& response,
+                       const std::string& error,
+                       mojom::ExtraResponseDataPtr extra_data = nullptr);
+  // Same as above, with a single response argument serialized as UTF-8 JSON in
+  // `response_json`.
+  void CompleteRequest(int request_id,
+                       mojo_base::BigBuffer response_json,
                        const std::string& error,
                        mojom::ExtraResponseDataPtr extra_data = nullptr);
 

@@ -37,6 +37,7 @@
 #include "extensions/common/mojom/extra_response_data.mojom.h"
 #include "extensions/common/mojom/response_wrapper.mojom-forward.h"
 #include "extensions/common/stack_frame.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
@@ -494,6 +495,10 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   ResponseValue NoArguments();
   // Success, a list of arguments `results` to pass to caller.
   ResponseValue ArgumentList(base::ListValue results);
+  // Success, a single argument serialized as UTF-8 JSON in `json` to pass to
+  // caller. Allows large results to be serialized off the UI thread and sent
+  // to the renderer in shared memory.
+  ResponseValue JsonArgument(mojo_base::BigBuffer json);
 
   // Success, a variadic list of arguments to pass to the caller.
   template <typename... Args>
@@ -667,6 +672,11 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // RespondNow() methods. In legacy implementations, this is set directly, and
   // should be set before calling SendResponse().
   std::optional<base::ListValue> results_;
+
+  // The single result of the API, serialized as UTF-8 JSON. Populated by
+  // JsonArgument(), mutually exclusive with `results_` (except in
+  // SendResponseImpl() when `preserve_results_for_testing_` is set).
+  std::optional<mojo_base::BigBuffer> results_json_;
 
   // Any detailed error from the API. This should be populated by the derived
   // class before Run() returns.

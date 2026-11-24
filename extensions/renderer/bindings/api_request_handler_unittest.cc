@@ -5,7 +5,10 @@
 #include "extensions/renderer/bindings/api_request_handler.h"
 
 #include <optional>
+#include <string>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -21,6 +24,7 @@
 #include "gin/function_template.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/isolate_holder.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
@@ -895,6 +899,144 @@ TEST_F(APIRequestHandlerTest, PromiseBasedRequests_Rejected) {
       base::StrCat({"Error: ", kError}),
       gin::V8ToString(isolate(), result->ToString(context).ToLocalChecked()));
 
+  EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
+}
+
+// Tests a callback-based request whose response argument is serialized as
+// JSON.
+TEST_F(APIRequestHandlerTest, JsonArgument_Callback) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  std::unique_ptr<APIRequestHandler> request_handler = CreateRequestHandler();
+
+  v8::Local<v8::Function> function = FunctionFromString(context, kEchoArgs);
+  ASSERT_FALSE(function.IsEmpty());
+
+  request_handler->StartRequest(context, kMethod, base::ListValue(),
+                                binding::AsyncResponseType::kCallback, function,
+                                v8::Local<v8::Function>(),
+                                binding::ResultModifierFunction());
+  int request_id = request_handler->last_sent_request_id();
+
+  request_handler->CompleteRequest(
+      request_id,
+      mojo_base::BigBuffer(base::as_byte_span(
+          std::string_view(R"({"foo":[1,"bar",{"baz":true}]})"))),
+      std::string());
+
+  v8::Local<v8::Array> result;
+  ASSERT_TRUE(
+      GetPropertyFromObjectAs(context->Global(), context, "result", &result));
+  ASSERT_EQ(1u, result->Length());
+  EXPECT_TRUE(result->Get(context, 0).ToLocalChecked()->IsObject());
+  EXPECT_EQ(R"([{"foo":[1,"bar",{"baz":true}]}])",
+            GetStringPropertyFromObject(context->Global(), context, "result"));
+  EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
+}
+
+// Tests a promise-based request whose response argument is serialized as JSON
+// in a `BigBuffer` backed by shared memory.
+TEST_F(APIRequestHandlerTest, JsonArgument_PromiseSharedMemory) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  std::unique_ptr<APIRequestHandler> request_handler = CreateRequestHandler();
+
+  v8::Local<v8::Promise> promise = request_handler->StartRequest(
+      context, kMethod, base::ListValue(), binding::AsyncResponseType::kPromise,
+      v8::Local<v8::Function>(), v8::Local<v8::Function>(),
+      binding::ResultModifierFunction());
+  ASSERT_FALSE(promise.IsEmpty());
+  int request_id = request_handler->last_sent_request_id();
+
+  // Build a JSON array larger than `mojo_base::BigBuffer::kMaxInlineBytes` so
+  // the `BigBuffer` is backed by shared memory.
+  constexpr std::string_view kElement = R"("element")";
+  constexpr size_t kNumElements =
+      mojo_base::BigBuffer::kMaxInlineBytes / (kElement.size() + 1) + 1;
+  static_assert(1 + kNumElements * (kElement.size() + 1) >
+                mojo_base::BigBuffer::kMaxInlineBytes);
+  std::string json = "[";
+  for (size_t i = 0; i < kNumElements; ++i) {
+    base::StrAppend(&json, {i == 0 ? "" : ",", kElement});
+  }
+  json += "]";
+  ASSERT_GT(json.size(), mojo_base::BigBuffer::kMaxInlineBytes);
+  mojo_base::BigBuffer json_buffer(base::as_byte_span(json));
+  ASSERT_EQ(mojo_base::BigBuffer::StorageType::kSharedMemory,
+            json_buffer.storage_type());
+
+  request_handler->CompleteRequest(request_id, std::move(json_buffer),
+                                   std::string());
+
+  ASSERT_EQ(v8::Promise::kFulfilled, promise->State());
+  ASSERT_TRUE(promise->Result()->IsArray());
+  EXPECT_EQ(kNumElements, promise->Result().As<v8::Array>()->Length());
+  EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
+}
+
+// Tests that a custom callback receives the JSON response argument.
+TEST_F(APIRequestHandlerTest, JsonArgument_CustomCallback) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  std::unique_ptr<APIRequestHandler> request_handler = CreateRequestHandler();
+
+  v8::Local<v8::Function> custom_callback =
+      FunctionFromString(context, kEchoArgs);
+  v8::Local<v8::Function> callback =
+      FunctionFromString(context, "(function() {})");
+  ASSERT_FALSE(custom_callback.IsEmpty());
+  ASSERT_FALSE(callback.IsEmpty());
+
+  request_handler->StartRequest(context, kMethod, base::ListValue(),
+                                binding::AsyncResponseType::kCallback, callback,
+                                custom_callback,
+                                binding::ResultModifierFunction());
+  int request_id = request_handler->last_sent_request_id();
+
+  request_handler->CompleteRequest(
+      request_id,
+      mojo_base::BigBuffer(base::as_byte_span(std::string_view(R"(["foo"])"))),
+      std::string());
+
+  v8::Local<v8::Array> result;
+  ASSERT_TRUE(
+      GetPropertyFromObjectAs(context->Global(), context, "result", &result));
+  ArgumentList args(isolate());
+  ASSERT_TRUE(gin::Converter<ArgumentList>::FromV8(isolate(), result, &args));
+  // `args[0]` is the completion callback that the custom callback invokes to
+  // deliver the final result to the extension's callback or promise.
+  ASSERT_EQ(2u, args.size());
+  EXPECT_TRUE(args[0]->IsFunction());
+  EXPECT_EQ(R"(["foo"])", V8ToString(args[1], context));
+}
+
+// Tests the fallback path when the JSON response exceeds the maximum length of
+// a single V8 string.
+TEST_F(APIRequestHandlerTest, JsonArgument_ExceedsMaxV8JsonLength) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  std::unique_ptr<APIRequestHandler> request_handler = CreateRequestHandler();
+  request_handler->SetMaxV8JsonLengthForTesting(8);
+
+  v8::Local<v8::Promise> promise = request_handler->StartRequest(
+      context, kMethod, base::ListValue(), binding::AsyncResponseType::kPromise,
+      v8::Local<v8::Function>(), v8::Local<v8::Function>(),
+      binding::ResultModifierFunction());
+  ASSERT_FALSE(promise.IsEmpty());
+  int request_id = request_handler->last_sent_request_id();
+
+  constexpr std::string_view kJson = R"({"foo":[1,"bar",{"baz":true}]})";
+  static_assert(kJson.size() > 8);
+  request_handler->CompleteRequest(
+      request_id, mojo_base::BigBuffer(base::as_byte_span(kJson)),
+      std::string());
+
+  ASSERT_EQ(v8::Promise::kFulfilled, promise->State());
+  EXPECT_EQ(kJson, V8ToString(promise->Result(), context));
   EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
 }
 

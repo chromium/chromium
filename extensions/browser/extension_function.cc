@@ -10,10 +10,13 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
@@ -21,6 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -652,6 +656,18 @@ ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
   return CreateArgumentListResponse(std::move(results));
 }
 
+ExtensionFunction::ResponseValue ExtensionFunction::JsonArgument(
+    mojo_base::BigBuffer json) {
+  CHECK_NE(json.storage_type(),
+           mojo_base::BigBuffer::StorageType::kInvalidBuffer);
+  CHECK_GT(json.size(), 0u);
+  CHECK(!results_) << "Function " << name() << " already has results set.";
+  CHECK(!results_json_) << "Function " << name()
+                        << " already has a JSON argument.";
+  results_json_ = std::move(json);
+  return ResponseValue(true, PassKey());
+}
+
 ExtensionFunction::ResponseValue ExtensionFunction::Error(std::string error) {
   return CreateErrorResponseValue(std::move(error));
 }
@@ -771,12 +787,25 @@ void ExtensionFunction::SendResponseImpl(bool success) {
     results_.emplace();
   }
 
-  base::ListValue results;
-  if (preserve_results_for_testing_) {
+  extensions::mojom::ResponseWrapperPtr response_wrapper;
+  if (results_json_) {
+    CHECK(results_->empty());
+    if (preserve_results_for_testing_) {
+      // Allow GetResultListForTest() to return the JSON argument.
+      results_->Append(base::JSONReader::Read(
+                           base::as_string_view(base::span(*results_json_)),
+                           base::JSON_PARSE_RFC)
+                           .value());
+    }
+    response_wrapper =
+        extensions::mojom::ResponseWrapper::NewJson(std::move(*results_json_));
+  } else if (preserve_results_for_testing_) {
     // Keep |results_| untouched.
-    results = results_->Clone();
+    response_wrapper =
+        extensions::mojom::ResponseWrapper::NewList(results_->Clone());
   } else {
-    results = std::move(*results_);
+    response_wrapper =
+        extensions::mojom::ResponseWrapper::NewList(std::move(*results_));
   }
 
   extensions::mojom::ExtraResponseDataPtr extra_data;
@@ -785,9 +814,8 @@ void ExtensionFunction::SendResponseImpl(bool success) {
         std::move(transferred_blobs_));
   }
   std::move(response_callback_)
-      .Run(response,
-           extensions::mojom::ResponseWrapper::NewList(std::move(results)),
-           GetError(), std::move(extra_data));
+      .Run(response, std::move(response_wrapper), GetError(),
+           std::move(extra_data));
   LogUma(success, timer_.Elapsed(), histogram_value_);
 
   OnResponded();
@@ -833,6 +861,7 @@ ExtensionFunction::ResponseValue ExtensionFunction::CreateBadMessageResponse() {
 
 void ExtensionFunction::SetFunctionResults(base::ListValue results) {
   DCHECK(!results_) << "Function " << name() << " already has results set.";
+  CHECK(!results_json_) << "Function " << name() << " has a JSON argument.";
   results_ = std::move(results);
 }
 

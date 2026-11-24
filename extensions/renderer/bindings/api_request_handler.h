@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_RENDERER_BINDINGS_API_REQUEST_HANDLER_H_
 #define EXTENSIONS_RENDERER_BINDINGS_API_REQUEST_HANDLER_H_
 
+#include <stddef.h>
+
 #include <map>
 #include <memory>
 #include <optional>
@@ -18,6 +20,7 @@
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_last_error.h"
 #include "extensions/renderer/bindings/interaction_provider.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "v8/include/v8.h"
@@ -100,12 +103,17 @@ class APIRequestHandler {
       binding::ResultModifierFunction result_modifier);
 
   // Responds to the request with the given `request_id`, calling the callback
-  // with the given `response` arguments.
-  // Invalid ids are ignored.
+  // with the response arguments, given as a list of base::Values
+  // (`response_list`), a single argument serialized as UTF-8 JSON
+  // (`response_json`) or V8 values (`response`). Invalid ids are ignored.
   // Warning: This can run arbitrary JS code, so the `context` may be
   // invalidated after this!
   void CompleteRequest(int request_id,
                        const base::ListValue& response_list,
+                       const std::string& error,
+                       mojom::ExtraResponseDataPtr extra_data = nullptr);
+  void CompleteRequest(int request_id,
+                       mojo_base::BigBuffer response_json,
                        const std::string& error,
                        mojom::ExtraResponseDataPtr extra_data = nullptr);
   void CompleteRequest(int request_id,
@@ -124,6 +132,10 @@ class APIRequestHandler {
   }
 
   std::set<int> GetPendingRequestIdsForTesting() const;
+
+  void SetMaxV8JsonLengthForTesting(size_t max_length) {
+    max_v8_json_length_ = max_length;
+  }
 
  private:
   class ArgumentAdapter;
@@ -197,6 +209,8 @@ class APIRequestHandler {
   // Outlives `this`.
   const raw_ptr<const InteractionProvider, DanglingUntriaged>
       interaction_provider_;
+
+  size_t max_v8_json_length_ = v8::String::kMaxLength;
 };
 
 }  // namespace extensions

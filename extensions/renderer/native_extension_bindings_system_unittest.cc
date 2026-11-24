@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +33,7 @@
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -156,6 +158,41 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Basic) {
   EXPECT_EQ("20", GetStringPropertyFromObject(
                       web_request.As<v8::Object>(), context,
                       "MAX_HANDLER_BEHAVIOR_CHANGED_CALLS_PER_10_MINUTES"));
+}
+
+TEST_F(NativeExtensionBindingsSystemUnittest, HandleJsonResponse) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("foo").AddAPIPermission("idle").Build();
+  RegisterExtension(extension);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  ScriptContext* script_context = CreateScriptContext(
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
+  script_context->set_url(extension->url());
+
+  bindings_system()->UpdateBindingsForContext(script_context);
+
+  constexpr char kCallIdleQueryState[] =
+      "(function() {\n"
+      "  chrome.idle.queryState(30, function(state) {\n"
+      "    this.responseState = state;\n"
+      "  });\n"
+      "});";
+  v8::Local<v8::Function> call_idle_query_state =
+      FunctionFromString(context, kCallIdleQueryState);
+  RunFunctionOnGlobal(call_idle_query_state, context, 0, nullptr);
+  ASSERT_TRUE(has_last_params());
+
+  bindings_system()->HandleResponse(
+      last_params().request_id, true,
+      mojom::ResponseWrapper::NewJson(mojo_base::BigBuffer(
+          base::as_byte_span(std::string_view(R"("active")")))),
+      std::string());
+
+  EXPECT_EQ(R"("active")", GetStringPropertyFromObject(
+                               context->Global(), context, "responseState"));
 }
 
 TEST_F(NativeExtensionBindingsSystemUnittest, Events) {

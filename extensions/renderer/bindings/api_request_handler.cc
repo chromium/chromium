@@ -4,10 +4,19 @@
 
 #include "extensions/renderer/bindings/api_request_handler.h"
 
+#include <optional>
+#include <string_view>
+#include <utility>
+
+#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -17,6 +26,7 @@
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/web/web_blob.h"
 
 namespace extensions {
@@ -33,6 +43,9 @@ class APIRequestHandler::ArgumentAdapter {
  public:
   ArgumentAdapter(const base::ListValue* base_argumements,
                   mojom::ExtraResponseDataPtr extra_data);
+  ArgumentAdapter(mojo_base::BigBuffer json_argument,
+                  mojom::ExtraResponseDataPtr extra_data,
+                  size_t max_v8_json_length);
   explicit ArgumentAdapter(const v8::LocalVector<v8::Value>& v8_arguments);
 
   ArgumentAdapter(ArgumentAdapter&) = delete;
@@ -51,12 +64,23 @@ class APIRequestHandler::ArgumentAdapter {
   raw_ptr<const base::ListValue> base_arguments_ = nullptr;
   mutable std::optional<v8::LocalVector<v8::Value>> v8_arguments_;
   mojom::ExtraResponseDataPtr extra_data_ = nullptr;
+  // Single argument serialized as UTF-8 JSON. Reset once parsed to release the
+  // (possibly shared) memory early.
+  mutable std::optional<mojo_base::BigBuffer> json_argument_;
+  size_t max_v8_json_length_ = v8::String::kMaxLength;
 };
 
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
     const base::ListValue* base_arguments,
     mojom::ExtraResponseDataPtr extra_data)
     : base_arguments_(base_arguments), extra_data_(std::move(extra_data)) {}
+APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
+    mojo_base::BigBuffer json_argument,
+    mojom::ExtraResponseDataPtr extra_data,
+    size_t max_v8_json_length)
+    : extra_data_(std::move(extra_data)),
+      json_argument_(std::move(json_argument)),
+      max_v8_json_length_(max_v8_json_length) {}
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
     const v8::LocalVector<v8::Value>& v8_arguments)
     : v8_arguments_(v8_arguments) {}
@@ -68,8 +92,31 @@ APIRequestHandler::ArgumentAdapter::GetArguments(
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   DCHECK(isolate->GetCurrentContext() == context);
 
-  if (base_arguments_) {
-    DCHECK(!v8_arguments_.has_value())
+  if (json_argument_) {
+    CHECK(!v8_arguments_.has_value())
+        << "GetArguments() should only be called once.";
+    v8_arguments_.emplace(isolate);
+    std::string_view json = base::as_string_view(base::span(*json_argument_));
+    if (json.size() <= max_v8_json_length_) {
+      v8::Local<v8::String> v8_json =
+          v8::String::NewFromUtf8(isolate, json.data(),
+                                  v8::NewStringType::kNormal,
+                                  base::checked_cast<int>(json.size()))
+              .ToLocalChecked();
+      json_argument_.reset();
+      v8_arguments_->push_back(
+          v8::JSON::Parse(context, v8_json).ToLocalChecked());
+    } else {
+      // A single V8 string cannot exceed `v8::String::kMaxLength`; fall back
+      // to parsing into a `base::Value` and converting element-by-element.
+      base::Value parsed =
+          base::JSONReader::Read(json, base::JSON_PARSE_RFC).value();
+      json_argument_.reset();
+      v8_arguments_->push_back(
+          content::V8ValueConverter::Create()->ToV8Value(parsed, context));
+    }
+  } else if (base_arguments_) {
+    CHECK(!v8_arguments_.has_value())
         << "GetArguments() should only be called once.";
     std::unique_ptr<content::V8ValueConverter> converter =
         content::V8ValueConverter::Create();
@@ -498,6 +545,18 @@ void APIRequestHandler::CompleteRequest(
   CompleteRequestImpl(request_id,
                       ArgumentAdapter(&response_args, std::move(extra_data)),
                       error);
+}
+
+void APIRequestHandler::CompleteRequest(
+    int request_id,
+    mojo_base::BigBuffer response_json,
+    const std::string& error,
+    mojom::ExtraResponseDataPtr extra_data) {
+  CompleteRequestImpl(
+      request_id,
+      ArgumentAdapter(std::move(response_json), std::move(extra_data),
+                      max_v8_json_length_),
+      error);
 }
 
 void APIRequestHandler::CompleteRequest(

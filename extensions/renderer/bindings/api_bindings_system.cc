@@ -127,6 +127,15 @@ void APIBindingsSystem::CompleteRequest(
                                    std::move(extra_data));
 }
 
+void APIBindingsSystem::CompleteRequest(
+    int request_id,
+    mojo_base::BigBuffer response_json,
+    const std::string& error,
+    mojom::ExtraResponseDataPtr extra_data) {
+  request_handler_.CompleteRequest(request_id, std::move(response_json), error,
+                                   std::move(extra_data));
+}
+
 void APIBindingsSystem::FireEventInContext(
     const std::string& event_name,
     v8::Local<v8::Context> context,

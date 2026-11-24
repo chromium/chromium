@@ -928,10 +928,15 @@ void NativeExtensionBindingsSystem::HandleResponse(
   // Some API calls result in failure, but don't set an error. Use a generic and
   // unhelpful error string.
   // TODO(devlin): Track these down and fix them. See crbug.com/40485455.
-  api_system_.CompleteRequest(
-      request_id, response->get_list(),
-      !success && error.empty() ? "Unknown error." : error,
-      std::move(extra_data));
+  std::string error_or_default =
+      !success && error.empty() ? "Unknown error." : error;
+  if (response->is_json()) {
+    api_system_.CompleteRequest(request_id, std::move(response->get_json()),
+                                error_or_default, std::move(extra_data));
+  } else {
+    api_system_.CompleteRequest(request_id, response->get_list(),
+                                error_or_default, std::move(extra_data));
+  }
 }
 
 IPCMessageSender* NativeExtensionBindingsSystem::GetIPCMessageSender() {

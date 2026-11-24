@@ -4,10 +4,32 @@
 
 module extensions.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
 // The arguments of a response to an extension API request.
 union ResponseWrapper {
   // A list of response arguments.
   mojo_base.mojom.ListValue list;
+
+  // A single response argument, serialized as UTF-8 JSON. Allows large
+  // responses to be serialized off the browser UI thread and sent in shared
+  // memory.
+  //
+  // Uses `BigBuffer` rather than `BigString`, because with `BigString`, Mojo
+  // copies the string into new shared memory on the browser UI thread when
+  // serializing the reply:
+  //   ExtensionFunction::SendResponseImpl()
+  //   ...
+  //   Serializer<mojo_base::mojom::BigStringDataView>::Serialize()
+  //   StructTraits<BigStringDataView, std::string>::data()
+  //   BigBuffer::BigBuffer(base::span)
+  //   BigBufferView::BigBufferView(base::span)  // allocates & copies
+  // With `BigBuffer`, the shared memory is filled off-thread and the UI thread
+  // only moves the handle.
+  //
+  // Reading directly from shared memory is safe because this union is only
+  // sent browser -> renderer and `BigBuffer` drops the browser's mapping when
+  // serialized.
+  mojo_base.mojom.BigBuffer json;
 };
