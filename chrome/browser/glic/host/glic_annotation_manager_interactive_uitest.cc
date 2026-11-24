@@ -762,13 +762,20 @@ class MAYBE_GlicAnnotationManagerWithFloatingWindowInLiveModeUiTest
 
   InteractiveGlicTest::MultiStep OpenGlicFloatingWindowInLiveMode(
       std::optional<ui::ElementIdentifier> web_contents_id = kActiveTabId) {
-    return Steps(OpenGlicFloatingWindow(), Do([&]() {
-                   // This is to switch to using GlicFocusedTabManager (which is
-                   // used by default with GlicMultiInstance disabled).
-                   GetGlicInstanceImpl()->OnInteractionModeChange(
-                       mojom::WebClientMode::kAudio);
-                 }),
-                 WaitUntilGlicFocusedTabIs(web_contents_id));
+    return Steps(
+#if BUILDFLAG(IS_MAC)
+        // On Mac, opening a floating window with activation independence does
+        // not activate the app, so activate the browser window first so the app
+        // and browser are active for GlicFocusedBrowserManagerImpl.
+        ActivateSurface(kBrowserViewElementId),
+#endif
+        OpenGlicFloatingWindow(), Do([&]() {
+          // This is to switch to using GlicFocusedTabManager (which is
+          // used by default with GlicMultiInstance disabled).
+          GetGlicInstanceImpl()->OnInteractionModeChange(
+              mojom::WebClientMode::kAudio);
+        }),
+        WaitUntilGlicFocusedTabIs(web_contents_id));
   }
 };
 
