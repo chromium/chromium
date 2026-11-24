@@ -85,6 +85,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom.h"
@@ -722,7 +723,8 @@ class RenderWidgetHostTest : public testing::Test {
     host_ = MockRenderWidgetHost::Create(
         /* frame_tree= */ nullptr, delegate_.get(),
         site_instance_group_->GetSafeRef(), process_->GetNextRoutingID(),
-        widget_.GetNewRemote());
+        widget_.GetNewRemote(), /*hidden=*/false,
+        /*renderer_initiated_creation=*/false);
     // Set up the RenderWidgetHost as being for a main frame.
     host_->set_owner_delegate(&mock_owner_delegate_);
     // Act like there is no RenderWidget present in the renderer yet.
@@ -1829,6 +1831,94 @@ TEST_F(RenderWidgetHostTest, HideShowMessages) {
   // It should have sent out a mojo message.
   ASSERT_TRUE(widget_.IsHidden().has_value());
   EXPECT_FALSE(widget_.IsHidden().value());
+}
+
+// Test that the RecordContentToVisibleTimeRequest sent with the WasShown and
+// RequestSuccessfulPresentationTimeForNextFrame IPCs has a
+// `browser_dispatch_time` equal to the time when RenderWidgetHostImpl sends
+// the IPC.
+TEST_F(RenderWidgetHostTest, VisibleTimeRequestHasBrowserDispatchTime) {
+  const blink::RecordContentToVisibleTimeRequest request{
+      .events = {blink::VisibleTimeEvent{
+          .event_start_time = base::TimeTicks::Now(),
+          .reason = blink::VisibleTimeEvent::TabSwitchReason{
+              .destination_is_loaded = true}}}};
+  {
+    base::RunLoop run_loop;
+    widget_.SetShownHiddenCallback(run_loop.QuitClosure());
+    host_->WasHidden();
+    run_loop.Run();
+  }
+
+  // WasShown().
+  task_environment_.FastForwardBy(base::Milliseconds(10));
+  base::TimeTicks dispatch_time = base::TimeTicks::Now();
+  {
+    base::RunLoop run_loop;
+    widget_.SetShownHiddenCallback(run_loop.QuitClosure());
+    host_->WasShown(request);
+    run_loop.Run();
+  }
+  ASSERT_TRUE(widget_.last_visible_time_request());
+  EXPECT_EQ(widget_.last_visible_time_request()->events, request.events);
+  EXPECT_EQ(widget_.last_visible_time_request()->browser_dispatch_time,
+            dispatch_time);
+
+  // RequestSuccessfulPresentationTimeForNextFrame().
+  task_environment_.FastForwardBy(base::Milliseconds(10));
+  dispatch_time = base::TimeTicks::Now();
+  host_->RequestSuccessfulPresentationTimeForNextFrame(request);
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return widget_.last_visible_time_request()->browser_dispatch_time ==
+           dispatch_time;
+  }));
+  EXPECT_EQ(widget_.last_visible_time_request()->events, request.events);
+}
+
+// Test that when RenderWidgetHostImpl::WasShown() is called before Init(),
+// the RecordContentToVisibleTimeRequest sent with the WasShown IPC has a
+// `browser_dispatch_time` equal to the time of Init(), which sends the
+// deferred IPC, rather than the time of WasShown().
+TEST_F(RenderWidgetHostTest, VisibleTimeRequestHasBrowserDispatchTimeOfInit) {
+  // With `renderer_initiated_creation`, RenderWidgetHostImpl::WasShown() saves
+  // the request in `pending_show_params_` until Init() sends the WasShown IPC.
+  // With `hidden`, WasShown() does not return early.
+  MockWidget widget;
+  std::unique_ptr<MockRenderWidgetHost> host = MockRenderWidgetHost::Create(
+      /*frame_tree=*/nullptr, delegate_.get(),
+      site_instance_group_->GetSafeRef(), process_->GetNextRoutingID(),
+      widget.GetNewRemote(), /*hidden=*/true,
+      /*renderer_initiated_creation=*/true);
+  auto view = std::make_unique<TestView>(host.get());
+  host->SetView(view.get());
+  host->BindFrameWidgetInterfaces(
+      mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>()
+          .InitWithNewEndpointAndPassReceiver(),
+      TestRenderWidgetHost::CreateStubFrameWidgetRemote());
+  host->RendererWidgetCreated(/*for_frame_widget=*/true);
+
+  const blink::RecordContentToVisibleTimeRequest request{
+      .events = {blink::VisibleTimeEvent{
+          .event_start_time = base::TimeTicks::Now(),
+          .reason = blink::VisibleTimeEvent::TabSwitchReason{
+              .destination_is_loaded = true}}}};
+  host->WasShown(request);
+
+  task_environment_.FastForwardBy(base::Milliseconds(10));
+  const base::TimeTicks init_time = base::TimeTicks::Now();
+  {
+    base::RunLoop run_loop;
+    widget.SetShownHiddenCallback(run_loop.QuitClosure());
+    host->Init();
+    run_loop.Run();
+  }
+  ASSERT_TRUE(widget.last_visible_time_request());
+  EXPECT_EQ(widget.last_visible_time_request()->events, request.events);
+  EXPECT_EQ(widget.last_visible_time_request()->browser_dispatch_time,
+            init_time);
+
+  view.reset();
+  host.reset();
 }
 
 TEST_F(RenderWidgetHostTest, IgnoreKeyEventsHandledByRenderer) {

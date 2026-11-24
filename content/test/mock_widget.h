@@ -46,6 +46,13 @@ class MockWidget : public blink::mojom::Widget,
   void ClearHidden() { is_hidden_ = std::nullopt; }
   const std::optional<bool>& IsHidden() const { return is_hidden_; }
 
+  // The last RecordContentToVisibleTimeRequest received via WasShown() or
+  // RequestSuccessfulPresentationTimeForNextFrame().
+  const std::optional<blink::RecordContentToVisibleTimeRequest>&
+  last_visible_time_request() const {
+    return last_visible_time_request_;
+  }
+
   // blink::mojom::RenderInputRouterClient overrides;
   void GetWidgetInputHandler(
       mojo::PendingReceiver<blink::mojom::WidgetInputHandler> request,
@@ -77,6 +84,8 @@ class MockWidget : public blink::mojom::Widget,
 
  private:
   std::optional<bool> is_hidden_;
+  std::optional<blink::RecordContentToVisibleTimeRequest>
+      last_visible_time_request_;
   base::RepeatingClosure shown_hidden_callback_;
   std::vector<blink::VisualProperties> visual_properties_;
   std::vector<std::pair<gfx::Rect, gfx::Rect>> screen_rects_;

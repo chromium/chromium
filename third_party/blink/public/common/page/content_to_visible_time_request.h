@@ -58,6 +58,12 @@ struct BLINK_COMMON_EXPORT VisibleTimeEvent {
 struct BLINK_COMMON_EXPORT RecordContentToVisibleTimeRequest {
   std::vector<VisibleTimeEvent> events;
 
+  // Time when RenderWidgetHostImpl sent this request to the renderer with the
+  // WasShown or RequestSuccessfulPresentationTimeForNextFrame IPC. Unset for
+  // requests that are not sent to the renderer (e.g. those passed to
+  // DelegatedFrameHost).
+  std::optional<base::TimeTicks> browser_dispatch_time;
+
   friend bool operator==(const RecordContentToVisibleTimeRequest&,
                          const RecordContentToVisibleTimeRequest&) = default;
   friend auto operator<=>(const RecordContentToVisibleTimeRequest&,

@@ -880,6 +880,10 @@ void RenderWidgetHostImpl::Init() {
   // receive them. This call will inform the renderer that the widget is shown.
   if (pending_show_params_) {
     CHECK(blink_widget_.is_bound());
+    if (pending_show_params_->visible_time_request) {
+      pending_show_params_->visible_time_request->browser_dispatch_time =
+          base::TimeTicks::Now();
+    }
     blink_widget_->WasShown(
         pending_show_params_->is_evicted,
         std::move(pending_show_params_->visible_time_request));
@@ -1005,6 +1009,10 @@ void RenderWidgetHostImpl::WasShown(
 
   CHECK(!pending_show_params_);
   if (!waiting_for_init_) {
+    if (record_tab_switch_time_request) {
+      record_tab_switch_time_request->browser_dispatch_time =
+          base::TimeTicks::Now();
+    }
     blink_widget_->WasShown(view_->is_evicted(),
                             std::move(record_tab_switch_time_request));
   } else {
@@ -1061,6 +1069,7 @@ void RenderWidgetHostImpl::RequestSuccessfulPresentationTimeForNextFrame(
     return;
   }
   CHECK(!pending_show_params_);
+  visible_time_request.browser_dispatch_time = base::TimeTicks::Now();
   blink_widget_->RequestSuccessfulPresentationTimeForNextFrame(
       std::move(visible_time_request));
 }

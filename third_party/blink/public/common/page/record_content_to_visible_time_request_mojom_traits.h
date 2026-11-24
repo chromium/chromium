@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_RECORD_CONTENT_TO_VISIBLE_TIME_REQUEST_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_RECORD_CONTENT_TO_VISIBLE_TIME_REQUEST_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
@@ -83,6 +84,11 @@ struct BLINK_COMMON_EXPORT StructTraits<
   static const std::vector<blink::VisibleTimeEvent>& events(
       const blink::RecordContentToVisibleTimeRequest& request) {
     return request.events;
+  }
+
+  static const std::optional<base::TimeTicks>& browser_dispatch_time(
+      const blink::RecordContentToVisibleTimeRequest& request) {
+    return request.browser_dispatch_time;
   }
 
   static bool Read(blink::mojom::RecordContentToVisibleTimeRequestDataView data,

@@ -69,7 +69,9 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
       RenderWidgetHostDelegate* delegate,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget);
+      mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget,
+      bool hidden,
+      bool renderer_initiated_creation);
 
   input::RenderInputRouter* GetRenderInputRouter() override;
 
@@ -90,7 +92,9 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
       RenderWidgetHostDelegate* delegate,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget);
+      mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget,
+      bool hidden,
+      bool renderer_initiated_creation);
 
   void SetupMockRenderInputRouter();
 };

@@ -41,4 +41,9 @@ struct VisibleTimeEvent {
 // web contents are visible. Events are added with VisibleTimeRequestTrigger::UpdateRequest.
 struct RecordContentToVisibleTimeRequest {
   array<VisibleTimeEvent> events;
+  // Time when the browser sent this request to the renderer with
+  // Widget.WasShown or Widget.RequestSuccessfulPresentationTimeForNextFrame.
+  // Nullable because the typemapped C++ struct is also used for requests that
+  // are not sent to the renderer.
+  mojo_base.mojom.TimeTicks? browser_dispatch_time;
 };

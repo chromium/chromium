@@ -21,17 +21,33 @@ using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 
-TEST(ContentToVisibleTimeRequestTest, MojoRoundTripPreservesFrozenState) {
+TEST(ContentToVisibleTimeRequestTest, MojoRoundTrip) {
   const RecordContentToVisibleTimeRequest input{
       .events = {VisibleTimeEvent{.event_start_time = base::TimeTicks::Now(),
-                                  .reason = VisibleTimeEvent::TabSwitchReason{
-                                      .destination_is_loaded = true,
-                                      .had_saved_frame_at_start = false,
-                                      .destination_is_frozen = true}}}};
+                                  .reason =
+                                      VisibleTimeEvent::TabSwitchReason{
+                                          .destination_is_loaded = true,
+                                          .had_saved_frame_at_start = false,
+                                          .destination_is_frozen = true}}},
+      .browser_dispatch_time = base::TimeTicks::Now()};
   RecordContentToVisibleTimeRequest output;
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
               mojom::RecordContentToVisibleTimeRequest>(input, output));
+  EXPECT_EQ(input, output);
+}
+
+TEST(ContentToVisibleTimeRequestTest, MojoRoundTripWithoutBrowserDispatchTime) {
+  const RecordContentToVisibleTimeRequest input{
+      .events = {VisibleTimeEvent{
+          .event_start_time = base::TimeTicks::Now(),
+          .reason = VisibleTimeEvent::BFCacheRestoreReason{}}}};
+  RecordContentToVisibleTimeRequest output{.browser_dispatch_time =
+                                               base::TimeTicks::Now()};
+
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::RecordContentToVisibleTimeRequest>(input, output));
+  EXPECT_EQ(output.browser_dispatch_time, std::nullopt);
   EXPECT_EQ(input, output);
 }
 

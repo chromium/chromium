@@ -80,10 +80,8 @@ bool StructTraits<blink::mojom::RecordContentToVisibleTimeRequestDataView,
                   blink::RecordContentToVisibleTimeRequest>::
     Read(blink::mojom::RecordContentToVisibleTimeRequestDataView data,
          blink::RecordContentToVisibleTimeRequest* out) {
-  if (!data.ReadEvents(&out->events)) {
-    return false;
-  }
-  return true;
+  return data.ReadEvents(&out->events) &&
+         data.ReadBrowserDispatchTime(&out->browser_dispatch_time);
 }
 
 }  // namespace mojo
