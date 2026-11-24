@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -39,7 +40,10 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(BlinkFeatures.PRERENDER2)
-@DisableFeatures(BlinkFeatures.PRERENDER2_MEMORY_CONTROLS)
+// TODO(crbug.com/423465927): Explore a better approach to make the existing tests run with
+// DSE Prewarm enabled, which otherwise triggers background prerenders that race with test
+// prerender assertions.
+@DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS, PreloadingFeatureMap.PREWARM})
 public class PageLoadMetricsTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
