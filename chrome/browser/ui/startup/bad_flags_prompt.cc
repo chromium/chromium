@@ -51,6 +51,7 @@
 #include "net/base/switches.h"
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/webnn/public/cpp/webnn_features.h"
 #include "services/webnn/public/mojom/features.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -249,9 +250,6 @@ static const std::variant<const base::Feature*, const char*>
         // for testing purposes. Can only be enabled via the command line.
         &blink::features::kBypassPepcSecurityForTesting,
 
-        // This feature is under development and has known security risks.
-        &webnn::mojom::features::kWebMachineLearningNeuralNetwork,
-
         // This feature enables the test root store, which can contain roots
         // that are not actually trusted.
         &net::features::kTestRootStore,
@@ -339,8 +337,9 @@ void ShowBadFlagsPrompt(content::WebContents* web_contents) {
   }
 #endif
 
+  std::string_view bad_flag_name;
   for (const auto& flag_or_feature : kBadFeatureFlagsInAboutFlags) {
-    std::string_view bad_flag_name = std::visit(
+    bad_flag_name = std::visit(
         absl::Overload{[](const base::Feature* feature) -> std::string_view {
                          if (feature &&
                              base::FeatureList::IsEnabled(*feature)) {
@@ -359,17 +358,31 @@ void ShowBadFlagsPrompt(content::WebContents* web_contents) {
         flag_or_feature);
 
     if (!bad_flag_name.empty()) {
-#if BUILDFLAG(IS_ANDROID)
-      ShowBadFlagsSnackbar(web_contents, l10n_util::GetStringFUTF16(
-                                             IDS_BAD_FEATURES_WARNING_MESSAGE,
-                                             base::UTF8ToUTF16(bad_flag_name)));
-#else
-      ShowBadFlagsInfoBarHelper(
-          ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
-          web_contents, IDS_BAD_FEATURES_WARNING_MESSAGE, bad_flag_name);
-#endif
-      return;
+      break;
     }
+  }
+
+  // WebNN is under development and has known security risks unless security
+  // hardening flags are enabled.
+  if (bad_flag_name.empty() &&
+      base::FeatureList::IsEnabled(
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork) &&
+      webnn::IsWebNNUnsafe()) {
+    bad_flag_name =
+        webnn::mojom::features::kWebMachineLearningNeuralNetwork.name;
+  }
+
+  if (!bad_flag_name.empty()) {
+#if BUILDFLAG(IS_ANDROID)
+    ShowBadFlagsSnackbar(web_contents, l10n_util::GetStringFUTF16(
+                                           IDS_BAD_FEATURES_WARNING_MESSAGE,
+                                           base::UTF8ToUTF16(bad_flag_name)));
+#else
+    ShowBadFlagsInfoBarHelper(
+        ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(), web_contents,
+        IDS_BAD_FEATURES_WARNING_MESSAGE, bad_flag_name);
+#endif
+    return;
   }
 }
 

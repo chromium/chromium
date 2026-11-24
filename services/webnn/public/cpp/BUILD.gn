@@ -13,6 +13,18 @@ buildflag_header("buildflags") {
   ]
 }
 
+source_set("features") {
+  sources = [
+    "webnn_features.cc",
+    "webnn_features.h",
+  ]
+
+  deps = [
+    "//base",
+    "//services/webnn/public/mojom:features",
+  ]
+}
+
 component("cpp") {
   sources = [
     "context_properties.cc",

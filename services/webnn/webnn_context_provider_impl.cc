@@ -27,6 +27,7 @@
 #include "services/webnn/error.h"
 #include "services/webnn/gpu_task_scheduler.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/webnn_features.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/features.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -212,9 +213,11 @@ WebNNContextProviderImpl::WebNNContextProviderImpl(
   CHECK(webnn_browser_host_.is_bound());
 
 #if defined(ADDRESS_SANITIZER)
-  LOG(ERROR) << "WebMachineLearningNeuralNetwork is an unsafe feature.";
-  base::debug::AsanService::GetInstance()->AddErrorCallback(
-      AsanUnsafeFeatureWarning);
+  if (IsWebNNUnsafe()) {
+    LOG(ERROR) << "WebMachineLearningNeuralNetwork is an unsafe feature.";
+    base::debug::AsanService::GetInstance()->AddErrorCallback(
+        AsanUnsafeFeatureWarning);
+  }
 #endif
 }
 

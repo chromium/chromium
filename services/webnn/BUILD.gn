@@ -75,6 +75,7 @@ source_set("webnn_service_base") {
     "//gpu/config",
     "//mojo/public/cpp/bindings",
     "//services/viz/privileged/mojom/gl",
+    "//services/webnn/public/cpp:features",
     "//services/webnn/public/mojom",
     "//third_party/tflite:buildflags",
   ]
