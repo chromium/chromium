@@ -79,6 +79,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1688214853608504530">Keď píšete do panela s adresou alebo vyhľadávacieho poľa, Chrome odosiela zadávaný text vyhľadávaniu, nástrojom umelej inteligencie a nástrojom agentov vašej organizácie, aby získal návrhy.</translation>
 <translation id="1698376642261615901">Google Chrome je webový prehliadač, ktorý spúšťa webové stránky a aplikácie rýchlosťou blesku. Je rýchly, stabilný a jednoduchý. Má v sebe vstavanú ochranu pred škodlivým softvérom a neoprávneným získavaním údajov, vďaka ktorej je prehliadanie webu bezpečnejšie.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome sa znova spustí o 1 hodinu}few{Chrome sa znova spustí o # hodiny}many{Chrome sa znova spustí o # hodiny}other{Chrome sa znova spustí o # hodín}}</translation>
+<translation id="1713866023633141719">Umelá inteligencia v zariadení je pripravená</translation>
 <translation id="1722488837206509557">Budete si môcť vybrať z dostupných zariadení a zobraziť v nich obsah.</translation>
 <translation id="1724094881572874997">Keď budete Chrome používať s prihláseným účtom, vaša organizácia si bude môcť prezerať alebo spravovať určité informácie, aby zabezpečila vašu prácu v tomto prehliadači.</translation>
 <translation id="1769661297620183092">Panel Vyhľadávania Google môžete znova otvoriť a počas prehliadania tak môžete klásť otázky</translation>
@@ -153,6 +154,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2513154137948333830">Vyžaduje sa reštart: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">vaša organizácia</translation>
 <translation id="2521391734665471391">Zavrieť režim AI vo Vyhľadávaní Google</translation>
+<translation id="2523048609826818526">Univerzálne písanie</translation>
 <translation id="2523492931736391680">Vaša práca je v Chrome zabezpečená</translation>
 <translation id="2534365042754120737">Povoľte Chromu odstraňovať povolenia z webov, ktoré ste v poslednom čase nenavštívili, a ochráňte tak svoje údaje. Upozornenia sa tým nedeaktivujú.</translation>
 <translation id="2556847002339236023">Ak sa Chrome nebude používať <ph name="TIMEOUT_DURATION" />, vaša organizácia ho zavrie. Dáta prehliadania boli odstránené. Môže to zahŕňať históriu, automatické dopĺňanie a stiahnuté súbory.</translation>
@@ -251,6 +253,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="3373752068427117404">Niektoré funkcie a rozšírenia Chromu majú skratky. Môžete ich znova zapnúť.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sa teraz reštartuje}=1{Chrome sa reštartuje o 1 sekundu}few{Chrome sa reštartuje o # sekundy}many{Chrome sa reštartuje o # sekundy}other{Chrome sa reštartuje o # sekúnd}}</translation>
 <translation id="3380249972812870825">Ak chcete otvoriť Gemini v Chrome, stlačte <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome pridal umelú inteligenciu, ktorá sa spúšťa vo vašom zariadení. Weby a Chrome ho môžu používať na funkcie, ako sú:</translation>
 <translation id="3396977131400919238">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Google Chrome znova.</translation>
 <translation id="3428747202529429621">Chráni vás v Chrome a môže zlepšiť zabezpečenie v ďalších aplikáciách Google, keď sa prihlásite</translation>
 <translation id="3438681572027105609">Ak chcete mať heslá a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do Chromu</translation>
@@ -299,6 +302,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="3973161977468201858">Google Chrome chce odstrániť vaše údaje Správcu hesiel Google. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="3984557288004650913">Tlačidlom Vyhľadávanie Google v Chrome na paneli s nástrojmi môžete znova otvoriť Vyhľadávanie Google v Chrome a klásť otázky počas prehliadania</translation>
 <translation id="399788104667917863">Pripnúť na panel s nástrojmi</translation>
+<translation id="4000385468528550798">Umelá inteligencia v zariadení bola aktualizovaná</translation>
 <translation id="400161754580828648">Ak chcete zdieľať obrazovku, povoľte Chromu nahrávať obrazovku v nastaveniach systému.</translation>
 <translation id="4012899077942246412">Kým máte aktívne prihlásenie, môžete v Chrome používať svoje heslá a ďalší obsah zo svojho účtu Google. Ak to chcete zmeniť, prejdite do sekcie Váš účet v Chrome.</translation>
 <translation id="4022972681110646219">Preložiť obrazovku</translation>
@@ -558,6 +562,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6632012506031284914">na vyhľadávanie pomocou Chromu.</translation>
 <translation id="6634299872736643004">Zmeny tohto nastavenia sa uplatnia po reštarte Chromu.</translation>
 <translation id="6644846457769259194">Zariadenie sa aktualizuje (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">Umelá inteligencia v zariadení je aktuálna</translation>
 <translation id="6660596345553328257">Chcete sa prihlásiť do Chromu?</translation>
 <translation id="6664219008737641504">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="SETTINGS_LINK" /> údaje Chromu vo svojom účte</translation>
 <translation id="6676384891291319759">Prístup do siete Internet</translation>
@@ -599,6 +604,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7024536598735240744">Chyba pri rozbalení: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Tu môžete prepínať profily Chromu</translation>
 <translation id="7026856149118332950">Kliknutím na <ph name="BEGIN_BOLD" />Áno<ph name="END_BOLD" /> v upozornení systému Windows pripnite Chrome na panel aplikácií, aby ste k nemu mali rýchly prístup.</translation>
+<translation id="7033785662379319359">Nová, kompaktnejšia verzia umelej inteligencie v zariadení je pripravená na používanie pri úlohách, ako sú súhrny, jazykové korektúry a ďalšie</translation>
 <translation id="7047386856539490735">Sú tieto výsledky užitočné?</translation>
 <translation id="7051685429025310665">Tento web ste v poslednom čase nenavštívili. Chrome odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Upravte Chrome podľa seba</translation>

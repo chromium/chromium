@@ -78,6 +78,7 @@
 <translation id="112840717907525620">정책 캐시 확인</translation>
 <translation id="1131264053432022307">복사한 이미지</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: 전체 화면을 종료하려면 상단에서 드래그한 후 뒤로 버튼을 터치하세요.</translation>
+<translation id="11370190534773372">카드 세부정보 입력됨</translation>
 <translation id="1138458427267715730">웹에 가격이 인하된 사이트가 있으면 알림이 전송됩니다.</translation>
 <translation id="1142713751288681188">용지 종류</translation>
 <translation id="1142965388643537393">여행 정보</translation>
@@ -4549,6 +4550,7 @@
 <translation id="8577348305244205642">가상 카드 사용할 수 없음</translation>
 <translation id="8579000896558714521">키보드 재정의</translation>
 <translation id="8579561564816585231">비밀번호 관리자와 같은 Google 서비스를 사용하여 로그인함</translation>
+<translation id="8580478010934016252">결제 수단으로 이동</translation>
 <translation id="8581064022803799721">페이지가 <ph name="LAST_BOOKMARKS_FOLDER" />에 저장되어 있습니다.</translation>
 <translation id="858637041960032120">번호 추가</translation>
 <translation id="8587100480629037893">손 추적이 허용되지 않음</translation>

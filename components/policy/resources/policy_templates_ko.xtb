@@ -6539,6 +6539,13 @@ Chrome 114까지 이 정책을 적용하려면 <ph name="SYNC_DISABLED_POLICY_NA
 
 참고: 이 정책은 지원 중단되었으므로 대신 <ph name="ISOLATE_ORIGINS_POLICY_NAME" />(고성능 기기용) 또는 <ph name="ISOLATE_ORIGINS_SHORTLIST_POLICY_NAME" /> 정책을 사용하세요. 이 정책은 반드시 1GB 이상의 RAM이 있는 기기에서 실행되는 <ph name="ANDROID_NAME" />의 Chrome에만 적용되며, 해당 기기에서는 특정 프로세스 격리를 구성하지 않는 것이 좋습니다.</translation>
 <translation id="4991786313466977061">기업 배지의 공개 상태 제어</translation>
+<translation id="4991886408515766724">정책을 설정하면 사용자에게 USB 기기 액세스를 요청할 수 있는 사이트를 지정하는 URL 패턴 목록을 만들 수 있습니다.
+
+      정책을 설정하지 않았을 때 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />이 설정되어 있으면 모든 사이트에 적용되며 설정되어 있지 않으면 사용자의 개인 설정이 적용됩니다.
+
+      URL 패턴은 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />와 충돌하지 않아야 합니다. URL이 둘 모두와 일치하면 어떠한 정책도 우선 적용되지 않습니다.
+
+      유효한 <ph name="URL_LABEL" /> 패턴에 관해 자세히 알아보려면 https://chromeenterprise.google/policies/url-patterns를 참고하세요. <ph name="WILDCARD_VALUE" />는 이 정책에 허용되는 값이 아닙니다.</translation>
 <translation id="4995123966071996433">Linux 가상 머신으로의 포트 전달 허용 안함</translation>
 <translation id="4996068111491152684"><ph name="PRODUCT_OS_NAME" /> 로그인 사용자 인증 정보가 네트워크 인증에 사용되지 않습니다.</translation>
 <translation id="4996086761250834365"><ph name="PLUGIN_VM_NAME" /> 제품 분석 허용</translation>

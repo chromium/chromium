@@ -1787,6 +1787,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6504541289630702018">Jednoduchý prístup k skupinám kariet vytvoreným v počítači</translation>
 <translation id="6505334220040167806">Zbaliť skupinu kariet</translation>
 <translation id="6506996418997555004">Zdieľanie skupiny kariet <ph name="GROUP_NAME" /></translation>
+<translation id="650770261448122895">Vyhľadávajte s funkciou Lens, čo vidíte</translation>
 <translation id="6507973708545996744">Ak chcete mať čitateľský zoznam k dispozícii vo všetkých zariadeniach, prihláste sa.</translation>
 <translation id="6518133107902771759">Overiť</translation>
 <translation id="6523575793810663688">Postup</translation>
@@ -2428,6 +2429,7 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8439758443371991593">Skryť položku Pridať do čitateľského zoznamu</translation>
 <translation id="8443986842926457191">Webová adresa obsahuje viac ako 2 048 znakov.</translation>
 <translation id="8449869326050867919">Heslo bolo zdieľané</translation>
+<translation id="8473367210869452063">Ak chcete s týmto webom interagovať, zastavte aktuálnu úlohu alebo počkajte, kým ju Gemini dokončí</translation>
 <translation id="8473815223723723001">Upraviť obrázok pomocou Gemini</translation>
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
 <translation id="8474378002946546633">Povoliť upozornenia</translation>

@@ -33,6 +33,7 @@
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />"-ыг нэмэх үү?</translation>
 <translation id="2159915644201199628">Дүрсний кодыг тайлах боломжгүй байна: <ph name="IMAGE_NAME" /> '</translation>
 <translation id="2193567467390483943">Танай эцэг эх энэ өргөтгөлийг зөвшөөрөөгүй</translation>
+<translation id="2207866393056347613">Бүх сайт дээрх таны өгөгдөлд хандах байнгын эрх олгоно</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" нь нэмэлт зөвшөөрөл хүссэн байна.</translation>
 <translation id="2327492829706409234">Аппликейшнийг идэвхжүүл</translation>
 <translation id="2350172092385603347">Байрлалыг ашигласан, анхдагч байрлалыг контентын жагсаалтанд зааж өгсөн.</translation>
@@ -41,6 +42,7 @@
 <translation id="2678063897982469759">Дахин идэвхжүүл</translation>
 <translation id="2743583586211388067">Энэ өргөтгөлд хандах эрхийг танай байгууллагын өргөтгөлийн эрсдэлийн бодлогын дагуу блоклосон.</translation>
 <translation id="2766161002040448006">Эцэг эхээс асуух</translation>
+<translation id="2775557057525247505">Бүх сайтыг харуулах</translation>
 <translation id="2785530881066938471">Контентын бичвэрийн зорилгоор <ph name="RELATIVE_PATH" /> файлыг ачаалж чадсангүй. Энэ нь UTF-8 кодчилол биш байна.</translation>
 <translation id="2850541429955027218">Загвар нэмэх</translation>
 <translation id="2883143988769190738">Энэ өргөтгөл дараах зөвшөөрлүүдийг хүсэж байна:</translation>
@@ -59,6 +61,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> борлуулагчийн <ph name="VENDOR_ID" /> (сериалын дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Хувийн түлхүүрт оруулах оролтын утга нь хүчин төгөлдөр байх ёстой.</translation>
+<translation id="3769470010314114481">Сайт дээрх таны өгөгдөлд түр хандах эрх олгоно</translation>
 <translation id="3788401245189148511">Энэ нь:</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" апп нь "<ph name="INSTALLED_APP_NAME" />"-тай зөрчилдөж байгаа тул үүнийг нэмэх боломжгүй байна.</translation>
 <translation id="388442998277590542">Сонголтууд хуудсыг '<ph name="OPTIONS_PAGE" />' ачаалж чадсангүй.</translation>
@@ -66,6 +69,7 @@
 <translation id="3908501907586732282">Өргөтгөлийг идэвхжүүлэх</translation>
 <translation id="3927932062596804919">Татгалзах</translation>
 <translation id="3984413272403535372">Өргөтгөл рүү нэвтрэх үед алдаа гарлаа</translation>
+<translation id="3990894032742690314">Жагсаасан сайтууд дээр үргэлж</translation>
 <translation id="4014432863917027322">Та "<ph name="EXTENSION_NAME" />-г" засварлах уу?</translation>
 <translation id="4061696872429826774">Taны компьютер дээрх өөр нэг программ Chromium-н ажиллах зарчмыг өөрчилж болох өргөтгөл нэмсэн.
 
@@ -74,6 +78,7 @@
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' Тухай хуудсыг ачаалж чадсангүй.</translation>
 <translation id="424963718355121712">Аппыг нөлөөлдөг толгой компьютероос нь ажиллуулах шаардлагатай</translation>
 <translation id="4306119971288449206">Аппыг заавал "<ph name="CONTENT_TYPE" />" агуулгын төрөлтэй ажиллуулах шаардлагатай</translation>
+<translation id="4307774243840254737">Доор жагсаасан сайтууд дээрх таны өгөгдөлд хандах байнгын эрх олгоно</translation>
 <translation id="4349181963619779233">Энэ вебсайтаас өргөтгөл, апп нэмэх боломжгүй</translation>
 <translation id="4625078469366263107">Аппыг идэвхжүүлэх</translation>
 <translation id="4633003931260532286">Өргөтгөлд хамгийн бага "<ph name="IMPORT_VERSION" />" хувилбартай "<ph name="IMPORT_NAME" />" шаардлагатай хэдий ч зөвхөн "<ph name="INSTALLED_VERSION" />" хувилбарыг суулгасан байна</translation>
@@ -91,6 +96,7 @@
 <translation id="5185386675596372454"><ph name="EXTENSION_NAME" />-ийн хамгийн сүүлийн хувилбар нь олон зөвшөөрөл шаарддаг учир идэвхгүй болсон байна.</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />-ыг идэвхжүүлэх үү"?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Зөвхөн таныг өргөтгөл дээр товшиход</translation>
 <translation id="5405650547142096840">Chromium-аас устга</translation>
 <translation id="5456409301717116725">Энэхүү өргөтгөлд <ph name="KEY_PATH" /> түлхүүр файл багтана. Та магадгүй энэ үйлдлийг хийх хүсэлгүй байж болох юм.</translation>
 <translation id="5485102783864353244">Апп нэмэх</translation>
@@ -119,6 +125,7 @@
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Энэхүү өргөтгөл нь хэт олон удаагийн давтамжтайгаар өөрийгөө ачаалсан байна.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" />-ын тодорхойгүй бүтээгдэхүүн <ph name="PRODUCT_ID" /></translation>
+<translation id="7017635639223148413">Жагсаасан сайтууд</translation>
 <translation id="7068383018033524534">Тодорхойлогч файл буруу байна</translation>
 <translation id="7217838517480956708">Энэ машины админаас суулгах <ph name="EXTENSION_NAME" />-ийг шаардаж байна. Үүнийг устгах юмуу өөрчилж болохгүй.</translation>
 <translation id="7287143125007575591">Хандалтыг зөвшөөрөөгүй.</translation>
@@ -136,6 +143,7 @@
 <translation id="8035920974645200807">Хэрэглэгч рүү харсан</translation>
 <translation id="8047248493720652249">Өөр өргөтгөл (<ph name="EXTENSION_NAME" /> ) татсан файлын нэрийг <ph name="ACTUAL_FILENAME" /> өөрөөр тодорхойлсон тул энэхүү өргөтгөлийн зүгээс <ph name="ATTEMPTED_FILENAME" /> гэсэн нэрээр нэрлэх үйлдэл амжилтгүй болсон байна.</translation>
 <translation id="8049705080247101012">Google "<ph name="EXTENSION_NAME" />"-г хортой гэж тэмдэглэсэн бөгөөд суулгахаас сэргийлсэн болно</translation>
+<translation id="823691536304079791">Таны өгөгдлийг унших, өөрчлөх</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" />-ний <ph name="PRODUCT_NAME" /></translation>
 <translation id="8353683614194668312">Энэ нь:</translation>
 <translation id="8517576857589387417">Тодорхойлогч файл байхгүй эсвэл үүнийг унших боломжгүй байна</translation>

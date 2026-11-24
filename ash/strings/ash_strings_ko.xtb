@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">유휴 상태 데이터</translation>
 <translation id="2058456167109518507">기기가 검색됨</translation>
 <translation id="2064048859448024834">동영상 카메라 미리보기 켜짐</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{링크 1개}other{링크 #개}}</translation>
 <translation id="2067220651560163985">온도를 섭씨로 표시</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" />에서 <ph name="PRINTER_NAME" /> 프린터로 인쇄를 완료했습니다.</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> 기능을 켜거나 끕니다. <ph name="CAPTURE_MEDIUM" /> 기능이 <ph name="CAPTURE_STATE" /> 상태입니다.</translation>

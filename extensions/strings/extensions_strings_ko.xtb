@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">'<ph name="EXTENSION_NAME" />'을(를) 추가하시겠습니까?</translation>
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' 이미지를 디코딩하지 못했습니다.</translation>
 <translation id="2193567467390483943">부모님이 이 확장 프로그램을 승인하지 않았습니다.</translation>
+<translation id="2207866393056347613">모든 사이트에서 내 데이터에 대한 영구 액세스 권한을 부여합니다</translation>
 <translation id="23030561267973084">'<ph name="EXTENSION_NAME" />'이(가) 추가 승인을 요청했습니다.</translation>
 <translation id="2327492829706409234">앱 사용</translation>
 <translation id="2350172092385603347">번역한 언어를 이용하였지만 매니페스트에 기본 언어(default_locale)를 지정하지 않았습니다.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">다시 사용</translation>
 <translation id="2743583586211388067">조직의 확장 프로그램 위험 정책에 따라 이 확장 프로그램에 대한 액세스가 차단되었습니다.</translation>
 <translation id="2766161002040448006">부모님에게 묻기</translation>
+<translation id="2775557057525247505">모든 사이트 보기</translation>
 <translation id="2785530881066938471">콘텐츠 스크립트에 파일('<ph name="RELATIVE_PATH" />')을 로드할 수 없습니다. UTF-8로 인코딩되지 않았습니다.</translation>
 <translation id="2850541429955027218">테마 추가</translation>
 <translation id="2883143988769190738">이 확장 프로그램에서 다음 권한을 요청합니다.</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" />(일련번호 <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">공급업체 <ph name="VENDOR_ID" />의 <ph name="PRODUCT_NAME" />(일련번호 <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">비공개 키 입력 값은 유효한 경로여야 합니다.</translation>
+<translation id="3769470010314114481">사이트의 데이터에 대한 임시 액세스 권한을 부여합니다</translation>
 <translation id="3788401245189148511">이전에 가능했던 대상:</translation>
 <translation id="3834775135533257713">애플리케이션 '<ph name="TO_INSTALL_APP_NAME" />'이(가) '<ph name="INSTALLED_APP_NAME" />'와(과) 충돌하기 때문에 추가하지 못했습니다.</translation>
 <translation id="388442998277590542">옵션 페이지('<ph name="OPTIONS_PAGE" />')를 로드하지 못했습니다.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">확장 프로그램 사용</translation>
 <translation id="3927932062596804919">거부</translation>
 <translation id="3984413272403535372">확장 프로그램에 서명하는 중에 오류가 발생했습니다.</translation>
+<translation id="3990894032742690314">목록에 있는 사이트에서 상시 사용</translation>
 <translation id="4014432863917027322">'<ph name="EXTENSION_NAME" />'을(를) 복구하시겠습니까?</translation>
 <translation id="4061696872429826774">컴퓨터의 다른 프로그램에서 Chromium 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">정보 페이지 '<ph name="ABOUT_PAGE" />'을(를) 로드할 수 없습니다.</translation>
 <translation id="424963718355121712">앱은 영향을 미치는 호스트에서 제공되어야 합니다</translation>
 <translation id="4306119971288449206">앱은 '<ph name="CONTENT_TYPE" />' 콘텐츠 유형으로 제공되어야 합니다</translation>
+<translation id="4307774243840254737">아래에 나열된 사이트의 데이터에 대한 영구 액세스 권한을 부여합니다</translation>
 <translation id="4349181963619779233">이 웹사이트의 확장 프로그램 및 앱을 추가할 수 없습니다.</translation>
 <translation id="4625078469366263107">앱 사용</translation>
 <translation id="4633003931260532286">확장 프로그램은 최소 버전 '<ph name="IMPORT_VERSION" />'의 '<ph name="IMPORT_NAME" />'을(를) 요구하지만 '<ph name="INSTALLED_VERSION" />' 버전만 설치되었습니다</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">'<ph name="EXTENSION_NAME" />'의 최신 버전에 더 많은 권한이 필요하여 사용이 중지되었습니다.</translation>
 <translation id="5242724311594467048">'<ph name="EXTENSION_NAME" />'을(를) 사용하시겠습니까?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">확장 프로그램을 클릭한 경우에만</translation>
 <translation id="5405650547142096840">Chromium에서 제거</translation>
 <translation id="5456409301717116725">이 확장 프로그램은 키 파일 '<ph name="KEY_PATH" />'을(를) 포함합니다. 사용하지 않는 것이 좋습니다.</translation>
 <translation id="5485102783864353244">앱 추가</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">확장 프로그램이 너무 자주 새로고침됩니다.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" />의 알 수 없는 제품 <ph name="PRODUCT_ID" /></translation>
+<translation id="7017635639223148413">나열된 사이트</translation>
 <translation id="7068383018033524534">매니페스트 파일이 잘못되었습니다</translation>
 <translation id="7217838517480956708">이 기기를 설치할 때 관리자가 <ph name="EXTENSION_NAME" />을(를) 요구합니다. 삭제 또는 수정할 수 없습니다.</translation>
 <translation id="7287143125007575591">액세스가 거부되었습니다.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">전면</translation>
 <translation id="8047248493720652249">다른 확장 프로그램(<ph name="EXTENSION_NAME" />)에서 파일 이름을 '<ph name="ACTUAL_FILENAME" />'(으)로 지정했기 때문에 이 확장 프로그램에서 다운로드하는 파일의 이름을 '<ph name="ATTEMPTED_FILENAME" />'(으)로 지정하지 못했습니다.</translation>
 <translation id="8049705080247101012">Google에서 '<ph name="EXTENSION_NAME" />'을(를) 악성 프로그램으로 분류했으며 설치가 금지되었습니다</translation>
+<translation id="823691536304079791">데이터 읽기 및 변경</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" />의 <ph name="PRODUCT_NAME" /></translation>
 <translation id="8353683614194668312">앱의 권한:</translation>
 <translation id="8517576857589387417">매니페스트 파일이 없거나 읽을 수 없습니다</translation>

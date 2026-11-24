@@ -386,6 +386,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2496180316473517155">Arakatze-historia</translation>
 <translation id="250020030759455918"><ph name="SITE_NAME" /> webgunean saioa hasi duzun ala ez, arakatze-datuak eta webguneetako datuak ikusiko dituzu Chrome-n</translation>
 <translation id="2501278716633472235">Egin atzera</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# deskarga abian}other{# deskarga abian}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> instalatzen…</translation>
 <translation id="2512234228327349533">Bilatu erosteko aukerak</translation>
 <translation id="2513403576141822879">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Sinkronizazioa eta Google-ren zerbitzuak<ph name="END_LINK" /> atalera</translation>
@@ -697,6 +698,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3740290940447881599">Ziurtatu webguneaz fidatzen zarela</translation>
 <translation id="3740525748616366977">Ahozko bilaketa ez dago erabilgarri gailu honetan</translation>
 <translation id="3749289110408117711">Fitxategiaren izena</translation>
+<translation id="3751708358601675711">Editatu prezioen jarraipena</translation>
 <translation id="3756823472711156529">Leheneratu taldea</translation>
 <translation id="3759306015475526475">Kudeatu erabilera-datuen eta hutsegiteekin erlazionatutako datuen ezarpenak</translation>
 <translation id="3763110477555836428">Txartel honekin ordaintzen duzunean, txartel birtualaren zenbaki bat beteko da, zure benetako xehetasunak babesteko. Kudeatu Google Wallet-en. <ph name="BEGIN_LINK1" />Lortu txartel birtualei buruzko informazio gehiago<ph name="END_LINK1" /></translation>

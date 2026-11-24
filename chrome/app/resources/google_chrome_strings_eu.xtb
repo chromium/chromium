@@ -81,6 +81,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1688214853608504530">Helbide-barran edo bilaketa-koadroan zerbait idazten duzunean, Chrome-k erakundearen bilaketa- eta agente-tresnetara, eta AA bidezkoetara bidaltzen du idatzitakoa, iradokizunak lortzeko.</translation>
 <translation id="1698376642261615901">Web-orriak eta aplikazioak ziztu bizian abiarazten dituen web-arakatzailea da Google Chrome. Bizkorra, egonkorra eta erabilerraza da. Sarea segurtasun osoz arakatu ahal izango duzu, Google Chrome-k malwarearen eta phishingaren aurkako babesa barneratuta baitu.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Ordubete barru exekutatuko da Chrome berriro}other{# ordu barru exekutatuko da Chrome berriro}}</translation>
+<translation id="1713866023633141719">Gailuko AA prest dago</translation>
 <translation id="1722488837206509557">Erabilgarri dauden gailuen artean hautatu ahal izango duzu, eta haietan edukia bistaratu.</translation>
 <translation id="1724094881572874997">Chrome-n egiten duzun lana babesteko, erakundeak informazio jakina ikusi edo kudeatu ahalko du Chrome-n saioa hasita daukazunean.</translation>
 <translation id="1769661297620183092">Google Bilaketa zerbitzuaren panela berriro ireki dezakezu, arakatu bitartean galderak egiteko</translation>
@@ -155,6 +156,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2513154137948333830">Berrabiarazi egin behar da: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">zure erakundea</translation>
 <translation id="2521391734665471391">Itxi Google Bilaketa zerbitzuaren AA modua</translation>
+<translation id="2523048609826818526">Idazketa orokorra</translation>
 <translation id="2523492931736391680">Zure lana Chrome-n babestuta dago</translation>
 <translation id="2534365042754120737">Datuak babesteko, eman azkenaldian bisitatu ez dituzun webguneei baimenak kentzeko baimena Chrome-ri. Ez ditu geldiarazten jakinarazpenak.</translation>
 <translation id="2556847002339236023">Erakundeak Chrome ixten du <ph name="TIMEOUT_DURATION" />z erabiltzen ez denean. Arakatze-datuak ezabatu dira. Arakatze-datuen barnean daude historia, automatikoki betetako datuak eta deskargak.</translation>
@@ -253,6 +255,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="3373752068427117404">Chrome-ren eginbide eta luzapen batzuek lasterbideak dituzte. Haiek berriro aktibatzea aukera dezakezu.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Orain exekutatuko da Chromium berriro}=1{1 segundo barru exekutatuko da Chromium berriro}other{# segundo barru exekutatuko da Chromium berriro}}</translation>
 <translation id="3380249972812870825">Chrome-ko Gemini irekitzeko, sakatu <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome-k gailuan exekutatzen den AA gehitu du. Webguneek eta Chrome-k eginbide hauetarako erabil dezakete, besteak beste:</translation>
 <translation id="3396977131400919238">Sistema-eragilean errore bat gertatu da instalatu bitartean. Deskargatu Google Chrome berriro.</translation>
 <translation id="3428747202529429621">Babestuta mantentzen zaitu Chrome-n, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean</translation>
 <translation id="3438681572027105609">Pasahitzak eta bestelako datuak zure gailu guztietan gordeta edukitzeko, hasi saioa Chrome-n</translation>
@@ -301,6 +304,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="3973161977468201858">Google Chrome-k Google-ren Pasahitz-kudeatzailea zerbitzuan dauzkazun datuak ezabatu behar ditu. Horretarako baimena emateko, idatzi Windows-eko pasahitza.</translation>
 <translation id="3984557288004650913">Tresna-barran dagoen "Chrome-ko Google Bilaketa" botoiaren bidez, Chrome-ko Google Bilaketa berriro ireki dezakezu, arakatu bitartean galderak egiteko</translation>
 <translation id="399788104667917863">Ainguratu tresna-barran</translation>
+<translation id="4000385468528550798">Gailuko AA eguneratu da</translation>
 <translation id="400161754580828648">Pantaila partekatzeko, eman pantaila grabatzeko baimena Chrome-ri sistemaren ezarpenetan.</translation>
 <translation id="4012899077942246412">Saioa hasita daukazunean, Google-ko kontuko pasahitzak eta beste erabil ditzakezu Chrome-n. Hori aldatzeko, joan "Zure kontua Chrome-n" atalera.</translation>
 <translation id="4022972681110646219">Itzuli pantaila</translation>
@@ -560,6 +564,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6632012506031284914">Chrome-rekin bilatzeko.</translation>
 <translation id="6634299872736643004">Ezarpen honetan egindako aldaketak Chrome berrabiarazi ondoren aplikatuko dira.</translation>
 <translation id="6644846457769259194">Gailua eguneratzen (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">Gailuko AA eguneratuta dago</translation>
 <translation id="6660596345553328257">Chrome-n saioa hasi nahi duzu?</translation>
 <translation id="6664219008737641504">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="SETTINGS_LINK" /> kontuko Chrome-ko datuak</translation>
 <translation id="6676384891291319759">Sartu Interneten</translation>
@@ -601,6 +606,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7024536598735240744">Despaketatze-errorea: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Aldatu Chrome-ko profila hemen</translation>
 <translation id="7026856149118332950">Chrome zereginen barran ainguratzeko eta bizkor atzitzeko, sakatu <ph name="BEGIN_BOLD" />Bai<ph name="END_BOLD" /> Windows-en jakinarazpenean.</translation>
+<translation id="7033785662379319359">Gailuko AAren bertsio berri eta trinkoago bat erabiltzeko prest dago, laburpenak, zuzenketak eta abar egiteko</translation>
 <translation id="7047386856539490735">Erabilgarriak al dira emaitzak?</translation>
 <translation id="7051685429025310665">Azkenaldian ez duzu bisitatu webgune hau. Chrome-k <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta <ph name="PERMISSION_3" /> erabiltzeko baimenak kendu dizkio.</translation>
 <translation id="7059914902409643750">Pertsonalizatu Chrome</translation>
