@@ -15,9 +15,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/account_id/account_id.h"
 #include "ui/aura/window_tracker.h"
-
-class AccountId;
 
 namespace aura {
 class Window;
@@ -55,12 +54,14 @@ class WebAuthNDialogControllerImpl : public WebAuthNDialogController {
 
  private:
   bool IsFingerprintAvailable(const AccountId& account_id);
-  void CheckAuthFactorAvailability(const AccountId& account_id,
-                                   const std::string& origin_name,
+  void OnAuthSessionStarted(const std::string& origin_name,
+                            uint32_t auth_methods,
+                            aura::Window* source_window,
+                            bool is_auth_session_started);
+  void CheckAuthFactorAvailability(const std::string& origin_name,
                                    uint32_t auth_methods,
                                    aura::Window* source_window);
-  void OnStartFingerprintAuthSession(AccountId account_id,
-                                     uint32_t auth_methods,
+  void OnStartFingerprintAuthSession(uint32_t auth_methods,
                                      aura::Window* source_window,
                                      const std::string& origin_name,
                                      bool success);
@@ -84,6 +85,10 @@ class WebAuthNDialogControllerImpl : public WebAuthNDialogController {
   void OnAuthSuccess();
 
   raw_ptr<InSessionAuthDialogClient> client_ = nullptr;
+
+  // The user the dialog is up for, set when it is requested. Empty when no
+  // dialog is up.
+  AccountId account_id_;
 
   // Callback to provide result of the entire authentication flow to
   // UserAuthenticationServiceProvider.

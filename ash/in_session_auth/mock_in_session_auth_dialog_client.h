@@ -26,7 +26,8 @@ class MockInSessionAuthDialogClient : public InSessionAuthDialogClient {
   // InSessionAuthDialogClient:
   MOCK_METHOD(void,
               StartAuthSession,
-              (base::OnceCallback<void(bool)>),
+              (const AccountId& account_id,
+               base::OnceCallback<void(bool)> callback),
               (override));
 
   MOCK_METHOD(void, InvalidateAuthSession, (), (override));
@@ -65,7 +66,10 @@ class MockInSessionAuthDialogClient : public InSessionAuthDialogClient {
               (base::OnceCallback<void(bool, FingerprintState)> callback),
               (override));
 
-  MOCK_METHOD(void, OpenInSessionAuthHelpPage, (), (const, override));
+  MOCK_METHOD(void,
+              OpenInSessionAuthHelpPage,
+              (const AccountId& account_id),
+              (const, override));
 };
 
 }  // namespace ash

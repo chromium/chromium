@@ -51,7 +51,8 @@ class InSessionAuthDialogClient
   static InSessionAuthDialogClient* Get();
 
   // ash::InSessionAuthDialogClient:
-  void StartAuthSession(base::OnceCallback<void(bool)> callback) override;
+  void StartAuthSession(const AccountId& account_id,
+                        base::OnceCallback<void(bool)> callback) override;
   void InvalidateAuthSession() override;
   void AuthenticateUserWithPasswordOrPin(
       const std::string& password,
@@ -67,7 +68,7 @@ class InSessionAuthDialogClient
       base::OnceCallback<void(bool)> callback) override;
   void AuthenticateUserWithFingerprint(
       base::OnceCallback<void(bool, ash::FingerprintState)> callback) override;
-  void OpenInSessionAuthHelpPage() const override;
+  void OpenInSessionAuthHelpPage(const AccountId& account_id) const override;
 
   // AuthStatusConsumer:
   void OnAuthFailure(const ash::AuthFailure& error) override;
@@ -92,9 +93,9 @@ class InSessionAuthDialogClient
     base::OnceCallback<void(bool)> callback;
   };
 
-  // Attempts to authenticate user in `user_context` with the given `password`.
-  void AuthenticateWithPassword(std::unique_ptr<ash::UserContext> user_context,
-                                const std::string& password);
+  // Attempts to authenticate the user of the auth session started by
+  // `StartAuthSession()` with the given `password`.
+  void AuthenticateWithPassword(const std::string& password);
 
   // Passed as a callback to `AuthPerformer::StartAuthSession`. Actually
   // initiates the auth attempt.
@@ -149,6 +150,10 @@ class InSessionAuthDialogClient
 
   std::optional<ash::LegacyFingerprintEngine> legacy_fingerprint_engine_;
 
+  // The auth session started by `StartAuthSession()`, for the user named
+  // there. `StartAuthSession()` is the only place this class builds a
+  // UserContext; the async auth calls above borrow this one and hand it back,
+  // which is what the other assignments to it are.
   std::unique_ptr<ash::UserContext> user_context_;
 
   FingerprintScanDoneCallback fingerprint_scan_done_callback_;

@@ -50,65 +50,68 @@ void WebAuthNDialogControllerImpl::ShowAuthenticationDialog(
   source_window_tracker_.Add(source_window);
   finish_callback_ = std::move(finish_callback);
 
-  AccountId account_id =
-      Shell::Get()->session_controller()->GetActiveAccountId();
+  CHECK(!account_id_.is_valid());
+  // TODO(b/156258540): Use the account of the source browser window.
+  account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
   // GAIA password option is not offered.
   uint32_t auth_methods = AuthDialogContentsView::kAuthPassword;
 
-  base::OnceClosure continuation =
-      base::BindOnce(&WebAuthNDialogControllerImpl::CheckAuthFactorAvailability,
-                     weak_factory_.GetWeakPtr(), account_id, origin_name,
-                     auth_methods, source_window);
-
-  auto on_auth_session_started = [](base::OnceClosure continuation,
-                                    bool is_auth_session_started) {
-    if (!is_auth_session_started) {
-      LOG(ERROR)
-          << "Failed to start cryptohome auth session, exiting dialog early";
-      return;
-    }
-    std::move(continuation).Run();
-  };
-
   client_->StartAuthSession(
-      base::BindOnce(on_auth_session_started, std::move(continuation)));
-  return;
+      account_id_,
+      base::BindOnce(&WebAuthNDialogControllerImpl::OnAuthSessionStarted,
+                     weak_factory_.GetWeakPtr(), origin_name, auth_methods,
+                     source_window));
+}
+
+void WebAuthNDialogControllerImpl::OnAuthSessionStarted(
+    const std::string& origin_name,
+    uint32_t auth_methods,
+    aura::Window* source_window,
+    bool is_auth_session_started) {
+  if (!is_auth_session_started) {
+    LOG(ERROR)
+        << "Failed to start cryptohome auth session, exiting dialog early";
+    Cancel();
+    return;
+  }
+
+  CheckAuthFactorAvailability(origin_name, auth_methods, source_window);
 }
 
 void WebAuthNDialogControllerImpl::CheckAuthFactorAvailability(
-    const AccountId& account_id,
     const std::string& origin_name,
     uint32_t auth_methods,
     aura::Window* source_window) {
-  if (client_->IsFingerprintAuthAvailable(account_id)) {
+  CHECK(account_id_.is_valid());
+  if (client_->IsFingerprintAuthAvailable(account_id_)) {
     client_->StartFingerprintAuthSession(
-        account_id,
+        account_id_,
         base::BindOnce(
             &WebAuthNDialogControllerImpl::OnStartFingerprintAuthSession,
-            weak_factory_.GetWeakPtr(), account_id, auth_methods, source_window,
+            weak_factory_.GetWeakPtr(), auth_methods, source_window,
             origin_name));
     // OnStartFingerprintAuthSession checks PIN availability.
     return;
   }
 
   client_->CheckPinAuthAvailability(
-      account_id,
+      account_id_,
       base::BindOnce(&WebAuthNDialogControllerImpl::OnPinCanAuthenticate,
                      weak_factory_.GetWeakPtr(), auth_methods, source_window,
                      origin_name));
 }
 
 void WebAuthNDialogControllerImpl::OnStartFingerprintAuthSession(
-    AccountId account_id,
     uint32_t auth_methods,
     aura::Window* source_window,
     const std::string& origin_name,
     bool success) {
+  CHECK(account_id_.is_valid());
   if (success)
     auth_methods |= AuthDialogContentsView::kAuthFingerprint;
 
   client_->CheckPinAuthAvailability(
-      account_id,
+      account_id_,
       base::BindOnce(&WebAuthNDialogControllerImpl::OnPinCanAuthenticate,
                      weak_factory_.GetWeakPtr(), auth_methods, source_window,
                      origin_name));
@@ -136,10 +139,10 @@ void WebAuthNDialogControllerImpl::OnPinCanAuthenticate(
     return;
   }
 
+  CHECK(account_id_.is_valid());
   Shell* shell = Shell::Get();
-  AccountId account_id = shell->session_controller()->GetActiveAccountId();
   const UserSession* session =
-      shell->session_controller()->GetUserSessionByAccountId(account_id);
+      shell->session_controller()->GetUserSessionByAccountId(account_id_);
   DCHECK(session);
   UserAvatar avatar = session->user_info.avatar;
 
@@ -149,7 +152,7 @@ void WebAuthNDialogControllerImpl::OnPinCanAuthenticate(
   AuthDialogContentsView::AuthMethodsMetadata auth_metadata;
   auth_metadata.autosubmit_pin_length =
       user_manager::KnownUser(shell->local_state())
-          .GetUserPinLength(account_id);
+          .GetUserPinLength(account_id_);
   source_window_tracker_.Remove(source_window);
   dialog_ = std::make_unique<InSessionAuthDialog>(
       auth_methods, source_window, origin_name, auth_metadata, avatar);
@@ -157,10 +160,9 @@ void WebAuthNDialogControllerImpl::OnPinCanAuthenticate(
 
 void WebAuthNDialogControllerImpl::DestroyAuthenticationDialog() {
   DCHECK(client_);
-  if (!dialog_)
-    return;
 
-  if (dialog_->GetAuthMethods() & AuthDialogContentsView::kAuthFingerprint) {
+  if (dialog_ &&
+      (dialog_->GetAuthMethods() & AuthDialogContentsView::kAuthFingerprint)) {
     client_->EndFingerprintAuthSession(
         base::BindOnce(&WebAuthNDialogControllerImpl::ProcessFinalCleanups,
                        weak_factory_.GetWeakPtr()));
@@ -174,6 +176,8 @@ void WebAuthNDialogControllerImpl::ProcessFinalCleanups() {
   client_->InvalidateAuthSession();
   dialog_.reset();
   source_window_tracker_.RemoveAll();
+  account_id_ = EmptyAccountId();
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void WebAuthNDialogControllerImpl::AuthenticateUserWithPasswordOrPin(
@@ -215,10 +219,9 @@ void WebAuthNDialogControllerImpl::OnAuthenticateComplete(
 
   // PIN might be locked out after an unsuccessful authentication, check if it's
   // still available so the UI can be updated.
-  AccountId account_id =
-      Shell::Get()->session_controller()->GetActiveAccountId();
+  CHECK(account_id_.is_valid());
   client_->CheckPinAuthAvailability(
-      account_id, base::BindOnce(std::move(callback), /*success=*/false));
+      account_id_, base::BindOnce(std::move(callback), /*success=*/false));
 }
 
 void WebAuthNDialogControllerImpl::OnFingerprintAuthComplete(
@@ -247,7 +250,8 @@ void WebAuthNDialogControllerImpl::Cancel() {
 
 void WebAuthNDialogControllerImpl::OpenInSessionAuthHelpPage() {
   DCHECK(client_);
-  client_->OpenInSessionAuthHelpPage();
+  CHECK(account_id_.is_valid());
+  client_->OpenInSessionAuthHelpPage(account_id_);
 }
 
 void WebAuthNDialogControllerImpl::CheckAvailability(

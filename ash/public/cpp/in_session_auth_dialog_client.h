@@ -18,8 +18,10 @@ namespace ash {
 // is responsible for.
 class ASH_PUBLIC_EXPORT InSessionAuthDialogClient {
  public:
-  // Starts a cryptohome auth session that spans the life of the dialog.
-  virtual void StartAuthSession(base::OnceCallback<void(bool)> callback) = 0;
+  // Starts a cryptohome auth session for |account_id| that spans the life of
+  // the dialog.
+  virtual void StartAuthSession(const AccountId& account_id,
+                                base::OnceCallback<void(bool)> callback) = 0;
 
   // Ends the cryptohome auth session when the dialog is destroyed.
   virtual void InvalidateAuthSession() = 0;
@@ -52,8 +54,8 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogClient {
   virtual void AuthenticateUserWithFingerprint(
       base::OnceCallback<void(bool, FingerprintState)> callback) = 0;
 
-  // Open a help article in a new window.
-  virtual void OpenInSessionAuthHelpPage() const = 0;
+  // Open a help article in a new window, for `account_id`.
+  virtual void OpenInSessionAuthHelpPage(const AccountId& account_id) const = 0;
 
  protected:
   virtual ~InSessionAuthDialogClient() = default;

@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/auth/cryptohome_pin_engine.h"
 #include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
@@ -28,8 +27,7 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "components/account_id/account_id.h"
-#include "components/session_manager/core/session.h"
-#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,7 +37,6 @@
 
 using ::ash::AuthenticationError;
 using ::ash::AuthStatusConsumer;
-using ::ash::Key;
 using ::ash::UserContext;
 
 class PrefService;
@@ -161,12 +158,14 @@ void InSessionAuthDialogClient::OnCheckPinAuthAvailability(
 }
 
 void InSessionAuthDialogClient::StartAuthSession(
+    const AccountId& account_id,
     base::OnceCallback<void(bool)> callback) {
-  auto* user_manager = user_manager::UserManager::Get();
-  const user_manager::User* const user = user_manager->GetActiveUser();
+  user_manager::UserManager* const user_manager =
+      user_manager::UserManager::Get();
+  auto user_context = std::make_unique<UserContext>(
+      CHECK_DEREF(user_manager->FindUser(account_id)));
   const bool ephemeral =
-      user_manager->IsUserCryptohomeDataEphemeral(user->GetAccountId());
-  auto user_context = std::make_unique<UserContext>(*user);
+      user_manager->IsUserCryptohomeDataEphemeral(account_id);
 
   auto on_auth_session_started =
       base::BindOnce(&InSessionAuthDialogClient::OnAuthSessionStarted,
@@ -189,25 +188,13 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
     const std::string& secret,
     bool authenticated_by_pin,
     base::OnceCallback<void(bool)> callback) {
-  // TODO(b/156258540): Pick/validate the correct user.
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  CHECK(user, base::NotFatalUntil::M162);
-  auto user_context = std::make_unique<UserContext>(*user);
-  Key key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), secret);
-  user_context->SetIsUsingPin(authenticated_by_pin);
-  user_context->SetSyncPasswordData(password_manager::PasswordHashData(
-      user->GetAccountId().GetUserEmail(), base::UTF8ToUTF16(secret),
-      false /*force_update*/));
-
   CHECK(!pending_auth_state_, base::NotFatalUntil::M162);
   pending_auth_state_.emplace(std::move(callback));
 
   if (!authenticated_by_pin) {
     // TODO(yichengli): If user type is SUPERVISED, use supervised
     // authenticator?
-    user_context->SetKey(std::move(key));
-    AuthenticateWithPassword(std::move(user_context), secret);
+    AuthenticateWithPassword(secret);
     return;
   }
 
@@ -233,12 +220,11 @@ void InSessionAuthDialogClient::OnPinAttemptDone(
 }
 
 void InSessionAuthDialogClient::AuthenticateWithPassword(
-    std::unique_ptr<UserContext> user_context,
     const std::string& password) {
   // Check that we have a valid `user_context_`, provided by a prior
   // `StartAuthSession`, this also nicely asserts that we are not waiting
-  // on other UserDataAuth dbus calls that involve the auth_session_id stored
-  // in this `user_context`.
+  // on other UserDataAuth dbus calls that involve the auth_session_id it
+  // stores.
   CHECK(user_context_);
 
   const auto* password_factor =
@@ -353,14 +339,12 @@ void InSessionAuthDialogClient::OnFingerprintScan(
   }
 }
 
-void InSessionAuthDialogClient::OpenInSessionAuthHelpPage() const {
-  // TODO(b/156258540): Use the account of the source browser window.
-  const session_manager::Session& session =
-      CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
+void InSessionAuthDialogClient::OpenInSessionAuthHelpPage(
+    const AccountId& account_id) const {
   // Create new browser window because the auth dialog is a child of the
   // existing one.
   ash::BrowserController::GetInstance()->OpenUrl(
-      session.account_id(), GURL(kInSessionAuthHelpPageUrl),
+      account_id, GURL(kInSessionAuthHelpPageUrl),
       {.disposition = ui::mojom::WindowOpenDisposition::kNewPopup,
        .transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK,
        .popup_has_trusted_source = true});
