@@ -556,28 +556,32 @@ public class DOMUtils {
 
     /**
      * Returns the text contents of a given node.
+     *
      * @param webContents The WebContents in which the node lives.
      * @param nodeId The id of the node.
      * @return the text contents of the node.
      */
     public static String getNodeContents(WebContents webContents, String nodeId)
             throws TimeoutException {
-        return getNodeField("textContent", webContents, nodeId, String.class);
+        return getNodeField("textContent", webContents, nodeId);
     }
 
     /**
      * Returns the value of a given node.
+     *
      * @param webContents The WebContents in which the node lives.
      * @param nodeId The id of the node.
      * @return the value of the node.
      */
     public static String getNodeValue(final WebContents webContents, String nodeId)
             throws TimeoutException {
-        return getNodeField("value", webContents, nodeId, String.class);
+        return getNodeField("value", webContents, nodeId);
     }
 
     /**
-     * Returns the string value of a field of a given node.
+     * Returns the string value of a field of a given node. Fails if the node isn't found or the
+     * field is null or undefined.
+     *
      * @param fieldName The field to return the value from.
      * @param webContents The WebContents in which the node lives.
      * @param nodeId The id of the node.
@@ -586,7 +590,11 @@ public class DOMUtils {
     public static String getNodeField(
             String fieldName, final WebContents webContents, String nodeId)
             throws TimeoutException {
-        return getNodeField(fieldName, webContents, nodeId, String.class);
+        String value =
+                getNodeFieldByJsOrNull(
+                        webContents, "document.getElementById('" + nodeId + "')", fieldName);
+        Assert.assertNotNull("Failed to retrieve " + fieldName + " for " + nodeId, value);
+        return value;
     }
 
     /**
@@ -806,6 +814,35 @@ public class DOMUtils {
         Rect bounds = getNodeBoundsByJsOrNull(webContents, jsCode);
         Assert.assertNotNull("Failed to retrieve bounds for element: " + jsCode, bounds);
         return bounds;
+    }
+
+    /**
+     * Returns the string value of a field of a node found by javascript, or null if the node isn't
+     * found or the field is null or undefined.
+     *
+     * @param webContents The WebContents in which the node lives.
+     * @param jsCode The javascript to get the node.
+     * @param fieldName The field to return the value from.
+     * @return The field's value as a string, or null.
+     */
+    public static @Nullable String getNodeFieldByJsOrNull(
+            final WebContents webContents, String jsCode, String fieldName)
+            throws TimeoutException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(function() {");
+        sb.append("  var node = " + jsCode + ";");
+        sb.append("  if (!node) return null;");
+        sb.append("  var value = node." + fieldName + ";");
+        sb.append("  if (value == null) return null;");
+        sb.append("  return [ value ];");
+        sb.append("})();");
+
+        String jsonText =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, sb.toString());
+        if (jsonText.trim().equalsIgnoreCase("null")) {
+            return null;
+        }
+        return readValue(jsonText, String.class);
     }
 
     /**

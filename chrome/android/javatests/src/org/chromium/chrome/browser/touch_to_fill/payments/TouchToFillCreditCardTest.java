@@ -25,6 +25,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -37,13 +39,16 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerTestUtilsBrid
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.ui.BottomSheetFacility;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
@@ -93,14 +98,58 @@ public class TouchToFillCreditCardTest {
 
     private BottomSheetController mBottomSheetController;
     private WebContents mWebContents;
+    private WebPageStation mPage;
+    private CreditCardFormFacility mCardFormFacility;
     TestInputMethodManagerWrapper mInputMethodWrapper;
+
+    private static class CreditCardFormFacility extends WebPageFacility {
+        public final HtmlElement cardName = declareHtmlElement("#" + CREDIT_CARD_NAME_FIELD_ID);
+        public final HtmlElement cardNumber = declareHtmlElement("#" + CREDIT_CARD_NUMBER_FIELD_ID);
+        public final HtmlElement cardExpMonth =
+                declareHtmlElement("#" + CREDIT_CARD_EXP_MONTH_FIELD_ID);
+        public final HtmlElement cardExpYear =
+                declareHtmlElement("#" + CREDIT_CARD_EXP_YEAR_FIELD_ID);
+    }
+
+    // TODO(crbug.com/428032441): Move the sheet state conditions to BottomSheetFacility.
+    private static class TouchToFillCreditCardFacility extends BottomSheetFacility<WebPageStation> {
+        private final BottomSheetController mController;
+
+        TouchToFillCreditCardFacility(BottomSheetController controller) {
+            mController = controller;
+        }
+
+        @Override
+        public void declareExtraElements() {
+            declareEnterCondition(
+                    SimpleConditions.uiThreadCondition(
+                            "Bottom sheet is open",
+                            () -> {
+                                @SheetState int state = mController.getSheetState();
+                                return Condition.whether(
+                                        state == SheetState.HALF || state == SheetState.FULL,
+                                        "sheetState=%d",
+                                        state);
+                            }));
+            declareExitCondition(
+                    SimpleConditions.uiThreadCondition(
+                            "Bottom sheet is hidden",
+                            () ->
+                                    Condition.whetherEquals(
+                                            SheetState.HIDDEN, mController.getSheetState())));
+        }
+    }
 
     @Before
     public void setup() throws TimeoutException {
         EmbeddedTestServerRule embeddedTestServerRule =
                 mActivityTestRule.getEmbeddedTestServerRule();
         embeddedTestServerRule.setServerUsesHttps(true);
-        mActivityTestRule.startOnWebPage(embeddedTestServerRule.getServer().getURL(FORM_URL));
+        mCardFormFacility = new CreditCardFormFacility();
+        mPage =
+                mActivityTestRule.startOnPage(
+                        embeddedTestServerRule.getServer().getURL(FORM_URL),
+                        WebPageStation.newBuilder().withFacility(mCardFormFacility));
         PasswordManagerTestUtilsBridge.disableServerPredictions();
         new AutofillTestHelper().setCreditCard(VISA);
 
@@ -124,9 +173,11 @@ public class TouchToFillCreditCardTest {
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288092
     public void testSelectingLocalCard() throws TimeoutException {
         // Focus the field to bring up the touch to fill for credit cards.
-        DOMUtils.clickNode(mWebContents, CREDIT_CARD_NUMBER_FIELD_ID);
-        // Wait for TTF.
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        TouchToFillCreditCardFacility sheet =
+                mCardFormFacility
+                        .cardNumber
+                        .clickTo()
+                        .enterFacility(new TouchToFillCreditCardFacility(mBottomSheetController));
         // Check that keyboard is not displayed.
         pollUiThread(
                 () -> {
@@ -137,18 +188,17 @@ public class TouchToFillCreditCardTest {
         mFakeTimeTestRule.advanceMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
 
         // The item with the index 1 in the recycler view is supposed to be the credit card.
+        View creditCardSuggestionItemLayout =
+                runOnUiThreadBlocking(
+                        () -> {
+                            View layout = getItemsList().getChildAt(1);
+                            verifyCardSuggestionIsCorrectlyDisplayed(layout);
+                            // Check that continue button is present
+                            assertTrue(getItemsList().getChildAt(2) instanceof ButtonCompat);
+                            return layout;
+                        });
         // Click on it to simulate user selection.
-        runOnUiThreadBlocking(
-                () -> {
-                    View creditCardSuggestionItemLayout = getItemsList().getChildAt(1);
-                    verifyCardSuggestionIsCorrectlyDisplayed(creditCardSuggestionItemLayout);
-                    // Check that continue button is present
-                    assertTrue(getItemsList().getChildAt(2) instanceof ButtonCompat);
-
-                    creditCardSuggestionItemLayout.performClick();
-                });
-        // Wait until the bottom sheet is closed
-        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+        mPage.runOnUiThreadTo(creditCardSuggestionItemLayout::performClick).exitFacility(sheet);
 
         // Check that the form is filled with the card credentials
         checkThat(DOMUtils.getNodeValue(mWebContents, CREDIT_CARD_NAME_FIELD_ID), is(CARD_NAME));

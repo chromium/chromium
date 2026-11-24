@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webid;
 
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -22,9 +21,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -32,12 +28,10 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.browser.webid.DigitalIdentityUiWarningLevel;
 import org.chromium.net.test.EmbeddedTestServer;
-
-import java.util.concurrent.TimeoutException;
 
 /** Test suite for verifying the behavior of request digital credentials via the Web API. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -58,6 +52,15 @@ public class DigitalCredentialProviderTest {
     @Mock public IdentityCredentialsDelegate mDelegate;
     private WebPageStation mPage;
 
+    private static class DigitalCredentialsPageFacility extends WebPageFacility {
+        public final HtmlElement requestAgeOnlyButton =
+                declareHtmlElement("#request_age_only_button");
+        public final HtmlElement requestAgeAndNameButton =
+                declareHtmlElement("#request_age_and_name_button");
+        public final HtmlElement createButton = declareHtmlElement("#create_button");
+        public final HtmlElement log = declareHtmlElement("#log");
+    }
+
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
@@ -69,7 +72,7 @@ public class DigitalCredentialProviderTest {
     @Test
     @LargeTest
     @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS)
-    public void testRequestMDoc() throws TimeoutException {
+    public void testRequestMDoc() {
         when(mDelegate.get(any(), any(), any(), eq(DigitalIdentityUiWarningLevel.HINT_NO_ISSUES)))
                 .thenAnswer(
                         input ->
@@ -78,27 +81,14 @@ public class DigitalCredentialProviderTest {
                                                 "protocol",
                                                 "{\"token\": \"" + EXPECTED_MDOC + "\"}")));
 
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
-        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "request_age_only_button");
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        String mdoc =
-                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                                        mActivityTestRule.getWebContents(),
-                                        "document.getElementById('log').textContent");
-                        String expected = "\"" + EXPECTED_MDOC + "\"";
-                        Criteria.checkThat("mdoc string is not as expected.", mdoc, is(expected));
-                    } catch (Exception e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                });
+        DigitalCredentialsPageFacility dcFacility = loadTestPage();
+        dcFacility.requestAgeOnlyButton.clickTo().waitFor(dcFacility.log.textIs(EXPECTED_MDOC));
     }
 
     @Test
     @LargeTest
     @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS)
-    public void testRequestMDocWithCaution() throws TimeoutException {
+    public void testRequestMDocWithCaution() {
         when(mDelegate.get(any(), any(), any(), eq(DigitalIdentityUiWarningLevel.HINT_CAUTION)))
                 .thenAnswer(
                         input ->
@@ -107,27 +97,14 @@ public class DigitalCredentialProviderTest {
                                                 "protocol",
                                                 "{\"token\": \"" + EXPECTED_MDOC + "\"}")));
 
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
-        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "request_age_and_name_button");
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        String mdoc =
-                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                                        mActivityTestRule.getWebContents(),
-                                        "document.getElementById('log').textContent");
-                        String expected = "\"" + EXPECTED_MDOC + "\"";
-                        Criteria.checkThat("mdoc string is not as expected.", mdoc, is(expected));
-                    } catch (Exception e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                });
+        DigitalCredentialsPageFacility dcFacility = loadTestPage();
+        dcFacility.requestAgeAndNameButton.clickTo().waitFor(dcFacility.log.textIs(EXPECTED_MDOC));
     }
 
     @Test
     @LargeTest
     @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS_CREATION)
-    public void testCreate() throws TimeoutException {
+    public void testCreate() {
         when(mDelegate.create(any(), any(), any()))
                 .thenAnswer(
                         input ->
@@ -138,21 +115,19 @@ public class DigitalCredentialProviderTest {
                                                         + EXPECTED_CREATION_RESPONSE
                                                         + "\"}"))));
 
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
-        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "create_button");
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        String response =
-                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                                        mActivityTestRule.getWebContents(),
-                                        "document.getElementById('log').textContent");
-                        String expected = "\"" + EXPECTED_CREATION_RESPONSE + "\"";
-                        Criteria.checkThat(
-                                "Response string is not as expected.", response, is(expected));
-                    } catch (Exception e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                });
+        DigitalCredentialsPageFacility dcFacility = loadTestPage();
+        dcFacility
+                .createButton
+                .clickTo()
+                .waitFor(dcFacility.log.textIs(EXPECTED_CREATION_RESPONSE));
+    }
+
+    private DigitalCredentialsPageFacility loadTestPage() {
+        DigitalCredentialsPageFacility dcFacility = new DigitalCredentialsPageFacility();
+        mPage =
+                mPage.loadPageProgrammatically(
+                        mTestServer.getURL(TEST_PAGE),
+                        WebPageStation.newBuilder().withFacility(dcFacility));
+        return dcFacility;
     }
 }

@@ -185,6 +185,52 @@ public class HtmlConditions {
         }
     }
 
+    /**
+     * Fulfilled when the first DOM Element matching the given {@link HtmlElementSpec} exists and
+     * its string property (e.g. {@code value}, {@code textContent}) equals {@code expected} in a
+     * WebContents that isn't hidden or destroyed.
+     */
+    public static class StringPropertyCondition extends InstrumentationThreadCondition {
+        private final Supplier<@Nullable WebContents> mWebContentsSupplier;
+        private final HtmlElementSpec mSpec;
+        private final String mPropertyName;
+        private final String mExpected;
+
+        public StringPropertyCondition(
+                Supplier<@Nullable WebContents> webContentsSupplier,
+                HtmlElementSpec spec,
+                String propertyName,
+                String expected) {
+            mWebContentsSupplier = dependOnSupplier(webContentsSupplier, "WebContents");
+            mSpec = spec;
+            mPropertyName = propertyName;
+            mExpected = expected;
+        }
+
+        @Override
+        protected ConditionStatus checkWithSuppliers() throws TimeoutException {
+            WebContents webContents = assumeNonNull(mWebContentsSupplier.get());
+            if (isDestroyedOrHidden(webContents)) {
+                return notFulfilled("WebContents destroyed or hidden");
+            }
+
+            String actual =
+                    DOMUtils.getNodeFieldByJsOrNull(
+                            webContents, mSpec.getSelectorJs(), mPropertyName);
+            if (actual == null) {
+                return notFulfilled("Element not found or %s is null", mPropertyName);
+            }
+            return whetherEquals(mExpected, actual);
+        }
+
+        @Override
+        public String buildDescription() {
+            return String.format(
+                    "DOM element with %s has %s \"%s\"",
+                    mSpec.getDescription(), mPropertyName, mExpected);
+        }
+    }
+
     // A hidden WebContents (e.g. the opener after a link opened a new tab) still lays out its DOM.
     private static boolean isDestroyedOrHidden(WebContents webContents) {
         return ThreadUtils.runOnUiThreadBlocking(

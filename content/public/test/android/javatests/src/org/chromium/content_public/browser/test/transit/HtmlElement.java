@@ -19,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.transit.HtmlConditions.DisplayedCondition;
 import org.chromium.content_public.browser.test.transit.HtmlConditions.NotDisplayedCondition;
+import org.chromium.content_public.browser.test.transit.HtmlConditions.StringPropertyCondition;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -104,6 +105,15 @@ public class HtmlElement extends Element<Rect> {
     /** Returns a TripBuilder with long pressing the HTML element as trigger. */
     public TripBuilder longPressTo() {
         return new TripBuilder().withContext(this).withTrigger(getLongPressTrigger());
+    }
+
+    /**
+     * Returns a {@link Condition} fulfilled when this element's {@code textContent} property equals
+     * {@code expectedText}.
+     */
+    public Condition textIs(String expectedText) {
+        return new StringPropertyCondition(
+                mWebContentsSupplier, mHtmlElementSpec, "textContent", expectedText);
     }
 
     /**
