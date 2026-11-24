@@ -11,7 +11,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -37,6 +36,7 @@
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/gfx/paint_canvas_video_renderer.h"
 #include "services/audio/public/cpp/device_factory.h"
+#include "skia/ext/skia_utils_base.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 namespace recording {
@@ -101,7 +101,8 @@ gfx::ImageSkia ExtractImageFromVideoFrame(const media::VideoFrame& frame) {
   media::PaintCanvasVideoRenderer renderer;
   SkBitmap bitmap;
   bitmap.allocN32Pixels(visible_size.width(), visible_size.height());
-  base::span<uint8_t> pixmap_span = UNSAFE_SKBITMAP_TO_BYTES_SPAN(bitmap);
+  base::span<uint8_t> pixmap_span =
+      skia::as_writable_byte_span(bitmap.pixmap());
   renderer.ConvertVideoFrameToRGBPixels(&frame, pixmap_span, bitmap.rowBytes());
 
   // Since this image will be used as a thumbnail, we can scale it down to save

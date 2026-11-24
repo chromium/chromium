@@ -10,6 +10,7 @@ include_rules = [
   "+mojo/public",
   "+services/audio/public",
   "+services/viz/privileged/mojom/compositing",
+  "+skia/ext/skia_utils_base.h",
   "+testing/gmock/include/gmock/gmock.h",
   "+testing/gtest/include/gtest/gtest.h",
   "+third_party/skia/include/core/SkBitmap.h",
