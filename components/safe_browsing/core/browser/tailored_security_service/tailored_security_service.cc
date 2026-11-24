@@ -359,6 +359,7 @@ void TailoredSecurityService::StartRequest(
             "An OAuth2 token authenticating the user."
           sender: "Safe Browsing"
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://history.google.com/history/api/lookup"
         }
         policy {
           cookies_allowed: NO

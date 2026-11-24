@@ -225,7 +225,7 @@ Refer to README.md for content description and update process.
  <item id="well_known_path_that_should_not_exist" added_in_milestone="86" content_hash_code="052bc423" os_list="windows,chromeos,android,linux" file_path="components/password_manager/core/browser/well_known_change_password/well_known_change_password_state.cc" />
  <item id="whats_new_fetcher" added_in_milestone="94" content_hash_code="006857bd" os_list="windows,linux" file_path="chrome/browser/ui/webui/whats_new/whats_new_fetcher.cc" />
  <item id="worker_script_load" added_in_milestone="72" content_hash_code="042a87a3" os_list="linux,windows,chromeos,android" file_path="content/browser/worker_host/worker_script_fetcher.cc" />
- <item id="tailored_security_service" added_in_milestone="97" content_hash_code="021a7daf" os_list="linux,windows,chromeos,android" file_path="components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.cc" />
+ <item id="tailored_security_service" added_in_milestone="97" content_hash_code="06bca351" os_list="linux,windows,chromeos,android" file_path="components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.cc" />
  <item id="managed_acccount_signin_restrictions_secure_connect" added_in_milestone="97" content_hash_code="0119d88f" os_list="linux,windows,chromeos,android" file_path="components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.cc" />
  <item id="ambient_photo_cache" added_in_milestone="98" content_hash_code="07dbf21e" os_list="chromeos" file_path="ash/ambient/ambient_photo_cache.cc" />
  <item id="ambient_photo_controller" added_in_milestone="98" content_hash_code="03284b8a" os_list="chromeos" file_path="ash/ambient/ambient_weather_controller.cc" />
