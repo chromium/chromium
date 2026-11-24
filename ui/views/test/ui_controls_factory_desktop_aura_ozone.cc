@@ -20,6 +20,7 @@
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_ui_controls_test_helper.h"
@@ -219,12 +220,20 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
 
   gfx::Point mouse_loc_in_screen =
       aura::Env::GetInstance()->last_mouse_location();
-  gfx::Point mouse_loc = mouse_loc_in_screen;
-  aura::Window* root_window = RootWindowForPoint(mouse_loc, window_hint);
+  aura::Window* root_window =
+      RootWindowForPoint(mouse_loc_in_screen, window_hint);
+  if (root_window == nullptr) {
+    // aura's last mouse location can be stale, e.g. when a window is resized
+    // under a pointer that doesn't move, which doesn't always generate a motion
+    // event on Wayland. Fall back to where the pointer was last moved to.
+    mouse_loc_in_screen = display::Screen::Get()->GetCursorScreenPoint();
+    root_window = RootWindowForPoint(mouse_loc_in_screen, window_hint);
+  }
   if (root_window == nullptr) {
     return true;
   }
 
+  gfx::Point mouse_loc = mouse_loc_in_screen;
   aura::client::ScreenPositionClient* screen_position_client =
       aura::client::GetScreenPositionClient(root_window);
   if (screen_position_client) {
