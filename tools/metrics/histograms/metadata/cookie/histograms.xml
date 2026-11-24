@@ -392,19 +392,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.IncludedResponseEffectiveSameSite.Subsampled"
-    enum="CookieEffectiveSameSite" expires_after="2025-05-04">
-  <owner>miketaylr@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    The value of the effective samesite for cookies that will be accepted from a
-    response. Logged once per successful inclusion.
-
-    Subsampled to 1/1000. See kHistogramSampleProbability in
-    net/cookies/cookie_constants.h for details.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.IsPartitionedValid.Subsampled" enum="BooleanValid"
     expires_after="2027-03-01">
   <owner>dylancutler@google.com</owner>

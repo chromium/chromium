@@ -940,12 +940,6 @@ void CanonicalCookie::PostIsSetPermittedInContext(
     return;
   }
 
-  if (access_result.status.IsInclude()) {
-    base::UmaHistogramEnumeration(
-        "Cookie.IncludedResponseEffectiveSameSite.Subsampled",
-        access_result.effective_same_site, CookieEffectiveSameSite::COUNT);
-  }
-
   using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
       ContextMetadata::ContextRedirectTypeBug1221316;
 
