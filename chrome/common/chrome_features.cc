@@ -528,8 +528,6 @@ const base::FeatureParam<base::TimeDelta> kGlicActorMoveBeforeClickDelay{
 // Controls country and locale filtering for Glic.
 // See chrome/browser/glic/public/glic_enabling.cc for more details.
 BASE_FEATURE(kGlicCountryFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kGlicUseSessionCountryForFiltering,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicLocaleFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls country filtering for Glic for users who cannot use adult features
 // (e.g. minors). When disabled, such users are blocked in all countries.

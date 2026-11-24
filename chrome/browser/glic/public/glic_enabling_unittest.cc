@@ -381,32 +381,6 @@ TEST_F(GlicEnablingTest,
   histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 5);
 }
 
-TEST_F(GlicEnablingTest,
-       CountryFilteringEnabledWithLists_SessionCountryIgnored) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{features::kGlicCountryFiltering,
-        {{"disabled_countries", "zz"}, {"enabled_countries", "us,uk,zz"}}}},
-      {features::kGlicUseSessionCountryForFiltering});
-
-  EXPECT_FALSE(TestDelegate::GetCountryEnablement("zz", "us"));
-  EXPECT_TRUE(TestDelegate::GetCountryEnablement("us", "zz"));
-  EXPECT_FALSE(TestDelegate::GetCountryEnablement("qq", "us"));
-  EXPECT_TRUE(TestDelegate::GetCountryEnablement("us", "qq"));
-  EXPECT_FALSE(TestDelegate::GetCountryEnablement("qq", "qq"));
-
-  histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2.Adult",
-      GlicFilteringResult::kBlockedInExclusionList, 1);
-  histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2.Adult",
-      GlicFilteringResult::kAllowedInInclusionList, 2);
-  histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2.Adult",
-      GlicFilteringResult::kBlockedNotInInclusionList, 2);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 5);
-}
-
 TEST_F(GlicEnablingTest, CountryFilteringEnabledWithStar) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
@@ -539,42 +513,23 @@ TEST_F(GlicEnablingTest, WebActuationDisclosureCountryVariant) {
 }
 
 TEST_F(GlicEnablingTest, WebActuationDisclosureCountryVariant_SessionCountry) {
-  {
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        {features::kGlicWebActuationDisclosureCountryVariant,
-         features::kGlicUseSessionCountryForFiltering},
-        {});
-    // Session country takes precedence over the permanent country.
-    delegate_.SetPermanentCountryCode("us");
-    delegate_.SetSessionCountryCode("gb");
-    EXPECT_TRUE(
-        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
-    delegate_.SetPermanentCountryCode("gb");
-    delegate_.SetSessionCountryCode("us");
-    EXPECT_FALSE(
-        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
-    // Falls back to the permanent country when the session country is unknown.
-    delegate_.SetPermanentCountryCode("gb");
-    delegate_.SetSessionCountryCode("");
-    EXPECT_TRUE(
-        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
-  }
-  {
-    // Only the permanent country is used when session filtering is disabled.
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        {features::kGlicWebActuationDisclosureCountryVariant},
-        {features::kGlicUseSessionCountryForFiltering});
-    delegate_.SetPermanentCountryCode("us");
-    delegate_.SetSessionCountryCode("gb");
-    EXPECT_FALSE(
-        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
-    delegate_.SetPermanentCountryCode("gb");
-    delegate_.SetSessionCountryCode("us");
-    EXPECT_TRUE(
-        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
-  }
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      features::kGlicWebActuationDisclosureCountryVariant);
+  // Session country takes precedence over the permanent country.
+  delegate_.SetPermanentCountryCode("us");
+  delegate_.SetSessionCountryCode("gb");
+  EXPECT_TRUE(
+      CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+  delegate_.SetPermanentCountryCode("gb");
+  delegate_.SetSessionCountryCode("us");
+  EXPECT_FALSE(
+      CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+  // Falls back to the permanent country when the session country is unknown.
+  delegate_.SetPermanentCountryCode("gb");
+  delegate_.SetSessionCountryCode("");
+  EXPECT_TRUE(
+      CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
 }
 
 base::flat_set<std::string> SplitCountryList(std::string_view country_list) {

@@ -217,7 +217,6 @@ std::string GetVariationsSessionCountryCode() {
              : std::string();
 }
 
-// Session country is only used when kGlicUseSessionCountryForFiltering is on.
 enum class CountryMatchStrategy {
   // Either the permanent or session country matches (feature gating).
   kAnyMatch,
@@ -231,21 +230,17 @@ bool IsCountryInList(
     std::string_view permanent_country_code,
     std::string_view session_country_code,
     CountryMatchStrategy strategy = CountryMatchStrategy::kAnyMatch) {
-  const bool use_session_country = base::FeatureList::IsEnabled(
-      features::kGlicUseSessionCountryForFiltering);
   if (strategy == CountryMatchStrategy::kSessionPrecedence) {
-    const std::string_view country =
-        use_session_country && !session_country_code.empty()
-            ? session_country_code
-            : permanent_country_code;
+    const std::string_view country = !session_country_code.empty()
+                                         ? session_country_code
+                                         : permanent_country_code;
     return std::ranges::any_of(country_list, [&](const std::string& c) {
       return base::EqualsCaseInsensitiveASCII(c, country);
     });
   }
   return std::ranges::any_of(country_list, [&](const std::string& c) {
     return base::EqualsCaseInsensitiveASCII(c, permanent_country_code) ||
-           (use_session_country &&
-            base::EqualsCaseInsensitiveASCII(c, session_country_code));
+           base::EqualsCaseInsensitiveASCII(c, session_country_code);
   });
 }
 

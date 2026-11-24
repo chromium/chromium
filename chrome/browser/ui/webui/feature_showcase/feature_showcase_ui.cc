@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/webui/feature_showcase/google_lens_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/password_manager_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/themes_and_customization_handler.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -86,14 +85,8 @@ void AddLensStepResources(content::WebUIDataSource* source) {
 }
 
 void AddGeminiStepResources(content::WebUIDataSource* source, bool is_managed) {
-  std::string country_code;
-  if (base::FeatureList::IsEnabled(
-          features::kGlicUseSessionCountryForFiltering)) {
-    country_code = g_browser_process->variations_service()->GetLatestCountry();
-  } else {
-    country_code =
-        g_browser_process->variations_service()->GetStoredPermanentCountry();
-  }
+  const std::string country_code =
+      g_browser_process->variations_service()->GetLatestCountry();
 
   const GeminiDisclosure disclosure =
       GetGeminiDisclosure(country_code, is_managed);
