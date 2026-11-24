@@ -272,8 +272,10 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // CompleteInitialization() down its failure path.
   void SetFailSetOriginForTesting(bool fail);
 
-  // All the OnXxx functions below are called from Java. The implementation must
-  // only do minimal work and then post tasks to avoid reentrancy issues.
+  // All the OnXxx functions below are called from Java on |task_runner_|. The
+  // implementation must only do minimal work and then post tasks to
+  // |task_runner_| to avoid synchronous reentrancy and ensure session events
+  // posted by MediaDrm listeners run after preceding promise resolutions.
 
   // Called by Java after a MediaCrypto object is created.
   void OnMediaCryptoReady(
@@ -341,12 +343,19 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // object.
   void OnCreateError(JNIEnv* env, int32_t j_error_code);
 
+  // Posts a Java Runnable to |task_runner_| for MediaDrm listener callbacks.
+  // May be called on any thread.
+  void PostToTaskRunner(JNIEnv* env, base::OnceClosure runnable);
+
  private:
   friend class MediaDrmBridgeFactory;
   friend class MediaDrmBridgeFactoryTest;
   FRIEND_TEST_ALL_PREFIXES(MediaDrmBridgeTest, MaybeParseCdmVersion);
   FRIEND_TEST_ALL_PREFIXES(MediaDrmBridgeTest,
                            ProvisionAfterDestroyedWhileProvisioning_Widevine);
+  FRIEND_TEST_ALL_PREFIXES(
+      MediaDrmBridgeTest,
+      UpdateSession_ClearKey_DeliversListenerCallbacksOnTaskRunner);
   // For DeleteSoon() in DeleteOnCorrectThread().
   friend class base::DeleteHelper<MediaDrmBridge>;
 
@@ -440,7 +449,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   CdmPromiseAdapter cdm_promise_adapter_;
 
   // Default task runner.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // The security level of the MediaDrmBridge.
   const SecurityLevel security_level_;

@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/android/android_info.h"
+#include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/compiler_specific.h"
@@ -805,9 +806,19 @@ void MediaDrmBridge::SetFailSetOriginForTesting(bool fail) {
       AttachCurrentThread(), j_media_drm_, fail);
 }
 
+void MediaDrmBridge::PostToTaskRunner(JNIEnv* env, base::OnceClosure runnable) {
+  // Called from the MediaDrm listener Executor (typically on a Binder thread).
+  // Must always post asynchronously rather than running inline so that session
+  // events triggered during a synchronous MediaDrm JNI call (e.g. restoreKeys)
+  // execute after the enclosing method queues its promise resolution.
+  task_runner_->PostTask(FROM_HERE, std::move(runnable));
+}
+
 //------------------------------------------------------------------------------
-// The following OnXxx functions are called from Java. The implementation must
-// only do minimal work and then post tasks to avoid reentrancy issues.
+// The following OnXxx functions are called from Java on |task_runner_|. The
+// implementation must only do minimal work and then post tasks to
+// |task_runner_| to avoid synchronous reentrancy and ensure session events
+// posted by MediaDrm listeners run after preceding promise resolutions.
 
 void MediaDrmBridge::OnMediaCryptoReady(
     JNIEnv* env,
@@ -885,6 +896,7 @@ void MediaDrmBridge::OnSessionMessage(JNIEnv* env,
                                       const JavaRef<jbyteArray>& j_session_id,
                                       int32_t j_message_type,
                                       const JavaRef<jbyteArray>& j_message) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__;
 
   std::vector<uint8_t> message;
@@ -902,6 +914,7 @@ void MediaDrmBridge::OnSessionMessage(JNIEnv* env,
 void MediaDrmBridge::OnSessionClosed(JNIEnv* env,
                                      const JavaRef<jbyteArray>& j_session_id,
                                      int32_t j_reason) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__;
   std::string session_id;
   JavaByteArrayToString(env, j_session_id, &session_id);
@@ -919,6 +932,7 @@ void MediaDrmBridge::OnSessionKeysChange(
     const JavaRef<jobjectArray>& j_keys_info,
     bool has_additional_usable_key,
     bool is_key_release) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__;
 
   CdmKeysInfo cdm_keys_info;
@@ -973,6 +987,7 @@ void MediaDrmBridge::OnSessionExpirationUpdate(
     JNIEnv* env,
     const JavaRef<jbyteArray>& j_session_id,
     int64_t expiry_time_ms) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__ << ": " << expiry_time_ms << " ms";
   std::string session_id;
   JavaByteArrayToString(env, j_session_id, &session_id);

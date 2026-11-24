@@ -61,7 +61,7 @@ class MediaDrmSessionManager {
         static String toHexString(byte[] bytes) {
             StringBuilder hexString = new StringBuilder();
             for (int i = 0; i < bytes.length; ++i) {
-                hexString.append(HEX_CHAR_LOOKUP[bytes[i] >>> 4]);
+                hexString.append(HEX_CHAR_LOOKUP[(bytes[i] >>> 4) & 0xf]);
                 hexString.append(HEX_CHAR_LOOKUP[bytes[i] & 0xf]);
             }
             return hexString.toString();

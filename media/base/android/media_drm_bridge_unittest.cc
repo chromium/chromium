@@ -6,9 +6,14 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/barrier_closure.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -753,6 +758,83 @@ TEST_F(MediaDrmBridgeFactoryTest, AbortDuringPendingMediaCryptoReady) {
   run_loop.Run();
   EXPECT_FALSE(future.Get<0>());
   EXPECT_EQ(future.Get<1>(), CreateCdmStatus::kCdmCreationAborted);
+}
+
+TEST_F(MediaDrmBridgeTest,
+       UpdateSession_ClearKey_DeliversListenerCallbacksOnTaskRunner) {
+  StrictMock<MockCdmClient> client;
+  auto creation_result = MediaDrmBridge::CreateInternal(
+      base::ToVector(kClearKeyUuid), kEmptyOrigin, kDefault, "Test",
+      /*requires_media_crypto=*/true, std::make_unique<MediaDrmStorageBridge>(),
+      base::NullCallback(),
+      base::BindRepeating(&MockCdmClient::OnSessionMessage,
+                          base::Unretained(&client)),
+      base::BindRepeating(&MockCdmClient::OnSessionClosed,
+                          base::Unretained(&client)),
+      base::BindRepeating(&MockCdmClient::OnSessionKeysChange,
+                          base::Unretained(&client)),
+      base::BindRepeating(&MockCdmClient::OnSessionExpirationUpdate,
+                          base::Unretained(&client)));
+  if (!creation_result.has_value() &&
+      creation_result.error() == CreateCdmStatus::kUnsupportedKeySystem) {
+    GTEST_SKIP() << "ClearKey not supported on device.";
+  }
+  ASSERT_TRUE(creation_result.has_value());
+  scoped_refptr<MediaDrmBridge> bridge = std::move(creation_result).value();
+
+  std::string session_id;
+  base::RunLoop create_loop;
+  EXPECT_CALL(client, OnSessionMessage(_, _, _)).WillOnce([&] {
+    create_loop.Quit();
+  });
+  bridge->CreateSessionAndGenerateRequest(
+      CdmSessionType::kTemporary, EmeInitDataType::WEBM,
+      std::vector<uint8_t>(16, 0x01),
+      std::make_unique<MockCdmSessionPromise>(/*expect_success=*/true,
+                                              &session_id));
+  create_loop.Run();
+  ASSERT_FALSE(session_id.empty());
+
+  // ClearKey's provideKeyResponse() fires onEvent, onExpirationUpdate, and
+  // onKeyStatusChange. Because TaskEnvironment does not pump Android's Looper,
+  // callbacks only arrive via PostToTaskRunner() after UpdateSession()
+  // resolves.
+  base::RunLoop update_loop;
+  bool update_resolved = false;
+  base::RepeatingClosure done =
+      base::BarrierClosure(4, update_loop.QuitClosure());
+  auto update_promise =
+      std::make_unique<MockCdmPromise>(/*expect_success=*/true);
+  ON_CALL(*update_promise, resolve()).WillByDefault([&] {
+    update_resolved = true;
+    done.Run();
+  });
+  auto expect_after_resolve = [&] {
+    EXPECT_TRUE(update_resolved);
+    done.Run();
+  };
+  EXPECT_CALL(client, OnSessionMessage(session_id, _, _))
+      .WillOnce(expect_after_resolve);
+  EXPECT_CALL(client, OnSessionKeysChangeCalled(session_id, true))
+      .WillOnce(expect_after_resolve);
+  EXPECT_CALL(client, OnSessionExpirationUpdate(session_id, _))
+      .WillOnce(expect_after_resolve);
+
+  constexpr std::string_view kClearKeyJwkSet =
+      R"({"keys":[{"kty":"oct","kid":"AQEBAQEBAQEBAQEBAQEBAQ",)"
+      R"("k":"AQEBAQEBAQEBAQEBAQEBAQ"}]})";
+  bridge->UpdateSession(session_id, base::ToVector<uint8_t>(kClearKeyJwkSet),
+                        std::move(update_promise));
+  update_loop.Run();
+  EXPECT_FALSE(client.keys_info().empty());
+
+  base::RunLoop close_loop;
+  auto close_promise =
+      std::make_unique<MockCdmPromise>(/*expect_success=*/true);
+  ON_CALL(*close_promise, resolve()).WillByDefault([&] { close_loop.Quit(); });
+  EXPECT_CALL(client, OnSessionClosed(session_id, _));
+  bridge->CloseSession(session_id, std::move(close_promise));
+  close_loop.Run();
 }
 
 }  // namespace media
