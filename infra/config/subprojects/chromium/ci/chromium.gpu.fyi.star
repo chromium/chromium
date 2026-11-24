@@ -3765,11 +3765,30 @@ ci.thin_tester(
         targets = [
             "gpu_all_win_release_gtests",
             "gpu_all_win_release_telemetry_tests",
+            # Default suites exercise the Graphite field trial. Keep explicit
+            # Ganesh coverage alongside them.
+            # TODO(crbug.com/40275700): Remove these local additions after
+            # Graphite launches on Windows ARM64 and coverage is provided by
+            # the gpu_all_win_release_* bundles.
+            "context_lost_passthrough_ganesh_tests",
+            "expected_color_pixel_passthrough_ganesh_test",
+            "pixel_skia_gold_passthrough_ganesh_test",
+            "screenshot_sync_passthrough_ganesh_tests",
+            "webgl2_conformance_d3d11_passthrough_ganesh_tests",
+            "webgl_conformance_d3d11_passthrough_ganesh_tests",
         ],
         mixins = [
             "win11_qualcomm_snapdragon_x_elite_stable",
         ],
         per_test_modifications = {
+            # The default suites already exercise Graphite through the field
+            # trial, so omit the inherited forced Graphite duplicates.
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = "Use the default suite to exercise the Graphite field trial.",
+            ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = "Use the default suite to exercise the Graphite field trial.",
+            ),
             "gl_tests_passthrough": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.gl_tests_passthrough.filter",
@@ -3779,6 +3798,12 @@ ci.thin_tester(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.gl_unittests.filter",
                 ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = "Use the default suite to exercise the Graphite field trial.",
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = "Use the default suite to exercise the Graphite field trial.",
             ),
             "services_webnn_unittests": targets.mixin(
                 args = [

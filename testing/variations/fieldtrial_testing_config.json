@@ -18757,6 +18757,21 @@
             ]
         }
     ],
+    "SkiaGraphiteQualcommWindows": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkiaGraphiteQualcommWindows"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkiaGraphiteSmallPathAtlas": [
         {
             "platforms": [

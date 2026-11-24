@@ -182,7 +182,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-skia-graphite",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --disable-skia-graphite",
           "--enforce-browser-version",
           "--jobs=4"
         ],
@@ -191,7 +191,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "module_scheme": "flat",
-        "name": "context_lost_passthrough_graphite_tests",
+        "name": "context_lost_passthrough_ganesh_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -262,7 +262,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-skia-graphite",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --disable-skia-graphite",
           "--enforce-browser-version",
           "--git-revision=${got_revision}",
           "--dont-restore-color-profile-after-test",
@@ -275,7 +275,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "module_scheme": "flat",
-        "name": "expected_color_pixel_passthrough_graphite_test",
+        "name": "expected_color_pixel_passthrough_ganesh_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -484,7 +484,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-skia-graphite",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --disable-skia-graphite",
           "--enforce-browser-version",
           "--git-revision=${got_revision}",
           "--dont-restore-color-profile-after-test",
@@ -497,7 +497,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "module_scheme": "flat",
-        "name": "pixel_skia_gold_passthrough_graphite_test",
+        "name": "pixel_skia_gold_passthrough_ganesh_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -582,7 +582,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-skia-graphite",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --disable-skia-graphite",
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
           "--jobs=4"
@@ -592,7 +592,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "module_scheme": "flat",
-        "name": "screenshot_sync_passthrough_graphite_tests",
+        "name": "screenshot_sync_passthrough_ganesh_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -744,6 +744,49 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --use-angle=d3d11 --disable-skia-graphite --force_high_performance_gpu",
+          "--enforce-browser-version",
+          "--webgl-conformance-version=2.0.1",
+          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_win_runtimes.json",
+          "--jobs=4"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "flat",
+        "name": "webgl2_conformance_d3d11_passthrough_ganesh_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "cpu": "arm64",
+            "display_attached": "1",
+            "gpu": "qcom:0c36-31.0.121.1",
+            "os": "Windows-11-26100",
+            "pool": "chromium.tests.gpu",
+            "screen_scaling_percent": "100"
+          },
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+      },
+      {
+        "args": [
+          "webgl2_conformance",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --use-angle=d3d11 --force_high_performance_gpu",
           "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
@@ -775,6 +818,48 @@
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+      },
+      {
+        "args": [
+          "webgl1_conformance",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --use-angle=d3d11 --disable-skia-graphite --force_high_performance_gpu",
+          "--enforce-browser-version",
+          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_win_runtimes.json",
+          "--jobs=4"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "flat",
+        "name": "webgl_conformance_d3d11_passthrough_ganesh_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "cpu": "arm64",
+            "display_attached": "1",
+            "gpu": "qcom:0c36-31.0.121.1",
+            "os": "Windows-11-26100",
+            "pool": "chromium.tests.gpu",
+            "screen_scaling_percent": "100"
+          },
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"

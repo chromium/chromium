@@ -112,7 +112,7 @@ GPU_BLOCKLIST_FEATURE_TEST(CompositorGpuThread,
                            GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR)
 
 #if BUILDFLAG(IS_WIN)
-TEST_F(GpuBlocklistTest, SkiaGraphiteSnapdragonXElite) {
+TEST_F(GpuBlocklistTest, SkiaGraphiteQualcommDriverException) {
   GPUInfo info;
   info.gpu.vendor_id = 0x4d4f4351;
   info.gpu.device_id = 0x36334330;
@@ -123,22 +123,33 @@ TEST_F(GpuBlocklistTest, SkiaGraphiteSnapdragonXElite) {
         .contains(GPU_FEATURE_TYPE_SKIA_GRAPHITE);
   };
 
-  // The bot's driver and the minimum supported driver bypass the D3D11
-  // feature-level restriction: this GPU supports feature level 12.0+ in D3D12.
-  info.gpu.driver_version = "31.0.121.1";
-  EXPECT_FALSE(is_blocked());
-  info.gpu.driver_version = "31.0.117.0";
-  EXPECT_FALSE(is_blocked());
+  // The driver baseline covers existing Snapdragon X devices and unknown
+  // device IDs without requiring a new exception for each generation.
+  for (uint32_t device_id :
+       {0x37314430u, 0x36334330u, 0x35464630u, 0x36334630u, 0x12345678u}) {
+    SCOPED_TRACE(device_id);
+    info.gpu.device_id = device_id;
+    // The driver exception matters only below D3D11 feature level 12.0.
+    for (D3D_FEATURE_LEVEL feature_level :
+         {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_12_0}) {
+      SCOPED_TRACE(feature_level);
+      info.d3d11_feature_level = feature_level;
+      info.gpu.driver_version = "31.0.121.1";
+      EXPECT_FALSE(is_blocked());
+      info.gpu.driver_version = "31.0.117.0";
+      EXPECT_FALSE(is_blocked());
+      info.gpu.driver_version = "31.0.116.9999";
+      EXPECT_EQ(feature_level == D3D_FEATURE_LEVEL_11_1, is_blocked());
+    }
+  }
 
-  info.gpu.driver_version = "31.0.116.0";
-  EXPECT_TRUE(is_blocked());
-
-  // Do not exempt other Qualcomm devices or other vendors.
-  info.gpu.driver_version = "31.0.121.1";
-  info.gpu.device_id = 0x36333630;
-  EXPECT_TRUE(is_blocked());
+  // The Qualcomm exception must not apply to other vendors.
   info.gpu.device_id = 0x36334330;
   info.gpu.vendor_id = 0x10de;
+  info.gpu.driver_version = "31.0.121.1";
+  info.d3d11_feature_level = D3D_FEATURE_LEVEL_12_0;
+  EXPECT_FALSE(is_blocked());
+  info.d3d11_feature_level = D3D_FEATURE_LEVEL_11_1;
   EXPECT_TRUE(is_blocked());
 }
 
