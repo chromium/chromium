@@ -569,7 +569,7 @@ bool IOSChromePaymentsAutofillClient::OnPurchaseAmountExtracted(
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     std::optional<int64_t> extracted_amount,
     bool is_amount_supported_by_any_issuer,
-    const std::optional<std::string>& app_locale,
+    const std::optional<base::i18n::LanguageTag>& app_locale,
     base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
     base::OnceClosure cancel_callback) {
   NOTREACHED();
@@ -582,7 +582,7 @@ bool IOSChromePaymentsAutofillClient::ShowTouchToFillProgress(
 
 bool IOSChromePaymentsAutofillClient::ShowTouchToFillBnplIssuers(
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
     base::OnceClosure cancel_callback) {
   return false;

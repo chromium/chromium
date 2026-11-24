@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
@@ -56,7 +57,7 @@ class MockPaymentsAutofillClient : public TestPaymentsAutofillClient {
   MOCK_METHOD(bool,
               ShowTouchToFillBnplIssuers,
               (base::span<const BnplIssuerContext>,
-               const std::string&,
+               const base::i18n::LanguageTag&,
                base::OnceCallback<void(BnplIssuer)>,
                base::OnceClosure),
               (override));
@@ -65,7 +66,7 @@ class MockPaymentsAutofillClient : public TestPaymentsAutofillClient {
               (base::span<const BnplIssuerContext> bnpl_issuer_contexts,
                std::optional<int64_t> extracted_amount,
                bool is_amount_supported_by_any_issuer,
-               const std::optional<std::string>& app_locale,
+               const std::optional<base::i18n::LanguageTag>& app_locale,
                base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
                base::OnceClosure cancel_callback),
               (override));
@@ -179,12 +180,14 @@ TEST_F(AndroidBnplUiDelegateTest, ShowSelectBnplIssuerUi) {
       BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
                         BnplIssuerEligibilityForPage::kIsEligible)};
 
+  const base::i18n::LanguageTag kAppLocale =
+      base::i18n::GetKnownLanguageTag("en-US");
   EXPECT_CALL(payments_autofill_client(),
               ShowTouchToFillBnplIssuers(ElementsAreArray(issuer_context),
-                                         /*app_locale=*/"en-US", _, _));
+                                         /*app_locale=*/kAppLocale, _, _));
 
   delegate_->ShowSelectBnplIssuerUi(
-      issuer_context, /*app_locale=*/"en-US",
+      issuer_context, /*app_locale=*/kAppLocale,
       /*selected_issuer_callback=*/base::DoNothing(),
       /*cancel_callback=*/base::DoNothing(), /*has_seen_ai_terms=*/false);
 }
@@ -196,16 +199,18 @@ TEST_F(AndroidBnplUiDelegateTest, UpdateBnplIssuerUi) {
       BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
                         BnplIssuerEligibilityForPage::kIsEligible)};
 
+  const base::i18n::LanguageTag kAppLocale =
+      base::i18n::GetKnownLanguageTag("en-US");
   EXPECT_CALL(
       payments_autofill_client(),
       OnPurchaseAmountExtracted(ElementsAreArray(issuer_context),
                                 /*extracted_amount=*/Eq(30'000'000),
                                 /*is_amount_supported_by_any_issuer=*/true,
-                                /*app_locale=*/Eq("en-US"), _, _));
+                                /*app_locale=*/Eq(kAppLocale), _, _));
 
   delegate_->UpdateBnplIssuerUi(issuer_context, /*extracted_amount=*/30'000'000,
                                 /*is_amount_supported_by_any_issuer=*/true,
-                                /*app_locale=*/"en-US",
+                                /*app_locale=*/kAppLocale,
                                 /*selected_issuer_callback=*/base::DoNothing(),
                                 /*cancel_callback=*/base::DoNothing());
 }

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -64,8 +65,9 @@ class SelectBnplIssuerDialogInteractiveUiTest : public InteractiveBrowserTest {
               ->GetBnplUiDelegate()
               ->ShowSelectBnplIssuerUi(
                   std::move(issuer_contexts),
-                  /*app_locale=*/"en-US", accept_callback_.Get(),
-                  cancel_callback_.Get(), has_seen_ai_terms);
+                  /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
+                  accept_callback_.Get(), cancel_callback_.Get(),
+                  has_seen_ai_terms);
         }),
         InAnyContext(WaitForShow(views::DialogClientView::kTopViewId)));
   }
@@ -181,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
                              kNotEligibleIssuerDoesNotSupportMerchant)},
                     /*extracted_amount=*/100,
                     /*is_amount_supported_by_any_issuer=*/true,
-                    /*app_locale=*/"en-US",
+                    /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
                     /*selected_issuer_callback=*/base::DoNothing(),
                     /*cancel_callback=*/base::DoNothing());
           }),

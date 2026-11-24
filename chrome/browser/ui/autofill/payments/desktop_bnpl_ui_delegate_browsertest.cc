@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/payments/desktop_bnpl_ui_delegate.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -64,7 +65,8 @@ class DesktopBnplUiDelegateBrowserTest
         GetDesktopBnplUiDelegate()->ShowSelectBnplIssuerUi(
             {BnplIssuerContext(test::GetTestUnlinkedBnplIssuer(),
                                BnplIssuerEligibilityForPage::kIsEligible)},
-            /*app_locale=*/"en-US", base::DoNothing(), base::DoNothing(),
+            /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
+            base::DoNothing(), base::DoNothing(),
             /*has_seen_ai_terms=*/false);
         break;
       }
@@ -79,13 +81,15 @@ class DesktopBnplUiDelegateBrowserTest
         GetDesktopBnplUiDelegate()->ShowSelectBnplIssuerUi(
             {BnplIssuerContext(test::GetTestUnlinkedBnplIssuer(),
                                BnplIssuerEligibilityForPage::kIsEligible)},
-            /*app_locale=*/"en-US", base::DoNothing(), base::DoNothing(),
+            /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
+            base::DoNothing(), base::DoNothing(),
             /*has_seen_ai_terms=*/true);
         GetDesktopBnplUiDelegate()->UpdateBnplIssuerUi(
             {BnplIssuerContext(test::GetTestUnlinkedBnplIssuer(),
                                BnplIssuerEligibilityForPage::kIsEligible)},
             /*extracted_amount=*/100,
-            /*is_amount_supported_by_any_issuer=*/true, /*app_locale=*/"en-US",
+            /*is_amount_supported_by_any_issuer=*/true,
+            /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
             /*selected_issuer_callback=*/base::DoNothing(),
             /*cancel_callback=*/base::DoNothing());
         break;

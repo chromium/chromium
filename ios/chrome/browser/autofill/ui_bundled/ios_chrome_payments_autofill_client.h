@@ -10,6 +10,7 @@
 
 #import "base/containers/span.h"
 #import "base/functional/callback.h"
+#import "base/i18n/language_tag.h"
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
@@ -186,13 +187,13 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
       std::optional<int64_t> extracted_amount,
       bool is_amount_supported_by_any_issuer,
-      const std::optional<std::string>& app_locale,
+      const std::optional<base::i18n::LanguageTag>& app_locale,
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillProgress(base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillBnplIssuers(
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillError(const AutofillErrorDialogContext& context) override;

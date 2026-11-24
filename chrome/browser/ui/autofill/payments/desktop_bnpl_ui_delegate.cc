@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/desktop_bnpl_ui_delegate.h"
 
 #include "base/check_deref.h"
+#include "base/i18n/language_tag.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -25,7 +26,7 @@ DesktopBnplUiDelegate::~DesktopBnplUiDelegate() = default;
 
 void DesktopBnplUiDelegate::ShowSelectBnplIssuerUi(
     std::vector<BnplIssuerContext> bnpl_issuer_context,
-    std::string app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::RepeatingCallback<void(BnplIssuer)> selected_issuer_callback,
     base::OnceClosure cancel_callback,
     bool has_seen_ai_terms) {
@@ -37,7 +38,7 @@ void DesktopBnplUiDelegate::ShowSelectBnplIssuerUi(
                      select_bnpl_issuer_dialog_controller_->GetWeakPtr(),
                      base::Unretained(&client_->GetWebContents()),
                      has_seen_ai_terms),
-      std::move(bnpl_issuer_context), std::move(app_locale),
+      std::move(bnpl_issuer_context), std::string(app_locale.tag_string()),
       std::move(selected_issuer_callback), std::move(cancel_callback));
 }
 
@@ -45,7 +46,7 @@ void DesktopBnplUiDelegate::UpdateBnplIssuerUi(
     std::vector<BnplIssuerContext> issuer_contexts,
     std::optional<int64_t>,
     bool,
-    const std::optional<std::string>&,
+    const std::optional<base::i18n::LanguageTag>&,
     base::OnceCallback<void(BnplIssuer)>,
     base::OnceClosure) {
   if (select_bnpl_issuer_dialog_controller_) {

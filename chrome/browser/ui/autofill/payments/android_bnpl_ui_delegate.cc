@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
@@ -51,7 +52,7 @@ AndroidBnplUiDelegate::~AndroidBnplUiDelegate() = default;
 
 void AndroidBnplUiDelegate::ShowSelectBnplIssuerUi(
     std::vector<BnplIssuerContext> bnpl_issuer_context,
-    std::string app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::RepeatingCallback<void(BnplIssuer)> selected_issuer_callback,
     base::OnceClosure cancel_callback,
     bool has_seen_ai_terms) {
@@ -66,7 +67,7 @@ void AndroidBnplUiDelegate::UpdateBnplIssuerUi(
     std::vector<BnplIssuerContext> issuer_contexts,
     std::optional<int64_t> extracted_amount,
     bool is_amount_supported_by_any_issuer,
-    const std::optional<std::string>& app_locale,
+    const std::optional<base::i18n::LanguageTag>& app_locale,
     base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
     base::OnceClosure cancel_callback) {
   client_->OnPurchaseAmountExtracted(

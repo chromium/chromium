@@ -189,7 +189,7 @@ class TestPaymentsAutofillClientMock : public TestPaymentsAutofillClient {
       (base::span<const BnplIssuerContext> bnpl_issuer_contexts,
        std::optional<int64_t> extracted_amount,
        bool is_amount_supported_by_any_issuer,
-       const std::optional<std::string>& app_locale,
+       const std::optional<base::i18n::LanguageTag>& app_locale,
        base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
        base::OnceClosure cancel_callback),
       (override));
@@ -204,7 +204,7 @@ class MockBnplUiDelegate : public BnplUiDelegate {
       void,
       ShowSelectBnplIssuerUi,
       (std::vector<BnplIssuerContext> bnpl_issuer_context,
-       std::string app_locale,
+       const base::i18n::LanguageTag& app_locale,
        base::RepeatingCallback<void(BnplIssuer)> selected_issuer_callback,
        base::OnceClosure cancel_callback,
        bool has_seen_ai_terms),
@@ -215,7 +215,7 @@ class MockBnplUiDelegate : public BnplUiDelegate {
       (std::vector<BnplIssuerContext> bnpl_issuer_context,
        std::optional<int64_t> extracted_amount,
        bool is_amount_supported_by_any_issuer,
-       const std::optional<std::string>& app_locale,
+       const std::optional<base::i18n::LanguageTag>& app_locale,
        base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
        base::OnceClosure cancel_callback),
       (override));
@@ -2530,8 +2530,7 @@ TEST_F(BnplManagerTest,
   EXPECT_CALL(GetBnplUiDelegate(), ShowProgressUi);
 #else   // Desktop only.
   EXPECT_CALL(GetBnplUiDelegate(),
-              ShowSelectBnplIssuerUi(testing::IsEmpty(),
-                                     Eq(kAppLocale.tag_string()), _, _,
+              ShowSelectBnplIssuerUi(testing::IsEmpty(), Eq(kAppLocale), _, _,
                                      /*has_seen_ai_terms=*/true));
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -2798,7 +2797,7 @@ TEST_F(
   EXPECT_CALL(GetBnplUiDelegate(),
               UpdateBnplIssuerUi(_, Eq(test_amount),
                                  /*is_amount_supported_by_any_issuer=*/false,
-                                 Optional(Eq(kAppLocale.tag_string())), _, _))
+                                 Optional(Eq(kAppLocale)), _, _))
       .WillOnce([&](base::span<const BnplIssuerContext> contexts, auto, auto,
                     auto, auto, auto) {
         issuer_contexts.assign(contexts.begin(), contexts.end());
@@ -2911,7 +2910,7 @@ TEST_F(BnplManagerTest,
       OnPurchaseAmountExtracted(/*bnpl_issuer_contexts=*/IsEmpty(),
                                 /*extracted_amount=*/Eq(std::nullopt),
                                 /*is_amount_supported_by_any_issuer=*/false,
-                                Optional(Eq(kAppLocale.tag_string())), _, _));
+                                Optional(Eq(kAppLocale)), _, _));
 
   bnpl_manager_->OnAmountExtractionReturned(/*extracted_amount=*/std::nullopt,
                                             /*timeout_reached=*/true);
@@ -2942,7 +2941,7 @@ TEST_F(BnplManagerTest,
       OnPurchaseAmountExtracted(/*bnpl_issuer_contexts=*/IsEmpty(),
                                 /*extracted_amount=*/Eq(std::nullopt),
                                 /*is_amount_supported_by_any_issuer=*/false,
-                                Optional(Eq(kAppLocale.tag_string())), _, _));
+                                Optional(Eq(kAppLocale)), _, _));
 
   bnpl_manager_->OnAmountExtractionReturned(/*extracted_amount=*/std::nullopt,
                                             /*timeout_reached=*/false);
@@ -2978,7 +2977,7 @@ TEST_F(BnplManagerTest,
       payments_autofill_client(),
       OnPurchaseAmountExtracted(_, Eq(extracted_amount),
                                 /*is_amount_supported_by_any_issuer=*/false,
-                                Optional(Eq(kAppLocale.tag_string())), _, _))
+                                Optional(Eq(kAppLocale)), _, _))
       .WillOnce([&](base::span<const BnplIssuerContext> contexts, auto, auto,
                     auto, auto, auto) {
         issuer_contexts.assign(contexts.begin(), contexts.end());
@@ -3025,7 +3024,7 @@ TEST_F(BnplManagerTest,
       payments_autofill_client(),
       OnPurchaseAmountExtracted(_, Eq(extracted_amount),
                                 /*is_amount_supported_by_any_issuer=*/true,
-                                Optional(Eq(kAppLocale.tag_string())), _, _))
+                                Optional(Eq(kAppLocale)), _, _))
       .WillOnce([&](base::span<const BnplIssuerContext> contexts, auto, auto,
                     auto, auto, auto) {
         issuer_contexts.assign(contexts.begin(), contexts.end());
@@ -3162,7 +3161,7 @@ TEST_F(BnplManagerTest, OnAmountExtractionReturnedFromAi_Success_PayLaterTabs) {
       payments_autofill_client(),
       OnPurchaseAmountExtracted(_, Optional(Eq(extracted_amount)),
                                 /*is_amount_supported_by_any_issuer=*/true,
-                                Optional(Eq(kAppLocale.tag_string())), _, _))
+                                Optional(Eq(kAppLocale)), _, _))
       .WillOnce([&](base::span<const BnplIssuerContext> contexts, auto, auto,
                     auto, base::OnceCallback<void(BnplIssuer)> callback, auto) {
         issuer_contexts.assign(contexts.begin(), contexts.end());
@@ -3209,7 +3208,7 @@ TEST_F(BnplManagerTest, OnAmountExtractionReturnedFromAi_Failure_PayLaterTabs) {
       payments_autofill_client(),
       OnPurchaseAmountExtracted(_, Eq(std::nullopt),
                                 /*is_amount_supported_by_any_issuer=*/false,
-                                Optional(Eq(kAppLocale.tag_string())), _, _))
+                                Optional(Eq(kAppLocale)), _, _))
       .WillOnce([&](base::span<const BnplIssuerContext> contexts, auto, auto,
                     auto, auto, auto) {
         issuer_contexts.assign(contexts.begin(), contexts.end());
@@ -3268,7 +3267,7 @@ TEST_F(BnplManagerTest,
       payments_autofill_client(),
       OnPurchaseAmountExtracted(_, Eq(std::nullopt),
                                 /*is_amount_supported_by_any_issuer=*/false,
-                                Optional(Eq(kAppLocale.tag_string())), _, _))
+                                Optional(Eq(kAppLocale)), _, _))
       .WillOnce([&](base::span<const BnplIssuerContext> contexts, auto, auto,
                     auto, auto, auto) {
         for (const auto& context : contexts) {
@@ -3326,7 +3325,7 @@ TEST_F(BnplManagerTest,
       payments_autofill_client(),
       OnPurchaseAmountExtracted(_, Optional(Eq(40'000'000)),
                                 /*is_amount_supported_by_any_issuer=*/true,
-                                Optional(Eq(kAppLocale.tag_string())), _, _))
+                                Optional(Eq(kAppLocale)), _, _))
       .WillOnce([&](base::span<const BnplIssuerContext> contexts, auto, auto,
                     auto, auto, auto) {
         for (const auto& context : contexts) {

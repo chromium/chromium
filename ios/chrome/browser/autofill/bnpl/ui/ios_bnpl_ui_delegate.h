@@ -6,10 +6,10 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_BNPL_UI_IOS_BNPL_UI_DELEGATE_H_
 
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 
@@ -37,7 +37,7 @@ class IosBnplUiDelegate : public BnplUiDelegate {
   // BnplUiDelegate:
   void ShowSelectBnplIssuerUi(
       std::vector<BnplIssuerContext> bnpl_issuer_context,
-      std::string app_locale,
+      const base::i18n::LanguageTag& app_locale,
       base::RepeatingCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback,
       bool has_seen_ai_terms) override;
@@ -45,7 +45,7 @@ class IosBnplUiDelegate : public BnplUiDelegate {
       std::vector<BnplIssuerContext> issuer_contexts,
       std::optional<int64_t> extracted_amount,
       bool is_amount_supported_by_any_issuer,
-      const std::optional<std::string>& app_locale,
+      const std::optional<base::i18n::LanguageTag>& app_locale,
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
   void RemoveSelectBnplIssuerOrProgressUi() override;
