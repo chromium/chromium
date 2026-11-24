@@ -2085,7 +2085,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/anonymous-tokens.git' + '@' + 'a3101cb168162fcafc493a3cf375703302e13362',
 
   'src/third_party/tink/src':
-    Var('chromium_git') + '/external/github.com/tink-crypto/tink-cc.git' + '@' + '73af50b8dfc50ea44ea56103e927067f4153a157',
+    Var('chromium_git') + '/external/github.com/tink-crypto/tink-cc.git' + '@' + 'e926aa03e1c8f837d833d176a1f4a4a9774d01d4',
 
 
     'src/third_party/blink/renderer/core/css/perftest_data': {
