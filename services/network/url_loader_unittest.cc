@@ -5542,7 +5542,6 @@ TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusNone) {
 
   test_network_delegate()->set_storage_access_status(
       net::cookie_util::StorageAccessStatus::kNone);
-  base::HistogramTester histogram_tester;
 
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader;
@@ -5557,11 +5556,6 @@ TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusNone) {
   delete_run_loop.Run();
 
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
-  histogram_tester.ExpectUniqueSample(
-      "API.StorageAccessHeader.ActivateStorageAccessLoadOutcome",
-      /*sample=*/
-      net::cookie_util::ActivateStorageAccessLoadOutcome::kFailureInvalidStatus,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusInactive) {
@@ -5594,7 +5588,6 @@ TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusActive) {
 
   test_network_delegate()->set_storage_access_status(
       net::cookie_util::StorageAccessStatus::kActive);
-  base::HistogramTester histogram_tester;
 
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader;
@@ -5609,10 +5602,6 @@ TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusActive) {
   delete_run_loop.Run();
 
   EXPECT_TRUE(client()->response_head()->load_with_storage_access);
-  histogram_tester.ExpectUniqueSample(
-      "API.StorageAccessHeader.ActivateStorageAccessLoadOutcome",
-      /*sample=*/net::cookie_util::ActivateStorageAccessLoadOutcome::kSuccess,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(StorageAccessHeaderURLLoaderTest,

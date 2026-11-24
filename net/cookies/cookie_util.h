@@ -80,27 +80,6 @@ enum class StorageAccessStatusOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:StorageAccessStatusOutcome)
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// The values of this enum correspond to the possible outcomes of a call to
-// URLRequest::ShouldSetLoadWithStorageAccess().
-//
-// LINT.IfChange(ActivateStorageAccessLoadOutcome)
-enum class ActivateStorageAccessLoadOutcome {
-  // Applies when the `Activate-Storage-Access` header behavior is not enabled
-  // under the existing feature flags or content settings.
-  // kFailureHeaderDisabled = 0, // Deprecated (feature is always enabled).
-  // Applies when a response includes the `Activate-Storage-Access: load`
-  // header, but its corresponding request either has an omitted storage access
-  // status, or has a storage access status of `none`.
-  kFailureInvalidStatus = 1,
-  // Applies when a response includes the `Activate-Storage-Access: load`
-  // header, and that header is honored by the browser.
-  kSuccess = 2,
-  kMaxValue = kSuccess
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:ActivateStorageAccessLoadOutcome)
-
 // Returns the effective TLD+1 for a given host. This only makes sense for http
 // and https schemes. For other schemes, the host will be returned unchanged
 // (minus any leading period).

@@ -26,16 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<!-- LINT.IfChange(ActivateStorageAccessLoadOutcome) -->
-
-<enum name="ActivateStorageAccessLoadOutcome">
-  <int value="0" label="Failure: header disabled"/>
-  <int value="1" label="Failure: invalid storage access status"/>
-  <int value="2" label="Success"/>
-</enum>
-
-<!-- LINT.ThenChange(//net/cookies/cookie_util.h:ActivateStorageAccessLoadOutcome) -->
-
 <!-- LINT.IfChange(BlobUuidAccess) -->
 
 <enum name="BlobUuidAccess">
