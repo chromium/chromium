@@ -76,6 +76,7 @@ source_set("unittests") {
     "//base/test:test_support",
     "//testing/gtest",
     "//ui/events",
+    "//ui/events:dom_keyboard_layout",
     "//ui/events:dom_keycode_converter",
     "//ui/events/keycodes:xkb",
   ]

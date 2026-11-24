@@ -128,10 +128,6 @@ ui::WindowFrameProvider* FakeLinuxUi::GetWindowFrameProvider(FrameType type,
   return nullptr;
 }
 
-base::flat_map<std::string, std::string> FakeLinuxUi::GetKeyboardLayoutMap() {
-  return base::flat_map<std::string, std::string>();
-}
-
 std::string FakeLinuxUi::GetCursorThemeName() {
   return std::string();
 }

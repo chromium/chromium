@@ -60,6 +60,9 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
                            KeyboardCode* key_code) const override;
   std::optional<uint32_t> LookupKeysym(DomCode dom_code,
                                        int flags) const override;
+  uint32_t GetKeyboardLayoutCount() const override;
+  DomKey LookupForLayout(DomCode dom_code,
+                         uint32_t layout_index) const override;
 
   void SetInitCallbackForTest(base::OnceClosure closure) override;
 
@@ -156,6 +159,13 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   // Returns true on success. This is virtual for testing.
   virtual bool XkbLookup(xkb_keycode_t xkb_keycode,
                          xkb_mod_mask_t xkb_flags,
+                         xkb_keysym_t* xkb_keysym,
+                         uint32_t* character) const;
+
+  // Like XkbLookup(), but in `layout` instead of the active layout.
+  bool XkbLookupInLayout(xkb_keycode_t xkb_keycode,
+                         xkb_mod_mask_t xkb_flags,
+                         xkb_layout_index_t layout,
                          xkb_keysym_t* xkb_keysym,
                          uint32_t* character) const;
 

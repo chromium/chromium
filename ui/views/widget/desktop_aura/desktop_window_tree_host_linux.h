@@ -120,9 +120,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest,
                            CaptionHoldHandsOffMoveAfterThreshold);
 
-  // DesktopWindowTreeHostPlatform:
-  base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
-
   // WindowTreeHost:
   bool SupportsMouseLock() override;
   void LockMouse(aura::Window* window) override;

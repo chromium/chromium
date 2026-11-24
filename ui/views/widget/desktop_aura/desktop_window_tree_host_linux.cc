@@ -600,14 +600,6 @@ void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
       linux_ui_theme && linux_ui_theme->PreferDarkTheme();
 }
 
-base::flat_map<std::string, std::string>
-DesktopWindowTreeHostLinux::GetKeyboardLayoutMap() {
-  if (auto* linux_ui = ui::LinuxUi::instance()) {
-    return linux_ui->GetKeyboardLayoutMap();
-  }
-  return WindowTreeHostPlatform::GetKeyboardLayoutMap();
-}
-
 bool DesktopWindowTreeHostLinux::SupportsMouseLock() {
   auto* wayland_extension = ui::GetWaylandToplevelExtension(*platform_window());
   if (!wayland_extension) {

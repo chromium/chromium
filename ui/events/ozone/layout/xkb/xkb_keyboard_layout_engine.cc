@@ -967,6 +967,54 @@ std::optional<uint32_t> XkbKeyboardLayoutEngine::LookupKeysym(DomCode dom_code,
   return xkb_keysym;
 }
 
+uint32_t XkbKeyboardLayoutEngine::GetKeyboardLayoutCount() const {
+  if (!xkb_state_) {
+    return 0;
+  }
+  return xkb_keymap_num_layouts(xkb_state_get_keymap(xkb_state_.get()));
+}
+
+DomKey XkbKeyboardLayoutEngine::LookupForLayout(DomCode dom_code,
+                                                uint32_t layout_index) const {
+  if (!xkb_state_ || dom_code == DomCode::NONE) {
+    return DomKey::NONE;
+  }
+
+  xkb_keycode_t xkb_keycode =
+      key_code_converter_->DomCodeToXkbKeyCode(dom_code);
+  if (xkb_keycode == key_code_converter_->InvalidXkbKeyCode()) {
+    return DomKey::NONE;
+  }
+
+  xkb_keymap* keymap = xkb_state_get_keymap(xkb_state_.get());
+  uint32_t num_layouts = xkb_keymap_num_layouts(keymap);
+  if (layout_index >= num_layouts) {
+    return DomKey::NONE;
+  }
+
+  xkb_layout_index_t active = layout_index_ < num_layouts ? layout_index_ : 0;
+  xkb_layout_index_t group =
+      layout_index == 0
+          ? active
+          : (layout_index <= active ? layout_index - 1 : layout_index);
+
+  xkb_keysym_t xkb_keysym;
+  uint32_t character;
+  if (!XkbLookupInLayout(xkb_keycode, EventFlagsToXkbFlags(EF_NONE), group,
+                         &xkb_keysym, &character)) {
+    return DomKey::NONE;
+  }
+
+  DomKey dom_key = NonPrintableXKeySymToDomKey(xkb_keysym);
+  if (dom_key != DomKey::NONE) {
+    return dom_key;
+  }
+  if (character == 0) {
+    return DomKey::UNIDENTIFIED;
+  }
+  return DomKey::FromCharacter(character);
+}
+
 void XkbKeyboardLayoutEngine::SetInitCallbackForTest(
     base::OnceClosure closure) {
   if (xkb_state_) {
@@ -1042,7 +1090,9 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
       keysym_map.end());
   xkb_keysym_map_ = std::move(keysym_map);
 
-  layout_index_ = 0;
+  if (layout_index_ >= xkb_keymap_num_layouts(keymap)) {
+    layout_index_ = 0;
+  }
   if (keymap_init_closure_for_test_)
     std::move(keymap_init_closure_for_test_).Run();
 }
@@ -1060,6 +1110,7 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
                                              uint32_t latched,
                                              uint32_t locked,
                                              uint32_t group) {
+  layout_index_ = group;
   if (!xkb_state_) {
     // The first XKB keymap may arrive after GTK IM events that depend on
     // modifier state (e.g. fcitx5 firing on first input activation).
@@ -1080,7 +1131,6 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
     if (xkb_state_mod_index_is_active(state, i, component))
       mask |= (1 << i);
   }
-  layout_index_ = group;
   return xkb_modifier_converter_.UiFlagsFromMask(mask);
 }
 
@@ -1151,13 +1201,22 @@ bool XkbKeyboardLayoutEngine::XkbLookup(xkb_keycode_t xkb_keycode,
                                         xkb_mod_mask_t xkb_flags,
                                         xkb_keysym_t* xkb_keysym,
                                         uint32_t* character) const {
+  return XkbLookupInLayout(xkb_keycode, xkb_flags, layout_index_, xkb_keysym,
+                           character);
+}
+
+bool XkbKeyboardLayoutEngine::XkbLookupInLayout(xkb_keycode_t xkb_keycode,
+                                                xkb_mod_mask_t xkb_flags,
+                                                xkb_layout_index_t layout,
+                                                xkb_keysym_t* xkb_keysym,
+                                                uint32_t* character) const {
   if (!xkb_state_) {
     LOG(ERROR) << "No current XKB state";
     return false;
   }
 
   auto* state = xkb_state_.get();
-  xkb_state_update_mask(state, xkb_flags, 0, 0, 0, 0, layout_index_);
+  xkb_state_update_mask(state, xkb_flags, 0, 0, 0, 0, layout);
   *xkb_keysym = xkb_state_key_get_one_sym(state, xkb_keycode);
 
   if (*xkb_keysym == XKB_KEY_NoSymbol)

@@ -4,6 +4,8 @@
 
 #include "ui/gfx/x/connection.h"
 
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -19,6 +21,7 @@
 #include "ui/gfx/x/shm.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_types.h"
 
 namespace x11 {
 
@@ -134,6 +137,56 @@ TEST(X11ConnectionTest, NewKeyboardNotifyUpdatesKeycodeRange) {
   EXPECT_EQ(GetKeysymsForRange(connection, min_keycode, max_keycode), keysyms);
 }
 
+TEST(X11ConnectionTest, XkbMapNotifyPreservesKeycodeRange) {
+  Connection connection;
+  ASSERT_TRUE(connection.Ready());
+
+  const KeyCode min_keycode = connection.setup().min_keycode;
+  const KeyCode max_keycode = connection.setup().max_keycode;
+  const auto keysyms = GetKeysymsForRange(connection, min_keycode, max_keycode);
+
+  connection.DispatchEvent(Event(false, Xkb::MapNotifyEvent{
+                                            .changed = Xkb::MapPart::KeySyms,
+                                            .minKeyCode = min_keycode,
+                                            .maxKeyCode = max_keycode,
+                                            .firstKeySym = min_keycode,
+                                            .nKeySyms = 1,
+                                        }));
+
+  ASSERT_EQ(connection.setup().min_keycode, min_keycode);
+  ASSERT_EQ(connection.setup().max_keycode, max_keycode);
+  EXPECT_EQ(GetKeysymsForRange(connection, min_keycode, max_keycode), keysyms);
+}
+
+// All XKB events share one event code and are told apart by `xkbType`.
+TEST(X11ConnectionTest, XkbEventsAreClassifiedByXkbType) {
+  Connection connection;
+  ASSERT_TRUE(connection.Ready());
+  if (!connection.xkb().present()) {
+    GTEST_SKIP() << "XKB not available";
+  }
+
+  auto make_xkb_event = [&](uint8_t xkb_type) {
+    // 32 bytes on the wire plus XCB's 4-byte `full_sequence`.
+    std::vector<uint8_t> bytes(36);
+    bytes[0] = connection.xkb().first_event();
+    bytes[1] = xkb_type;
+    return Event(ThrowAwaySizeRefCountedMemory::From(std::move(bytes)),
+                 &connection);
+  };
+
+  Event new_keyboard = make_xkb_event(Xkb::NewKeyboardNotifyEvent::opcode);
+  EXPECT_TRUE(new_keyboard.As<Xkb::NewKeyboardNotifyEvent>());
+
+  Event map = make_xkb_event(Xkb::MapNotifyEvent::opcode);
+  EXPECT_TRUE(map.As<Xkb::MapNotifyEvent>());
+  EXPECT_FALSE(map.As<Xkb::NewKeyboardNotifyEvent>());
+
+  Event state = make_xkb_event(Xkb::StateNotifyEvent::opcode);
+  EXPECT_TRUE(state.As<Xkb::StateNotifyEvent>());
+  EXPECT_FALSE(state.As<Xkb::NewKeyboardNotifyEvent>());
+}
+
 TEST(X11ConnectionTest, Request) {
   Connection connection;
   ASSERT_TRUE(connection.Ready());
@@ -177,8 +230,14 @@ TEST(X11ConnectionTest, Event) {
   EXPECT_FALSE(prop_future.Sync().error);
 
   connection.ReadResponses();
-  ASSERT_EQ(connection.events().size(), 1u);
-  auto* prop = connection.events().front().As<PropertyNotifyEvent>();
+  // Tests running in parallel on the same X server may cause unrelated events,
+  // e.g. MappingNotify after changing the keymap.
+  const PropertyNotifyEvent* prop = nullptr;
+  for (const auto& event : connection.events()) {
+    if ((prop = event.As<PropertyNotifyEvent>())) {
+      break;
+    }
+  }
   ASSERT_TRUE(prop);
   EXPECT_EQ(prop->atom, Atom::WM_NAME);
   EXPECT_EQ(prop->state, Property::NewValue);

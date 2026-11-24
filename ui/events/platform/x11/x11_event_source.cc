@@ -62,11 +62,14 @@ void InitializeXkb(x11::Connection* connection) {
       }));
 
   constexpr auto kXkbAllMapPartMask = static_cast<x11::Xkb::MapPart>(0xff);
+  constexpr auto kXkbEvents =
+      x11::Xkb::EventType::NewKeyboardNotify | x11::Xkb::EventType::MapNotify;
   xkb.SelectEvents(x11::Xkb::SelectEventsRequest{
       .deviceSpec = static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd),
-      .affectWhich = x11::Xkb::EventType::NewKeyboardNotify,
-      .selectAll = x11::Xkb::EventType::NewKeyboardNotify,
+      .affectWhich = kXkbEvents,
+      .selectAll = kXkbEvents,
       .affectMap = kXkbAllMapPartMask,
+      .map = kXkbAllMapPartMask,
   });
 }
 

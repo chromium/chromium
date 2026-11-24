@@ -17,6 +17,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -175,7 +176,8 @@ void SetLayoutFromName(XkbKeyboardLayoutEngine& layout_engine,
   std::unique_ptr<xkb_keymap, XkbKeymapDeleter> xkb_keymap(
       xkb_keymap_new_from_names(xkb_context.get(), &names,
                                 XKB_KEYMAP_COMPILE_NO_FLAGS));
-  ASSERT_TRUE(xkb_keymap) << "Failed to compile keymap for layout: " << layout;
+  ASSERT_TRUE(xkb_keymap) << "Failed to compile keymap for layout: " << layout
+                          << " variant: " << variant;
   std::unique_ptr<char, base::FreeDeleter> keymap_string(
       xkb_keymap_get_as_string(xkb_keymap.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
   ASSERT_TRUE(keymap_string);
@@ -1332,6 +1334,54 @@ TEST(XkbKeyboardLayoutEngineTest, NoStateBeforeKeymap) {
                                              /*locked=*/0, /*group=*/0));
   EXPECT_EQ(DomCode::NONE,
             layout_engine.GetDomCodeByKeysym(XKB_KEY_a, std::nullopt));
+  EXPECT_EQ(0u, layout_engine.GetKeyboardLayoutCount());
+}
+
+TEST(XkbKeyboardLayoutEngineTest, ActiveLayoutAndAsciiFallbackInLayoutMap) {
+  XkbEvdevCodes evdev_codes;
+  auto layout_engine = std::make_unique<XkbKeyboardLayoutEngine>(evdev_codes);
+  auto* engine_ptr = layout_engine.get();
+  ScopedKeyboardLayoutEngine scoped_engine(std::move(layout_engine));
+
+  // [US, Dvorak]: active group 0 (US) -> KeyQ is "q", switching to group 1
+  // (Dvorak) -> KeyQ is "'". Single-group keys like IntlBackslash (<LSGT>)
+  // wrap into group 1 as well.
+  ASSERT_NO_FATAL_FAILURE(SetLayoutFromName(*engine_ptr, "us,us", ",dvorak"));
+  auto map = GenerateDomKeyboardLayoutMap();
+  EXPECT_EQ("q", map["KeyQ"]);
+  EXPECT_EQ("<", map["IntlBackslash"]);
+
+  engine_ptr->UpdateModifiers(/*depressed=*/0, /*latched=*/0, /*locked=*/0,
+                              /*group=*/1);
+  map = GenerateDomKeyboardLayoutMap();
+  EXPECT_EQ("'", map["KeyQ"]);
+  EXPECT_EQ("<", map["IntlBackslash"]);
+
+  // Reordering to [Dvorak, US] while group 1 remains active preserves group 1
+  // (now US -> KeyQ is "q") even before another modifiers event arrives.
+  ASSERT_NO_FATAL_FAILURE(SetLayoutFromName(*engine_ptr, "us,us", "dvorak,"));
+  map = GenerateDomKeyboardLayoutMap();
+  EXPECT_EQ("q", map["KeyQ"]);
+
+  // [Dvorak, Russian, US]: when active group 1 (Russian) is non-ASCII-capable,
+  // fallback picks the highest-priority ASCII-capable layout (group 0, Dvorak).
+  ASSERT_NO_FATAL_FAILURE(
+      SetLayoutFromName(*engine_ptr, "us,ru,us", "dvorak,,"));
+  engine_ptr->UpdateModifiers(/*depressed=*/0, /*latched=*/0, /*locked=*/0,
+                              /*group=*/1);
+  map = GenerateDomKeyboardLayoutMap();
+  EXPECT_EQ("'", map["KeyQ"]);
+
+  // Switching to group 2 (US) selects US directly.
+  engine_ptr->UpdateModifiers(/*depressed=*/0, /*latched=*/0, /*locked=*/0,
+                              /*group=*/2);
+  map = GenerateDomKeyboardLayoutMap();
+  EXPECT_EQ("q", map["KeyQ"]);
+
+  // Loading a single-group keymap clamps an out-of-range active group to 0.
+  ASSERT_NO_FATAL_FAILURE(SetLayoutFromName(*engine_ptr, "us", "dvorak"));
+  map = GenerateDomKeyboardLayoutMap();
+  EXPECT_EQ("'", map["KeyQ"]);
 }
 
 // Keymaps may map keycodes that have no DomCode, e.g. XKB keycodes above 202

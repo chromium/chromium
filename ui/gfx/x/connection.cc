@@ -887,6 +887,9 @@ void Connection::PreDispatchEvent(const Event& event) {
     setup_.max_keycode = notify->maxKeyCode;
     keyboard_state_->UpdateMapping();
   }
+  if (event.As<Xkb::MapNotifyEvent>()) {
+    keyboard_state_->UpdateMapping();
+  }
 
   // This is adapted from XRRUpdateConfiguration.
   if (auto* configure = event.As<ConfigureNotifyEvent>()) {

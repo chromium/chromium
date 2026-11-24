@@ -155,8 +155,6 @@ component("gtk") {
     "//ui/color:mixers",
     "//ui/display",
     "//ui/events",
-    "//ui/events:dom_keyboard_layout",
-    "//ui/events:dom_keycode_converter",
     "//ui/gfx",
     "//ui/gfx:native_ui_types",
     "//ui/gfx/geometry",

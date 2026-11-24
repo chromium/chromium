@@ -3,7 +3,6 @@ gboolean gdk_keymap_translate_keyboard_state(GdkKeymap* keymap, guint hardware_k
 void gdk_keymap_add_virtual_modifiers(GdkKeymap* keymap, GdkModifierType* state);
 GdkEvent* gdk_event_new(GdkEventType type);
 void gdk_event_free(GdkEvent* event);
-gboolean gdk_keymap_get_entries_for_keycode(GdkKeymap* keymap, guint hardware_keycode, GdkKeymapKey** keys, guint** keyvals, gint* n_entries);
 GdkKeymap* gdk_keymap_get_for_display(GdkDisplay* display);
 int gdk_texture_get_width(GdkTexture* texture);
 int gdk_texture_get_height(GdkTexture* texture);
@@ -31,7 +30,6 @@ GdkSurface* gdk_event_get_surface(GdkEvent* event);
 GdkModifierType gdk_event_get_modifier_state(GdkEvent *event);
 GType gdk_toplevel_get_type(void);
 void gdk_set_allowed_backends(const gchar* backends);
-guint32 gdk_keyval_to_unicode(guint keyval);
 gdouble gdk_screen_get_resolution(GdkScreen *screen);
 guint gdk_unicode_to_keyval(guint32 wc);
 int gdk_display_get_n_monitors(GdkDisplay *display);

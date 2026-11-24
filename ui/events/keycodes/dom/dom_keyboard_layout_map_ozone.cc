@@ -40,25 +40,25 @@ DomKeyboardLayoutMapOzone::DomKeyboardLayoutMapOzone() = default;
 DomKeyboardLayoutMapOzone::~DomKeyboardLayoutMapOzone() = default;
 
 uint32_t DomKeyboardLayoutMapOzone::GetKeyboardLayoutCount() {
-  // There is only one keyboard layout available on Ozone.
-  return 1;
+  ui::KeyboardLayoutEngine* const keyboard_layout_engine =
+      ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
+  return keyboard_layout_engine
+             ? keyboard_layout_engine->GetKeyboardLayoutCount()
+             : 0;
 }
 
 ui::DomKey DomKeyboardLayoutMapOzone::GetDomKeyFromDomCodeForLayout(
     ui::DomCode dom_code,
     uint32_t keyboard_layout_index) {
   CHECK_NE(dom_code, ui::DomCode::NONE, base::NotFatalUntil::M163);
-  CHECK_EQ(keyboard_layout_index, 0U, base::NotFatalUntil::M163);
 
   ui::KeyboardLayoutEngine* const keyboard_layout_engine =
       ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
-
-  ui::DomKey dom_key;
-  ui::KeyboardCode unused_code;
-  if (keyboard_layout_engine->Lookup(dom_code, 0, &dom_key, &unused_code))
-    return dom_key;
-
-  return ui::DomKey::NONE;
+  if (!keyboard_layout_engine) {
+    return ui::DomKey::NONE;
+  }
+  return keyboard_layout_engine->LookupForLayout(dom_code,
+                                                 keyboard_layout_index);
 }
 
 }  // namespace

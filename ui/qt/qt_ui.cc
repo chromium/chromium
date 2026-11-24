@@ -660,11 +660,6 @@ ui::WindowFrameProvider* QtUi::GetWindowFrameProvider(ui::FrameType type,
   return nullptr;
 }
 
-base::flat_map<std::string, std::string> QtUi::GetKeyboardLayoutMap() {
-  return fallback_linux_ui_ ? fallback_linux_ui_->GetKeyboardLayoutMap()
-                            : base::flat_map<std::string, std::string>{};
-}
-
 std::string QtUi::GetCursorThemeName() {
   // This is only used on X11 where QT obtains the cursor theme from XSettings.
   // However, ui/base/x/x11_cursor_loader.cc already handles this.

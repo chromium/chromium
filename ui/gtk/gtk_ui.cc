@@ -19,7 +19,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/span.h"
 #include "base/debug/leak_annotations.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
@@ -49,10 +48,6 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/display/display.h"
-#include "ui/events/keycodes/dom/dom_code.h"
-#include "ui/events/keycodes/dom/dom_keyboard_layout.h"
-#include "ui/events/keycodes/dom/dom_keyboard_layout_manager.h"
-#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/rect.h"
@@ -681,75 +676,6 @@ ui::WindowFrameProvider* GtkUi::GetWindowFrameProvider(ui::FrameType type,
                                                              tiled, maximized);
   }
   return provider.get();
-}
-
-// Mapping from GDK dead keys to corresponding printable character.
-static struct {
-  guint gdk_key;
-  guint16 unicode;
-} kDeadKeyMapping[] = {
-    {GDK_KEY_dead_grave, 0x0060},      {GDK_KEY_dead_acute, 0x0027},
-    {GDK_KEY_dead_circumflex, 0x005e}, {GDK_KEY_dead_tilde, 0x007e},
-    {GDK_KEY_dead_diaeresis, 0x00a8},
-};
-
-base::flat_map<std::string, std::string> GtkUi::GetKeyboardLayoutMap() {
-  GdkDisplay* display = gdk_display_get_default();
-  GdkKeymap* keymap = nullptr;
-  if (!GtkCheckVersion(4)) {
-    keymap = gdk_keymap_get_for_display(display);
-    if (!keymap) {
-      return {};
-    }
-  }
-
-  auto layouts = std::make_unique<ui::DomKeyboardLayoutManager>();
-  auto map = base::flat_map<std::string, std::string>();
-
-  for (const ui::DomCode domcode : ui::kWritingSystemKeyDomCodes) {
-    guint16 keycode = ui::KeycodeConverter::DomCodeToNativeKeycode(domcode);
-    GdkKeymapKey* keys = nullptr;
-    guint* keyvals = nullptr;
-    gint n_entries = 0;
-
-    // The order of the layouts is based on the system default ordering in
-    // Keyboard Settings. The currently active layout does not affect this
-    // order.
-    const bool success =
-        GtkCheckVersion(4) ? gdk_display_map_keycode(display, keycode, &keys,
-                                                     &keyvals, &n_entries)
-                           : gdk_keymap_get_entries_for_keycode(
-                                 keymap, keycode, &keys, &keyvals, &n_entries);
-    if (success) {
-      const size_t num_entries = base::checked_cast<size_t>(n_entries);
-      // SAFETY: On success, GDK returns `keys` and `keyvals` as arrays of
-      // `n_entries` elements each.
-      const auto keys_span = UNSAFE_BUFFERS(base::span(keys, num_entries));
-      const auto keyvals_span =
-          UNSAFE_BUFFERS(base::span(keyvals, num_entries));
-      for (size_t i = 0; i < num_entries; ++i) {
-        // There are 4 entries per layout group, one each for shift level 0..3.
-        // We only care about the unshifted values (level = 0).
-        if (keys_span[i].level == 0) {
-          uint16_t unicode = gdk_keyval_to_unicode(keyvals_span[i]);
-          if (unicode == 0) {
-            for (const auto& i_dead : kDeadKeyMapping) {
-              if (keyvals_span[i] == i_dead.gdk_key) {
-                unicode = i_dead.unicode;
-              }
-            }
-          }
-          if (unicode != 0) {
-            layouts->GetLayout(keys_span[i].group)
-                ->AddKeyMapping(domcode, unicode);
-          }
-        }
-      }
-    }
-    g_free(keys);
-    g_free(keyvals);
-  }
-  return layouts->GetFirstAsciiCapableLayout()->GetMap();
 }
 
 std::string GtkUi::GetCursorThemeName() {

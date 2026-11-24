@@ -6,16 +6,44 @@
 
 #include <xcb/xcb.h>
 
+#include <array>
 #include <cstring>
 
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_internal.h"
 #include "ui/gfx/x/xproto_types.h"
 
 namespace x11 {
+
+namespace {
+
+// Returns the type id of the XKB event with the given `xkbType`, or 0 if it is
+// unknown.
+uint8_t GetXkbEventTypeId(uint8_t xkb_type) {
+  // Indexed by each event's `opcode`, which is its `xkbType`.
+  constexpr auto kTypeIds = std::to_array<uint8_t>({
+      Xkb::NewKeyboardNotifyEvent::type_id,
+      Xkb::MapNotifyEvent::type_id,
+      Xkb::StateNotifyEvent::type_id,
+      Xkb::ControlsNotifyEvent::type_id,
+      Xkb::IndicatorStateNotifyEvent::type_id,
+      Xkb::IndicatorMapNotifyEvent::type_id,
+      Xkb::NamesNotifyEvent::type_id,
+      Xkb::CompatMapNotifyEvent::type_id,
+      Xkb::BellNotifyEvent::type_id,
+      Xkb::ActionMessageEvent::type_id,
+      Xkb::AccessXNotifyEvent::type_id,
+      Xkb::ExtensionDeviceNotifyEvent::type_id,
+  });
+  static_assert(Xkb::ExtensionDeviceNotifyEvent::opcode + 1 == kTypeIds.size());
+  return xkb_type < kTypeIds.size() ? kTypeIds[xkb_type] : 0;
+}
+
+}  // namespace
 
 Event::Event() = default;
 
@@ -39,6 +67,13 @@ Event::Event(scoped_refptr<UnsizedRefCountedMemory> event_bytes,
     UNSAFE_TODO(memmove(&ge->full_sequence, &ge[1], extended_length));
   }
   connection->GetEventTypeAndOp(event_bytes->bytes(), &type_id_, &opcode_);
+  // XKB sends all of its events with the extension's single event code and
+  // tells them apart by the `xkbType` byte, so GetEventTypeAndOp() reports
+  // every XKB event as an Xkb::NewKeyboardNotifyEvent.
+  if (type_id_ == Xkb::NewKeyboardNotifyEvent::type_id) {
+    opcode_ = xcb_event->pad0;
+    type_id_ = GetXkbEventTypeId(opcode_);
+  }
   if (type_id_) {
     raw_event_ = event_bytes;
   }

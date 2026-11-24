@@ -38,6 +38,7 @@
 #include "ui/ozone/platform/x11/linux_ui_delegate_x11.h"
 #include "ui/ozone/platform/x11/x11_clipboard_ozone.h"
 #include "ui/ozone/platform/x11/x11_keyboard_hook.h"
+#include "ui/ozone/platform/x11/x11_keyboard_layout_engine.h"
 #include "ui/ozone/platform/x11/x11_menu_utils.h"
 #include "ui/ozone/platform/x11/x11_screen_ozone.h"
 #include "ui/ozone/platform/x11/x11_surface_factory.h"
@@ -258,8 +259,8 @@ class OzonePlatformX11 : public OzonePlatform,
     cursor_factory_ = std::make_unique<X11CursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
 
-    // TODO(crbug.com/41472924): Support XKB.
-    keyboard_layout_engine_ = std::make_unique<StubKeyboardLayoutEngine>();
+    // TODO(crbug.com/41472924): Support XkbKeyboardLayoutEngine for Lookup().
+    keyboard_layout_engine_ = std::make_unique<X11KeyboardLayoutEngine>();
     KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(
         keyboard_layout_engine_.get());
 

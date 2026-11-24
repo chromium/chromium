@@ -169,9 +169,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
                                            int size,
                                            float scale) const = 0;
 
-  // Returns a map of KeyboardEvent code to KeyboardEvent key values.
-  virtual base::flat_map<std::string, std::string> GetKeyboardLayoutMap() = 0;
-
 #if BUILDFLAG(ENABLE_PRINTING)
   virtual std::unique_ptr<printing::PrintDialogLinuxInterface>
   CreatePrintDialog(printing::PrintingContextLinux* context) = 0;

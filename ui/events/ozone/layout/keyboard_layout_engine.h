@@ -26,9 +26,15 @@ enum class DomCode : uint32_t;
 // and optionally Windows key code) for a physical key press (DomCode
 // and modifier flags).
 //
-// This interface does not expose individual layouts because it must support
-// platforms that only provide for one active system layout, and/or platforms
-// where layouts have no accessible representation.
+// Key mapping via Lookup() uses only the current layout, because this
+// interface must support platforms that only provide for one active system
+// layout, and/or platforms where layouts have no accessible representation.
+// GetKeyboardLayoutCount() and LookupForLayout() additionally expose other
+// configured layouts, but only for generating the keyboard layout map
+// (navigator.keyboard.getLayoutMap()), which falls back to an ASCII-capable
+// layout when the current one is not. Platforms with a single accessible
+// layout keep the default implementations, which expose only the current
+// layout via Lookup().
 class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) KeyboardLayoutEngine {
  public:
   KeyboardLayoutEngine() {}
@@ -98,6 +104,15 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) KeyboardLayoutEngine {
   // keymap is active.
   virtual std::optional<uint32_t> LookupKeysym(DomCode dom_code,
                                                int event_flags) const;
+
+  // Returns the number of layouts available for keyboard layout map
+  // generation, ordered with the active layout at index 0 followed by
+  // fallback layouts in system priority order.
+  virtual uint32_t GetKeyboardLayoutCount() const;
+
+  // Returns the unmodified DomKey for `dom_code` in `layout_index` (where
+  // `layout_index < GetKeyboardLayoutCount()`).
+  virtual DomKey LookupForLayout(DomCode dom_code, uint32_t layout_index) const;
 
   // Tests may need to wait for the keyboard layout to be fully initialised.
   // The implementation should run |closure| when it is ready to handle calls to

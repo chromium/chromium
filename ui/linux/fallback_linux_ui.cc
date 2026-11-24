@@ -8,7 +8,6 @@
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -159,11 +158,6 @@ bool FallbackLinuxUi::PrimaryPasteEnabled() const {
 
 int FallbackLinuxUi::GetWindowDragThresholdPx() const {
   return kDefaultWindowDragThreshold;
-}
-
-base::flat_map<std::string, std::string>
-FallbackLinuxUi::GetKeyboardLayoutMap() {
-  return ui::GenerateDomKeyboardLayoutMap();
 }
 
 std::string FallbackLinuxUi::GetCursorThemeName() {
