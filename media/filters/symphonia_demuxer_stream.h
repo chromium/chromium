@@ -16,6 +16,7 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
 #include "media/base/media_track.h"
+#include "media/base/timestamp_constants.h"
 
 namespace media {
 
@@ -65,6 +66,15 @@ class MEDIA_EXPORT SymphoniaDemuxerStream : public DemuxerStream {
 
   bool is_enabled() const { return is_enabled_; }
 
+  // Returns the duration estimated from the packets enqueued so far, or
+  // `kNoTimestamp` if none have been. Like `FFmpegDemuxerStream::duration()`,
+  // this is the latest packet's start time, ignoring packets that are entirely
+  // discard padding.
+  base::TimeDelta estimated_duration() const { return estimated_duration_; }
+
+  // Sets the value returned by `liveness()`. Defaults to `kRecorded`.
+  void set_liveness(StreamLiveness liveness) { liveness_ = liveness; }
+
   // Enables or disables the stream. Disabling drops all queued packets and
   // satisfies any pending read with an end-of-stream buffer. Packets enqueued
   // while disabled are dropped. End-of-stream and aborted state are kept.
@@ -106,6 +116,9 @@ class MEDIA_EXPORT SymphoniaDemuxerStream : public DemuxerStream {
   // Satisfies the pending read with a single end-of-stream buffer.
   void SatisfyPendingReadWithEndOfStream();
 
+  // Updates `estimated_duration_` for a newly enqueued `buffer`.
+  void UpdateEstimatedDuration(const DecoderBuffer& buffer);
+
   const uint32_t track_id_;
   const MediaTrack::Id media_track_id_;
   const AudioDecoderConfig audio_config_;
@@ -119,6 +132,8 @@ class MEDIA_EXPORT SymphoniaDemuxerStream : public DemuxerStream {
   bool is_enabled_ = true;
   bool stopped_ = false;
   bool aborted_ = false;
+  StreamLiveness liveness_ = StreamLiveness::kRecorded;
+  base::TimeDelta estimated_duration_ = kNoTimestamp;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

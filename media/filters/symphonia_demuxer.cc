@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "media/base/audio_decoder_config.h"
@@ -363,6 +364,28 @@ void SymphoniaDemuxer::OnInitializeDone(InitResultOrError result) {
         .Run(PipelineStatus(DEMUXER_ERROR_NO_SUPPORTED_STREAMS,
                             "No supported audio tracks found"));
     return;
+  }
+
+  // Like `FFmpegDemuxer` for media without a timeline offset, report liveness
+  // as recorded only when the duration is known.
+  const bool duration_known = duration_ != kInfiniteDuration;
+  for (const auto& stream : streams_) {
+    stream->set_liveness(duration_known ? StreamLiveness::kRecorded
+                                        : StreamLiveness::kUnknown);
+  }
+
+  // Help the data source size its buffers. Symphonia does not report container
+  // or stream bitrates, so estimate one from the file size, as `FFmpegDemuxer`
+  // does when FFmpeg reports none.
+  int64_t file_size = 0;
+  if (duration_known && duration_.is_positive() &&
+      data_source_->GetSize(&file_size) && file_size > 0) {
+    // Multiply by `ToHz()` (1 / seconds) in `double` before scaling by 8, so
+    // `file_size * 8` cannot overflow `int64_t` on huge files.
+    const int bitrate = base::ClampRound(file_size * duration_.ToHz() * 8);
+    if (bitrate > 0) {
+      data_source_->SetBitrate(bitrate);
+    }
   }
 
   // Publish the tracks, complete initialization, and start prefetching
@@ -745,6 +768,15 @@ void SymphoniaDemuxer::OnReadPacketDone(
   }
 
   (*it)->EnqueueBuffer(std::move(buffer));
+
+  // Like `FFmpegDemuxer`, raise a known duration if the stream turns out to be
+  // longer. An unknown duration is set at end of stream instead.
+  const base::TimeDelta estimate = (*it)->estimated_duration();
+  if (duration_ != kInfiniteDuration && estimate != kNoTimestamp &&
+      estimate > duration_) {
+    duration_ = estimate;
+    host_->SetDuration(duration_);
+  }
 
   ReadFrameIfNeeded();
 }

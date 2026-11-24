@@ -379,3 +379,40 @@ fn test_source_handle_unconnected_and_reset() {
     expect_true!(res2.is_err());
     expect_eq!(res2.unwrap_err().kind(), std::io::ErrorKind::NotConnected);
 }
+
+#[gtest(SymphoniaDemuxerBridgeTest, TrimmedPacketDurWorksAroundMp3Bug)]
+fn test_trimmed_packet_dur_works_around_mp3_bug() {
+    use symphonia::core::packet::PacketBuilder;
+    use symphonia::core::units::{Duration, Timestamp};
+    use symphonia_demuxer_bridge::trimmed_packet_dur;
+
+    let partial = PacketBuilder::new()
+        .track_id(0)
+        .pts(Timestamp::new(-576))
+        .trimmed_dur(Duration::new(1152), Some(Timestamp::new(1000)))
+        .data(vec![0u8; 4])
+        .build();
+    // MP1/MP2/MP3 subtract `trim_start` (576) from the untrimmed `dur` (1152).
+    expect_eq!(trimmed_packet_dur("mp1", &partial), 576);
+    expect_eq!(trimmed_packet_dur("mp2", &partial), 576);
+    expect_eq!(trimmed_packet_dur("mp3", &partial), 576);
+
+    // Trailing MP3 padding packet past `end_pts` clamps to 0.
+    let all_padding = PacketBuilder::new()
+        .track_id(0)
+        .pts(Timestamp::new(1500))
+        .trimmed_dur(Duration::new(1152), Some(Timestamp::new(1000)))
+        .data(vec![0u8; 4])
+        .build();
+    expect_eq!(trimmed_packet_dur("mp3", &all_padding), 0);
+
+    // Other containers already exclude trim from `packet.dur`, so leave as-is.
+    let ogg_packet = PacketBuilder::new()
+        .track_id(0)
+        .pts(Timestamp::new(0))
+        .dur(Duration::new(384))
+        .trim_end(Duration::new(576))
+        .data(vec![0u8; 4])
+        .build();
+    expect_eq!(trimmed_packet_dur("ogg", &ogg_packet), 384);
+}

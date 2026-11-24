@@ -48,7 +48,7 @@ DemuxerStream::Type SymphoniaDemuxerStream::type() const {
 }
 
 StreamLiveness SymphoniaDemuxerStream::liveness() const {
-  return StreamLiveness::kRecorded;
+  return liveness_;
 }
 
 void SymphoniaDemuxerStream::Read(uint32_t count, ReadCB read_cb) {
@@ -117,8 +117,24 @@ void SymphoniaDemuxerStream::EnqueueBuffer(
   if (stopped_ || aborted_ || !is_enabled_) {
     return;
   }
+  UpdateEstimatedDuration(*buffer);
   buffer_queue_.Push(std::move(buffer));
   SatisfyPendingRead();
+}
+
+void SymphoniaDemuxerStream::UpdateEstimatedDuration(
+    const DecoderBuffer& buffer) {
+  // Unlike FFmpeg's `AVPacket`, Symphonia's packet timestamps already start at
+  // `-delay` for leading trim, and `buffer.duration()` excludes `trim_start`
+  // and `trim_end` (leaving zero duration on all-padding packets).
+  const auto [start_padding, end_padding] =
+      buffer.discard_padding().value_or(DecoderBuffer::DiscardPadding());
+  const bool has_padding =
+      start_padding.is_positive() || end_padding.is_positive();
+  const bool is_padding = has_padding && buffer.duration().is_zero();
+  if (!is_padding && buffer.timestamp() > estimated_duration_) {
+    estimated_duration_ = buffer.timestamp();
+  }
 }
 
 void SymphoniaDemuxerStream::SetEndOfStream() {

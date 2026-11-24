@@ -43,6 +43,7 @@ use symphonia::core::formats::probe::Hint;
 use symphonia::core::formats::{FormatOptions, FormatReader, SeekMode, SeekTo, Track};
 use symphonia::core::io::{MediaSource, MediaSourceStream, MediaSourceStreamOptions};
 use symphonia::core::meta::MetadataOptions;
+use symphonia::core::packet::Packet;
 use symphonia::core::units::{Time, TimeBase, Timestamp};
 
 #[cxx::bridge(namespace = "media")]
@@ -442,6 +443,24 @@ pub fn calc_duration_us(timebase: Option<TimeBase>, frames: u64) -> i64 {
     calc_timestamp_us(timebase, Timestamp::new(frames as i64))
 }
 
+/// Returns a packet's valid (post-trim) duration in `TimeBase` units.
+///
+/// Symphonia's `Packet` contract requires `packet.dur` to exclude `trim_start`
+/// and `trim_end` (as Ogg does), but Symphonia 0.6's
+/// `PacketBuilder::trimmed_dur()` (used by the MP1/MP2/MP3 reader) subtracts
+/// `self.trim_*` (0) instead of the newly computed trim values, leaving
+/// `packet.dur` equal to the untrimmed block duration.
+#[inline]
+pub fn trimmed_packet_dur(container_name: &str, packet: &Packet) -> u64 {
+    let dur = match container_name {
+        "mp1" | "mp2" | "mp3" => {
+            packet.dur.saturating_sub(packet.trim_start).saturating_sub(packet.trim_end)
+        }
+        _ => packet.dur,
+    };
+    dur.get()
+}
+
 /// Converts a Symphonia `Track` into `ffi::SymphoniaTrackInfo`.
 pub fn convert_track_info(track: &Track) -> ffi::SymphoniaTrackInfo {
     let (time_base_num, time_base_den) =
@@ -676,7 +695,8 @@ impl SymphoniaDemuxerBridge {
                 } else {
                     calc_timestamp_us(timebase, packet.dts)
                 };
-                let duration_us = calc_duration_us(timebase, packet.dur.get());
+                let duration_us =
+                    calc_duration_us(timebase, trimmed_packet_dur(&self.container_name, &packet));
                 let trim_start_us = calc_duration_us(timebase, packet.trim_start.get());
                 let trim_end_us = calc_duration_us(timebase, packet.trim_end.get());
 

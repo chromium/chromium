@@ -4,6 +4,7 @@
 
 #include "media/filters/symphonia_demuxer.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -72,6 +73,16 @@ constexpr base::TimeDelta kSeekTolerance = base::Milliseconds(50);
 class UnknownSizeFileDataSource : public FileDataSource {
  public:
   bool GetSize(int64_t* size_out) override { return false; }
+};
+
+// A `FileDataSource` that records the bitrate the demuxer reports.
+class BitrateRecordingFileDataSource : public FileDataSource {
+ public:
+  void SetBitrate(int bitrate) override { bitrate_ = bitrate; }
+  int bitrate() const { return bitrate_; }
+
+ private:
+  int bitrate_ = 0;
 };
 
 // A `FileDataSource` that can hold reads until `Abort()` or `Stop()`, like a
@@ -935,6 +946,68 @@ TEST_F(SymphoniaDemuxerTest, UnknownDurationIsSetAtEndOfStream) {
   EXPECT_EQ(status.Get(), PIPELINE_OK);
 
   ExpectReadsAllPackets();
+}
+
+TEST_F(SymphoniaDemuxerTest, ShortKnownDurationIsRaisedAsPacketsArrive) {
+  std::string flac;
+  ASSERT_TRUE(base::ReadFileToString(GetTestDataFilePath("sfx.flac"), &flac));
+  ASSERT_GT(flac.size(), 26u);
+  ASSERT_EQ(flac.substr(0, 4), "fLaC");
+
+  // Patch the 36-bit `total_samples` field at the end of bytes [18..26] in the
+  // STREAMINFO block down from 12,719 (~288 ms) to 100 (~2.27 ms), so
+  // `Initialize()` reports a short finite duration that reading packets raises.
+  flac[21] &= 0xF0;
+  flac[22] = 0;
+  flac[23] = 0;
+  flac[24] = 0;
+  flac[25] = 100;
+  CreateDemuxerWithContents(flac);
+
+  std::vector<base::TimeDelta> reported_durations;
+  EXPECT_CALL(host_, SetDuration(_))
+      .WillRepeatedly([&](base::TimeDelta duration) {
+        reported_durations.push_back(duration);
+      });
+
+  base::test::TestFuture<PipelineStatus> status;
+  demuxer_->Initialize(&host_, status.GetCallback());
+  EXPECT_EQ(status.Get(), PIPELINE_OK);
+
+  ExpectReadsAllPackets();
+
+  // Initial duration is ~2.27 ms (100 / 44,100 s), then packets at 4,608 and
+  // 9,216 samples raise it past 200 ms monotonically.
+  ASSERT_GE(reported_durations.size(), 2u);
+  EXPECT_LT(reported_durations.front(), base::Milliseconds(5));
+  EXPECT_GT(reported_durations.back(), base::Milliseconds(200));
+  EXPECT_TRUE(std::ranges::is_sorted(reported_durations));
+}
+
+TEST_F(SymphoniaDemuxerTest, UnknownDurationHasUnknownLiveness) {
+  auto data_source = std::make_unique<UnknownSizeFileDataSource>();
+  ASSERT_TRUE(
+      data_source->Initialize(GetTestDataFilePath("silent-section.mp3")));
+  CreateDemuxerForDataSource(std::move(data_source));
+  InitializeDemuxer();
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  EXPECT_EQ(stream->liveness(), StreamLiveness::kUnknown);
+}
+
+TEST_F(SymphoniaDemuxerTest, KnownDurationIsRecordedAndSetsBitrate) {
+  auto data_source = std::make_unique<BitrateRecordingFileDataSource>();
+  ASSERT_TRUE(data_source->Initialize(GetTestDataFilePath("sfx_s16le.wav")));
+  BitrateRecordingFileDataSource* data_source_ptr = data_source.get();
+  CreateDemuxerForDataSource(std::move(data_source));
+  InitializeDemuxer();
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  EXPECT_EQ(stream->liveness(), StreamLiveness::kRecorded);
+
+  // sfx_s16le.wav is 44.1 kHz mono 16-bit PCM, so about 705.6 kbps.
+  EXPECT_GT(data_source_ptr->bitrate(), 700'000);
+  EXPECT_LT(data_source_ptr->bitrate(), 720'000);
 }
 
 TEST_F(SymphoniaDemuxerTest, ConstructedOnMainThreadAndUsedOnMediaSequence) {
