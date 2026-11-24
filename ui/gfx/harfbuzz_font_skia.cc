@@ -9,6 +9,7 @@
 
 #include <limits>
 #include <map>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
@@ -275,11 +276,10 @@ class TypefaceData {
     DCHECK(face_);
   }
 
-  TypefaceData(TypefaceData&& data) {
-    face_ = data.face_;
-    glyphs_ = std::move(data.glyphs_);
-    data.face_ = nullptr;
-  }
+  TypefaceData(TypefaceData&& data)
+      : glyphs_(std::move(data.glyphs_)),
+        face_(std::exchange(data.face_, nullptr)),
+        sk_typeface_(std::move(data.sk_typeface_)) {}
 
   TypefaceData(const TypefaceData&) = delete;
   TypefaceData& operator=(const TypefaceData&) = delete;

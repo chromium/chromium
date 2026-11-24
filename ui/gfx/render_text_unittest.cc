@@ -19,6 +19,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/i18n/base_i18n_switches.h"
@@ -43,11 +44,15 @@
 #include "build/build_config.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
+#include "third_party/skia/include/core/SkGraphics.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
@@ -105,6 +110,18 @@ enum {
 };
 
 using FontSpan = std::pair<Font, Range>;
+
+// Returns a copy of |typeface| that has its own unique ID and that nothing
+// else references.
+sk_sp<SkTypeface> CloneTypeface(SkTypeface* typeface) {
+  int ttc_index = 0;
+  std::unique_ptr<SkStreamAsset> stream = typeface->openStream(&ttc_index);
+  CHECK(stream);
+  sk_sp<SkTypeface> clone =
+      skia::DefaultFontMgr()->makeFromStream(std::move(stream), ttc_index);
+  CHECK(clone);
+  return clone;
+}
 
 bool IsFontsSmoothingEnabled() {
 #if BUILDFLAG(IS_WIN)
@@ -492,6 +509,13 @@ class RenderTextTest : public testing::Test {
   internal::TextRunList* GetHarfBuzzRunList() {
     test_api()->EnsureLayout();
     return test_api()->GetHarfBuzzRunList();
+  }
+
+  void ShapeRunsWithFont(
+      std::u16string_view text,
+      const internal::TextRunHarfBuzz::FontParams& font_params,
+      std::vector<internal::TextRunHarfBuzz*>* in_out_runs) {
+    GetRenderText()->ShapeRunsWithFont(text, font_params, in_out_runs);
   }
 
   // For testing purposes, returns which fonts were chosen for which parts of
@@ -7478,6 +7502,32 @@ TEST_F(RenderTextTest, HarfBuzz_ShapeRunsWithMultipleFonts) {
     mapped_fonts.push_back(font_span.first.GetFontName());
   EXPECT_EQ(expected_fonts, mapped_fonts);
 #endif
+}
+
+// The typeface cache must keep a reference to the typeface, because the cached
+// hb_face_t points at it.
+TEST_F(RenderTextTest, HarfBuzz_TypefaceCacheRetainsTypeface) {
+  Font font;
+  sk_sp<SkTypeface> fresh_typeface =
+      CloneTypeface(font.platform_font()->GetNativeSkTypeface().get());
+  ASSERT_TRUE(fresh_typeface->unique());
+
+  {
+    // Use a string longer than ShapeRunCache's kMaxRunLengthToCache (25) so
+    // ShapeRunCache does not retain |fresh_typeface|; only TypefaceCache does.
+    const std::u16string text(30, u'a');
+    internal::TextRunHarfBuzz run(font);
+    run.range = Range(0, text.length());
+    internal::TextRunHarfBuzz::FontParams font_params(font);
+    font_params.skia_face = fresh_typeface;
+    std::vector<internal::TextRunHarfBuzz*> runs = {&run};
+    ShapeRunsWithFont(text, font_params, &runs);
+  }
+
+  // Purge Skia's strike cache so only TypefaceCache retains |fresh_typeface|.
+  SkGraphics::PurgeFontCache();
+
+  EXPECT_FALSE(fresh_typeface->unique());
 }
 
 TEST_F(RenderTextTest, GlyphBounds) {
