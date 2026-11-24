@@ -9,14 +9,22 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/ozone_buildflags.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -218,5 +226,55 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest,
   RequestToLockPointer(/*user_gesture=*/true,
                        /*last_unlocked_by_target=*/false);
   EXPECT_EQ(kTestOrigin,
+            GetExclusiveAccessManager()->GetExclusiveAccessBubbleOrigin());
+}
+
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest,
+                       GetOriginForPointerLockBubbleDuringPendingNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL committed_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL pending_url("https://pending.example/title2.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), committed_url));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::TestNavigationManager navigation_manager(web_contents, pending_url);
+  web_contents->GetController().LoadURL(pending_url, content::Referrer(),
+                                        ui::PAGE_TRANSITION_TYPED,
+                                        std::string());
+  ASSERT_TRUE(navigation_manager.WaitForRequestStart());
+  ASSERT_FALSE(navigation_manager.was_committed());
+  ASSERT_EQ(pending_url, web_contents->GetVisibleURL());
+  ASSERT_EQ(committed_url, web_contents->GetLastCommittedURL());
+
+  RequestToLockPointer(/*user_gesture=*/false,
+                       /*last_unlocked_by_target=*/true);
+  ASSERT_TRUE(GetExclusiveAccessManager()
+                  ->pointer_lock_controller()
+                  ->IsPointerLocked());
+  EXPECT_EQ(url::Origin::Create(committed_url),
+            GetExclusiveAccessManager()->GetExclusiveAccessBubbleOrigin());
+}
+
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest,
+                       GetOriginForPointerLockBubbleInAboutBlankPopup) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL opener_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
+
+  content::WebContents* opener =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::WebContentsAddedObserver popup_observer;
+  ASSERT_TRUE(content::ExecJs(opener, "window.open('about:blank', '_blank');"));
+  content::WebContents* popup = popup_observer.GetWebContents();
+  ASSERT_TRUE(popup);
+  EXPECT_TRUE(content::WaitForLoadStop(popup));
+  ASSERT_EQ(popup, browser()->GetTabStripModel()->GetActiveWebContents());
+  ASSERT_EQ(GURL(url::kAboutBlankURL), popup->GetLastCommittedURL());
+
+  RequestToLockPointer(/*user_gesture=*/true,
+                       /*last_unlocked_by_target=*/false);
+  EXPECT_EQ(url::Origin::Create(opener_url),
             GetExclusiveAccessManager()->GetExclusiveAccessBubbleOrigin());
 }

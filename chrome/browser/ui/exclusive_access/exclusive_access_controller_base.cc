@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 using content::WebContents;
@@ -19,8 +20,15 @@ ExclusiveAccessControllerBase::~ExclusiveAccessControllerBase() = default;
 
 url::Origin ExclusiveAccessControllerBase::GetOriginForExclusiveAccessBubble()
     const {
-  return url::Origin::Create(
-      exclusive_access_tab() ? exclusive_access_tab()->GetURL() : GURL());
+  if (!exclusive_access_tab()) {
+    return url::Origin();
+  }
+  const url::Origin& origin =
+      exclusive_access_tab()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  if (!origin.opaque()) {
+    return origin;
+  }
+  return url::Origin::Create(exclusive_access_tab()->GetLastCommittedURL());
 }
 
 void ExclusiveAccessControllerBase::OnTabDeactivated(
