@@ -1,7 +1,7 @@
 Name: Core Kotlin Extensions
 Short Name: core-ktx
-URL: https://androidx.dev/snapshots/latest/artifacts/repository/androidx/core/core-ktx/1.20.0-SNAPSHOT/maven-metadata.xml
-Version: 1.20.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/latest/artifacts/repository/androidx/core/core-ktx/1.21.0-SNAPSHOT/maven-metadata.xml
+Version: 1.21.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Kotlin extensions for 'core' artifact
 
-See also: https://developer.android.com/jetpack/androidx/releases/core#1.20.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/core#1.21.0-SNAPSHOT
 
 
 Local Modifications:

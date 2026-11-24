@@ -1,7 +1,7 @@
 Name: Core
 Short Name: core
-URL: https://androidx.dev/snapshots/latest/artifacts/repository/androidx/core/core/1.20.0-SNAPSHOT/maven-metadata.xml
-Version: 1.20.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/latest/artifacts/repository/androidx/core/core/1.21.0-SNAPSHOT/maven-metadata.xml
+Version: 1.21.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Provides backward-compatible implementations of Android platform APIs and features.
 
-See also: https://developer.android.com/jetpack/androidx/releases/core#1.20.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/core#1.21.0-SNAPSHOT
 
 
 Local Modifications:
