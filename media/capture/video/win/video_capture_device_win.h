@@ -185,9 +185,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceWin : public VideoCaptureDevice,
   // released. Until then that thread may call into |input_sink_pin_|. It can't
   // reach |this| any more, because the destructor detaches it from the pin
   // first (see SinkFilter::Shutdown()). Therefore:
-  // - |capture_filter_| must be destroyed after everything else that refers to
-  //   the capture filter, so that its destruction releases the last reference
-  //   and joins the thread.
+  // - |capture_filter_| must be released after everything else that refers to
+  //   the capture filter, so that releasing it drops the last reference and
+  //   joins the thread. The destructor does this explicitly, and keeps the
+  //   sink filter alive if the capture filter is still referenced elsewhere.
   // - |sink_filter_| and |input_sink_pin_| must be destroyed after
   //   |capture_filter_|, so the thread never calls into a freed pin.
   // - The graph members must be destroyed after |capture_filter_|, because the
@@ -201,7 +202,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceWin : public VideoCaptureDevice,
   Microsoft::WRL::ComPtr<ICaptureGraphBuilder2> capture_graph_builder_;
   Microsoft::WRL::ComPtr<IMediaControl> media_control_;
 
-  const Microsoft::WRL::ComPtr<IBaseFilter> capture_filter_;
+  Microsoft::WRL::ComPtr<IBaseFilter> capture_filter_;
   Microsoft::WRL::ComPtr<IPin> output_capture_pin_;
   Microsoft::WRL::ComPtr<ICameraControl> camera_control_;
   Microsoft::WRL::ComPtr<IVideoProcAmp> video_control_;

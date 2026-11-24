@@ -5,6 +5,8 @@
 
 #include "media/capture/video/win/pin_base_win.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
@@ -121,6 +123,7 @@ PinBase::PinBase(IBaseFilter* owner) : owner_(owner) {
 }
 
 void PinBase::SetOwner(IBaseFilter* owner) {
+  base::AutoLock lock(lock_);
   owner_ = owner;
 }
 
@@ -135,6 +138,7 @@ HRESULT PinBase::ReceiveConnection(IPin* connector,
   if (!connector || !media_type) {
     return E_POINTER;
   }
+  base::AutoLock lock(lock_);
   if (connected_pin_) {
     return VFW_E_ALREADY_CONNECTED;
   }
@@ -147,36 +151,47 @@ HRESULT PinBase::ReceiveConnection(IPin* connector,
 }
 
 HRESULT PinBase::Disconnect() {
-  if (!connected_pin_.Get())
-    return S_FALSE;
-
-  connected_pin_.Reset();
+  Microsoft::WRL::ComPtr<IPin> old_pin;
+  {
+    base::AutoLock lock(lock_);
+    if (!connected_pin_) {
+      return S_FALSE;
+    }
+    current_media_type_ = {};
+    old_pin = std::move(connected_pin_);
+  }
+  old_pin.Reset();
   return S_OK;
 }
 
 HRESULT PinBase::ConnectedTo(IPin** pin) {
+  base::AutoLock lock(lock_);
   *pin = connected_pin_.Get();
-  if (!connected_pin_.Get())
+  if (!connected_pin_) {
     return VFW_E_NOT_CONNECTED;
+  }
 
-  connected_pin_.Get()->AddRef();
+  connected_pin_->AddRef();
   return S_OK;
 }
 
 HRESULT PinBase::ConnectionMediaType(AM_MEDIA_TYPE* media_type) {
-  if (!connected_pin_.Get())
+  base::AutoLock lock(lock_);
+  if (!connected_pin_) {
     return VFW_E_NOT_CONNECTED;
+  }
   *media_type = current_media_type_;
   return S_OK;
 }
 
 HRESULT PinBase::QueryPinInfo(PIN_INFO* info) {
   info->dir = PINDIR_INPUT;
-  info->pFilter = owner_;
-  if (owner_)
-    owner_->AddRef();
   info->achName[0] = L'\0';
-
+  base::AutoLock lock(lock_);
+  info->pFilter = owner_;
+  if (owner_) {
+    owner_->AddRef();
+  }
   return S_OK;
 }
 

@@ -16,7 +16,7 @@ namespace media {
 
 // Implement IEnumPins.
 class PinEnumerator final : public IEnumPins,
-                            public base::RefCounted<PinEnumerator> {
+                            public base::RefCountedThreadSafe<PinEnumerator> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
@@ -33,12 +33,12 @@ class PinEnumerator final : public IEnumPins,
   }
 
   IFACEMETHODIMP_(ULONG) AddRef() override {
-    base::RefCounted<PinEnumerator>::AddRef();
+    base::RefCountedThreadSafe<PinEnumerator>::AddRef();
     return 1;
   }
 
   IFACEMETHODIMP_(ULONG) Release() override {
-    base::RefCounted<PinEnumerator>::Release();
+    base::RefCountedThreadSafe<PinEnumerator>::Release();
     return 1;
   }
 
@@ -80,7 +80,7 @@ class PinEnumerator final : public IEnumPins,
   }
 
  private:
-  friend class base::RefCounted<PinEnumerator>;
+  friend class base::RefCountedThreadSafe<PinEnumerator>;
   ~PinEnumerator() = default;
 
   scoped_refptr<FilterBase> filter_;
@@ -102,15 +102,22 @@ HRESULT FilterBase::FindPin(LPCWSTR id, IPin** pin) {
 }
 
 HRESULT FilterBase::QueryFilterInfo(FILTER_INFO* info) {
-  info->pGraph = owning_graph_.Get();
   info->achName[0] = L'\0';
-  if (info->pGraph)
+  base::AutoLock lock(lock_);
+  info->pGraph = owning_graph_.Get();
+  if (info->pGraph) {
     info->pGraph->AddRef();
+  }
   return S_OK;
 }
 
 HRESULT FilterBase::JoinFilterGraph(IFilterGraph* graph, LPCWSTR name) {
-  owning_graph_ = graph;
+  // Take and drop the graph references outside |lock_|.
+  Microsoft::WRL::ComPtr<IFilterGraph> other_graph(graph);
+  {
+    base::AutoLock lock(lock_);
+    owning_graph_.Swap(other_graph);
+  }
   return S_OK;
 }
 
@@ -120,21 +127,25 @@ HRESULT FilterBase::QueryVendorInfo(LPWSTR* pVendorInfo) {
 
 // Implement IMediaFilter.
 HRESULT FilterBase::Stop() {
+  base::AutoLock lock(lock_);
   state_ = State_Stopped;
   return S_OK;
 }
 
 HRESULT FilterBase::Pause() {
+  base::AutoLock lock(lock_);
   state_ = State_Paused;
   return S_OK;
 }
 
 HRESULT FilterBase::Run(REFERENCE_TIME start) {
+  base::AutoLock lock(lock_);
   state_ = State_Running;
   return S_OK;
 }
 
 HRESULT FilterBase::GetState(DWORD msec_timeout, FILTER_STATE* state) {
+  base::AutoLock lock(lock_);
   *state = state_;
   return S_OK;
 }
@@ -166,12 +177,12 @@ HRESULT FilterBase::QueryInterface(REFIID id, void** object_ptr) {
 }
 
 ULONG STDMETHODCALLTYPE FilterBase::AddRef() {
-  base::RefCounted<FilterBase>::AddRef();
+  base::RefCountedThreadSafe<FilterBase>::AddRef();
   return 1;
 }
 
 ULONG STDMETHODCALLTYPE FilterBase::Release() {
-  base::RefCounted<FilterBase>::Release();
+  base::RefCountedThreadSafe<FilterBase>::Release();
   return 1;
 }
 

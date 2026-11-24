@@ -26,6 +26,10 @@ void SinkFilter::Shutdown() {
   input_pin_->Shutdown();
 }
 
+void SinkFilter::DetachPinOwner() {
+  input_pin_->SetOwner(nullptr);
+}
+
 size_t SinkFilter::NoOfPins() {
   return 1;
 }

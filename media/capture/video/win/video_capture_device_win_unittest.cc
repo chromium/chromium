@@ -406,8 +406,23 @@ class ClosureSimpleThread final : public base::SimpleThread {
 
 struct LateDeliveryResults {
   bool filter_destroyed = false;
+  HRESULT pin_info_hr = E_UNEXPECTED;
+  HRESULT filter_state_hr = E_UNEXPECTED;
   HRESULT delivery_hr = E_UNEXPECTED;
 };
+
+// What a streaming thread might do with an input pin it still points to: query
+// the pin and its filter, then deliver a sample.
+void UseInputPinLate(IPin* pin, LateDeliveryResults* results) {
+  PIN_INFO pin_info = {};
+  results->pin_info_hr = pin->QueryPinInfo(&pin_info);
+  if (SUCCEEDED(results->pin_info_hr) && pin_info.pFilter) {
+    FILTER_STATE state;
+    results->filter_state_hr = pin_info.pFilter->GetState(0, &state);
+    pin_info.pFilter->Release();
+  }
+  results->delivery_hr = DeliverSampleTo(pin);
+}
 
 // Models a DirectShow source filter whose Stop() returns without joining its
 // streaming thread, and which only joins that thread from its destructor, i.e.
@@ -443,13 +458,13 @@ class FakeCaptureFilter final
     IPin* raw_input_pin = output_pin_->connected_pin().Get();
     ASSERT_TRUE(raw_input_pin);
     streaming_thread_ = std::make_unique<ClosureSimpleThread>(base::BindOnce(
-        [](base::WaitableEvent* start, IPin* pin, HRESULT* delivery_hr) {
+        [](base::WaitableEvent* start, IPin* pin,
+           LateDeliveryResults* results) {
           start->Wait();
-          *delivery_hr = DeliverSampleTo(pin);
+          UseInputPinLate(pin, results);
         },
         base::Unretained(&start_late_delivery_),
-        base::Unretained(raw_input_pin),
-        base::Unretained(&results_->delivery_hr)));
+        base::Unretained(raw_input_pin), base::Unretained(results_.get())));
     streaming_thread_->Start();
   }
 
@@ -523,6 +538,9 @@ class FakeFilterGraph final
                           ChainInterfaces<IMediaControl, IDispatch>> {
  public:
   void set_stop_result(HRESULT hr) { stop_result_ = hr; }
+  void set_disconnect_on_remove(bool disconnect) {
+    disconnect_on_remove_ = disconnect;
+  }
 
   // IFilterGraph
   IFACEMETHODIMP AddFilter(IBaseFilter* filter, LPCWSTR name) override {
@@ -536,7 +554,7 @@ class FakeFilterGraph final
     }
     // Like the real graph, disconnect the filter's pins before removing it.
     ComPtr<IEnumPins> enum_pins;
-    if (SUCCEEDED(filter->EnumPins(&enum_pins))) {
+    if (disconnect_on_remove_ && SUCCEEDED(filter->EnumPins(&enum_pins))) {
       ComPtr<IPin> pin;
       while (enum_pins->Next(1, &pin, nullptr) == S_OK) {
         ComPtr<IPin> peer;
@@ -646,6 +664,7 @@ class FakeFilterGraph final
  private:
   std::vector<ComPtr<IBaseFilter>> filters_;
   HRESULT stop_result_ = S_OK;
+  bool disconnect_on_remove_ = true;
 };
 
 class FakeCaptureGraphBuilder final
@@ -760,8 +779,8 @@ class VideoCaptureDeviceWinTest : public ::testing::Test {
 
 // Regression test for a source filter that keeps delivering samples from its
 // streaming thread after Stop() and Disconnect() return, and only joins that
-// thread when its last reference is released. The input pin must stay alive
-// until then, and late samples must not reach the device.
+// thread when its last reference is released. The input pin and sink filter
+// must stay alive until then, and late samples must not reach the device.
 TEST_F(VideoCaptureDeviceWinTest,
        LateDeliveryFromStreamingThreadDuringTeardown) {
   LateDeliveryResults results;
@@ -793,7 +812,73 @@ TEST_F(VideoCaptureDeviceWinTest,
   // disconnected input pin and joins its streaming thread.
   device.reset();
   EXPECT_TRUE(results.filter_destroyed);
+  EXPECT_EQ(results.pin_info_hr, S_OK);
+  EXPECT_EQ(results.filter_state_hr, S_OK);
   EXPECT_EQ(results.delivery_hr, S_FALSE);
+}
+
+// If something else still references the capture filter after teardown, its
+// streaming thread may outlive the device, so the sink filter and pin must be
+// kept alive.
+TEST_F(VideoCaptureDeviceWinTest,
+       SinkOutlivesExternallyReferencedCaptureFilter) {
+  LateDeliveryResults results;
+  ComPtr<FakeCaptureFilter> capture_filter = Make<FakeCaptureFilter>(&results);
+  std::unique_ptr<VideoCaptureDeviceWin> device = CreateDevice(capture_filter);
+  ASSERT_TRUE(device->Init());
+  device->AllocateAndStart(
+      CreateCaptureParams(PIXEL_FORMAT_I420),
+      std::make_unique<NiceMock<MockVideoCaptureDeviceClient>>());
+  capture_filter->StartLateDeliveryThread();
+  graph_.Reset();
+
+  device->StopAndDeAllocate();
+  device.reset();
+  EXPECT_FALSE(results.filter_destroyed);
+
+  capture_filter.Reset();
+  EXPECT_TRUE(results.filter_destroyed);
+  EXPECT_EQ(results.pin_info_hr, S_OK);
+  EXPECT_EQ(results.filter_state_hr, S_OK);
+  EXPECT_EQ(results.delivery_hr, S_FALSE);
+}
+
+// Samples delivered to a pin that is still connected after the device is gone
+// must not reach the device.
+TEST_F(VideoCaptureDeviceWinTest, DeliveryToStillConnectedPinAfterDestruction) {
+  LateDeliveryResults results;
+  ComPtr<FakeCaptureFilter> capture_filter = Make<FakeCaptureFilter>(&results);
+  std::unique_ptr<VideoCaptureDeviceWin> device = CreateDevice(capture_filter);
+  ASSERT_TRUE(device->Init());
+  device->AllocateAndStart(
+      CreateCaptureParams(PIXEL_FORMAT_I420),
+      std::make_unique<NiceMock<MockVideoCaptureDeviceClient>>());
+  ComPtr<IPin> input_pin = capture_filter->output_pin()->connected_pin();
+  ASSERT_TRUE(input_pin);
+
+  // Destroy the device without StopAndDeAllocate(), with a graph that doesn't
+  // disconnect pins on removal. The test's reference to the capture filter
+  // keeps the sink filter alive past the device, so only the device's own
+  // teardown detaches it.
+  graph_->set_disconnect_on_remove(false);
+  graph_.Reset();
+  device.reset();
+  EXPECT_FALSE(results.filter_destroyed);
+
+  // The device disconnected the input pin itself.
+  ComPtr<IPin> connected;
+  EXPECT_EQ(input_pin->ConnectedTo(&connected), VFW_E_NOT_CONNECTED);
+
+  // Even once connected again, samples don't reach the destroyed device.
+  AM_MEDIA_TYPE media_type;
+  VIDEOINFOHEADER video_info;
+  PopulateI420MediaType(&media_type, &video_info);
+  ASSERT_EQ(
+      input_pin->ReceiveConnection(capture_filter->output_pin(), &media_type),
+      S_OK);
+  EXPECT_EQ(DeliverSampleTo(input_pin.Get()), S_FALSE);
+  capture_filter.Reset();
+  EXPECT_TRUE(results.filter_destroyed);
 }
 
 TEST_F(VideoCaptureDeviceWinTest, AllocateDeliverAndRestartWithOtherFormat) {
@@ -888,6 +973,66 @@ TEST_F(VideoCaptureDeviceWinTest, InFlightReceiveDuringStopAndDestruction) {
     EXPECT_HRESULT_SUCCEEDED(delivery.hr);
     EXPECT_TRUE(results.filter_destroyed);
   }
+}
+
+TEST_F(VideoCaptureDeviceWinTest, RetainedInputPinAfterDeviceDestruction) {
+  LateDeliveryResults results;
+  ComPtr<FakeCaptureFilter> capture_filter = Make<FakeCaptureFilter>(&results);
+  std::unique_ptr<VideoCaptureDeviceWin> device = CreateDevice(capture_filter);
+  ASSERT_TRUE(device->Init());
+  device->AllocateAndStart(
+      CreateCaptureParams(PIXEL_FORMAT_I420),
+      std::make_unique<NiceMock<MockVideoCaptureDeviceClient>>());
+
+  ComPtr<IPin> retained_input_pin =
+      capture_filter->output_pin()->connected_pin();
+  ASSERT_TRUE(retained_input_pin);
+  capture_filter.Reset();
+  // Keep the sink filter alive past the device, so that the pin's pointer to it
+  // can only have been cleared by the device's teardown.
+  PIN_INFO pin_info = {};
+  ASSERT_EQ(retained_input_pin->QueryPinInfo(&pin_info), S_OK);
+  ComPtr<IBaseFilter> sink_filter;
+  sink_filter.Attach(pin_info.pFilter);
+  ASSERT_TRUE(sink_filter);
+
+  device->StopAndDeAllocate();
+  device.reset();
+  EXPECT_TRUE(results.filter_destroyed);
+
+  // A component that still holds the pin must not reach the destroyed device
+  // or the sink filter through it.
+  EXPECT_EQ(DeliverSampleTo(retained_input_pin.Get()), S_FALSE);
+  pin_info = {};
+  EXPECT_EQ(retained_input_pin->QueryPinInfo(&pin_info), S_OK);
+  EXPECT_EQ(pin_info.pFilter, nullptr);
+}
+
+TEST_F(VideoCaptureDeviceWinTest, SinkFilterShutdownDetachesObserver) {
+  CountingSinkObserver observer;
+  auto sink_filter = base::MakeRefCounted<SinkFilter>(&observer);
+  ComPtr<IPin> input_pin = sink_filter->GetPin(0);
+  ComPtr<FakeOutputPin> upstream_pin = Make<FakeOutputPin>(nullptr);
+  ASSERT_EQ(upstream_pin->Connect(input_pin.Get(), nullptr), S_OK);
+
+  EXPECT_EQ(DeliverSampleTo(input_pin.Get()), S_OK);
+  EXPECT_EQ(observer.frames_received(), 1);
+
+  sink_filter->Shutdown();
+  EXPECT_EQ(DeliverSampleTo(input_pin.Get()), S_FALSE);
+  EXPECT_EQ(observer.frames_received(), 1);
+
+  EXPECT_EQ(upstream_pin->Disconnect(), S_OK);
+  EXPECT_EQ(input_pin->Disconnect(), S_OK);
+  PIN_INFO pin_info = {};
+  EXPECT_EQ(input_pin->QueryPinInfo(&pin_info), S_OK);
+  EXPECT_EQ(pin_info.pFilter, sink_filter.get());
+  pin_info.pFilter->Release();
+
+  sink_filter->DetachPinOwner();
+  pin_info = {};
+  EXPECT_EQ(input_pin->QueryPinInfo(&pin_info), S_OK);
+  EXPECT_EQ(pin_info.pFilter, nullptr);
 }
 
 // Validating a media type doesn't change the negotiated format. While

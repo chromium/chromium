@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Implement a simple base class for a DirectShow input pin. It may only be
-// used in a single threaded apartment.
+// Implement a simple base class for a DirectShow input pin. Connection state
+// and filter ownership are synchronized and reference counting is thread-safe
+// as DirectShow streaming threads may invoke pin methods concurrently.
 
 #ifndef MEDIA_CAPTURE_VIDEO_WIN_PIN_BASE_WIN_H_
 #define MEDIA_CAPTURE_VIDEO_WIN_PIN_BASE_WIN_H_
@@ -15,6 +16,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 
 namespace media {
 
@@ -26,9 +29,11 @@ class PinBase : public IPin,
 
   explicit PinBase(IBaseFilter* owner);
 
-  // Function used for changing the owner.
-  // If the owner is deleted the owner should first call this function
-  // with owner = NULL.
+  PinBase(const PinBase&) = delete;
+  PinBase& operator=(const PinBase&) = delete;
+
+  // Sets or clears the owning filter. Must be called with nullptr before the
+  // owning filter is destroyed.
   void SetOwner(IBaseFilter* owner);
 
   // Checks if a media type is acceptable. This is called when this pin is
@@ -103,11 +108,12 @@ class PinBase : public IPin,
   virtual ~PinBase();
 
  private:
-  AM_MEDIA_TYPE current_media_type_;
-  Microsoft::WRL::ComPtr<IPin> connected_pin_;
+  base::Lock lock_;
+  AM_MEDIA_TYPE current_media_type_ GUARDED_BY(lock_);
+  Microsoft::WRL::ComPtr<IPin> connected_pin_ GUARDED_BY(lock_);
   // owner_ is the filter owning this pin. We don't reference count it since
   // that would create a circular reference count.
-  raw_ptr<IBaseFilter, DanglingUntriaged> owner_;
+  raw_ptr<IBaseFilter> owner_ GUARDED_BY(lock_);
 };
 
 }  // namespace media

@@ -77,6 +77,11 @@ SinkFilter : public FilterBase {
   // callback is in progress and samples delivered later are dropped.
   void Shutdown();
 
+  // Clears the input pin's pointer to this filter. Call this while still
+  // holding a reference to the filter, so that QueryPinInfo() calls on threads
+  // that retained the pin can't race with the filter's destruction.
+  void DetachPinOwner();
+
   // Implement FilterBase.
   size_t NoOfPins() override;
   IPin* GetPin(int index) override;

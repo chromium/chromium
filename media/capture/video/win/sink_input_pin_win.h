@@ -61,6 +61,7 @@ class SinkInputPin : public PinBase {
   // (e.g. VideoCaptureDeviceWin::lock_). Never call into this pin while holding
   // such a lock. |observer_| must not call back into this pin, block on the
   // device thread, or make COM calls that need that thread to pump messages.
+  // This lock is separate from PinBase's private lock.
   base::Lock sink_lock_;
   VideoPixelFormat requested_pixel_format_ GUARDED_BY(sink_lock_);
   float requested_frame_rate_ GUARDED_BY(sink_lock_);

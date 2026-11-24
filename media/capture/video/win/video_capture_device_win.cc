@@ -376,6 +376,34 @@ VideoCaptureDeviceWin::~VideoCaptureDeviceWin() {
     }
   }
 
+  // Disconnect the input pin even if the graph didn't, e.g. because Stop()
+  // failed. Otherwise it keeps a reference to the capture filter's output pin,
+  // which typically shares the filter's reference count, so the capture filter
+  // would always look externally referenced below.
+  input_sink_pin_->Disconnect();
+
+  // Release the capture filter now, after everything else of ours that holds a
+  // reference to it, to find out whether that was the last reference. If it
+  // was, its streaming thread (if any) has been joined. If something else
+  // still holds the filter, that thread may outlive |this| and keep calling the
+  // input pin through a pointer it cached. The returned count is only a hint,
+  // but leaking the sink filter, which no longer references |this| and keeps
+  // the input pin alive, is cheap compared to freeing the pin under that
+  // thread.
+  output_capture_pin_.Reset();
+  camera_control_.Reset();
+  video_control_.Reset();
+  if (capture_filter_.Reset() != 0) {
+    DLOG(WARNING) << "DirectShow capture filter still referenced after "
+                     "teardown; leaking the sink filter.";
+    sink_filter_->AddRef();
+  } else {
+    // Clear the pin's pointer to the sink filter while it's still referenced,
+    // so that QueryPinInfo() on a thread that retained the pin can't race
+    // with the sink filter's destruction.
+    sink_filter_->DetachPinOwner();
+  }
+
   // The remaining DirectShow objects are released in member destruction
   // order, see the comment on |sink_filter_| in the header.
 }
