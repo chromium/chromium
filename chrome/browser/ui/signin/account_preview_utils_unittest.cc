@@ -6,14 +6,19 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <tuple>
+#include <utility>
 
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -180,6 +185,20 @@ std::string ParamToTestName(
                     with_device ? "WithDevice" : "WithoutDevice"});
   std::ranges::replace(name, ' ', '_');
   return name;
+}
+
+void EnableAccountSwitchingFeature(base::test::ScopedFeatureList& feature_list,
+                                   bool create_new_profile) {
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      switches::kEnableAccountPreviewSwitchingAccount,
+      {{switches::kAccountPreviewSwitchingAccountDesktopArm.name,
+        switches::kAccountPreviewSwitchingAccountDesktopArm.GetName(
+            create_new_profile
+                ? switches::AccountPreviewSwitchingAccountDesktopArm::
+                      kNewProfile
+                : switches::AccountPreviewSwitchingAccountDesktopArm::
+                      kInProfileSwitch)}});
 }
 
 }  // namespace
@@ -1251,6 +1270,21 @@ TEST(AccountPreviewUtilsTest,
             l10n_util::GetStringFUTF8(
                 IDS_ACCOUNT_PREVIEW_PROFILE_SEPARATION_SUBTITLE_PASSWORDS,
                 u"Elisa", u"bob.beckett@gmail.com"));
+  {
+    base::test::ScopedFeatureList feature_list;
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/false);
+    EXPECT_EQ(GetAccountPreviewAccountSwitchingSubtitle("bob.beckett@gmail.com",
+                                                        pref),
+              l10n_util::GetStringFUTF8(
+                  IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_PASSWORDS,
+                  u"bob.beckett@gmail.com"));
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/true);
+    EXPECT_EQ(GetAccountPreviewAccountSwitchingSubtitle("bob.beckett@gmail.com",
+                                                        pref),
+              l10n_util::GetStringFUTF8(
+                  IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_PASSWORDS,
+                  u"bob.beckett@gmail.com"));
+  }
 
   // History promos require HISTORY in other_device_info.enabled_data_types.
   EXPECT_EQ(
@@ -1315,6 +1349,21 @@ TEST(AccountPreviewUtilsTest,
             l10n_util::GetStringFUTF8(
                 IDS_ACCOUNT_PREVIEW_PROFILE_SEPARATION_SUBTITLE_EXTENSIONS,
                 u"Elisa", u"bob.beckett@gmail.com"));
+  {
+    base::test::ScopedFeatureList feature_list;
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/false);
+    EXPECT_EQ(GetAccountPreviewAccountSwitchingSubtitle("bob.beckett@gmail.com",
+                                                        pref),
+              l10n_util::GetStringFUTF8(
+                  IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_EXTENSIONS,
+                  u"bob.beckett@gmail.com"));
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/true);
+    EXPECT_EQ(GetAccountPreviewAccountSwitchingSubtitle("bob.beckett@gmail.com",
+                                                        pref),
+              l10n_util::GetStringFUTF8(
+                  IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_EXTENSIONS,
+                  u"bob.beckett@gmail.com"));
+  }
 #else
   std::u16string device_str =
       l10n_util::GetStringUTF16(IDS_ACCOUNT_PREVIEW_DEVICE_COMPUTER);
@@ -1349,6 +1398,325 @@ TEST(AccountPreviewUtilsTest,
   EXPECT_EQ(GetAccountPreviewProfileSeparationSubtitle(
                 "Elisa", "bob.beckett@gmail.com", pref),
             std::nullopt);
+  {
+    base::test::ScopedFeatureList feature_list;
+    // Account switching falls back to the generic bubble subtitle rather than
+    // the generic-device EXTENSIONS string.
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/false);
+    EXPECT_EQ(
+        GetAccountPreviewAccountSwitchingSubtitle("bob.beckett@gmail.com",
+                                                  pref),
+        l10n_util::GetStringFUTF8(IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC,
+                                  u"bob.beckett@gmail.com"));
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/true);
+    EXPECT_EQ(
+        GetAccountPreviewAccountSwitchingSubtitle("bob.beckett@gmail.com",
+                                                  pref),
+        l10n_util::GetStringFUTF8(IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC,
+                                  u"bob.beckett@gmail.com"));
+  }
+}
+
+TEST(AccountPreviewUtilsTest,
+     AccountSwitchingTitleAndSubtitleRequireFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewSwitchingAccount);
+
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.preferred_data_types.push_back(
+      {syncer::PASSWORDS, SyncDataQuartile::kAboveQ3});
+
+  EXPECT_CHECK_DEATH(GetAccountPreviewAccountSwitchingTitle(pref));
+  EXPECT_CHECK_DEATH(GetAccountPreviewAccountSwitchingSubtitle(
+      "elisa.g.beckett@gmail.com", pref));
+}
+
+TEST(AccountPreviewUtilsTest,
+     AccountSwitchingDefaultConfigurationUsesInProfileSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kEnableAccountPreviewSwitchingAccount);
+
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.preferred_data_types.push_back(
+      {syncer::PASSWORDS, SyncDataQuartile::kAboveQ3});
+
+  EXPECT_EQ(
+      GetAccountPreviewAccountSwitchingTitle(pref),
+      l10n_util::GetStringUTF8(IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_TITLE));
+  EXPECT_EQ(GetAccountPreviewAccountSwitchingSubtitle(
+                "elisa.g.beckett@gmail.com", pref),
+            l10n_util::GetStringFUTF8(
+                IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_PASSWORDS,
+                u"elisa.g.beckett@gmail.com"));
+}
+
+TEST(AccountPreviewUtilsTest, AccountSwitchingTitleWithoutDevice) {
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  base::test::ScopedFeatureList feature_list;
+
+  EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/false);
+  EXPECT_EQ(
+      GetAccountPreviewAccountSwitchingTitle(pref),
+      l10n_util::GetStringUTF8(IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_TITLE));
+
+  EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/true);
+  EXPECT_EQ(
+      GetAccountPreviewAccountSwitchingTitle(pref),
+      l10n_util::GetStringUTF8(IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_TITLE));
+}
+
+TEST(AccountPreviewUtilsTest, AccountSwitchingTitleWithDevice) {
+  struct TestCase {
+    sync_pb::SyncEnums_DeviceFormFactor form_factor;
+    int expected_device_id;
+  };
+  const TestCase kTestCases[] = {
+      {sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+       IDS_ACCOUNT_PREVIEW_DEVICE_PHONE},
+      {sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET,
+       IDS_ACCOUNT_PREVIEW_DEVICE_TABLET},
+      {sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+       IDS_ACCOUNT_PREVIEW_DEVICE_COMPUTER},
+  };
+
+  base::test::ScopedFeatureList feature_list;
+  for (const auto& test_case : kTestCases) {
+    AccountPreviewDataService::AccountPreviewPreference pref;
+    pref.other_device_info.form_factor = test_case.form_factor;
+    std::u16string device_str =
+        l10n_util::GetStringUTF16(test_case.expected_device_id);
+
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/false);
+    EXPECT_EQ(GetAccountPreviewAccountSwitchingTitle(pref),
+              l10n_util::GetStringFUTF8(
+                  IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_TITLE_WITH_DEVICE,
+                  device_str));
+
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/true);
+    EXPECT_EQ(GetAccountPreviewAccountSwitchingTitle(pref),
+              l10n_util::GetStringFUTF8(
+                  IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_TITLE_WITH_DEVICE,
+                  device_str));
+  }
+}
+
+TEST(AccountPreviewUtilsTest, AccountSwitchingSubtitleEmptyPreference) {
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  base::test::ScopedFeatureList feature_list;
+
+  EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/false);
+  EXPECT_EQ(
+      GetAccountPreviewAccountSwitchingSubtitle("elisa.g.beckett@gmail.com",
+                                                pref),
+      l10n_util::GetStringFUTF8(IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC,
+                                u"elisa.g.beckett@gmail.com"));
+
+  EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/true);
+  EXPECT_EQ(
+      GetAccountPreviewAccountSwitchingSubtitle("elisa.g.beckett@gmail.com",
+                                                pref),
+      l10n_util::GetStringFUTF8(IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC,
+                                u"elisa.g.beckett@gmail.com"));
+}
+
+TEST(AccountPreviewUtilsTest, AccountSwitchingSubtitleUnsupportedDataTypes) {
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.preferred_data_types.push_back(
+      {syncer::HISTORY, SyncDataQuartile::kAboveQ3});
+  pref.preferred_data_types.push_back(
+      {syncer::PREFERENCES, SyncDataQuartile::kAboveQ3});
+  base::test::ScopedFeatureList feature_list;
+
+  EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/false);
+  EXPECT_EQ(
+      GetAccountPreviewAccountSwitchingSubtitle("elisa.g.beckett@gmail.com",
+                                                pref),
+      l10n_util::GetStringFUTF8(IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC,
+                                u"elisa.g.beckett@gmail.com"));
+
+  EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/true);
+  EXPECT_EQ(
+      GetAccountPreviewAccountSwitchingSubtitle("elisa.g.beckett@gmail.com",
+                                                pref),
+      l10n_util::GetStringFUTF8(IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC,
+                                u"elisa.g.beckett@gmail.com"));
+}
+
+TEST(AccountPreviewUtilsTest, AccountSwitchingSubtitleAllDataTypesAndDevices) {
+  struct DataTypeExpectation {
+    syncer::DataType data_type;
+    int in_profile_id;
+    int in_profile_with_device_id;
+    int new_profile_id;
+    int new_profile_with_device_id;
+  };
+  const DataTypeExpectation kDataTypes[] = {
+      {syncer::PASSWORDS,
+       IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_PASSWORDS,
+       IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_PASSWORDS_WITH_DEVICE,
+       IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_PASSWORDS,
+       IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_PASSWORDS_WITH_DEVICE},
+      {syncer::BOOKMARKS,
+       IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_BOOKMARKS,
+       IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_BOOKMARKS_WITH_DEVICE,
+       IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_BOOKMARKS,
+       IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_BOOKMARKS_WITH_DEVICE},
+      {syncer::AUTOFILL,
+       IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_SAVED_INFO,
+       IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_SAVED_INFO_WITH_DEVICE,
+       IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_SAVED_INFO,
+       IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_SAVED_INFO_WITH_DEVICE},
+      {syncer::AUTOFILL_WALLET_METADATA,
+       IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_SAVED_INFO,
+       IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_SAVED_INFO_WITH_DEVICE,
+       IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_SAVED_INFO,
+       IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_SAVED_INFO_WITH_DEVICE},
+      {syncer::READING_LIST,
+       IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_READING_LIST,
+       IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_READING_LIST_WITH_DEVICE,
+       IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_READING_LIST,
+       IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_READING_LIST_WITH_DEVICE},
+  };
+
+  base::test::ScopedFeatureList feature_list;
+  for (const auto& entry : kDataTypes) {
+    // Without device.
+    {
+      AccountPreviewDataService::AccountPreviewPreference pref;
+      pref.preferred_data_types.push_back(
+          {entry.data_type, SyncDataQuartile::kAboveQ3});
+
+      EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/false);
+      EXPECT_EQ(GetAccountPreviewAccountSwitchingSubtitle(
+                    "elisa.g.beckett@gmail.com", pref),
+                l10n_util::GetStringFUTF8(entry.in_profile_id,
+                                          u"elisa.g.beckett@gmail.com"));
+
+      EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/true);
+      EXPECT_EQ(GetAccountPreviewAccountSwitchingSubtitle(
+                    "elisa.g.beckett@gmail.com", pref),
+                l10n_util::GetStringFUTF8(entry.new_profile_id,
+                                          u"elisa.g.beckett@gmail.com"));
+    }
+
+    // With phone, tablet, and desktop devices.
+    const std::pair<sync_pb::SyncEnums_DeviceFormFactor, int> kDevices[] = {
+        {sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+         IDS_ACCOUNT_PREVIEW_DEVICE_PHONE},
+        {sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET,
+         IDS_ACCOUNT_PREVIEW_DEVICE_TABLET},
+        {sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+         IDS_ACCOUNT_PREVIEW_DEVICE_COMPUTER},
+    };
+    for (const auto& [form_factor, device_id] : kDevices) {
+      AccountPreviewDataService::AccountPreviewPreference pref;
+      pref.preferred_data_types.push_back(
+          {entry.data_type, SyncDataQuartile::kAboveQ3});
+      pref.other_device_info = PreferredDeviceInfo{
+          .form_factor = form_factor,
+          .enabled_data_types = {entry.data_type},
+      };
+      std::u16string device_str = l10n_util::GetStringUTF16(device_id);
+
+      EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/false);
+      EXPECT_EQ(
+          GetAccountPreviewAccountSwitchingSubtitle("elisa.g.beckett@gmail.com",
+                                                    pref),
+          l10n_util::GetStringFUTF8(entry.in_profile_with_device_id,
+                                    u"elisa.g.beckett@gmail.com", device_str));
+
+      EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/true);
+      EXPECT_EQ(
+          GetAccountPreviewAccountSwitchingSubtitle("elisa.g.beckett@gmail.com",
+                                                    pref),
+          l10n_util::GetStringFUTF8(entry.new_profile_with_device_id,
+                                    u"elisa.g.beckett@gmail.com", device_str));
+    }
+  }
+}
+
+TEST(AccountPreviewUtilsTest,
+     AccountSwitchingSubtitleExtensionsSupportedDevicesAndFallback) {
+  base::test::ScopedFeatureList feature_list;
+
+  // Extensions on Desktop with EXTENSIONS enabled uses device-specific string.
+  {
+    AccountPreviewDataService::AccountPreviewPreference pref;
+    pref.preferred_data_types.push_back(
+        {syncer::EXTENSIONS, SyncDataQuartile::kAboveQ3});
+    pref.other_device_info = PreferredDeviceInfo{
+        .form_factor =
+            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+        .enabled_data_types = {syncer::EXTENSIONS},
+    };
+    std::u16string device_str =
+        l10n_util::GetStringUTF16(IDS_ACCOUNT_PREVIEW_DEVICE_COMPUTER);
+
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/false);
+    EXPECT_EQ(
+        GetAccountPreviewAccountSwitchingSubtitle("elisa.g.beckett@gmail.com",
+                                                  pref),
+        l10n_util::GetStringFUTF8(
+            IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_EXTENSIONS_WITH_DEVICE,
+            u"elisa.g.beckett@gmail.com", device_str));
+
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/true);
+    EXPECT_EQ(
+        GetAccountPreviewAccountSwitchingSubtitle("elisa.g.beckett@gmail.com",
+                                                  pref),
+        l10n_util::GetStringFUTF8(
+            IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_EXTENSIONS_WITH_DEVICE,
+            u"elisa.g.beckett@gmail.com", device_str));
+  }
+
+  // Extensions on Phone falls back to next supported preferred data type.
+  {
+    AccountPreviewDataService::AccountPreviewPreference pref;
+    pref.preferred_data_types.push_back(
+        {syncer::EXTENSIONS, SyncDataQuartile::kAboveQ3});
+    pref.preferred_data_types.push_back(
+        {syncer::BOOKMARKS, SyncDataQuartile::kAboveQ3});
+    pref.other_device_info = PreferredDeviceInfo{
+        .form_factor =
+            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+        .enabled_data_types = {syncer::BOOKMARKS},
+    };
+    std::u16string device_str =
+        l10n_util::GetStringUTF16(IDS_ACCOUNT_PREVIEW_DEVICE_PHONE);
+
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/false);
+    EXPECT_EQ(
+        GetAccountPreviewAccountSwitchingSubtitle("elisa.g.beckett@gmail.com",
+                                                  pref),
+        l10n_util::GetStringFUTF8(
+            IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_BOOKMARKS_WITH_DEVICE,
+            u"elisa.g.beckett@gmail.com", device_str));
+
+    EnableAccountSwitchingFeature(feature_list, /*create_new_profile=*/true);
+    EXPECT_EQ(
+        GetAccountPreviewAccountSwitchingSubtitle("elisa.g.beckett@gmail.com",
+                                                  pref),
+        l10n_util::GetStringFUTF8(
+            IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_BOOKMARKS_WITH_DEVICE,
+            u"elisa.g.beckett@gmail.com", device_str));
+  }
+}
+
+TEST(AccountPreviewUtilsTest, AccountSwitchingProfileMenuButtonLabel) {
+  EXPECT_EQ(
+      GetAccountSwitchingProfileMenuButtonLabel("elisa.g.beckett@gmail.com"),
+      l10n_util::GetStringFUTF16(IDS_PROFILE_MENU_SWITCH_ACCOUNT_BUTTON_LABEL,
+                                 u"elisa.g.beckett@gmail.com"));
+  EXPECT_EQ(
+      GetAccountSwitchingProfileMenuButtonLabel(
+          "élisa.superlong.email@gmail.com"),
+      l10n_util::GetStringFUTF16(IDS_PROFILE_MENU_SWITCH_ACCOUNT_BUTTON_LABEL,
+                                 u"élisa.superlong.email@gmail.com"));
+  EXPECT_EQ(GetAccountSwitchingProfileMenuButtonLabel(""),
+            l10n_util::GetStringFUTF16(
+                IDS_PROFILE_MENU_SWITCH_ACCOUNT_BUTTON_LABEL, u""));
 }
 
 }  // namespace signin

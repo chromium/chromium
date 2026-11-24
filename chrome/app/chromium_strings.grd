@@ -1400,6 +1400,74 @@ Chromium is unable to recover your settings.
         <message name="IDS_ACCOUNT_PREVIEW_PROFILE_SEPARATION_SUBTITLE_EXTENSIONS" desc="Body of the web signin interception bubble with account preview, informing the user they can keep accounts separate and access extensions on all their devices.">
           <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS">$2<ex>bob.beckett@gmail.com</ex></ph>. You’ll also get your extensions and more on all your devices.
         </message>
+        <!-- Smart Account Switching Startup Prompt Bubble Subtitles -->
+        <!-- TODO(crbug.com/590057691): Finalize copy with UXW, remove translateable="false", and add translation screenshots. -->
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC" translateable="false" desc="Fallback body of the Smart Account Switching startup prompt bubble (in-profile switch) when no specific preview data type is highlighted.">
+          Sign in to Chromium with <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> for passwords, bookmarks, and tabs from your Google Account. Your current tabs will stay open.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_PASSWORDS_WITH_DEVICE" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (in-profile switch) informing the user they can switch accounts in the current profile and access passwords from their other device.">
+          Sign in to Chromium with <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your passwords and more from <ph name="DEVICE">$2<ex>your phone</ex></ph>. Your current tabs will stay open.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_BOOKMARKS_WITH_DEVICE" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (in-profile switch) informing the user they can switch accounts in the current profile and access bookmarks from their other device.">
+          Sign in to Chromium with <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your bookmarks and more from <ph name="DEVICE">$2<ex>your phone</ex></ph>. Your current tabs will stay open.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_SAVED_INFO_WITH_DEVICE" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (in-profile switch) informing the user they can switch accounts in the current profile and access saved info (such as autofill data, addresses, and payment methods) from their other device.">
+          Sign in to Chromium with <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your saved info and more from <ph name="DEVICE">$2<ex>your phone</ex></ph>. Your current tabs will stay open.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_READING_LIST_WITH_DEVICE" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (in-profile switch) informing the user they can switch accounts in the current profile and access their reading list from their other device.">
+          Sign in to Chromium with <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your reading list and more from <ph name="DEVICE">$2<ex>your phone</ex></ph>. Your current tabs will stay open.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_EXTENSIONS_WITH_DEVICE" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (in-profile switch) informing the user they can switch accounts in the current profile and access extensions from their computer. Only desktop/computer DEVICE are supported for extensions.">
+          Sign in to Chromium with <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your extensions and more from <ph name="DEVICE">$2<ex>your computer</ex></ph>. Your current tabs will stay open.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_PASSWORDS" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (in-profile switch) informing the user they can switch accounts in the current profile and access passwords on all their devices.">
+          Sign in to Chromium with <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your passwords and more on all your devices. Your current tabs will stay open.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_BOOKMARKS" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (in-profile switch) informing the user they can switch accounts in the current profile and access bookmarks on all their devices.">
+          Sign in to Chromium with <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your bookmarks and more on all your devices. Your current tabs will stay open.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_SAVED_INFO" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (in-profile switch) informing the user they can switch accounts in the current profile and access saved info (such as autofill data, addresses, and payment methods) on all their devices.">
+          Sign in to Chromium with <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your saved info and more on all your devices. Your current tabs will stay open.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_READING_LIST" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (in-profile switch) informing the user they can switch accounts in the current profile and access their reading list on all their devices.">
+          Sign in to Chromium with <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your reading list and more on all your devices. Your current tabs will stay open.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_EXTENSIONS" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (in-profile switch) informing the user they can switch accounts in the current profile and access extensions on all their devices.">
+          Sign in to Chromium with <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your extensions and more on all your devices. Your current tabs will stay open.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC" translateable="false" desc="Fallback body of the Smart Account Switching startup prompt bubble (new profile) when no specific preview data type is highlighted.">
+          Open a new Chromium window signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to access saved passwords, bookmarks, and tabs. Your current profile and these tabs stay open in this window.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_PASSWORDS_WITH_DEVICE" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (new profile) informing the user they can open a new profile window and access passwords from their other device.">
+          Open a new Chromium window signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your passwords and more from <ph name="DEVICE">$2<ex>your phone</ex></ph>. Your current profile and these tabs stay open in this window.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_BOOKMARKS_WITH_DEVICE" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (new profile) informing the user they can open a new profile window and access bookmarks from their other device.">
+          Open a new Chromium window signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your bookmarks and more from <ph name="DEVICE">$2<ex>your phone</ex></ph>. Your current profile and these tabs stay open in this window.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_SAVED_INFO_WITH_DEVICE" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (new profile) informing the user they can open a new profile window and access saved info (such as autofill data, addresses, and payment methods) from their other device.">
+          Open a new Chromium window signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your saved info and more from <ph name="DEVICE">$2<ex>your phone</ex></ph>. Your current profile and these tabs stay open in this window.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_READING_LIST_WITH_DEVICE" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (new profile) informing the user they can open a new profile window and access their reading list from their other device.">
+          Open a new Chromium window signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your reading list and more from <ph name="DEVICE">$2<ex>your phone</ex></ph>. Your current profile and these tabs stay open in this window.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_EXTENSIONS_WITH_DEVICE" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (new profile) informing the user they can open a new profile window and access extensions from their computer. Only desktop/computer DEVICE are supported for extensions.">
+          Open a new Chromium window signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your extensions and more from <ph name="DEVICE">$2<ex>your computer</ex></ph>. Your current profile and these tabs stay open in this window.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_PASSWORDS" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (new profile) informing the user they can open a new profile window and access passwords on all their devices.">
+          Open a new Chromium window signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your passwords and more on all your devices. Your current profile and these tabs stay open in this window.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_BOOKMARKS" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (new profile) informing the user they can open a new profile window and access bookmarks on all their devices.">
+          Open a new Chromium window signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your bookmarks and more on all your devices. Your current profile and these tabs stay open in this window.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_SAVED_INFO" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (new profile) informing the user they can open a new profile window and access saved info (such as autofill data, addresses, and payment methods) on all their devices.">
+          Open a new Chromium window signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your saved info and more on all your devices. Your current profile and these tabs stay open in this window.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_READING_LIST" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (new profile) informing the user they can open a new profile window and access their reading list on all their devices.">
+          Open a new Chromium window signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your reading list and more on all your devices. Your current profile and these tabs stay open in this window.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_EXTENSIONS" translateable="false" desc="Body of the Smart Account Switching startup prompt bubble (new profile) informing the user they can open a new profile window and access extensions on all their devices.">
+          Open a new Chromium window signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph> to get your extensions and more on all your devices. Your current profile and these tabs stay open in this window.
+        </message>
         <!-- Account Preview Settings Signin Promo Subtitles -->
         <message name="IDS_ACCOUNT_PREVIEW_SETTINGS_PROMO_SUBTITLE_PASSWORDS_WITH_DEVICE" desc="Subtitle of a sign-in promo in Settings informing the user they can access their passwords from their other device.">
           To get your passwords and more from <ph name="DEVICE">$1<ex>your phone</ex></ph>, sign in to Chromium

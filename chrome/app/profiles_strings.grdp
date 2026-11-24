@@ -1303,6 +1303,33 @@
     <message name="IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD_BOOKMARK_CLEANUP" desc="The description of the identity section in the Profile Menu for users that can see the Batch Upload promo in the Avatar button with the emphasis on Bookmarks cleanup, when having local data. This describes the action presented right below it in the button.">
       To clean up any duplicate bookmarks, save them in your Google Account
     </message>
+    <!-- Smart Account Switching Desktop -->
+    <!-- TODO(crbug.com/590057691): Finalize copy with UXW, remove translateable="false", and add translation screenshots. -->
+    <if expr="not use_titlecase">
+      <message name="IDS_AVATAR_BUTTON_SWITCH_ACCOUNT" translateable="false" desc="Text displayed on the extended avatar pill while the Smart Account Switching startup prompt bubble is shown.">
+        Switch account?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_ACCOUNT_SWITCHED" translateable="false" desc="Text displayed on the extended avatar pill while the Smart Account Switching in-profile confirmation bubble is shown.">
+        Account switched
+      </message>
+      <message name="IDS_AVATAR_BUTTON_PROFILE_CREATED" translateable="false" desc="Text displayed on the extended avatar pill in the new profile window while the Smart Account Switching confirmation bubble is shown.">
+        Profile created
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_AVATAR_BUTTON_SWITCH_ACCOUNT" translateable="false" desc="Text displayed on the extended avatar pill while the Smart Account Switching startup prompt bubble is shown.">
+        Switch Account?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_ACCOUNT_SWITCHED" translateable="false" desc="Text displayed on the extended avatar pill while the Smart Account Switching in-profile confirmation bubble is shown.">
+        Account Switched
+      </message>
+      <message name="IDS_AVATAR_BUTTON_PROFILE_CREATED" translateable="false" desc="Text displayed on the extended avatar pill in the new profile window while the Smart Account Switching confirmation bubble is shown.">
+        Profile Created
+      </message>
+    </if>
+    <message name="IDS_PROFILE_MENU_SWITCH_ACCOUNT_BUTTON_LABEL" translateable="false" desc="Label of the temporary Profile Menu row allowing the user to switch accounts in place during the Smart Account Switching 7-day switch-back window.">
+      Switch to <ph name="USER_EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>
+    </message>
   </if>
     <!-- Sign in on your phone (QR code) strings  -->
     <if expr="not use_titlecase">

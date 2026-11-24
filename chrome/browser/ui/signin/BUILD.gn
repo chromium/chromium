@@ -130,6 +130,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
       "//chrome/browser/ui/web_applications",
       "//components/pref_registry",
+      "//components/signin/public/base:signin_switches",
       "//components/user_education/common",
       "//ui/views",
     ]
@@ -291,6 +292,7 @@ if (enable_dice_support) {
       "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/omnibox/common",
       "//components/signin/public/base",
+      "//components/signin/public/base:signin_switches",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//content/test:test_support",
@@ -299,7 +301,6 @@ if (enable_dice_support) {
       "//testing/gmock",
       "//testing/gtest",
       "//ui/base",
-      "//ui/gfx",
       "//ui/views",
     ]
   }

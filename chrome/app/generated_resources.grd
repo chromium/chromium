@@ -13773,6 +13773,64 @@ This can include information about installed software, files, your browser, the 
         <message name="IDS_ACCOUNT_PREVIEW_RECENT_TABS_PROMO_SUBTITLE_EXTENSIONS" desc="Subtitle of the recent tabs sign-in promo informing the user they can access their tabs and extensions on all their devices.">
           To get your tabs from your other devices, sign in and sync history. You’ll also get your extensions and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
         </message>
+
+        <!-- Smart Account Switching Startup Prompt & Confirmation Bubble Strings -->
+        <!-- TODO(crbug.com/590057691): Finalize copy with UXW, remove translateable="false", and add translation screenshots. -->
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_TITLE_WITH_DEVICE" translateable="false" desc="Title of the Smart Account Switching startup prompt bubble (in-profile switch) when the recommended account is active on another known device.">
+          Pick up where you left off on <ph name="DEVICE">$1<ex>your phone</ex></ph>
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_TITLE" translateable="false" desc="Title of the Smart Account Switching startup prompt bubble (in-profile switch) when no specific other device form factor is available.">
+          Pick up where you left off
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_TITLE_WITH_DEVICE" translateable="false" desc="Title of the Smart Account Switching startup prompt bubble (new profile) when the recommended account is active on another known device.">
+          Pick up where you left off on <ph name="DEVICE">$1<ex>your phone</ex></ph>
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_TITLE" translateable="false" desc="Title of the Smart Account Switching startup prompt bubble (new profile) when no specific other device form factor is available.">
+          Pick up where you left off
+        </message>
+        <if expr="use_titlecase">
+          <then>
+            <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_ACCEPT_BUTTON_LABEL" translateable="false" desc="Label of the confirm button in the Smart Account Switching startup prompt bubble (in-profile switch).">
+              Switch in This Window
+            </message>
+            <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_ACCEPT_BUTTON_LABEL" translateable="false" desc="Label of the confirm button in the Smart Account Switching startup prompt bubble (new profile).">
+              Open in New Window
+            </message>
+            <message name="IDS_ACCOUNT_SWITCHING_BUBBLE_CANCEL_BUTTON_LABEL" translateable="false" desc="Label of the cancel button in the Smart Account Switching startup prompt bubble.">
+              Not Now
+            </message>
+            <message name="IDS_ACCOUNT_SWITCHING_CONFIRMATION_BUBBLE_GOT_IT_BUTTON" translateable="false" desc="Label of the acknowledge button in the Smart Account Switching post-switch confirmation bubble.">
+              Got It
+            </message>
+          </then>
+          <else>
+            <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_ACCEPT_BUTTON_LABEL" translateable="false" desc="Label of the confirm button in the Smart Account Switching startup prompt bubble (in-profile switch).">
+              Switch in this window
+            </message>
+            <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_ACCEPT_BUTTON_LABEL" translateable="false" desc="Label of the confirm button in the Smart Account Switching startup prompt bubble (new profile).">
+              Open in new window
+            </message>
+            <message name="IDS_ACCOUNT_SWITCHING_BUBBLE_CANCEL_BUTTON_LABEL" translateable="false" desc="Label of the cancel button in the Smart Account Switching startup prompt bubble.">
+              Not now
+            </message>
+            <message name="IDS_ACCOUNT_SWITCHING_CONFIRMATION_BUBBLE_GOT_IT_BUTTON" translateable="false" desc="Label of the acknowledge button in the Smart Account Switching post-switch confirmation bubble.">
+              Got it
+            </message>
+          </else>
+        </if>
+        <message name="IDS_ACCOUNT_SWITCHING_CONFIRMATION_BUBBLE_TITLE" translateable="false" desc="Title of the Smart Account Switching confirmation bubble shown after switching accounts or creating a new profile.">
+          Switched to <ph name="USER_EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_CONFIRMATION_BUBBLE_BODY" translateable="false" desc="Primary body paragraph of the Smart Account Switching confirmation bubble shown after an in-profile account switch.">
+          You can always sign out and manage your accounts here.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_IN_PROFILE_CONFIRMATION_BUBBLE_RELOAD_NOTICE" translateable="false" desc="Secondary body paragraph of the Smart Account Switching confirmation bubble informing the user that open Google web apps may need to be reloaded after switching accounts in place.">
+          You may need to reload your Google apps with your new account.
+        </message>
+        <message name="IDS_ACCOUNT_SWITCHING_NEW_PROFILE_CONFIRMATION_BUBBLE_BODY" translateable="false" desc="Body of the Smart Account Switching confirmation bubble shown in the newly created profile window.">
+          You can always switch between your profiles here.
+        </message>
+
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_BY_TOKEN" desc="Body of the web signin interception bubble when the new account is managed via a token">
           You just signed in a managed account, creating a new managed profile will allow you to access some resources linked to that account.
         </message>

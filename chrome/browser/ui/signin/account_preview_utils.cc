@@ -7,10 +7,13 @@
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -340,6 +343,108 @@ std::optional<std::string> GetProfileSeparationSubtitleForDataType(
   }
 }
 
+struct AccountSwitchingSubtitleMessageIds {
+  int fallback;
+  int passwords_with_device;
+  int passwords;
+  int bookmarks_with_device;
+  int bookmarks;
+  int saved_info_with_device;
+  int saved_info;
+  int reading_list_with_device;
+  int reading_list;
+  int extensions_with_device;
+  int extensions;
+};
+
+AccountSwitchingSubtitleMessageIds GetAccountSwitchingSubtitleMessageIds() {
+  // Choose string IDs for either in-profile switching or new-profile creation
+  // based on the active feature configuration.
+  switch (switches::kAccountPreviewSwitchingAccountDesktopArm.Get()) {
+    case switches::AccountPreviewSwitchingAccountDesktopArm::kInProfileSwitch:
+      return {
+          .fallback = IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC,
+          .passwords_with_device =
+              IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_PASSWORDS_WITH_DEVICE,
+          .passwords = IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_PASSWORDS,
+          .bookmarks_with_device =
+              IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_BOOKMARKS_WITH_DEVICE,
+          .bookmarks = IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_BOOKMARKS,
+          .saved_info_with_device =
+              IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_SAVED_INFO_WITH_DEVICE,
+          .saved_info = IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_SAVED_INFO,
+          .reading_list_with_device =
+              IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_READING_LIST_WITH_DEVICE,
+          .reading_list =
+              IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_READING_LIST,
+          .extensions_with_device =
+              IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_EXTENSIONS_WITH_DEVICE,
+          .extensions = IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_DESC_EXTENSIONS,
+      };
+    case switches::AccountPreviewSwitchingAccountDesktopArm::kNewProfile:
+      return {
+          .fallback = IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC,
+          .passwords_with_device =
+              IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_PASSWORDS_WITH_DEVICE,
+          .passwords = IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_PASSWORDS,
+          .bookmarks_with_device =
+              IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_BOOKMARKS_WITH_DEVICE,
+          .bookmarks = IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_BOOKMARKS,
+          .saved_info_with_device =
+              IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_SAVED_INFO_WITH_DEVICE,
+          .saved_info =
+              IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_SAVED_INFO,
+          .reading_list_with_device =
+              IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_READING_LIST_WITH_DEVICE,
+          .reading_list =
+              IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_READING_LIST,
+          .extensions_with_device =
+              IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_EXTENSIONS_WITH_DEVICE,
+          .extensions =
+              IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_DESC_EXTENSIONS,
+      };
+  }
+}
+
+std::optional<std::string> GetAccountSwitchingSubtitleForDataType(
+    const AccountSwitchingSubtitleMessageIds& ids,
+    syncer::DataType data_type,
+    const PreferredDeviceInfo& other_device_info,
+    const std::u16string& new_account_email) {
+  std::optional<int> device_string_id =
+      GetDeviceStringIdForDataType(other_device_info, data_type);
+
+  auto format_switching = [&](int id_with_device, int id_without_device) {
+    return device_string_id.has_value()
+               ? l10n_util::GetStringFUTF8(
+                     id_with_device, new_account_email,
+                     l10n_util::GetStringUTF16(*device_string_id))
+               : l10n_util::GetStringFUTF8(id_without_device,
+                                           new_account_email);
+  };
+
+  switch (data_type) {
+    case syncer::PASSWORDS:
+      return format_switching(ids.passwords_with_device, ids.passwords);
+    case syncer::BOOKMARKS:
+      return format_switching(ids.bookmarks_with_device, ids.bookmarks);
+    case syncer::AUTOFILL:
+    case syncer::AUTOFILL_WALLET_METADATA:
+      return format_switching(ids.saved_info_with_device, ids.saved_info);
+    case syncer::READING_LIST:
+      return format_switching(ids.reading_list_with_device, ids.reading_list);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    case syncer::EXTENSIONS:
+      if (!IsSupportedDeviceForExtensions(other_device_info)) {
+        return std::nullopt;
+      }
+      return format_switching(ids.extensions_with_device, ids.extensions);
+#endif
+    default:
+      return std::nullopt;
+  }
+}
+
 }  // namespace
 
 std::optional<std::string> GetAccountPreviewPromoSubtitle(
@@ -477,6 +582,61 @@ std::u16string GetAccountPreviewPasswordManagerPromoTitle(
                    l10n_util::GetStringUTF16(*device_string_id))
              : l10n_util::GetStringUTF16(
                    IDS_PASSWORD_MANAGER_UI_SIGNIN_PROMO_CARD_TITLE);
+}
+
+std::string GetAccountPreviewAccountSwitchingTitle(
+    const AccountPreviewDataService::AccountPreviewPreference& preference) {
+  CHECK(base::FeatureList::IsEnabled(
+      switches::kEnableAccountPreviewSwitchingAccount));
+
+  int id_with_device = 0;
+  int id_without_device = 0;
+  switch (switches::kAccountPreviewSwitchingAccountDesktopArm.Get()) {
+    case switches::AccountPreviewSwitchingAccountDesktopArm::kInProfileSwitch:
+      id_with_device =
+          IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_TITLE_WITH_DEVICE;
+      id_without_device = IDS_ACCOUNT_SWITCHING_IN_PROFILE_BUBBLE_TITLE;
+      break;
+    case switches::AccountPreviewSwitchingAccountDesktopArm::kNewProfile:
+      id_with_device =
+          IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_TITLE_WITH_DEVICE;
+      id_without_device = IDS_ACCOUNT_SWITCHING_NEW_PROFILE_BUBBLE_TITLE;
+      break;
+  }
+
+  std::optional<int> device_string_id =
+      GetDeviceStringId(preference.other_device_info.form_factor);
+  return device_string_id.has_value()
+             ? l10n_util::GetStringFUTF8(
+                   id_with_device, l10n_util::GetStringUTF16(*device_string_id))
+             : l10n_util::GetStringUTF8(id_without_device);
+}
+
+std::string GetAccountPreviewAccountSwitchingSubtitle(
+    std::string_view new_account_email,
+    const AccountPreviewDataService::AccountPreviewPreference& preference) {
+  CHECK(base::FeatureList::IsEnabled(
+      switches::kEnableAccountPreviewSwitchingAccount));
+
+  const AccountSwitchingSubtitleMessageIds ids =
+      GetAccountSwitchingSubtitleMessageIds();
+  std::u16string new_account_email_u16 = base::UTF8ToUTF16(new_account_email);
+
+  for (const auto& preferred_data_type : preference.preferred_data_types) {
+    if (auto subtitle = GetAccountSwitchingSubtitleForDataType(
+            ids, preferred_data_type.data_type, preference.other_device_info,
+            new_account_email_u16)) {
+      return *subtitle;
+    }
+  }
+
+  return l10n_util::GetStringFUTF8(ids.fallback, new_account_email_u16);
+}
+
+std::u16string GetAccountSwitchingProfileMenuButtonLabel(
+    std::string_view email) {
+  return l10n_util::GetStringFUTF16(
+      IDS_PROFILE_MENU_SWITCH_ACCOUNT_BUTTON_LABEL, base::UTF8ToUTF16(email));
 }
 
 }  // namespace signin

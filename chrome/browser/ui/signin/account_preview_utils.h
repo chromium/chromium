@@ -76,6 +76,31 @@ std::u16string GetAccountPreviewBookmarkManagerPromoTitle(
 std::u16string GetAccountPreviewPasswordManagerPromoTitle(
     const AccountPreviewDataService::AccountPreviewPreference& preference);
 
+// Returns a formatted title string for the Smart Account Switching startup
+// prompt bubble, personalized with the other device form factor in
+// `preference` if available, or falling back to a generic title otherwise.
+// Selects either the in-profile switching or new-profile creation copy
+// according to the active `switches::kEnableAccountPreviewSwitchingAccount`
+// configuration. Requires `switches::kEnableAccountPreviewSwitchingAccount` to
+// be enabled.
+std::string GetAccountPreviewAccountSwitchingTitle(
+    const AccountPreviewDataService::AccountPreviewPreference& preference);
+
+// Returns a formatted subtitle string for the Smart Account Switching startup
+// prompt bubble based on the account preview preference and target account
+// email, falling back to a generic subtitle if `preference` contains no
+// supported preferred data types. Selects either the in-profile switching or
+// new-profile creation copy according to the active
+// `switches::kEnableAccountPreviewSwitchingAccount` configuration. Requires
+// `switches::kEnableAccountPreviewSwitchingAccount` to be enabled.
+std::string GetAccountPreviewAccountSwitchingSubtitle(
+    std::string_view new_account_email,
+    const AccountPreviewDataService::AccountPreviewPreference& preference);
+
+// Returns a formatted label for the Profile Menu "Switch to [Account]" row.
+std::u16string GetAccountSwitchingProfileMenuButtonLabel(
+    std::string_view email);
+
 }  // namespace signin
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_ACCOUNT_PREVIEW_UTILS_H_
