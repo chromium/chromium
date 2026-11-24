@@ -136,6 +136,18 @@ private func isTransferableEndpoint(type: ILType) -> Bool {
         || group.hasSuffix("PendingAssociatedReceiver")
 }
 
+/// Sending an endpoint moves its pipe to the other side. Hides the endpoints
+/// among the `arguments` of a call, so that Fuzzilli does not send or call
+/// them again.
+///
+/// TODO(crbug.com/479225937): Hide endpoints in structs, arrays, and unions,
+/// as the current predicate only identifies arguments that are endpoints.
+private func hideSentEndpoints(_ b: ProgramBuilder, in arguments: [Variable]) {
+    for argument in Set(arguments) where isTransferableEndpoint(type: b.type(of: argument)) {
+        b.hide(argument)
+    }
+}
+
 /// Mojo variant of the builtin `MethodCallGenerator` that operates only on
 /// "Mojo" objects instead of all the objects in the JavaScript environment,
 /// most of which are unrelated to the interface. This generator emits random
@@ -153,11 +165,7 @@ private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     let signatures = b.methodSignatures(of: methodName, on: obj)
     let signature = chooseUniform(from: signatures)
     let arguments = b.findOrGenerateArguments(forSignature: signature, maxNumberOfVariablesToGenerate: 1000)
-    // Sending an endpoint moves its pipe to the other side. Hide the sent
-    // endpoints, so that Fuzzilli does not send or call them again.
-    for argument in Set(arguments) where isTransferableEndpoint(type: b.type(of: argument)) {
-        b.hide(argument)
-    }
+    hideSentEndpoints(b, in: arguments)
     b.callMethod(methodName, on: obj, withArgs: arguments, guard: false)
 }
 
@@ -185,6 +193,7 @@ private func awaitRemoteChain(
     let arguments = b.findOrGenerateArguments(
                         forSignature: signature,
                         maxNumberOfVariablesToGenerate: 1000)
+    hideSentEndpoints(b, in: arguments)
     var value = b.await(b.callMethod(
         method, on: remote, withArgs: arguments, guard: false, isReceiverOptional: true))
     for property in path {
@@ -206,6 +215,7 @@ private func passReceiver(
                         forSignature: signature,
                         maxNumberOfVariablesToGenerate: 1000)
     arguments[index] = receiver
+    hideSentEndpoints(b, in: arguments)
     b.callMethod(method, on: remote, withArgs: arguments, guard: false)
     return newRemote
 }
