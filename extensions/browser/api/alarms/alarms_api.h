@@ -5,18 +5,18 @@
 #ifndef EXTENSIONS_BROWSER_API_ALARMS_ALARMS_API_H_
 #define EXTENSIONS_BROWSER_API_ALARMS_ALARMS_API_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/api/alarms.h"
 
 namespace base {
 class Clock;
 }  // namespace base
 
 namespace extensions {
-struct Alarm;
-using AlarmList = std::vector<Alarm>;
 
 class AlarmsCreateFunction : public ExtensionFunction {
  public:
@@ -45,7 +45,7 @@ class AlarmsGetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Callback(Alarm* alarm);
+  void Callback(std::optional<api::alarms::Alarm> alarm);
   DECLARE_EXTENSION_FUNCTION("alarms.get", ALARMS_GET)
 };
 
@@ -57,7 +57,7 @@ class AlarmsGetAllFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Callback(const AlarmList* alarms);
+  void Callback(std::vector<api::alarms::Alarm> alarms);
   DECLARE_EXTENSION_FUNCTION("alarms.getAll", ALARMS_GETALL)
 };
 

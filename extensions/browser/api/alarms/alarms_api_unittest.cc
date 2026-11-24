@@ -14,6 +14,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -60,7 +61,7 @@ class AlarmsObjectTest : public testing::Test {
     if (period_in_minutes) {
       value.Set("periodInMinutes", *period_in_minutes);
     }
-    std::optional<JsAlarm> alarm = api::alarms::Alarm::FromValue(value);
+    std::optional<JsAlarm> alarm = JsAlarm::FromValue(value);
     CHECK(alarm);
     return std::move(*alarm);
   }
@@ -229,18 +230,18 @@ class ExtensionAlarmsTest : public ApiUnitTest {
 };
 
 void ExtensionAlarmsTestGetAllAlarmsCallback(
-    const AlarmManager::AlarmList* alarms) {
+    std::vector<api::alarms::Alarm> alarms) {
   // Ensure the alarm is gone.
-  ASSERT_FALSE(alarms);
+  ASSERT_TRUE(alarms.empty());
 }
 
 void ExtensionAlarmsTestGetAlarmCallback(ExtensionAlarmsTest* test,
-                                         Alarm* alarm) {
+                                         std::optional<JsAlarm> alarm) {
   ASSERT_TRUE(alarm);
-  EXPECT_EQ("", alarm->js_alarm->name);
-  EXPECT_DOUBLE_EQ(10000, alarm->js_alarm->scheduled_time);
-  EXPECT_FALSE(alarm->js_alarm->period_in_minutes);
-  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
+  EXPECT_EQ("", alarm->name);
+  EXPECT_DOUBLE_EQ(10000, alarm->scheduled_time);
+  EXPECT_FALSE(alarm->period_in_minutes);
+  EXPECT_TRUE(alarm->persist_across_sessions);
 
   // Now wait for the alarm to fire. Our test delegate will quit the
   // MessageLoop when that happens.
@@ -270,15 +271,15 @@ TEST_F(ExtensionAlarmsTest, CreateNameInObject) {
   // Create 1 non-repeating alarm passing name in object.
   CreateAlarm("[null, {\"name\": \"Alarm Name\", \"delayInMinutes\": 0}]");
 
-  base::test::TestFuture<Alarm*> alarm_future;
+  base::test::TestFuture<std::optional<JsAlarm>> alarm_future;
   alarm_manager_->GetAlarm(extension()->id(), "Alarm Name",
                            alarm_future.GetCallback());
-  Alarm* alarm = alarm_future.Get();
+  const std::optional<JsAlarm>& alarm = alarm_future.Get();
   ASSERT_TRUE(alarm);
-  EXPECT_EQ("Alarm Name", alarm->js_alarm->name);
-  EXPECT_DOUBLE_EQ(10000, alarm->js_alarm->scheduled_time);
-  EXPECT_FALSE(alarm->js_alarm->period_in_minutes);
-  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
+  EXPECT_EQ("Alarm Name", alarm->name);
+  EXPECT_DOUBLE_EQ(10000, alarm->scheduled_time);
+  EXPECT_FALSE(alarm->period_in_minutes);
+  EXPECT_TRUE(alarm->persist_across_sessions);
 
   // Now wait for the alarm to fire. Our test delegate will quit the
   // `MessageLoop` when that happens.
@@ -288,11 +289,11 @@ TEST_F(ExtensionAlarmsTest, CreateNameInObject) {
   EXPECT_EQ("Alarm Name", alarm_delegate_->alarms_seen[0]);
 
   // Ensure the alarm is gone.
-  base::test::TestFuture<const AlarmList*> alarm_list_future;
+  base::test::TestFuture<std::vector<api::alarms::Alarm>> alarm_list_future;
   alarm_manager_->GetAllAlarms(extension()->id(),
                                alarm_list_future.GetCallback());
-  const AlarmList* alarm_list = alarm_list_future.Get();
-  ASSERT_FALSE(alarm_list);
+  const std::vector<api::alarms::Alarm>& alarms = alarm_list_future.Get();
+  ASSERT_TRUE(alarms.empty());
 }
 
 // Passing alarm name twice is not valid.
@@ -304,12 +305,12 @@ TEST_F(ExtensionAlarmsTest, CreateNameInvalid) {
 
 void ExtensionAlarmsTestCreateRepeatingGetAlarmCallback(
     ExtensionAlarmsTest* test,
-    Alarm* alarm) {
+    std::optional<JsAlarm> alarm) {
   ASSERT_TRUE(alarm);
-  EXPECT_EQ("", alarm->js_alarm->name);
-  EXPECT_DOUBLE_EQ(10060, alarm->js_alarm->scheduled_time);
-  EXPECT_THAT(alarm->js_alarm->period_in_minutes, testing::Eq(0.001));
-  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
+  EXPECT_EQ("", alarm->name);
+  EXPECT_DOUBLE_EQ(10060, alarm->scheduled_time);
+  EXPECT_THAT(alarm->period_in_minutes, testing::Eq(0.001));
+  EXPECT_TRUE(alarm->persist_across_sessions);
 
   test->test_clock_.Advance(base::Seconds(1));
   // Now wait for the alarm to fire. Our test delegate will quit the
@@ -338,7 +339,7 @@ TEST_F(ExtensionAlarmsTest, CreateRepeating) {
 
 void ExtensionAlarmsTestCreateAbsoluteGetAlarm2Callback(
     ExtensionAlarmsTest* test,
-    Alarm* alarm) {
+    std::optional<JsAlarm> alarm) {
   ASSERT_FALSE(alarm);
 
   ASSERT_EQ(1u, test->alarm_delegate_->alarms_seen.size());
@@ -347,12 +348,12 @@ void ExtensionAlarmsTestCreateAbsoluteGetAlarm2Callback(
 
 void ExtensionAlarmsTestCreateAbsoluteGetAlarm1Callback(
     ExtensionAlarmsTest* test,
-    Alarm* alarm) {
+    std::optional<JsAlarm> alarm) {
   ASSERT_TRUE(alarm);
-  EXPECT_EQ("", alarm->js_alarm->name);
-  EXPECT_DOUBLE_EQ(10001, alarm->js_alarm->scheduled_time);
-  EXPECT_FALSE(alarm->js_alarm->period_in_minutes.has_value());
-  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
+  EXPECT_EQ("", alarm->name);
+  EXPECT_DOUBLE_EQ(10001, alarm->scheduled_time);
+  EXPECT_FALSE(alarm->period_in_minutes.has_value());
+  EXPECT_TRUE(alarm->persist_across_sessions);
 
   test->test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(10.1));
   // Now wait for the alarm to fire. Our test delegate will quit the
@@ -375,14 +376,14 @@ TEST_F(ExtensionAlarmsTest, CreateAbsolute) {
 
 void ExtensionAlarmsTestCreateRepeatingWithQuickFirstCallGetAlarm3Callback(
     ExtensionAlarmsTest* test,
-    Alarm* alarm) {
+    std::optional<JsAlarm> alarm) {
   ASSERT_TRUE(alarm);
   EXPECT_THAT(test->alarm_delegate_->alarms_seen, testing::ElementsAre("", ""));
 }
 
 void ExtensionAlarmsTestCreateRepeatingWithQuickFirstCallGetAlarm2Callback(
     ExtensionAlarmsTest* test,
-    Alarm* alarm) {
+    std::optional<JsAlarm> alarm) {
   ASSERT_TRUE(alarm);
   EXPECT_THAT(test->alarm_delegate_->alarms_seen, testing::ElementsAre(""));
 
@@ -399,12 +400,12 @@ void ExtensionAlarmsTestCreateRepeatingWithQuickFirstCallGetAlarm2Callback(
 
 void ExtensionAlarmsTestCreateRepeatingWithQuickFirstCallGetAlarm1Callback(
     ExtensionAlarmsTest* test,
-    Alarm* alarm) {
+    std::optional<JsAlarm> alarm) {
   ASSERT_TRUE(alarm);
-  EXPECT_EQ("", alarm->js_alarm->name);
-  EXPECT_DOUBLE_EQ(10001, alarm->js_alarm->scheduled_time);
-  EXPECT_THAT(alarm->js_alarm->period_in_minutes, testing::Eq(0.001));
-  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
+  EXPECT_EQ("", alarm->name);
+  EXPECT_DOUBLE_EQ(10001, alarm->scheduled_time);
+  EXPECT_THAT(alarm->period_in_minutes, testing::Eq(0.001));
+  EXPECT_TRUE(alarm->persist_across_sessions);
 
   test->test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(10.1));
   // Now wait for the alarm to fire. Our test delegate will quit the
@@ -430,10 +431,9 @@ TEST_F(ExtensionAlarmsTest, CreateRepeatingWithQuickFirstCall) {
 }
 
 void ExtensionAlarmsTestCreateDupeGetAllAlarmsCallback(
-    const AlarmManager::AlarmList* alarms) {
-  ASSERT_TRUE(alarms);
-  EXPECT_EQ(1u, alarms->size());
-  EXPECT_DOUBLE_EQ(430000, (*alarms)[0].js_alarm->scheduled_time);
+    std::vector<api::alarms::Alarm> alarms) {
+  ASSERT_EQ(1u, alarms.size());
+  EXPECT_DOUBLE_EQ(430000, alarms[0].scheduled_time);
 }
 
 TEST_F(ExtensionAlarmsTest, CreateDupe) {
@@ -594,19 +594,17 @@ TEST_F(ExtensionAlarmsTest, GetAll) {
 }
 
 void ExtensionAlarmsTestClearGetAllAlarms2Callback(
-    const AlarmManager::AlarmList* alarms) {
+    std::vector<api::alarms::Alarm> alarms) {
   // Ensure the 0.001-minute alarm is still there, since it's repeating.
-  ASSERT_TRUE(alarms);
-  EXPECT_EQ(1u, alarms->size());
-  EXPECT_THAT((*alarms)[0].js_alarm->period_in_minutes, testing::Eq(0.001));
+  ASSERT_EQ(1u, alarms.size());
+  EXPECT_THAT(alarms[0].period_in_minutes, testing::Eq(0.001));
 }
 
 void ExtensionAlarmsTestClearGetAllAlarms1Callback(
     ExtensionAlarmsTest* test,
-    const AlarmManager::AlarmList* alarms) {
-  ASSERT_TRUE(alarms);
-  EXPECT_EQ(1u, alarms->size());
-  EXPECT_THAT((*alarms)[0].js_alarm->period_in_minutes, testing::Eq(0.001));
+    std::vector<api::alarms::Alarm> alarms) {
+  ASSERT_EQ(1u, alarms.size());
+  EXPECT_THAT(alarms[0].period_in_minutes, testing::Eq(0.001));
 
   // Now wait for the alarms to fire, and ensure the cancelled alarms don't
   // fire.
@@ -650,15 +648,14 @@ TEST_F(ExtensionAlarmsTest, Clear) {
 }
 
 void ExtensionAlarmsTestClearAllGetAllAlarms2Callback(
-    const AlarmManager::AlarmList* alarms) {
-  ASSERT_FALSE(alarms);
+    std::vector<api::alarms::Alarm> alarms) {
+  ASSERT_TRUE(alarms.empty());
 }
 
 void ExtensionAlarmsTestClearAllGetAllAlarms1Callback(
     ExtensionAlarmsTest* test,
-    const AlarmManager::AlarmList* alarms) {
-  ASSERT_TRUE(alarms);
-  EXPECT_EQ(3u, alarms->size());
+    std::vector<api::alarms::Alarm> alarms) {
+  EXPECT_EQ(3u, alarms.size());
 
   // Clear them.
   test->RunFunction(base::MakeRefCounted<AlarmsClearAllFunction>(), "[]");
@@ -723,11 +720,10 @@ TEST_F(ExtensionAlarmsTest, ClearAll) {
 }
 
 class ExtensionAlarmsSchedulingTest : public ExtensionAlarmsTest {
-  void GetAlarmCallback(Alarm* alarm) {
+  void GetAlarmCallback(std::optional<JsAlarm> alarm) {
     CHECK(alarm);
     const base::Time scheduled_time =
-        base::Time::FromMillisecondsSinceUnixEpoch(
-            alarm->js_alarm->scheduled_time);
+        base::Time::FromMillisecondsSinceUnixEpoch(alarm->scheduled_time);
     EXPECT_EQ(scheduled_time, alarm_manager_->next_poll_time_);
   }
 
@@ -875,11 +871,12 @@ TEST_F(ExtensionAlarmsSchedulingTest, MinimumGranularity) {
       alarm_manager_->next_poll_time_.InMillisecondsFSinceUnixEpoch());
 }
 
-void FrequencyTestGetAlarmsCallback(ExtensionAlarmsTest* test, Alarm* alarm) {
+void FrequencyTestGetAlarmCallback(ExtensionAlarmsTest* test,
+                                   std::optional<JsAlarm> alarm) {
   ASSERT_TRUE(alarm);
-  EXPECT_EQ("hello", alarm->js_alarm->name);
-  EXPECT_DOUBLE_EQ(10000, alarm->js_alarm->scheduled_time);
-  EXPECT_THAT(alarm->js_alarm->period_in_minutes, testing::Eq(0.0001));
+  EXPECT_EQ("hello", alarm->name);
+  EXPECT_DOUBLE_EQ(10000, alarm->scheduled_time);
+  EXPECT_THAT(alarm->period_in_minutes, testing::Eq(0.0001));
 
   test->test_clock_.Advance(base::Milliseconds(10));
   // Now wait for the alarm to fire. Our test delegate will quit the
@@ -921,7 +918,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
     // Let the alarm fire once, we will verify the next polling time afterwards.
     alarm_manager_->GetAlarm(
         extension()->id(), "hello",
-        base::BindOnce(FrequencyTestGetAlarmsCallback, this));
+        base::BindOnce(FrequencyTestGetAlarmCallback, this));
 
     // The stored alarm's "periodInMinutes" is much smaller than allowed minimum
     // in this test (alarms_api_constants::kDevDelayMinimum or
@@ -931,7 +928,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
     base::Time expected_poll_time =
         // 10s initial clock.
         base::Time::FromSecondsSinceUnixEpoch(10) +
-        // 10ms in FrequencyTestGetAlarmsCallback.
+        // 10ms in FrequencyTestGetAlarmCallback.
         base::Milliseconds(10) + entry.delay_minimum;
     // The alarm should not trigger before our expected poll time...
     EXPECT_GE(alarm_manager_->next_poll_time_, expected_poll_time);
@@ -943,10 +940,11 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
   }
 }
 
-void OldAlarmTestGetAlarmsCallback(ExtensionAlarmsTest* test, Alarm* alarm) {
+void OldAlarmsTestGetAlarmCallback(ExtensionAlarmsTest* test,
+                                   std::optional<JsAlarm> alarm) {
   ASSERT_TRUE(alarm);
-  EXPECT_EQ("hello", alarm->js_alarm->name);
-  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
+  EXPECT_EQ("hello", alarm->name);
+  EXPECT_TRUE(alarm->persist_across_sessions);
 }
 
 // Tests that when reading an alarm from storage that was created before we had
@@ -961,7 +959,7 @@ TEST_F(ExtensionAlarmsTest, OldPersistentAlarmFromStorage) {
                                   base::test::ParseJson(alarm_args));
 
   alarm_manager_->GetAlarm(extension()->id(), "hello",
-                           base::BindOnce(OldAlarmTestGetAlarmsCallback, this));
+                           base::BindOnce(OldAlarmsTestGetAlarmCallback, this));
 
   // This looks racy (we're removing the alarm that the callback is waiting to
   // fire on), but the callback is run synchronously, so this is fine.

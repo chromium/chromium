@@ -107,16 +107,18 @@ class AlarmManager : public BrowserContextKeyedAPI,
                 Alarm alarm,
                 AddAlarmCallback callback);
 
-  using GetAlarmCallback = base::OnceCallback<void(Alarm*)>;
-  // Passes the alarm with the given name, or NULL if none exists, to
+  using GetAlarmCallback =
+      base::OnceCallback<void(std::optional<api::alarms::Alarm>)>;
+  // Passes the alarm with the given name, or std::nullopt if none exists, to
   // `callback`.
   void GetAlarm(const ExtensionId& extension_id,
                 const std::string& name,
                 GetAlarmCallback callback);
 
-  using GetAllAlarmsCallback = base::OnceCallback<void(const AlarmList*)>;
-  // Passes the list of pending alarms for the given extension, or
-  // NULL if none exist, to `callback`.
+  using GetAllAlarmsCallback =
+      base::OnceCallback<void(std::vector<api::alarms::Alarm>)>;
+  // Passes the vector containing pending alarms for the given extension to
+  // `callback`.
   void GetAllAlarms(const ExtensionId& extension_id,
                     GetAllAlarmsCallback callback);
 

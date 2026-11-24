@@ -14,7 +14,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
-#include "base/values.h"
 #include "extensions/browser/api/alarms/alarm_manager.h"
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/common/api/alarms.h"
@@ -197,9 +196,9 @@ ExtensionFunction::ResponseAction AlarmsGetFunction::Run() {
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void AlarmsGetFunction::Callback(extensions::Alarm* alarm) {
+void AlarmsGetFunction::Callback(std::optional<api::alarms::Alarm> alarm) {
   if (alarm) {
-    Respond(ArgumentList(alarms::Get::Results::Create(*alarm->js_alarm)));
+    Respond(ArgumentList(alarms::Get::Results::Create(*alarm)));
   } else {
     Respond(NoArguments());
   }
@@ -213,13 +212,8 @@ ExtensionFunction::ResponseAction AlarmsGetAllFunction::Run() {
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void AlarmsGetAllFunction::Callback(const AlarmList* alarms) {
-  base::ListValue alarms_value;
-  if (alarms) {
-    for (const auto& alarm : *alarms)
-      alarms_value.Append(alarm.js_alarm->ToValue());
-  }
-  Respond(WithArguments(std::move(alarms_value)));
+void AlarmsGetAllFunction::Callback(std::vector<api::alarms::Alarm> alarms) {
+  Respond(ArgumentList(alarms::GetAll::Results::Create(alarms)));
 }
 
 ExtensionFunction::ResponseAction AlarmsClearFunction::Run() {

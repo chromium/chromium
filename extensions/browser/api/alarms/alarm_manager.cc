@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -203,13 +204,22 @@ void AlarmManager::GetAlarmWhenReady(const std::string& name,
                                      GetAlarmCallback callback,
                                      const ExtensionId& extension_id) {
   AlarmIterator it = GetAlarmIterator(extension_id, name);
-  std::move(callback).Run(it.first != alarms_.end() ? &*it.second : nullptr);
+  std::move(callback).Run(it.first != alarms_.end()
+                              ? std::make_optional(it.second->js_alarm->Clone())
+                              : std::nullopt);
 }
 
 void AlarmManager::GetAllAlarmsWhenReady(GetAllAlarmsCallback callback,
                                          const ExtensionId& extension_id) {
   auto list = alarms_.find(extension_id);
-  std::move(callback).Run(list != alarms_.end() ? &list->second : nullptr);
+  std::vector<api::alarms::Alarm> alarms;
+  if (list != alarms_.end()) {
+    alarms.reserve(list->second.size());
+    for (const Alarm& alarm : list->second) {
+      alarms.push_back(alarm.js_alarm->Clone());
+    }
+  }
+  std::move(callback).Run(std::move(alarms));
 }
 
 void AlarmManager::RemoveAlarmWhenReady(const std::string& name,
