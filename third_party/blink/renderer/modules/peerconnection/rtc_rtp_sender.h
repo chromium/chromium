@@ -148,6 +148,16 @@ class MODULES_EXPORT RTCRtpSender final
   void set_transceiver(RTCRtpTransceiver*);
   void set_transport(RTCDtlsTransport*);
 
+  void GenerateKeyFrame(
+      const String& rid,
+      scoped_refptr<base::SingleThreadTaskRunner> transformer_task_runner,
+      CrossThreadOnceFunction<
+          void(const RTCRtpScriptTransform::GenerateKeyFrameRequestResult,
+               Vector<String>)> callback,
+      CrossThreadOnceFunction<
+          void(const RTCRtpScriptTransform::GenerateKeyFrameRequestResult)>
+          cancel_callback);
+
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
 

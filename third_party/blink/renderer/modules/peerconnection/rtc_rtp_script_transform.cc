@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transformer.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transform_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -210,10 +211,18 @@ void RTCRtpScriptTransform::AttachToReceiver(RTCRtpReceiver* receiver) {
   receiver_ = receiver;
 }
 
+void RTCRtpScriptTransform::AttachToSender(RTCRtpSender* sender) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_attached_);
+  Attach();
+  sender_ = sender;
+}
+
 void RTCRtpScriptTransform::Detach() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_attached_ = false;
   receiver_ = nullptr;
+  sender_ = nullptr;
   encoded_video_transformer_ = nullptr;
   encoded_audio_transformer_ = nullptr;
   disconnect_callback_source_.Reset();
@@ -270,9 +279,42 @@ void RTCRtpScriptTransform::SendKeyFrameRequestToReceiver(
                       CrossThreadBindOnce(std::move(callback), result));
 }
 
+void RTCRtpScriptTransform::GenerateKeyFrame(
+    const String& rid,
+    CrossThreadOnceFunction<void(const GenerateKeyFrameRequestResult,
+                                 Vector<String>)> callback,
+    CrossThreadOnceFunction<void(const GenerateKeyFrameRequestResult)>
+        cancel_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // `SetRtpTransformer` is posted to `rtp_transform_task_runner_` before
+  // `RTCRtpScriptTransformer` is exposed to script on the worker, so
+  // `rtp_transformer_` is guaranteed to be initialized before any
+  // `GenerateKeyFrame` task posted by script on that same runner.
+  CHECK(rtp_transformer_);
+  if (is_unused_ || (is_attached_ && !sender_)) {
+    PostCrossThreadTask(
+        *rtp_transformer_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(std::move(callback),
+                            GenerateKeyFrameRequestResult::kInvalidState,
+                            Vector<String>()));
+    return;
+  }
+  if (!is_attached_ || !sender_) {
+    PostCrossThreadTask(
+        *rtp_transformer_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(std::move(callback),
+                            GenerateKeyFrameRequestResult::kClosedOrStopped,
+                            Vector<String>()));
+    return;
+  }
+  sender_->GenerateKeyFrame(rid, rtp_transformer_task_runner_,
+                            std::move(callback), std::move(cancel_callback));
+}
+
 void RTCRtpScriptTransform::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(receiver_);
+  visitor->Trace(sender_);
 }
 
 }  // namespace blink

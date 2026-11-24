@@ -23,12 +23,14 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class ExceptionState;
 class ScriptState;
 class RTCRtpReceiver;
+class RTCRtpSender;
 
 class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -43,6 +45,15 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
     kNoTransformer,
     kDetached,
     kInvalidDirection
+  };
+
+  enum class GenerateKeyFrameRequestResult {
+    kSuccess,
+    kInvalidState,
+    kNotFound,
+    // The connection is closed, the transceiver is stopped, or the transform
+    // is detached, so no future key frame can ever resolve the request.
+    kClosedOrStopped,
   };
 
   static RTCRtpScriptTransform* Create(ScriptState*,
@@ -79,6 +90,7 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
 
   void Attach();
   void AttachToReceiver(RTCRtpReceiver*);
+  void AttachToSender(RTCRtpSender*);
   void Detach();
   bool HasBeenUsed() const;
 
@@ -94,6 +106,13 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
 
   RTCRtpScriptTransform::SendKeyFrameRequestResult
   HandleSendKeyFrameRequestResults();
+
+  void GenerateKeyFrame(
+      const String& rid,
+      CrossThreadOnceFunction<void(const GenerateKeyFrameRequestResult,
+                                   Vector<String>)> callback,
+      CrossThreadOnceFunction<void(const GenerateKeyFrameRequestResult)>
+          cancel_callback);
 
   void Trace(Visitor*) const override;
 
@@ -129,6 +148,7 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
   bool is_attached_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_unused_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
   WeakMember<RTCRtpReceiver> receiver_;
+  WeakMember<RTCRtpSender> sender_;
 };
 }  // namespace blink
 

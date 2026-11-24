@@ -26,14 +26,20 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoding_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_encoding_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_send_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver_direction.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_set_parameter_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_mediastreamtrack_string.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/peerconnection/fake_rtc_rtp_transceiver_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_encoded_source.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transceiver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
@@ -48,6 +54,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
@@ -566,6 +573,208 @@ TEST_F(RTCRtpSenderTest, SetParametersFailsOnNativeRejection) {
       V8DOMException::ToWrappable(scope.GetIsolate(), tester.Value().V8Value());
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "OperationError");
+}
+
+namespace {
+
+RTCRtpScriptTransform::GenerateKeyFrameRequestResult RunGenerateKeyFrame(
+    RTCRtpSender* sender,
+    const String& rid,
+    Vector<String>* selected_rids) {
+  auto result =
+      RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kInvalidState;
+  bool called = false;
+  selected_rids->clear();
+  sender->GenerateKeyFrame(
+      rid, blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+      CrossThreadBindOnce(
+          [](bool* called_out,
+             RTCRtpScriptTransform::GenerateKeyFrameRequestResult* result_out,
+             Vector<String>* rids_out,
+             const RTCRtpScriptTransform::GenerateKeyFrameRequestResult r,
+             Vector<String> rids) {
+            *called_out = true;
+            *result_out = r;
+            *rids_out = std::move(rids);
+          },
+          CrossThreadUnretained(&called), CrossThreadUnretained(&result),
+          CrossThreadUnretained(selected_rids)),
+      CrossThreadBindOnce(
+          [](const RTCRtpScriptTransform::GenerateKeyFrameRequestResult) {}));
+  test::RunPendingTasks();
+  EXPECT_TRUE(called);
+  return result;
+}
+
+}  // namespace
+
+TEST_F(RTCRtpSenderTest, GenerateKeyFrameSelectsActiveLayers) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+
+  auto platform = std::make_unique<EncodingsFakeRTCRtpSenderPlatform>();
+  webrtc::RtpEncodingParameters layer0;
+  layer0.rid = "0";
+  layer0.active = true;
+  webrtc::RtpEncodingParameters layer1;
+  layer1.rid = "1";
+  layer1.active = false;
+  webrtc::RtpEncodingParameters layer2;
+  layer2.rid = "2";
+  layer2.active = true;
+  platform->last_encodings_ = {layer0, layer1, layer2};
+
+  auto* platform_ptr = platform.get();
+  auto* sender = CreateSender(pc, std::move(platform));
+
+  // Without a track attached (even with no transceiver), GenerateKeyFrame
+  // selects the active layers and delegates to the platform sender.
+  Vector<String> selected_rids;
+  EXPECT_EQ(RunGenerateKeyFrame(sender, /*rid=*/String(), &selected_rids),
+            RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kSuccess);
+  EXPECT_THAT(selected_rids, testing::ElementsAre("0", "2"));
+  EXPECT_EQ(platform_ptr->generate_keyframe_call_count_, 1);
+
+  auto* dummy_transceiver = pc->addTransceiver(
+      MakeGarbageCollected<V8UnionMediaStreamTrackOrString>("video"),
+      RTCRtpTransceiverInit::Create(), scope.GetExceptionState());
+  ASSERT_TRUE(dummy_transceiver);
+  sender->SetTrack(dummy_transceiver->receiver()->track());
+
+  // Ridless call selects all active layers ("0" and "2") in order.
+  EXPECT_EQ(RunGenerateKeyFrame(sender, /*rid=*/String(), &selected_rids),
+            RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kSuccess);
+  EXPECT_THAT(selected_rids, testing::ElementsAre("0", "2"));
+
+  // Requesting an inactive layer ("1") fails with kNotFound.
+  EXPECT_EQ(RunGenerateKeyFrame(sender, "1", &selected_rids),
+            RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kNotFound);
+  EXPECT_TRUE(selected_rids.empty());
+
+  // Legacy SSRC simulcast (multiple active encodings with empty rid)
+  // deduplicates `selected_rids` to a single empty string.
+  webrtc::RtpEncodingParameters ssrc_layer;
+  ssrc_layer.active = true;
+  platform_ptr->last_encodings_ = {ssrc_layer, ssrc_layer};
+  EXPECT_EQ(RunGenerateKeyFrame(sender, /*rid=*/String(), &selected_rids),
+            RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kSuccess);
+  EXPECT_THAT(selected_rids, testing::ElementsAre(""));
+
+  // Closed PeerConnection returns kClosedOrStopped without calling platform.
+  int call_count_before_close = platform_ptr->generate_keyframe_call_count_;
+  pc->close();
+  EXPECT_EQ(
+      RunGenerateKeyFrame(sender, /*rid=*/String(), &selected_rids),
+      RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kClosedOrStopped);
+  EXPECT_TRUE(selected_rids.empty());
+  EXPECT_EQ(platform_ptr->generate_keyframe_call_count_,
+            call_count_before_close);
+}
+
+TEST_F(RTCRtpSenderTest,
+       GenerateKeyFrameSelectsActiveRidsWhenTransceiverInactive) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+
+  auto platform = std::make_unique<EncodingsFakeRTCRtpSenderPlatform>();
+  webrtc::RtpEncodingParameters layer0;
+  layer0.rid = "0";
+  layer0.active = true;
+  webrtc::RtpEncodingParameters layer1;
+  layer1.rid = "1";
+  layer1.active = false;
+  webrtc::RtpEncodingParameters layer2;
+  layer2.rid = "2";
+  layer2.active = true;
+  platform->last_encodings_ = {layer0, layer1, layer2};
+
+  auto* platform_ptr = platform.get();
+  auto* sender = CreateSender(pc, std::move(platform));
+
+  auto* dummy_transceiver = pc->addTransceiver(
+      MakeGarbageCollected<V8UnionMediaStreamTrackOrString>("video"),
+      RTCRtpTransceiverInit::Create(), scope.GetExceptionState());
+  ASSERT_TRUE(dummy_transceiver);
+  sender->SetTrack(dummy_transceiver->receiver()->track());
+
+  auto task_runner = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
+  auto* inactive_transceiver = MakeGarbageCollected<RTCRtpTransceiver>(
+      pc,
+      std::make_unique<FakeRTCRtpTransceiverImpl>(
+          "0", FakeRTCRtpSenderImpl("track_id", {}, task_runner),
+          FakeRTCRtpReceiverImpl("recv_id", {}, task_runner),
+          webrtc::RtpTransceiverDirection::kInactive,
+          webrtc::RtpTransceiverDirection::kInactive),
+      sender, dummy_transceiver->receiver());
+  ASSERT_TRUE(inactive_transceiver->currentDirection().has_value());
+  EXPECT_EQ(inactive_transceiver->currentDirection()->AsEnum(),
+            V8RTCRtpTransceiverDirection::Enum::kInactive);
+
+  // While the transceiver is negotiated inactive, `GenerateKeyFrame` still
+  // selects the active layers and delegates to the platform sender (WebRTC
+  // treats non-sending senders as a no-op).
+  Vector<String> selected_rids;
+  EXPECT_EQ(RunGenerateKeyFrame(sender, /*rid=*/String(), &selected_rids),
+            RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kSuccess);
+  EXPECT_THAT(selected_rids, testing::ElementsAre("0", "2"));
+  EXPECT_EQ(platform_ptr->generate_keyframe_call_count_, 1);
+}
+
+TEST_F(RTCRtpSenderTest, GenerateKeyFrameRejectsNotFoundWhenNoActiveLayers) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+
+  auto platform = std::make_unique<EncodingsFakeRTCRtpSenderPlatform>();
+  webrtc::RtpEncodingParameters layer0;
+  layer0.rid = "0";
+  layer0.active = false;
+  webrtc::RtpEncodingParameters layer1;
+  layer1.rid = "1";
+  layer1.active = false;
+  platform->last_encodings_ = {layer0, layer1};
+
+  auto* sender = CreateSender(pc, std::move(platform));
+
+  Vector<String> selected_rids;
+  EXPECT_EQ(RunGenerateKeyFrame(sender, /*rid=*/String(), &selected_rids),
+            RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kNotFound);
+  EXPECT_TRUE(selected_rids.empty());
+}
+
+TEST_F(RTCRtpSenderTest, GenerateKeyFrameRejectsNotFoundWhenTrackEnded) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+
+  auto platform = std::make_unique<EncodingsFakeRTCRtpSenderPlatform>();
+  webrtc::RtpEncodingParameters layer0;
+  layer0.rid = "0";
+  layer0.active = true;
+  platform->last_encodings_ = {layer0};
+
+  auto* platform_ptr = platform.get();
+  auto* sender = CreateSender(pc, std::move(platform));
+
+  auto* dummy_transceiver = pc->addTransceiver(
+      MakeGarbageCollected<V8UnionMediaStreamTrackOrString>("video"),
+      RTCRtpTransceiverInit::Create(), scope.GetExceptionState());
+  ASSERT_TRUE(dummy_transceiver);
+  MediaStreamTrack* track = dummy_transceiver->receiver()->track();
+  sender->SetTrack(track);
+  track->stopTrack(scope.GetExecutionContext());
+  ASSERT_TRUE(track->Ended());
+
+  Vector<String> selected_rids;
+  EXPECT_EQ(RunGenerateKeyFrame(sender, /*rid=*/String(), &selected_rids),
+            RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kNotFound);
+  EXPECT_TRUE(selected_rids.empty());
+  EXPECT_EQ(RunGenerateKeyFrame(sender, "0", &selected_rids),
+            RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kNotFound);
+  EXPECT_TRUE(selected_rids.empty());
+  EXPECT_EQ(platform_ptr->generate_keyframe_call_count_, 0);
 }
 
 class RTCRtpSenderEncodedSourceTest : public RTCRtpSenderTest {};

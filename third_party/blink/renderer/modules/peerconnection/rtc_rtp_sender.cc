@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_header_extension_capability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_header_extension_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_send_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver_direction.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_set_parameter_options.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -70,6 +71,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_source.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transceiver.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_stats_report.h"
 #include "third_party/blink/renderer/modules/peerconnection/web_rtc_stats_report_callback_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -88,6 +90,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -1543,7 +1546,7 @@ void RTCRtpSender::setTransform(RTCRtpScriptTransform* transform,
     StopShortCircuiting();
   }
   transform_ = transform;
-  transform_->Attach();
+  transform_->AttachToSender(this);
   if (kind_ == "audio") {
     transform_->CreateAudioUnderlyingSourceAndSink(
         CrossThreadBindOnce(&RTCRtpSender::UnregisterEncodedAudioStreamCallback,
@@ -1556,6 +1559,97 @@ void RTCRtpSender::setTransform(RTCRtpScriptTransform* transform,
       CrossThreadBindOnce(&RTCRtpSender::UnregisterEncodedVideoStreamCallback,
                           WrapCrossThreadWeakPersistent(this)),
       encoded_video_transformer_);
+}
+
+void OnKeyFrameLayersSelected(
+    scoped_refptr<base::SingleThreadTaskRunner> transformer_task_runner,
+    CrossThreadOnceFunction<
+        void(const RTCRtpScriptTransform::GenerateKeyFrameRequestResult,
+             Vector<String>)> callback,
+    Vector<String> selected_rids) {
+  auto result =
+      selected_rids.empty()
+          ? RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kNotFound
+          : RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kSuccess;
+  PostCrossThreadTask(*transformer_task_runner, FROM_HERE,
+                      CrossThreadBindOnce(std::move(callback), result,
+                                          std::move(selected_rids)));
+}
+
+void OnKeyFrameEncoderError(
+    scoped_refptr<base::SingleThreadTaskRunner> transformer_task_runner,
+    CrossThreadOnceFunction<
+        void(const RTCRtpScriptTransform::GenerateKeyFrameRequestResult)>
+        cancel_callback,
+    webrtc::RTCError error) {
+  auto error_result =
+      error.type() == webrtc::RTCErrorType::INVALID_PARAMETER
+          ? RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kNotFound
+          : RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kInvalidState;
+  PostCrossThreadTask(
+      *transformer_task_runner, FROM_HERE,
+      CrossThreadBindOnce(std::move(cancel_callback), error_result));
+}
+
+void RTCRtpSender::GenerateKeyFrame(
+    const String& rid,
+    scoped_refptr<base::SingleThreadTaskRunner> transformer_task_runner,
+    CrossThreadOnceFunction<
+        void(const RTCRtpScriptTransform::GenerateKeyFrameRequestResult,
+             Vector<String>)> callback,
+    CrossThreadOnceFunction<
+        void(const RTCRtpScriptTransform::GenerateKeyFrameRequestResult)>
+        cancel_callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (kind_ != "video") {
+    PostCrossThreadTask(
+        *transformer_task_runner, FROM_HERE,
+        CrossThreadBindOnce(
+            std::move(callback),
+            RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kInvalidState,
+            Vector<String>()));
+    return;
+  }
+  // Spec: layers that are not active, or whose track has ended, are removed;
+  // if none remain the promise rejects with NotFoundError. A closed connection
+  // or stopped transceiver can never resume sending, so the promise stays
+  // pending permanently without registering against incoming frames. A
+  // non-sending direction or null track keeps the request pending so it can
+  // resolve if sending resumes.
+  if (track_ && track_->Ended()) {
+    PostCrossThreadTask(
+        *transformer_task_runner, FROM_HERE,
+        CrossThreadBindOnce(
+            std::move(callback),
+            RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kNotFound,
+            Vector<String>()));
+    return;
+  }
+  const bool pc_closed = pc_ && pc_->IsClosed();
+  const bool transceiver_stopped = transceiver_ && transceiver_->stopped();
+  if (pc_closed || transceiver_stopped) {
+    PostCrossThreadTask(
+        *transformer_task_runner, FROM_HERE,
+        CrossThreadBindOnce(std::move(callback),
+                            RTCRtpScriptTransform::
+                                GenerateKeyFrameRequestResult::kClosedOrStopped,
+                            Vector<String>()));
+    return;
+  }
+
+  // Active-layer selection and encoder triggering run in a single async hop on
+  // the WebRTC signaling thread (no blocking call on the main thread, and no
+  // gating on cached `transceiver_->currentDirection()`, which may lag behind
+  // pending SLD/SRD — WebRTC treats non-sending senders as a no-op).
+  // `OnKeyFrameLayersSelected` runs before WebRTC's `GenerateKeyFrame()`,
+  // posting `callback` to `transformer_task_runner` ahead of any resulting key
+  // frame delivered via `OnFrameFromSource`.
+  sender_->GenerateKeyFrame(
+      rid,
+      CrossThreadBindOnce(&OnKeyFrameLayersSelected, transformer_task_runner,
+                          std::move(callback)),
+      CrossThreadBindOnce(&OnKeyFrameEncoderError, transformer_task_runner,
+                          std::move(cancel_callback)));
 }
 
 void RTCRtpSender::LogMessage(const std::string& message) {
