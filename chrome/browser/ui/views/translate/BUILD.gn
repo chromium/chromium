@@ -183,6 +183,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/page_action:page_action_test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/enterprise/isolated_mode:test_support",
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//content/public/browser",

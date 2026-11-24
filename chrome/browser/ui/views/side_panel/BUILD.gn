@@ -221,6 +221,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_scoped_utils",
     "//components/contextual_tasks/public:feature_list",
+    "//components/enterprise/isolated_mode:test_support",
     "//testing/gtest",
   ]
 }
@@ -246,6 +247,7 @@ source_set("interactive_ui_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_scoped_utils",
     "//chrome/test/user_education",
+    "//components/enterprise/isolated_mode:test_support",
     "//testing/gtest",
   ]
 }

@@ -35,8 +35,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -102,6 +101,12 @@ class ActionAppMenuManagerTest : public ActionAppMenuTestBase {
                                         consent_level);
     return identity_manager;
   }
+};
+
+class ActionAppMenuManagerIsolatedModeTest : public ActionAppMenuManagerTest {
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
 };
 
 TEST_F(ActionAppMenuManagerTest, ProxySyncsWithDelegateAndInvokes) {
@@ -345,16 +350,8 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenuSingleProfile) {
             kActionManageChromeProfiles);
 }
 
-TEST_F(ActionAppMenuManagerTest,
+TEST_F(ActionAppMenuManagerIsolatedModeTest,
        BlockActionsEnterpriseIsolatedModeReplacesIncognito) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-  profile_->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-
   ActionAppMenuManager menu_manager(&mock_window_interface_,
                                     &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
@@ -433,16 +430,8 @@ TEST_F(ActionAppMenuManagerTest, BlockActionsIncognitoNewTabTextOverride) {
                            chrome::CleanTextOptions::kEllipses));
 }
 
-TEST_F(ActionAppMenuManagerTest,
+TEST_F(ActionAppMenuManagerIsolatedModeTest,
        BlockActionsEnterpriseIsolatedModeNewTabTextOverride) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-  profile_->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-
   Profile* isolated_profile =
       profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());

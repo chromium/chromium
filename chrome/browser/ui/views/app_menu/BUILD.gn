@@ -265,7 +265,7 @@ if (toolkit_views) {
       "//components/bookmarks/browser",
       "//components/bookmarks/common",
       "//components/bookmarks/test",
-      "//components/enterprise/isolated_mode",
+      "//components/enterprise/isolated_mode:test_support",
       "//components/favicon/core/test:test_support",
       "//components/history/core/common",
       "//components/prefs",

@@ -15,7 +15,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -46,7 +45,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -71,10 +70,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/test/base/scoped_channel_override.h"
-#endif
 
 class LayoutWaiter : public views::ViewObserver {
  public:
@@ -617,19 +612,9 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedTest,
 
 class HorizontalTabStripRegionViewUnifiedIsolatedTest
     : public HorizontalTabStripRegionViewUnifiedTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    HorizontalTabStripRegionViewUnifiedTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        enterprise_isolated_mode::switches::
-            kForceEnterpriseIsolatedModeReplacesIncognito);
-  }
-
  private:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-  chrome::ScopedChannelOverride channel_override_{
-      chrome::ScopedChannelOverride::Channel::kDev};
-#endif
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedIsolatedTest,

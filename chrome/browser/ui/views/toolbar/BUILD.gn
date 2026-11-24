@@ -550,6 +550,7 @@ if (!is_android) {
       "//chrome/test/permissions",
       "//components/commerce/core:feature_list",
       "//components/contextual_tasks/public",
+      "//components/enterprise/isolated_mode:test_support",
       "//components/prefs",
       "//components/translate/content/browser:test_support",
       "//components/user_education/views",

@@ -5,23 +5,18 @@
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/test/base/scoped_channel_override.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 class HistoryClustersSidePanelCoordinatorBrowserTest
     : public InProcessBrowserTest {
@@ -80,27 +75,16 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersSidePanelCoordinatorBrowserTest,
 
 class HistoryClustersSidePanelCoordinatorIsolatedModeBrowserTest
     : public HistoryClustersSidePanelCoordinatorBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    HistoryClustersSidePanelCoordinatorBrowserTest::SetUpCommandLine(
-        command_line);
-    command_line->AppendSwitch(
-        enterprise_isolated_mode::switches::
-            kForceEnterpriseIsolatedModeReplacesIncognito);
-  }
-
  private:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-  chrome::ScopedChannelOverride channel_override_{
-      chrome::ScopedChannelOverride::Channel::kDev};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(
     HistoryClustersSidePanelCoordinatorIsolatedModeBrowserTest,
     DisabledInIsolatedMode) {
-  // Use CreateIncognitoBrowser() which creates an isolated mode profile when
-  // the kForceEnterpriseIsolatedModeReplacesIncognito switch is present.
+  // Use CreateIncognitoBrowser(), which creates an isolated mode profile when
+  // isolated mode replaces incognito.
   BrowserWindowInterface* isolated_browser =
       CreateIncognitoBrowser(browser()->GetProfile());
   EXPECT_TRUE(
