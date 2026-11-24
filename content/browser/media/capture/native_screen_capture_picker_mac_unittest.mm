@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/test/browser_task_environment.h"
@@ -270,6 +271,7 @@ namespace {
 constexpr int kTestFrameWidth = 100;
 constexpr int kTestFrameHeight = 100;
 constexpr base::TimeDelta kScreenshotFadeOutDelay = base::Milliseconds(250);
+constexpr base::TimeDelta kTestIdleTimeout = base::Minutes(30);
 
 }  // namespace
 
@@ -390,6 +392,15 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
           NativeScreenCapturePickerMac::GetInstance())
           ->OnScreenLocked();
     }
+  }
+
+  // Returns whether the picker still holds any state for `session_id`.
+  bool HasSession(DesktopMediaID::Id session_id) {
+    if (@available(macOS 14.0, *)) {
+      return NativeScreenCapturePickerMac::GetInstance()->sessions_.contains(
+          session_id);
+    }
+    return false;
   }
 
   void TriggerCancel() {
@@ -1032,6 +1043,177 @@ TEST_F(NativeScreenCapturePickerMacTest,
     // CreateDevice() must not bring the session back, mark the source active,
     // or turn the picker back on while the screen is locked.
     EXPECT_FALSE(device);
+    EXPECT_FALSE(g_fake_picker.active);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RetainSessionForScreenshotsUnknownIdReturnsFalse) {
+  if (@available(macOS 14.0, *)) {
+    constexpr DesktopMediaID::Id kUnknownSessionId = 999;
+    EXPECT_FALSE(
+        NativeScreenCapturePickerMac::GetInstance()
+            ->RetainSessionForScreenshots(kUnknownSessionId, kTestIdleTimeout));
+
+    // A rejected call must not leave a session behind for the unknown id.
+    EXPECT_FALSE(HasSession(kUnknownSessionId));
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RetainSessionForScreenshotsWithoutFilterReturnsFalse) {
+  if (@available(macOS 14.0, *)) {
+    // Open the picker without selecting anything, so that the session exists
+    // but has no content filter yet.
+    DesktopMediaID::Id session_id = 0;
+    picker_->Open(DesktopMediaID::TYPE_SCREEN,
+                  base::BindLambdaForTesting(
+                      [&](DesktopMediaID::Id id) { session_id = id; }),
+                  base::DoNothing(), base::DoNothing(), base::DoNothing(),
+                  base::DoNothing());
+    ASSERT_TRUE(HasSession(session_id));
+
+    EXPECT_FALSE(
+        NativeScreenCapturePickerMac::GetInstance()
+            ->RetainSessionForScreenshots(session_id, kTestIdleTimeout));
+
+    // No idle timer was started, so the pending picker request keeps its
+    // session.
+    task_environment_.FastForwardBy(kTestIdleTimeout);
+    EXPECT_TRUE(HasSession(session_id));
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RetainSessionForScreenshotsRejectsNonPositiveIdleTimeout) {
+  if (@available(macOS 14.0, *)) {
+    const DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_SCREEN);
+    NativeScreenCapturePickerMac* picker_mac =
+        NativeScreenCapturePickerMac::GetInstance();
+
+    EXPECT_FALSE(
+        picker_mac->RetainSessionForScreenshots(session_id, base::TimeDelta()));
+    EXPECT_FALSE(
+        picker_mac->RetainSessionForScreenshots(session_id, -kTestIdleTimeout));
+
+    // The rejected calls leave the session as it was, so it can still be
+    // retained.
+    EXPECT_TRUE(
+        picker_mac->RetainSessionForScreenshots(session_id, kTestIdleTimeout));
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RetainedSessionIsReleasedAfterIdleTimeout) {
+  if (@available(macOS 14.0, *)) {
+    const DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_SCREEN);
+    ASSERT_TRUE(
+        NativeScreenCapturePickerMac::GetInstance()
+            ->RetainSessionForScreenshots(session_id, kTestIdleTimeout));
+
+    task_environment_.FastForwardBy(kTestIdleTimeout - base::Seconds(1));
+    EXPECT_TRUE(HasSession(session_id));
+    EXPECT_TRUE(g_fake_picker.active);
+
+    task_environment_.FastForwardBy(base::Seconds(1));
+    EXPECT_FALSE(HasSession(session_id));
+    EXPECT_FALSE(g_fake_picker.active);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RetainedSessionExpirationKeepsPickerActiveDuringLiveCapture) {
+  if (@available(macOS 14.0, *)) {
+    const DesktopMediaID::Id live_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_SCREEN);
+    const DesktopMediaID live_device_id(DesktopMediaID::TYPE_SCREEN, live_id);
+    auto live_device = picker_->CreateDevice(live_device_id);
+    ASSERT_TRUE(live_device);
+
+    const DesktopMediaID::Id retained_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_SCREEN);
+    ASSERT_TRUE(
+        NativeScreenCapturePickerMac::GetInstance()
+            ->RetainSessionForScreenshots(retained_id, kTestIdleTimeout));
+
+    task_environment_.FastForwardBy(kTestIdleTimeout);
+    EXPECT_FALSE(HasSession(retained_id));
+    EXPECT_TRUE(HasSession(live_id));
+    EXPECT_TRUE(g_fake_picker.active);
+
+    picker_->Close(live_device_id);
+    EXPECT_FALSE(g_fake_picker.active);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RetainSessionForScreenshotsRejectsActiveDevice) {
+  if (@available(macOS 14.0, *)) {
+    const DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_SCREEN);
+    const DesktopMediaID device_id(DesktopMediaID::TYPE_SCREEN, session_id);
+    auto device = picker_->CreateDevice(device_id);
+    ASSERT_TRUE(device);
+
+    EXPECT_FALSE(
+        NativeScreenCapturePickerMac::GetInstance()
+            ->RetainSessionForScreenshots(session_id, kTestIdleTimeout));
+
+    // No idle timer was started, so the live capture keeps its session and
+    // leaves the picker active.
+    task_environment_.FastForwardBy(kTestIdleTimeout);
+    EXPECT_TRUE(HasSession(session_id));
+    EXPECT_TRUE(g_fake_picker.active);
+
+    picker_->Close(device_id);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       CreateDeviceReturnsNullForRetainedSession) {
+  if (@available(macOS 14.0, *)) {
+    const DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_SCREEN);
+    ASSERT_TRUE(
+        NativeScreenCapturePickerMac::GetInstance()
+            ->RetainSessionForScreenshots(session_id, kTestIdleTimeout));
+
+    const DesktopMediaID device_id(DesktopMediaID::TYPE_SCREEN, session_id);
+    EXPECT_FALSE(picker_->CreateDevice(device_id));
+
+    // The rejected `CreateDevice()` must not stop the idle timer or mark the
+    // session active.
+    task_environment_.FastForwardBy(kTestIdleTimeout - base::Seconds(1));
+    EXPECT_TRUE(HasSession(session_id));
+    EXPECT_TRUE(g_fake_picker.active);
+
+    task_environment_.FastForwardBy(base::Seconds(1));
+    EXPECT_FALSE(HasSession(session_id));
+    EXPECT_FALSE(g_fake_picker.active);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RetainSessionForScreenshotsClampsIdleTimeout) {
+  if (@available(macOS 14.0, *)) {
+    constexpr base::TimeDelta kMaxIdleTimeout =
+        NativeScreenCapturePickerMac::kMaxCachedSessionIdleTimeout;
+    const DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_SCREEN);
+    ASSERT_TRUE(NativeScreenCapturePickerMac::GetInstance()
+                    ->RetainSessionForScreenshots(
+                        session_id, kMaxIdleTimeout + base::Hours(1)));
+
+    task_environment_.FastForwardBy(kMaxIdleTimeout - base::Seconds(1));
+    EXPECT_TRUE(HasSession(session_id));
+    EXPECT_TRUE(g_fake_picker.active);
+
+    // The session is released at the maximum, not at the longer timeout that
+    // was requested.
+    task_environment_.FastForwardBy(base::Seconds(1));
+    EXPECT_FALSE(HasSession(session_id));
     EXPECT_FALSE(g_fake_picker.active);
   }
 }

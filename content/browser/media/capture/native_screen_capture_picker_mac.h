@@ -19,6 +19,7 @@ static_assert(BUILDFLAG(IS_MAC));
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/public/browser/desktop_capture.h"
@@ -60,11 +61,29 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
   using GetWindowOwnerPidCallback =
       base::RepeatingCallback<pid_t(DesktopMediaID::Id)>;
 
+  // The longest idle timeout that `RetainSessionForScreenshots()` grants.
+  // Longer requests are clamped to this value.
+  static constexpr base::TimeDelta kMaxCachedSessionIdleTimeout =
+      base::Hours(8);
+
   // Must be called on the UI thread.
   static NativeScreenCapturePickerMac* GetInstance();
 
   NativeScreenCapturePickerMac();
   ~NativeScreenCapturePickerMac() override;
+
+  // Marks the session `session_id` as retained for screenshots and starts its
+  // idle timer: the session's content filter is released once `idle_timeout`,
+  // clamped to `kMaxCachedSessionIdleTimeout`, has elapsed, deactivating the
+  // picker if no other capture or picker request is active. Retained sessions
+  // are for repeated screenshots only (`CreateDevice()` returns nullptr for
+  // them). Returns false, without creating or changing any state, if
+  // `idle_timeout` is not positive, if `session_id` already has an active
+  // capture device, or if no session with that id holds a content filter (for
+  // example because nothing has been picked for it yet or it was already
+  // cleaned up).
+  bool RetainSessionForScreenshots(DesktopMediaID::Id session_id,
+                                   base::TimeDelta idle_timeout);
 
   void CaptureScreenshot(DesktopMediaID::Id session_id,
                          base::OnceCallback<void(const SkBitmap&)> callback);
@@ -98,7 +117,14 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
     SCContentFilter* __strong filter;
     // Tracks if the initial OS response (update/cancel/error) has occurred.
     bool received_first_response = false;
-    // Timer to cleanup the session state after the device is closed.
+    // True once `RetainSessionForScreenshots()` has succeeded for this session.
+    bool is_retained_for_screenshots = false;
+    // How long a retained session may stay idle before `cleanup_timer` releases
+    // it. Already clamped to `kMaxCachedSessionIdleTimeout`. Only meaningful
+    // when `is_retained_for_screenshots` is true.
+    base::TimeDelta idle_timeout;
+    // Timer to cleanup the session state, either after the device is closed or
+    // once a retained session has been idle for `idle_timeout`.
     base::OneShotTimer cleanup_timer;
 
     std::optional<desktop_capture::ApplicationAudioCaptureId>
@@ -124,6 +150,7 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
 
   void ScheduleCleanup(DesktopMediaID::Id id);
   void CleanupContentFilter(DesktopMediaID::Id id);
+  void OnRetainedSessionIdleTimeout(DesktopMediaID::Id id);
 
   // Callback called by `ScreenCaptureKitDeviceMac` on creating a new stream.
   void UpdateStreamMap(DesktopMediaID::Id id, SCStream* stream);
