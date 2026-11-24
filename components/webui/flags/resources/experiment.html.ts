@@ -7,12 +7,11 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ExperimentElement} from './experiment.js';
 
 export function getHtml(this: ExperimentElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="experiment" id="${this.feature_.internal_name}">
   <div class="flex-container">
     <div class="flex">
-      ${this.showingSearchHit_? html`
+      ${this.showingSearchHit_ ? html`
         <h2 class="experiment-name clone" id="${this.getHeaderId_()}"
             .title="${this.getExperimentTitle_()}"
             @click="${this.onExperimentNameClick_}">
@@ -40,19 +39,16 @@ export function getHtml(this: ExperimentElement) {
               aria-labelledby="${this.getHeaderId_()}"
               data-internal-name="${this.feature_.internal_name}"
               .value="${this.feature_.origin_list_value}"
-              @change="${this.onTextareaChange_}">
-          </textarea>
+              @change="${this.onTextareaChange_}"></textarea>
         </div>
       ` : ''}
 
       ${this.feature_.string_value !== undefined ? html`
         <div class="input-container">
-          <input type="text"
-              aria-labelledby="${this.getHeaderId_()}"
+          <input type="text" aria-labelledby="${this.getHeaderId_()}"
               data-internal-name="${this.feature_.internal_name}"
               .value="${this.feature_.string_value}"
               @change="${this.onTextInputChange_}">
-          </textarea>
         </div>
       ` : ''}
 
@@ -64,11 +60,11 @@ export function getHtml(this: ExperimentElement) {
         </div>
       ` : ''}
 
-      ${this.showingSearchHit_? html`
+      ${this.showingSearchHit_ ? html`
         <a class="permalink clone" href="#${this.feature_.internal_name}">
           <!-- intentionally empty -->
         </a>
-      `: html`
+      ` : html`
         <a class="permalink" href="#${this.feature_.internal_name}">
           #${this.feature_.internal_name}
         </a>
@@ -109,5 +105,4 @@ export function getHtml(this: ExperimentElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

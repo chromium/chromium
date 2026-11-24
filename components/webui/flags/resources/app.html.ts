@@ -7,16 +7,13 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AppElement} from './app.js';
 
 export function getHtml(this: AppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="header">
   <div class="flex-container">
     <div class="flex search-container">
-      <input type="text" id="search"
-          aria-label="$i18n{search-label}"
-          placeholder="$i18n{search-placeholder}"
-          autocomplete="off" spellcheck="false"
-          @input="${this.onSearchInput_}">
+      <input type="text" id="search" aria-label="$i18n{search-label}"
+          placeholder="$i18n{search-placeholder}" autocomplete="off"
+          spellcheck="false" @input="${this.onSearchInput_}">
       <button class="clear-search" title="$i18n{clear-search}"
           @click="${this.onClearSearchClick_}">
         <div class="clear-search-icon"></div>
@@ -28,11 +25,10 @@ export function getHtml(this: AppElement) {
         $i18n{reset}
       </cr-button>
       <cr-icon-button id="experiment-import"
-          iron-icon="${this.webuiRoundedIconsEnabled_
-              ? 'flags:upload'
-              : 'flags:file-upload-old'}"
-          aria-label="Import"
-          @click="${this.onImportClick_}"
+          iron-icon="${this.webuiRoundedIconsEnabled_ ?
+              'flags:upload' :
+              'flags:file-upload-old'}"
+          aria-label="Import" @click="${this.onImportClick_}"
           ?hidden="${!this.isImportExportEnabled_}">
       </cr-icon-button>
       <cr-tooltip for="experiment-import" fit-to-visible-bounds
@@ -49,10 +45,8 @@ export function getHtml(this: AppElement) {
           Paste from clipboard
         </button>
       </cr-action-menu>
-      <cr-icon-button id="experiment-export"
-          iron-icon="cr:download"
-          aria-label="Export"
-          @click="${this.onExportClick_}"
+      <cr-icon-button id="experiment-export" iron-icon="cr:download"
+          aria-label="Export" @click="${this.onExportClick_}"
           ?hidden="${!this.isImportExportEnabled_}">
       </cr-icon-button>
       <cr-tooltip for="experiment-export" fit-to-visible-bounds
@@ -64,7 +58,8 @@ export function getHtml(this: AppElement) {
     </div>
   </div>
   <div class="screen-reader-only" id="screen-reader-status-message"
-      role="status"></div>
+      role="status">
+  </div>
   <cr-toast id="toast" duration="3000">
     <div>${this.toastMessage_}</div>
   </cr-toast>
@@ -111,8 +106,8 @@ export function getHtml(this: AppElement) {
 
     <div id="tabpanels">
       <div id="tab-content-available" class="tab-content"
-          ?selected="${this.isTabSelected_(0)}"
-          role="tabpanel" aria-labelledby="tab-available" aria-hidden="false">
+          ?selected="${this.isTabSelected_(0)}" role="tabpanel"
+          aria-labelledby="tab-available" aria-hidden="false">
         <!-- Non default experiments. -->
         <div id="non-default-experiments">
           ${this.nonDefaultFeatures.map(feature => html`
@@ -137,8 +132,8 @@ export function getHtml(this: AppElement) {
       </div>
 <if expr="not is_ios">
       <div id="tab-content-unavailable" class="tab-content"
-          ?selected="${this.isTabSelected_(1)}"
-          role="tabpanel" aria-labelledby="tab-unavailable" aria-hidden="false">
+          ?selected="${this.isTabSelected_(1)}" role="tabpanel"
+          aria-labelledby="tab-unavailable" aria-hidden="false">
         <div id="unavailable-experiments">
           ${this.data.unsupportedFeatures.map(feature => html`
             <flags-experiment id="${feature.internal_name}" .data="${feature}"
@@ -170,5 +165,4 @@ export function getHtml(this: AppElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }
