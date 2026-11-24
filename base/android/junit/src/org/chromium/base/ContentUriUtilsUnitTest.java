@@ -8,13 +8,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
@@ -36,6 +41,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.util.List;
 
 /** Tests for {@link ContentUriUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -123,6 +129,24 @@ public class ContentUriUtilsUnitTest {
                 .thenReturn(new String[] {actualType});
 
         assertNull(ContentUriUtils.readTextFromUri(uri, requestedType));
+    }
+
+    @Test
+    public void testGetMimeType_DocumentQueryThrows() {
+        // Make the URI a document URI, so that its provider is queried.
+        String authority = "org.chromium.test.documents";
+        Uri uri = Uri.parse("content://" + authority + "/document/doc-id");
+        ResolveInfo info = new ResolveInfo();
+        info.providerInfo = new ProviderInfo();
+        info.providerInfo.authority = authority;
+        when(mMockPackageManager.queryIntentContentProviders(any(Intent.class), anyInt()))
+                .thenReturn(List.of(info));
+        // E.g. the app has no permission to read the document.
+        when(mMockContentResolver.query(uri, null, null, null, null))
+                .thenThrow(new SecurityException("Permission Denial"));
+
+        assertNull(ContentUriUtils.getMimeType(uri.toString()));
+        verify(mMockContentResolver).query(uri, null, null, null, null);
     }
 
     private ProviderInfo mockProvider(String authority, String packageName, int uid) {

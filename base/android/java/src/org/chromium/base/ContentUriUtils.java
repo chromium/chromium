@@ -302,18 +302,26 @@ public abstract class ContentUriUtils {
      * Retrieve the MIME type for the content URI.
      *
      * @param uriString the content URI to look up.
-     * @return MIME type or null if the input params are empty or invalid.
+     * @return MIME type or null if the input params are empty or invalid, or the content cannot be
+     *     read.
      */
     @CalledByNative
     public static @Nullable @JniType("std::string") String getMimeType(
             @JniType("std::string") String uriString) {
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         Uri uri = Uri.parse(uriString);
-        if (isVirtualDocument(uri)) {
-            String[] streamTypes = resolver.getStreamTypes(uri, "*/*");
-            return (streamTypes != null && streamTypes.length > 0) ? streamTypes[0] : null;
+        try {
+            if (isVirtualDocument(uri)) {
+                String[] streamTypes = resolver.getStreamTypes(uri, "*/*");
+                return (streamTypes != null && streamTypes.length > 0) ? streamTypes[0] : null;
+            }
+            return resolver.getType(uri);
+        } catch (Exception e) {
+            // The provider can throw, e.g. a SecurityException for a document that this app has
+            // no permission to read. An exception that reaches native code is fatal.
+            Log.w(TAG, "Cannot get MIME type of content uri: %s", uriString, e);
+            return null;
         }
-        return resolver.getType(uri);
     }
 
     /**

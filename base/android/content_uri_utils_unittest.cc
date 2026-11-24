@@ -49,6 +49,15 @@ TEST(ContentUriUtilsTest, Test) {
   EXPECT_FALSE(GetFileInfo(invalid_path, &info));
 }
 
+// A document that this app has not been granted access to has no MIME type.
+// Regression test for crbug.com/588897368, where asking for it crashed.
+TEST(ContentUriUtilsTest, GetContentUriMimeTypeOfUnreadableDocument) {
+  FilePath path(
+      "content://com.android.externalstorage.documents/document/"
+      "primary%3ADownload%2Fno-such-file.png");
+  EXPECT_TRUE(GetContentUriMimeType(path).empty());
+}
+
 TEST(ContentUriUtilsTest, TranslateOpenFlagsToJavaMode) {
   constexpr auto kTranslations = MakeFixedFlatMap<uint32_t, std::string>({
       {File::FLAG_OPEN | File::FLAG_READ, "r"},

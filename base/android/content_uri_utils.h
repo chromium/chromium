@@ -93,7 +93,7 @@ enum class ContentUriOwner {
 BASE_EXPORT ContentUriOwner ResolveContentUriOwner(const FilePath& content_uri);
 
 // Gets MIME type from a content URI. Returns an empty string if the URI is
-// invalid.
+// invalid or the content cannot be read.
 BASE_EXPORT std::string GetContentUriMimeType(const FilePath& content_uri);
 
 // Gets the display name from a content URI. Returns true if the name was found.
