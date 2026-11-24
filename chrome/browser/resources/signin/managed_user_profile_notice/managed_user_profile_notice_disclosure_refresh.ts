@@ -60,8 +60,6 @@ export class ManagedUserProfileNoticeDisclosureRefreshElement extends
         attribute: 'revamp-enabled',
       },
       isDarkMode_: {type: Boolean},
-      disableAnimations_: {type: Boolean},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -73,9 +71,9 @@ export class ManagedUserProfileNoticeDisclosureRefreshElement extends
   protected accessor revampEnabled_: boolean =
       loadTimeData.getBoolean('isFirstRunDesktopRevampEnabled');
   private accessor isDarkMode_: boolean = false;
-  protected accessor disableAnimations_: boolean =
+  protected readonly disableAnimations_: boolean =
       loadTimeData.getBoolean('disableAnimations');
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private browserProxy_: ManagedUserProfileNoticeBrowserProxy =

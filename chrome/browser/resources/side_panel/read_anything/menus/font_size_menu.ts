@@ -64,12 +64,11 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
   static override get properties() {
     return {
       fontSize: {type: Number},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   accessor fontSize: number = 0;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private visualBrowserProxy_: VisualBrowserProxy =

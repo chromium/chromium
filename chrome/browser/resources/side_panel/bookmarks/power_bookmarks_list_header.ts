@@ -63,7 +63,6 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
       disableEdit: {type: Boolean},
       editing: {type: Boolean},
       sortTypes_: {type: Array},
-      webuiRoundedIconsEnabled_: {type: Boolean},
       titleA_: {type: String},
       titleB_: {type: String},
       activeTitle_: {type: String},
@@ -115,7 +114,7 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
       lowerLabel: loadTimeData.getString('sortReverseAlphabetically'),
     },
   ];
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private bookmarksService_: PowerBookmarksService =
       PowerBookmarksService.getInstance();
@@ -214,8 +213,6 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
     event.stopPropagation();
     this.fire('bulk-edit');
   }
-
-
 
   protected getSortMenuItemLowerLabel_(sortType: SortOption): string {
     return loadTimeData.getStringF('sortByType', sortType.lowerLabel);

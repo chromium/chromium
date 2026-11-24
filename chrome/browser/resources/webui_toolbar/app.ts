@@ -143,45 +143,31 @@ export class ToolbarAppElement extends AppElementBase {
 
   static override get properties() {
     return {
-      isReloadButtonEnabled_: {type: Boolean},
-      isAppMenuButtonEnabled_: {type: Boolean},
-      isSplitTabsButtonEnabled_: {type: Boolean},
-      isHomeButtonEnabled_: {type: Boolean},
-      isBatterySaverButtonEnabled_: {type: Boolean},
-      isLocationBarEnabled_: {type: Boolean},
       toolbarState_: {type: Object},
-      isBackForwardButtonEnabled_: {type: Boolean},
-      isPinnedToolbarActionsEnabled_: {type: Boolean},
-      isExtensionsContainerEnabled_: {type: Boolean},
       isGlicButtonEnabled_: {type: Boolean},
       isAvatarButtonEnabled_: {type: Boolean},
-      isPerformanceInterventionButtonEnabled_: {type: Boolean},
-      // <if expr="is_win or is_macosx or is_linux">
-      isMediaButtonEnabled_: {type: Boolean},
-      // </if>
       isInitialized_: {type: Boolean},
       hasReceivedToolbarState_: {type: Boolean},
-      webUIToolbarFullyEnabled_: {type: Boolean},
     };
   }
 
-  protected accessor isReloadButtonEnabled_: boolean =
+  protected readonly isReloadButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableReloadButton');
-  protected accessor isAppMenuButtonEnabled_: boolean =
+  protected readonly isAppMenuButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableAppMenuButton');
-  protected accessor isSplitTabsButtonEnabled_: boolean =
+  protected readonly isSplitTabsButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableSplitTabsButton');
-  protected accessor isHomeButtonEnabled_: boolean =
+  protected readonly isHomeButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableHomeButton');
-  protected accessor isBatterySaverButtonEnabled_: boolean =
+  protected readonly isBatterySaverButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableBatterySaverButton');
-  protected accessor isLocationBarEnabled_: boolean =
+  protected readonly isLocationBarEnabled_: boolean =
       loadTimeData.getBoolean('enableLocationBar');
-  protected accessor isBackForwardButtonEnabled_: boolean =
+  protected readonly isBackForwardButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableBackForwardButtons');
-  protected accessor isPinnedToolbarActionsEnabled_: boolean =
+  protected readonly isPinnedToolbarActionsEnabled_: boolean =
       loadTimeData.getBoolean('enablePinnedToolbarActions');
-  protected accessor isExtensionsContainerEnabled_: boolean =
+  protected readonly isExtensionsContainerEnabled_: boolean =
       loadTimeData.getBoolean('enableExtensionsContainer');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private initialState_: InitialStateReader =
@@ -194,10 +180,10 @@ export class ToolbarAppElement extends AppElementBase {
       loadTimeData.getBoolean('enableAvatarButton') &&
       this.initialState_.getBoolean(
           ToolbarStateKey.CAN_SHOW_AVATAR_FOR_PROFILE);
-  protected accessor isPerformanceInterventionButtonEnabled_: boolean =
+  protected readonly isPerformanceInterventionButtonEnabled_: boolean =
       loadTimeData.getBoolean('enablePerformanceInterventionButton');
   // <if expr="is_win or is_macosx or is_linux">
-  protected accessor isMediaButtonEnabled_: boolean =
+  protected readonly isMediaButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableMediaButton');
   // </if>
   /**
@@ -214,7 +200,7 @@ export class ToolbarAppElement extends AppElementBase {
       loadTimeData.getBoolean('toolbarAppMenuLabelResizingEnabled');
   private toolbarGlicButtonResizingEnabled_: boolean =
       loadTimeData.getBoolean('toolbarGlicButtonResizingEnabled');
-  protected accessor webUIToolbarFullyEnabled_: boolean =
+  protected readonly webUIToolbarFullyEnabled_: boolean =
       loadTimeData.getBoolean('webUIToolbarFullyEnabled');
   protected accessor toolbarState_: ToolbarState = {
     reloadControlState: {

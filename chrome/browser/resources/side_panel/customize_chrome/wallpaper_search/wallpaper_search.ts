@@ -150,7 +150,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       errorState_: {type: Object},
       loading_: {type: Boolean},
       history_: {type: Array},
-      inspirationCardEnabled_: {type: Boolean},
       inspirationGroups_: {type: Array},
       inspirationToggleIcon_: {type: String},
       openInspirations_: {type: Boolean},
@@ -181,7 +180,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   protected accessor errorState_: ErrorState|null = null;
   protected accessor history_: WallpaperSearchResult[] = [];
   protected accessor inspirationGroups_: InspirationGroup[] = [];
-  protected accessor inspirationCardEnabled_: boolean =
+  protected readonly inspirationCardEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchInspirationCardEnabled');
   protected accessor inspirationToggleIcon_: string = '';
   protected accessor loading_: boolean = false;

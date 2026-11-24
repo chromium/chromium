@@ -55,7 +55,6 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
       label: {type: String},
       nonModal: {type: Boolean},
       closeOnClick: {type: Boolean},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -70,7 +69,7 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
   // Initializing to random value, but this is set by the parent.
   accessor eventName: ToolbarEvent = ToolbarEvent.THEME;
   accessor label: string = '';
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {

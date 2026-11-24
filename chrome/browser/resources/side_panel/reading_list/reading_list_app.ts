@@ -74,7 +74,6 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       readHeader_: {type: String},
       unreadExpanded_: {type: Boolean},
       readExpanded_: {type: Boolean},
-      isWebUIBrowser_: {type: Boolean},
     };
   }
 
@@ -93,7 +92,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   private accessor readHeader_: string = loadTimeData.getString('readHeader');
   private accessor unreadExpanded_: boolean = true;
   private accessor readExpanded_: boolean = false;
-  private accessor isWebUIBrowser_: boolean =
+  private readonly isWebUIBrowser_: boolean =
       loadTimeData.getBoolean('isWebUIBrowser');
   private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];

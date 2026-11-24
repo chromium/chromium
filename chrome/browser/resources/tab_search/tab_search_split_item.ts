@@ -37,7 +37,6 @@ export class TabSearchSplitItemElement extends TabSearchSplitItemBase {
   static override get properties() {
     return {
       data: {type: Object},
-      buttonRipples_: {type: Boolean},
       closeButtonIcon: {type: String},
     };
   }
@@ -55,7 +54,7 @@ export class TabSearchSplitItemElement extends TabSearchSplitItemBase {
       groupId: null,
     },
   });
-  protected accessor buttonRipples_: boolean =
+  protected readonly buttonRipples_: boolean =
       loadTimeData.getBoolean('useRipples');
   accessor closeButtonIcon: string =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?

@@ -20,7 +20,6 @@ import {getCss} from './tab_search_item.css.js';
 import {getHtml} from './tab_search_item.html.js';
 import {getFaviconUrlForTab, getMediaAlertImageClass, highlightText, tabHasMediaAlerts} from './tab_search_utils.js';
 
-
 function deepGet(obj: Record<string, any>, path: string): any {
   let value: Record<string, any> = obj;
 
@@ -51,7 +50,6 @@ export interface TabSearchItemElement {
 
 const TabSearchItemBase = MouseHoverableMixinLit(CrLitElement);
 
-
 export class TabSearchItemElement extends TabSearchItemBase {
   static get is() {
     return 'tab-search-item';
@@ -68,7 +66,6 @@ export class TabSearchItemElement extends TabSearchItemBase {
   static override get properties() {
     return {
       data: {type: Object},
-      buttonRipples_: {type: Boolean},
       hideTimestamp: {type: Boolean},
       hideUrl: {type: Boolean},
       hideCloseButton: {type: Boolean},
@@ -99,7 +96,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
         url: '',
       },
       TabItemType.OPEN_TAB, '');
-  protected accessor buttonRipples_: boolean =
+  protected readonly buttonRipples_: boolean =
       loadTimeData.getBoolean('useRipples');
   accessor hideTimestamp: boolean = false;
   accessor size: TabSearchItemSize = TabSearchItemSize.MEDIUM;

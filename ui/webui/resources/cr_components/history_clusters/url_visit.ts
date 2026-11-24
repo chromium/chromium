@@ -73,12 +73,6 @@ export class UrlVisitElement extends ClusterMenuElementBase {
       fromPersistence: {type: Boolean},
 
       /**
-       * Usually this is true, but this can be false if deleting history is
-       * prohibited by Enterprise policy.
-       */
-      allowDeletingHistory_: {type: Boolean},
-
-      /**
        * Whether the cluster is in the side panel.
        */
       inSidePanel_: {
@@ -97,7 +91,11 @@ export class UrlVisitElement extends ClusterMenuElementBase {
   accessor query: string = '';
   accessor visit: URLVisit|undefined;
   accessor fromPersistence: boolean = false;
-  protected accessor allowDeletingHistory_: boolean =
+  /**
+   * Usually this is true, but this can be false if deleting history is
+   * prohibited by Enterprise policy.
+   */
+  protected readonly allowDeletingHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
   protected accessor inSidePanel_: boolean =
       loadTimeData.getBoolean('inSidePanel');

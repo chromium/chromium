@@ -41,15 +41,7 @@ export class PasswordChangeDetailsElement extends
     return getHtml.bind(this)();
   }
 
-  static override get properties() {
-    return {
-      isPasswordChangeWithPrivateInferenceLoginCheckEnabled_: {
-        type: Boolean,
-      },
-    };
-  }
-
-  protected accessor isPasswordChangeWithPrivateInferenceLoginCheckEnabled_:
+  protected readonly isPasswordChangeWithPrivateInferenceLoginCheckEnabled_:
       boolean = loadTimeData.getBoolean(
           'isPasswordChangeWithPrivateInferenceLoginCheckEnabled');
 

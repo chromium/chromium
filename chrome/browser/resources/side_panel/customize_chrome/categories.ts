@@ -77,9 +77,6 @@ export class CategoriesElement extends CategoriesElementBase {
       isClassicChromeSelected_: {type: Boolean},
       isLocalImageSelected_: {type: Boolean},
       isWallpaperSearchSelected_: {type: Boolean},
-      wallpaperSearchEnabled_: {type: Boolean},
-      chromeWebStoreThemesEnabled_: {type: Boolean},
-      organizerPanelEnabled_: {type: Boolean},
     };
   }
 
@@ -90,11 +87,11 @@ export class CategoriesElement extends CategoriesElementBase {
   protected accessor isClassicChromeSelected_: boolean = false;
   protected accessor isLocalImageSelected_: boolean = false;
   protected accessor isWallpaperSearchSelected_: boolean = false;
-  protected accessor wallpaperSearchEnabled_: boolean =
+  protected readonly wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
-  protected accessor chromeWebStoreThemesEnabled_: boolean =
+  protected readonly chromeWebStoreThemesEnabled_: boolean =
       loadTimeData.getBoolean('chromeWebStoreThemesEnabled');
-  private accessor organizerPanelEnabled_: boolean =
+  private readonly organizerPanelEnabled_: boolean =
       loadTimeData.getBoolean('organizerPanelEnabled');
   private imageErrorDetectionEnabled_: boolean =
       loadTimeData.getBoolean('imageErrorDetectionEnabled');

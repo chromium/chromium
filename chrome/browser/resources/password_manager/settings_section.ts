@@ -84,14 +84,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       /** An array of sites with permissions for actor login. */
       actorLoginPermissions_: {type: Array},
 
-      isActorLoginPermissionsEnabled_: {type: Boolean},
-      isFedCmEmbedderInitiatedLoginEnabled_: {type: Boolean},
-
-      // <if expr="is_win or is_macosx or is_chromeos">
-      isBiometricAuthenticationForFillingToggleVisible_: {type: Boolean},
-      // </if>
-
-      isAutomatedPasswordChangeVisible_: {type: Boolean},
       hasPasswordsToExport_: {type: Boolean},
       // <if expr="is_win or is_macosx">
       hasPasskeys_: {type: Boolean},
@@ -102,7 +94,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       trustedVaultBannerState_: {type: Number},
 
       movePasswordsLabel_: {type: String},
-      canAddShortcut_: {type: Boolean},
       isPasswordManagerPinAvailable_: {type: Boolean},
       isConnectedToCloudAuthenticator_: {type: Boolean},
       isDisconnectCloudAuthenticatorInProgress_: {type: Boolean},
@@ -115,12 +106,12 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
   protected accessor blockedSites_: BlockedSite[] = [];
   protected accessor actorLoginPermissions_: ActorLoginPermission[] = [];
-  private accessor isActorLoginPermissionsEnabled_: boolean =
+  private readonly isActorLoginPermissionsEnabled_: boolean =
       loadTimeData.getBoolean('enableActorLoginPermissions');
-  private accessor isFedCmEmbedderInitiatedLoginEnabled_: boolean =
+  private readonly isFedCmEmbedderInitiatedLoginEnabled_: boolean =
       loadTimeData.getBoolean('fedCmEmbedderInitiatedLoginEnabled');
   // <if expr="is_win or is_macosx or is_chromeos">
-  protected accessor isBiometricAuthenticationForFillingToggleVisible_:
+  protected readonly isBiometricAuthenticationForFillingToggleVisible_:
       boolean = loadTimeData.getBoolean(
           'biometricAuthenticationForFillingToggleVisible');
   // </if>
@@ -130,9 +121,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   protected accessor credentialsEnableServicePref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
   protected accessor hasPasswordsToExport_: boolean = false;
-  protected accessor isAutomatedPasswordChangeVisible_: boolean =
+  protected readonly isAutomatedPasswordChangeVisible_: boolean =
       loadTimeData.getBoolean('passwordChangeAvailable');
-  protected accessor canAddShortcut_: boolean =
+  protected readonly canAddShortcut_: boolean =
       loadTimeData.getBoolean('canAddShortcut');
   private accessor trustedVaultBannerState_: TrustedVaultBannerState =
       TrustedVaultBannerState.NOT_SHOWN;

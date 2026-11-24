@@ -60,7 +60,6 @@ class SuggestInternalsAppElement extends CrLitElement {
       responseText_: {type: String},
       toastDuration_: {type: Number},
       toastMessage_: {type: String},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -71,7 +70,7 @@ class SuggestInternalsAppElement extends CrLitElement {
   protected accessor responseText_: string = '';
   protected accessor toastDuration_: number = 3000;
   protected accessor toastMessage_: string = '';
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private callbackRouter_: PageCallbackRouter;
@@ -79,7 +78,6 @@ class SuggestInternalsAppElement extends CrLitElement {
   private suggestionsRequestCompletedListenerId_: number|null = null;
   private suggestionsRequestCreatedListenerId_: number|null = null;
   private suggestionsRequestStartedListenerId_: number|null = null;
-
 
   constructor() {
     super();
@@ -274,7 +272,6 @@ declare global {
     'suggest-internals-app': SuggestInternalsAppElement;
   }
 }
-
 
 customElements.define(
     SuggestInternalsAppElement.is, SuggestInternalsAppElement);

@@ -28,14 +28,13 @@ export class WebviewElement extends CrLitElement {
   static override get properties() {
     return {
       guestId: {type: String},
-      enableSurfaceEmbed: {type: Boolean},
       allowPinchZoom: {type: Boolean},
     };
   }
 
   accessor guestId: string = '';
   // Whether to use surface embed instead of guest contents.
-  protected accessor enableSurfaceEmbed: boolean =
+  protected readonly enableSurfaceEmbed: boolean =
       loadTimeData.getBoolean('enableSurfaceEmbed');
   accessor allowPinchZoom: boolean = true;
 

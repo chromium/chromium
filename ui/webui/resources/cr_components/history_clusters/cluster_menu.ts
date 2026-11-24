@@ -43,12 +43,6 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
   static override get properties() {
     return {
       /**
-       * Usually this is true, but this can be false if deleting history is
-       * prohibited by Enterprise policy.
-       */
-      allowDeletingHistory_: {type: Boolean},
-
-      /**
        * Whether the cluster is in the side panel.
        */
       inSidePanel_: {
@@ -64,7 +58,7 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
   // Properties
   //============================================================================
 
-  protected accessor allowDeletingHistory_: boolean =
+  protected readonly allowDeletingHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
   protected accessor inSidePanel_: boolean =
       loadTimeData.getBoolean('inSidePanel');

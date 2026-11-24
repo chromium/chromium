@@ -39,13 +39,12 @@ export class ThemeSnapshotElement extends CrLitElement {
 
   static override get properties() {
     return {
-      organizerPanelEnabled_: {type: Boolean},
       theme_: {type: Object},
       themeType_: {type: String},
     };
   }
 
-  private accessor organizerPanelEnabled_: boolean =
+  private readonly organizerPanelEnabled_: boolean =
       loadTimeData.getBoolean('organizerPanelEnabled');
   protected accessor theme_: Theme|null = null;
   protected accessor themeType_: CustomizeThemeType|null = null;
@@ -72,7 +71,6 @@ export class ThemeSnapshotElement extends CrLitElement {
         });
     this.apiProxy_.handler.updateTheme();
   }
-
 
   override disconnectedCallback() {
     super.disconnectedCallback();

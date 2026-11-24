@@ -57,7 +57,6 @@ export class SpComponentsDemoElement extends CrLitElement {
       showBadges_: {type: Boolean},
       urlCount_: {type: Number},
       urls_: {type: Array},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -71,7 +70,7 @@ export class SpComponentsDemoElement extends CrLitElement {
   protected accessor showBadges_: boolean = false;
   protected accessor urlCount_: number = 15;
   protected accessor urls_: UrlItem[] = [];
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {

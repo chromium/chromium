@@ -50,13 +50,12 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     return {
       allEligibleTabs_: {type: Array},
       minViewportHeight_: {type: Number},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   protected accessor allEligibleTabs_: TabData[] = [];
   protected accessor minViewportHeight_: number = 0;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private tabSearchApiProxy_: TabSearchApiProxy =

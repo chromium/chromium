@@ -88,7 +88,6 @@ export class SkillsDialogAppElement extends CrLitElement {
       dialogTitle_: {type: String},
       canUndoRefine_: {type: Boolean},
       canRedoRefine_: {type: Boolean},
-      shouldShowErrorPage_: {type: Boolean},
       signedInEmail_: {type: String},
       promptError_: {type: Number},
       isRefineLoading_: {type: Boolean},
@@ -101,7 +100,6 @@ export class SkillsDialogAppElement extends CrLitElement {
       generatedIcon_: {type: String},
       isNameInputFocused_: {type: Boolean},
       hasSeenGeneratedSuggestion_: {type: Boolean},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -129,10 +127,10 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor showEmojiPicker_: boolean = false;
   private accessor canUndoRefine_: boolean = false;
   private accessor canRedoRefine_: boolean = false;
-  protected accessor shouldShowErrorPage_: boolean =
-    !loadTimeData.getBoolean('isGlicEnabled') ||
-    (loadTimeData.valueExists('isSkillsSupported') &&
-     !loadTimeData.getBoolean('isSkillsSupported'));
+  protected readonly shouldShowErrorPage_: boolean =
+      !loadTimeData.getBoolean('isGlicEnabled') ||
+      (loadTimeData.valueExists('isSkillsSupported') &&
+       !loadTimeData.getBoolean('isSkillsSupported'));
 
   protected getErrorType_(): ErrorType {
     if (loadTimeData.valueExists('isSkillsSupported') &&
@@ -150,7 +148,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   private accessor generatedIcon_: string = '';
   private accessor isNameInputFocused_: boolean = false;
   private accessor hasSeenGeneratedSuggestion_: boolean = false;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private originalPrompt_: string = '';

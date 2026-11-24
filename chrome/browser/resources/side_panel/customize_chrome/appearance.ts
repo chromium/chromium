@@ -87,9 +87,6 @@ export class AppearanceElement extends AppearanceElementBase {
         type: Boolean,
         reflect: true,
       },
-
-      wallpaperSearchEnabled_: {type: Boolean},
-      footerEnabled_: {type: Boolean},
     };
   }
 
@@ -108,9 +105,9 @@ export class AppearanceElement extends AppearanceElementBase {
   protected accessor showManagedDialog_: boolean = false;
   protected accessor wallpaperSearchButtonEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonEnabled');
-  private accessor wallpaperSearchEnabled_: boolean =
+  private readonly wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
-  private accessor footerEnabled_: boolean =
+  private readonly footerEnabled_: boolean =
       loadTimeData.getBoolean('footerEnabled');
   private accessor newTabPageType_: NewTabPageType =
       NewTabPageType.kFirstPartyWebUI;

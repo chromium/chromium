@@ -34,8 +34,6 @@ import type {ExperimentalFeaturesData, Feature} from './flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
 import {ImportExportFileProxyImpl} from './import_export_file_proxy.js';
 
-
-
 /**
  * Map of updated flag entry names to redirect legacy hashes to new hashes.
  * TODO(crbug.com/524236481): Remove built-in AI API flag entries by June 2027.
@@ -150,8 +148,6 @@ export class FlagsAppElement extends CrLitElement {
 
       tabNames_: {type: Array},
       selectedTabIndex_: {type: Number},
-      isImportExportEnabled_: {type: Boolean},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -183,7 +179,7 @@ export class FlagsAppElement extends CrLitElement {
   protected accessor needsRestart: boolean = false;
   protected accessor importError: string = '';
   protected accessor toastMessage_: string = '';
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private announceStatusDelayMs: number = 100;
@@ -706,7 +702,7 @@ export class FlagsAppElement extends CrLitElement {
         this.data.showDevChannelPromotion;
   }
 
-  protected accessor isImportExportEnabled_: boolean =
+  protected readonly isImportExportEnabled_: boolean =
       loadTimeData.getBoolean('importExportEnabled');
 
   protected onTabsSelectedChanged_(e: CustomEvent<{value: number}>) {

@@ -58,7 +58,6 @@ export class SkillCardElement extends CrLitElement {
       cardType: {type: String},
       saveDisabled: {type: Boolean},
       hideTooltip: {type: Boolean},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -82,7 +81,7 @@ export class SkillCardElement extends CrLitElement {
   accessor saveDisabled: boolean = false;
   accessor hideTooltip: boolean = false;
 
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private proxy_: BrowserProxy = browserProxyFactory.getInstance();

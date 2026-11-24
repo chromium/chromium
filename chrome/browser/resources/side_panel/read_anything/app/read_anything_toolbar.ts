@@ -129,7 +129,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       lineFocusStyle: {type: Object},
       lineFocusEnabled: {type: Boolean},
       lineFocusMovement: {type: Number},
-      webuiRoundedIconsEnabled_: {type: Boolean},
       isAiPlaybackActive: {type: Boolean},
       isAiPlaybackUiEnabled_: {type: Boolean},
     };
@@ -174,7 +173,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   protected accessor hideSpinner_: boolean = true;
   protected accessor isAiPlaybackUiEnabled_: boolean = false;
   protected accessor areFontsLoaded_: boolean = false;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   // Member variables below
@@ -192,7 +191,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // Corresponds to UI setup being complete on the toolbar when
   // connectedCallback has finished executing.
   private isSetupComplete_: boolean = false;
-
 
   isReadingModeInactive(): boolean {
     return this.presentationState ===

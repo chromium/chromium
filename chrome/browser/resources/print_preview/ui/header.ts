@@ -19,7 +19,6 @@ import {getCss} from './header.css.js';
 import {getHtml} from './header.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
-
 const PrintPreviewHeaderElementBase = SettingsMixin(CrLitElement);
 
 export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
@@ -43,7 +42,6 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
       managed: {type: Boolean},
       sheetCount_: {type: Number},
       summary_: {type: String},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -53,7 +51,7 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   accessor managed: boolean = false;
   private accessor sheetCount_: number = 0;
   protected accessor summary_: string|null = null;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override connectedCallback() {

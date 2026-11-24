@@ -57,14 +57,12 @@ export class SignoutConfirmationAppElement extends CrLitElement {
   static override get properties() {
     return {
       data_: {type: Object},
-
-      isUnoPhase2FollowUpEnabled_: {type: Boolean},
     };
   }
 
   protected accessor data_: SignoutConfirmationData = SAMPLE_DATA;
 
-  protected accessor isUnoPhase2FollowUpEnabled_: boolean =
+  protected readonly isUnoPhase2FollowUpEnabled_: boolean =
       loadTimeData.getBoolean('isUnoPhase2FollowUpEnabled');
 
   private eventTracker_: EventTracker = new EventTracker();

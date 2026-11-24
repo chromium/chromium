@@ -58,14 +58,13 @@ export class ShoppingListElement extends CrLitElement {
       open_: {type: Boolean},
       untrackedItems_: {type: Array},
       productInfos: {type: Array},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   accessor productInfos: BookmarkProductInfo[] = [];
   private accessor untrackedItems_: BookmarkProductInfo[] = [];
   protected accessor open_: boolean = true;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();

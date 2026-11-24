@@ -79,7 +79,6 @@ export class FilterBarElement extends CrLitElement {
       filterMenuState: {type: String},
       menuHost: {type: String},
       focusReturnElement: {type: Object},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -89,7 +88,7 @@ export class FilterBarElement extends CrLitElement {
   protected accessor filterOrder: FilterCategory[] = [];
   protected accessor filterMenuState: FilterMenuState = 'closed';
   private accessor menuHost: 'chip'|'input' = 'input';
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private accessor focusReturnElement: HTMLElement|null = null;
@@ -155,7 +154,6 @@ export class FilterBarElement extends CrLitElement {
           !!(this.filterSettings.startDate || this.filterSettings.endDate));
     }
   }
-
 
   protected async onRemoveFilterClick(e: Event) {
     const category = getFilterCategoryForTarget(e.currentTarget as HTMLElement);

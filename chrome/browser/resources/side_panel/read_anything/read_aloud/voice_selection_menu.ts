@@ -68,7 +68,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
       voiceGroups_: {type: Array},
       nonModal: {type: Boolean},
       errorMessages_: {type: Array},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -88,7 +87,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   protected accessor downloadingMessages_: string[] = [];
   protected accessor voiceGroups_: VoiceDropdownGroup[] = [];
   protected accessor showLanguageMenuDialog_: boolean = false;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private readonly spBodyPadding_ = Number.parseInt(

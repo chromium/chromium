@@ -59,7 +59,6 @@ export class ThemesElement extends ThemesElementBase {
     return {
       selectedCollection: {type: Object},
       header_: {type: String},
-      imageErrorDetectionEnabled_: {type: Boolean},
       isRefreshToggleChecked_: {type: Boolean},
       theme_: {type: Object},
       themes_: {type: Array},
@@ -69,7 +68,7 @@ export class ThemesElement extends ThemesElementBase {
   accessor selectedCollection: BackgroundCollection|null = null;
 
   protected accessor header_: string = '';
-  private accessor imageErrorDetectionEnabled_: boolean =
+  private readonly imageErrorDetectionEnabled_: boolean =
       loadTimeData.getBoolean('imageErrorDetectionEnabled');
   protected accessor isRefreshToggleChecked_: boolean = false;
   private accessor theme_: Theme|undefined;

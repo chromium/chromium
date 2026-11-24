@@ -59,12 +59,11 @@ export class WhatsNewAppElement extends CrLitElement {
   static override get properties() {
     return {
       url_: {type: String},
-      isStaging_: {type: Boolean},
     };
   }
 
   protected accessor url_: string = '';
-  protected accessor isStaging_: boolean = loadTimeData.getBoolean('isStaging');
+  protected readonly isStaging_: boolean = loadTimeData.getBoolean('isStaging');
 
   private beforeUnloadHandlerBound_:
       () => void = this.beforeUnloadHandler_.bind(this);

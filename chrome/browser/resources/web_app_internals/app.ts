@@ -35,7 +35,6 @@ export class WebAppInternalsAppElement extends CrLitElement {
       debugInfoJson_: {type: String},
       parsedDebugData_: {type: Object},
       query_: {type: String},
-      isIwaPolicyInstallEnabled_: {type: Boolean},
     };
   }
 
@@ -43,7 +42,7 @@ export class WebAppInternalsAppElement extends CrLitElement {
   private accessor debugInfoJson_: string = '';
   private accessor parsedDebugData_: DebugData|null = null;
   private accessor query_: string = '';
-  protected accessor isIwaPolicyInstallEnabled_: boolean =
+  protected readonly isIwaPolicyInstallEnabled_: boolean =
       loadTimeData.getBoolean('isIwaPolicyInstallEnabled');
 
   private tracker_: EventTracker = new EventTracker();

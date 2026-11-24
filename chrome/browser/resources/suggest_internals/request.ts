@@ -43,7 +43,6 @@ export class SuggestRequestElement extends CrLitElement {
       responseJson_: {type: String},
       pgcl_: {type: String},
       expanded_: {type: Boolean},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -52,7 +51,7 @@ export class SuggestRequestElement extends CrLitElement {
   protected accessor responseJson_: string = '';
   private accessor pgcl_: string = '';
   protected accessor expanded_: boolean = false;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {

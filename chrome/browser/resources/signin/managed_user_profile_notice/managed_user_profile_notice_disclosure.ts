@@ -38,7 +38,6 @@ export class ManagedUserProfileNoticeDisclosureElement extends
       pictureUrl: {type: String},
       title: {type: String},
       subtitle: {type: String},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -47,7 +46,7 @@ export class ManagedUserProfileNoticeDisclosureElement extends
   override accessor title: string = '';
   accessor subtitle: string = '';
 
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override firstUpdated() {

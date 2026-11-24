@@ -84,7 +84,6 @@ export class ProfilePickerMainViewElement extends
       isGlic_: {type: Boolean, reflect: true},
       // Exposed to CSS as 'is-refreshed-ui_'.
       isRefreshedUI_: {type: Boolean, reflect: true},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -113,7 +112,7 @@ export class ProfilePickerMainViewElement extends
   protected accessor pickerButtonsDisabled_: boolean = false;
 
   protected accessor isRefreshedUI_: boolean = isUseRefreshedUI();
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private eventTracker_: EventTracker = new EventTracker();

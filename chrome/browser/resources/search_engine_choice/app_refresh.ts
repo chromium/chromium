@@ -78,7 +78,6 @@ export class AppRefreshElement extends AppRefreshElementBase {
       // Exposed to CSS as 'use-horizontal-mode_'.
       useHorizontalMode_: {type: Boolean, reflect: true},
       saveGuestModeSearchEngineChoice_: {type: Boolean},
-      showGuestCheckbox_: {type: Boolean},
     };
   }
 
@@ -90,7 +89,7 @@ export class AppRefreshElement extends AppRefreshElementBase {
   protected accessor showInfoDialog_: boolean = false;
   protected accessor actionButtonText_: string = '';
   protected accessor useHorizontalMode_: boolean = false;
-  protected accessor showGuestCheckbox_: boolean =
+  protected readonly showGuestCheckbox_: boolean =
       loadTimeData.getBoolean('showGuestCheckbox');
   protected accessor saveGuestModeSearchEngineChoice_: boolean = false;
 

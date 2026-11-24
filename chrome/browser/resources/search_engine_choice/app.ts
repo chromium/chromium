@@ -66,7 +66,6 @@ export class AppElement extends AppElementBase {
       hasUserScrolledToTheBottom_: {type: Boolean},
       showInfoDialog_: {type: Boolean},
       saveGuestModeSearchEngineChoice_: {type: Boolean},
-      showGuestCheckbox_: {type: Boolean},
     };
   }
 
@@ -77,7 +76,7 @@ export class AppElement extends AppElementBase {
   protected accessor hasUserScrolledToTheBottom_: boolean = false;
   protected accessor showInfoDialog_: boolean = false;
   protected accessor actionButtonText_: string = '';
-  protected accessor showGuestCheckbox_: boolean =
+  protected readonly showGuestCheckbox_: boolean =
       loadTimeData.getBoolean('showGuestCheckbox');
   protected accessor saveGuestModeSearchEngineChoice_: boolean = false;
 

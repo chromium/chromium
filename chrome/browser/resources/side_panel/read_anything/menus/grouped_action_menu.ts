@@ -51,7 +51,6 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
       label: {type: String},
       nonModal: {type: Boolean},
       closeOnClick: {type: Boolean},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -61,7 +60,7 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
 
   // Initializing to random value, but this is set by the parent.
   accessor label: string = '';
-  private accessor webuiRoundedIconsEnabled_: boolean =
+  private readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {

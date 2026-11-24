@@ -78,46 +78,38 @@ export class AppElement extends AppElementBase {
   static override get properties() {
     return {
       page_: {type: String},
-      modulesEnabled_: {type: Boolean},
       selectedCollection_: {type: Object},
       extensionPolicyEnabled_: {type: Boolean},
-      extensionsCardEnabled_: {type: Boolean},
-      ntpNextFeaturesEnabled_: {type: Boolean},
-      ntpNextDisablementEnabled_: {type: Boolean},
-      aimPolicyEnabled_: {type: Boolean},
-      footerEnabled_: {type: Boolean},
-      wallpaperSearchEnabled_: {type: Boolean},
       newTabPageType_: {type: Number},
       showEditTheme_: {type: Boolean},
       showFooter_: {type: Boolean},
       showFooterForManagedBrowser_: {type: Boolean},
-      toolbarCustomizationEnabled_: {type: Boolean},
     };
   }
 
   protected accessor page_: CustomizeChromePage = CustomizeChromePage.OVERVIEW;
-  protected accessor modulesEnabled_: boolean =
+  protected readonly modulesEnabled_: boolean =
       loadTimeData.getBoolean('modulesEnabled');
   protected accessor selectedCollection_: BackgroundCollection|null = null;
-  protected accessor extensionsCardEnabled_: boolean =
+  protected readonly extensionsCardEnabled_: boolean =
       loadTimeData.getBoolean('extensionsCardEnabled');
-  protected accessor ntpNextFeaturesEnabled_: boolean =
+  protected readonly ntpNextFeaturesEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextFeaturesEnabled');
-  protected accessor ntpNextDisablementEnabled_: boolean =
+  protected readonly ntpNextDisablementEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextDisablementEnabled');
   private accessor extensionPolicyEnabled_: boolean = false;
-  protected accessor aimPolicyEnabled_: boolean =
+  protected readonly aimPolicyEnabled_: boolean =
       loadTimeData.getBoolean('aimPolicyEnabled');
-  private accessor footerEnabled_: boolean =
+  private readonly footerEnabled_: boolean =
       loadTimeData.getBoolean('footerEnabled');
-  protected accessor wallpaperSearchEnabled_: boolean =
+  protected readonly wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
   private accessor newTabPageType_: NewTabPageType =
       NewTabPageType.kFirstPartyWebUI;
   protected accessor showEditTheme_: boolean = true;
   protected accessor showFooter_: boolean = false;
   private accessor showFooterForManagedBrowser_: boolean = false;
-  protected accessor toolbarCustomizationEnabled_: boolean =
+  protected readonly toolbarCustomizationEnabled_: boolean =
       loadTimeData.getBoolean('toolbarCustomizationEnabled');
 
   private listenerIds_: number[] = [];
@@ -178,8 +170,7 @@ export class AppElement extends AppElementBase {
 
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('footerEnabled_') ||
-        changedPrivateProperties.has('newTabPageType_') ||
+    if (changedPrivateProperties.has('newTabPageType_') ||
         changedPrivateProperties.has('showFooterForManagedBrowser_') ||
         changedPrivateProperties.has('extensionPolicyEnabled_')) {
       this.showFooter_ = this.computeShowFooter_();

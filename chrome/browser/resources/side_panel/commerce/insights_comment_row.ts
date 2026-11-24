@@ -25,13 +25,7 @@ export class InsightsCommentRowElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  static override get properties() {
-    return {
-      shouldShowFeedback_: {type: Boolean},
-    };
-  }
-
-  protected accessor shouldShowFeedback_: boolean =
+  protected readonly shouldShowFeedback_: boolean =
       loadTimeData.getBoolean('shouldShowFeedback');
   private priceInsightsProxy_: PriceInsightsBrowserProxy =
       PriceInsightsBrowserProxyImpl.getInstance();
