@@ -255,13 +255,6 @@ export class
         changedProperties.has('enableFileHint')) {
       this.updateInputPlaceholder();
     }
-
-    if (!this.hasUpdated) {
-      // The mixin default reads the all-surfaces coherence key; Contextual
-      // Tasks must use the cobrowsing-specific key.
-      this.voiceSearchCoherenceEnabled = loadTimeData.getBoolean(
-          'voiceSearchCoherenceCobrowsingComposeboxEnabled');
-    }
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
