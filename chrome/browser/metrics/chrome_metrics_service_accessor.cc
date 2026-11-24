@@ -42,10 +42,11 @@ bool ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled(
   // BrowserThread::UI, e.g. when the MetricsStateManager is created during
   // field trial setup in ChromeMainDelegate::PostEarlyInitialization(). Once
   // the UI thread is registered, all calls must happen on it.
-  CHECK(!content::BrowserThread::IsThreadInitialized(
-            content::BrowserThread::UI) ||
-            content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
-        base::NotFatalUntil::M161);
+  // TODO(crbug.com/588850177): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!content::BrowserThread::IsThreadInitialized(
+             content::BrowserThread::UI) ||
+         content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   // This is only possible during unit tests. If the unit test didn't set the
   // local_state then it doesn't care about pref value and therefore we return
