@@ -5,6 +5,7 @@
 #ifndef UI_GTK_X_GTK_UI_PLATFORM_X11_H_
 #define UI_GTK_X_GTK_UI_PLATFORM_X11_H_
 
+#include "base/component_export.h"
 #include "base/memory/raw_ref.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/connection.h"
@@ -15,7 +16,7 @@ namespace gtk {
 class GtkEventLoopX11;
 
 // GtkUiPlatform implementation for desktop Linux X11 backends.
-class GtkUiPlatformX11 : public GtkUiPlatform {
+class COMPONENT_EXPORT(GTK) GtkUiPlatformX11 : public GtkUiPlatform {
  public:
   GtkUiPlatformX11();
   GtkUiPlatformX11(const GtkUiPlatformX11&) = delete;

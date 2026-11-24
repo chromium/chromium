@@ -5,7 +5,6 @@
 #include "ui/gtk/x/gtk_ui_platform_x11.h"
 
 #include "base/check.h"
-#include "base/environment.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
@@ -49,10 +48,6 @@ GdkWindow* GtkUiPlatformX11::GetGdkWindow(
       display, static_cast<uint32_t>(window_id));
   if (gdk_window) {
     g_object_ref(gdk_window);
-  } else if (base::Environment::Create()->HasVar("XLIB_SKIP_ARGB_VISUALS")) {
-    // gdk_x11_window_foreign_new_for_display calls XVisualIDFromVisual which
-    // will crash when XLIB_SKIP_ARGB_VISUALS is set.
-    return nullptr;
   } else {
     gdk_window = gdk_x11_window_foreign_new_for_display(
         display, static_cast<uint32_t>(window_id));

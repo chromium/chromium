@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/color_palette.h"
@@ -192,6 +193,15 @@ bool GtkCheckVersion(uint32_t major, uint32_t minor, uint32_t micro) {
 }
 
 bool GtkInitCheck(int* argc, char** argv) {
+  // Temporarily unset XLIB_SKIP_ARGB_VISUALS while GDK opens its Xlib Display
+  // so Xlib does not hide 32-bit ARGB visuals from GDK. Chrome creates X11
+  // windows via XCB (which ignores XLIB_SKIP_ARGB_VISUALS), so wrapping an
+  // ARGB Aura window with gdk_x11_window_foreign_new_for_display() would
+  // otherwise crash in XVisualIDFromVisual(nullptr)
+  // (https://crbug.com/1272182). Restoring it afterwards preserves the user's
+  // environment for child processes.
+  base::ScopedEnvironmentVariableOverride unset_skip_argb(
+      "XLIB_SKIP_ARGB_VISUALS");
   if (GtkCheckVersion(4)) {
     static auto gtk_init_check =
         DlSym<gboolean()>(GetLibGtk(), "gtk_init_check");
