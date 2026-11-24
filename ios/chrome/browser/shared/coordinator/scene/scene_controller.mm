@@ -2244,6 +2244,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 }
 
+// LINT.IfChange(ShareExtensionLensImageSearch)
 // Starts a lens search for share extension.
 - (void)searchShareExtensionImageWithLens {
   CHECK(_imageSearchData);
@@ -2282,6 +2283,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
          entryPoint:LensEntrypoint::ContextMenu];
   [lensHandler searchImageWithLens:command];
 }
+// LINT.ThenChange(//ios/chrome/app/task_request_for_xcallback_url_context.mm:ShareExtensionLensImageSearch)
 
 - (void)startQRCodeScanner {
   if (!self.currentInterface.browser) {

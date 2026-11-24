@@ -7,33 +7,50 @@
 #import <UIKit/UIKit.h>
 
 #import <map>
+#import <memory>
 #import <optional>
 #import <string>
 
+#import "base/check.h"
 #import "base/functional/bind.h"
+#import "base/ios/block_types.h"
+#import "base/location.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_group_command_payload.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/app/task_request_utils.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/x_callback_url.h"
+#import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 namespace {
+
+// Format to which images from outside the app are transcoded before being
+// searched with Lens, as in the legacy startup flow.
+NSString* const kTranscodedImageType = @"image/jpeg";
 
 // Commands that a Chrome extension can request through the App Group.
 enum class AppGroupCommandType {
@@ -165,6 +182,8 @@ std::optional<AppGroupCommandTab> SearchTextTabForAppGroupCommand(
   AppGroupCommandPayload _appGroupCommand;
   // Whether the request is an App Group command from the share extension.
   BOOL _isFromShareExtension;
+  // Re-encodes the image to search with Lens, as it comes from outside the app.
+  std::unique_ptr<web::JavaScriptImageTranscoder> _imageTranscoder;
 }
 
 - (instancetype)initWithURLContext:(UIOpenURLContext*)URLContext
@@ -316,10 +335,9 @@ std::optional<AppGroupCommandTab> SearchTextTabForAppGroupCommand(
 }
 
 // Searches the image sent by the extension in `targetMode` as the legacy
-// startup flow does when Lens is unavailable: with the default search engine if
-// it supports image search, otherwise by only opening the NTP. Commands without
-// an image are discarded.
-// TODO(crbug.com/493816082): Search the image with Lens when available.
+// startup flow does: with Lens when available, otherwise with the default
+// search engine if it supports image search, otherwise by only opening the NTP.
+// Commands without an image are discarded.
 - (void)searchAppGroupImageInMode:(ApplicationModeForTabOpening)targetMode
                        sceneState:(SceneState*)sceneState {
   NSData* imageData = _appGroupCommand.external_data;
@@ -329,10 +347,17 @@ std::optional<AppGroupCommandTab> SearchTextTabForAppGroupCommand(
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(
           sceneState.profileState.profile);
+  if ([self shouldSearchImageWithLens:templateURLService]) {
+    [self openNTPAndSearchImageWithLens:imageData
+                             targetMode:targetMode
+                             sceneState:sceneState];
+    return;
+  }
   if (!search_engines::SupportsSearchByImage(templateURLService)) {
     [self openImageSearchTabWithURLLoadParams:UrlLoadParams::InNewTab(
                                                   GURL(kChromeUINewTabURL))
                                    targetMode:targetMode
+                        postOpeningCompletion:nil
                                    sceneState:sceneState];
     return;
   }
@@ -347,6 +372,81 @@ std::optional<AppGroupCommandTab> SearchTextTabForAppGroupCommand(
                                              sceneState:weakSceneState];
       }));
 }
+
+// Returns whether images must be searched with Lens. Logs the Lens
+// availability, with the same entry point as the legacy startup flow.
+- (BOOL)shouldSearchImageWithLens:(TemplateURLService*)templateURLService {
+  return lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+      LensEntrypoint::ContextMenu,
+      search_engines::SupportsSearchImageWithLens(templateURLService));
+}
+
+// Opens the NTP in `targetMode`, then searches `imageData` with Lens.
+- (void)openNTPAndSearchImageWithLens:(NSData*)imageData
+                           targetMode:(ApplicationModeForTabOpening)targetMode
+                           sceneState:(SceneState*)sceneState {
+  __weak SceneState* weakSceneState = sceneState;
+  ProceduralBlock completion = ^{
+    [self transcodeAndSearchImageWithLens:imageData sceneState:weakSceneState];
+  };
+  [self openImageSearchTabWithURLLoadParams:UrlLoadParams::InNewTab(
+                                                GURL(kChromeUINewTabURL))
+                                 targetMode:targetMode
+                      postOpeningCompletion:completion
+                                 sceneState:sceneState];
+}
+
+// LINT.IfChange(ShareExtensionLensImageSearch)
+// Searches `imageData` with Lens in the current browser of `sceneState`, once
+// it is transcoded, as it comes from outside the app and can't be trusted.
+// `self` owns the transcoder and is retained by its callback until it replies,
+// so that the search outlives the request execution. A request searches at
+// most one image.
+- (void)transcodeAndSearchImageWithLens:(NSData*)imageData
+                             sceneState:(SceneState*)sceneState {
+  CHECK(!_imageTranscoder);
+  if (!sceneState) {
+    return;
+  }
+  _imageTranscoder = std::make_unique<web::JavaScriptImageTranscoder>();
+  __weak SceneState* weakSceneState = sceneState;
+  // TODO(crbug.com/541315801): C2PA: Shared image could have C2PA metadata;
+  // candidate to pass raw bytes.
+  _imageTranscoder->TranscodeImage(
+      imageData, kTranscodedImageType, nil, nil, nil,
+      base::BindOnce(^(NSData* transcodedImageData, NSError* error) {
+        [self searchTranscodedImageWithLens:error ? nil : transcodedImageData
+                                 sceneState:weakSceneState];
+      }));
+}
+
+// Searches the transcoded `imageData` with Lens in the current browser of
+// `sceneState`. Does nothing if `imageData` is nil or can't be decoded, as
+// Lens requires an image, or if the scene has no browser anymore.
+- (void)searchTranscodedImageWithLens:(NSData*)imageData
+                           sceneState:(SceneState*)sceneState {
+  // This is called from the transcoder's callback, so the transcoder must not
+  // be destroyed synchronously.
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(_imageTranscoder));
+  if (!imageData) {
+    return;
+  }
+  // TODO(crbug.com/541315801): C2PA: Shared image could have C2PA metadata;
+  // candidate to pass raw bytes.
+  UIImage* image = [UIImage imageWithData:imageData];
+  Browser* browser = sceneState.browserProviderInterface.currentBrowser;
+  if (!image || !browser) {
+    return;
+  }
+  id<LensCommands> lensHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), LensCommands);
+  SearchImageWithLensCommand* command = [[SearchImageWithLensCommand alloc]
+      initWithImage:image
+         entryPoint:LensEntrypoint::ContextMenu];
+  [lensHandler searchImageWithLens:command];
+}
+// LINT.ThenChange(//ios/chrome/browser/shared/coordinator/scene/scene_controller.mm:ShareExtensionLensImageSearch)
 
 // Opens the default search engine results for `resizedImageData`. Does nothing
 // if the scene or its profile went away, or if the default search engine
@@ -374,21 +474,23 @@ std::optional<AppGroupCommandTab> SearchTextTabForAppGroupCommand(
           resizedImageData, GURL(), templateURLService);
   [self openImageSearchTabWithURLLoadParams:urlLoadParams
                                  targetMode:targetMode
+                      postOpeningCompletion:nil
                                  sceneState:sceneState];
 }
 
 // Opens a tab loading `urlLoadParams` in `targetMode` for an image search.
 // Image searches are external requests, so they skip the new tab animation.
-- (void)openImageSearchTabWithURLLoadParams:(UrlLoadParams)urlLoadParams
-                                 targetMode:
-                                     (ApplicationModeForTabOpening)targetMode
-                                 sceneState:(SceneState*)sceneState {
+- (void)
+    openImageSearchTabWithURLLoadParams:(UrlLoadParams)urlLoadParams
+                             targetMode:(ApplicationModeForTabOpening)targetMode
+                  postOpeningCompletion:(ProceduralBlock)postOpeningCompletion
+                             sceneState:(SceneState*)sceneState {
   urlLoadParams.from_external = true;
   [self openTabWithSceneState:sceneState
                 urlLoadParams:urlLoadParams
                    targetMode:targetMode
             postOpeningAction:TabOpeningPostOpeningAction::NO_ACTION
-        postOpeningCompletion:nil];
+        postOpeningCompletion:postOpeningCompletion];
 }
 
 // Opens the http(s) URL passed in the `url` query parameter of the `/open`

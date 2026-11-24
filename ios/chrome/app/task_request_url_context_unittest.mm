@@ -32,12 +32,14 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
+#import "ios/chrome/app/task_request_for_xcallback_url_context_testing.h"
 #import "ios/chrome/browser/app_switcher/test/test_app_switcher_helper.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -53,6 +55,8 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
@@ -250,6 +254,57 @@ class TaskRequestForURLContextTest : public PlatformTest {
     scene_state_.controller = tab_opener;
     [request execute];
     return tab_opener;
+  }
+
+  // Same as `ExecuteAppGroupCommandRequest()`, with Lens available, as Lens is
+  // not supported in tests.
+  TaskRequestURLContextTestTabOpener* ExecuteAppGroupCommandRequestWithLens() {
+    TaskRequestForURLContext* request = [TaskRequestForURLContext
+        taskRequestWithURLContext:CreateMockURLContext(
+                                      [NSURL URLWithString:kAppGroupCommandURL])
+                       sceneState:scene_state_
+                      isColdStart:YES];
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        [[TaskRequestURLContextTestTabOpener alloc]
+            initWithSceneState:scene_state_];
+    scene_state_.controller = tab_opener;
+    id request_mock = OCMPartialMock(request);
+    OCMStub([request_mock
+                shouldSearchImageWithLens:static_cast<TemplateURLService*>(
+                                              [OCMArg anyPointer])])
+        .andReturn(YES);
+    [request execute];
+    // Lens availability is only checked when the request executes.
+    [request_mock stopMocking];
+    return tab_opener;
+  }
+
+  // Dispatches the Lens commands of the current browser to a mock, returning
+  // the commands it receives.
+  NSMutableArray<SearchImageWithLensCommand*>* RecordLensCommands() {
+    id mock_lens_handler = OCMProtocolMock(@protocol(LensCommands));
+    NSMutableArray<SearchImageWithLensCommand*>* received_commands =
+        [NSMutableArray array];
+    OCMStub([mock_lens_handler
+        searchImageWithLens:[OCMArg checkWithBlock:^BOOL(
+                                        SearchImageWithLensCommand* command) {
+          [received_commands addObject:command];
+          return YES;
+        }]]);
+    [scene_state_.browserProviderInterface.currentBrowser
+            ->GetCommandDispatcher()
+        startDispatchingToTarget:mock_lens_handler
+                     forProtocol:@protocol(LensCommands)];
+    return received_commands;
+  }
+
+  // Returns the PNG data of a decodable image.
+  NSData* CreateDecodableImageData() {
+    UIGraphicsImageRenderer* renderer =
+        [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(1, 1)];
+    return
+        [renderer PNGDataWithActions:^(UIGraphicsImageRendererContext* context){
+        }];
   }
 
   // Returns whether an App Group command is in the shared defaults.
@@ -1422,8 +1477,43 @@ TEST_F(TaskRequestForURLContextTest,
   EXPECT_TRUE(tab_opener.completionActionExecuted);
 }
 
+// Tests that App Group image search commands open the NTP then search the
+// transcoded image with Lens when available, even if the default search engine
+// can search images, without the new tab animation.
+TEST_F(TaskRequestForURLContextTest, TestAppGroupImageSearchCommandWithLens) {
+  SetUpImageSearchDefaultSearchEngine();
+  NSMutableArray<SearchImageWithLensCommand*>* lens_commands =
+      RecordLensCommands();
+  for (const auto& test_case : kImageSearchTestCases) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(test_case.command));
+    [lens_commands removeAllObjects];
+    WriteRecentAppGroupCommand(test_case.command,
+                               app_group::kOpenCommandSourceShareExtension, nil,
+                               CreateDecodableImageData());
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        ExecuteAppGroupCommandRequestWithLens();
+
+    EXPECT_EQ(tab_opener.targetMode, test_case.expected_mode);
+    EXPECT_EQ(tab_opener.urlLoadParams.web_params.url,
+              GURL(kChromeUINewTabURL));
+    EXPECT_TRUE(tab_opener.urlLoadParams.from_external);
+    EXPECT_TRUE(tab_opener.dismissOmnibox);
+    // The Lens search replaces the default post-opening action.
+    EXPECT_FALSE(tab_opener.completionActionExecuted);
+    // Transcoding runs JavaScript in a web view, outside of the task
+    // environment.
+    ASSERT_TRUE(base::test::RunUntil([&] { return lens_commands.count > 0; }));
+    ASSERT_EQ(lens_commands.count, 1u);
+    EXPECT_TRUE(lens_commands.firstObject.image);
+    EXPECT_EQ(lens_commands.firstObject.entryPoint,
+              LensEntrypoint::ContextMenu);
+  }
+}
+
 // Tests that App Group image search commands open the image search results of
-// the default search engine, without the new tab animation.
+// the default search engine when Lens isn't available, without the new tab
+// animation.
 TEST_F(TaskRequestForURLContextTest,
        TestAppGroupImageSearchCommandWithDefaultSearchEngine) {
   SetUpImageSearchDefaultSearchEngine();
@@ -1451,13 +1541,15 @@ TEST_F(TaskRequestForURLContextTest,
   }
 }
 
-// Tests that App Group image search commands only open the NTP when the default
-// search engine can't search images.
+// Tests that App Group image search commands only open the NTP when neither
+// Lens nor the default search engine can search images, and that the Lens
+// availability is logged.
 TEST_F(TaskRequestForURLContextTest,
        TestAppGroupImageSearchCommandWithoutImageSearchSupport) {
   SetUpDefaultSearchEngine();
   for (const auto& test_case : kImageSearchTestCases) {
     SCOPED_TRACE(base::SysNSStringToUTF8(test_case.command));
+    base::HistogramTester histogram_tester;
     WriteRecentAppGroupCommand(test_case.command,
                                app_group::kOpenCommandSourceShareExtension, nil,
                                kTestImageData);
@@ -1471,6 +1563,9 @@ TEST_F(TaskRequestForURLContextTest,
     EXPECT_TRUE(tab_opener.urlLoadParams.from_external);
     EXPECT_TRUE(tab_opener.dismissOmnibox);
     EXPECT_TRUE(tab_opener.completionActionExecuted);
+    histogram_tester.ExpectUniqueSample(
+        kIOSLensContextMenuSupportStatusHistogramName,
+        LensSupportStatus::ProviderUnsupported, 1);
   }
 }
 
