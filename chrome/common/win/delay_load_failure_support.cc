@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/common/win/delay_load_failure_support.h"
+
 // windows.h needs to be included before delayimp.h.
 #include <windows.h>
 
 #include <delayimp.h>
+
+#include <optional>
 
 #include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/notreached.h"
 #include "base/process/memory.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/win/delayload_helpers.h"
 
 FARPROC WINAPI HandleDelayLoadFailureCommon(unsigned reason,
@@ -33,6 +38,22 @@ FARPROC WINAPI HandleDelayLoadFailureCommon(unsigned reason,
   DEBUG_ALIAS_FOR_CSTR(dll_name, dll_info->szDll, 256);
   SCOPED_CRASH_KEY_STRING256("DelayLoad", "ModuleName", dll_name);
   SCOPED_CRASH_KEY_NUMBER("DelayLoad", "LastError", dll_info->dwLastError);
+
+  std::optional<base::debug::ScopedCrashKeyString> proc_crash_key;
+  if (reason == dliFailGetProc) {
+    if (dll_info->dlp.fImportByName) {
+      static auto* const proc_name_key = base::debug::AllocateCrashKeyString(
+          "DelayLoad-ProcName", base::debug::CrashKeySize::Size256);
+      proc_crash_key.emplace(proc_name_key, dll_info->dlp.szProcName
+                                                ? dll_info->dlp.szProcName
+                                                : "");
+    } else {
+      static auto* const proc_ordinal_key = base::debug::AllocateCrashKeyString(
+          "DelayLoad-ProcOrdinal", base::debug::CrashKeySize::Size32);
+      proc_crash_key.emplace(proc_ordinal_key,
+                             base::NumberToString(dll_info->dlp.dwOrdinal));
+    }
+  }
 
   // Deterministically crash here. Returning 0 from the hook would likely result
   // in the process crashing anyway, but in a form that might trigger undefined
