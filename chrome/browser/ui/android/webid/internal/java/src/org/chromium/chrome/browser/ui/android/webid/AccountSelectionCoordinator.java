@@ -283,6 +283,11 @@ public class AccountSelectionCoordinator
                 AccountSelectionProperties.ITEM_TYPE_IDP,
                 new LayoutViewBuilder<>(R.layout.account_selection_active_mode_idp_item),
                 AccountSelectionViewBinder::bindIdpView);
+        adapter.registerType(
+                AccountSelectionProperties.ITEM_TYPE_SHOW_IDP_PICKER,
+                new LayoutViewBuilder<>(
+                        R.layout.account_selection_active_mode_add_account_row_item),
+                AccountSelectionViewBinder::bindShowIdpPickerView);
         sheetItemListView.setAdapter(adapter);
 
         return contentView;

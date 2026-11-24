@@ -258,7 +258,8 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
                     assertSame(activeSheet, mBottomSheetController.getCurrentSheetContent());
                     RecyclerView accountsList =
                             activeSheet.getContentView().findViewById(R.id.sheet_item_list);
-                    assertEquals(2, accountsList.getAdapter().getItemCount());
+                    // Two accounts plus the "Use a different account" picker row.
+                    assertEquals(3, accountsList.getAdapter().getItemCount());
                 });
         verify(mMockBridge, never()).onAccountSelected(any());
         verify(mMockBridge, never()).onDismissed(anyInt());

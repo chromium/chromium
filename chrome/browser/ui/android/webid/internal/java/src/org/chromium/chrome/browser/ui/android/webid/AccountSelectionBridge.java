@@ -153,7 +153,9 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             @JniType("std::vector") List<Account> accounts,
             @JniType("std::vector") List<IdentityProviderData> idpDataList,
             @JniType("std::vector") List<Account> newAccounts) {
-        assert accounts != null && !accounts.isEmpty();
+        assert accounts != null;
+        assert idpDataList != null && !idpDataList.isEmpty();
+        assert !accounts.isEmpty() || idpDataList.size() > 1;
         return mAccountSelectionComponent.showAccounts(rpData, accounts, idpDataList, newAccounts);
     }
 

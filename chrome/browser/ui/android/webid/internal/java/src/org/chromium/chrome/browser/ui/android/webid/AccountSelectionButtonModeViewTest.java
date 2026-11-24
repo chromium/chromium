@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.H
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ShowIdpPickerProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerItemDecoration;
@@ -572,6 +573,31 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
             assertNotNull(startIcon.getDrawable());
             assertFalse(startIcon.getDrawable() instanceof BitmapDrawable);
         }
+    }
+
+    @Test
+    public void testShowIdpPickerRowDisplayedAndClickable() {
+        boolean[] clicked = new boolean[1];
+        mSheetAccountItems.add(
+                new MVCListAdapter.ListItem(
+                        AccountSelectionProperties.ITEM_TYPE_SHOW_IDP_PICKER,
+                        new PropertyModel.Builder(ShowIdpPickerProperties.ALL_KEYS)
+                                .with(
+                                        ShowIdpPickerProperties.ON_CLICK_LISTENER,
+                                        () -> clicked[0] = true)
+                                .build()));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        RecyclerView itemsList = mContentView.findViewById(R.id.sheet_item_list);
+        View pickerRow = itemsList.getChildAt(0);
+        ImageView startIcon = pickerRow.findViewById(R.id.start_icon);
+        assertTrue(startIcon.isShown());
+        assertNotNull(startIcon.getDrawable());
+        TextView title = pickerRow.findViewById(R.id.title);
+        assertEquals("Use a different account", title.getText().toString());
+        assertEquals("Use a different account", title.getContentDescription().toString());
+        pickerRow.performClick();
+        assertTrue(clicked[0]);
     }
 
     private IdentityProviderData createIdpDataWithBrandIcon(Bitmap brandIcon) {

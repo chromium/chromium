@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.I
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ShowIdpPickerProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
@@ -301,13 +302,9 @@ class AccountSelectionMediator {
                                 int dismissReason = IdentityRequestDialogDismissReason.OTHER;
                                 if (reason == BottomSheetController.StateChangeReason.SWIPE) {
                                     dismissReason = IdentityRequestDialogDismissReason.SWIPE;
-                                    // mAccountChooserState is not null only if we want to record
-                                    // this metric, that is, a active mode explicit sign-in account
-                                    // chooser was shown.
-                                    mAccountChooserState =
-                                            mAccountChooserState != null
-                                                    ? AccountChooserResult.SWIPE
-                                                    : null;
+                                    if (shouldRecordAccountChooserDismissal()) {
+                                        mAccountChooserState = AccountChooserResult.SWIPE;
+                                    }
                                     mLoadingDialogState =
                                             mHeaderType == HeaderType.LOADING
                                                     ? LoadingDialogResult.SWIPE
@@ -323,13 +320,9 @@ class AccountSelectionMediator {
                                 } else if (reason
                                         == BottomSheetController.StateChangeReason.BACK_PRESS) {
                                     dismissReason = IdentityRequestDialogDismissReason.BACK_PRESS;
-                                    // mAccountChooserState is not null only if we want to record
-                                    // this metric, that is, a active mode explicit sign-in account
-                                    // chooser was shown.
-                                    mAccountChooserState =
-                                            mAccountChooserState != null
-                                                    ? AccountChooserResult.BACK_PRESS
-                                                    : null;
+                                    if (shouldRecordAccountChooserDismissal()) {
+                                        mAccountChooserState = AccountChooserResult.BACK_PRESS;
+                                    }
                                     mLoadingDialogState =
                                             mHeaderType == HeaderType.LOADING
                                                     ? LoadingDialogResult.BACK_PRESS
@@ -341,13 +334,9 @@ class AccountSelectionMediator {
                                 } else if (reason
                                         == BottomSheetController.StateChangeReason.TAP_SCRIM) {
                                     dismissReason = IdentityRequestDialogDismissReason.TAP_SCRIM;
-                                    // mAccountChooserState is not null only if we want to record
-                                    // this metric, that is, a active mode explicit sign-in account
-                                    // chooser was shown.
-                                    mAccountChooserState =
-                                            mAccountChooserState != null
-                                                    ? AccountChooserResult.TAP_SCRIM
-                                                    : null;
+                                    if (shouldRecordAccountChooserDismissal()) {
+                                        mAccountChooserState = AccountChooserResult.TAP_SCRIM;
+                                    }
                                     mLoadingDialogState =
                                             mHeaderType == HeaderType.LOADING
                                                     ? LoadingDialogResult.TAP_SCRIM
@@ -426,24 +415,34 @@ class AccountSelectionMediator {
     }
 
     private void updateBackPressBehavior() {
-        mBottomSheetContent.setCustomBackPressBehavior(
+        boolean canGoBack =
                 !mWasDismissed
-                                && ((mSelectedAccount != null
-                                                && assumeNonNull(mAccounts).size() != 1
-                                                && mHeaderType != HeaderType.VERIFY)
-                                        || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL)
-                        ? this::handleBackPress
-                        : null);
+                        && ((mSelectedAccount != null
+                                        && assumeNonNull(mAccounts).size() != 1
+                                        && mHeaderType != HeaderType.VERIFY)
+                                || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
+                                || (mHeaderType == HeaderType.IDP_PICKER
+                                        && hasUsableAccounts(assumeNonNull(mAccounts))));
+        mBottomSheetContent.setCustomBackPressBehavior(canGoBack ? this::handleBackPress : null);
     }
 
     private void handleBackPress() {
-        if (mWasDismissed) {
+        if (mWasDismissed || (mHeaderType == HeaderType.IDP_PICKER && mIsModalDialogOpen)) {
             return;
         }
         mSelectedAccount = null;
         if (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
             mDisclosureDialogState = DisclosureDialogResult.BACK_PRESS;
             maybeRecordDisclosureDialogResult();
+        } else if (mHeaderType == HeaderType.IDP_PICKER) {
+            // Returning to the chooser leaves the account chooser outcome undecided until the
+            // user acts on the chooser again or dismisses. Keep `mAccountChooserState` null if a
+            // result was already recorded (e.g. after returning from a login modal).
+            if (mAccountChooserState != null) {
+                mAccountChooserState = AccountChooserResult.TAB_CLOSED;
+            }
+            showAccountChooser();
+            return;
         }
         showAccountsInternal(/* newAccounts= */ null);
     }
@@ -498,6 +497,15 @@ class AccountSelectionMediator {
         return SheetType.ACCOUNT_SELECTION;
     }
 
+    private static boolean hasUsableAccounts(List<Account> accounts) {
+        for (Account account : accounts) {
+            if (!account.isFilteredOut()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void updateAccounts(
             List<Account> accounts,
             List<IdentityProviderData> identityProviders,
@@ -532,6 +540,18 @@ class AccountSelectionMediator {
         if (skipAddAccountRows) {
             return;
         }
+        if (mRpMode == RpMode.ACTIVE
+                && mIsShowingMultipleIdps
+                && mHeaderType == HeaderType.SIGN_IN
+                && areAccountsClickable) {
+            // In active mode with multiple IDPs, "Use a different account" opens an IDP picker
+            // containing all IDPs rather than a single IDP's login tab.
+            mSheetAccountItems.add(
+                    new ListItem(
+                            AccountSelectionProperties.ITEM_TYPE_SHOW_IDP_PICKER,
+                            createShowIdpPickerItem()));
+            return;
+        }
         boolean hasAddedLoginButton = false;
         for (IdentityProviderData identityProvider : identityProviders) {
             if (identityProvider.getIdpMetadata().showUseDifferentAccountButton()
@@ -557,6 +577,11 @@ class AccountSelectionMediator {
         assert mComponentShowTime != 0;
         long currentTime = SystemClock.elapsedRealtime();
         return currentTime - mComponentShowTime > POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
+    }
+
+    private boolean shouldRecordAccountChooserDismissal() {
+        // Keep USE_OTHER_ACCOUNT_BUTTON when dismissed from IDP_PICKER rather than overwriting it.
+        return mAccountChooserState != null && mHeaderType != HeaderType.IDP_PICKER;
     }
 
     private void maybeRecordAccountChooserResult(int result) {
@@ -722,7 +747,7 @@ class AccountSelectionMediator {
         mIdpDataListForShowAccounts = idpDataList;
         // Like in active mode with multiple identity providers, the request permission dialog then
         // shows the RP icon of `account`'s identity provider, and back shows the account chooser
-        // without login rows, see `updateSheet()`.
+        // with the row to open the IDP picker, see `updateSheet()`.
         mIsMultiIdpRequest = idpDataList.size() > 1;
         // Title the sheet with the identity provider of `account`.
         IdentityProviderData idpData = account.getIdentityProviderData();
@@ -1035,9 +1060,7 @@ class AccountSelectionMediator {
         return true;
     }
 
-    // TODO(crbug.com/581411351): Make private once the account chooser opens the IDP picker.
-    @VisibleForTesting
-    boolean showIdpPicker() {
+    private boolean showIdpPicker() {
         assert mRpMode == RpMode.ACTIVE;
         assert assumeNonNull(mIdpDataListForShowAccounts).size() > 1;
         mSelectedAccount = null;
@@ -1091,6 +1114,15 @@ class AccountSelectionMediator {
             // Else:
             // Show accounts picker which doesn't contain the disclosure text. We do not support
             // request permission UI without disclosure text.
+        }
+
+        // With multiple IDPs in active mode and no usable account to choose from, open the IDP
+        // picker directly instead of an empty account chooser.
+        if (mRpMode == RpMode.ACTIVE
+                && assumeNonNull(mIdpDataListForShowAccounts).size() > 1
+                && !hasUsableAccounts(assertNonNull(mAccounts))) {
+            assert mSelectedAccount == null;
+            return showIdpPicker();
         }
 
         if (!showAccountChooser()) {
@@ -1147,15 +1179,10 @@ class AccountSelectionMediator {
                         && areAccountsClickable
                         && firstAccountIdp != null
                         && firstAccountIdp.getIdpMetadata().showUseDifferentAccountButton();
-        // We add the add account button alongside the accounts if supported in passive mode and in
-        // the multi-account UI of active mode with a single IDP.
-        // TODO(crbug.com/581411351): With multiple IDPs in active mode, offer the IDPs that have
-        // no usable account in an IDP picker instead, as on desktop. When no IDP returns accounts,
-        // AccountSelectionBridge.showAccounts() also asserts `!accounts.isEmpty()` and must
-        // accept an empty list (crbug.com/586497366).
-        boolean skipAddAccountRows =
-                showUseDifferentAccountInSingleAccountChooserActiveMode
-                        || (mRpMode == RpMode.ACTIVE && mIsMultiIdpRequest);
+        // We add the add account button alongside the accounts if supported in passive mode, in
+        // the multi-account UI of active mode with a single IDP, or to open the IDP picker in
+        // active mode with multiple IDPs.
+        boolean skipAddAccountRows = showUseDifferentAccountInSingleAccountChooserActiveMode;
         updateAccounts(accounts, identityProviders, areAccountsClickable, skipAddAccountRows);
         // TODO(crbug.com/575550088): Show the RP icon in active mode with multiple IDPs. Until
         // then, the header shows a fallback icon, see AccountSelectionViewBinder.bindHeaderView().
@@ -1421,6 +1448,33 @@ class AccountSelectionMediator {
                 buttonData.mIdpMetadata.getConfigUrl(), buttonData.mIdpMetadata.getLoginUrl());
     }
 
+    // Event listener for when the user taps on an identity provider row in the IDP picker.
+    private void onIdpPickerRowClicked(ButtonData buttonData) {
+        assert mRpMode == RpMode.ACTIVE;
+        if (mWasDismissed || mHeaderType != HeaderType.IDP_PICKER || mIsModalDialogOpen) {
+            return;
+        }
+        onLoginToIdP(buttonData);
+    }
+
+    // Event listener for when the user taps on "Use a different account" with multiple IDPs.
+    private void onShowIdpPicker() {
+        assert mRpMode == RpMode.ACTIVE;
+        assert mIsMultiIdpRequest;
+        if (mWasDismissed
+                || mHeaderType != HeaderType.SIGN_IN
+                || mIsModalDialogOpen
+                || !shouldInputBeProcessed()) {
+            return;
+        }
+        // TODO(crbug.com/589786033): Track IDP picker outcomes separately from
+        // Button.AccountChooserResult and record signed-out IDP logins in UseOtherAccountResult.
+        if (mAccountChooserState != null) {
+            mAccountChooserState = AccountChooserResult.USE_OTHER_ACCOUNT_BUTTON;
+        }
+        showIdpPicker();
+    }
+
     /** Event listener for when the user taps on the more details button of the bottomsheet. */
     void onMoreDetails() {
         if (!shouldInputBeProcessed()) return;
@@ -1589,9 +1643,15 @@ class AccountSelectionMediator {
                 .build();
     }
 
+    private PropertyModel createShowIdpPickerItem() {
+        return new PropertyModel.Builder(ShowIdpPickerProperties.ALL_KEYS)
+                .with(ShowIdpPickerProperties.ON_CLICK_LISTENER, this::onShowIdpPicker)
+                .build();
+    }
+
     private PropertyModel createIdpItem(IdentityProviderData identityProvider) {
         IdpProperties.Properties properties =
-                new IdpProperties.Properties(identityProvider, this::onLoginToIdP);
+                new IdpProperties.Properties(identityProvider, this::onIdpPickerRowClicked);
         return new PropertyModel.Builder(IdpProperties.ALL_KEYS)
                 .with(IdpProperties.PROPERTIES, properties)
                 .build();
@@ -1668,17 +1728,23 @@ class AccountSelectionMediator {
     }
 
     // Handles the user closing the login CCT or native app intent before completion. Re-shows the
-    // account chooser when opened from `SIGN_IN`; otherwise dismisses the request because there is
-    // no chooser to return to (matching desktop's `user_close_cancels_flow`).
+    // account chooser or IDP picker when opened from `SIGN_IN` or `IDP_PICKER`; otherwise
+    // dismisses the request because there is no chooser to return to (matching desktop's
+    // `user_close_cancels_flow`).
     void onModalDialogClosedByUser() {
         if (mWasDismissed) {
             return;
         }
         boolean wasModalDialogOpen = mIsModalDialogOpen;
         mIsModalDialogOpen = false;
-        if (mHeaderType == HeaderType.SIGN_IN && wasModalDialogOpen) {
+        if ((mHeaderType == HeaderType.SIGN_IN || mHeaderType == HeaderType.IDP_PICKER)
+                && wasModalDialogOpen) {
             mSelectedAccount = null;
-            showAccountsInternal(/* newAccounts= */ null);
+            if (mHeaderType == HeaderType.IDP_PICKER) {
+                showIdpPicker();
+            } else {
+                showAccountsInternal(/* newAccounts= */ null);
+            }
             return;
         }
         onDismissed(IdentityRequestDialogDismissReason.OTHER);

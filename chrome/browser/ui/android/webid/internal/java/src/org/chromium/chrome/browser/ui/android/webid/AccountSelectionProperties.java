@@ -42,6 +42,7 @@ class AccountSelectionProperties {
     public static final int ITEM_TYPE_LOGIN = 2;
     public static final int ITEM_TYPE_SEPARATOR = 3;
     public static final int ITEM_TYPE_IDP = 4;
+    public static final int ITEM_TYPE_SHOW_IDP_PICKER = 5;
 
     /**
      * The data needed for a button in the AccountSelection sheet. It may be a continue button for
@@ -304,6 +305,16 @@ class AccountSelectionProperties {
         static final PropertyKey[] ALL_KEYS = {PROPERTIES};
 
         private IdpProperties() {}
+    }
+
+    /** Properties for the "Use a different account" row that opens the active-mode IDP picker. */
+    static class ShowIdpPickerProperties {
+        static final ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
+                new ReadableObjectPropertyKey<>("on_click_listener");
+
+        static final PropertyKey[] ALL_KEYS = {ON_CLICK_LISTENER};
+
+        private ShowIdpPickerProperties() {}
     }
 
     /**

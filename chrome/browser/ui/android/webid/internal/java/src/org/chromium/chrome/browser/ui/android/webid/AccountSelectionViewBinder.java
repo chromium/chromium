@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.I
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ShowIdpPickerProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
@@ -409,6 +410,27 @@ class AccountSelectionViewBinder {
                     properties.mOnClickListener.onResult(
                             new ButtonData(/* account= */ null, idpMetadata));
                 });
+    }
+
+    /**
+     * Called whenever the "Use a different account" row that opens the active-mode IDP picker is
+     * bound.
+     */
+    static void bindShowIdpPickerView(PropertyModel model, View view, PropertyKey key) {
+        if (key != ShowIdpPickerProperties.ON_CLICK_LISTENER) {
+            assert false : "Unhandled update to property:" + key;
+            return;
+        }
+        Context context = view.getContext();
+        ImageView startIconView = view.findViewById(R.id.start_icon);
+        setDefaultLoginImage(context, RpMode.ACTIVE, startIconView);
+        TextView subject = view.findViewById(R.id.title);
+        String buttonText = context.getString(R.string.account_selection_add_account);
+        subject.setText(buttonText);
+        // Opens the in-sheet IDP picker rather than an IDP login tab.
+        subject.setContentDescription(buttonText);
+        Runnable onClickListener = model.get(ShowIdpPickerProperties.ON_CLICK_LISTENER);
+        view.setOnClickListener(clickedView -> onClickListener.run());
     }
 
     static void setDefaultLoginImage(

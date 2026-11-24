@@ -951,36 +951,42 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 mAnaAccountWithUseDifferentAccount,
                 /* expectClickListener= */ true,
                 /* expectShowIdp= */ true);
-        if (mRpMode == RpMode.ACTIVE) {
-            // TODO(crbug.com/581411351): Active mode has no add account button with multiple
-            // identity providers until there is an IDP picker.
-            assertEquals("Incorrect item sheet count", 2, mSheetAccountItems.size());
-            return;
-        }
-        // Because of use a different account, size is 4: two accounts, separator, add account
-        // button.
-        assertEquals("Incorrect item sheet count", 4, mSheetAccountItems.size());
+        // All modes show two accounts plus a use a different account row; passive mode adds a
+        // leading separator.
+        int expectedCount = mRpMode == RpMode.PASSIVE ? 4 : 3;
+        assertEquals("Incorrect item sheet count", expectedCount, mSheetAccountItems.size());
 
         View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
         RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
-        assertEquals(4, sheetItemListView.getAdapter().getItemCount());
+        assertEquals(expectedCount, sheetItemListView.getAdapter().getItemCount());
+
+        int loginButtonIndex = 2;
+        if (mRpMode == RpMode.PASSIVE) {
+            assertEquals(
+                    AccountSelectionProperties.ITEM_TYPE_SEPARATOR,
+                    sheetItemListView.getAdapter().getItemViewType(loginButtonIndex));
+            View separator = sheetItemListView.getChildAt(loginButtonIndex);
+            assertEquals(1, separator.getHeight());
+            ++loginButtonIndex;
+        }
 
         assertEquals(
-                AccountSelectionProperties.ITEM_TYPE_SEPARATOR,
-                sheetItemListView.getAdapter().getItemViewType(2));
-        View separator = sheetItemListView.getChildAt(2);
-        assertEquals(1, separator.getHeight());
-
-        assertEquals(
-                AccountSelectionProperties.ITEM_TYPE_LOGIN,
-                sheetItemListView.getAdapter().getItemViewType(3));
-        View addAccountButton = sheetItemListView.getChildAt(3);
+                mRpMode == RpMode.PASSIVE
+                        ? AccountSelectionProperties.ITEM_TYPE_LOGIN
+                        : AccountSelectionProperties.ITEM_TYPE_SHOW_IDP_PICKER,
+                sheetItemListView.getAdapter().getItemViewType(loginButtonIndex));
+        View addAccountButton = sheetItemListView.getChildAt(loginButtonIndex);
         assertEquals(addAccountButton.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
         TextView textView = addAccountButton.findViewById(R.id.title);
-        // The string should be specific for mIdpDataWithUseDifferentAccount.
-        assertEquals("Use your " + mTestEtldPlusOne2 + " account", textView.getText());
+        if (mRpMode == RpMode.PASSIVE) {
+            // The string should be specific for mIdpDataWithUseDifferentAccount.
+            assertEquals("Use your " + mTestEtldPlusOne2 + " account", textView.getText());
+            assertNotNull(addAccountButton.findViewById(R.id.end_icon));
+        } else {
+            assertEquals("Use a different account", textView.getText());
+            assertEquals("Use a different account", textView.getContentDescription());
+        }
         assertNotNull(addAccountButton.findViewById(R.id.start_icon));
-        assertNotNull(addAccountButton.findViewById(R.id.end_icon));
 
         // Do not let test inputs be ignored.
         mMediator.setComponentShowTime(-1000);
@@ -991,22 +997,30 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 .get(AccountProperties.ON_CLICK_LISTENER)
                 .onResult(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
 
-        // Dragbar no longer shown since only one account is being shown!
-        assertFalse(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
         headerModel = mModel.get(ItemProperties.HEADER);
-        assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
         assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
         assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
         assertNotNull(headerModel.get(HEADER_ICON));
         assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertFalse(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
-        // Should show continue button with the single account.
-        assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
-        testAccount(
-                mSheetAccountItems.get(0).model,
-                mNewUserAccount,
-                /* expectClickListener= */ false,
-                /* expectShowIdp= */ false);
+        if (mRpMode == RpMode.PASSIVE) {
+            // Dragbar no longer shown since only one account is being shown in passive mode.
+            assertFalse(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
+            assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
+            // Should show continue button with the single account.
+            assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
+            testAccount(
+                    mSheetAccountItems.get(0).model,
+                    mNewUserAccount,
+                    /* expectClickListener= */ false,
+                    /* expectShowIdp= */ false);
+        } else {
+            assertTrue(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
+            assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, headerModel.get(TYPE));
+            assertEquals(0, mSheetAccountItems.size());
+            assertTrue(containsItemOfType(mModel, ItemProperties.ACCOUNT_CHIP));
+            assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+        }
 
         // Go back should show multiple IDP UI again.
         pressBack();
@@ -1020,7 +1034,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNull(headerModel.get(HEADER_ICON));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertTrue(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
-        assertEquals("Incorrect item sheet count", 4, mSheetAccountItems.size());
+        assertEquals("Incorrect item sheet count", expectedCount, mSheetAccountItems.size());
         testAccount(
                 mSheetAccountItems.get(0).model,
                 mNewUserAccount,
@@ -1031,6 +1045,21 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 mAnaAccountWithUseDifferentAccount,
                 /* expectClickListener= */ true,
                 /* expectShowIdp= */ true);
+    }
+
+    @Test
+    public void testMultiIdpNoUsableAccountsHeaderTypeMatchesMode() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Collections.emptyList(),
+                Arrays.asList(mIdpData, mIdpDataWithUseDifferentAccount),
+                /* newAccounts= */ Collections.emptyList());
+
+        assertEquals(
+                mRpMode == RpMode.PASSIVE ? HeaderType.SIGN_IN : HeaderType.IDP_PICKER,
+                mModel.get(ItemProperties.HEADER).get(TYPE));
     }
 
     @Test
