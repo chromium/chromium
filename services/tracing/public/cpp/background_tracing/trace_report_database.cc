@@ -83,8 +83,7 @@ constexpr char kLocalTracesPayloadsTableSql[] =
   "CREATE TABLE IF NOT EXISTS local_traces_payloads("
     "uuid TEXT PRIMARY KEY NOT NULL,"
     "trace_content BLOB NULL,"
-    "system_profile BLOB NULL,"
-    "FOREIGN KEY(uuid) REFERENCES local_traces_index(uuid) ON DELETE CASCADE)";
+    "system_profile BLOB NULL)";
 // clang-format on
 
 }  // namespace
@@ -100,8 +99,7 @@ ClientTraceReport::ClientTraceReport() = default;
 ClientTraceReport::~ClientTraceReport() = default;
 
 TraceReportDatabase::TraceReportDatabase()
-    : database_(sql::DatabaseOptions().set_cache_size(128),
-                /*tag=*/"LocalTraces") {
+    : database_(sql::DatabaseOptions(), /*tag=*/"LocalTraces") {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -368,7 +366,19 @@ bool TraceReportDatabase::DeleteTrace(const base::Token& uuid) {
   CHECK(delete_index_entry.is_valid());
   delete_index_entry.BindString(0, uuid.ToString());
 
-  return delete_index_entry.Run();
+  sql::Statement delete_payload(database_.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM local_traces_payloads WHERE uuid=?"));
+  CHECK(delete_payload.is_valid());
+  delete_payload.BindString(0, uuid.ToString());
+
+  sql::Transaction transaction(&database_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  if (!delete_index_entry.Run() || !delete_payload.Run()) {
+    return false;
+  }
+  return transaction.Commit();
 }
 
 bool TraceReportDatabase::DeleteAllTraces() {
@@ -380,7 +390,19 @@ bool TraceReportDatabase::DeleteAllTraces() {
   sql::Statement delete_index_entries(database_.GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM local_traces_index"));
   CHECK(delete_index_entries.is_valid());
-  return delete_index_entries.Run();
+
+  sql::Statement delete_payloads(database_.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM local_traces_payloads"));
+  CHECK(delete_payloads.is_valid());
+
+  sql::Transaction transaction(&database_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  if (!delete_index_entries.Run() || !delete_payloads.Run()) {
+    return false;
+  }
+  return transaction.Commit();
 }
 
 bool TraceReportDatabase::DeleteTracesInDateRange(base::Time start,
@@ -397,7 +419,14 @@ bool TraceReportDatabase::DeleteTracesInDateRange(base::Time start,
   delete_index_entries.BindTime(0, start);
   delete_index_entries.BindTime(1, end);
 
-  return delete_index_entries.Run();
+  sql::Transaction transaction(&database_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  if (!delete_index_entries.Run() || !DeleteOrphanedPayloads()) {
+    return false;
+  }
+  return transaction.Commit();
 }
 
 bool TraceReportDatabase::DeleteTraceReportsOlderThan(base::TimeDelta age) {
@@ -417,7 +446,14 @@ bool TraceReportDatabase::DeleteTraceReportsOlderThan(base::TimeDelta age) {
   delete_reports_older_than.BindTime(0, base::Time(base::Time::Now() - age));
   CHECK(delete_reports_older_than.is_valid());
 
-  return delete_reports_older_than.Run();
+  sql::Transaction transaction(&database_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  if (!delete_reports_older_than.Run() || !DeleteOrphanedPayloads()) {
+    return false;
+  }
+  return transaction.Commit();
 }
 
 bool TraceReportDatabase::DeleteUploadedTraceContentOlderThan(
@@ -465,6 +501,28 @@ bool TraceReportDatabase::DeleteOldTraceContent(size_t max_traces) {
   delete_payload.BindInt(0, static_cast<int>(max_traces));
 
   return delete_payload.Run();
+}
+
+bool TraceReportDatabase::CleanDatabase(size_t max_traces,
+                                        base::TimeDelta report_ttl,
+                                        base::TimeDelta uploaded_content_ttl) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_initialized()) {
+    return false;
+  }
+
+  sql::Transaction transaction(&database_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  // Expired reports are deleted first, so that their payloads are deleted
+  // along with them and aren't considered by the following statements.
+  if (!DeleteTraceReportsOlderThan(report_ttl) ||
+      !DeleteUploadedTraceContentOlderThan(uploaded_content_ttl) ||
+      !DeleteOldTraceContent(max_traces)) {
+    return false;
+  }
+  return transaction.Commit();
 }
 
 bool TraceReportDatabase::AllPendingUploadSkipped(
@@ -601,6 +659,18 @@ base::flat_map<std::string, size_t> TraceReportDatabase::GetScenarioCountsSince(
                             static_cast<uint64_t>(statement.ColumnInt64(1)));
   }
   return scenario_counts;
+}
+
+bool TraceReportDatabase::DeleteOrphanedPayloads() {
+  static constexpr char kDeleteOrphanedPayloadsSql[] =
+      // clang-format off
+      "DELETE FROM local_traces_payloads "
+        "WHERE uuid NOT IN (SELECT uuid FROM local_traces_index)";
+  // clang-format on
+  sql::Statement delete_payloads(
+      database_.GetCachedStatement(SQL_FROM_HERE, kDeleteOrphanedPayloadsSql));
+  CHECK(delete_payloads.is_valid());
+  return delete_payloads.Run();
 }
 
 bool TraceReportDatabase::EnsureTableCreated() {

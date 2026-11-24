@@ -922,13 +922,12 @@ void BackgroundTracingManager::CleanDatabase() {
       FROM_HERE,
       base::BindOnce(
           [](TraceReportDatabase* trace_database) {
-            // Trace payload is cleared on a more frequent basis.
-            trace_database->DeleteOldTraceContent(kMaxTraceContent);
-            // The reports entries are kept (without the payload) for longer to
-            // track upload quotas.
-            trace_database->DeleteTraceReportsOlderThan(kTraceReportTimeToLive);
-            trace_database->DeleteUploadedTraceContentOlderThan(
-                kUploadedTraceContentTimeToLive);
+            // Trace payload is cleared on a more frequent basis. The reports
+            // entries are kept (without the payload) for longer to track upload
+            // quotas.
+            trace_database->CleanDatabase(kMaxTraceContent,
+                                          kTraceReportTimeToLive,
+                                          kUploadedTraceContentTimeToLive);
             return trace_database->GetScenarioCountsSince(
                 base::Time::Now() - kMaxTracesPerScenarioDuration);
           },

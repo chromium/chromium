@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
@@ -123,6 +124,8 @@ TEST_F(TraceReportDatabaseTest, DeletingSingleTrace) {
 
   ASSERT_TRUE(trace_report_.DeleteTrace(new_report.uuid));
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
+  EXPECT_FALSE(trace_report_.GetTraceContent(new_report.uuid));
+  EXPECT_FALSE(trace_report_.GetSystemProfile(new_report.uuid));
 }
 
 TEST_F(TraceReportDatabaseTest, DeletingAllTraces) {
@@ -131,8 +134,10 @@ TEST_F(TraceReportDatabaseTest, DeletingAllTraces) {
   // Create multiple NewTraceReport and add to the
   // local_traces table.
 
+  std::vector<base::Token> uuids;
   for (int i = 0; i < 5; i++) {
     NewTraceReport new_report = MakeNewTraceReport();
+    uuids.push_back(new_report.uuid);
 
     ASSERT_TRUE(trace_report_.AddTrace(new_report));
   }
@@ -141,6 +146,9 @@ TEST_F(TraceReportDatabaseTest, DeletingAllTraces) {
 
   ASSERT_TRUE(trace_report_.DeleteAllTraces());
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
+  for (const auto& uuid : uuids) {
+    EXPECT_FALSE(trace_report_.GetTraceContent(uuid));
+  }
 }
 
 TEST_F(TraceReportDatabaseTest, DeleteTracesInDateRange) {
@@ -149,20 +157,25 @@ TEST_F(TraceReportDatabaseTest, DeleteTracesInDateRange) {
   const base::Time today = base::Time::Now();
   // Create multiple NewTraceReport and add to the local_traces table.
 
+  std::vector<base::Token> kept_traces;
   for (int i = 0; i < 5; i++) {
     NewTraceReport new_report = MakeNewTraceReport(today);
+    kept_traces.push_back(new_report.uuid);
 
     ASSERT_TRUE(trace_report_.AddTrace(new_report));
   }
 
+  std::vector<base::Token> deleted_traces;
   for (int i = 0; i < 3; i++) {
     NewTraceReport new_report = MakeNewTraceReport(today - base::Days(20));
+    deleted_traces.push_back(new_report.uuid);
 
     ASSERT_TRUE(trace_report_.AddTrace(new_report));
   }
 
   for (int i = 0; i < 2; i++) {
     NewTraceReport new_report = MakeNewTraceReport(today - base::Days(10));
+    deleted_traces.push_back(new_report.uuid);
 
     ASSERT_TRUE(trace_report_.AddTrace(new_report));
   }
@@ -174,6 +187,12 @@ TEST_F(TraceReportDatabaseTest, DeleteTracesInDateRange) {
 
   ASSERT_TRUE(trace_report_.DeleteTracesInDateRange(start, end));
   EXPECT_EQ(trace_report_.GetAllReports().size(), 5u);
+  for (const auto& uuid : kept_traces) {
+    EXPECT_TRUE(trace_report_.GetTraceContent(uuid));
+  }
+  for (const auto& uuid : deleted_traces) {
+    EXPECT_FALSE(trace_report_.GetTraceContent(uuid));
+  }
 }
 
 TEST_F(TraceReportDatabaseTest, DeleteTraceReportsOlderThan) {
@@ -182,13 +201,17 @@ TEST_F(TraceReportDatabaseTest, DeleteTraceReportsOlderThan) {
   const base::Time today = base::Time::Now();
 
   // Create multiple NewTraceReport and add to the local_traces table.
+  std::vector<base::Token> kept_traces;
   for (int i = 0; i < 5; i++) {
     NewTraceReport new_report = MakeNewTraceReport(today);
+    kept_traces.push_back(new_report.uuid);
     ASSERT_TRUE(trace_report_.AddTrace(new_report));
   }
 
+  std::vector<base::Token> old_traces;
   for (int i = 0; i < 3; i++) {
     NewTraceReport new_report = MakeNewTraceReport(today - base::Days(20));
+    old_traces.push_back(new_report.uuid);
     ASSERT_TRUE(trace_report_.AddTrace(new_report));
   }
 
@@ -196,6 +219,12 @@ TEST_F(TraceReportDatabaseTest, DeleteTraceReportsOlderThan) {
 
   ASSERT_TRUE(trace_report_.DeleteTraceReportsOlderThan(base::Days(10)));
   EXPECT_EQ(trace_report_.GetAllReports().size(), 5u);
+  for (const auto& uuid : kept_traces) {
+    EXPECT_TRUE(trace_report_.GetTraceContent(uuid));
+  }
+  for (const auto& uuid : old_traces) {
+    EXPECT_FALSE(trace_report_.GetTraceContent(uuid));
+  }
 }
 
 TEST_F(TraceReportDatabaseTest, DeleteUploadedTraceContentOlderThan) {
@@ -255,6 +284,51 @@ TEST_F(TraceReportDatabaseTest, DeleteOldTraceContent) {
               trace_report_.GetTraceContent(report.uuid).has_value());
   }
   for (const auto& uuid : old_traces) {
+    EXPECT_FALSE(trace_report_.GetTraceContent(uuid));
+  }
+}
+
+TEST_F(TraceReportDatabaseTest, CleanDatabase) {
+  const base::Time today = base::Time::Now();
+
+  // Recent reports, which all keep their content.
+  std::vector<base::Token> recent_traces;
+  for (int i = 0; i < 3; i++) {
+    NewTraceReport new_report = MakeNewTraceReport(today - base::Hours(i));
+    recent_traces.push_back(new_report.uuid);
+    ASSERT_TRUE(trace_report_.AddTrace(new_report));
+  }
+  // A report uploaded a long time ago, which loses its content.
+  NewTraceReport uploaded_report = MakeNewTraceReport(today - base::Days(5));
+  ASSERT_TRUE(trace_report_.AddTrace(uploaded_report));
+  ASSERT_TRUE(trace_report_.UploadComplete(uploaded_report.uuid,
+                                           today - base::Days(5)));
+  // Expired reports, which are deleted along with their content.
+  std::vector<base::Token> expired_traces;
+  for (int i = 0; i < 3; i++) {
+    NewTraceReport new_report = MakeNewTraceReport(today - base::Days(20));
+    expired_traces.push_back(new_report.uuid);
+    ASSERT_TRUE(trace_report_.AddTrace(new_report));
+  }
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 7u);
+
+  ASSERT_TRUE(trace_report_.CleanDatabase(
+      /*max_traces=*/3, /*report_ttl=*/base::Days(10),
+      /*uploaded_content_ttl=*/base::Days(1)));
+
+  // The expired reports are deleted first, so the 3 most recent remaining
+  // reports keep their content, except for the uploaded one.
+  auto received_reports = trace_report_.GetAllReports();
+  EXPECT_EQ(received_reports.size(), 4u);
+  for (const auto& report : received_reports) {
+    EXPECT_EQ(report.has_trace_content,
+              trace_report_.GetTraceContent(report.uuid).has_value());
+  }
+  for (const auto& uuid : recent_traces) {
+    EXPECT_TRUE(trace_report_.GetTraceContent(uuid));
+  }
+  EXPECT_FALSE(trace_report_.GetTraceContent(uploaded_report.uuid));
+  for (const auto& uuid : expired_traces) {
     EXPECT_FALSE(trace_report_.GetTraceContent(uuid));
   }
 }

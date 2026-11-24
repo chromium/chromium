@@ -147,6 +147,14 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) TraceReportDatabase {
   // Delete old trace content, keeping up to `max_traces`.
   bool DeleteOldTraceContent(size_t max_traces);
 
+  // Performs periodic clean up in a single transaction: deletes all reports
+  // (and their payloads) older than `report_ttl`, then deletes uploaded trace
+  // content older than `uploaded_content_ttl`, and finally deletes old trace
+  // content, keeping up to `max_traces`.
+  bool CleanDatabase(size_t max_traces,
+                     base::TimeDelta report_ttl,
+                     base::TimeDelta uploaded_content_ttl);
+
   // Mark all reports that are pending upload as skipped with `skip_reason`.
   bool AllPendingUploadSkipped(SkipUploadReason skip_reason);
 
@@ -176,6 +184,9 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) TraceReportDatabase {
 
  private:
   bool EnsureTableCreated();
+
+  // Deletes payloads that no longer have a matching report.
+  bool DeleteOrphanedPayloads();
 
   sql::Database database_;
   base::FilePath db_file_path_;
