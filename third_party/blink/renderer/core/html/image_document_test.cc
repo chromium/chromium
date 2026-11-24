@@ -355,6 +355,54 @@ TEST_F(ImageDocumentTest, MAYBE(ImageCenteredAtDeviceScaleFactor)) {
   }
 }
 
+class ImageDocumentPartialLoadTest : public SimTest {
+ protected:
+  String ImageStyle() {
+    return To<ImageDocument>(GetDocument())
+        .ImageElement()
+        ->getAttribute(html_names::kStyleAttr);
+  }
+};
+
+// Clicking the image toggles zoom as soon as the image size is known, so the
+// zoom cursor should be shown from that point rather than only once the image
+// has finished loading.
+TEST_F(ImageDocumentPartialLoadTest, MAYBE(ZoomCursorBeforeLoadFinishes)) {
+  WebView().MainFrameWidget()->Resize(gfx::Size(100, 100));
+  SimRequest request("https://example.com/image.jpg", "image/jpeg");
+  LoadURL("https://example.com/image.jpg");
+
+  // Send everything but the tail of the image, which is enough to determine
+  // its size but leaves it still loading.
+  Vector<char> data = CreateJpegImageData(200, 200);
+  constexpr size_t kTailSize = 16;
+  ASSERT_GT(data.size(), kTailSize);
+  auto [head, tail] = base::span(data).split_at(data.size() - kTailSize);
+  Vector<char> head_data;
+  head_data.append_range(head);
+  request.Write(head_data);
+  test::RunPendingTasks();
+
+  ASSERT_TRUE(IsA<ImageDocument>(GetDocument()));
+  auto& document = To<ImageDocument>(GetDocument());
+  // The image is shrunk to fit, and is styled as still loading.
+  ASSERT_EQ(100u, document.ImageElement()->width());
+  ASSERT_TRUE(ImageStyle().contains("background-color: hsl(0, 0%, 25%);"));
+  EXPECT_TRUE(ImageStyle().contains("cursor: zoom-in;"));
+
+  document.ImageClicked(10, 10);
+  EXPECT_EQ(200u, document.ImageElement()->width());
+  EXPECT_TRUE(ImageStyle().contains("cursor: zoom-out;"));
+
+  Vector<char> tail_data;
+  tail_data.append_range(tail);
+  request.Complete(tail_data);
+  test::RunPendingTasks();
+  EXPECT_TRUE(ImageStyle().contains("background-color: hsl(0, 0%, 90%);"));
+  EXPECT_EQ(200u, document.ImageElement()->width());
+  EXPECT_TRUE(ImageStyle().contains("cursor: zoom-out;"));
+}
+
 class ImageDocumentClipboardTest
     : public SimTest,
       public testing::WithParamInterface<EditorCommandSource> {

@@ -433,10 +433,14 @@ void ImageDocument::ImageLoaded() {
 }
 
 ImageDocument::MouseCursorMode ImageDocument::ComputeMouseCursorMode() const {
-  if (!image_is_loaded_)
-    return kDefault;
   if (shrink_to_fit_mode_ != kDesktop || !ShouldShrinkToFit())
     return kDefault;
+  // Clicking toggles zoom as soon as the image size is known, even if the image
+  // hasn't finished loading yet (see ImageClicked()), so the cursor reflects
+  // that from the same point.
+  if (!image_size_is_known_) {
+    return kDefault;
+  }
   if (ImageFitsInWindow())
     return kDefault;
   return should_shrink_image_ ? kZoomIn : kZoomOut;
