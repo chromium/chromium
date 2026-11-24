@@ -109,6 +109,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/lens/lens_media_link_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -1190,8 +1192,31 @@ void ContextualTasksUiService::OnTextFinderLookupComplete(
   }
 
   if (!tab || !all_text_found) {
-    // If the tab went away or the text wasn't found on the page, open a new
-    // tab.
+#if !BUILDFLAG(IS_ANDROID)
+    // If the text wasn't found but `tab` is still showing the cited page,
+    // opening the citation in a new tab would only duplicate the page the user
+    // is already looking at. Tell the user the content wasn't found instead.
+    // The toast is anchored to the browser's active tab, so only show it if
+    // `tab` is still the active tab of `browser`; the user may have switched
+    // tabs or moved `tab` to another window while the lookup was in flight.
+    if (tab && tab->GetContents() &&
+        TabListInterface::From(browser.get())->GetActiveTab() == tab.get() &&
+        shared_highlighting::RemoveFragmentSelectorDirectives(
+            tab->GetContents()->GetLastCommittedURL()) ==
+            shared_highlighting::RemoveFragmentSelectorDirectives(url)) {
+      // `MaybeShowToast()` returns false if the toast can't be shown (e.g. the
+      // user has restricted toasts to actionable ones only). In that case,
+      // fall through to opening a new tab so the click isn't a silent no-op.
+      auto* toast_controller = ToastController::From(browser.get());
+      if (toast_controller && toast_controller->MaybeShowToast(ToastParams(
+                                  ToastId::kContextualTasksCitationNotFound))) {
+        return;
+      }
+    }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+    // If the tab went away, navigated elsewhere, is no longer the active tab
+    // of `browser`, or the toast could not be shown, open a new tab.
     std::unique_ptr<content::WebContents> new_contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(profile_));

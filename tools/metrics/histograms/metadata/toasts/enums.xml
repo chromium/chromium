@@ -130,6 +130,7 @@ chromium-metrics-reviews@google.com.
   <int value="68" label="TTC permission denied"/>
   <int value="69" label="TTC speaker muted"/>
   <int value="70" label="TTC speaker volume low"/>
+  <int value="71" label="Contextual tasks citation not found"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

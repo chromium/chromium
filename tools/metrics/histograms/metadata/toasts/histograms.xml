@@ -25,6 +25,8 @@ found in the LICENSE file.
   <variant name="AutoSignIn" summary="auto sign-in"/>
   <variant name="ClearBrowsingData" summary="clear browsing data"/>
   <variant name="ClosePinnedTab" summary="close pinned tab confirmation"/>
+  <variant name="ContextualTasksCitationNotFound"
+      summary="contextual tasks citation not found"/>
   <variant name="CopiedToClipboard" summary="copied to clipboard"/>
   <variant name="DefaultBrowserUpdateSuccess"
       summary="default browser update success"/>

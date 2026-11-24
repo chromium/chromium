@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
@@ -25,6 +26,10 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_media_link_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_metrics.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
@@ -32,6 +37,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -113,8 +119,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
       1u, text_highlighter_manager->get_text_highlighters_for_testing().size());
 }
 
+// Test that a citation for the page that is already open, whose text cannot be
+// found on that page, shows a toast instead of opening a duplicate tab.
 IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
-                       CitationTextHighlight_TextNotFoundOpensTab) {
+                       CitationTextHighlight_TextNotFoundShowsToast) {
   GURL url("data:text/html,<html><body>some text to highlight</body></html>");
   ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
 
@@ -151,17 +159,116 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
   ui_service->OnThreadLinkClicked(citation_url, task.GetTaskId(), nullptr,
                                   browser()->GetWeakPtr(), url::Origin());
 
-  // Wait for the new tab to be created.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return browser()->GetTabStripModel()->count() == 3; }));
+  // Wait for the toast telling the user the content wasn't found.
+  ToastController* toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return toast_controller->GetCurrentToastId() ==
+           ToastId::kContextualTasksCitationNotFound;
+  }));
 
   // A text highlighter should not have been created for the existing page.
   text_highlighter_manager = companion::TextHighlighterManager::GetForPage(
       active_tab->GetContents()->GetPrimaryPage());
   EXPECT_EQ(nullptr, text_highlighter_manager);
 
-  // Another tab should have been opened since the text wasn't found.
-  EXPECT_EQ(browser()->GetTabStripModel()->count(), 3);
+  // The citation points at the page that is already open, so no duplicate tab
+  // should have been opened.
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
+}
+
+// Test that the "not found" toast, which is anchored to the active tab, is not
+// shown if the user switched away from the cited tab while the text lookup was
+// in flight. The citation should open in a new tab instead.
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
+                       CitationTextHighlight_TextNotFoundTabSwitchedNoToast) {
+  GURL url("data:text/html,<html><body>some text to highlight</body></html>");
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
+
+  // Ensure the tab is open and on the expected URL.
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
+  tabs::TabInterface* cited_tab = browser()->GetTabStripModel()->GetActiveTab();
+  EXPECT_EQ(cited_tab->GetContents()->GetVisibleURL(), url);
+
+  // Create a task and associate the tab with the new task.
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ContextualTask task = contextual_tasks_service->CreateTask();
+  contextual_tasks_service->AssociateTabWithTask(
+      task.GetTaskId(),
+      sessions::SessionTabHelper::IdForTab(cited_tab->GetContents()));
+
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+
+  // Add a text fragment to the URL that does not contain text found in the
+  // page.
+  GURL citation_url = GURL(url.spec() + "#:~:text=google");
+
+  ui_service->OnThreadLinkClicked(citation_url, task.GetTaskId(), nullptr,
+                                  browser()->GetWeakPtr(), url::Origin());
+
+  // Switch to the other tab before the asynchronous text lookup completes.
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  ASSERT_NE(browser()->GetTabStripModel()->GetActiveTab(), cited_tab);
+
+  // Since the cited tab is no longer active, the citation should open in a new
+  // tab rather than showing a toast over the wrong tab.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return browser()->GetTabStripModel()->count() == 3; }));
+
+  ToastController* toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+  EXPECT_NE(toast_controller->GetCurrentToastId(),
+            ToastId::kContextualTasksCitationNotFound);
+}
+
+// Test that if the "not found" toast can't be shown (e.g. the user has
+// restricted toasts to actionable ones only), the citation falls back to
+// opening in a new tab instead of silently doing nothing.
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
+                       CitationTextHighlight_TextNotFoundToastBlockedOpensTab) {
+  // Only allow actionable toasts. The "not found" toast is not actionable.
+  g_browser_process->local_state()->SetInteger(
+      prefs::kToastAlertLevel,
+      static_cast<int>(toasts::ToastAlertLevel::kActionable));
+
+  GURL url("data:text/html,<html><body>some text to highlight</body></html>");
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
+
+  // Ensure the tab is open and on the expected URL.
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
+  tabs::TabInterface* cited_tab = browser()->GetTabStripModel()->GetActiveTab();
+  EXPECT_EQ(cited_tab->GetContents()->GetVisibleURL(), url);
+
+  // Create a task and associate the tab with the new task.
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ContextualTask task = contextual_tasks_service->CreateTask();
+  contextual_tasks_service->AssociateTabWithTask(
+      task.GetTaskId(),
+      sessions::SessionTabHelper::IdForTab(cited_tab->GetContents()));
+
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+
+  // Add a text fragment to the URL that does not contain text found in the
+  // page.
+  GURL citation_url = GURL(url.spec() + "#:~:text=google");
+
+  ui_service->OnThreadLinkClicked(citation_url, task.GetTaskId(), nullptr,
+                                  browser()->GetWeakPtr(), url::Origin());
+
+  // The toast can't be shown, so the citation should open in a new tab.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return browser()->GetTabStripModel()->count() == 3; }));
+
+  ToastController* toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+  EXPECT_NE(toast_controller->GetCurrentToastId(),
+            ToastId::kContextualTasksCitationNotFound);
 }
 
 class TestLensMediaLinkHandler : public lens::LensMediaLinkHandler {

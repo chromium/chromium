@@ -148,6 +148,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "TtcSpeakerMuted";
     case ToastId::kTtcSpeakerVolumeLow:
       return "TtcSpeakerVolumeLow";
+    case ToastId::kContextualTasksCitationNotFound:
+      return "ContextualTasksCitationNotFound";
   }
 
   NOTREACHED();

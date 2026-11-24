@@ -351,6 +351,16 @@ void ToastService::RegisterToasts() {
           .AddCloseButton()
           .Build());
 
+  // Shown when a citation clicked in the contextual tasks side panel points
+  // at the page that is already open, but the cited text is not on it.
+  toast_registry_->RegisterToast(
+      ToastId::kContextualTasksCitationNotFound,
+      ToastSpecification::Builder(
+          features::IsRoundedIconsEnabled() ? vector_icons::kInfoIcon
+                                            : vector_icons::kInfoRefreshOldIcon,
+          IDS_LENS_OVERLAY_TOAST_PAGE_CONTENT_NOT_FOUND_MESSAGE)
+          .Build());
+
   toast_registry_->RegisterToast(
       ToastId::kGlic,
       ToastSpecification::Builder(glic::GlicVectorIconManager::GetVectorIcon(
