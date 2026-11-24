@@ -69,8 +69,8 @@ struct SymphoniaTrackInfo;
 //   only if no fallback is available; TODO(crbug.com/583934381).
 // - Encrypted media - `encrypted_media_init_data_cb` is never invoked;
 //   TODO(crbug.com/583935700).
-// - Mid-stream config changes (TODO(crbug.com/583935452),
-//   TODO(crbug.com/583934912)) and bitstream conversions
+// - Mid-stream config changes other than a new chained Ogg stream
+//   (TODO(crbug.com/583934912)) and bitstream conversions
 //   (TODO(crbug.com/583935590)).
 // - Packet side data, excluding discard padding; TODO(crbug.com/583935113).
 // - Non-zero start time (TODO(crbug.com/583934943)) and timeline offsets
@@ -191,6 +191,10 @@ class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
   // the container did not report one.
   void OnEndOfStream();
 
+  // Handles a new stream starting mid-playback (e.g. chained Ogg) with the
+  // container's new `tracks`.
+  void OnStreamResetRequired(const rust::Vec<SymphoniaTrackInfo>& tracks);
+
   // Reports a fatal error to the `DemuxerHost`.
   void OnDemuxerError(PipelineStatus status);
 
@@ -213,9 +217,17 @@ class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
   raw_ptr<DemuxerHost> host_ = nullptr;
 
   std::vector<std::unique_ptr<SymphoniaDemuxerStream>> streams_;
+  // When a chained stream (e.g. chained Ogg) starts with a new track ID,
+  // packets with this ID are routed to `streams_[0]`.
+  std::optional<uint32_t> chained_track_id_;
+
   // `kInfiniteDuration` until end of stream if the container does not report
   // a duration.
   base::TimeDelta duration_;
+  // True after a chained stream reset (`OnStreamResetRequired()`). Symphonia's
+  // Ogg reader probes only the first stream's duration, so chained streams
+  // raise `duration_` as later links run past it.
+  bool has_chained_stream_ = false;
   // End time of the latest packet read so far, used to set the duration at end
   // of stream.
   base::TimeDelta max_packet_end_time_;

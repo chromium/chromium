@@ -27,6 +27,12 @@ constexpr size_t kMaxQueuedPackets = 50;
 
 }  // namespace
 
+SymphoniaDemuxerStream::PendingConfigSegment::PendingConfigSegment(
+    AudioDecoderConfig config)
+    : config(std::move(config)) {}
+
+SymphoniaDemuxerStream::PendingConfigSegment::~PendingConfigSegment() = default;
+
 SymphoniaDemuxerStream::SymphoniaDemuxerStream(
     uint32_t track_id,
     MediaTrack::Id media_track_id,
@@ -75,7 +81,7 @@ void SymphoniaDemuxerStream::EnableBitstreamConverter() {
 }
 
 bool SymphoniaDemuxerStream::SupportsConfigChanges() {
-  return false;
+  return supports_config_changes_;
 }
 
 AudioDecoderConfig SymphoniaDemuxerStream::audio_decoder_config() {
@@ -87,6 +93,24 @@ VideoDecoderConfig SymphoniaDemuxerStream::video_decoder_config() {
   // TODO(crbug.com/550619039): Return the video config once video tracks are
   // supported.
   NOTREACHED();
+}
+
+void SymphoniaDemuxerStream::ChangeConfig(AudioDecoderConfig audio_config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(supports_config_changes_);
+
+  // Always emit `kConfigChanged` at a chained stream boundary, even when the
+  // new stream's config matches the previous one, so the audio decoder resets
+  // its overlap/pre-skip state. If a trailing segment never received any
+  // packets, replace it instead of emitting two empty resets in a row.
+  if (!pending_segments_.empty() &&
+      pending_segments_.back()->buffers.IsEmpty()) {
+    pending_segments_.back()->config = std::move(audio_config);
+  } else {
+    pending_segments_.push_back(
+        std::make_unique<PendingConfigSegment>(std::move(audio_config)));
+  }
+  SatisfyPendingRead();
 }
 
 void SymphoniaDemuxerStream::SetEnabled(bool enabled) {
@@ -103,7 +127,7 @@ void SymphoniaDemuxerStream::SetEnabled(bool enabled) {
   // and aborted state: the demuxer does not read past end of stream, so a
   // re-enabled stream that lost it would wait forever, and an aborted stream
   // must keep aborting reads until the next seek.
-  buffer_queue_.Clear();
+  DropQueuedPackets();
   if (read_cb_) {
     SatisfyPendingReadWithEndOfStream();
   }
@@ -118,7 +142,12 @@ void SymphoniaDemuxerStream::EnqueueBuffer(
     return;
   }
   UpdateEstimatedDuration(*buffer);
-  buffer_queue_.Push(std::move(buffer));
+  // Packets for a pending segment are held back until earlier segments drain.
+  if (!pending_segments_.empty()) {
+    pending_segments_.back()->buffers.Push(std::move(buffer));
+  } else {
+    buffer_queue_.Push(std::move(buffer));
+  }
   SatisfyPendingRead();
 }
 
@@ -145,7 +174,7 @@ void SymphoniaDemuxerStream::SetEndOfStream() {
 
 void SymphoniaDemuxerStream::FlushBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  buffer_queue_.Clear();
+  DropQueuedPackets();
   end_of_stream_ = false;
   aborted_ = false;
 }
@@ -159,7 +188,7 @@ void SymphoniaDemuxerStream::Stop() {
 void SymphoniaDemuxerStream::Abort() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   aborted_ = true;
-  buffer_queue_.Clear();
+  DropQueuedPackets();
   if (read_cb_) {
     std::move(read_cb_).Run(kAborted, {});
   }
@@ -171,17 +200,35 @@ bool SymphoniaDemuxerStream::HasAvailableCapacity() const {
   if (stopped_ || aborted_ || !is_enabled_) {
     return false;
   }
-  return (buffer_queue_.queue_size() < kMaxQueuedPackets && !end_of_stream_) ||
+  return (TotalQueuedPackets() < kMaxQueuedPackets && !end_of_stream_) ||
          has_pending_read();
 }
 
 int64_t SymphoniaDemuxerStream::GetMemoryUsage() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return static_cast<int64_t>(buffer_queue_.memory_usage_in_bytes());
+  size_t total = buffer_queue_.memory_usage_in_bytes();
+  for (const auto& segment : pending_segments_) {
+    total += segment->buffers.memory_usage_in_bytes();
+  }
+  return static_cast<int64_t>(total);
 }
 
 void SymphoniaDemuxerStream::SatisfyPendingRead() {
   if (!read_cb_) {
+    return;
+  }
+
+  // All packets for the current segment have been read, so switch to the next
+  // queued segment before returning any of its packets.
+  if (buffer_queue_.IsEmpty() && !pending_segments_.empty()) {
+    std::unique_ptr<PendingConfigSegment> next =
+        std::move(pending_segments_.front());
+    pending_segments_.pop_front();
+    audio_config_ = std::move(next->config);
+    while (!next->buffers.IsEmpty()) {
+      buffer_queue_.Push(next->buffers.Pop());
+    }
+    std::move(read_cb_).Run(kConfigChanged, {});
     return;
   }
 
@@ -209,6 +256,25 @@ void SymphoniaDemuxerStream::SatisfyPendingReadWithEndOfStream() {
   DecoderBufferVector buffers;
   buffers.push_back(DecoderBuffer::CreateEOSBuffer());
   std::move(read_cb_).Run(kOk, std::move(buffers));
+}
+
+void SymphoniaDemuxerStream::DropQueuedPackets() {
+  buffer_queue_.Clear();
+  if (!pending_segments_.empty()) {
+    std::unique_ptr<PendingConfigSegment> latest =
+        std::move(pending_segments_.back());
+    latest->buffers.Clear();
+    pending_segments_.clear();
+    pending_segments_.push_back(std::move(latest));
+  }
+}
+
+size_t SymphoniaDemuxerStream::TotalQueuedPackets() const {
+  size_t total = buffer_queue_.queue_size();
+  for (const auto& segment : pending_segments_) {
+    total += segment->buffers.queue_size();
+  }
+  return total;
 }
 
 }  // namespace media

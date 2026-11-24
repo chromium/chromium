@@ -128,6 +128,157 @@ TEST_F(SymphoniaDemuxerStreamTest, SetLiveness) {
   EXPECT_EQ(stream_.liveness(), StreamLiveness::kUnknown);
 }
 
+TEST_F(SymphoniaDemuxerStreamTest, ChangeConfigAfterQueuedBuffers) {
+  stream_.set_supports_config_changes(true);
+  EXPECT_TRUE(stream_.SupportsConfigChanges());
+
+  // One packet for the old config, then the config changes, then one packet
+  // for the new config.
+  stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(0)));
+  const AudioDecoderConfig normal = TestAudioConfig::Normal();
+  const AudioDecoderConfig new_config(
+      normal.codec(), normal.sample_format(),
+      ChannelLayoutConfig::Guess(normal.channels()),
+      normal.samples_per_second() * 2, std::vector<uint8_t>(),
+      EncryptionScheme::kUnencrypted);
+  ASSERT_FALSE(new_config.Matches(normal));
+  stream_.ChangeConfig(new_config);
+  stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(10)));
+
+  // The old config's packet is read first, even though more are requested.
+  ReadFuture first;
+  stream_.Read(2, first.GetCallback());
+  auto [first_status, first_buffers] = first.Take();
+  EXPECT_EQ(first_status, DemuxerStream::kOk);
+  ASSERT_EQ(first_buffers.size(), 1u);
+  EXPECT_EQ(first_buffers[0]->timestamp(), base::Milliseconds(0));
+  EXPECT_TRUE(
+      stream_.audio_decoder_config().Matches(TestAudioConfig::Normal()));
+
+  // Then the config change is reported.
+  ReadFuture second;
+  stream_.Read(2, second.GetCallback());
+  EXPECT_EQ(second.Get<DemuxerStream::Status>(), DemuxerStream::kConfigChanged);
+  EXPECT_TRUE(stream_.audio_decoder_config().Matches(new_config));
+
+  // Then the new config's packet.
+  ReadFuture third;
+  stream_.Read(2, third.GetCallback());
+  auto [third_status, third_buffers] = third.Take();
+  EXPECT_EQ(third_status, DemuxerStream::kOk);
+  ASSERT_EQ(third_buffers.size(), 1u);
+  EXPECT_EQ(third_buffers[0]->timestamp(), base::Milliseconds(10));
+}
+
+TEST_F(SymphoniaDemuxerStreamTest, ChangeConfigToSameConfigEmitsConfigChanged) {
+  stream_.set_supports_config_changes(true);
+  stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(0)));
+  stream_.ChangeConfig(TestAudioConfig::Normal());
+  stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(10)));
+
+  // Even when the config matches, a chained stream boundary must emit
+  // `kConfigChanged` so the audio decoder resets its state.
+  ReadFuture first;
+  stream_.Read(2, first.GetCallback());
+  auto [first_status, first_buffers] = first.Take();
+  EXPECT_EQ(first_status, DemuxerStream::kOk);
+  ASSERT_EQ(first_buffers.size(), 1u);
+  EXPECT_EQ(first_buffers[0]->timestamp(), base::Milliseconds(0));
+
+  ReadFuture second;
+  stream_.Read(2, second.GetCallback());
+  EXPECT_EQ(second.Get<DemuxerStream::Status>(), DemuxerStream::kConfigChanged);
+
+  ReadFuture third;
+  stream_.Read(2, third.GetCallback());
+  auto [third_status, third_buffers] = third.Take();
+  EXPECT_EQ(third_status, DemuxerStream::kOk);
+  ASSERT_EQ(third_buffers.size(), 1u);
+  EXPECT_EQ(third_buffers[0]->timestamp(), base::Milliseconds(10));
+}
+
+TEST_F(SymphoniaDemuxerStreamTest, MultipleQueuedConfigChangesPreservePackets) {
+  stream_.set_supports_config_changes(true);
+  const AudioDecoderConfig normal = TestAudioConfig::Normal();
+  const AudioDecoderConfig second_config(
+      normal.codec(), normal.sample_format(),
+      ChannelLayoutConfig::Guess(normal.channels()),
+      normal.samples_per_second() * 2, std::vector<uint8_t>(),
+      EncryptionScheme::kUnencrypted);
+  const AudioDecoderConfig third_config(
+      normal.codec(), normal.sample_format(),
+      ChannelLayoutConfig::Guess(normal.channels()),
+      normal.samples_per_second() * 4, std::vector<uint8_t>(),
+      EncryptionScheme::kUnencrypted);
+
+  stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(0)));
+  stream_.ChangeConfig(second_config);
+  stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(10)));
+  stream_.ChangeConfig(third_config);
+  stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(20)));
+
+  ReadFuture read1;
+  stream_.Read(2, read1.GetCallback());
+  ASSERT_EQ(read1.Get<DemuxerStream::DecoderBufferVector>().size(), 1u);
+
+  ReadFuture change1;
+  stream_.Read(2, change1.GetCallback());
+  EXPECT_EQ(change1.Get<DemuxerStream::Status>(),
+            DemuxerStream::kConfigChanged);
+  EXPECT_TRUE(stream_.audio_decoder_config().Matches(second_config));
+
+  ReadFuture read2;
+  stream_.Read(2, read2.GetCallback());
+  auto [status2, buffers2] = read2.Take();
+  EXPECT_EQ(status2, DemuxerStream::kOk);
+  ASSERT_EQ(buffers2.size(), 1u);
+  EXPECT_EQ(buffers2[0]->timestamp(), base::Milliseconds(10));
+
+  ReadFuture change2;
+  stream_.Read(2, change2.GetCallback());
+  EXPECT_EQ(change2.Get<DemuxerStream::Status>(),
+            DemuxerStream::kConfigChanged);
+  EXPECT_TRUE(stream_.audio_decoder_config().Matches(third_config));
+
+  ReadFuture read3;
+  stream_.Read(2, read3.GetCallback());
+  auto [status3, buffers3] = read3.Take();
+  EXPECT_EQ(status3, DemuxerStream::kOk);
+  ASSERT_EQ(buffers3.size(), 1u);
+  EXPECT_EQ(buffers3[0]->timestamp(), base::Milliseconds(20));
+}
+
+TEST_F(SymphoniaDemuxerStreamTest, FlushBuffersPreservesPendingConfigChange) {
+  stream_.set_supports_config_changes(true);
+  const AudioDecoderConfig normal = TestAudioConfig::Normal();
+  const AudioDecoderConfig new_config(
+      normal.codec(), normal.sample_format(),
+      ChannelLayoutConfig::Guess(normal.channels()),
+      normal.samples_per_second() * 2, std::vector<uint8_t>(),
+      EncryptionScheme::kUnencrypted);
+
+  stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(0)));
+  stream_.ChangeConfig(new_config);
+  stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(10)));
+
+  // Flushing drops packets from both segments, but keeps the pending config so
+  // the next read still signals `kConfigChanged` before post-flush packets.
+  stream_.FlushBuffers();
+  stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(20)));
+
+  ReadFuture change;
+  stream_.Read(2, change.GetCallback());
+  EXPECT_EQ(change.Get<DemuxerStream::Status>(), DemuxerStream::kConfigChanged);
+  EXPECT_TRUE(stream_.audio_decoder_config().Matches(new_config));
+
+  ReadFuture read;
+  stream_.Read(2, read.GetCallback());
+  auto [status, buffers] = read.Take();
+  EXPECT_EQ(status, DemuxerStream::kOk);
+  ASSERT_EQ(buffers.size(), 1u);
+  EXPECT_EQ(buffers[0]->timestamp(), base::Milliseconds(20));
+}
+
 TEST_F(SymphoniaDemuxerStreamTest, ReadReturnsQueuedBuffers) {
   stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(0)));
   stream_.EnqueueBuffer(CreateBuffer(base::Milliseconds(10)));

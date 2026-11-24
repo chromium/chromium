@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include <memory>
+
+#include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -75,6 +78,19 @@ class MEDIA_EXPORT SymphoniaDemuxerStream : public DemuxerStream {
   // Sets the value returned by `liveness()`. Defaults to `kRecorded`.
   void set_liveness(StreamLiveness liveness) { liveness_ = liveness; }
 
+  // Sets whether `SupportsConfigChanges()` returns true. Must be called before
+  // the stream is handed to the pipeline.
+  void set_supports_config_changes(bool supports_config_changes) {
+    supports_config_changes_ = supports_config_changes;
+  }
+
+  // Queues a config transition for packets enqueued from now on, e.g. when a
+  // chained Ogg stream starts. The first read after all previously queued
+  // packets returns `kConfigChanged` so the decoder resets for the new stream,
+  // even when `audio_config` matches the previous config. Requires
+  // `SupportsConfigChanges()`.
+  void ChangeConfig(AudioDecoderConfig audio_config);
+
   // Enables or disables the stream. Disabling drops all queued packets and
   // satisfies any pending read with an end-of-stream buffer. Packets enqueued
   // while disabled are dropped. End-of-stream and aborted state are kept.
@@ -109,6 +125,14 @@ class MEDIA_EXPORT SymphoniaDemuxerStream : public DemuxerStream {
   int64_t GetMemoryUsage() const;
 
  private:
+  struct PendingConfigSegment {
+    explicit PendingConfigSegment(AudioDecoderConfig config);
+    ~PendingConfigSegment();
+
+    AudioDecoderConfig config;
+    DecoderBufferQueue buffers;
+  };
+
   // Satisfies the pending read, if any, from the queue or with an end-of-stream
   // buffer, then requests more data if the queue has spare capacity.
   void SatisfyPendingRead();
@@ -119,21 +143,36 @@ class MEDIA_EXPORT SymphoniaDemuxerStream : public DemuxerStream {
   // Updates `estimated_duration_` for a newly enqueued `buffer`.
   void UpdateEstimatedDuration(const DecoderBuffer& buffer);
 
+  // Drops all queued packets while keeping the latest pending config change
+  // (if any) so the next read still emits `kConfigChanged`.
+  void DropQueuedPackets();
+
+  // Total number of queued packets across `buffer_queue_` and
+  // `pending_segments_`.
+  size_t TotalQueuedPackets() const;
+
   const uint32_t track_id_;
   const MediaTrack::Id media_track_id_;
-  const AudioDecoderConfig audio_config_;
+  AudioDecoderConfig audio_config_;
   const base::TimeDelta duration_;
   const base::RepeatingClosure request_data_cb_;
 
   ReadCB read_cb_;
   uint32_t requested_count_ = 0;
   DecoderBufferQueue buffer_queue_;
+
+  // Chained stream segments queued by `ChangeConfig()`. Each segment holds its
+  // config and packets until earlier queues drain, then a read returns
+  // `kConfigChanged` and promotes the front segment into `buffer_queue_`.
+  base::circular_deque<std::unique_ptr<PendingConfigSegment>> pending_segments_;
+
   bool end_of_stream_ = false;
   bool is_enabled_ = true;
   bool stopped_ = false;
   bool aborted_ = false;
   StreamLiveness liveness_ = StreamLiveness::kRecorded;
   base::TimeDelta estimated_duration_ = kNoTimestamp;
+  bool supports_config_changes_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

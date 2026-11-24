@@ -703,6 +703,36 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return std::string(AudioBackendName(info.param));
                          });
 
+class AudioChainedOggTest : public PipelineIntegrationTest,
+                            public testing::WithParamInterface<AudioBackend> {
+ public:
+  AudioChainedOggTest() {
+    ConfigureAudioBackend(GetParam(), scoped_feature_list_);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// double-sfx.ogg is two chained copies of sfx.ogg. The second logical stream
+// restarts its timestamps from zero.
+TEST_P(AudioChainedOggTest, PlaysToEnd) {
+  ASSERT_EQ(PIPELINE_OK, Start("double-sfx.ogg", kUnreliableDuration));
+  EXPECT_EQ(demuxer_->GetDemuxerType(), ExpectedDemuxerType(GetParam()));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  constexpr base::TimeDelta kMinChainedPlaybackTime = base::Milliseconds(500);
+  EXPECT_GT(pipeline_->GetMediaTime(), kMinChainedPlaybackTime);
+  EXPECT_EQ(base::TimeDelta(), demuxer_->GetStartTime());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AudioChainedOggTest,
+                         testing::ValuesIn(kAudioBackends),
+                         [](const testing::TestParamInfo<AudioBackend>& info) {
+                           return std::string(AudioBackendName(info.param));
+                         });
+
 struct MSEChangeTypeTestData {
   const MSEPlaybackTestData file_one;
   const MSEPlaybackTestData file_two;

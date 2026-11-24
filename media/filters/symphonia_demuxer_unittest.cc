@@ -512,6 +512,105 @@ TEST_F(SymphoniaDemuxerTest, InitializeMp3) {
             container_names::MediaContainerName::kContainerMP3);
 }
 
+TEST_F(SymphoniaDemuxerTest, ReadsAllPacketsChainedOgg) {
+  // double-sfx.ogg is two chained copies of sfx.ogg. The second stream's
+  // timestamps restart from zero inside the file, but must keep increasing,
+  // and `DemuxerHost::SetDuration()` must grow past the first link's ~350 ms
+  // probed length.
+  CreateDemuxer("double-sfx.ogg");
+  base::TimeDelta latest_duration;
+  EXPECT_CALL(host_, SetDuration(_))
+      .WillRepeatedly(testing::SaveArg<0>(&latest_duration));
+  base::test::TestFuture<PipelineStatus> init_status;
+  demuxer_->Initialize(&host_, init_status.GetCallback());
+  ASSERT_EQ(init_status.Get(), PIPELINE_OK);
+
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  EXPECT_TRUE(stream->SupportsConfigChanges());
+
+  base::TimeDelta last_pts = base::TimeDelta::Min();
+  while (true) {
+    ReadFuture future;
+    stream->Read(1, future.GetCallback());
+    auto [status, buffers] = future.Take();
+    if (status == DemuxerStream::kConfigChanged) {
+      continue;
+    }
+    ASSERT_EQ(status, DemuxerStream::kOk);
+    ASSERT_EQ(buffers.size(), 1u);
+    if (buffers[0]->end_of_stream()) {
+      break;
+    }
+    EXPECT_GE(buffers[0]->timestamp(), last_pts);
+    last_pts = buffers[0]->timestamp();
+  }
+
+  // Each copy of sfx.ogg is about 350 ms long.
+  constexpr base::TimeDelta kMinChainedDuration = base::Milliseconds(500);
+  EXPECT_GT(last_pts, kMinChainedDuration);
+  EXPECT_GT(latest_duration, kMinChainedDuration);
+}
+
+TEST_F(SymphoniaDemuxerTest, ChainedOggSwitchesAudioDecoderConfig) {
+  std::string vorbis;
+  std::string opus;
+  ASSERT_TRUE(base::ReadFileToString(GetTestDataFilePath("sfx.ogg"), &vorbis));
+  ASSERT_TRUE(
+      base::ReadFileToString(GetTestDataFilePath("sfx-opus.ogg"), &opus));
+  CreateDemuxerWithContents(vorbis + opus);
+  InitializeDemuxer();
+
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  EXPECT_EQ(stream->audio_decoder_config().codec(), AudioCodec::kVorbis);
+
+  bool saw_config_change = false;
+  int packets_after_config_change = 0;
+  while (true) {
+    ReadFuture future;
+    stream->Read(1, future.GetCallback());
+    auto [status, buffers] = future.Take();
+    if (status == DemuxerStream::kConfigChanged) {
+      saw_config_change = true;
+      EXPECT_EQ(stream->audio_decoder_config().codec(), AudioCodec::kOpus);
+      continue;
+    }
+    ASSERT_EQ(status, DemuxerStream::kOk);
+    ASSERT_EQ(buffers.size(), 1u);
+    if (buffers[0]->end_of_stream()) {
+      break;
+    }
+    if (saw_config_change) {
+      ++packets_after_config_change;
+    }
+  }
+  EXPECT_TRUE(saw_config_change);
+  EXPECT_GT(packets_after_config_change, 0);
+}
+
+TEST_F(SymphoniaDemuxerTest, ChainedOggRejectsMidStreamVideoTrack) {
+  std::string audio;
+  std::string video;
+  ASSERT_TRUE(base::ReadFileToString(GetTestDataFilePath("sfx.ogg"), &audio));
+  ASSERT_TRUE(base::ReadFileToString(GetTestDataFilePath("bear.ogv"), &video));
+  CreateDemuxerWithContents(audio + video);
+
+  // Hitting the multi-track audio+video link triggers `PIPELINE_ERROR_DECODE`
+  // and stops further packet reads.
+  EXPECT_CALL(host_, OnDemuxerError(_)).WillOnce([&](PipelineStatus status) {
+    EXPECT_EQ(status, PIPELINE_ERROR_DECODE);
+    demuxer_->AbortPendingReads();
+  });
+  InitializeDemuxer();
+
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  while (scoped_refptr<DecoderBuffer> buffer = ReadBuffer(stream)) {
+    ASSERT_FALSE(buffer->end_of_stream());
+  }
+}
+
 TEST_F(SymphoniaDemuxerTest, InitializeFailsWithTruncatedHeader) {
   // A WAVE file header with no chunks after it. Symphonia recognizes the
   // container but can't read it, which is an error rather than a fallback.
