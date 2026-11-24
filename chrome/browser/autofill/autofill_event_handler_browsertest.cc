@@ -364,23 +364,6 @@ IN_PROC_BROWSER_TEST_F(AutofillEventHandlerBrowserTest, CompleteAutofillFlow) {
   EXPECT_TRUE(prefecture_field_exists)
       << "New prefecture field was not added to the form";
 
-  // Verify at least one of the new fields was filled by the refill
-  // (depending on the profile data, not all fields may have values)
-  std::string neighborhood_value =
-      content::EvalJs(
-          web_contents(),
-          "document.getElementById('ADDRESS_HOME_DEPENDENT_LOCALITY') ? "
-          "document.getElementById('ADDRESS_HOME_DEPENDENT_LOCALITY').value : "
-          "''")
-          .ExtractString();
-
-  std::string region_value =
-      content::EvalJs(
-          web_contents(),
-          "document.getElementById('ADDRESS_HOME_ADMIN_LEVEL2') ? "
-          "document.getElementById('ADDRESS_HOME_ADMIN_LEVEL2').value : ''")
-          .ExtractString();
-
   // At least verify the fields exist and can potentially be filled
   // The actual filling depends on whether the profile has these values
 
