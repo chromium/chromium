@@ -32,6 +32,7 @@
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/ui/url_identity.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -135,7 +136,16 @@ constexpr UrlIdentity::FormatOptions kUrlIdentityOptions{
 ChromePageInfoDelegate::GetBrowserCallback
 ChromePageInfoDelegate::DefaultGetBrowserCallback() {
   return base::BindRepeating([](content::WebContents* contents) {
-    return GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
+    if (BrowserWindowInterface* browser =
+            GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                contents)) {
+      return browser;
+    }
+    // Page Info can be opened for non-tab WebContents (e.g. side panels), where
+    // `FindBrowserWithTab()` returns nullptr. Fall back to the embedding
+    // browser context so browser-scoped actions (like opening Site Settings)
+    // still resolve the owning browser window.
+    return contents ? webui::GetBrowserWindowInterface(contents) : nullptr;
   });
 }
 
