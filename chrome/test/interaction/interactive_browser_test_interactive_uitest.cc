@@ -583,21 +583,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       WaitForStateChange(kWebContentsId, clear_all_downloads_click));
 }
 
-IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, SendKeyToWebContents) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithTextField);
-  const DeepQuery kTextField = {"#value"};
-
-  RunTestSequence(
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      FocusWebContents(kWebContentsId),
-      ExecuteJsAt(kWebContentsId, kTextField,
-                  "el => { el.focus(); el.value = ''; }"),
-      SendKeyPress(kWebContentsId, ui::VKEY_A),
-      SendKeyPress(kWebContentsId, ui::VKEY_B, ui::EF_SHIFT_DOWN),
-      CheckJsResultAt(kWebContentsId, kTextField, "el => el.value", u"aB"));
-}
-
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, FocusElement) {
   RunTestSequence(
       FocusElement(kNewTabButtonElementId),
@@ -624,13 +609,36 @@ class InteractiveBrowserTestKeyboardUiTest
   }
   ~InteractiveBrowserTestKeyboardUiTest() override = default;
 
+  // InteractiveBrowserTestUiTest:
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTestUiTest::SetUpOnMainThread();
+    WaitForInitialWebUIToolbar(browser());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestKeyboardUiTest, SendKeyPress) {
-  WaitForInitialWebUIToolbar(browser());
+IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestKeyboardUiTest,
+                       SendKeyToWebContents) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithTextField);
+  const DeepQuery kTextField = {"#value"};
 
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      FocusWebContents(kWebContentsId),
+      ExecuteJsAt(kWebContentsId, kTextField,
+                  "el => { el.focus(); el.value = ''; }"),
+      SendKeyPress(kWebContentsId, ui::VKEY_A),
+      SendKeyPress(kWebContentsId, ui::VKEY_B, ui::EF_SHIFT_DOWN),
+      // Key events cross asynchronously to the renderer over
+      // WidgetInputHandler, so wait for the input value rather than racing with
+      // CheckJsResultAt.
+      WaitForJsResultAt(kWebContentsId, kTextField, "el => el.value", u"aB"));
+}
+
+IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestKeyboardUiTest, SendKeyPress) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTextfieldId);
 
   auto delegate = std::make_unique<views::BubbleDialogDelegate>(
