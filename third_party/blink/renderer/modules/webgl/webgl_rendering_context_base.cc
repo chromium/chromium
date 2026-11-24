@@ -1991,6 +1991,7 @@ WebGLRenderingContextBase::ClearIfComposited(
   }
 
   GetDrawingBuffer()->SetBufferClearNeeded(false);
+  copied_contents_are_stale_ = true;
 
   return combined_clear ? kCombinedClear : kJustClear;
 }
@@ -2143,7 +2144,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     return nullptr;
   }
 
-  bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
+  ClearIfComposited(kClearCallerOther);
 
   if (Host()->LowLatencyEnabled() &&
       GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
@@ -2165,7 +2166,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
   // The host's ResourceProvider is purged to save memory when the tab
   // is backgrounded.
 
-  if (!copied_contents_are_stale_ && !cleared_content) {
+  if (!copied_contents_are_stale_) {
     if (resource_provider_.get()) {
       // `resource_provider_` already has the current contents.
       return resource_provider_->Snapshot();
@@ -2253,13 +2254,12 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     return nullptr;
   }
 
-  bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
+  ClearIfComposited(kClearCallerOther);
 
   if (Host()->LowLatencyEnabled() &&
       GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
     return GetDrawingBuffer()->ExportLowLatencyCanvasResource();
   }
-
 
   if (resource_provider_.get() &&
       resource_provider_.get()->Size() != GetDrawingBuffer()->Size()) {
@@ -2267,8 +2267,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     Host()->DiscardResources();
   }
 
-  if (!copied_contents_are_stale_ && !cleared_content &&
-      resource_provider_.get()) {
+  if (!copied_contents_are_stale_ && resource_provider_.get()) {
     // `resource_provider_` already has the current contents.
     return resource_provider_->ProduceCanvasResource();
   }

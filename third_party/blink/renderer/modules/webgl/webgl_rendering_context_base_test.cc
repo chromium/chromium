@@ -705,4 +705,88 @@ TEST_F(
   EXPECT_NE(snapshot1, snapshot3);
 }
 
+// Verifies that when a non-draw operation (such as `copyTexImage2D()`) clears
+// the drawing buffer after compositing, a subsequent
+// `PaintRenderingResultsToSnapshot()` refreshes rather than returning a stale
+// pre-clear snapshot (both with GPU compositing and when falling back to an
+// unaccelerated snapshot).
+TEST_F(WebGLRenderingContextBaseTest,
+       PaintRenderingResultsToSnapshotRefreshesAfterNonDrawClearIfComposited) {
+  CanvasContextCreationAttributesCore attrs;
+  attrs.preserve_drawing_buffer = false;
+  WebGLRenderingContextBase* gl_ctx = CreateWebGLContext(attrs);
+  ASSERT_NE(gl_ctx, nullptr);
+
+  WebGLTexture* tex = gl_ctx->createTexture();
+  ASSERT_NE(tex, nullptr);
+  gl_ctx->bindTexture(GL_TEXTURE_2D, tex);
+
+  CanvasRenderingContext* rendering_ctx = gl_ctx;
+
+  // 1. Default GPU-composited snapshot path.
+  gl_ctx->clear(GL_COLOR_BUFFER_BIT);
+  scoped_refptr<StaticBitmapImage> snapshot1 =
+      rendering_ctx->PaintRenderingResultsToSnapshot(kBackBuffer);
+  ASSERT_NE(snapshot1, nullptr);
+
+  rendering_ctx->MarkLayerComposited();
+  gl_ctx->copyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, 10, 10, 0);
+
+  scoped_refptr<StaticBitmapImage> snapshot2 =
+      rendering_ctx->PaintRenderingResultsToSnapshot(kBackBuffer);
+  ASSERT_NE(snapshot2, nullptr);
+  EXPECT_NE(snapshot1, snapshot2);
+
+  // 2. Unaccelerated fallback snapshot path when `SharedGpuContext` is
+  // unavailable.
+  SharedGpuContext::Reset();
+  SharedGpuContext::SetContextProviderFactoryForTesting(
+      BindRepeating([]() -> std::unique_ptr<WebGraphicsContext3DProvider> {
+        return nullptr;
+      }));
+  canvas_->SetSize(gfx::Size(50, 50));
+
+  gl_ctx->clear(GL_COLOR_BUFFER_BIT);
+  scoped_refptr<StaticBitmapImage> fallback_snapshot1 =
+      rendering_ctx->PaintRenderingResultsToSnapshot(kBackBuffer);
+  ASSERT_NE(fallback_snapshot1, nullptr);
+
+  rendering_ctx->MarkLayerComposited();
+  gl_ctx->copyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, 10, 10, 0);
+
+  scoped_refptr<StaticBitmapImage> fallback_snapshot2 =
+      rendering_ctx->PaintRenderingResultsToSnapshot(kBackBuffer);
+  ASSERT_NE(fallback_snapshot2, nullptr);
+  EXPECT_NE(fallback_snapshot1, fallback_snapshot2);
+}
+
+// Verifies that when a user framebuffer is bound after compositing and a call
+// clears the default drawing buffer (e.g., `clear(0)` triggering the implicit
+// post-composite clear), a subsequent `PaintRenderingResultsToSnapshot()`
+// refreshes rather than returning a stale pre-clear snapshot.
+TEST_F(WebGLRenderingContextBaseTest,
+       PaintRenderingResultsToSnapshotRefreshesAfterUserFboClearPostComposite) {
+  CanvasContextCreationAttributesCore attrs;
+  attrs.preserve_drawing_buffer = false;
+  WebGLRenderingContextBase* gl_ctx = CreateWebGLContext(attrs);
+  ASSERT_NE(gl_ctx, nullptr);
+
+  CanvasRenderingContext* rendering_ctx = gl_ctx;
+  gl_ctx->clear(GL_COLOR_BUFFER_BIT);
+  scoped_refptr<StaticBitmapImage> snapshot1 =
+      rendering_ctx->PaintRenderingResultsToSnapshot(kBackBuffer);
+  ASSERT_NE(snapshot1, nullptr);
+
+  rendering_ctx->MarkLayerComposited();
+  WebGLFramebuffer* user_fbo = gl_ctx->createFramebuffer();
+  ASSERT_NE(user_fbo, nullptr);
+  gl_ctx->bindFramebuffer(GL_FRAMEBUFFER, user_fbo);
+  gl_ctx->clear(0);
+
+  scoped_refptr<StaticBitmapImage> snapshot2 =
+      rendering_ctx->PaintRenderingResultsToSnapshot(kBackBuffer);
+  ASSERT_NE(snapshot2, nullptr);
+  EXPECT_NE(snapshot1, snapshot2);
+}
+
 }  // namespace blink
