@@ -1390,6 +1390,7 @@ chromium-metrics-reviews@google.com.
   <int value="1823608208" label="pcm_mulaw"/>
   <int value="1827051583" label="adpcm_thp"/>
   <int value="1834381325" label="adpcm_dtk"/>
+  <int value="1853863193" label="av2"/>
   <int value="1854844146" label="tscc"/>
   <int value="1890319788" label="mp4als"/>
   <int value="1896040704" label="cllc"/>

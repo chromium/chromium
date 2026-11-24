@@ -119,11 +119,12 @@ static base::TimeDelta ExtractStartTime(AVStream* stream) {
     start_time = ConvertFromTimeBase(stream->time_base, stream->start_time);
 
   // Next try to use the first DTS value, for codecs where we know PTS == DTS
-  // (excludes all H26x codecs). The start time must be returned in PTS.
+  // (excludes all H26x codecs and AV2). The start time must be returned in PTS.
   if (av_stream_get_first_dts(stream) != kNoFFmpegTimestamp &&
       stream->codecpar->codec_id != AV_CODEC_ID_HEVC &&
       stream->codecpar->codec_id != AV_CODEC_ID_H264 &&
-      stream->codecpar->codec_id != AV_CODEC_ID_MPEG4) {
+      stream->codecpar->codec_id != AV_CODEC_ID_MPEG4 &&
+      stream->codecpar->codec_id != AV_CODEC_ID_AV2) {
     const base::TimeDelta first_pts =
         ConvertFromTimeBase(stream->time_base, av_stream_get_first_dts(stream));
     if (first_pts < start_time)

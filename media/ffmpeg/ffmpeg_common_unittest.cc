@@ -9,7 +9,9 @@
 
 #include <array>
 #include <cstring>
+#include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -21,6 +23,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/filters/ffmpeg_glue.h"
 #include "media/filters/in_memory_url_protocol.h"
+#include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
@@ -397,6 +400,136 @@ TEST_F(FFmpegCommonTest, VerifyAv1Profiles) {
   VerifyProfileTest("bear-av1.mp4", AV1PROFILE_PROFILE_MAIN);
 }
 #endif
+
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+namespace {
+
+// Multi-OBU 'av2C' payload containing an Operating Point Set OBU followed by a
+// Sequence Header OBU with an extension header (Main 4:2:2 10-bit IP1).
+constexpr auto kValidOutOfBandAv2CPayload = std::to_array<uint8_t>({
+    0x00,
+    0x01,
+    0x02,
+    0x48,
+    0x80,
+    0x05,
+    0x84,
+    0x01,
+    0x8c,
+    0x3d,
+    0x40,
+});
+
+// Valid 2-byte 'av2c' payload (Main 4:2:2 10-bit IP1, level_idx = 10).
+constexpr auto kValidInBandAv2cPayload = std::to_array<uint8_t>({0x00, 0xd4});
+
+// Corrupt multi-byte 'av2C' payload whose first two bytes (0x00, 0x40) would
+// decode to AV2PROFILE_MAIN_420_10_IP1 if misparsed as a 2-byte 'av2c' record.
+constexpr auto kCorruptOutOfBandAv2CPayload = std::to_array<uint8_t>({
+    0x00,
+    0x40,
+    0xff,
+    0xff,
+});
+
+struct ScopedAVFormatContextDeleter {
+  void operator()(AVFormatContext* ctx) const { avformat_free_context(ctx); }
+};
+
+using ScopedAVFormatContext =
+    std::unique_ptr<AVFormatContext, ScopedAVFormatContextDeleter>;
+
+ScopedAVFormatContext CreateAv2TestFormatContext(
+    uint32_t codec_tag,
+    int width,
+    int height,
+    base::span<const uint8_t> extradata) {
+  ScopedAVFormatContext format_context(avformat_alloc_context());
+  AVStream* stream = avformat_new_stream(format_context.get(), nullptr);
+  stream->codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
+  stream->codecpar->codec_id = AV_CODEC_ID_AV2;
+  stream->codecpar->codec_tag = codec_tag;
+  stream->codecpar->format = AV_PIX_FMT_YUV420P10LE;
+  stream->codecpar->width = width;
+  stream->codecpar->height = height;
+  if (!extradata.empty()) {
+    stream->codecpar->extradata = static_cast<uint8_t*>(
+        av_mallocz(extradata.size() + AV_INPUT_BUFFER_PADDING_SIZE));
+    stream->codecpar->extradata_size = static_cast<int>(extradata.size());
+    AVCodecParametersExtraDataToSpan(stream->codecpar)
+        .copy_from_nonoverlapping(extradata);
+  }
+  return format_context;
+}
+
+}  // namespace
+
+TEST_F(FFmpegCommonTest, AVStreamToVideoDecoderConfig_Av2OutOfBand) {
+  auto ctx = CreateAv2TestFormatContext(MKTAG('a', 'v', '2', 'E'), 1920, 1080,
+                                        kValidOutOfBandAv2CPayload);
+  VideoDecoderConfig config;
+  ASSERT_TRUE(AVStreamToVideoDecoderConfig(ctx->streams[0], &config));
+  EXPECT_EQ(VideoCodec::kAV2, config.codec());
+  EXPECT_EQ(AV2PROFILE_MAIN_422_10_IP1, config.profile());
+  EXPECT_EQ(base::span(config.extra_data()),
+            base::span(kValidOutOfBandAv2CPayload).subspan(2u));
+  EXPECT_FALSE(config.color_space_info().IsSpecified());
+
+  // Out-of-band 'av2E' requires valid 'av2C' configuration OBUs and must not
+  // fall back to in-band 'av2c' parsing on missing or corrupt payloads.
+  auto missing_ctx =
+      CreateAv2TestFormatContext(MKTAG('a', 'v', '2', 'E'), 1920, 1080, {});
+  EXPECT_FALSE(AVStreamToVideoDecoderConfig(missing_ctx->streams[0], &config));
+
+  auto corrupt_ctx = CreateAv2TestFormatContext(
+      MKTAG('a', 'v', '2', 'E'), 1920, 1080, kCorruptOutOfBandAv2CPayload);
+  EXPECT_FALSE(AVStreamToVideoDecoderConfig(corrupt_ctx->streams[0], &config));
+}
+
+TEST_F(FFmpegCommonTest, AVStreamToVideoDecoderConfig_Av2InBand) {
+  auto ctx = CreateAv2TestFormatContext(MKTAG('a', 'v', '2', 'e'), 1280, 720,
+                                        kValidInBandAv2cPayload);
+  VideoDecoderConfig config;
+  ASSERT_TRUE(AVStreamToVideoDecoderConfig(ctx->streams[0], &config));
+  EXPECT_EQ(VideoCodec::kAV2, config.codec());
+  EXPECT_EQ(AV2PROFILE_MAIN_422_10_IP1, config.profile());
+  EXPECT_TRUE(config.extra_data().empty());
+
+  // In-band 'av2e' must not parse multi-byte 'av2C' payloads as out-of-band
+  // config OBUs, and must still clear extra_data.
+  auto wrong_box_ctx = CreateAv2TestFormatContext(
+      MKTAG('a', 'v', '2', 'e'), 1280, 720, kValidOutOfBandAv2CPayload);
+  ASSERT_TRUE(AVStreamToVideoDecoderConfig(wrong_box_ctx->streams[0], &config));
+  EXPECT_EQ(AV2PROFILE_MAIN_420_10_IP0, config.profile());
+  EXPECT_TRUE(config.extra_data().empty());
+}
+
+TEST_F(FFmpegCommonTest, AVStreamToVideoDecoderConfig_Av2AmbiguousCodecTag) {
+  for (uint32_t tag : {uint32_t{MKTAG('a', 'v', '0', '2')}, uint32_t{0}}) {
+    auto oob_ctx =
+        CreateAv2TestFormatContext(tag, 640, 360, kValidOutOfBandAv2CPayload);
+    VideoDecoderConfig config;
+    ASSERT_TRUE(AVStreamToVideoDecoderConfig(oob_ctx->streams[0], &config));
+    EXPECT_EQ(AV2PROFILE_MAIN_422_10_IP1, config.profile());
+    EXPECT_EQ(base::span(config.extra_data()),
+              base::span(kValidOutOfBandAv2CPayload).subspan(2u));
+
+    auto inband_ctx =
+        CreateAv2TestFormatContext(tag, 640, 360, kValidInBandAv2cPayload);
+    ASSERT_TRUE(AVStreamToVideoDecoderConfig(inband_ctx->streams[0], &config));
+    EXPECT_EQ(AV2PROFILE_MAIN_422_10_IP1, config.profile());
+    EXPECT_TRUE(config.extra_data().empty());
+
+    // Corrupt multi-byte 'av2C' payloads must not silently match the 2-byte
+    // 'av2c' parser.
+    auto corrupt_ctx =
+        CreateAv2TestFormatContext(tag, 640, 360, kCorruptOutOfBandAv2CPayload);
+    ASSERT_TRUE(AVStreamToVideoDecoderConfig(corrupt_ctx->streams[0], &config));
+    EXPECT_EQ(AV2PROFILE_MAIN_420_10_IP0, config.profile());
+    EXPECT_TRUE(config.extra_data().empty());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 TEST_F(FFmpegCommonTest, VerifyDolbyVisionColorSpaceInfo_Profile5) {

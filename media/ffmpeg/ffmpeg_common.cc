@@ -242,6 +242,8 @@ static VideoCodec CodecIDToVideoCodec(AVCodecID codec_id) {
       return VideoCodec::kVP9;
     case AV_CODEC_ID_AV1:
       return VideoCodec::kAV1;
+    case AV_CODEC_ID_AV2:
+      return VideoCodec::kAV2;
     default:
       DVLOG(1) << "Unknown video CodecID: " << codec_id;
   }
@@ -266,6 +268,8 @@ AVCodecID VideoCodecToCodecID(VideoCodec video_codec) {
       return AV_CODEC_ID_VP9;
     case VideoCodec::kAV1:
       return AV_CODEC_ID_AV1;
+    case VideoCodec::kAV2:
+      return AV_CODEC_ID_AV2;
     default:
       DVLOG(1) << "Unknown VideoCodec: " << video_codec;
   }
@@ -595,6 +599,22 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   VideoChromaSampling chroma_sampling =
       VideoPixelFormatToChromaSampling(pixel_format);
 
+  // AVCodecContext occasionally has invalid extra data. See
+  // http://crbug.com/517163
+  if (codec_context->extradata != nullptr &&
+      codec_context->extradata_size == 0) {
+    DLOG(ERROR) << __func__ << " Non-Null extra data cannot have size of 0.";
+    return false;
+  }
+
+  std::vector<uint8_t> extra_data;
+  if (codec_context->extradata_size > 0) {
+    extra_data.resize(codec_context->extradata_size);
+    base::span(extra_data)
+        .copy_from_nonoverlapping(
+            AVCodecContextExtraDataToSpan(codec_context.get()));
+  }
+
   switch (codec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kH264: {
@@ -720,6 +740,42 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       }
       break;
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+    case VideoCodec::kAV2: {
+      profile = AV2PROFILE_MAIN_420_10_IP0;
+      const base::span<const uint8_t> extradata_span =
+          (codec_context->extradata && codec_context->extradata_size > 0)
+              ? AVCodecContextExtraDataToSpan(codec_context.get())
+              : base::span<const uint8_t>();
+      const bool is_out_of_band_tag =
+          codec_context->codec_tag == MKTAG('a', 'v', '2', 'E');
+      const bool is_in_band_tag =
+          codec_context->codec_tag == MKTAG('a', 'v', '2', 'e');
+
+      mp4::AV2CodecConfigurationRecord av2_config;
+      if (!is_in_band_tag && extradata_span.size() >= 4u &&
+          av2_config.Parse(extradata_span)) {
+        profile = av2_config.profile;
+        extra_data = std::move(av2_config.config_obus);
+        break;
+      }
+      if (is_out_of_band_tag) {
+        DLOG(WARNING) << "Failed to parse AV2 out-of-band extra data.";
+        return false;
+      }
+      if (!extradata_span.empty() || is_in_band_tag) {
+        mp4::InBandAV2CodecConfigurationRecord inband_av2_config;
+        if (extradata_span.size() == 2u &&
+            inband_av2_config.Parse(extradata_span)) {
+          profile = inband_av2_config.profile;
+        } else {
+          DLOG(WARNING) << "Failed to parse AV2 extra data.";
+        }
+        extra_data.clear();
+      }
+      break;
+    }
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
     case VideoCodec::kTheora:
       profile = THEORAPROFILE_ANY;
       break;
@@ -740,7 +796,8 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     // to make it behave correctly from the get-go.
     // TODO(hubbe): Skip this inference for all codecs.
     if (codec_context->codec_id != AV_CODEC_ID_VP9 &&
-        codec_context->codec_id != AV_CODEC_ID_AV1) {
+        codec_context->codec_id != AV_CODEC_ID_AV1 &&
+        codec_context->codec_id != AV_CODEC_ID_AV2) {
       // Otherwise, assume that SD video is usually Rec.601, and HD is usually
       // Rec.709.
       color_space = (natural_size.height() < 720) ? VideoColorSpace::REC601()
@@ -767,22 +824,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     // make a guess can at least make these videos able to play. See
     // crbug.com/1374270.
     color_space = GetGuessedColorSpace(color_space);
-  }
-
-  // AVCodecContext occasionally has invalid extra data. See
-  // http://crbug.com/517163
-  if (codec_context->extradata != nullptr &&
-      codec_context->extradata_size == 0) {
-    DLOG(ERROR) << __func__ << " Non-Null extra data cannot have size of 0.";
-    return false;
-  }
-
-  std::vector<uint8_t> extra_data;
-  if (codec_context->extradata_size > 0) {
-    extra_data.resize(codec_context->extradata_size);
-    base::span(extra_data)
-        .copy_from_nonoverlapping(
-            AVCodecContextExtraDataToSpan(codec_context.get()));
   }
 
   VideoTransformation video_transformation = VideoTransformation();
