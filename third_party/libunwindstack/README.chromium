@@ -4,7 +4,7 @@ Date: 2023-01-29
 Version: N/A
 Revision: 9ebb4981c2b9ba73018702531ded8de9c169958a
 License: Apache-2.0, BSD-2-Clause
-License File: LICENSE
+License File: LICENSE, src/libunwindstack/LICENSE_BSD
 Shipped: yes
 Security Critical: yes
 Update Mechanism: Manual
@@ -33,71 +33,18 @@ is backwards-compatible and can parse dex files for Chromium built with
 `min-sdk` version bumps, given it can currently parse versions from 35-40.
 `libdexfile` and its dependency `libartbase` come from `platform/art/` in AOSP.
 
-Steps to update `libunwindstack`:
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from this directory:
+crowbar build --no-dry-run ./
 
-1. Update the contents to the upstream revision.
-
-    ```
-    rm -rf src
-    mkdir temp src
-    git clone https://android.googlesource.com/platform/system/unwinding -b main temp/unwinding
-    cp -pr temp/unwinding/libunwindstack src/libunwindstack
-    # Get revisions of repositories.
-    head temp/*/.git/refs/heads/main
-    rm -rf temp
-    find src/* -name .clang-format -exec rm \{\} \;
-    # Manually update the revision info in README.chromium ...
-    git add --all .
-    git commit -m 'step 1'
-    ```
-
-2. Build and apply/update/add patches until the code compiles with component
-   debug builds. Some linker errors will not be surfaced on release builds as
-   it does aggresive code elimination. Update existing patches so that they
-   apply cleanly. Remove any patches that are no longer required.
-
-    ```
-    # Apply patches
-    patch -p1 < patches/...  # etc.
-    # Build `stack_unwinder` module in component debug build.
-    gn gen ../../out/libunwindstack_test_build --args=" \
-      target_os=\"android\" \
-      use_remoteexec=true \
-      is_component_build=true \
-      is_debug=true" && \
-    autoninja -C ../../out/libunwindstack_test_build stack_unwinder
-    # Remove remnants of failed patch attempts.
-    find src -name \*.orig -o -name \*.rej | xargs rm
-    git add --all .
-    git commit -m 'step 2'
-    ```
-
-3. Prune to the subset of `libunwindstack` sources that should be compiled and
-   checked in.
-
-    ```
-    tools/get_required_sources.sh out/libunwindstack_test_build > required_sources
-
-    # Replace BUILD.gn 'public' files with these:
-    grep src/libunwindstack/include required_sources | sed 's/.*/    "&",/'
-
-    # Replace BUILD.gn 'sources' files with these:
-    grep -v 'src/libunwindstack/include\|\.S$' required_sources | \
-      sed 's/.*/    "&",/'
-
-    # Remove unused files.
-    find src -type f | sort | comm -2 -3 - required_sources | xargs rm
-    find src -depth -type d -empty -exec rmdir \{\} \;
-    rm required_sources
-    git add -u src
-    git commit -m 'step 3'
-    ```
-
-4. Squash the three commits into one CL. Every chromium/src CL must
-   build, so step 1 cannot land on its own.
+copy.bara.sky lists every file it imports. If the new upstream version
+adds a file Chromium needs, add it there and to BUILD.gn.
+libprocinfo/, libbase/ and art/ are separate Crowbar packages with
+their own update instructions.
 
 
 Local Modifications:
+The patches are in patches/; copy.bara.sky applies them in this order.
 The libbase and ART patches are in libbase/patches/ and art/patches/.
 - 0002-create-local-process-memory.patch: add
   Memory::CreateLocalProcessMemory().

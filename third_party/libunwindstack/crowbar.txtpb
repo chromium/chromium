@@ -1,0 +1,23 @@
+upstream {
+  commit: "9ebb4981c2b9ba73018702531ded8de9c169958a"
+  artifacts {
+    git {
+      repository: "https://android.googlesource.com/platform/system/unwinding"
+      commit: "9ebb4981c2b9ba73018702531ded8de9c169958a"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish {
+    git {
+      # Publish removes every src/ below this directory. Keep the src/ of
+      # the nested Crowbar packages.
+      patterns: "!/libprocinfo/src/"
+      patterns: "!/libbase/src/"
+      patterns: "!/art/src/"
+    }
+  }
+}
