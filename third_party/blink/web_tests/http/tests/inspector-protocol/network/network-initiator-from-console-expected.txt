@@ -1,0 +1,12 @@
+Tests that there is no javascript error when console evaluation causes resource loading.
+
+Page reloaded.
+request.url: http://127.0.0.1:8000/inspector-protocol/network/resources/silent_script.js
+resource.type: Script
+response.status: 200
+initiator.type: script
+initiator.stack.callFrames.length > 0: true
+topFrame.url: ""
+topFrame.lineNumber: 0
+exceptionThrown: false
+
