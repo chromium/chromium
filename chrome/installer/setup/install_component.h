@@ -33,7 +33,9 @@ class InstallerState;
 // Installs a Chrome component from an inner CRX to the Chrome application
 // directory (system-level or user-level depending on `installer_state`).
 //
-// `source_file`: Path to the inner CRX component file to install.
+// `source_file`: Absolute path, without parent directory references, to the
+// inner CRX component file to install. Installation fails if this is not a
+// non-empty regular file.
 // `original_state`: The current state of Chrome on the machine.
 // `installer_state`: State encapsulating target paths and installation level.
 // `command_line`: The installer's command line, from which component-specific

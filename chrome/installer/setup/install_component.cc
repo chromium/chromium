@@ -4,6 +4,8 @@
 
 #include "chrome/installer/setup/install_component.h"
 
+#include <windows.h>
+
 #include <stdint.h>
 
 #include <array>
@@ -94,6 +96,40 @@ constexpr auto kSupportedComponents =
         {kDynamicPatchPublicKeySHA256, &CreateComponent<DynamicPatchComponent>},
     });
 
+// The name under which the CRX is staged. Using a fixed name keeps the name of
+// the caller's file out of the staging path.
+constexpr base::FilePath::CharType kStagedCrxFilename[] =
+    FILE_PATH_LITERAL("component.crx3");
+
+// Opens `source_file` for reading. Returns an invalid file if it cannot be
+// opened or if it is not a non-empty regular file. These checks are made on
+// the open file rather than on its path so that the file that is checked is
+// the file that is subsequently read.
+base::File OpenSourceFile(const base::FilePath& source_file) {
+  // Share the file for all access so that neither this open nor a concurrent
+  // open by another process fails with a sharing violation. The path is chosen
+  // by the caller and may name a pipe rather than a file, so open it with
+  // SECURITY_ANONYMOUS to prevent the pipe's server from impersonating this
+  // process. base::File does not support this, so the file is opened directly.
+  base::File file(::CreateFileW(
+      source_file.value().c_str(), /*dwDesiredAccess=*/GENERIC_READ,
+      /*dwShareMode=*/FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+      /*lpSecurityAttributes=*/nullptr, /*dwCreationDisposition=*/OPEN_EXISTING,
+      /*dwFlagsAndAttributes=*/FILE_FLAG_SEQUENTIAL_SCAN |
+          SECURITY_SQOS_PRESENT | SECURITY_ANONYMOUS,
+      /*hTemplateFile=*/nullptr));
+  if (!file.IsValid()) {
+    PLOG(ERROR) << "Failed to open CRX";
+    return base::File();
+  }
+  if (::GetFileType(file.GetPlatformFile()) != FILE_TYPE_DISK ||
+      file.GetLength() <= 0) {
+    LOG(ERROR) << "CRX is not a non-empty regular file";
+    return base::File();
+  }
+  return file;
+}
+
 InstallStatus InstallComponentInternal(
     const base::FilePath& source_file,
     const InstallerState& installer_state,
@@ -102,10 +138,11 @@ InstallStatus InstallComponentInternal(
   // Source file must be absolute, non-empty and must not reference parent dirs.
   CHECK(source_file.IsAbsolute() && !source_file.ReferencesParent());
 
-  // Reject anything that is not a regular non-empty file.
-  base::File::Info source_info;
-  if (base::GetFileInfo(source_file, &source_info)) {
-    CHECK(!source_info.is_directory && source_info.size > 0);
+  // Open the file once and use only the open file from here on, so that the
+  // file that is checked is the file that is staged.
+  base::File source = OpenSourceFile(source_file);
+  if (!source.IsValid()) {
+    return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
   }
 
   // The staged CRX is a copy of a caller-chosen file made before the file has
@@ -119,12 +156,20 @@ InstallStatus InstallComponentInternal(
     return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
   }
 
-  base::FilePath staged_file =
-      staged_crx_dir.GetPath().Append(source_file.BaseName());
-  if (!base::CopyFile(source_file, staged_file)) {
-    PLOG(ERROR) << "Failed to copy CRX to staging directory";
-    return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
+  const base::FilePath staged_file =
+      staged_crx_dir.GetPath().Append(kStagedCrxFilename);
+  {
+    base::File staged(staged_file, base::File::FLAG_CREATE |
+                                       base::File::FLAG_WRITE |
+                                       base::File::FLAG_WIN_SEQUENTIAL_SCAN);
+    if (!staged.IsValid() || !base::CopyFileContents(source, staged)) {
+      PLOG(ERROR) << "Failed to copy CRX to staging directory";
+      return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
+    }
   }
+  // The staged copy is verified and unpacked by path, so neither file needs to
+  // remain open.
+  source.Close();
 
   std::string public_key;
   std::string crx_id;

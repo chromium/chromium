@@ -15,6 +15,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -22,13 +23,16 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "base/win/access_token.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
 #include "chrome/installer/setup/component_interface.h"
@@ -831,6 +835,122 @@ TEST(InstallComponentTest, ComponentFailureAbortsInstallation) {
   // Installation succeeds when all operations succeed.
   EXPECT_EQ(INSTALL_COMPONENT_SUCCESS, install({}));
   EXPECT_TRUE(base::PathExists(target_dir.Append(FPL("manifest.json"))));
+}
+
+// Verifies that installation fails, rather than crashing the installer, when
+// the source is not a non-empty regular file, and that nothing is installed.
+TEST(InstallComponentTest, SourceMustBeNonEmptyRegularFile) {
+  InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  installer_state.set_target_path_for_testing(temp_dir.GetPath());
+
+  const base::FilePath missing_file =
+      temp_dir.GetPath().Append(FPL("missing.crx3"));
+  const base::FilePath directory =
+      temp_dir.GetPath().Append(FPL("directory.crx3"));
+  ASSERT_TRUE(base::CreateDirectory(directory));
+  const base::FilePath empty_file =
+      temp_dir.GetPath().Append(FPL("empty.crx3"));
+  ASSERT_TRUE(base::WriteFile(empty_file, ""));
+  // A character device, which can be opened but is not a disk file.
+  const base::FilePath null_device(FPL("\\\\.\\NUL"));
+
+  for (const base::FilePath& source_file :
+       {missing_file, directory, empty_file, null_device}) {
+    SCOPED_TRACE(source_file);
+    EXPECT_EQ(INSTALL_COMPONENT_FAILED_INTERNAL,
+              InstallComponentForTesting(
+                  source_file, installer_state, &TestComponentFactory,
+                  crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
+  }
+  EXPECT_FALSE(
+      base::PathExists(temp_dir.GetPath().AppendASCII(kTestDeveloperCrxId)));
+}
+
+// Verifies that a named pipe is rejected as a source, and that the pipe's
+// server does not get a token for the installer.
+TEST(InstallComponentTest, SourceIsNamedPipe) {
+  InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  installer_state.set_target_path_for_testing(temp_dir.GetPath());
+
+  // A pipe from which a client can read. It is in non-blocking mode so that
+  // ConnectNamedPipe() below reports the pipe's state rather than waiting for a
+  // client.
+  const std::wstring pipe_name =
+      base::StrCat({L"\\\\.\\pipe\\install_component_unittest.",
+                    base::NumberToWString(::GetCurrentProcessId()), L".",
+                    base::NumberToWString(base::RandUint64())});
+  base::win::ScopedHandle pipe(::CreateNamedPipeW(
+      pipe_name.c_str(), PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE,
+      PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT |
+          PIPE_REJECT_REMOTE_CLIENTS,
+      /*nMaxInstances=*/1, /*nOutBufferSize=*/0, /*nInBufferSize=*/0,
+      /*nDefaultTimeOut=*/0, /*lpSecurityAttributes=*/nullptr));
+  ASSERT_TRUE(pipe.is_valid())
+      << "CreateNamedPipeW failed: " << ::GetLastError();
+
+  EXPECT_EQ(
+      INSTALL_COMPONENT_FAILED_INTERNAL,
+      InstallComponentForTesting(
+          base::FilePath(pipe_name), installer_state, &TestComponentFactory,
+          crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
+
+  // The installer connected to the pipe and has closed its end, so the source
+  // was rejected after it had been opened rather than because the open failed.
+  const BOOL connected =
+      ::ConnectNamedPipe(pipe.get(), /*lpOverlapped=*/nullptr);
+  const DWORD connect_error = ::GetLastError();
+  EXPECT_FALSE(connected);
+  EXPECT_EQ(connect_error, static_cast<DWORD>(ERROR_NO_DATA));
+
+  // The server does not get a token for the installer. Impersonating a client
+  // that connected with SECURITY_ANONYMOUS succeeds, but the token that the
+  // thread is then given cannot be opened. Expect exactly this outcome, rather
+  // than merely the absence of a token, so that the test does not pass when
+  // impersonation fails for some other reason.
+  const BOOL impersonating = ::ImpersonateNamedPipeClient(pipe.get());
+  const DWORD impersonate_error = ::GetLastError();
+  const std::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentThread();
+  const DWORD token_error = ::GetLastError();
+  if (impersonating) {
+    PCHECK(::RevertToSelf());
+  }
+  EXPECT_TRUE(impersonating)
+      << "ImpersonateNamedPipeClient failed: " << impersonate_error;
+  EXPECT_FALSE(token.has_value());
+  EXPECT_EQ(token_error, static_cast<DWORD>(ERROR_CANT_OPEN_ANONYMOUS));
+}
+
+// Verifies that a source file that is open elsewhere, including with write and
+// delete access, can be installed.
+TEST(InstallComponentTest, SourceOpenElsewhere) {
+  InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  installer_state.set_target_path_for_testing(temp_dir.GetPath());
+
+  const base::FilePath source_file =
+      temp_dir.GetPath().Append(FPL("in_use.crx3"));
+  ASSERT_TRUE(base::CopyFile(GetTestCrxPath(), source_file));
+
+  base::File in_use(source_file, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                     base::File::FLAG_WRITE |
+                                     base::File::FLAG_WIN_SHARE_DELETE |
+                                     base::File::FLAG_CAN_DELETE_ON_CLOSE);
+  ASSERT_TRUE(in_use.IsValid());
+
+  EXPECT_EQ(INSTALL_COMPONENT_SUCCESS,
+            InstallComponentForTesting(
+                source_file, installer_state, &TestComponentFactory,
+                crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
+  EXPECT_TRUE(base::PathExists(temp_dir.GetPath()
+                                   .AppendASCII(kTestDeveloperCrxId)
+                                   .AppendASCII("394")
+                                   .Append(FPL("manifest.json"))));
 }
 
 }  // namespace installer
