@@ -1617,7 +1617,7 @@ void X11Window::UpdateDecorationInsets() {
                             static_cast<uint32_t>(insets_px.bottom())});
 }
 
-void X11Window::OnXWindowStateChanged() {
+void X11Window::OnXWindowStateChanged(bool was_fullscreen) {
   // Determine the new window state information to be propagated to the client.
   // Note that the order of checks is important here, because window can have
   // several properties at the same time.
@@ -1630,30 +1630,29 @@ void X11Window::OnXWindowStateChanged() {
     new_state = PlatformWindowState::kMaximized;
   }
 
-  // fullscreen state is set syschronously at ToggleFullscreen() and must be
+  // Fullscreen state is set synchronously at SetFullscreen() and must be
   // kept and propagated to the client only when explicitly requested by upper
-  // layers, as it means we are in "browser fullscreen mode" (where
-  // decorations, omnibar, buttons, etc are hidden), which is different from
+  // layers, as it means Chrome is in "browser fullscreen mode" (where
+  // decorations, omnibar, buttons, etc. are hidden), which is different from
   // the case where the request comes from the window manager (or any other
-  // process), handled by this method. In this case, we follow EWMH guidelines:
-  // Optimize the whole application for fullscreen usage. Window decorations
-  // (e.g. borders) should be hidden, but the functionalily of the application
-  // should not change. Further details:
+  // process), handled by this method. In this case, Chrome follows EWMH
+  // guidelines: optimize the whole application for fullscreen usage. Window
+  // decorations (e.g. borders) should be hidden, but the functionality of the
+  // application should not change. Further details:
   // https://specifications.freedesktop.org/wm-spec/wm-spec-1.3.html
-  bool browser_fullconnection_mode = state_ == PlatformWindowState::kFullScreen;
-  bool window_fullconnection_mode =
-      new_state == PlatformWindowState::kFullScreen;
-  // So, we ignore fullscreen state transitions in 2 cases:
-  // 1. If |new_state| is kFullScreen but |state_| is not, which means the
-  // fullscreen request is coming from an external process. So the browser
-  // window must occupies the entire screen but not transitioning to browser
-  // fullscreen mode.
-  // 2. if |state_| is kFullScreen but |new_state| is not, we have been
-  // requested to exit fullscreen by other process (e.g: via WM keybinding),
-  // in this case we must keep on "browser fullscreen mode" bug the platform
-  // window gets back to its previous state (e.g: unmaximized, tiled in TWMs,
-  // etc).
-  if (window_fullconnection_mode != browser_fullconnection_mode) {
+  bool browser_fullscreen_mode = state_ == PlatformWindowState::kFullScreen;
+  bool window_fullscreen_mode = new_state == PlatformWindowState::kFullScreen;
+  // Ignore external fullscreen entry requests (when `new_state` is kFullScreen
+  // but `state_` is not) so the window occupies the entire screen without
+  // hiding browser UI. Also ignore non-fullscreen state updates while a
+  // browser-initiated fullscreen request is still awaiting
+  // _NET_WM_STATE_FULLSCREEN from the window manager (`!was_fullscreen`), or
+  // when a fullscreen window is minimized while retaining
+  // _NET_WM_STATE_FULLSCREEN (`IsFullscreen()`). However, when the window was
+  // in _NET_WM_STATE_FULLSCREEN and the window manager cleared it (e.g. via an
+  // OS shortcut), propagate the exit so the browser leaves fullscreen mode too.
+  if (window_fullscreen_mode != browser_fullscreen_mode &&
+      (!browser_fullscreen_mode || !was_fullscreen || IsFullscreen())) {
     return;
   }
 
@@ -2808,6 +2807,7 @@ void X11Window::UpdateWindowProperties(
   }
 
   const bool was_minimized = IsMinimized();
+  const bool was_fullscreen = IsFullscreen();
   window_properties_ = new_window_properties;
 
   // A window manager restoring a minimized window clears _NET_WM_STATE_HIDDEN
@@ -2818,14 +2818,9 @@ void X11Window::UpdateWindowProperties(
     OnMapPending();
   }
 
-  // Ignore requests by the window manager to enter or exit fullscreen (e.g. as
-  // a result of pressing a window manager accelerator key). Chrome does not
-  // handle window manager initiated fullscreen. In particular, Chrome needs to
-  // do preprocessing before the x window's fullscreen state is toggled.
-
   is_always_on_top_ = HasWMSpecProperty(
       window_properties_, connection_->GetAtom("_NET_WM_STATE_ABOVE"));
-  OnXWindowStateChanged();
+  OnXWindowStateChanged(was_fullscreen);
   MaybeUpdateOcclusionState();
   ResetWindowRegion();
 }

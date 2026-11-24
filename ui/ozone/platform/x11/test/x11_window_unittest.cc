@@ -707,16 +707,9 @@ TEST_F(X11WindowTest, NoInputRegionWhenNotAcceptingEvents) {
   delegate.set_window(nullptr);
 }
 
-// Flaky on Linux ASAN and ChromeOS. https://crbug.com/1291868
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_WindowManagerTogglesFullscreen \
-  DISABLED_WindowManagerTogglesFullscreen
-#else
-#define MAYBE_WindowManagerTogglesFullscreen WindowManagerTogglesFullscreen
-#endif
 // Test that the widget reacts on changes in fullscreen state initiated by the
 // window manager (e.g. via a window manager accelerator key).
-TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
+TEST_F(X11WindowTest, WindowManagerTogglesFullscreen) {
   auto* connection = x11::Connection::Get();
   if (!connection->WmSupportsHint(
           connection->GetAtom("_NET_WM_STATE_FULLSCREEN"))) {
@@ -732,60 +725,80 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
   x11::Window x11_window = window->window();
   window->Show(false);
 
-  connection->DispatchAll();
+  // `WMStateWaiter` reads _NET_WM_STATE directly from the server, so it may
+  // observe the window manager's update before `X11Window` has processed the
+  // corresponding PropertyNotify. Round-trip and dispatch pending events so
+  // `X11Window` sees the latest state before checking it.
+  auto sync_and_dispatch = [connection]() {
+    connection->Sync();
+    connection->DispatchAll();
+  };
+  sync_and_dispatch();
 
   EXPECT_NE(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
 
-  gfx::Rect initial_bounds = window->GetBoundsInPixels();
+  // Window manager entering fullscreen on a normal window should not put the
+  // window into browser fullscreen mode (crbug.com/40664422).
   {
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FULLSCREEN", true);
-    window->SetFullscreen(true, display::kInvalidDisplayId);
+    ui::SendClientMessage(
+        x11_window, ui::GetX11RootWindow(),
+        connection->GetAtom("_NET_WM_STATE"),
+        {1,
+         static_cast<uint32_t>(connection->GetAtom("_NET_WM_STATE_FULLSCREEN")),
+         0, 1, 0});
     waiter.Wait();
+    sync_and_dispatch();
   }
-  EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
+  EXPECT_NE(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
 
-  // Emulate the window manager exiting fullscreen via a window manager
-  // accelerator key.
   {
+    WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FULLSCREEN", false);
     ui::SendClientMessage(
         x11_window, ui::GetX11RootWindow(),
         connection->GetAtom("_NET_WM_STATE"),
         {0,
          static_cast<uint32_t>(connection->GetAtom("_NET_WM_STATE_FULLSCREEN")),
          0, 1, 0});
-
-    WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FULLSCREEN", false);
     waiter.Wait();
+    sync_and_dispatch();
   }
-
-  // Ensure it continues in browser fullscreen mode and bounds are restored to
-  // |initial_bounds|.
-  EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
-  delegate.WaitForBoundsChange({false});
-  EXPECT_EQ(initial_bounds, window->GetBoundsInPixels());
-
-  // Emulate window resize (through X11 configure events) while in browser
-  // fullscreen mode and ensure bounds are tracked correctly.
-  initial_bounds.set_size({400, 400});
-  {
-    connection->ConfigureWindow({
-        .window = x11_window,
-        .width = initial_bounds.width(),
-        .height = initial_bounds.height(),
-    });
-    // Ensure that the task which is posted when a window is resized is run.
-    base::RunLoop().RunUntilIdle();
-  }
-  EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
-  delegate.WaitForBoundsChange({false});
-  EXPECT_EQ(initial_bounds, window->GetBoundsInPixels());
-
-  // Calling Widget::SetFullscreen(false) should clear the widget's fullscreen
-  // state and clean things up.
-  window->SetFullscreen(false, display::kInvalidDisplayId);
   EXPECT_NE(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
-  delegate.WaitForBoundsChange({false});
-  EXPECT_EQ(initial_bounds, window->GetBoundsInPixels());
+
+  // Enter browser fullscreen mode via SetFullscreen(true).
+  {
+    WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FULLSCREEN", true);
+    window->SetFullscreen(true, display::kInvalidDisplayId);
+    // An unrelated _NET_WM_STATE update arriving before the WM sets
+    // _NET_WM_STATE_FULLSCREEN must not cancel the pending fullscreen state.
+    window->UpdateWindowProperties(
+        {connection->GetAtom("_NET_WM_STATE_FOCUSED")});
+    EXPECT_EQ(window->GetPlatformWindowState(),
+              PlatformWindowState::kFullScreen);
+    waiter.Wait();
+    sync_and_dispatch();
+  }
+  EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
+
+  // Emulate the window manager exiting fullscreen via a window manager
+  // accelerator key (crbug.com/40260096). The platform window should exit
+  // fullscreen state and notify its delegate.
+  {
+    WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FULLSCREEN", false);
+    ui::SendClientMessage(
+        x11_window, ui::GetX11RootWindow(),
+        connection->GetAtom("_NET_WM_STATE"),
+        {0,
+         static_cast<uint32_t>(connection->GetAtom("_NET_WM_STATE_FULLSCREEN")),
+         0, 1, 0});
+    waiter.Wait();
+    sync_and_dispatch();
+  }
+
+  EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kNormal);
+  EXPECT_EQ(delegate.state(), PlatformWindowState::kNormal);
+
+  delegate.set_window(nullptr);
 }
 
 // TODO(crbug.com/40820331): Flaky on both Linux and ChromeOS.

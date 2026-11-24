@@ -190,7 +190,7 @@ class X11Window : public PlatformWindow,
     return platform_window_delegate_;
   }
 
-  void OnXWindowStateChanged();
+  void OnXWindowStateChanged(bool was_fullscreen);
   void OnXWindowDamageEvent(const gfx::Rect& damage_rect);
   void OnXWindowCloseRequested();
   void OnXWindowIsActiveChanged(bool active);
