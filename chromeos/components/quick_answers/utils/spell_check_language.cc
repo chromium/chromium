@@ -4,6 +4,8 @@
 
 #include "chromeos/components/quick_answers/utils/spell_check_language.h"
 
+#include <utility>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -143,12 +145,15 @@ void SpellCheckLanguage::CheckSpelling(const std::string& word,
       std::move(callback).Run(false);
       return;
     }
-    // Lazily launch the spell check service on first use and re-run
-    // `CheckSpelling()` once `OnDictionaryCreated()` finishes.
-    pending_check_ =
-        base::BindOnce(&SpellCheckLanguage::CheckSpelling,
-                       weak_factory_.GetWeakPtr(), word, std::move(callback));
-    InitializeSpellCheckService();
+    // Lazily launch the spell check service on the first cold-start request
+    // and replay queued requests once OnDictionaryCreated() finishes.
+    const bool should_initialize = pending_checks_.empty();
+    pending_checks_.push_back(base::BindOnce(&SpellCheckLanguage::CheckSpelling,
+                                             weak_factory_.GetWeakPtr(), word,
+                                             std::move(callback)));
+    if (should_initialize) {
+      InitializeSpellCheckService();
+    }
     return;
   }
 
@@ -220,8 +225,8 @@ void SpellCheckLanguage::OnDictionaryCreated(
     MaybeRetryInitialize();
   }
 
-  if (pending_check_) {
-    std::move(pending_check_).Run();
+  for (auto& pending_check : std::exchange(pending_checks_, {})) {
+    std::move(pending_check).Run();
   }
 }
 

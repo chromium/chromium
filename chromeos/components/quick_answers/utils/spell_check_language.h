@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -79,8 +80,8 @@ class SpellCheckLanguage : public QuickAnswersStateObserver {
   // Whether the spell check dictionary has been successfully initialized.
   bool dictionary_initialized_ = false;
 
-  // Pending CheckSpelling() call waiting for the dictionary to initialize.
-  base::OnceClosure pending_check_;
+  // Pending CheckSpelling() calls waiting for the dictionary to initialize.
+  std::vector<base::OnceClosure> pending_checks_;
 
   // Number of retries used for initializing the spell check service.
   int num_retries_ = 0;
