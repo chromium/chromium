@@ -6,7 +6,9 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
+#include <vector>
+
+#include "base/containers/span.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/scoped_av_packet.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -299,10 +301,9 @@ class FFmpegH264ToAnnexBBitstreamConverterTest : public testing::Test {
   FFmpegH264ToAnnexBBitstreamConverterTest& operator=(
       const FFmpegH264ToAnnexBBitstreamConverterTest&) = delete;
 
-  void CreatePacket(AVPacket* packet, const uint8_t* data, uint32_t data_size) {
-    // Create new packet sized of |data_size| from |data|.
-    EXPECT_EQ(av_new_packet(packet, data_size), 0);
-    UNSAFE_TODO(memcpy(packet->data, data, data_size));
+  void CreatePacket(AVPacket* packet, base::span<const uint8_t> data) {
+    EXPECT_EQ(av_new_packet(packet, data.size()), 0);
+    AVPacketData(*packet).copy_from_nonoverlapping(data);
   }
 
   // Variable to hold valid dummy parameters for testing.
@@ -313,8 +314,7 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_Success) {
   FFmpegH264ToAnnexBBitstreamConverter converter(&test_parameters_);
 
   auto test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), kPacketDataOkWithFieldLen4,
-               sizeof(kPacketDataOkWithFieldLen4));
+  CreatePacket(test_packet.get(), kPacketDataOkWithFieldLen4);
 
   // Try out the actual conversion (should be successful and allocate new
   // packet and destroy the old one).
@@ -328,10 +328,9 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_SuccessBigPacket) {
 
   // Create new packet with 1000 excess bytes.
   auto test_packet = ScopedAVPacket::Allocate();
-  static uint8_t excess_data[sizeof(kPacketDataOkWithFieldLen4) + 1000] = {};
-  UNSAFE_TODO(memcpy(excess_data, kPacketDataOkWithFieldLen4,
-                     sizeof(kPacketDataOkWithFieldLen4)));
-  CreatePacket(test_packet.get(), excess_data, sizeof(excess_data));
+  std::vector<uint8_t> excess_data(sizeof(kPacketDataOkWithFieldLen4) + 1000);
+  base::span(excess_data).copy_prefix_from(kPacketDataOkWithFieldLen4);
+  CreatePacket(test_packet.get(), excess_data);
 
   // Try out the actual conversion (should be successful and allocate new
   // packet and destroy the old one as we do NOT support in place transform).
@@ -352,8 +351,7 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_SuccessNullParams) {
 
   // Create new packet to test actual conversion.
   auto test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), kPacketDataOkWithFieldLen4,
-               sizeof(kPacketDataOkWithFieldLen4));
+  CreatePacket(test_packet.get(), kPacketDataOkWithFieldLen4);
 
   // Try out the actual conversion. This should fail due to missing extradata.
   auto* packet_data = test_packet->data;
@@ -370,8 +368,7 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest,
   // Convert using the standard configuration to find the expected size.
   FFmpegH264ToAnnexBBitstreamConverter converter(&test_parameters_);
   auto expected_packet = ScopedAVPacket::Allocate();
-  CreatePacket(expected_packet.get(), kPacketDataOkWithFieldLen4,
-               sizeof(kPacketDataOkWithFieldLen4));
+  CreatePacket(expected_packet.get(), kPacketDataOkWithFieldLen4);
   EXPECT_TRUE(converter.ConvertPacket(expected_packet.get()));
 
   // Convert using the trailing nulls configuration.
@@ -382,8 +379,7 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest,
   FFmpegH264ToAnnexBBitstreamConverter test_converter(&parameters);
 
   auto test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), kPacketDataOkWithFieldLen4,
-               sizeof(kPacketDataOkWithFieldLen4));
+  CreatePacket(test_packet.get(), kPacketDataOkWithFieldLen4);
   EXPECT_TRUE(test_converter.ConvertPacket(test_packet.get()));
 
   // The converted packets should be the same.
