@@ -20,8 +20,11 @@ class AppUpdate;
 class ShelfAppServiceAppUpdater : public ShelfAppUpdater,
                                   public apps::AppRegistryCache::Observer {
  public:
+  // `app_registry_cache` must not be null. `this` observes it, and stops the
+  // observation on its destruction, so it may be destroyed before `this`.
   ShelfAppServiceAppUpdater(Delegate* delegate,
-                            content::BrowserContext* browser_context);
+                            content::BrowserContext* browser_context,
+                            apps::AppRegistryCache* app_registry_cache);
 
   ShelfAppServiceAppUpdater(const ShelfAppServiceAppUpdater&) = delete;
   ShelfAppServiceAppUpdater& operator=(const ShelfAppServiceAppUpdater&) =

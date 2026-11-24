@@ -1661,7 +1661,10 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
     std::vector<std::unique_ptr<ShelfAppUpdater>>& app_updaters_for_profile =
         app_updaters_[profile];
     app_updaters_for_profile.push_back(
-        std::make_unique<ShelfAppServiceAppUpdater>(this, profile));
+        std::make_unique<ShelfAppServiceAppUpdater>(
+            this, profile,
+            &apps::AppServiceProxyFactory::GetForProfile(profile)
+                 ->AppRegistryCache()));
 
     // Some special extensions open new windows, and on Chrome OS, those windows
     // should show the extension icon in the shelf. Extensions are not present

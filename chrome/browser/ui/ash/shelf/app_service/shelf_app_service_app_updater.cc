@@ -4,27 +4,23 @@
 
 #include "chrome/browser/ui/ash/shelf/app_service/shelf_app_service_app_updater.h"
 
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/profiles/profile.h"
+#include "base/check_deref.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
 ShelfAppServiceAppUpdater::ShelfAppServiceAppUpdater(
     Delegate* delegate,
-    content::BrowserContext* browser_context)
+    content::BrowserContext* browser_context,
+    apps::AppRegistryCache* app_registry_cache)
     : ShelfAppUpdater(delegate, browser_context) {
-  auto* cache = &apps::AppServiceProxyFactory::GetForProfile(
-                     Profile::FromBrowserContext(browser_context))
-                     ->AppRegistryCache();
-
-  cache->ForEachApp([this](const apps::AppUpdate& update) {
+  apps::AppRegistryCache& cache = CHECK_DEREF(app_registry_cache);
+  cache.ForEachApp([this](const apps::AppUpdate& update) {
     if (update.Readiness() == apps::Readiness::kReady) {
       this->installed_apps_.insert(update.AppId());
     }
   });
-  app_registry_cache_observer_.Observe(cache);
+  app_registry_cache_observer_.Observe(&cache);
 }
 
 ShelfAppServiceAppUpdater::~ShelfAppServiceAppUpdater() = default;
