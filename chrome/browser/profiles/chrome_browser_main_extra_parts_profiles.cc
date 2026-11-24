@@ -513,6 +513,7 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
+#include "chrome/browser/dino/dino_bookmark_metrics_service_factory.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_service_factory.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/profile_token_web_signin_interceptor_factory.h"
@@ -965,6 +966,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   dictation::DictationKeyedServiceFactory::GetInstance();
 #endif
   digital_credentials::DigitalCredentialsKeyedServiceFactory::GetInstance();
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  dino::DinoBookmarkMetricsServiceFactory::GetInstance();
+#endif
   DocumentSuggestionsServiceFactory::GetInstance();
   DomainDiversityReporterFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
