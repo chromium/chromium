@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/background/glic/glic_status_icon.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
@@ -274,6 +276,7 @@ void GlicBackgroundModeManager::Shutdown() {
 }
 
 void GlicBackgroundModeManager::EnterBackgroundMode(bool show_status_icon) {
+  CHECK(!browser_shutdown::IsTryingToQuit(), base::NotFatalUntil::M163);
   KeepAliveRegistry* const keep_alive_registry =
       KeepAliveRegistry::GetInstance();
   if (!keep_alive_ && keep_alive_registry &&
