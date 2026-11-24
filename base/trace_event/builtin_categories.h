@@ -201,6 +201,10 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
       "etc."),
     perfetto::Category("offline_pages"),
     perfetto::Category("omnibox"),
+    perfetto::Category("on_device_translation").SetDescription(
+        "Events of the Translator API: availability and translator creation "
+        "in the browser, and the TranslateKit library and model loads in the "
+        "on-device translation service."),
     perfetto::Category("oobe"),
     perfetto::Category("openscreen"),
 

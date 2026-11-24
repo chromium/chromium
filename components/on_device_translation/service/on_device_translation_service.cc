@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "components/on_device_translation/metrics.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
@@ -103,6 +104,8 @@ void OnDeviceTranslationService::CreateTranslator(
     mojo::PendingReceiver<on_device_translation::mojom::OnDeviceTranslator>
         receiver,
     CreateTranslatorCallback create_translator_callback) {
+  TRACE_EVENT("on_device_translation",
+              "OnDeviceTranslationService::CreateTranslator");
   auto maybe_translator = client_->GetTranslator(source_lang, target_lang);
   if (!maybe_translator.has_value()) {
     std::move(create_translator_callback).Run(maybe_translator.error());

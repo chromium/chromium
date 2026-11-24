@@ -15,6 +15,7 @@
 #include "base/i18n/tag_converters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
 #include "components/component_updater/component_updater_service.h"
@@ -413,6 +414,8 @@ void TranslationManagerImpl::CreateTranslatorImpl(
 void TranslationManagerImpl::CreateTranslator(
     mojo::PendingRemote<TranslationManagerCreateTranslatorClient> client,
     blink::mojom::TranslatorCreateOptionsPtr options) {
+  TRACE_EVENT("on_device_translation",
+              "TranslationManagerImpl::CreateTranslator");
   const mojo::RemoteSetElementId client_id =
       pending_clients_.Add(std::move(client));
   base::ScopedClosureRunner cleanup_pending_client(
@@ -502,6 +505,8 @@ void TranslationManagerImpl::TranslationAvailable(
     TranslatorLanguageCodePtr source_lang,
     TranslatorLanguageCodePtr target_lang,
     TranslationAvailableCallback callback) {
+  TRACE_EVENT("on_device_translation",
+              "TranslationManagerImpl::TranslationAvailable");
   std::optional<std::string> maybe_source_language =
       GetBestFitLanguageCode(std::move(source_lang->code));
   std::optional<std::string> maybe_target_language =
