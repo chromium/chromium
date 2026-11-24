@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/types/optional_ref.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
@@ -195,6 +196,18 @@ std::optional<std::vector<uint8_t>> GenerateEcSignature(
 
 // Returns whether the provided algorithm is supported.
 bool IsSupportedAlgorithm(int32_t algorithm);
+
+// Returns the key in `keys` with the highest version, or `std::nullopt` if
+// `keys` is empty.
+base::optional_ref<const DeviceAuthorizationKey>
+FindLatestDeviceAuthorizationKey(
+    const DeviceAuthorizationKeys& keys LIFETIME_BOUND);
+
+// Returns the bytes of the key in `keys` with `version`, or `std::nullopt` if
+// there is no such key.
+std::optional<base::span<const uint8_t>> FindDeviceAuthorizationKeyWithVersion(
+    const DeviceAuthorizationKeys& keys LIFETIME_BOUND,
+    int32_t version);
 
 }  // namespace webauthn::passkey_model_utils
 

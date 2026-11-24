@@ -6,14 +6,17 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/rand_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/optional_ref.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
+#include "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
@@ -680,6 +683,63 @@ TEST_F(PasskeyModelUtilsDeviceAuthorizationTest,
       kTestKey, kTestDeviceAuthorizationKey,
       CreatePasskeyWithSecurityDomainEncrypted(kSecurityDomainEncrypted),
       &out));
+}
+
+TEST(PasskeyModelUtilsTest,
+     ShouldReturnNulloptWhenFindingLatestKeyInEmptyKeys) {
+  DeviceAuthorizationKeys empty_keys;
+  EXPECT_FALSE(FindLatestDeviceAuthorizationKey(empty_keys).has_value());
+}
+
+TEST(PasskeyModelUtilsTest, ShouldFindLatestDeviceAuthorizationKey) {
+  DeviceAuthorizationKeys keys;
+  DeviceAuthorizationKey* key1 = keys.add_keys();
+  key1->set_version(2);
+  key1->set_key("key_v2");
+  DeviceAuthorizationKey* key2 = keys.add_keys();
+  key2->set_version(5);
+  key2->set_key("key_v5");
+  DeviceAuthorizationKey* key3 = keys.add_keys();
+  key3->set_version(3);
+  key3->set_key("key_v3");
+
+  base::optional_ref<const DeviceAuthorizationKey> latest =
+      FindLatestDeviceAuthorizationKey(keys);
+  ASSERT_TRUE(latest.has_value());
+  EXPECT_EQ(latest->version(), 5);
+  EXPECT_EQ(latest->key(), "key_v5");
+}
+
+TEST(PasskeyModelUtilsTest,
+     ShouldReturnNulloptWhenFindingKeyWithVersionInEmptyKeys) {
+  EXPECT_FALSE(
+      FindDeviceAuthorizationKeyWithVersion(DeviceAuthorizationKeys(), 0)
+          .has_value());
+}
+
+TEST(PasskeyModelUtilsTest,
+     ShouldReturnNulloptWhenFindingKeyWithMissingVersion) {
+  DeviceAuthorizationKeys keys;
+  DeviceAuthorizationKey* key = keys.add_keys();
+  key->set_version(2);
+  key->set_key("key_v2");
+
+  EXPECT_FALSE(FindDeviceAuthorizationKeyWithVersion(keys, 3).has_value());
+}
+
+TEST(PasskeyModelUtilsTest, ShouldFindDeviceAuthorizationKeyWithVersion) {
+  DeviceAuthorizationKeys keys;
+  DeviceAuthorizationKey* key1 = keys.add_keys();
+  key1->set_version(2);
+  key1->set_key("key_v2");
+  DeviceAuthorizationKey* key2 = keys.add_keys();
+  key2->set_version(5);
+  key2->set_key("key_v5");
+
+  std::optional<base::span<const uint8_t>> found =
+      FindDeviceAuthorizationKeyWithVersion(keys, 5);
+  ASSERT_TRUE(found.has_value());
+  EXPECT_EQ(base::as_string_view(*found), "key_v5");
 }
 
 }  // namespace

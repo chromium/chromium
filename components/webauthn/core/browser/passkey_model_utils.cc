@@ -500,4 +500,24 @@ bool IsSupportedAlgorithm(int32_t algorithm) {
          base::strict_cast<int32_t>(device::CoseAlgorithmIdentifier::kEs256);
 }
 
+base::optional_ref<const DeviceAuthorizationKey>
+FindLatestDeviceAuthorizationKey(const DeviceAuthorizationKeys& keys) {
+  if (keys.keys().empty()) {
+    return std::nullopt;
+  }
+  return *std::ranges::max_element(keys.keys(), {},
+                                   &DeviceAuthorizationKey::version);
+}
+
+std::optional<base::span<const uint8_t>> FindDeviceAuthorizationKeyWithVersion(
+    const DeviceAuthorizationKeys& keys,
+    int32_t version) {
+  const auto key =
+      std::ranges::find(keys.keys(), version, &DeviceAuthorizationKey::version);
+  if (key == keys.keys().end()) {
+    return std::nullopt;
+  }
+  return base::as_byte_span(key->key());
+}
+
 }  // namespace webauthn::passkey_model_utils

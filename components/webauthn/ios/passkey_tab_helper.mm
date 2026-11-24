@@ -67,19 +67,6 @@ std::vector<uint8_t> ToByteVector(const std::string& str) {
   return std::vector<uint8_t>(str.begin(), str.end());
 }
 
-// Returns the bytes of the key in `keys` with `version`, or `std::nullopt` if
-// there is no such key.
-std::optional<base::span<const uint8_t>> FindDeviceAuthorizationKeyWithVersion(
-    const DeviceAuthorizationKeys& keys,
-    int32_t version) {
-  const auto key =
-      std::ranges::find(keys.keys(), version, &DeviceAuthorizationKey::version);
-  if (key == keys.keys().end()) {
-    return std::nullopt;
-  }
-  return base::as_byte_span(key->key());
-}
-
 // Utility function to create a passkey and an attestation object from the
 // provided parameters.
 // TODO(crbug.com/460485333): Merge this code with PerformPasskeyCreation.
@@ -1192,7 +1179,7 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
   base::span<const uint8_t> device_authorization_key;
   if (passkey.has_security_domain_encrypted()) {
     const std::optional<base::span<const uint8_t>> key =
-        FindDeviceAuthorizationKeyWithVersion(
+        passkey_model_utils::FindDeviceAuthorizationKeyWithVersion(
             device_authorization_keys,
             passkey.device_authorization_key_version());
     if (!key.has_value()) {
