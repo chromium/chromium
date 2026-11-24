@@ -542,8 +542,15 @@ void RenderWidgetHostViewAura::InitAsPopup(
   if (destroy_pending()) {
     return;
   }
-  if (NeedsMouseCapture())
+  if (NeedsMouseCapture()) {
+    // The parent has capture if the popup was opened by a mouse press that is
+    // still held.
+    if (popup_parent_host_view_->window_->HasCapture()) {
+      forward_mouse_buttons_to_parent_ =
+          aura::Env::GetInstance()->mouse_button_flags();
+    }
     window_->SetCapture();
+  }
 
   event_observer_for_popup_exit_ =
       std::make_unique<EventObserverForPopupExit>(this);
@@ -2525,6 +2532,7 @@ void RenderWidgetHostViewAura::OnCaptureLost() {
   if (destroy_pending() || !host()) {
     return;
   }
+  forward_mouse_buttons_to_parent_ = 0;
   host()->LostCapture();
 }
 
@@ -2695,6 +2703,35 @@ void RenderWidgetHostViewAura::OnMouseEvent(ui::MouseEvent* event) {
     }
   } else {
     last_pointer_type_ = ui::EventPointerType::kMouse;
+  }
+  // Send the drags and the releases of the buttons that were held when this
+  // popup opened to the parent as well, as happens on platforms where popups
+  // don't take capture.
+  if (forward_mouse_buttons_to_parent_ &&
+      (event->type() == ui::EventType::kMouseDragged ||
+       (event->type() == ui::EventType::kMouseReleased &&
+        (event->changed_button_flags() & forward_mouse_buttons_to_parent_)))) {
+    const int forwarded_buttons = forward_mouse_buttons_to_parent_;
+    if (event->type() == ui::EventType::kMouseReleased) {
+      forward_mouse_buttons_to_parent_ &= ~event->changed_button_flags();
+    }
+    if (popup_parent_host_view_) {
+      aura::Window* parent_window = popup_parent_host_view_->window_;
+      ui::MouseEvent parent_event(*event, window_.get(), parent_window);
+      // The parent shouldn't see buttons pressed after the popup opened.
+      parent_event.SetFlags(parent_event.flags() &
+                            ~(ui::EF_MOUSE_BUTTON & ~forwarded_buttons));
+      gfx::PointF root_location = parent_event.location_f();
+      aura::Window::ConvertPointToTarget(
+          parent_window, parent_window->GetRootWindow(), &root_location);
+      parent_event.set_root_location_f(root_location);
+      ui::Event::DispatcherApi(&parent_event).set_target(parent_window);
+      popup_parent_host_view_->OnMouseEvent(&parent_event);
+      if (destroy_pending()) {
+        event->SetHandled();
+        return;
+      }
+    }
   }
   event_handler_->OnMouseEvent(event);
 }

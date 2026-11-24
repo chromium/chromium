@@ -776,7 +776,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
 
   // Tests should set these to nullptr if they've already triggered their
   // destruction.
-  raw_ptr<RenderWidgetHostImpl> parent_host_ = nullptr;
+  raw_ptr<MockRenderWidgetHostImpl> parent_host_ = nullptr;
   // The `parent_view_` owns the object.
   // Note: It would be great turning this into a std::unique_ptr<>.
   raw_ptr<RenderWidgetHostViewAura> parent_view_ = nullptr;
@@ -1528,6 +1528,42 @@ TEST_F(RenderWidgetHostViewAuraTest, PopupRetainsCaptureAfterMouseRelease) {
 
   generator.ReleaseLeftButton();
   EXPECT_TRUE(window->HasCapture());
+}
+
+// The popup takes capture while the mouse press that opened it is still held.
+// Drags and the release must still reach the parent so that the page sees
+// mousemoves and a mouseup, even if another button is pressed and released in
+// between (crbug.com/40245423).
+TEST_F(RenderWidgetHostViewAuraTest, PopupForwardsOpeningDragToParent) {
+  parent_view_->SetBounds(gfx::Rect(10, 10, 400, 400));
+  parent_view_->ShowWithVisibility(PageVisibilityState::kVisible);
+  parent_view_->Focus();
+
+  ui::test::EventGenerator generator(
+      parent_view_->GetNativeView()->GetRootWindow(), gfx::Point(300, 300));
+  generator.PressLeftButton();
+  ASSERT_TRUE(parent_view_->GetNativeView()->HasCapture());
+  InitViewForPopup(parent_view_, gfx::Rect(10, 10, 100, 100));
+  parent_host_->input_handler()->GetAndResetDispatchedMessages();
+
+  generator.MoveMouseTo(gfx::Point(50, 50));
+  generator.PressRightButton();
+  generator.MoveMouseTo(gfx::Point(55, 55));
+  generator.ReleaseRightButton();
+  generator.MoveMouseTo(gfx::Point(60, 60));
+  generator.ReleaseLeftButton();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return parent_host_->input_handler()->dispatched_messages().size() >= 4;
+  }));
+  auto messages =
+      parent_host_->input_handler()->GetAndResetDispatchedMessages();
+  EXPECT_EQ("MouseMove MouseMove MouseMove MouseUp", GetMessageNames(messages));
+  // The right button was pressed after the popup opened, so the parent doesn't
+  // see it held.
+  const int modifiers = messages[1]->ToEvent()->Event()->Event().GetModifiers();
+  EXPECT_TRUE(modifiers & blink::WebInputEvent::kLeftButtonDown);
+  EXPECT_FALSE(modifiers & blink::WebInputEvent::kRightButtonDown);
+  EXPECT_TRUE(view_->GetNativeView()->HasCapture());
 }
 #endif
 

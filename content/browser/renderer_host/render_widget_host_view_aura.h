@@ -830,6 +830,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // whichever side is set and CHECKs that the pair agrees.
   raw_ptr<RenderWidgetHostViewAura> popup_parent_host_view_;
 
+  // The mouse buttons that were held when this popup took mouse capture from
+  // its parent and have not been released yet. Drags and the releases of these
+  // buttons are forwarded to the parent so that the page sees the mousemoves
+  // and mouseups.
+  int forward_mouse_buttons_to_parent_ = 0;
+
   // Our child popup host. NULL if we do not have a child popup.
   raw_ptr<RenderWidgetHostViewAura> popup_child_host_view_;
 
