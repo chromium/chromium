@@ -18,7 +18,8 @@ include_rules = [
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/policy/dlp",
   "+chrome/browser/chromeos/policy/dlp",
-  "+chrome/browser/profiles",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/profiles/profile_keyed_service_factory.h",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
   "+chrome/common/chrome_isolated_world_ids.h",
@@ -47,7 +48,7 @@ specific_include_rules = {
   ],
   "arc_file_system_bridge_unittest\\.cc": [
     "+chrome/browser/ash/file_system_provider",
-    "+chrome/browser/ash/login/users",
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
     "+chrome/test/base",
   ],
   "arc_file_system_operation_runner_unittest\\.cc": [

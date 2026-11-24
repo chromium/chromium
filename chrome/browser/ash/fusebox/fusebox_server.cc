@@ -11,6 +11,8 @@
 #include <utility>
 #include <variant>
 
+#include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -30,7 +32,10 @@
 #include "chrome/browser/ash/fusebox/fusebox_copy_to_fd.h"
 #include "chrome/browser/ash/fusebox/fusebox_errno.h"
 #include "chrome/browser/ash/fusebox/fusebox_read_writer.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
@@ -97,9 +102,9 @@ std::pair<std::string, bool> ResolvePrefixMap(
                         iter->second.read_only);
 }
 
-// Parsed is the T in the base::expected<T, E> type returned by
-// ParseFileSystemURL. It holds a storage::FileSystemContext, a
-// storage::FileSystemURL and read-only-ness.
+// `Parsed` is the `T` in the `base::expected<T, E>` type returned by
+// `ParseFileSystemURL()`. It holds a `storage::FileSystemContext`, a
+// `storage::FileSystemURL`, and read-only-ness.
 struct Parsed {
   Parsed(scoped_refptr<storage::FileSystemContext> fs_context_arg,
          storage::FileSystemURL fs_url_arg,
@@ -138,24 +143,28 @@ ParseError::ParseError(int posix_error_code_arg, bool is_moniker_root_arg)
     : posix_error_code(posix_error_code_arg),
       is_moniker_root(is_moniker_root_arg) {}
 
+content::BrowserContext* GetActiveSessionBrowserContext() {
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  return active_session
+             ? ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                   active_session->account_id())
+             : nullptr;
+}
+
 // All of the Server methods' take a protobuf argument. Many protobufs have a
 // file_system_url field (a string). This function parses that string as a
 // storage::FileSystemURL (resolving it in the context of the MonikerMap and
 // PrefixMap) as well as finding the storage::FileSystemContext we will need to
 // serve those methods.
 base::expected<Parsed, ParseError> ParseFileSystemURL(
+    content::BrowserContext* browser_context,
     const fusebox::MonikerMap& moniker_map,
     const fusebox::Server::PrefixMap& prefix_map,
     std::string_view fs_url_as_string) {
-  scoped_refptr<storage::FileSystemContext> fs_context =
-      file_manager::util::GetFileManagerFileSystemContext(
-          ProfileManager::GetActiveUserProfile());
   if (fs_url_as_string.empty()) {
     LOG(ERROR) << "No FileSystemURL";
     return base::unexpected(ParseError(EINVAL));
-  } else if (!fs_context) {
-    LOG(ERROR) << "No FileSystemContext";
-    return base::unexpected(ParseError(EFAULT));
   }
 
   // encoded is fs_url_as_string transformed such that "fsp.hash/x/y#z.txt"
@@ -176,42 +185,53 @@ base::expected<Parsed, ParseError> ParseFileSystemURL(
          url::UriComponentEncoder(fs_url_as_string.substr(slash + 1)).view()});
   }
 
-  storage::FileSystemURL fs_url;
-  bool read_only = false;
-
   // Intercept any moniker names and replace them by their linked target.
+  // Handle moniker root and malformed moniker URLs before requiring a
+  // `FileSystemContext` so `Stat2("moniker")` and `ReadDir2("moniker")`
+  // succeed before login.
   using ResultType = fusebox::MonikerMap::ExtractTokenResult::ResultType;
   auto extract_token_result = fusebox::MonikerMap::ExtractToken(encoded);
   switch (extract_token_result.result_type) {
-    case ResultType::OK: {
-      auto resolved = moniker_map.Resolve(extract_token_result.token);
-      if (!resolved.first.is_valid()) {
-        LOG(ERROR) << "Unresolvable Moniker";
-        return base::unexpected(ParseError(ENOENT));
-      }
-      fs_url = std::move(resolved.first);
-      read_only = resolved.second;
-      break;
-    }
-    case ResultType::NOT_A_MONIKER_FS_URL: {
-      auto resolved = ResolvePrefixMap(prefix_map, encoded);
-      if (resolved.first.empty()) {
-        LOG(ERROR) << "Unresolvable Prefix";
-        return base::unexpected(ParseError(ENOENT));
-      }
-      read_only = resolved.second;
-      fs_url = fs_context->CrackURLInFirstPartyContext(GURL(resolved.first));
-      if (!fs_url.is_valid()) {
-        LOG(ERROR) << "Invalid FileSystemURL";
-        return base::unexpected(ParseError(EINVAL));
-      }
-      break;
-    }
-    case ResultType::MONIKER_FS_URL_BUT_ONLY_ROOT: {
+    case ResultType::MONIKER_FS_URL_BUT_ONLY_ROOT:
       return base::unexpected(ParseError(ENOENT, true));
-    }
     case ResultType::MONIKER_FS_URL_BUT_NOT_WELL_FORMED:
       return base::unexpected(ParseError(ENOENT));
+    case ResultType::OK:
+    case ResultType::NOT_A_MONIKER_FS_URL:
+      break;
+  }
+
+  scoped_refptr<storage::FileSystemContext> fs_context =
+      browser_context
+          ? file_manager::util::GetFileManagerFileSystemContext(browser_context)
+          : nullptr;
+  if (!fs_context) {
+    LOG(ERROR) << "No FileSystemContext";
+    return base::unexpected(ParseError(EFAULT));
+  }
+
+  storage::FileSystemURL fs_url;
+  bool read_only = false;
+  if (extract_token_result.result_type == ResultType::OK) {
+    auto resolved = moniker_map.Resolve(extract_token_result.token);
+    if (!resolved.first.is_valid()) {
+      LOG(ERROR) << "Unresolvable Moniker";
+      return base::unexpected(ParseError(ENOENT));
+    }
+    fs_url = std::move(resolved.first);
+    read_only = resolved.second;
+  } else {
+    auto resolved = ResolvePrefixMap(prefix_map, encoded);
+    if (resolved.first.empty()) {
+      LOG(ERROR) << "Unresolvable Prefix";
+      return base::unexpected(ParseError(ENOENT));
+    }
+    read_only = resolved.second;
+    fs_url = fs_context->CrackURLInFirstPartyContext(GURL(resolved.first));
+    if (!fs_url.is_valid()) {
+      LOG(ERROR) << "Invalid FileSystemURL";
+      return base::unexpected(ParseError(EINVAL));
+    }
   }
 
   if (!ash::FileSystemBackend::Get(*fs_context)->CanHandleType(fs_url.type())) {
@@ -830,7 +850,7 @@ void Server::OverrideFuseBoxMediaPathForTesting(std::string_view path) {
   }
 }
 
-storage::FileSystemURL Server::ResolveFilename(Profile* profile,
+storage::FileSystemURL Server::ResolveFilename(content::BrowserContext* context,
                                                std::string_view filename) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
@@ -843,7 +863,7 @@ storage::FileSystemURL Server::ResolveFilename(Profile* profile,
   if (resolved.first.empty()) {
     return storage::FileSystemURL();
   }
-  return file_manager::util::GetFileManagerFileSystemContext(profile)
+  return file_manager::util::GetFileManagerFileSystemContext(context)
       ->CrackURLInFirstPartyContext(GURL(resolved.first));
 }
 
@@ -939,7 +959,9 @@ void Server::Create(const CreateRequestProto& request_proto,
                                      ? request_proto.file_system_url()
                                      : std::string();
 
-  auto parsed = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  content::BrowserContext* browser_context = GetActiveSessionBrowserContext();
+  auto parsed = ParseFileSystemURL(browser_context, moniker_map_, prefix_map_,
+                                   fs_url_as_string);
   if (!parsed.has_value()) {
     CreateResponseProto response_proto;
     response_proto.set_posix_error_code(parsed.error().posix_error_code);
@@ -956,11 +978,10 @@ void Server::Create(const CreateRequestProto& request_proto,
   constexpr bool writable = true;
   bool use_temp_file = writable && UseTempFile(fs_url_as_string);
 
+  CHECK(browser_context);
   uint64_t fuse_handle = InsertFuseFileMapEntry(FuseFileMapEntry(
       parsed->fs_context, parsed->fs_url,
-      use_temp_file
-          ? ProfileManager::GetActiveUserProfile()->GetPath().AsUTF8Unsafe()
-          : std::string(),
+      use_temp_file ? browser_context->GetPath().AsUTF8Unsafe() : std::string(),
       readable, writable, use_temp_file, false));
 
   if (use_temp_file) {
@@ -1030,7 +1051,9 @@ void Server::MkDir(const MkDirRequestProto& request_proto,
                                      ? request_proto.file_system_url()
                                      : std::string();
 
-  auto parsed = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  content::BrowserContext* browser_context = GetActiveSessionBrowserContext();
+  auto parsed = ParseFileSystemURL(browser_context, moniker_map_, prefix_map_,
+                                   fs_url_as_string);
   if (!parsed.has_value()) {
     MkDirResponseProto response_proto;
     response_proto.set_posix_error_code(parsed.error().posix_error_code);
@@ -1070,7 +1093,9 @@ void Server::Open2(const Open2RequestProto& request_proto,
                                ? request_proto.access_mode()
                                : AccessMode::NO_ACCESS;
 
-  auto parsed = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  content::BrowserContext* browser_context = GetActiveSessionBrowserContext();
+  auto parsed = ParseFileSystemURL(browser_context, moniker_map_, prefix_map_,
+                                   fs_url_as_string);
   if (!parsed.has_value()) {
     Open2ResponseProto response_proto;
     response_proto.set_posix_error_code(parsed.error().posix_error_code);
@@ -1085,11 +1110,10 @@ void Server::Open2(const Open2RequestProto& request_proto,
                              (access_mode == AccessMode::READ_WRITE));
   bool use_temp_file = writable && UseTempFile(fs_url_as_string);
 
+  CHECK(browser_context);
   uint64_t fuse_handle = InsertFuseFileMapEntry(FuseFileMapEntry(
       std::move(parsed->fs_context), parsed->fs_url,
-      use_temp_file
-          ? ProfileManager::GetActiveUserProfile()->GetPath().AsUTF8Unsafe()
-          : std::string(),
+      use_temp_file ? browser_context->GetPath().AsUTF8Unsafe() : std::string(),
       readable, writable, use_temp_file, true));
 
   Open2ResponseProto response_proto;
@@ -1151,7 +1175,9 @@ void Server::ReadDir2(const ReadDir2RequestProto& request_proto,
                                   ? request_proto.cancel_error_code()
                                   : 0;
 
-  auto parsed = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  content::BrowserContext* browser_context = GetActiveSessionBrowserContext();
+  auto parsed = ParseFileSystemURL(browser_context, moniker_map_, prefix_map_,
+                                   fs_url_as_string);
   if (!parsed.has_value()) {
     ReadDir2ResponseProto response_proto;
     if (parsed.error().is_moniker_root) {
@@ -1208,8 +1234,9 @@ void Server::Rename(const RenameRequestProto& request_proto,
   std::string dst_fs_url_as_string = request_proto.has_dst_file_system_url()
                                          ? request_proto.dst_file_system_url()
                                          : std::string();
-  auto src_parsed =
-      ParseFileSystemURL(moniker_map_, prefix_map_, src_fs_url_as_string);
+  content::BrowserContext* browser_context = GetActiveSessionBrowserContext();
+  auto src_parsed = ParseFileSystemURL(browser_context, moniker_map_,
+                                       prefix_map_, src_fs_url_as_string);
   if (!src_parsed.has_value()) {
     RenameResponseProto response_proto;
     response_proto.set_posix_error_code(src_parsed.error().posix_error_code);
@@ -1222,8 +1249,8 @@ void Server::Rename(const RenameRequestProto& request_proto,
     return;
   }
 
-  auto dst_parsed =
-      ParseFileSystemURL(moniker_map_, prefix_map_, dst_fs_url_as_string);
+  auto dst_parsed = ParseFileSystemURL(browser_context, moniker_map_,
+                                       prefix_map_, dst_fs_url_as_string);
   if (!dst_parsed.has_value()) {
     RenameResponseProto response_proto;
     response_proto.set_posix_error_code(dst_parsed.error().posix_error_code);
@@ -1266,12 +1293,11 @@ void Server::Rename(const RenameRequestProto& request_proto,
         base::BindOnce(&RunRenameCallbackPosixErrorCode, std::move(callback),
                        src_parsed->fs_context));
 
+    CHECK(browser_context);
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&DoCrossFileSystemRename, src_parsed->fs_context,
-                       std::string(ProfileManager::GetActiveUserProfile()
-                                       ->GetPath()
-                                       .AsUTF8Unsafe()),
+                       browser_context->GetPath().AsUTF8Unsafe(),
                        std::move(src_parsed->fs_url),
                        std::move(dst_parsed->fs_url),
                        std::move(outer_callback)));
@@ -1307,7 +1333,9 @@ void Server::RmDir(const RmDirRequestProto& request_proto,
                                      ? request_proto.file_system_url()
                                      : std::string();
 
-  auto parsed = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  content::BrowserContext* browser_context = GetActiveSessionBrowserContext();
+  auto parsed = ParseFileSystemURL(browser_context, moniker_map_, prefix_map_,
+                                   fs_url_as_string);
   if (!parsed.has_value()) {
     RmDirResponseProto response_proto;
     response_proto.set_posix_error_code(parsed.error().posix_error_code);
@@ -1341,7 +1369,9 @@ void Server::Stat2(const Stat2RequestProto& request_proto,
                                      ? request_proto.file_system_url()
                                      : std::string();
 
-  auto parsed = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  content::BrowserContext* browser_context = GetActiveSessionBrowserContext();
+  auto parsed = ParseFileSystemURL(browser_context, moniker_map_, prefix_map_,
+                                   fs_url_as_string);
   if (!parsed.has_value()) {
     Stat2ResponseProto response_proto;
     if (parsed.error().is_moniker_root) {
@@ -1382,7 +1412,9 @@ void Server::Truncate(const TruncateRequestProto& request_proto,
                                      ? request_proto.file_system_url()
                                      : std::string();
 
-  auto parsed = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  content::BrowserContext* browser_context = GetActiveSessionBrowserContext();
+  auto parsed = ParseFileSystemURL(browser_context, moniker_map_, prefix_map_,
+                                   fs_url_as_string);
   if (!parsed.has_value()) {
     TruncateResponseProto response_proto;
     response_proto.set_posix_error_code(parsed.error().posix_error_code);
@@ -1423,7 +1455,9 @@ void Server::Unlink(const UnlinkRequestProto& request_proto,
                                      ? request_proto.file_system_url()
                                      : std::string();
 
-  auto parsed = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  content::BrowserContext* browser_context = GetActiveSessionBrowserContext();
+  auto parsed = ParseFileSystemURL(browser_context, moniker_map_, prefix_map_,
+                                   fs_url_as_string);
   if (!parsed.has_value()) {
     UnlinkResponseProto response_proto;
     response_proto.set_posix_error_code(parsed.error().posix_error_code);
@@ -1495,16 +1529,21 @@ void Server::ListStorages(const ListStoragesRequestProto& request,
   std::move(callback).Run(response);
 }
 
-void Server::MakeTempDir(MakeTempDirCallback callback) {
+void Server::MakeTempDir(content::BrowserContext* browser_context,
+                         MakeTempDirCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(browser_context);
 
   constexpr auto make_temp_dir_on_worker_thread =
-      [](base::WeakPtr<Server> weak_ptr_server, MakeTempDirCallback callback) {
+      [](base::WeakPtr<Server> weak_ptr_server,
+         base::WeakPtr<content::BrowserContext> browser_context,
+         MakeTempDirCallback callback) {
         base::ScopedTempDir scoped_temp_dir;
         bool create_succeeded = scoped_temp_dir.CreateUniqueTempDir();
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(&Server::ReplyToMakeTempDir,
                                       std::move(weak_ptr_server),
+                                      std::move(browser_context),
                                       std::move(scoped_temp_dir),
                                       create_succeeded, std::move(callback)));
       };
@@ -1512,18 +1551,27 @@ void Server::MakeTempDir(MakeTempDirCallback callback) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(make_temp_dir_on_worker_thread,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     browser_context->GetWeakPtr(), std::move(callback)));
 }
 
-void Server::ReplyToMakeTempDir(base::ScopedTempDir scoped_temp_dir,
-                                bool create_succeeded,
-                                MakeTempDirCallback callback) {
+void Server::ReplyToMakeTempDir(
+    base::WeakPtr<content::BrowserContext> browser_context,
+    base::ScopedTempDir scoped_temp_dir,
+    bool create_succeeded,
+    MakeTempDirCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
   if (!create_succeeded) {
     std::move(callback).Run("CreateUniqueTempDir failed", "", "");
     return;
   }
+
+  CHECK(browser_context);
+  scoped_refptr<storage::FileSystemContext> fs_context =
+      file_manager::util::GetFileManagerFileSystemContext(
+          browser_context.get());
+  CHECK(fs_context);
 
   const std::string subdir = SubdirForTempDir(scoped_temp_dir);
   const std::string mount_name =
@@ -1541,9 +1589,6 @@ void Server::ReplyToMakeTempDir(base::ScopedTempDir scoped_temp_dir,
     return;
   }
 
-  scoped_refptr<storage::FileSystemContext> fs_context =
-      file_manager::util::GetFileManagerFileSystemContext(
-          ProfileManager::GetActiveUserProfile());
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(
           "http://fusebox-server.example.com");

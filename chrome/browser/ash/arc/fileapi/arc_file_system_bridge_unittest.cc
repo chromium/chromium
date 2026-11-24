@@ -37,10 +37,10 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
-#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
@@ -50,6 +50,9 @@
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_file_system_instance.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -62,7 +65,9 @@ namespace arc {
 
 namespace {
 
-constexpr char kTestingProfileName[] = "test-user@gmail.com";
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test-user@gmail.com",
+                                            GaiaId::Literal("1234567890"));
 
 // Values set by FakeProvidedFileSystem.
 constexpr char kTestFileType[] = "text/plain";
@@ -100,21 +105,19 @@ class ArcFileSystemBridgeTest : public testing::Test {
     ash::SeneschalClient::InitializeFake();
     ash::VirtualFileProviderClient::InitializeFake();
 
-    user_session_test_environment_ =
-        std::make_unique<ash::test::UserSessionTestEnvironment>(
-            TestingBrowserProcess::GetGlobal()->local_state());
-    const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        kTestingProfileName, GaiaId("1234567890")));
-    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
+    user_session_test_environment_->LogIn(kTestAccountId);
 
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    user_session_test_environment_->LogIn(account_id);
-
-    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
-                                            account_id);
-    profile_ = profile_manager_->CreateTestingProfile(kTestingProfileName);
+    profile_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kTestAccountId));
+    ASSERT_TRUE(profile_);
 
     auto fake_provider =
         ash::file_system_provider::FakeExtensionProvider::Create(kExtensionId);
@@ -141,7 +144,6 @@ class ArcFileSystemBridgeTest : public testing::Test {
     arc_bridge_service_.file_system()->CloseInstance(&fake_file_system_);
     arc_file_system_bridge_.reset();
     profile_ = nullptr;
-    profile_manager_.reset();
     user_session_test_environment_.reset();
     ash::VirtualFileProviderClient::Shutdown();
     ash::SeneschalClient::Shutdown();
@@ -219,8 +221,7 @@ class ArcFileSystemBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   std::string mount_point_name_;
   GURL test_url_;
@@ -456,8 +457,11 @@ TEST_F(ArcFileSystemBridgeTest, CreateMonikerIgnoresRequestForWriteAccess) {
 // `IsUrlAllowed()` performs no sharing check on ARCVM.
 TEST_F(ArcFileSystemBridgeTest, WritableMonikerRequestCannotModifyHostFile) {
   StartArcVm();
-  // `fusebox::Server` resolves the `FileSystemContext` from the active profile.
-  ASSERT_EQ(profile_.get(), ProfileManager::GetActiveUserProfile());
+  // `fusebox::Server` resolves the `FileSystemContext` from the active session.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  ASSERT_EQ(active_session->account_id(), kTestAccountId);
 
   constexpr char kMountName[] = "arc-file-system-bridge-test-local";
   constexpr char kFileName[] = "target.txt";

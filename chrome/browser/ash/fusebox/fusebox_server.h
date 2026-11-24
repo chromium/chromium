@@ -24,7 +24,9 @@
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace fusebox {
 
@@ -73,7 +75,7 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
   //
   // It returns an invalid storage::FileSystemURL if the filename doesn't match
   // "/media/fuse/fusebox/subdir/etc" or the "subdir" wasn't registered.
-  storage::FileSystemURL ResolveFilename(Profile* profile,
+  storage::FileSystemURL ResolveFilename(content::BrowserContext* context,
                                          std::string_view filename);
 
   // Performs the inverse of ResolveFilename. It converts a FileSystemURL like
@@ -223,7 +225,8 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
       base::OnceCallback<void(const std::string& error_message,
                               const std::string& fusebox_file_path,
                               const std::string& underlying_file_path)>;
-  void MakeTempDir(MakeTempDirCallback callback);
+  void MakeTempDir(content::BrowserContext* browser_context,
+                   MakeTempDirCallback callback);
   void RemoveTempDir(const std::string& fusebox_file_path);
 
   // ----
@@ -319,9 +322,11 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
   // ----
 
  private:
-  void ReplyToMakeTempDir(base::ScopedTempDir scoped_temp_dir,
-                          bool create_succeeded,
-                          MakeTempDirCallback callback);
+  void ReplyToMakeTempDir(
+      base::WeakPtr<content::BrowserContext> browser_context,
+      base::ScopedTempDir scoped_temp_dir,
+      bool create_succeeded,
+      MakeTempDirCallback callback);
 
   void OnFlush(uint64_t fuse_handle,
                FlushCallback callback,

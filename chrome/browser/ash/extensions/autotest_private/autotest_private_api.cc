@@ -5980,8 +5980,10 @@ AutotestPrivateMakeFuseboxTempDirFunction::Run() {
   if (!server) {
     return RespondNow(Error("Fusebox server instance not available"));
   }
-  server->MakeTempDir(base::BindOnce(
-      &AutotestPrivateMakeFuseboxTempDirFunction::OnMakeTempDir, this));
+  server->MakeTempDir(
+      browser_context(),
+      base::BindOnce(&AutotestPrivateMakeFuseboxTempDirFunction::OnMakeTempDir,
+                     this));
   return RespondLater();
 }
 
