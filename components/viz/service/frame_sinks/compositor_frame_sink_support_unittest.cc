@@ -2632,6 +2632,37 @@ TEST_P(CompositorFrameSinkSupportTest,
   EXPECT_EQ(kViewportRect, props->render_pass_subrect);
   EXPECT_EQ(kDefaultSize, props->root_render_pass_size);
 }
+
+TEST_P(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_EntireTabAndroidViewportClampedToRootSize) {
+  struct TestCase {
+    gfx::Size visible_viewport_size;
+    gfx::Rect expected_subrect;
+  };
+  const TestCase kTestCases[] = {
+      // Emulated mobile viewport taller than the physical window surface.
+      {gfx::Size(10, 40), gfx::Rect(0, 0, 10, kDefaultSize.height())},
+      // Emulated viewport wider than a narrow / split-screen window surface.
+      {gfx::Size(40, 15), gfx::Rect(0, 0, kDefaultSize.width(), 15)},
+      // Emulated viewport exceeding the surface in both dimensions.
+      {gfx::Size(40, 50), gfx::Rect(kDefaultSize)},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    CompositorFrame frame = MakeDefaultCompositorFrame();
+    frame.metadata.visible_viewport_size = test_case.visible_viewport_size;
+
+    support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+
+    const auto props =
+        support_->GetRequestRegionProperties(VideoCaptureSubTarget());
+    ASSERT_TRUE(props.has_value());
+    EXPECT_EQ(test_case.expected_subrect, props->render_pass_subrect);
+    EXPECT_EQ(kDefaultSize, props->root_render_pass_size);
+    EXPECT_TRUE(gfx::Rect(props->root_render_pass_size)
+                    .Contains(props->render_pass_subrect));
+  }
+}
 #endif
 
 TEST_P(CompositorFrameSinkSupportTest,

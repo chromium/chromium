@@ -1387,17 +1387,20 @@ CompositorFrameSinkSupport::GetRequestRegionProperties(
 
   // If we don't have a sub target, capture everything in the frame.
   if (IsEntireTabCapture(sub_target)) {
+    out.render_pass_subrect = gfx::Rect(out.root_render_pass_size);
 #if BUILDFLAG(IS_ANDROID)
     // On Android, the browser viewport includes the space used for browser
     // controls so that scrolling can hide controls smoothly without the need to
     // resize the viewport. However, for media capture scenarios (e.g. tab
     // sharing), the desired capture area is just the web content viewport.
+    // Intersect with `root_render_pass_size` because an emulated viewport (e.g.
+    // DevTools device emulation) can exceed the physical surface bounds, which
+    // would otherwise cause FrameSinkVideoCapturerImpl to drop every frame.
     if (!frame.metadata.visible_viewport_size.IsEmpty()) {
-      out.render_pass_subrect = gfx::Rect(frame.metadata.visible_viewport_size);
-      return out;
+      out.render_pass_subrect.Intersect(
+          gfx::Rect(frame.metadata.visible_viewport_size));
     }
 #endif
-    out.render_pass_subrect = gfx::Rect(out.root_render_pass_size);
     return out;
   }
 
