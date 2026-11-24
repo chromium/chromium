@@ -16,7 +16,7 @@ namespace {
 
 struct SameSizeAsInlineItem {
   UntracedMember<void*> members[2];
-  unsigned integers[3];
+  wtf_size_t integers[3];
   uint8_t bytes[1];
   uint32_t bit_fields : 32;
 };
@@ -69,8 +69,8 @@ bool IsInlineBoxEndEmpty(const ComputedStyle& style,
 }  // namespace
 
 InlineItem::InlineItem(InlineItemType type,
-                       unsigned start,
-                       unsigned end,
+                       wtf_size_t start,
+                       wtf_size_t end,
                        LayoutObject* layout_object)
     : start_offset_(start),
       end_offset_(end),
@@ -83,8 +83,8 @@ InlineItem::InlineItem(InlineItemType type,
 }
 
 InlineItem::InlineItem(const InlineItem& other,
-                       unsigned start,
-                       unsigned end,
+                       wtf_size_t start,
+                       wtf_size_t end,
                        const ShapeResult* shape_result)
     : start_offset_(start),
       end_offset_(end),
@@ -186,7 +186,7 @@ const char* InlineItem::InlineItemTypeToString(InlineItemType val) {
 
 void InlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
                                 InlineItems* items) {
-  unsigned segment_data = InlineItemSegment::PackSegmentData(range);
+  uint32_t segment_data = InlineItemSegment::PackSegmentData(range);
   for (Member<InlineItem>& item_ptr : *items) {
     InlineItem& item = *item_ptr;
     if (item.Type() == InlineItem::kText) {
@@ -204,11 +204,11 @@ void InlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
 // @param end_offset The exclusive end offset to set.
 // @param level The level to set.
 // @return The index of the next item.
-unsigned InlineItem::SetBidiLevel(InlineItems& items,
-                                  unsigned index,
-                                  unsigned end_offset,
-                                  UBiDiLevel level,
-                                  wtf_size_t num_out_of_flow) {
+wtf_size_t InlineItem::SetBidiLevel(InlineItems& items,
+                                    wtf_size_t index,
+                                    wtf_size_t end_offset,
+                                    UBiDiLevel level,
+                                    wtf_size_t num_out_of_flow) {
   InlineItem* item;
   for (;; ++index) {
     item = items[index];
@@ -308,7 +308,9 @@ String InlineItem::ToString() const {
 // @param items The list of InlineItem.
 // @param index The index to split.
 // @param offset The offset to split at.
-void InlineItem::Split(InlineItems& items, unsigned index, unsigned offset) {
+void InlineItem::Split(InlineItems& items,
+                       wtf_size_t index,
+                       wtf_size_t offset) {
   InlineItem* source = &*items[index];
   DCHECK_GT(offset, source->start_offset_);
   DCHECK_LT(offset, source->end_offset_);

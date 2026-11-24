@@ -138,12 +138,11 @@ class InlineItemsBuilderTest : public RenderingTest {
   }
 
   void ValidateItems() {
-    unsigned current_offset = 0;
-    for (unsigned i = 0; i < items()->size(); i++) {
-      const InlineItem& item = *items()->at(i);
-      EXPECT_EQ(current_offset, item.StartOffset());
-      EXPECT_LE(item.StartOffset(), item.EndOffset());
-      current_offset = item.EndOffset();
+    wtf_size_t current_offset = 0;
+    for (const auto& item : *items()) {
+      EXPECT_EQ(current_offset, item->StartOffset());
+      EXPECT_LE(item->StartOffset(), item->EndOffset());
+      current_offset = item->EndOffset();
     }
     EXPECT_EQ(current_offset, text_.length());
   }

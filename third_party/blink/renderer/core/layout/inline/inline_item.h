@@ -67,15 +67,15 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
   // The constructor and destructor can't be implicit or inlined, because they
   // require full definition of ComputedStyle.
   InlineItem(InlineItemType type,
-             unsigned start,
-             unsigned end,
+             wtf_size_t start,
+             wtf_size_t end,
              LayoutObject* layout_object);
   ~InlineItem();
 
   // Copy constructor adjusting start/end and shape results.
   InlineItem(const InlineItem&,
-             unsigned adjusted_start,
-             unsigned adjusted_end,
+             wtf_size_t adjusted_start,
+             wtf_size_t adjusted_end,
              const ShapeResult*);
   InlineItem(const InlineItem&);
 
@@ -156,11 +156,11 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
     To<LayoutInline>(layout_object_.Get())->SetShouldCreateBoxFragment();
   }
 
-  unsigned StartOffset() const { return start_offset_; }
-  unsigned EndOffset() const { return end_offset_; }
-  unsigned Length() const { return end_offset_ - start_offset_; }
+  wtf_size_t StartOffset() const { return start_offset_; }
+  wtf_size_t EndOffset() const { return end_offset_; }
+  wtf_size_t Length() const { return end_offset_ - start_offset_; }
 
-  bool IsValidOffset(unsigned offset) const;
+  bool IsValidOffset(wtf_size_t offset) const;
 
   TextDirection Direction() const { return DirectionFromLevel(BidiLevel()); }
   UBiDiLevel BidiLevel() const { return static_cast<UBiDiLevel>(bidi_level_); }
@@ -174,14 +174,14 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
     return GetLayoutObject() && GetLayoutObject()->IsLayoutTextCombine();
   }
 
-  void SetOffset(unsigned start, unsigned end) {
+  void SetOffset(wtf_size_t start, wtf_size_t end) {
     DCHECK_GE(end, start);
     start_offset_ = start;
     end_offset_ = end;
     // Any modification to the offset will invalidate the shape result.
     shape_result_ = nullptr;
   }
-  void SetEndOffset(unsigned end_offset) {
+  void SetEndOffset(wtf_size_t end_offset) {
     DCHECK_GE(end_offset, start_offset_);
     end_offset_ = end_offset;
     // Any modification to the offset will invalidate the shape result.
@@ -241,10 +241,10 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
     is_end_collapsible_newline_ = is_newline;
   }
 
-  static void Split(InlineItems&, unsigned index, unsigned offset);
+  static void Split(InlineItems&, wtf_size_t index, wtf_size_t offset);
 
   // RunSegmenter properties.
-  unsigned SegmentData() const { return segment_data_; }
+  uint32_t SegmentData() const { return segment_data_; }
   static void SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
                              InlineItems* items);
 
@@ -266,11 +266,11 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
       shape_result_ = nullptr;
     bidi_level_ = level;
   }
-  static unsigned SetBidiLevel(InlineItems&,
-                               unsigned index,
-                               unsigned end_offset,
-                               UBiDiLevel,
-                               wtf_size_t num_out_of_flow = 0);
+  static wtf_size_t SetBidiLevel(InlineItems&,
+                                 wtf_size_t index,
+                                 wtf_size_t end_offset,
+                                 UBiDiLevel,
+                                 wtf_size_t num_out_of_flow = 0);
 
   // Update `InlineItem::Index()` for the given list.
   static void UpdateIndex(base::span<Member<InlineItem>> items);
@@ -278,8 +278,8 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
   static void CheckIndex(base::span<Member<InlineItem>> items);
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
-  void AssertOffset(unsigned offset) const { DCHECK(IsValidOffset(offset)); }
-  void AssertEndOffset(unsigned offset) const;
+  void AssertOffset(wtf_size_t offset) const { DCHECK(IsValidOffset(offset)); }
+  void AssertEndOffset(wtf_size_t offset) const;
 
   String ToString() const;
 
@@ -288,8 +288,8 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
  private:
   void ComputeBoxProperties();
 
-  unsigned start_offset_;
-  unsigned end_offset_;
+  wtf_size_t start_offset_;
+  wtf_size_t end_offset_;
   Member<const ShapeResult> shape_result_{
       nullptr, Member<const ShapeResult>::AtomicInitializerTag{}};
   Member<LayoutObject> layout_object_;
@@ -311,12 +311,12 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
   friend class InlineNodeDataEditor;
 };
 
-inline bool InlineItem::IsValidOffset(unsigned offset) const {
+inline bool InlineItem::IsValidOffset(wtf_size_t offset) const {
   return (offset >= start_offset_ && offset < end_offset_) ||
          (start_offset_ == end_offset_ && offset == start_offset_);
 }
 
-inline void InlineItem::AssertEndOffset(unsigned offset) const {
+inline void InlineItem::AssertEndOffset(wtf_size_t offset) const {
   DCHECK_GE(offset, start_offset_);
   DCHECK_LE(offset, end_offset_);
 }

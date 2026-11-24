@@ -89,7 +89,7 @@ bool IsEastAsianWidthWide(UChar32 c, const ComputedStyle* style) {
 // CSS Text, Segment Break Transformation Rules
 // https://drafts.csswg.org/css-text-3/#line-break-transform
 bool ShouldRemoveNewlineSlow(const StringBuilder& before,
-                             unsigned space_index,
+                             wtf_size_t space_index,
                              const ComputedStyle* before_style,
                              const StringView& after,
                              const ComputedStyle* after_style) {
@@ -140,7 +140,7 @@ bool ShouldRemoveNewlineSlow(const StringBuilder& before,
 }
 
 bool ShouldRemoveNewline(const StringBuilder& before,
-                         unsigned space_index,
+                         wtf_size_t space_index,
                          const ComputedStyle* before_style,
                          const StringView& after,
                          const ComputedStyle* after_style) {
@@ -152,8 +152,8 @@ bool ShouldRemoveNewline(const StringBuilder& before,
 
 inline InlineItem& AppendItem(InlineItems* items,
                               InlineItem::InlineItemType type,
-                              unsigned start,
-                              unsigned end,
+                              wtf_size_t start,
+                              wtf_size_t end,
                               LayoutObject* layout_object) {
   InlineItem* item =
       MakeGarbageCollected<InlineItem>(type, start, end, layout_object);
@@ -187,7 +187,7 @@ inline bool IsControlItemCharacter(UChar c) {
 // Returns whether this space run contains a newline or not, because it changes
 // the collapsing behavior.
 inline bool MoveToEndOfCollapsibleSpaces(const StringView& string,
-                                         unsigned* offset,
+                                         wtf_size_t* offset,
                                          UChar* c) {
   DCHECK_EQ(*c, UNSAFE_TODO(string[*offset]));
   DCHECK(unicode::IsCollapsibleSpace(*c));
@@ -236,7 +236,7 @@ inline UChar GetCollapsedSpaceChar(const ComputedStyle* style) {
 
 template <typename MappingBuilder>
 InlineItemsBuilderTemplate<MappingBuilder>::BoxInfo::BoxInfo(
-    unsigned item_index,
+    wtf_size_t item_index,
     const InlineItem& item)
     : style(*item.Style()),
       item_index(item_index),
@@ -304,7 +304,7 @@ InlineItem& InlineItemsBuilderTemplate<MappingBuilder>::AppendTextItem(
     const TransformedString& transformed,
     LayoutText* layout_object) {
   DCHECK(layout_object);
-  unsigned start_offset = text_.length();
+  wtf_size_t start_offset = text_.length();
   AppendTransformedString(transformed, *layout_object);
   InlineItem& item =
       AppendItem(items_, type, start_offset, text_.length(), layout_object);
@@ -320,7 +320,7 @@ template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendEmptyTextItem(
     LayoutText* layout_object) {
   DCHECK(layout_object);
-  unsigned offset = text_.length();
+  wtf_size_t offset = text_.length();
   InlineItem& item =
       AppendItem(items_, InlineItem::kText, offset, offset, layout_object);
   item.SetEndCollapseType(InlineItem::kOpaqueToCollapsing);
@@ -458,7 +458,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
             // If the start of the original string was not collapsed, and the
             // collapsible space run contains newline, the newline may be
             // removed.
-            unsigned offset = 0;
+            wtf_size_t offset = 0;
             UChar c = source_text[0];
             bool contains_newline =
                 MoveToEndOfCollapsibleSpaces(source_text, &offset, &c);
@@ -548,7 +548,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
       }
     }
 
-    unsigned start = text_.length();
+    wtf_size_t start = text_.length();
     has_non_orc_16bit_ =
         has_non_orc_16bit_ || original_data.HasNonOrc16BitCharacters();
     text_.Append(original_string, item.StartOffset(), item.Length());
@@ -563,7 +563,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
 
     // If the position has shifted the item and the shape result needs to be
     // adjusted to reflect the new start and end offsets.
-    unsigned end = start + item.Length();
+    wtf_size_t end = start + item.Length();
     const ShapeResult* adjusted_shape_result = nullptr;
     if (item.TextShapeResult()) {
       DCHECK_EQ(item.Type(), InlineItem::kText);
@@ -635,7 +635,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
   auto [original_length, offset_map] =
       layout_text->GetVariableLengthTransformResult();
   String transformed = layout_text->TransformedText();
-  const Vector<unsigned> length_map =
+  const Vector<TextOffsetMap::Length> length_map =
       offset_map.CreateLengthMap(original_length, transformed.length());
   CHECK(transformed.length() == length_map.size() || length_map.size() == 0);
   AppendText(TransformedString(transformed, length_map), *layout_text);
@@ -704,9 +704,9 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextChunks(
     return false;
   const ComputedStyle& style = layout_text.Style();
   const bool should_collapse_space = style.ShouldCollapseWhiteSpaces();
-  unsigned length = transformed.View().length();
-  unsigned start = 0;
-  for (unsigned offset : iter->value) {
+  wtf_size_t length = transformed.View().length();
+  wtf_size_t start = 0;
+  for (wtf_size_t offset : iter->value) {
     DCHECK_LE(offset, length);
     if (start < offset) {
       if (!should_collapse_space) {
@@ -753,16 +753,16 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendTransformedString(
   // 1 followed by 0+     => expanded
   // 2 or larger          => shrink
   // 1+ not followed by 0 => identity
-  unsigned identity_start = kNotFound;
-  unsigned size = transformed.View().length();
-  for (unsigned i = 0; i < size; ++i) {
+  wtf_size_t identity_start = kNotFound;
+  wtf_size_t size = transformed.View().length();
+  for (wtf_size_t i = 0; i < size; ++i) {
     TextOffsetMap::Length len = transformed.LengthMap()[i];
     if (len > 1u) {
       if (identity_start != kNotFound) {
         mapping_builder_.AppendIdentityMapping(i - identity_start);
         identity_start = kNotFound;
       }
-      unsigned zero_length = 0;
+      wtf_size_t zero_length = 0;
       for (++i; i < size; ++i) {
         if (transformed.LengthMap()[i] != 0) {
           --i;
@@ -781,7 +781,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendTransformedString(
         mapping_builder_.AppendIdentityMapping(i - identity_start - 1);
       }
       identity_start = kNotFound;
-      unsigned zero_length = 1;
+      wtf_size_t zero_length = 1;
       for (++i; i < size; ++i) {
         if (transformed.LengthMap()[i] != 0) {
           --i;
@@ -822,9 +822,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
   // Due to this difference, this algorithm process the first run first, then
   // loop through the rest of runs.
 
-  unsigned start_offset;
+  wtf_size_t start_offset;
   InlineItem::CollapseType end_collapse = InlineItem::kNotCollapsible;
-  unsigned i = 0;
+  wtf_size_t i = 0;
   UChar c = UNSAFE_TODO(string[i]);
   bool space_run_has_newline = false;
   if (unicode::IsCollapsibleSpace(c)) {
@@ -903,7 +903,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
     start_offset = text_.length();
 
     DCHECK(i);
-    unsigned collapsed_length = i;
+    wtf_size_t collapsed_length = i;
     if (insert_space) {
       text_.Append(GetCollapsedSpaceChar(style));
       mapping_builder_.AppendIdentityMapping(1);
@@ -939,7 +939,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
       // Append the non-space text until we find a collapsible space.
       // |string[i]| is guaranteed not to be a space.
       DCHECK(!unicode::IsCollapsibleSpace(UNSAFE_TODO(string[i])));
-      unsigned start_of_non_space = i;
+      wtf_size_t start_of_non_space = i;
       for (i++; i < string.length(); i++) {
         // SAFETY: index checked against length in for-statement.
         c = UNSAFE_BUFFERS(string[i]);
@@ -959,7 +959,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
       // Process a collapsible space run. First, find the end of the run.
       DCHECK_EQ(c, UNSAFE_TODO(string[i]));
       DCHECK(unicode::IsCollapsibleSpace(c));
-      unsigned start_of_spaces = i;
+      wtf_size_t start_of_spaces = i;
       space_run_has_newline = MoveToEndOfCollapsibleSpaces(string, &i, &c);
 
       // Because leading spaces are handled before this loop, no need to check
@@ -1011,7 +1011,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::
     ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
         StringView string,
         const ComputedStyle& style,
-        unsigned index) const {
+        wtf_size_t index) const {
   DCHECK_LE(index, string.length());
   if (is_text_combine_) [[unlikely]] {
     return false;
@@ -1039,7 +1039,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::
         const TransformedString& transformed,
         const ComputedStyle& style,
         LayoutText* layout_object,
-        unsigned* start) {
+        wtf_size_t* start) {
   DCHECK(start);
   StringView string = transformed.View();
   if (ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
@@ -1071,7 +1071,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
   // Due to our optimization to give opportunities before spaces, the
   // opportunity after leading preserved spaces needs a special code in the line
   // breaker. Generate an opportunity to make it easy.
-  unsigned start = 0;
+  wtf_size_t start = 0;
   InsertBreakOpportunityAfterLeadingPreservedSpaces(transformed, *style,
                                                     layout_object, &start);
   const StringView transformed_view = transformed.View();
@@ -1163,7 +1163,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveNewline(
     const ComputedStyle* style,
     LayoutText* layout_object) {
   StringView string = transformed.View();
-  for (unsigned start = 0; start < string.length();) {
+  for (wtf_size_t start = 0; start < string.length();) {
     // SAFETY: index checked against length in for-statement.
     if (UNSAFE_BUFFERS(string[start]) == uchar::kLineFeed) {
       AppendForcedBreakCollapseWhitespace(layout_object);
@@ -1281,7 +1281,7 @@ InlineItem& InlineItemsBuilderTemplate<MappingBuilder>::Append(
   has_non_orc_16bit_ = has_non_orc_16bit_ || IsNonOrc16BitCharacter(character);
   text_.Append(character);
   mapping_builder_.AppendIdentityMapping(1);
-  unsigned end_offset = text_.length();
+  wtf_size_t end_offset = text_.length();
   InlineItem& item =
       AppendItem(items_, type, end_offset - 1, end_offset, layout_object);
   is_block_level_ &= item.IsBlockLevel();
@@ -1366,7 +1366,7 @@ InlineItem& InlineItemsBuilderTemplate<MappingBuilder>::AppendOpaque(
   has_non_orc_16bit_ = has_non_orc_16bit_ || IsNonOrc16BitCharacter(character);
   text_.Append(character);
   mapping_builder_.AppendIdentityMapping(1);
-  unsigned end_offset = text_.length();
+  wtf_size_t end_offset = text_.length();
   InlineItem& item =
       AppendItem(items_, type, end_offset - 1, end_offset, layout_object);
   item.SetEndCollapseType(InlineItem::kOpaqueToCollapsing);
@@ -1378,7 +1378,7 @@ template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendOpaque(
     InlineItem::InlineItemType type,
     LayoutObject* layout_object) {
-  unsigned end_offset = text_.length();
+  wtf_size_t end_offset = text_.length();
   InlineItem& item =
       AppendItem(items_, type, end_offset, end_offset, layout_object);
   item.SetEndCollapseType(InlineItem::kOpaqueToCollapsing);
@@ -1413,7 +1413,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::RemoveTrailingCollapsibleSpace(
   }
 
   DCHECK_GT(item->EndOffset(), item->StartOffset());
-  unsigned space_offset = item->EndOffset() - 1;
+  wtf_size_t space_offset = item->EndOffset() - 1;
   DCHECK(text_[space_offset] == uchar::kSpace ||
          text_[space_offset] == uchar::kIdeographicSpace);
   text_.erase(space_offset);
@@ -1675,10 +1675,10 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
       // Set ShouldCreateBoxFragment if this inline box is empty so that we can
       // compute its position/size correctly. Check this by looking for any
       // non-empty items after the last |kOpenTag|.
-      const unsigned open_item_index = current_box->item_index;
+      const wtf_size_t open_item_index = current_box->item_index;
       DCHECK_GE(items_->size(), open_item_index + 1);
       DCHECK_EQ((*items_)[open_item_index]->Type(), InlineItem::kOpenTag);
-      for (unsigned i = items_->size() - 1;; --i) {
+      for (wtf_size_t i = items_->size() - 1;; --i) {
         InlineItem& item = *(*items_)[i];
         if (i == open_item_index) {
           DCHECK_EQ(i, current_box->item_index);

@@ -54,20 +54,20 @@ struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
   // The DOM to text content offset mapping of this inline node.
   Member<OffsetMapping> offset_mapping;
 
-  bool IsValidOffset(unsigned index, unsigned offset) const {
+  bool IsValidOffset(wtf_size_t index, wtf_size_t offset) const {
     return index < items.size() && items[index]->IsValidOffset(offset);
   }
   bool IsValidOffset(const InlineItemTextIndex& index) const {
     return IsValidOffset(index.item_index, index.text_offset);
   }
 
-  void AssertOffset(unsigned index, unsigned offset) const {
+  void AssertOffset(wtf_size_t index, wtf_size_t offset) const {
     items[index]->AssertOffset(offset);
   }
   void AssertOffset(const InlineItemTextIndex& index) const {
     AssertOffset(index.item_index, index.text_offset);
   }
-  void AssertEndOffset(unsigned index, unsigned offset) const {
+  void AssertEndOffset(wtf_size_t index, wtf_size_t offset) const {
     items[index]->AssertEndOffset(offset);
   }
 

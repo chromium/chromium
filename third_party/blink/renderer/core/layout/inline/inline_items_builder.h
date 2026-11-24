@@ -163,13 +163,13 @@ class InlineItemsBuilderTemplate {
     DISALLOW_NEW();
 
     Member<const ComputedStyle> style;
-    unsigned item_index;
+    wtf_size_t item_index;
     bool should_create_box_fragment;
     FontHeight text_metrics;
 
     void Trace(Visitor* visitor) const { visitor->Trace(style); }
 
-    BoxInfo(unsigned item_index, const InlineItem& item);
+    BoxInfo(wtf_size_t item_index, const InlineItem& item);
     bool ShouldCreateBoxFragmentForChild(const BoxInfo& child) const;
     void SetShouldCreateBoxFragment(InlineItems* items);
   };
@@ -258,12 +258,12 @@ class InlineItemsBuilderTemplate {
   bool ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
       StringView,
       const ComputedStyle&,
-      unsigned index = 0) const;
+      wtf_size_t index = 0) const;
   void InsertBreakOpportunityAfterLeadingPreservedSpaces(
       const TransformedString&,
       const ComputedStyle&,
       LayoutText*,
-      unsigned* start);
+      wtf_size_t* start);
 
   friend class InlineItemsBuilderTest;
 };
