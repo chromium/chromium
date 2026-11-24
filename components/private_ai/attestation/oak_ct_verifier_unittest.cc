@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verify_result.h"
@@ -295,9 +296,7 @@ TEST_F(OakCtVerifierTest, CtPolicyNotMet) {
   for (auto compliance :
        {net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
         net::ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-        net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
-        net::ct::CTPolicyCompliance::
-            CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE}) {
+        net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY}) {
     net::CertVerifyResult result = CompliantResult();
     result.policy_compliance = compliance;
     context_.set_cert_verify_result(result);
@@ -305,6 +304,28 @@ TEST_F(OakCtVerifierTest, CtPolicyNotMet) {
               Result::kCtPolicyNotMet)
         << static_cast<int>(compliance);
   }
+}
+
+TEST_F(OakCtVerifierTest, CtPolicyComplianceDetailsNotAvailable) {
+  net::CertVerifyResult result = CompliantResult();
+  result.policy_compliance =
+      net::ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
+  context_.set_cert_verify_result(result);
+#if BUILDFLAG(IS_IOS)
+  // On iOS, `CertVerifyProcIOS` relies on Apple's `SecTrust` for CT
+  // enforcement and leaves `policy_compliance` at
+  // `CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE`.
+  EXPECT_EQ(RunVerify(&context_, tca_root_pem_, oakct_chain_pem_),
+            Result::kVerified);
+
+  result.is_issued_by_known_root = false;
+  context_.set_cert_verify_result(result);
+  EXPECT_EQ(RunVerify(&context_, tca_root_pem_, oakct_chain_pem_),
+            Result::kNotPubliclyTrusted);
+#else
+  EXPECT_EQ(RunVerify(&context_, tca_root_pem_, oakct_chain_pem_),
+            Result::kCtPolicyNotMet);
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 }  // namespace

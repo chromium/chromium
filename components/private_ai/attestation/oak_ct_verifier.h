@@ -32,8 +32,9 @@ namespace private_ai {
 // file (not of the DER it decodes to). Verifying that a TCA root has been
 // published therefore consists of deriving the expected hostname from the TCA
 // root and verifying the OakCT certificate chain for that hostname with
-// Chrome's regular certificate verifier (public roots plus CT policy). The
-// verification itself runs in the network service via
+// Chrome's regular certificate verifier (public roots plus CT policy; on iOS,
+// CT is enforced by Apple's `SecTrust` rather than Chrome's CT policy field).
+// The verification itself runs in the network service via
 // NetworkContext::VerifyCert so that the browser process never parses
 // untrusted certificates.
 class OakCtVerifier {

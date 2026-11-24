@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/base32/base32.h"
 #include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -48,8 +49,20 @@ void OnVerifyCertResult(OakCtVerifier::VerifyCallback callback,
     std::move(callback).Run(OakCtVerifier::Result::kNotPubliclyTrusted);
     return;
   }
-  if (result.policy_compliance !=
-      net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS) {
+  bool ct_compliant = result.policy_compliance ==
+                      net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
+#if BUILDFLAG(IS_IOS)
+  // On iOS, `CertVerifyProcIOS` delegates to Apple's `SecTrust`, which enforces
+  // Apple's CT policy for publicly trusted roots (checked via
+  // `is_issued_by_known_root` above) and leaves `policy_compliance` at
+  // `CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE`. Still reject explicit
+  // non-compliance statuses in case iOS later populates `policy_compliance`.
+  ct_compliant =
+      ct_compliant || result.policy_compliance ==
+                          net::ct::CTPolicyCompliance::
+                              CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
+#endif  // BUILDFLAG(IS_IOS)
+  if (!ct_compliant) {
     DVLOG(1) << "OakCT certificate does not comply with CT policy: "
              << static_cast<int>(result.policy_compliance);
     std::move(callback).Run(OakCtVerifier::Result::kCtPolicyNotMet);
