@@ -410,6 +410,9 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, CancelBeforeHeaders) {
 }
 
 IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, CancelDuringBody) {
+  if (GetParam() == RequestType::kImage) {
+    GTEST_SKIP() << "TODO(crbug.com/40947143): Flaky on image body cancel.";
+  }
   TestNavigationObserver navigation_observer(active_web_contents(), 1);
   StartNavigatingAndWaitForRequest();
   SendHeadersPartialBody();
@@ -450,6 +453,9 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
                        MAYBE_InterruptedCancelDuringBody) {
+  if (GetParam() == RequestType::kImage) {
+    GTEST_SKIP() << "TODO(crbug.com/40947143): Flaky on image body cancel.";
+  }
   TestNavigationObserver navigation_observer(active_web_contents(), 1);
   StartNavigatingAndWaitForRequest();
   SendHeadersPartialBody();
