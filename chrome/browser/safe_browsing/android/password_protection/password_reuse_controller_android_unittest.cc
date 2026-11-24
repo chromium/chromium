@@ -98,6 +98,19 @@ TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonTextOnAutomotive) {
     ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
   }
   {
+    password_type.set_account_type(
+        ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
+    password_type.set_is_account_syncing(false);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
+        controller->GetSecondaryButtonText());
+  }
+  {
     password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
     password_type.set_is_account_syncing(true);
 
@@ -156,6 +169,19 @@ TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonText) {
     controller->SetReusedPasswordAccountTypeForTesting(password_type);
 
     ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
+        controller->GetSecondaryButtonText());
+  }
+  {
+    password_type.set_account_type(
+        ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
+    password_type.set_is_account_syncing(false);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON),
               controller->GetPrimaryButtonText());
     ASSERT_EQ(
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),

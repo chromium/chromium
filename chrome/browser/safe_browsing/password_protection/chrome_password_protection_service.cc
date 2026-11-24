@@ -1754,14 +1754,17 @@ bool ChromePasswordProtectionService::IsPingingEnabled(
       return extended_reporting_enabled;
     }
 
-// Only saved password reuse, GAIA password reuse, and OTP field detection can
-// result in enforcement for Android users. Therefore, other types of password
-// reuse events should be gated by Safe Browsing extended reporting because
-// phishy verdicts won't be enforced making the pings telemetry-only.
+// Only saved password reuse, GAIA password reuse, enterprise password reuse,
+// and OTP field detection can result in enforcement for Android users.
+// Therefore, other types of password reuse events should be gated by Safe
+// Browsing extended reporting because phishy verdicts won't be enforced making
+// the pings telemetry-only.
 #if BUILDFLAG(IS_ANDROID)
     if (password_type.account_type() ==
             ReusedPasswordAccountType::SAVED_PASSWORD ||
         password_type.account_type() == ReusedPasswordAccountType::GMAIL ||
+        password_type.account_type() ==
+            ReusedPasswordAccountType::NON_GAIA_ENTERPRISE ||
         trigger_type ==
             LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED) {
       return true;

@@ -144,6 +144,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, SafeBrowsingStatePolicyManaged) {
   EXPECT_EQ(security_interstitials::CMD_TEXT_NOT_FOUND,
             IsEnhancedProtectionMessageVisibleOnInterstitial(this));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that when password protection login URLs are set by policy, password
 // protection service gets the correct value.
@@ -205,6 +206,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, PasswordProtectionLoginURLs) {
 #endif
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test that when password protection change password URL is set by policy,
 // password protection service gets the correct value.
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

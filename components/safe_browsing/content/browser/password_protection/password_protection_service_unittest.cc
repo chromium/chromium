@@ -1768,13 +1768,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
   EXPECT_CALL(*password_protection_service_,
               GetPasswordProtectionWarningTriggerPref(_))
       .WillRepeatedly(Return(PHISHING_REUSE));
-// Currently password reuse warnings are not supported for enterprise passwords
-// on Android.
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
-#else
   EXPECT_TRUE(password_protection_service_->ShouldShowModalWarning(
-#endif
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_account_type, LoginReputationClientResponse::PHISHING));
 }

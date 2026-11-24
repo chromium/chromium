@@ -402,18 +402,18 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForPinging(
 
 bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
     ReusedPasswordAccountType password_type) const {
-  if (password_type.account_type() == ReusedPasswordAccountType::SAVED_PASSWORD)
+  if (password_type.account_type() ==
+          ReusedPasswordAccountType::SAVED_PASSWORD ||
+      password_type.account_type() ==
+          ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
     return true;
+  }
 
-// Currently password reuse warnings are only supported for saved passwords
-// and GAIA passwords on Android.
+// Currently password reuse warnings are only supported for saved passwords,
+// enterprise passwords, and GAIA passwords on Android.
 #if BUILDFLAG(IS_ANDROID)
   return password_type.account_type() == ReusedPasswordAccountType::GMAIL;
 #else
-  if (password_type.account_type() ==
-      ReusedPasswordAccountType::NON_GAIA_ENTERPRISE)
-    return true;
-
   if (password_type.account_type() != ReusedPasswordAccountType::GMAIL &&
       password_type.account_type() != ReusedPasswordAccountType::GSUITE)
     return false;

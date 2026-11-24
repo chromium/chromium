@@ -80,6 +80,10 @@ std::u16string PasswordReuseControllerAndroid::GetPrimaryButtonText() const {
       password_type_.is_account_syncing()) {
     return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON);
   }
+  if (password_type_.account_type() ==
+      ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
+    return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON);
+  }
   // The modal can be shown on automotive, but should not lead users to the
   // GMSCore Password Check UI, as that is not optimized for automotive.
   if (base::android::device_info::is_automotive()) {
@@ -95,8 +99,10 @@ std::u16string PasswordReuseControllerAndroid::GetPrimaryButtonText() const {
 }
 
 std::u16string PasswordReuseControllerAndroid::GetSecondaryButtonText() const {
-  if (password_type_.account_type() == ReusedPasswordAccountType::GMAIL &&
-      password_type_.is_account_syncing()) {
+  if ((password_type_.account_type() == ReusedPasswordAccountType::GMAIL &&
+       password_type_.is_account_syncing()) ||
+      password_type_.account_type() ==
+          ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
     return l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON);
   }

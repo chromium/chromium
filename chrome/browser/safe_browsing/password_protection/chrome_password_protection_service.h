@@ -480,6 +480,8 @@ class ChromePasswordProtectionService
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyAlertModeForEnterprisePasswordEntryPing);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
+                           VerifyUserPopulationForEnterprisePasswordEntryPing);
+  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyUserPopulationForOtpPing);
 
  private:
