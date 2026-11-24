@@ -2312,10 +2312,12 @@ source_set("browser_tests") {
     "//components/javascript_dialogs",
     "//components/safe_browsing/core/browser/realtime:test_support",
     "//components/user_manager",
+    "//skia",
     "//ui/accessibility:test_support",
     "//ui/base:data_exchange",
     "//ui/base:ozone_buildflags",
     "//ui/base/clipboard:clipboard_test_support",
+    "//ui/compositor",
     "//ui/native_theme:test_support",
   ]
 

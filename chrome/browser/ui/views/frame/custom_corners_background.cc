@@ -20,8 +20,11 @@
 #include "chrome/browser/ui/views/frame/custom_floating_corner.h"
 #include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
+#include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -202,34 +205,34 @@ std::vector<SkPath> CustomCornersBackground::GetCornerPaths(
 
   // Bump out the corners by 1 DIP to avoid cracking/subpixel issues.
   // (This is why the insets are applied below.)
-  if (corners[VisualCorner::kTopLeft].type != CornerType::kSquare) {
-    const int radius =
-        corners[VisualCorner::kTopLeft].radius.value_or(default_radius());
+  if (const int radius =
+          CornerToRadius(corners[VisualCorner::kTopLeft], default_radius_);
+      radius > 0) {
     gfx::Rect bounds(in_bounds.x(), in_bounds.y(), radius, radius);
     const gfx::Insets insets = gfx::Insets::TLBR(1, 1, 0, 0);
     bounds.Inset(-insets);
     result.push_back(GetCornerPath(VisualCorner::kTopLeft, bounds, insets));
   }
-  if (corners[VisualCorner::kTopRight].type != CornerType::kSquare) {
-    const int radius =
-        corners[VisualCorner::kTopRight].radius.value_or(default_radius());
+  if (const int radius =
+          CornerToRadius(corners[VisualCorner::kTopRight], default_radius_);
+      radius > 0) {
     gfx::Rect bounds(in_bounds.right() - radius, in_bounds.y(), radius, radius);
     const gfx::Insets insets = gfx::Insets::TLBR(1, 0, 0, 1);
     bounds.Inset(-insets);
     result.push_back(GetCornerPath(VisualCorner::kTopRight, bounds, insets));
   }
-  if (corners[VisualCorner::kBottomRight].type != CornerType::kSquare) {
-    const int radius =
-        corners[VisualCorner::kBottomRight].radius.value_or(default_radius());
+  if (const int radius =
+          CornerToRadius(corners[VisualCorner::kBottomRight], default_radius_);
+      radius > 0) {
     gfx::Rect bounds(in_bounds.right() - radius, in_bounds.bottom() - radius,
                      radius, radius);
     const gfx::Insets insets = gfx::Insets::TLBR(0, 0, 1, 1);
     bounds.Inset(-insets);
     result.push_back(GetCornerPath(VisualCorner::kBottomRight, bounds, insets));
   }
-  if (corners[VisualCorner::kBottomLeft].type != CornerType::kSquare) {
-    const int radius =
-        corners[VisualCorner::kBottomLeft].radius.value_or(default_radius());
+  if (const int radius =
+          CornerToRadius(corners[VisualCorner::kBottomLeft], default_radius_);
+      radius > 0) {
     gfx::Rect bounds(in_bounds.x(), in_bounds.bottom() - radius, radius,
                      radius);
     const gfx::Insets insets = gfx::Insets::TLBR(0, 1, 1, 0);
@@ -400,10 +403,64 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
     PaintPath(canvas, corner_path, corner_color_, /*anti_alias=*/false);
   }
 
-  // Draw solid rect/rrect background:
+  // Draw solid rect/rrect background. On non-pixel canvases (the recording
+  // matrix is a pure translation and raster applies `image_scale()`), a
+  // fractional scale factor can put the straight edges between pixels, so
+  // anti-aliasing them leaves a semi-transparent seam next to adjacent views
+  // that snap to integer pixels. In that case, round the rrect bounds to device
+  // pixels and draw it in device space: the straight edges then land on pixel
+  // boundaries while the corners stay anti-aliased, and the draw remains a
+  // single rrect. Pixel canvases already snap view bounds to pixels.
   CornerRadii radii;
-  PaintPath(canvas, GetBackgroundPath(view_->GetLocalBounds(), &radii),
-            primary_color_, /*anti_alias=*/true);
+  const SkPath background_path = GetBackgroundPath(rect, &radii);
+  const float scale = canvas->image_scale();
+  const SkMatrix recording_matrix =
+      canvas->sk_canvas()->getLocalToDevice().asM33();
+  if (recording_matrix.isTranslate() && scale > 0) {
+    // Find the offset of `view` in the layer it paints into. The recording is
+    // replayed at this offset, and the layer origin is snapped to a device
+    // pixel, so pixel boundaries are only known in layer space.
+    const views::View* layer_view = view;
+    while (!layer_view->layer() && layer_view->parent()) {
+      layer_view = layer_view->parent();
+    }
+    gfx::Point offset;
+    views::View::ConvertPointToTarget(view, layer_view, &offset);
+
+    // Map `rect` to layer device pixels (recording translation, then the
+    // view's layer offset, then the raster scale) and round it so each straight
+    // edge lands on a pixel boundary.
+    SkMatrix layer_matrix = SkMatrix::Scale(scale, scale);
+    layer_matrix.preTranslate(offset.x(), offset.y());
+    layer_matrix.preConcat(recording_matrix);
+    const SkRect layer_device_rect =
+        SkRect::Make(layer_matrix.mapRect(gfx::RectToSkRect(rect)).round());
+
+    // Remove the scaled layer offset again, since replay applies it. The
+    // result is in device pixels relative to `view`'s replay origin.
+    const SkRect device_rect =
+        layer_device_rect.makeOffset(-offset.x() * scale, -offset.y() * scale);
+
+    // Scale the corner radii to device pixels to match.
+    CornerRadii device_radii = radii;
+    for (SkVector& radius : device_radii) {
+      radius.scale(scale);
+    }
+    SkRRect device_rrect;
+    device_rrect.setRectRadii(device_rect, device_radii.data());
+
+    // Draw in device space. SetMatrix is relative to the matrix at replay time
+    // (the raster scale and `view`'s offset), so undoing the raster scale maps
+    // `device_rrect` 1:1 to device pixels.
+    gfx::ScopedCanvas device_scope(canvas);
+    canvas->sk_canvas()->setMatrix(SkM44::Scale(1.0f / scale, 1.0f / scale));
+    PaintPath(canvas, SkPath::RRect(device_rrect), primary_color_,
+              /*anti_alias=*/true);
+  } else {
+    // Pixel canvases (and other non-translate matrices) draw the plain
+    // anti-aliased path.
+    PaintPath(canvas, background_path, primary_color_, /*anti_alias=*/true);
+  }
 
   // Paint strokes around the outside. Corners get strokes if they are between
   // two sides with strokes and have a radius. Multiple paths may be drawn if
