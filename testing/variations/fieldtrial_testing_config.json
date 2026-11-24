@@ -1259,7 +1259,7 @@
                         "calculate_occlusion_rate_limit_ms": "100",
                         "minimum_visibility_size_threshold": "10",
                         "occlusion_optimizations": "true",
-                        "tracking_mode": "self_occlusion"
+                        "tracking_mode": "auto"
                     },
                     "enable_features": [
                         "AndroidWindowOcclusion"
