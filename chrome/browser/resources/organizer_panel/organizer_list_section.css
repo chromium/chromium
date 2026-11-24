@@ -18,3 +18,30 @@
   --cr-collapse-collapse-duration: 200ms;
   --cr-collapse-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
+
+#items > * {
+  opacity: 0;
+  transition: opacity 90ms linear 0ms;
+}
+
+#items[opened] > * {
+  opacity: 1;
+  transition: opacity 200ms linear calc(40ms + var(--row-index, 0) * 20ms);
+}
+
+@starting-style {
+  #items[opened] > * {
+    opacity: 0;
+  }
+}
+
+#items[no-animation] > * {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #items > *,
+  #items[opened] > * {
+    transition: none;
+  }
+}
