@@ -105,7 +105,6 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 
@@ -561,7 +560,6 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     public void testSigninButton_DrawnWhenVisible() {
         // Inflate the real view using the real coordinator.
         mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
@@ -587,7 +585,6 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     public void testSigninButton_NotDrawnWhenNotVisible() {
         // Inflate the real view using the real coordinator.
         mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
@@ -611,7 +608,6 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testSigninButton_followsToolbarNtpState() {
         mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());

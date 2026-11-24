@@ -6539,10 +6539,6 @@ inline constexpr char kSigninButtonProfileMenuRefinementsDescription[] =
     "Enables fast-follow refinements and visual adjustments for the desktop "
     "profile menu on Desktop Android.";
 
-inline constexpr char kSigninLevelUpButtonName[] = "Signin Level Up Button";
-inline constexpr char kSigninLevelUpButtonDescription[] =
-    "Replaces signed out avatar with signin button on Android.";
-
 inline constexpr char kSiteIsolationForPasswordSitesName[] =
     "Site Isolation For Password Sites";
 inline constexpr char kSiteIsolationForPasswordSitesDescription[] =

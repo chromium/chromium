@@ -77,7 +77,6 @@ import org.chromium.ui.util.ValueUtils;
 /** Integration tests for {@link SigninButtonCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
 public class SigninButtonCoordinatorTest {
 
     // Mock sign-in environment needs to be destroyed after ChromeTabbedActivity in case there are

@@ -2223,12 +2223,7 @@ public class RootUiCoordinator
                     /* onShareRunnable= */ () -> {
                         assertNonNull(mToolbarManager).endFuseboxInput();
                     },
-                    /* onSigninTapped= */ () -> {
-                        assertNonNull(mToolbarManager).endFuseboxInput();
-                    },
                     mWindowAndroid,
-                    mActivityResultTracker,
-                    assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
                     trackerSupplier,
                     mScrimManagerSupplier.asNonNull(),
                     mReaderModeIphControllerSupplier,

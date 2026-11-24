@@ -12626,12 +12626,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"signin-level-up-button", flag_descriptions::kSigninLevelUpButtonName,
-     flag_descriptions::kSigninLevelUpButtonDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kSigninLevelUpButton)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"always-draw-composited-toolbar-hairline",
      flag_descriptions::kAlwaysDrawCompositedToolbarHairlineName,
      flag_descriptions::kAlwaysDrawCompositedToolbarHairlineDescription,

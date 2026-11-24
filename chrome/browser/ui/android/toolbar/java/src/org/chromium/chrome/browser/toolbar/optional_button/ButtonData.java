@@ -277,6 +277,10 @@ public interface ButtonData {
                 return this;
             }
 
+            // TODO(crbug.com/573174911): Remove setIdentityDiscConfig(), setHasErrorBadge() and
+            // setSupportsTinting(), which have no production callers since IdentityDiscController
+            // was removed, along with the identity disc and error badge state and the code that
+            // reads it.
             public Builder setIdentityDiscConfig(boolean isIdentityDisc, boolean hasAiTierRing) {
                 mIsIdentityDisc = isIdentityDisc;
                 mHasAiTierRing = hasAiTierRing;

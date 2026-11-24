@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProvider;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.coupons.DiscountsBottomSheetContentCoordinator;
 import org.chromium.chrome.browser.commerce.coupons.DiscountsButtonController;
-import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceInteractionSource;
@@ -56,12 +55,9 @@ import org.chromium.chrome.browser.toolbar.adaptive.TranslateToolbarButtonContro
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -75,9 +71,6 @@ import java.util.function.Supplier;
 @NullMarked
 public class AdaptiveToolbarUiCoordinator {
     private final Context mContext;
-    // TODO(crbug.com/475144764): Use Context instead of Activity once sign-in launcher is
-    // refactored.
-    private final Activity mActivity;
     private final ActivityTabProvider mActivityTabProvider;
     private final NonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
@@ -104,7 +97,6 @@ public class AdaptiveToolbarUiCoordinator {
             ActivityTabProvider activityTabProvider,
             NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = activity;
-        mActivity = activity;
         mActivityTabProvider = activityTabProvider;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mButtonDataProviders = List.of();
@@ -129,10 +121,7 @@ public class AdaptiveToolbarUiCoordinator {
             Supplier<@Nullable ReadAloudController> readAloudControllerSupplier,
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             Runnable onShareRunnable,
-            Runnable onSigninTapped,
             WindowAndroid windowAndroid,
-            ActivityResultTracker activityResultTracker,
-            DeviceLockActivityLauncher deviceLockActivityLauncher,
             Supplier<@Nullable Tracker> trackerSupplier,
             Supplier<ScrimManager> scrimSupplier,
             Supplier<@Nullable ReaderModeIphController> readerModeIphControllerSupplier,
@@ -244,22 +233,7 @@ public class AdaptiveToolbarUiCoordinator {
         mAdaptiveToolbarButtonController = adaptiveToolbarButtonController;
         toolbarBehavior.registerPerSurfaceButtons(adaptiveToolbarButtonController, trackerSupplier);
 
-        if (SigninFeatureMap.sSigninLevelUpButton.isEnabled()) {
-            mButtonDataProviders = List.of(adaptiveToolbarButtonController);
-        } else {
-            IdentityDiscController identityDiscController =
-                    new IdentityDiscController(
-                            mActivity,
-                            windowAndroid,
-                            activityResultTracker,
-                            deviceLockActivityLauncher,
-                            profileSupplier,
-                            bottomSheetController,
-                            mModalDialogManagerSupplier.get(),
-                            snackbarManagerSupplier.get(),
-                            onSigninTapped);
-            mButtonDataProviders = List.of(identityDiscController, adaptiveToolbarButtonController);
-        }
+        mButtonDataProviders = List.of(adaptiveToolbarButtonController);
     }
 
     /**

@@ -94,7 +94,6 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -317,29 +316,27 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                         mToolbarLayout,
                         () -> toolbarDataProvider.getTab());
 
-        if (SigninFeatureMap.sSigninLevelUpButton.isEnabled()) {
-            ViewStub signinButtonStub = mToolbarLayout.findViewById(R.id.signin_button_stub);
-            if (signinButtonStub != null) {
-                mSigninButtonCoordinator =
-                        new SigninButtonCoordinator(
-                                toolbarLayout.getContext(),
-                                windowAndroid,
-                                signinButtonStub,
-                                tabSupplier,
-                                mToolbarLayout::isShowingNtp,
-                                omniboxStubSupplier,
-                                onSigninTapped,
-                                mToolbarLayout::beginButtonTransition,
-                                profileSupplier,
-                                signinAndHistorySyncActivityLauncher,
-                                activityResultTracker,
-                                deviceLockActivityLauncher,
-                                bottomSheetController,
-                                modalDialogManager,
-                                snackbarManager,
-                                normalThemeColorProvider,
-                                incognitoStateProvider);
-            }
+        ViewStub signinButtonStub = mToolbarLayout.findViewById(R.id.signin_button_stub);
+        if (signinButtonStub != null) {
+            mSigninButtonCoordinator =
+                    new SigninButtonCoordinator(
+                            toolbarLayout.getContext(),
+                            windowAndroid,
+                            signinButtonStub,
+                            tabSupplier,
+                            mToolbarLayout::isShowingNtp,
+                            omniboxStubSupplier,
+                            onSigninTapped,
+                            mToolbarLayout::beginButtonTransition,
+                            profileSupplier,
+                            signinAndHistorySyncActivityLauncher,
+                            activityResultTracker,
+                            deviceLockActivityLauncher,
+                            bottomSheetController,
+                            modalDialogManager,
+                            snackbarManager,
+                            normalThemeColorProvider,
+                            incognitoStateProvider);
         }
         if (DownloadFeatures.isDownloadToolbarButtonEnabled()) {
             ViewStub downloadButtonStub = mToolbarLayout.findViewById(R.id.download_button_stub);

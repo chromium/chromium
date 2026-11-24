@@ -111,7 +111,6 @@ import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorLi
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.ui.accessibility.KeyboardFocusUtil;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -3423,10 +3422,9 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void initializeOptionalButton() {
-        // TODO(crbug.com/506984216): Once ToolbarVariationUtils.isNewToolbarUiEnabled() is launched
-        // it should be safe to remove the optional button from the NTP if the identity disc is
-        // ported to a dedicated button. SigninFeatureMap.sSigninLevelUpButton.isEnabled() already
-        // does this, so it is free if both features are enabled.
+        // TODO(crbug.com/506984216): Once ToolbarVariationUtils.isNewToolbarUiEnabled() is
+        // launched, the optional button is no longer shown in the toolbar (it lives in the location
+        // bar), so it can be removed from ToolbarPhone.
 
         if (mOptionalButtonCoordinator == null) {
             ViewStub optionalButtonStub = findViewById(R.id.optional_button_stub);
@@ -3588,7 +3586,7 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         // Update toolbar.
-        if (shouldShowOptionalButtonInToolbar(buttonData)) {
+        if (shouldShowOptionalButtonInToolbar()) {
             if (mOptionalButtonCoordinator == null) {
                 initializeOptionalButton();
             }
@@ -3833,15 +3831,9 @@ public class ToolbarPhone extends ToolbarLayout
         return !isNtp && mIsToolbarUiRefactorEnabled;
     }
 
-    private boolean shouldShowOptionalButtonInToolbar(@Nullable ButtonData buttonData) {
-        boolean isNtp = isNtpVisualState(mVisualState);
-        boolean isSignInLevelUp = SigninFeatureMap.sSigninLevelUpButton.isEnabled();
-        if (mIsToolbarUiRefactorEnabled) {
-            // New IA: Only show the button on the NTP for the identity disk if needed.
-            return isNtp && !isSignInLevelUp && buttonData != null && buttonData.isIdentityDisc();
-        } else {
-            // Old IA: Show in toolbar except for NTP + SignInLevelUpButton which should hide it.
-            return !(isNtp && isSignInLevelUp);
-        }
+    private boolean shouldShowOptionalButtonInToolbar() {
+        // The identity disc is now a dedicated signin button, so the optional button is never shown
+        // in the toolbar on the NTP. In the new IA, the optional button lives in the location bar.
+        return !mIsToolbarUiRefactorEnabled && !isNtpVisualState(mVisualState);
     }
 }

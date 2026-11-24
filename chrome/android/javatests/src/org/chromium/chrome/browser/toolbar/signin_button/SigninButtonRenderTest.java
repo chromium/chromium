@@ -48,7 +48,6 @@ import java.io.IOException;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
 public class SigninButtonRenderTest {
 
     // Mock sign-in environment needs to be destroyed after ChromeTabbedActivity in case there are
