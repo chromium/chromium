@@ -35,4 +35,9 @@ BASE_FEATURE(kUploadReportOnProfileOpen, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kChromeEnterpriseUMAMetricsCollection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<base::TimeDelta>
+    kChromeEnterpriseUMAMetricsUploadInterval{
+        &kChromeEnterpriseUMAMetricsCollection, "upload_interval",
+        base::Minutes(30)};
+
 }  // namespace enterprise_reporting

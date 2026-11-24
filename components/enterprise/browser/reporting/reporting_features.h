@@ -6,6 +6,8 @@
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORTING_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace enterprise_reporting {
@@ -37,6 +39,10 @@ BASE_DECLARE_FEATURE(kUploadReportOnProfileOpen);
 
 // Controls whether Chrome Enterprise UMA metrics collection is enabled.
 BASE_DECLARE_FEATURE(kChromeEnterpriseUMAMetricsCollection);
+
+// Periodic upload interval for Chrome Enterprise UMA metrics collection.
+extern const base::FeatureParam<base::TimeDelta>
+    kChromeEnterpriseUMAMetricsUploadInterval;
 
 }  // namespace enterprise_reporting
 
