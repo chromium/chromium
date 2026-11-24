@@ -46,13 +46,17 @@ class ShareGroupContextData {
     uint32_t flush_generation_;
   };
 
+  ShareGroupContextData();
+  ~ShareGroupContextData();
+
   IdHandlerData* id_handler_data(int namespace_id) {
-    return UNSAFE_TODO(&id_handler_data_[namespace_id]);
+    return &id_handler_data_[namespace_id];
   }
 
  private:
-  IdHandlerData id_handler_data_[static_cast<int>(
-      SharedIdNamespaces::kNumSharedIdNamespaces)];
+  std::array<IdHandlerData,
+             static_cast<size_t>(SharedIdNamespaces::kNumSharedIdNamespaces)>
+      id_handler_data_;
 };
 
 // Base class for IdHandlers

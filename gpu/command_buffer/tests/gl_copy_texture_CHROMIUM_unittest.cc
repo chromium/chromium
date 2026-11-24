@@ -283,6 +283,13 @@ void getExpectedColorAndMask(GLenum src_internal_format,
   }
 }
 
+void FillRgbaPixels(base::span<uint8_t> pixels,
+                    base::span<const uint8_t, 4> color) {
+  while (!pixels.empty()) {
+    pixels.take_first<4>().copy_from(color);
+  }
+}
+
 void getTextureDataAndExpectedRGBAs(FormatType src_format_type,
                                     FormatType dest_format_type,
                                     GLsizei width,
@@ -295,22 +302,22 @@ void getTextureDataAndExpectedRGBAs(FormatType src_format_type,
 
   const uint32_t src_channel_count = gles2::GLES2Util::ElementsPerGroup(
       src_format_type.format, src_format_type.type);
-  constexpr uint8_t color[4] = {1u, 63u, 127u, 255u};
-  uint8_t expected_color[4];
-  constexpr uint8_t alt_color[4] = {200u, 100u, 0u, 255u};
+  constexpr std::array<uint8_t, 4> color = {1u, 63u, 127u, 255u};
+  std::array<uint8_t, 4> expected_color;
+  constexpr std::array<uint8_t, 4> alt_color = {200u, 100u, 0u, 255u};
 
   getExpectedColorAndMask(src_format_type.internal_format,
                           dest_format_type.internal_format, color,
-                          expected_color, expected_mask);
+                          expected_color.data(), expected_mask);
 
   const size_t num_pixels = width * height;
   expected_rgba_pixels->resize(num_pixels * 4, 0);
 
   if (src_format_type.type == GL_UNSIGNED_BYTE) {
-    uint8_t alt_expected_color[4];
+    std::array<uint8_t, 4> alt_expected_color;
     getExpectedColorAndMask(src_format_type.internal_format,
                             dest_format_type.internal_format, alt_color,
-                            alt_expected_color, expected_mask);
+                            alt_expected_color.data(), expected_mask);
 
     texture_data->resize(num_pixels * src_channel_count, 0);
     // Generate a simple diagonal pattern to be able to catch UV mapping errors.
@@ -320,10 +327,10 @@ void getTextureDataAndExpectedRGBAs(FormatType src_format_type,
         for (uint32_t j = 0; j < 4; ++j) {
           if (j < src_channel_count) {
             texture_data->at((width * y + x) * src_channel_count + j) =
-                UNSAFE_TODO((alt ? alt_color : color)[j]);
+                (alt ? alt_color : color)[j];
           }
           expected_rgba_pixels->at((width * y + x) * 4 + j) =
-              UNSAFE_TODO((alt ? alt_expected_color : expected_color)[j]);
+              (alt ? alt_expected_color : expected_color)[j];
         }
       }
     }
@@ -347,11 +354,7 @@ void getTextureDataAndExpectedRGBAs(FormatType src_format_type,
         UNSAFE_TODO(texture_data16[i + j]) = color_16bit[j] + offset;
       }
     }
-    for (uint32_t i = 0; i < num_pixels * 4; i += 4) {
-      for (int c = 0; c < 4; ++c) {
-        expected_rgba_pixels->at(i + c) = UNSAFE_TODO(expected_color[c]);
-      }
-    }
+    FillRgbaPixels(*expected_rgba_pixels, expected_color);
 
     return;
   } else if (src_format_type.type == GL_UNSIGNED_INT_2_10_10_10_REV) {
@@ -364,9 +367,8 @@ void getTextureDataAndExpectedRGBAs(FormatType src_format_type,
         UNSAFE_TODO(reinterpret_cast<uint32_t*>(texture_data->data()));
     for (uint32_t p = 0; p < num_pixels; ++p) {
       UNSAFE_TODO(texture_data32[p]) = color_rgb10_a2;
-      UNSAFE_TODO(
-          memcpy(expected_rgba_pixels->data() + p * 4, expected_color, 4));
     }
+    FillRgbaPixels(*expected_rgba_pixels, expected_color);
     return;
   }
   NOTREACHED() << gl::GLEnums::GetStringEnum(src_format_type.type);

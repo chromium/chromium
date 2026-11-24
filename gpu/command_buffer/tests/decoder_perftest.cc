@@ -563,8 +563,8 @@ TEST_F(DecoderPerfTest, TextureDraw) {
   GLint texture_location = gl_->GetUniformLocation(program, "texture");
 
   constexpr size_t kTextures = 16;
-  GLuint textures[kTextures];
-  gl_->GenTextures(kTextures, textures);
+  std::array<GLuint, kTextures> textures;
+  gl_->GenTextures(kTextures, textures.data());
   for (GLuint texture : textures)
     CreateBasicTexture(texture);
 
@@ -589,7 +589,7 @@ TEST_F(DecoderPerfTest, TextureDraw) {
     float xpos = 2.f * x / N - 1.f;
     for (int y = 0; y < N; ++y) {
       float ypos = 2.f * y / N - 1.f;
-      gl_->BindTexture(GL_TEXTURE_2D, UNSAFE_TODO(textures[texture]));
+      gl_->BindTexture(GL_TEXTURE_2D, textures[texture]);
       gl_->Uniform2f(offset_location, xpos, ypos);
       gl_->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
       texture = (texture + 1) % kTextures;

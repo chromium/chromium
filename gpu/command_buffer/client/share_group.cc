@@ -22,6 +22,9 @@
 namespace gpu {
 namespace gles2 {
 
+ShareGroupContextData::ShareGroupContextData() = default;
+ShareGroupContextData::~ShareGroupContextData() = default;
+
 ShareGroupContextData::IdHandlerData::IdHandlerData() : flush_generation_(0) {}
 ShareGroupContextData::IdHandlerData::~IdHandlerData() = default;
 
