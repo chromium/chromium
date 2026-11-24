@@ -5916,4 +5916,94 @@ TEST(PaintOpBufferTest, SaveLayerRetainsDecodedImagesUntilRestore) {
   EXPECT_EQ(output.getColor(5, 5), SK_ColorGREEN);
 }
 
+TEST(PaintOpBufferTest, SaveLayerShaderAndUnclosedLayerRetainDecodes) {
+  class TrackingImageProvider : public ImageProvider {
+   public:
+    ~TrackingImageProvider() override { EXPECT_EQ(ref_count_, 0); }
+
+    ScopedResult GetRasterContent(const DrawImage& draw_image) override {
+      SkBitmap bitmap;
+      bitmap.allocN32Pixels(10, 10);
+      bitmap.eraseColor(SK_ColorGREEN);
+      sk_sp<SkImage> image = SkImages::RasterFromBitmap(bitmap);
+      ref_count_++;
+      return ScopedResult(
+          DecodedDrawImage(std::move(image), nullptr, SkSize::MakeEmpty(),
+                           SkSize::Make(1.0f, 1.0f),
+                           draw_image.filter_quality(),
+                           /*is_budgeted=*/true),
+          base::BindOnce(&TrackingImageProvider::UnrefImage,
+                         base::Unretained(this)));
+    }
+
+    int ref_count() const { return ref_count_; }
+
+   private:
+    void UnrefImage() {
+      CHECK_GT(ref_count_, 0);
+      ref_count_--;
+    }
+
+    int ref_count_ = 0;
+  };
+
+  PaintImage filter_image = CreateDiscardablePaintImage(gfx::Size(10, 10));
+  auto image_filter = sk_make_sp<ImagePaintFilter>(
+      filter_image, SkRect::MakeWH(10, 10), SkRect::MakeWH(10, 10),
+      PaintFlags::FilterQuality::kNone);
+  std::array<sk_sp<PaintFilter>, 2> merge_inputs = {nullptr, image_filter};
+  auto merge_filter = sk_make_sp<MergePaintFilter>(merge_inputs);
+  merge_filter->set_has_animated_images(true);
+
+  PaintImage shader_image = CreateDiscardablePaintImage(gfx::Size(10, 10));
+  PaintFlags layer_flags;
+  layer_flags.setImageFilter(merge_filter);
+  layer_flags.setShader(PaintShader::MakeImage(shader_image, SkTileMode::kClamp,
+                                               SkTileMode::kClamp, nullptr));
+
+  // Case 1: SaveLayerOp with both an ImageFilter and a PaintShader retains
+  // both decodes until RestoreOp.
+  {
+    PaintOpBuffer buffer;
+    buffer.push<SaveLayerOp>(SkRect::MakeWH(10, 10), layer_flags);
+    buffer.push<DrawColorOp>(SkColors::kBlue, SkBlendMode::kSrcOver);
+    buffer.push<RestoreOp>();
+    buffer.push<NoopOp>();
+
+    TrackingImageProvider provider;
+    std::vector<int> ref_counts_after_op;
+    PlaybackCallbacks callbacks;
+    callbacks.did_draw_op_callback = base::BindLambdaForTesting(
+        [&]() { ref_counts_after_op.push_back(provider.ref_count()); });
+
+    SkBitmap output;
+    output.allocN32Pixels(10, 10);
+    SkCanvas canvas(output);
+    buffer.Playback(&canvas, PlaybackParams(&provider, SkM44(), callbacks));
+
+    EXPECT_THAT(ref_counts_after_op, ElementsAre(2, 2, 0, 0));
+    EXPECT_EQ(provider.ref_count(), 0);
+  }
+
+  // Case 2: Unclosed SaveLayerOp retains decodes until restored by
+  // SkAutoCanvasRestore at the end of Playback, for both `local_ctm` values.
+  for (bool local_ctm : {true, false}) {
+    PaintOpBuffer buffer;
+    buffer.push<SaveLayerOp>(SkRect::MakeWH(10, 10), layer_flags);
+
+    TrackingImageProvider provider;
+    testing::StrictMock<MockCanvas> canvas;
+    InSequence sequence;
+    EXPECT_CALL(canvas, OnSaveLayer()).WillOnce([&]() {
+      EXPECT_EQ(provider.ref_count(), 2);
+    });
+    EXPECT_CALL(canvas, willRestore()).WillOnce([&]() {
+      EXPECT_EQ(provider.ref_count(), 2);
+    });
+
+    buffer.Playback(&canvas, PlaybackParams(&provider), local_ctm);
+    EXPECT_EQ(provider.ref_count(), 0);
+  }
+}
+
 }  // namespace cc
