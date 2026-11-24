@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 
+#include "base/notreached.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace optimization_guide::prefs {
@@ -23,6 +24,7 @@ std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature) {
     case UserVisibleFeatureKey::kContextualCueing:
       return "optimization_guide.contextual_cueing_setting_state";
   }
+  NOTREACHED();
 }
 
 void RegisterSettingsUiPrefs(PrefRegistrySimple* registry) {

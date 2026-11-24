@@ -169,6 +169,7 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
     case UserVisibleFeatureKey::kContextualCueing:
       return ModelBasedCapabilityKey::kContextualCueing;
   }
+  NOTREACHED();
 }
 
 inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
@@ -249,6 +250,7 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_QUICK_ANSWERS;
   }
+  NOTREACHED();
 }
 
 inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
