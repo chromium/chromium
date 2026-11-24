@@ -1545,6 +1545,17 @@ chromium-metrics-reviews@google.com.
   <int value="32902" label="Intel"/>
 </enum>
 
+<!-- LINT.IfChange(H264Interlacing) -->
+
+<enum name="H264Interlacing">
+  <int value="0" label="Progressive"/>
+  <int value="1" label="PAFF"/>
+  <int value="2" label="MBAFF"/>
+  <int value="3" label="Both (PAFF and MBAFF)"/>
+</enum>
+
+<!-- LINT.ThenChange(//media/filters/h264_feature_tracker.h:H264Interlacing) -->
+
 <!-- LINT.IfChange(ImplementationClassification) -->
 
 <enum name="ImplementationClassification">
@@ -3066,6 +3077,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kTimedout"/>
   <int value="2" label="kFailed"/>
 </enum>
+
+<!-- LINT.IfChange(VideoChromaSampling) -->
+
+<enum name="VideoChromaSampling">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="4:2:0"/>
+  <int value="2" label="4:2:2"/>
+  <int value="3" label="4:4:4"/>
+  <int value="4" label="4:0:0 (Monochrome)"/>
+</enum>
+
+<!-- LINT.ThenChange(//media/base/video_types.h:VideoChromaSampling) -->
 
 <!-- LINT.IfChange(VideoFrameStorageType) -->
 

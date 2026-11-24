@@ -11,6 +11,7 @@
 
 #include "base/bits.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -31,9 +32,20 @@
 #include "media/ffmpeg/ffmpeg_decoding_loop.h"
 #include "media/filters/ffmpeg_glue.h"
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#include "media/filters/h264_feature_tracker.h"
+#endif
+
 namespace media {
 
 namespace {
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+// Enables tracking and UMA reporting of H.264 stream features decoded by
+// FFmpegVideoDecoder.
+BASE_FEATURE(kFFmpegVideoDecoderH264FeatureMetrics,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // Dynamically allocated AVBuffer opaque data.
 struct OpaqueData {
@@ -399,6 +411,12 @@ bool FFmpegVideoDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
       break;
   }
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (!buffer.end_of_stream() && h264_feature_tracker_) {
+    h264_feature_tracker_->ParsePacket(base::span(buffer));
+  }
+#endif
+
   return true;
 }
 
@@ -497,11 +515,22 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
   video_frame->metadata().power_efficient = false;
   video_frame->AddDestructionObserver(
       frame_pool_->CreateFrameCallback(opaque->fb_priv));
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (h264_feature_tracker_) {
+    h264_feature_tracker_->OnFrameDecoded();
+  }
+#endif
   output_cb_.Run(video_frame);
   return true;
 }
 
 void FFmpegVideoDecoder::ReleaseFFmpegResources() {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (h264_feature_tracker_) {
+    h264_feature_tracker_->ReportMetrics();
+    h264_feature_tracker_.reset();
+  }
+#endif
   decoding_loop_.reset();
   codec_context_.reset();
   hdr_metadata_reordering_map_.Clear();
@@ -538,6 +567,13 @@ bool FFmpegVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config,
   }
 
   decoding_loop_ = std::make_unique<FFmpegDecodingLoop>(codec_context_.get());
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (config.codec() == VideoCodec::kH264 &&
+      base::FeatureList::IsEnabled(kFFmpegVideoDecoderH264FeatureMetrics)) {
+    h264_feature_tracker_ = std::make_unique<H264FeatureTracker>();
+    h264_feature_tracker_->ParseExtraData(config.extra_data());
+  }
+#endif
   return true;
 }
 

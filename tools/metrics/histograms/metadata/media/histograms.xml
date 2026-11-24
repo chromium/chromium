@@ -5297,6 +5297,71 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.FFmpegVideoDecoder.H264.ChromaSubsampling"
+    enum="VideoChromaSampling" expires_after="2027-11-23">
+  <owner>eugene@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records each distinct H.264 chroma subsampling format (4:2:0, 4:2:2, 4:4:4,
+    or 4:0:0 monochrome) parsed by H264Parser during a conformant
+    FFmpegVideoDecoder session. Recorded when an H.264 FFmpegVideoDecoder
+    session ends (on re-initialization or destruction) if at least one frame was
+    successfully decoded and H264Parser parsed the stream without error.
+  </summary>
+</histogram>
+
+<histogram name="Media.FFmpegVideoDecoder.H264.ColorDepth" units="bits"
+    expires_after="2027-11-23">
+  <owner>eugene@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records each distinct H.264 color bit depth (e.g., 8, 10, 12) parsed by
+    H264Parser during a conformant FFmpegVideoDecoder session. Recorded when an
+    H.264 FFmpegVideoDecoder session ends (on re-initialization or destruction)
+    if at least one frame was successfully decoded and H264Parser parsed the
+    stream without error.
+  </summary>
+</histogram>
+
+<histogram name="Media.FFmpegVideoDecoder.H264.Conformant" enum="Boolean"
+    expires_after="2027-11-23">
+  <owner>eugene@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records whether an H.264 stream successfully decoded by FFmpegVideoDecoder
+    could be parsed without error by media::H264Parser (true) or caused a parser
+    error / failed to parse any SPS+slice (false). Recorded once when an H.264
+    FFmpegVideoDecoder session ends (on re-initialization or destruction) if at
+    least one frame was successfully decoded. Used to measure how often FFmpeg
+    decodes non-conformant streams that strict parsers reject.
+  </summary>
+</histogram>
+
+<histogram name="Media.FFmpegVideoDecoder.H264.Interlacing"
+    enum="H264Interlacing" expires_after="2027-11-23">
+  <owner>eugene@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the H.264 interlacing mode (progressive, PAFF, MBAFF, or both)
+    parsed by H264Parser during a conformant FFmpegVideoDecoder session.
+    Recorded once when an H.264 FFmpegVideoDecoder session ends (on
+    re-initialization or destruction) if at least one frame was successfully
+    decoded and H264Parser parsed the stream without error.
+  </summary>
+</histogram>
+
+<histogram name="Media.FFmpegVideoDecoder.H264.Profile"
+    enum="VideoCodecProfile" expires_after="2027-11-23">
+  <owner>eugene@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records each distinct H.264 profile parsed by H264Parser during a conformant
+    FFmpegVideoDecoder session. Recorded when an H.264 FFmpegVideoDecoder
+    session ends (on re-initialization or destruction) if at least one frame was
+    successfully decoded and H264Parser parsed the stream without error.
+  </summary>
+</histogram>
+
 <histogram name="Media.FrameInfo.GuessedInitialCodedSizeSuccess"
     enum="BooleanSuccess" expires_after="2027-04-11">
   <owner>dalecurtis@chromium.org</owner>

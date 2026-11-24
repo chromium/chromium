@@ -19,6 +19,7 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
+#include "media/media_buildflags.h"
 
 struct AVCodecContext;
 struct AVFrame;
@@ -27,6 +28,7 @@ namespace media {
 
 class DecoderBuffer;
 class FFmpegDecodingLoop;
+class H264FeatureTracker;
 class MediaLog;
 
 class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
@@ -98,6 +100,10 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
   HdrMetadataReorderingMap hdr_metadata_reordering_map_;
 
   std::unique_ptr<FFmpegDecodingLoop> decoding_loop_;
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  std::unique_ptr<H264FeatureTracker> h264_feature_tracker_;
+#endif
 };
 
 }  // namespace media

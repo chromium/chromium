@@ -126,6 +126,7 @@ enum VideoPixelFormat {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(VideoChromaSampling)
 enum class VideoChromaSampling : uint8_t {
   kUnknown = 0,
   k420,  // 4:2:0 chroma channel has 1/2 height/width of luma channel.
@@ -136,6 +137,7 @@ enum class VideoChromaSampling : uint8_t {
   // Please update UMA histogram enumeration when adding new formats here.
   kMaxValue = k400,  // Must always be equal to largest entry logged.
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VideoChromaSampling)
 
 // Return the name of chroma sampling format as a string.
 MEDIA_EXPORT std::string VideoChromaSamplingToString(
