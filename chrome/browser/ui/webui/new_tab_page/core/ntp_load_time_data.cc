@@ -102,15 +102,13 @@ bool UseGoogleLogo26() {
 
 // Returns whether the left-hand side (LHS) threads rail is shown on the NTP.
 // The rail embeds Google Search AI Mode content, so it is only available on
-// Google Chrome branded builds. In hybrid mode, the local rail renders items
-// from `LhsRailConfig`, so a non-null config is required.
+// Google Chrome branded builds. The folded rail renders items from
+// `LhsRailConfig`, so a non-null config is required.
 bool IsThreadsRailEnabled(bool aim_eligible, bool has_lhs_rail_config) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!aim_eligible ||
-      !base::FeatureList::IsEnabled(ntp_features::kNtpThreadsRail)) {
-    return false;
-  }
-  return !ntp_features::kNtpThreadsRailHybridParam.Get() || has_lhs_rail_config;
+  return aim_eligible &&
+         base::FeatureList::IsEnabled(ntp_features::kNtpThreadsRail) &&
+         has_lhs_rail_config;
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -223,10 +221,8 @@ base::DictValue BuildLoadTimeData(Profile* profile,
   dict.Set("threadsUrl", threads_url.spec());
 
   GURL expanded_lhs_url = google_base_url.Resolve(kLhsRelativeUrl);
-  if (ntp_features::kNtpThreadsRailHybridParam.Get()) {
-    expanded_lhs_url = net::AppendQueryParameter(expanded_lhs_url, "atvm",
-                                                 kAIMThreadsVisibilityMode);
-  }
+  expanded_lhs_url = net::AppendQueryParameter(expanded_lhs_url, "atvm",
+                                               kAIMThreadsVisibilityMode);
   expanded_lhs_url = net::AppendQueryParameter(expanded_lhs_url, "csui",
                                                kAIMConversationalSearchUI);
   expanded_lhs_url = net::AppendQueryParameter(
@@ -699,8 +695,6 @@ base::DictValue BuildLoadTimeData(Profile* profile,
   const bool enable_threads_rail =
       IsThreadsRailEnabled(aim_eligible, lhs_rail_config != nullptr);
   dict.Set("enableThreadsRail", enable_threads_rail);
-  dict.Set("enableThreadsRailHybrid",
-           ntp_features::kNtpThreadsRailHybridParam.Get());
   dict.Set("threadsRailPreloadDebounceMs",
            ntp_features::kNtpThreadsRailPreloadDebounceMsParam.Get());
   if (enable_threads_rail && lhs_rail_config) {

@@ -318,11 +318,6 @@ extern const base::FeatureParam<int> kBookmarkBarCountThreshold;
 extern const base::FeatureParam<base::TimeDelta>
     kBookmarkBarMinStalenessTimeInterval;
 
-// Parameter determining whether the Threads Rail is shown in hybrid mode: the
-// folded state is rendered natively by Chrome, while the expanded state is
-// rendered by GWS.
-extern const base::FeatureParam<bool> kNtpThreadsRailHybridParam;
-
 // Parameter determining the debounce duration before preloading the expanded
 // Threads Rail iframe on hover or focus, in milliseconds.
 extern const base::FeatureParam<int> kNtpThreadsRailPreloadDebounceMsParam;

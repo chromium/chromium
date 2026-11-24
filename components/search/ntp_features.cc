@@ -590,9 +590,6 @@ const base::FeatureParam<base::TimeDelta> kBookmarkBarMinStalenessTimeInterval(
     "BookmarkBarMinStalenessTimeInterval",
     base::Days(1));
 
-const base::FeatureParam<bool> kNtpThreadsRailHybridParam{
-    &ntp_features::kNtpThreadsRail, "NtpThreadsRailHybridParam", false};
-
 const base::FeatureParam<int> kNtpThreadsRailPreloadDebounceMsParam{
     &ntp_features::kNtpThreadsRail, "NtpThreadsRailPreloadDebounceMs", 100};
 
