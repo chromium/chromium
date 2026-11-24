@@ -22,6 +22,10 @@ constexpr char kSuccessLatencyHistogram[] =
     "Enterprise.DeviceSignals.Attestation.Success.Latency";
 constexpr char kFailureLatencyHistogram[] =
     "Enterprise.DeviceSignals.Attestation.Failure.Latency";
+constexpr char kSuccessForegroundLatencyHistogram[] =
+    "Enterprise.DeviceSignals.Attestation.Success.ForegroundLatency";
+constexpr char kFailureForegroundLatencyHistogram[] =
+    "Enterprise.DeviceSignals.Attestation.Failure.ForegroundLatency";
 
 // Blobs are expected to be in the low kilobytes. The range is wide enough that
 // realistic growth stays resolvable rather than piling into the overflow
@@ -56,6 +60,16 @@ void LogAttestationBlobGenerated(base::TimeTicks start_time,
         base::saturated_cast<int>(result.attestation_blob.size()),
         kMinBlobSizeBytes, kMaxBlobSizeBytes, kBlobSizeBucketCount);
   }
+}
+
+void LogAttestationBlobForegroundLatency(base::TimeDelta foreground_latency,
+                                         const BlobGenerationResult& result) {
+  // Use the same range as the wall-clock latency recorded by
+  // `LogAttestationBlobGenerated()`, so that the two can be compared directly.
+  base::UmaHistogramMediumTimes(result.IsSuccess()
+                                    ? kSuccessForegroundLatencyHistogram
+                                    : kFailureForegroundLatencyHistogram,
+                                foreground_latency);
 }
 
 void LogAttestationBlobServiceUnavailable() {

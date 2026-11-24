@@ -4,6 +4,8 @@
 
 #import "components/enterprise/device_attestation/ios/device_attestation_service_ios.h"
 
+#import <UIKit/UIKit.h>
+
 #import <cstddef>
 #import <memory>
 #import <string>
@@ -12,12 +14,16 @@
 
 #import "base/base64.h"
 #import "base/callback_list.h"
+#import "base/check.h"
+#import "base/containers/circular_deque.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "base/time/time.h"
 #import "base/types/expected.h"
 #import "components/device_signals/core/common/signals_features.h"
 #import "components/enterprise/device_attestation/common/device_attestation_types.h"
@@ -43,6 +49,15 @@ constexpr char kDefaultNonce[] = "nonce";
 constexpr size_t kLargePayloadSize = 1024 * 1024;
 constexpr int kContentBindingVersionV1 = 1;
 constexpr int kContentBindingVersionV0 = 0;
+
+constexpr char kSuccessLatencyHistogram[] =
+    "Enterprise.DeviceSignals.Attestation.Success.Latency";
+constexpr char kFailureLatencyHistogram[] =
+    "Enterprise.DeviceSignals.Attestation.Failure.Latency";
+constexpr char kSuccessForegroundLatencyHistogram[] =
+    "Enterprise.DeviceSignals.Attestation.Success.ForegroundLatency";
+constexpr char kFailureForegroundLatencyHistogram[] =
+    "Enterprise.DeviceSignals.Attestation.Failure.ForegroundLatency";
 
 std::string Sha256Base64(std::string_view payload) {
   return base::Base64Encode(crypto::hash::Sha256(payload));
@@ -112,6 +127,39 @@ class ErrorAttestationServiceIOS : public AttestationServiceIOS {
 
  private:
   AttestationError error_;
+};
+
+// Attestation service whose snapshot requests stay pending in FIFO order until
+// the test completes them with `CompleteSnapshot()`.
+class AsyncAttestationServiceIOS : public AttestationServiceIOS {
+ public:
+  AsyncAttestationServiceIOS() = default;
+  ~AsyncAttestationServiceIOS() override = default;
+
+  base::CallbackListSubscription Initialize(
+      InitializeCallback callback) override {
+    return base::CallbackListSubscription();
+  }
+
+  bool IsReady() override { return true; }
+
+  base::CallbackListSubscription GetSnapshot(
+      const ContentBinding& content_binding,
+      SnapshotCallback callback) override {
+    pending_callbacks_.push_back(std::move(callback));
+    return callback_list_.Add(base::DoNothing());
+  }
+
+  void CompleteSnapshot(base::expected<std::string, AttestationError> result) {
+    CHECK(!pending_callbacks_.empty());
+    SnapshotCallback callback = std::move(pending_callbacks_.front());
+    pending_callbacks_.pop_front();
+    std::move(callback).Run(std::move(result));
+  }
+
+ private:
+  base::circular_deque<SnapshotCallback> pending_callbacks_;
+  base::RepeatingClosureList callback_list_;
 };
 
 struct AttestationErrorTestCase {
@@ -443,6 +491,8 @@ TEST_F(DeviceAttestationServiceIOSTest, NullServiceReturnsError) {
       "Enterprise.DeviceSignals.Attestation.Success.Latency", 0);
   histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Attestation.Failure.Latency", 0);
+  histogram_tester_.ExpectTotalCount(kSuccessForegroundLatencyHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFailureForegroundLatencyHistogram, 0);
 }
 
 TEST_F(DeviceAttestationServiceIOSTest, SnapshotGenerationFailureReturnsError) {
@@ -543,30 +593,6 @@ TEST_F(DeviceAttestationServiceIOSTest,
 
 TEST_F(DeviceAttestationServiceIOSTest,
        AsynchronousSnapshotCleansUpSubscription) {
-  class AsyncAttestationServiceIOS : public AttestationServiceIOS {
-   public:
-    base::CallbackListSubscription Initialize(
-        InitializeCallback callback) override {
-      return base::CallbackListSubscription();
-    }
-    bool IsReady() override { return true; }
-    base::CallbackListSubscription GetSnapshot(
-        const ContentBinding& content_binding,
-        SnapshotCallback callback) override {
-      saved_callback_ = std::move(callback);
-      return callback_list_.Add(base::DoNothing());
-    }
-
-    void CompleteSnapshot(
-        base::expected<std::string, AttestationError> result) {
-      std::move(saved_callback_).Run(std::move(result));
-    }
-
-   private:
-    SnapshotCallback saved_callback_;
-    base::RepeatingClosureList callback_list_;
-  };
-
   std::unique_ptr<AsyncAttestationServiceIOS> async_mock =
       std::make_unique<AsyncAttestationServiceIOS>();
   AsyncAttestationServiceIOS* raw_async_mock = async_mock.get();
@@ -654,6 +680,273 @@ TEST_F(DeviceAttestationServiceIOSTest, FactoryCreatesServiceWithoutProvider) {
   EXPECT_TRUE(result.blob_generation_result.attestation_blob.empty());
   EXPECT_EQ(result.blob_generation_result.error_message,
             "Attestation service unavailable");
+}
+
+// Fixture for the tests of the foreground latency metric. Time is mocked so
+// that the tests decide how long a request is pending while the app is in the
+// foreground and while it is in the background.
+class DeviceAttestationServiceIOSForegroundLatencyTest : public PlatformTest {
+ protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    std::unique_ptr<AsyncAttestationServiceIOS> attestation_service =
+        std::make_unique<AsyncAttestationServiceIOS>();
+    attestation_service_ = attestation_service.get();
+    service_ = std::make_unique<DeviceAttestationServiceIOS>(
+        std::move(attestation_service));
+    // `service_` reads the state of the app when it is created. Make the tests
+    // start in the foreground whatever the state of the app that hosts them.
+    SimulateAppWillEnterForeground();
+  }
+
+  void TearDown() override {
+    // The notifications reach every observer in the process. Do not leave the
+    // other ones believing that the app is in the background.
+    if (is_app_in_background_) {
+      SimulateAppWillEnterForeground();
+    }
+    attestation_service_ = nullptr;
+    service_.reset();
+    PlatformTest::TearDown();
+  }
+
+  void SimulateAppDidEnterBackground() {
+    is_app_in_background_ = true;
+    [NSNotificationCenter.defaultCenter
+        postNotificationName:UIApplicationDidEnterBackgroundNotification
+                      object:nil];
+  }
+
+  void SimulateAppWillEnterForeground() {
+    is_app_in_background_ = false;
+    [NSNotificationCenter.defaultCenter
+        postNotificationName:UIApplicationWillEnterForegroundNotification
+                      object:nil];
+  }
+
+  // Requests an attestation blob from `service_`. The request stays pending
+  // until `attestation_service_->CompleteSnapshot()` is called.
+  void RequestAttestationBlob() {
+    enterprise_management::ChromeProfileReportRequest report;
+    service_->GetAttestationResponse(kFlowName, report,
+                                     /*legacy_request_payload=*/"",
+                                     kDefaultTimestamp, kDefaultNonce,
+                                     base::DoNothing());
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
+  // Declare service_ BEFORE attestation_service_ to ensure correct destruction
+  // order.
+  std::unique_ptr<DeviceAttestationServiceIOS> service_;
+  raw_ptr<AsyncAttestationServiceIOS> attestation_service_ = nullptr;
+  bool is_app_in_background_ = false;
+};
+
+// Tests that the foreground latency of a request that is only pending while the
+// app is in the foreground is its wall-clock latency.
+TEST_F(DeviceAttestationServiceIOSForegroundLatencyTest,
+       MatchesLatencyInForeground) {
+  RequestAttestationBlob();
+  task_environment_.FastForwardBy(base::Seconds(2));
+  attestation_service_->CompleteSnapshot(kTestAttestationBlob);
+
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessLatencyHistogram,
+                                           base::Seconds(2), 1);
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessForegroundLatencyHistogram,
+                                           base::Seconds(2), 1);
+  histogram_tester_.ExpectTotalCount(kFailureForegroundLatencyHistogram, 0);
+}
+
+// Tests that the time the app spends in the background while a request is
+// pending is left out of the foreground latency, but not out of the wall-clock
+// latency.
+TEST_F(DeviceAttestationServiceIOSForegroundLatencyTest,
+       ExcludesTimeInBackground) {
+  RequestAttestationBlob();
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  SimulateAppDidEnterBackground();
+  task_environment_.FastForwardBy(base::Minutes(10));
+  SimulateAppWillEnterForeground();
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  SimulateAppDidEnterBackground();
+  task_environment_.FastForwardBy(base::Minutes(5));
+  SimulateAppWillEnterForeground();
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  attestation_service_->CompleteSnapshot(kTestAttestationBlob);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      kSuccessLatencyHistogram, base::Minutes(15) + base::Seconds(4), 1);
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessForegroundLatencyHistogram,
+                                           base::Seconds(4), 1);
+  histogram_tester_.ExpectTotalCount(kFailureForegroundLatencyHistogram, 0);
+}
+
+// Tests that the foreground latency of a failed generation is recorded to the
+// failure histogram.
+TEST_F(DeviceAttestationServiceIOSForegroundLatencyTest,
+       RecordedForFailedGeneration) {
+  RequestAttestationBlob();
+  task_environment_.FastForwardBy(base::Seconds(2));
+  SimulateAppDidEnterBackground();
+  task_environment_.FastForwardBy(base::Minutes(10));
+  SimulateAppWillEnterForeground();
+  attestation_service_->CompleteSnapshot(
+      base::unexpected(AttestationServiceIOS::AttestationError::kTimeout));
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      kFailureLatencyHistogram, base::Minutes(10) + base::Seconds(2), 1);
+  histogram_tester_.ExpectUniqueTimeSample(kFailureForegroundLatencyHistogram,
+                                           base::Seconds(2), 1);
+  histogram_tester_.ExpectTotalCount(kSuccessForegroundLatencyHistogram, 0);
+}
+
+// Tests that the foreground latency of a request made while the app is in the
+// background only starts when the app enters the foreground.
+TEST_F(DeviceAttestationServiceIOSForegroundLatencyTest,
+       RequestMadeInBackground) {
+  SimulateAppDidEnterBackground();
+  task_environment_.FastForwardBy(base::Hours(1));
+  RequestAttestationBlob();
+  task_environment_.FastForwardBy(base::Seconds(30));
+  SimulateAppWillEnterForeground();
+  task_environment_.FastForwardBy(base::Seconds(2));
+  attestation_service_->CompleteSnapshot(kTestAttestationBlob);
+
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessLatencyHistogram,
+                                           base::Seconds(32), 1);
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessForegroundLatencyHistogram,
+                                           base::Seconds(2), 1);
+}
+
+// Tests that the foreground latency of a request whose result arrives while the
+// app is in the background stops when the app enters the background.
+TEST_F(DeviceAttestationServiceIOSForegroundLatencyTest,
+       ResultArrivesInBackground) {
+  RequestAttestationBlob();
+  task_environment_.FastForwardBy(base::Seconds(2));
+  SimulateAppDidEnterBackground();
+  task_environment_.FastForwardBy(base::Seconds(30));
+  attestation_service_->CompleteSnapshot(kTestAttestationBlob);
+
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessLatencyHistogram,
+                                           base::Seconds(32), 1);
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessForegroundLatencyHistogram,
+                                           base::Seconds(2), 1);
+}
+
+// Tests that no foreground latency is recorded for a request that is only
+// pending while the app is in the background, as it has none.
+TEST_F(DeviceAttestationServiceIOSForegroundLatencyTest,
+       NotRecordedForRequestOnlyInBackground) {
+  SimulateAppDidEnterBackground();
+  task_environment_.FastForwardBy(base::Minutes(1));
+  RequestAttestationBlob();
+  task_environment_.FastForwardBy(base::Seconds(30));
+  attestation_service_->CompleteSnapshot(kTestAttestationBlob);
+
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessLatencyHistogram,
+                                           base::Seconds(30), 1);
+  histogram_tester_.ExpectTotalCount(kSuccessForegroundLatencyHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFailureForegroundLatencyHistogram, 0);
+}
+
+// Tests that no foreground latency is recorded for a request that was only
+// pending in the background and completes immediately as the app returns to the
+// foreground, after `OnAppWillEnterForeground()` has cleared
+// `background_start_time_`.
+TEST_F(DeviceAttestationServiceIOSForegroundLatencyTest,
+       NotRecordedWhenCompletingImmediatelyOnForegroundReturn) {
+  SimulateAppDidEnterBackground();
+  task_environment_.FastForwardBy(base::Minutes(1));
+  RequestAttestationBlob();
+  task_environment_.FastForwardBy(base::Seconds(30));
+  SimulateAppWillEnterForeground();
+  attestation_service_->CompleteSnapshot(
+      base::unexpected(AttestationServiceIOS::AttestationError::kTimeout));
+
+  histogram_tester_.ExpectUniqueTimeSample(kFailureLatencyHistogram,
+                                           base::Seconds(30), 1);
+  histogram_tester_.ExpectTotalCount(kSuccessForegroundLatencyHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFailureForegroundLatencyHistogram, 0);
+}
+
+// Tests that no foreground latency is recorded for a zero-duration request that
+// starts and completes while the app is in the background.
+TEST_F(DeviceAttestationServiceIOSForegroundLatencyTest,
+       NotRecordedForZeroDurationInBackground) {
+  SimulateAppDidEnterBackground();
+  RequestAttestationBlob();
+  attestation_service_->CompleteSnapshot(kTestAttestationBlob);
+
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessLatencyHistogram,
+                                           base::TimeDelta(), 1);
+  histogram_tester_.ExpectTotalCount(kSuccessForegroundLatencyHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFailureForegroundLatencyHistogram, 0);
+}
+
+// Tests that a zero-duration request in the foreground still records a 0ms
+// foreground latency sample.
+TEST_F(DeviceAttestationServiceIOSForegroundLatencyTest,
+       RecordedForZeroDurationInForeground) {
+  RequestAttestationBlob();
+  attestation_service_->CompleteSnapshot(kTestAttestationBlob);
+
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessLatencyHistogram,
+                                           base::TimeDelta(), 1);
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessForegroundLatencyHistogram,
+                                           base::TimeDelta(), 1);
+  histogram_tester_.ExpectTotalCount(kFailureForegroundLatencyHistogram, 0);
+}
+
+// Tests that overlapping requests starting before and during a background
+// period each subtract only the background time that elapsed after they
+// started.
+TEST_F(DeviceAttestationServiceIOSForegroundLatencyTest,
+       OverlappingRequestsIsolateBackgroundTimeAtStart) {
+  // First request starts in the foreground, 2s before entering background.
+  RequestAttestationBlob();
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  SimulateAppDidEnterBackground();
+  task_environment_.FastForwardBy(base::Seconds(20));
+
+  // Second request starts 20s into the background period.
+  RequestAttestationBlob();
+  task_environment_.FastForwardBy(base::Seconds(15));
+
+  // Total completed background time is now 35s.
+  SimulateAppWillEnterForeground();
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // First request completes: 38s wall-clock, 35s in background -> 3s
+  // foreground.
+  attestation_service_->CompleteSnapshot(kTestAttestationBlob);
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessLatencyHistogram,
+                                           base::Seconds(38), 1);
+  histogram_tester_.ExpectUniqueTimeSample(kSuccessForegroundLatencyHistogram,
+                                           base::Seconds(3), 1);
+
+  task_environment_.FastForwardBy(base::Seconds(9));
+
+  // Second request completes: 25s wall-clock, 15s in background -> 10s
+  // foreground.
+  attestation_service_->CompleteSnapshot(kTestAttestationBlob);
+  histogram_tester_.ExpectTotalCount(kSuccessLatencyHistogram, 2);
+  histogram_tester_.ExpectTimeBucketCount(kSuccessLatencyHistogram,
+                                          base::Seconds(38), 1);
+  histogram_tester_.ExpectTimeBucketCount(kSuccessLatencyHistogram,
+                                          base::Seconds(25), 1);
+  histogram_tester_.ExpectTotalCount(kSuccessForegroundLatencyHistogram, 2);
+  histogram_tester_.ExpectTimeBucketCount(kSuccessForegroundLatencyHistogram,
+                                          base::Seconds(3), 1);
+  histogram_tester_.ExpectTimeBucketCount(kSuccessForegroundLatencyHistogram,
+                                          base::Seconds(10), 1);
+  histogram_tester_.ExpectTotalCount(kFailureForegroundLatencyHistogram, 0);
 }
 
 }  // namespace enterprise

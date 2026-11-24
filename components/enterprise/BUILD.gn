@@ -296,6 +296,7 @@ source_set("unit_tests") {
   if (is_ios) {
     sources +=
         [ "device_attestation/ios/device_attestation_service_ios_unittest.mm" ]
+    frameworks = [ "UIKit.framework" ]
   }
 
   if (is_win || is_linux || is_chromeos || is_mac || is_android) {

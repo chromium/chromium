@@ -4,6 +4,8 @@
 
 #import "components/enterprise/device_attestation/ios/device_attestation_service_ios.h"
 
+#import <UIKit/UIKit.h>
+
 #import <cstdint>
 #import <string>
 #import <string_view>
@@ -16,6 +18,7 @@
 #import "base/time/time.h"
 #import "base/types/expected.h"
 #import "base/values.h"
+#import "build/ios_buildflags.h"
 #import "components/device_signals/core/common/signals_features.h"
 #import "components/enterprise/device_attestation/common/device_attestation_types.h"
 #import "components/enterprise/device_attestation/device_attestation_metrics.h"
@@ -170,11 +173,59 @@ std::string_view AttestationErrorToString(
 
 }  // namespace
 
+struct DeviceAttestationServiceIOS::ObjCStorage {
+  // Tokens representing the app lifecycle notification observers.
+  id __strong did_enter_background_observer;
+  id __strong will_enter_foreground_observer;
+};
+
 DeviceAttestationServiceIOS::DeviceAttestationServiceIOS(
     std::unique_ptr<AttestationServiceIOS> attestation_service)
-    : attestation_service_(std::move(attestation_service)) {}
+    : attestation_service_(std::move(attestation_service)),
+      objc_storage_(std::make_unique<ObjCStorage>()) {
+#if !BUILDFLAG(IS_IOS_APP_EXTENSION)
+  // The app can be launched directly into the background, in which case no
+  // notification announces it. Code that is built for app extensions cannot
+  // check this, as `UIApplication.sharedApplication` is not available to it,
+  // and assumes that the app starts in the foreground.
+  if (UIApplication.sharedApplication.applicationState ==
+      UIApplicationStateBackground) {
+    background_start_time_ = base::TimeTicks::Now();
+  }
+#endif  // !BUILDFLAG(IS_IOS_APP_EXTENSION)
 
-DeviceAttestationServiceIOS::~DeviceAttestationServiceIOS() = default;
+  base::WeakPtr<DeviceAttestationServiceIOS> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  NSNotificationCenter* notification_center =
+      NSNotificationCenter.defaultCenter;
+  objc_storage_->did_enter_background_observer = [notification_center
+      addObserverForName:UIApplicationDidEnterBackgroundNotification
+                  object:nil
+                   queue:nil
+              usingBlock:^(NSNotification* notification) {
+                if (weak_this) {
+                  weak_this->OnAppDidEnterBackground();
+                }
+              }];
+  objc_storage_->will_enter_foreground_observer = [notification_center
+      addObserverForName:UIApplicationWillEnterForegroundNotification
+                  object:nil
+                   queue:nil
+              usingBlock:^(NSNotification* notification) {
+                if (weak_this) {
+                  weak_this->OnAppWillEnterForeground();
+                }
+              }];
+}
+
+DeviceAttestationServiceIOS::~DeviceAttestationServiceIOS() {
+  NSNotificationCenter* notification_center =
+      NSNotificationCenter.defaultCenter;
+  [notification_center
+      removeObserver:objc_storage_->did_enter_background_observer];
+  [notification_center
+      removeObserver:objc_storage_->will_enter_foreground_observer];
+}
 
 void DeviceAttestationServiceIOS::GetAttestationResponse(
     std::string_view /*flow_name*/,
@@ -186,6 +237,8 @@ void DeviceAttestationServiceIOS::GetAttestationResponse(
   // Captured before any work is done so that the content binding construction
   // below is part of the measured latency, matching Android.
   const base::TimeTicks start_time = base::TimeTicks::Now();
+  const base::TimeDelta background_time_at_start =
+      GetTimeInBackground(start_time);
   LogAttestationBlobRequested();
 
   if (!attestation_service_) {
@@ -233,7 +286,7 @@ void DeviceAttestationServiceIOS::GetAttestationResponse(
           content_binding,
           base::BindOnce(&DeviceAttestationServiceIOS::OnAttestationResponse,
                          weak_this, request_id, start_time,
-                         std::move(callback)));
+                         background_time_at_start, std::move(callback)));
 
   // If the callback ran synchronously during `GetSnapshot`, `this` may have
   // been destroyed.
@@ -258,6 +311,7 @@ void DeviceAttestationServiceIOS::GetAttestationResponse(
 void DeviceAttestationServiceIOS::OnAttestationResponse(
     uint64_t request_id,
     base::TimeTicks start_time,
+    base::TimeDelta background_time_at_start,
     DeviceAttestationCallback callback,
     base::expected<std::string, AttestationServiceIOS::AttestationError>
         result) {
@@ -273,9 +327,58 @@ void DeviceAttestationServiceIOS::OnAttestationResponse(
 
   LogAttestationBlobGenerated(start_time, blob_generation_result);
 
+  // iOS suspends the app shortly after it enters the background, and
+  // `base::TimeTicks` keeps advancing while the app is suspended. The latency
+  // recorded above therefore includes the time the app spent suspended while
+  // the request was pending, which can be arbitrarily long and says nothing
+  // about the generation itself. The app is not told when it is suspended, only
+  // when it enters and leaves the background, so also record the latency
+  // without any of the time spent in the background.
+  const base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta background_time =
+      GetTimeInBackground(now) - background_time_at_start;
+  const base::TimeDelta foreground_latency =
+      (now - start_time) - background_time;
+  // A request that was only pending while the app was in the background has no
+  // foreground latency to record. Checking `background_time` in addition to
+  // `background_start_time_` also catches callbacks that run immediately upon
+  // returning to the foreground, after `OnAppWillEnterForeground()` has cleared
+  // `background_start_time_`, while still recording 0ms synchronous foreground
+  // completions.
+  const bool was_only_in_background =
+      foreground_latency.is_zero() &&
+      (background_start_time_.has_value() || !background_time.is_zero());
+  if (!was_only_in_background) {
+    LogAttestationBlobForegroundLatency(foreground_latency,
+                                        blob_generation_result);
+  }
+
   std::move(callback).Run(AttestationResult{
       .blob_generation_result = std::move(blob_generation_result),
       .content_binding_version = GetCurrentContentBindingsVersion()});
+}
+
+void DeviceAttestationServiceIOS::OnAppDidEnterBackground() {
+  if (!background_start_time_.has_value()) {
+    background_start_time_ = base::TimeTicks::Now();
+  }
+}
+
+void DeviceAttestationServiceIOS::OnAppWillEnterForeground() {
+  if (background_start_time_.has_value()) {
+    completed_background_time_ +=
+        base::TimeTicks::Now() - background_start_time_.value();
+    background_start_time_.reset();
+  }
+}
+
+base::TimeDelta DeviceAttestationServiceIOS::GetTimeInBackground(
+    base::TimeTicks now) const {
+  base::TimeDelta time_in_background = completed_background_time_;
+  if (background_start_time_.has_value()) {
+    time_in_background += now - background_start_time_.value();
+  }
+  return time_in_background;
 }
 
 }  // namespace enterprise

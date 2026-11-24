@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -52,19 +53,42 @@ class DeviceAttestationServiceIOS : public DeviceAttestationService {
   }
 
  private:
+  // Holds the Objective-C objects owned by this class. They cannot be members,
+  // because this header is also included from C++ files.
+  struct ObjCStorage;
+
   // `start_time` is the time at which the snapshot was requested, and is used
-  // to record the generation latency.
+  // to record the generation latency. `background_time_at_start` is the value
+  // of `GetTimeInBackground()` at that time, and is used to leave the time the
+  // app spent in the background out of the foreground latency.
   void OnAttestationResponse(
       uint64_t request_id,
       base::TimeTicks start_time,
+      base::TimeDelta background_time_at_start,
       DeviceAttestationCallback callback,
       base::expected<std::string, AttestationServiceIOS::AttestationError>
           result);
+
+  // Called when the app has entered the background, and when it is about to
+  // enter the foreground again.
+  void OnAppDidEnterBackground();
+  void OnAppWillEnterForeground();
+
+  // Returns the total time the app has spent in the background since this
+  // object was created, up to `now`.
+  base::TimeDelta GetTimeInBackground(base::TimeTicks now) const;
 
   std::unique_ptr<AttestationServiceIOS> attestation_service_;
   uint64_t next_request_id_ = 0;
   base::flat_map<uint64_t, base::CallbackListSubscription>
       attestation_subscriptions_;
+
+  // When the app entered the background, if it is in the background now.
+  std::optional<base::TimeTicks> background_start_time_;
+  // Total duration of the background periods that have ended.
+  base::TimeDelta completed_background_time_;
+  std::unique_ptr<ObjCStorage> objc_storage_;
+
   base::WeakPtrFactory<DeviceAttestationServiceIOS> weak_ptr_factory_{this};
 };
 

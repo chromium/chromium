@@ -1819,6 +1819,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.DeviceSignals.Attestation.{Outcome}.ForegroundLatency"
+    units="ms" expires_after="2027-09-14">
+  <owner>mickaczmarczyk@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Captures the time taken to generate the device attestation blob that binds a
+    signals report to the device, counting only the time during which the app
+    was in the foreground. Measured from the moment the blob generation was
+    requested until its result was received, minus the time the app spent in the
+    background in between. Complements
+    Enterprise.DeviceSignals.Attestation.Success.Latency and
+    Enterprise.DeviceSignals.Attestation.Failure.Latency, which measure
+    wall-clock time: the OS suspends an app that is in the background, so for a
+    request that is pending across a background period they include the time the
+    app spent suspended. Recorded once per attestation blob generation request,
+    only when the generation was actually attempted and {Outcome}, and not for a
+    request that was pending only while the app was in the background. The app
+    keeps running for a short time after entering the background, which is not
+    counted either, so for a request that overlaps a background period this is a
+    lower bound of the time the generation took. Recorded on iOS only.
+  </summary>
+  <token key="Outcome" variants="DeviceSignalsOutcome"/>
+</histogram>
+
 <histogram name="Enterprise.DeviceSignals.Attestation.{Outcome}.Latency"
     units="ms" expires_after="2027-09-14">
   <owner>mickaczmarczyk@google.com</owner>
