@@ -6,5 +6,97 @@ buganizer_public: {
   component_id: 1457039
 }
 
-# Opt-in to the Chromium AI Code Review Agent without custom capabilities.
-agentic_review {}
+# Opt in to the Chromium AI Code Review Agent with curated Payments Autofill
+# review rules in components/autofill/core/browser/payments/knowledge_base/.
+# kb_last_updated_usec: 1790600546000000
+agentic_review: {
+  capability_groups: {
+    rules: [
+      "components/autofill/core/browser/payments/knowledge_base/bind-directly-to-sub-data-manager.md"
+    ]
+    path_expression: [
+      "(?:.*/)?[^/]*\\.(?:h|cc|mm)"
+    ]
+    content_patterns: [
+      "\\bGetPersonalDataManager\\(\\)",
+      "\\b(?:payments|address)_data_manager\\(\\)",
+      "\\b(?:Payments|Address)DataManager\\b",
+      "\\bpersonal_data_manager\\b.*\\b(?:payments|address)_data_manager\\b"
+    ]
+  }
+  capability_groups: {
+    rules: [
+      "components/autofill/core/browser/payments/knowledge_base/combine-shown-and-not-shown-reasons-in-enum-histogram.md"
+    ]
+    path_expression: [
+      "(?:.*/)?[^/]*\\.(?:h|cc|mm)"
+    ]
+    content_patterns: [
+      "\\b(?:base::)?UmaHistogram(?:Enumeration|Boolean|ExactLinear)\\s*\\(",
+      "\\b(?:enum\\s+class\\s+)?\\w*(?:ShowResult|NotShownReason|PromptResult|DisplayResult)\\b",
+      "\"[A-Za-z0-9_.]+\\.(?:ShowResult|NotShownReason|PromptResult|BubbleResult)\"",
+      "\\bkShown\\s*=\\s*0\\b",
+      "\\bLog\\w*(?:ShowResult|NotShownReason|BubbleShown|PromptShown)\\s*\\("
+    ]
+  }
+  capability_groups: {
+    rules: [
+      "components/autofill/core/browser/payments/knowledge_base/encapsulate-storage-transformations-in-preference-helpers.md"
+    ]
+    path_expression: [
+      "(?:.*/)?[^/]*\\.(?:h|cc|mm)"
+    ]
+    content_patterns: [
+      "\\b(?:signin::)?GaiaIdHash\\b",
+      "\\bGaiaIdHash::From[A-Za-z0-9_]+\\b",
+      "\\b(?:syncer::)?(?:Get|Set|Clear)AccountKeyedPrefValue\\b",
+      "\\b(?:Get|Set|Has)[A-Z]\\w*(?:Notice|OptIn|Preference|Pref|State)\\([^)]*?\\b(?:PrefService|GaiaIdHash)\\b",
+      "\\bPrefService\\b.*\\bGaiaIdHash\\b",
+      "\\bGaiaIdHash\\b.*\\bPrefService\\b"
+    ]
+  }
+  capability_groups: {
+    rules: [
+      "components/autofill/core/browser/payments/knowledge_base/include-utm-parameters-on-external-navigation-urls.md"
+    ]
+    path_expression: [
+      "(?:.*/)?[^/]*\\.(?:h|cc|mm|java|ts)"
+    ]
+    content_patterns: [
+      "[?&]utm_(?:source|campaign|medium)=",
+      "\\butm_(?:source|campaign|medium)\\b",
+      "https?://(?:wallet|pay|myaccount|accounts|passwords|support)\\.google\\.com",
+      "\\b(?:Append|AppendOrReplace)QueryParameter\\b.*utm_"
+    ]
+  }
+  capability_groups: {
+    rules: [
+      "components/autofill/core/browser/payments/knowledge_base/setup-flag-on-and-off-tests-for-easy-cleanup.md"
+    ]
+    path_expression: [
+      "(?:.*/)?[^/]*(?:[Tt]est|unittest)[^/]*\\.(?:cc|mm|java|ts)"
+    ]
+    content_patterns: [
+      "\\b(?:InitAndDisableFeature|InitAndEnableFeature|InitWithFeatures|InitWithFeatureState)\\s*\\(",
+      "\\b(?:base::test::)?ScopedFeatureList\\b",
+      "@(?:Enable|Disable)Features\\b",
+      "\\bTEST(?:_F|_P)?\\s*\\([^)]*?(?:Flags?On|Flags?Enabled|FeatureOn|FeatureEnabled|Flags?Off|Flags?Disabled|FeatureOff|FeatureDisabled)",
+      "\\btest[A-Z]\\w*_(?:[Ff]lags?(?:On|Off|Enabled|Disabled)|[Ff]eature(?:On|Off|Enabled|Disabled))\\b"
+    ]
+  }
+  capability_groups: {
+    rules: [
+      "components/autofill/core/browser/payments/knowledge_base/validate-preconditions-before-feature-flag-check.md"
+    ]
+    path_expression: [
+      "(?:.*/)?[^/]*\\.(?:h|cc|mm)"
+    ]
+    content_patterns: [
+      "\\b(?:base::)?FeatureList::IsEnabled\\s*\\(",
+      "\\bIs[A-Za-z0-9_]*(?:Eligible|Eligibility)\\s*\\(",
+      "\\bIs[A-Za-z0-9_]*(?:Feature|Notice|Prompt|Experiment)Enabled\\s*\\(",
+      "\\b(?:GetFieldTrialParamByFeatureAs|GetFieldTrialParamValueByFeature)\\b",
+      "\\b(?:BASE_FEATURE|BASE_DECLARE_FEATURE)\\s*\\("
+    ]
+  }
+}

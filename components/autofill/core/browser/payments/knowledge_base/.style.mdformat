@@ -1,0 +1,2 @@
+# Presence of this file opts Markdown files in this directory into
+# formatting via `git cl format` (see third_party/depot_tools/markdown_format.py).
