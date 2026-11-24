@@ -428,6 +428,11 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   if (!payments_network_interface) {
     return;
   }
+  // Drop any pending `GetCardUploadDetails()` response from an earlier
+  // attempt. This attempt resets the upload state below and may return before
+  // issuing its own request, so running the older response would offer upload
+  // save with the state of this attempt.
+  upload_details_weak_ptr_factory_.InvalidateWeakPtrs();
   upload_request_ = payments::UploadCardRequestDetails();
   upload_request_.card = card;
   uploading_local_card_ = uploading_local_card;
@@ -673,7 +678,8 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       country_only_profiles, upload_request_.detected_values,
       upload_request_.client_behavior_signals, client_->GetAppLocale(),
       base::BindOnce(&CreditCardSaveManager::OnDidGetUploadDetails,
-                     weak_ptr_factory_.GetWeakPtr(), ukm_source_id),
+                     upload_details_weak_ptr_factory_.GetWeakPtr(),
+                     ukm_source_id),
       payments::kUploadPaymentMethodBillableServiceNumber,
       payments::GetBillingCustomerId(payments_data_manager()),
       payments::UploadCardSource::kUpstreamCheckoutFlow);

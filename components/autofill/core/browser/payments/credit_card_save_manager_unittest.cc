@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
@@ -3616,6 +3617,45 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_TRUE(credit_card_save_manager().should_request_name_from_user());
   EXPECT_TRUE(
       credit_card_save_manager().should_request_expiration_date_from_user());
+}
+
+// Tests that a pending `GetCardUploadDetails()` response for an earlier form is
+// dropped once a later form starts a new upload save attempt. The later attempt
+// below returns before sending its own request because it is missing both the
+// cardholder name and the expiration date, so running the earlier response
+// would offer upload save requesting both of them.
+TEST_F(CreditCardSaveManagerTest,
+       DoNotOfferUploadSave_IfUploadDetailsResponseIsForEarlierForm) {
+  FormData address_form = CreateTestAddressFormData();
+  FormsSeen({address_form});
+  ManuallyFillAddressForm("", "", "77401", "US", &address_form);
+  FormSubmitted(address_form);
+
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen({credit_card_form});
+  payments_network_interface().ShouldReturnCardUploadDetailsImmediately(false);
+
+  // Submit a complete card form; its upload details response is held.
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form)
+      .field(2)
+      .set_value(ASCIIToUTF16(test::NextMonth()));
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"123");
+  FormSubmitted(credit_card_form);
+  base::OnceClosure earlier_upload_details_response =
+      payments_network_interface().GetGetCardUploadDetailsCallback();
+  ASSERT_TRUE(earlier_upload_details_response);
+
+  // Submit the form again without the cardholder name and expiration date.
+  test_api(credit_card_form).field(0).set_value(u"");
+  test_api(credit_card_form).field(2).set_value(u"");
+  test_api(credit_card_form).field(3).set_value(u"");
+  FormSubmitted(credit_card_form);
+
+  EXPECT_CALL(payments_autofill_client(), ShowSaveCreditCardToCloud).Times(0);
+  std::move(earlier_upload_details_response).Run();
 }
 #endif  // !BUILDFLAG(IS_IOS)
 

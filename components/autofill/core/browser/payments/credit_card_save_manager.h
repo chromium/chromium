@@ -502,6 +502,13 @@ class CreditCardSaveManager {
   // May be null.
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
+  // Used only for the `GetCardUploadDetails()` response callback. Its weak
+  // pointers are invalidated at the start of each upload save attempt, so a
+  // pending response for an older form is never run on the state of a newer
+  // one.
+  base::WeakPtrFactory<CreditCardSaveManager> upload_details_weak_ptr_factory_{
+      this};
+
   base::WeakPtrFactory<CreditCardSaveManager> weak_ptr_factory_{this};
 };
 
