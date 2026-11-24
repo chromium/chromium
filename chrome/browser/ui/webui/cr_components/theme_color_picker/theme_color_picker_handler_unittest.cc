@@ -383,7 +383,7 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, UsingDeviceThemeGM3) {
   ON_CALL(mock_theme_service(), UsingSystemTheme())
       .WillByDefault(testing::Return(false));
   ON_CALL(mock_theme_service(), UsingPolicyTheme())
-      .WillByDefault(testing::Return(true));
+      .WillByDefault(testing::Return(false));
   ON_CALL(mock_theme_service(), GetIsGrayscale())
       .WillByDefault(testing::Return(false));
   ON_CALL(mock_theme_service(), GetBrowserColorScheme())
@@ -398,7 +398,27 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, UsingDeviceThemeGM3) {
 
   theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
   ASSERT_TRUE(theme);
+  EXPECT_TRUE(theme->follow_device_theme);
   EXPECT_EQ(kUsedColor, theme->seed_color);
+  EXPECT_TRUE(theme->foreground_color.has_value());
+}
+
+TEST_P(ThemeColorPickerHandlerSetThemeTest,
+       UsingDeviceThemeWithoutOsAccentColor) {
+  // Even if a user color was synced, `UsingDeviceTheme()` ignores it; when the
+  // OS supplies no accent color, `follow_device_theme` must be false so the
+  // color picker falls back to Default Chrome rather than selecting the custom
+  // swatch with an unset `foreground_color`.
+  ON_CALL(mock_theme_service(), GetUserColor())
+      .WillByDefault(testing::Return(SK_ColorGREEN));
+  ON_CALL(mock_theme_service(), UsingDeviceTheme())
+      .WillByDefault(testing::Return(true));
+  ASSERT_FALSE(os_settings_provider().AccentColor().has_value());
+
+  theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
+  ASSERT_TRUE(theme);
+  EXPECT_FALSE(theme->follow_device_theme);
+  EXPECT_FALSE(theme->foreground_color.has_value());
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeWithDailyRefresh) {

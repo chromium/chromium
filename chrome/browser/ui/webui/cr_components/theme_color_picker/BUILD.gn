@@ -74,9 +74,7 @@ if (!is_android || enable_webui_ntp) {
       "//ui/webui/resources/cr_components/theme_color_picker:mojom",
     ]
   }
-}
 
-if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [ "theme_color_picker_handler_unittest.cc" ]
@@ -98,6 +96,7 @@ if (!is_android) {
       "//testing/gmock",
       "//testing/gtest",
       "//ui/color/dynamic_color",
+      "//ui/native_theme:test_support",
     ]
   }
 }

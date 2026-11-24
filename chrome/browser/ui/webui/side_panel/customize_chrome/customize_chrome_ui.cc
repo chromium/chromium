@@ -46,7 +46,13 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
-#if !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+#include <optional>
+
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/native_theme/native_theme.h"
+#else
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.h"
@@ -283,12 +289,17 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       ntp::HasModulesEnabled(module_id_details_,
                              IdentityManagerFactory::GetForProfile(profile_)));
 
-  source->AddBoolean("showDeviceThemeToggle",
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-                     true);
+  bool show_device_theme_toggle = true;
+#elif BUILDFLAG(IS_ANDROID)
+  std::optional<SkColor> os_user_color =
+      ui::NativeTheme::GetInstanceForNativeUi()->user_color();
+  bool show_device_theme_toggle =
+      os_user_color.has_value() && *os_user_color != SK_ColorTRANSPARENT;
 #else
-                     false);
+  bool show_device_theme_toggle = false;
 #endif
+  source->AddBoolean("showDeviceThemeToggle", show_device_theme_toggle);
 
   source->AddBoolean(
       "extensionsCardEnabled",

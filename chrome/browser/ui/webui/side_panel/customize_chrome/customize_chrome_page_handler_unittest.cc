@@ -979,7 +979,6 @@ TEST_F(CustomizeChromePageHandlerTest, GetReplacementCollectionPreviewImage) {
 
 TEST_F(CustomizeChromePageHandlerTest, SetDefaultColor) {
   EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
-  EXPECT_CALL(mock_theme_service(), UseDeviceTheme(false)).Times(1);
 
   handler().SetDefaultColor();
 }

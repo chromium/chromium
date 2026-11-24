@@ -222,7 +222,6 @@ bool CustomizeChromePageHandler::IsNtpManagedByThirdPartySearchEngine() const {
 }
 
 void CustomizeChromePageHandler::SetDefaultColor() {
-  theme_service_->UseDeviceTheme(false);
   theme_service_->UseDefaultTheme();
 }
 
