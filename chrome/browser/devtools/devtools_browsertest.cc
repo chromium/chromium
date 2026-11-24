@@ -170,6 +170,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
@@ -7012,5 +7013,36 @@ IN_PROC_BROWSER_TEST_F(DevToolsTopChromeWebUITest, OpensDevToolsInUserProfile) {
   EXPECT_EQ(browser()->GetProfile(), frontend->GetBrowserContext());
   EXPECT_TRUE(content::WaitForLoadStop(frontend));
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
+}
+
+// When debugging Top Chrome WebUIs, chrome://inspect lists a WebContents in
+// TopChromeWebUIProfile only in the user profile of the WebContents.
+IN_PROC_BROWSER_TEST_F(DevToolsTopChromeWebUITest, ListsTargetInUserProfile) {
+  std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
+      content::WebContents::CreateParams(webui::GetTopChromeWebUIProfile()));
+  webui::SetUserProfile(contents.get(), browser()->GetProfile());
+  const std::string target_id =
+      content::DevToolsAgentHost::GetOrCreateFor(contents.get())->GetId();
+
+  auto is_listed = [&target_id](Profile* profile) {
+    std::optional<base::Value> targets;
+    std::unique_ptr<DevToolsTargetsUIHandler> handler =
+        DevToolsTargetsUIHandler::CreateForLocal(
+            base::BindLambdaForTesting(
+                [&](const std::string&, const base::Value& list) {
+                  targets = list.Clone();
+                }),
+            profile);
+    CHECK(targets);
+    for (const base::Value& target : targets->GetList()) {
+      const std::string* id = target.GetDict().FindString("id");
+      if (id && *id == target_id) {
+        return true;
+      }
+    }
+    return false;
+  };
+  EXPECT_TRUE(is_listed(browser()->GetProfile()));
+  EXPECT_FALSE(is_listed(CreateIncognitoBrowser()->GetProfile()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

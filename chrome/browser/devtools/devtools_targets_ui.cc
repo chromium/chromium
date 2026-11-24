@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -20,11 +21,13 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/serialize_host_descriptions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "components/media_router/browser/presentation/local_presentation_manager.h"
 #include "components/media_router/browser/presentation/local_presentation_manager_factory.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
+#include "content/public/common/content_features.h"
 
 using content::BrowserThread;
 using content::DevToolsAgentHost;
@@ -64,6 +67,20 @@ const char kAdbScreenHeightField[] = "adbScreenHeight";
 
 const char kPortForwardingPorts[] = "ports";
 const char kPortForwardingBrowserId[] = "browserId";
+
+// Returns the profile whose chrome://inspect lists `host`.
+Profile* GetProfileToListIn(DevToolsAgentHost* host) {
+  Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
+  // TopChromeWebUIProfile is shared by the windows of all profiles. When
+  // debugging Top Chrome WebUIs, list each of its WebContents in the profile
+  // of its window.
+  if (profile && profile->IsTopChromeWebUIProfile() &&
+      base::FeatureList::IsEnabled(features::kDebugTopChromeWebUI)) {
+    content::WebContents* web_contents = host->GetWebContents();
+    return web_contents ? webui::GetUserProfile(web_contents) : nullptr;
+  }
+  return profile;
+}
 
 // LocalTargetsUIHandler ---------------------------------------------
 
@@ -155,7 +172,7 @@ void LocalTargetsUIHandler::UpdateTargets() {
 bool LocalTargetsUIHandler::AllowDevToolsFor(DevToolsAgentHost* host) {
   return local_presentation_manager_->IsLocalPresentation(
              host->GetWebContents()) ||
-         (Profile::FromBrowserContext(host->GetBrowserContext()) == profile_ &&
+         (GetProfileToListIn(host) == profile_ &&
           DevToolsWindow::AllowDevToolsFor(profile_, host));
 }
 
