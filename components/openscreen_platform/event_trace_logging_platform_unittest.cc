@@ -15,6 +15,7 @@
 #include "third_party/openscreen/src/platform/api/time.h"
 #include "third_party/openscreen/src/platform/api/trace_event.h"
 #include "third_party/openscreen/src/platform/base/error.h"
+#include "third_party/openscreen/src/platform/base/trace_logging_activation.h"
 #include "third_party/openscreen/src/platform/base/trace_logging_types.h"
 
 namespace openscreen_platform {
@@ -44,6 +45,22 @@ class EventTraceLoggingPlatformTest : public ::testing::Test {
     trace_processor_.StartTrace(kOpenscreenTraceLoggingCategory);
   }
 
+  void StartTraceWithCategory(const std::string& category) {
+    trace_processor_.StartTrace(category);
+  }
+
+  void StopTrace() {
+    const absl::Status status = trace_processor_.StopAndParseTrace();
+    EXPECT_TRUE(status.ok()) << status.message();
+  }
+
+  // Returns the platform that Open Screen currently sends trace events to, or
+  // nullptr if Open Screen has no tracing destination.
+  static openscreen::TraceLoggingPlatform* GetOpenscreenDestination() {
+    const openscreen::CurrentTracingDestination destination;
+    return destination ? destination.operator->() : nullptr;
+  }
+
   base::test::TestTraceProcessor::QueryResult StopAndQuery(
       const std::string& query) {
     const absl::Status status = trace_processor_.StopAndParseTrace();
@@ -53,13 +70,14 @@ class EventTraceLoggingPlatformTest : public ::testing::Test {
     return result.value_or(base::test::TestTraceProcessor::QueryResult());
   }
 
-  EventTraceLoggingPlatform& platform() { return platform_; }
+  EventTraceLoggingPlatform& platform() {
+    return EventTraceLoggingPlatform::GetInstance();
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::TracingEnvironment tracing_environment_;
   base::test::TestTraceProcessor trace_processor_;
-  EventTraceLoggingPlatform platform_;
 };
 
 TEST_F(EventTraceLoggingPlatformTest, LogFlowLinksEventsWithTheSameId) {
@@ -123,6 +141,34 @@ TEST_F(EventTraceLoggingPlatformTest, LogFlowRecordsFlowIdAndArguments) {
                   Row{"Frame.Enqueued", "0", "1234", "42",
                       openscreen::ToString(
                           openscreen::Error::Code::kParameterInvalid)}));
+}
+
+TEST_F(EventTraceLoggingPlatformTest, RegistersOnlyWhileCategoryIsRecorded) {
+  // With no trace session, Open Screen has no destination, so its trace macros
+  // do no work.
+  EXPECT_FALSE(
+      platform().IsTraceLoggingEnabled(openscreen::TraceCategory::kAny));
+  EXPECT_EQ(GetOpenscreenDestination(), nullptr);
+
+  StartTrace();
+  EXPECT_TRUE(
+      platform().IsTraceLoggingEnabled(openscreen::TraceCategory::kAny));
+  EXPECT_TRUE(
+      platform().IsTraceLoggingEnabled(openscreen::TraceCategory::kReceiver));
+  EXPECT_EQ(GetOpenscreenDestination(), &platform());
+
+  StopTrace();
+  EXPECT_FALSE(
+      platform().IsTraceLoggingEnabled(openscreen::TraceCategory::kAny));
+  EXPECT_EQ(GetOpenscreenDestination(), nullptr);
+}
+
+TEST_F(EventTraceLoggingPlatformTest, IgnoresSessionsWithoutCategory) {
+  StartTraceWithCategory("media");
+  EXPECT_FALSE(
+      platform().IsTraceLoggingEnabled(openscreen::TraceCategory::kAny));
+  EXPECT_EQ(GetOpenscreenDestination(), nullptr);
+  StopTrace();
 }
 
 }  // namespace

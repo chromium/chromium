@@ -38,23 +38,49 @@ base::TimeTicks ToTimeTicks(openscreen::Clock::time_point time) {
 }  // namespace
 
 // static
-void EventTraceLoggingPlatform::EnsureInstance() {
+EventTraceLoggingPlatform& EventTraceLoggingPlatform::GetInstance() {
   static base::NoDestructor<EventTraceLoggingPlatform> g_platform;
+  return *g_platform;
 }
 
 bool EventTraceLoggingPlatform::IsTraceLoggingEnabled(
     openscreen::TraceCategory category) {
-  // Chrome controls what categories are enabled by use of the subsystem field
-  // in the trace event macro.
-  return true;
+  // Every Open Screen category is recorded under the one Chrome category.
+  return TRACE_EVENT_CATEGORY_ENABLED(kOpenscreenTraceLoggingCategory);
 }
 
 EventTraceLoggingPlatform::EventTraceLoggingPlatform() {
-  openscreen::StartTracing(this);
+  base::TrackEvent::AddSessionObserver(this);
+  // A trace session may already be running, for example when tracing started
+  // before the Cast session did.
+  MaybeStartTracing();
 }
 
 EventTraceLoggingPlatform::~EventTraceLoggingPlatform() {
+  base::TrackEvent::RemoveSessionObserver(this);
   openscreen::StopTracing();
+}
+
+void EventTraceLoggingPlatform::OnStart(
+    const perfetto::DataSourceBase::StartArgs& args) {
+  MaybeStartTracing();
+}
+
+void EventTraceLoggingPlatform::OnStop(
+    const perfetto::DataSourceBase::StopArgs& args) {
+  // Another session may still record the category.
+  if (!base::trace_event::IsCategoryEnabledOnStop(
+          PERFETTO_GET_CATEGORY_INDEX(kOpenscreenTraceLoggingCategory), args)) {
+    openscreen::StopTracing();
+  }
+}
+
+void EventTraceLoggingPlatform::MaybeStartTracing() {
+  // Starting again with the same destination is allowed, so this is safe to
+  // call when tracing has already started.
+  if (TRACE_EVENT_CATEGORY_ENABLED(kOpenscreenTraceLoggingCategory)) {
+    openscreen::StartTracing(this);
+  }
 }
 
 void EventTraceLoggingPlatform::LogTrace(

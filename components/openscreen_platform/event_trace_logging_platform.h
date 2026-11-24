@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_OPENSCREEN_PLATFORM_EVENT_TRACE_LOGGING_PLATFORM_H_
 #define COMPONENTS_OPENSCREEN_PLATFORM_EVENT_TRACE_LOGGING_PLATFORM_H_
 
-#include "third_party/openscreen/src/platform/api/trace_logging_platform.h"
-
 #include "base/containers/flat_map.h"
+#include "base/trace_event/trace_session_observer.h"
+#include "third_party/openscreen/src/platform/api/trace_logging_platform.h"
 
 namespace openscreen_platform {
 
@@ -20,7 +20,13 @@ constexpr char kOpenscreenTraceLoggingCategory[] = "openscreen";
 // categories. Flow events are the exception: they use the time that Open
 // Screen recorded, which may be earlier than now. Chrome's openscreen::Clock
 // is based on base::TimeTicks, so these times line up too.
-class EventTraceLoggingPlatform : public openscreen::TraceLoggingPlatform {
+//
+// Open Screen sees this platform only while a trace session records the
+// "openscreen" category. At all other times Open Screen has no tracing
+// destination, so its trace macros skip all work.
+class EventTraceLoggingPlatform
+    : public openscreen::TraceLoggingPlatform,
+      public base::trace_event::TraceSessionObserver {
  public:
   EventTraceLoggingPlatform();
   EventTraceLoggingPlatform(const EventTraceLoggingPlatform&) = delete;
@@ -30,8 +36,13 @@ class EventTraceLoggingPlatform : public openscreen::TraceLoggingPlatform {
   EventTraceLoggingPlatform& operator=(EventTraceLoggingPlatform&&) = delete;
   ~EventTraceLoggingPlatform() override;
 
-  // Ensures that a trace logging platform exists for the current process.
-  static void EnsureInstance();
+  // Returns the trace logging platform for the current process, creating it on
+  // first use. Chrome code that uses Open Screen calls this to set up tracing.
+  // Open Screen itself never calls it: the platform registers itself with
+  // Open Screen through openscreen::StartTracing() while a trace session
+  // records the category. Open Screen supports only one platform at a time,
+  // so code should use this instead of creating another one.
+  static EventTraceLoggingPlatform& GetInstance();
 
   // TraceLoggingPlatform implementation.
   bool IsTraceLoggingEnabled(openscreen::TraceCategory category) override;
@@ -41,6 +52,15 @@ class EventTraceLoggingPlatform : public openscreen::TraceLoggingPlatform {
   void LogAsyncEnd(openscreen::TraceEvent event) override;
   void LogFlow(openscreen::TraceEvent event,
                openscreen::FlowType type) override;
+
+  // base::trace_event::TraceSessionObserver implementation.
+  void OnStart(const perfetto::DataSourceBase::StartArgs& args) override;
+  void OnStop(const perfetto::DataSourceBase::StopArgs& args) override;
+
+ private:
+  // Registers this object with Open Screen if a trace session is recording the
+  // Open Screen category.
+  void MaybeStartTracing();
 };
 
 }  // namespace openscreen_platform

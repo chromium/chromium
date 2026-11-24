@@ -241,7 +241,7 @@ OpenscreenSessionHost::OpenscreenSessionHost(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(resource_provider_);
 
-  openscreen_platform::EventTraceLoggingPlatform::EnsureInstance();
+  openscreen_platform::EventTraceLoggingPlatform::GetInstance();
 
   mirror_settings_.SetMaxResolutionConstraints(max_resolution);
   resource_provider_->GetSocketFactory(
