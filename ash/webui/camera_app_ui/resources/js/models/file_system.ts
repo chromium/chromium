@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {assert} from '../assert.js';
+import {reportError} from '../error.js';
+import {ErrorLevel, ErrorType} from '../type.js';
 import {isFileSystemDirectoryHandle} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
@@ -88,10 +90,17 @@ async function initCameraDirectory(): Promise<DirectoryAccessEntry> {
       const dir = launchParams.files[0];
       assert(isFileSystemDirectoryHandle(dir));
 
-      await idb.set(idb.KEY_CAMERA_DIRECTORY_HANDLE, dir);
-      window.sessionStorage.setItem('IsConsumedHandle', 'true');
-
-      handle.signal(dir);
+      // Persist the handle and 'IsConsumedHandle' before signaling so an
+      // immediate reload does not miss the already-consumed launchQueue, while
+      // still signaling if IndexedDB fails (e.g. QuotaExceededError).
+      try {
+        await idb.set(idb.KEY_CAMERA_DIRECTORY_HANDLE, dir);
+        window.sessionStorage.setItem('IsConsumedHandle', 'true');
+      } catch (e) {
+        reportError(ErrorType.FILE_SYSTEM_FAILURE, ErrorLevel.WARNING, e);
+      } finally {
+        handle.signal(dir);
+      }
     });
   }
   const dir = await handle.wait();

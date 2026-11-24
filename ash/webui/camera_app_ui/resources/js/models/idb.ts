@@ -8,21 +8,49 @@ const DB_STORE = 'store';
 // Key of the camera directory handle.
 export const KEY_CAMERA_DIRECTORY_HANDLE = 'CameraDirectoryHandle';
 
-const idb = new Promise<IDBDatabase>((resolve, reject) => {
-  const request = indexedDB.open(DB_NAME);
-  request.onerror = () => {
-    reject(request.error);
-  };
-  request.onupgradeneeded = () => {
-    const db = request.result;
-    db.createObjectStore(DB_STORE, {
-      keyPath: 'id',
-    });
-  };
-  request.onsuccess = () => {
-    resolve(request.result);
-  };
-});
+let idbPromise: Promise<IDBDatabase>|null = null;
+
+/**
+ * Opens IndexedDB lazily on first use to avoid import-time unhandled
+ * rejections under low disk space and skip opening on OPFS/intent paths.
+ */
+function getIdb(): Promise<IDBDatabase> {
+  if (idbPromise !== null) {
+    return idbPromise;
+  }
+  let request: IDBOpenDBRequest;
+  try {
+    request = indexedDB.open(DB_NAME);
+  } catch (e) {
+    return Promise.reject(e);
+  }
+  const promise = new Promise<IDBDatabase>((resolve, reject) => {
+    const clearCachedPromise = () => {
+      if (idbPromise === promise) {
+        idbPromise = null;
+      }
+    };
+    request.onerror = () => {
+      clearCachedPromise();
+      reject(request.error ?? new Error('Failed to open IndexedDB'));
+    };
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      db.createObjectStore(DB_STORE, {
+        keyPath: 'id',
+      });
+    };
+    request.onsuccess = () => {
+      const db = request.result;
+      db.onclose = () => {
+        clearCachedPromise();
+      };
+      resolve(db);
+    };
+  });
+  idbPromise = promise;
+  return promise;
+}
 
 /**
  * Retrieves serializable object from idb.
@@ -30,11 +58,13 @@ const idb = new Promise<IDBDatabase>((resolve, reject) => {
  * @param key The key of the object.
  */
 export async function get<T>(key: string): Promise<T|null> {
-  const transaction = (await idb).transaction(DB_STORE, 'readonly');
+  const transaction = (await getIdb()).transaction(DB_STORE, 'readonly');
   const objStore = transaction.objectStore(DB_STORE);
   const request = objStore.get(key);
   return new Promise<T|null>((resolve, reject) => {
-    request.onerror = () => reject(request.error);
+    request.onerror = () => {
+      reject(request.error ?? new Error('IndexedDB get request failed'));
+    };
     request.onsuccess = () => {
       const entry = request.result;
       if (entry === undefined) {
@@ -53,11 +83,17 @@ export async function get<T>(key: string): Promise<T|null> {
  * @param obj The object to store.
  */
 export async function set(key: string, obj: unknown): Promise<void> {
-  const transaction = (await idb).transaction(DB_STORE, 'readwrite');
+  const transaction = (await getIdb()).transaction(DB_STORE, 'readwrite');
   const objStore = transaction.objectStore(DB_STORE);
-  const request = objStore.put({id: key, value: obj});
+  objStore.put({id: key, value: obj});
   return new Promise((resolve, reject) => {
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve();
+    // Wait for transaction commit rather than put's onsuccess because
+    // low-disk-space quota errors can abort the write during commit, and any
+    // unhandled put error also aborts the transaction.
+    transaction.onabort = () => {
+      reject(
+          transaction.error ?? new Error('IndexedDB set transaction failed'));
+    };
+    transaction.oncomplete = () => resolve();
   });
 }
