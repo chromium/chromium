@@ -8,16 +8,16 @@ namespace switches {
 
 const char kEnableDistillabilityService[] = "enable-distillability-service";
 const char kEnableWebDistiller[] = "enable-dom-distiller";
-const char kReaderModeHeuristics[] = "reader-mode-heuristics";
+const char kDistillerHeuristics[] = "reader-mode-heuristics";
 const char kReaderModeFeedback[] = "reader-mode-feedback";
 
-namespace reader_mode_heuristics {
+namespace distiller_heuristics {
 const char kAdaBoost[] = "adaboost";
 const char kAllArticles[] = "allarticles";
 const char kOGArticle[] = "opengraph";
 const char kAlwaysTrue[] = "alwaystrue";
 const char kNone[] = "none";
-}  // namespace reader_mode_heuristics
+}  // namespace distiller_heuristics
 
 const char kReaderModeDiscoverabilityParamName[] = "discoverability";
 const char kReaderModeOfferInSettings[] = "offer-in-settings";

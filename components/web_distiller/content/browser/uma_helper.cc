@@ -94,39 +94,4 @@ void UMAHelper::UpdateTimersOnContentsChange(
   driver->GetTimer().Resume();
 }
 
-// static
-void UMAHelper::StartTimerIfNeeded(content::WebContents* web_contents,
-                                   ReaderModePageType page_type) {
-  CHECK(web_contents);
-  DistillabilityDriver::CreateForWebContents(web_contents);
-  DistillabilityDriver* driver =
-      DistillabilityDriver::FromWebContents(web_contents);
-  CHECK(driver);
-
-  if (page_type == ReaderModePageType::kDistilled) {
-    // If this is a distilled page, ensure the timer is running.
-    driver->GetTimer().Start(/* is_distilled_page */ true);
-  } else if (page_type == ReaderModePageType::kDistillable) {
-    // If we are on a distillable page, ensure the timer is running.
-    driver->GetTimer().Start(false);
-  }
-}
-
-// static
-void UMAHelper::UpdateTimersOnNavigation(content::WebContents* web_contents,
-                                         ReaderModePageType page_type) {
-  CHECK(web_contents);
-  DistillabilityDriver::CreateForWebContents(web_contents);
-  DistillabilityDriver* driver =
-      DistillabilityDriver::FromWebContents(web_contents);
-  CHECK(driver);
-
-  if (!driver->GetTimer().HasStarted()) {
-    return;
-  }
-
-  // Stop timing distilled pages when a user navigates away.
-  driver->GetTimer().Reset();
-}
-
 }  // namespace web_distiller

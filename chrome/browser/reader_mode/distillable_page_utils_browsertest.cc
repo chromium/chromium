@@ -86,7 +86,7 @@ class TestOption : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableWebDistiller);
-    command_line->AppendSwitchASCII(switches::kReaderModeHeuristics, Option);
+    command_line->AppendSwitchASCII(switches::kDistillerHeuristics, Option);
     command_line->AppendSwitch(switches::kEnableDistillabilityService);
   }
 
@@ -154,7 +154,7 @@ MATCHER(IsMobileFriendly,
 }
 
 using DistillablePageUtilsBrowserTestAlways =
-    TestOption<switches::reader_mode_heuristics::kAlwaysTrue>;
+    TestOption<switches::distiller_heuristics::kAlwaysTrue>;
 
 IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAlways,
                        AllRealPathsCallObserverOnceWithIsDistillable) {
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAlways,
 }
 
 using DistillablePageUtilsBrowserTestNone =
-    TestOption<switches::reader_mode_heuristics::kNone>;
+    TestOption<switches::distiller_heuristics::kNone>;
 
 IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestNone, NeverCallObserver) {
   EXPECT_CALL(holder_, OnResult(_)).Times(0);
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestNone, NeverCallObserver) {
 }
 
 using DistillablePageUtilsBrowserTestOGArticle =
-    TestOption<switches::reader_mode_heuristics::kOGArticle>;
+    TestOption<switches::distiller_heuristics::kOGArticle>;
 
 IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestOGArticle,
                        ArticlesCallObserverOnceWithIsDistillable) {
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestOGArticle,
 }
 
 using DistillablePageUtilsBrowserTestAdaboost =
-    TestOption<switches::reader_mode_heuristics::kAdaBoost>;
+    TestOption<switches::distiller_heuristics::kAdaBoost>;
 
 IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAdaboost,
                        SimpleArticlesCallObserverTwiceWithIsDistillable) {
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAdaboost,
 }
 
 using DistillablePageUtilsBrowserTestAllArticles =
-    TestOption<switches::reader_mode_heuristics::kAllArticles>;
+    TestOption<switches::distiller_heuristics::kAllArticles>;
 
 IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
                        SimpleArticlesCallObserverTwiceWithIsDistillable) {

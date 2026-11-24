@@ -17,24 +17,24 @@ DistillerHeuristicsType GetDistillerHeuristicsType() {
       base::FieldTrialList::FindFullName("ReaderModeUI");
   const std::string switch_value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kReaderModeHeuristics);
+          switches::kDistillerHeuristics);
   if (switch_value != "") {
-    if (switch_value == switches::reader_mode_heuristics::kAdaBoost) {
+    if (switch_value == switches::distiller_heuristics::kAdaBoost) {
       return DistillerHeuristicsType::ADABOOST_MODEL;
     }
-    if (switch_value == switches::reader_mode_heuristics::kAllArticles) {
+    if (switch_value == switches::distiller_heuristics::kAllArticles) {
       return DistillerHeuristicsType::ALL_ARTICLES;
     }
-    if (switch_value == switches::reader_mode_heuristics::kOGArticle) {
+    if (switch_value == switches::distiller_heuristics::kOGArticle) {
       return DistillerHeuristicsType::OG_ARTICLE;
     }
-    if (switch_value == switches::reader_mode_heuristics::kAlwaysTrue) {
+    if (switch_value == switches::distiller_heuristics::kAlwaysTrue) {
       return DistillerHeuristicsType::ALWAYS_TRUE;
     }
-    if (switch_value == switches::reader_mode_heuristics::kNone) {
+    if (switch_value == switches::distiller_heuristics::kNone) {
       return DistillerHeuristicsType::NONE;
     }
-    NOTREACHED() << "Invalid value for " << switches::kReaderModeHeuristics;
+    NOTREACHED() << "Invalid value for " << switches::kDistillerHeuristics;
   } else {
     if (base::StartsWith(group_name, "AdaBoost",
                          base::CompareCase::INSENSITIVE_ASCII)) {

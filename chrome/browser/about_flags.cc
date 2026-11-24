@@ -823,19 +823,18 @@ const FeatureEntry::Choice kSubmenuTypeOverrideChoices[] = {
 const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kReaderModeHeuristicsMarkup,
-     switches::kReaderModeHeuristics,
-     switches::reader_mode_heuristics::kOGArticle},
+     switches::kDistillerHeuristics,
+     switches::distiller_heuristics::kOGArticle},
     {flag_descriptions::kReaderModeHeuristicsAdaboost,
-     switches::kReaderModeHeuristics,
-     switches::reader_mode_heuristics::kAdaBoost},
+     switches::kDistillerHeuristics, switches::distiller_heuristics::kAdaBoost},
     {flag_descriptions::kReaderModeHeuristicsAlwaysOn,
-     switches::kReaderModeHeuristics,
-     switches::reader_mode_heuristics::kAlwaysTrue},
+     switches::kDistillerHeuristics,
+     switches::distiller_heuristics::kAlwaysTrue},
     {flag_descriptions::kReaderModeHeuristicsAlwaysOff,
-     switches::kReaderModeHeuristics, switches::reader_mode_heuristics::kNone},
+     switches::kDistillerHeuristics, switches::distiller_heuristics::kNone},
     {flag_descriptions::kReaderModeHeuristicsAllArticles,
-     switches::kReaderModeHeuristics,
-     switches::reader_mode_heuristics::kAllArticles},
+     switches::kDistillerHeuristics,
+     switches::distiller_heuristics::kAllArticles},
 };
 
 const FeatureEntry::Choice kForceUpdateMenuTypeChoices[] = {

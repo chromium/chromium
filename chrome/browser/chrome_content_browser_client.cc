@@ -3286,7 +3286,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         switches::kEnableExperimentalWebAssemblyFeatures,
         embedder_support::kOriginTrialDisabledFeatures,
         embedder_support::kOriginTrialPublicKey,
-        switches::kReaderModeHeuristics,
+        switches::kDistillerHeuristics,
         sync_tab_context::kTabContextAllowedOriginSwitch,
         translate::switches::kTranslateSecurityOrigin,
     };

@@ -21,19 +21,19 @@ extern const char kEnableWebDistiller[];
 // Switch to enable specific heuristics for detecting if a page is distillable
 // or not.
 COMPONENT_EXPORT(WEB_DISTILLER_FEATURES)
-extern const char kReaderModeHeuristics[];
+extern const char kDistillerHeuristics[];
 
 // Switch to control the display of the distiller feedback form.
 COMPONENT_EXPORT(WEB_DISTILLER_FEATURES)
 extern const char kReaderModeFeedback[];
 
-namespace reader_mode_heuristics {
+namespace distiller_heuristics {
 COMPONENT_EXPORT(WEB_DISTILLER_FEATURES) extern const char kAdaBoost[];
 COMPONENT_EXPORT(WEB_DISTILLER_FEATURES) extern const char kAllArticles[];
 COMPONENT_EXPORT(WEB_DISTILLER_FEATURES) extern const char kOGArticle[];
 COMPONENT_EXPORT(WEB_DISTILLER_FEATURES) extern const char kAlwaysTrue[];
 COMPONENT_EXPORT(WEB_DISTILLER_FEATURES) extern const char kNone[];
-}  // namespace reader_mode_heuristics
+}  // namespace distiller_heuristics
 
 COMPONENT_EXPORT(WEB_DISTILLER_FEATURES)
 extern const char kReaderModeDiscoverabilityParamName[];
