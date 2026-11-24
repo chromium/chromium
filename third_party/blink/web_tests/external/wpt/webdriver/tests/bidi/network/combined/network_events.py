@@ -549,28 +549,29 @@ async def test_dedicated_worker_subscribe_to_user_context(
     assert len(fetch_started_events) == 1
     assert len(fetch_completed_events) == 1
 
-    # Check the worker's network events include the subscribed userContext.
+    # Check the worker's network events have context set to null since worker
+    # requests are not associated with a navigable.
     expected_request = {"method": "GET", "url": text_url}
     expected_response = {"url": text_url}
     assert_before_request_sent_event(
         fetch_before_events[0],
         expected_event={
             "request": expected_request,
-            "userContext": user_context,
+            "context": None,
         },
     )
     assert_response_event(
         fetch_started_events[0],
         expected_event={
             "response": expected_response,
-            "userContext": user_context,
+            "context": None,
         },
     )
     assert_response_event(
         fetch_completed_events[0],
         expected_event={
             "response": expected_response,
-            "userContext": user_context,
+            "context": None,
         },
     )
 
