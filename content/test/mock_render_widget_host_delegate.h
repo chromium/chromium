@@ -46,6 +46,10 @@ class MockRenderWidgetHostDelegate
   void set_focused_widget(RenderWidgetHostImpl* focused_widget) {
     focused_widget_ = focused_widget;
   }
+  void set_primary_main_frame_widget(
+      std::optional<RenderWidgetHostImpl*> primary_main_frame_widget) {
+    primary_main_frame_widget_ = primary_main_frame_widget;
+  }
   void set_pre_handle_keyboard_event_result(
       KeyboardEventProcessingResult result) {
     pre_handle_keyboard_event_result_ = result;
@@ -84,6 +88,8 @@ class MockRenderWidgetHostDelegate
   RenderWidgetHostImpl* GetRenderWidgetHostWithPageFocus() override;
   void SendScreenRects() override;
   TextInputManager* GetTextInputManager() override;
+  bool IsWidgetForPrimaryMainFrame(
+      RenderWidgetHostImpl* render_widget_host) override;
   bool IsFullscreen() override;
   RenderViewHostDelegateView* GetDelegateView() override;
   VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() override;
@@ -106,6 +112,7 @@ class MockRenderWidgetHostDelegate
   bool is_fullscreen_ = false;
   TextInputManager text_input_manager_;
   raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> focused_widget_ = nullptr;
+  std::optional<raw_ptr<RenderWidgetHostImpl>> primary_main_frame_widget_;
   KeyboardEventProcessingResult pre_handle_keyboard_event_result_ =
       KeyboardEventProcessingResult::NOT_HANDLED;
   bool pre_handle_mouse_event_result_ = false;

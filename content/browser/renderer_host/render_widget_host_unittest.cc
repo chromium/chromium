@@ -606,6 +606,10 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
     return visible_time_request_trigger_;
   }
 
+  bool IsWidgetForPrimaryMainFrame(RenderWidgetHostImpl*) override {
+    return true;
+  }
+
  private:
   bool prehandle_keyboard_event_;
   bool prehandle_keyboard_event_is_shortcut_;

@@ -113,6 +113,7 @@
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/input_method_observer.h"
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
@@ -8856,6 +8857,88 @@ TEST_F(RenderWidgetHostViewAuraReentrantDestructionIME,
   ui::GestureEventDetails tap_details(ui::EventType::kGestureTap);
   ui::GestureEvent gesture_tap(10, 10, 0, ui::EventTimeForNow(), tap_details);
   target_view->OnGestureEvent(&gesture_tap);
+}
+
+using RenderWidgetHostViewAuraIMETest =
+    RenderWidgetHostViewAuraReentrantDestructionIME;
+
+// Regression test for crbug.com/574410501: during a cross-RenderFrameHost
+// navigation, CommitPending() swaps the primary main frame to the incoming
+// RenderWidgetHostViewAura and focuses it before UnloadOldFrame() clears
+// TextInputManager::active_view_ for the outgoing view. Verify that when the
+// outgoing (now non-primary) view subsequently deactivates, the focused
+// incoming view dispatches OnTextInputTypeChanged(TEXT_INPUT_TYPE_NONE) to the
+// InputMethod so any open virtual keyboard is dismissed.
+TEST_F(RenderWidgetHostViewAuraIMETest, DeactivatingOldPrimaryNotifiesIME) {
+  class RecordingInputMethodObserver : public ui::InputMethodObserver {
+   public:
+    void OnFocus() override {}
+    void OnBlur() override {}
+    void OnCaretBoundsChanged(const ui::TextInputClient* client) override {}
+    void OnTextInputStateChanged(const ui::TextInputClient* client) override {
+      notifications.emplace_back(client, client ? client->GetTextInputType()
+                                                : ui::TEXT_INPUT_TYPE_NONE);
+    }
+    void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
+
+    std::vector<std::pair<const ui::TextInputClient*, ui::TextInputType>>
+        notifications;
+  };
+
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+
+  MockRenderWidgetHostDelegate* delegate = render_widget_host_delegate();
+  TextInputManager* manager = GetTextInputManager(view_);
+
+  // 1) `view_` is the focused primary main frame widget with an active search
+  // input (e.g. chrome://os-settings/ search box).
+  delegate->set_primary_main_frame_widget(widget_host_);
+  delegate->set_focused_widget(widget_host_);
+  view_->OnWindowFocused(view_->GetNativeView(), nullptr);
+  ASSERT_EQ(view_.get(), input_method_->GetTextInputClient());
+
+  ui::mojom::TextInputState search_state;
+  search_state.type = ui::TEXT_INPUT_TYPE_SEARCH;
+  manager->UpdateTextInputState(view_, search_state);
+  ASSERT_EQ(view_.get(), manager->active_view_for_testing());
+  ASSERT_EQ(ui::TEXT_INPUT_TYPE_SEARCH, view_->GetTextInputType());
+
+  // 2) Create speculative `new_view` after `view_` is already active, then
+  // simulate CommitPending(): `new_host` becomes the primary main frame and
+  // `new_view` gains Aura focus while `active_view_` still points to `view_`.
+  auto* new_host = MockRenderWidgetHostImpl::Create(
+      GetFrameTree(), delegate, site_instance_group_->GetSafeRef(),
+      process_host_->GetNextRoutingID(), /*hidden=*/false);
+  auto* new_view = new FakeRenderWidgetHostViewAura(new_host);
+  new_view->InitAsChild(nullptr);
+  ParentHostView(new_view, parent_view_);
+  ASSERT_EQ(manager, GetTextInputManager(new_view));
+
+  delegate->set_primary_main_frame_widget(new_host);
+  delegate->set_focused_widget(new_host);
+  view_->OnWindowFocused(new_view->GetNativeView(), view_->GetNativeView());
+  new_view->OnWindowFocused(new_view->GetNativeView(), view_->GetNativeView());
+  ASSERT_EQ(new_view, input_method_->GetTextInputClient());
+  ASSERT_EQ(ui::TEXT_INPUT_TYPE_SEARCH, new_view->GetTextInputType());
+  ASSERT_FALSE(manager->IsViewFocused(view_));
+
+  // 3) Simulate UnloadOldFrame() -> DidEnterBackForwardCache(`view_`) clearing
+  // `active_view_`. `new_view` must notify the InputMethod that its
+  // TextInputType transitioned from SEARCH to NONE.
+  RecordingInputMethodObserver observer;
+  input_method_->AddObserver(&observer);
+  manager->DidEnterBackForwardCache(view_);
+  input_method_->RemoveObserver(&observer);
+
+  EXPECT_EQ(nullptr, manager->active_view_for_testing());
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, new_view->GetTextInputType());
+  ASSERT_EQ(1u, observer.notifications.size());
+  EXPECT_EQ(new_view, observer.notifications[0].first);
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, observer.notifications[0].second);
+
+  delegate->set_primary_main_frame_widget(std::nullopt);
+  DestroyView(new_view);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

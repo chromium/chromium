@@ -3045,6 +3045,7 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
     if (input_method) {
       // Ask the system-wide IME to send all TextInputClient messages to |this|
       // object.
+      last_text_input_type_ = GetTextInputType();
       auto weak_this = weak_ptr_factory_.GetWeakPtr();
       input_method->SetFocusedTextInputClient(this);
       if (!weak_this) {
@@ -3649,6 +3650,7 @@ void RenderWidgetHostViewAura::AddedToRootWindow() {
   if (HasFocus()) {
     ui::InputMethod* input_method = GetInputMethod();
     if (input_method) {
+      last_text_input_type_ = GetTextInputType();
       input_method->SetFocusedTextInputClient(this);
       if (!weak_this) {
         return;
@@ -3694,6 +3696,7 @@ void RenderWidgetHostViewAura::RemovingFromRootWindow() {
 void RenderWidgetHostViewAura::DetachFromInputMethod(bool is_removed) {
   ui::InputMethod* input_method = GetInputMethod();
   if (input_method) {
+    last_text_input_type_ = ui::TEXT_INPUT_TYPE_NONE;
     auto weak_this = weak_ptr_factory_.GetWeakPtr();
     input_method->DetachTextInputClient(this);
     if (!weak_this) {
