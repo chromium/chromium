@@ -22,7 +22,7 @@ class TestInternalAuthenticator : public webauthn::InternalAuthenticator {
   void SetPaymentOptions(blink::mojom::PaymentOptionsPtr payment) override {}
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
-      blink::mojom::Authenticator::MakeCredentialCallback callback) override {}
+      blink::mojom::Authenticator::MakeCredentialCallback callback) override;
   void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
                     GetAssertionCallback callback) override {}
   void IsUserVerifyingPlatformAuthenticatorAvailable(
@@ -37,6 +37,13 @@ class TestInternalAuthenticator : public webauthn::InternalAuthenticator {
       webauthn::GetMatchingCredentialIdsCallback callback) override {}
   void Cancel() override {}
   content::RenderFrameHost* GetRenderFrameHost() override;
+
+  // Whether MakeCredential() was called, i.e. whether the creation of a
+  // credential was requested.
+  bool make_credential_called() const { return make_credential_called_; }
+
+ private:
+  bool make_credential_called_ = false;
 };
 
 }  // namespace autofill

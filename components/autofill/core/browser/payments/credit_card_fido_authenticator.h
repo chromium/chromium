@@ -66,6 +66,8 @@ class CreditCardFidoAuthenticator
     kOptOutFlow,
     // Authorization of a new card.
     kFollowupAfterCvcAuthFlow,
+    // Enrollment into FIDO authentication by the request that unmasks a card.
+    kEnrollmentDuringUnmaskFlow,
   };
   // The response of FIDO authentication, including necessary information needed
   // by the subclasses.
@@ -121,6 +123,23 @@ class CreditCardFidoAuthenticator
       base::WeakPtr<Requester> requester,
       base::DictValue request_options,
       std::optional<std::string> context_token = std::nullopt);
+
+  // Invokes the enrollment during unmask flow: the WebAuthn response is sent
+  // with the request that unmasks `card`, so that a single request both enrolls
+  // this device into FIDO authentication and responds to `requester` with the
+  // full pan. A new credential is created from `creation_options`.
+  void EnrollAndAuthenticateWithCreationOptions(
+      CreditCard card,
+      base::WeakPtr<Requester> requester,
+      base::DictValue creation_options);
+
+  // Same as EnrollAndAuthenticateWithCreationOptions(), except that
+  // `request_options` are signed with a credential that already exists on this
+  // device instead of creating a new one.
+  void EnrollAndAuthenticateWithRequestOptions(
+      CreditCard card,
+      base::WeakPtr<Requester> requester,
+      base::DictValue request_options);
 
   // Invokes Registration flow. Sends credentials created from
   // |creation_options| along with the |card_authorization_token| to Payments in
@@ -268,6 +287,11 @@ class CreditCardFidoAuthenticator
   void HandleGetAssertionSuccess(
       blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response);
   void HandleGetAssertionFailure();
+
+  // Sends `fido_authenticator_response`, the WebAuthn response of the
+  // enrollment during unmask flow, with the request that unmasks `card_`.
+  void GetFullCardViaFidoEnrollment(
+      base::DictValue fido_authenticator_response);
 
   // Gets or creates Authenticator pointer to facilitate WebAuthn.
   webauthn::InternalAuthenticator* authenticator();

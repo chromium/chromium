@@ -38,10 +38,13 @@
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
+#include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
+#include "components/autofill/core/browser/payments/test_internal_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -180,6 +183,21 @@ class CreditCardFidoAuthenticatorTest
                                                PaymentsRpcCardType::kServerCard;
     fido_authenticator().full_card_request_->OnDidGetRealPan(
         result, response.with_real_pan(real_pan));
+  }
+
+  // Returns the details of the pending request that unmasks the card.
+  const payments::UnmaskRequestDetails* GetUnmaskRequestDetails() {
+    CHECK(fido_authenticator().full_card_request_);
+    return fido_authenticator()
+        .full_card_request_->GetUnmaskRequestDetailsForTesting();
+  }
+
+  // Returns whether the creation of a credential was requested from the
+  // platform authenticator.
+  bool MakeCredentialCalled() {
+    return static_cast<TestInternalAuthenticator*>(
+               fido_authenticator().authenticator())
+        ->make_credential_called();
   }
 
   // Mocks an OptChange response from the PaymentsNetworkInterface.
@@ -445,6 +463,206 @@ TEST_F(CreditCardFidoAuthenticatorTest, AuthenticateCard_Success) {
 
   EXPECT_TRUE((*requester().did_succeed()));
   EXPECT_EQ(requester().number(), kTestNumber16);
+}
+
+TEST_F(CreditCardFidoAuthenticatorTest,
+       EnrollAndAuthenticateWithCreationOptions_BadCreationOptions) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+
+  fido_authenticator().EnrollAndAuthenticateWithCreationOptions(
+      card, requester().GetWeakPtr(),
+      GetTestCreationOptions(/*challenge=*/"", kTestRelyingPartyId));
+
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kNoneFlow);
+  ASSERT_TRUE(requester().did_succeed().has_value());
+  EXPECT_FALSE(*requester().did_succeed());
+}
+
+// Ensures the requester is told when the WebAuthn prompt that creates the
+// credential fails, and that the failure is not treated like a failed opt-in.
+TEST_F(CreditCardFidoAuthenticatorTest,
+       EnrollAndAuthenticateWithCreationOptions_UserVerificationFailed) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+
+  fido_authenticator().EnrollAndAuthenticateWithCreationOptions(
+      card, requester().GetWeakPtr(),
+      GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId));
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kEnrollmentDuringUnmaskFlow);
+
+  TestCreditCardFidoAuthenticator::MakeCredential(&fido_authenticator(),
+                                                  /*did_succeed=*/false);
+
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kNoneFlow);
+  ASSERT_TRUE(requester().did_succeed().has_value());
+  EXPECT_FALSE(*requester().did_succeed());
+  EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
+  EXPECT_EQ(fido_authenticator()
+                .GetOrCreateFidoAuthenticationStrikeDatabase()
+                ->GetStrikes(),
+            0);
+}
+
+// Ensures the attestation of the new credential is sent with the request that
+// unmasks the card, and that the device is not considered enrolled if the
+// server declines that request.
+TEST_F(CreditCardFidoAuthenticatorTest,
+       EnrollAndAuthenticateWithCreationOptions_PaymentsResponseError) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+
+  fido_authenticator().EnrollAndAuthenticateWithCreationOptions(
+      card, requester().GetWeakPtr(),
+      GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId));
+  TestCreditCardFidoAuthenticator::MakeCredential(&fido_authenticator(),
+                                                  /*did_succeed=*/true);
+
+  const payments::UnmaskRequestDetails* request = GetUnmaskRequestDetails();
+  ASSERT_TRUE(request);
+  ASSERT_TRUE(request->fido_authenticator_response.has_value());
+  EXPECT_TRUE(
+      request->fido_authenticator_response->contains("fido_attestation_info"));
+  EXPECT_FALSE(request->fido_assertion_info.has_value());
+
+  GetRealPan(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      "");
+
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kNoneFlow);
+  ASSERT_TRUE(requester().did_succeed().has_value());
+  EXPECT_FALSE(*requester().did_succeed());
+  EXPECT_EQ(requester().failure_type(),
+            CreditCardFidoAuthenticator::FidoAuthenticationResponse::
+                FailureType::kVerificationDeclined);
+  EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
+}
+
+// Ensures a successful enrollment during unmask returns the card and records
+// that the user is now opted in to FIDO authentication.
+TEST_F(CreditCardFidoAuthenticatorTest,
+       EnrollAndAuthenticateWithCreationOptions_Success) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+  ASSERT_FALSE(fido_authenticator().IsUserOptedIn());
+
+  fido_authenticator().EnrollAndAuthenticateWithCreationOptions(
+      card, requester().GetWeakPtr(),
+      GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId));
+  TestCreditCardFidoAuthenticator::MakeCredential(&fido_authenticator(),
+                                                  /*did_succeed=*/true);
+  GetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+             kTestNumber);
+
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kNoneFlow);
+  ASSERT_TRUE(requester().did_succeed().has_value());
+  EXPECT_TRUE(*requester().did_succeed());
+  EXPECT_EQ(requester().number(), kTestNumber16);
+  EXPECT_TRUE(fido_authenticator().IsUserOptedIn());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// On desktop, creating a credential for an opt-in requires that the WebAuthn
+// offer dialog is still showing. The enrollment during unmask flow has no such
+// dialog and must not depend on one.
+TEST_F(CreditCardFidoAuthenticatorTest,
+       EnrollAndAuthenticateWithCreationOptions_NoWebauthnDialogRequired) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+  payments_autofill_client().set_is_webauthn_dialog_showing(false);
+
+  fido_authenticator().EnrollAndAuthenticateWithCreationOptions(
+      card, requester().GetWeakPtr(),
+      GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId));
+
+  // The credential is being created, and the requester waits for the result.
+  EXPECT_TRUE(MakeCredentialCalled());
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kEnrollmentDuringUnmaskFlow);
+  EXPECT_FALSE(requester().did_succeed().has_value());
+}
+
+// Ensures a credential is still not created for an opt-in whose WebAuthn offer
+// dialog was closed in the meantime.
+TEST_F(CreditCardFidoAuthenticatorTest, Register_WebauthnOfferDialogClosed) {
+  payments_autofill_client().set_is_webauthn_dialog_showing(false);
+
+  fido_authenticator().Register(
+      kTestAuthToken,
+      GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId));
+
+  EXPECT_FALSE(MakeCredentialCalled());
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kNoneFlow);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(CreditCardFidoAuthenticatorTest,
+       EnrollAndAuthenticateWithRequestOptions_BadRequestOptions) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+
+  fido_authenticator().EnrollAndAuthenticateWithRequestOptions(
+      card, requester().GetWeakPtr(), base::DictValue());
+
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kNoneFlow);
+  ASSERT_TRUE(requester().did_succeed().has_value());
+  EXPECT_FALSE(*requester().did_succeed());
+}
+
+TEST_F(CreditCardFidoAuthenticatorTest,
+       EnrollAndAuthenticateWithRequestOptions_UserVerificationFailed) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+
+  fido_authenticator().EnrollAndAuthenticateWithRequestOptions(
+      card, requester().GetWeakPtr(),
+      GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
+                            kTestCredentialId));
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kEnrollmentDuringUnmaskFlow);
+
+  TestCreditCardFidoAuthenticator::GetAssertion(&fido_authenticator(),
+                                                /*did_succeed=*/false);
+
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kNoneFlow);
+  ASSERT_TRUE(requester().did_succeed().has_value());
+  EXPECT_FALSE(*requester().did_succeed());
+  EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
+}
+
+// Ensures that an assertion signed with an existing credential enrolls the
+// device as well: it is sent as the FIDO authenticator response of the request
+// that unmasks the card rather than as a plain FIDO assertion, which would
+// only authenticate.
+TEST_F(CreditCardFidoAuthenticatorTest,
+       EnrollAndAuthenticateWithRequestOptions_Success) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+  ASSERT_FALSE(fido_authenticator().IsUserOptedIn());
+
+  fido_authenticator().EnrollAndAuthenticateWithRequestOptions(
+      card, requester().GetWeakPtr(),
+      GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
+                            kTestCredentialId));
+  TestCreditCardFidoAuthenticator::GetAssertion(&fido_authenticator(),
+                                                /*did_succeed=*/true);
+
+  const payments::UnmaskRequestDetails* request = GetUnmaskRequestDetails();
+  ASSERT_TRUE(request);
+  ASSERT_TRUE(request->fido_authenticator_response.has_value());
+  EXPECT_TRUE(
+      request->fido_authenticator_response->contains("fido_assertion_info"));
+  EXPECT_FALSE(request->fido_assertion_info.has_value());
+
+  GetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+             kTestNumber);
+
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kNoneFlow);
+  ASSERT_TRUE(requester().did_succeed().has_value());
+  EXPECT_TRUE(*requester().did_succeed());
+  EXPECT_EQ(requester().number(), kTestNumber16);
+  EXPECT_TRUE(fido_authenticator().IsUserOptedIn());
 }
 
 TEST_F(CreditCardFidoAuthenticatorTest, OptIn_PaymentsResponseError) {

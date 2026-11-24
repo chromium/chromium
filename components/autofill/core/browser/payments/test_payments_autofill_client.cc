@@ -101,7 +101,7 @@ void TestPaymentsAutofillClient::ShowWebauthnVerifyPendingDialog(
 void TestPaymentsAutofillClient::UpdateWebauthnOfferDialogWithError() {}
 
 bool TestPaymentsAutofillClient::CloseWebauthnDialog() {
-  return true;
+  return is_webauthn_dialog_showing_;
 }
 
 void TestPaymentsAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {

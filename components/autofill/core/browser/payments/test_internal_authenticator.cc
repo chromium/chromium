@@ -6,6 +6,12 @@
 
 namespace autofill {
 
+void TestInternalAuthenticator::MakeCredential(
+    blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+    blink::mojom::Authenticator::MakeCredentialCallback callback) {
+  make_credential_called_ = true;
+}
+
 void TestInternalAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
     blink::mojom::Authenticator::
         IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {

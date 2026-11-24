@@ -410,6 +410,12 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool omnibox_autofill_chip_shown() { return omnibox_autofill_chip_shown_; }
 
   bool omnibox_autofill_chip_hidden() { return omnibox_autofill_chip_hidden_; }
+
+  // Sets whether a WebAuthn dialog is showing, which is what
+  // CloseWebauthnDialog() reports back to its caller.
+  void set_is_webauthn_dialog_showing(bool is_webauthn_dialog_showing) {
+    is_webauthn_dialog_showing_ = is_webauthn_dialog_showing;
+  }
 #endif
 
  private:
@@ -525,6 +531,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool omnibox_autofill_chip_shown_ = false;
 
   bool omnibox_autofill_chip_hidden_ = false;
+
+  // This value is returned by CloseWebauthnDialog().
+  bool is_webauthn_dialog_showing_ = true;
 #endif
 };
 
