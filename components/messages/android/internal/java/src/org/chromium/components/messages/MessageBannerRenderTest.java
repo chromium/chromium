@@ -343,7 +343,7 @@ public class MessageBannerRenderTest {
                             return view;
                         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        View mainContent = getMainContent(result);
+        View mainContent = result.getMainContentForTesting();
         mRenderTestRule.render(mainContent, "message_banner_basic_with_reset_primary_button_text");
     }
 

@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.AccountPreviewPreference;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -484,13 +485,20 @@ public class AccountPickerBottomSheetRenderTest {
                 });
 
         // To cover the sign-in in progress view's height in test, the container is used instead of
-        // the bottom sheet content view to ensure the bottom sheet has a colored background with
+        // the bottom sheet content view to ensure the container has a colored background with
         // correct height in the screenshot.
         // This is needed since the sign-in in progress view's height is defined by the previously
         // shown view's height, and can change from one test to another.
-        View bottomSheetContainer =
-                mActivityTestRule.getActivity().findViewById(R.id.sheet_container);
-        mRenderTestRule.render(bottomSheetContainer, testId);
+        View containerView =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                SigninUtils.shouldShowAccountPickerDialog(
+                                                mActivityTestRule.getActivity())
+                                        ? bottomSheetView.getRootView()
+                                        : mActivityTestRule
+                                                .getActivity()
+                                                .findViewById(R.id.sheet_container));
+        mRenderTestRule.render(containerView, testId);
     }
 
     private void expandBottomSheet() {

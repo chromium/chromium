@@ -495,13 +495,12 @@ public class TabListEditorMenuTest {
         PopupListener listener = new PopupListener();
         openMenu(listener);
         assertMenuItem("Close tab", true);
+        forceFinishRollAnimation();
+        mRenderTestRule.render(mTabListEditorMenu.getContentView(), "singleMenuItemEnabled_Menu");
         clickMenuItem("Close tab");
         helper.waitForCallback(0);
 
-        forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "singleMenuItemEnabled_Toolbar");
-        mRenderTestRule.render(
-                mTabListEditorMenu.getContentView(), "singleMenuItemEnabled_Menu");
         closeMenu(listener);
 
         assertEquals(1, processedTabs.size());
