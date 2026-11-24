@@ -183,16 +183,16 @@ bool IsPathExcluded(const base::FilePath& path,
                      });
 }
 
-// The same as the static function of `ScreenAIServiceRouter` as we are not
-// allowed to include it directly. It's not expected to change this function and
-// to sync it to `ScreenAIServiceRouter`. Instead, we would like this function
-// to sync when there is an update in `ScreenAIServiceRouter` so that we can
-// re-try OCR with the right delay.
+// The same as the static function of `ScreenAIServiceHandlerBase` as we are
+// not allowed to include it directly. It's not expected to change this function
+// and to sync it to `ScreenAIServiceHandlerBase`. Instead, we would like this
+// function to sync when there is an update in `ScreenAIServiceHandlerBase` so
+// that we can re-try OCR with the right delay.
 // LINT.IfChange(SuggestedWaitTimeBeforeReAttempt)
 base::TimeDelta SuggestedWaitTimeBeforeReAttempt(uint32_t reattempt_number) {
   return base::Minutes(reattempt_number * reattempt_number);
 }
-// LINT.ThenChange(//chrome/browser/screen_ai/screen_ai_service_router.cc:SuggestedWaitTimeBeforeReAttempt)
+// LINT.ThenChange(//chrome/browser/screen_ai/screen_ai_service_handler_base.cc:SuggestedWaitTimeBeforeReAttempt)
 
 }  // namespace
 

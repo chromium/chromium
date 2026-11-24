@@ -11,7 +11,6 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/screen_ai/screen_ai_service_handler_main_content_extraction.h"
 #include "chrome/browser/screen_ai/screen_ai_service_handler_ocr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -34,10 +33,6 @@ class ScreenAIServiceRouter : public KeyedService {
   ScreenAIServiceRouter(const ScreenAIServiceRouter&) = delete;
   ScreenAIServiceRouter& operator=(const ScreenAIServiceRouter&) = delete;
   ~ScreenAIServiceRouter() override;
-
-  // Static method to return suggested wait time before next reconnect attempt.
-  static base::TimeDelta SuggestedWaitTimeBeforeReAttempt(
-      uint32_t reattempt_number);
 
   void BindScreenAIAnnotator(
       mojo::PendingReceiver<mojom::ScreenAIAnnotator> receiver);

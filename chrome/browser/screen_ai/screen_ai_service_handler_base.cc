@@ -27,7 +27,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_library_provider.h"
-#include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
@@ -131,6 +130,14 @@ ScreenAIServiceHandlerBase::ScreenAIServiceHandlerBase(
 
 ScreenAIServiceHandlerBase::~ScreenAIServiceHandlerBase() = default;
 
+// static
+// LINT.IfChange(SuggestedWaitTimeBeforeReAttempt)
+base::TimeDelta ScreenAIServiceHandlerBase::SuggestedWaitTimeBeforeReAttempt(
+    uint32_t reattempt_number) {
+  return base::Minutes(reattempt_number * reattempt_number);
+}
+// LINT.ThenChange(//chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.cc:SuggestedWaitTimeBeforeReAttempt)
+
 std::string ScreenAIServiceHandlerBase::GetMetricFullName(
     std::string_view metric_name) const {
   return base::StringPrintf("Accessibility.%s.Service.%s", GetServiceName(),
@@ -219,8 +226,7 @@ void ScreenAIServiceHandlerBase::OnScreenAIServiceDisconnected() {
   shutdown_handler_data_.crash_count++;
   shutdown_handler_data_.suspended = true;
   base::TimeDelta suspense_time =
-      ScreenAIServiceRouter::SuggestedWaitTimeBeforeReAttempt(
-          shutdown_handler_data_.crash_count);
+      SuggestedWaitTimeBeforeReAttempt(shutdown_handler_data_.crash_count);
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ScreenAIServiceHandlerBase::ResetSuspend,

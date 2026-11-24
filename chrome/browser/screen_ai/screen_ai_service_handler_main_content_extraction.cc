@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/screen_ai/screen_ai_service_handler_main_content_extraction.h"
+
 #include <utility>
 #include <vector>
 
@@ -17,7 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_service_handler_base.h"
-#include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"

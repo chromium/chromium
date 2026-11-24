@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SCREEN_AI_SCREEN_AI_SERVICE_HANDLER_BASE_H_
 #define CHROME_BROWSER_SCREEN_AI_SCREEN_AI_SERVICE_HANDLER_BASE_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <set>
 #include <string_view>
@@ -35,6 +37,10 @@ class ScreenAIServiceHandlerBase
   ScreenAIServiceHandlerBase& operator=(const ScreenAIServiceHandlerBase&) =
       delete;
   ~ScreenAIServiceHandlerBase() override;
+
+  // Static method to return suggested wait time before next reconnect attempt.
+  static base::TimeDelta SuggestedWaitTimeBeforeReAttempt(
+      uint32_t reattempt_number);
 
   // Schedules library download and initializes the service if needed, and
   // calls `callback` with initialization result when service is ready or
@@ -74,7 +80,6 @@ class ScreenAIServiceHandlerBase
   }
 
  private:
-  friend class ScreenAIServiceRouterFactory;
   friend class ScreenAIServiceShutdownHandlerTest;
 
   bool GetAndRecordSuspendedState();
