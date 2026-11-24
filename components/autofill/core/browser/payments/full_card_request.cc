@@ -54,6 +54,7 @@ void FullCardRequest::GetFullCard(
   DCHECK(ui_delegate);
   GetFullCardImpl(std::move(card), reason, result_delegate, ui_delegate,
                   /*fido_assertion_info=*/std::nullopt,
+                  /*fido_authenticator_response=*/std::nullopt,
                   /*last_committed_primary_main_frame_origin=*/std::nullopt,
                   /*context_token=*/std::move(context_token),
                   /*selected_challenge_option=*/std::nullopt);
@@ -73,6 +74,7 @@ void FullCardRequest::GetFullVirtualCardViaCVC(
   DCHECK(selected_challenge_option.type == CardUnmaskChallengeOptionType::kCvc);
   GetFullCardImpl(std::move(card), reason, result_delegate, ui_delegate,
                   /*fido_assertion_info=*/std::nullopt,
+                  /*fido_authenticator_response=*/std::nullopt,
                   std::move(last_committed_primary_main_frame_origin),
                   std::move(vcn_context_token),
                   std::move(selected_challenge_option));
@@ -87,8 +89,26 @@ void FullCardRequest::GetFullCardViaFIDO(
     std::optional<std::string> context_token) {
   GetFullCardImpl(std::move(card), reason, result_delegate, nullptr,
                   std::move(fido_assertion_info),
+                  /*fido_authenticator_response=*/std::nullopt,
                   std::move(last_committed_primary_main_frame_origin),
                   std::move(context_token),
+                  /*selected_challenge_option=*/std::nullopt);
+}
+
+void FullCardRequest::GetFullCardViaFidoEnrollment(
+    CreditCard card,
+    PaymentsAutofillClient::UnmaskCardReason reason,
+    base::WeakPtr<ResultDelegate> result_delegate,
+    base::DictValue fido_authenticator_response) {
+  // The server does not support enrolling into FIDO authentication while
+  // unmasking a virtual card.
+  DCHECK_NE(card.record_type(), CreditCard::RecordType::kVirtualCard);
+  GetFullCardImpl(std::move(card), reason, result_delegate,
+                  /*ui_delegate=*/nullptr,
+                  /*fido_assertion_info=*/std::nullopt,
+                  std::move(fido_authenticator_response),
+                  /*last_committed_primary_main_frame_origin=*/std::nullopt,
+                  /*context_token=*/std::nullopt,
                   /*selected_challenge_option=*/std::nullopt);
 }
 
@@ -98,13 +118,17 @@ void FullCardRequest::GetFullCardImpl(
     base::WeakPtr<ResultDelegate> result_delegate,
     base::WeakPtr<UIDelegate> ui_delegate,
     std::optional<base::DictValue> fido_assertion_info,
+    std::optional<base::DictValue> fido_authenticator_response,
     std::optional<GURL> last_committed_primary_main_frame_origin,
     std::optional<std::string> context_token,
     std::optional<CardUnmaskChallengeOption> selected_challenge_option) {
-  // Retrieval of card information should happen via CVC auth or FIDO, but not
-  // both. Use `ui_delegate`'s existence as evidence of doing CVC auth and
-  // `fido_assertion_info` as evidence of doing FIDO auth.
-  DCHECK_NE(fido_assertion_info.has_value(), !!ui_delegate);
+  // Retrieval of card information should happen via exactly one of CVC auth,
+  // FIDO auth, or FIDO enrollment. Use `ui_delegate`'s existence as evidence of
+  // doing CVC auth, `fido_assertion_info` as evidence of doing FIDO auth, and
+  // `fido_authenticator_response` as evidence of doing FIDO enrollment.
+  DCHECK_EQ(!!ui_delegate + fido_assertion_info.has_value() +
+                fido_authenticator_response.has_value(),
+            1);
   DCHECK(result_delegate);
 
   // Only masked server cards and virtual cards are unmasked through
@@ -143,6 +167,8 @@ void FullCardRequest::GetFullCardImpl(
       GetBillingCustomerId(GetPaymentsDataManager());
 
   request_->fido_assertion_info = std::move(fido_assertion_info);
+  request_->fido_authenticator_response =
+      std::move(fido_authenticator_response);
 
   // Add appropriate ClientBehaviorConstants to the request based on the
   // user experience.
@@ -156,7 +182,8 @@ void FullCardRequest::GetFullCardImpl(
   }
 
   // If there is a UI delegate, then perform a CVC check.
-  // Otherwise, continue and use `fido_assertion_info` to unmask.
+  // Otherwise, continue and use `fido_assertion_info` or
+  // `fido_authenticator_response` to unmask.
   if (ui_delegate_) {
     ui_delegate_->ShowUnmaskPrompt(
         request_->card,
@@ -216,7 +243,8 @@ bool FullCardRequest::ShouldOfferFidoAuth() const {
 void FullCardRequest::OnDidGetUnmaskRiskData(const std::string& risk_data) {
   request_->risk_data = risk_data;
   if (!request_->user_response.cvc.empty() ||
-      request_->fido_assertion_info.has_value()) {
+      request_->fido_assertion_info.has_value() ||
+      request_->fido_authenticator_response.has_value()) {
     SendUnmaskCardRequest();
   }
 }
@@ -233,9 +261,13 @@ void FullCardRequest::OnDidGetRealPan(
     const UnmaskResponseDetails& response_details) {
   // If the CVC field is populated, that means the user performed a CVC check.
   // If FIDO AssertionInfo is populated, then the user must have performed FIDO
-  // authentication. Exactly one of these fields must be populated.
-  DCHECK_NE(!request_->user_response.cvc.empty(),
-            request_->fido_assertion_info.has_value());
+  // authentication. If the FIDO authenticator response is populated, then the
+  // user must have performed FIDO enrollment. Exactly one of these fields must
+  // be populated.
+  DCHECK_EQ(!request_->user_response.cvc.empty() +
+                request_->fido_assertion_info.has_value() +
+                request_->fido_authenticator_response.has_value(),
+            1);
 
   // Update the existing context token to the most up-to-date one received from
   // the payments server. The context token in the response details can be an

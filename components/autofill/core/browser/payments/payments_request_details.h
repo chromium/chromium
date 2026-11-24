@@ -89,6 +89,11 @@ struct UnmaskRequestDetails {
   std::string risk_data;
   CardUnmaskDelegate::UserProvidedUnmaskDetails user_response;
   std::optional<base::DictValue> fido_assertion_info;
+  // The WebAuthn response that enrolls this device into FIDO authentication
+  // with the same request that unmasks the card: either the attestation of a
+  // newly created credential or an assertion signed with an existing one.
+  // Mutually exclusive with `fido_assertion_info`, which only authenticates.
+  std::optional<base::DictValue> fido_authenticator_response;
   std::u16string otp;
   // An opaque token used to chain consecutive payments requests together.
   std::string context_token;

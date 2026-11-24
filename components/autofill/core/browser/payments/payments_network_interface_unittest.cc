@@ -65,6 +65,13 @@ struct CardUnmaskOptions {
     return *this;
   }
 
+  CardUnmaskOptions& with_fido_enrollment() {
+    use_fido_enrollment = true;
+    use_cvc = false;
+    set_context_token = false;
+    return *this;
+  }
+
   CardUnmaskOptions& with_cvc(std::string c) {
     use_cvc = true;
     cvc = c;
@@ -118,6 +125,8 @@ struct CardUnmaskOptions {
   bool use_cvc = true;
   // If true, use FIDO authentication.
   bool use_fido = false;
+  // If true, enroll into FIDO authentication while unmasking.
+  bool use_fido_enrollment = false;
   // If true, use otp authentication.
   bool use_otp = false;
   // If CVC authentication is chosen, default CVC value the user entered, to be
@@ -295,7 +304,13 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
     request_details.risk_data = "some risk data";
     if (options.use_fido) {
-      request_details.fido_assertion_info = base::DictValue();
+      request_details.fido_assertion_info =
+          base::DictValue().Set("signature", "fake_signature");
+    }
+    if (options.use_fido_enrollment) {
+      request_details.fido_authenticator_response = base::DictValue().Set(
+          "fido_attestation_info",
+          base::DictValue().Set("attestation_object", "fake_attestation"));
     }
     if (options.use_cvc) {
       request_details.user_response.cvc = base::ASCIIToUTF16(options.cvc);
@@ -643,6 +658,68 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessViaFIDO) {
   EXPECT_EQ(result_, PaymentsRpcResult::kSuccess);
   EXPECT_EQ(unmask_response_details()->real_pan, "1234");
 }
+
+// Ensures the WebAuthn response that enrolls the device into FIDO
+// authentication is sent as `fido_authenticator_response`, without any other
+// authentication payload and without asking for a FIDO opt-in.
+TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessViaFidoEnrollment) {
+  StartUnmasking(CardUnmaskOptions().with_fido_enrollment());
+  IssueOAuthToken();
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                 "{ \"pan\": \"1234\" }");
+
+  const std::string request = base::UnescapeBinaryURLComponent(GetUploadData());
+  EXPECT_THAT(request,
+              HasSubstr(R"("fido_authenticator_response":{)"
+                        R"("fido_attestation_info":{)"
+                        R"("attestation_object":"fake_attestation"}})"));
+  EXPECT_THAT(request, HasSubstr(R"("opt_in_fido_auth":false)"));
+  AssertNotIncludedInRequest("fido_assertion_info");
+  AssertNotIncludedInRequest("context_token");
+  AssertCvcNotIncludedInRequest();
+  AssertOtpNotIncludedInRequest();
+  EXPECT_EQ(result_, PaymentsRpcResult::kSuccess);
+  EXPECT_EQ(unmask_response_details()->real_pan, "1234");
+}
+
+struct FidoPayloadRetryTestCase {
+  // The options of the unmask request.
+  CardUnmaskOptions options;
+  // A value of the FIDO payload that every attempt has to send.
+  const char* payload_value;
+};
+
+class UnmaskFidoPayloadRetryTest
+    : public PaymentsNetworkInterfaceTest,
+      public ::testing::WithParamInterface<FidoPayloadRetryTestCase> {};
+
+// Ensures the FIDO payload is still part of the request that is re-sent after
+// the server rejected the access token of the first attempt.
+TEST_P(UnmaskFidoPayloadRetryTest, RetryAfterRejectedRequestKeepsFidoPayload) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableOAuth2TokenFix);
+  StartUnmasking(GetParam().options);
+  IssueOAuthToken();
+  ASSERT_THAT(GetUploadData(), HasSubstr(GetParam().payload_value));
+
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_UNAUTHORIZED, "");
+  ASSERT_EQ(result_, PaymentsRpcResult::kNone);
+  IssueOAuthToken();
+
+  EXPECT_THAT(GetUploadData(), HasSubstr(GetParam().payload_value));
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                 "{ \"pan\": \"1234\" }");
+  EXPECT_EQ(result_, PaymentsRpcResult::kSuccess);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    UnmaskFidoPayloadRetryTest,
+    testing::Values(FidoPayloadRetryTestCase{CardUnmaskOptions().with_fido(),
+                                             "fake_signature"},
+                    FidoPayloadRetryTestCase{
+                        CardUnmaskOptions().with_fido_enrollment(),
+                        "fake_attestation"}));
 
 TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessViaCVCWithCreationOptions) {
   StartUnmasking(CardUnmaskOptions().with_cvc("111"));

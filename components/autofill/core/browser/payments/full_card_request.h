@@ -156,6 +156,19 @@ class FullCardRequest final : public CardUnmaskDelegate {
           std::nullopt,
       std::optional<std::string> context_token = std::nullopt);
 
+  // Retrieves the pan for `card` while enrolling this device into FIDO
+  // authentication, and invokes Delegate::OnFullCardRequestSucceeded() or
+  // Delegate::OnFullCardRequestFailed(). Only one request should be active at a
+  // time. `fido_authenticator_response` is the WebAuthn response to the
+  // challenge the server issued for the enrollment: either the attestation of
+  // a newly created credential or an assertion signed with an existing one.
+  // Only supported for masked server cards.
+  void GetFullCardViaFidoEnrollment(
+      CreditCard card,
+      PaymentsAutofillClient::UnmaskCardReason reason,
+      base::WeakPtr<ResultDelegate> result_delegate,
+      base::DictValue fido_authenticator_response);
+
   // Called by the PaymentsNetworkInterface when a card has been unmasked.
   void OnDidGetRealPan(PaymentsAutofillClient::PaymentsRpcResult result,
                        const UnmaskResponseDetails& response_details);
@@ -186,6 +199,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
   //
   // If `ui_delegate` is set, then the user is queried for CVC.
   // Else if `fido_assertion_info` is a dictionary, FIDO verification is used.
+  // Else if `fido_authenticator_response` is a dictionary, the device is
+  // enrolled into FIDO authentication by the request that unmasks the card.
   // `last_committed_primary_main_frame_origin` is the full origin of the
   // primary main frame on which the card is unmasked. `context_token` is used
   // for providing context of the request to the server to link related
@@ -200,6 +215,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
       base::WeakPtr<ResultDelegate> result_delegate,
       base::WeakPtr<UIDelegate> ui_delegate,
       std::optional<base::DictValue> fido_assertion_info,
+      std::optional<base::DictValue> fido_authenticator_response,
       std::optional<GURL> last_committed_primary_main_frame_origin,
       std::optional<std::string> context_token,
       std::optional<CardUnmaskChallengeOption> selected_challenge_option);

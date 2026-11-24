@@ -53,6 +53,11 @@ UnmaskRequestDetails& UnmaskRequestDetails::operator=(
   } else {
     fido_assertion_info.reset();
   }
+  if (other.fido_authenticator_response.has_value()) {
+    fido_authenticator_response = other.fido_authenticator_response->Clone();
+  } else {
+    fido_authenticator_response.reset();
+  }
   context_token = other.context_token;
   otp = other.otp;
   last_committed_primary_main_frame_origin =

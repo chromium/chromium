@@ -285,6 +285,48 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForMaskedServerCardViaFido) {
   OnDidGetRealPan(PaymentsRpcResult::kSuccess, "4111");
 }
 
+// Verify getting the full PAN for a masked server card while enrolling into
+// FIDO authentication: the WebAuthn response is sent as the FIDO authenticator
+// response of the request instead of as a FIDO assertion.
+TEST_F(FullCardRequestTest, GetFullCardForMaskedServerCardViaFidoEnrollment) {
+  EXPECT_CALL(result_delegate(),
+              OnFullCardRequestSucceeded(
+                  testing::Ref(request()),
+                  CardMatches(CreditCard::RecordType::kFullServerCard, "4111"),
+                  testing::Eq(u"")));
+
+  request().GetFullCardViaFidoEnrollment(
+      CreditCard(CreditCard::RecordType::kMaskedServerCard, "server_id"),
+      UnmaskCardReason::kAutofill, result_delegate().AsWeakPtr(),
+      base::DictValue().Set("fido_attestation_info", base::DictValue()));
+
+  const UnmaskRequestDetails* request_details =
+      request().GetUnmaskRequestDetailsForTesting();
+  ASSERT_TRUE(request_details);
+  EXPECT_FALSE(request_details->fido_assertion_info.has_value());
+  ASSERT_TRUE(request_details->fido_authenticator_response.has_value());
+  EXPECT_TRUE(request_details->fido_authenticator_response->contains(
+      "fido_attestation_info"));
+  EXPECT_TRUE(request_details->context_token.empty());
+
+  OnDidGetRealPan(PaymentsRpcResult::kSuccess, "4111");
+}
+
+// Verify that the result delegate is notified when the server declines to
+// enroll the device into FIDO authentication.
+TEST_F(FullCardRequestTest, FidoEnrollmentPermanentFailure) {
+  EXPECT_CALL(result_delegate(),
+              OnFullCardRequestFailed(
+                  CreditCard::RecordType::kMaskedServerCard,
+                  FullCardRequest::FailureType::VERIFICATION_DECLINED));
+
+  request().GetFullCardViaFidoEnrollment(
+      CreditCard(CreditCard::RecordType::kMaskedServerCard, "server_id"),
+      UnmaskCardReason::kAutofill, result_delegate().AsWeakPtr(),
+      base::DictValue().Set("fido_attestation_info", base::DictValue()));
+  OnDidGetRealPan(PaymentsRpcResult::kPermanentFailure, "");
+}
+
 // Verify getting the CVC for a masked server card with expiration date in the past.
 TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredMaskedServerCard) {
   EXPECT_CALL(result_delegate(),

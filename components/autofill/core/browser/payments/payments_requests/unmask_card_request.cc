@@ -348,16 +348,24 @@ std::string UnmaskCardRequest::GetRequestContent() {
   bool is_cvc_auth = !request_details_.user_response.cvc.empty();
   bool is_otp_auth = !request_details_.otp.empty();
   bool is_fido_auth = request_details_.fido_assertion_info.has_value();
+  bool is_fido_enrollment =
+      request_details_.fido_authenticator_response.has_value();
 
   // At most, only one of these auth methods can be provided.
-  DCHECK_LE(is_cvc_auth + is_fido_auth + is_otp_auth, 1);
+  DCHECK_LE(is_cvc_auth + is_fido_auth + is_otp_auth + is_fido_enrollment, 1);
+  // The FIDO payloads are cloned rather than moved out of `request_details_`,
+  // because this function runs again if the request has to be re-sent after
+  // the access token was rejected.
   if (is_cvc_auth) {
     request_dict.Set("encrypted_cvc", "__param:s7e_13_cvc");
   } else if (is_otp_auth) {
     request_dict.Set("otp", "__param:s7e_263_otp");
   } else if (is_fido_auth) {
     request_dict.Set("fido_assertion_info",
-                     std::move(request_details_.fido_assertion_info.value()));
+                     request_details_.fido_assertion_info->Clone());
+  } else if (is_fido_enrollment) {
+    request_dict.Set("fido_authenticator_response",
+                     request_details_.fido_authenticator_response->Clone());
   }
 
   if (request_details_.last_committed_primary_main_frame_origin.has_value()) {
