@@ -471,6 +471,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Lens"/>
   <int value="6" label="TabGroups"/>
   <int value="7" label="PriceTracking"/>
+  <int value="8" label="Safety"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/desktop_to_mobile_promos/promos_types.h:PromoType) -->

@@ -405,6 +405,9 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
       return SetUpTabGroupsBubble(bubble_type);
     case PromoType::kPriceTracking:
       return SetUpPriceTrackingBubble(bubble_type);
+    case PromoType::kSafety:
+      // TODO(crbug.com/587366243): Present Safety via the Wave 2 bubble UI.
+      return IOSPromoConstants::IOSPromoTypeConfigs();
   }
 }
 

@@ -65,6 +65,8 @@ std::string IOSDesktopPromoHistogramType(PromoType promo_type) {
       return "TabGroupsPromo";
     case PromoType::kPriceTracking:
       return "PriceTrackingPromo";
+    case PromoType::kSafety:
+      return "SafetyPromo";
   }
 }
 
@@ -197,6 +199,7 @@ bool VerifySyncingDatatypes(const syncer::SyncService& sync_service,
     case PromoType::kLens:
     case PromoType::kTabGroups:
     case PromoType::kPriceTracking:
+    case PromoType::kSafety:
       // TODO(crbug.com/438769954): Verify relevant data types.
       return true;
   }
@@ -320,6 +323,13 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(PromoType promo_type) {
           promos_prefs::kDesktopToiOSPriceTrackingPromoOptOut;
       promo_last_impression_timestamp_pref_name =
           promos_prefs::kDesktopToiOSPriceTrackingPromoLastImpressionTimestamp;
+      break;
+    case PromoType::kSafety:
+#if !BUILDFLAG(IS_ANDROID)
+      promo_feature = &feature_engagement::kIPHiOSSafetyPromoDesktopFeature;
+#endif  // !BUILDFLAG(IS_ANDROID)
+      // TODO(crbug.com/586964303): Add Safety prefs.
+      break;
   }
 }
 

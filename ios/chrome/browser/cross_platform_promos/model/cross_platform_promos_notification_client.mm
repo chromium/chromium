@@ -123,6 +123,9 @@ CrossPlatformPromosNotificationClient::GetNotificationType(
       case desktop_to_mobile_promos::PromoType::kPayment:
         // Promo types not supported for push notifications.
         NOTREACHED();
+      case desktop_to_mobile_promos::PromoType::kSafety:
+        // TODO(crbug.com/587366243): Support Safety push notifications.
+        break;
     }
   }
   return std::nullopt;
@@ -171,6 +174,9 @@ void CrossPlatformPromosNotificationClient::ShowPromo(
     case desktop_to_mobile_promos::PromoType::kPayment:
       // Promo types not supported for push notifications.
       NOTREACHED();
+    case desktop_to_mobile_promos::PromoType::kSafety:
+      // TODO(crbug.com/587366243): Show Safety promo from push notification.
+      return;
   }
 
   // Clear the promo reminder pref after showing the promo so that the in-app

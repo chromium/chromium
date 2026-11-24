@@ -20,7 +20,8 @@ enum class PromoType {
   kLens = 5,
   kTabGroups = 6,
   kPriceTracking = 7,
-  kMaxValue = kPriceTracking
+  kSafety = 8,
+  kMaxValue = kSafety
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSCrossPlatformPromoType)
 

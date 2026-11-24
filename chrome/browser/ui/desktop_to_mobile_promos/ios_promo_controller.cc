@@ -48,6 +48,8 @@ const base::Feature& FeatureForIOSPromoType(PromoType promo_type) {
       return feature_engagement::kIPHiOSTabGroupsDesktopFeature;
     case PromoType::kPriceTracking:
       return feature_engagement::kIPHiOSPriceTrackingDesktopFeature;
+    case PromoType::kSafety:
+      return feature_engagement::kIPHiOSSafetyPromoDesktopFeature;
   }
 }
 
@@ -188,6 +190,9 @@ bool IOSPromoController::IsUserEligibleForPromo(PromoType promo_type) {
       break;
     case PromoType::kPriceTracking:
       feature_type = MobilePromoOnDesktopPromoType::kPriceTracking;
+      break;
+    case PromoType::kSafety:
+      feature_type = MobilePromoOnDesktopPromoType::kSafety;
       break;
     case PromoType::kAddress:
     case PromoType::kPayment:

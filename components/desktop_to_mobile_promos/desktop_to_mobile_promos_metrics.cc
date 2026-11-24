@@ -26,6 +26,8 @@ std::string PromoTypeToString(PromoType type) {
       return "TabGroups";
     case PromoType::kPriceTracking:
       return "PriceTracking";
+    case PromoType::kSafety:
+      return "Safety";
   }
 }
 

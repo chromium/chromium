@@ -35,6 +35,10 @@ PromoNotificationStringIDs GetPromoNotificationStringIDs(PromoType promo_type) {
       ids.title_id = IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_NOTIFICATION_TITLE;
       ids.body_id = IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_NOTIFICATION_BODY;
       break;
+    case PromoType::kSafety:
+      ids.title_id = IDS_IOS_DESKTOP_SAFETY_PROMO_NOTIFICATION_TITLE;
+      ids.body_id = IDS_IOS_DESKTOP_SAFETY_PROMO_NOTIFICATION_BODY;
+      break;
     case PromoType::kAddress:
     case PromoType::kPayment:
       break;

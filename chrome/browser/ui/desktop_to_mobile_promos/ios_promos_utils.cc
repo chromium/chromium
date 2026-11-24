@@ -153,6 +153,9 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
       }
       break;
     }
+    case PromoType::kSafety:
+      // TODO(crbug.com/589704930): Present the Safety promo bubble.
+      break;
   }
 }
 

@@ -373,6 +373,10 @@ std::u16string IOSPromoBubbleView::GetConfirmationDescriptionText(
       return l10n_util::GetStringFUTF16(
           config_.promo_description_id,
           l10n_util::GetStringUTF16(config_.feature_name_id));
+    case PromoType::kSafety:
+      // TODO(crbug.com/589704930): Add strings for Wave 2 reminder confirmation
+      // flows depending on UX clarification.
+      return std::u16string();
     case PromoType::kAddress:
     case PromoType::kPayment:
       // These types do not have a reminder flow.
@@ -406,6 +410,7 @@ bool IOSPromoBubbleView::ShouldHighlightAnchorButton() const {
     case PromoType::kPayment:
     case PromoType::kTabGroups:
     case PromoType::kPriceTracking:
+    case PromoType::kSafety:
       return false;
   }
 }
