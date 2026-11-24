@@ -1239,6 +1239,9 @@ constexpr char kObsoleteAccessibilityAXTreeFixingEnabled[] =
 constexpr char kDefaultSupervisedUserFilteringBehavior[] =
     "profile.managed.default_filtering_behavior";
 
+// Deprecated 11/2026.
+inline constexpr char kLomProfileId[] = "private_metrics.lom.profile_id";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1796,6 +1799,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 11/2026.
   // 0 == static_cast<int>(FilteringBehavior::kAllow)
   registry->RegisterIntegerPref(kDefaultSupervisedUserFilteringBehavior, 0);
+
+  // Deprecated 11/2026.
+  registry->RegisterUint64Pref(kLomProfileId, 0u);
 }
 
 }  // namespace
@@ -3307,6 +3313,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 11/2026.
   profile_prefs->ClearPref(kDefaultSupervisedUserFilteringBehavior);
+
+  // Added 11/2026.
+  profile_prefs->ClearPref(kLomProfileId);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

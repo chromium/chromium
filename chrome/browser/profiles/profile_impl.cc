@@ -459,8 +459,6 @@ void ProfileImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kPdfAnnotationsEnabled, true);
 #endif
   registry->RegisterIntegerPref(prefs::kEnterpriseBadgingTemporarySetting, 0);
-
-  registry->RegisterUint64Pref(prefs::kLomProfileId, 0u);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

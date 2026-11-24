@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
-#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
@@ -675,19 +674,6 @@ variations::VariationsClient* Profile::GetVariationsClient() {
 
 base::WeakPtr<Profile> Profile::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
-}
-
-uint64_t Profile::GetLomProfileId() {
-  PrefService* prefs = GetPrefs();
-  CHECK(prefs);
-  uint64_t id = prefs->GetUint64(prefs::kLomProfileId);
-  if (id == 0u) {
-    while (id == 0u) {
-      id = base::RandUint64();
-    }
-    prefs->SetUint64(prefs::kLomProfileId, id);
-  }
-  return id;
 }
 
 std::string Profile::ToDebugString() const {
