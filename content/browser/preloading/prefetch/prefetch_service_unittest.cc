@@ -1124,6 +1124,16 @@ class PrefetchServicePrePrefetchTest : public PrefetchServiceTest {
  public:
   void SetUp() override {
     PrefetchServiceTest::SetUp();
+    // Skip the `force_off_the_main_thread` params, which would just duplicate
+    // the others here:
+    // - The tests here start prefetches only via `PrePrefetchService`, which
+    //   `features::kPrefetchOffTheMainThreadForceForTesting` doesn't affect.
+    // - `InitScopedFeatureList()` overrides the parameters of
+    //   `features::kPrefetchOffTheMainThread` set by `InitRearchFeatures()`.
+    if (rearch_param().force_off_the_main_thread) {
+      GTEST_SKIP() << "PrefetchServicePrePrefetchTest doesn't use "
+                      "force_off_the_main_thread.";
+    }
     pre_prefetch_service_ = PrePrefetchService::Create(
         browser_context(),
         /*embedder_non_ui_thread_update_headers_callbacks=*/{},
