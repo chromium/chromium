@@ -296,24 +296,22 @@ void TabMenuModel::AppendAiModeItems(tabs::TabHandle context_tab,
     return;
   }
 
-  const ui::ImageModel ai_mode_icon = ui::ImageModel::FromVectorIcon(
-      searchbox::GetSearchSparkIcon(), ui::kColorMenuIcon, kTabMenuIconSize);
-
   if (show_share) {
     contextual_tasks_tab_sub_menu_model_ =
         std::make_unique<contextual_tasks::ContextualTasksTabSubMenuModel>(
             tab_strip_, context_tab);
-    AddSubMenuWithIcon(TabStripModel::CommandAiModeShare,
-                       l10n_util::GetPluralStringFUTF16(
-                           IDS_TAB_CXMENU_AI_MODE_SHARE, tabs.size()),
-                       contextual_tasks_tab_sub_menu_model_.get(),
-                       ai_mode_icon);
+    AddSubMenuWithIcon(
+        TabStripModel::CommandAiModeShare,
+        l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_AI_MODE_SHARE,
+                                         tabs.size()),
+        contextual_tasks_tab_sub_menu_model_.get(),
+        ui::ImageModel::FromVectorIcon(searchbox::GetSearchSparkIcon(),
+                                       ui::kColorMenuIcon, kTabMenuIconSize));
   }
 
   if (show_unshare) {
-    AddItemWithIcon(TabStripModel::CommandAiModeUnshare,
-                    l10n_util::GetStringUTF16(IDS_TAB_CXMENU_AI_MODE_UNSHARE),
-                    ai_mode_icon);
+    AddItem(TabStripModel::CommandAiModeUnshare,
+            l10n_util::GetStringUTF16(IDS_TAB_CXMENU_AI_MODE_UNSHARE));
   }
 }
 

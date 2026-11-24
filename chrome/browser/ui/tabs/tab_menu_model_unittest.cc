@@ -787,14 +787,16 @@ TEST_F(TabMenuModelTest, AiModeUnshareShownWhenTabInContext) {
   {
     TabMenuModel shared_model(&delegate_, &menu_model_delegate(),
                               &tab_strip_model, 0);
-    EXPECT_TRUE(
-        shared_model.GetIndexOfCommandId(TabStripModel::CommandAiModeShare)
-            .has_value());
+    std::optional<size_t> share_index =
+        shared_model.GetIndexOfCommandId(TabStripModel::CommandAiModeShare);
+    ASSERT_TRUE(share_index.has_value());
+    EXPECT_FALSE(shared_model.GetIconAt(*share_index).IsEmpty());
     std::optional<size_t> unshare_index =
         shared_model.GetIndexOfCommandId(TabStripModel::CommandAiModeUnshare);
     ASSERT_TRUE(unshare_index.has_value());
     EXPECT_EQ(shared_model.GetLabelAt(*unshare_index),
               l10n_util::GetStringUTF16(IDS_TAB_CXMENU_AI_MODE_UNSHARE));
+    EXPECT_TRUE(shared_model.GetIconAt(*unshare_index).IsEmpty());
   }
 
   base::HistogramTester histogram_tester;
