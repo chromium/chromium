@@ -1,6 +1,7 @@
 [package]
 name = "utf8_iter"
-version = "1.0.4"
+version = "1.1.0"
+rust-version = "1.83" # Match utf_types
 edition = "2021"
 description = "Iterator by char over potentially-invalid UTF-8 in &[u8]"
 authors = ["Henri Sivonen <hsivonen@hsivonen.fi>"]
@@ -11,3 +12,6 @@ homepage = "https://docs.rs/utf8_iter/"
 repository = "https://github.com/hsivonen/utf8_iter"
 keywords = ["encoding", "UTF-8", "unicode", "iterator"]
 categories = ["text-processing", "encoding", "internationalization"]
+
+[dependencies]
+utf_types = "1"

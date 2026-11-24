@@ -25,7 +25,7 @@ This is a `no_std` crate.
 TL;DR: `Apache-2.0 OR MIT`
 
 Please see the file named
-[COPYRIGHT](https://github.com/hsivonen/utf8_iter/blob/master/COPYRIGHT).
+[COPYRIGHT](https://github.com/hsivonen/utf8_iter/blob/main/COPYRIGHT).
 
 ## Documentation
 
@@ -33,6 +33,16 @@ Generated [API documentation](https://docs.rs/utf8_iter/) is available
 online.
 
 ## Release Notes
+
+### 1.1.0
+
+* Increase MSRV to 1.83
+* Reformulate the crate in terms of a pluggable handler trait.
+* Depend on `utf_types` for making the handler interface safe and
+  for de-duplicating a lookup table in apps that also depend on
+  `encoding_rs` in addition to depending on this crate.
+* Improve performance particularly for backward iteration and
+  for two-byte sequence forward iteration.
 
 ### 1.0.4
 

@@ -15,9 +15,13 @@ cargo_crate("lib") {
   crate_root =
       "//third_party/rust/chromium_crates_io/vendor/utf8_iter-v1/src/lib.rs"
   sources = [
+    "//third_party/rust/chromium_crates_io/vendor/utf8_iter-v1/src/basic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/utf8_iter-v1/src/handler.rs",
     "//third_party/rust/chromium_crates_io/vendor/utf8_iter-v1/src/indices.rs",
     "//third_party/rust/chromium_crates_io/vendor/utf8_iter-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/utf8_iter-v1/src/macros.rs",
     "//third_party/rust/chromium_crates_io/vendor/utf8_iter-v1/src/report.rs",
+    "//third_party/rust/chromium_crates_io/vendor/utf8_iter-v1/src/str.rs",
   ]
   inputs = []
 
@@ -28,9 +32,11 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "Iterator by char over potentially-invalid UTF-8 in &[u8]"
   cargo_pkg_repository = "https://github.com/hsivonen/utf8_iter"
-  cargo_pkg_version = "1.0.4"
+  cargo_pkg_version = "1.1.0"
 
   allow_unsafe = true
+
+  deps = [ "//third_party/rust/utf_types/v1:lib" ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

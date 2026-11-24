@@ -11,9 +11,16 @@
 
 [package]
 edition = "2021"
+rust-version = "1.83"
 name = "utf8_iter"
-version = "1.0.4"
+version = "1.1.0"
 authors = ["Henri Sivonen <hsivonen@hsivonen.fi>"]
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Iterator by char over potentially-invalid UTF-8 in &[u8]"
 homepage = "https://docs.rs/utf8_iter/"
 documentation = "https://docs.rs/utf8_iter/"
@@ -31,3 +38,10 @@ categories = [
 ]
 license = "Apache-2.0 OR MIT"
 repository = "https://github.com/hsivonen/utf8_iter"
+
+[lib]
+name = "utf8_iter"
+path = "src/lib.rs"
+
+[dependencies.utf_types]
+version = "1"
