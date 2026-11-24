@@ -7438,13 +7438,15 @@
             ],
             "experiments": [
                 {
-                    "name": "CobrowseAndLensEntrypoint",
+                    "name": "CobrowseAndLensEntrypointIph",
                     "params": {
                         "Omnibox_AskGBypassPrivacyNotice": "true",
                         "Omnibox_AskGCoBrowse": "true",
                         "Omnibox_AskGLensChipRoute": "true",
                         "Omnibox_AskGLensIcon": "true",
+                        "Omnibox_AskGLensIconIph": "true",
                         "Omnibox_AskGLensSearchHintText": "true",
+                        "Omnibox_AskGSuggestionSidePanelDescription": "true",
                         "Omnibox_AskGSwapIcon": "true"
                     },
                     "enable_features": [
