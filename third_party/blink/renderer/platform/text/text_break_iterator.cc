@@ -188,9 +188,9 @@ struct LazyLineBreakIterator::Context {
           wtf_size_t start_offset,
           wtf_size_t index) {
     DCHECK_GE(index, start_offset);
-    CHECK_LE(index, len);
+    DCHECK_LT(index, len);
     if (index > start_offset) {
-      // SAFETY: `index <= len`, and `index > start_offset` guarantees
+      // SAFETY: `index < len`, and `index > start_offset` guarantees
       // `index - 1` is a valid character within `str`.
       last = ContextChar(UNSAFE_BUFFERS(str[index - 1]));
       if (index > start_offset + 1) {
@@ -291,6 +291,11 @@ inline wtf_size_t LazyLineBreakIterator::NextBreakablePosition(
     base::span<const CharacterType> span) const {
   const CharacterType* str = span.data();
   wtf_size_t len = base::checked_cast<wtf_size_t>(span.size());
+  DCHECK_GE(pos, start_offset_);
+  CHECK_LE(pos, len);
+  if (pos == len) [[unlikely]] {
+    return len;
+  }
   Context<CharacterType> context(str, len, start_offset_, pos);
   wtf_size_t next_break = 0;
   ULineBreak last_line_break;
