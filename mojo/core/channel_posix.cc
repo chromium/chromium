@@ -268,10 +268,6 @@ void ChannelPosix::ShutDownOnIOThread() {
     } else {
       socket_.reset();
     }
-#if BUILDFLAG(IS_IOS)
-    base::AutoLock fd_lock(fds_to_close_lock_);
-    fds_to_close_.clear();
-#endif
   }
 
   // May destroy the |this| if it was the last reference.
@@ -363,6 +359,9 @@ void ChannelPosix::OnFdWritable(int fd) {
 // cannot be written, it's queued and a wait is initiated to write the message
 // ASAP on the I/O thread.
 bool ChannelPosix::WriteNoLock(MessageView message_view) {
+  // Messages are only written directly when nothing is queued, and the only
+  // message this queues is |message_view| itself.
+  DCHECK(outgoing_messages_.empty());
   size_t bytes_written = 0;
   std::vector<PlatformHandleInTransit> handles = message_view.TakeHandles();
   size_t num_handles = handles.size();
@@ -402,29 +401,6 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
       }
       result = SendmsgWithHandles(socket_.get(), &iov, 1, fds);
       if (result >= 0) {
-#if BUILDFLAG(IS_IOS)
-        // There is a bug in XNU which makes it dangerous to close
-        // a file descriptor while it is in transit. So instead we
-        // store the file descriptor in a set and send a message to
-        // the recipient, which is queued AFTER the message that
-        // sent the FD. The recipient will reply to the message,
-        // letting us know that it is now safe to close the file
-        // descriptor. For more information, see:
-        // http://crbug.com/298276
-        MessagePtr fds_message = Message::CreateMessage(
-            sizeof(int) * fds.size(), 0, Message::MessageType::HANDLES_SENT);
-        int* fd_data = reinterpret_cast<int*>(fds_message->mutable_payload());
-        for (size_t i = 0; i < fds.size(); ++i) {
-          UNSAFE_TODO(fd_data[i]) = fds[i].get();
-        }
-        outgoing_messages_.emplace_back(std::move(fds_message), 0);
-        {
-          base::AutoLock l(fds_to_close_lock_);
-          for (auto& fd : fds) {
-            fds_to_close_.emplace_back(std::move(fd));
-          }
-        }
-#endif  // BUILDFLAG(IS_IOS)
         handles_written += num_handles_to_send;
         DCHECK_LE(handles_written, num_handles);
         message_view.set_num_handles_sent(handles_written);
@@ -473,7 +449,7 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
   } while (handles_written < num_handles ||
            bytes_written < message_view.data_num_bytes());
 
-  return FlushOutgoingMessagesNoLock();
+  return true;
 }
 
 bool ChannelPosix::FlushOutgoingMessagesNoLock() {
@@ -494,14 +470,10 @@ bool ChannelPosix::FlushOutgoingMessagesNoLock() {
     if (!outgoing_messages_.empty()) {
       // The message was requeued by WriteNoLock(), so we have to wait for
       // pipe to become writable again. Repopulate the message queue and exit.
-      // If sending the message triggered any control messages, they may be
-      // in |outgoing_messages_| in addition to or instead of the message
-      // being sent.
+      DCHECK_EQ(outgoing_messages_.size(), 1u);
+      MessageView message_view = std::move(outgoing_messages_.front());
       std::swap(messages, outgoing_messages_);
-      while (!messages.empty()) {
-        outgoing_messages_.push_front(std::move(messages.back()));
-        messages.pop_back();
-      }
+      outgoing_messages_.push_front(std::move(message_view));
       return true;
     }
   }
@@ -546,74 +518,12 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
       RejectPreIpczUpgradeOffer();
       return true;
     }
-#if BUILDFLAG(IS_IOS)
-    case Message::MessageType::HANDLES_SENT: {
-      if (payload_size == 0) {
-        break;
-      }
-      MessagePtr message = Message::CreateMessage(
-          payload_size, 0, Message::MessageType::HANDLES_SENT_ACK);
-      UNSAFE_TODO(memcpy(message->mutable_payload(), payload, payload_size));
-      Write(std::move(message));
-      return true;
-    }
-
-    case Message::MessageType::HANDLES_SENT_ACK: {
-      size_t num_fds = payload_size / sizeof(int);
-      if (num_fds == 0 || payload_size % sizeof(int) != 0) {
-        break;
-      }
-
-      const int* fds = reinterpret_cast<const int*>(payload);
-      if (!CloseHandles(fds, num_fds)) {
-        break;
-      }
-      return true;
-    }
-#endif
     default:
       break;
   }
 
   return false;
 }
-
-#if BUILDFLAG(IS_IOS)
-// Closes handles referenced by |fds|. Returns false if |num_fds| is 0, or if
-// |fds| does not match a sequence of handles in |fds_to_close_|.
-bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
-  base::AutoLock l(fds_to_close_lock_);
-  if (!num_fds) {
-    return false;
-  }
-
-  auto start = std::ranges::find(fds_to_close_, fds[0], &base::ScopedFD::get);
-  if (start == fds_to_close_.end()) {
-    return false;
-  }
-
-  auto it = start;
-  size_t i = 0;
-  // The FDs in the message should match a sequence of handles in
-  // |fds_to_close_|.
-  // TODO(wez): Consider making |fds_to_close_| a circular_deque<>
-  // for greater efficiency? Or assign a unique Id to each FD-containing
-  // message, and map that to a vector of FDs to close, to avoid the
-  // need for this traversal? Id could even be the first FD in the message.
-  for (; i < num_fds && it != fds_to_close_.end(); i++, ++it) {
-    if (it->get() != UNSAFE_TODO(fds[i])) {
-      return false;
-    }
-  }
-  if (i != num_fds) {
-    return false;
-  }
-
-  // Close the FDs by erase()ing their ScopedFDs.
-  fds_to_close_.erase(start, it);
-  return true;
-}
-#endif  // BUILDFLAG(IS_IOS)
 
 // static
 scoped_refptr<Channel> Channel::Create(

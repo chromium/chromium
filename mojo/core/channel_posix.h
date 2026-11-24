@@ -12,7 +12,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
-#include "build/build_config.h"
 #include "mojo/core/channel.h"
 
 namespace mojo {
@@ -53,12 +52,7 @@ class ChannelPosix : public Channel,
  protected:
   ~ChannelPosix() override;
   virtual void StartOnIOThread() LOCKS_EXCLUDED(write_lock_);
-  virtual void ShutDownOnIOThread() LOCKS_EXCLUDED(write_lock_
-#if BUILDFLAG(IS_IOS)
-                                                   ,
-                                                   fds_to_close_lock_
-#endif  // BUILDFLAG(IS_IOS)
-  );
+  virtual void ShutDownOnIOThread() LOCKS_EXCLUDED(write_lock_);
   virtual void OnWriteError(Error error) LOCKS_EXCLUDED(write_lock_);
 
   // Keeps the functionality to reject upgrade offers for old (pre-ipcz) clients
@@ -85,17 +79,8 @@ class ChannelPosix : public Channel,
   // cannot be written, it's queued and a wait is initiated to write the message
   // ASAP on the I/O thread.
   bool WriteNoLock(MessageView message_view)
-      EXCLUSIVE_LOCKS_REQUIRED(write_lock_)
-#if BUILDFLAG(IS_IOS)
-          LOCKS_EXCLUDED(fds_to_close_lock_)
-#endif  // BUILDFLAG(IS_IOS)
-              ;
+      EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
   bool FlushOutgoingMessagesNoLock() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
-
-#if BUILDFLAG(IS_IOS)
-  bool CloseHandles(const int* fds, size_t num_fds)
-      LOCKS_EXCLUDED(fds_to_close_lock_);
-#endif  // BUILDFLAG(IS_IOS)
 
   // The socket over which to communicate.
   base::ScopedFD socket_;
@@ -116,11 +101,6 @@ class ChannelPosix : public Channel,
   base::circular_deque<MessageView> outgoing_messages_ GUARDED_BY(write_lock_);
 
   bool leak_handle_ = false;
-
-#if BUILDFLAG(IS_IOS)
-  base::Lock fds_to_close_lock_;
-  std::vector<base::ScopedFD> fds_to_close_ GUARDED_BY(fds_to_close_lock_);
-#endif  // BUILDFLAG(IS_IOS)
 };
 
 }  // namespace core

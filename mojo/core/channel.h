@@ -91,12 +91,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
       // TODO(crbug.com/41303999): remove legacy support when Arc++ has
       // updated to Mojo with normal versioned messages.
       NORMAL_LEGACY = 0,
-#if BUILDFLAG(IS_IOS)
-      // A control message containing handles to echo back.
-      HANDLES_SENT,
-      // A control message containing handles that can now be closed.
-      HANDLES_SENT_ACK,
-#endif
       // A normal message that uses Header and can contain extra header values.
       NORMAL,
 
