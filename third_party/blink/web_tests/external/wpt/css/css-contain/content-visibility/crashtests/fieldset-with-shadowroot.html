@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<link rel="help" href="https://issues.chromium.org/issues/589815787">
+<fieldset id="fieldset">
+  <div id="host">
+    <template shadowrootmode="open">
+      <div style="position:absolute; position-try-fallbacks:flip-inline;"></div>
+      <slot id="slot"></slot>
+    </template>
+  </div>
+</fieldset>
+<script>
+  document.body.offsetTop;
+  host.shadowRoot.getElementById('slot').style.color = 'red';
+  fieldset.style.contentVisibility = 'hidden';
+  document.body.offsetTop;
+  fieldset.style.cssText = 'width: 500px';
+</script>
