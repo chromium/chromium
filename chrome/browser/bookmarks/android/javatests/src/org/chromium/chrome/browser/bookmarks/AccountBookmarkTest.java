@@ -25,6 +25,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.DeviceInfo;
@@ -40,6 +41,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
@@ -56,14 +59,23 @@ import org.chromium.url.GURL;
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
 })
 public class AccountBookmarkTest {
-    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
-    @Rule public BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    public final BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
+
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mSyncTestRule).around(mCtaTestRule).around(mBookmarkTestRule);
 
     private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private BookmarkModel mBookmarkModel;
 
     @Before
     public void setUp() throws Exception {
+        mCtaTestRule.startOnBlankPage();
         mBookmarkModel =
                 runOnUiThreadBlocking(
                         () ->
@@ -71,7 +83,7 @@ public class AccountBookmarkTest {
                                         ProfileManager.getLastUsedRegularProfile()));
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mBookmarkManagerCoordinator =
-                mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+                mBookmarkTestRule.showBookmarkManager(mCtaTestRule.getActivity());
     }
 
     @Test

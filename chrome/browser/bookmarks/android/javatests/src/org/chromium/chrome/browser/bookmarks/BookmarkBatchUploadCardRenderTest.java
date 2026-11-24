@@ -19,6 +19,7 @@ import androidx.test.filters.LargeTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
@@ -29,8 +30,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -45,12 +46,16 @@ import org.chromium.url.GURL;
 public class BookmarkBatchUploadCardRenderTest {
     private static final int RENDER_TEST_REVISION = 2;
 
-    @Rule public final SyncTestRule mSyncTestRule = new SyncTestRule();
-    @Rule public final BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    public final BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
 
     @Rule
-    public final AutoResetCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mSyncTestRule).around(mActivityTestRule).around(mBookmarkTestRule);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -63,6 +68,7 @@ public class BookmarkBatchUploadCardRenderTest {
 
     @Before
     public void setUp() throws Exception {
+        mActivityTestRule.startOnBlankPage();
         runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel =
@@ -87,7 +93,7 @@ public class BookmarkBatchUploadCardRenderTest {
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
         onView(withId(R.id.selectable_list_recycler_view))
                 .perform(RecyclerViewActions.scrollToLastPosition());
         waitForView(withId(R.id.signin_settings_card));
@@ -108,7 +114,7 @@ public class BookmarkBatchUploadCardRenderTest {
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
         onView(withId(R.id.selectable_list_recycler_view))
                 .perform(RecyclerViewActions.scrollToLastPosition());
         waitForView(withId(R.id.signin_settings_card));
@@ -137,7 +143,7 @@ public class BookmarkBatchUploadCardRenderTest {
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
         onView(withId(R.id.selectable_list_recycler_view))
                 .perform(RecyclerViewActions.scrollToLastPosition());
         waitForView(withId(R.id.signin_settings_card));

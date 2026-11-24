@@ -78,11 +78,12 @@ public class PasswordGenerationIntegrationTest {
      */
     public static final int KEYBOARD_ACCESSORY_BAR_ITEM_COUNT = 3;
 
-    private final SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule(order = 0)
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
 
-    @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.wrapTestRule(mSyncTestRule);
+    @Rule(order = 1)
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String PASSWORD_NODE_ID_MANUAL = "password_field_manual";
@@ -105,6 +106,7 @@ public class PasswordGenerationIntegrationTest {
     @Before
     public void setUp() throws InterruptedException {
         ChromeWindow.setKeyboardVisibilityDelegateFactory(FakeKeyboard::new);
+        mActivityTestRule.startOnBlankPage();
         CoreAccountInfo account = mSyncTestRule.setUpAccountAndSignInForTesting();
         PasswordManagerTestHelper.setAccountForPasswordStore(account.getEmail());
         ManualFillingTestHelper.disableServerPredictions();
