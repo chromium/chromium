@@ -29,6 +29,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1164,6 +1165,63 @@ TEST_F(FilePathWatcherTest, DeleteWhileFSEventsPendingDeterministic) {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
+TEST_F(FilePathWatcherTest, WindowsUsesDistinctOverlappedPointers) {
+  FilePathWatcher first_watcher;
+  FilePathWatcher second_watcher;
+  TestDelegate first_delegate;
+  TestDelegate second_delegate;
+  ASSERT_TRUE(SetupWatch(test_file(), &first_watcher, &first_delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+  ASSERT_TRUE(SetupWatch(test_file(), &second_watcher, &second_delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  EXPECT_NE(first_watcher.GetOverlappedPointerForTest(),
+            second_watcher.GetOverlappedPointerForTest());
+}
+
+TEST_F(FilePathWatcherTest, WindowsReportsReadDirectoryChangesError) {
+  base::HistogramTester histogram_tester;
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatchWithChangeInfo(test_file(), &watcher, &delegate,
+                                       FilePathWatcher::WatchOptions{}));
+  watcher.SetNextReadDirectoryChangesErrorForTest(ERROR_GEN_FAILURE);
+  ASSERT_TRUE(WriteFile(test_file(), "content"));
+
+  event_expecter.AddExpectedEventForPath(test_file(), /*error=*/true);
+  delegate.RunUntilEventsMatch(event_expecter);
+  histogram_tester.ExpectUniqueSample(
+      "Storage.FileSystemAccess.ReadDirectoryChangesError", ERROR_GEN_FAILURE,
+      1);
+
+  ASSERT_TRUE(WriteFile(test_file(), "updated content"));
+  SpinEventLoopForABit();
+  EXPECT_THAT(delegate.events(), testing::ElementsAre(HasErrored()));
+}
+
+TEST_F(FilePathWatcherTest,
+       WindowsRetriesAfterReadDirectoryChangesAccessDenied) {
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  ASSERT_TRUE(SetupWatchWithChangeInfo(test_file(), &watcher, &delegate,
+                                       FilePathWatcher::WatchOptions{}));
+  watcher.SetNextReadDirectoryChangesErrorForTest(ERROR_ACCESS_DENIED);
+  ASSERT_TRUE(WriteFile(test_file(), "content"));
+  delegate.RunUntilEventsMatch(testing::Not(testing::IsEmpty()));
+  task_environment_.RunUntilIdle();
+  const auto expected_event = testing::AllOf(
+      testing::Not(HasErrored()),
+      testing::Not(IsType(FilePathWatcher::ChangeType::kDeleted)));
+  EXPECT_THAT(delegate.events(), testing::Each(expected_event));
+
+  const size_t first_write_events = delegate.events().size();
+  ASSERT_TRUE(WriteFile(test_file(), "updated content"));
+  delegate.RunUntilEventsMatch(
+      testing::SizeIs(testing::Gt(first_write_events)));
+  EXPECT_THAT(delegate.events(), testing::Each(expected_event));
+}
+
 TEST_F(FilePathWatcherTest, WindowsBufferOverflow) {
   FilePathWatcher watcher;
   TestDelegate delegate;

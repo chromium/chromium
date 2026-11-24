@@ -20,6 +20,7 @@ enum class WatchWithChangeInfoResult {
 };
 
 void RecordWatchWithChangeInfoResultUma(WatchWithChangeInfoResult result);
+void RecordReadDirectoryChangesErrorUma(int error);
 void RecordInotifyWatchCountUma(int count);
 
 

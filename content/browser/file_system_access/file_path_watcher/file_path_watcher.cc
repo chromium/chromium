@@ -130,6 +130,14 @@ FilePathWatcher::FilePathWatcher(std::unique_ptr<PlatformDelegate> delegate) {
 base::Lock& FilePathWatcher::GetWatchThreadLockForTest() {
   return impl_->GetWatchThreadLockForTest();  // IN-TEST
 }
+
+const void* FilePathWatcher::GetOverlappedPointerForTest() {
+  return impl_->GetOverlappedPointerForTest();  // IN-TEST
+}
+
+void FilePathWatcher::SetNextReadDirectoryChangesErrorForTest(uint32_t error) {
+  impl_->SetNextReadDirectoryChangesErrorForTest(error);  // IN-TEST
+}
 #endif
 
 size_t FilePathWatcher::current_usage() const {

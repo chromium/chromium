@@ -121,6 +121,11 @@ class CompletionIOPortThread final : public base::PlatformThread::Delegate {
   void RemoveWatcher(WatcherEntryId watcher_id);
 
   base::Lock& GetLockForTest();  // IN-TEST
+  const void* GetOverlappedPointerForTest(  // IN-TEST
+      WatcherEntryId watcher_id);
+  void SetNextReadDirectoryChangesErrorForTest(  // IN-TEST
+      WatcherEntryId watcher_id,
+      DWORD error);
 
   // The max size of a file notification assuming that long paths aren't
   // enabled.
@@ -155,8 +160,7 @@ class CompletionIOPortThread final : public base::PlatformThread::Delegate {
           watched_path(std::move(watched_path)) {}
     ~WatcherEntry() = default;
 
-    // Delete copy and move constructors since `buffer` should not be copied or
-    // moved.
+    // The kernel may hold pointers to `overlapped` and `buffer`.
     WatcherEntry(const WatcherEntry&) = delete;
     WatcherEntry& operator=(const WatcherEntry&) = delete;
     WatcherEntry(WatcherEntry&&) = delete;
@@ -172,10 +176,12 @@ class CompletionIOPortThread final : public base::PlatformThread::Delegate {
     base::win::ScopedHandle watched_handle;
     base::FilePath watched_path;
 
+    OVERLAPPED overlapped = {};
     alignas(DWORD) uint8_t buffer[kWatchBufferSizeBytes];
+    // True while the kernel may still access `overlapped` and `buffer`.
+    bool has_pending_io = false;
+    DWORD next_read_directory_changes_error_for_test = ERROR_SUCCESS;
   };
-
-  OVERLAPPED overlapped = {};
 
   CompletionIOPortThread();
 
@@ -235,6 +241,9 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   void Cancel() override;
 
   base::Lock& GetWatchThreadLockForTest() override;  // IN-TEST
+  const void* GetOverlappedPointerForTest() override;  // IN-TEST
+  void SetNextReadDirectoryChangesErrorForTest(        // IN-TEST
+      uint32_t error) override;
 
  private:
   friend CompletionIOPortThread;
@@ -275,8 +284,9 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
   void BufferOverflowed();
 
-  void WatchedDirectoryDeleted(base::FilePath watched_path,
-                               base::HeapArray<uint8_t> notification_batch);
+  void WatchError(DWORD error,
+                  base::FilePath watched_path,
+                  base::HeapArray<uint8_t> notification_batch);
 
   void ProcessNotificationBatch(base::FilePath watched_path,
                                 base::HeapArray<uint8_t> notification_batch);
@@ -316,15 +326,24 @@ CompletionIOPortThread::CompletionIOPortThread() {
 }
 
 DWORD CompletionIOPortThread::SetupWatch(WatcherEntry& watcher_entry) {
+  CHECK(!watcher_entry.has_pending_io);
+  if (watcher_entry.next_read_directory_changes_error_for_test !=
+      ERROR_SUCCESS) {
+    return std::exchange(
+        watcher_entry.next_read_directory_changes_error_for_test,
+        ERROR_SUCCESS);
+  }
+
   bool success = ReadDirectoryChangesW(
       watcher_entry.watched_handle.get(), &watcher_entry.buffer,
       kWatchBufferSizeBytes, /*bWatchSubtree=*/true,
       FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_SIZE |
           FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_DIR_NAME,
-      nullptr, &overlapped, nullptr);
+      nullptr, &watcher_entry.overlapped, nullptr);
   if (!success) {
     return ::GetLastError();
   }
+  watcher_entry.has_pending_io = true;
   return ERROR_SUCCESS;
 }
 
@@ -376,21 +395,46 @@ void CompletionIOPortThread::RemoveWatcher(WatcherEntryId watcher_id) {
     raw_watched_handle = watched_handle.release();
 
     it->second.watcher_raw_ptr = nullptr;
+
+    // An unsuccessful submission does not post a completion. Keep the entry
+    // only while a completion packet is outstanding.
+    if (!it->second.has_pending_io) {
+      watcher_entries_.erase(it);
+    }
   }
 
   {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
-    // `raw_watched_handle` being closed indicates to `ThreadMain` that this
-    // entry needs to be removed from `watcher_entries_` once the kernel
-    // indicates it is safe too.
+    // Closing the handle cancels any pending directory read. Its completion
+    // lets ThreadMain release the entry.
     ::CloseHandle(raw_watched_handle);
   }
 }
 
 base::Lock& CompletionIOPortThread::GetLockForTest() {
   return watchers_lock_;
+}
+
+const void* CompletionIOPortThread::GetOverlappedPointerForTest(
+    WatcherEntryId watcher_id) {
+  base::AutoLock auto_lock(watchers_lock_);
+  auto it = watcher_entries_.find(watcher_id);
+  CHECK(it != watcher_entries_.end());
+  return &it->second.overlapped;
+}
+
+void CompletionIOPortThread::SetNextReadDirectoryChangesErrorForTest(
+    WatcherEntryId watcher_id,
+    DWORD error) {
+  base::AutoLock auto_lock(watchers_lock_);
+  auto it = watcher_entries_.find(watcher_id);
+  CHECK(it != watcher_entries_.end());
+  CHECK_NE(error, static_cast<DWORD>(ERROR_SUCCESS));
+  CHECK_EQ(it->second.next_read_directory_changes_error_for_test,
+           static_cast<DWORD>(ERROR_SUCCESS));
+  it->second.next_read_directory_changes_error_for_test = error;
 }
 
 void CompletionIOPortThread::ThreadMain() {
@@ -402,14 +446,12 @@ void CompletionIOPortThread::ThreadMain() {
     BOOL io_port_result = ::GetQueuedCompletionStatus(
         io_completion_port_.get(), &bytes_transferred, &key, &overlapped_out,
         INFINITE);
-    CHECK(&overlapped == overlapped_out);
+    const DWORD io_port_error =
+        io_port_result ? ERROR_SUCCESS : ::GetLastError();
 
-    DWORD io_port_error = ERROR_SUCCESS;
-    if (io_port_result == FALSE) {
-      io_port_error = ::GetLastError();
-      // `ERROR_ACCESS_DENIED` should be the only error we can receive.
-      CHECK_EQ(io_port_error, static_cast<DWORD>(ERROR_ACCESS_DENIED));
-    }
+    // The port stays open and the wait is infinite. Even failed I/O must
+    // return a completion packet with an OVERLAPPED pointer.
+    CHECK(overlapped_out);
 
     base::AutoLock auto_lock(watchers_lock_);
 
@@ -421,42 +463,32 @@ void CompletionIOPortThread::ThreadMain() {
         << "WatcherEntryId not in map";
 
     auto& watcher_entry = watcher_entry_it->second;
-    auto& [watcher_raw_ptr, watcher_weak_ptr, task_runner, watched_handle,
-           watched_path, buffer] = watcher_entry;
+    CHECK_EQ(&watcher_entry.overlapped, overlapped_out);
+    watcher_entry.has_pending_io = false;
 
-    if (!watched_handle.is_valid()) {
-      // After the handle has been closed, a final notification will be sent
-      // with `bytes_transferred` equal to 0. It is safe to destroy the watcher
-      // now.
-      if (bytes_transferred == 0) {
-        // `watcher_entry` and all the local refs to its members will be
-        // dangling after this call.
-        watcher_entries_.erase(watcher_entry_it);
-      }
+    if (!watcher_entry.watched_handle.is_valid()) {
+      // The last I/O has completed, so the entry's storage can be released.
+      watcher_entries_.erase(watcher_entry_it);
       continue;
     }
 
     // If watched_handle hasn't been released yet, then the `watcher` is
     // still alive, and it is safe to access via raw pointer.
-    watcher_raw_ptr->upcoming_batch_count_++;
+    watcher_entry.watcher_raw_ptr->upcoming_batch_count_++;
 
-    // `GetQueuedCompletionStatus` can fail with `ERROR_ACCESS_DENIED` when the
-    // watched directory is deleted.
-    if (io_port_result == FALSE) {
-      CHECK(bytes_transferred == 0);
-
-      task_runner->PostTask(
-          FROM_HERE,
-          base::BindOnce(&FilePathWatcherImpl::WatchedDirectoryDeleted,
-                         watcher_weak_ptr, watched_path,
-                         base::HeapArray<uint8_t>()));
+    if (!io_port_result) {
+      watcher_entry.task_runner->PostTask(
+          FROM_HERE, base::BindOnce(&FilePathWatcherImpl::WatchError,
+                                    watcher_entry.watcher_weak_ptr,
+                                    io_port_error, watcher_entry.watched_path,
+                                    base::HeapArray<uint8_t>()));
       continue;
     }
 
     base::HeapArray<uint8_t> notification_batch;
     if (bytes_transferred > 0) {
       notification_batch = base::HeapArray<uint8_t>::CopiedFrom(
-          base::span<uint8_t>(buffer).first(bytes_transferred));
+          base::span(watcher_entry.buffer).first(bytes_transferred));
     }
 
     // Let the kernel know that we're ready to receive change events again in
@@ -469,28 +501,28 @@ void CompletionIOPortThread::ThreadMain() {
     // `SetupWatch` can fail if the watched directory was deleted before
     // `SetupWatch` was called but after `GetQueuedCompletionStatus` returned.
     if (result != ERROR_SUCCESS) {
-      CHECK_EQ(result, static_cast<DWORD>(ERROR_ACCESS_DENIED));
-      task_runner->PostTask(
-          FROM_HERE,
-          base::BindOnce(&FilePathWatcherImpl::WatchedDirectoryDeleted,
-                         watcher_weak_ptr, watched_path,
-                         std::move(notification_batch)));
+      watcher_entry.task_runner->PostTask(
+          FROM_HERE, base::BindOnce(&FilePathWatcherImpl::WatchError,
+                                    watcher_entry.watcher_weak_ptr, result,
+                                    watcher_entry.watched_path,
+                                    std::move(notification_batch)));
       continue;
     }
 
     // `GetQueuedCompletionStatus` succeeds with zero bytes transferred if there
     // is a buffer overflow.
     if (bytes_transferred == 0) {
-      task_runner->PostTask(
+      watcher_entry.task_runner->PostTask(
           FROM_HERE, base::BindOnce(&FilePathWatcherImpl::BufferOverflowed,
-                                    watcher_weak_ptr));
+                                    watcher_entry.watcher_weak_ptr));
       continue;
     }
 
-    task_runner->PostTask(
+    watcher_entry.task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&FilePathWatcherImpl::ProcessNotificationBatch,
-                       watcher_weak_ptr, watched_path,
+                       watcher_entry.watcher_weak_ptr,
+                       watcher_entry.watched_path,
                        std::move(notification_batch)));
   }
 }
@@ -528,6 +560,7 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
     const FilePathWatcher::UsageChangeCallback& usage_callback) {
   CHECK(target_.empty(),
         base::NotFatalUntil::M159);  // Can only watch one path.
+  CHECK(!callback.is_null());
 
   set_task_runner(base::SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
@@ -562,6 +595,20 @@ base::Lock& FilePathWatcherImpl::GetWatchThreadLockForTest() {
   return CompletionIOPortThread::Get()->GetLockForTest();  // IN-TEST
 }
 
+const void* FilePathWatcherImpl::GetOverlappedPointerForTest() {
+  CHECK(watcher_id_.has_value());
+  return CompletionIOPortThread::Get()->GetOverlappedPointerForTest(  // IN-TEST
+      watcher_id_.value());
+}
+
+void FilePathWatcherImpl::SetNextReadDirectoryChangesErrorForTest(
+    uint32_t error) {
+  CHECK(watcher_id_.has_value());
+  CompletionIOPortThread::Get()
+      ->SetNextReadDirectoryChangesErrorForTest(  // IN-TEST
+          watcher_id_.value(), error);
+}
+
 void FilePathWatcherImpl::BufferOverflowed() {
   CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
 
@@ -577,24 +624,45 @@ void FilePathWatcherImpl::BufferOverflowed() {
   callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
 }
 
-void FilePathWatcherImpl::WatchedDirectoryDeleted(
+void FilePathWatcherImpl::WatchError(
+    DWORD error,
     base::FilePath watched_path,
     base::HeapArray<uint8_t> notification_batch) {
   CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
 
-  WatchWithChangeInfoResult result = SetupWatchHandleForTarget();
-
   UpcomingBatchCountDecrementer upcoming_batch_count_decrementer(
       weak_factory_.GetWeakPtr());
+  RecordReadDirectoryChangesErrorUma(static_cast<int>(error));
 
-  if (result != WatchWithChangeInfoResult::kSuccess) {
-    // `this` may be deleted after `callback_` is run.
-    callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
+  bool target_missing = false;
+  bool recovered = false;
+  if (error == ERROR_ACCESS_DENIED &&
+      SetupWatchHandleForTarget() == WatchWithChangeInfoResult::kSuccess) {
+    // Access denied alone does not establish that the target disappeared.
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    if (::GetFileAttributesW(target_.value().c_str()) !=
+        INVALID_FILE_ATTRIBUTES) {
+      recovered = true;
+    } else {
+      const DWORD path_error = ::GetLastError();
+      target_missing = path_error == ERROR_FILE_NOT_FOUND ||
+                       path_error == ERROR_PATH_NOT_FOUND;
+      recovered = target_missing;
+    }
+  }
+
+  if (!recovered) {
+    pending_delete_timer_.Stop();
+    CloseWatchHandle();
+    weak_factory_.InvalidateWeakPtrs();
+    auto callback = std::move(callback_);
+    callback.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
     return;
   }
 
   auto self = weak_factory_.GetWeakPtr();
-
+  const bool watched_target = watched_path == target_;
   if (!notification_batch.empty()) {
     // `ProcessNotificationBatch` will decrement `upcoming_batch_count`.
     upcoming_batch_count_decrementer.Cancel();
@@ -608,13 +676,17 @@ void FilePathWatcherImpl::WatchedDirectoryDeleted(
     }
   }
 
-  // The pending delete can be sent, without having to wait for coalescing
-  // since the watched directory is deleted.
-  if (pending_delete_timer_.IsRunning()) {
-    pending_delete_timer_.FireNow();
+  // Deliver the pending change before MayHaveMissedChanges clears it.
+  if (change_tracker_->HasPendingDelete()) {
+    pending_delete_timer_.Stop();
+    RunCallbackOnPendingDelete();
+    if (!self) {
+      return;
+    }
   }
 
-  if (watched_path == target_ || change_tracker_->KnowTargetExists()) {
+  if (target_missing &&
+      (watched_target || change_tracker_->KnowTargetExists())) {
     // `this` may be deleted after `callback_` is run.
     callback_.Run(FilePathWatcher::ChangeInfo(
                       FilePathWatcher::FilePathType::kDirectory,

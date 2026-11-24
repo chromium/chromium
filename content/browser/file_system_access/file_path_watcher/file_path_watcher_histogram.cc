@@ -13,6 +13,11 @@ void RecordWatchWithChangeInfoResultUma(WatchWithChangeInfoResult result) {
       "Storage.FileSystemAccess.WatchWithChangeInfoResult", result);
 }
 
+void RecordReadDirectoryChangesErrorUma(int error) {
+  base::UmaHistogramSparse("Storage.FileSystemAccess.ReadDirectoryChangesError",
+                           error);
+}
+
 void RecordInotifyWatchCountUma(int count) {
   base::UmaHistogramCounts10000("Storage.FileSystemAccess.InotifyWatchCount",
                                 count);

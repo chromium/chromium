@@ -7,6 +7,8 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_PATH_WATCHER_FILE_PATH_WATCHER_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_PATH_WATCHER_FILE_PATH_WATCHER_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -191,6 +193,8 @@ class CONTENT_EXPORT FilePathWatcher {
     // implementation's Watch thread. Tests can use this to block that thread
     // and cause a buffer overflow.
     virtual base::Lock& GetWatchThreadLockForTest() = 0;
+    virtual const void* GetOverlappedPointerForTest() = 0;
+    virtual void SetNextReadDirectoryChangesErrorForTest(uint32_t error) = 0;
 #endif
 
    protected:
@@ -260,6 +264,11 @@ class CONTENT_EXPORT FilePathWatcher {
   // Watch thread. Tests can use this to block that thread and cause a buffer
   // overflow.
   base::Lock& GetWatchThreadLockForTest();
+
+  const void* GetOverlappedPointerForTest();
+
+  // Makes the next ReadDirectoryChangesW call fail with `error`.
+  void SetNextReadDirectoryChangesErrorForTest(uint32_t error);
 #endif
 
 #if BUILDFLAG(IS_MAC)

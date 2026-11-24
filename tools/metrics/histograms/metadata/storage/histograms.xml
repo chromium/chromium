@@ -1463,6 +1463,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.FileSystemAccess.ReadDirectoryChangesError"
+    enum="WinGetLastError" expires_after="2027-07-11">
+  <owner>mych@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    Windows error returned when a File System Access directory watch fails to
+    complete or to submit its next read.
+  </summary>
+</histogram>
+
 <histogram name="Storage.FileSystemAccess.RestorePermissionPromptOutcome"
     enum="FileSystemAccessRestorePermissionPromptOutcome"
     expires_after="2027-07-11">
