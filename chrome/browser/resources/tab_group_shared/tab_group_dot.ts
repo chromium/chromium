@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -41,26 +40,19 @@ export class TabGroupDotElement extends CrLitElement {
         type: String,
         reflect: true,
       },
-      tabGroupColorRefresh_: {type: Boolean},
     };
   }
 
   accessor color: Color = Color.kGrey;
   accessor filled: boolean = true;
   accessor size: TabGroupDotSize = TabGroupDotSize.SMALL;
-  accessor tabGroupColorRefresh_: boolean =
-      loadTimeData.valueExists('useTabGroupColorRefresh') ?
-      loadTimeData.getBoolean('useTabGroupColorRefresh') :
-      false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('color') ||
-        changedProperties.has('tabGroupColorRefresh_')) {
+    if (changedProperties.has('color')) {
       this.style.setProperty(
-          '--group-dot-color',
-          getTabGroupColorVar(this.color, this.tabGroupColorRefresh_));
+          '--group-dot-color', getTabGroupColorVar(this.color));
     }
 
     if (changedProperties.has('size')) {

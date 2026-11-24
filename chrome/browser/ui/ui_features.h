@@ -73,7 +73,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kToolbarGlowUpBookmarkEnabled);
 BASE_DECLARE_FEATURE(kMenuSimplification);
 BASE_DECLARE_FEATURE_PARAM(bool,
                            kMenuSimplificationGlicSearchAboveSaveAndPrint);
-BASE_DECLARE_FEATURE(kTabGroupColorRefresh);
 BASE_DECLARE_FEATURE(kWebuiRefresh2026);
 BASE_DECLARE_FEATURE(kAppMenuGlowUp);
 // Enables the redesigned Settings 2026 refresh features and search UX.
@@ -97,7 +96,6 @@ bool IsToolbarGlowUpReloadEnabled();
 bool IsToolbarGlowUpBackForwardEnabled();
 bool IsToolbarGlowUpBookmarkEnabled();
 bool IsMenuSimplificationEnabled();
-bool IsTabGroupColorRefreshEnabled();
 bool IsWebuiRefresh2026Enabled();
 bool IsSettingsRefresh2026Enabled();
 bool IsSettingsSearch2026Enabled();

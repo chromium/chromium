@@ -9830,10 +9830,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebUIRoundedIconsDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kWebUIRoundedIcons)},
 
-    {"tab-group-color-refresh", flag_descriptions::kTabGroupColorRefreshName,
-     flag_descriptions::kTabGroupColorRefreshDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabGroupColorRefresh)},
-
     {"menu-simplification", flag_descriptions::kMenuSimplificationName,
      flag_descriptions::kMenuSimplificationDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kMenuSimplification,

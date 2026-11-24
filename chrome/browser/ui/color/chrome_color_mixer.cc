@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/color/tab_group_color_ids.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome_color_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
@@ -118,7 +117,6 @@ struct TabGroupColorParams {
 };
 
 TabGroupColorParams CreateColorParams(
-    bool use_alternate_palette,
     ui::ColorId active,
     ui::ColorId inactive,
     ui::ColorId dialog,
@@ -126,44 +124,28 @@ TabGroupColorParams CreateColorParams(
     ui::ColorId saved_fg,
     ui::ColorId saved_outline,
     ui::ColorId bookmark,
-    // Glow up palette
-    SkColor alt_dark,
-    SkColor alt_light,
-    SkColor alt_chip_dark,
-    SkColor alt_chip_light,
-    SkColor alt_fg_dark,
-    // Classic palette
     SkColor base_dark,
     SkColor base_light,
+    SkColor chip_dark,
+    SkColor chip_light,
     SkColor fg_dark,
-    SkColor fg_light,
-    SkColor outline_dark,
-    SkColor outline_light,
-    SkColor bm_dark,
-    SkColor bm_light,
-    std::optional<SkColor> alt_fg_light = std::nullopt,
-    std::optional<SkColor> alt_outline_light = std::nullopt) {
-  if (use_alternate_palette) {
-    return {active,
-            inactive,
-            dialog,
-            context,
-            saved_fg,
-            saved_outline,
-            bookmark,
-            alt_dark,
-            alt_light,
-            alt_fg_dark,
-            alt_fg_light.value_or(alt_light),
-            alt_dark,
-            alt_outline_light.value_or(alt_light),
-            alt_chip_dark,
-            alt_chip_light};
-  } else {
-    return {active,        inactive,     dialog,        context,    saved_fg,
-            saved_outline, bookmark,     base_dark,     base_light, fg_dark,
-            fg_light,      outline_dark, outline_light, bm_dark,    bm_light};
-  }
+    std::optional<SkColor> fg_light = std::nullopt,
+    std::optional<SkColor> outline_light = std::nullopt) {
+  return {active,
+          inactive,
+          dialog,
+          context,
+          saved_fg,
+          saved_outline,
+          bookmark,
+          base_dark,
+          base_light,
+          fg_dark,
+          fg_light.value_or(base_light),
+          base_dark,
+          outline_light.value_or(base_light),
+          chip_dark,
+          chip_light};
 }
 
 }  // namespace
@@ -174,110 +156,79 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
   ui::ColorMixer& mixer = provider->AddMixer();
 
-  const bool use_alternate_palette = features::IsTabGroupColorRefreshEnabled();
-
   std::vector<TabGroupColorParams> tab_group_color_params_all = {
       CreateColorParams(
-          use_alternate_palette, kColorTabGroupTabStripFrameActiveBlue,
+          kColorTabGroupTabStripFrameActiveBlue,
           kColorTabGroupTabStripFrameInactiveBlue, kColorTabGroupDialogBlue,
           kColorTabGroupContextMenuBlue, kColorSavedTabGroupForegroundBlue,
           kColorSavedTabGroupOutlineBlue, kColorTabGroupBookmarkBarBlue,
           gfx::kTabGroupBlueDarkMode, gfx::kTabGroupBlueLightMode,
           gfx::kTabGroupBlueChipDarkMode, gfx::kTabGroupBlueChipLightMode,
-          gfx::kTabGroupBlueTextDarkMode, gfx::kGoogleBlue300,
-          gfx::kGoogleBlue600, gfx::kGoogleBlue100, gfx::kGoogleBlue700,
-          gfx::kGoogleBlue300, gfx::kGoogleBlue700,
-          SkColorSetRGB(0x39, 0x43, 0x54), gfx::kGoogleBlue050),
+          gfx::kTabGroupBlueTextDarkMode),
       CreateColorParams(
-          use_alternate_palette, kColorTabGroupTabStripFrameActiveCyan,
+          kColorTabGroupTabStripFrameActiveCyan,
           kColorTabGroupTabStripFrameInactiveCyan, kColorTabGroupDialogCyan,
           kColorTabGroupContextMenuCyan, kColorSavedTabGroupForegroundCyan,
           kColorSavedTabGroupOutlineCyan, kColorTabGroupBookmarkBarCyan,
           gfx::kTabGroupCyanDarkMode, gfx::kTabGroupCyanLightMode,
           gfx::kTabGroupCyanChipDarkMode, gfx::kTabGroupCyanChipLightMode,
-          gfx::kTabGroupCyanTextDarkMode, gfx::kGoogleCyan300,
-          gfx::kGoogleCyan900, gfx::kGoogleCyan100, gfx::kGoogleCyan900,
-          gfx::kGoogleCyan300, gfx::kGoogleCyan900,
-          SkColorSetRGB(0x35, 0x4C, 0x51), gfx::kGoogleCyan050),
+          gfx::kTabGroupCyanTextDarkMode),
       CreateColorParams(
-          use_alternate_palette, kColorTabGroupTabStripFrameActiveGreen,
+          kColorTabGroupTabStripFrameActiveGreen,
           kColorTabGroupTabStripFrameInactiveGreen, kColorTabGroupDialogGreen,
           kColorTabGroupContextMenuGreen, kColorSavedTabGroupForegroundGreen,
           kColorSavedTabGroupOutlineGreen, kColorTabGroupBookmarkBarGreen,
           gfx::kTabGroupGreenDarkMode, gfx::kTabGroupGreenLightMode,
           gfx::kTabGroupGreenChipDarkMode, gfx::kTabGroupGreenChipLightMode,
-          gfx::kTabGroupGreenTextDarkMode, gfx::kGoogleGreen300,
-          gfx::kGoogleGreen700, gfx::kGoogleGreen100, gfx::kGoogleGreen800,
-          gfx::kGoogleGreen300, gfx::kGoogleGreen800,
-          SkColorSetRGB(0x37, 0x48, 0x3C), gfx::kGoogleGreen050),
+          gfx::kTabGroupGreenTextDarkMode),
       CreateColorParams(
-          use_alternate_palette, kColorTabGroupTabStripFrameActiveGrey,
+          kColorTabGroupTabStripFrameActiveGrey,
           kColorTabGroupTabStripFrameInactiveGrey, kColorTabGroupDialogGrey,
           kColorTabGroupContextMenuGrey, kColorSavedTabGroupForegroundGrey,
           kColorSavedTabGroupOutlineGrey, kColorTabGroupBookmarkBarGrey,
           gfx::kTabGroupGreyDarkMode, gfx::kTabGroupGreyLightMode,
           gfx::kTabGroupGreyChipDarkMode, gfx::kTabGroupGreyChipLightMode,
-          gfx::kTabGroupGreyTextDarkMode, gfx::kGoogleGrey300,
-          gfx::kGoogleGrey700, gfx::kGoogleGrey100, gfx::kGoogleGrey700,
-          gfx::kGoogleGrey300, gfx::kGoogleGrey700,
-          SkColorSetRGB(0x4C, 0x4D, 0x4E), gfx::kGoogleGrey100),
+          gfx::kTabGroupGreyTextDarkMode),
       CreateColorParams(
-          use_alternate_palette, kColorTabGroupTabStripFrameActiveOrange,
+          kColorTabGroupTabStripFrameActiveOrange,
           kColorTabGroupTabStripFrameInactiveOrange, kColorTabGroupDialogOrange,
           kColorTabGroupContextMenuOrange, kColorSavedTabGroupForegroundOrange,
           kColorSavedTabGroupOutlineOrange, kColorTabGroupBookmarkBarOrange,
           gfx::kTabGroupOrangeDarkMode, gfx::kTabGroupOrangeLightMode,
           gfx::kTabGroupOrangeChipDarkMode, gfx::kTabGroupOrangeChipLightMode,
-          gfx::kTabGroupOrangeTextDarkMode, gfx::kGoogleOrange300,
-          gfx::kGoogleOrange400, gfx::kGoogleOrange100, gfx::kGoogleGrey800,
-          gfx::kGoogleOrange300, gfx::kGoogleOrange800,
-          SkColorSetRGB(0x54, 0x42, 0x33), gfx::kGoogleOrange050,
-          gfx::kTabGroupOrangeTextLightMode),
+          gfx::kTabGroupOrangeTextDarkMode, gfx::kTabGroupOrangeTextLightMode),
       CreateColorParams(
-          use_alternate_palette, kColorTabGroupTabStripFrameActivePink,
+          kColorTabGroupTabStripFrameActivePink,
           kColorTabGroupTabStripFrameInactivePink, kColorTabGroupDialogPink,
           kColorTabGroupContextMenuPink, kColorSavedTabGroupForegroundPink,
           kColorSavedTabGroupOutlinePink, kColorTabGroupBookmarkBarPink,
           gfx::kTabGroupPinkDarkMode, gfx::kTabGroupPinkLightMode,
           gfx::kTabGroupPinkChipDarkMode, gfx::kTabGroupPinkChipLightMode,
-          gfx::kTabGroupPinkTextDarkMode, gfx::kGooglePink300,
-          gfx::kGooglePink700, gfx::kGooglePink100, gfx::kGooglePink800,
-          gfx::kGooglePink300, gfx::kGooglePink700,
-          SkColorSetRGB(0x55, 0x39, 0x49), gfx::kGooglePink050),
+          gfx::kTabGroupPinkTextDarkMode),
       CreateColorParams(
-          use_alternate_palette, kColorTabGroupTabStripFrameActivePurple,
+          kColorTabGroupTabStripFrameActivePurple,
           kColorTabGroupTabStripFrameInactivePurple, kColorTabGroupDialogPurple,
           kColorTabGroupContextMenuPurple, kColorSavedTabGroupForegroundPurple,
           kColorSavedTabGroupOutlinePurple, kColorTabGroupBookmarkBarPurple,
           gfx::kTabGroupPurpleDarkMode, gfx::kTabGroupPurpleLightMode,
           gfx::kTabGroupPurpleChipDarkMode, gfx::kTabGroupPurpleChipLightMode,
-          gfx::kTabGroupPurpleTextDarkMode, gfx::kGooglePurple300,
-          gfx::kGooglePurple500, gfx::kGooglePurple100, gfx::kGooglePurple700,
-          gfx::kGooglePurple300, gfx::kGooglePurple700,
-          SkColorSetRGB(0x47, 0x39, 0x54), gfx::kGooglePurple050),
+          gfx::kTabGroupPurpleTextDarkMode),
       CreateColorParams(
-          use_alternate_palette, kColorTabGroupTabStripFrameActiveRed,
+          kColorTabGroupTabStripFrameActiveRed,
           kColorTabGroupTabStripFrameInactiveRed, kColorTabGroupDialogRed,
           kColorTabGroupContextMenuRed, kColorSavedTabGroupForegroundRed,
           kColorSavedTabGroupOutlineRed, kColorTabGroupBookmarkBarRed,
           gfx::kTabGroupRedDarkMode, gfx::kTabGroupRedLightMode,
           gfx::kTabGroupRedChipDarkMode, gfx::kTabGroupRedChipLightMode,
-          gfx::kTabGroupRedTextDarkMode, gfx::kGoogleRed300, gfx::kGoogleRed600,
-          gfx::kGoogleRed100, gfx::kGoogleRed700, gfx::kGoogleRed300,
-          gfx::kGoogleRed700, SkColorSetRGB(0x52, 0x39, 0x37),
-          gfx::kGoogleRed050),
+          gfx::kTabGroupRedTextDarkMode),
       CreateColorParams(
-          use_alternate_palette, kColorTabGroupTabStripFrameActiveYellow,
+          kColorTabGroupTabStripFrameActiveYellow,
           kColorTabGroupTabStripFrameInactiveYellow, kColorTabGroupDialogYellow,
           kColorTabGroupContextMenuYellow, kColorSavedTabGroupForegroundYellow,
           kColorSavedTabGroupOutlineYellow, kColorTabGroupBookmarkBarYellow,
           gfx::kTabGroupYellowDarkMode, gfx::kTabGroupYellowLightMode,
           gfx::kTabGroupYellowChipDarkMode, gfx::kTabGroupYellowChipLightMode,
-          gfx::kTabGroupYellowTextDarkMode, gfx::kGoogleYellow300,
-          gfx::kGoogleYellow600, gfx::kGoogleYellow100, gfx::kGoogleGrey800,
-          gfx::kGoogleYellow300, gfx::kGoogleYellow600,
-          SkColorSetRGB(0x55, 0x4B, 0x30), gfx::kGoogleYellow050,
-          gfx::kTabGroupYellowTextLightMode,
+          gfx::kTabGroupYellowTextDarkMode, gfx::kTabGroupYellowTextLightMode,
           gfx::kTabGroupYellowOutlineLightMode)};
 
   for (const auto& params : tab_group_color_params_all) {

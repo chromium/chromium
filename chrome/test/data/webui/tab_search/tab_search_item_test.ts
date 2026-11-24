@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {RecentlyClosedTab, Tab, TabGroup, TabSearchItemElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabAlertState, TabData, TabGroupColor, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertNotReached} from 'chrome://webui-test/chai_assert.js';
@@ -134,13 +133,8 @@ suite('TabSearchItemTest', () => {
     assertNotEquals(null, groupDotElement);
     const groupDotComputedStyle = getComputedStyle(groupDotElement);
 
-    const useColorRefresh = loadTimeData.getBoolean('useTabGroupColorRefresh');
-    const expectedColorVar = useColorRefresh ?
-        '--tab-group-refresh-color-blue' :
-        '--tab-group-color-blue';
-
     assertEquals(
-        groupDotComputedStyle.getPropertyValue(expectedColorVar),
+        groupDotComputedStyle.getPropertyValue('--tab-group-color-blue'),
         groupDotComputedStyle.getPropertyValue('--group-dot-color'));
 
     assertNotEquals(

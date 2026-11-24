@@ -14,9 +14,6 @@
       <message name="IDS_TAB_GROUP_COLOR_YELLOW" desc="The accessibility label for a button in a color picker that is used to choose the color yellow." formatter_data="android_java">
         Yellow
       </message>
-      <message name="IDS_TAB_GROUP_COLOR_MAGENTA" desc="The accessibility label for a button in a color picker that is used to choose the color magenta.">
-        Magenta
-      </message>
       <message name="IDS_TAB_GROUP_COLOR_GREEN" desc="The accessibility label for a button in a color picker that is used to choose the color green." formatter_data="android_java">
         Green
       </message>

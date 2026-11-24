@@ -12,7 +12,6 @@
 
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -104,26 +103,13 @@ tab_groups::TabGroupColorId TabGroupModel::GetNextColor(
 
 // static
 std::vector<tab_groups::TabGroupColorId> TabGroupModel::GetColorOrdering() {
-  if (features::IsTabGroupColorRefreshEnabled()) {
-    return {tab_groups::TabGroupColorId::kBlue,
-            tab_groups::TabGroupColorId::kPurple,
-            tab_groups::TabGroupColorId::kPink,
-            tab_groups::TabGroupColorId::kRed,
-            tab_groups::TabGroupColorId::kOrange,
-            tab_groups::TabGroupColorId::kYellow,
-            tab_groups::TabGroupColorId::kGreen,
-            tab_groups::TabGroupColorId::kCyan,
-            tab_groups::TabGroupColorId::kGrey};
-  } else {
-    // Use the ordering defined by values of each member in the enum, in
-    // ascending order.
-    const tab_groups::ColorLabelMap& color_map =
-        tab_groups::GetTabGroupColorLabelMap();
-    std::vector<tab_groups::TabGroupColorId> color_ids;
-
-    for (const auto& pair : color_map) {
-      color_ids.push_back(pair.first);
-    }
-    return color_ids;
-  }
+  return {tab_groups::TabGroupColorId::kBlue,
+          tab_groups::TabGroupColorId::kPurple,
+          tab_groups::TabGroupColorId::kPink,
+          tab_groups::TabGroupColorId::kRed,
+          tab_groups::TabGroupColorId::kOrange,
+          tab_groups::TabGroupColorId::kYellow,
+          tab_groups::TabGroupColorId::kGreen,
+          tab_groups::TabGroupColorId::kCyan,
+          tab_groups::TabGroupColorId::kGrey};
 }

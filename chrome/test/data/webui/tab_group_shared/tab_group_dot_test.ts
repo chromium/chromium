@@ -84,8 +84,7 @@ suite('TabGroupDotTest', () => {
     assertEquals('3', circle.getAttribute('r'));
   });
 
-  test('sets color without refresh', async () => {
-    dot.tabGroupColorRefresh_ = false;
+  test('sets color', async () => {
     dot.color = Color.kBlue;
     await microtasksFinished();
 
@@ -98,23 +97,6 @@ suite('TabGroupDotTest', () => {
 
     assertEquals(
         'var(--tab-group-color-red)',
-        dot.style.getPropertyValue('--group-dot-color'));
-  });
-
-  test('sets color with refresh', async () => {
-    dot.tabGroupColorRefresh_ = true;
-    dot.color = Color.kBlue;
-    await microtasksFinished();
-
-    assertEquals(
-        'var(--tab-group-refresh-color-blue)',
-        dot.style.getPropertyValue('--group-dot-color'));
-
-    dot.color = Color.kGreen;
-    await microtasksFinished();
-
-    assertEquals(
-        'var(--tab-group-refresh-color-green)',
         dot.style.getPropertyValue('--group-dot-color'));
   });
 });

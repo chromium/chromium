@@ -9397,11 +9397,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "tab-group-color-refresh",
-    "owners": [ "dominicaustria@google.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 165
-  },
-  {
     "name": "tab-group-context-menu-live-title-update",
     "owners": [ "zheliooo@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 170

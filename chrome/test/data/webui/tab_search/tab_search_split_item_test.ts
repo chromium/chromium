@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabSearchSplitItemElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {SplitTabLayout, SplitViewData, TabGroupColor} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -127,13 +126,8 @@ suite('TabSearchSplitItemTest', () => {
         tabSearchSplitItem.shadowRoot.querySelector<HTMLElement>('#groupDot')!;
     assertNotEquals(null, groupDotElement);
 
-    const useColorRefresh = loadTimeData.getBoolean('useTabGroupColorRefresh');
-    const expectedColorVar = useColorRefresh ?
-        'var(--tab-group-refresh-color-blue)' :
-        'var(--tab-group-color-blue)';
-
     assertEquals(
-        expectedColorVar,
+        'var(--tab-group-color-blue)',
         groupDotElement.style.getPropertyValue('--group-dot-color'));
   });
 });

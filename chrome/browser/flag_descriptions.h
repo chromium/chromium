@@ -4514,10 +4514,6 @@ inline constexpr char kTestThirdPartyCookiePhaseoutDescription[] =
     "Enable to test third-party cookie phaseout. "
     "Learn more: https://goo.gle/3pcd-flags";
 
-inline constexpr char kTabGroupColorRefreshName[] = "Tab Group Color Refresh";
-inline constexpr char kTabGroupColorRefreshDescription[] =
-    "Update the color selection for tab groups.";
-
 inline constexpr char kTabGroupsFocusingName[] = "Tab Groups Focusing";
 inline constexpr char kTabGroupsFocusingDescription[] =
     "When a tab group is focused, the tabstrip constrains visiblity to the "
