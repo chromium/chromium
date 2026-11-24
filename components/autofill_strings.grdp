@@ -955,15 +955,6 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_YOUR_SAVED_INFO" desc="Title shown in the AtMemory suggestions above Autofill-sourced suggestions." translateable="false">
     Your saved info
   </message>
-  <message name="IDS_AT_MEMORY_NOTICE_TEXT" desc="Body text of an informational notice introducing a new enhanced autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should remain unlocalized and match standard guidelines across languages. 'Manage settings' is a hyperlink that navigates the user to the Chrome settings page to adjust their preferences." formatter_data="android_java">
-    Powered by Gemini with Personal Intelligence. Your requests, page titles, and URLs may be reviewed to improve enhanced autofill. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Manage settings<ph name="END_LINK">&lt;/link&gt;</ph>
-  </message>
-  <message name="IDS_AT_MEMORY_NOTICE_TEXT_NO_LOGGING" desc="Body text of an informational notice introducing a new enhanced autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should remain unlocalized and match standard guidelines across languages. 'Manage settings' is a hyperlink that navigates the user to the Chrome settings page to adjust their preferences." formatter_data="android_java">
-    Powered by Gemini with Personal Intelligence. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Manage settings<ph name="END_LINK">&lt;/link&gt;</ph>
-  </message>
-  <message name="IDS_AT_MEMORY_NOTICE_TITLE" desc="Headline of an informational notice introducing a new enhanced autofill feature. 'Gmail' is a proper branding name and should remain unlocalized and match standard guidelines across languages." formatter_data="android_java">
-    Now you can find and fill info from Gmail and more
-  </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_ORDER_NUMBER" desc="Example search query shown in the AtMemory zero state for finding an order number." translateable="false">
     Try "running shoes order number"
   </message>
@@ -975,14 +966,6 @@
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_HOTEL_ADDRESS" desc="Example search query shown in the AtMemory zero state for finding a hotel address." translateable="false">
     Try "address for my hotel in Tokyo"
-  </message>
-  <if expr="is_android">
-    <message name="IDS_AT_MEMORY_SEARCH_HINT" desc="Hint text for the search bar in the AtMemory bottom sheet." formatter_data="android_java" translateable="false">
-      Find and fill
-    </message>
-  </if>
-   <message name="IDS_AUTOFILL_AT_MEMORY_SUGGESTION_SOURCE_TEXT" desc="The label for a text in the At Memory flyout that shows the source of the autofill suggestion." formatter_data="android_java" translateable="false">
-    From Gemini and connected apps
   </message>
   <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI" desc="Sublabel text or accessibility description indicating that a suggestion is sourced from Gemini." formatter_data="android_java" translateable="false">
     Suggested by Gemini
@@ -1015,14 +998,6 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_MANAGE_CONTACT_INFO" desc="The text displayed at the bottom of the AtMemory popup to allow the user to manage their Autofill preferences for contact information. When the user clicks on it, opens the Contact info settings page." translateable="false">
     Manage contact info
   </message>
-  <if expr="is_android or is_ios">
-    <message name="IDS_AT_MEMORY_NOTICE_OK_BUTTON" desc="Standard acknowledgment button label to dismiss the informational notice." formatter_data="android_java">
-      OK
-    </message>
-    <message name="IDS_AT_MEMORY_NOTICE_OK_BUTTON_A11Y_LABEL" translateable="false" is_accessibility_with_no_ui="true" desc="Accessibility label for a standard acknowledgment button label to dismiss the informational notice. Clicking the button will close only the notice row, but not the whole bottom sheet." formatter_data="android_java">
-      OK, close notice
-    </message>
-  </if>
 
   <!-- Autofill Address Edit Dialog -->
   <!-- Common on all platforms -->

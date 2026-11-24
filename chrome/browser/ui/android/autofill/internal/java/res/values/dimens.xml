@@ -19,21 +19,4 @@ found in the LICENSE file.
   <dimen name="progress_bar_dialog_margin_top">60dp</dimen>
   <dimen name="progress_bar_dialog_margin_bottom">30dp</dimen>
   <dimen name="progress_bar_description_spacing">5dp</dimen>
-
-  <dimen name="at_memory_flyout_default_margin">16dp</dimen>
-  <dimen name="at_memory_flyout_margin_bottom">12dp</dimen>
-  <dimen name="at_memory_flyout_padding">8dp</dimen>
-  <dimen name="at_memory_suggestion_default_margin">16dp</dimen>
-  <dimen name="at_memory_suggestion_item_padding_vertical">12dp</dimen>
-  <dimen name="at_memory_suggestion_icon_size">24dp</dimen>
-  <dimen name="at_memory_suggestion_divider_width">1dp</dimen>
-  <dimen name="at_memory_suggestion_divider_height">24dp</dimen>
-  <dimen name="at_memory_notice_corner_radius">16dp</dimen>
-  <dimen name="at_memory_bottom_sheet_horizontal_margin">24dp</dimen>
-  <dimen name="at_memory_bottom_sheet_margin_top">20dp</dimen>
-  <dimen name="at_memory_bottom_sheet_margin_bottom">18dp</dimen>
-  <dimen name="at_memory_search_bar_height">48dp</dimen>
-  <dimen name="at_memory_suggestions_margin_top">20dp</dimen>
-  <dimen name="at_memory_suggestion_item_height">64dp</dimen>
-  <dimen name="at_memory_search_bar_corner_radius">40dp</dimen>
 </resources>
