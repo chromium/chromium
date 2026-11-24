@@ -68,6 +68,7 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   // `SetFocus(false)` Mojo IPC to ensure DOM input focus in the WebUI is
   // cleared.
   void OnBlur() override;
+  void ClearSavedSelectionForFocusChange() override;
   bool RequestWebUIContextMenu(const gfx::Point& screen_point,
                                ui::mojom::MenuSourceType source_type) override;
   // Called when the WebUI page handler establishes its Mojo connection.
@@ -88,18 +89,24 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   bool is_focused() const { return focused_; }
 
   // The Full popup's blur sequence: accepts any temporary text while user
-  // input is in progress as the user's draft, reverts unedited text (see
-  // `OmniboxEditModel::RevertUneditedText()`), tells the WebUI it lost focus
+  // input is in progress as the user's draft, tells the WebUI it lost focus
   // (`edit_model->popup_view()->OnBlur()`, when the popup view is still
-  // registered), runs `move_focus` (the host's own focus change, e.g. clearing
-  // views focus or focusing the page), blurs the edit model, and closes the
-  // popup unless the edit model holds a draft. Static so a host can still run
-  // the rest of the sequence while the popup view is tearing down.
+  // registered), which saves its selection, reverts unedited text (see
+  // `OmniboxEditModel::RevertUneditedText()`), runs `move_focus` (the host's
+  // own focus change, e.g. clearing views focus or focusing the page), blurs
+  // the edit model, and closes the popup unless the edit model holds a draft.
+  // Static so a host can still run the rest of the sequence while the popup
+  // view is tearing down.
   static void BlurOmnibox(OmniboxController& controller,
                           base::FunctionRef<void()> move_focus);
 
   const OmniboxPopupHandler* popup_handler_for_testing() {
     return GetPopupHandler();
+  }
+
+  // True if the WebUI has been sent the current tab's state.
+  bool has_sent_state_for_testing() const {
+    return last_sent_text_.has_value();
   }
 
  private:
@@ -131,6 +138,15 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   // overriding selections the user subsequently made inside the WebUI popup.
   // Null after a state reset (e.g., tab switch, popup reopen).
   std::optional<gfx::Range> last_consumed_native_selection_;
+
+  // The selection and unelided state saved when the omnibox is blurred, and
+  // restored when it's focused again, as `OmniboxViewViews` does with its own
+  // `saved_selection_for_focus_change_`. Saved per tab in `OmniboxState`.
+  // TODO(b/574630952): Restore the selection after a modal dialog from these
+  // too, so `OmniboxPopupFullPresenter` only tracks whether the dialog
+  // interrupted focus, and remove `FocusStateToRestore`'s selection.
+  gfx::Range saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
+  bool saved_show_full_url_for_focus_change_ = false;
 
   bool has_completed_first_tab_changed_ = false;
   bool is_reverting_ = false;

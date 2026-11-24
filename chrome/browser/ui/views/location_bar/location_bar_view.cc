@@ -1808,12 +1808,14 @@ void LocationBarView::OnFocus() {
   if (is_full_webui_omnibox_) {
     // In Full WebUI mode, `LocationBarView` is the focusable Views proxy for
     // the WebUI omnibox. When `FocusManager` moves focus here on its own (tab
-    // traversal, focus restoration), forward to WebUI without triggering an
-    // unexpected Zero-Prefix Suggestion (ZPS) query.
+    // traversal, focus restoration), open and focus the popup as
+    // `OmniboxViewViews::OnFocus()` would focus the Views omnibox: select all
+    // on focus traversal, and otherwise restore the selection saved on blur,
+    // without triggering an unexpected Zero-Prefix Suggestion (ZPS) query.
     if (!moving_focus_to_webui_) {
-      if (omnibox::ShouldHostUnboundedOmniboxInLocationBar() &&
-          GetFocusManager() &&
-          GetFocusManager()->focus_change_reason() ==
+      auto* focus_manager = GetFocusManager();
+      if (omnibox::ShouldHostUnboundedOmniboxInLocationBar() && focus_manager &&
+          focus_manager->focus_change_reason() ==
               views::FocusManager::FocusChangeReason::kFocusRestore) {
         // On activation by a click, `FocusManager` restores focus before the
         // click is dispatched; let the click take focus first.
@@ -1823,17 +1825,27 @@ void LocationBarView::OnFocus() {
                 [](base::WeakPtr<LocationBarView> self) {
                   // `LocationBarView::HasFocus()` checks `edit_model()`, not
                   // Views focus.
-                  if (self && self->views::View::HasFocus()) {
-                    self->ForwardFocusToWebUI(/*query_zps=*/false,
-                                              /*select_all=*/false,
-                                              /*show_full_url=*/false);
+                  if (!self || !self->views::View::HasFocus()) {
+                    return;
+                  }
+                  if (auto* popup_view = self->GetOmniboxPopupView()) {
+                    popup_view->OnFocus(/*query_zps=*/false,
+                                        /*select_all=*/false,
+                                        /*show_full_url=*/false);
                   }
                 },
                 weak_factory_.GetWeakPtr()));
         return;
       }
-      ForwardFocusToWebUI(/*query_zps=*/false, /*select_all=*/false,
-                          /*show_full_url=*/false);
+      if (auto* popup_view = GetOmniboxPopupView()) {
+        const bool is_focus_traversal =
+            focus_manager &&
+            focus_manager->focus_change_reason() ==
+                views::FocusManager::FocusChangeReason::kFocusTraversal;
+        popup_view->OnFocus(/*query_zps=*/false,
+                            /*select_all=*/is_focus_traversal,
+                            /*show_full_url=*/false);
+      }
     }
     return;
   }
@@ -2252,6 +2264,10 @@ void LocationBarView::OnOmniboxFocused() {
 void LocationBarView::OpenOmniboxPopup(bool query_zps) {
   if (is_full_webui_omnibox_ && !in_popup_state_transition_) {
     if (auto* popup_view = GetOmniboxPopupView()) {
+      // The native view hands off a selection the user just made (e.g. by
+      // clicking or dragging), which replaces the one saved on blur, as a
+      // click in `OmniboxViewViews` sets the selection after `OnFocus()`.
+      popup_view->ClearSavedSelectionForFocusChange();
       popup_view->OnFocus(query_zps, /*select_all=*/false,
                           /*show_full_url=*/false);
     }
