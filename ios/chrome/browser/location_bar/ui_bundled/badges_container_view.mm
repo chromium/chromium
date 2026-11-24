@@ -106,7 +106,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
         constraintEqualToAnchor:_containerStackView.heightAnchor]
         .active = YES;
 
-    if (IsProactiveSuggestionsFrameworkEnabled()) {
+    if (IsPageActionMenuEnabled()) {
       _separatorView = [[UIView alloc] init];
       _separatorView.translatesAutoresizingMaskIntoConstraints = NO;
       _separatorView.isAccessibilityElement = NO;
@@ -142,8 +142,8 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
     [accessibleElements addObject:self.incognitoBadgeView];
   }
 
-  if (IsProactiveSuggestionsFrameworkEnabled() && _tapOverlayButton &&
-      !_tapOverlayButton.hidden) {
+  if (_tapOverlayButton && !_tapOverlayButton.hidden &&
+      IsPageActionMenuEnabled()) {
     if (_tapOverlayButton.alpha > 0) {
       [accessibleElements addObject:_tapOverlayButton];
     }
@@ -357,9 +357,9 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   // The Incognito badge should decide its visibility independently of the
   // visibility of other badges.
   incognitoBadgeViewShouldBeVisibleFinal = _incognitoBadgeViewShouldBeVisible;
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
-    // When framework is enabled, Reader mode uses the badge view instead of
-    // the standalone Reader mode chip.
+  if (IsPageActionMenuEnabled()) {
+    // When the Page Action Menu is enabled, Reader mode uses the badge view
+    // instead of the standalone Reader mode chip.
     readerModeChipShouldBeVisibleFinal = NO;
   } else {
     // The Reader mode chip (which wants to be visible when Reader mode is
@@ -377,13 +377,14 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
 
   if (_readerModeChipShouldBeVisible) {
     // `_readerModeChipShouldBeVisible` is true when Reader mode is active.
-    // Then the contextual entrypoint should only be visible if PSF is enabled,
-    // and the contextual chip wants to be visible, and the contextual panel
-    // item is NOT the Reader Mode availability contextual chip.
+    // Then the contextual entrypoint should only be visible if the Page Action
+    // Menu is enabled, and the contextual chip wants to be visible, and the
+    // contextual panel item is NOT the Reader Mode availability contextual
+    // chip.
     contextualPanelEntrypointShouldBeVisibleFinal =
-        IsProactiveSuggestionsFrameworkEnabled() &&
         _contextualPanelEntrypointShouldBeVisible &&
-        (_contextualPanelItemType != ContextualPanelItemType::ReaderModeItem);
+        (_contextualPanelItemType != ContextualPanelItemType::ReaderModeItem) &&
+        IsPageActionMenuEnabled();
   } else {
     // `_readerModeChipShouldBeVisible` is false when Reader mode is inactive.
     // The contextual panel entrypoint can only be visible if it wants to be
@@ -446,7 +447,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
     }
   }
 
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     if (_separatorView) {
       BOOL separatorShouldBeVisible =
           contextualPanelEntrypointShouldBeVisibleFinal &&
@@ -547,7 +548,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
 
 // Updates background visibility and badge tint colors.
 - (void)updateBackgroundVisibility {
-  if (!IsProactiveSuggestionsFrameworkEnabled() || !_badgeBackgroundView) {
+  if (!_badgeBackgroundView || !IsPageActionMenuEnabled()) {
     return;
   }
 

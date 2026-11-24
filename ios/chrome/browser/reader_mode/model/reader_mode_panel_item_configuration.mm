@@ -7,12 +7,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -64,8 +61,7 @@ ReaderModePanelItemConfiguration::~ReaderModePanelItemConfiguration() = default;
 #pragma mark - ContextualPanelItemConfiguration
 
 void ReaderModePanelItemConfiguration::DidTransitionToSmallEntrypoint() {
-  if (IsProfileEligibleForGemini() ||
-      IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     Invalidate();
   }
 }
@@ -86,8 +82,7 @@ void ReaderModePanelItemConfiguration::ReaderModeWebStateWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper,
     web::WebState* web_state,
     ReaderModeDeactivationReason reason) {
-  if (IsProfileEligibleForGemini() ||
-      IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     Invalidate();
   }
 }
@@ -119,15 +114,4 @@ void ReaderModePanelItemConfiguration::Invalidate() {
     contextual_panel_tab_helper->InvalidateContextualPanelItemConfiguration(
         this);
   }
-}
-
-bool ReaderModePanelItemConfiguration::IsProfileEligibleForGemini() {
-  web::WebState* web_state = web_state_observation_.GetSource();
-  if (!web_state || web_state->IsBeingDestroyed()) {
-    return false;
-  }
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
-  GeminiService* gemini_service = GeminiServiceFactory::GetForProfile(profile);
-  return gemini_service && gemini_service->IsProfileEligibleForGemini();
 }

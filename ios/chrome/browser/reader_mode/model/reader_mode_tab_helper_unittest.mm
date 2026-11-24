@@ -896,12 +896,7 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerDistillationOnActive) {
                   ReaderModeDistillerResult::kPageIsNotDistillable)));
 }
 
-// Tests that the Reader Mode infobar is added when Reader Mode is activated
-// and the proactive suggestions framework is enabled.
-// Tests that the Reader Mode infobar is added when Reader Mode is activated
-// and the proactive suggestions framework is enabled.
-// Tests that the Reader Mode infobar is added when Reader Mode is activated
-// and the proactive suggestions framework is enabled.
+// Tests that the Reader Mode infobar is added when Reader Mode is activated.
 TEST_F(ReaderModeTabHelperTest, AddsInfobarWhenActivated) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);

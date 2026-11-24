@@ -98,13 +98,12 @@ const CGFloat kInfobarSymbolPointSizeModifier = 4;
 }
 
 - (BadgeButton*)overflowBadgeButton {
-  Symbol symbol = IsProactiveSuggestionsFrameworkEnabled()
-                      ? SymbolEllipsis
-                      : SymbolEllipsisCircleFill;
+  Symbol symbol =
+      IsPageActionMenuEnabled() ? SymbolEllipsis : SymbolEllipsisCircleFill;
 
   UIImage* image = SymbolWithPointSize(symbol, [self infoBarSymbolPointSize]);
 
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     image = [image imageWithTintColor:[UIColor whiteColor]
                         renderingMode:UIImageRenderingModeAlwaysOriginal];
   }
@@ -208,7 +207,7 @@ const CGFloat kInfobarSymbolPointSizeModifier = 4;
 
 // Returns the size of the infobar symbol image.
 - (CGFloat)infoBarSymbolPointSize {
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     return kInfobarSymbolPointSize - kInfobarSymbolPointSizeModifier;
   }
 

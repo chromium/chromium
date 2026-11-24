@@ -75,7 +75,7 @@ bool IsInfobarTypeSupportedInReaderMode(InfobarType infobarType) {
     case InfobarType::kInfobarTypeCollaborationOutOfDate:
     case InfobarType::kInfobarTypeSaveCvc:
     case InfobarType::kInfobarTypeContextualCue:
-      return IsProactiveSuggestionsFrameworkEnabled();
+      return IsPageActionMenuEnabled();
     case InfobarType::kInfobarTypeAutofillAiSaveEntity:
       // This infobar is not supported in reader mode since forms are not shown
       // in reader mode, so the user shouldn't be able to submit a form.
@@ -274,7 +274,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
         BadgeTypeForInfobarType(infobarTypeBadgeStatePair.first);
     // TODO(crbug.com/569998074): Remove this translate badge filtering logic
     // when migrating to LocationBarBadgeViewController.
-    if (IsProactiveSuggestionsFrameworkEnabled()) {
+    if (IsPageActionMenuEnabled()) {
       BadgeState badgeState = infobarTypeBadgeStatePair.second;
       if (badgeType == kBadgeTypeTranslate &&
           !(badgeState & BadgeStateAccepted)) {
@@ -286,7 +286,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     if (infobarTypeBadgeStatePair.first ==
         InfobarType::kInfobarTypePermissions) {
       // TODO(crbug.com/584804875): Migrate to `LocationBarBadge`.
-      if (IsProactiveSuggestionsFrameworkEnabled() && self.webState) {
+      if (self.webState && IsPageActionMenuEnabled()) {
         // Check camera permission.
         if (self.webState->GetStateForPermission(web::PermissionCamera) ==
             web::PermissionStateAllowed) {
@@ -307,7 +307,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 
         continue;
       } else {
-        // Fallback to original behavior when framework is disabled.
+        // Fallback to original behavior when the Page Action Menu is disabled.
         badgeType = self.permissionsBadgeType;
       }
     }
@@ -475,7 +475,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 
   NSArray<id<BadgeItem>>* badges = self.badges;
 
-  if (IsProactiveSuggestionsFrameworkEnabled() && self.webState) {
+  if (self.webState && IsPageActionMenuEnabled()) {
     [self handleMultiBadgeDisplay:badges];
   } else {
     [self handleSingleBadgeDisplay:badges];
@@ -484,7 +484,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
   [self updateConsumerReadStatus];
 }
 
-// Handles the multi badge state for proactive suggestions framework.
+// Handles the multi badge state when the Page Action Menu is enabled.
 - (void)handleMultiBadgeDisplay:(NSArray<id<BadgeItem>>*)badges {
   NSMutableArray<id<BadgeItem>>* badgesToDisplay =
       [[NSMutableArray alloc] init];

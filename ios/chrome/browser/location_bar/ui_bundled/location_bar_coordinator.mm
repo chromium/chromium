@@ -430,8 +430,7 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   [_composeboxMenuCoordinator stop];
   _composeboxMenuCoordinator = nil;
 
-  if (IsPageActionMenuEnabled() || IsProactiveSuggestionsFrameworkEnabled() ||
-      IsLocationBarBadgeMigrationEnabled()) {
+  if (IsPageActionMenuEnabled() || IsLocationBarBadgeMigrationEnabled()) {
     [self.locationBarBadgeCoordinator stop];
     self.locationBarBadgeCoordinator = nil;
   }
@@ -986,8 +985,7 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 - (void)setUpBadges {
   BOOL isIncognito = self.isOffTheRecord;
 
-  if (IsPageActionMenuEnabled() || IsProactiveSuggestionsFrameworkEnabled() ||
-      IsLocationBarBadgeMigrationEnabled()) {
+  if (IsPageActionMenuEnabled() || IsLocationBarBadgeMigrationEnabled()) {
     self.locationBarBadgeCoordinator = [[LocationBarBadgeCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];

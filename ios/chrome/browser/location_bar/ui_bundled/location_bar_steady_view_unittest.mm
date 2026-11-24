@@ -246,13 +246,11 @@ TEST_F(LocationBarSteadyViewTest,
               NSStringFromCGRect(expected_rtl_frame));
 }
 
-// Tests that the incognito badge stays outside the Proactive Suggestions
-// Framework container and tap overlay.
-TEST_F(LocationBarSteadyViewTest,
-       IncognitoBadgeOutsideProactiveSuggestionsContainer) {
+// Tests that the incognito badge stays outside the unified badges container and
+// tap overlay.
+TEST_F(LocationBarSteadyViewTest, IncognitoBadgeOutsideBadgesContainer) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kPageActionMenu, kProactiveSuggestionsFramework}, {kChromeNextIa});
+  scoped_feature_list.InitWithFeatures({kPageActionMenu}, {kChromeNextIa});
 
   LocationBarBadgesContainerView* container =
       [[LocationBarBadgesContainerView alloc] init];

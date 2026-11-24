@@ -89,7 +89,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
       : badge_consumer_([[FakeBadgeConsumer alloc] init]),
         profile_(TestProfileIOS::Builder().Build()),
         browser_(std::make_unique<TestBrowser>(profile())) {
-    feature_list_.InitAndDisableFeature(kProactiveSuggestionsFramework);
+    feature_list_.InitWithFeatures({kGeminiKillSwitch}, {kPageActionMenu});
     overlay_presenter_ = OverlayPresenter::FromBrowser(
         browser(), OverlayModality::kInfobarBanner);
     overlay_presenter_->SetPresentationContext(&overlay_presentation_context_);

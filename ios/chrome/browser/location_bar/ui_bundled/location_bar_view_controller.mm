@@ -511,7 +511,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
       _defaultSearchEngineIconView,
       CGSizeMake(kOmniboxLeadingImageSize + 12.0f, kOmniboxLeadingImageSize));
 
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     _locationBarSteadyView.pageActionMenuHandler = self.pageActionMenuHandler;
   }
 
@@ -534,7 +534,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   self.locationBarSteadyView.trailingButton.alpha = alphaValue;
   self.locationBarSteadyView.badgesContainerView.placeholderView.alpha =
       alphaValue;
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     [self.locationBarSteadyView.badgesContainerView
         updateForFullscreenAlpha:alphaValue];
   }

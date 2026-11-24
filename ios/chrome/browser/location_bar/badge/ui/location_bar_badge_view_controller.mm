@@ -699,15 +699,19 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 }
 
 - (BOOL)useMultiBadge {
-  return IsProactiveSuggestionsFrameworkEnabled() &&
-         [self displayedBadgeType] !=
-             LocationBarBadgeType::kGeminiContextualCueChip;
+  return [self displayedBadgeType] !=
+             LocationBarBadgeType::kGeminiContextualCueChip &&
+         IsPageActionMenuEnabled();
 }
 
 #pragma mark - ContextualPanelEntrypointConsumer
 
 - (void)setEntrypointConfig:(ContextualPanelItemConfiguration*)config {
-  if (IsPageActionMenuEnabled() || IsProactiveSuggestionsFrameworkEnabled()) {
+  if (!config) {
+    return;
+  }
+
+  if (IsPageActionMenuEnabled()) {
     LocationBarBadgeType badgeType;
     switch (config->item_type) {
       case ContextualPanelItemType::SamplePanelItem:
@@ -745,10 +749,6 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
     [self setBadgeConfig:badgeConfig];
   } else {
-    if (!config) {
-      return;
-    }
-
     _buttonContainer.accessibilityLabel =
         base::SysUTF8ToNSString(config->accessibility_label);
     if (config->accessibility_hint.size() > 0) {

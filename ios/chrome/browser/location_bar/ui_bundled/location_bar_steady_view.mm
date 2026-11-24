@@ -691,7 +691,7 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
 
 - (void)setPageActionMenuHandler:
     (id<PageActionMenuCommands>)pageActionMenuHandler {
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     _pageActionMenuHandler = pageActionMenuHandler;
     _badgesContainerView.pageActionMenuHandler = pageActionMenuHandler;
   }

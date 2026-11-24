@@ -39,7 +39,7 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 CGFloat const kDividerWidthConstant = 2;
 
 // Corner radius of the divider between badges.
-CGFloat const kPSFSeparatorCornerRadius = 1;
+CGFloat const kDividerCornerRadius = 1;
 
 // Vertical padding for separator.
 CGFloat const kDividerVerticalPadding = 12.0;
@@ -66,11 +66,10 @@ CGFloat const kDividerVerticalPadding = 12.0;
 @end
 
 @implementation BadgeViewController {
-  // Array of separator views displayed between badges (Proactive Suggestions
-  // Framework enabled only).
+  // Array of separator views displayed between badges (Page Action Menu enabled
+  // only).
   NSMutableArray<UIView*>* _separatorViews;
-  // Array of currently displayed badges (Proactive Suggestions Framework
-  // enabled only).
+  // Array of currently displayed badges (Page Action Menu enabled only).
   NSArray<id<BadgeItem>>* _currentlyDisplayedBadges;
 }
 
@@ -98,7 +97,7 @@ CGFloat const kDividerVerticalPadding = 12.0;
 #pragma mark BadgeConsumer
 
 - (void)setupWithDisplayedBadge:(id<BadgeItem>)displayedBadgeItem {
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     [self clearAllBadges];
     if (displayedBadgeItem) {
       BadgeButton* newButton = [self.buttonFactory
@@ -133,7 +132,7 @@ CGFloat const kDividerVerticalPadding = 12.0;
 
 - (void)updateDisplayedBadge:(id<BadgeItem>)displayedBadgeItem
                      infoBar:(InfoBarIOS*)infoBar {
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     NSArray<id<BadgeItem>>* badges =
         displayedBadgeItem ? @[ displayedBadgeItem ] : @[];
     [self updateDisplayedBadges:badges];
@@ -166,7 +165,7 @@ CGFloat const kDividerVerticalPadding = 12.0;
 }
 
 - (void)markDisplayedBadgeAsRead:(BOOL)read {
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     return;
   }
 
@@ -213,7 +212,7 @@ CGFloat const kDividerVerticalPadding = 12.0;
 }
 
 - (void)updateDisplayedBadges:(NSArray<id<BadgeItem>>*)badgesToDisplay {
-  if (!IsProactiveSuggestionsFrameworkEnabled()) {
+  if (!IsPageActionMenuEnabled()) {
     [self updateDisplayedBadge:[badgesToDisplay firstObject] infoBar:nil];
     return;
   }
@@ -263,7 +262,7 @@ CGFloat const kDividerVerticalPadding = 12.0;
 #pragma mark - Getter/Setter
 
 - (void)setDisplayedBadge:(BadgeButton*)badgeButton {
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     return;
   }
 
@@ -334,7 +333,7 @@ CGFloat const kDividerVerticalPadding = 12.0;
   separator.translatesAutoresizingMaskIntoConstraints = NO;
   separator.isAccessibilityElement = NO;
   separator.backgroundColor = [UIColor colorNamed:kGrey300Color];
-  separator.layer.cornerRadius = kPSFSeparatorCornerRadius;
+  separator.layer.cornerRadius = kDividerCornerRadius;
 
   [self.view addSubview:separator];
   [_separatorViews addObject:separator];
@@ -375,11 +374,11 @@ CGFloat const kDividerVerticalPadding = 12.0;
     // Turning off force disable mode doesn't imply that the badge view will
     // not remain hidden. Check if there is a badge to be displayed to avoid
     // accidentally removing the placeholder as a side effect of unhiding.
-    if (!IsProactiveSuggestionsFrameworkEnabled()) {
-      [self.visibilityDelegate setBadgeViewHidden:!self.displayedBadge];
-    } else {
+    if (IsPageActionMenuEnabled()) {
       [self.visibilityDelegate
           setBadgeViewHidden:(_currentlyDisplayedBadges.count == 0)];
+    } else {
+      [self.visibilityDelegate setBadgeViewHidden:!self.displayedBadge];
     }
   }
 }

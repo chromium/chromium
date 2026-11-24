@@ -249,9 +249,9 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 
   BOOL infobarBadgesCurrentlyShown = badgesCount > 0;
 
-  // Disable contextual panel separator when Proactive Suggestions Framework is
-  // enabled to prevent conflicts.
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  // Disable contextual panel separator when the Page Action Menu is enabled to
+  // prevent conflicts.
+  if (IsPageActionMenuEnabled()) {
     infobarBadgesCurrentlyShown = NO;
   }
 

@@ -95,10 +95,9 @@ class LocationBarBadgeViewControllerTest : public PlatformTest {
 TEST_F(LocationBarBadgeViewControllerTest,
        DidCompleteTransitionToSmallEntrypoint) {
   // Create the conditions in which the Ask Gemini badge is not available, but
-  // the Proactive Suggestions Framework supports other contextual panel badges.
+  // the Page Action Menu supports other contextual panel badges.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kProactiveSuggestionsFramework, kPageActionMenu}, {});
+  feature_list.InitAndEnableFeature(kPageActionMenu);
 
   [view_controller_ loadViewIfNeeded];
   ContextualPanelItemConfiguration configuration(
@@ -367,8 +366,7 @@ TEST_F(LocationBarBadgeViewControllerTest,
 TEST_F(LocationBarBadgeViewControllerTest,
        KeepsUnifiedContainerLabelColorOnSameTypeUpdate) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kLocationBarBadgeMigration, kPageActionMenu,
-                                 kProactiveSuggestionsFramework},
+  feature_list.InitWithFeatures({kLocationBarBadgeMigration, kPageActionMenu},
                                 {});
   UIImage* icon = [[UIImage alloc] init];
   LocationBarBadgeItem* expanded_item =
