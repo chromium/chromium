@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
@@ -135,6 +136,20 @@ public class ProfileManager {
         return ProfileManagerJni.get().getLoadedProfiles();
     }
 
+    /**
+     * Asynchronously creates a new profile in the next available multiprofile directory. Must only
+     * be called if {@code kAndroidMultiprofile} and {@code kAndroidMultiprofileStartupData} are
+     * enabled.
+     *
+     * @param name The name of the new profile. Must not be empty.
+     * @param initializedCallback Called when profile initialization is done, with the created
+     *     {@link Profile} or null if creation failed.
+     */
+    public static void createMultiProfileAsync(
+            String name, Callback<@Nullable Profile> initializedCallback) {
+        ProfileManagerJni.get().createMultiProfileAsync(name, initializedCallback);
+    }
+
     public static void onProfileActivated(Profile profile) {
         ProfileManagerJni.get().onProfileActivated(profile);
     }
@@ -179,5 +194,10 @@ public class ProfileManager {
 
         @JniType("std::vector<Profile*>")
         List<Profile> getLoadedProfiles();
+
+        void createMultiProfileAsync(
+                @JniType("std::u16string") String name,
+                @JniType("base::OnceCallback<void(Profile*)>")
+                        Callback<@Nullable Profile> initializedCallback);
     }
 }

@@ -844,7 +844,8 @@ class ProfileManagerMultiProfileTest : public ProfileManagerTest {
 #if BUILDFLAG(IS_ANDROID)
  private:
   base::test::ScopedFeatureList feature_list_{
-      chrome::android::kAndroidMultiprofile};
+      { chrome::android::kAndroidMultiprofile,
+        features::kAndroidMultiprofileStartupData }};
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 

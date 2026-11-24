@@ -1004,6 +1004,9 @@ void ProfileManager::CreateMultiProfileAsync(
   // On Android, multiple profiles are only supported behind
   // `kAndroidMultiprofile`.
   CHECK(profiles::IsMultipleProfilesEnabled());
+#if BUILDFLAG(IS_ANDROID)
+  CHECK(profiles::IsAndroidMultiprofileStartupDataEnabled());
+#endif
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(!name.empty(), base::NotFatalUntil::M162);
   CHECK(profiles::IsDefaultAvatarIconIndex(icon_index),

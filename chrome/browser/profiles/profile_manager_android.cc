@@ -4,8 +4,15 @@
 
 #include "chrome/browser/profiles/profile_manager_android.h"
 
+#include <string>
+#include <utility>
+
+#include "base/android/callback_android.h"
+#include "base/android/jni_string.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -54,6 +61,16 @@ static ScopedJavaLocalRef<jobject> JNI_ProfileManager_GetLastUsedRegularProfile(
 // static
 static std::vector<Profile*> JNI_ProfileManager_GetLoadedProfiles(JNIEnv* env) {
   return g_browser_process->profile_manager()->GetLoadedProfiles();
+}
+
+// static
+static void JNI_ProfileManager_CreateMultiProfileAsync(
+    JNIEnv* env,
+    const std::u16string& name,
+    base::OnceCallback<void(Profile*)> initialized_callback) {
+  ProfileManager::CreateMultiProfileAsync(
+      name, profiles::GetPlaceholderAvatarIndex(), /* is_hidden= */ false,
+      std::move(initialized_callback));
 }
 
 // static
