@@ -362,8 +362,6 @@ void DesktopWindowTreeHostWin::OnNativeWidgetCreated(
       !wm::WindowAnimationsDisabled(content_window());
 }
 
-void DesktopWindowTreeHostWin::OnActiveWindowChanged(bool active) {}
-
 void DesktopWindowTreeHostWin::OnWidgetInitDone() {}
 
 void DesktopWindowTreeHostWin::SetBackgroundColor(SkColor background_color) {

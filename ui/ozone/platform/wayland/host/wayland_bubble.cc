@@ -11,6 +11,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
+#include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -26,13 +27,21 @@ WaylandBubble::WaylandBubble(PlatformWindowDelegate* delegate,
 }
 
 WaylandBubble::~WaylandBubble() {
+  set_shutting_down();
+  WaylandToplevelWindow* root =
+      GetRootParentWindow()->AsWaylandToplevelWindow();
+  base::WeakPtr<WaylandWindow> weak_root = root ? root->AsWeakPtr() : nullptr;
+  const bool was_bubble_ancestor = root && root->IsInBubbleAncestry(this);
   if (parent_window()) {
     if (root_surface()) {
-      set_shutting_down();
       parent_window()->RemoveChildSubsurface(GetWidget(), TakeWaylandSurface(),
                                              std::move(subsurface_));
     }
     parent_window()->RemoveBubble(this);
+    set_parent_window(nullptr);
+  }
+  if (was_bubble_ancestor && weak_root) {
+    root->SetActiveBubble(nullptr);
   }
 }
 
@@ -115,25 +124,18 @@ void WaylandBubble::SetInputRegion(
 }
 
 void WaylandBubble::Activate() {
-  if (subsurface_ && activatable_ && parent_window()) {
-    auto weak_this = AsWeakPtr();
-    parent_window()->ActivateBubble(this);
-    if (!weak_this) {
-      return;
+  if (subsurface_ && activatable_) {
+    if (auto* root = GetRootParentWindow()->AsWaylandToplevelWindow()) {
+      root->SetActiveBubble(this);
     }
   }
-  WaylandWindow::Activate();
 }
 
 void WaylandBubble::Deactivate() {
-  if (IsActive()) {
-    auto weak_this = AsWeakPtr();
-    parent_window()->ActivateBubble(nullptr);
-    if (!weak_this) {
-      return;
-    }
+  if (auto* root = GetRootParentWindow()->AsWaylandToplevelWindow();
+      root && root->IsInBubbleAncestry(this)) {
+    root->SetActiveBubble(nullptr);
   }
-  WaylandWindow::Deactivate();
 }
 
 void WaylandBubble::UpdateWindowScale(bool update_bounds) {
@@ -174,9 +176,9 @@ base::WeakPtr<WaylandWindow> WaylandBubble::AsWeakPtr() {
 }
 
 bool WaylandBubble::IsActive() const {
-  bool is_active = activatable_ && parent_window() &&
-                   parent_window()->IsActive() &&
-                   parent_window()->active_bubble() == this;
+  const auto* root = GetRootParentWindow()->AsWaylandToplevelWindow();
+  bool is_active =
+      activatable_ && root && root->IsActive() && root->active_bubble() == this;
   CHECK(activatable_ || !is_active);
   return is_active;
 }

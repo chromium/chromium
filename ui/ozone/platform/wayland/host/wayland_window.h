@@ -182,12 +182,11 @@ class WaylandWindow : public PlatformWindow,
   // `child_bubbles_` list.
   void AddBubble(WaylandBubble* window);
   void RemoveBubble(WaylandBubble* window);
-  void ActivateBubble(WaylandBubble* window);
 
-  WaylandBubble* active_bubble() { return active_bubble_; }
   const std::vector<raw_ptr<WaylandBubble>>& child_bubbles() const {
     return child_bubbles_;
   }
+  bool shutting_down() const { return shutting_down_; }
 
   // Takes over a child bubble's `subsurface` and/or `surface`, deferring their
   // destruction until this window's in-flight applied state request commits:
@@ -288,6 +287,7 @@ class WaylandWindow : public PlatformWindow,
   int64_t GetVizSequenceIdForAppliedState() const override;
   int64_t GetVizSequenceIdForLatchedState() const override;
   void SetLatchImmediately(bool latch_immediately) override;
+  void ActivateWithinToplevel() override;
 
   // EventTarget:
   bool CanAcceptEvent(const Event& event) override;
@@ -392,6 +392,7 @@ class WaylandWindow : public PlatformWindow,
 
   // Returns a root parent window within the same hierarchy.
   WaylandWindow* GetRootParentWindow();
+  const WaylandWindow* GetRootParentWindow() const;
 
   // Returns a top most child window within the same hierarchy.
   WaylandWindow* GetTopMostChildWindow();
@@ -430,6 +431,7 @@ class WaylandWindow : public PlatformWindow,
   virtual WaylandBubble* AsWaylandBubble();
   virtual WaylandPopup* AsWaylandPopup();
   virtual WaylandToplevelWindow* AsWaylandToplevelWindow();
+  virtual const WaylandToplevelWindow* AsWaylandToplevelWindow() const;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner() {
     return ui_task_runner_;
@@ -694,12 +696,6 @@ class WaylandWindow : public PlatformWindow,
   // AcceleratedWidget for this window. This will be unique even over time.
   gfx::AcceleratedWidget accelerated_widget_;
 
-  // `active_bubble_` represents the WaylandBubble that should take activation
-  // when this WaylandWindow has activation from wayland server. It can be set
-  // on a WaylandWindow regardless of whether or not this WaylandWindow has
-  // activation. If this WaylandWindow has activation the bubble is considered
-  // the active WaylandWindow in the window hierarchy.
-  raw_ptr<WaylandBubble> active_bubble_ = nullptr;
   std::vector<raw_ptr<WaylandBubble>> child_bubbles_;
 
   // |root_surface_| is a surface for the opaque background. Its z-order is

@@ -66,6 +66,7 @@ WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
 }
 
 WaylandToplevelWindow::~WaylandToplevelWindow() {
+  set_shutting_down();
   // Child popups must be unmapped before `xdg_toplevel_` is destroyed.
   HideChildPopups();
 }
@@ -213,13 +214,34 @@ void WaylandToplevelWindow::HideNow() {
   }
 
   auto weak_this = AsWeakPtr();
+  // Deactivate the active bubble first so that hiding children doesn't
+  // reactivate this hiding toplevel.
+  if (WaylandBubble* prev = std::exchange(active_bubble_, nullptr)) {
+    ++bubble_activation_epoch_;
+    if (!prev->shutting_down()) {
+      prev->delegate()->OnActivationChanged(false);
+      if (!weak_this || !xdg_toplevel_) {
+        return;
+      }
+    }
+  }
   HideChildPopups();
   if (!weak_this || !xdg_toplevel_) {
     return;
   }
   set_child_popup(nullptr);
-  for (auto bubble : child_bubbles()) {
-    bubble->Hide();
+  std::vector<base::WeakPtr<WaylandWindow>> bubbles;
+  bubbles.reserve(child_bubbles().size());
+  for (WaylandBubble* bubble : child_bubbles()) {
+    bubbles.push_back(bubble->AsWeakPtr());
+  }
+  for (const auto& bubble : bubbles) {
+    if (bubble) {
+      bubble->Hide();
+    }
+    if (!weak_this || !xdg_toplevel_) {
+      return;
+    }
   }
 
   // Note that the xdg_toplevel object should be destroyed before we touch
@@ -465,7 +487,7 @@ void WaylandToplevelWindow::Activate() {
     }
     connection()->Flush();
   }
-  WaylandWindow::Activate();
+  SetActiveBubble(nullptr);
 }
 
 void WaylandToplevelWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
@@ -571,6 +593,65 @@ WaylandToplevelWindow* WaylandToplevelWindow::AsWaylandToplevelWindow() {
   return this;
 }
 
+const WaylandToplevelWindow* WaylandToplevelWindow::AsWaylandToplevelWindow()
+    const {
+  return this;
+}
+
+void WaylandToplevelWindow::SetActiveBubble(WaylandBubble* new_bubble) {
+  // Like Aura activation, a bubble may become active within an unfocused
+  // toplevel (e.g. one shown before the compositor activates the toplevel).
+  const auto can_activate = [this]() {
+    return !shutting_down() && !hide_deferred_;
+  };
+  if (new_bubble) {
+    CHECK(new_bubble->activatable());
+    CHECK_EQ(new_bubble->GetRootParentWindow(), this);
+    if (!can_activate() || !new_bubble->IsVisible() ||
+        new_bubble->shutting_down()) {
+      return;
+    }
+  }
+  if (active_bubble_ == new_bubble) {
+    return;
+  }
+
+  const uint64_t epoch = ++bubble_activation_epoch_;
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<WaylandWindow> weak_new =
+      new_bubble ? new_bubble->AsWeakPtr() : nullptr;
+
+  if (WaylandBubble* prev = std::exchange(active_bubble_, nullptr)) {
+    if (!prev->shutting_down()) {
+      prev->delegate()->OnActivationChanged(false);
+    }
+  } else if (new_bubble) {
+    delegate()->OnActivationChanged(false);
+  }
+  if (!weak_this || bubble_activation_epoch_ != epoch || !can_activate()) {
+    return;
+  }
+
+  if (weak_new && new_bubble->IsVisible() && !new_bubble->shutting_down() &&
+      new_bubble->GetRootParentWindow() == this) {
+    active_bubble_ = new_bubble;
+    new_bubble->delegate()->OnActivationChanged(true);
+  } else if (is_active_) {
+    delegate()->OnActivationChanged(true);
+  }
+}
+
+bool WaylandToplevelWindow::IsInBubbleAncestry(
+    const WaylandWindow* window) const {
+  for (const WaylandWindow* cur = active_bubble_; cur;
+       cur = cur->parent_window()) {
+    if (cur == window) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void WaylandToplevelWindow::UpdateActivationState() {
   bool prev_is_active = is_active_;
 
@@ -601,10 +682,18 @@ void WaylandToplevelWindow::UpdateActivationState() {
   }
 
   if (prev_is_active != is_active_) {
-    if (active_bubble()) {
-      ActivateBubble(is_active_ ? active_bubble() : nullptr);
+    ++bubble_activation_epoch_;
+    if (is_active_) {
+      // A bubble activated while unfocused stays active.
+      if (!active_bubble_) {
+        delegate()->OnActivationChanged(true);
+      }
+    } else if (WaylandBubble* prev = std::exchange(active_bubble_, nullptr)) {
+      if (!prev->shutting_down()) {
+        prev->delegate()->OnActivationChanged(false);
+      }
     } else {
-      delegate()->OnActivationChanged(is_active_);
+      delegate()->OnActivationChanged(false);
     }
   }
 }

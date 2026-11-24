@@ -7319,7 +7319,8 @@ TEST_P(WaylandWindowTest, WaylandBubbleActivateBubbleUaf) {
   });
 
   // This should not crash and should return safely.
-  window_->ActivateBubble(wayland_bubble->AsWaylandBubble());
+  window_->AsWaylandToplevelWindow()->SetActiveBubble(
+      wayland_bubble->AsWaylandBubble());
 }
 
 TEST_P(WaylandWindowTest, WaylandBubbleRemoveBubbleUaf) {
@@ -7335,7 +7336,8 @@ TEST_P(WaylandWindowTest, WaylandBubbleRemoveBubbleUaf) {
                                     &bubble_delegate, window_->GetWidget());
   ASSERT_TRUE(wayland_bubble);
 
-  window_->ActivateBubble(wayland_bubble->AsWaylandBubble());
+  window_->AsWaylandToplevelWindow()->SetActiveBubble(
+      wayland_bubble->AsWaylandBubble());
 
   EXPECT_CALL(delegate_, OnActivationChanged(::testing::_))
       .Times(::testing::AnyNumber());
@@ -7346,7 +7348,7 @@ TEST_P(WaylandWindowTest, WaylandBubbleRemoveBubbleUaf) {
   });
 
   // This should not crash and should return safely.
-  window_->RemoveBubble(wayland_bubble->AsWaylandBubble());
+  wayland_bubble.reset();
 }
 
 TEST_P(WaylandWindowTest, WaylandBubbleUpdateWindowScaleUaf) {
@@ -7429,6 +7431,173 @@ TEST_P(WaylandWindowTest, WaylandBubbleDeactivateUaf) {
   // This should not crash if the bubble is destroyed during Deactivate().
   wayland_bubble->Deactivate();
   EXPECT_FALSE(wayland_bubble);
+}
+
+TEST_P(WaylandWindowTest, WaylandBubbleNestedAndIntraToplevelActivation) {
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> outer_delegate(
+      connection_.get());
+  auto outer_bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 50, 50), &outer_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(outer_bubble);
+
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> nested_popup_delegate(
+      connection_.get());
+  auto nested_popup = CreateWaylandWindowWithParams(
+      PlatformWindowType::kPopup, gfx::Rect(15, 15, 20, 20),
+      &nested_popup_delegate, outer_bubble->GetWidget());
+  ASSERT_TRUE(nested_popup);
+  ASSERT_TRUE(nested_popup->AsWaylandBubble());
+
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> tooltip_delegate(
+      connection_.get());
+  PlatformWindowInitProperties tooltip_props;
+  tooltip_props.bounds = gfx::Rect(20, 20, 15, 15);
+  tooltip_props.type = PlatformWindowType::kTooltip;
+  tooltip_props.activatable = false;
+  tooltip_props.parent_widget = outer_bubble->GetWidget();
+  auto tooltip = tooltip_delegate.CreateWaylandWindow(connection_.get(),
+                                                      std::move(tooltip_props));
+  ASSERT_TRUE(tooltip);
+  ASSERT_TRUE(tooltip->AsWaylandBubble());
+  tooltip->Show(/*inactive=*/true);
+
+  // Activate `outer_bubble`, then nested `nested_popup`: `outer_bubble` is
+  // deactivated once and reports `!IsActive()`.
+  outer_bubble->ActivateWithinToplevel();
+  EXPECT_TRUE(outer_bubble->IsActive());
+
+  EXPECT_CALL(outer_delegate, OnActivationChanged(false)).Times(1);
+  EXPECT_CALL(nested_popup_delegate, OnActivationChanged(true)).Times(1);
+  nested_popup->ActivateWithinToplevel();
+  EXPECT_FALSE(outer_bubble->IsActive());
+  EXPECT_TRUE(nested_popup->IsActive());
+  testing::Mock::VerifyAndClearExpectations(&outer_delegate);
+  testing::Mock::VerifyAndClearExpectations(&nested_popup_delegate);
+
+  // Non-activatable tooltip subsurface is a no-op.
+  EXPECT_CALL(tooltip_delegate, OnActivationChanged(_)).Times(0);
+  EXPECT_CALL(nested_popup_delegate, OnActivationChanged(_)).Times(0);
+  tooltip->ActivateWithinToplevel();
+  EXPECT_TRUE(nested_popup->IsActive());
+  testing::Mock::VerifyAndClearExpectations(&tooltip_delegate);
+  testing::Mock::VerifyAndClearExpectations(&nested_popup_delegate);
+
+  // Clearing to toplevel deactivates `nested_popup` once and does not notify
+  // already-inactive `outer_delegate`.
+  EXPECT_CALL(outer_delegate, OnActivationChanged(_)).Times(0);
+  EXPECT_CALL(nested_popup_delegate, OnActivationChanged(false)).Times(1);
+  EXPECT_CALL(delegate_, OnActivationChanged(true)).Times(1);
+  window_->ActivateWithinToplevel();
+  EXPECT_FALSE(outer_bubble->IsActive());
+  EXPECT_FALSE(nested_popup->IsActive());
+  testing::Mock::VerifyAndClearExpectations(&outer_delegate);
+  testing::Mock::VerifyAndClearExpectations(&nested_popup_delegate);
+  VerifyAndClearExpectations();
+
+  // Persistent nested `nested_popup` activated while `outer_bubble` stays
+  // inactive receives routed key events until toplevel reclaims activation.
+  EXPECT_CALL(delegate_, OnActivationChanged(false)).Times(1);
+  EXPECT_CALL(nested_popup_delegate, OnActivationChanged(true)).Times(1);
+  nested_popup->ActivateWithinToplevel();
+  EXPECT_FALSE(outer_bubble->IsActive());
+  EXPECT_TRUE(nested_popup->IsActive());
+  testing::Mock::VerifyAndClearExpectations(&nested_popup_delegate);
+  VerifyAndClearExpectations();
+
+  KeyEvent key_event(EventType::kKeyPressed, VKEY_A, 0);
+  Event::DispatcherApi(&key_event).set_target(window_.get());
+  EXPECT_CALL(nested_popup_delegate, DispatchEvent(_)).Times(1);
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
+  window_->DispatchEvent(&key_event);
+  testing::Mock::VerifyAndClearExpectations(&nested_popup_delegate);
+  VerifyAndClearExpectations();
+
+  window_->ActivateWithinToplevel();
+  EXPECT_CALL(nested_popup_delegate, DispatchEvent(_)).Times(0);
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(1);
+  window_->DispatchEvent(&key_event);
+}
+
+TEST_P(WaylandWindowTest, WaylandBubbleUnfocusedToplevelAndTeardown) {
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> outer_delegate(
+      connection_.get());
+  auto outer_bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 50, 50), &outer_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(outer_bubble);
+
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> nested_delegate(
+      connection_.get());
+  auto nested_bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(15, 15, 20, 20), &nested_delegate,
+      outer_bubble->GetWidget());
+  ASSERT_TRUE(nested_bubble);
+
+  nested_bubble->Activate();
+  ASSERT_TRUE(nested_bubble->IsActive());
+
+  // OS deactivation of the toplevel clears `active_bubble_` and deactivates
+  // `nested_bubble`.
+  EXPECT_CALL(nested_delegate, OnActivationChanged(false)).Times(1);
+  SendConfigureEvent(surface_id_, {0, 0}, MakeStateArray({}));
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_FALSE(window_->IsActive());
+  EXPECT_EQ(window_->AsWaylandToplevelWindow()->active_bubble(), nullptr);
+  EXPECT_FALSE(nested_bubble->IsActive());
+  testing::Mock::VerifyAndClearExpectations(&nested_delegate);
+
+  // Like Aura activation, a bubble can be activated while the toplevel is
+  // unfocused.
+  EXPECT_CALL(outer_delegate, OnActivationChanged(true)).Times(1);
+  outer_bubble->Activate();
+  EXPECT_EQ(window_->AsWaylandToplevelWindow()->active_bubble(),
+            outer_bubble->AsWaylandBubble());
+  EXPECT_FALSE(outer_bubble->IsActive());
+  testing::Mock::VerifyAndClearExpectations(&outer_delegate);
+
+  // Activating within the unfocused toplevel (e.g. for a child widget)
+  // deactivates the bubble without activating the toplevel.
+  EXPECT_CALL(outer_delegate, OnActivationChanged(false)).Times(1);
+  EXPECT_CALL(delegate_, OnActivationChanged(true)).Times(0);
+  window_->ActivateWithinToplevel();
+  EXPECT_EQ(window_->AsWaylandToplevelWindow()->active_bubble(), nullptr);
+  testing::Mock::VerifyAndClearExpectations(&outer_delegate);
+  VerifyAndClearExpectations();
+  outer_bubble->Activate();
+
+  // OS reactivation keeps `outer_bubble` active.
+  EXPECT_CALL(delegate_, OnActivationChanged(_)).Times(0);
+  SendConfigureEvent(surface_id_, {0, 0},
+                     MakeStateArray({XDG_TOPLEVEL_STATE_ACTIVATED}));
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_TRUE(window_->IsActive());
+  EXPECT_TRUE(outer_bubble->IsActive());
+  VerifyAndClearExpectations();
+
+  // Hiding intermediate `outer_bubble` while `nested_bubble` is active
+  // deactivates `nested_bubble` and restores `window_`.
+  nested_bubble->Activate();
+  ASSERT_TRUE(nested_bubble->IsActive());
+  EXPECT_CALL(nested_delegate, OnActivationChanged(false)).Times(1);
+  EXPECT_CALL(delegate_, OnActivationChanged(true)).Times(1);
+  outer_bubble->Hide();
+  EXPECT_FALSE(nested_bubble->IsActive());
+  testing::Mock::VerifyAndClearExpectations(&nested_delegate);
+  VerifyAndClearExpectations();
+
+  // Destroying `new_bubble` inside `prev`'s `OnActivationChanged(false)` falls
+  // back to activating `window_`.
+  outer_bubble->Show(/*inactive=*/false);
+  outer_bubble->Activate();
+  ASSERT_TRUE(outer_bubble->IsActive());
+  EXPECT_CALL(outer_delegate, OnActivationChanged(false)).WillOnce([&]() {
+    nested_bubble.reset();
+  });
+  EXPECT_CALL(delegate_, OnActivationChanged(true)).Times(1);
+  window_->AsWaylandToplevelWindow()->SetActiveBubble(
+      nested_bubble->AsWaylandBubble());
+  EXPECT_EQ(window_->AsWaylandToplevelWindow()->active_bubble(), nullptr);
 }
 
 TEST_P(WaylandWindowTest, WaylandBubbleHideUaf) {

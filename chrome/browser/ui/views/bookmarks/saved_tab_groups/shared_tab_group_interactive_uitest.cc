@@ -419,6 +419,8 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       WaitForShow(kTabGroupEditorBubbleId),
       PressButton(kTabGroupEditorBubbleShareGroupButtonId),
       WaitForShow(kDataSharingSigninPromptDialogCancelButtonElementId),
+      // The editor bubble must not stay open above the modal dialog.
+      WaitForHide(kTabGroupEditorBubbleId),
       PressButton(kDataSharingSigninPromptDialogCancelButtonElementId),
       WaitForHide(kDataSharingSigninPromptDialogCancelButtonElementId));
 
@@ -444,6 +446,8 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       WaitForShow(kTabGroupEditorBubbleId),
       PressButton(kTabGroupEditorBubbleManageSharedGroupButtonId),
       WaitForShow(kDataSharingSigninPromptDialogCancelButtonElementId),
+      // The editor bubble must not stay open above the modal dialog.
+      WaitForHide(kTabGroupEditorBubbleId),
       PressButton(kDataSharingSigninPromptDialogCancelButtonElementId),
       WaitForHide(kDataSharingSigninPromptDialogCancelButtonElementId));
 

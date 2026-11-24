@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   // `WaylandWindow` for more details.
   virtual void SetLatchImmediately(bool latch_immediately) = 0;
 
+  // Transfers subsurface activation to or from this window within an already
+  // OS-active toplevel hierarchy without requesting compositor activation.
+  virtual void ActivateWithinToplevel() = 0;
+
  protected:
   virtual ~WaylandExtension();
 

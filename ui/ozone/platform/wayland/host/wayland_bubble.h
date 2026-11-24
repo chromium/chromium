@@ -25,7 +25,7 @@ class WaylandBubble final : public WaylandWindow {
   WaylandBubble& operator=(const WaylandBubble&) = delete;
   ~WaylandBubble() override;
 
-  bool activatable() { return activatable_; }
+  bool activatable() const { return activatable_; }
   bool is_security_surface() const { return is_security_surface_; }
   wl_subsurface* subsurface() { return subsurface_.get(); }
 

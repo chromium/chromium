@@ -1721,10 +1721,6 @@ void DesktopNativeWidgetAura::OnWindowActivated(
     native_widget_delegate_->OnNativeWidgetActivationChanged(
         content_window_activated);
   }
-
-  // Give the native widget a chance to handle any specific changes it needs.
-  desktop_window_tree_host_->OnActiveWindowChanged(
-      content_window_->Contains(gained_active));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

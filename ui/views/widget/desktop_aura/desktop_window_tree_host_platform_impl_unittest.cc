@@ -28,10 +28,17 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/platform_window/stub/stub_window.h"
 #include "ui/platform_window/wm/wm_move_loop_handler.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/native_widget_aura.h"
+#include "ui/views/widget/widget_observer.h"
 #endif
 
 namespace views {
@@ -548,6 +555,209 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
   }
 
   env->set_mouse_button_flags(ui::EF_NONE);
+}
+
+TEST_F(DesktopWindowTreeHostPlatformImplTest,
+       ActivateWithinToplevelOnInactiveHostAuraActivation) {
+  class TestWaylandStubWindow : public ui::StubWindow,
+                                public ui::WaylandExtension {
+   public:
+    TestWaylandStubWindow(ui::PlatformWindowDelegate* delegate,
+                          gfx::AcceleratedWidget widget)
+        : ui::StubWindow(gfx::Rect(100, 100, 100, 100)) {
+      SetWaylandExtension(this, this);
+      InitDelegateWithWidget(delegate, widget);
+    }
+
+    int platform_activate_count() const { return platform_activate_count_; }
+    int within_toplevel_count() const { return within_toplevel_count_; }
+    void set_on_within_toplevel(base::RepeatingClosure cb) {
+      on_within_toplevel_ = std::move(cb);
+    }
+
+    // ui::StubWindow:
+    void Activate() override {
+      ++platform_activate_count_;
+      delegate()->OnActivationChanged(true);
+    }
+    void Deactivate() override { delegate()->OnActivationChanged(false); }
+
+    // ui::WaylandExtension:
+    void RoundTripQueue() override {}
+    bool HasInFlightRequestsForState() const override { return false; }
+    int64_t GetVizSequenceIdForAppliedState() const override { return -1; }
+    int64_t GetVizSequenceIdForLatchedState() const override { return -1; }
+    void SetLatchImmediately(bool) override {}
+    void ActivateWithinToplevel() override {
+      ++within_toplevel_count_;
+      if (on_within_toplevel_) {
+        on_within_toplevel_.Run();
+      }
+    }
+
+    base::WeakPtr<TestWaylandStubWindow> AsWeakPtr() {
+      return weak_factory_.GetWeakPtr();
+    }
+
+   private:
+    int platform_activate_count_ = 0;
+    int within_toplevel_count_ = 0;
+    base::RepeatingClosure on_within_toplevel_;
+    base::WeakPtrFactory<TestWaylandStubWindow> weak_factory_{this};
+  };
+
+  class ScopedFactory : public aura::WindowTreeHostPlatform::
+                            PlatformWindowFactoryDelegateForTesting {
+   public:
+    ScopedFactory() {
+      aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+          this);
+    }
+    ~ScopedFactory() override {
+      aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+          nullptr);
+    }
+    std::unique_ptr<ui::PlatformWindow> Create(
+        aura::WindowTreeHostPlatform* host) override {
+      auto stub = std::make_unique<TestWaylandStubWindow>(host, ++next_widget_);
+      last_stub_ = stub->AsWeakPtr();
+      return stub;
+    }
+    TestWaylandStubWindow* last_stub() const { return last_stub_.get(); }
+
+   private:
+    gfx::AcceleratedWidget next_widget_ = gfx::kNullAcceleratedWidget;
+    base::WeakPtr<TestWaylandStubWindow> last_stub_;
+  } factory;
+
+  base::test::ScopedFeatureList enable_bubbles{
+      features::kOzoneBubblesUsePlatformWidgets};
+
+  auto parent_widget = std::make_unique<Widget>();
+  Widget::InitParams parent_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  auto* native_widget = new DesktopNativeWidgetAura(parent_widget.get());
+  parent_params.native_widget = native_widget;
+  auto* parent_host =
+      new DesktopWindowTreeHostLinux(parent_widget.get(), native_widget);
+  parent_params.desktop_window_tree_host = parent_host;
+  parent_params.remove_standard_frame = true;
+  parent_params.bounds = gfx::Rect(100, 100, 100, 100);
+  parent_widget->Init(std::move(parent_params));
+  TestWaylandStubWindow* parent_stub = factory.last_stub();
+
+  bool was_widget_active_on_press = false;
+  class ActiveOnPressView : public View {
+   public:
+    explicit ActiveOnPressView(bool* flag) : flag_(flag) {}
+    bool OnMousePressed(const ui::MouseEvent&) override {
+      *flag_ = GetWidget()->IsActive();
+      return true;
+    }
+
+   private:
+    raw_ptr<bool> flag_;
+  };
+  auto* press_view =
+      parent_widget->GetContentsView()->AddChildView(std::unique_ptr<View>(
+          std::make_unique<ActiveOnPressView>(&was_widget_active_on_press)));
+  press_view->SetBounds(0, 0, 100, 100);
+  parent_widget->Show();
+  ASSERT_TRUE(parent_host->IsActive());
+  const int initial_platform_activates = parent_stub->platform_activate_count();
+
+  parent_host->Deactivate();
+  ASSERT_FALSE(parent_host->IsActive());
+  parent_stub->set_on_within_toplevel(base::BindRepeating(
+      [](DesktopWindowTreeHostLinux* host) {
+        static_cast<ui::PlatformWindowDelegate*>(host)->OnActivationChanged(
+            true);
+      },
+      parent_host));
+
+  auto dispatch_click = [](DesktopWindowTreeHostLinux* host, int offset) {
+    ui::MouseEvent press(ui::EventType::kMousePressed,
+                         gfx::Point(offset, offset), gfx::Point(offset, offset),
+                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+    static_cast<ui::PlatformWindowDelegate*>(host)->DispatchEvent(&press);
+    ui::MouseEvent release(ui::EventType::kMouseReleased,
+                           gfx::Point(offset, offset),
+                           gfx::Point(offset, offset), ui::EventTimeForNow(),
+                           ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+    static_cast<ui::PlatformWindowDelegate*>(host)->DispatchEvent(&release);
+  };
+  dispatch_click(parent_host, 10);
+  EXPECT_EQ(1, parent_stub->within_toplevel_count());
+  EXPECT_EQ(initial_platform_activates, parent_stub->platform_activate_count());
+  EXPECT_TRUE(was_widget_active_on_press);
+  EXPECT_TRUE(parent_widget->IsActive());
+
+  dispatch_click(parent_host, 15);
+  EXPECT_EQ(1, parent_stub->within_toplevel_count());
+
+  Widget bubble_widget;
+  Widget::InitParams bubble_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_BUBBLE);
+  bubble_params.parent = parent_widget->GetNativeWindow();
+  bubble_params.bounds = gfx::Rect(110, 110, 50, 50);
+  bubble_widget.Init(std::move(bubble_params));
+  bubble_widget.Show();
+  parent_host->Deactivate();
+  parent_stub->set_on_within_toplevel(base::BindRepeating(
+      [](DesktopWindowTreeHostLinux* host, Widget* bubble) {
+        bubble->CloseNow();
+        static_cast<ui::PlatformWindowDelegate*>(host)->OnActivationChanged(
+            true);
+      },
+      parent_host, &bubble_widget));
+
+  class ActivationRecorder : public WidgetObserver {
+   public:
+    explicit ActivationRecorder(Widget* widget) { obs_.Observe(widget); }
+    void OnWidgetActivationChanged(Widget*, bool active) override {
+      changes_.push_back(active);
+    }
+    const std::vector<bool>& changes() const { return changes_; }
+
+   private:
+    std::vector<bool> changes_;
+    base::ScopedObservation<Widget, WidgetObserver> obs_{this};
+  } recorder(parent_widget.get());
+
+  Widget aura_child;
+  Widget::InitParams child_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW);
+  child_params.bounds = gfx::Rect(10, 10, 40, 40);
+  child_params.parent = parent_widget->GetNativeWindow();
+  child_params.native_widget = new NativeWidgetAura(&aura_child);
+  aura_child.Init(std::move(child_params));
+  aura_child.Show();
+
+  EXPECT_EQ(2, parent_stub->within_toplevel_count());
+  EXPECT_TRUE(parent_host->IsActive());
+  EXPECT_TRUE(aura_child.IsActive());
+  EXPECT_FALSE(parent_widget->IsActive());
+  EXPECT_TRUE(recorder.changes().empty());
+
+  aura_child.CloseNow();
+  EXPECT_TRUE(parent_widget->IsActive());
+  EXPECT_EQ(std::vector<bool>{true}, recorder.changes());
+
+  {
+    base::test::ScopedFeatureList disable_bubbles;
+    disable_bubbles.InitAndDisableFeature(
+        features::kOzoneBubblesUsePlatformWidgets);
+    parent_host->Deactivate();
+    dispatch_click(parent_host, 20);
+    EXPECT_EQ(2, parent_stub->within_toplevel_count());
+  }
+  parent_host->Deactivate();
+  parent_widget->Close();
+  wm::GetActivationClient(parent_host->window())
+      ->ActivateWindow(parent_widget->GetNativeWindow());
+  EXPECT_EQ(2, parent_stub->within_toplevel_count());
+  parent_widget->CloseNow();
 }
 #endif  // BUILDFLAG(IS_LINUX)
 

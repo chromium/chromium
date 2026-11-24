@@ -59,10 +59,15 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Notify that this window's active state may change.
   void UpdateActivationState();
 
+  WaylandBubble* active_bubble() const { return active_bubble_; }
+  void SetActiveBubble(WaylandBubble* bubble);
+  bool IsInBubbleAncestry(const WaylandWindow* window) const;
+
   // WaylandWindow overrides:
   void SetBoundsInDIP(const gfx::Rect& bounds_dip) override;
   void UpdateWindowScale(bool update_bounds) override;
   WaylandToplevelWindow* AsWaylandToplevelWindow() override;
+  const WaylandToplevelWindow* AsWaylandToplevelWindow() const override;
 
   // Configure related:
   void HandleToplevelConfigure(int32_t width,
@@ -310,6 +315,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool is_active_ = false;
   bool is_xdg_active_ = false;
   bool is_suspended_ = false;
+
+  // Authoritative active subsurface bubble in this toplevel's window tree.
+  // Cleared when the toplevel loses OS activation.
+  raw_ptr<WaylandBubble> active_bubble_ = nullptr;
+  uint64_t bubble_activation_epoch_ = 0;
 
   // Id of the chromium app passed through
   // PlatformWindowInitProperties::wm_class_name. This is used by Wayland

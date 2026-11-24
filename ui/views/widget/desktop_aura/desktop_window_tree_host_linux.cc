@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -24,6 +25,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ozone_buildflags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
@@ -323,6 +325,21 @@ void DesktopWindowTreeHostLinux::OnNativeThemeUpdated(
   UpdateFrameRegions();
 }
 
+void DesktopWindowTreeHostLinux::OnWindowActivated(ActivationReason reason,
+                                                   aura::Window* gained_active,
+                                                   aura::Window* lost_active) {
+  // Transfer Wayland subsurface activation within an already-active toplevel
+  // when a window inside an inactive host gains Aura activation.
+  if (!base::FeatureList::IsEnabled(
+          features::kOzoneBubblesUsePlatformWidgets) ||
+      !gained_active || IsActive() || !platform_window()) {
+    return;
+  }
+  if (auto* wayland_extension = ui::GetWaylandExtension(*platform_window())) {
+    wayland_extension->ActivateWithinToplevel();
+  }
+}
+
 void DesktopWindowTreeHostLinux::Init(const Widget::InitParams& params) {
   DesktopWindowTreeHostPlatform::Init(params);
 
@@ -341,6 +358,23 @@ void DesktopWindowTreeHostLinux::OnNativeWidgetCreated(
     const Widget::InitParams& params) {
   CreateNonClientEventFilter();
   DesktopWindowTreeHostPlatform::OnNativeWidgetCreated(params);
+}
+
+void DesktopWindowTreeHostLinux::OnWidgetInitDone() {
+  DesktopWindowTreeHostPlatform::OnWidgetInitDone();
+  if (auto* activation_client = wm::GetActivationClient(window())) {
+    activation_observation_.Observe(activation_client);
+  }
+}
+
+void DesktopWindowTreeHostLinux::Close() {
+  activation_observation_.Reset();
+  DesktopWindowTreeHostPlatform::Close();
+}
+
+void DesktopWindowTreeHostLinux::CloseNow() {
+  activation_observation_.Reset();
+  DesktopWindowTreeHostPlatform::CloseNow();
 }
 
 void DesktopWindowTreeHostLinux::InitModalType(
@@ -474,6 +508,7 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
 }
 
 void DesktopWindowTreeHostLinux::OnClosed() {
+  activation_observation_.Reset();
   DestroyNonClientEventFilter();
   DesktopWindowTreeHostPlatform::OnClosed();
 }

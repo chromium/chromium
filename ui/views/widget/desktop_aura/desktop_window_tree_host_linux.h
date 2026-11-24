@@ -21,6 +21,8 @@
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
+#include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace aura {
 class ScopedWindowTargeter;
@@ -42,7 +44,8 @@ using WindowEventFilterClass = WindowEventFilterLinux;
 class VIEWS_EXPORT DesktopWindowTreeHostLinux
     : public DesktopWindowTreeHostPlatform,
       public ui::X11ExtensionDelegate,
-      public ui::NativeThemeObserver {
+      public ui::NativeThemeObserver,
+      public wm::ActivationChangeObserver {
  public:
   static const char kWindowKey[];
 
@@ -76,6 +79,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // Overridden from DesktopWindowTreeHost:
   void Init(const Widget::InitParams& params) override;
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
+  void OnWidgetInitDone() override;
+  void Close() override;
+  void CloseNow() override;
   void InitModalType(ui::mojom::ModalType modal_type) override;
   void PrepareForMoveLoop(Widget::MoveLoopSource source) override;
   void SetBypassWindowManager(bool bypass) override;
@@ -102,6 +108,11 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTestWithTouch,
@@ -151,6 +162,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
+
+  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
+      activation_observation_{this};
 
   // The display and the native X window hosting the root window.
   base::WeakPtrFactory<DesktopWindowTreeHostLinux> weak_factory_{this};

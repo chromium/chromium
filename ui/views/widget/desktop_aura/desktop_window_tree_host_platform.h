@@ -75,7 +75,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void Init(const Widget::InitParams& params) override;
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
   void OnWidgetInitDone() override;
-  void OnActiveWindowChanged(bool active) override;
   std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
   std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient() override;
   void Close() override;
@@ -249,12 +248,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
       Widget& widget,
       ui::PlatformWindowDelegate::RotateDirection direction,
       bool reset);
-
-#if BUILDFLAG(IS_OZONE)
-  // Returns true if this host is a child bubble widget (rendered as a
-  // platform subwindow when kOzoneBubblesUsePlatformWidgets is enabled).
-  bool IsBubbleSubwindow() const;
-#endif
 
   const base::WeakPtr<internal::NativeWidgetDelegate> native_widget_delegate_;
   const raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;

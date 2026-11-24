@@ -23,6 +23,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
+#include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 #include "ui/ozone/platform/wayland/host/xdg_popup.h"
 #include "ui/ozone/platform/wayland/host/xdg_surface.h"
@@ -241,6 +242,13 @@ void WaylandPopup::Hide() {
   }
 
   ClearInFlightRequestsSerial();
+  if (auto* root = GetRootParentWindow()->AsWaylandToplevelWindow();
+      root && root->IsInBubbleAncestry(this)) {
+    root->SetActiveBubble(nullptr);
+    if (!weak_this) {
+      return;
+    }
+  }
 
   connection()->Flush();
 }

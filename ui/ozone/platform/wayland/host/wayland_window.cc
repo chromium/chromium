@@ -61,6 +61,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_tablet_seat.h"
+#include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
@@ -149,6 +150,12 @@ WaylandWindow::~WaylandWindow() {
     parent_window_->set_child_popup(nullptr);
   }
 
+  WaylandToplevelWindow* root =
+      GetRootParentWindow()->AsWaylandToplevelWindow();
+  base::WeakPtr<WaylandWindow> weak_root =
+      root && root != this ? root->AsWeakPtr() : nullptr;
+  const bool was_bubble_ancestor = weak_root && root->IsInBubbleAncestry(this);
+
   // `child_popup_` only tracks the most recently shown popup. Other windows
   // (e.g. hidden popups or popups that were replaced as `child_popup_`) may
   // still refer to this window as their parent.
@@ -179,6 +186,13 @@ WaylandWindow::~WaylandWindow() {
     if (connection_->SupportsTextInputFocus()) {
       focus_client_->OnTextInputFocusChanged(false);
     }
+  }
+
+  // `this` is no longer in the window manager, so `root`'s destructor can't
+  // reset `parent_window_` if `SetActiveBubble()` destroys `root`.
+  parent_window_ = nullptr;
+  if (was_bubble_ancestor && weak_root) {
+    root->SetActiveBubble(nullptr);
   }
 }
 
@@ -244,60 +258,7 @@ void WaylandWindow::AddBubble(WaylandBubble* window) {
 }
 
 void WaylandWindow::RemoveBubble(WaylandBubble* window) {
-  if (active_bubble_ == window) {
-    active_bubble_ = nullptr;
-    if (IsActive()) {
-      auto weak_this = AsWeakPtr();
-      delegate()->OnActivationChanged(true);
-      if (!weak_this) {
-        return;
-      }
-    }
-  }
-  auto it = std::find(child_bubbles_.begin(), child_bubbles_.end(), window);
-  if (it != child_bubbles_.end()) {
-    child_bubbles_.erase(it);
-  }
-}
-
-void WaylandWindow::ActivateBubble(WaylandBubble* window) {
-  CHECK(!window || std::ranges::contains(child_bubbles_, window));
-  CHECK(!window || (window->AsWaylandBubble() &&
-                    window->AsWaylandBubble()->activatable()));
-  if (active_bubble_ == window) {
-    return;
-  }
-
-  base::WeakPtr<WaylandWindow> weak_window =
-      window ? window->AsWeakPtr() : nullptr;
-
-  if (active_bubble_) {
-    auto weak_this = AsWeakPtr();
-    active_bubble_->delegate()->OnActivationChanged(false);
-    if (!weak_this) {
-      return;
-    }
-  }
-
-  if (window && !weak_window) {
-    return;
-  }
-
-  active_bubble_ = window;
-
-  if (active_bubble_) {
-    auto weak_this = AsWeakPtr();
-    delegate()->OnActivationChanged(false);
-    if (!weak_this) {
-      return;
-    }
-    if (active_bubble_) {
-      active_bubble_->delegate()->OnActivationChanged(true);
-    }
-  } else {
-    auto weak_this = AsWeakPtr();
-    delegate()->OnActivationChanged(IsActive());
-  }
+  std::erase(child_bubbles_, window);
 }
 
 wl::Object<wl_subsurface> WaylandWindow::RemoveChildSubsurface(
@@ -787,13 +748,9 @@ PlatformWindowState WaylandWindow::GetPlatformWindowState() const {
   return applied_state().window_state;
 }
 
-void WaylandWindow::Activate() {
-  ActivateBubble(nullptr);
-}
+void WaylandWindow::Activate() {}
 
-void WaylandWindow::Deactivate() {
-  ActivateBubble(nullptr);
-}
+void WaylandWindow::Deactivate() {}
 
 void WaylandWindow::SetUseNativeFrame(bool use_native_frame) {
   // Do nothing here since only shell surfaces can handle server-side
@@ -971,20 +928,14 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
   }
 
   if (event->IsKeyEvent()) {
-    if (active_bubble()) {
+    auto* root = GetRootParentWindow();
+    if (auto* toplevel = root->AsWaylandToplevelWindow();
+        toplevel && toplevel->active_bubble()) {
       // Typically wl_keyboard.enter and leave are not called for
-      // wl_subsurfaces. So automatically dispatch to active_bubble() as they
-      // need it to traverse menu options, or type in text boxes.
-      auto* bubble = active_bubble();
-      while (bubble->active_bubble()) {
-        bubble = bubble->active_bubble();
-      }
-      return bubble->DispatchEventToDelegate(event);
-    } else {
-      // When no active_bubble present, dispatch all keyboard events to the root
-      // window.
-      return GetRootParentWindow()->DispatchEventToDelegate(event);
+      // wl_subsurfaces, so route key events to the active subsurface bubble.
+      return toplevel->active_bubble()->DispatchEventToDelegate(event);
     }
+    return root->DispatchEventToDelegate(event);
   }
 
   return DispatchEventToDelegate(event);
@@ -1262,6 +1213,10 @@ WaylandWindow* WaylandWindow::GetRootParentWindow() {
   return parent_window_ ? parent_window_->GetRootParentWindow() : this;
 }
 
+const WaylandWindow* WaylandWindow::GetRootParentWindow() const {
+  return parent_window_ ? parent_window_->GetRootParentWindow() : this;
+}
+
 void WaylandWindow::OnEnteredOutput() {
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
@@ -1339,6 +1294,10 @@ WaylandPopup* WaylandWindow::AsWaylandPopup() {
 }
 
 WaylandToplevelWindow* WaylandWindow::AsWaylandToplevelWindow() {
+  return nullptr;
+}
+
+const WaylandToplevelWindow* WaylandWindow::AsWaylandToplevelWindow() const {
   return nullptr;
 }
 
@@ -2017,6 +1976,20 @@ int64_t WaylandWindow::GetVizSequenceIdForLatchedState() const {
 
 void WaylandWindow::SetLatchImmediately(bool latch_immediately) {
   latch_immediately_for_testing_ = latch_immediately;
+}
+
+void WaylandWindow::ActivateWithinToplevel() {
+  auto* root = GetRootParentWindow()->AsWaylandToplevelWindow();
+  if (!root || (!root->IsActive() && !root->active_bubble())) {
+    return;
+  }
+  if (auto* bubble = AsWaylandBubble()) {
+    if (bubble->IsVisible() && bubble->activatable()) {
+      root->SetActiveBubble(bubble);
+    }
+  } else if (this == root || root->IsInBubbleAncestry(this)) {
+    root->SetActiveBubble(nullptr);
+  }
 }
 
 void WaylandWindow::ForceApplyWindowStateDoNotUse(
