@@ -109,7 +109,7 @@ interface ScriptToolHost {
   PauseExecution();
 };
 
-// Interface implemented by `content::ScriptToolUserData` (1:1 with Document),
+// Interface implemented by `content::ScriptToolDocumentUserData` (1:1 with Document),
 // for the renderer to request actions from the browser related to WebMCP. See
 // https://github.com/webmachinelearning/webmcp.
 interface ModelContextHost {

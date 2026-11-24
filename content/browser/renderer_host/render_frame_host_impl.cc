@@ -158,7 +158,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
-#include "content/browser/renderer_host/script_tools/script_tool_user_data.h"
+#include "content/browser/renderer_host/script_tools/script_tool_document_user_data.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/unbounded_surface_host_impl.h"
 #include "content/browser/renderer_host/unbounded_surface_window.h"
@@ -17416,13 +17416,13 @@ bool RenderFrameHostImpl::ShouldResetDocumentAssociatedDataAtCommit() const {
 }
 
 void RenderFrameHostImpl::ResetStateForReplacedRendererDocument() {
-  // Drop the replaced Document's ScriptToolUserData. `ModelContextHost` is
-  // navigation-associated, so the binds from the replaced and the new Document
-  // are processed in order with the IPC that reports the replacement.
+  // Drop the replaced Document's ScriptToolDocumentUserData. `ModelContextHost`
+  // is navigation-associated, so the binds from the replaced and the new
+  // Document are processed in order with the IPC that reports the replacement.
   // TODO(crbug.com/576419973): Do this for all Document scoped user data.
-  if (ScriptToolUserData::GetForCurrentDocument(this)) {
+  if (ScriptToolDocumentUserData::GetForCurrentDocument(this)) {
     const auto previous_state = GetScriptToolsReadyState();
-    ScriptToolUserData::DeleteForCurrentDocument(this);
+    ScriptToolDocumentUserData::DeleteForCurrentDocument(this);
     if (previous_state != GetScriptToolsReadyState()) {
       delegate_->ScriptToolsReadyStateChanged(this);
     }
@@ -19775,7 +19775,7 @@ RenderFrameHostImpl::GetScriptToolsReadyState() {
   if (!IsDOMContentLoaded()) {
     return ScriptToolsReadyState::kLoading;
   }
-  auto* user_data = ScriptToolUserData::GetForCurrentDocument(this);
+  auto* user_data = ScriptToolDocumentUserData::GetForCurrentDocument(this);
   if (user_data && user_data->script_tools_waiting()) {
     return ScriptToolsReadyState::kWaiting;
   }

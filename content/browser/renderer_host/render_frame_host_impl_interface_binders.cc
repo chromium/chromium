@@ -31,7 +31,7 @@
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/browser/renderer_host/script_tools/script_tool_user_data.h"
+#include "content/browser/renderer_host/script_tools/script_tool_document_user_data.h"
 #include "content/browser/webid/request_service.h"
 #include "content/common/dom_automation_controller.mojom.h"
 #include "content/common/frame.mojom.h"
@@ -494,7 +494,7 @@ void RenderFrameHostImpl::BindFileBackedBlobFactory(
 
 void RenderFrameHostImpl::BindModelContextHost(
     mojo::PendingAssociatedReceiver<blink::mojom::ModelContextHost> receiver) {
-  ScriptToolUserData::Bind(this, std::move(receiver));
+  ScriptToolDocumentUserData::Bind(this, std::move(receiver));
 }
 
 }  // namespace content

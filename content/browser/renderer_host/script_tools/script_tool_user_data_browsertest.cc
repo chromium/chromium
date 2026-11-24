@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/script_tools/script_tool_user_data.h"
-
 #include <utility>
 #include <vector>
 
@@ -12,6 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/script_tools/script_tool_continuation_manager.h"
+#include "content/browser/renderer_host/script_tools/script_tool_document_user_data.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -109,7 +109,7 @@ class ScriptToolUserDataBrowserTest : public ContentBrowserTest {
 // Ensures that a frame reports the expected ready states across document load
 // and `waitForToolsUntil()` promises.
 IN_PROC_BROWSER_TEST_F(ScriptToolUserDataBrowserTest, ReadyStateTransitions) {
-  EXPECT_FALSE(ScriptToolUserData::GetForCurrentDocument(main_rfh()));
+  EXPECT_FALSE(ScriptToolDocumentUserData::GetForCurrentDocument(main_rfh()));
   EXPECT_EQ(main_rfh()->GetScriptToolsReadyState(), ReadyState::kReady);
 
   ScriptToolsReadyObserver observer(web_contents());
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(ScriptToolUserDataBrowserTest, CrashedRenderer) {
   process->Shutdown(0);
   crash_observer.Wait();
 
-  EXPECT_TRUE(ScriptToolUserData::GetForCurrentDocument(main_rfh()));
+  EXPECT_TRUE(ScriptToolDocumentUserData::GetForCurrentDocument(main_rfh()));
   EXPECT_EQ(main_rfh()->GetScriptToolsReadyState(), ReadyState::kNoRenderer);
 }
 
@@ -255,8 +255,8 @@ IN_PROC_BROWSER_TEST_F(ScriptToolUserDataBrowserTest,
 
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
-  ScriptToolUserData::GetOrCreateForCurrentDocument(child)->SetScriptToolsReady(
-      false);
+  ScriptToolDocumentUserData::GetOrCreateForCurrentDocument(child)
+      ->SetScriptToolsReady(false);
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "WebMCPWaitForToolsUntil is not enabled.");
 }
