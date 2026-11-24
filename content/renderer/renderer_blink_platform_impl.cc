@@ -757,7 +757,8 @@ RendererBlinkPlatformImpl::CreateWebGLGraphicsContextProvider(
     bool fail_if_major_performance_caveat,
     blink::Platform::WebGLContextType context_type,
     const blink::WebURL& document_url,
-    blink::Platform::WebGLContextInfo* gl_info) {
+    blink::Platform::WebGLContextInfo* gl_info,
+    blink::Platform::GraphicsContextThread context_thread) {
   DCHECK(gl_info);
   if (!RenderThreadImpl::current()) {
     std::string error_message("Failed to run in Current RenderThreadImpl");
@@ -777,11 +778,20 @@ RendererBlinkPlatformImpl::CreateWebGLGraphicsContextProvider(
   const auto& gpu_info = gpu_channel_host->gpu_info();
   CollectWebGLContextInfo(gl_info, gpu_info);
 
+  const bool isolate_worker_stream =
+      context_thread == blink::Platform::GraphicsContextThread::kWorker &&
+      base::FeatureList::IsEnabled(features::kIsolateWebGLAndWorkerGpuStreams);
+  const int32_t stream_id =
+      isolate_worker_stream ? kGpuStreamIdWorker : kGpuStreamIdDefault;
+  const gpu::SchedulingPriority stream_priority =
+      isolate_worker_stream ? RenderThreadImpl::GetGpuWorkerStreamPriority()
+                            : kGpuStreamPriorityDefault;
+
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       viz::ContextProviderCommandBuffer::CreateForWebGL(
           std::move(gpu_channel_host), GURL(document_url),
           ToGpuContextType(context_type), prefer_low_power_gpu,
-          fail_if_major_performance_caveat));
+          fail_if_major_performance_caveat, stream_id, stream_priority));
 }
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
@@ -804,17 +814,26 @@ RendererBlinkPlatformImpl::CreateRasterGraphicsContextProvider(
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;
 
+  const bool isolate_worker_stream =
+      context_type ==
+          blink::Platform::RasterContextType::kSharedGpuContextWorker &&
+      base::FeatureList::IsEnabled(features::kIsolateWebGLAndWorkerGpuStreams);
+  const int32_t stream_id =
+      isolate_worker_stream ? kGpuStreamIdWorker : kGpuStreamIdDefault;
+
   gpu::SchedulingPriority stream_priority =
       (base::FeatureList::IsEnabled(features::kInitialWebUI) &&
        features::kInitialWebUIHighStreamPriority.Get() &&
        base::CommandLine::ForCurrentProcess()->HasSwitch(
            switches::kTopChromeWebUI))
           ? kGpuStreamPriorityUI
-          : kGpuStreamPriorityDefault;
+          : (isolate_worker_stream
+                 ? RenderThreadImpl::GetGpuWorkerStreamPriority()
+                 : kGpuStreamPriorityDefault);
 
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       viz::ContextProviderCommandBuffer::CreateForRaster(
-          std::move(gpu_channel_host), kGpuStreamIdDefault, stream_priority,
+          std::move(gpu_channel_host), stream_id, stream_priority,
           GURL(document_url), automatic_flushes, support_locking,
           gpu::SharedMemoryLimits(), ToVizContextType(context_type)));
 }

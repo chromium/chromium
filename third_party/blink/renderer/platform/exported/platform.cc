@@ -275,7 +275,8 @@ Platform::CreateWebGLGraphicsContextProvider(
     bool fail_if_major_performance_caveat,
     WebGLContextType context_type,
     const WebURL& document_url,
-    WebGLContextInfo*) {
+    WebGLContextInfo*,
+    GraphicsContextThread context_thread) {
   return nullptr;
 }
 

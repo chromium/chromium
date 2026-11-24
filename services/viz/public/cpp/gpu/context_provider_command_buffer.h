@@ -82,7 +82,10 @@ class ContextProviderCommandBuffer
       const GURL& active_url,
       WebGLContextType context_type,
       bool prefer_low_power_gpu,
-      bool fail_if_major_performance_caveat);
+      bool fail_if_major_performance_caveat,
+      int32_t stream_id = 0,
+      gpu::SchedulingPriority stream_priority =
+          gpu::SchedulingPriority::kNormal);
 
   static scoped_refptr<ContextProviderCommandBuffer> CreateForRaster(
       scoped_refptr<gpu::GpuChannelHost> channel,

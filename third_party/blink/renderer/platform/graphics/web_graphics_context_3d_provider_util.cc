@@ -85,7 +85,7 @@ CreateWebGLGraphicsContextProvider(bool prefer_low_power_gpu,
   if (IsMainThread()) {
     return Platform::Current()->CreateWebGLGraphicsContextProvider(
         prefer_low_power_gpu, fail_if_major_performance_caveat, context_type,
-        url, gl_info);
+        url, gl_info, Platform::GraphicsContextThread::kMainThread);
   } else {
     base::WaitableEvent waitable_event;
     std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;
@@ -106,7 +106,8 @@ CreateWebGLGraphicsContextProvider(bool prefer_low_power_gpu,
               *out_provider =
                   Platform::Current()->CreateWebGLGraphicsContextProvider(
                       prefer_low_power_gpu, fail_if_major_performance_caveat,
-                      context_type, url, gl_info);
+                      context_type, url, gl_info,
+                      Platform::GraphicsContextThread::kWorker);
               waitable_event->Signal();
             },
             prefer_low_power_gpu, fail_if_major_performance_caveat,

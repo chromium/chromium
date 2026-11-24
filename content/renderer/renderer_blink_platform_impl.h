@@ -194,7 +194,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       bool fail_if_major_performance_caveat,
       blink::Platform::WebGLContextType context_type,
       const blink::WebURL& document_url,
-      blink::Platform::WebGLContextInfo* gl_info) override;
+      blink::Platform::WebGLContextInfo* gl_info,
+      blink::Platform::GraphicsContextThread context_thread) override;
   std::unique_ptr<blink::WebGraphicsContext3DProvider>
   CreateRasterGraphicsContextProvider(
       const blink::WebURL& document_url,

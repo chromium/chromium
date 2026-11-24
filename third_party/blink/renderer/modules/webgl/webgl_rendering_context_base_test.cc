@@ -70,7 +70,8 @@ class WebGLTestPlatform : public GpuCompositingTestPlatform {
       bool fail_if_major_performance_caveat,
       Platform::WebGLContextType context_type,
       const WebURL& document_url,
-      Platform::WebGLContextInfo* gl_info) override {
+      Platform::WebGLContextInfo* gl_info,
+      Platform::GraphicsContextThread context_thread) override {
     if (gl_info) {
       gl_info->using_gpu_compositing = true;
     }

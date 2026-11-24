@@ -45,6 +45,7 @@
 #include "content/renderer/blink_isolates_pressure_listener.h"
 #include "content/renderer/memory_reclaimer_pressure_listener.h"
 #include "content/renderer/skia_graphics_pressure_listener.h"
+#include "gpu/command_buffer/common/scheduling_priority.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "media/media_buildflags.h"
@@ -264,6 +265,9 @@ class CONTENT_EXPORT RenderThreadImpl
 
   scoped_refptr<gpu::SharedImageInterface>
   GetRenderThreadSharedImageInterface();
+
+  // Returns the scheduling priority for kGpuStreamIdWorker contexts.
+  static gpu::SchedulingPriority GetGpuWorkerStreamPriority();
 
   // Returns a worker context provider that will be bound on the compositor
   // thread.

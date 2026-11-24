@@ -506,6 +506,10 @@ class BLINK_PLATFORM_EXPORT Platform {
     WebString driver_version;
     WebString error_message;
   };
+  enum class GraphicsContextThread {
+    kMainThread,
+    kWorker,
+  };
   // Returns a newly allocated and initialized offscreen context provider,
   // backed by an independent context. Returns null if the context cannot be
   // created or initialized.
@@ -514,7 +518,8 @@ class BLINK_PLATFORM_EXPORT Platform {
                                      bool fail_if_major_performance_caveat,
                                      WebGLContextType context_type,
                                      const WebURL& document_url,
-                                     WebGLContextInfo*);
+                                     WebGLContextInfo*,
+                                     GraphicsContextThread context_thread);
 
   enum class RasterContextType {
     kSharedGpuContextWorker,

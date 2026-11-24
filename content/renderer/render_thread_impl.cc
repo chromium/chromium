@@ -1585,6 +1585,13 @@ RenderThreadImpl::GetMediaSequencedTaskRunner() {
   return media_thread_->task_runner();
 }
 
+// static
+gpu::SchedulingPriority RenderThreadImpl::GetGpuWorkerStreamPriority() {
+  return base::FeatureList::IsEnabled(features::kLowPriorityGpuWorkerStream)
+             ? gpu::SchedulingPriority::kLow
+             : kGpuStreamPriorityWorker;
+}
+
 scoped_refptr<viz::RasterContextProvider>
 RenderThreadImpl::SharedCompositorWorkerContextProvider(
     cc::RasterDarkModeFilter* dark_mode_filter) {
@@ -1616,13 +1623,10 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
       support_gpu_rasterization ? gpu::SharedMemoryLimits::ForGPURasterContext()
                                 : gpu::SharedMemoryLimits();
   base::TimeTicks create_start_time = base::TimeTicks::Now();
-  const gpu::SchedulingPriority stream_priority =
-      base::FeatureList::IsEnabled(features::kLowPriorityGpuWorkerStream)
-          ? gpu::SchedulingPriority::kLow
-          : kGpuStreamPriorityWorker;
   shared_worker_context_provider_ =
       viz::ContextProviderCommandBuffer::CreateForRaster(
-          std::move(gpu_channel_host), kGpuStreamIdWorker, stream_priority,
+          std::move(gpu_channel_host), kGpuStreamIdWorker,
+          GetGpuWorkerStreamPriority(),
           GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/"
                "RenderWorker"),
           /*automatic_flushes=*/false, /*support_locking=*/true,
@@ -1668,12 +1672,9 @@ void RenderThreadImpl::SharedMediaContextProvider(
 
   auto shared_memory_limits = gpu::SharedMemoryLimits::ForGPURasterContext();
 
-  const gpu::SchedulingPriority stream_priority =
-      base::FeatureList::IsEnabled(features::kLowPriorityGpuWorkerStream)
-          ? gpu::SchedulingPriority::kLow
-          : kGpuStreamPriorityWorker;
   auto context_provider = viz::ContextProviderCommandBuffer::CreateForRaster(
-      std::move(gpu_channel_host), kGpuStreamIdWorker, stream_priority,
+      std::move(gpu_channel_host), kGpuStreamIdWorker,
+      GetGpuWorkerStreamPriority(),
       GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/"
            "MediaWorker"),
       /*automatic_flushes=*/false, /*support_locking=*/true,

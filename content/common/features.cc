@@ -431,6 +431,12 @@ BASE_FEATURE(kInterestGroupUpdateIfOlderThan, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIOSurfaceCapturer, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Isolates worker WebGL and worker shared GPU contexts onto kGpuStreamIdWorker
+// at kGpuStreamPriorityWorker so heavy worker WebGL or MediaPipe workloads do
+// not cause head-of-line blocking on the default renderer compositor stream.
+BASE_FEATURE(kIsolateWebGLAndWorkerGpuStreams,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, holds back (disables) the early-return optimization in
 // SiteInstanceImpl::IsSuitableForUrlInfo.
 BASE_FEATURE(kIsSuitableForUrlInfoEarlyReturnHoldback,

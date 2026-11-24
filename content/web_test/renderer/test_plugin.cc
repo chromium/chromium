@@ -227,7 +227,8 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
       blink::Platform::Current()->CreateWebGLGraphicsContextProvider(
           /*prefer_low_power_gpu=*/true,
           /*fail_if_major_performance_caveat=*/false,
-          blink::Platform::kWebGL1ContextType, url, &gl_info);
+          blink::Platform::kWebGL1ContextType, url, &gl_info,
+          blink::Platform::GraphicsContextThread::kMainThread);
   if (context_provider && !context_provider->BindToCurrentSequence()) {
     context_provider = nullptr;
   }

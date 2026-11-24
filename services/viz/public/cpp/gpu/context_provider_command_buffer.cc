@@ -119,7 +119,9 @@ ContextProviderCommandBuffer::CreateForWebGL(
     const GURL& active_url,
     WebGLContextType context_type,
     bool prefer_low_power_gpu,
-    bool fail_if_major_performance_caveat) {
+    bool fail_if_major_performance_caveat,
+    int32_t stream_id,
+    gpu::SchedulingPriority stream_priority) {
   auto attributes = gpu::mojom::GLESCreationAttribs::New();
   attributes->gpu_preference = prefer_low_power_gpu
                                    ? gl::GpuPreference::kLowPower
@@ -138,7 +140,7 @@ ContextProviderCommandBuffer::CreateForWebGL(
 
   return base::MakeRefCounted<ContextProviderCommandBuffer>(
       base::PassKey<ContextProviderCommandBuffer>(), std::move(channel),
-      /*stream_id=*/0, gpu::SchedulingPriority::kNormal, active_url,
+      stream_id, stream_priority, active_url,
       /*automatic_flushes=*/true, /*support_locking=*/false,
       gpu::SharedMemoryLimits(),
       gpu::mojom::ContextCreationAttribs::NewGles(std::move(attributes)),
@@ -227,8 +229,9 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(context_sequence_checker_);
   CHECK(channel_);
 
-  if (bind_tried_)
+  if (bind_tried_) {
     return bind_result_;
+  }
 
   bind_tried_ = true;
 
@@ -446,8 +449,9 @@ gpu::gles2::GLES2Interface* ContextProviderCommandBuffer::ContextGL() {
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
   CheckValidSequenceOrLockAcquired();
 
-  if (trace_impl_)
+  if (trace_impl_) {
     return trace_impl_.get();
+  }
   return gles2_impl_.get();
 }
 
@@ -488,8 +492,9 @@ void ContextProviderCommandBuffer::SetReplyTaskRunner(
 }
 
 base::Lock* ContextProviderCommandBuffer::GetLock() {
-  if (!support_locking_)
+  if (!support_locking_) {
     return nullptr;
+  }
   return &context_lock_;
 }
 
@@ -524,8 +529,9 @@ void ContextProviderCommandBuffer::OnLostContext() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::DoNothingWithBoundArgs(base::WrapRefCounted(this)));
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnContextLost();
+  }
 
   gpu::CommandBuffer::State state = GetCommandBufferProxy()->GetLastState();
   command_buffer_metrics::UmaRecordContextLost(context_type_, state.error,
