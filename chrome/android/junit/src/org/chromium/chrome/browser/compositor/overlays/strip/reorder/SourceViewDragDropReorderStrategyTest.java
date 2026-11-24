@@ -9,9 +9,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -22,6 +26,7 @@ import android.graphics.PointF;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
@@ -31,10 +36,12 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Collections;
+import java.util.Set;
 
 /** Tests for {@link SourceViewDragDropReorderStrategy}. */
 @Config(qualifiers = "sw600dp")
@@ -233,6 +240,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         eq(mInteractingTab),
                         eq(new PointF(END_X, 0f)));
         verifyNoMoreInteractions(mMultiTabStrategy);
+        verify(mModel, never()).setTabsMultiSelected(any(), anyBoolean());
     }
 
     @Test
@@ -299,6 +307,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         DELTA_X,
                         ReorderType.DRAG_WITHIN_STRIP);
         verifyNoMoreInteractions(mMultiTabStrategy);
+        verify(mModel, never()).setTabsMultiSelected(any(), anyBoolean());
     }
 
     @Test
@@ -343,6 +352,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         verify(mAnimationHost, times(2)).finishAnimationsAndPushTabUpdates();
         verify(mStripUpdateDelegate, times(2)).resizeTabStrip(null, false);
         verifyNoMoreInteractions(mMultiTabStrategy);
+        verify(mModel, never()).setTabsMultiSelected(any(), anyBoolean());
     }
 
     @Test
@@ -444,6 +454,38 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     public void testUpdateReorder_dragOutOfAndThenOntoStrip_multiTabSelection() {
         startMultiTabReorder();
         doTestDragOutOfAndThenOntoStripSelection();
+
+        InOrder inOrder = inOrder(mModel);
+        inOrder.verify(mModel).setIndex(2, TabSelectionType.FROM_USER);
+        inOrder.verify(mModel).setIndex(0, TabSelectionType.FROM_USER);
+        inOrder.verify(mModel)
+                .setTabsMultiSelected(Set.of(TAB_ID1, TAB_ID2), /* isSelected= */ true);
+    }
+
+    @Test
+    public void testUpdateReorder_multiTab_dragOutOfAndThenOntoStrip_restoresMultiSelection() {
+        startMultiTabReorder();
+        when(mStripUpdateDelegate.getNextIndexAfterClose(any())).thenReturn(2);
+        dragOutOfStrip();
+        assertEquals(2, mModel.index());
+
+        // Re-entering the strip reselects the active dragged tab, restores multi-selection, and
+        // then restarts the wrapped multi-tab reorder strategy.
+        clearInvocations(mModel, mMultiTabStrategy);
+        dragOntoStrip();
+
+        assertEquals(0, mModel.index());
+        InOrder inOrder = inOrder(mModel, mMultiTabStrategy);
+        inOrder.verify(mModel).setIndex(0, TabSelectionType.FROM_USER);
+        inOrder.verify(mModel)
+                .setTabsMultiSelected(Set.of(TAB_ID1, TAB_ID2), /* isSelected= */ true);
+        inOrder.verify(mMultiTabStrategy)
+                .startReorderMode(
+                        eq(mStripViews),
+                        eq(mStripTabs),
+                        eq(mGroupTitles),
+                        eq(mInteractingTab),
+                        eq(new PointF(END_X, 0f)));
     }
 
     @Test
@@ -575,6 +617,85 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         assertFalse("DraggedOffStrip should be false", mOtherSelectedTab.isDraggedOffStrip());
         assertEquals("offsetY should be 0", 0f, mInteractingTab.getOffsetY(), EPSILON);
         assertEquals("offsetY should be 0", 0f, mOtherSelectedTab.getOffsetY(), EPSILON);
+        verify(mModel).setTabsMultiSelected(Set.of(TAB_ID1, TAB_ID2), /* isSelected= */ true);
+    }
+
+    @Test
+    public void testStopReorder_multiTab_withoutDragOffStrip_doesNotRestoreMultiSelection() {
+        startMultiTabReorder();
+
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
+
+        verify(mModel, never()).setTabsMultiSelected(any(), anyBoolean());
+    }
+
+    @Test
+    public void testStopReorder_multiTab_afterReparent_doesNotRestoreMultiSelection() {
+        startMultiTabReorder();
+        when(mStripUpdateDelegate.getNextIndexAfterClose(any())).thenReturn(2);
+        dragOutOfStrip();
+
+        // Simulate both dragged tabs reparented out of the source model.
+        mModel.removeTab(mModel.getTabById(TAB_ID1));
+        mModel.removeTab(mModel.getTabById(TAB_ID2));
+        mModel.setIndex(0, TabSelectionType.FROM_USER);
+
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
+
+        verify(mModel, never()).setTabsMultiSelected(any(), anyBoolean());
+    }
+
+    @Test
+    public void testStopReorder_multiTab_partialRemovalWithActiveOutside_doesNotRestore() {
+        StripLayoutTab thirdSelectedTab = buildStripTab(TAB_ID3, 2);
+        setupForMultiTabDrag();
+        mStripTabs = new StripLayoutTab[] {mInteractingTab, mOtherSelectedTab, thirdSelectedTab};
+        when(mModel.isTabMultiSelected(TAB_ID3)).thenReturn(true);
+        when(mModel.getMultiSelectedTabsCount()).thenReturn(3);
+        mModel.setIndex(1, TabSelectionType.FROM_USER);
+        when(mTabStripDragHandler.startMultiTabDragAction(
+                        any(), any(), any(), any(), anyFloat(), anyFloat()))
+                .thenReturn(true);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        dragOntoStrip();
+
+        when(mStripUpdateDelegate.getNextIndexAfterClose(any())).thenReturn(3);
+        dragOutOfStrip();
+        // Remove the previously active dragged tab (TAB_ID2) while keeping mInteractingTab
+        // (TAB_ID1) and TAB_ID3 in the model so views restore to the strip with TAB_ID4 active.
+        mModel.removeTab(mModel.getTabById(TAB_ID2));
+        mModel.setIndex(mModel.indexOf(mModel.getTabById(TAB_ID4)), TabSelectionType.FROM_USER);
+
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
+
+        verify(mModel, never()).setTabsMultiSelected(any(), anyBoolean());
+    }
+
+    @Test
+    public void testStopReorder_multiTab_draggedViewRemoved_doesNotRestore() {
+        StripLayoutTab thirdSelectedTab = buildStripTab(TAB_ID3, 2);
+        setupForMultiTabDrag();
+        mStripTabs = new StripLayoutTab[] {mInteractingTab, mOtherSelectedTab, thirdSelectedTab};
+        when(mModel.isTabMultiSelected(TAB_ID3)).thenReturn(true);
+        when(mModel.getMultiSelectedTabsCount()).thenReturn(3);
+        when(mTabStripDragHandler.startMultiTabDragAction(
+                        any(), any(), any(), any(), anyFloat(), anyFloat()))
+                .thenReturn(true);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        dragOntoStrip();
+
+        when(mStripUpdateDelegate.getNextIndexAfterClose(any())).thenReturn(3);
+        dragOutOfStrip();
+        // Remove mInteractingTab (TAB_ID1) so views stay off-strip even though TAB_ID2 and TAB_ID3
+        // remain in the model with TAB_ID2 active.
+        mModel.removeTab(mModel.getTabById(TAB_ID1));
+        mModel.setIndex(mModel.indexOf(mModel.getTabById(TAB_ID2)), TabSelectionType.FROM_USER);
+
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
+
+        verify(mModel, never()).setTabsMultiSelected(any(), anyBoolean());
     }
 
     @Test

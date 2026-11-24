@@ -36,7 +36,9 @@ import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -483,6 +485,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 StripLayoutGroupTitle[] stripGroupTitles,
                 StripLayoutView interactingView,
                 PointF startPoint) {
+            boolean wasDraggedOffStrip = interactingView.isDraggedOffStrip();
             // 1. Hide compositor buttons.
             mStripUpdateDelegate.setCompositorButtonsVisible(false);
 
@@ -496,6 +499,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
 
             // 3. Re-select the previously selected dragged tab, if needed.
             reselectDraggedSelectedTab(mModel, mSelectedDraggedTab);
+            onDraggedTabReselected(wasDraggedOffStrip);
 
             // 4. Start to reorder within strip - delegate to the wrapped strategy.
             super.startReorderMode(
@@ -530,12 +534,30 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 StripLayoutView[] stripViews,
                 StripLayoutGroupTitle[] groupTitles,
                 boolean isDragCancelled) {
+            onStopViewDragAction(
+                    stripViews, groupTitles, isDragCancelled, /* wasDraggedOffStrip= */ false);
+        }
+
+        void onStopViewDragAction(
+                StripLayoutView[] stripViews,
+                StripLayoutGroupTitle[] groupTitles,
+                boolean isDragCancelled,
+                boolean wasDraggedOffStrip) {
             reselectDraggedSelectedTab(mModel, mSelectedDraggedTab);
+            onDraggedTabReselected(wasDraggedOffStrip);
             mViewsBeingDragged.clear();
             mTabsBeingDragged.clear();
             mSelectedDraggedTab = null;
             super.onStopViewDragAction(stripViews, groupTitles, isDragCancelled);
         }
+
+        /**
+         * Called immediately after {@link #reselectDraggedSelectedTab} finishes.
+         *
+         * @param wasDraggedOffStrip Whether dragged views were just restored back onto the strip
+         *     after being dragged off-strip.
+         */
+        void onDraggedTabReselected(boolean wasDraggedOffStrip) {}
 
         @Override
         int getNextTabIndexOnDragExit() {
@@ -579,6 +601,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         boolean startViewDragAction(StripLayoutTab[] stripTabs, PointF startPoint) {
             // Populate the list of views being dragged.
             mViewsBeingDragged.clear();
+            mTabsBeingDragged.clear();
             List<Tab> selectedTabs = new ArrayList<>();
             for (StripLayoutTab stripTab : stripTabs) {
                 if (stripTab != null && mModel.isTabMultiSelected(stripTab.getTabId())) {
@@ -614,9 +637,11 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             // If the dragged views were re-parented, they will no longer be present in model.
             // If this is not the case, attempt to restore views to their original position.
             StripLayoutTab draggedTab = (StripLayoutTab) mViewBeingDragged;
-            if (draggedTab != null
-                    && mModel.getTabById(draggedTab.getTabId()) != null
-                    && draggedTab.isDraggedOffStrip()) {
+            boolean restoredFromOffStrip =
+                    draggedTab != null
+                            && mModel.getTabById(draggedTab.getTabId()) != null
+                            && draggedTab.isDraggedOffStrip();
+            if (restoredFromOffStrip) {
                 mAnimationHost.finishAnimationsAndPushTabUpdates();
                 for (StripLayoutView view : mViewsBeingDragged) {
                     bringViewOntoStrip(view);
@@ -625,7 +650,26 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                         /* tabToAnimate= */ null, /* animateTabAdded= */ false);
                 // TODO(crbug.com/445152399) Re-select the dragged tab, if needed.
             }
-            super.onStopViewDragAction(stripViews, groupTitles, isDragCancelled);
+            super.onStopViewDragAction(
+                    stripViews, groupTitles, isDragCancelled, restoredFromOffStrip);
+        }
+
+        @Override
+        void onDraggedTabReselected(boolean wasDraggedOffStrip) {
+            if (!wasDraggedOffStrip) return;
+            Set<Integer> tabIdsToRestore = new LinkedHashSet<>();
+            for (StripLayoutTab stripTab : mTabsBeingDragged) {
+                int tabId = stripTab.getTabId();
+                if (mModel.getTabById(tabId) != null) {
+                    tabIdsToRestore.add(tabId);
+                }
+            }
+            // Restore the dragged multi-selection only when multiple dragged tabs remain in this
+            // model and include the active tab, matching the TabModel multi-selection invariant.
+            if (tabIdsToRestore.size() > 1
+                    && tabIdsToRestore.contains(TabModelUtils.getCurrentTabId(mModel))) {
+                mModel.setTabsMultiSelected(tabIdsToRestore, /* isSelected= */ true);
+            }
         }
     }
 
