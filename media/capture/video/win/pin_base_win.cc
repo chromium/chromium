@@ -9,13 +9,73 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 
 namespace media {
 
-// Implement IEnumPins.
+PinBase::OwnedMediaType::OwnedMediaType() = default;
+
+PinBase::OwnedMediaType& PinBase::OwnedMediaType::operator=(
+    OwnedMediaType&& other) {
+  if (this != &other) {
+    Reset();
+    type_ = std::exchange(other.type_, {});
+  }
+  return *this;
+}
+
+PinBase::OwnedMediaType::~OwnedMediaType() {
+  Reset();
+}
+
+HRESULT PinBase::OwnedMediaType::CopyFrom(const AM_MEDIA_TYPE& source) {
+  Reset();
+  return CopyMediaType(source, &type_);
+}
+
+HRESULT PinBase::OwnedMediaType::CopyTo(AM_MEDIA_TYPE* target) const {
+  return CopyMediaType(type_, target);
+}
+
+// static
+HRESULT PinBase::OwnedMediaType::CopyMediaType(const AM_MEDIA_TYPE& source,
+                                               AM_MEDIA_TYPE* target) {
+  BYTE* format = nullptr;
+  if (source.cbFormat && source.pbFormat) {
+    format = static_cast<BYTE*>(CoTaskMemAlloc(source.cbFormat));
+    if (!format) {
+      *target = {};
+      return E_OUTOFMEMORY;
+    }
+    // SAFETY: |source.pbFormat| points to |source.cbFormat| bytes, and
+    // |format| was just allocated with that size.
+    UNSAFE_BUFFERS(base::span(format, source.cbFormat))
+        .copy_from(
+            UNSAFE_BUFFERS(base::span(source.pbFormat, source.cbFormat)));
+  }
+  *target = source;
+  target->pbFormat = format;
+  target->cbFormat = format ? source.cbFormat : 0;
+  if (target->pUnk) {
+    target->pUnk->AddRef();
+  }
+  return S_OK;
+}
+
+void PinBase::OwnedMediaType::Reset() {
+  if (type_.pbFormat) {
+    CoTaskMemFree(type_.pbFormat);
+  }
+  if (type_.pUnk) {
+    type_.pUnk->Release();
+  }
+  type_ = {};
+}
+
+// Implement IEnumMediaTypes.
 class TypeEnumerator final : public IEnumMediaTypes,
                              public base::RefCountedThreadSafe<TypeEnumerator> {
  public:
@@ -118,9 +178,7 @@ class TypeEnumerator final : public IEnumMediaTypes,
   int index_;
 };
 
-PinBase::PinBase(IBaseFilter* owner) : owner_(owner) {
-  UNSAFE_TODO(memset(&current_media_type_, 0, sizeof(current_media_type_)));
-}
+PinBase::PinBase(IBaseFilter* owner) : owner_(owner) {}
 
 void PinBase::SetOwner(IBaseFilter* owner) {
   base::AutoLock lock(lock_);
@@ -138,26 +196,46 @@ HRESULT PinBase::ReceiveConnection(IPin* connector,
   if (!connector || !media_type) {
     return E_POINTER;
   }
-  base::AutoLock lock(lock_);
-  if (connected_pin_) {
-    return VFW_E_ALREADY_CONNECTED;
+  {
+    base::AutoLock lock(lock_);
+    if (connected_pin_) {
+      return VFW_E_ALREADY_CONNECTED;
+    }
   }
   if (!IsMediaTypeValid(media_type)) {
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
-  current_media_type_ = *media_type;
-  connected_pin_ = connector;
-  return S_OK;
+
+  OwnedMediaType new_type;
+  HRESULT hr = new_type.CopyFrom(*media_type);
+  if (FAILED(hr)) {
+    return hr;
+  }
+  Microsoft::WRL::ComPtr<IPin> new_pin(connector);
+  {
+    // Hold |lock_| only briefly, and don't destroy media types under it: their
+    // destructors run custom filter code, which could deadlock.
+    base::AutoLock lock(lock_);
+    if (!connected_pin_) {
+      current_media_type_ = std::move(new_type);
+      connected_pin_ = std::move(new_pin);
+      return S_OK;
+    }
+  }
+  return VFW_E_ALREADY_CONNECTED;
 }
 
 HRESULT PinBase::Disconnect() {
   Microsoft::WRL::ComPtr<IPin> old_pin;
+  OwnedMediaType old_type;
   {
+    // Hold |lock_| only briefly, and don't destroy media types under it: their
+    // destructors run custom filter code, which could deadlock.
     base::AutoLock lock(lock_);
     if (!connected_pin_) {
       return S_FALSE;
     }
-    current_media_type_ = {};
+    old_type = std::move(current_media_type_);
     old_pin = std::move(connected_pin_);
   }
   old_pin.Reset();
@@ -178,10 +256,10 @@ HRESULT PinBase::ConnectedTo(IPin** pin) {
 HRESULT PinBase::ConnectionMediaType(AM_MEDIA_TYPE* media_type) {
   base::AutoLock lock(lock_);
   if (!connected_pin_) {
+    *media_type = {};
     return VFW_E_NOT_CONNECTED;
   }
-  *media_type = current_media_type_;
-  return S_OK;
+  return current_media_type_.CopyTo(media_type);
 }
 
 HRESULT PinBase::QueryPinInfo(PIN_INFO* info) {

@@ -1099,4 +1099,47 @@ TEST_F(VideoCaptureDeviceWinTest, ReconnectionAttemptKeepsFormat) {
   EXPECT_EQ(input_pin->Disconnect(), S_OK);
 }
 
+TEST_F(VideoCaptureDeviceWinTest, ConnectionMediaTypeReturnsDeepCopy) {
+  CountingSinkObserver observer;
+  auto sink_filter = base::MakeRefCounted<SinkFilter>(&observer);
+  ComPtr<IPin> input_pin = sink_filter->GetPin(0);
+  ComPtr<FakeOutputPin> upstream_pin = Make<FakeOutputPin>(nullptr);
+
+  AM_MEDIA_TYPE media_type;
+  VIDEOINFOHEADER video_info;
+  PopulateI420MediaType(&media_type, &video_info);
+  ASSERT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &media_type),
+            S_OK);
+  // The caller owns |video_info| and may reuse it after the call.
+  video_info.bmiHeader.biWidth = 1;
+
+  // The caller owns the returned format block and may modify and free it.
+  AM_MEDIA_TYPE connection_type = {};
+  ASSERT_EQ(input_pin->ConnectionMediaType(&connection_type), S_OK);
+  ASSERT_EQ(connection_type.cbFormat, sizeof(VIDEOINFOHEADER));
+  ASSERT_NE(connection_type.pbFormat, reinterpret_cast<BYTE*>(&video_info));
+  auto* returned_info =
+      reinterpret_cast<VIDEOINFOHEADER*>(connection_type.pbFormat);
+  EXPECT_EQ(returned_info->bmiHeader.biWidth, kTestWidth);
+  returned_info->bmiHeader.biWidth = 2;
+
+  // Each call returns a new copy of the pin's own format block.
+  AM_MEDIA_TYPE second_type = {};
+  ASSERT_EQ(input_pin->ConnectionMediaType(&second_type), S_OK);
+  ASSERT_NE(second_type.pbFormat, connection_type.pbFormat);
+  EXPECT_EQ(reinterpret_cast<VIDEOINFOHEADER*>(second_type.pbFormat)
+                ->bmiHeader.biWidth,
+            kTestWidth);
+  ::CoTaskMemFree(second_type.pbFormat);
+  ::CoTaskMemFree(connection_type.pbFormat);
+
+  // While disconnected, the returned media type is cleared.
+  EXPECT_EQ(input_pin->Disconnect(), S_OK);
+  connection_type.cbFormat = 1;
+  EXPECT_EQ(input_pin->ConnectionMediaType(&connection_type),
+            VFW_E_NOT_CONNECTED);
+  EXPECT_EQ(connection_type.cbFormat, 0u);
+  EXPECT_EQ(connection_type.pbFormat, nullptr);
+}
+
 }  // namespace media

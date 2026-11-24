@@ -108,8 +108,37 @@ class PinBase : public IPin,
   virtual ~PinBase();
 
  private:
+  // Owns a deep copy of an AM_MEDIA_TYPE, including its format block and
+  // |pUnk|, and frees them when destroyed.
+  class OwnedMediaType {
+   public:
+    OwnedMediaType();
+    OwnedMediaType(const OwnedMediaType&) = delete;
+    OwnedMediaType& operator=(const OwnedMediaType&) = delete;
+    OwnedMediaType(OwnedMediaType&&) = delete;
+    OwnedMediaType& operator=(OwnedMediaType&& other);
+    ~OwnedMediaType();
+
+    // Replaces the owned type with a deep copy of |source|. On failure, the
+    // owned type is left empty.
+    HRESULT CopyFrom(const AM_MEDIA_TYPE& source);
+    // Writes a deep copy to |target|, which the caller then owns and frees,
+    // e.g. with FreeMediaType(). |target| must not own any memory.
+    HRESULT CopyTo(AM_MEDIA_TYPE* target) const;
+
+   private:
+    // Deep-copies |source| into |target|. |target| must not own any memory.
+    static HRESULT CopyMediaType(const AM_MEDIA_TYPE& source,
+                                 AM_MEDIA_TYPE* target);
+
+    void Reset();
+
+    AM_MEDIA_TYPE type_ = {};
+  };
+
   base::Lock lock_;
-  AM_MEDIA_TYPE current_media_type_ GUARDED_BY(lock_);
+  // Set only while connected.
+  OwnedMediaType current_media_type_ GUARDED_BY(lock_);
   Microsoft::WRL::ComPtr<IPin> connected_pin_ GUARDED_BY(lock_);
   // owner_ is the filter owning this pin. We don't reference count it since
   // that would create a circular reference count.
