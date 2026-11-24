@@ -2330,4 +2330,327 @@ TEST_F(InputMethodAshKeyEventTest,
   input_method_ash_->SetFocusedTextInputClient(nullptr);
 }
 
+TEST_F(InputMethodAshTest,
+       SetComposingRangeRejectedWhenNotCoveringNonEmptySelection) {
+  FakeTextInputClient client(ui::TEXT_INPUT_TYPE_TEXT);
+  client.SetTextAndSelection(u"New folder", gfx::Range(0, 10));
+  InputMethodAsh ime(this);
+  ime.SetFocusedTextInputClient(&client);
+
+  EXPECT_FALSE(ime.SetComposingRange(4, 10, {}));
+  EXPECT_EQ(client.composition_range(), gfx::Range());
+  EXPECT_EQ(client.selection(), gfx::Range(0, 10));
+  ime.CancelComposition(&client);
+  EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 0);
+
+  // Reversed selection and strict-superset composition ranges should also work.
+  client.SetTextAndSelection(u"New folder", gfx::Range(10, 4));
+  EXPECT_FALSE(ime.SetComposingRange(0, 4, {}));
+  EXPECT_TRUE(ime.SetComposingRange(0, 10, {}));
+  EXPECT_EQ(client.composition_range(), gfx::Range(0, 10));
+
+  // An empty composition range clears existing composition even while a
+  // non-empty selection is active, without modifying the selection.
+  EXPECT_TRUE(ime.SetComposingRange(10, 10, {}));
+  EXPECT_TRUE(client.composition_range().is_empty());
+  EXPECT_EQ(client.selection(), gfx::Range(10, 4));
+  ime.CancelComposition(&client);
+  EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 0);
+
+  ime.SetFocusedTextInputClient(nullptr);
+}
+
+TEST_F(InputMethodAshKeyEventTest,
+       DeferredPendingCompositionRangeSkippedWhenSelectionExpands) {
+  FakeTextInputClient client(ui::TEXT_INPUT_TYPE_TEXT);
+  input_method_ash_->SetFocusedTextInputClient(&client);
+
+  // Case 1: Key event completes while the expanded [0, 10] selection is active,
+  // before a subsequent `CommitText()` arrives.
+  client.SetTextAndSelection(u"New folder", gfx::Range(10, 10));
+  ui::KeyEvent event1(ui::EventType::kKeyPressed, ui::VKEY_E, ui::DomCode::US_E,
+                      ui::EF_NONE, ui::DomKey::FromCharacter('e'),
+                      ui::EventTimeForNow());
+  input_method_ash_->DispatchKeyEvent(&event1);
+  KeyEventCallback callback1 = mock_ime_engine_handler_->last_passed_callback();
+  EXPECT_TRUE(input_method_ash_->SetComposingRange(4, 10, {}));
+  client.SetTextAndSelection(u"New folder", gfx::Range(0, 10));
+  std::move(callback1).Run(ui::ime::KeyEventHandledState::kHandledByIME);
+
+  EXPECT_EQ(client.composition_range(), gfx::Range());
+  EXPECT_EQ(client.selection(), gfx::Range(0, 10));
+  EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 1);
+  input_method_ash_->CancelComposition(&client);
+  EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 1);
+
+  input_method_ash_->CommitText(
+      u"ab", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_EQ(client.text(), u"ab");
+
+  // Case 2: A stale `SetComposingRange()` is buffered before `CommitText()`
+  // during the same key event, selection expands to [0, 10], and the stale
+  // range fits inside the newly committed text.
+  struct BufferedCommitCase {
+    uint32_t range_start;
+    uint32_t range_end;
+    const char16_t* committed_text;
+  };
+  static constexpr BufferedCommitCase kCases[] = {
+      {0, 2, u"ab"},
+      {4, 10, u"Renamed folder"},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(UTF16ToUTF8(test_case.committed_text));
+    const int resets_before = mock_ime_engine_handler_->reset_call_count();
+    client.SetTextAndSelection(u"New folder", gfx::Range(10, 10));
+    ui::KeyEvent key_event(
+        ui::EventType::kKeyPressed, ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
+        ui::DomKey::FromCharacter('a'), ui::EventTimeForNow());
+    input_method_ash_->DispatchKeyEvent(&key_event);
+    KeyEventCallback callback =
+        mock_ime_engine_handler_->last_passed_callback();
+    EXPECT_TRUE(input_method_ash_->SetComposingRange(test_case.range_start,
+                                                     test_case.range_end, {}));
+    client.SetTextAndSelection(u"New folder", gfx::Range(0, 10));
+    input_method_ash_->CommitText(
+        test_case.committed_text,
+        TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
+
+    EXPECT_EQ(client.text(), test_case.committed_text);
+    EXPECT_EQ(client.composition_range(), gfx::Range());
+    EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), resets_before + 1);
+    input_method_ash_->CancelComposition(&client);
+    EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), resets_before + 1);
+  }
+
+  input_method_ash_->SetFocusedTextInputClient(nullptr);
+}
+
+TEST_F(InputMethodAshKeyEventTest,
+       ConfirmCompositionSkipsPendingCompositionRangeWhenSelectionExpands) {
+  FakeTextInputClient client(ui::TEXT_INPUT_TYPE_TEXT);
+  client.SetTextAndSelection(u"New folder", gfx::Range(10, 10));
+  input_method_ash_->SetFocusedTextInputClient(&client);
+
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_1,
+                     ui::DomCode::DIGIT1, ui::EF_NONE,
+                     ui::DomKey::FromCharacter('1'), ui::EventTimeForNow());
+  input_method_ash_->DispatchKeyEvent(&event);
+  KeyEventCallback callback = mock_ime_engine_handler_->last_passed_callback();
+  EXPECT_TRUE(input_method_ash_->SetComposingRange(4, 10, {}));
+
+  client.SetTextAndSelection(u"New folder", gfx::Range(0, 10));
+  // Completing the key event as unhandled triggers
+  // `ConfirmComposition(/*reset_engine=*/true)` in `ProcessKeyEventDone()`.
+  std::move(callback).Run(ui::ime::KeyEventHandledState::kNotHandled);
+
+  EXPECT_EQ(client.composition_range(), gfx::Range());
+  EXPECT_EQ(client.selection(), gfx::Range(0, 10));
+  EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 1);
+  input_method_ash_->CancelComposition(&client);
+  EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 1);
+
+  input_method_ash_->SetFocusedTextInputClient(nullptr);
+}
+
+TEST_F(InputMethodAshKeyEventTest,
+       DeferredSetComposingRangeMarksComposingTextForSubsequentCommit) {
+  input_type_ = ui::TEXT_INPUT_TYPE_TEXT;
+  input_method_ash_->OnTextInputTypeChanged(this);
+
+  surrounding_text_ = u"folder";
+  text_range_ = gfx::Range(0, 6);
+  selection_range_ = gfx::Range(6, 6);
+
+  auto apply_deferred_composing_range = [&](uint32_t start, uint32_t end) {
+    ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_R,
+                       ui::DomCode::US_R, ui::EF_NONE,
+                       ui::DomKey::FromCharacter('r'), ui::EventTimeForNow());
+    input_method_ash_->DispatchKeyEvent(&event);
+    EXPECT_TRUE(input_method_ash_->SetComposingRange(start, end, {}));
+    std::move(mock_ime_engine_handler_->last_passed_callback())
+        .Run(ui::ime::KeyEventHandledState::kHandledByIME);
+  };
+
+  apply_deferred_composing_range(0, 6);
+  EXPECT_EQ(composition_text_.text, u"folder");
+
+  // A subsequent single-character `CommitText()` while composition is active
+  // must use `InsertText()` (replacing the composition) rather than
+  // `InsertChar()`.
+  ui::KeyEvent commit_event(
+      ui::EventType::kKeyPressed, ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_NONE,
+      ui::DomKey::FromCharacter('1'), ui::EventTimeForNow());
+  input_method_ash_->DispatchKeyEvent(&commit_event);
+  input_method_ash_->CommitText(
+      u"1", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
+
+  EXPECT_EQ(dispatched_key_event_.key_code(), ui::VKEY_PROCESSKEY);
+  EXPECT_EQ(inserted_text_, u"1");
+  EXPECT_EQ(inserted_char_, 0);
+  input_method_ash_->CancelComposition(this);
+  EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 0);
+
+  // Canceling composition after a deferred `SetComposingRange()` callback
+  // finishes should also reset the engine.
+  apply_deferred_composing_range(0, 6);
+  input_method_ash_->CancelComposition(this);
+  EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 1);
+
+  // An empty deferred `SetComposingRange()` clears `composing_text_`.
+  apply_deferred_composing_range(0, 6);
+  apply_deferred_composing_range(6, 6);
+  input_method_ash_->CancelComposition(this);
+  EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 1);
+}
+
+TEST_F(InputMethodAshKeyEventTest,
+       DeferredPendingCompositionRangeSkippedWhenCommitCreatesSelection) {
+  class InlineAutocompleteTextInputClient : public FakeTextInputClient {
+   public:
+    explicit InlineAutocompleteTextInputClient(
+        std::u16string autocomplete_suffix)
+        : FakeTextInputClient(ui::TEXT_INPUT_TYPE_TEXT),
+          autocomplete_suffix_(std::move(autocomplete_suffix)) {}
+
+    // ui::TextInputClient:
+    void InsertText(const std::u16string& text,
+                    InsertTextCursorBehavior cursor_behavior) override {
+      FakeTextInputClient::InsertText(text, cursor_behavior);
+      AppendInlineAutocomplete();
+    }
+
+    void InsertChar(const ui::KeyEvent& event) override {
+      InsertText(std::u16string(1, event.GetCharacter()),
+                 InsertTextCursorBehavior::kMoveCursorAfterText);
+    }
+
+   private:
+    void AppendInlineAutocomplete() {
+      const size_t caret = selection().end();
+      const std::u16string completed = text() + autocomplete_suffix_;
+      SetTextAndSelection(completed, gfx::Range(caret, completed.length()));
+    }
+
+    const std::u16string autocomplete_suffix_;
+  };
+
+  struct CommitCase {
+    const char16_t* committed_text;
+    const char16_t* autocomplete_suffix;
+    uint32_t range_end;
+    const char16_t* expected_text;
+    gfx::Range expected_selection;
+    gfx::Range expected_composition_range;
+  };
+  static constexpr CommitCase kCases[] = {
+      // Single-character `CommitText()` (`InsertChar()` path) creates a new
+      // inline autocomplete selection [1, 10] not covered by [0, 1].
+      {u"g", u"oogle.com", 1, u"google.com", gfx::Range(1, 10), gfx::Range()},
+      // Multi-character `CommitText()` (`InsertText()` path) creates a new
+      // inline autocomplete selection [2, 10] not covered by [0, 2].
+      {u"go", u"ogle.com", 2, u"google.com", gfx::Range(2, 10), gfx::Range()},
+      // When the buffered composition range covers the post-commit selection,
+      // it is still applied.
+      {u"go", u"ogle.com", 10, u"google.com", gfx::Range(2, 10),
+       gfx::Range(0, 10)},
+  };
+
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(testing::Message() << UTF16ToUTF8(test_case.committed_text)
+                                    << " [0, " << test_case.range_end << ")");
+    const int resets_before = mock_ime_engine_handler_->reset_call_count();
+    InlineAutocompleteTextInputClient client(test_case.autocomplete_suffix);
+    input_method_ash_->SetFocusedTextInputClient(&client);
+
+    ui::KeyEvent key_event(
+        ui::EventType::kKeyPressed, ui::VKEY_G, ui::DomCode::US_G, ui::EF_NONE,
+        ui::DomKey::FromCharacter('g'), ui::EventTimeForNow());
+    input_method_ash_->DispatchKeyEvent(&key_event);
+    KeyEventCallback callback =
+        mock_ime_engine_handler_->last_passed_callback();
+    input_method_ash_->CommitText(
+        test_case.committed_text,
+        TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    EXPECT_TRUE(
+        input_method_ash_->SetComposingRange(0, test_case.range_end, {}));
+    std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
+
+    EXPECT_EQ(client.text(), test_case.expected_text);
+    EXPECT_EQ(client.selection(), test_case.expected_selection);
+    EXPECT_EQ(client.composition_range(), test_case.expected_composition_range);
+    // Rejecting a deferred composing range resets the engine immediately,
+    // leaving `composing_text_` false; applying it resets only when canceled.
+    const bool rejected = test_case.expected_composition_range.is_empty();
+    EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(),
+              resets_before + (rejected ? 1 : 0));
+    input_method_ash_->CancelComposition(&client);
+    EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), resets_before + 1);
+    input_method_ash_->SetFocusedTextInputClient(nullptr);
+  }
+}
+
+TEST_F(InputMethodAshKeyEventTest,
+       CommitTextThenSetComposingRangeReplacesSelection) {
+  class InsertCharFakeTextInputClient : public FakeTextInputClient {
+   public:
+    InsertCharFakeTextInputClient()
+        : FakeTextInputClient(ui::TEXT_INPUT_TYPE_TEXT) {}
+
+    // ui::TextInputClient:
+    void InsertChar(const ui::KeyEvent& event) override {
+      InsertText(std::u16string(1, event.GetCharacter()),
+                 InsertTextCursorBehavior::kMoveCursorAfterText);
+    }
+  };
+
+  struct ReplaceSelectionCase {
+    const char16_t* committed_text;
+    uint32_t range_end;
+    const char16_t* expected_text;
+    gfx::Range expected_selection;
+    gfx::Range expected_composition_range;
+  };
+  static constexpr ReplaceSelectionCase kCases[] = {
+      // Single-character `CommitText()` (`InsertChar()` path) followed by a
+      // post-commit `SetComposingRange()` replacing selection [0, 3].
+      {u"x", 1, u"x def", gfx::Range(1, 1), gfx::Range(0, 1)},
+      // Multi-character `CommitText()` (`InsertText()` path) followed by a
+      // post-commit `SetComposingRange()` replacing selection [0, 3].
+      {u"xy", 2, u"xy def", gfx::Range(2, 2), gfx::Range(0, 2)},
+  };
+
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(UTF16ToUTF8(test_case.committed_text));
+    const int resets_before = mock_ime_engine_handler_->reset_call_count();
+    InsertCharFakeTextInputClient client;
+    client.SetTextAndSelection(u"abc def", gfx::Range(0, 3));
+    input_method_ash_->SetFocusedTextInputClient(&client);
+
+    ui::KeyEvent key_event(
+        ui::EventType::kKeyPressed, ui::VKEY_X, ui::DomCode::US_X, ui::EF_NONE,
+        ui::DomKey::FromCharacter('x'), ui::EventTimeForNow());
+    input_method_ash_->DispatchKeyEvent(&key_event);
+    KeyEventCallback callback =
+        mock_ime_engine_handler_->last_passed_callback();
+    input_method_ash_->CommitText(
+        test_case.committed_text,
+        TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    EXPECT_TRUE(
+        input_method_ash_->SetComposingRange(0, test_case.range_end, {}));
+    std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
+
+    EXPECT_EQ(client.text(), test_case.expected_text);
+    EXPECT_EQ(client.selection(), test_case.expected_selection);
+    EXPECT_EQ(client.composition_range(), test_case.expected_composition_range);
+    EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), resets_before);
+    input_method_ash_->CancelComposition(&client);
+    EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), resets_before + 1);
+    input_method_ash_->SetFocusedTextInputClient(nullptr);
+  }
+}
+
 }  // namespace ash

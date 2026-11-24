@@ -115,12 +115,17 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // Representings a pending SetCompositionRange operation.
   struct PendingSetCompositionRange {
     PendingSetCompositionRange(const gfx::Range& range,
-                               const std::vector<ui::ImeTextSpan>& text_spans);
+                               const std::vector<ui::ImeTextSpan>& text_spans,
+                               bool after_pending_commit = false);
     PendingSetCompositionRange(const PendingSetCompositionRange& other);
     ~PendingSetCompositionRange();
 
     gfx::Range range;
     std::vector<ui::ImeTextSpan> text_spans;
+    // True when `SetComposingRange()` was called after `pending_commit_` was
+    // already queued for the current key event, meaning `range` is expressed in
+    // post-commit coordinates rather than against the pre-commit selection.
+    bool after_pending_commit = false;
   };
 
   // Representings a pending CommitText operation.

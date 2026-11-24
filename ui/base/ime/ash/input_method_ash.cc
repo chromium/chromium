@@ -76,6 +76,26 @@ AutocapitalizationMode ConvertAutocapitalizationMode(int flags) {
   return AutocapitalizationMode::kUnspecified;
 }
 
+// Returns false when `client` has an active non-empty selection that is not
+// covered by a non-empty `composition_range` (for example, an async
+// `SetComposingRange()` computed from an earlier collapsed caret arriving after
+// the field's text was selected), preventing subsequent composition updates
+// from replacing only a partial range instead of the active selection. An empty
+// `composition_range` only clears existing composition, so it is always
+// allowed.
+bool CanApplyCompositionRange(const TextInputClient& client,
+                              const gfx::Range& composition_range) {
+  if (composition_range.is_empty()) {
+    return true;
+  }
+  gfx::Range selection_range;
+  if (!client.GetEditableSelectionRange(&selection_range) ||
+      selection_range.is_empty()) {
+    return true;
+  }
+  return composition_range.Contains(selection_range);
+}
+
 }  // namespace
 
 TextInputMethod* GetEngine() {
@@ -104,8 +124,11 @@ InputMethodAsh::~InputMethodAsh() {
 
 InputMethodAsh::PendingSetCompositionRange::PendingSetCompositionRange(
     const gfx::Range& range,
-    const std::vector<ui::ImeTextSpan>& text_spans)
-    : range(range), text_spans(text_spans) {}
+    const std::vector<ui::ImeTextSpan>& text_spans,
+    bool after_pending_commit)
+    : range(range),
+      text_spans(text_spans),
+      after_pending_commit(after_pending_commit) {}
 
 InputMethodAsh::PendingSetCompositionRange::PendingSetCompositionRange(
     const PendingSetCompositionRange& other) = default;
@@ -540,6 +563,17 @@ bool InputMethodAsh::SetComposingRange(
   const auto ordered_range = std::minmax(start, end);
   const gfx::Range composition_range(ordered_range.first, ordered_range.second);
 
+  // When `CommitText()` is already buffered for the current key event,
+  // `composition_range` is in post-commit coordinates (e.g. an engine replacing
+  // a non-empty selection with a shorter commit and setting it as composing).
+  // Defer validation until after `pending_commit_` is applied to `client`.
+  const bool after_pending_commit =
+      IsHandlingKeyEvent() && pending_commit_.has_value();
+  if (!after_pending_commit &&
+      !CanApplyCompositionRange(*client, composition_range)) {
+    return false;
+  }
+
   // Use a default text span that spans across the whole composition range.
   auto non_empty_text_spans =
       !text_spans.empty()
@@ -552,13 +586,16 @@ bool InputMethodAsh::SetComposingRange(
   // |ProcessKeyEventPostIME|. Otherwise, process it immediately.
   if (IsHandlingKeyEvent()) {
     composition_changed_ = true;
-    pending_composition_range_ =
-        PendingSetCompositionRange{composition_range, non_empty_text_spans};
+    pending_composition_range_ = PendingSetCompositionRange(
+        composition_range, non_empty_text_spans, after_pending_commit);
     return true;
   } else {
-    composing_text_ = true;
-    return client->SetCompositionFromExistingText(composition_range,
-                                                  non_empty_text_spans);
+    const bool result = client->SetCompositionFromExistingText(
+        composition_range, non_empty_text_spans);
+    if (result) {
+      composing_text_ = !composition_range.is_empty();
+    }
+    return result;
   }
 }
 
@@ -633,11 +670,21 @@ void InputMethodAsh::ConfirmComposition(bool reset_engine) {
         std::move(*pending_composition_range_);
     pending_composition_range_ = std::nullopt;
     composition_changed_ = false;
-    // `SetComposingRange()` defers setting `composing_text_` while a key event
-    // is in flight; set it here so `ResetContext()` below knows composition was
-    // active and resets the engine when `reset_engine` is true.
-    composing_text_ = true;
-    client->SetCompositionFromExistingText(range.range, range.text_spans);
+    // `SetComposingRange()` already returned true to the engine while a key
+    // event was in flight; set `composing_text_` when `range.range` is
+    // non-empty even if it is rejected below so `ResetContext()` still resets
+    // the engine when `reset_engine` is true.
+    if (!range.range.is_empty()) {
+      composing_text_ = true;
+    }
+    if (!(range.after_pending_commit && pending_commit_) &&
+        CanApplyCompositionRange(*client, range.range)) {
+      const bool result =
+          client->SetCompositionFromExistingText(range.range, range.text_spans);
+      if (result && range.range.is_empty()) {
+        composing_text_ = false;
+      }
+    }
   }
   // TODO(b/225723475): Similar to the comment above, this is a quick fix to
   // solve the autocorrect issue outlined in the linked bug. This is due to the
@@ -851,6 +898,17 @@ void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
   TextInputClient* client = GetTextInputClient();
   CHECK(client, base::NotFatalUntil::M163);
 
+  // When `pending_composition_range_` was queued before `pending_commit_` (so
+  // its offsets are in pre-commit coordinates), check whether it covers any
+  // active selection before `pending_commit_` below replaces and collapses the
+  // selection. When it was queued after `pending_commit_`, its offsets are in
+  // post-commit coordinates and are validated below after `pending_commit_`
+  // runs.
+  bool can_apply_pending_composition_range =
+      !pending_composition_range_ ||
+      pending_composition_range_->after_pending_commit ||
+      CanApplyCompositionRange(*client, pending_composition_range_->range);
+
   if (pending_commit_) {
     if (handled && NeedInsertChar()) {
       for (const auto& ch : pending_commit_->text) {
@@ -884,15 +942,39 @@ void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
       composing_text_ = false;
     }
     typing_session_manager_.CommitCharacters(pending_commit_->text.length());
+
+    // Validate `pending_composition_range_` against the post-commit selection:
+    // either its offsets were in post-commit coordinates
+    // (`after_pending_commit`) or `InsertChar()` / `InsertText()` above may
+    // have synchronously created a new non-empty selection on `client` (e.g.
+    // omnibox inline autocompletion via `OnAfterUserAction()`).
+    if (can_apply_pending_composition_range && pending_composition_range_) {
+      can_apply_pending_composition_range =
+          CanApplyCompositionRange(*client, pending_composition_range_->range);
+    }
   }
 
   // TODO(crbug.com/40623107): Refactor this code to be clearer and less
   // error-prone.
   if (composition_changed_ && !IsTextInputTypeNone()) {
     if (pending_composition_range_) {
-      client->SetCompositionFromExistingText(
-          pending_composition_range_->range,
-          pending_composition_range_->text_spans);
+      if (can_apply_pending_composition_range) {
+        if (client->SetCompositionFromExistingText(
+                pending_composition_range_->range,
+                pending_composition_range_->text_spans)) {
+          // `SetComposingRange()` defers updating `composing_text_` while a key
+          // event is in flight; update it once the deferred range is applied so
+          // subsequent `NeedInsertChar()` and `ResetContext()` checks reflect
+          // whether composition is active.
+          composing_text_ = !pending_composition_range_->range.is_empty();
+        }
+      } else if (!pending_composition_ && GetEngine()) {
+        // `SetComposingRange()` already returned true to the engine while the
+        // key event was in flight. Reset the engine when rejecting the deferred
+        // range so it does not keep stale composing state and send a later
+        // update that replaces the active selection with stale text.
+        GetEngine()->Reset();
+      }
     }
     if (pending_composition_) {
       composing_text_ = true;
