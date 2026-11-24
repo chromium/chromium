@@ -5,12 +5,15 @@
 #include "cc/trees/single_thread_proxy.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/safety_checks.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
@@ -91,6 +94,10 @@ void SingleThreadProxy::Start() {
   DCHECK(task_runner_provider_->IsMainThread());
 
   const LayerTreeSettings& settings = layer_tree_host_->GetSettings();
+  exclude_commit_and_draw_from_safety_checks_ =
+      settings.is_layer_tree_for_ui &&
+      base::FeatureList::IsEnabled(
+          features::kExcludeUiCompositorCommitAndDrawFromSafetyChecks);
   DCHECK(settings.single_thread_proxy_scheduler ||
          !settings.enable_checker_imaging)
       << "Checker-imaging is not supported in synchronous single threaded mode";
@@ -240,33 +247,43 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   if (host_impl_->EvictedUIResourcesExist())
     layer_tree_host_->GetUIResourceManager()->RecreateUIResources();
 
-  // Strictly speaking, it's not necessary to pass a CompletionEvent to
-  // WillCommit, since we can't have thread contention issues. The benefit to
-  // creating one here is that it simplifies LayerTreeHost::in_commit(), which
-  // is useful in DCHECKs sprinkled throughout the code.
-  auto completion_event_ptr = std::make_unique<CompletionEvent>(
-      base::WaitableEvent::ResetPolicy::MANUAL);
-  auto* completion_event = completion_event_ptr.get();
-  // Must get unsafe_state before calling WillCommit() to avoid deadlock.
-  auto& unsafe_state = layer_tree_host_->GetUnsafeStateForCommit();
-  std::unique_ptr<CommitState> commit_state =
-      layer_tree_host_->WillCommit(std::move(completion_event_ptr),
-                                   /*has_updates=*/true);
-  DCHECK(commit_state.get());
-  devtools_instrumentation::ScopedCommitTrace commit_task(
-      layer_tree_host_->GetId(), commit_args.frame_id.sequence_number);
+  {
+    // Exclude cc-internal commit state transfer and destruction from
+    // PartitionAlloc safety checks while keeping `UIResourceClient` and image
+    // decode callbacks outside the exclusion scope.
+    std::optional<base::ScopedSafetyChecksExclusion> excluded;
+    if (exclude_commit_and_draw_from_safety_checks_) {
+      excluded.emplace();
+    }
 
-  // Commit immediately.
-  DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
-  DebugScopedSetImplThread impl(task_runner_provider_);
+    // Strictly speaking, it's not necessary to pass a CompletionEvent to
+    // WillCommit, since we can't have thread contention issues. The benefit to
+    // creating one here is that it simplifies LayerTreeHost::in_commit(), which
+    // is useful in DCHECKs sprinkled throughout the code.
+    auto completion_event_ptr = std::make_unique<CompletionEvent>(
+        base::WaitableEvent::ResetPolicy::MANUAL);
+    auto* completion_event = completion_event_ptr.get();
+    // Must get unsafe_state before calling WillCommit() to avoid deadlock.
+    auto& unsafe_state = layer_tree_host_->GetUnsafeStateForCommit();
+    std::unique_ptr<CommitState> commit_state =
+        layer_tree_host_->WillCommit(std::move(completion_event_ptr),
+                                     /*has_updates=*/true);
+    DCHECK(commit_state.get());
+    devtools_instrumentation::ScopedCommitTrace commit_task(
+        layer_tree_host_->GetId(), commit_args.frame_id.sequence_number);
 
-  source_frame_number_for_next_commit_ = commit_state->source_frame_number;
-  host_impl_->BeginCommit(commit_state->source_frame_number,
-                          commit_state->trace_id);
+    // Commit immediately.
+    DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
+    DebugScopedSetImplThread impl(task_runner_provider_);
 
-  host_impl_->FinishCommit(*commit_state, unsafe_state);
-  commit_state.reset();
-  completion_event->Signal();
+    source_frame_number_for_next_commit_ = commit_state->source_frame_number;
+    host_impl_->BeginCommit(commit_state->source_frame_number,
+                            commit_state->trace_id);
+
+    host_impl_->FinishCommit(*commit_state, unsafe_state);
+    commit_state.reset();
+    completion_event->Signal();
+  }
 
   {
     DebugScopedSetMainThread main(task_runner_provider_);
@@ -279,7 +296,13 @@ void SingleThreadProxy::DoPostCommit() {
   DCHECK(task_runner_provider_->IsMainThread());
 
   DebugScopedSetImplThread impl(task_runner_provider_);
-  host_impl_->CommitComplete();
+  {
+    std::optional<base::ScopedSafetyChecksExclusion> excluded;
+    if (exclude_commit_and_draw_from_safety_checks_) {
+      excluded.emplace();
+    }
+    host_impl_->CommitComplete();
+  }
 
   // Commit goes directly to the active tree, but we need to synchronously
   // "activate" the tree still during commit to satisfy any potential
@@ -966,6 +989,11 @@ DrawResult SingleThreadProxy::DoComposite(FrameData* frame) {
     // the swap buffers will execute first.
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
 
+    std::optional<base::ScopedSafetyChecksExclusion> excluded;
+    if (exclude_commit_and_draw_from_safety_checks_) {
+      excluded.emplace();
+    }
+
     draw_result = host_impl_->PrepareToDraw(frame);
     draw_frame = draw_result == DrawResult::kSuccess;
     if (draw_frame) {
@@ -976,7 +1004,11 @@ DrawResult SingleThreadProxy::DoComposite(FrameData* frame) {
           scheduler_on_impl_thread_->DidSubmitCompositorFrame(
               submit_info.value());
         }
+        excluded.reset();
         single_thread_delegate_->DidSubmitCompositorFrame();
+        if (exclude_commit_and_draw_from_safety_checks_) {
+          excluded.emplace();
+        }
       }
     }
     host_impl_->DidDrawAllLayers(*frame);

@@ -356,6 +356,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(
 // in parallel with the incoming navigation commit.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionEarlySnapshotRelease);
 
+// When enabled, excludes `SingleThreadProxy`'s cc-internal commit, post-commit,
+// and draw work from PartitionAlloc safety checks for UI compositors
+// (`LayerTreeSettings::is_layer_tree_for_ui`).
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kExcludeUiCompositorCommitAndDrawFromSafetyChecks);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

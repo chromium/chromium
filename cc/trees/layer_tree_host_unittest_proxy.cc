@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/memory/safety_checks.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
 #include "cc/test/fake_content_layer_client.h"
@@ -13,6 +16,17 @@
 #include "cc/trees/proxy_impl.h"
 #include "cc/trees/proxy_main.h"
 #include "cc/trees/single_thread_proxy.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    PA_CONFIG(THREAD_CACHE_SUPPORTED) &&           \
+    !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#include "partition_alloc/scheduler_loop_quarantine_support.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
+        // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace cc {
 
@@ -928,5 +942,134 @@ class LayerTreeHostProxyTestNotifyOutOfBandFrame
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostProxyTestNotifyOutOfBandFrame);
+
+class LayerTreeHostProxyTestUiCompositorSafetyChecksBase
+    : public LayerTreeHostProxyTest {
+ protected:
+  LayerTreeHostProxyTestUiCompositorSafetyChecksBase(bool is_layer_tree_for_ui,
+                                                     bool enable_feature,
+                                                     int expected_delta)
+      : is_layer_tree_for_ui_(is_layer_tree_for_ui),
+        expected_delta_(expected_delta) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kExcludeUiCompositorCommitAndDrawFromSafetyChecks,
+        enable_feature);
+  }
+
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    LayerTreeHostProxyTest::InitializeSettings(settings);
+    settings->is_layer_tree_for_ui = is_layer_tree_for_ui_;
+  }
+
+  void BeginTest() override {
+    // Ensure the thread-local `ThreadCache` is initialized before reading
+    // `PausedCount()`.
+    std::make_unique<int>(0).reset();
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    PA_CONFIG(THREAD_CACHE_SUPPORTED) &&           \
+    !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+    const int paused_before = GetQuarantinePausedCount();
+    {
+      base::ScopedSafetyChecksExclusion test_exclusion;
+      ASSERT_EQ(GetQuarantinePausedCount(), paused_before + 1);
+    }
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
+        // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void BeginMainFrame(const viz::BeginFrameArgs& args) override {
+    main_frame_paused_count_ = GetQuarantinePausedCount();
+  }
+  void UpdateLayerTreeHost() override {
+    ExpectQuarantinePausedCount(main_frame_paused_count_);
+  }
+  void BeginCommitOnThread(LayerTreeHostImpl* host_impl) override {
+    saw_commit_ = true;
+    ExpectQuarantinePausedCount(main_frame_paused_count_ + expected_delta_);
+  }
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    saw_post_commit_ = true;
+    ExpectQuarantinePausedCount(main_frame_paused_count_ + expected_delta_);
+  }
+  void DidBeginMainFrame() override {
+    ExpectQuarantinePausedCount(main_frame_paused_count_);
+  }
+  void DidCommit() override {
+    ExpectQuarantinePausedCount(main_frame_paused_count_);
+  }
+  void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
+    saw_draw_ = true;
+    draw_paused_count_ = GetQuarantinePausedCount();
+  }
+  void DidCommitAndDrawFrame() override {
+    ExpectQuarantinePausedCount(draw_paused_count_ - expected_delta_);
+    EndTest();
+  }
+  void AfterTest() override {
+    EXPECT_TRUE(saw_commit_ && saw_post_commit_ && saw_draw_);
+  }
+
+ private:
+  static int GetQuarantinePausedCount() {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    PA_CONFIG(THREAD_CACHE_SUPPORTED) &&           \
+    !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+    return partition_alloc::internal::
+        ScopedSchedulerLoopQuarantineBranchAccessorForTesting(
+               allocator_shim::internal::PartitionAllocMalloc::Allocator())
+            .PausedCount();
+#else
+    return 0;
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
+        // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  }
+
+  static void ExpectQuarantinePausedCount([[maybe_unused]] int expected_count) {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    PA_CONFIG(THREAD_CACHE_SUPPORTED) &&           \
+    !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+    EXPECT_EQ(GetQuarantinePausedCount(), expected_count);
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
+        // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  }
+
+  const bool is_layer_tree_for_ui_;
+  const int expected_delta_;
+  int main_frame_paused_count_ = 0;
+  int draw_paused_count_ = 0;
+  bool saw_commit_ = false;
+  bool saw_post_commit_ = false;
+  bool saw_draw_ = false;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class LayerTreeHostProxyTestUiCompositorSafetyChecksExcluded
+    : public LayerTreeHostProxyTestUiCompositorSafetyChecksBase {
+ protected:
+  LayerTreeHostProxyTestUiCompositorSafetyChecksExcluded()
+      : LayerTreeHostProxyTestUiCompositorSafetyChecksBase(true, true, 1) {}
+};
+SINGLE_THREAD_TEST_F(LayerTreeHostProxyTestUiCompositorSafetyChecksExcluded);
+
+class LayerTreeHostProxyTestUiCompositorSafetyChecksDefaultActive
+    : public LayerTreeHostProxyTestUiCompositorSafetyChecksBase {
+ protected:
+  LayerTreeHostProxyTestUiCompositorSafetyChecksDefaultActive()
+      : LayerTreeHostProxyTestUiCompositorSafetyChecksBase(true, false, 0) {}
+};
+SINGLE_THREAD_TEST_F(
+    LayerTreeHostProxyTestUiCompositorSafetyChecksDefaultActive);
+
+class LayerTreeHostProxyTestNonUiCompositorSafetyChecksActive
+    : public LayerTreeHostProxyTestUiCompositorSafetyChecksBase {
+ protected:
+  LayerTreeHostProxyTestNonUiCompositorSafetyChecksActive()
+      : LayerTreeHostProxyTestUiCompositorSafetyChecksBase(false, true, 0) {}
+};
+SINGLE_THREAD_TEST_F(LayerTreeHostProxyTestNonUiCompositorSafetyChecksActive);
 
 }  // namespace cc

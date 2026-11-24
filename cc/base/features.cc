@@ -358,4 +358,7 @@ BASE_FEATURE(kViewTransitionsAvoidDuplicateCaptureRenderPass,
 BASE_FEATURE(kViewTransitionEarlySnapshotRelease,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExcludeUiCompositorCommitAndDrawFromSafetyChecks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

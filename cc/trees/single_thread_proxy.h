@@ -230,6 +230,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
 
   raw_ptr<TaskRunnerProvider> task_runner_provider_;
 
+  bool exclude_commit_and_draw_from_safety_checks_ = false;
+
   // Used on the Thread, but checked on main thread during
   // initialization/shutdown.
   std::unique_ptr<ClientLayerTreeHostImpl> host_impl_;
