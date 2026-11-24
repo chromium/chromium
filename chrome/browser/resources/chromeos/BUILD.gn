@@ -9,7 +9,6 @@ assert(is_chromeos, "Only ChromeOS resources in //c/b/resources/chromeos.")
 
 group("resources") {
   public_deps = [
-    ":app_icon_resources",
     ":multidevice_setup_resources",
     "accessibility:build",
     "account_manager:resources",
@@ -51,34 +50,6 @@ group("resources") {
     "supervision:resources",
     "sys_internals:resources",
   ]
-}
-
-grit("app_icon_resources") {
-  source = "app_icon/app_icon_resources.grd"
-  inputs = [
-    "app_icon/default_100_percent/badges/block-icon-badge.png",
-    "app_icon/default_100_percent/badges/chrome-icon-badge.png",
-    "app_icon/default_100_percent/badges/hourglass-icon-badge.png",
-    "app_icon/default_100_percent/mask/badge-mask.png",
-    "app_icon/default_200_percent/badges/block-icon-badge.png",
-    "app_icon/default_200_percent/badges/chrome-icon-badge.png",
-    "app_icon/default_200_percent/badges/hourglass-icon-badge.png",
-    "app_icon/default_200_percent/mask/badge-mask.png",
-    "app_icon/default_200_percent/badges/hourglass-icon-badge.png",
-    "app_icon/default_200_percent/mask/badge-mask.png",
-  ]
-  defines = chrome_grit_defines
-  outputs = [
-    "grit/chromeos_app_icon_resources.h",
-    "grit/chromeos_app_icon_resources_map.cc",
-    "grit/chromeos_app_icon_resources_map.h",
-    "chromeos_app_icon_resources_100_percent.pak",
-    "chromeos_app_icon_resources_200_percent.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-
-  # TODO(crbug.com/584115494): Remove once grit() adds this dependency.
-  public_deps = [ "//ui/base:webui_resource_path" ]
 }
 
 grit("multidevice_setup_resources") {

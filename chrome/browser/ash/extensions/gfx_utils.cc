@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "ash/constants/ash_extension_constants.h"
+#include "ash/resources/grit/ash_scaled_resources.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/grit/chromeos_app_icon_resources.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"

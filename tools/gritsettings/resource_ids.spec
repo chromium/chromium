@@ -145,9 +145,6 @@
   "chrome/browser/resources/app_icon/app_icon_resources.grd": {
     "structures": [2360],
   },
-  "chrome/browser/resources/chromeos/app_icon/app_icon_resources.grd": {
-    "structures": [2380],
-  },
   "chrome/browser/resources/chromeos/mako/resources.grd": {
     "META": {"sizes": {"includes": [150]}},
     "includes": [2400],
@@ -1628,6 +1625,9 @@
   },
   "ash/quick_insert/resources/quick_insert_resources.grd": {
     "structures":[9190],
+  },
+  "ash/resources/ash_scaled_resources.grd": {
+    "structures": [9198],
   },
   "ash/system/mahi/resources/mahi_resources.grd": {
     "structures":[9200],

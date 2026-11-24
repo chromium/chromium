@@ -4,12 +4,37 @@
 
 import("//ash/ambient/resources/resources.gni")
 import("//build/config/chrome_build.gni")
+import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//ui/base/ui_features.gni")
 
 assert(is_chromeos)
 
 assert(enable_hidpi)
+
+grit("scaled_resources") {
+  source = "ash_scaled_resources.grd"
+  inputs = [
+    "default_100_percent/badges/block-icon-badge.png",
+    "default_100_percent/badges/chrome-icon-badge.png",
+    "default_100_percent/badges/hourglass-icon-badge.png",
+    "default_100_percent/mask/badge-mask.png",
+    "default_200_percent/badges/block-icon-badge.png",
+    "default_200_percent/badges/chrome-icon-badge.png",
+    "default_200_percent/badges/hourglass-icon-badge.png",
+    "default_200_percent/mask/badge-mask.png",
+  ]
+  outputs = [
+    "grit/ash_scaled_resources.h",
+    "grit/ash_scaled_resources_map.cc",
+    "grit/ash_scaled_resources_map.h",
+    "ash_scaled_resources_100_percent.pak",
+    "ash_scaled_resources_200_percent.pak",
+  ]
+
+  # TODO(crbug.com/584115494): Remove once grit() adds this dependency.
+  public_deps = [ "//ui/base:webui_resource_path" ]
+}
 
 repack("ash_test_resources_unscaled") {
   output = "$root_build_dir/ash_test_resources_unscaled.pak"
@@ -53,6 +78,7 @@ template("ash_test_resources") {
 
     sources = [
       "$root_gen_dir/ash/login/resources/login_resources_${percent}_percent.pak",
+      "$root_gen_dir/ash/resources/ash_scaled_resources_${percent}_percent.pak",
       "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_${percent}_percent.pak",
       "$root_gen_dir/ui/resources/ui_resources_${percent}_percent.pak",
       "$root_gen_dir/ui/views/resources/views_resources_${percent}_percent.pak",
@@ -70,6 +96,7 @@ template("ash_test_resources") {
     }
 
     deps = [
+      ":scaled_resources",
       "//ash/login/resources",
       "//mojo/public/js:resources",
       "//ui/chromeos/resources",
