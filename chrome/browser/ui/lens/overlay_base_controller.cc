@@ -724,8 +724,11 @@ void OverlayBaseController::ShowOverlay() {
     SetLiveBlurImpl(should_enable_live_blur_on_show_);
 
     // The overlay needs to be focused on show to immediately begin
-    // receiving key events.
-    overlay_web_view_->RequestFocus();
+    // receiving key events. Avoid stealing focus when reshowing an inactive
+    // split-view tab.
+    if (tab_->IsActivated()) {
+      overlay_web_view_->RequestFocus();
+    }
 
     // Disable mouse and keyboard inputs to the tab contents web view. Do this
     // after the overlay takes focus. If it is done before, focus will move from
@@ -758,9 +761,12 @@ void OverlayBaseController::ShowOverlay() {
   tab_contents_view_observer_.Observe(overlay_view_);
 
   // The overlay needs to be focused on show to immediately begin
-  // receiving key events.
+  // receiving key events. Avoid stealing focus when reshowing an inactive
+  // split-view tab.
   CHECK(overlay_web_view_);
-  overlay_web_view_->RequestFocus();
+  if (tab_->IsActivated()) {
+    overlay_web_view_->RequestFocus();
+  }
 
   // Disable mouse and keyboard inputs to the tab contents web view. Do this
   // after the overlay takes focus. If it is done before, focus will move from
