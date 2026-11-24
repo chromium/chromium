@@ -4,14 +4,18 @@
 
 #include "content/public/browser/site_isolation_policy.h"
 
+#include <memory>
+
 #include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -26,12 +30,16 @@
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -642,5 +650,185 @@ IN_PROC_BROWSER_TEST_P(OriginKeyedProcessesEnabledPolicyBrowserTest, Simple) {
     EXPECT_NE(root_rfh->GetProcess(), child_rfh->GetProcess())
         << "The root frame and child iframe should be in separate processes.";
   }
+}
+
+namespace {
+
+// Tags every navigation as an ad by the ad host filter.
+class AdTaggingThrottle : public content::NavigationThrottle {
+ public:
+  explicit AdTaggingThrottle(content::NavigationThrottleRegistry& registry)
+      : content::NavigationThrottle(registry) {}
+
+  ThrottleCheckResult WillStartRequest() override {
+    navigation_handle()->SetIsAdTaggedByHostFilter();
+    return PROCEED;
+  }
+
+  const char* GetNameForLogging() override { return "AdTaggingThrottle"; }
+};
+
+enum class AdsExclusionPolicyTestCase {
+  // Ads are not excluded.
+  kPolicyWithFieldTrial,
+  // Ads are excluded.
+  kPolicyWithCommandLine,
+  // Control. Ads are excluded.
+  kNoPolicyWithFieldTrial,
+  // Origin-keyed processes enabled from the command line, which also counts as
+  // an override. Ads are not excluded.
+  kCommandLineWithFieldTrial,
+};
+
+}  // namespace
+
+// Checks that the OriginKeyedProcessesEnabled enterprise policy beats a field
+// trial for the ads exclusion.
+class OriginKeyedProcessesEnabledPolicyAdsExclusionBrowserTest
+    : public SiteIsolationPolicyBrowserTest,
+      public testing::WithParamInterface<AdsExclusionPolicyTestCase> {
+ public:
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ protected:
+  OriginKeyedProcessesEnabledPolicyAdsExclusionBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    // ScopedFeatureList initializes FeatureList via InitFromCommandLine().
+    // InitAndEnableFeature() does not attach a field trial, so it counts as a
+    // command-line override (IsFeatureOverriddenFromCommandLine() is true),
+    // whereas ...WithParameters() calls attach a synthetic field trial.
+    const base::FieldTrialParams kFieldTrialParams = {{"param", "value"}};
+    switch (GetParam()) {
+      case AdsExclusionPolicyTestCase::kPolicyWithFieldTrial:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            features::kExcludeAdsFromOriginIsolation, kFieldTrialParams);
+        break;
+      case AdsExclusionPolicyTestCase::kPolicyWithCommandLine:
+        scoped_feature_list_.InitAndEnableFeature(
+            features::kExcludeAdsFromOriginIsolation);
+        break;
+      case AdsExclusionPolicyTestCase::kNoPolicyWithFieldTrial:
+        scoped_feature_list_.InitWithFeaturesAndParameters(
+            {{features::kOriginKeyedProcessesByDefault, kFieldTrialParams},
+             {features::kExcludeAdsFromOriginIsolation, kFieldTrialParams}},
+            {});
+        break;
+      case AdsExclusionPolicyTestCase::kCommandLineWithFieldTrial:
+        // Separate lists, since every feature in a ...WithParameters() call
+        // gets a field trial.
+        okp_command_line_feature_list_.InitAndEnableFeature(
+            features::kOriginKeyedProcessesByDefault);
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            features::kExcludeAdsFromOriginIsolation, kFieldTrialParams);
+        break;
+    }
+  }
+
+  bool IsPolicySet() const {
+    return GetParam() == AdsExclusionPolicyTestCase::kPolicyWithFieldTrial ||
+           GetParam() == AdsExclusionPolicyTestCase::kPolicyWithCommandLine;
+  }
+
+  bool ShouldExcludeAds() const {
+    return GetParam() == AdsExclusionPolicyTestCase::kPolicyWithCommandLine ||
+           GetParam() == AdsExclusionPolicyTestCase::kNoPolicyWithFieldTrial;
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    if (!IsPolicySet()) {
+      return;
+    }
+    provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+
+    // This policy is recommended-only.
+    policy::PolicyMap values;
+    values.Set(policy::key::kOriginKeyedProcessesEnabled,
+               policy::POLICY_LEVEL_RECOMMENDED, policy::POLICY_SCOPE_MACHINE,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+    provider_.UpdateChromePolicy(values);
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList okp_command_line_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OriginKeyedProcessesEnabledPolicyAdsExclusionBrowserTest,
+    testing::Values(AdsExclusionPolicyTestCase::kPolicyWithFieldTrial,
+                    AdsExclusionPolicyTestCase::kPolicyWithCommandLine,
+                    AdsExclusionPolicyTestCase::kNoPolicyWithFieldTrial,
+                    AdsExclusionPolicyTestCase::kCommandLineWithFieldTrial),
+    [](const testing::TestParamInfo<AdsExclusionPolicyTestCase>& info) {
+      switch (info.param) {
+        case AdsExclusionPolicyTestCase::kPolicyWithFieldTrial:
+          return "PolicyWithFieldTrial";
+        case AdsExclusionPolicyTestCase::kPolicyWithCommandLine:
+          return "PolicyWithCommandLine";
+        case AdsExclusionPolicyTestCase::kNoPolicyWithFieldTrial:
+          return "NoPolicyWithFieldTrial";
+        case AdsExclusionPolicyTestCase::kCommandLineWithFieldTrial:
+          return "CommandLineWithFieldTrial";
+      }
+    });
+
+IN_PROC_BROWSER_TEST_P(OriginKeyedProcessesEnabledPolicyAdsExclusionBrowserTest,
+                       AdFrame) {
+  content::BrowserContext* browser_context =
+      chrome_test_utils::GetProfile(this);
+  // Avoid IsEnabled(), which activates the field trial.
+  base::FeatureList* feature_list = base::FeatureList::GetInstance();
+  ASSERT_TRUE(feature_list->IsFeatureOverridden(
+      features::kExcludeAdsFromOriginIsolation.name));
+  ASSERT_EQ(GetParam() == AdsExclusionPolicyTestCase::kPolicyWithCommandLine,
+            feature_list->IsFeatureOverriddenFromCommandLine(
+                features::kExcludeAdsFromOriginIsolation.name));
+  const PrefService::Preference* policy_pref =
+      g_browser_process->local_state()->FindPreference(
+          prefs::kOriginKeyedProcessesEnabled);
+  ASSERT_TRUE(policy_pref);
+  ASSERT_EQ(IsPolicySet(), policy_pref->IsRecommended());
+  ASSERT_TRUE(
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          browser_context));
+  EXPECT_EQ(
+      ShouldExcludeAds(),
+      content::SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+          browser_context));
+
+  GURL start_url(https_server()->GetURL("a.test", "/iframe.html"));
+  GURL ad_url(https_server()->GetURL("ad.a.test", "/simple.html"));
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(content::NavigateToURL(web_contents, start_url));
+
+  // Tag the subframe navigation as an ad.
+  content::TestNavigationThrottleInserter throttle_inserter(
+      web_contents,
+      base::BindRepeating([](content::NavigationThrottleRegistry& registry) {
+        if (!registry.GetNavigationHandle().IsInMainFrame()) {
+          registry.AddThrottle(std::make_unique<AdTaggingThrottle>(registry));
+        }
+      }));
+  EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", ad_url));
+
+  content::RenderFrameHost* child_rfh =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+  EXPECT_TRUE(
+      content::HasOriginKeyedProcess(web_contents->GetPrimaryMainFrame()));
+  EXPECT_EQ(!ShouldExcludeAds(), content::HasOriginKeyedProcess(child_rfh));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

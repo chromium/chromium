@@ -67,6 +67,11 @@ bool UrlInfo::IsIsolated() const {
 
 bool UrlInfo::RequestsOriginKeyedProcess(
     const IsolationContext& context) const {
+  // `is_ad_tagged_for_site_keying` is already NavigationRequest's (possibly
+  // frozen) decision, so honor it rather than re-evaluating
+  // SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(), which can
+  // change after the decision was made. Check the feature last, since it
+  // activates the field trial.
   if (is_ad_tagged_for_site_keying && !oac_header_request.has_value() &&
       base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation)) {
     return false;

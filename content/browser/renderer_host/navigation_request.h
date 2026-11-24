@@ -2118,11 +2118,6 @@ class CONTENT_EXPORT NavigationRequest
   // existing BrowsingInstances.
   void MaybeRegisterExistingOriginAsHavingDefaultIsolation(const GURL& url);
 
-  // Returns whether the ad exclusion from origin-keyed processes can apply. If
-  // not, no navigation is an excluded ad.
-  bool IsAdExclusionFromOriginKeyedProcessesEnabled(
-      BrowserContext* browser_context);
-
   // Uses the current inputs to calculate if this navigation is an ad that must
   // get a site-keyed process when origin-keyed processes are turned on by
   // default. The ad inputs can change asynchronously. Thus, only

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -77,6 +78,17 @@ bool IsSiteIsolationDisabled(SiteIsolationMode site_isolation_mode) {
   return GetContentClient() &&
          GetContentClient()->browser()->ShouldDisableSiteIsolation(
              site_isolation_mode);
+}
+
+// Returns the embedder's override, or nullopt if overrides are ignored for
+// testing.
+std::optional<bool> GetOriginKeyedProcessesOverride() {
+  if (g_ignore_origin_keyed_process_overrides_for_testing) {
+    return std::nullopt;
+  }
+  return GetContentClient()
+      ->browser()
+      ->GetOverrideValueForOriginKeyedProcesses();
 }
 
 }  // namespace
@@ -316,10 +328,8 @@ bool SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
 
   // Check if the feature is explicitly overridden by the user or enterprise
   // policy. This will ignore memory limits.
-  std::optional<bool> overridden_value =
-      GetContentClient()->browser()->GetOverrideValueForOriginKeyedProcesses();
-  if (overridden_value.has_value() &&
-      !g_ignore_origin_keyed_process_overrides_for_testing) {
+  std::optional<bool> overridden_value = GetOriginKeyedProcessesOverride();
+  if (overridden_value.has_value()) {
     return overridden_value.value();
   }
 
@@ -347,6 +357,27 @@ bool SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
           AreOriginKeyedProcessesEnabledByDefault(browser_context)) &&
          !GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
              browser_context);
+}
+
+// static
+bool SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+    BrowserContext* browser_context) {
+  if (!AreOriginKeyedProcessesEnabledByDefault(browser_context) ||
+      !AreOriginAgentClustersEnabledByDefault(browser_context)) {
+    return false;
+  }
+
+  // Any user or enterprise override for origin-keyed processes means we honor
+  // that override without applying the ads exclusion, unless the ads exclusion
+  // itself is overridden from the command line.
+  if (GetOriginKeyedProcessesOverride().has_value() &&
+      !base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+          features::kExcludeAdsFromOriginIsolation.name)) {
+    return false;
+  }
+
+  // Check the feature last, since it activates the field trial.
+  return base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation);
 }
 
 // static

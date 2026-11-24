@@ -99,6 +99,18 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   static bool AreOriginAgentClustersEnabledByDefault(
       BrowserContext* browser_context);
 
+  // Returns true if ads without an Origin-Agent-Cluster header are excluded
+  // from origin-keyed processes by default. A user (including the command line)
+  // or enterprise override of origin-keyed processes turns this off, unless
+  // kExcludeAdsFromOriginIsolation is also overridden from the command line.
+  // The result can change mid-session, since it reads enterprise policy prefs
+  // that can be updated dynamically. Callers that must stay consistent with an
+  // earlier decision (e.g., an existing process lock) should store that
+  // decision instead of calling this again; see NavigationRequest's frozen ad
+  // decision and SiteInfo::GetAgentClusterKeyForURL().
+  static bool AreAdsExcludedFromOriginKeyedProcesses(
+      BrowserContext* browser_context);
+
   // Returns true if Cross-Origin-Opener-Policy headers may be used as
   // heuristics for turning on site isolation.
   static bool IsSiteIsolationForCOOPEnabled();

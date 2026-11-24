@@ -4,7 +4,13 @@
 
 #include "content/public/browser/site_isolation_policy.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -184,6 +190,21 @@ class AdsExclusionBrowserClient : public ContentBrowserClient {
   bool below_strict_memory_threshold_ = false;
 };
 
+// Lets tests simulate a user or enterprise override of origin-keyed processes.
+class OriginKeyedProcessesOverrideBrowserClient : public ContentBrowserClient {
+ public:
+  std::optional<bool> GetOverrideValueForOriginKeyedProcesses() override {
+    return override_value_;
+  }
+
+  void set_override_value(std::optional<bool> value) {
+    override_value_ = value;
+  }
+
+ private:
+  std::optional<bool> override_value_;
+};
+
 }  // namespace
 
 // Tests for SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds().
@@ -294,6 +315,172 @@ TEST_F(SiteIsolationPolicyAdsExclusionTest, RequiresDefaultSiteInstanceGroups) {
   feature_list.InitAndDisableFeature(features::kDefaultSiteInstanceGroups);
   EXPECT_FALSE(
       SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds());
+}
+
+// Tests for SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses().
+class SiteIsolationPolicyOriginAdsExclusionTest : public testing::Test {
+ public:
+  SiteIsolationPolicyOriginAdsExclusionTest() {
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kSitePerProcess);
+    // Needed to create field trials.
+    scoped_empty_feature_and_field_trial_lists_
+        .InitWithEmptyFeatureAndFieldTrialLists();
+  }
+
+ protected:
+  // How features::kExcludeAdsFromOriginIsolation is set.
+  enum class ExclusionSource {
+    kNone,
+    kFieldTrial,
+    kCommandLineEnabled,
+    kCommandLineDisabled,
+    // Feature<Trial on the command line. Counts as a field trial.
+    kCommandLineWithTrial,
+  };
+
+  void InitFeatures(ExclusionSource exclusion_source) {
+    const std::string exclusion_feature =
+        features::kExcludeAdsFromOriginIsolation.name;
+    std::string enabled_features =
+        std::string(features::kOriginIsolationHeader.name) + "," +
+        features::kOriginKeyedProcessesByDefault.name;
+    std::string disabled_features;
+    switch (exclusion_source) {
+      case ExclusionSource::kNone:
+      case ExclusionSource::kFieldTrial:
+        break;
+      case ExclusionSource::kCommandLineEnabled:
+        enabled_features += "," + exclusion_feature;
+        break;
+      case ExclusionSource::kCommandLineDisabled:
+        disabled_features = exclusion_feature;
+        break;
+      case ExclusionSource::kCommandLineWithTrial:
+        base::FieldTrialList::CreateFieldTrial("ExcludeAdsStudy", "Enabled");
+        enabled_features += "," + exclusion_feature + "<ExcludeAdsStudy";
+        break;
+    }
+
+    auto feature_list = std::make_unique<base::FeatureList>();
+    feature_list->InitFromCommandLine(enabled_features, disabled_features);
+    if (exclusion_source == ExclusionSource::kFieldTrial) {
+      feature_list->RegisterFieldTrialOverride(
+          exclusion_feature, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+          base::FieldTrialList::CreateFieldTrial("ExcludeAdsStudy", "Enabled"));
+    }
+    feature_list_.InitWithFeatureList(std::move(feature_list));
+  }
+
+  OriginKeyedProcessesOverrideBrowserClient& browser_client() {
+    return browser_client_;
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+  base::test::ScopedFeatureList scoped_empty_feature_and_field_trial_lists_;
+  base::test::ScopedFeatureList feature_list_;
+  OriginKeyedProcessesOverrideBrowserClient browser_client_;
+  ScopedContentBrowserClientSetting browser_client_setting_{&browser_client_};
+};
+
+TEST_F(SiteIsolationPolicyOriginAdsExclusionTest, FieldTrialWithoutOverride) {
+  InitFeatures(ExclusionSource::kFieldTrial);
+  ASSERT_TRUE(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+      /*browser_context=*/nullptr));
+  EXPECT_TRUE(SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+      /*browser_context=*/nullptr));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive("ExcludeAdsStudy"));
+}
+
+TEST_F(SiteIsolationPolicyOriginAdsExclusionTest, OverrideWinsOverFieldTrial) {
+  InitFeatures(ExclusionSource::kFieldTrial);
+  browser_client().set_override_value(true);
+  ASSERT_TRUE(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+      /*browser_context=*/nullptr));
+  EXPECT_FALSE(SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+      /*browser_context=*/nullptr));
+  // The override keeps the client out of the study.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive("ExcludeAdsStudy"));
+}
+
+TEST_F(SiteIsolationPolicyOriginAdsExclusionTest,
+       RequiresOriginAgentClustersByDefault) {
+  InitFeatures(ExclusionSource::kFieldTrial);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kOriginIsolationHeader);
+  ASSERT_TRUE(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+      /*browser_context=*/nullptr));
+  ASSERT_FALSE(SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
+      /*browser_context=*/nullptr));
+  EXPECT_FALSE(SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+      /*browser_context=*/nullptr));
+}
+
+TEST_F(SiteIsolationPolicyOriginAdsExclusionTest,
+       CommandLineExclusionWithOverride) {
+  InitFeatures(ExclusionSource::kCommandLineEnabled);
+  browser_client().set_override_value(true);
+  ASSERT_TRUE(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+      /*browser_context=*/nullptr));
+  EXPECT_TRUE(SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+      /*browser_context=*/nullptr));
+}
+
+TEST_F(SiteIsolationPolicyOriginAdsExclusionTest,
+       CommandLineDisableWithOverride) {
+  InitFeatures(ExclusionSource::kCommandLineDisabled);
+  browser_client().set_override_value(true);
+  ASSERT_TRUE(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+      /*browser_context=*/nullptr));
+  ASSERT_TRUE(
+      base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+          features::kExcludeAdsFromOriginIsolation.name));
+  EXPECT_FALSE(SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+      /*browser_context=*/nullptr));
+}
+
+TEST_F(SiteIsolationPolicyOriginAdsExclusionTest, CommandLineWithTrial) {
+  InitFeatures(ExclusionSource::kCommandLineWithTrial);
+  ASSERT_TRUE(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+      /*browser_context=*/nullptr));
+  ASSERT_FALSE(
+      base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+          features::kExcludeAdsFromOriginIsolation.name));
+  EXPECT_TRUE(SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+      /*browser_context=*/nullptr));
+
+  browser_client().set_override_value(true);
+  EXPECT_FALSE(SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+      /*browser_context=*/nullptr));
+}
+
+TEST_F(SiteIsolationPolicyOriginAdsExclusionTest,
+       OverrideDisabledWithCommandLineExclusion) {
+  InitFeatures(ExclusionSource::kCommandLineEnabled);
+  browser_client().set_override_value(false);
+  EXPECT_FALSE(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+      /*browser_context=*/nullptr));
+  EXPECT_FALSE(SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+      /*browser_context=*/nullptr));
+}
+
+TEST_F(SiteIsolationPolicyOriginAdsExclusionTest,
+       OverrideDisabledWithFieldTrial) {
+  InitFeatures(ExclusionSource::kFieldTrial);
+  browser_client().set_override_value(false);
+  EXPECT_FALSE(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+      /*browser_context=*/nullptr));
+  EXPECT_FALSE(SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+      /*browser_context=*/nullptr));
+}
+
+TEST_F(SiteIsolationPolicyOriginAdsExclusionTest, RequiresFeature) {
+  InitFeatures(ExclusionSource::kNone);
+  ASSERT_TRUE(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+      /*browser_context=*/nullptr));
+  EXPECT_FALSE(SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+      /*browser_context=*/nullptr));
 }
 
 }  // namespace content

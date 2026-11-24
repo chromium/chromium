@@ -4279,10 +4279,6 @@ bool NavigationRequest::IsAdTaggedByHostFilter() const {
 }
 
 bool NavigationRequest::HasSameSiteAdAncestor() {
-  if (!base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation)) {
-    return false;
-  }
-
   // A main frame has no ad ancestor. Return before GetOriginToCommit(), which
   // CHECKs for a RenderFrameHost that a page activation does not have yet.
   if (!frame_tree_node_->parent()) {
@@ -4327,19 +4323,10 @@ void NavigationRequest::ComputeDownloadPolicyForTesting() {
   ComputeDownloadPolicy();
 }
 
-bool NavigationRequest::IsAdExclusionFromOriginKeyedProcessesEnabled(
-    BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(
-             features::kExcludeAdsFromOriginIsolation) &&
-         SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
-             browser_context) &&
-         SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
-             browser_context);
-}
-
 bool NavigationRequest::CalculateExcludeAdFromOriginKeyedProcess(
     BrowserContext* browser_context) {
-  return IsAdExclusionFromOriginKeyedProcessesEnabled(browser_context) &&
+  return SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+             browser_context) &&
          response() && !IsOriginAgentClusterOptInRequested() &&
          !IsOriginAgentClusterOptOutRequested() &&
          (IsAdTaggedByHostFilter() || HasSameSiteAdAncestor());
@@ -4367,7 +4354,8 @@ void NavigationRequest::RecordAdExclusionResultHistogram() {
   BrowserContext* browser_context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
   if (IsInOutermostMainFrame() ||
-      !IsAdExclusionFromOriginKeyedProcessesEnabled(browser_context)) {
+      !SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+          browser_context)) {
     return;
   }
 
@@ -4923,18 +4911,23 @@ UrlInfo NavigationRequest::GetUrlInfo() {
       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
       .WithEmbedderIsolationInfo(embedder_isolation_info_);
 
-  if (base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation)) {
-    // After the final response, use the decision from
-    // FreezeExcludeAdFromOriginKeyedProcess(). This makes the process selection
-    // and the commit validation use the same decision as the global walk.
-    // Before the final response, use the current inputs, because that result
-    // affects only the speculative RenderFrameHost.
-    url_info_init.WithIsAdTaggedForSiteKeying(
-        exclude_ad_from_origin_keyed_process_.has_value()
-            ? exclude_ad_from_origin_keyed_process_.value()
-            : (response() && IsAdTaggedByHostFilter()) ||
-                  HasSameSiteAdAncestor());
+  // After the final response, use the decision from
+  // FreezeExcludeAdFromOriginKeyedProcess(). This makes the process selection
+  // and the commit validation use the same decision as the global walk.
+  // Before the final response, use the current inputs, because that result
+  // affects only the speculative RenderFrameHost.
+  bool is_ad_tagged_for_site_keying = false;
+  if (exclude_ad_from_origin_keyed_process_.has_value()) {
+    is_ad_tagged_for_site_keying =
+        exclude_ad_from_origin_keyed_process_.value();
+  } else if (SiteIsolationPolicy::AreAdsExcludedFromOriginKeyedProcesses(
+                 frame_tree_node_->navigator()
+                     .controller()
+                     .GetBrowserContext())) {
+    is_ad_tagged_for_site_keying =
+        (response() && IsAdTaggedByHostFilter()) || HasSameSiteAdAncestor();
   }
+  url_info_init.WithIsAdTaggedForSiteKeying(is_ad_tagged_for_site_keying);
 
   // Compute the CrossOriginIsolationKey for the navigation.
   std::optional<AgentClusterKey::CrossOriginIsolationKey>

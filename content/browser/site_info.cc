@@ -1002,12 +1002,18 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
       url_info.oac_header_request.value_or(
           isolation_context.default_isolation_state());
 
-  // We want to skip process-isolation if this is an ad URL without an explicit
-  // header.
+  // Skip process isolation for an ad URL without an explicit OAC header.
+  // `is_ad_tagged_for_site_keying` is only set after checking
+  // AreAdsExcludedFromOriginKeyedProcesses(), or from an existing site-keyed by
+  // default lock when PerformJailAndCitadelChecks() recomputes the expected
+  // ProcessLock. We explicitly do not re-evaluate
+  // AreAdsExcludedFromOriginKeyedProcesses() here, since its policy inputs can
+  // change mid-session after the decision or lock was established. Check the
+  // feature last, since it activates the field trial.
   if (url_info.is_ad_tagged_for_site_keying &&
-      base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation) &&
       !url_info.oac_header_request.has_value() &&
-      oac_isolation_state.is_origin_agent_cluster()) {
+      oac_isolation_state.is_origin_agent_cluster() &&
+      base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation)) {
     oac_isolation_state =
         OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
             /*had_oac_request=*/false,
