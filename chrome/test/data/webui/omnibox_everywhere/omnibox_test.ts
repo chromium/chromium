@@ -1957,6 +1957,12 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         'no-drag',
         getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
   });
+
+  test('uses text cursor only on the editable input', () => {
+    assertEquals('auto', getComputedStyle(omnibox.$.input).cursor);
+    assertEquals('auto', getComputedStyle(omnibox.$.input.$.icon).cursor);
+    assertEquals('text', getComputedStyle(omnibox.$.input.inputElement).cursor);
+  });
 });
 
 

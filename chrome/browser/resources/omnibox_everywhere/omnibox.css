@@ -196,6 +196,7 @@ cr-searchbox-input::part(searchbox-input),
 
 cr-searchbox-input::part(searchbox-input) {
   align-self: center;
+  cursor: text;
   padding-top: 2px;
 }
 
@@ -480,11 +481,6 @@ cr-composebox-contextual-entrypoint-button,
     :not([in-keyword-mode])::part(searchbox-input):placeholder-shown {
   -webkit-app-region: drag;
   -webkit-user-drag: none;
-}
-
-cr-searchbox-input,
-cr-searchbox-input::part(searchbox-input) {
-  cursor: text;
 }
 
 cr-searchbox-input::part(icon),
