@@ -4,8 +4,14 @@
 
 #include "third_party/blink/renderer/modules/ai/on_device_translation/language_detector.h"
 
+#include <array>
+#include <compare>
+#include <string_view>
+
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
@@ -25,9 +31,33 @@ namespace blink {
 
 namespace {
 
+// Stores BCP-47 language tags inline so kSupportedLanguages lives in .rodata
+// without dynamic ELF relocations (max 7 chars + trailing NUL).
+struct FixedLanguage {
+  // Needed for brace-init with string literals.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  consteval FixedLanguage(const char* s) {
+    std::string_view sv(s);
+    CHECK_LT(sv.size(), chars.size());
+    base::span(chars).copy_prefix_from(sv);
+  }
+
+  friend constexpr auto operator<=>(const FixedLanguage& lhs,
+                                    const FixedLanguage& rhs) {
+    return std::string_view(lhs.chars.data()) <=>
+           std::string_view(rhs.chars.data());
+  }
+  friend constexpr auto operator<=>(const FixedLanguage& lhs,
+                                    std::string_view rhs) {
+    return std::string_view(lhs.chars.data()) <=> rhs;
+  }
+
+  std::array<char, 8> chars{};
+};
+
 // TODO(crbug.com/410949688): Figure out how to retrieve these from the model.
 static constexpr auto kSupportedLanguages =
-    base::MakeFixedFlatSet<std::string_view>({
+    base::MakeFixedFlatSet<FixedLanguage>({
         "af",      "am", "ar",      "ar-Latn", "az",      "be",      "bg",
         "bg-Latn", "bn", "bs",      "ca",      "ceb",     "co",      "cs",
         "cy",      "da", "de",      "el",      "el-Latn", "en",      "eo",
