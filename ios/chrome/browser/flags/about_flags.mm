@@ -296,6 +296,9 @@ constexpr FeatureEntry::Choice kOmniboxTruncateSearchUrlChoices[] = {
      "TruncateSearchUrlOq:truncate_search_url_oq_length/1024"},
     {"Enabled Oq2kQNoTruncation (2k oq, q disabled)", switches::kEnableFeatures,
      "TruncateSearchUrlOq:truncate_search_url_oq_length/2048"},
+    {"Enabled Oq1kQ9k (1k oq, 9k q)", switches::kEnableFeatures,
+     "TruncateSearchUrlOq:truncate_search_url_oq_length/1024,"
+     "TruncateSearchUrlQ:truncate_search_url_q_length/9216"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
      "TruncateSearchUrlOq,TruncateSearchUrlQ"},
 };
