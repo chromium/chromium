@@ -80,6 +80,7 @@ class QuickDeleteDialogDelegate {
 
                 @Override
                 public void onDismiss(PropertyModel model, int dismissalCause) {
+                    mModalDialogPropertyModel = null;
                     mOnDismissCallback.onResult(dismissalCause);
                 }
             };
@@ -283,5 +284,12 @@ class QuickDeleteDialogDelegate {
         mModalDialogPropertyModel = createQuickDeleteDialogProperty();
         mModalDialogManager.showDialog(
                 mModalDialogPropertyModel, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    /** Dismisses the Quick delete dialog if currently shown. */
+    void dismissDialog(@DialogDismissalCause int dismissalCause) {
+        if (mModalDialogPropertyModel != null) {
+            mModalDialogManager.dismissDialog(mModalDialogPropertyModel, dismissalCause);
+        }
     }
 }

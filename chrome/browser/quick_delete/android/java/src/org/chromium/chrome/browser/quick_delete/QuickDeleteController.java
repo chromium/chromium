@@ -12,6 +12,7 @@ import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -26,9 +27,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.Tracker.DisplayLockHandle;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -49,6 +52,7 @@ public class QuickDeleteController {
     private final QuickDeleteTabsFilter mDeleteRegularTabsFilter;
     // Null when declutter is disabled.
     private final @Nullable QuickDeleteTabsFilter mDeleteArchivedTabsFilter;
+    private final TabModelSelector mTabModelSelector;
     private final SnackbarManager mSnackbarManager;
     private final @Nullable LayoutManager mLayoutManager;
     private final Profile mProfile;
@@ -57,6 +61,16 @@ public class QuickDeleteController {
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final QuickDeleteDialogDelegate mDialogDelegate;
+    private final CallbackController mCallbackController = new CallbackController();
+    private final TabModelSelectorObserver mRegularTabModelSelectorObserver =
+            new TabModelSelectorObserver() {
+                @Override
+                public void onDestroyed() {
+                    destroy();
+                }
+            };
+    private boolean mIsDestroyed;
+    private @Nullable DisplayLockHandle mTrackerLock;
 
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
@@ -81,10 +95,10 @@ public class QuickDeleteController {
         mDelegate = delegate;
         mSnackbarManager = snackbarManager;
         mLayoutManager = layoutManager;
+        mTabModelSelector = tabModelSelector;
 
         mTabModel = tabModelSelector.getModel(/* incognito= */ false);
-        mDeleteRegularTabsFilter =
-                new QuickDeleteTabsFilter(tabModelSelector.getModel(/* incognito= */ false));
+        mDeleteRegularTabsFilter = new QuickDeleteTabsFilter(mTabModel);
         if (archivedTabModelSelector != null) {
             mDeleteArchivedTabsFilter =
                     new QuickDeleteTabsFilter(
@@ -92,7 +106,7 @@ public class QuickDeleteController {
         } else {
             mDeleteArchivedTabsFilter = null;
         }
-        mProfile = assumeNonNull(tabModelSelector.getCurrentModel().getProfile());
+        mProfile = assumeNonNull(mTabModel.getProfile());
 
         // MVC setup.
         View quickDeleteView =
@@ -125,20 +139,34 @@ public class QuickDeleteController {
                         this::onDialogDismissed,
                         tabModelSelector,
                         mQuickDeleteMediator);
+
+        mTabModelSelector.addObserver(mRegularTabModelSelectorObserver);
     }
 
-    void destroy() {
+    /** Destroys the controller and cancels any in-flight deletion callbacks. */
+    public void destroy() {
+        if (mIsDestroyed) return;
+        mIsDestroyed = true;
+        mCallbackController.destroy();
+        mTabModelSelector.removeObserver(mRegularTabModelSelectorObserver);
+        mDialogDelegate.dismissDialog(DialogDismissalCause.ACTIVITY_DESTROYED);
         mPropertyModelChangeProcessor.destroy();
         mQuickDeleteMediator.destroy();
+        if (mTrackerLock != null) {
+            mTrackerLock.release();
+            mTrackerLock = null;
+        }
     }
 
     /** Show the Quick Delete dialog. */
     public void showDialog() {
+        if (mIsDestroyed) return;
         mDialogDelegate.showDialog();
     }
 
     /** A method called when the user confirms or cancels the dialog. */
     private void onDialogDismissed(@DialogDismissalCause int dismissalCause) {
+        if (mIsDestroyed) return;
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
@@ -148,7 +176,10 @@ public class QuickDeleteController {
                         mPropertyModel.get(QuickDeleteProperties.HAS_MULTI_WINDOWS);
 
                 mDelegate.performQuickDelete(
-                        () -> onBrowsingDataDeletionFinished(timePeriod, isTabClosureDisabled),
+                        mCallbackController.makeCancelable(
+                                () ->
+                                        onBrowsingDataDeletionFinished(
+                                                timePeriod, isTabClosureDisabled)),
                         timePeriod);
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
@@ -173,24 +204,24 @@ public class QuickDeleteController {
         // Ensure that no in-product help is triggered during tab closure and the post-deletion
         // experience.
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
-        Tracker.DisplayLockHandle trackerLock = tracker.acquireDisplayLock();
+        mTrackerLock = tracker.acquireDisplayLock();
 
         if (isTabClosureDisabled) {
-            showPostDeleteFeedback(timePeriod, trackerLock);
+            showPostDeleteFeedback(timePeriod);
         } else {
             if (mLayoutManager != null) {
                 TabSwitcherUtils.navigateToTabSwitcher(
                         mLayoutManager,
                         /* animate= */ true,
-                        () -> maybeShowQuickDeleteAnimation(timePeriod, trackerLock));
+                        mCallbackController.makeCancelable(
+                                () -> maybeShowQuickDeleteAnimation(timePeriod)));
             } else {
-                maybeShowQuickDeleteAnimation(timePeriod, trackerLock);
+                maybeShowQuickDeleteAnimation(timePeriod);
             }
         }
     }
 
-    private void maybeShowQuickDeleteAnimation(
-            @TimePeriod int timePeriod, Tracker.@Nullable DisplayLockHandle trackerLock) {
+    private void maybeShowQuickDeleteAnimation(@TimePeriod int timePeriod) {
         mDeleteRegularTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
         if (mDeleteArchivedTabsFilter != null) {
             mDeleteArchivedTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
@@ -205,29 +236,25 @@ public class QuickDeleteController {
                     mDeleteRegularTabsFilter
                             .getListOfTabsFilteredToBeClosedExcludingPlaceholderTabGroups();
             mDelegate.showQuickDeleteAnimation(
-                    () -> closeTabsAndShowPostDeleteFeedback(timePeriod, trackerLock), tabs);
+                    mCallbackController.makeCancelable(
+                            () -> closeTabsAndShowPostDeleteFeedback(timePeriod)),
+                    tabs);
         } else {
-            closeTabsAndShowPostDeleteFeedback(timePeriod, trackerLock);
+            closeTabsAndShowPostDeleteFeedback(timePeriod);
         }
     }
 
-    private void closeTabsAndShowPostDeleteFeedback(
-            @TimePeriod int timePeriod, Tracker.@Nullable DisplayLockHandle trackerLock) {
+    private void closeTabsAndShowPostDeleteFeedback(@TimePeriod int timePeriod) {
         mDeleteRegularTabsFilter.closeTabsFilteredForQuickDelete();
         if (mDeleteArchivedTabsFilter != null) {
             mDeleteArchivedTabsFilter.closeTabsFilteredForQuickDelete();
         }
-        showPostDeleteFeedback(timePeriod, trackerLock);
+        showPostDeleteFeedback(timePeriod);
     }
 
-    private void showPostDeleteFeedback(
-            @TimePeriod int timePeriod, Tracker.@Nullable DisplayLockHandle trackerLock) {
+    private void showPostDeleteFeedback(@TimePeriod int timePeriod) {
         triggerHapticFeedback();
         showSnackbar(timePeriod);
-
-        if (trackerLock != null) {
-            trackerLock.release();
-        }
 
         destroy();
     }
