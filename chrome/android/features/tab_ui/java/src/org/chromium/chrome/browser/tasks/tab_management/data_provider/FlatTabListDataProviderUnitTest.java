@@ -1078,7 +1078,7 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
         assertItems(item(TAB3_ID), item(TAB1_ID));
 
         when(mOtherTabModel.isTabStateInitialized()).thenReturn(true);
-        mTabModelObserver.restoreCompleted();
+        mProvider.requestDataReset();
 
         assertItems(item(TAB4_ID), item(TAB3_ID), item(TAB2_ID), item(TAB1_ID));
     }
@@ -1274,6 +1274,37 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
 
         verifyNoInteractions(mObserver);
         assertItems(item(TAB1_ID));
+    }
+
+    @Test
+    public void testMultipleModels_RestoreCompleted_AddsOnlyTheRestoredModelsTabs() {
+        // Both models start loading. The first model drives the highlight and finishes last.
+        mModelTabs.add(mTab2);
+        mOtherModelTabs.add(mTab1);
+        mSelectedTab = mTab2;
+        when(mTabModel.isTabStateInitialized()).thenReturn(false);
+        when(mOtherTabModel.isTabStateInitialized()).thenReturn(false);
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+        assertItems();
+
+        when(mOtherTabModel.isTabStateInitialized()).thenReturn(true);
+        mTabModelObserver.restoreCompleted();
+
+        verify(mObserver).onItemsInserted(List.of(item(TAB1_ID)), /* after= */ null);
+        assertItems(item(TAB1_ID));
+
+        clearInvocations(mObserver);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
+        mTabModelObserver.restoreCompleted();
+
+        verify(mObserver).onItemsInserted(List.of(selected(TAB2_ID)), /* after= */ null);
+        verify(mObserver, never()).onDataReset(any());
+        assertItems(selected(TAB2_ID), item(TAB1_ID));
+
+        // Another restoreCompleted() once every model has loaded changes nothing.
+        clearInvocations(mObserver);
+        mTabModelObserver.restoreCompleted();
+        verifyNoInteractions(mObserver);
     }
 
     // ============================================================================================

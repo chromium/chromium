@@ -35,8 +35,14 @@ public abstract class TabListDataProvider {
     private final NonNullObservableSupplier<List<TabModel>> mTabModelListSupplier;
     private final Callback<List<TabModel>> mOnTabModelsChanged = this::onTabModelsChanged;
 
-    /** The models currently observed, in the order they were attached. */
+    /**
+     * The models currently observed, in the order they were attached, with each tab ID held by at
+     * most one of them.
+     */
     private final List<TabModel> mAttachedTabModels = new ArrayList<>();
+
+    /** The attached models still restoring their tabs, so their tabs are added once they finish. */
+    private final List<TabModel> mLoadingTabModels = new ArrayList<>();
 
     private @Nullable TabModelObserver mTabModelObserver;
     private @Nullable TabGroupObserver mTabGroupObserver;
@@ -122,6 +128,27 @@ public abstract class TabListDataProvider {
         mTabGroupObserver = tabGroupObserver;
         assertModelsSupported(mTabModelListSupplier.get());
         mTabModelListSupplier.addSyncObserver(mOnTabModelsChanged);
+    }
+
+    /**
+     * Called when an attached {@link TabModel} finishes restoring its tabs. With one model,
+     * rebuilds the list. With several, adds the tabs of the models that just finished.
+     */
+    protected void onRestoreCompleted() {
+        // The callback doesn't say which model finished, so check the models still loading.
+        List<TabModel> restoredModels = new ArrayList<>();
+        for (TabModel model : mLoadingTabModels) {
+            if (model.isTabStateInitialized()) restoredModels.add(model);
+        }
+        mLoadingTabModels.removeAll(restoredModels);
+
+        if (mAttachedTabModels.size() <= 1) {
+            requestDataReset();
+            return;
+        }
+        for (TabModel model : restoredModels) {
+            addTabItems(model);
+        }
     }
 
     /** Returns the first observed {@link TabModel} if its tab state is initialized, or null. */
@@ -699,6 +726,7 @@ public abstract class TabListDataProvider {
             model.addTabGroupObserver(mTabGroupObserver);
         }
         mAttachedTabModels.add(model);
+        if (!model.isTabStateInitialized()) mLoadingTabModels.add(model);
     }
 
     private void detachFromModel(TabModel model) {
@@ -709,6 +737,7 @@ public abstract class TabListDataProvider {
             model.removeTabGroupObserver(mTabGroupObserver);
         }
         mAttachedTabModels.remove(model);
+        mLoadingTabModels.remove(model);
     }
 
     /** Returns the loaded model that holds a tab with {@code tabId}, or null if none does. */

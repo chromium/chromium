@@ -107,7 +107,7 @@ public class FlatTabListDataProvider extends TabListDataProvider {
 
                     @Override
                     public void restoreCompleted() {
-                        requestDataReset();
+                        onRestoreCompleted();
                     }
 
                     @Override

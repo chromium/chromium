@@ -104,7 +104,7 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
 
                     @Override
                     public void restoreCompleted() {
-                        requestDataReset();
+                        onRestoreCompleted();
                     }
 
                     @Override
