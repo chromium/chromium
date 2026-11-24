@@ -601,7 +601,9 @@ void ViewAccessibility::SetName(View& naming_view) {
   CHECK_NE(view_, &naming_view, base::NotFatalUntil::M163);
 
   std::u16string name = naming_view.GetViewAccessibility().GetCachedName();
-  CHECK(!name.empty(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/585992395): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!name.empty());
   SetName(std::move(name), ax::mojom::NameFrom::kRelatedElement);
 
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
