@@ -8758,3 +8758,5 @@ crbug.com/566257733 tables/mozilla/bugs/bug137388-2.html [ Failure Pass ]
 crbug.com/566841082 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-001.html [ Failure Pass ]
 crbug.com/569420237 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-002.html [ Failure Pass ]
 crbug.com/566469808 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-003.html [ Failure Pass ]
+# Gardener 2026-11-23
+crbug.com/584920130 [ Win11-arm64 ] external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html [ Failure Pass ]
