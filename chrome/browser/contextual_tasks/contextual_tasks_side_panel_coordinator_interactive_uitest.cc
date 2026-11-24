@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,8 +25,10 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -46,10 +49,13 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/contextual_tasks_tab_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_onboarding_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
@@ -67,6 +73,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
@@ -95,9 +102,11 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/views_switches.h"
 #include "ui/views/widget/widget_deletion_observer.h"
 
@@ -2167,6 +2176,176 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          UserVariation::kSignedOut,
                                          UserVariation::kIncognito),
                          UserVariationToString);
+
+namespace {
+
+// Forwards tab context menu commands to `TabStripModel`, the same way the tab
+// strip's `TabContextMenuController` dispatches a clicked menu item.
+class TabContextMenuCommandForwarder : public ui::SimpleMenuModel::Delegate {
+ public:
+  TabContextMenuCommandForwarder(TabStripModel* tab_strip_model,
+                                 tabs::TabHandle context_tab)
+      : tab_strip_model_(CHECK_DEREF(tab_strip_model)),
+        context_tab_(context_tab) {}
+  TabContextMenuCommandForwarder(const TabContextMenuCommandForwarder&) =
+      delete;
+  TabContextMenuCommandForwarder& operator=(
+      const TabContextMenuCommandForwarder&) = delete;
+  ~TabContextMenuCommandForwarder() override = default;
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override {
+    tab_strip_model_->ExecuteContextMenuCommand(
+        context_tab_,
+        static_cast<TabStripModel::ContextMenuCommand>(command_id));
+  }
+
+ private:
+  const raw_ref<TabStripModel> tab_strip_model_;
+  const tabs::TabHandle context_tab_;
+};
+
+}  // namespace
+
+// This tests the following CUJ:
+//  (1) User has an AI Mode thread that was started from Tab 0.
+//  (2) User shares Tab 1 with that thread from the tab context menu's AI Mode
+//      share submenu.
+//  (3) The Contextual Tasks side panel opens with Tab 1 selected, and Tab 1
+//      shows the AI Mode sharing tab alert and tab underline.
+//  (4) User opens the tab context menu on Tab 1 and clicks the AI Mode
+//      unshare item.
+//  (5) Tab 1 is no longer selected in the side panel, and no longer shows the
+//      AI Mode sharing tab alert or tab underline.
+//  (6) The unshare item is no longer offered in Tab 1's tab context menu.
+IN_PROC_BROWSER_TEST_P(ContextualTasksTabSubMenuInteractiveUiTest,
+                       TabContextMenuUnshareActiveTab) {
+  SkipIfIncognito("Sharing tabs with AI Mode is disabled in Incognito");
+
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kSharedTabAiModeSharingAlertState);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kSharedTabSelectedInSidePanelState);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kSharedTabUnderlineState);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title2.html"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  ASSERT_EQ(tab_list->GetActiveIndex(), 1);
+  tabs::TabInterface* shared_tab = tab_list->GetTab(1);
+  const tabs::TabHandle shared_tab_handle = shared_tab->GetHandle();
+  const SessionID shared_tab_id =
+      sessions::SessionTabHelper::IdForTab(shared_tab->GetContents());
+
+  // Start an AI Mode thread from Tab 0.
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ContextualTask existing_task = contextual_tasks_service->CreateTask();
+  const base::Uuid existing_task_id = existing_task.GetTaskId();
+  contextual_tasks_service->AssociateTabWithTask(
+      existing_task_id,
+      sessions::SessionTabHelper::IdForTab(tab_list->GetTab(0)->GetContents()));
+  contextual_tasks_service->UpdateThreadForTask(existing_task_id,
+                                                ThreadType::kAiMode, "thread1",
+                                                std::nullopt, "Valid Thread");
+  CreateCachedWebContentsForTesting(existing_task_id, /*is_open=*/true);
+  content::WebContents* existing_thread_contents =
+      GetCachedWebContentsForTask(existing_task_id);
+  ASSERT_NE(existing_thread_contents, nullptr);
+  existing_thread_contents->GetController().LoadURL(
+      GURL("https://www.g.ai/search?udm=50&mtid=1"), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  ASSERT_TRUE(content::WaitForLoadStop(existing_thread_contents));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_FALSE(tab_strip_model->IsContextMenuCommandEnabled(
+      shared_tab_handle, TabStripModel::CommandAiModeUnshare));
+
+  TabContextMenuCommandForwarder menu_delegate(tab_strip_model,
+                                               shared_tab_handle);
+
+  // Returns whether the side panel thread lists Tab 1 among the selected tabs
+  // that its composebox shows.
+  auto is_selected_in_side_panel = [existing_thread_contents, shared_tab_id]() {
+    auto* user_data = ContextualTasksWebContentsUserData::FromWebContents(
+        existing_thread_contents);
+    return user_data &&
+           std::ranges::any_of(
+               user_data->GetSelectedTabs(),
+               [shared_tab_id](const contextual_search::TabInfo& tab) {
+                 return tab.tab_id == shared_tab_id.id();
+               });
+  };
+
+  // Returns whether Tab 1 shows its tab strip underline.
+  auto is_tab_underlined = [this, shared_tab_handle]() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    views::View* tab_anchor =
+        browser_view && browser_view->tab_strip_view()
+            ? browser_view->tab_strip_view()->GetTabAnchorView(
+                  shared_tab_handle)
+            : nullptr;
+    auto* underline =
+        tab_anchor
+            ? views::AsViewClass<glic::TabUnderlineView>(
+                  tab_anchor->GetViewByElementId(
+                      glic::TabUnderlineView::kGlicTabUnderlineElementId))
+            : nullptr;
+    return underline && underline->IsShowing();
+  };
+
+  RunTestSequence(
+      Do([&]() {
+        // Share Tab 1 with the existing thread from the AI Mode share submenu.
+        ContextualTasksTabSubMenuModel submenu(tab_strip_model,
+                                               shared_tab_handle);
+        ASSERT_EQ(submenu.GetItemCount(), 3u);
+        ASSERT_EQ(submenu.GetCommandIdAt(2),
+                  ContextualTasksTabSubMenuModel::kMinRecentThreadCommandId);
+        submenu.ExecuteCommand(
+            ContextualTasksTabSubMenuModel::kMinRecentThreadCommandId,
+            /*event_flags=*/0);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      PollState(kSharedTabAiModeSharingAlertState,
+                [shared_tab]() {
+                  return tabs::TabAlertController::From(shared_tab)
+                      ->IsAlertActive(tabs::TabAlert::kAiModeSharing);
+                }),
+      PollState(kSharedTabSelectedInSidePanelState, is_selected_in_side_panel),
+      PollState(kSharedTabUnderlineState, is_tab_underlined),
+      WaitForState(kSharedTabAiModeSharingAlertState, true),
+      WaitForState(kSharedTabSelectedInSidePanelState, true),
+      WaitForState(kSharedTabUnderlineState, true), Do([&]() {
+        // Open the tab context menu on Tab 1 and click the unshare item.
+        TabMenuModel menu(&menu_delegate, TabMenuModelDelegate::From(browser()),
+                          tab_strip_model, shared_tab_handle);
+        std::optional<size_t> unshare_index =
+            menu.GetIndexOfCommandId(TabStripModel::CommandAiModeUnshare);
+        ASSERT_TRUE(unshare_index.has_value());
+        EXPECT_EQ(menu.GetLabelAt(*unshare_index),
+                  l10n_util::GetStringUTF16(IDS_TAB_CXMENU_AI_MODE_UNSHARE));
+        menu.ActivatedAt(*unshare_index);
+      }),
+      WaitForState(kSharedTabSelectedInSidePanelState, false),
+      WaitForState(kSharedTabAiModeSharingAlertState, false),
+      WaitForState(kSharedTabUnderlineState, false),
+      CheckResult(
+          [&]() {
+            TabMenuModel menu(&menu_delegate,
+                              TabMenuModelDelegate::From(browser()),
+                              tab_strip_model, shared_tab_handle);
+            return menu.GetIndexOfCommandId(TabStripModel::CommandAiModeUnshare)
+                .has_value();
+          },
+          false, "Unshare item is no longer offered for Tab 1"));
+}
 
 // Regression test for crbug.com/517906613: On a buggy build, trying to show the
 // pending dialog during SetWebContents when the view's web_contents() is stale
