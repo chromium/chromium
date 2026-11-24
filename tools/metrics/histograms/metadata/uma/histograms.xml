@@ -1143,7 +1143,8 @@ chromium-metrics-reviews@google.com.
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The number of UMA histogram samples that were sent in the previous browser
-    run. Emitted when the browser starts up.
+    run. Emitted when the browser starts up. Before M160, logs loaded from an
+    earlier browser run had no saved sample count and were not counted.
   </summary>
 </histogram>
 
@@ -1155,7 +1156,8 @@ chromium-metrics-reviews@google.com.
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The number of UMA histogram samples that were not yet sent in the previous
-    browser run. Emitted when the browser starts up.
+    browser run. Emitted when the browser starts up. Before M160, logs loaded
+    from an earlier browser run had no saved sample count and were not counted.
   </summary>
 </histogram>
 
@@ -1167,7 +1169,8 @@ chromium-metrics-reviews@google.com.
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The percentage of the unsent samples over the total in the previous browser
-    run; it is recorded on the browser start up.
+    run; it is recorded on the browser start up. Before M160, logs loaded from
+    an earlier browser run had no saved sample count and were not counted.
   </summary>
 </histogram>
 

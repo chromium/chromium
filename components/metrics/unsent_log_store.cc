@@ -15,6 +15,7 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_base.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -42,6 +43,7 @@ const char kLogSentCountKey[] = "sent_samples_count";
 const char kLogPersistedSizeInKbKey[] = "unsent_persisted_size_in_kb";
 const char kLogUserIdKey[] = "user_id";
 const char kLogSourceType[] = "type";
+const char kLogSamplesCountKey[] = "samples_count";
 
 std::string EncodeToBase64(const std::string& to_convert) {
   DCHECK(to_convert.data());
@@ -90,12 +92,13 @@ class LogsPrefWriter {
       dict_value.Set(kLogUserIdKey,
                      EncodeToBase64(base::NumberToString(user_id.value())));
     }
-    list_value_->Append(std::move(dict_value));
-
     auto samples_count = log->log_metadata.samples_count;
     if (samples_count.has_value()) {
-      unsent_samples_count_ += samples_count.value();
+      dict_value.Set(kLogSamplesCountKey, samples_count.value());
+      unsent_samples_count_ =
+          base::ClampAdd(unsent_samples_count_, samples_count.value());
     }
+    list_value_->Append(std::move(dict_value));
     unsent_persisted_size_ += log->compressed_log_data.length();
     ++unsent_logs_count_;
   }
@@ -275,8 +278,10 @@ void UnsentLogStore::MarkStagedLogAsSent() {
   DCHECK(has_staged_log());
   DCHECK_LT(staged_log_index_.value(), list_.size());
   auto samples_count = current_log()->log_metadata.samples_count;
-  if (samples_count.has_value())
-    total_samples_sent_ += samples_count.value();
+  if (samples_count.has_value()) {
+    total_samples_sent_ =
+        base::ClampAdd(total_samples_sent_, samples_count.value());
+  }
   NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogUploaded,
                  current_log()->hash);
 }
@@ -488,6 +493,13 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::ListValue& list_value) {
     info->hash = DecodeFromBase64(info->hash);
     info->signature = DecodeFromBase64(info->signature);
     // timestamp doesn't need to be decoded.
+
+    // Extract the samples count of the log if it exists and is non-negative.
+    // Absent when the log had no sample count or was saved by an older version.
+    std::optional<int> samples_count = dict->FindInt(kLogSamplesCountKey);
+    if (samples_count.has_value() && samples_count.value() >= 0) {
+      info->log_metadata.samples_count = samples_count.value();
+    }
 
     std::optional<int> log_source_type = dict->FindInt(kLogSourceType);
     if (log_source_type.has_value()) {

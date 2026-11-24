@@ -8,9 +8,11 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base64.h"
+#include "base/metrics/histogram_base.h"
 #include "base/rand_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -962,6 +964,81 @@ TEST_F(UnsentLogStoreTest, DropMetrics_PrefCorruption) {
       UnsentLogStoreMetrics::LOG_STRING_CORRUPTION, 1);
   histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Ongoing.DropReason",
                                       UnsentLogDropReason::kPrefCorruption, 3);
+}
+
+// Verifies that the samples count of a log is saved with the log, so that
+// metadata metrics include logs from earlier sessions after a restart. A log
+// without a samples count has none.
+TEST_F(UnsentLogStoreTest, PersistsSamplesCount) {
+  constexpr base::HistogramBase::Count32 kKeptSamplesCount = 4;
+  constexpr base::HistogramBase::Count32 kSentSamplesCount = 6;
+  {
+    TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
+    unsent_log_store.StoreLog(
+        "kept", LogMetadata(kKeptSamplesCount, std::nullopt, std::nullopt),
+        MetricsLogsEventManager::CreateReason::kUnknown);
+    unsent_log_store.StoreLog(
+        "sent", LogMetadata(kSentSamplesCount, std::nullopt, std::nullopt),
+        MetricsLogsEventManager::CreateReason::kUnknown);
+    unsent_log_store.StoreLog("without count", LogMetadata(),
+                              MetricsLogsEventManager::CreateReason::kUnknown);
+    unsent_log_store.TrimAndPersistUnsentLogs(
+        /*overwrite_in_memory_store=*/true);
+  }
+
+  TestUnsentLogStore reloaded_store(&prefs_,
+                                    UnsentLogStore::UnsentLogStoreLimits{
+                                        .min_log_count = kLogCountLimit,
+                                        .min_queue_size_bytes = 1,
+                                        .max_log_size_bytes = kLogByteLimit,
+                                    });
+  reloaded_store.LoadPersistedUnsentLogs();
+  ASSERT_EQ(3U, reloaded_store.size());
+
+  // The newest log is staged first.
+  reloaded_store.StageNextLog();
+  EXPECT_EQ(reloaded_store.staged_log(), Compress("without count"));
+  EXPECT_FALSE(reloaded_store.staged_log_metadata().samples_count.has_value());
+  reloaded_store.DiscardStagedLog();
+
+  // Sending a reloaded log and persisting the remaining reloaded log records
+  // both cross-session counts in metadata prefs for the next startup.
+  reloaded_store.StageNextLog();
+  EXPECT_EQ(reloaded_store.staged_log(), Compress("sent"));
+  EXPECT_EQ(reloaded_store.staged_log_metadata().samples_count,
+            kSentSamplesCount);
+  reloaded_store.MarkStagedLogAsSent();
+  reloaded_store.DiscardStagedLog();
+  reloaded_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+
+  auto metrics = std::make_unique<TestUnsentLogStoreMetrics>();
+  TestUnsentLogStoreMetrics* metrics_ptr = metrics.get();
+  TestUnsentLogStore next_session_store(std::move(metrics), &prefs_,
+                                        kLogByteLimit);
+  next_session_store.LoadPersistedUnsentLogs();
+  EXPECT_EQ(kKeptSamplesCount, metrics_ptr->unsent_samples_count());
+  EXPECT_EQ(kSentSamplesCount, metrics_ptr->sent_samples_count());
+}
+
+// Verifies that a corrupt negative `samples_count` in prefs is ignored on load.
+TEST_F(UnsentLogStoreTest, IgnoresNegativeSamplesCountInPref) {
+  {
+    TestUnsentLogStore writer_store(&prefs_, kLogByteLimit);
+    writer_store.StoreLog("log", LogMetadata(4, std::nullopt, std::nullopt),
+                          MetricsLogsEventManager::CreateReason::kUnknown);
+    writer_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+  }
+  {
+    ScopedListPrefUpdate update(&prefs_, kTestPrefName);
+    ASSERT_EQ(1U, update->size());
+    (*update)[0].GetDict().Set("samples_count", -5);
+  }
+
+  TestUnsentLogStore reloaded_store(&prefs_, kLogByteLimit);
+  reloaded_store.LoadPersistedUnsentLogs();
+  ASSERT_EQ(1U, reloaded_store.size());
+  reloaded_store.StageNextLog();
+  EXPECT_FALSE(reloaded_store.staged_log_metadata().samples_count.has_value());
 }
 
 }  // namespace metrics
