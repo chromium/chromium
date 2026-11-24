@@ -5,19 +5,23 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_BOOKMARK_NODE_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_BOOKMARK_NODE_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_form_factor.h"
 #include "components/bookmarks/browser/titled_url_node.h"
-#include "ui/base/models/tree_node_model.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -29,8 +33,10 @@ class BookmarkModel;
 
 // BookmarkNode contains information about a starred entry: title, URL, favicon,
 // ID and type. BookmarkNodes are returned from BookmarkModel.
-class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
+class BookmarkNode : public TitledUrlNode {
  public:
+  using TreeNodes = std::vector<std::unique_ptr<BookmarkNode>>;
+
   enum Type {
     URL,
     FOLDER,
@@ -54,6 +60,54 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
 
   ~BookmarkNode() override;
 
+  // Adds `node` as a child of this node, at `index`. `node` must be non-null
+  // and unparented, and `index` must be in `[0, children().size()]`. Returns a
+  // raw pointer to the added node.
+  BookmarkNode* Add(std::unique_ptr<BookmarkNode> node, size_t index);
+
+  // Shorthand for adding at the end (`node` must be non-null and unparented).
+  BookmarkNode* Add(std::unique_ptr<BookmarkNode> node);
+
+  // Removes the child node at the given `index` (which must be `<
+  // children().size()`) and returns ownership of it.
+  std::unique_ptr<BookmarkNode> Remove(size_t index);
+
+  // Removes all children from this node.
+  void DeleteAll();
+
+  // Returns the parent node, or nullptr if this is the root node.
+  const BookmarkNode* parent() const { return parent_; }
+  BookmarkNode* parent() { return parent_; }
+
+  // Returns true if this is the root node.
+  bool is_root() const { return parent_ == nullptr; }
+
+  const TreeNodes& children() const { return children_; }
+
+  // Returns the number of all nodes in the subtree rooted at this node,
+  // including this node.
+  size_t GetTotalNodeCount() const;
+
+  // Returns the index of `node`, or nullopt if `node` is not a child of this.
+  // `node` must be non-null (unlike `HasAncestor()`).
+  std::optional<size_t> GetIndexOf(const BookmarkNode* node) const;
+
+  // Returns true if `this == ancestor`, or one of this node's parents is
+  // `ancestor`. Accepts null `ancestor` (returning false).
+  bool HasAncestor(const BookmarkNode* ancestor) const;
+
+  // Reorders children according to a new arbitrary order. `new_order` must
+  // contain one entry per child node, and the value of the entry at position
+  // `i` represents the new position, which must be unique and in the range
+  // `[0, children().size())`.
+  void ReorderChildren(const std::vector<size_t>& new_order);
+
+  // Sorts children according to a comparator.
+  template <typename Compare>
+  void SortChildren(Compare comp) {
+    std::stable_sort(children_.begin(), children_.end(), comp);
+  }
+
   // Returns true if the node is a BookmarkPermanentNode (which does not include
   // the root).
   bool is_permanent_node() const { return is_permanent_node_; }
@@ -61,7 +115,9 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   // Set the node's internal title. Note that this neither invokes observers
   // nor updates any bookmark model this node may be in. For that functionality,
   // BookmarkModel::SetTitle(..) should be used instead.
-  void SetTitle(const std::u16string& title) override;
+  void SetTitle(const std::u16string& title);
+
+  const std::u16string& GetTitle() const { return title_; }
 
   // Returns an unique ID for this node.
   // For bookmark nodes that are managed by the bookmark model, the IDs are
@@ -227,6 +283,10 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   const bool is_permanent_node_;
 
   base::Time date_last_used_;
+
+  std::u16string title_;
+  raw_ptr<BookmarkNode> parent_ = nullptr;
+  TreeNodes children_;
 };
 
 // BookmarkPermanentNode -------------------------------------------------------

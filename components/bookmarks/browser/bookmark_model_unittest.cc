@@ -218,8 +218,35 @@ void SwapDateUsed(BookmarkNode* n1, BookmarkNode* n2) {
   n2->set_date_last_used(tmp);
 }
 
-// See comment in PopulateNodeFromString.
-using TestNode = ui::TreeNodeWithValue<BookmarkNode::Type>;
+// Lightweight tree node used by PopulateNodeFromString and
+// VerifyModelMatchesNode to describe expected bookmark subtrees in tests.
+class TestNode {
+ public:
+  TestNode() = default;
+  TestNode(const std::u16string& title, BookmarkNode::Type value)
+      : value(value), title_(title) {}
+
+  TestNode(const TestNode&) = delete;
+  TestNode& operator=(const TestNode&) = delete;
+
+  TestNode* Add(std::unique_ptr<TestNode> node) {
+    TestNode* ptr = node.get();
+    children_.push_back(std::move(node));
+    return ptr;
+  }
+
+  const std::vector<std::unique_ptr<TestNode>>& children() const {
+    return children_;
+  }
+
+  const std::u16string& GetTitle() const { return title_; }
+
+  BookmarkNode::Type value = BookmarkNode::URL;
+
+ private:
+  std::u16string title_;
+  std::vector<std::unique_ptr<TestNode>> children_;
+};
 
 // Does the work of PopulateNodeFromString. index gives the index of the current
 // element in description to process.
@@ -3647,6 +3674,66 @@ TEST(BookmarkNodeTest, NodeMetaInfo) {
   EXPECT_FALSE(node.GetMetaInfo("key2.subkey2", &out_value));
   EXPECT_FALSE(node.GetMetaInfo("key2.subkey2.leaf", &out_value));
   EXPECT_FALSE(node.GetMetaInfoMap());
+}
+
+TEST(BookmarkNodeTest, TreeOperations) {
+  auto root = std::make_unique<BookmarkNode>(
+      /*id=*/0, base::Uuid::GenerateRandomV4(), GURL());
+  EXPECT_TRUE(root->is_root());
+  EXPECT_EQ(1u, root->GetTotalNodeCount());
+
+  BookmarkNode* folder = root->Add(std::make_unique<BookmarkNode>(
+      /*id=*/1, base::Uuid::GenerateRandomV4(), GURL()));
+  EXPECT_EQ(std::nullopt, folder->GetIndexOf(root.get()));
+  folder->SetTitle(u"Folder\nName");
+  EXPECT_EQ(u"Folder Name", folder->GetTitle());
+  EXPECT_FALSE(folder->is_root());
+  EXPECT_EQ(root.get(), folder->parent());
+  EXPECT_TRUE(folder->HasAncestor(root.get()));
+  EXPECT_TRUE(folder->HasAncestor(folder));
+  EXPECT_FALSE(folder->HasAncestor(nullptr));
+  EXPECT_FALSE(root->HasAncestor(folder));
+
+  BookmarkNode* url_b = folder->Add(std::make_unique<BookmarkNode>(
+      /*id=*/2, base::Uuid::GenerateRandomV4(), GURL("https://b.example")));
+  url_b->SetTitle(u"B");
+  BookmarkNode* url_a = folder->Add(
+      std::make_unique<BookmarkNode>(/*id=*/3, base::Uuid::GenerateRandomV4(),
+                                     GURL("https://a.example")),
+      /*index=*/0);
+  url_a->SetTitle(u"A");
+  BookmarkNode* url_c = folder->Add(std::make_unique<BookmarkNode>(
+      /*id=*/4, base::Uuid::GenerateRandomV4(), GURL("https://c.example")));
+  url_c->SetTitle(u"C");
+
+  EXPECT_TRUE(url_a->HasAncestor(root.get()));
+  EXPECT_EQ(5u, root->GetTotalNodeCount());
+  EXPECT_EQ(0u, folder->GetIndexOf(url_a));
+  EXPECT_EQ(1u, folder->GetIndexOf(url_b));
+  EXPECT_EQ(2u, folder->GetIndexOf(url_c));
+  EXPECT_EQ(std::nullopt, root->GetIndexOf(url_a));
+
+  // Use a 3-cycle so `new_children[new_order[i]] = children_[i]` is
+  // distinguished from its inverse permutation.
+  folder->ReorderChildren({1, 2, 0});
+  EXPECT_THAT(folder->children(),
+              ElementsAre(testing::Pointer(url_c), testing::Pointer(url_a),
+                          testing::Pointer(url_b)));
+
+  folder->SortChildren([](const auto& lhs, const auto& rhs) {
+    return lhs->GetTitle() < rhs->GetTitle();
+  });
+  EXPECT_THAT(folder->children(),
+              ElementsAre(testing::Pointer(url_a), testing::Pointer(url_b),
+                          testing::Pointer(url_c)));
+
+  std::unique_ptr<BookmarkNode> removed = folder->Remove(0);
+  ASSERT_EQ(url_a, removed.get());
+  EXPECT_EQ(nullptr, removed->parent());
+  EXPECT_EQ(2u, folder->children().size());
+
+  root->DeleteAll();
+  EXPECT_TRUE(root->children().empty());
 }
 
 // Creates a set of nodes in the bookmark model, and checks that the loaded
