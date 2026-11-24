@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -600,7 +601,10 @@ public class TabsTest {
                         () ->
                                 model.getTabRemover()
                                         .closeTabs(
-                                                TabClosureParams.closeTab(tab).build(),
+                                                TabClosureParams.closeTab(tab)
+                                                        .tabClosingSource(
+                                                                TabClosingSource.GRID_TAB_SWITCHER)
+                                                        .build(),
                                                 /* allowDialog= */ false));
 
         runOnUiThreadBlocking(
@@ -845,7 +849,10 @@ public class TabsTest {
                         () ->
                                 model.getTabRemover()
                                         .closeTabs(
-                                                TabClosureParams.closeTab(tab).build(),
+                                                TabClosureParams.closeTab(tab)
+                                                        .tabClosingSource(
+                                                                TabClosingSource.GRID_TAB_SWITCHER)
+                                                        .build(),
                                                 /* allowDialog= */ false));
 
         assertTrue("getCurrentTabSupplier() was not called with null", mNotifyChangedCalled);
