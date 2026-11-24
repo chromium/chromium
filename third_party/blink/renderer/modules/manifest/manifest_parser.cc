@@ -449,11 +449,6 @@ bool ManifestParser::Parse() {
                         WebFeature::kWebAppManifestScopeExtensions);
     }
   }
-  manifest_->lock_screen = ParseLockScreen(root_object.get());
-  if (!manifest_->lock_screen.is_null()) {
-    UseCounter::Count(execution_context_,
-                      WebFeature::kWebAppManifestLockScreen);
-  }
   manifest_->note_taking = ParseNoteTaking(root_object.get());
   if (!manifest_->note_taking.is_null()) {
     UseCounter::Count(execution_context_,
@@ -1948,19 +1943,6 @@ ManifestParser::ParseScopeExtensionOrigin(const String& origin_string) {
 
   scope_extension->origin = origin;
   return std::move(scope_extension);
-}
-
-mojom::blink::ManifestLockScreenPtr ManifestParser::ParseLockScreen(
-    const JSONObject* manifest) {
-  const JSONObject* lock_screen_object = ParseObject(manifest, "lock_screen");
-  if (!lock_screen_object) {
-    return nullptr;
-  }
-  auto lock_screen = mojom::blink::ManifestLockScreen::New();
-  lock_screen->start_url =
-      ParseURL(lock_screen_object, "start_url", manifest_url_,
-               ParseURLRestrictions::kWithinScope);
-  return lock_screen;
 }
 
 mojom::blink::ManifestNoteTakingPtr ManifestParser::ParseNoteTaking(

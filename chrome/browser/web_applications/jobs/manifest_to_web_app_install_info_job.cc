@@ -851,14 +851,6 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   GURL inferred_scope = install_info().scope.is_valid()
                             ? install_info().scope
                             : install_info().start_url().GetWithoutFilename();
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAppManifestLockScreen) &&
-      manifest_.lock_screen() &&
-      manifest_.lock_screen()->start_url.is_valid() &&
-      IsInScope(manifest_.lock_screen()->start_url, inferred_scope)) {
-    install_info().lock_screen_start_url = manifest_.lock_screen()->start_url;
-  }
-
   if (manifest_.note_taking() &&
       manifest_.note_taking()->new_note_url.is_valid() &&
       IsInScope(manifest_.note_taking()->new_note_url, inferred_scope)) {

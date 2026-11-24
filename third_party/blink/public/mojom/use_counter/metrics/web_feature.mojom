@@ -4650,7 +4650,7 @@ enum WebFeature {
   kWebAppManifestIcons = 5339,
   kWebAppManifestScreenshots = 5340,
   kWebAppManifestScope = 5341,
-  kWebAppManifestLockScreen = 5342,
+  kOBSOLETE_WebAppManifestLockScreen = 5342,
   kWebAppManifestNoteTaking = 5343,
   kWebAppManifestPermissionsPolicy = 5344,
   kWebAppManifestPrefer_Related_Applications = 5345,

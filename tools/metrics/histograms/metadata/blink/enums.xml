@@ -6056,7 +6056,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5339" label="WebAppManifestIcons"/>
   <int value="5340" label="WebAppManifestScreenshots"/>
   <int value="5341" label="WebAppManifestScope"/>
-  <int value="5342" label="WebAppManifestLockScreen"/>
+  <int value="5342" label="OBSOLETE_WebAppManifestLockScreen"/>
   <int value="5343" label="WebAppManifestNoteTaking"/>
   <int value="5344" label="WebAppManifestPermissionsPolicy"/>
   <int value="5345" label="WebAppManifestPrefer_Related_Applications"/>

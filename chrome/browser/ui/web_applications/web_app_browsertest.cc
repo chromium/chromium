@@ -2877,7 +2877,6 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ManifestWithUseCounterFields) {
       {blink::mojom::WebFeature::kWebAppManifestIcons, 1},
       {blink::mojom::WebFeature::kWebAppManifestScreenshots, 1},
       {blink::mojom::WebFeature::kWebAppManifestScope, 1},
-      {blink::mojom::WebFeature::kWebAppManifestLockScreen, 1},
       {blink::mojom::WebFeature::kWebAppManifestNoteTaking, 1},
       {blink::mojom::WebFeature::kWebAppManifestPrefer_Related_Applications, 1},
       {blink::mojom::WebFeature::kWebAppManifestThemeColor, 1},

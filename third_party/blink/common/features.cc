@@ -2363,13 +2363,6 @@ BASE_FEATURE(kWebAppEnableScopeExtensionsBySite,
 BASE_FEATURE(kWebAppEnableScopeExtensionsForIsolatedWebApps,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls parsing of the "lock_screen" dictionary field and its "start_url"
-// entry in web app manifests.  See explainer for more information:
-// https://github.com/WICG/lock-screen/
-// Note: the lock screen API and OS integration is separately controlled by
-// the content feature `kWebLockScreenApi`.
-BASE_FEATURE(kWebAppManifestLockScreen, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use deferred pull status update instead of updating the status directly
 // on audio thread. See https://crbug.com/40249972.
 BASE_FEATURE(kWebAudioDeferPullStatusUpdate, base::FEATURE_DISABLED_BY_DEFAULT);

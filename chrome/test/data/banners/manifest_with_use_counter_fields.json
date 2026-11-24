@@ -20,9 +20,6 @@
   "start_url": "different_manifest_test_page.html",
   "display": "fullscreen",
   "scope": "/",
-  "lock_screen": {
-    "notifications": true
-  },
   "note_taking": {
     "new_note_url": "/banners/scope_a/new_note.html"
   },

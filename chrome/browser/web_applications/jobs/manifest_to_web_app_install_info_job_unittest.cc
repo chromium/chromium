@@ -165,10 +165,7 @@ class ManifestToWebAppInstallInfoJobTest : public WebAppTest {
 };
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({blink::features::kWebAppManifestLockScreen,
-                                 blink::features::kUnframedIwa},
-                                /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature_list(blink::features::kUnframedIwa);
 
   SetupBasicPageState();
   auto& manifest = GetPageManifest();
@@ -197,9 +194,6 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   related_app.url = GURL("http://www.example.com");
   related_app.id = u"id";
 
-  blink::Manifest::LockScreen lock_screen;
-  lock_screen.start_url = GURL("https://www.foo.bar/lock-screen-start-url");
-
   blink::Manifest::NoteTaking note_taking;
   note_taking.new_note_url = GURL("https://www.foo.bar/new-note-url");
 
@@ -209,7 +203,6 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
                  .SetProtocolHandlers({std::move(protocol_handler)})
                  .SetScopeExtensions({std::move(scope_extension)})
                  .SetRelatedApplications({std::move(related_app)})
-                 .SetLockScreen(std::move(lock_screen))
                  .SetNoteTaking(std::move(note_taking))
                  .BuildChecked();
 
@@ -256,9 +249,6 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   EXPECT_EQ(scope_extension_info.origin,
             url::Origin::Create(GURL("https://scope_extensions_origin.com/")));
   EXPECT_FALSE(scope_extension_info.has_origin_wildcard);
-
-  EXPECT_EQ(GURL("https://www.foo.bar/lock-screen-start-url"),
-            web_app_info->lock_screen_start_url);
 
   EXPECT_EQ(GURL("https://www.foo.bar/new-note-url"),
             web_app_info->note_taking_new_note_url);
@@ -684,16 +674,10 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, LargeIconsDiscardedForShortcut) {
 }
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, OutOfScopeUrls_DropFields) {
-  base::test::ScopedFeatureList feature_list(
-      blink::features::kWebAppManifestLockScreen);
   SetupBasicPageState();
   auto& manifest = GetPageManifest();
   GURL start_url("https://www.foo.bar/scope/index.html");
   GURL scope("https://www.foo.bar/scope/");
-
-  blink::Manifest::LockScreen lock_screen;
-  lock_screen.start_url =
-      GURL("https://www.foo.bar/out_of_scope/lock-screen-start-url");
 
   blink::Manifest::NoteTaking note_taking;
   note_taking.new_note_url =
@@ -703,12 +687,10 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, OutOfScopeUrls_DropFields) {
                  .SetStartUrl(start_url)
                  .SetId(start_url)
                  .SetScope(scope)
-                 .SetLockScreen(std::move(lock_screen))
                  .SetNoteTaking(std::move(note_taking))
                  .BuildChecked();
 
   auto web_app_info = GetWebAppInstallInfoFromJob(manifest);
-  EXPECT_TRUE(web_app_info->lock_screen_start_url.is_empty());
   EXPECT_TRUE(web_app_info->note_taking_new_note_url.is_empty());
 }
 

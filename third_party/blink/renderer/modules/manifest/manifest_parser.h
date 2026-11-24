@@ -415,13 +415,6 @@ class MODULES_EXPORT ManifestParser {
   std::optional<mojom::blink::ManifestProtocolHandlerPtr> ParseProtocolHandler(
       const JSONObject* protocol_dictionary);
 
-  // Parses the 'lock_screen' field of a Manifest, as defined in:
-  // https://github.com/WICG/lock-screen/
-  // Returns a parsed ManifestLockScreenPtr, or nullptr if not present or
-  // parsing failed.
-  mojom::blink::ManifestLockScreenPtr ParseLockScreen(
-      const JSONObject* manifest);
-
   // Parses the 'note_taking' field of a Manifest, as defined in:
   // https://wicg.github.io/manifest-incubations/index.html#dfn-note_taking
   // Returns a parsed ManifestNoteTakingPtr, or nullptr if not present or
