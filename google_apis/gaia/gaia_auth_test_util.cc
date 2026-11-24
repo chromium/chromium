@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/base64.h"
+#include "base/base64url.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/list_accounts_response.pb.h"
@@ -57,10 +58,8 @@ std::string GenerateOAuth2MintTokenConsentResult(
   if (obfuscated_id.has_value()) {
     consent_result.set_obfuscated_id(obfuscated_id->ToString());
   }
-  std::string serialized_consent = consent_result.SerializeAsString();
-  std::string encoded_consent;
-  base::Base64UrlEncode(serialized_consent, encode_policy, &encoded_consent);
-  return encoded_consent;
+  return base::Base64UrlEncode(consent_result.SerializeAsString(),
+                               encode_policy);
 }
 
 std::string CreateListAccountsResponseInBinaryFormat(

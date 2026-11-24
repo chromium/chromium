@@ -229,10 +229,8 @@ std::string CreateBoundOAuthToken(const GaiaId& gaia_id,
     return std::string();
   }
 
-  std::string base64_encoded;
-  base::Base64UrlEncode(serialized, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &base64_encoded);
-  return base64_encoded;
+  return base::Base64UrlEncode(serialized,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 std::string CreateMultiOAuthHeader(
@@ -248,11 +246,8 @@ std::string CreateMultiOAuthHeader(
     header.mutable_account_requests()->Add(std::move(request));
   }
 
-  std::string base64_encoded_header;
-  base::Base64UrlEncode(header.SerializeAsString(),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &base64_encoded_header);
-  return base64_encoded_header;
+  return base::Base64UrlEncode(header.SerializeAsString(),
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 GoogleServiceAuthError::InvalidGaiaCredentialsReason
