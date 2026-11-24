@@ -623,3 +623,8 @@ crbug.com/587051138 [ iOS27 iPad Simulator ] NTPHomeTestCase/testMinimumHeight [
 
 # Gardening suppression 2026-11-17
 crbug.com/584310068 [ iOS26 iOS27 Simulator ] HistoryUITestCase/testContextMenuRepeatedShare [ Pass Failure ]
+
+# CQ flakiness quarantine 2026-11-23
+crbug.com/587566569 [ Simulator ] BookmarksFolderChooserAccountTestCase/testEditFunctionalityOnSingleFolderAccount [ Pass Failure ]
+crbug.com/588485339 [ Simulator ] BookmarksEntriesTestCase/testContextMenuForMultipleURLOpenAllInIncognito [ Pass Failure ]
+crbug.com/578730189 [ iOS26 iOS27 iPad Simulator ] ManageAccountsTableTestCase/testAddAccount [ Pass Failure ]
