@@ -295,17 +295,30 @@ source_set("chrome_web_authentication_delegate") {
   }
 
   if (!is_android) {
-    public += [ "chrome_web_authentication_delegate.h" ]
-    sources += [ "chrome_web_authentication_delegate.cc" ]
+    # TODO(crbug.com/506062130): Build the remoteClientDataJSON permission
+    # context on Android once the content setting is registered there.
+    public += [
+      "chrome_web_authentication_delegate.h",
+      "remote_client_data_json_permission_context.h",
+    ]
+    sources += [
+      "chrome_web_authentication_delegate.cc",
+      "remote_client_data_json_permission_context.cc",
+    ]
 
     deps += [
       ":unexportable_key_utils",
       "//chrome/browser/signin",
       "//chrome/browser/sync",
       "//chrome/browser/ui/passwords",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
       "//components/device_event_log",
+      "//components/permissions",
       "//components/webauthn/core/browser",
       "//components/webauthn/core/browser:signal_api_utils",
+      "//services/network/public/mojom:mojom_permissions_policy",
+      "//url",
     ]
 
     if (is_chromeos) {
@@ -494,6 +507,7 @@ source_set("unit_tests") {
       "passkey_unlock_error_strings_unittest.cc",
       "passkey_unlock_manager_unittest.cc",
       "password_credential_ui_controller_unittest.cc",
+      "remote_client_data_json_permission_context_unittest.cc",
       "ui_readiness_barrier_unittest.cc",
     ]
 
@@ -501,12 +515,16 @@ source_set("unit_tests") {
       ":local_credential_management",
       ":test_support",
       ":unexportable_key_utils",
+      "//chrome/browser/permissions",
       "//chrome/browser/signin",
       "//chrome/browser/signin:test_support",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/passwords",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+      "//components/permissions",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//components/tabs:public",
@@ -518,6 +536,9 @@ source_set("unit_tests") {
       "//device/fido:mocks",
       "//google_apis",
       "//net",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom:mojom_permissions_policy",
+      "//third_party/blink/public/common",
     ]
 
     if (is_mac) {

@@ -204,6 +204,7 @@ source_set("permissions") {
   if (!is_android) {
     deps += [
       "//chrome/browser/ui/permission_bubble",
+      "//chrome/browser/webauthn:chrome_web_authentication_delegate",
       "//third_party/tflite_support",
     ]
   }

@@ -55,6 +55,10 @@
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/webauthn/remote_client_data_json_permission_context.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
 #include "chrome/browser/printing/web_api/web_printing_permission_context.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
@@ -190,6 +194,15 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::WEB_APP_INSTALLATION] =
       std::make_unique<permissions::WebAppInstallationPermissionContext>(
           profile);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // WebAuthn remoteClientDataJSON is authorized via enterprise policy rather
+  // than user prompts, so the permission state is policy-derived.
+  // TODO(crbug.com/506062130): Register on Android once supported there.
+  permission_contexts
+      [ContentSettingsType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON] =
+          std::make_unique<RemoteClientDataJsonPermissionContext>(profile);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   permission_contexts[ContentSettingsType::WEB_PRINTING] =
