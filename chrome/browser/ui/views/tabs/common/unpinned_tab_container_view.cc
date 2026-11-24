@@ -7,6 +7,8 @@
 #include <optional>
 #include <vector>
 
+#include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -211,6 +213,23 @@ UnpinnedTabContainerView::UnpinnedTabContainerView(
 }
 
 UnpinnedTabContainerView::~UnpinnedTabContainerView() = default;
+
+base::CallbackListSubscription
+UnpinnedTabContainerView::RegisterLeadingEdgePaintScheduledCallback(
+    base::RepeatingClosure callback) {
+  CHECK_EQ(orientation_, TabStripOrientation::kHorizontal);
+  return leading_edge_paint_scheduled_callbacks_.Add(std::move(callback));
+}
+
+void UnpinnedTabContainerView::OnDidSchedulePaint(const gfx::Rect& rect) {
+  TabCollectionZOrderManager::OnDidSchedulePaint(rect);
+  if (!leading_edge_paint_scheduled_callbacks_.empty() &&
+      GetMirroredRect(
+          gfx::Rect(0, 0, TabStyle::Get()->GetTabOverlap(), height()))
+          .Intersects(rect)) {
+    leading_edge_paint_scheduled_callbacks_.Notify();
+  }
+}
 
 int UnpinnedTabContainerView::LayoutManager::GetUnconstrainedPreferredWidth()
     const {

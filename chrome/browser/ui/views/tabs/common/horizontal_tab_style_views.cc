@@ -574,29 +574,22 @@ float HorizontalTabStyleViews::GetSeparatorOpacity(bool for_layout,
       right_tab && right_tab->GetGroup().has_value() &&
       (!left_tab || left_tab->GetGroup() != right_tab->GetGroup());
 
-  const float shown_separator_opacity =
-      GetHoverInterpolatedSeparatorOpacity(for_layout, adjacent_tab);
-
   // Show the separator unless this tab is the first in the group and is next
-  // to it's own header.
+  // to its own header; a group header separates this tab from `adjacent_tab`.
   if (adjacent_to_header) {
     return (delegate_->GetGroup().has_value() && leading)
                ? 0.0f
-               : shown_separator_opacity;
+               : GetHoverInterpolatedSeparatorOpacity(for_layout, nullptr);
   }
+
+  const float shown_separator_opacity =
+      GetHoverInterpolatedSeparatorOpacity(for_layout, adjacent_tab);
 
   if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
     // When unification is enabled, tabs render trailing separators by default
     // to avoid double separators between tabs. Leading separators are only
     // rendered in certain scenarios.
     if (leading) {
-      // Between the pinned and unpinned tab containers when new pinned
-      // tab styling is disabled should show leading
-      if (!tabs::IsNewHorizontalPinnedTabStylingEnabled() && adjacent_tab &&
-          adjacent_tab->IsPinned() && !has_visible_background(adjacent_tab)) {
-        return shown_separator_opacity;
-      }
-
       // When the preceding item is a group header, show a leading separator.
       if (adjacent_tab && adjacent_tab->IsGroupCollapsed() &&
           adjacent_tab->GetGroup() != delegate_->GetGroup() &&

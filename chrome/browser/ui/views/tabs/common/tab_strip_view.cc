@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/callback_list.h"
+#include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/horizontal_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -412,6 +415,9 @@ void TabStripView::OnChildrenAdded(const tabs::TabCollectionNodes& handles) {
   }
 
   UpdateSeparatorVisibility();
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    SchedulePaintPinnedTrailingSeparator();
+  }
 
   const tabs::TabInterface* active_tab =
       collection_node_->GetController()->GetActiveTab();
@@ -440,12 +446,23 @@ void TabStripView::OnChildrenRemoved() {
   }
 
   UpdateSeparatorVisibility();
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    SchedulePaintPinnedTrailingSeparator();
+  }
 }
 
 void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
   CHECK(moved_node);
 
-  if (!collection_node_ || is_first_window_presentation_ ||
+  if (!collection_node_) {
+    return;
+  }
+
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    SchedulePaintPinnedTrailingSeparator();
+  }
+
+  if (is_first_window_presentation_ ||
       collection_node_->GetController()->GetDragHandler().IsDragging()) {
     return;
   }
@@ -748,24 +765,36 @@ views::View* TabStripView::AddScrollViewContents(
     std::unique_ptr<views::View> view) {
   if (auto* container =
           views::AsViewClass<UnpinnedTabContainerView>(view.get())) {
+    CHECK(!unpinned_tabs_container_view_);
     unpinned_tabs_container_view_ = container;
+    if (orientation_ == TabStripOrientation::kHorizontal) {
+      unpinned_leading_edge_paint_scheduled_subscription_ =
+          container->RegisterLeadingEdgePaintScheduledCallback(
+              base::BindRepeating(
+                  &TabStripView::SchedulePaintPinnedTrailingSeparator,
+                  base::Unretained(this)));
+    }
     return unpinned_tabs_scroll_view_->SetContents(std::move(view));
   }
   // `view` should only ever be UnpinnedTabContainerView or
   // PinnedTabContainerView.
   auto* container = views::AsViewClass<PinnedTabContainerView>(view.get());
   CHECK(container);
+  CHECK(!pinned_tabs_container_view_);
   pinned_tabs_container_view_ = container;
   return pinned_tabs_scroll_view_->SetContents(std::move(view));
 }
 
 void TabStripView::RemoveScrollViewContents(views::View* view) {
   if (views::IsViewClass<UnpinnedTabContainerView>(view)) {
+    CHECK_EQ(view, unpinned_tabs_container_view_);
+    unpinned_leading_edge_paint_scheduled_subscription_ = {};
     unpinned_tabs_container_view_ = nullptr;
     unpinned_tabs_scroll_view_->SetContents(nullptr);
     return;
   }
   if (views::IsViewClass<PinnedTabContainerView>(view)) {
+    CHECK_EQ(view, pinned_tabs_container_view_);
     pinned_tabs_container_view_ = nullptr;
     pinned_tabs_scroll_view_->SetContents(nullptr);
     return;
@@ -845,6 +874,7 @@ void TabStripView::SetScrollViewProperties(views::ScrollView* scroll_view) {
 }
 
 void TabStripView::ResetCollectionNode() {
+  unpinned_leading_edge_paint_scheduled_subscription_ = {};
   collection_node_ = nullptr;
   if (tab_scroll_button_container_) {
     tab_scroll_button_container_->SetScrollView(nullptr);
@@ -1209,6 +1239,35 @@ void TabStripView::UpdateSeparatorVisibility() {
   CHECK(unpinned_tabs_container_view_);
   pinned_tabs_container_view_->SchedulePaint();
   unpinned_tabs_container_view_->SchedulePaint();
+}
+
+void TabStripView::SchedulePaintPinnedTrailingSeparator() {
+  CHECK_EQ(orientation_, TabStripOrientation::kHorizontal);
+  if (tabs::IsNewHorizontalPinnedTabStylingEnabled() ||
+      ShouldHideSeparators()) {
+    return;
+  }
+  TabCollectionNode* const pinned_node =
+      collection_node_->GetChildNodeOfType(TabCollectionNode::Type::PINNED);
+  if (!pinned_node || pinned_node->children().empty()) {
+    return;
+  }
+  // Schedule paint on the last pinned tab view's trailing overlap rather than
+  // the container's trailing edge: overflowing pinned containers add
+  // `tab_overlap / 2` padding, and `last_view` may temporarily paint to its own
+  // layer during animations.
+  TabCollectionNode* last_pinned = pinned_node->children().back().get();
+  if (last_pinned->type() == TabCollectionNode::Type::SPLIT &&
+      !last_pinned->children().empty()) {
+    last_pinned = last_pinned->children().back().get();
+  }
+  views::View& last_view = CHECK_DEREF(last_pinned->view());
+  const int strip_width =
+      std::min(TabStyle::Get()->GetTabOverlap(), last_view.width());
+  if (strip_width > 0 && last_view.height() > 0) {
+    last_view.SchedulePaintInRect(last_view.GetMirroredRect(gfx::Rect(
+        last_view.width() - strip_width, 0, strip_width, last_view.height())));
+  }
 }
 
 BEGIN_METADATA(TabStripView)
