@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
 class BrowserWindowInterface;
@@ -37,11 +38,16 @@ class ContextualSearchSessionHandle;
 struct TabContextState;
 }  // namespace contextual_search
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace contextual_tasks {
 
 // Manages the Contextual Tasks privacy notice and Ask Google tooltip bubbles.
 class ContextualTasksOnboardingTooltipController
-    : public views::WidgetObserver {
+    : public views::ViewObserver,
+      public views::WidgetObserver {
  public:
   // `browser_window` and `profile` may be null in tests and must outlive
   // `this` when non-null.
@@ -76,6 +82,10 @@ class ContextualTasksOnboardingTooltipController
     return toolbar_web_contents_observer_.web_contents();
   }
 
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
+
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
@@ -103,6 +113,11 @@ class ContextualTasksOnboardingTooltipController
   void OnFaviconsElementShown(ui::TrackedElement* element);
   void OnFaviconsElementHidden(ui::TrackedElement* element);
   void OnFaviconsElementBoundsChanged(ui::TrackedElement* element);
+  // Lays out the browser window if necessary and re-anchors the bubble, after
+  // the side panel hosting the anchor moved or resized.
+  void OnSidePanelBoundsSettled();
+  // Re-anchors the showing bubble to the current screen bounds of its anchor.
+  void UpdateBubbleAnchorBounds();
   void MaybeShowBubble(ui::TrackedElement* anchor_element);
   bool IsAskGoogleEntryPointEligible() const;
   bool HasAutomaticActiveTab() const;
@@ -126,6 +141,9 @@ class ContextualTasksOnboardingTooltipController
       bubble_widget_observation_{this};
   base::OneShotTimer impression_delay_timer_;
   std::vector<ui::ElementTracker::Subscription> element_subscriptions_;
+  base::ScopedObservation<views::View, views::ViewObserver>
+      side_panel_observation_{this};
+  bool side_panel_update_pending_ = false;
   bool is_subscribed_ = false;
   base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
       subscribed_session_handle_;

@@ -2997,6 +2997,12 @@ class ContextualTasksOnboardingBubbleInteractiveUiTest
     test_element_->Show();
   }
 
+  // Moves the favicons element on screen without notifying that its bounds
+  // changed, as happens when the side panel hosting it moves.
+  void MoveFaviconsElementWithoutNotifying(const gfx::Rect& screen_bounds) {
+    test_element_->SetScreenBounds(screen_bounds);
+  }
+
   void AddAutomaticActiveTabToPanelSession() {
     auto* session_handle =
         GetCoordinator()->GetContextualSearchSessionHandleForPanel();
@@ -3168,6 +3174,54 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksOnboardingBubbleInteractiveUiTest,
                 ->IsBubbleShowing();
           },
           false));
+}
+
+// This tests the following CUJ:
+//  (1) User opens the Contextual Tasks side panel and the onboarding bubble
+//      appears anchored to the tab favicons element.
+//  (2) The side panel changes bounds without an animation, moving the tab
+//      favicons element on screen.
+//  (3) The onboarding bubble follows the tab favicons element.
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksOnboardingBubbleInteractiveUiTest,
+    RepositionsOnboardingBubbleWhenSidePanelBoundsChangeWithoutAnimation) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kBubbleRepositionedState);
+
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+  gfx::Rect initial_bubble_bounds;
+
+  RunTestSequence(
+      Do([coordinator]() {
+        coordinator->Show(
+            /*transition_from_tab=*/false,
+            omnibox::ChromeAimEntryPoint::
+                DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([this]() {
+        AddAutomaticActiveTabToPanelSession();
+        ShowFaviconsElement();
+      }),
+      WaitForShow(ContextualTasksOnboardingBubbleView::kBubbleElementId),
+      Do([this, coordinator, &initial_bubble_bounds]() {
+        initial_bubble_bounds = coordinator->onboarding_controller_for_testing()
+                                    ->bubble_widget_for_testing()
+                                    ->GetWindowBoundsInScreen();
+        MoveFaviconsElementWithoutNotifying(gfx::Rect(220, 180, 50, 50));
+        SidePanel* side_panel =
+            BrowserView::GetBrowserViewForBrowser(browser())->side_panel();
+        side_panel->SetPanelWidth(side_panel->width() + 50);
+      }),
+      PollState(kBubbleRepositionedState,
+                [coordinator, &initial_bubble_bounds]() {
+                  views::Widget* bubble_widget =
+                      coordinator->onboarding_controller_for_testing()
+                          ->bubble_widget_for_testing();
+                  return bubble_widget &&
+                         bubble_widget->GetWindowBoundsInScreen() !=
+                             initial_bubble_bounds;
+                }),
+      WaitForState(kBubbleRepositionedState, true));
 }
 
 }  // namespace contextual_tasks

@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_onboarding_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
@@ -38,6 +40,7 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -158,6 +161,26 @@ void ContextualTasksOnboardingTooltipController::
   OnTabContextUpdated(contextual_search::TabContextState());
 }
 
+void ContextualTasksOnboardingTooltipController::OnViewBoundsChanged(
+    views::View* observed_view) {
+  if (!IsBubbleShowing() || side_panel_update_pending_) {
+    return;
+  }
+  // This is called in the middle of a layout, before the panel's `WebContents`
+  // has been moved to its new position. Re-anchor once the layout is done.
+  side_panel_update_pending_ = true;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &ContextualTasksOnboardingTooltipController::OnSidePanelBoundsSettled,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ContextualTasksOnboardingTooltipController::OnViewIsDeleting(
+    views::View* observed_view) {
+  side_panel_observation_.Reset();
+}
+
 void ContextualTasksOnboardingTooltipController::OnWidgetDestroying(
     views::Widget* widget) {
   if (widget == bubble_widget_.get()) {
@@ -168,6 +191,19 @@ void ContextualTasksOnboardingTooltipController::OnWidgetDestroying(
 }
 
 void ContextualTasksOnboardingTooltipController::EnsureSubscribed() {
+  // The anchor's bounds inside the panel's `WebContents` don't change when the
+  // side panel itself moves or resizes, so no bounds-changed event fires for
+  // it. Follow the side panel's bounds so that the bubble stays attached to its
+  // anchor however the panel changes: animated or not, or resized.
+  if (!side_panel_observation_.IsObserving()) {
+    if (BrowserView* browser_view =
+            browser_window_
+                ? BrowserView::GetBrowserViewForBrowser(browser_window_)
+                : nullptr;
+        browser_view && browser_view->side_panel()) {
+      side_panel_observation_.Observe(browser_view->side_panel());
+    }
+  }
   if (is_subscribed_) {
     return;
   }
@@ -279,12 +315,32 @@ void ContextualTasksOnboardingTooltipController::OnFaviconsElementBoundsChanged(
   if (!element || element->identifier() != kContextualTasksFaviconsElementId) {
     return;
   }
-  if (IsBubbleShowing()) {
-    if (views::WidgetDelegate* widget_delegate =
-            bubble_widget_->widget_delegate()) {
-      if (auto* delegate = widget_delegate->AsBubbleDialogDelegate()) {
-        delegate->OnAnchorBoundsChanged();
-      }
+  UpdateBubbleAnchorBounds();
+}
+
+void ContextualTasksOnboardingTooltipController::OnSidePanelBoundsSettled() {
+  side_panel_update_pending_ = false;
+  if (!IsBubbleShowing()) {
+    return;
+  }
+  // Moving the side panel invalidates the layout of its `WebContents`. Lay out
+  // now so that the anchor's screen bounds are up to date.
+  if (BrowserView* browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser_window_);
+      browser_view && browser_view->GetWidget()) {
+    browser_view->GetWidget()->LayoutRootViewIfNecessary();
+  }
+  UpdateBubbleAnchorBounds();
+}
+
+void ContextualTasksOnboardingTooltipController::UpdateBubbleAnchorBounds() {
+  if (!IsBubbleShowing()) {
+    return;
+  }
+  if (views::WidgetDelegate* widget_delegate =
+          bubble_widget_->widget_delegate()) {
+    if (auto* delegate = widget_delegate->AsBubbleDialogDelegate()) {
+      delegate->OnAnchorBoundsChanged();
     }
   }
 }
