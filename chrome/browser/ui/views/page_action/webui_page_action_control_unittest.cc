@@ -1142,10 +1142,8 @@ TEST_F(WebUIPageActionControlTest,
       .priority = page_actions::PageActionPriorityCategory::
           kSecurityTrustAndPermissions,
   };
-  const page_actions::AnchoredMessageConfig anchored_message_config{
-      .priority = page_actions::PageActionPriorityCategory::
-          kSecurityTrustAndPermissions,
-  };
+  const page_actions::AnchoredMessageConfig anchored_message_config(
+      page_actions::PageActionPriorityCategory::kSecurityTrustAndPermissions);
 
   // Promote kActionShowTranslate to a suggestion chip. Chips precede regular
   // icons.
@@ -1931,7 +1929,8 @@ TEST_F(WebUIPageActionControlAnchoredMessageTest,
   // icon color stays `kColorOmniboxActionIcon` until the bubble actually shows.
   controller_->ShowAnchoredMessage(
       kActionShowTranslate,
-      {.priority = page_actions::PageActionPriorityCategory::kUserInteraction});
+      page_actions::AnchoredMessageConfig(
+          page_actions::PageActionPriorityCategory::kUserInteraction));
   EXPECT_FALSE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
 
   auto states = control_->GetPageActionStates();
@@ -1971,7 +1970,8 @@ TEST_F(WebUIPageActionControlAnchoredMessageTest,
   controller_->Show(kActionShowTranslate);
   controller_->ShowAnchoredMessage(
       kActionShowTranslate,
-      {.priority = page_actions::PageActionPriorityCategory::kUserInteraction});
+      page_actions::AnchoredMessageConfig(
+          page_actions::PageActionPriorityCategory::kUserInteraction));
 
   AnchoredMessageBubbleView* bubble = GetAnchoredMessage(kActionShowTranslate);
   ASSERT_TRUE(bubble);

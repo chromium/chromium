@@ -1051,8 +1051,8 @@ void IndigoPageActionController::ShowAnchoredMessage(
         std::make_unique<IndigoMenuModel>(profile, GetWeakPtr()));
   }
 
-  page_action_controller_->ShowAnchoredMessage(kActionIndigo,
-                                               {.priority = priority});
+  page_action_controller_->ShowAnchoredMessage(
+      kActionIndigo, page_actions::AnchoredMessageConfig(priority));
 }
 
 bool IndigoPageActionController::ShouldOfferContextMenuSnoozeIph() const {

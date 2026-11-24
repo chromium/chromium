@@ -159,6 +159,11 @@ const base::FeatureParam<bool> kEnablePrivateInsightsLogging(
     "ContextualCueingV2EnablePrivateInsightsLogging",
     false);
 
+const base::FeatureParam<base::TimeDelta> kAnchoredMessageTimeout(
+    &kContextualCueingV2,
+    "ContextualCueingV2AnchoredMessageTimeout",
+    base::Seconds(15));
+
 BASE_FEATURE(kHappinessTrackingSurveysForContextualCueingDismissed,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

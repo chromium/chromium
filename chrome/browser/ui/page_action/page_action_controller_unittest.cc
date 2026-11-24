@@ -513,7 +513,7 @@ TEST_F(PageActionControllerMockModelTest,
               SetShouldShowAnchoredMessage(_, true));
   controller().ShowAnchoredMessage(
       kFirstActionItemId,
-      {.priority = PageActionPriorityCategory::kUserInteraction});
+      AnchoredMessageConfig(PageActionPriorityCategory::kUserInteraction));
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetShouldShowSuggestionChip(_, true))
@@ -528,7 +528,8 @@ TEST_F(PageActionControllerMockModelTest,
               SetShouldShowAnchoredMessage(_, true));
   controller().ShowAnchoredMessage(
       kFirstActionItemId,
-      {.priority = PageActionPriorityCategory::kSecurityTrustAndPermissions});
+      AnchoredMessageConfig(
+          PageActionPriorityCategory::kSecurityTrustAndPermissions));
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetShouldShowSuggestionChip(_, true))
@@ -537,6 +538,61 @@ TEST_F(PageActionControllerMockModelTest,
               SetShouldShowAnchoredMessage(_, false))
       .Times(1);
   task_environment_.FastForwardBy(base::Seconds(16));
+}
+
+TEST_F(PageActionControllerMockModelTest, AnchoredMessageCustomTimeout) {
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowAnchoredMessage(_, true));
+  AnchoredMessageConfig config(
+      PageActionPriorityCategory::kSecurityTrustAndPermissions);
+  config.set_timeout_for_testing(base::Seconds(30));
+  controller().ShowAnchoredMessage(kFirstActionItemId, config);
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowSuggestionChip(_, true))
+      .Times(0);
+  task_environment_.FastForwardBy(base::Seconds(16));
+  testing::Mock::VerifyAndClearExpectations(&models().Get(kFirstActionItemId));
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowSuggestionChip(_, true))
+      .Times(1);
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowAnchoredMessage(_, false))
+      .Times(1);
+  task_environment_.FastForwardBy(base::Seconds(14));
+}
+
+TEST_F(PageActionControllerMockModelTest,
+       AnchoredMessageNonPositiveTimeoutUsesDefault) {
+  for (const base::TimeDelta invalid_timeout :
+       {base::Seconds(0), base::Seconds(-5)}) {
+    EXPECT_CALL(models().Get(kFirstActionItemId),
+                SetShouldShowAnchoredMessage(_, true));
+    AnchoredMessageConfig config(
+        PageActionPriorityCategory::kSecurityTrustAndPermissions);
+    config.set_timeout_for_testing(invalid_timeout);
+    controller().ShowAnchoredMessage(kFirstActionItemId, config);
+
+    EXPECT_CALL(models().Get(kFirstActionItemId),
+                SetShouldShowSuggestionChip(_, true))
+        .Times(0);
+    task_environment_.FastForwardBy(base::Seconds(14));
+    testing::Mock::VerifyAndClearExpectations(
+        &models().Get(kFirstActionItemId));
+
+    EXPECT_CALL(models().Get(kFirstActionItemId),
+                SetShouldShowSuggestionChip(_, true))
+        .Times(1);
+    EXPECT_CALL(models().Get(kFirstActionItemId),
+                SetShouldShowAnchoredMessage(_, false))
+        .Times(1);
+    task_environment_.FastForwardBy(base::Seconds(2));
+    testing::Mock::VerifyAndClearExpectations(
+        &models().Get(kFirstActionItemId));
+
+    controller().HideAnchoredMessage(kFirstActionItemId);
+  }
 }
 
 TEST_F(PageActionControllerMockModelTest,
@@ -548,7 +604,8 @@ TEST_F(PageActionControllerMockModelTest,
 
   controller().ShowAnchoredMessage(
       kFirstActionItemId,
-      {.priority = PageActionPriorityCategory::kSecurityTrustAndPermissions});
+      AnchoredMessageConfig(
+          PageActionPriorityCategory::kSecurityTrustAndPermissions));
 
   delegate.expand_callback_.Run();
   delegate.expand_callback_.Run();
@@ -579,7 +636,8 @@ TEST_F(PageActionControllerMockModelTest, AnchoredMessageTimeoutResetOnHide) {
 
   controller().ShowAnchoredMessage(
       kFirstActionItemId,
-      {.priority = PageActionPriorityCategory::kSecurityTrustAndPermissions});
+      AnchoredMessageConfig(
+          PageActionPriorityCategory::kSecurityTrustAndPermissions));
 
   delegate.expand_callback_.Run();
   controller().HideAnchoredMessage(kFirstActionItemId);
@@ -588,7 +646,8 @@ TEST_F(PageActionControllerMockModelTest, AnchoredMessageTimeoutResetOnHide) {
               SetShouldShowAnchoredMessage(_, true));
   controller().ShowAnchoredMessage(
       kFirstActionItemId,
-      {.priority = PageActionPriorityCategory::kSecurityTrustAndPermissions});
+      AnchoredMessageConfig(
+          PageActionPriorityCategory::kSecurityTrustAndPermissions));
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetShouldShowSuggestionChip(_, true))
@@ -974,7 +1033,8 @@ TEST_F(PageActionControllerMockModelTest,
       .Times(1);
   controller().ShowAnchoredMessage(
       kFirstActionItemId,
-      {.priority = PageActionPriorityCategory::kSecurityTrustAndPermissions});
+      AnchoredMessageConfig(
+          PageActionPriorityCategory::kSecurityTrustAndPermissions));
   EXPECT_EQ(controller().GetActiveAnchoredMessage(), kFirstActionItemId);
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
@@ -1017,7 +1077,8 @@ TEST_F(PageActionControllerMockModelTest,
       .Times(1);
   controller().ShowAnchoredMessage(
       kFirstActionItemId,
-      {.priority = PageActionPriorityCategory::kSecurityTrustAndPermissions});
+      AnchoredMessageConfig(
+          PageActionPriorityCategory::kSecurityTrustAndPermissions));
 
   EXPECT_EQ(controller().GetActiveAnchoredMessage(), std::nullopt);
 }
@@ -1036,7 +1097,8 @@ TEST_F(PageActionControllerMockModelTest,
 
   controller().ShowAnchoredMessage(
       kSecondActionItemId,
-      {.priority = PageActionPriorityCategory::kSecurityTrustAndPermissions});
+      AnchoredMessageConfig(
+          PageActionPriorityCategory::kSecurityTrustAndPermissions));
 
   EXPECT_EQ(controller().GetActiveAnchoredMessage(), std::nullopt);
 }
@@ -1055,7 +1117,7 @@ TEST_F(PageActionControllerMockModelTest,
 
   controller().ShowAnchoredMessage(
       kSecondActionItemId,
-      {.priority = PageActionPriorityCategory::kProactiveSuggestion});
+      AnchoredMessageConfig(PageActionPriorityCategory::kProactiveSuggestion));
 
   EXPECT_EQ(controller().GetActiveAnchoredMessage(), std::nullopt);
 }
@@ -1074,7 +1136,7 @@ TEST_F(PageActionControllerMockModelTest,
 
   controller().ShowAnchoredMessage(
       kSecondActionItemId,
-      {.priority = PageActionPriorityCategory::kUserInteraction});
+      AnchoredMessageConfig(PageActionPriorityCategory::kUserInteraction));
 
   EXPECT_EQ(controller().GetActiveAnchoredMessage(), kSecondActionItemId);
 }
@@ -1087,7 +1149,8 @@ TEST_F(
       .Times(1);
   controller().ShowAnchoredMessage(
       kFirstActionItemId,
-      {.priority = PageActionPriorityCategory::kSecurityTrustAndPermissions});
+      AnchoredMessageConfig(
+          PageActionPriorityCategory::kSecurityTrustAndPermissions));
   EXPECT_EQ(controller().GetActiveAnchoredMessage(), kFirstActionItemId);
 
   EXPECT_CALL(models().Get(kSecondActionItemId), SetActionActive(_, true))
@@ -1118,8 +1181,8 @@ TEST_F(
       controller()->CreateActionItemSubscription(action_item_b.get());
 
   controller()->ShowAnchoredMessage(
-      0,
-      {.priority = PageActionPriorityCategory::kSecurityTrustAndPermissions});
+      0, AnchoredMessageConfig(
+             PageActionPriorityCategory::kSecurityTrustAndPermissions));
   EXPECT_EQ(controller()->GetActiveAnchoredMessage(), 0);
 
   action_item_b->SetIsShowingBubble(true);
@@ -1138,7 +1201,8 @@ TEST_F(PageActionControllerMockModelTest,
       .Times(1);
   controller().ShowAnchoredMessage(
       kFirstActionItemId,
-      {.priority = PageActionPriorityCategory::kSecurityTrustAndPermissions});
+      AnchoredMessageConfig(
+          PageActionPriorityCategory::kSecurityTrustAndPermissions));
   EXPECT_EQ(controller().GetActiveAnchoredMessage(), kFirstActionItemId);
 
   delegate.expand_callback_.Run();
@@ -1174,7 +1238,7 @@ TEST_F(PageActionControllerMockModelTest,
       .Times(0);
   controller().ShowAnchoredMessage(
       kSecondActionItemId,
-      {.priority = PageActionPriorityCategory::kProactiveSuggestion});
+      AnchoredMessageConfig(PageActionPriorityCategory::kProactiveSuggestion));
   EXPECT_EQ(controller().GetActiveAnchoredMessage(), std::nullopt);
 
   EXPECT_CALL(models().Get(kFirstActionItemId), SetActionActive(_, true))

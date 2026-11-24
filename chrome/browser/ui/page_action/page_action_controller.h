@@ -42,6 +42,10 @@ namespace base {
 class CallbackListSubscription;
 }
 
+namespace contextual_cueing {
+class ContextualCueingController;
+}  // namespace contextual_cueing
+
 namespace ui {
 class SimpleMenuModel;
 }  // namespace ui
@@ -171,10 +175,27 @@ struct SuggestionChipConfig {
 
 // Configuration for a page action's anchored message.
 struct AnchoredMessageConfig {
+  static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(15);
+
+  AnchoredMessageConfig() = default;
+  explicit AnchoredMessageConfig(PageActionPriorityCategory priority)
+      : priority(priority) {}
+
   // What priority this suggestion chip is.
   PageActionPriorityCategory priority = PageActionPriorityCategory::kUnknown;
 
+  void set_timeout_for_testing(base::TimeDelta timeout) { timeout_ = timeout; }
+
   auto operator<=>(const AnchoredMessageConfig& other) const = default;
+
+ private:
+  friend class contextual_cueing::ContextualCueingController;
+  friend class PageActionControllerImpl;
+
+  // How long the anchored message should be shown before downgrading to a
+  // suggestion chip. Ignored when `priority` is `kUserInteraction`.
+  // Non-positive values are ignored and fall back to `kDefaultTimeout`.
+  base::TimeDelta timeout_ = kDefaultTimeout;
 };
 
 // Represents a scope during which a page action is considered active.

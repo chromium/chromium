@@ -385,7 +385,8 @@ void FilterUiController::ShowCueWithFavicon() {
   page_action_controller_->Show(kActionMultistepFilter);
 
   page_action_controller_->ShowAnchoredMessage(
-      kActionMultistepFilter, {.priority = kMultistepFilterPriority});
+      kActionMultistepFilter,
+      page_actions::AnchoredMessageConfig(kMultistepFilterPriority));
 }
 
 void FilterUiController::ClearCue() {

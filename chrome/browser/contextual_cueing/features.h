@@ -96,6 +96,9 @@ extern const base::FeatureParam<bool> kShouldShowCueInSplitView;
 // If true, logs telemetry events to the Private Insights Service.
 extern const base::FeatureParam<bool> kEnablePrivateInsightsLogging;
 
+// The timeout before an anchored message cue downgrades to a suggestion chip.
+extern const base::FeatureParam<base::TimeDelta> kAnchoredMessageTimeout;
+
 // Happiness Tracking Survey (HaTS) feature for contextual cueing dismissals.
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForContextualCueingDismissed);
 

@@ -255,8 +255,11 @@ void PageActionControllerImpl::DoShowAnchoredMessage(
   if (!anchored_message_has_timeout_) {
     return;
   }
+  const base::TimeDelta timeout = config.timeout_.is_positive()
+                                      ? config.timeout_
+                                      : AnchoredMessageConfig::kDefaultTimeout;
   anchored_message_timeout_.Start(
-      FROM_HERE, base::Seconds(15),
+      FROM_HERE, timeout,
       base::BindRepeating(&PageActionControllerImpl::DowngradeAnchoredMessage,
                           base::Unretained(this), action_id));
 }

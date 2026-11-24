@@ -1316,10 +1316,11 @@ void ContextualCueingController::ShowCue(
   page_action_controller->Show(kActionAnchoredContextualCue);
 
   if (intrusiveness == CueIntrusiveness::kLoud) {
-    page_action_controller->ShowAnchoredMessage(
-        kActionAnchoredContextualCue,
-        {.priority =
-             page_actions::PageActionPriorityCategory::kProactiveSuggestion});
+    page_actions::AnchoredMessageConfig config(
+        page_actions::PageActionPriorityCategory::kProactiveSuggestion);
+    config.timeout_ = kAnchoredMessageTimeout.Get();
+    page_action_controller->ShowAnchoredMessage(kActionAnchoredContextualCue,
+                                                config);
   }
 
   CUEING_LOG(base::StringPrintf(
@@ -1543,8 +1544,8 @@ void ContextualCueingController::OnCueClicked(
           page_actions::PageActionPriorityCategory::kUserInteraction;
       page_action_controller->ShowAnchoredMessage(
           kActionAnchoredContextualCue,
-          {.priority =
-               page_actions::PageActionPriorityCategory::kUserInteraction});
+          page_actions::AnchoredMessageConfig(
+              page_actions::PageActionPriorityCategory::kUserInteraction));
       if (!cue_hidden_time_.is_null()) {
         base::TimeDelta collapsed_duration =
             base::TimeTicks::Now() - cue_hidden_time_;

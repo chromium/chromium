@@ -6050,7 +6050,8 @@ IN_PROC_BROWSER_TEST_F(WebUIPageActionBrowserTest,
   controller_->SetAnchoredMessageText(kActionShowTranslate, u"Translate Page?");
   controller_->ShowAnchoredMessage(
       kActionShowTranslate,
-      {.priority = page_actions::PageActionPriorityCategory::kUserInteraction});
+      page_actions::AnchoredMessageConfig(
+          page_actions::PageActionPriorityCategory::kUserInteraction));
 
   ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
     return control.IsAnchoredMessageShowing(kActionShowTranslate) &&

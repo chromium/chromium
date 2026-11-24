@@ -1736,7 +1736,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   // Show an anchored message using another action ID.
   page_action_controller->ShowAnchoredMessage(
       kActionSidePanelShowReadAnything,
-      {.priority = page_actions::PageActionPriorityCategory::kQuietUtility});
+      page_actions::AnchoredMessageConfig(
+          page_actions::PageActionPriorityCategory::kQuietUtility));
 
   SimulateFilterPassed();
 
