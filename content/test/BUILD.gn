@@ -1713,6 +1713,7 @@ test("content_browsertests") {
     "../browser/resource_loading_browsertest.cc",
     "../browser/screen_details/screen_details_browsertest.cc",
     "../browser/screen_orientation/screen_orientation_browsertest.cc",
+    "../browser/security/coep/cross_origin_embedder_policy_reporting_browsertest.cc",
     "../browser/security/coop/cross_origin_opener_policy_browsertest.cc",
     "../browser/security/cpsp/child_process_security_policy_browsertest.cc",
     "../browser/security/dip/document_isolation_policy_browsertest.cc",
