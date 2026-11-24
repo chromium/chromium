@@ -14363,6 +14363,11 @@ void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
 std::vector<std::string> RegisterAllFeatureVariationParameters(
     flags_ui::FlagsStorage* flags_storage,
     base::FeatureList* feature_list) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kNoExperiments)) {
+    return {};
+  }
+
   return FlagsStateSingleton::GetFlagsState()
       ->RegisterAllFeatureVariationParameters(flags_storage, feature_list);
 }

@@ -18,6 +18,7 @@
 #include "components/variations/variations_ids_provider.h"
 #include "components/webui/flags/feature_entry.h"
 #include "components/webui/flags/feature_entry_macros.h"
+#include "components/webui/flags/flags_ui_switches.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -144,3 +145,32 @@ IN_PROC_BROWSER_TEST_F(ChromeFeatureListCreatorLocalStateOnlyBrowserTest,
               testing::Not(testing::Contains(kTestVariationId)));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Starts the browser with --no-experiments and the about:flags variation
+// `kTestFlagVariationOption` selected.
+class ChromeFeatureListCreatorNoExperimentsBrowserTest
+    : public ChromeFeatureListCreatorBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeFeatureListCreatorBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kNoExperiments);
+  }
+};
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(ChromeFeatureListCreatorNoExperimentsBrowserTest,
+                       PRE_SkipsVariationParams) {
+  SelectTestFlagVariationInLocalState();
+}
+#endif
+
+// Verifies that --no-experiments skips both about:flags startup steps: switch
+// conversion and parameter registration.
+IN_PROC_BROWSER_TEST_F(ChromeFeatureListCreatorNoExperimentsBrowserTest,
+                       SkipsVariationParams) {
+  EXPECT_FALSE(
+      base::FeatureList::IsEnabled(kChromeFeatureListCreatorTestFeature));
+  EXPECT_FALSE(base::FieldTrialList::TrialExists(kTestTrialName));
+  EXPECT_EQ("", base::GetFieldTrialParamValueByFeature(
+                    kChromeFeatureListCreatorTestFeature, kTestParamName));
+}

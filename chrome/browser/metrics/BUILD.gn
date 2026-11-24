@@ -870,6 +870,7 @@ if (!is_android) {
       "//components/variations",
       "//components/webui/chrome_urls",
       "//components/webui/flags",
+      "//components/webui/flags:switches",
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//extensions/buildflags",
