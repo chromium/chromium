@@ -5,6 +5,7 @@
 #include "components/signin/core/browser/account_investigator.h"
 
 #include <map>
+#include <string>
 
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -19,6 +20,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -151,15 +153,28 @@ class AccountInvestigatorTest : public testing::Test {
 
 namespace {
 
-ListedAccount Account(const CoreAccountId& account_id) {
+// Uses `GetTestGaiaIdForEmail()` so the account ID matches the one generated
+// by `IdentityTestEnvironment`.
+ListedAccount Account(const std::string& email) {
   ListedAccount account;
-  account.id = account_id;
+  account.id = CoreAccountId::FromGaiaId(signin::GetTestGaiaIdForEmail(email));
   return account;
 }
 
-ListedAccount SignedOutAccount(const CoreAccountId& account_id) {
-  ListedAccount account;
-  account.id = account_id;
+ListedAccount Account1() {
+  return Account("1@mail.com");
+}
+
+ListedAccount Account2() {
+  return Account("2@mail.com");
+}
+
+ListedAccount Account3() {
+  return Account("3@mail.com");
+}
+
+ListedAccount SignedOutAccount1() {
+  ListedAccount account = Account1();
   account.signed_out = true;
   return account;
 }
@@ -171,20 +186,6 @@ CoreAccountInfo ToAccountInfo(ListedAccount account) {
   account_info.email = account.email;
   return account_info;
 }
-
-// NOTE: IdentityTestEnvironment uses a prefix for generating gaia IDs:
-// "gaia_id_for_". For this reason, the tests prefix expected account IDs
-// used so that there is a match.
-const GaiaId kGaiaId1 = signin::GetTestGaiaIdForEmail("1@mail.com");
-const GaiaId kGaiaId2 = signin::GetTestGaiaIdForEmail("2@mail.com");
-const GaiaId kGaiaId3 = signin::GetTestGaiaIdForEmail("3@mail.com");
-
-const ListedAccount one(Account(CoreAccountId::FromGaiaId(kGaiaId1)));
-const ListedAccount two(Account(CoreAccountId::FromGaiaId(kGaiaId2)));
-const ListedAccount three(Account(CoreAccountId::FromGaiaId(kGaiaId3)));
-
-const ListedAccount one_signed_out(
-    SignedOutAccount(CoreAccountId::FromGaiaId(kGaiaId1)));
 
 TEST_F(AccountInvestigatorTest, CalculatePeriodicDelay) {
   const Time epoch;
@@ -200,50 +201,55 @@ TEST_F(AccountInvestigatorTest, CalculatePeriodicDelay) {
 
 TEST_F(AccountInvestigatorTest, HashAccounts) {
   EXPECT_EQ(Hash({}, {}), Hash({}, {}));
-  EXPECT_EQ(Hash({one}, {two}), Hash({one}, {two}));
-  EXPECT_EQ(Hash({one, two}, {}), Hash({one, two}, {}));
-  EXPECT_EQ(Hash({}, {one, two}), Hash({}, {one, two}));
-  EXPECT_EQ(Hash({one, two}, {}), Hash({two, one}, {}));
-  EXPECT_EQ(Hash({}, {one, two}), Hash({}, {two, one}));
+  EXPECT_EQ(Hash({Account1()}, {Account2()}), Hash({Account1()}, {Account2()}));
+  EXPECT_EQ(Hash({Account1(), Account2()}, {}),
+            Hash({Account1(), Account2()}, {}));
+  EXPECT_EQ(Hash({}, {Account1(), Account2()}),
+            Hash({}, {Account1(), Account2()}));
+  EXPECT_EQ(Hash({Account1(), Account2()}, {}),
+            Hash({Account2(), Account1()}, {}));
+  EXPECT_EQ(Hash({}, {Account1(), Account2()}),
+            Hash({}, {Account2(), Account1()}));
 
-  EXPECT_NE(Hash({}, {}), Hash({one}, {}));
-  EXPECT_NE(Hash({}, {}), Hash({}, {one}));
-  EXPECT_NE(Hash({one}, {}), Hash({two}, {}));
-  EXPECT_NE(Hash({one}, {}), Hash({one, two}, {}));
-  EXPECT_NE(Hash({one}, {}), Hash({}, {one}));
+  EXPECT_NE(Hash({}, {}), Hash({Account1()}, {}));
+  EXPECT_NE(Hash({}, {}), Hash({}, {Account1()}));
+  EXPECT_NE(Hash({Account1()}, {}), Hash({Account2()}, {}));
+  EXPECT_NE(Hash({Account1()}, {}), Hash({Account1(), Account2()}, {}));
+  EXPECT_NE(Hash({Account1()}, {}), Hash({}, {Account1()}));
 }
 
 TEST_F(AccountInvestigatorTest, DiscernRelation) {
   EXPECT_EQ(AccountRelation::EMPTY_COOKIE_JAR,
-            Relation(ToAccountInfo(one), {}, {}));
+            Relation(ToAccountInfo(Account1()), {}, {}));
   EXPECT_EQ(AccountRelation::SINGLE_SIGNED_IN_MATCH_NO_SIGNED_OUT,
-            Relation(ToAccountInfo(one), {one}, {}));
+            Relation(ToAccountInfo(Account1()), {Account1()}, {}));
   EXPECT_EQ(AccountRelation::SINGLE_SINGED_IN_MATCH_WITH_SIGNED_OUT,
-            Relation(ToAccountInfo(one), {one}, {two}));
+            Relation(ToAccountInfo(Account1()), {Account1()}, {Account2()}));
   EXPECT_EQ(AccountRelation::WITH_SIGNED_IN_NO_MATCH,
-            Relation(ToAccountInfo(one), {two}, {}));
+            Relation(ToAccountInfo(Account1()), {Account2()}, {}));
   EXPECT_EQ(AccountRelation::ONE_OF_SIGNED_IN_MATCH_ANY_SIGNED_OUT,
-            Relation(ToAccountInfo(one), {one, two}, {one}));
+            Relation(ToAccountInfo(Account1()), {Account1(), Account2()},
+                     {Account1()}));
   EXPECT_EQ(AccountRelation::ONE_OF_SIGNED_IN_MATCH_ANY_SIGNED_OUT,
-            Relation(ToAccountInfo(one), {one, two}, {}));
+            Relation(ToAccountInfo(Account1()), {Account1(), Account2()}, {}));
   EXPECT_EQ(AccountRelation::NO_SIGNED_IN_ONE_OF_SIGNED_OUT_MATCH,
-            Relation(ToAccountInfo(one), {}, {one, two}));
+            Relation(ToAccountInfo(Account1()), {}, {Account1(), Account2()}));
   EXPECT_EQ(AccountRelation::NO_SIGNED_IN_SINGLE_SIGNED_OUT_MATCH,
-            Relation(ToAccountInfo(one), {}, {one}));
+            Relation(ToAccountInfo(Account1()), {}, {Account1()}));
   EXPECT_EQ(AccountRelation::WITH_SIGNED_IN_ONE_OF_SIGNED_OUT_MATCH,
-            Relation(ToAccountInfo(one), {two}, {one}));
+            Relation(ToAccountInfo(Account1()), {Account2()}, {Account1()}));
   EXPECT_EQ(AccountRelation::NO_SIGNED_IN_WITH_SIGNED_OUT_NO_MATCH,
-            Relation(ToAccountInfo(three), {}, {one, two}));
+            Relation(ToAccountInfo(Account3()), {}, {Account1(), Account2()}));
 }
 
 TEST_F(AccountInvestigatorTest, SignedInAccountRelationReport) {
-  ExpectRelationReport({one}, {}, ReportingType::PERIODIC,
+  ExpectRelationReport({Account1()}, {}, ReportingType::PERIODIC,
                        AccountRelation::WITH_SIGNED_IN_NO_MATCH);
   identity_test_env()->SetPrimaryAccount("1@mail.com",
                                          signin::ConsentLevel::kSignin);
-  ExpectRelationReport({one}, {}, ReportingType::PERIODIC,
+  ExpectRelationReport({Account1()}, {}, ReportingType::PERIODIC,
                        AccountRelation::SINGLE_SIGNED_IN_MATCH_NO_SIGNED_OUT);
-  ExpectRelationReport({two}, {}, ReportingType::ON_CHANGE,
+  ExpectRelationReport({Account2()}, {}, ReportingType::ON_CHANGE,
                        AccountRelation::WITH_SIGNED_IN_NO_MATCH);
 }
 
@@ -265,7 +271,8 @@ TEST_F(AccountInvestigatorTest, SharedCookieJarReportWithAccount) {
       AccountRelation::ONE_OF_SIGNED_IN_MATCH_ANY_SIGNED_OUT);
   const HistogramTester histogram_tester;
   const base::TimeDelta expected_stable_age(base::Days(1));
-  SharedReport({one, two}, {}, now + base::Days(1), ReportingType::ON_CHANGE);
+  SharedReport({Account1(), Account2()}, {}, now + base::Days(1),
+               ReportingType::ON_CHANGE);
   ExpectSharedReportHistograms(ReportingType::ON_CHANGE, histogram_tester,
                                &expected_stable_age, 2, 0, 2,
                                &expected_relation, false);
@@ -274,7 +281,7 @@ TEST_F(AccountInvestigatorTest, SharedCookieJarReportWithAccount) {
 TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedError) {
   const HistogramTester histogram_tester;
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
-      /*accounts_are_fresh=*/true, {one});
+      /*accounts_are_fresh=*/true, {Account1()});
   investigator()->OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info,
       GoogleServiceAuthError::FromServiceUnavailable(
@@ -286,7 +293,7 @@ TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedError) {
 TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedOnChange) {
   const HistogramTester histogram_tester;
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
-      /*accounts_are_fresh=*/true, {one});
+      /*accounts_are_fresh=*/true, {Account1()});
   investigator()->OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info, GoogleServiceAuthError::AuthErrorNone());
   ExpectSharedReportHistograms(ReportingType::ON_CHANGE, histogram_tester,
@@ -302,9 +309,9 @@ TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedSigninOnly) {
   const HistogramTester histogram_tester;
   identity_test_env()->SetPrimaryAccount("1@mail.com",
                                          signin::ConsentLevel::kSignin);
-  pref_service()->SetString(prefs::kGaiaCookieHash, Hash({one}, {}));
+  pref_service()->SetString(prefs::kGaiaCookieHash, Hash({Account1()}, {}));
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
-      /*accounts_are_fresh=*/true, {one});
+      /*accounts_are_fresh=*/true, {Account1()});
   investigator()->OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info, GoogleServiceAuthError::AuthErrorNone());
   EXPECT_EQ(
@@ -319,7 +326,7 @@ TEST_F(AccountInvestigatorTest,
   identity_test_env()->SetPrimaryAccount("1@mail.com",
                                          signin::ConsentLevel::kSignin);
   signin::AccountsInCookieJarInfo signed_in_account_in_cookies(
-      /*accounts_are_fresh=*/true, /*accounts=*/{one});
+      /*accounts_are_fresh=*/true, /*accounts=*/{Account1()});
   investigator()->OnAccountsInCookieUpdated(
       signed_in_account_in_cookies, GoogleServiceAuthError::AuthErrorNone());
   ExpectRelationReport(ReportingType::ON_CHANGE, histogram_tester,
@@ -328,7 +335,7 @@ TEST_F(AccountInvestigatorTest,
   // Simulate a sign out of the content area.
   const HistogramTester histogram_tester2;
   signin::AccountsInCookieJarInfo signed_out_account_in_cookies(
-      /*accounts_are_fresh=*/true, /*accounts=*/{one_signed_out});
+      /*accounts_are_fresh=*/true, /*accounts=*/{SignedOutAccount1()});
   investigator()->OnAccountsInCookieUpdated(
       signed_out_account_in_cookies, GoogleServiceAuthError::AuthErrorNone());
   const AccountRelation expected_relation =
