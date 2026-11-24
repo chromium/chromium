@@ -256,6 +256,11 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
         }
     }
 
+    @Override
+    public int getInterfaceVersion() {
+        return IJsSandboxIsolate.VERSION;
+    }
+
     // Notify the client side that the isolate should be terminated.
     //
     // Returns true if the client supports and received the onTerminated notification. (It is OK to

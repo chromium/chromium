@@ -89,7 +89,7 @@ public class JsSandboxMessagePortTest {
     public void testPostMessageWithArgs_string_succeeds() throws Throwable {
         final BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<>();
         MessagePort messagePort =
-                mJsIsolate.provideMessagePort(
+                mJsIsolate.createMessageChannel(
                         PORT_NAME, MoreExecutors.directExecutor(), messageQueue::add);
         String code =
                 String.format(
@@ -111,7 +111,7 @@ public class JsSandboxMessagePortTest {
     public void testPostMessageWithArgs_arrayBuffer_succeeds() throws Throwable {
         final BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<>();
         MessagePort messagePort =
-                mJsIsolate.provideMessagePort(
+                mJsIsolate.createMessageChannel(
                         PORT_NAME, MoreExecutors.directExecutor(), messageQueue::add);
         String code =
                 String.format(
@@ -134,7 +134,7 @@ public class JsSandboxMessagePortTest {
     }
 
     private void assertPostMessageThrowsTypeError(String expression) throws Throwable {
-        mJsIsolate.provideMessagePort(
+        mJsIsolate.createMessageChannel(
                 PORT_NAME, MoreExecutors.directExecutor(), EXPECT_NO_INCOMING_MESSAGES);
         String code =
                 String.format(
@@ -341,13 +341,13 @@ public class JsSandboxMessagePortTest {
         String messageString = "Hello World";
         final BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<>();
         MessagePort messagePort =
-                mJsIsolate.provideMessagePort(
+                mJsIsolate.createMessageChannel(
                         PORT_NAME, MoreExecutors.directExecutor(), messageQueue::add);
 
         earlyEval.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         // Make sure the port works as expected.
-        messagePort.postMessage(Message.createString(messageString));
+        messagePort.postMessage(Message.createStringMessage(messageString));
         Assert.assertEquals(
                 messageString, messageQueue.poll(TIMEOUT_SECONDS, TimeUnit.SECONDS).getString());
     }
@@ -401,16 +401,16 @@ public class JsSandboxMessagePortTest {
         String messageString = "Hello World";
         final BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<>();
         MessagePort messagePort =
-                mJsIsolate.provideMessagePort(
+                mJsIsolate.createMessageChannel(
                         PORT_NAME, MoreExecutors.directExecutor(), messageQueue::add);
         Assert.assertEquals("PASS", setupFuture.get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
 
         // Post twice so that we're slightly more confident that the replaced onmessage handlers
         // never run, in case they're actually run in an (un)lucky order.
-        messagePort.postMessage(Message.createString(messageString));
+        messagePort.postMessage(Message.createStringMessage(messageString));
         Assert.assertEquals(
                 messageString, messageQueue.poll(TIMEOUT_SECONDS, TimeUnit.SECONDS).getString());
-        messagePort.postMessage(Message.createString(messageString));
+        messagePort.postMessage(Message.createStringMessage(messageString));
         Assert.assertEquals(
                 messageString, messageQueue.poll(TIMEOUT_SECONDS, TimeUnit.SECONDS).getString());
     }
@@ -421,10 +421,10 @@ public class JsSandboxMessagePortTest {
         String portNameA = "TestPortA";
         String portNameB = "TestPortB";
         MessagePort messagePortA =
-                mJsIsolate.provideMessagePort(
+                mJsIsolate.createMessageChannel(
                         portNameA, MoreExecutors.directExecutor(), EXPECT_NO_INCOMING_MESSAGES);
         messagePortA.close();
-        mJsIsolate.provideMessagePort(
+        mJsIsolate.createMessageChannel(
                 portNameB, MoreExecutors.directExecutor(), EXPECT_NO_INCOMING_MESSAGES);
         String code =
                 String.format(
@@ -471,7 +471,7 @@ public class JsSandboxMessagePortTest {
                         """,
                         PORT_NAME);
 
-        mJsIsolate.provideMessagePort(
+        mJsIsolate.createMessageChannel(
                 PORT_NAME, MoreExecutors.directExecutor(), EXPECT_NO_INCOMING_MESSAGES);
 
         ListenableFuture<String> setupFuture = mJsIsolate.evaluateJavaScriptAsync(code);
@@ -482,11 +482,11 @@ public class JsSandboxMessagePortTest {
     private void assertInvalidOnMessageHandlerConvertsToNullAndDropsMessages(String expression)
             throws Throwable {
         MessagePort port =
-                mJsIsolate.provideMessagePort(
+                mJsIsolate.createMessageChannel(
                         PORT_NAME, MoreExecutors.directExecutor(), EXPECT_NO_INCOMING_MESSAGES);
         // Consumed by invalid message handler. Note that this should be internally queued until
         // the first time onmessage is set (even if to an invalid handler).
-        port.postMessage(Message.createString("dropped message"));
+        port.postMessage(Message.createStringMessage("dropped message"));
         String code1 =
                 String.format(
                         """
@@ -518,7 +518,7 @@ public class JsSandboxMessagePortTest {
                 .evaluateJavaScriptAsync("'Eval used for synchronization'")
                 .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         // Consumed by valid message handler.
-        port.postMessage(Message.createString("processed message"));
+        port.postMessage(Message.createStringMessage("processed message"));
         Assert.assertEquals("processed message", result2.get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
     }
 
@@ -547,7 +547,7 @@ public class JsSandboxMessagePortTest {
     private void assertPostingMessagesToIsolateExceedsMemoryLimit(
             Message message, int count, boolean busyIsolate) throws Throwable {
         MessagePort messagePort =
-                mJsIsolate.provideMessagePort(
+                mJsIsolate.createMessageChannel(
                         PORT_NAME, MoreExecutors.directExecutor(), EXPECT_NO_INCOMING_MESSAGES);
         String code =
                 String.format(
@@ -590,7 +590,7 @@ public class JsSandboxMessagePortTest {
         // more, but isn't currently likely to be less. If it's less than 4096, this test may fail!
         final int messageCount = MAX_HEAP_SIZE / 4096 + 1;
         assertPostingMessagesToIsolateExceedsMemoryLimit(
-                Message.createString(""), messageCount, true);
+                Message.createStringMessage(""), messageCount, true);
     }
 
     @Test
@@ -601,7 +601,7 @@ public class JsSandboxMessagePortTest {
         // more, but isn't currently likely to be less. If it's less than 4096, this test may fail!
         final int messageCount = MAX_HEAP_SIZE / 4096 + 1;
         assertPostingMessagesToIsolateExceedsMemoryLimit(
-                Message.createArrayBuffer(new byte[0]), messageCount, true);
+                Message.createArrayBufferMessage(new byte[0]), messageCount, true);
     }
 
     @Test
@@ -611,7 +611,7 @@ public class JsSandboxMessagePortTest {
         final int messageSize = 8192;
         final int messageCount = MAX_HEAP_SIZE / messageSize + 1;
         assertPostingMessagesToIsolateExceedsMemoryLimit(
-                Message.createString("a".repeat(messageSize / 2)), messageCount, true);
+                Message.createStringMessage("a".repeat(messageSize / 2)), messageCount, true);
     }
 
     @Test
@@ -620,7 +620,7 @@ public class JsSandboxMessagePortTest {
         final int messageSize = 8192;
         final int messageCount = MAX_HEAP_SIZE / messageSize + 1;
         assertPostingMessagesToIsolateExceedsMemoryLimit(
-                Message.createArrayBuffer(new byte[messageSize]), messageCount, true);
+                Message.createArrayBufferMessage(new byte[messageSize]), messageCount, true);
     }
 
     @Test
@@ -630,7 +630,7 @@ public class JsSandboxMessagePortTest {
         final int messageSize = 1048576;
         final int messageCount = MAX_HEAP_SIZE / messageSize + 1;
         assertPostingMessagesToIsolateExceedsMemoryLimit(
-                Message.createString("a".repeat(messageSize / 2)), messageCount, true);
+                Message.createStringMessage("a".repeat(messageSize / 2)), messageCount, true);
     }
 
     @Test
@@ -639,7 +639,7 @@ public class JsSandboxMessagePortTest {
         final int messageSize = 1048576;
         final int messageCount = MAX_HEAP_SIZE / messageSize + 1;
         assertPostingMessagesToIsolateExceedsMemoryLimit(
-                Message.createArrayBuffer(new byte[messageSize]), messageCount, true);
+                Message.createArrayBufferMessage(new byte[messageSize]), messageCount, true);
     }
 
     @Test
@@ -648,7 +648,7 @@ public class JsSandboxMessagePortTest {
         // For single oversized messages there is no need to busy-loop the isolate.
         // So, ensure handling still works without active evaluations, in contrast to other tests.
         assertPostingMessagesToIsolateExceedsMemoryLimit(
-                Message.createString("a".repeat(MAX_HEAP_SIZE + 1)), 1, false);
+                Message.createStringMessage("a".repeat(MAX_HEAP_SIZE + 1)), 1, false);
     }
 
     @Test
@@ -657,13 +657,13 @@ public class JsSandboxMessagePortTest {
         // For single oversized messages there is no need to busy-loop the isolate.
         // So, ensure handling still works without active evaluations, in contrast to other tests.
         assertPostingMessagesToIsolateExceedsMemoryLimit(
-                Message.createArrayBuffer(new byte[MAX_HEAP_SIZE + 1]), 1, false);
+                Message.createArrayBufferMessage(new byte[MAX_HEAP_SIZE + 1]), 1, false);
     }
 
     private void assertMessageMemoryRecycled(Message message, int messageCount, int batchSize)
             throws Throwable {
         MessagePort messagePort =
-                mJsIsolate.provideMessagePort(
+                mJsIsolate.createMessageChannel(
                         PORT_NAME, MoreExecutors.directExecutor(), EXPECT_NO_INCOMING_MESSAGES);
         String code =
                 String.format(
@@ -722,7 +722,7 @@ public class JsSandboxMessagePortTest {
     public void testProcessedMessages_emptyStrings_memoryRecycled() throws Throwable {
         final int messageCount = 2 * MAX_HEAP_SIZE / 4096 + 1;
         final int batchSize = 1048576 / 4096;
-        assertMessageMemoryRecycled(Message.createString(""), messageCount, batchSize);
+        assertMessageMemoryRecycled(Message.createStringMessage(""), messageCount, batchSize);
     }
 
     @Test
@@ -731,7 +731,7 @@ public class JsSandboxMessagePortTest {
         final int messageCount = 2 * MAX_HEAP_SIZE / 4096 + 1;
         final int batchSize = 1048576 / 4096;
         assertMessageMemoryRecycled(
-                Message.createArrayBuffer(new byte[0]), messageCount, batchSize);
+                Message.createArrayBufferMessage(new byte[0]), messageCount, batchSize);
     }
 
     @Test
@@ -742,7 +742,7 @@ public class JsSandboxMessagePortTest {
         final int messageCount = 2 * MAX_HEAP_SIZE / messageSize;
         final int batchSize = 1048576 / messageSize;
         assertMessageMemoryRecycled(
-                Message.createString("a".repeat(messageSize / 2)), messageCount, batchSize);
+                Message.createStringMessage("a".repeat(messageSize / 2)), messageCount, batchSize);
     }
 
     @Test
@@ -752,7 +752,7 @@ public class JsSandboxMessagePortTest {
         final int messageCount = 2 * MAX_HEAP_SIZE / messageSize;
         final int batchSize = 1048576 / messageSize;
         assertMessageMemoryRecycled(
-                Message.createArrayBuffer(new byte[messageSize]), messageCount, batchSize);
+                Message.createArrayBufferMessage(new byte[messageSize]), messageCount, batchSize);
     }
 
     @Test
@@ -763,7 +763,7 @@ public class JsSandboxMessagePortTest {
         final int messageCount = 2 * MAX_HEAP_SIZE / messageSize;
         final int batchSize = 1048576 / messageSize;
         assertMessageMemoryRecycled(
-                Message.createString("a".repeat(messageSize / 2)), messageCount, batchSize);
+                Message.createStringMessage("a".repeat(messageSize / 2)), messageCount, batchSize);
     }
 
     @Test
@@ -773,6 +773,6 @@ public class JsSandboxMessagePortTest {
         final int messageCount = 2 * MAX_HEAP_SIZE / messageSize;
         final int batchSize = 1048576 / messageSize;
         assertMessageMemoryRecycled(
-                Message.createArrayBuffer(new byte[messageSize]), messageCount, batchSize);
+                Message.createArrayBufferMessage(new byte[messageSize]), messageCount, batchSize);
     }
 }

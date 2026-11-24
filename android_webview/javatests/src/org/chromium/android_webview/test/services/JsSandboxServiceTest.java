@@ -826,7 +826,7 @@ public class JsSandboxServiceTest {
     @MediumTest
     public void testMultipleSandboxesCannotCoexist() throws Throwable {
         Context context = ContextUtils.getApplicationContext();
-        final String contains = "already bound";
+        final String contains = "Cannot create two concurrent legacy sandboxes.";
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture1 =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox1 = jsSandboxFuture1.get(5, TimeUnit.SECONDS)) {

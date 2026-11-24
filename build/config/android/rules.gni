@@ -4048,6 +4048,9 @@ if (!is_robolectric && enable_java_templates) {
         }
         args += [ "--includes=$_rebased_import_paths" ]
       }
+      if (defined(invoker.version)) {
+        args += [ "--version=${invoker.version}" ]
+      }
       args += rebase_path(sources, root_build_dir)
     }
     if (_do_cpp_gen) {

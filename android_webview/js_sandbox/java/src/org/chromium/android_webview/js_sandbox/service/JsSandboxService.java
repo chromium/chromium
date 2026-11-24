@@ -67,6 +67,11 @@ public class JsSandboxService extends Service {
                 public List<String> getSupportedFeatures() {
                     return SUPPORTED_FEATURES;
                 }
+
+                @Override
+                public int getInterfaceVersion() {
+                    return IJsSandboxService.VERSION;
+                }
             };
 
     @Override

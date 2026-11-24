@@ -22,6 +22,8 @@ def _GetAidlCmd(options):
     cmd += ['-p' + s for s in options.imports]
     cmd += ['-I' + s for s in options.includes]
     cmd += ['--omit_invocation']
+    if options.version:
+        cmd += ['--version=' + options.version]
     return cmd
 
 
@@ -56,6 +58,7 @@ def main(argv):
         '--includes', help='Directories to add as import search paths.'
     )
     parser.add_argument('--srcjar', help='Path for srcjar output.')
+    parser.add_argument('--version', help='Interface version number.')
     parser.add_argument('files', nargs='+')
     action_helpers.add_depfile_arg(parser)
     options = parser.parse_args(argv[1:])
