@@ -20,6 +20,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kNtpModulesAutoRemovalDisabledDict);
   registry->RegisterBooleanPref(kNtpAnimatedDoodlesEnabled, true);
   registry->RegisterBooleanPref(kNtpDoodleMuralsEnabled, true);
+  registry->RegisterDictionaryPref(kNtpWidgetPlatformPresets);
 }
 
 void ResetProfilePrefs(PrefService* prefs) {
@@ -28,6 +29,7 @@ void ResetProfilePrefs(PrefService* prefs) {
   prefs->SetDict(kNtpModulesAutoRemovalDisabledDict, base::DictValue());
   prefs->SetBoolean(kNtpAnimatedDoodlesEnabled, true);
   prefs->SetBoolean(kNtpDoodleMuralsEnabled, true);
+  prefs->SetDict(kNtpWidgetPlatformPresets, base::DictValue());
   prefs->SetDict(prefs::kContextMenuAnimationState, base::DictValue());
 }
 

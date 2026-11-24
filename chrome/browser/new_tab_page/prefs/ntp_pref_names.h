@@ -84,6 +84,12 @@ inline constexpr char kNtpMostVisitedTileHoverCount[] =
 inline constexpr char kNtpMostVisitedTileNavigationCount[] =
     "ntp.most_visited_tile_navigation_count";
 
+// Tracks the user's NTP widget platform presets and active preset selection
+// as a dictionary containing the active preset id and per-preset widget layouts
+// (order, grid spans, and enabled/disabled state).
+inline constexpr char kNtpWidgetPlatformPresets[] =
+    "ntp.widget_platform_presets";
+
 }  // namespace ntp_prefs
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_PREFS_NTP_PREF_NAMES_H_
