@@ -732,7 +732,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.BatteryChargeHealth" units="%"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -857,7 +857,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeRateMilliwatts6.TenMinutes"
-    units="milliwatts" expires_after="2027-03-21">
+    units="milliwatts" expires_after="2027-05-23">
   <owner>pmonette@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -958,7 +958,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeRateWhileSuspended" units="mW"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1513,7 +1513,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.HighestFanSpeed" units="100rpm"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>eshimanovich@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1547,7 +1547,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.KernelResumeTimeOnAC" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>puthik@chromium.org</owner>
   <owner>mhiramat@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1574,7 +1574,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.KernelSuspendTimeOnAC" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>puthik@chromium.org</owner>
   <owner>mhiramat@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1845,7 +1845,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.SuspendJourneyResult" enum="SuspendJourneyResult"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>eizan@chromium.org</owner>
   <owner>chromeos-power-team@google.com</owner>
   <summary>
@@ -1886,7 +1886,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.TimeInSuspendAtResume" units="minutes"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS time in minutes spent in suspend-to-RAM mode sampled at resume.

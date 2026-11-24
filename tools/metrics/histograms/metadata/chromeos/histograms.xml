@@ -2077,7 +2077,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.AttachmentType.{Form}" enum="AttachmentType"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>wmahon@google.com</owner>
   <owner>chromeos-tango@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -4589,7 +4589,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TypeC.WrongConfiguration"
-    enum="WrongConfigurationMetric" expires_after="2027-03-14">
+    enum="WrongConfigurationMetric" expires_after="2027-05-23">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4696,7 +4696,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceClass"
-    enum="ChromeOSUsbDeviceClass" expires_after="2027-03-21">
+    enum="ChromeOSUsbDeviceClass" expires_after="2027-05-23">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4737,7 +4737,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.UserTypeByDeviceType.LogSegment"
-    enum="UserDeviceMatrix" expires_after="2027-03-21">
+    enum="UserDeviceMatrix" expires_after="2027-05-23">
   <owner>bmalcolm@chromium.org</owner>
   <owner>cros-client-wa@google.com</owner>
   <summary>

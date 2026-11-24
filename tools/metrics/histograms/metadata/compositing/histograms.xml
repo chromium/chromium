@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.RootDamage" units="%"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>vasilyt@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -303,7 +303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.Draw.Quads" units="quads"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>vmiura@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -461,7 +461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.VizDependencyResolvedToGpuStartedDrawUs"
-    units="microseconds" expires_after="2027-03-14">
+    units="microseconds" expires_after="2027-05-23">
   <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -476,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.VizScheduledDrawToDependencyResolvedUs"
-    units="microseconds" expires_after="2027-03-21">
+    units="microseconds" expires_after="2027-05-23">
   <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -547,7 +547,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Renderer.PauseRenderingUntilVisibilityChangeTimeout"
-    enum="Boolean" expires_after="2027-03-21">
+    enum="Boolean" expires_after="2027-05-23">
   <owner>vmpstr@chromium.org</owner>
   <owner>rendering-core-dev@chromium.org</owner>
   <summary>
@@ -588,7 +588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Scheduler.DeadlineMode"
-    enum="BeginImplFrameDeadlineMode" expires_after="2027-03-21">
+    enum="BeginImplFrameDeadlineMode" expires_after="2027-05-23">
   <owner>lizeb@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <summary>
@@ -625,7 +625,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Slim.BeginFrameResult" enum="SlimBeginFrameResult"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>acondor@chromium.org</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -680,7 +680,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.TileManager.MemoryUsageWhenEnoughMemory.{ProcessType}"
-    units="MB" expires_after="2027-03-21">
+    units="MB" expires_after="2027-05-23">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>
   <summary>

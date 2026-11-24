@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Session.Android.TabbedSessionContainedGoogleSearch"
-    enum="Boolean" expires_after="2027-03-21">
+    enum="Boolean" expires_after="2027-05-23">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -295,7 +295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.IsActive" enum="BooleanActive"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.IsActive2" enum="BooleanActive"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.OpenedTabCounts" units="operations"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>rohitrao@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -1534,7 +1534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.ErrorReason.{Type}"
-    enum="SessionRestoreErrorReason" expires_after="2027-03-14">
+    enum="SessionRestoreErrorReason" expires_after="2027-05-23">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1626,7 +1626,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.Outcome.{Type}" enum="SessionRestoreOutcome"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

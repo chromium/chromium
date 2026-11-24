@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ActionChips.Click2" enum="ActionChipIconType"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>giannich@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>Logged when any Action Chips was clicked by the user.</summary>
@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ActionChips.RequestStatus"
-    enum="ActionChipsRequestStatus" expires_after="2027-03-21">
+    enum="ActionChipsRequestStatus" expires_after="2027-05-23">
   <owner>shomizoe@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -387,7 +387,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Click" enum="NTPElement" expires_after="2027-03-21">
+<histogram name="NewTabPage.Click" enum="NTPElement" expires_after="2027-05-23">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -891,7 +891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.CustomizeShortcutAction"
-    enum="NTPCustomizeShortcutAction" expires_after="2027-03-21">
+    enum="NTPCustomizeShortcutAction" expires_after="2027-05-23">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1641,7 +1641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.DataRequest" enum="NtpModules"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2111,7 +2111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.MostVisited.ShowActionsToggleClicked"
-    enum="MostVisitedShowActions" expires_after="2027-03-17">
+    enum="MostVisitedShowActions" expires_after="2027-05-23">
   <owner>adamyao@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -2134,7 +2134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.NavigationOrActivationToFirstContentfulPaint"
-    units="ms" expires_after="2027-03-21">
+    units="ms" expires_after="2027-05-23">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -2162,7 +2162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.NavigationOrActivationToLargestContentfulPaint"
-    units="ms" expires_after="2027-03-21">
+    units="ms" expires_after="2027-05-23">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -2208,7 +2208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.OpenedInNewTab" enum="TabLaunchType"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>eirage@chromium.org</owner>
   <owner>hanxi@chromium.org</owner>
   <summary>
@@ -2445,7 +2445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.SuggestTiles.DeletedTileType"
-    enum="SuggestTileType" expires_after="2027-03-14">
+    enum="SuggestTileType" expires_after="2027-05-23">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2911,7 +2911,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Width" units="pixels" expires_after="2027-03-21">
+<histogram name="NewTabPage.Width" units="pixels" expires_after="2027-05-23">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2924,7 +2924,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{MostVisitedSurface}.MostVisited.IsExpandedOnLoad"
-    enum="Boolean" expires_after="2027-03-17">
+    enum="Boolean" expires_after="2027-05-23">
   <owner>adamyao@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -3036,7 +3036,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="{MostVisitedSurface}.SuggestionsImpression{NewTabPageProviders}"
-    enum="MostVisitedTileIndex" expires_after="2027-03-14">
+    enum="MostVisitedTileIndex" expires_after="2027-05-23">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

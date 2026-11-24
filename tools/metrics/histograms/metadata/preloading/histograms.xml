@@ -373,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Prefetch.PrefetchDataPipeTeeDtorState"
-    enum="PrefetchDataPipeTeeState" expires_after="2027-03-21">
+    enum="PrefetchDataPipeTeeState" expires_after="2027-05-23">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -497,7 +497,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Precision"
-    enum="PredictorConfusionMatrix" expires_after="2027-03-14">
+    enum="PredictorConfusionMatrix" expires_after="2027-05-23">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -681,7 +681,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaopThen.PotentialCandidateCollectResultAndServableStateAndMatcherAction"
-    units="code" expires_after="2027-03-21">
+    units="code" expires_after="2027-05-23">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

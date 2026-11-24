@@ -410,7 +410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.ProcessedRealMinidumps"
-    enum="AndroidProcessedMinidumps" expires_after="2027-03-22">
+    enum="AndroidProcessedMinidumps" expires_after="2027-05-23">
   <owner>wnwen@chromium.org</owner>
   <owner>src/components/minidump_uploader/OWNERS</owner>
   <summary>
@@ -422,7 +422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.RendererCrash" enum="Boolean"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>wnwen@chromium.org</owner>
   <summary>
     Counts renderer crashes including OOMs. Android only. Mirrors old stability

@@ -567,7 +567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.EntryPoints" enum="IOSActivityScenario"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>dimich@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <owner>chrome-with-friends-robots@google.com</owner>
@@ -1041,7 +1041,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.ChildAccountStatusDuration" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -1275,7 +1275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.IntentToCreationTime2{ActivityType}" units="ms"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>mthiesse@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -1293,7 +1293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.LaunchCause" enum="LaunchCause"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>mthiesse@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>

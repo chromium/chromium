@@ -311,7 +311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.FrontendLocation" enum="DevToolsFrontendLocation"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>dsv@chromium.org</owner>
   <owner>chrome-devtools@google.com</owner>
   <summary>

@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Caret.FirstVisible" enum="Boolean"
-    expires_after="2027-02-28">
+    expires_after="2027-05-23">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.EngineLifetime" units="ms" expires_after="2027-03-21">
+<histogram name="PDF.EngineLifetime" units="ms" expires_after="2027-05-23">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.FirstPaintTime" units="ms" expires_after="2027-03-21">
+<histogram name="PDF.FirstPaintTime" units="ms" expires_after="2027-05-23">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2027-03-21">
+<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2027-05-23">
   <owner>dhoss@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2SaveHas{AnnotationType}" enum="Boolean"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>thestig@chromium.org</owner>
   <owner>andyphan@chromium.org</owner>
   <summary>
@@ -445,7 +445,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.PageHasText" enum="Boolean" expires_after="2027-03-21">
+<histogram name="PDF.PageHasText" enum="Boolean" expires_after="2027-05-23">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -585,7 +585,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.SchemeIsFile" enum="Boolean" expires_after="2027-03-14">
+<histogram name="PDF.SchemeIsFile" enum="Boolean" expires_after="2027-05-23">
   <owner>thestig@chromium.org</owner>
   <owner>andyphan@chromium.org</owner>
   <summary>

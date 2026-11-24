@@ -414,7 +414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Login.Federated.HangingFedCmRequestExists"
-    enum="Boolean" expires_after="2027-02-25">
+    enum="Boolean" expires_after="2027-05-23">
   <owner>ioanap@google.com</owner>
   <owner>otara@google.com</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -425,7 +425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Login.Federated.LoginResult"
-    enum="ActorLoginFederatedLoginResult" expires_after="2027-02-25">
+    enum="ActorLoginFederatedLoginResult" expires_after="2027-05-23">
   <owner>ioanap@google.com</owner>
   <owner>otara@google.com</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -714,7 +714,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.OriginGating.SubframeDryRun.BlockReason"
-    enum="ActorMayActOnUrlBlockReason" expires_after="2027-03-24">
+    enum="ActorMayActOnUrlBlockReason" expires_after="2027-05-23">
   <owner>masnoble@google.com</owner>
   <owner>cfredric@chromium.org</owner>
   <summary>
@@ -729,7 +729,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.OriginGating.SubframeDryRun.Outcome"
-    enum="ActorSubframeGatingDryRunOutcome" expires_after="2027-03-24">
+    enum="ActorSubframeGatingDryRunOutcome" expires_after="2027-05-23">
   <owner>masnoble@google.com</owner>
   <owner>cfredric@chromium.org</owner>
   <summary>
@@ -743,7 +743,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.OriginGating.TargetFrameType"
-    enum="ActorPageActionTargetFrameType" expires_after="2027-03-24">
+    enum="ActorPageActionTargetFrameType" expires_after="2027-05-23">
   <owner>masnoble@google.com</owner>
   <owner>cfredric@chromium.org</owner>
   <summary>
@@ -785,7 +785,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.PageContext.APC.Status"
-    enum="AIPageContentExtractionStatus" expires_after="2027-03-14">
+    enum="AIPageContentExtractionStatus" expires_after="2027-05-23">
   <owner>linnan@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
   <summary>
@@ -795,7 +795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.PageContext.ObservationOutcome"
-    enum="ActorObservationOutcome" expires_after="2027-03-14">
+    enum="ActorObservationOutcome" expires_after="2027-05-23">
   <owner>bokan@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
   <summary>
@@ -813,7 +813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.PageContext.Screenshot.Status"
-    enum="ScreenshotCaptureStatus" expires_after="2027-03-14">
+    enum="ScreenshotCaptureStatus" expires_after="2027-05-23">
   <owner>linnan@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
   <summary>
@@ -830,7 +830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.PageContext.TabObservationResult"
-    enum="ActorTabObservationResult" expires_after="2027-03-14">
+    enum="ActorTabObservationResult" expires_after="2027-05-23">
   <owner>bokan@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
   <summary>

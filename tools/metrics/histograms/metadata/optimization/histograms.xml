@@ -733,7 +733,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.AIPageContent.ActiveRequestCount"
-    units="requests" expires_after="2027-03-21">
+    units="requests" expires_after="2027-05-23">
   <owner>alexmt@chromium.org</owner>
   <owner>khushalsagar@chromium.org</owner>
   <summary>
@@ -2083,7 +2083,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.CategoryClassifier.EducationScore"
-    units="%" expires_after="2027-03-21">
+    units="%" expires_after="2027-05-23">
   <owner>zekunjiang@google.com</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2094,7 +2094,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.CategoryClassifier.ShoppingScore"
-    units="%" expires_after="2027-03-21">
+    units="%" expires_after="2027-05-23">
   <owner>zekunjiang@google.com</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2477,7 +2477,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.AutomaticOnLoad.ExtractionLatency"
-    units="ms" expires_after="2027-03-21">
+    units="ms" expires_after="2027-05-23">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

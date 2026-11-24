@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="LanguageDetection.TFLiteModel.ClassifyText.Detected"
-    enum="BooleanDetected" expires_after="2027-03-14">
+    enum="BooleanDetected" expires_after="2027-05-23">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -267,7 +267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.PageImpression"
-    enum="LanguageSettingsPageType" expires_after="2027-03-14">
+    enum="LanguageSettingsPageType" expires_after="2027-05-23">
   <owner>googleo@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage" enum="LanguageName"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage.Count" units="count"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>dvallet@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageName"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

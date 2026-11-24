@@ -164,7 +164,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.MainFrameLoad.RulesetIsAvailableAnyActivationLevel"
-    enum="BooleanAvailable" expires_after="2027-03-21">
+    enum="BooleanAvailable" expires_after="2027-05-23">
   <owner>alexmt@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationDecision"
-    enum="SubresourceFilterActivationDecision" expires_after="2027-03-21">
+    enum="SubresourceFilterActivationDecision" expires_after="2027-05-23">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.SafeBrowsingDelay" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-23">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -377,7 +377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SubresourceLoad.Evaluation.WallDuration"
-    units="microseconds" expires_after="2027-03-21">
+    units="microseconds" expires_after="2027-05-23">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

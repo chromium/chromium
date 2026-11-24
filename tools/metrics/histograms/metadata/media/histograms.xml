@@ -944,7 +944,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Android.MediaCodec.VideoInputExceedsMaxCapacity"
-    enum="Boolean" expires_after="2027-03-24">
+    enum="Boolean" expires_after="2027-05-23">
   <owner>sobek@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -1021,7 +1021,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Android.AAudio.InputTimestampDiscontinuitySizeV2"
-    units="ms" expires_after="2027-03-14">
+    units="ms" expires_after="2027-05-23">
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -1725,7 +1725,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError.FormatRelated"
-    enum="AudioStreamFormatRelatedInitError" expires_after="2027-03-21">
+    enum="AudioStreamFormatRelatedInitError" expires_after="2027-05-23">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -2774,7 +2774,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Win.CoreAudioUtil.SharedModeInitializeTime"
-    units="ms" expires_after="2027-03-14">
+    units="ms" expires_after="2027-05-23">
   <owner>henrika@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>media-audio@chromium.org</owner>
@@ -3020,7 +3020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioDuckerWin.UnduckSessionResult"
-    enum="BooleanSuccess" expires_after="2027-03-21">
+    enum="BooleanSuccess" expires_after="2027-05-23">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3383,7 +3383,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}.PromptResultV2"
-    enum="MediaAutoPictureInPicturePromptResult" expires_after="2027-03-14">
+    enum="MediaAutoPictureInPicturePromptResult" expires_after="2027-05-23">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3733,7 +3733,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.BreakoutBox.Usage" enum="BreakoutBoxUsage"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>guidou@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <summary>
@@ -5688,7 +5688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.InitializationError" enum="HlsDemuxerStatus"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5697,7 +5697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.ParserError" units="sparse"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5707,7 +5707,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.PlaybackError" enum="HlsDemuxerStatus"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -6008,7 +6008,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetUserMedia.Result3"
-    enum="UserMediaRequestResult" expires_after="2027-03-21">
+    enum="UserMediaRequestResult" expires_after="2027-05-23">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>

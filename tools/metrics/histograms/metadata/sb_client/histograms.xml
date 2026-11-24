@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.Android.DownloadProtectionOutcome"
     enum="SBClientDownloadAndroidDownloadProtectionOutcome"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -143,7 +143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.CheckDownloadStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2027-03-21">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2027-05-23">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
@@ -477,7 +477,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ApplyTfliteTime.Classify" units="ms"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -639,7 +639,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ClientSideDetection.InterruptedByNavigation"
-    enum="ClientSideDetectionType" expires_after="2027-03-12">
+    enum="ClientSideDetectionType" expires_after="2027-05-23">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -651,7 +651,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ClientSideDetectionEvent{RequestType}"
-    enum="ClientSideDetectionEvent" expires_after="2027-03-12">
+    enum="ClientSideDetectionEvent" expires_after="2027-05-23">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1040,7 +1040,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.IntelligentScanOngoingOnNewPreclassification{RequestType}"
-    enum="BooleanExists" expires_after="2027-03-21">
+    enum="BooleanExists" expires_after="2027-05-23">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1175,7 +1175,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.LlamaForcedTriggerInfo.IntelligentScan"
-    enum="BooleanEnabled" expires_after="2027-03-21">
+    enum="BooleanEnabled" expires_after="2027-05-23">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1186,7 +1186,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.LlamaForcedTriggerInfo.LlamaTriggerRuleId"
-    units="rule_id" expires_after="2027-03-23">
+    units="rule_id" expires_after="2027-05-23">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1197,7 +1197,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.LlamaForcedTriggerInfo.LlamaTriggerRuleInfosSize"
-    units="count" expires_after="2027-03-21">
+    units="count" expires_after="2027-05-23">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1366,7 +1366,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram
     name="SBClientPhishing.OnDeviceModelEligibilityReasonAtDownloadFailure"
     enum="OptimizationGuideOnDeviceModelEligibilityReason"
-    expires_after="2027-03-18">
+    expires_after="2027-05-23">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1624,7 +1624,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.RTLookupForceRequest"
-    enum="BooleanForceRequest" expires_after="2027-03-21">
+    enum="BooleanForceRequest" expires_after="2027-05-23">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

@@ -29,7 +29,7 @@ reviewer.
 <!-- LINT.ThenChange(//chrome/browser/ui/views/animations/organizer_panel_animations.cc:OrganizerPanelAnimations) -->
 
 <histogram name="Projects.ProjectsPanel.{OrganizerPanelAnimation}.AnimationFPS"
-    units="fps" expires_after="2027-02-07">
+    units="fps" expires_after="2027-05-23">
   <owner>dfried@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>

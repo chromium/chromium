@@ -403,7 +403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Action.WithDisposition.{DispositionType}"
-    enum="PermissionAction" expires_after="2027-03-14">
+    enum="PermissionAction" expires_after="2027-05-23">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Action.{PermissionType}.CrossOriginFrame"
-    enum="PermissionAction" expires_after="2027-03-21">
+    enum="PermissionAction" expires_after="2027-05-23">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -736,7 +736,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.ClapperLoud.PageInfo.Subscribed" enum="Boolean"
-    expires_after="2027-01-24">
+    expires_after="2027-05-23">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1981,7 +1981,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Request.SameOrigin.{FrameLevel}"
-    enum="PermissionType" expires_after="2027-03-21">
+    enum="PermissionType" expires_after="2027-05-23">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>

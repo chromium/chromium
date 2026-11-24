@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppLaunch.ChromeAppsDeprecationCheck"
-    enum="ChromeAppDeprecationLaunchOutcome" expires_after="2027-03-21">
+    enum="ChromeAppDeprecationLaunchOutcome" expires_after="2027-05-23">
   <owner>giovax@google.com</owner>
   <owner>src/apps/DEPRECATION_OWNERS</owner>
   <summary>
@@ -1883,7 +1883,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppShim.Launched" enum="Boolean"
-    expires_after="2027-03-01">
+    expires_after="2027-05-23">
   <owner>mek@chromium.org</owner>
   <owner>src/chrome/browser/web_applications/OWNERS</owner>
   <summary>
@@ -1944,7 +1944,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppShim.NotificationProvider.Outcome"
-    enum="AppShimNotificationProviderOutcome" expires_after="2027-03-01">
+    enum="AppShimNotificationProviderOutcome" expires_after="2027-05-23">
   <owner>mek@chromium.org</owner>
   <owner>src/chrome/browser/web_applications/OWNERS</owner>
   <summary>
@@ -1993,7 +1993,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppShim.WillTerminate" enum="Boolean"
-    expires_after="2027-03-01">
+    expires_after="2027-05-23">
   <owner>mek@chromium.org</owner>
   <owner>src/chrome/browser/web_applications/OWNERS</owner>
   <summary>
@@ -2174,7 +2174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.CreateShortcuts.Mac.UpdateSignatureResult"
-    enum="UpdateSignatureResult" expires_after="2027-03-21">
+    enum="UpdateSignatureResult" expires_after="2027-05-23">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2445,7 +2445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.OobeAppRecommendationsService.ServerResponseCodes"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-03-21">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-05-23">
   <owner>bohdanty@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>

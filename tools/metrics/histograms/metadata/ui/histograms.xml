@@ -650,7 +650,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.FirstPaint.{StartPoint}{Version}"
-    units="ms" expires_after="2027-03-14">
+    units="ms" expires_after="2027-05-23">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
@@ -712,7 +712,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.ReloadButton.{PaintType}.{StartPoint}{Version}"
-    units="ms" expires_after="2027-03-14">
+    units="ms" expires_after="2027-05-23">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
@@ -757,7 +757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InitialWebUI.ReloadButton.InputCount"
-    enum="ReloadButtonInputType" expires_after="2027-03-21">
+    enum="ReloadButtonInputType" expires_after="2027-05-23">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
@@ -1026,7 +1026,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InitialWebUI.Toolbar.ProcessAlreadyExistsForTheSameProfileOnCreation"
-    enum="Boolean" expires_after="2027-03-21">
+    enum="Boolean" expires_after="2027-05-23">
   <owner>leimy@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
@@ -1102,7 +1102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RenderTextHarfBuzz.GetFallbackFontsTime" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>dayeung@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -1113,7 +1113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RenderTextHarfBuzz.GetFallbackFontTime" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>dayeung@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -1131,7 +1131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RenderTextHarfBuzz.ShapeRunsFallback" enum="ShapeRunFallback"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>dayeung@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -1141,7 +1141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RenderTextHarfBuzz.ShapeRunsWithFallbackFontsTime" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>dayeung@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -1462,7 +1462,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.Settings.PathVisited" enum="WebUISettingsPathHashes"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>dschuyler@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <owner>bettes@chromium.org</owner>

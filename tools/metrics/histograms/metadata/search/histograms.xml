@@ -1108,7 +1108,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.DefaultSearchEngineMirrored" enum="Boolean"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -1697,7 +1697,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.OseSplitYahooJapan.Count{Timing}{Profile}"
-    units="engines" expires_after="2027-03-14">
+    units="engines" expires_after="2027-05-23">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>

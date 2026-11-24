@@ -1695,7 +1695,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebApp.Isolated.KeyDistributionComponent.KeyRotationInfoSource"
-    enum="KeyDistributionComponentSource" expires_after="2027-03-21">
+    enum="KeyDistributionComponentSource" expires_after="2027-05-23">
   <owner>greengrape@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
@@ -1794,7 +1794,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.KeyDistributionComponent.UpdateSource"
-    enum="IwaComponentUpdateSource" expires_after="2027-03-21">
+    enum="IwaComponentUpdateSource" expires_after="2027-05-23">
   <owner>greengrape@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
@@ -3243,7 +3243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Update.ApplyPendingManifestUpdateResult"
-    enum="WebAppApplyPendingManifestUpdateResult" expires_after="2027-01-17">
+    enum="WebAppApplyPendingManifestUpdateResult" expires_after="2027-05-23">
   <owner>msiem@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -3257,7 +3257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Update.ManifestSilentUpdateCheckResult"
-    enum="WebAppManifestSilentUpdateCheckResult" expires_after="2027-03-21">
+    enum="WebAppManifestSilentUpdateCheckResult" expires_after="2027-05-23">
   <owner>msiem@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -3272,7 +3272,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.UpdateDialog.MigrateForced.UserAction"
-    enum="WebAppIdentityUpdateResult" expires_after="2027-03-11">
+    enum="WebAppIdentityUpdateResult" expires_after="2027-05-23">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -3332,7 +3332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.WebAppOriginAssociationParseResult"
-    enum="WebAppOriginAssociationParseResult" expires_after="2027-03-05">
+    enum="WebAppOriginAssociationParseResult" expires_after="2027-05-23">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -3342,7 +3342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
-    enum="WebAppUrlLoaderResult" expires_after="2027-03-01">
+    enum="WebAppUrlLoaderResult" expires_after="2027-05-23">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

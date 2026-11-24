@@ -1030,7 +1030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.SnapshotSaveError"
-    enum="PlatformFileError" expires_after="2027-03-21">
+    enum="PlatformFileError" expires_after="2027-05-23">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -1307,7 +1307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.AlternativeServiceTypeForRequest"
-    enum="AlternativeServiceType" expires_after="2027-03-21">
+    enum="AlternativeServiceType" expires_after="2027-05-23">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1514,7 +1514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CanPool.CTRequirementStatus" enum="CTRequirementStatus"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>mattm@chromium.org</owner>
   <owner>chrome-secure-web-and-net@chromium.org</owner>
   <summary>
@@ -1599,7 +1599,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Certificate.TrustAnchor.Request" enum="NetTrustAnchors"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>mattm@chromium.org</owner>
   <owner>chrome-secure-web-and-net@chromium.org</owner>
   <summary>
@@ -1614,7 +1614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Certificate.TrustAnchor.Verify" enum="NetTrustAnchors"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>mattm@chromium.org</owner>
   <owner>chrome-secure-web-and-net@chromium.org</owner>
   <summary>
@@ -1629,7 +1629,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Certificate.TrustAnchor.VerifyOutOfDate"
-    enum="BooleanOutOfDate" expires_after="2027-03-14">
+    enum="BooleanOutOfDate" expires_after="2027-05-23">
   <owner>mattm@chromium.org</owner>
   <owner>chrome-secure-web-and-net@chromium.org</owner>
   <summary>
@@ -1723,7 +1723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.CTRequirementStatus"
-    enum="CTRequirementStatus" expires_after="2027-03-21">
+    enum="CTRequirementStatus" expires_after="2027-05-23">
   <owner>mattm@chromium.org</owner>
   <owner>chrome-secure-web-and-net@chromium.org</owner>
   <summary>
@@ -3554,7 +3554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.ResolveFallbackPath" enum="ResolveFallbackPath"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>bashi@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -3958,7 +3958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ErrorCodesForIsolatedAppScheme" enum="NetErrorCodes"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
   <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
@@ -4946,7 +4946,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpTimeToFirstByte.TLS13.Google" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>davidben@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -5228,7 +5228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkTransaction.RequestStreamCpuTime" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5349,7 +5349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkTransaction.TerminalState"
-    enum="HttpNetworkTransactionTerminalState" expires_after="2027-03-21">
+    enum="HttpNetworkTransactionTerminalState" expires_after="2027-05-23">
   <owner>ricea@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -8864,7 +8864,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionary.Transaction.Outcome"
-    enum="SharedDictionaryTransactionOutcome" expires_after="2027-03-14">
+    enum="SharedDictionaryTransactionOutcome" expires_after="2027-05-23">
   <owner>wbjacksonjr@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -8997,7 +8997,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryOnDisk.StorageResult"
-    enum="SharedDictionaryStorageResult" expires_after="2027-03-14">
+    enum="SharedDictionaryStorageResult" expires_after="2027-05-23">
   <owner>wbjacksonjr@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -9045,7 +9045,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryStorageOnDisk.MemoryCache.PreviousEvictionReason"
-    enum="SharedDictionaryStorageEvictionReason" expires_after="2027-03-14">
+    enum="SharedDictionaryStorageEvictionReason" expires_after="2027-05-23">
   <owner>wbjacksonjr@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -9060,7 +9060,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStorageOnDisk.MetadataReadTime.{Result}"
-    units="ms" expires_after="2027-03-07">
+    units="ms" expires_after="2027-05-23">
   <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -9826,7 +9826,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SqlDiskCache.EntriesWithHintsPercentage" units="%"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -9851,7 +9851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SqlDiskCache.FakeIndexFileError"
-    enum="SqlDiskCacheFakeIndexFileError" expires_after="2027-03-21">
+    enum="SqlDiskCacheFakeIndexFileError" expires_after="2027-05-23">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -9877,7 +9877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SqlDiskCache.MemoryEntryDataHintsValid" enum="Boolean"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -10128,7 +10128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSLHandshakeDetails" enum="SSLHandshakeDetails"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -10229,7 +10229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.StructuredHeaders.Base64DecodingIsStrictCompliant"
-    enum="Boolean" expires_after="2027-03-21">
+    enum="Boolean" expires_after="2027-05-23">
   <owner>apaseltiner@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>

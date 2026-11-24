@@ -890,7 +890,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Birch.Bar.Activate" units="count"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -899,7 +899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Birch.Bar.Impression" units="count"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -909,7 +909,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Birch.Chip.Activate" enum="BirchItemType"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -943,7 +943,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Birch.Chip.Impression" enum="BirchItemType"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>Recorded when the user is shown a chip of a given type.</summary>
@@ -4426,7 +4426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.KcerPkcs12Migration.Events"
-    enum="KcerPkcs12MigrationEvent" expires_after="2027-03-21">
+    enum="KcerPkcs12MigrationEvent" expires_after="2027-05-23">
   <owner>miersh@google.com</owner>
   <owner>olsa@google.com</owner>
   <summary>
@@ -6118,7 +6118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Picker.Session.Outcome" enum="PickerSessionOutcome"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -6156,7 +6156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Picker.Session.SearchLatency" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>shend@chromium.org</owner>
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -6485,7 +6485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.CreationFlow.{TabletOrClamshellMode}"
-    enum="ProjectorCreationFlow" expires_after="2027-03-21">
+    enum="ProjectorCreationFlow" expires_after="2027-05-23">
   <owner>dorianbrandon@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
@@ -6508,7 +6508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.MarkerColor.{TabletOrClamshellMode}"
-    enum="ProjectorMarkerColor" expires_after="2027-03-21">
+    enum="ProjectorMarkerColor" expires_after="2027-05-23">
   <owner>dorianbrandon@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
@@ -6568,7 +6568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.Toolbar.{TabletOrClamshellMode}"
-    enum="ProjectorToolbar" expires_after="2027-03-21">
+    enum="ProjectorToolbar" expires_after="2027-05-23">
   <owner>dorianbrandon@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>

@@ -863,7 +863,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseSqliteError" enum="SqliteLoggedResultCode"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1456716</component>
@@ -885,7 +885,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseVersion" enum="HistoryDatabaseVersion"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>jpgravel@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <component>1456716</component>
@@ -897,7 +897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount1Day_V3" units="domains"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -938,7 +938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount1Day_V4" units="domains"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1143,7 +1143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.CpuUsage2" units="1/100 %"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -1268,7 +1268,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Embeddings.Embedder.PassageEmbeddingsGenerationThreadDuration"
-    units="ms" expires_after="2027-03-21">
+    units="ms" expires_after="2027-05-23">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -1454,7 +1454,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.FaviconDatabaseSizeMB" units="MB" expires_after="M160">
+<histogram name="History.FaviconDatabaseSizeMB" units="MB"
+    expires_after="2027-05-23">
   <owner>pkotwicz@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>1456716</component>
@@ -1466,7 +1467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsLegacy" units="visits"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -1479,7 +1480,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsNotRemapped" units="visits"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -1492,7 +1493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableFrom" units="visits"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -1505,7 +1506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableOpener" units="visits"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -1847,7 +1848,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.URLTableCount" units="URLs" expires_after="2027-03-21">
+<histogram name="History.URLTableCount" units="URLs" expires_after="2027-05-23">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
@@ -2016,7 +2017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.WeeklyHostCount" units="hosts"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>

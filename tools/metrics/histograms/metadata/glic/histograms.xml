@@ -1311,7 +1311,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.Media.SharedContextLength" units="bytes"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>ahmedmoussa@google.com</owner>
   <owner>chrome-bluefin@google.com</owner>
   <summary>
@@ -1487,7 +1487,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.PageContextFetcher.GetScreenshotError"
-    enum="CopyFromSurfaceError" expires_after="2027-03-21">
+    enum="CopyFromSurfaceError" expires_after="2027-05-23">
   <owner>bokan@google.com</owner>
   <owner>dtapuska@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
@@ -1541,7 +1541,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.PageContextFetcher.ScreenshotRedacted" enum="Boolean"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>linnan@google.com</owner>
   <owner>shivanisha@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
@@ -2629,7 +2629,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram
     name="Glic{GlicProvider}.Instance.Floaty.UserResizeEnded.{Dimension}"
-    units="DIPs" expires_after="2027-03-21">
+    units="DIPs" expires_after="2027-05-23">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -2642,7 +2642,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram
     name="Glic{GlicProvider}.Instance.Floaty.UserResizeStarted.{Dimension}"
-    units="DIPs" expires_after="2027-03-21">
+    units="DIPs" expires_after="2027-05-23">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3026,7 +3026,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.TabPinTrigger"
-    enum="GlicPinTrigger" expires_after="2027-03-21">
+    enum="GlicPinTrigger" expires_after="2027-05-23">
   <owner>sanaakbani@google.com</owner>
   <owner>birnie@google.com</owner>
   <summary>
@@ -3037,7 +3037,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.TabUnpinTrigger"
-    enum="GlicUnpinTrigger" expires_after="2027-03-21">
+    enum="GlicUnpinTrigger" expires_after="2027-05-23">
   <owner>sanaakbani@google.com</owner>
   <owner>birnie@google.com</owner>
   <summary>
@@ -3270,7 +3270,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.TotalVisibleDuration" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3781,7 +3781,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.ScrollTo.SessionCount" units="count"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>liuwilliam@google.com</owner>
   <owner>adithyas@google.com</owner>
   <summary>
@@ -3957,7 +3957,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Tab.InstanceBindCount" units="count"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>birnie@google.com</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
@@ -3969,7 +3969,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Tab.InstancePinCount" units="count"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>birnie@google.com</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>

@@ -188,7 +188,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:WebUIHostname) -->
 
 <histogram name="ActivityReporter.IncompleteReports" units="reports"
-    expires_after="2027-01-27">
+    expires_after="2027-05-23">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/activity_reporter/OWNERS</owner>
   <summary>
@@ -1126,7 +1126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Document.BeforeUnloadDialog" enum="BeforeUnloadDialogResult"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>panicker@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <summary>
@@ -1171,7 +1171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DocumentScan.ScanRequested" enum="DocumentScanSaneBackend"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -1181,7 +1181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DocumentScan.ScanSucceeded" enum="DocumentScanSaneBackend"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -2657,7 +2657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Hardware.Display.Count.OnChange" units="units"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -2667,7 +2667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Hardware.Display.Count.OnStartup" units="units"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -2677,7 +2677,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Hardware.Display.SupportsHDR" enum="BooleanSupported"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>cassew@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2689,7 +2689,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Hardware.TotalDiskSpace" units="GB" expires_after="2027-03-21">
+<histogram name="Hardware.TotalDiskSpace" units="GB" expires_after="2027-05-23">
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -3109,7 +3109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.Channel.WriteQueuePendingMessages2" units="count"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>pasko@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <summary>
@@ -4330,7 +4330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.{ReadStatus}.Count.{RecordedAt}.{StorageState}"
-    units="count" expires_after="2027-02-07">
+    units="count" expires_after="2027-05-23">
   <owner>mastiz@chromium.org</owner>
   <owner>mmrashad@google.com</owner>
   <owner>treib@chromium.org</owner>
@@ -4669,7 +4669,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Shutdown.BrowserExit.Time2" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -4738,7 +4738,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Shutdown.EndSession.Time2" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -4783,7 +4783,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Shutdown.OtherExit.Time2" units="ms"
-    expires_after="2027-02-14">
+    expires_after="2027-05-23">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -4794,7 +4794,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Shutdown.ShutdownType2" enum="ShutdownType"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -4819,7 +4819,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Shutdown.Time.BrowserCloseManager.Canceled" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -4831,7 +4831,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Shutdown.Time.BrowserCloseManager.Confirmed" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -4843,7 +4843,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Shutdown.Time.RenderProcess.Termination" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -4854,7 +4854,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Shutdown.WindowClose.Time2" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -5522,7 +5522,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SubscriptionEligibility.AiSubscriptionTierStatus"
     enum="SubscriptionEligibilityAiSubscriptionTierStatus"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -5903,7 +5903,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UpdateClient.UnzipTime{AppID}" units="ms"
-    expires_after="2027-02-07">
+    expires_after="2027-05-23">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <summary>
@@ -6190,7 +6190,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FinishEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2027-03-21">
+    enum="VoiceInteractionEventSource" expires_after="2027-05-23">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -6210,7 +6210,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceResultConfidenceValue" units="%"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

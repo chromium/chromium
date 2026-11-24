@@ -1424,7 +1424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.IsGuest" enum="NavigationIsGuest"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -1473,7 +1473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.IsSameSiteInstance{NavigationFrameType}"
-    enum="NavigationIsSameSiteInstance" expires_after="2027-01-24">
+    enum="NavigationIsSameSiteInstance" expires_after="2027-05-23">
   <owner>arthursonzogni@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
@@ -1664,7 +1664,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.MainframeSameDocumentNavigationCommitToPresentFirstFrame"
-    units="ms" expires_after="2027-03-21">
+    units="ms" expires_after="2027-05-23">
   <owner>liuwilliam@chromium.org</owner>
   <owner>chrome-seamless-core@google.com</owner>
   <summary>
@@ -2964,7 +2964,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.URLLoader.HasClientHintsControllerDelegate"
-    enum="Boolean" expires_after="2027-03-21">
+    enum="Boolean" expires_after="2027-05-23">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -3694,7 +3694,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.ActivationTransitionMismatch{PreloadingTriggerType}"
-    enum="NavigationPageTransitionDecodedType" expires_after="2027-03-16">
+    enum="NavigationPageTransitionDecodedType" expires_after="2027-05-23">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

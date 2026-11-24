@@ -599,7 +599,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.InnerFrameContents.HttpResponseCode"
-    enum="HttpResponseCode" expires_after="2027-03-21">
+    enum="HttpResponseCode" expires_after="2027-05-23">
   <owner>juanmojica@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
@@ -611,7 +611,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualTasks.InnerFrameContents.HttpResponseCode.ExcludeZeroStateLoads"
-    enum="HttpResponseCode" expires_after="2027-03-21">
+    enum="HttpResponseCode" expires_after="2027-05-23">
   <owner>juanmojica@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
@@ -1540,7 +1540,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.VoiceSearch.StateV2" enum="VoiceSearchState"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>jamesleung@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>

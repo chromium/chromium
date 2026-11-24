@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserDataImporter.{ImportSource}.{ImportDataType}.ImportedCount"
-    units="count" expires_after="2027-02-25">
+    units="count" expires_after="2027-05-23">
   <owner>fsenra@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.Outcome"
-    enum="UserDataImportOutcome" expires_after="2027-02-25">
+    enum="UserDataImportOutcome" expires_after="2027-05-23">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserDataImporter.{ImportSource}.{ImportDataType}.PreparedCount"
-    units="items" expires_after="2027-02-25">
+    units="items" expires_after="2027-05-23">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>

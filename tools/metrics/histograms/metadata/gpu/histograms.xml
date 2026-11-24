@@ -482,7 +482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLECanEmulateGLES3" enum="BooleanANGLECanEmulateGLES3"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>blundell@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
@@ -966,7 +966,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.OverlaysSupported"
-    enum="BooleanOverlaySupported" expires_after="2027-03-21">
+    enum="BooleanOverlaySupported" expires_after="2027-05-23">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
@@ -978,7 +978,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.Supported" enum="Boolean"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>lehoangquyen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1048,7 +1048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.EGLDisplayType" enum="EGLDisplayType"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>The display type used to ask for an EGLDisplay.</summary>
@@ -1157,7 +1157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.EstablishGpuChannelSyncRetry" enum="BooleanSuccess"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>fangzhoug@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -1280,7 +1280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUProcessExitCode" enum="CrashExitCodes"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1559,7 +1559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.IntelGpuGeneration" enum="IntelGpuGeneration"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1661,7 +1661,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.OutputSurface.ScheduleOverlaysUs" units="microseconds"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -1824,7 +1824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ProcessLifetimeEvents.HardwareAccelerated"
-    enum="GPUProcessLifetimeEvent" expires_after="2027-03-21">
+    enum="GPUProcessLifetimeEvent" expires_after="2027-05-23">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Recorded once for every GPU process launch and crash when GPU process is
@@ -2009,7 +2009,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SharedImage.BackingType" enum="SharedImageBackingType"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
@@ -2040,7 +2040,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -2129,7 +2129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.Event{ThreadType}"
-    enum="GpuWatchdogThreadEvent" expires_after="2027-03-21">
+    enum="GpuWatchdogThreadEvent" expires_after="2027-05-23">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>

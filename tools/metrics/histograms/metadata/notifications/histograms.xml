@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Notifications.Actions" enum="NotificationActionType"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>dewittj@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
@@ -846,7 +846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.macOS.DisplayNotificationResult.{Style}"
-    enum="MacNotificationDisplayResult" expires_after="2027-03-01">
+    enum="MacNotificationDisplayResult" expires_after="2027-05-23">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -896,7 +896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.macOS.{ProcessType}.TimeToFirstResponse"
-    units="ms" expires_after="2027-03-01">
+    units="ms" expires_after="2027-05-23">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1183,7 +1183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PersistentNotificationDisplayResult"
-    enum="PersistentNotificationDisplayResult" expires_after="2027-03-21">
+    enum="PersistentNotificationDisplayResult" expires_after="2027-05-23">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

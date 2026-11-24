@@ -127,7 +127,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.OptionsType"
-    enum="LanguageModelCreateOptionsType" expires_after="2027-03-16">
+    enum="LanguageModelCreateOptionsType" expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.SamplingMode"
-    enum="AILanguageModelSamplingMode" expires_after="2027-03-16">
+    enum="AILanguageModelSamplingMode" expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -157,7 +157,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.TemperatureX1000"
-    units="tempX1000" expires_after="2027-03-16">
+    units="tempX1000" expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -188,7 +188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.TopK"
-    units="tokens" expires_after="2027-03-16">
+    units="tokens" expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.{LanguageModelExpectedInputOrOutput}.Type"
-    enum="LanguageModelInputType" expires_after="2027-03-16">
+    enum="LanguageModelInputType" expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.ContextTokens" units="tokens"
-    expires_after="2027-03-16">
+    expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -423,7 +423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.FirstResponseTime" units="ms"
-    expires_after="2027-03-16">
+    expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -436,7 +436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptRequestSize" units="characters"
-    expires_after="2027-03-16">
+    expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -449,7 +449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseCallbackCount"
-    units="times" expires_after="2027-03-16">
+    units="times" expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -488,7 +488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.ResponseCompleteTime" units="ms"
-    expires_after="2027-03-16">
+    expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -530,7 +530,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.Summarizer.APIUsage.{WritingAssistanceFunctionName}.CoreOptionType"
-    enum="WritingAssistanceMetricsOptionType" expires_after="2027-03-16">
+    enum="WritingAssistanceMetricsOptionType" expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -628,7 +628,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.CoreOptionFormat"
-    enum="WritingAssistanceMetricsOptionFormat" expires_after="2027-03-16">
+    enum="WritingAssistanceMetricsOptionFormat" expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -644,7 +644,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.CoreOptionLength"
-    enum="WritingAssistanceMetricsOptionLength" expires_after="2027-03-16">
+    enum="WritingAssistanceMetricsOptionLength" expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -676,7 +676,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.{LanguageMetric}"
-    enum="LocaleCodeBCP47" expires_after="2027-03-16">
+    enum="LocaleCodeBCP47" expires_after="2027-05-23">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>

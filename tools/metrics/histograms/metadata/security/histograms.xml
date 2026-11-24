@@ -40,7 +40,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="OSCrypt.AppBoundEncryption.SupportLevel"
-    enum="AppBoundEncryptionSupportLevel" expires_after="2027-03-21">
+    enum="AppBoundEncryptionSupportLevel" expires_after="2027-05-23">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.AppBoundProvider.Decrypt.ResultLastError"
-    enum="WinGetLastError" expires_after="2027-03-21">
+    enum="WinGetLastError" expires_after="2027-05-23">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
   <summary>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.Win.KeyDecryptionError" enum="WinGetLastError"
-    expires_after="2027-02-07">
+    expires_after="2027-05-23">
   <owner>wfh@chromium.org</owner>
   <owner>forshaw@chromium.org</owner>
   <summary>
@@ -445,7 +445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.SettingEnabledAtStartup2"
-    enum="HttpsFirstModeSetting" expires_after="2027-03-21">
+    enum="HttpsFirstModeSetting" expires_after="2027-05-23">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -598,7 +598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteInteraction"
-    enum="AboutThisSiteInteraction" expires_after="2027-03-21">
+    enum="AboutThisSiteInteraction" expires_after="2027-05-23">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -732,7 +732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.CheckResult"
-    enum="LocalNetworkAccessCheckResult" expires_after="2027-03-21">
+    enum="LocalNetworkAccessCheckResult" expires_after="2027-05-23">
   <owner>hchao@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>

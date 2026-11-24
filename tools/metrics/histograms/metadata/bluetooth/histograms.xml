@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.DeviceConnected.{ConnectionType}"
-    enum="BluetoothDeviceType" expires_after="2027-03-21">
+    enum="BluetoothDeviceType" expires_after="2027-05-23">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.DeviceDisconnect"
-    enum="BluetoothDeviceType" expires_after="2027-03-21">
+    enum="BluetoothDeviceType" expires_after="2027-05-23">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>Emitted each time a Bluetooth device is disconnected.</summary>

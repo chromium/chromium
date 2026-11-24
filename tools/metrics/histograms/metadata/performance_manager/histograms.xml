@@ -329,7 +329,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpacePercent"
-    units="%" expires_after="2027-03-21">
+    units="%" expires_after="2027-05-23">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -463,7 +463,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.BatterySaverModeEnabledPercent"
-    units="%" expires_after="2027-03-21">
+    units="%" expires_after="2027-05-23">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

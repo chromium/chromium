@@ -592,7 +592,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchMatchResolver.OnDeterminedHeadWithUnmatch.PotentialCandidateServingResultAndServableStateAndMatcherAction"
-    units="code" expires_after="2027-03-21">
+    units="code" expires_after="2027-05-23">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1077,7 +1077,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Proxy.RespCode" enum="HttpResponseCode"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

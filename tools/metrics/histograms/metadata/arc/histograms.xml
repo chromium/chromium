@@ -689,7 +689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Attestation.CertificateSigning.Result"
-    enum="CertificateSigningResult" expires_after="2027-03-21">
+    enum="CertificateSigningResult" expires_after="2027-05-23">
   <owner>batoon@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
@@ -1920,7 +1920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PrintPreview.PreviewEvent" enum="PrintPreviewHelperEvents"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -2107,7 +2107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.FirstFrameRendered" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>

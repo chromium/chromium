@@ -511,7 +511,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyUser.GaiaUsersCount" units="Number of Users"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -660,7 +660,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType" enum="SupervisedUserWebFilterType"
-    expires_after="2027-03-14">
+    expires_after="2027-05-23">
 <!-- Do not extend once expires, migrate to SupervisedUsers.WebFilterType.FamilyLink-->
 
   <owner>zhangwenyu@google.com</owner>
@@ -683,7 +683,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType.PerRecord"
-    enum="SupervisedUserWebFilterType" expires_after="2027-03-14">
+    enum="SupervisedUserWebFilterType" expires_after="2027-05-23">
   <owner>tju@google.com</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
@@ -769,7 +769,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ManagedUsers.FilteringResult"
-    enum="SupervisedUserSafetyFilterResult" expires_after="2027-03-21">
+    enum="SupervisedUserSafetyFilterResult" expires_after="2027-05-23">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>

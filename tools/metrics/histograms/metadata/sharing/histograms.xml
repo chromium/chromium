@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
-    enum="SendTabToSelfNotificationStatus" expires_after="2027-03-21">
+    enum="SendTabToSelfNotificationStatus" expires_after="2027-05-23">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -589,7 +589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendTabToSelf.ScrollPosition.GenerationTime"
-    units="ms" expires_after="2027-03-14">
+    units="ms" expires_after="2027-05-23">
   <owner>mtatarski@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -738,7 +738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.CustomAction"
-    enum="ShareCustomAction" expires_after="2027-03-21">
+    enum="ShareCustomAction" expires_after="2027-05-23">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -748,7 +748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
@@ -770,7 +770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.TimeToCustomAction" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -850,7 +850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.{ShareSurface}.ShareContentType"
-    enum="SharingContentTypeAndroid" expires_after="2027-03-21">
+    enum="SharingContentTypeAndroid" expires_after="2027-05-23">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
