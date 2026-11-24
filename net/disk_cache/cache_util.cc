@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "base/byte_size.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
@@ -56,7 +55,7 @@ base::FilePath GetTempCacheName(const base::FilePath& dirname,
   // We'll attempt to have up to kMaxOldFolders folders for deletion.
   for (int i = 0; i < kMaxOldFolders; i++) {
     base::FilePath to_delete = GetPrefixedName(dirname, basename, i);
-    if (!base::PathExists(to_delete)) {
+    if (!base::PathExists(to_delete) && !base::IsLink(to_delete)) {
       return to_delete;
     }
   }
@@ -77,6 +76,9 @@ void CleanupTemporaryDirectories(const base::FilePath& path) {
 }
 
 bool MoveDirectoryToTemporaryDirectory(const base::FilePath& path) {
+  if (path.empty() || base::IsLink(path)) {
+    return false;
+  }
   const base::FilePath dirname = path.DirName();
   const std::optional<base::SafeBaseName> basename =
       base::SafeBaseName::Create(path);
@@ -148,25 +150,24 @@ BASE_FEATURE(kChangeGeneratedCodeCacheSizeExperiment,
              "ChangeGeneratedCodeCacheSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-void DeleteCache(const base::FilePath& path, bool remove_folder) {
+bool DeleteCache(const base::FilePath& path, bool remove_folder) {
+  if (path.empty() || path.ReferencesParent()) {
+    return false;
+  }
+  const base::FilePath stripped_path = path.StripTrailingSeparators();
   if (remove_folder) {
-    if (!base::DeletePathRecursively(path)) {
+    if (!base::DeletePathRecursively(stripped_path)) {
       LOG(WARNING) << "Unable to delete cache folder.";
+      return false;
     }
-    return;
+    return true;
   }
 
-  base::FileEnumerator iter(
-      path,
-      /*recursive=*/false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath file = iter.Next(); !file.value().empty();
-       file = iter.Next()) {
-    if (!base::DeletePathRecursively(file)) {
-      LOG(WARNING) << "Unable to delete cache.";
-      return;
-    }
+  if (!internal::DeleteCacheContents(stripped_path)) {
+    LOG(WARNING) << "Unable to delete cache.";
+    return false;
   }
+  return true;
 }
 
 void CleanupDirectory(const base::FilePath& path,
