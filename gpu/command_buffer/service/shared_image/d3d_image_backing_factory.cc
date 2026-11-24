@@ -1165,6 +1165,20 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
                                          gfx::GpuMemoryBufferType gmb_type,
                                          GrContextType gr_context_type,
                                          base::span<const uint8_t> pixel_data) {
+  const bool is_concurrent_read_write =
+      usage.Has(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
+  const bool is_webgpu_shared_buffer =
+      usage.Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER);
+
+  // Only D3D12 shared buffers (`CreateSharedBufferD3D12`) support thread-safe
+  // access; D3D11 2D textures, GMBs, and swap chains do not.
+  const bool supports_thread_safe = is_webgpu_shared_buffer &&
+                                    gmb_type == gfx::EMPTY_BUFFER &&
+                                    !is_concurrent_read_write;
+  if (thread_safe && !supports_thread_safe) {
+    return false;
+  }
+
   constexpr auto kAllowedWebNNUsages =
       gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR |
       gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER |
@@ -1221,13 +1235,10 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
 
   const bool is_scanout = usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   const bool is_video_decode = usage.Has(gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE);
-  const bool is_concurrent_read_write =
-      usage.Has(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-  const bool is_buffer =
-      usage.Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER);
 
   // WebNN tensors must always be buffer-backed.
-  if (usage.Has(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR) && !is_buffer) {
+  if (usage.Has(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR) &&
+      !is_webgpu_shared_buffer) {
     return false;
   }
 
@@ -1244,7 +1255,7 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
     }
   }
 
-  if (is_buffer) {
+  if (is_webgpu_shared_buffer) {
     // If the SharedImage can be used as a WebGPU buffer, that means it's
     // readable and writable and must have those usages.
     if (!usage.HasAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
@@ -1267,7 +1278,8 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
   }
 
   if (gmb_type == gfx::EMPTY_BUFFER) {
-    if (ToDXGIFormat(format) == DXGI_FORMAT_UNKNOWN && !is_buffer) {
+    if (ToDXGIFormat(format) == DXGI_FORMAT_UNKNOWN &&
+        !is_webgpu_shared_buffer) {
       return false;
     }
   } else if (gmb_type == gfx::DXGI_SHARED_HANDLE) {

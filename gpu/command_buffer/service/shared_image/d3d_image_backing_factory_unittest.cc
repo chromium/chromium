@@ -3527,6 +3527,72 @@ TEST_F(D3DImageBackingFactoryBufferTest, CreateSharedImageImportToDawn) {
   factory_ref.reset();
 }
 
+TEST_F(D3DImageBackingFactoryBufferTest,
+       ThreadSafeOnlySupportedForSharedBuffer) {
+  const SharedImageUsageSet texture_usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+  EXPECT_TRUE(shared_image_factory_->CanCreateSharedImage(
+      texture_usage, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(64, 64),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+  // Regular D3D11 2D textures do not support thread_safe.
+  EXPECT_FALSE(shared_image_factory_->CanCreateSharedImage(
+      texture_usage, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(64, 64),
+      /*thread_safe=*/true, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+  // GMB-backed D3D11 textures do not support thread_safe.
+  EXPECT_FALSE(shared_image_factory_->CanCreateSharedImage(
+      texture_usage, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(64, 64),
+      /*thread_safe=*/true, gfx::DXGI_SHARED_HANDLE, GrContextType::kGL,
+      /*pixel_data=*/{}));
+
+  // DXGI swap chains (CONCURRENT_READ_WRITE) do not support thread_safe.
+  const SharedImageUsageSet swapchain_usage =
+      texture_usage | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+  EXPECT_FALSE(shared_image_factory_->CanCreateSharedImage(
+      swapchain_usage, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(64, 64),
+      /*thread_safe=*/true, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+
+  // D3D12 shared buffers (WEBGPU_SHARED_BUFFER with EMPTY_BUFFER) support
+  // thread_safe.
+  const SharedImageUsageSet buffer_usage =
+      SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER | SHARED_IMAGE_USAGE_WEBGPU_READ |
+      SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  EXPECT_TRUE(shared_image_factory_->CanCreateSharedImage(
+      buffer_usage, viz::SharedImageFormat(), gfx::Size(4, 1),
+      /*thread_safe=*/true, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+  // Shared buffers cannot be backed by a GMB handle or swap chain.
+  EXPECT_FALSE(shared_image_factory_->CanCreateSharedImage(
+      buffer_usage, viz::SharedImageFormat(), gfx::Size(4, 1),
+      /*thread_safe=*/true, gfx::DXGI_SHARED_HANDLE, GrContextType::kGL,
+      /*pixel_data=*/{}));
+  EXPECT_FALSE(shared_image_factory_->CanCreateSharedImage(
+      buffer_usage | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE,
+      viz::SharedImageFormat(), gfx::Size(4, 1), /*thread_safe=*/true,
+      gfx::EMPTY_BUFFER, GrContextType::kGL, /*pixel_data=*/{}));
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+  ASSERT_TRUE(d3d11_device);
+  D3DImageBackingFactory webnn_only_factory(
+      d3d11_device, shared_image_manager_.dxgi_shared_handle_manager(),
+      GLFormatCaps(), GpuDriverBugWorkarounds(),
+      /*enable_webnn_only_d3d_factory=*/true);
+  // Non-buffer-backed WebNN tensor usage is rejected.
+  EXPECT_FALSE(webnn_only_factory.CanCreateSharedImage(
+      SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR, viz::SinglePlaneFormat::kR_F16,
+      gfx::Size(4, 4), /*thread_safe=*/true, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, /*pixel_data=*/{}));
+  // Buffer-backed WebNN tensors use D3D12 shared buffers and support
+  // thread_safe.
+  EXPECT_TRUE(webnn_only_factory.CanCreateSharedImage(
+      buffer_usage | SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR,
+      viz::SinglePlaneFormat::kR_F16, gfx::Size(4, 4), /*thread_safe=*/true,
+      gfx::EMPTY_BUFFER, GrContextType::kGL, /*pixel_data=*/{}));
+}
+
 // Disabled by default as it requires DX11.
 TEST_F(D3DImageBackingFactoryTest, DISABLED_CreateGpuMemoryBuffer) {
   for (auto format : {

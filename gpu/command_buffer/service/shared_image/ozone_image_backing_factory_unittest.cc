@@ -936,4 +936,13 @@ TEST_F(OzoneImageBackingFactoryTest, UploadAndReadbackWithoutContextCurrent) {
   EXPECT_EQ(gl::GLSurface::GetCurrent(), fake_onscreen_surface.get());
 }
 
+TEST_F(OzoneImageBackingFactoryTest, RejectsThreadSafe) {
+  const SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+  EXPECT_FALSE(backing_factory_->CanCreateSharedImage(
+      usage, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 100),
+      /*thread_safe=*/true, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+}
+
 }  // namespace gpu

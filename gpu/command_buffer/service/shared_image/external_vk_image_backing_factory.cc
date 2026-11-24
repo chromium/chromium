@@ -296,8 +296,8 @@ bool ExternalVkImageBackingFactory::IsSupported(
   }
 
   if (thread_safe) {
-    LOG(ERROR) << "ExternalVkImageBackingFactory currently do not support "
-                  "cross-thread usage.";
+    DVLOG(1) << "ExternalVkImageBackingFactory currently do not support "
+                "cross-thread usage.";
     return false;
   }
 
