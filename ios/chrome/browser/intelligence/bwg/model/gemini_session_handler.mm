@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_chat_message_data_types.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_chat_message_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_snackbar_data_types.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_live_utils.h"
@@ -26,6 +27,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 #import "ios/web/public/web_state.h"
 
@@ -150,6 +154,10 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   // The refill date of the last logged Nano Banana quota exhaustion to avoid
   // duplicate logging.
   NSDate* _lastLoggedNanoBananaQuotaRefillDate;
+  // Message text of the last snackbar presented on behalf of the Gemini SDK,
+  // tracked so `dismissSnackbar` only dismisses that snackbar via
+  // `dismissSnackbarWithMessage:animated:`.
+  NSString* _lastSnackbarMessage;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -514,6 +522,36 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
     return;
   }
   [chatMessageHandler handleChatMessageRequest:request completion:completion];
+}
+
+- (void)showSnackbar:(GeminiSnackbar*)snackbar {
+  if (!IsIOSGeminiBottomSheetMigrationEnabled() || !self.snackbarHandler ||
+      !snackbar.message.length) {
+    return;
+  }
+
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:snackbar.message];
+  if (snackbar.actionTitle.length > 0) {
+    SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
+    action.title = snackbar.actionTitle;
+    action.handler = snackbar.actionHandler;
+    message.action = action;
+  }
+
+  [self.snackbarHandler showSnackbarMessage:message];
+  _lastSnackbarMessage = [snackbar.message copy];
+}
+
+- (void)dismissSnackbar {
+  if (!IsIOSGeminiBottomSheetMigrationEnabled() || !_lastSnackbarMessage) {
+    return;
+  }
+
+  NSString* messageToDismiss = _lastSnackbarMessage;
+  _lastSnackbarMessage = nil;
+  [self.snackbarHandler dismissSnackbarWithMessage:messageToDismiss
+                                          animated:YES];
 }
 
 #pragma mark - Private

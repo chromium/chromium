@@ -20,16 +20,10 @@ class Tracker;
 @protocol GeminiChatMessageHandler;
 @protocol GeminiCommands;
 @protocol SettingsCommands;
+@protocol SnackbarCommands;
 
 // Handler for the Gemini sessions.
 @interface GeminiSessionHandler : NSObject <GeminiSessionDelegate>
-
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                             tracker:(feature_engagement::Tracker*)tracker
-                         prefService:(PrefService*)prefService
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
 
 // Delegate for view state changes.
 @property(nonatomic, weak) id<GeminiViewStateDelegate> geminiViewStateDelegate;
@@ -44,8 +38,18 @@ class Tracker;
 // The settings commands handler used by this session handler.
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 
+// The snackbar commands handler used by this session handler.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
+
 // Whether the current session is the first session.
 @property(nonatomic, assign) BOOL isFirstSession;
+
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                             tracker:(feature_engagement::Tracker*)tracker
+                         prefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

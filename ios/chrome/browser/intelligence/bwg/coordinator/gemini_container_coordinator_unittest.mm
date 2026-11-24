@@ -16,6 +16,9 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_snackbar_data_types.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -34,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
@@ -412,6 +416,49 @@ TEST_F(GeminiContainerCoordinatorTest,
   OCMExpect([mock_fullscreen_handler_ exitForceFullscreen]);
   [mediator.fullscreenHandler exitForceFullscreen];
   EXPECT_OCMOCK_VERIFY(mock_fullscreen_handler_);
+
+  [coordinator_ stop];
+  [dispatcher stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];
+}
+
+// Tests that `start` wires `SnackbarCommands` to the session handler so SDK
+// snackbar requests are forwarded in the bottom sheet flow.
+TEST_F(GeminiContainerCoordinatorTest, TestStartWiresSessionSnackbarHandler) {
+  id mock_container_handler =
+      OCMProtocolMock(@protocol(AssistantContainerCommands));
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  [dispatcher startDispatchingToTarget:mock_container_handler
+                           forProtocol:@protocol(AssistantContainerCommands)];
+
+  __block id<AssistantContainerDelegate> captured_delegate = nil;
+  OCMExpect([mock_container_handler
+      showAssistantContainerWithContent:[OCMArg any]
+                               delegate:[OCMArg
+                                            checkWithBlock:^BOOL(
+                                                id<AssistantContainerDelegate>
+                                                    delegate) {
+                                              captured_delegate = delegate;
+                                              return YES;
+                                            }]]);
+
+  [coordinator_ start];
+  EXPECT_OCMOCK_VERIFY(mock_container_handler);
+
+  GeminiContainerMediator* mediator =
+      base::apple::ObjCCastStrict<GeminiContainerMediator>(captured_delegate);
+  GeminiSessionHandler* session_handler =
+      mediator.gatewayManager.sessionHandler;
+  ASSERT_NE(session_handler.snackbarHandler, nil);
+
+  OCMExpect([mock_snackbar_handler_
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(SnackbarMessage* msg) {
+        return [msg.title isEqualToString:@"Response copied"];
+      }]]);
+  GeminiSnackbar* snackbar =
+      [[GeminiSnackbar alloc] initWithType:GeminiSnackbarType::kResponseCopied
+                                   message:@"Response copied"];
+  [session_handler showSnackbar:snackbar];
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
 
   [coordinator_ stop];
   [dispatcher stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];

@@ -22,6 +22,7 @@ include_rules = [
   "+ios/chrome/browser/shared/model/web_state_list/tab_utils.h",
   "+ios/chrome/browser/shared/public/commands/tab_picker_commands.h",
   "+ios/chrome/browser/shared/public/snackbar/snackbar_message.h",
+  "+ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h",
   "+ios/chrome/browser/signin/model/authentication_service.h",
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",

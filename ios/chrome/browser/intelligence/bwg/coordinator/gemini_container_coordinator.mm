@@ -282,7 +282,10 @@
     _mediator.fullscreenController =
         FullscreenController::FromBrowser(self.browser);
   }
-  _mediator.snackbarHandler = HandlerForProtocol(dispatcher, SnackbarCommands);
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  _mediator.gatewayManager.sessionHandler.snackbarHandler = snackbarHandler;
+  _mediator.snackbarHandler = snackbarHandler;
 }
 
 // Dismisses Gemini from all other windows and executes `completion`.
