@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
+#include "url/gurl.h"
 
 namespace extensions {
 
@@ -23,14 +24,14 @@ struct SidebarInfo : public Extension::ManifestData {
   // Returns true when the extension declares the "sidebar" key.
   static bool HasSidebar(const Extension& extension);
 
-  // Returns the "sidebar.default_path" value, or an empty string if the
-  // extension does not set it.
-  static const std::string& GetDefaultPath(const Extension& extension);
+  // Returns the URL that "sidebar.default_path" resolves to, or an empty URL if
+  // the extension does not set it.
+  static const GURL& GetDefaultUrl(const Extension& extension);
 
-  // Relative path to the default sidebar page, or empty when unset. Non-empty
-  // values are validated by `SidebarManifestHandler::Parse()` as relative
-  // extension resource URLs.
-  std::string default_path;
+  // URL of the default sidebar page, or empty when unset.
+  // `SidebarManifestHandler::Parse()` resolves "sidebar.default_path" against
+  // the extension origin and only stores a valid `chrome-extension://` URL.
+  GURL default_url;
 };
 
 // Parses the "sidebar" manifest key.

@@ -9,8 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/files/file_path.h"
-#include "base/strings/string_util.h"
 #include "chrome/common/extensions/api/sidebar.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest.h"
@@ -36,30 +34,25 @@ std::unique_ptr<SidebarInfo> ParseFromDictionary(const Extension& extension,
 
   CHECK(manifest_keys.sidebar.has_value());
   // `default_path` is optional. Return an empty `SidebarInfo` when omitted.
-  std::optional<std::string>& default_path =
+  const std::optional<std::string>& default_path =
       manifest_keys.sidebar->default_path;
   if (!default_path.has_value()) {
     return std::make_unique<SidebarInfo>();
   }
 
-  // Reject absolute URLs (`chrome-extension://...`), network-path URLs
-  // (`//...`), backslashes (`\`), and parent-directory references (`..`) that
-  // `GetResourceURL()` would otherwise resolve within the extension origin.
-  if (GURL(*default_path).is_valid() || default_path->starts_with("//") ||
-      default_path->contains('\\') ||
-      base::FilePath::FromUTF8Unsafe(*default_path).ReferencesParent()) {
-    *error = manifest_errors::kSidebarManifestDefaultPathInvalid;
-    return nullptr;
-  }
-
-  const GURL url = extension.GetResourceURL(*default_path);
+  // `GetResourceURL()` returns an invalid URL for a path that resolves outside
+  // the extension origin or to an unsafe file path. The scheme check also
+  // rejects `blob:` and `filesystem:` URLs, which share the extension origin.
+  // Other forms, such as "../panel.html", resolve to a URL inside the
+  // extension, so storing the resolved URL keeps them harmless.
+  GURL url = extension.GetResourceURL(*default_path);
   if (!url.is_valid() || !url.SchemeIs(kExtensionScheme)) {
     *error = manifest_errors::kSidebarManifestDefaultPathInvalid;
     return nullptr;
   }
 
   auto info = std::make_unique<SidebarInfo>();
-  info->default_path = std::move(*default_path);
+  info->default_url = std::move(url);
   return info;
 }
 
@@ -75,9 +68,9 @@ bool SidebarInfo::HasSidebar(const Extension& extension) {
 }
 
 // static
-const std::string& SidebarInfo::GetDefaultPath(const Extension& extension) {
+const GURL& SidebarInfo::GetDefaultUrl(const Extension& extension) {
   const SidebarInfo* info = extension.GetManifestData<SidebarInfo>();
-  return info ? info->default_path : base::EmptyString();
+  return info ? info->default_url : GURL::EmptyGURL();
 }
 
 SidebarManifestHandler::SidebarManifestHandler() = default;

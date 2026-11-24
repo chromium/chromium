@@ -14,6 +14,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace extensions {
 
@@ -58,7 +59,8 @@ TEST_F(SidebarManifestTest, DefaultPath) {
   ASSERT_TRUE(extension);
   EXPECT_TRUE(extension->install_warnings().empty());
   EXPECT_TRUE(SidebarInfo::HasSidebar(*extension));
-  EXPECT_EQ("panel.html", SidebarInfo::GetDefaultPath(*extension));
+  EXPECT_EQ(extension->GetResourceURL("panel.html"),
+            SidebarInfo::GetDefaultUrl(*extension));
 }
 
 // Tests that an empty "sidebar" key loads without warnings, since
@@ -69,7 +71,7 @@ TEST_F(SidebarManifestTest, EmptyDictionary) {
   ASSERT_TRUE(extension);
   EXPECT_TRUE(extension->install_warnings().empty());
   EXPECT_TRUE(SidebarInfo::HasSidebar(*extension));
-  EXPECT_EQ("", SidebarInfo::GetDefaultPath(*extension));
+  EXPECT_TRUE(SidebarInfo::GetDefaultUrl(*extension).is_empty());
 }
 
 // Tests that an extension without a "sidebar" key loads without sidebar info or
@@ -85,26 +87,21 @@ TEST_F(SidebarManifestTest, NoSidebarKey) {
   ASSERT_TRUE(extension);
   EXPECT_TRUE(extension->install_warnings().empty());
   EXPECT_FALSE(SidebarInfo::HasSidebar(*extension));
-  EXPECT_EQ("", SidebarInfo::GetDefaultPath(*extension));
+  EXPECT_TRUE(SidebarInfo::GetDefaultUrl(*extension).is_empty());
 }
 
 // Tests that invalid "sidebar.default_path" values fail the load.
 TEST_F(SidebarManifestTest, InvalidDefaultPaths) {
-  // Reject empty, root, query-only, directory, encoded backslash, parent
-  // traversal, network-path, external, and same-origin absolute/non-extension
-  // URLs.
+  // Reject empty, root, query-only, directory, encoded backslash, other-origin,
+  // external, and same-origin blob or filesystem URLs.
   const std::string kInvalidPaths[] = {
       "",
       "/",
       "?",
       "dir/",
       "dir%5Cpanel.html",
-      "../panel.html",
-      "..\\\\panel.html",
-      "dir\\\\..\\\\panel.html",
-      base::StringPrintf("//%s/panel.html", kTestExtensionId),
+      "//other-host/panel.html",
       "https://example.com",
-      base::StringPrintf("chrome-extension://%s/panel.html", kTestExtensionId),
       base::StringPrintf("blob:chrome-extension://%s/panel.html",
                          kTestExtensionId),
       base::StringPrintf(
@@ -117,6 +114,28 @@ TEST_F(SidebarManifestTest, InvalidDefaultPaths) {
     LoadAndExpectError(GetManifestData(base::StringPrintf(
                            R"({"default_path": "%s"})", path.c_str())),
                        manifest_errors::kSidebarManifestDefaultPathInvalid);
+  }
+}
+
+// Tests that "sidebar.default_path" values that are not plain relative paths,
+// but resolve inside the extension, load and store the resolved URL.
+TEST_F(SidebarManifestTest, SameOriginDefaultPathsResolveInsideExtension) {
+  const std::string kSameOriginPaths[] = {
+      "../panel.html",
+      "..\\\\panel.html",
+      "dir\\\\..\\\\panel.html",
+      base::StringPrintf("//%s/panel.html", kTestExtensionId),
+      base::StringPrintf("chrome-extension://%s/panel.html", kTestExtensionId),
+  };
+  const GURL expected_url(
+      base::StringPrintf("chrome-extension://%s/panel.html", kTestExtensionId));
+
+  for (const std::string& path : kSameOriginPaths) {
+    SCOPED_TRACE(path);
+    scoped_refptr<Extension> extension = LoadAndExpectSuccess(GetManifestData(
+        base::StringPrintf(R"({"default_path": "%s"})", path.c_str())));
+    ASSERT_TRUE(extension);
+    EXPECT_EQ(expected_url, SidebarInfo::GetDefaultUrl(*extension));
   }
 }
 
@@ -160,7 +179,7 @@ TEST_P(SidebarManifestFeatureTest, FeatureGating) {
       "'sidebar' requires the 'ApiSidebar' feature flag to be enabled.");
   ASSERT_TRUE(extension);
   EXPECT_FALSE(SidebarInfo::HasSidebar(*extension));
-  EXPECT_EQ("", SidebarInfo::GetDefaultPath(*extension));
+  EXPECT_TRUE(SidebarInfo::GetDefaultUrl(*extension).is_empty());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SidebarManifestFeatureTest);
