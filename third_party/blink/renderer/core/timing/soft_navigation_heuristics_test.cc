@@ -120,8 +120,9 @@ class SoftNavigationHeuristicsTest : public testing::Test {
 
     heuristics->SetContextForTest(context, node);
     TextRecord* record = CreateTextRecordForTest(node, 1000, 1000);
-    record->SetPaintTime(base::TimeTicks::Now(), DOMPaintTimingInfo());
     heuristics->OnPaintFinished({}, {record});
+    heuristics->OnFramePresented({}, {record}, base::TimeTicks::Now(),
+                                 DOMPaintTimingInfo(), /*navigation_id=*/1);
   }
 
  private:
@@ -310,10 +311,10 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
   // Simulate a paint in a separate task.
   {
     heuristics->SetContextForTest(context, node1);
-    TextRecord* record = CreateTextRecordForTest(node1, 1000, 1000);
-    record->SetPaintTime(/*paint_time=*/base::TimeTicks::Now(),
-                         /*info=*/DOMPaintTimingInfo());
+    TextRecord* record = CreateTextRecordForTest(node1, 100, 100);
     heuristics->OnPaintFinished({}, {record});
+    heuristics->OnFramePresented({}, {record}, base::TimeTicks::Now(),
+                                 DOMPaintTimingInfo(), /*navigation_id=*/1);
     EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));
     EXPECT_TRUE(context->HasFirstContentfulPaint());
     EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
@@ -336,10 +337,10 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
   // And another paint
   {
     heuristics->SetContextForTest(context, node2);
-    TextRecord* record = CreateTextRecordForTest(node2, 1000, 1000);
-    record->SetPaintTime(/*paint_time=*/base::TimeTicks::Now(),
-                         /*info=*/DOMPaintTimingInfo());
+    TextRecord* record = CreateTextRecordForTest(node2, 100, 200);
     heuristics->OnPaintFinished({}, {record});
+    heuristics->OnFramePresented({}, {record}, base::TimeTicks::Now(),
+                                 DOMPaintTimingInfo(), /*navigation_id=*/1);
     EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));
     // Should still just have one single soft-nav because a single context
     // with a single Interaction should only emit once, even if it e.g.

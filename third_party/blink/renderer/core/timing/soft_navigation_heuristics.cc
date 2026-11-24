@@ -464,7 +464,6 @@ void SoftNavigationHeuristics::MaybeCommitNavigationOrEmitSoftNavigation(
   // Postpone emitting the entry if we're still waiting for FCP presentation
   // feedback.
   if (!context->HasFirstContentfulPaint()) {
-    contexts_waiting_for_paint_timestamp_.insert(context);
     return;
   }
   EmitSoftNavigation(context);
@@ -523,6 +522,7 @@ OptionalPaintTimingCallback SoftNavigationHeuristics::OnPaintFinished(
   for (auto& [context, records] : records_per_context) {
     context->OnPaintFinished(records->image_records, records->text_records);
   }
+
   return std::nullopt;
 }
 
@@ -546,25 +546,18 @@ void SoftNavigationHeuristics::OnFramePresented(
   GroupLcpCandidatesByContext(image_records, candidates_per_context);
   GroupLcpCandidatesByContext(text_records, candidates_per_context);
 
-  // Next, update the LCP candidate and emit an ICP entry for the active
-  // context, if any. We do this before unblocking entries waiting for FCP
-  // below, since that also emits and updates metrics.
   for (const auto& context_and_records : candidates_per_context) {
     context_and_records.key->OnFramePresented(context_and_records.value,
                                               presentation_timestamp,
                                               paint_timing_info, navigation_id);
   }
+}
 
-  // If we're waiting on FCP presentation feedback to emit entries, check if we
-  // can emit now.
-  if (!contexts_waiting_for_paint_timestamp_.empty()) {
-    for (auto& context : contexts_waiting_for_paint_timestamp_) {
-      CHECK(!context->WasEmitted());
-      MaybeCommitNavigationOrEmitSoftNavigation(context);
-    }
-    contexts_waiting_for_paint_timestamp_.erase_if(
-        [&](const auto& context) { return context->WasEmitted(); });
-  }
+void SoftNavigationHeuristics::OnFirstContentfulPaint(
+    SoftNavigationContext* context) {
+  CHECK(context->HasFirstContentfulPaint());
+  CHECK(!context->WasEmitted());
+  MaybeCommitNavigationOrEmitSoftNavigation(context);
 }
 
 void SoftNavigationHeuristics::UpdateSoftLcpMetricsForContext(
@@ -667,7 +660,6 @@ void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
   visitor->Trace(context_for_current_url_);
   visitor->Trace(window_);
   visitor->Trace(paint_attribution_tracker_);
-  visitor->Trace(contexts_waiting_for_paint_timestamp_);
   visitor->Trace(interaction_effects_monitors_);
   visitor->Trace(interaction_id_to_context_);
 }

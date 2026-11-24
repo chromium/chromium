@@ -14,11 +14,13 @@
 
 namespace blink {
 struct DOMPaintTimingInfo;
-class LocalDOMWindow;
 class ImageRecord;
+class LargestContentfulPaint;
 class LayoutObject;
+class LocalDOMWindow;
 class MediaTiming;
 class TextRecord;
+class TracedValue;
 
 // `LargestContentfulPaintManager` is responsible for computing Largest
 // Contentful Paint (LCP) for hard navigations. It mainly does so by delegating
@@ -31,8 +33,6 @@ class CORE_EXPORT LargestContentfulPaintManager
   explicit LargestContentfulPaintManager(LocalDOMWindow*);
 
   // LargestContentfulPaintCalculator::Delegate:
-  void EmitLcpPerformanceEntry(const DOMPaintTimingInfo& paint_timing_info,
-                               LargestContentfulPaint* lcp_entry) override;
   void OnLcpMetricsForReportingChanged() override;
   bool IsHardNavigation() const override { return true; }
   void Trace(Visitor* visitor) const override;
@@ -83,13 +83,34 @@ class CORE_EXPORT LargestContentfulPaintManager
   }
 
  private:
+  // Updates the current LCP candidate info based on the given candidates
+  // computed for a single paint. Returns a callback to flush the candidate and
+  // metrics at presentation time, or std::nullopt if the candidate info didn't
+  // change.
+  OptionalPaintTimingCallback MaybeUpdateLargestContentfulPaint(
+      LargestContentfulPaintCalculator::LcpCandidates*);
+
+  // Called when the new LCP candidate has been presented or metrics need to be
+  // updated. Invokes the `metrics_callback` and emits `lcp_entry` and the
+  // corresponding trace data, if non-null.
+  void FlushCandidateAndMetricsOnFramePresented(
+      OptionalPaintTimingCallback metrics_callback,
+      LargestContentfulPaint* lcp_entry,
+      std::unique_ptr<TracedValue> trace_data,
+      const base::TimeTicks& presentation_timestamp,
+      const DOMPaintTimingInfo& paint_timing_info,
+      uint64_t navigation_id);
+
+  bool IsRecordingLcp() const { return is_recording_lcp_; }
+
   // Returns the current largest ignored text or image if it exists and the
   // underlying node has not been removed from the DOM, and nullptr otherwise.
   TextRecord* GetLargestIgnoredTextIfNotRemoved() const;
   ImageRecord* GetLargestIgnoredImageIfNotRemoved() const;
 
   Member<LocalDOMWindow> window_;
-  Member<LargestContentfulPaintCalculator> largest_contentful_paint_calculator_;
+  const Member<LargestContentfulPaintCalculator>
+      largest_contentful_paint_calculator_;
 
   // Text and image paints are ignored when they (or an ancestor) have opacity
   // 0. This can be a problem later on if the opacity changes to nonzero but
@@ -106,6 +127,7 @@ class CORE_EXPORT LargestContentfulPaintManager
                                                                       nullptr};
   Member<ImageRecord> largest_ignored_image_;
 
+  bool is_recording_lcp_ = true;
   bool contains_full_viewport_image_ = false;
 };
 

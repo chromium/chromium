@@ -17,6 +17,9 @@ class MediaTiming;
 
 namespace blink::paint_timing {
 
+inline constexpr const char kWebExposedLcpTraceCategories[] =
+    "loading,rail,devtools.timeline";
+
 // Returns true if `object` will cause an image to be rendered, and false
 // otherwise.
 inline bool CORE_EXPORT IsImageType(const LayoutObject& object) {
