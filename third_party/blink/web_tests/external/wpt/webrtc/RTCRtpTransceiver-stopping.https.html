@@ -129,6 +129,9 @@ const interop2026 = !new URLSearchParams(location.search).has("rest");
                   'direction during negotiation');
     assert_equals(pc2Transceiver.currentDirection, 'stopped',
                   'currentDirection during negotiation');
+    assert_array_equals(pc2.getSenders(), [], 'getSenders() during negotiation');
+    assert_array_equals(pc2.getReceivers(), [],
+                        'getReceivers() during negotiation');
     await pc2.setLocalDescription();
     assert_equals(pc2.getTransceivers().length, 0);
     assert_equals(pc2Transceiver.mid, null, 'mid after negotiation');

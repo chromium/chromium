@@ -343,19 +343,10 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       webrtc::CreateSessionDescriptionObserver* observer,
       webrtc::PeerConnectionInterface::RTCOfferAnswerOptions answer_options,
       bool capture_synchronous_failure);
-  Vector<std::unique_ptr<blink::RTCRtpSenderImpl>>::iterator FindSender(
-      uintptr_t id);
-  Vector<std::unique_ptr<blink::RTCRtpReceiverImpl>>::iterator FindReceiver(
-      uintptr_t id);
   Vector<std::unique_ptr<blink::RTCRtpTransceiverImpl>>::iterator
   FindTransceiver(uintptr_t id);
-  // For full transceiver implementations, returns the index of
-  // |rtp_transceivers_| that correspond to |platform_transceiver|.
-  // For sender-only transceiver implementations, returns the index of
-  // |rtp_senders_| that correspond to |platform_transceiver.Sender()|.
-  // For receiver-only transceiver implementations, returns the index of
-  // |rtp_receivers_| that correspond to |platform_transceiver.Receiver()|.
-  // NOTREACHED()-crashes if no correspondent is found.
+  // Returns the index of |rtp_transceivers_| that corresponds to
+  // |platform_transceiver|. NOTREACHED()-crashes if none is found.
   wtf_size_t GetTransceiverIndex(
       const RTCRtpTransceiverPlatform& platform_transceiver);
   std::unique_ptr<blink::RTCRtpTransceiverImpl> CreateOrUpdateTransceiver(
@@ -394,10 +385,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // needs to reference it, and automatically disposed when there are no longer
   // any components referencing it.
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map_;
-  // Blink layer correspondents of |webrtc::RtpSenderInterface|.
-  Vector<std::unique_ptr<blink::RTCRtpSenderImpl>> rtp_senders_;
-  // Blink layer correspondents of |webrtc::RtpReceiverInterface|.
-  Vector<std::unique_ptr<blink::RTCRtpReceiverImpl>> rtp_receivers_;
   // Blink layer correspondents of |webrtc::RtpTransceiverInterface|.
   Vector<std::unique_ptr<blink::RTCRtpTransceiverImpl>> rtp_transceivers_;
   // A snapshot of transceiver ids taken before the last transition, used to

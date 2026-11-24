@@ -269,11 +269,13 @@ std::set<RTCPeerConnectionHandler*>* GetPeerConnectionHandlers() {
 
 // Counts the number of senders that have |stream_id| as an associated stream.
 size_t GetLocalStreamUsageCount(
-    const Vector<std::unique_ptr<blink::RTCRtpSenderImpl>>& rtp_senders,
+    const Vector<std::unique_ptr<blink::RTCRtpTransceiverImpl>>&
+        rtp_transceivers,
     const std::string& stream_id) {
   size_t usage_count = 0;
-  for (const auto& sender : rtp_senders) {
-    for (const auto& sender_stream_id : sender->state().stream_ids()) {
+  for (const auto& transceiver : rtp_transceivers) {
+    for (const auto& sender_stream_id :
+         transceiver->content_sender()->state().stream_ids()) {
       if (sender_stream_id == stream_id) {
         ++usage_count;
         break;
@@ -769,8 +771,6 @@ RTCPeerConnectionHandler::~RTCPeerConnectionHandler() {
   }
   // Delete RTP Media API objects that may have references to the native peer
   // connection.
-  rtp_senders_.clear();
-  rtp_receivers_.clear();
   rtp_transceivers_.clear();
   // `signaling_thread_` may be null in some testing-only environments.
   if (!signaling_thread_) {
@@ -1551,24 +1551,25 @@ RTCPeerConnectionHandler::AddTrack(
   DCHECK_EQ(transceiver_states.size(), 1u);
   auto transceiver_state = std::move(transceiver_states[0]);
 
-  std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver;
   // Create or recycle a transceiver.
   auto transceiver = CreateOrUpdateTransceiver(
       std::move(transceiver_state), blink::TransceiverStateUpdateMode::kAll);
-  platform_transceiver = std::move(transceiver);
   if (peer_connection_tracker_) {
-    size_t transceiver_index = GetTransceiverIndex(*platform_transceiver);
+    size_t transceiver_index = GetTransceiverIndex(*transceiver);
     peer_connection_tracker_->TrackAddTransceiver(
         this, PeerConnectionTracker::TransceiverUpdatedReason::kAddTrack,
-        *platform_transceiver, transceiver_index);
+        *transceiver, transceiver_index);
   }
-  for (const auto& stream_id : rtp_senders_.back()->state().stream_ids()) {
-    if (GetLocalStreamUsageCount(rtp_senders_, stream_id) == 1u) {
+  for (const auto& stream_id :
+       transceiver->content_sender()->state().stream_ids()) {
+    if (GetLocalStreamUsageCount(rtp_transceivers_, stream_id) == 1u) {
       // This is the first occurrence of this stream.
       blink::PerSessionWebRTCAPIMetrics::GetInstance()
           ->IncrementStreamCounter();
     }
   }
+  std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver =
+      std::move(transceiver);
   return platform_transceiver;
 }
 
@@ -1604,12 +1605,13 @@ webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>
 RTCPeerConnectionHandler::RemoveTrack(blink::RTCRtpSenderPlatform* web_sender) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::RemoveTrack");
-  auto it = FindSender(web_sender->Id());
-  if (it == rtp_senders_.end()) {
+  auto it = std::ranges::find_if(rtp_transceivers_, [&](const auto& t) {
+    return t->content_sender()->Id() == web_sender->Id();
+  });
+  if (it == rtp_transceivers_.end()) {
     return webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER);
   }
-  const auto& sender = *it;
-  auto webrtc_sender = sender->state().webrtc_sender();
+  auto webrtc_sender = (*it)->content_sender()->state().webrtc_sender();
 
   blink::TransceiverStateSurfacer transceiver_state_surfacer(
       task_runner_, signaling_thread());
@@ -1683,8 +1685,8 @@ void RTCPeerConnectionHandler::RemoveTrackOnSignalingThread(
 Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>>
 RTCPeerConnectionHandler::GetPlatformSenders() const {
   Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> senders;
-  for (const auto& sender : rtp_senders_) {
-    senders.push_back(sender->ShallowCopy());
+  for (const auto& transceiver : rtp_transceivers_) {
+    senders.push_back(transceiver->Sender());
   }
   return senders;
 }
@@ -2074,19 +2076,6 @@ void RTCPeerConnectionHandler::ReportFirstSessionDescriptions(
   // video or not.
 }
 
-Vector<std::unique_ptr<blink::RTCRtpSenderImpl>>::iterator
-RTCPeerConnectionHandler::FindSender(uintptr_t id) {
-  return std::ranges::find_if(
-      rtp_senders_, [id](const auto& sender) { return sender->Id() == id; });
-}
-
-Vector<std::unique_ptr<blink::RTCRtpReceiverImpl>>::iterator
-RTCPeerConnectionHandler::FindReceiver(uintptr_t id) {
-  return std::ranges::find_if(rtp_receivers_, [id](const auto& receiver) {
-    return receiver->Id() == id;
-  });
-}
-
 Vector<std::unique_ptr<blink::RTCRtpTransceiverImpl>>::iterator
 RTCPeerConnectionHandler::FindTransceiver(uintptr_t id) {
   return std::ranges::find_if(rtp_transceivers_, [id](const auto& transceiver) {
@@ -2113,8 +2102,6 @@ RTCPeerConnectionHandler::CreateOrUpdateTransceiver(
   DCHECK(transceiver_state.sender_state());
   DCHECK(transceiver_state.receiver_state());
   auto webrtc_transceiver = transceiver_state.webrtc_transceiver();
-  auto webrtc_sender = transceiver_state.sender_state()->webrtc_sender();
-  auto webrtc_receiver = transceiver_state.receiver_state()->webrtc_receiver();
 
   std::unique_ptr<blink::RTCRtpTransceiverImpl> transceiver;
   auto it = FindTransceiver(
@@ -2126,22 +2113,10 @@ RTCPeerConnectionHandler::CreateOrUpdateTransceiver(
         std::move(transceiver_state),
         dependency_factory_->CreateDecodeMetronome());
     rtp_transceivers_.push_back(transceiver->ShallowCopy());
-    DCHECK(FindSender(blink::RTCRtpSenderImpl::getId(webrtc_sender.get())) ==
-           rtp_senders_.end());
-    rtp_senders_.push_back(std::make_unique<blink::RTCRtpSenderImpl>(
-        *transceiver->content_sender()));
-    DCHECK(FindReceiver(blink::RTCRtpReceiverImpl::getId(
-               webrtc_receiver.get())) == rtp_receivers_.end());
-    rtp_receivers_.push_back(std::make_unique<blink::RTCRtpReceiverImpl>(
-        *transceiver->content_receiver()));
   } else {
     // Update the transceiver. This also updates the sender and receiver.
     transceiver = (*it)->ShallowCopy();
     transceiver->set_state(std::move(transceiver_state), update_mode);
-    DCHECK(FindSender(blink::RTCRtpSenderImpl::getId(webrtc_sender.get())) !=
-           rtp_senders_.end());
-    DCHECK(FindReceiver(blink::RTCRtpReceiverImpl::getId(
-               webrtc_receiver.get())) != rtp_receivers_.end());
   }
   return transceiver;
 }

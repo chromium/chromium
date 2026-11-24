@@ -232,8 +232,8 @@ class MODULES_EXPORT RTCPeerConnection final
                                          ExceptionState&);
 
   const HeapVector<Member<RTCRtpTransceiver>>& getTransceivers() const;
-  const HeapVector<Member<RTCRtpSender>>& getSenders() const;
-  const HeapVector<Member<RTCRtpReceiver>>& getReceivers() const;
+  HeapVector<Member<RTCRtpSender>> getSenders() const;
+  HeapVector<Member<RTCRtpReceiver>> getReceivers() const;
   RtpContributingSourceCache& GetRtpContributingSourceCache();
   RTCRtpTransceiver* addTransceiver(
       const V8UnionMediaStreamTrackOrString* track_or_kind,
@@ -399,10 +399,6 @@ class MODULES_EXPORT RTCPeerConnection final
   void DispatchScheduledEvents();
   MediaStreamTrack* GetTrackForTesting(MediaStreamComponent*) const;
   RTCRtpSender* FindSenderForTrackAndStream(MediaStreamTrack*, MediaStream*);
-  HeapVector<Member<RTCRtpSender>>::iterator FindSender(
-      const RTCRtpSenderPlatform& web_sender);
-  HeapVector<Member<RTCRtpReceiver>>::iterator FindReceiver(
-      const RTCRtpReceiverPlatform& platform_receiver);
   HeapVector<Member<RTCRtpTransceiver>>::iterator FindTransceiverById(
       uintptr_t id);
   HeapVector<Member<RTCRtpTransceiver>>::iterator FindTransceiver(
@@ -418,7 +414,8 @@ class MODULES_EXPORT RTCPeerConnection final
   // |tracks_|. The caller is responsible for ensuring this with
   // RegisterTrack(), e.g:
   // - On addTrack(), the track is supplied as an argument.
-  RTCRtpSender* CreateOrUpdateSender(std::unique_ptr<RTCRtpSenderPlatform>,
+  RTCRtpSender* CreateOrUpdateSender(RTCRtpSender* sender,
+                                     std::unique_ptr<RTCRtpSenderPlatform>,
                                      String kind);
   // Creates or updates the receiver such that it is up-to-date with the
   // RTCRtpReceiverPlatform in all regards *except for streams*. The web
@@ -428,6 +425,7 @@ class MODULES_EXPORT RTCPeerConnection final
   //   processing the addition/removal of remote tracks which includes how to
   //   create and update the associated streams set.
   RTCRtpReceiver* CreateOrUpdateReceiver(
+      RTCRtpReceiver* receiver,
       std::unique_ptr<RTCRtpReceiverPlatform>);
   // Creates or updates the transceiver such that it, including its sender and
   // receiver, are up-to-date with the RTCRtpTransceiverPlatform in all regerds
@@ -532,17 +530,9 @@ class MODULES_EXPORT RTCPeerConnection final
   bool was_ever_connected_ = false;
 
   // A map containing any track that is in use by the peer connection. This
-  // includes tracks of |rtp_senders_| and |rtp_receivers_|.
+  // includes tracks of the senders and receivers of |transceivers_|.
   HeapHashMap<WeakMember<MediaStreamComponent>, WeakMember<MediaStreamTrack>>
       tracks_;
-  // In Plan B, senders and receivers exist independently of one another.
-  // In Unified Plan, all senders and receivers are the sender-receiver pairs of
-  // transceivers.
-  // TODO(hbos): When Plan B is removed, remove |rtp_senders_| and
-  // |rtp_receivers_| since these are part of |transceivers_|.
-  // https://crbug.com/857004
-  HeapVector<Member<RTCRtpSender>> rtp_senders_;
-  HeapVector<Member<RTCRtpReceiver>> rtp_receivers_;
   HeapVector<Member<RTCRtpTransceiver>> transceivers_;
   // Always has a value if initialization was successful (the constructor did
   // not throw an exception).

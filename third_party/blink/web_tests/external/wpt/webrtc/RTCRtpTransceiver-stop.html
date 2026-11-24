@@ -127,7 +127,11 @@ promise_test(async (t) => {
   assert_equals(pc1.getTransceivers().length, 1);
   assert_equals(pc2.getTransceivers().length, 1);
   pc1.getTransceivers()[0].stop();
-  await exchangeOfferAnswer(pc1, pc2);
+  await exchangeOffer(pc1, pc2);
+  assert_equals(pc2.getTransceivers().length, 1);
+  assert_equals(pc2.getSenders().length, 0, 'callee senders before answer');
+  assert_equals(pc2.getReceivers().length, 0, 'callee receivers before answer');
+  await exchangeAnswer(pc1, pc2);
   assert_equals(pc1.getTransceivers().length, 0);
   assert_equals(pc2.getTransceivers().length, 0);
   assert_equals(pc1.getSenders().length, 0, 'caller senders');

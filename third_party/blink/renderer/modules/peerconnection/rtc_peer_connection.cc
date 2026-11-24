@@ -2073,14 +2073,14 @@ ScriptPromise<RTCStatsReport> RTCPeerConnection::getStats(
   // Find the sender or receiver that represent the selector.
   size_t track_uses = 0u;
   RTCRtpSender* track_sender = nullptr;
-  for (const auto& sender : rtp_senders_) {
+  for (const auto& sender : getSenders()) {
     if (sender->track() == selector) {
       ++track_uses;
       track_sender = sender;
     }
   }
   RTCRtpReceiver* track_receiver = nullptr;
-  for (const auto& receiver : rtp_receivers_) {
+  for (const auto& receiver : getReceivers()) {
     if (receiver->track() == selector) {
       ++track_uses;
       track_receiver = receiver;
@@ -2112,13 +2112,26 @@ RTCPeerConnection::getTransceivers() const {
   return transceivers_;
 }
 
-const HeapVector<Member<RTCRtpSender>>& RTCPeerConnection::getSenders() const {
-  return rtp_senders_;
+HeapVector<Member<RTCRtpSender>> RTCPeerConnection::getSenders() const {
+  HeapVector<Member<RTCRtpSender>> senders;
+  for (const auto& transceiver : transceivers_) {
+    if (transceiver->currentDirection() !=
+        V8RTCRtpTransceiverDirection::Enum::kStopped) {
+      senders.push_back(transceiver->sender());
+    }
+  }
+  return senders;
 }
 
-const HeapVector<Member<RTCRtpReceiver>>& RTCPeerConnection::getReceivers()
-    const {
-  return rtp_receivers_;
+HeapVector<Member<RTCRtpReceiver>> RTCPeerConnection::getReceivers() const {
+  HeapVector<Member<RTCRtpReceiver>> receivers;
+  for (const auto& transceiver : transceivers_) {
+    if (transceiver->currentDirection() !=
+        V8RTCRtpTransceiverDirection::Enum::kStopped) {
+      receivers.push_back(transceiver->receiver());
+    }
+  }
+  return receivers;
 }
 
 RtpContributingSourceCache& RTCPeerConnection::GetRtpContributingSourceCache() {
@@ -2217,7 +2230,7 @@ RTCRtpSender* RTCPeerConnection::addTrack(MediaStreamTrack* track,
                                            &exception_state)) {
     return nullptr;
   }
-  for (const auto& sender : rtp_senders_) {
+  for (const auto& sender : getSenders()) {
     if (sender->track() == track) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidAccessError,
@@ -2262,8 +2275,9 @@ void RTCPeerConnection::removeTrack(RTCRtpSender* sender,
                                            &exception_state)) {
     return;
   }
-  auto it = FindSender(*sender->web_sender());
-  if (it == rtp_senders_.end()) {
+  if (!std::ranges::any_of(transceivers_, [&](const auto& transceiver) {
+        return transceiver->sender() == sender;
+      })) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
         "The sender was not created by this peer connection.");
@@ -2391,29 +2405,16 @@ MediaStreamTrack* RTCPeerConnection::GetTrackForTesting(
 RTCRtpSender* RTCPeerConnection::FindSenderForTrackAndStream(
     MediaStreamTrack* track,
     MediaStream* stream) {
-  for (const auto& rtp_sender : rtp_senders_) {
+  for (const auto& transceiver : transceivers_) {
+    RTCRtpSender* rtp_sender = transceiver->sender();
     if (rtp_sender->track() == track) {
       auto streams = rtp_sender->streams();
       if (streams.size() == 1u && streams[0] == stream) {
-        return rtp_sender.Get();
+        return rtp_sender;
       }
     }
   }
   return nullptr;
-}
-
-HeapVector<Member<RTCRtpSender>>::iterator RTCPeerConnection::FindSender(
-    const RTCRtpSenderPlatform& web_sender) {
-  return std::ranges::find_if(rtp_senders_, [&](const auto& sender) {
-    return sender->web_sender()->Id() == web_sender.Id();
-  });
-}
-
-HeapVector<Member<RTCRtpReceiver>>::iterator RTCPeerConnection::FindReceiver(
-    const RTCRtpReceiverPlatform& platform_receiver) {
-  return std::ranges::find_if(rtp_receivers_, [&](const auto& receiver) {
-    return receiver->platform_receiver()->Id() == platform_receiver.Id();
-  });
 }
 
 HeapVector<Member<RTCRtpTransceiver>>::iterator
@@ -2430,6 +2431,7 @@ RTCPeerConnection::FindTransceiver(
 }
 
 RTCRtpSender* RTCPeerConnection::CreateOrUpdateSender(
+    RTCRtpSender* sender,
     std::unique_ptr<RTCRtpSenderPlatform> rtp_sender_platform,
     String kind) {
   // The track corresponding to |web_track| must already be known to us by being
@@ -2443,18 +2445,14 @@ RTCRtpSender* RTCPeerConnection::CreateOrUpdateSender(
 
   // Create or update sender. If the web sender has stream IDs the sender's
   // streams need to be set separately outside of this method.
-  auto sender_it = FindSender(*rtp_sender_platform);
-  RTCRtpSender* sender;
-  if (sender_it == rtp_senders_.end()) {
+  if (!sender) {
     // Create new sender (with empty stream set).
     sender = MakeGarbageCollected<RTCRtpSender>(
         this, std::move(rtp_sender_platform), kind, track, MediaStreamVector(),
         encoded_insertable_streams_,
         GetExecutionContext()->GetTaskRunner(TaskType::kInternalMedia));
-    rtp_senders_.push_back(sender);
   } else {
     // Update existing sender (not touching the stream set).
-    sender = *sender_it;
     DCHECK_EQ(sender->web_sender()->Id(), rtp_sender_platform->Id());
     sender->SetTrack(track);
   }
@@ -2465,23 +2463,14 @@ RTCRtpSender* RTCPeerConnection::CreateOrUpdateSender(
 }
 
 RTCRtpReceiver* RTCPeerConnection::CreateOrUpdateReceiver(
+    RTCRtpReceiver* receiver,
     std::unique_ptr<RTCRtpReceiverPlatform> platform_receiver) {
-  auto receiver_it = FindReceiver(*platform_receiver);
-  // Create track.
-  MediaStreamTrack* track;
-  if (receiver_it == rtp_receivers_.end()) {
-    track = MakeGarbageCollected<MediaStreamTrackImpl>(
-        GetExecutionContext(), platform_receiver->Track());
-    RegisterTrack(track);
-  } else {
-    track = (*receiver_it)->track();
-  }
-
   // Create or update receiver. If the web receiver has stream IDs the
   // receiver's streams need to be set separately outside of this method.
-  RTCRtpReceiver* receiver;
-  if (receiver_it == rtp_receivers_.end()) {
-    // Create new receiver.
+  if (!receiver) {
+    MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+        GetExecutionContext(), platform_receiver->Track());
+    RegisterTrack(track);
     receiver = MakeGarbageCollected<RTCRtpReceiver>(
         this, std::move(platform_receiver), track, MediaStreamVector(),
         encoded_insertable_streams_,
@@ -2493,12 +2482,9 @@ RTCRtpReceiver* RTCPeerConnection::CreateOrUpdateReceiver(
     // having constructed the track in an already muted state.
     receiver->track()->Component()->Source()->SetReadyState(
         MediaStreamSource::kReadyStateMuted);
-    rtp_receivers_.push_back(receiver);
   } else {
     // Update existing receiver is a no-op.
-    receiver = *receiver_it;
     DCHECK_EQ(receiver->platform_receiver()->Id(), platform_receiver->Id());
-    DCHECK_EQ(receiver->track(), track);  // Its track should never change.
   }
   receiver->set_transport(CreateOrUpdateDtlsTransport(
       receiver->platform_receiver()->DtlsTransport(),
@@ -2512,26 +2498,23 @@ RTCRtpTransceiver* RTCPeerConnection::CreateOrUpdateTransceiver(
                  MediaStreamSource::kTypeAudio)
                     ? "audio"
                     : "video";
-  RTCRtpSender* sender =
-      CreateOrUpdateSender(platform_transceiver->Sender(), kind);
-  RTCRtpReceiver* receiver =
-      CreateOrUpdateReceiver(platform_transceiver->Receiver());
-
-  RTCRtpTransceiver* transceiver;
   auto transceiver_it = FindTransceiver(*platform_transceiver);
-  if (transceiver_it == transceivers_.end()) {
-    // Create new tranceiver.
-    transceiver = MakeGarbageCollected<RTCRtpTransceiver>(
-        this, std::move(platform_transceiver), sender, receiver);
-    transceivers_.push_back(transceiver);
-  } else {
-    // Update existing transceiver.
-    transceiver = *transceiver_it;
-    // The sender and receiver have already been updated above.
-    DCHECK_EQ(transceiver->sender(), sender);
-    DCHECK_EQ(transceiver->receiver(), receiver);
+  if (transceiver_it != transceivers_.end()) {
+    RTCRtpTransceiver* transceiver = *transceiver_it;
+    CreateOrUpdateSender(transceiver->sender(), platform_transceiver->Sender(),
+                         kind);
+    CreateOrUpdateReceiver(transceiver->receiver(),
+                           platform_transceiver->Receiver());
     transceiver->UpdateMembers();
+    return transceiver;
   }
+  RTCRtpSender* sender =
+      CreateOrUpdateSender(nullptr, platform_transceiver->Sender(), kind);
+  RTCRtpReceiver* receiver =
+      CreateOrUpdateReceiver(nullptr, platform_transceiver->Receiver());
+  auto* transceiver = MakeGarbageCollected<RTCRtpTransceiver>(
+      this, std::move(platform_transceiver), sender, receiver);
+  transceivers_.push_back(transceiver);
   return transceiver;
 }
 
@@ -2582,7 +2565,7 @@ RTCDTMFSender* RTCPeerConnection::createDTMFSender(
     return nullptr;
   }
   RTCRtpSender* found_rtp_sender = nullptr;
-  for (const auto& rtp_sender : rtp_senders_) {
+  for (const auto& rtp_sender : getSenders()) {
     if (rtp_sender->track() == track) {
       found_rtp_sender = rtp_sender;
       break;
@@ -2822,15 +2805,6 @@ void RTCPeerConnection::DidModifyTransceivers(
       }
     }
   }
-  // Update the rtp_senders_ and rtp_receivers_ members to only contain
-  // senders and receivers that are in the current set of transceivers.
-  rtp_senders_.clear();
-  rtp_receivers_.clear();
-  for (auto& transceiver : transceivers_) {
-    rtp_senders_.push_back(transceiver->sender());
-    rtp_receivers_.push_back(transceiver->receiver());
-  }
-
   MediaStreamVector current_streams = getRemoteStreams();
 
   // Modify and fire "pc.onsignalingchange" synchronously.
@@ -3329,8 +3303,6 @@ void RTCPeerConnection::Trace(Visitor* visitor) const {
   visitor->Trace(pending_remote_description_);
   visitor->Trace(current_remote_description_);
   visitor->Trace(tracks_);
-  visitor->Trace(rtp_senders_);
-  visitor->Trace(rtp_receivers_);
   visitor->Trace(transceivers_);
   visitor->Trace(scheduled_events_);
   visitor->Trace(dtls_transports_by_native_transport_);
