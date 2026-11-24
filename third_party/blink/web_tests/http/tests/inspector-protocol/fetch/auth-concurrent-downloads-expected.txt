@@ -1,0 +1,6 @@
+Tests that an auth challenge for one of two concurrent downloads is reported for the download that was challenged.
+Request paused: http://127.0.0.1:8000/devtools/network/resources/resource.php?wait=3000
+Request paused: http://127.0.0.1:8000/loading/resources/basic-auth-testing.php?realm=auth-concurrent-downloads&username=auth-concurrent-downloads&password=never-sent
+Auth required: http://127.0.0.1:8000/loading/resources/basic-auth-testing.php?realm=auth-concurrent-downloads&username=auth-concurrent-downloads&password=never-sent
+Auth challenge is reported for the second download: true
+

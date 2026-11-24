@@ -1,0 +1,6 @@
+Tests that an auth challenge for a download is reported to the session that intercepted it while another session intercepts a download of its own.
+[session 1] Request paused: http://127.0.0.1:8000/loading/resources/basic-auth-testing.php?realm=auth-downloads-in-two-sessions&username=auth-downloads-in-two-sessions&password=never-sent
+[session 2] Request paused: http://127.0.0.1:8000/devtools/network/resources/resource.php?wait=3000
+[session 1] Auth required: http://127.0.0.1:8000/loading/resources/basic-auth-testing.php?realm=auth-downloads-in-two-sessions&username=auth-downloads-in-two-sessions&password=never-sent
+Auth challenge is reported for the challenged download: true
+

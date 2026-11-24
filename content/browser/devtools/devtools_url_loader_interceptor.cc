@@ -826,6 +826,15 @@ void DevToolsURLLoaderFactoryProxy::CreateLoaderAndStart(
     return;
   }
 
+  if (process_id_ <= 0 && request_id == 0) {
+    // Browser-initiated loaders that do not track request IDs (such as
+    // ResourceDownloader for downloads) pass `request_id = 0`. Assign a unique
+    // browser-initiated ID so concurrent requests can be independently
+    // intercepted and have their network callbacks (e.g. auth challenges and
+    // header client events) routed without colliding on GlobalRequestID(0, 0).
+    request_id = GlobalRequestID::MakeBrowserInitiated().request_id;
+  }
+
   GlobalRequestID global_req_id(ToOriginatingProcessIdUnsafe(process_id_),
                                 request_id);
   // CORS preflights reuse the request ID of the request they precede. On a
@@ -841,35 +850,29 @@ void DevToolsURLLoaderFactoryProxy::CreateLoaderAndStart(
   if (InterceptionJob* existing_job =
           is_cors_preflight ? nullptr
                             : interceptor->FindJobByGlobalId(global_req_id)) {
-    // Genuine child/renderer processes strictly have process IDs >= 1
-    // (content::ChildProcessId starts generating IDs at 1). Values <= 0
-    // represent browser-initiated contexts (0 for navigations, or -1 for
-    // invalid child IDs). Multiple concurrent browser requests may share these
-    // non-renderer IDs; shutting down the existing job would abort an active,
-    // independent load. Therefore, if a collision occurs on process_id_ <= 0,
-    // skip interception and forward directly to the target factory without
-    // touching the existing job (crbug.com/40276949).
-    if (process_id_ <= 0) {
-      target_factory_->CreateLoaderAndStart(std::move(loader), request_id,
-                                            options, request, std::move(client),
-                                            traffic_annotation);
-      return;
-    }
-
     // A collision occurs in two scenarios:
-    // 1. Legitimate Blink restarts: An in-flight request is restarted (e.g.
-    //    Critical Client Hints, cross-scheme redirects, or Service Worker
-    //    fallback to network) while the previous loader's Mojo disconnection is
-    //    still in flight across IPC.
+    // 1. Legitimate restarts: An in-flight request is restarted with the same
+    //    request ID (e.g. navigation restarts reusing `global_request_id_` on
+    //    Accept-CH, cross-scheme redirects, or Service Worker fallback, or
+    //    Blink subresource restarts) while the previous loader's Mojo
+    //    disconnection is still in flight across IPC.
     // 2. Attack vector (crbug.com/497350668): A compromised renderer attempts
-    // to reuse
-    //    an in-flight request ID (e.g. guessing the negative ID of a browser-
-    //    initiated worker script fetch) to hijack authentication challenges and
-    //    misdirect credentials to an attacker server.
+    //    to reuse an in-flight request ID (e.g. guessing the negative ID of a
+    //    browser-initiated worker script fetch) to hijack authentication
+    //    challenges and misdirect credentials to an attacker server.
+    //
+    // Browser-initiated requests without an ID (`request_id == 0`, such as
+    // downloads) were assigned a unique ID above, so remaining collisions on
+    // `process_id_ <= 0` are restarts of a trusted browser-assigned ID.
+    // Preserving `request_id` ensures client-side proxies (such as extensions'
+    // WebRequestProxyingURLLoaderFactory) and LoginTabHelper can match
+    // OnLoaderCreated, OnLoaderFailedWithRemoteEndpoint, and auth callbacks
+    // against the original ID.
+    //
     // In both cases, shutting down the obsolete job safely handles the
-    // collision: for restarts, it allows the new loader to proceed cleanly; for
-    // attacks, it destroys the victim job, cancels its pending auth callbacks,
-    // and prevents credential theft.
+    // collision: for restarts, it allows the new loader to proceed cleanly
+    // under the original ID; for attacks, it destroys the victim job, cancels
+    // its pending auth callbacks, and prevents credential theft.
     existing_job->Shutdown();
   }
 
