@@ -1676,7 +1676,6 @@ void RenderText::EnsureLayoutTextUpdated() const {
   // Iterates through graphemes from |text_| and rewrite its codepoints to
   // |layout_text_|.
   base::i18n::UTF16CharIterator text_iter(text_);
-  internal::StyleIterator styles = GetTextStyleIterator();
   bool text_truncated = false;
   std::vector<uint32_t> grapheme_codepoints;
   while (!text_iter.end() && !text_truncated) {
@@ -1749,7 +1748,6 @@ void RenderText::EnsureLayoutTextUpdated() const {
 
     for (uint32_t codepoint : grapheme_codepoints) {
       // Append the codepoint to the layout text.
-      const size_t current_layout_text_position = layout_text_.size();
       const size_t codepoint_length = U16_LENGTH(codepoint);
       if (codepoint_length == 1) {
         layout_text_ += codepoint;
@@ -1757,29 +1755,46 @@ void RenderText::EnsureLayoutTextUpdated() const {
         layout_text_ += U16_LEAD(codepoint);
         layout_text_ += U16_TRAIL(codepoint);
       }
+    }
+  }
 
-      // Apply the style at current grapheme position to the layout text.
-      styles.IncrementToPosition(text_grapheme_start_position);
+  // Apply the styles of |text_| to |layout_text_|. A grapheme takes the styles
+  // at its start in |text_|, so apply them once per run of graphemes that start
+  // in the same style range and that are either all inside or all outside the
+  // composition range.
+  const auto in_composition = [this](size_t text_index) {
+    return composition_range_.Contains(Range(text_index, text_index + 1));
+  };
+  internal::StyleIterator styles = GetTextStyleIterator();
+  const auto graphemes_end = text_to_display_indices_.end();
+  for (auto grapheme = text_to_display_indices_.begin();
+       grapheme != graphemes_end;) {
+    const auto first = grapheme;
+    styles.IncrementToPosition(first->text_index);
+    const size_t style_end = styles.GetRange().end();
+    const bool underline = in_composition(first->text_index);
+    do {
+      ++grapheme;
+    } while (grapheme != graphemes_end && grapheme->text_index < style_end &&
+             in_composition(grapheme->text_index) == underline);
 
-      Range range(current_layout_text_position, layout_text_.size());
-      layout_colors_.ApplyValue(styles.color(), range);
-      layout_baselines_.ApplyValue(styles.baseline(), range);
-      layout_font_size_overrides_.ApplyValue(styles.font_size_override(),
-                                             range);
-      layout_resolved_typefaces_.ApplyValue(styles.resolved_typeface(), range);
-      layout_fill_styles_.ApplyValue(styles.fill_style(), range);
-      layout_stroke_widths_.ApplyValue(styles.stroke_width(), range);
-      layout_weights_.ApplyValue(styles.weight(), range);
-      for (size_t i = 0; i < layout_styles_.size(); ++i) {
-        layout_styles_[i].ApplyValue(styles.style(static_cast<TextStyle>(i)),
-                                     range);
-      }
-
-      // Apply an underline to the composition range in |underlines|.
-      const Range grapheme_start_range(text_grapheme_start_position,
-                                       text_grapheme_start_position + 1);
-      if (composition_range_.Contains(grapheme_start_range))
-        layout_styles_[TEXT_STYLE_HEAVY_UNDERLINE].ApplyValue(true, range);
+    const Range range(first->display_index, grapheme == graphemes_end
+                                                ? layout_text_.size()
+                                                : grapheme->display_index);
+    layout_colors_.ApplyValue(styles.color(), range);
+    layout_baselines_.ApplyValue(styles.baseline(), range);
+    layout_font_size_overrides_.ApplyValue(styles.font_size_override(), range);
+    layout_resolved_typefaces_.ApplyValue(styles.resolved_typeface(), range);
+    layout_fill_styles_.ApplyValue(styles.fill_style(), range);
+    layout_stroke_widths_.ApplyValue(styles.stroke_width(), range);
+    layout_weights_.ApplyValue(styles.weight(), range);
+    for (size_t i = 0; i < layout_styles_.size(); ++i) {
+      layout_styles_[i].ApplyValue(styles.style(static_cast<TextStyle>(i)),
+                                   range);
+    }
+    // Apply an underline to the composition range.
+    if (underline) {
+      layout_styles_[TEXT_STYLE_HEAVY_UNDERLINE].ApplyValue(true, range);
     }
   }
 
