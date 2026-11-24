@@ -2579,6 +2579,22 @@
             ]
         }
     ],
+    "AutofillJsOptimizationsIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillOptimizationFormSearchIos",
+                        "AutofillTrackFormMutationsOptimizationIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillLabelSensitiveAutocomplete": [
         {
             "platforms": [
