@@ -40,7 +40,7 @@
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
-#include "components/password_manager/core/browser/password_change/password_change_credentials_provider.h"
+#include "components/password_manager/core/browser/password_change/mock_password_change_credentials_provider.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -65,19 +65,6 @@ using ::optimization_guide::proto::AnnotatedPageContent;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
-
-class MockPasswordChangeCredentialsProvider
-    : public password_manager::PasswordChangeCredentialsProvider {
- public:
-  MOCK_METHOD((base::expected<password_manager::PasswordString, Error>),
-              GetOldPassword,
-              (),
-              (const, override));
-  MOCK_METHOD((base::expected<password_manager::PasswordString, Error>),
-              GetNewPassword,
-              (password_manager::PasswordFormManager * form_manager),
-              (override));
-};
 
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
@@ -625,7 +612,7 @@ TEST_F(ChangePasswordToolTest, Invoke_NoPasswordChangeFlow_Fails) {
 }
 
 TEST_F(ChangePasswordToolTest, Invoke_CredentialsProviderFails_ReturnsError) {
-  NiceMock<MockPasswordChangeCredentialsProvider> provider;
+  NiceMock<password_manager::MockPasswordChangeCredentialsProvider> provider;
   EXPECT_CALL(password_change_service(),
               GetCredentialsProviderForActorSurface(
                   actor_surface().GetHandle().raw_value()))

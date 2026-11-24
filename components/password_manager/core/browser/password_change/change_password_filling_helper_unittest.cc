@@ -27,8 +27,8 @@
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
+#include "components/password_manager/core/browser/password_change/mock_password_change_credentials_provider.h"
 #include "components/password_manager/core/browser/password_change/mock_password_change_service.h"
-#include "components/password_manager/core/browser/password_change/password_change_credentials_provider.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -75,19 +75,6 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
        base::OnceCallback<void(const std::optional<autofill::FormData>&)>
            form_data_callback),
       (override));
-};
-
-class MockPasswordChangeCredentialsProvider
-    : public PasswordChangeCredentialsProvider {
- public:
-  MOCK_METHOD((base::expected<PasswordString, Error>),
-              GetOldPassword,
-              (),
-              (const, override));
-  MOCK_METHOD((base::expected<PasswordString, Error>),
-              GetNewPassword,
-              (PasswordFormManager * form_manager),
-              (override));
 };
 
 class ChangePasswordFillingHelperTest : public testing::Test {

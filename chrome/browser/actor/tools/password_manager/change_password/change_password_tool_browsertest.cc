@@ -30,7 +30,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/shared_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/core/browser/password_change/password_change_credentials_provider.h"
+#include "components/password_manager/core/browser/password_change/mock_password_change_credentials_provider.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
@@ -54,18 +54,6 @@ using ::testing::Return;
 constexpr char kDefaultOldPassword[] = "provider_current_password";
 constexpr char kDefaultNewPassword[] = "provider_new_password";
 
-class MockPasswordChangeCredentialsProvider
-    : public password_manager::PasswordChangeCredentialsProvider {
- public:
-  MOCK_METHOD((base::expected<password_manager::PasswordString, Error>),
-              GetOldPassword,
-              (),
-              (const, override));
-  MOCK_METHOD((base::expected<password_manager::PasswordString, Error>),
-              GetNewPassword,
-              (password_manager::PasswordFormManager * form_manager),
-              (override));
-};
 
 class ChangePasswordToolBrowserTest : public ActorToolsTest {
  public:
@@ -116,7 +104,8 @@ class ChangePasswordToolBrowserTest : public ActorToolsTest {
   }
 
  private:
-  NiceMock<MockPasswordChangeCredentialsProvider> credentials_provider_;
+  NiceMock<password_manager::MockPasswordChangeCredentialsProvider>
+      credentials_provider_;
   raw_ptr<MockChromePasswordChangeService> mock_password_change_service_ =
       nullptr;
 };
