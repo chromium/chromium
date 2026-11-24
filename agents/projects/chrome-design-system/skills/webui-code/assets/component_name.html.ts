@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {MyComponentElement} from './my_component.js';
 
 export function getHtml(this: MyComponentElement) {
-  return html`
-    <!-- HTML goes here... -->
-  `;
+  return html`<!-- HTML goes here... -->`;
 }
