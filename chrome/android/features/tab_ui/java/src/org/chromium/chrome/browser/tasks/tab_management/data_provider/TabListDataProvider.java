@@ -184,8 +184,8 @@ public abstract class TabListDataProvider {
     }
 
     /**
-     * Returns the tab with {@code tabId} from the observed models, checking them in order and
-     * skipping models whose tab state isn't initialized yet, or null if none has it.
+     * Returns the tab with {@code tabId} from the observed models, skipping models whose tab state
+     * isn't initialized yet, or null if none has it.
      *
      * @param tabId The ID of the tab to find.
      */
@@ -249,10 +249,9 @@ public abstract class TabListDataProvider {
      * TabList#INVALID_TAB_INDEX} if absent. Subclasses can override to map grouped tabs to their
      * containing {@link TabGroupItem}.
      *
-     * @param model The active {@link TabModel}.
      * @param tabId The ID of the tab to resolve.
      */
-    protected int indexOfItemForTab(TabModel model, @TabId int tabId) {
+    protected int indexOfItemForTab(@TabId int tabId) {
         return indexOfTabId(tabId);
     }
 
@@ -373,8 +372,8 @@ public abstract class TabListDataProvider {
         TabModel model = getHighlightTabModel();
         if (model == null || model.getTabById(newSelectedTabId) == null) return;
 
-        int prevSelectedIndex = indexOfItemForTab(model, prevSelectedTabId);
-        int newSelectedIndex = indexOfItemForTab(model, newSelectedTabId);
+        int prevSelectedIndex = indexOfItemForTab(prevSelectedTabId);
+        int newSelectedIndex = indexOfItemForTab(newSelectedTabId);
         if (newSelectedIndex != TabList.INVALID_TAB_INDEX
                 && newSelectedIndex == prevSelectedIndex) {
             return;
@@ -457,7 +456,7 @@ public abstract class TabListDataProvider {
      * Inserts a {@link TabListItem} into {@link #mItems} at its {@link TabModel} position and
      * notifies observers via {@link TabListDataObserver#onItemsInserted}.
      *
-     * @param model The active {@link TabModel}.
+     * @param model The loaded {@link TabModel} that holds {@code item}'s tab.
      * @param item The {@link TabListItem} to insert.
      */
     protected void insertItem(TabModel model, TabListItem item) {
@@ -670,12 +669,8 @@ public abstract class TabListDataProvider {
     /** Moves the highlight to the highlight model's current tab, or clears it if there is none. */
     private void refreshHighlight() {
         if (mItems.isEmpty()) return;
-        TabModel model = getHighlightTabModel();
         Tab tab = getSelectedTab();
-        int index =
-                model == null || tab == null
-                        ? TabList.INVALID_TAB_INDEX
-                        : indexOfItemForTab(model, tab.getId());
+        int index = tab == null ? TabList.INVALID_TAB_INDEX : indexOfItemForTab(tab.getId());
         moveHighlightTo(index);
         updateMultiSelection();
     }
@@ -707,8 +702,8 @@ public abstract class TabListDataProvider {
     }
 
     /**
-     * Detaches the attached models missing from {@code newModels}, then removes the cards whose tab
-     * no remaining model holds.
+     * Detaches the attached models missing from {@code newModels}, then removes the removed models'
+     * cards.
      */
     private void detachRemovedModels(List<TabModel> newModels) {
         List<TabModel> removedModels = new ArrayList<>(mAttachedTabModels);

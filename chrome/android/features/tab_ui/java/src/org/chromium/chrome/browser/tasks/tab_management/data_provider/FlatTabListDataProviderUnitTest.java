@@ -33,7 +33,6 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -1043,53 +1042,7 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
     }
 
     @Test
-    public void testComparator_Rebuild_SortsTabsFromAllModels() {
-        mModelTabs.addAll(List.of(mTab1, mTab3));
-        mOtherModelTabs.addAll(List.of(mTab2, mTab4));
-        setUpSortedProvider(mTabModel, mOtherTabModel);
-
-        assertItems(item(TAB4_ID), item(TAB3_ID), item(TAB2_ID), item(TAB1_ID));
-    }
-
-    @Test
-    public void testComparator_Rebuild_ShowsRepeatedTabIdOnce() {
-        // The second model holds a different Tab object with the same ID.
-        MockTab otherTab2 = new MockTab(TAB2_ID, /* profile= */ null);
-        otherTab2.setIsPinned(true);
-        mModelTabs.addAll(List.of(mTab1, mTab2));
-        mOtherModelTabs.add(otherTab2);
-        setUpSortedProvider(mTabModel, mOtherTabModel);
-
-        // The first model's copy wins, so the card isn't pinned.
-        assertItems(item(TAB2_ID), item(TAB1_ID));
-    }
-
-    @Test
-    public void testComparator_Rebuild_FilteredOutFirstCopyHidesRepeatedTabId() {
-        // The filter shows pinned tabs. The first model's copy of TAB2_ID isn't pinned, while the
-        // second model's copy is.
-        MockTab otherTab2 = new MockTab(TAB2_ID, /* profile= */ null);
-        otherTab2.setIsPinned(true);
-        mTab1.setIsPinned(true);
-        mModelTabs.addAll(List.of(mTab1, mTab2));
-        mOtherModelTabs.add(otherTab2);
-        mTabModelListSupplier =
-                ObservableSuppliers.createNonNull(List.of(mTabModel, mOtherTabModel));
-        initProvider(
-                new FlatTabListDataProvider(
-                        mTabModelListSupplier,
-                        ObservableSuppliers.createNullable(mTabModel),
-                        Tab::getIsPinned,
-                        (a, b) -> Integer.compare(b.getId(), a.getId()),
-                        /* supportsMultipleModels= */ true));
-        mProvider.requestDataReset();
-
-        // The first model's copy is checked before the filter, so TAB2_ID gets no card.
-        assertItems(pinned(TAB1_ID));
-    }
-
-    @Test
-    public void testComparator_Rebuild_SkipsModelThatHasNotLoaded() {
+    public void testComparator_Rebuild_SortsLoadedModels() {
         when(mOtherTabModel.isTabStateInitialized()).thenReturn(false);
         mModelTabs.addAll(List.of(mTab1, mTab3));
         mOtherModelTabs.addAll(List.of(mTab2, mTab4));
@@ -1165,7 +1118,7 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
     // ============================================================================================
 
     @Test
-    public void testMultipleModels_AddTabWhileFirstModelLoading_InsertsTab() {
+    public void testMultipleModels_FirstModelLoading_SecondModelEventsUpdateItems() {
         mModelTabs.add(mTab1);
         mOtherModelTabs.add(mTab2);
         when(mTabModel.isTabStateInitialized()).thenReturn(false);
@@ -1173,36 +1126,17 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
         assertItems(item(TAB2_ID));
 
         addTabToOtherModel(mTab3);
-
         verify(mObserver).onItemsInserted(List.of(item(TAB3_ID)), /* after= */ null);
-        assertItems(item(TAB3_ID), item(TAB2_ID));
-    }
-
-    @Test
-    public void testMultipleModels_PinInSecondModelWhileFirstLoading_UpdatesItem() {
-        mModelTabs.add(mTab1);
-        mOtherModelTabs.add(mTab2);
-        when(mTabModel.isTabStateInitialized()).thenReturn(false);
-        setUpSortedProvider(mTabModel, mOtherTabModel);
 
         mTab2.setIsPinned(true);
         mTabModelObserver.didChangePinState(mTab2);
-
         verify(mObserver).onItemUpdated(pinned(TAB2_ID), PayloadType.PIN_STATE);
-        assertItems(pinned(TAB2_ID));
-    }
-
-    @Test
-    public void testMultipleModels_MultiSelectInSecondModelWhileFirstLoading_UpdatesItem() {
-        mModelTabs.add(mTab1);
-        mOtherModelTabs.add(mTab2);
-        when(mTabModel.isTabStateInitialized()).thenReturn(false);
-        setUpSortedProvider(mTabModel, mOtherTabModel);
 
         setMultiSelectedTabs(TAB2_ID);
-
-        verify(mObserver).onItemUpdated(multiSelected(TAB2_ID), PayloadType.MULTI_SELECTION);
-        assertItems(multiSelected(TAB2_ID));
+        TabItem pinnedAndMultiSelected =
+                pinned(TAB2_ID).withMultiSelected(/* isMultiSelected= */ true);
+        verify(mObserver).onItemUpdated(pinnedAndMultiSelected, PayloadType.MULTI_SELECTION);
+        assertItems(item(TAB3_ID), pinnedAndMultiSelected);
     }
 
     @Test

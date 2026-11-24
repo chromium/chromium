@@ -21,9 +21,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -163,14 +161,11 @@ public class FlatTabListDataProvider extends TabListDataProvider {
     protected void rebuildItems() {
         mItems.clear();
 
-        // Keep only the first loaded model's copy of each tab id, checked before the filter, so a
-        // card always shows the copy that getTabById() returns.
-        Set<Integer> seenTabIds = new HashSet<>();
         List<Tab> tabs = new ArrayList<>();
         for (TabModel model : getAttachedTabModels()) {
             if (!model.isTabStateInitialized()) continue;
             for (Tab tab : model) {
-                if (seenTabIds.add(tab.getId()) && shouldShowTab(tab)) tabs.add(tab);
+                if (shouldShowTab(tab)) tabs.add(tab);
             }
         }
         if (mComparator != null) tabs.sort(mComparator);
