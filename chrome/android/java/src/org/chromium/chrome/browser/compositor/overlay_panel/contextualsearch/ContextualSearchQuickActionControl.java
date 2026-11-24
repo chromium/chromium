@@ -195,23 +195,21 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
     }
 
     /**
-     * @return The caption associated with the quick action or null if no quick action is available.
+     * Returns the caption associated with the quick action or null if no quick action is available.
      */
     public @Nullable String getCaption() {
         return mCaption;
     }
 
     /**
-     * @return The resource id for the icon associated with the quick action or 0 if no quick action
-     *     is available.
+     * Returns the resource id for the icon associated with the quick action or 0 if no quick action
+     * is available.
      */
     public int getIconResId() {
         return mHasQuickAction ? getViewId() : 0;
     }
 
-    /**
-     * @return Whether there is currently a quick action available.
-     */
+    /** Returns whether there is currently a quick action available. */
     public boolean hasQuickAction() {
         return mHasQuickAction;
     }

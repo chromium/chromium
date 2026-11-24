@@ -95,7 +95,9 @@ public class ContextualSearchCalloutControl extends OverlayPanelInflater {
      * Updates the opacity of the callout when the TTS panel is updated from a super G to a custom
      * thumbnail.
      *
-     * @param percentage The percentage of the fade in animation.
+     * @param customImageIsVisible Whether the custom image is visible, which enables the callout
+     *     icon.
+     * @param visibilityPercentage The percentage of the fade in animation.
      */
     public void onUpdateCustomImageVisibility(
             boolean customImageIsVisible, float visibilityPercentage) {
@@ -104,9 +106,7 @@ public class ContextualSearchCalloutControl extends OverlayPanelInflater {
         mOpacity = visibilityPercentage;
     }
 
-    /**
-     * @return The opacity of the callout.
-     */
+    /** Returns the opacity of the callout. */
     public float getOpacity() {
         return mOpacity;
     }

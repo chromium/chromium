@@ -140,6 +140,7 @@ public class ContextualSearchBarControl {
      * Constructs a new bottom bar control container by inflating views from XML.
      *
      * @param panel The panel.
+     * @param context The Android Context used to inflate the View.
      * @param container The parent view for the bottom bar views.
      * @param loader The resource loader that will handle the snapshot capturing.
      */
@@ -172,16 +173,12 @@ public class ContextualSearchBarControl {
                 context.getResources().getDimension(R.dimen.contextual_search_term_caption_spacing);
     }
 
-    /**
-     * @return The {@link ContextualSearchImageControl} for the panel.
-     */
+    /** Returns the {@link ContextualSearchImageControl} for the panel. */
     public ContextualSearchImageControl getImageControl() {
         return mImageControl;
     }
 
-    /**
-     * @return The {@link ContextualSearchCalloutControl} for the panel.
-     */
+    /** Returns the {@link ContextualSearchCalloutControl} for the panel. */
     public ContextualSearchCalloutControl getCalloutControl() {
         return mCalloutControl;
     }
@@ -314,23 +311,17 @@ public class ContextualSearchBarControl {
         return mCaptionControl.getAnimationPercentage();
     }
 
-    /**
-     * @return Whether the caption control is visible.
-     */
+    /** Returns whether the caption control is visible. */
     public boolean getCaptionVisible() {
         return mCaptionControl.getIsVisible();
     }
 
-    /**
-     * @return The Id of the Search Context View.
-     */
+    /** Returns the Id of the Search Context View. */
     public int getSearchContextViewId() {
         return mContextControl.getViewId();
     }
 
-    /**
-     * @return The Id of the Search Term View.
-     */
+    /** Returns the Id of the Search Term View. */
     public int getSearchTermViewId() {
         return mSearchTermControl.getViewId();
     }
@@ -340,39 +331,29 @@ public class ContextualSearchBarControl {
         return assumeNonNull(mSearchTermControl.getTextView()).getText();
     }
 
-    /**
-     * @return The Id of the Search Caption View.
-     */
+    /** Returns the Id of the Search Caption View. */
     public int getCaptionViewId() {
         return mCaptionControl.getViewId();
     }
 
-    /**
-     * @return The text currently showing in the caption view.
-     */
+    /** Returns the text currently showing in the caption view. */
     @VisibleForTesting
     public CharSequence getCaptionText() {
         return mCaptionControl.getCaptionText();
     }
 
-    /**
-     * @return the caption text View.
-     */
+    /** Returns the caption text View. */
     @VisibleForTesting
     public @Nullable TextView getCaptionTextView() {
         return mCaptionControl.getTextView();
     }
 
-    /**
-     * @return The opacity of the SearchBar's search context.
-     */
+    /** Returns the opacity of the SearchBar's search context. */
     public float getSearchBarContextOpacity() {
         return mSearchBarContextOpacity;
     }
 
-    /**
-     * @return The opacity of the SearchBar's search term.
-     */
+    /** Returns the opacity of the SearchBar's search term. */
     public float getSearchBarTermOpacity() {
         return mSearchBarTermOpacity;
     }
@@ -399,9 +380,7 @@ public class ContextualSearchBarControl {
         }
     }
 
-    /**
-     * @return The {@link ContextualSearchQuickActionControl} for the panel.
-     */
+    /** Returns the {@link ContextualSearchQuickActionControl} for the panel. */
     public ContextualSearchQuickActionControl getQuickActionControl() {
         return mQuickActionControl;
     }
@@ -439,23 +418,17 @@ public class ContextualSearchBarControl {
     /** The width of the touch highlight, in pixels. */
     private float mTouchHighlightWidthPx;
 
-    /**
-     * @return Whether the touch highlight is visible.
-     */
+    /** Returns whether the touch highlight is visible. */
     public boolean getTouchHighlightVisible() {
         return mTouchHighlightVisible;
     }
 
-    /**
-     * @return The x-offset of the touch highlight in pixels.
-     */
+    /** Returns the x-offset of the touch highlight in pixels. */
     public float getTouchHighlightXOffsetPx() {
         return mTouchHighlightXOffsetPx;
     }
 
-    /**
-     * @return The width of the touch highlight in pixels.
-     */
+    /** Returns the width of the touch highlight in pixels. */
     public float getTouchHighlightWidthPx() {
         return mTouchHighlightWidthPx;
     }
@@ -615,9 +588,7 @@ public class ContextualSearchBarControl {
         mSearchBarTermOpacity = mIsShowingContext ? fadingOutPercentage : fadingInPercentage;
     }
 
-    /**
-     * @return Whether the animation for the in bar related searches animation is running.
-     */
+    /** Returns whether the animation for the in bar related searches animation is running. */
     boolean inBarRelatedSearchesAnimationIsRunning() {
         return mInBarRelatedSearchesAnimation != null && mInBarRelatedSearchesAnimation.isRunning();
     }

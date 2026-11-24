@@ -136,16 +136,12 @@ public class RelatedSearchesControl {
     // Public API
     // ============================================================================================
 
-    /**
-     * @return Whether the View is visible.
-     */
+    /** Returns whether the View is visible. */
     public boolean isVisible() {
         return mIsVisible;
     }
 
-    /**
-     * @return The View height in pixels.
-     */
+    /** Returns the View height in pixels. */
     public float getHeightPx() {
         return !mIsVisible || mControlView == null ? 0f : mHeightPx;
     }

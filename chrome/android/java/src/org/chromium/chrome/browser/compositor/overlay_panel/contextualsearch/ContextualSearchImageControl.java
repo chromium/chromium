@@ -82,16 +82,12 @@ public class ContextualSearchImageControl {
         animateCustomImageVisibility(true);
     }
 
-    /**
-     * @return The resource id of the card icon to display.
-     */
+    /** Returns the resource id of the card icon to display. */
     public int getCardIconResourceId() {
         return mCardIconResourceId;
     }
 
-    /**
-     * @return Whether the card icon is visible.
-     */
+    /** Returns whether the card icon is visible. */
     public boolean getCardIconVisible() {
         return mCardIconVisible;
     }
@@ -117,16 +113,14 @@ public class ContextualSearchImageControl {
     }
 
     /**
-     * @return The URL used to fetch a thumbnail to display in the Bar. Will return an empty string
-     *     if no thumbnail is available.
+     * Returns the URL used to fetch a thumbnail to display in the Bar. Will return an empty string
+     * if no thumbnail is available.
      */
     public String getThumbnailUrl() {
         return mThumbnailUrl != null ? mThumbnailUrl : "";
     }
 
-    /**
-     * @return Whether the thumbnail is visible.
-     */
+    /** Returns whether the thumbnail is visible. */
     public boolean getThumbnailVisible() {
         return mThumbnailVisible;
     }
@@ -173,9 +167,7 @@ public class ContextualSearchImageControl {
         }
     }
 
-    /**
-     * @return The height and width of the image displayed at the start of the bar in px.
-     */
+    /** Returns the height and width of the image displayed at the start of the bar in px. */
     public int getBarImageSize() {
         if (mBarImageSize == 0) {
             mBarImageSize =
@@ -187,9 +179,9 @@ public class ContextualSearchImageControl {
     }
 
     /**
-     * @return The custom image visibility percentage, which dictates how and where to draw the
-     *     custom image. The custom image is not visible at all at 0.f and completely visible at
-     *     1.f. The custom image may be either a thumbnail or card icon.
+     * Returns the custom image visibility percentage, which dictates how and where to draw the
+     * custom image. The custom image is not visible at all at 0.f and completely visible at 1.f.
+     * The custom image may be either a thumbnail or card icon.
      */
     public float getCustomImageVisibilityPercentage() {
         return mCustomImageVisibilityPercentage;

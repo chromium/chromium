@@ -82,9 +82,7 @@ public class ContextualSearchContextControl extends OverlayPanelRepaddingTextVie
         mEndText = view.findViewById(R.id.surrounding_text_end);
     }
 
-    /**
-     * @return the Search Context's TextView height.
-     */
+    /** Returns the Search Context's TextView height. */
     @Px
     int getTextViewHeight() {
         return Math.max(

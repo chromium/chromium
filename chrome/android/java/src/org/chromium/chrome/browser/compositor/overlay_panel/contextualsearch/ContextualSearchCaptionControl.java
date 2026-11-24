@@ -152,23 +152,17 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
         return mAnimationPercentage;
     }
 
-    /**
-     * @return The text currently showing in the caption view.
-     */
+    /** Returns the text currently showing in the caption view. */
     public CharSequence getCaptionText() {
         return assumeNonNull(mCaption).getText();
     }
 
-    /**
-     * @return whether there's already a visible caption.
-     */
+    /** Returns whether there's already a visible caption. */
     boolean hasCaption() {
         return getIsVisible() && !TextUtils.isEmpty(getCaptionText());
     }
 
-    /**
-     * @return the caption's TextView height if it is visible.
-     */
+    /** Returns the caption's TextView height if it is visible. */
     @Px
     int getTextViewHeight() {
         return getIsVisible() ? assumeNonNull(mCaption).getHeight() : 0;

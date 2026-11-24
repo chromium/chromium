@@ -471,9 +471,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
         return onInterceptOpeningPanel();
     }
 
-    /**
-     * @return True if the event on the bar was intercepted.
-     */
+    /** Returns true if the event on the bar was intercepted. */
     private boolean onInterceptOpeningPanel() {
         if (mManagementDelegate.isRunningInCompatibilityMode()) {
             mManagementDelegate.openResolvedSearchUrlInNewTab();
@@ -560,9 +558,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
         return super.isCoordinateInsideOpenTabButton(x);
     }
 
-    /**
-     * @return The resource ID of the close icon, or {@code INVALID_RESOURCE_ID} if disabled.
-     */
+    /** Returns the resource ID of the close icon, or {@code INVALID_RESOURCE_ID} if disabled. */
     public int getCloseIconResourceId() {
         return ChromeFeatureList.sContextualPanelCloseButton.isEnabled()
                 ? R.drawable.btn_close
@@ -882,9 +878,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
                         quickActionUri, quickActionCategory, mToolbarManager.getPrimaryColor());
     }
 
-    /**
-     * @return The padding used for each side of the button in the Bar.
-     */
+    /** Returns the padding used for each side of the button in the Bar. */
     public float getButtonPaddingDps() {
         return mButtonPaddingDps;
     }
@@ -895,9 +889,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
 
     // TODO(pedrosimonetti): replace proxy methods with direct PanelMetrics usage
 
-    /**
-     * @return The {@link ContextualSearchPanelMetrics}.
-     */
+    /** Returns the {@link ContextualSearchPanelMetrics}. */
     public ContextualSearchPanelMetrics getPanelMetrics() {
         return mPanelMetrics;
     }
@@ -1099,9 +1091,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     // ============================================================================================
     // Image Control
     // ============================================================================================
-    /**
-     * @return The {@link ContextualSearchImageControl} for the panel.
-     */
+    /** Returns the {@link ContextualSearchImageControl} for the panel. */
     public ContextualSearchImageControl getImageControl() {
         return getSearchBarControl().getImageControl();
     }
@@ -1109,9 +1099,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     // ============================================================================================
     // Callout Control
     // ============================================================================================
-    /**
-     * @return The {@link ContextualSearchCalloutControl} for the panel.
-     */
+    /** Returns the {@link ContextualSearchCalloutControl} for the panel. */
     public ContextualSearchCalloutControl getCalloutControl() {
         return getSearchBarControl().getCalloutControl();
     }
@@ -1170,9 +1158,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     private @Nullable ContextualSearchPromoControl mPromoControl;
     private @Nullable ContextualSearchPromoHost mPromoHost;
 
-    /**
-     * @return Height of the promo in pixels.
-     */
+    /** Returns the height of the promo in pixels. */
     private float getPromoHeightPx() {
         return getPromoControl().getHeightPx();
     }
@@ -1199,9 +1185,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
         }
     }
 
-    /**
-     * @return An implementation of {@link ContextualSearchPromoHost}.
-     */
+    /** Returns an implementation of {@link ContextualSearchPromoHost}. */
     private ContextualSearchPromoHost getContextualSearchPromoHost() {
         if (mPromoHost == null) {
             // Create a handler for callbacks from the Opt-in promo.
@@ -1275,7 +1259,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     }
 
     /**
-     * @return Height of the Related Searches UI as currently show right inside the Bar, in DPs.
+     * Returns the height of the Related Searches UI as currently show right inside the Bar, in DPs.
      */
     public float getInBarRelatedSearchesAnimatedHeightDps() {
         return haveSearchBarControl()
@@ -1296,7 +1280,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     }
 
     /**
-     * @return Total height of this section of the Bar in DPs (once fully exposed by animation).
+     * Returns the total height of this section of the Bar in DPs (once fully exposed by animation).
      */
     float getInBarRelatedSearchesMaximumHeightDps() {
         return getRelatedSearchesInBarControl().getMaximumHeightPx() * mPxToDp;
@@ -1310,9 +1294,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
         }
     }
 
-    /**
-     * @return An implementation of {@link RelatedSearchesSectionHost}.
-     */
+    /** Returns an implementation of {@link RelatedSearchesSectionHost}. */
     private RelatedSearchesSectionHost getRelatedSearchesInBarHost() {
         if (mRelatedSearchesInBarHost == null) {
             mRelatedSearchesInBarHost =
@@ -1359,9 +1341,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
         super.destroyOverlayPanelContent();
     }
 
-    /**
-     * @return Whether the panel content can be displayed in a new tab.
-     */
+    /** Returns whether the panel content can be displayed in a new tab. */
     public boolean canPromoteToNewTab() {
         return mCanPromoteToNewTab;
     }

@@ -82,6 +82,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
 
     /**
      * @param panel The panel.
+     * @param host The {@link ContextualSearchPromoHost} notified of promo events.
      * @param context The Android Context used to inflate the View.
      * @param container The container View used to inflate the View.
      * @param resourceLoader The resource loader that will handle the snapshot capturing.
@@ -148,37 +149,27 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         collapse();
     }
 
-    /**
-     * @return Whether the Promo is visible.
-     */
+    /** Returns whether the Promo is visible. */
     public boolean isVisible() {
         return mIsVisible;
     }
 
-    /**
-     * @return Whether the Promo reached a state in which it could be interacted.
-     */
+    /** Returns whether the Promo reached a state in which it could be interacted. */
     public boolean wasInteractive() {
         return mWasInteractive;
     }
 
-    /**
-     * @return The Promo height in pixels.
-     */
+    /** Returns the Promo height in pixels. */
     public float getHeightPx() {
         return mHeightPx;
     }
 
-    /**
-     * @return The Promo opacity.
-     */
+    /** Returns the Promo opacity. */
     public float getOpacity() {
         return mOpacity;
     }
 
-    /**
-     * @return The background color for the promo, which controls areas outside the content.
-     */
+    /** Returns the background color for the promo, which controls areas outside the content. */
     public int getBackgroundColor() {
         return mBackgroundColor;
     }
