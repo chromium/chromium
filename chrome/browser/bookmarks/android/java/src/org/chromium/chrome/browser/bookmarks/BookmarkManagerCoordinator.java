@@ -543,7 +543,7 @@ public class BookmarkManagerCoordinator
 
     // Private methods.
     /**
-     * Called when the user presses the back key. This is only going to be called on Phone.
+     * Called when the user presses the back key.
      *
      * @return True if manager handles this event, false if it decides to ignore.
      */
