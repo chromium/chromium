@@ -1,0 +1,8 @@
+Tests exception message contains stack with correct function name.
+function-name-in-exception-stack.js:4 Uncaught Error
+foo.function.name @ function-name-in-exception-stack.js:4
+bar @ function-name-in-exception-stack.js:12
+baz.function.name @ function-name-in-exception-stack.js:19
+setTimeout
+(anonymous) @ schedule.js:1
+
