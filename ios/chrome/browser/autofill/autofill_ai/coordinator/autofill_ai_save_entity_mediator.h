@@ -15,6 +15,9 @@ class GURL;
 namespace autofill {
 class EntityDataManager;
 }  // namespace autofill
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
 
 @protocol AutofillAISaveEntityConsumer;
 @protocol AutofillCommands;
@@ -31,10 +34,12 @@ class EntityDataManager;
 // Initializes the mediator with the tab helper and entity data manager.
 - (instancetype)initWithTabHelper:(AutofillBottomSheetTabHelper*)tabHelper
                 entityDataManager:
-                    (autofill::EntityDataManager*)entityDataManager;
+                    (autofill::EntityDataManager*)entityDataManager
+                        appLocale:(const base::i18n::LanguageTag&)appLocale;
 
 - (instancetype)initWithParams:(autofill::SaveEntityParams)params
-             entityDataManager:(autofill::EntityDataManager*)entityDataManager;
+             entityDataManager:(autofill::EntityDataManager*)entityDataManager
+                     appLocale:(const base::i18n::LanguageTag&)appLocale;
 
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -10,6 +10,7 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -664,7 +665,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
 
   extensions::api::autofill_private::EntityInstance api_entity =
       extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+          entity_instance, base::i18n::GetKnownLanguageTag("en-US"),
+          /*entity_supports_wallet_storage=*/true);
 
   // Explicitly request storage in Wallet.
   api_entity.stored_in_wallet = true;
@@ -711,7 +713,8 @@ IN_PROC_BROWSER_TEST_F(
 
   extensions::api::autofill_private::EntityInstance api_entity =
       extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+          entity_instance, base::i18n::GetKnownLanguageTag("en-US"),
+          /*entity_supports_wallet_storage=*/true);
 
   // Explicitly request storage in Wallet.
   api_entity.stored_in_wallet = true;
@@ -788,7 +791,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
 
   extensions::api::autofill_private::EntityInstance api_entity =
       extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+          entity_instance, base::i18n::GetKnownLanguageTag("en-US"),
+          /*entity_supports_wallet_storage=*/true);
   api_entity.stored_in_wallet = true;
   // LINT.IfChange(WalletPrivatePassConsentStrings)
   api_entity.consent_string_names = std::vector<std::string>{
@@ -847,7 +851,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
       {.record_type = EntityInstance::RecordType::kServerWallet});
   extensions::api::autofill_private::EntityInstance api_entity =
       extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+          entity_instance, base::i18n::GetKnownLanguageTag("en-US"),
+          /*entity_supports_wallet_storage=*/true);
   api_entity.stored_in_wallet = true;
   api_entity.consent_string_names =
       std::vector<std::string>{"saveInfoToWalletPrivatePassAccountNotice"};
@@ -887,7 +892,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
       {.record_type = EntityInstance::RecordType::kServerWallet});
   extensions::api::autofill_private::EntityInstance api_entity =
       extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+          entity_instance, base::i18n::GetKnownLanguageTag("en-US"),
+          /*entity_supports_wallet_storage=*/true);
   api_entity.stored_in_wallet = true;
 
   EXPECT_CALL(consent_auditor(), RecordWalletPrivatePassConsent).Times(0);
@@ -915,7 +921,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
       {.record_type = EntityInstance::RecordType::kServerWallet});
   extensions::api::autofill_private::EntityInstance api_entity =
       extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+          entity_instance, base::i18n::GetKnownLanguageTag("en-US"),
+          /*entity_supports_wallet_storage=*/true);
   api_entity.stored_in_wallet = true;
   api_entity.consent_string_names =
       std::vector<std::string>{"unknownStringName"};
@@ -1158,7 +1165,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
 
   extensions::api::autofill_private::EntityInstance api_entity =
       extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+          entity_instance, base::i18n::GetKnownLanguageTag("en-US"),
+          /*entity_supports_wallet_storage=*/true);
   api_entity.guid = "";
   api_entity.stored_in_wallet = true;
   // Include non-UTF-8 bytes (`\xff\xfe`) to verify binary `bytes` handling.
@@ -1217,7 +1225,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiAutofillAiMetricsTest,
 
   extensions::api::autofill_private::EntityInstance api_entity =
       extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+          entity_instance, base::i18n::GetKnownLanguageTag("en-US"),
+          /*entity_supports_wallet_storage=*/true);
   api_entity.guid = "";  // New entity.
 
   base::ListValue args;
@@ -1255,7 +1264,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiAutofillAiMetricsTest,
 
   extensions::api::autofill_private::EntityInstance api_entity =
       extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+          entity_instance, base::i18n::GetKnownLanguageTag("en-US"),
+          /*entity_supports_wallet_storage=*/true);
 
   base::ListValue args;
   args.Append(api_entity.ToValue());

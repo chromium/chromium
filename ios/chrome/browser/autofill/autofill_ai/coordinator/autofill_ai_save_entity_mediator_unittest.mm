@@ -10,6 +10,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/i18n/language_tag.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -67,7 +68,8 @@ autofill::EntityInstance CreateTestEntity() {
 
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
             oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
-    saveIsSynchronous:(BOOL)saveIsSynchronous {
+    saveIsSynchronous:(BOOL)saveIsSynchronous
+            appLocale:(const base::i18n::LanguageTag&)appLocale {
   self.setNewEntityCalled = YES;
 }
 
@@ -103,8 +105,10 @@ class AutofillAISaveEntityMediatorTest : public PlatformTest {
                                       show_explicit_decline_button);
 
     AutofillAISaveEntityMediator* mediator =
-        [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
-                                           entityDataManager:nullptr];
+        [[AutofillAISaveEntityMediator alloc]
+               initWithParams:std::move(params)
+            entityDataManager:nullptr
+                    appLocale:base::i18n::GetKnownLanguageTag("en-US")];
 
     FakeAutofillAISaveEntityConsumer* consumer =
         [[FakeAutofillAISaveEntityConsumer alloc] init];
@@ -154,8 +158,10 @@ class AutofillAISaveEntityMediatorTest : public PlatformTest {
         std::make_unique<AutofillAiSaveEntityPromptModel>(std::move(params));
     tab_helper_->ShowAutofillAiSaveEntityBottomSheet(std::move(model));
     EXPECT_NE(nullptr, tab_helper_->GetAutofillAiSaveEntityPromptModel());
-    return [[AutofillAISaveEntityMediator alloc] initWithTabHelper:tab_helper_
-                                                 entityDataManager:nullptr];
+    return [[AutofillAISaveEntityMediator alloc]
+        initWithTabHelper:tab_helper_
+        entityDataManager:nullptr
+                appLocale:base::i18n::GetKnownLanguageTag("en-US")];
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -317,9 +323,10 @@ TEST_F(AutofillAISaveEntityMediatorTest,
       /*public_passes_notice=*/std::move(legal_message_lines),
       /*show_explicit_decline_button=*/false);
 
-  AutofillAISaveEntityMediator* mediator =
-      [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
-                                         entityDataManager:nullptr];
+  AutofillAISaveEntityMediator* mediator = [[AutofillAISaveEntityMediator alloc]
+         initWithParams:std::move(params)
+      entityDataManager:nullptr
+              appLocale:base::i18n::GetKnownLanguageTag("en-US")];
   FakeAutofillAISaveEntityConsumer* consumer =
       [[FakeAutofillAISaveEntityConsumer alloc] init];
   mediator.consumer = consumer;
@@ -378,9 +385,10 @@ TEST_F(AutofillAISaveEntityMediatorTest, AcceptSavingReportsAccepted) {
             callback_result = result;
           }));
 
-  AutofillAISaveEntityMediator* mediator =
-      [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
-                                         entityDataManager:nullptr];
+  AutofillAISaveEntityMediator* mediator = [[AutofillAISaveEntityMediator alloc]
+         initWithParams:std::move(params)
+      entityDataManager:nullptr
+              appLocale:base::i18n::GetKnownLanguageTag("en-US")];
   [mediator acceptSaving];
 
   EXPECT_EQ(callback_result,
@@ -403,9 +411,10 @@ TEST_F(AutofillAISaveEntityMediatorTest, CancelSavingReportsCancelled) {
             callback_result = result;
           }));
 
-  AutofillAISaveEntityMediator* mediator =
-      [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
-                                         entityDataManager:nullptr];
+  AutofillAISaveEntityMediator* mediator = [[AutofillAISaveEntityMediator alloc]
+         initWithParams:std::move(params)
+      entityDataManager:nullptr
+              appLocale:base::i18n::GetKnownLanguageTag("en-US")];
   [mediator cancelSaving];
 
   EXPECT_EQ(callback_result,
@@ -430,9 +439,10 @@ TEST_F(AutofillAISaveEntityMediatorTest,
             callback_result = result;
           }));
 
-  AutofillAISaveEntityMediator* mediator =
-      [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
-                                         entityDataManager:nullptr];
+  AutofillAISaveEntityMediator* mediator = [[AutofillAISaveEntityMediator alloc]
+         initWithParams:std::move(params)
+      entityDataManager:nullptr
+              appLocale:base::i18n::GetKnownLanguageTag("en-US")];
   [mediator dismissSaving];
 
   EXPECT_EQ(callback_result,
@@ -457,9 +467,10 @@ TEST_F(AutofillAISaveEntityMediatorTest,
             callback_result = result;
           }));
 
-  AutofillAISaveEntityMediator* mediator =
-      [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
-                                         entityDataManager:nullptr];
+  AutofillAISaveEntityMediator* mediator = [[AutofillAISaveEntityMediator alloc]
+         initWithParams:std::move(params)
+      entityDataManager:nullptr
+              appLocale:base::i18n::GetKnownLanguageTag("en-US")];
   [mediator disconnect];
 
   EXPECT_EQ(callback_result,

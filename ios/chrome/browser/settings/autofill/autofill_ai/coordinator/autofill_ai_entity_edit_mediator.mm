@@ -164,10 +164,10 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
     _identityManager = identityManager;
     _appLocale = appLocale;
     _geoIpCountryCode = std::move(geoIpCountryCode);
-    const std::string locale_str(_appLocale->tag_string());
-    _dateFormatter = CreateDateFormatterForLocale(locale_str);
+    _dateFormatter =
+        CreateDateFormatterForLocale(std::string(_appLocale->tag_string()));
     _itemFactory =
-        [[AutofillAIEntityEditItemFactory alloc] initWithLocale:locale_str
+        [[AutofillAIEntityEditItemFactory alloc] initWithLocale:*_appLocale
                                                   dateFormatter:_dateFormatter
                                            userHasAuthenticated:NO];
     _reauthModule = reauthModule;

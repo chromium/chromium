@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_item_factory.h"
 
+#import <optional>
+
+#import "base/i18n/language_tag.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/filling/field_filling_util.h"
@@ -25,17 +28,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @implementation AutofillAIEntityEditItemFactory {
-  std::string _locale;
+  std::optional<base::i18n::LanguageTag> _locale;
   NSDateFormatter* _dateFormatter;
   BOOL _userHasAuthenticated;
 }
 
-- (instancetype)initWithLocale:(std::string)locale
+- (instancetype)initWithLocale:(const base::i18n::LanguageTag&)locale
                  dateFormatter:(NSDateFormatter*)dateFormatter
           userHasAuthenticated:(BOOL)userHasAuthenticated {
   self = [super init];
   if (self) {
-    _locale = std::move(locale);
+    _locale = locale;
     _dateFormatter = dateFormatter;
     _userHasAuthenticated = userHasAuthenticated;
   }
@@ -131,8 +134,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Extracts the standard string value for non-date attributes.
 - (NSString*)valueFromAttributeInstance:(const AttributeInstance&)attribute {
-  std::u16string value_u16 =
-      attribute.GetInfo(attribute.type().field_type(), _locale, std::nullopt);
+  std::u16string value_u16 = attribute.GetInfo(
+      attribute.type().field_type(), _locale->tag_string(), std::nullopt);
   if ([self shouldObfuscateAttribute:attribute] && !value_u16.empty()) {
     return base::SysUTF16ToNSString(
         GetObfuscatedValue(value_u16, /*visible_suffix_length=*/4));

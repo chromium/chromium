@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_container_view_controller.h"
 
+#import "base/i18n/language_tag.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
@@ -124,9 +125,12 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
 
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
             oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
-    saveIsSynchronous:(BOOL)saveIsSynchronous {
+    saveIsSynchronous:(BOOL)saveIsSynchronous
+            appLocale:(const base::i18n::LanguageTag&)appLocale {
   // Forward the data to the table view controller for display.
-  [_tableViewController setNewEntity:newEntity oldEntity:oldEntity];
+  [_tableViewController setNewEntity:newEntity
+                           oldEntity:oldEntity
+                           appLocale:appLocale];
 
   autofill::EntityTypeName typeName = newEntity.type().name();
   NSString* titleString =

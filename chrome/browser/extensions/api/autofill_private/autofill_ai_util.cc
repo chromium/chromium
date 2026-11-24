@@ -141,7 +141,7 @@ AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
 
 std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
     const autofill_private::EntityInstance& private_api_entity_instance,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     bool entity_supports_wallet_storage) {
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attribute_instances;
@@ -171,17 +171,17 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
 
       attribute_instance.SetInfo(
           attribute_instance.type().field_type(),
-          base::UTF8ToUTF16(date->month), app_locale,
+          base::UTF8ToUTF16(date->month), app_locale.tag_string(),
           AutofillFormatString(u"M", autofill::FormatString_Type_DATE),
           autofill::VerificationStatus::kUserVerified);
       attribute_instance.SetInfo(
           attribute_instance.type().field_type(), base::UTF8ToUTF16(date->day),
-          app_locale,
+          app_locale.tag_string(),
           AutofillFormatString(u"D", autofill::FormatString_Type_DATE),
           autofill::VerificationStatus::kUserVerified);
       attribute_instance.SetInfo(
           attribute_instance.type().field_type(), base::UTF8ToUTF16(date->year),
-          app_locale,
+          app_locale.tag_string(),
           AutofillFormatString(u"YYYY", autofill::FormatString_Type_DATE),
           autofill::VerificationStatus::kUserVerified);
     } else {
@@ -236,7 +236,7 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
 
 autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     const EntityInstance& entity_instance,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     bool entity_supports_wallet_storage) {
   std::vector<autofill_private::AttributeInstance>
       private_api_attribute_instances;
@@ -265,16 +265,16 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
       date_value.SetByDottedPath(
           "month",
           base::UTF16ToUTF8(attribute_instance.GetInfo(
-              field_type, app_locale,
+              field_type, app_locale.tag_string(),
               AutofillFormatString(u"M", autofill::FormatString_Type_DATE))));
       date_value.SetByDottedPath(
           "day",
           base::UTF16ToUTF8(attribute_instance.GetInfo(
-              field_type, app_locale,
+              field_type, app_locale.tag_string(),
               AutofillFormatString(u"D", autofill::FormatString_Type_DATE))));
       date_value.SetByDottedPath(
           "year", base::UTF16ToUTF8(attribute_instance.GetInfo(
-                      field_type, app_locale,
+                      field_type, app_locale.tag_string(),
                       AutofillFormatString(u"YYYY",
                                            autofill::FormatString_Type_DATE))));
       autofill_private::AttributeInstance::Value::Populate(
@@ -283,7 +283,7 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     } else {
       autofill_private::AttributeInstance::Value::Populate(
           base::Value(base::UTF16ToUTF8(
-              attribute_instance.GetCompleteInfo(app_locale))),
+              attribute_instance.GetCompleteInfo(app_locale.tag_string()))),
           private_api_attribute_instances.back().value);
     }
   }

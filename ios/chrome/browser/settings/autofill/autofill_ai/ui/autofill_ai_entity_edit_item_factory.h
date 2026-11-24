@@ -7,18 +7,20 @@
 
 #import <Foundation/Foundation.h>
 
-#import <string>
-
 @class TableViewItem;
 
 namespace autofill {
 class AttributeInstance;
 }
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 // Factory to create TableViewItems for editing Autofill AI attributes.
 @interface AutofillAIEntityEditItemFactory : NSObject
 
-- (instancetype)initWithLocale:(std::string)locale
+- (instancetype)initWithLocale:(const base::i18n::LanguageTag&)locale
                  dateFormatter:(NSDateFormatter*)dateFormatter
           userHasAuthenticated:(BOOL)userHasAuthenticated;
 

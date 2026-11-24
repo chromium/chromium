@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller.h"
 
+#import <optional>
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/i18n/language_tag.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/filling/field_filling_util.h"
 #import "components/strings/grit/components_strings.h"
@@ -38,16 +40,16 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // Creates an array of `TableViewTextEditItem` objects from an `entity`.
 NSArray<TableViewTextEditItem*>* CreateItemsFromEntity(
-    const autofill::EntityInstance& entity) {
+    const autofill::EntityInstance& entity,
+    const base::i18n::LanguageTag& app_locale) {
   NSMutableArray<TableViewTextEditItem*>* items = [[NSMutableArray alloc] init];
-  std::string locale =
-      base::SysNSStringToUTF8([[NSLocale currentLocale] localeIdentifier]);
 
   NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
   dateFormatter.dateStyle = NSDateFormatterMediumStyle;
   dateFormatter.timeStyle = NSDateFormatterNoStyle;
   dateFormatter.locale =
-      [NSLocale localeWithLocaleIdentifier:base::SysUTF8ToNSString(locale)];
+      [NSLocale localeWithLocaleIdentifier:base::SysUTF8ToNSString(
+                                               app_locale.tag_string())];
 
   for (const auto& attribute : entity.attributes()) {
     TableViewTextEditItem* item = [[TableViewTextEditItem alloc] init];
@@ -61,7 +63,7 @@ NSArray<TableViewTextEditItem*>* CreateItemsFromEntity(
       value =
           base::SysNSStringToUTF16([dateFormatter stringFromDate:dateValue]);
     } else {
-      value = attribute.GetCompleteInfo(locale);
+      value = attribute.GetCompleteInfo(app_locale.tag_string());
     }
 
     if (attribute.masked()) {
@@ -85,11 +87,12 @@ void RegisterCells(UITableView* table_view) {
 void AddEntity(
     NSDiffableDataSourceSnapshot<NSNumber*, TableViewItem*>* snapshot,
     const autofill::EntityInstance& entity,
-    SectionIdentifier sectionIdentifier) {
+    SectionIdentifier sectionIdentifier,
+    const base::i18n::LanguageTag& app_locale) {
   [snapshot appendSectionsWithIdentifiers:@[
     @(sectionIdentifier),
   ]];
-  NSArray<TableViewItem*>* items = CreateItemsFromEntity(entity);
+  NSArray<TableViewItem*>* items = CreateItemsFromEntity(entity, app_locale);
   [snapshot appendItemsWithIdentifiers:items
              intoSectionWithIdentifier:@(sectionIdentifier)];
 }
@@ -114,6 +117,9 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 
   // Old entity to compare against.
   std::optional<autofill::EntityInstance> _oldEntity;
+
+  // Application locale for formatting entity values.
+  std::optional<base::i18n::LanguageTag> _appLocale;
 
   // Footer text and tappable link URLs pushed by the mediator.
   NSString* _footerText;
@@ -166,10 +172,10 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   NSDiffableDataSourceSnapshot<NSNumber*, TableViewItem*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
 
-  AddEntity(snapshot, *_newEntity, SectionIdentifierNewEntity);
+  AddEntity(snapshot, *_newEntity, SectionIdentifierNewEntity, *_appLocale);
 
   if ([self isUpdateDialog]) {
-    AddEntity(snapshot, *_oldEntity, SectionIdentifierOldEntity);
+    AddEntity(snapshot, *_oldEntity, SectionIdentifierOldEntity, *_appLocale);
   }
 
   [snapshot appendSectionsWithIdentifiers:@[
@@ -182,9 +188,11 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 #pragma mark - Public Methods
 
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
-           oldEntity:(std::optional<autofill::EntityInstance>)oldEntity {
+           oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
+           appLocale:(const base::i18n::LanguageTag&)appLocale {
   _newEntity = std::move(newEntity);
   _oldEntity = std::move(oldEntity);
+  _appLocale = appLocale;
   if (self.viewLoaded) {
     [self loadModel];
   }

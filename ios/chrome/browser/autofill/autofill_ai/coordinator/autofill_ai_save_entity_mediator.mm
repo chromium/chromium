@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_mediator.h"
 
 #import <algorithm>
+#import <optional>
 
 #import "base/check.h"
+#import "base/i18n/language_tag.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/timer/timer.h"
@@ -33,6 +35,7 @@
   base::WeakPtr<AutofillBottomSheetTabHelper> _tabHelper;
   std::optional<autofill::SaveEntityParams> _params;
   raw_ptr<autofill::EntityDataManager> _entityDataManager;
+  std::optional<base::i18n::LanguageTag> _appLocale;
   // Timer that controls auto dismissal of the view controller after success
   // confirmation is shown.
   base::OneShotTimer _autoDismissConfirmationTimer;
@@ -52,12 +55,14 @@
 
 - (instancetype)initWithTabHelper:(AutofillBottomSheetTabHelper*)tabHelper
                 entityDataManager:
-                    (autofill::EntityDataManager*)entityDataManager {
+                    (autofill::EntityDataManager*)entityDataManager
+                        appLocale:(const base::i18n::LanguageTag&)appLocale {
   self = [super init];
   if (self) {
     CHECK(tabHelper);
     _tabHelper = tabHelper->GetWeakPtr();
     _entityDataManager = entityDataManager;
+    _appLocale = appLocale;
     if (_entityDataManager) {
       _entityDataManagerObserver = std::make_unique<
           autofill::IOSAutofillEntityDataManagerObserverBridge>(
@@ -68,11 +73,13 @@
 }
 
 - (instancetype)initWithParams:(autofill::SaveEntityParams)params
-             entityDataManager:(autofill::EntityDataManager*)entityDataManager {
+             entityDataManager:(autofill::EntityDataManager*)entityDataManager
+                     appLocale:(const base::i18n::LanguageTag&)appLocale {
   self = [super init];
   if (self) {
     _params = std::move(params);
     _entityDataManager = entityDataManager;
+    _appLocale = appLocale;
     if (_entityDataManager) {
       _entityDataManagerObserver = std::make_unique<
           autofill::IOSAutofillEntityDataManagerObserverBridge>(
@@ -213,7 +220,8 @@
 
   [_consumer setNewEntity:params->new_entity
                 oldEntity:params->old_entity
-        saveIsSynchronous:params->save_is_synchronous];
+        saveIsSynchronous:params->save_is_synchronous
+                appLocale:*_appLocale];
 
   NSArray<AutofillLegalMessageLine*>* legalMessages =
       [AutofillLegalMessageLine convertFrom:params->public_passes_notice];

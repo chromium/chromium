@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_container_view_controller.h"
 
+#import "base/i18n/language_tag.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_mutator.h"
@@ -51,7 +52,8 @@ class AutofillAISaveEntityContainerViewControllerTest : public PlatformTest {
     options.make = u"Car Maker";
     [controller_ setNewEntity:autofill::test::GetVehicleEntityInstance(options)
                     oldEntity:std::nullopt
-            saveIsSynchronous:YES];
+            saveIsSynchronous:YES
+                    appLocale:base::i18n::GetKnownLanguageTag("en-US")];
   }
 
   AutofillAISaveEntityContainerViewController* controller_;

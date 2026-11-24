@@ -21,6 +21,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
@@ -36,6 +37,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",

@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_coordinator.h"
 
 #import "base/check.h"
+#import "base/i18n/language_tag.h"
 #import "base/memory/weak_ptr.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_mediator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_container_view_controller.h"
@@ -14,6 +16,7 @@
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -73,6 +76,8 @@
   autofill::EntityDataManager* dataManager =
       IOSAutofillEntityDataManagerFactory::GetForProfile(profile);
 
+  const base::i18n::LanguageTag appLocale =
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag();
   if (base::FeatureList::IsEnabled(kAutofillReshowSavePromptOnTabReturn)) {
     AutofillBottomSheetTabHelper* tabHelper =
         _webState ? AutofillBottomSheetTabHelper::FromWebState(_webState.get())
@@ -82,12 +87,14 @@
     }
     _mediator =
         [[AutofillAISaveEntityMediator alloc] initWithTabHelper:tabHelper
-                                              entityDataManager:dataManager];
+                                              entityDataManager:dataManager
+                                                      appLocale:appLocale];
   } else {
     CHECK(_params.has_value());
     _mediator =
         [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(*_params)
-                                           entityDataManager:dataManager];
+                                           entityDataManager:dataManager
+                                                   appLocale:appLocale];
     _params.reset();
   }
 

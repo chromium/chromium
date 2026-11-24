@@ -11,6 +11,10 @@
 
 @class CrURL;
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 // View controller for the Autofill AI entity save and update detailed UI.
 @interface AutofillAISaveEntityTableViewController : ChromeTableViewController
 
@@ -21,7 +25,8 @@
 // Sets the entities to be displayed. Called by the parent container view
 // controller.
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
-           oldEntity:(std::optional<autofill::EntityInstance>)oldEntity;
+           oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
+           appLocale:(const base::i18n::LanguageTag&)appLocale;
 
 // Sets the footer text (with "BEGIN_LINK"/"END_LINK" delimiters) and the
 // corresponding tappable link URLs.

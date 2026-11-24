@@ -37,7 +37,7 @@ AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
 std::optional<autofill::EntityInstance>
 PrivateApiEntityInstanceToEntityInstance(
     const api::autofill_private::EntityInstance& private_api_entity_instance,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     bool entity_supports_wallet_storage);
 
 // Converts an `autofill::EntityInstance` object to an
@@ -45,7 +45,7 @@ PrivateApiEntityInstanceToEntityInstance(
 // `app_locale`.
 api::autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     const autofill::EntityInstance& entity_instance,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     bool entity_supports_wallet_storage);
 
 // Converts `autofill::EntityInstance`s to

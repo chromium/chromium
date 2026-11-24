@@ -13,13 +13,18 @@
 
 @class CrURL;
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 // Consumer for the Autofill AI entity save and update UI.
 @protocol AutofillAISaveEntityConsumer <NSObject>
 
 // Sets the entities to be displayed and managed by the consumer.
 - (void)setNewEntity:(autofill::EntityInstance)newEntity
             oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
-    saveIsSynchronous:(BOOL)saveIsSynchronous;
+    saveIsSynchronous:(BOOL)saveIsSynchronous
+            appLocale:(const base::i18n::LanguageTag&)appLocale;
 
 // Sets the footer text (with "BEGIN_LINK"/"END_LINK" delimiters) and the
 // corresponding tappable link URLs.

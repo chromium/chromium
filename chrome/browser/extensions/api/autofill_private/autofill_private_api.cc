@@ -1229,7 +1229,9 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   std::optional<EntityInstance> entity_instance =
       autofill_ai_util::PrivateApiEntityInstanceToEntityInstance(
           private_api_entity_instance,
-          g_browser_process->GetApplicationLocale(),
+          g_browser_process->GetFeatures()
+              ->application_locale_storage()
+              ->GetTag(),
           is_eligible_for_wallet_storage);
   if (!entity_instance.has_value()) {
     return RespondNow(Error(base::StrCat(
@@ -1488,8 +1490,7 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
     return RespondNow(ArgumentList(
         api::autofill_private::GetEntityInstanceByGuid::Results::Create(
             autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-                entity_instance.value(),
-                autofill_client()->GetAppLocale().tag_string(),
+                entity_instance.value(), autofill_client()->GetAppLocale(),
                 IsEligibleForWalletStorage(autofill_client(),
                                            entity_instance.value().type())))));
   }
@@ -1513,7 +1514,7 @@ void AutofillPrivateGetEntityInstanceByGuidFunction::OnReauthCompleted(
     Respond(ArgumentList(
         api::autofill_private::GetEntityInstanceByGuid::Results::Create(
             autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-                entity_instance, autofill_client()->GetAppLocale().tag_string(),
+                entity_instance, autofill_client()->GetAppLocale(),
                 IsEligibleForWalletStorage(autofill_client(),
                                            entity_instance.type())))));
     return;

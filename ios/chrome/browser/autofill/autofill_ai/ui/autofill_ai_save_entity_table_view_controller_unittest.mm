@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/i18n/language_tag.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
@@ -57,7 +58,8 @@ TEST_F(AutofillAISaveEntityTableViewControllerTest, DisplayNewAndOldSections) {
   autofill::EntityInstance old_entity = GetTestVehicle(kCarMaker1);
 
   [controller_ setNewEntity:std::move(new_entity)
-                  oldEntity:std::move(old_entity)];
+                  oldEntity:std::move(old_entity)
+                  appLocale:base::i18n::GetKnownLanguageTag("en-US")];
 
   [controller_ loadViewIfNeeded];
 
@@ -89,7 +91,9 @@ TEST_F(AutofillAISaveEntityTableViewControllerTest, DisplayNewAndOldSections) {
 // via `setFooterText:urls:`.
 TEST_F(AutofillAISaveEntityTableViewControllerTest,
        DisplayFooterWithTextAndUrls) {
-  [controller_ setNewEntity:GetTestVehicle(kCarMaker2) oldEntity:std::nullopt];
+  [controller_ setNewEntity:GetTestVehicle(kCarMaker2)
+                  oldEntity:std::nullopt
+                  appLocale:base::i18n::GetKnownLanguageTag("en-US")];
 
   NSString* footer_text = @"Test wallet footer with BEGIN_LINKlinkEND_LINK";
   NSArray<CrURL*>* urls =
@@ -114,7 +118,9 @@ TEST_F(AutofillAISaveEntityTableViewControllerTest,
 // section.
 TEST_F(AutofillAISaveEntityTableViewControllerTest,
        SetFooterAfterViewLoadedUpdatesFooter) {
-  [controller_ setNewEntity:GetTestVehicle(kCarMaker2) oldEntity:std::nullopt];
+  [controller_ setNewEntity:GetTestVehicle(kCarMaker2)
+                  oldEntity:std::nullopt
+                  appLocale:base::i18n::GetKnownLanguageTag("en-US")];
   [controller_ loadViewIfNeeded];
 
   // Verify footer before setting footer text.
@@ -142,7 +148,9 @@ TEST_F(AutofillAISaveEntityTableViewControllerTest,
 // existing URLs array.
 TEST_F(AutofillAISaveEntityTableViewControllerTest,
        SetFooterWithIdenticalContentDoesNotUpdate) {
-  [controller_ setNewEntity:GetTestVehicle(kCarMaker2) oldEntity:std::nullopt];
+  [controller_ setNewEntity:GetTestVehicle(kCarMaker2)
+                  oldEntity:std::nullopt
+                  appLocale:base::i18n::GetKnownLanguageTag("en-US")];
   [controller_ loadViewIfNeeded];
 
   NSString* footer_text = @"Saved locally.\n\nBEGIN_LINKTestEND_LINK legal";
