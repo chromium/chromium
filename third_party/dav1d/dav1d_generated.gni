@@ -102,6 +102,7 @@ arm_template_sources = []
 riscv64_asm_sources = [
   "libdav1d/src/riscv/64/cdef.S",
   "libdav1d/src/riscv/64/cdef16.S",
+  "libdav1d/src/riscv/64/cdef_common.S",
   "libdav1d/src/riscv/64/cpu.S",
   "libdav1d/src/riscv/64/filmgrain.S",
   "libdav1d/src/riscv/64/filmgrain16.S",
