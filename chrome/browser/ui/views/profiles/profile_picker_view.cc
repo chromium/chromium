@@ -62,7 +62,9 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_controller.h"
@@ -75,6 +77,9 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
@@ -154,6 +159,23 @@ void ClearLockedProfilesFirstBrowserKeepAlive() {
     if (entry && entry->IsSigninRequired()) {
       profile_manager->ClearFirstBrowserWindowKeepAlive(profile);
     }
+  }
+}
+
+void DetachModalDialogDelegateIfHostedBy(content::WebContents* web_contents,
+                                         const ProfilePickerView* host) {
+  if (!web_contents) {
+    return;
+  }
+  auto* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  if (!manager || !manager->delegate()) {
+    return;
+  }
+  if (manager->delegate() == host ||
+      manager->delegate()->GetWebContentsModalDialogHost(web_contents) ==
+          host) {
+    manager->SetDelegate(nullptr);
   }
 }
 
@@ -446,12 +468,12 @@ content::WebContentsDelegate* ProfilePickerView::GetWebContentsDelegate() {
 web_modal::WebContentsModalDialogHost*
 ProfilePickerView::GetWebContentsModalDialogHost(
     content::WebContents* web_contents) {
-  return this;
+  return GetWebContentsModalDialogHost();
 }
 
 web_modal::WebContentsModalDialogHost*
 ProfilePickerView::GetWebContentsModalDialogHost() {
-  return this;
+  return GetHostView() ? this : nullptr;
 }
 
 void ProfilePickerView::Reset(StepSwitchFinishedCallback callback) {
@@ -544,24 +566,35 @@ content::WebContents* ProfilePickerView::AddNewContents(
 }
 
 gfx::NativeView ProfilePickerView::GetHostView() const {
-  return GetWidget()->GetNativeView();
+  return GetWidget() ? GetWidget()->GetNativeView() : gfx::NativeView();
 }
 
 gfx::Point ProfilePickerView::GetDialogPosition(const gfx::Size& size) {
   gfx::Point position(std::max(0, (width() - size.width()) / 2), 0);
-  views::View::ConvertPointToWidget(this, &position);
+  if (GetWidget()) {
+    views::View::ConvertPointToWidget(this, &position);
+  }
   return position;
 }
 
 gfx::Size ProfilePickerView::GetMaximumDialogSize() {
-  return size();
+  return GetWidget() ? size() : gfx::Size();
 }
 
 void ProfilePickerView::AddObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observers_.AddObserver(observer);
+}
 
 void ProfilePickerView::RemoveObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observers_.RemoveObserver(observer);
+}
+
+void ProfilePickerView::NotifyPositionRequiresUpdate() {
+  modal_dialog_host_observers_.Notify(
+      &web_modal::ModalDialogHostObserver::OnPositionRequiresUpdate);
+}
 
 ProfilePickerView::ProfilePickerView(ProfilePicker::Params&& params)
     : keep_alive_(KeepAliveOrigin::USER_MANAGER_VIEW,
@@ -585,6 +618,7 @@ ProfilePickerView::ProfilePickerView(ProfilePicker::Params&& params)
 }
 
 ProfilePickerView::~ProfilePickerView() {
+  ResetModalDialogHost();
   if (contents_) {
     contents_->SetDelegate(nullptr);
   }
@@ -768,7 +802,14 @@ void ProfilePickerView::SwitchToReauth(
       std::move(on_error_callback));
 }
 
+void ProfilePickerView::OnWidgetMove() {
+  views::WidgetDelegateView::OnWidgetMove();
+  NotifyPositionRequiresUpdate();
+}
+
 void ProfilePickerView::WindowClosing() {
+  ResetModalDialogHost();
+
   // If a profile is locked, it might have been loaded and it's first browser
   // will never be created, we need to remove it's equivalent
   // `ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow` to be able to
@@ -902,6 +943,11 @@ void ProfilePickerView::Layout(PassKey) {
   toolbar_->SetBounds(0, 0, width(), toolbar_->GetPreferredSize().height());
 }
 
+void ProfilePickerView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  views::WidgetDelegateView::OnBoundsChanged(previous_bounds);
+  NotifyPositionRequiresUpdate();
+}
+
 void ProfilePickerView::BuildLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -967,6 +1013,18 @@ void ProfilePickerView::InitializeFeaturePromo(Profile* system_profile) {
   feature_promo_ = std::make_unique<ProfilePickerFeaturePromoController>(
       tracker_service, user_education_service, g_profile_picker_view);
   feature_promo_->Init();
+}
+
+void ProfilePickerView::ResetModalDialogHost() {
+  // Detach active modal dialog delegates before notifying `OnHostDestroying()`
+  // so closing the topmost dialog does not trigger `ShowNextDialog()` on any
+  // queued dialog while `ProfilePickerWidget` is tearing down.
+  DetachModalDialogDelegateIfHostedBy(contents_.get(), this);
+  if (web_view_) {
+    DetachModalDialogDelegateIfHostedBy(web_view_->GetWebContents(), this);
+  }
+  modal_dialog_host_observers_.Notify(
+      &web_modal::ModalDialogHostObserver::OnHostDestroying);
 }
 
 ProfilePickerFlowController* ProfilePickerView::GetProfilePickerFlowController()

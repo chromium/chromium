@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
@@ -20,6 +21,8 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/web_modal/modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/views/controls/webview/webview.h"
@@ -41,6 +44,10 @@ class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 // Dialog widget that contains the Desktop Profile picker webui.
 class ProfilePickerView
@@ -101,18 +108,21 @@ class ProfilePickerView
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
       content::WebContents* web_contents) override;
 
-  // web_modal::WebContentsModalDialogHost
+  // web_modal::WebContentsModalDialogHost:
   gfx::NativeView GetHostView() const override;
   gfx::Point GetDialogPosition(const gfx::Size& size) override;
   gfx::Size GetMaximumDialogSize() override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void NotifyPositionRequiresUpdate() override;
 
   // views::WidgetDelegateView:
+  void OnWidgetMove() override;
   void WindowClosing() override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   views::View* GetContentsView() override;
   void Layout(PassKey) override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   std::u16string GetAccessibleWindowTitle() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
@@ -249,6 +259,13 @@ class ProfilePickerView
   // through the Profile Picker.
   void InitializeFeaturePromo(Profile* system_profile);
 
+  // Called in `WindowClosing()` so child web-modal dialog widgets close before
+  // native widget teardown finishes (even if their `WebContents` was moved to a
+  // `Browser`), and again in `~ProfilePickerView()` in case the view is
+  // destroyed without a widget. Idempotent: the second call is a no-op once
+  // delegates are detached and observers have unregistered.
+  void ResetModalDialogHost();
+
   ScopedKeepAlive keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
@@ -265,6 +282,9 @@ class ProfilePickerView
 
   // A mapping between accelerators and command IDs.
   std::map<ui::Accelerator, int> accelerator_table_;
+
+  base::ObserverList<web_modal::ModalDialogHostObserver, /*check_empty=*/true>
+      modal_dialog_host_observers_;
 
   // Owned by the view hierarchy.
   raw_ptr<views::WebView> web_view_ = nullptr;

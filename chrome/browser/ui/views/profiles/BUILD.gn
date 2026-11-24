@@ -524,6 +524,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser/ui/profiles",
       "//components/keep_alive_registry",
       "//components/user_education/common",
+      "//components/web_modal",
       "//ui/base/metadata",
       "//ui/views",
       "//ui/views/controls/webview",
@@ -565,12 +566,12 @@ if (is_win || is_mac || is_linux) {
       "//components/signin/public/base:signin_switches",
       "//components/signin/public/identity_manager",
       "//components/startup_metric_utils",
-      "//components/web_modal",
       "//content/public/browser",
       "//content/public/common",
       "//google_apis",
       "//ui/base",
       "//ui/base:types",
+      "//ui/gfx/geometry",
       "//url",
     ]
 
@@ -1409,8 +1410,13 @@ source_set("browser_tests") {
       "//chrome/test/base:profile_lifecycle_test_utils",
       "//chrome/test/base:testing_browser_process",
       "//chrome/test/user_education",
+      "//components/constrained_window",
       "//components/web_modal",
+      "//ui/base",
       "//ui/base:ozone_buildflags",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/views:test_support",
     ]
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
