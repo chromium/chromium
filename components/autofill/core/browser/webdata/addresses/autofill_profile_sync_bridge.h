@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -50,7 +51,7 @@ class AutofillProfileSyncBridge
  public:
   AutofillProfileSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       AutofillWebDataBackend* backend);
 
   AutofillProfileSyncBridge(const AutofillProfileSyncBridge&) = delete;
@@ -62,7 +63,7 @@ class AutofillProfileSyncBridge
   // Constructor that hides dealing with change_processor and also stores the
   // created bridge within |web_data_service|.
   static void CreateForWebDataServiceAndBackend(
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       AutofillWebDataBackend* web_data_backend,
       AutofillWebDataService* web_data_service);
 
@@ -116,7 +117,7 @@ class AutofillProfileSyncBridge
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Locale needed for comparing autofill profiles when resolving conflicts.
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
 
   // AutofillProfileSyncBridge is owned by |web_data_backend_| through
   // SupportsUserData, so it's guaranteed to outlive |this|.

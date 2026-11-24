@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -77,7 +78,6 @@ constexpr char kGuidB[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
 constexpr char kGuidC[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44C";
 constexpr char kGuidD[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44D";
 constexpr char kGuidInvalid[] = "EDC609ED-7EEE-4F27-B00C";
-constexpr char kLocaleString[] = "en-US";
 
 AutofillProfileSpecifics CreateAutofillProfileSpecifics(
     const AutofillProfile& entry) {
@@ -269,7 +269,8 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
 
   void ResetBridge() {
     bridge_ = std::make_unique<AutofillProfileSyncBridge>(
-        mock_processor_.CreateForwardingProcessor(), kLocaleString, &backend_);
+        mock_processor_.CreateForwardingProcessor(),
+        base::i18n::GetKnownLanguageTag("en-US"), &backend_);
   }
 
   void StartSyncing(

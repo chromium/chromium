@@ -14,6 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace syncer {
 class ModelError;
 }  // namespace syncer
@@ -128,8 +132,7 @@ class AutofillProfileInitialSyncDifferenceTracker
   // to find any similarities with local entries. Should be run after all
   // entries get incorporated but before flushing results to local/sync.
   [[nodiscard]] std::optional<syncer::ModelError>
-  MergeSimilarEntriesForInitialSync(const std::string& app_locale);
-
+  MergeSimilarEntriesForInitialSync(const base::i18n::LanguageTag& app_locale);
 };
 
 }  // namespace autofill

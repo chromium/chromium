@@ -42,7 +42,6 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // created bridge within |web_data_service|. This method should only be
   // called on |web_data_service|'s DB thread.
   static void CreateForWebDataServiceAndBackend(
-      const std::string& app_locale,
       AutofillWebDataBackend* webdata_backend,
       AutofillWebDataService* web_data_service);
 

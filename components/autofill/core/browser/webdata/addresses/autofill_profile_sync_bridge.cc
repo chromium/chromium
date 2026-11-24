@@ -61,7 +61,7 @@ static int kAutofillProfileSyncBridgeUserDataKey = 0;
 
 // static
 void AutofillProfileSyncBridge::CreateForWebDataServiceAndBackend(
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
   web_data_service->GetDBUserData().SetUserData(
@@ -83,7 +83,7 @@ syncer::DataTypeSyncBridge* AutofillProfileSyncBridge::FromWebDataService(
 
 AutofillProfileSyncBridge::AutofillProfileSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     AutofillWebDataBackend* backend)
     : syncer::DataTypeSyncBridge(std::move(change_processor)),
       app_locale_(app_locale),

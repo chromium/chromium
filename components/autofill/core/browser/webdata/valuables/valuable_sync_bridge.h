@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -67,7 +68,7 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
 
   ValuableSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       AutofillWebDataBackend* backend);
   ~ValuableSyncBridge() override;
 
@@ -75,7 +76,7 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   ValuableSyncBridge& operator=(const ValuableSyncBridge&) = delete;
 
   static void CreateForWebDataServiceAndBackend(
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       AutofillWebDataBackend* web_data_backend,
       AutofillWebDataService* web_data_service);
 
@@ -174,7 +175,7 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The application locale, used to gate locale-restricted valuable types.
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
 
   // ValuableSyncBridge is owned by `web_data_backend_` through
   // SupportsUserData, so it's guaranteed to outlive `this`.

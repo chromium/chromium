@@ -18,9 +18,11 @@ source_set("impl") {
   deps = [
     ":webdata_services",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/profiles",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/prefs",
     "//components/search_engines",

@@ -9,6 +9,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -49,7 +50,7 @@ class WebDataServiceWrapperTest : public testing::Test {
   // Creates WebDataServiceWrapper under test.
   std::unique_ptr<WebDataServiceWrapper> CreateWebDataServiceWrapper() {
     return std::make_unique<WebDataServiceWrapper>(
-        scoped_temp_dir_.GetPath(), "en_US",
+        scoped_temp_dir_.GetPath(), base::i18n::GetKnownLanguageTag("en-US"),
         task_environment_.GetMainThreadTaskRunner(), base::DoNothing(),
         os_crypt_.get());
   }

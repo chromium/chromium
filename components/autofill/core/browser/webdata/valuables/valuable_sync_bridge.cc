@@ -201,7 +201,8 @@ std::optional<std::string> GetLegalMessageToken(
   return entity_table.GetLegalMessageToken(guid);
 }
 
-bool IsSyncWalletDirectOffersEnabled(std::string_view app_locale) {
+bool IsSyncWalletDirectOffersEnabled(
+    const base::i18n::LanguageTag& app_locale) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableWalletDirectOffers)) {
     return false;
@@ -211,8 +212,9 @@ bool IsSyncWalletDirectOffersEnabled(std::string_view app_locale) {
               kAutofillDisableWalletDirectOffersLocaleCountryCheckForTesting)) {
     return true;
   }
-  return app_locale == "en-US" || app_locale == "en-CA" ||
-         app_locale == "en-GB";
+  return app_locale == base::i18n::GetKnownLanguageTag("en-US") ||
+         app_locale == base::i18n::GetKnownLanguageTag("en-CA") ||
+         app_locale == base::i18n::GetKnownLanguageTag("en-GB");
 }
 
 // Returns if the entity `change` should be uploaded to AUTOFILL_VALUABLE.
@@ -302,7 +304,7 @@ LoyaltyCard CreateLoyaltyCardFromSpecificsAndLoadMetadata(
 
 ValuableSyncBridge::ValuableSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     AutofillWebDataBackend* backend)
     : DataTypeSyncBridge(std::move(change_processor)),
       app_locale_(app_locale),
@@ -328,7 +330,7 @@ ValuableSyncBridge::~ValuableSyncBridge() = default;
 
 // static
 void ValuableSyncBridge::CreateForWebDataServiceAndBackend(
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
   web_data_service->GetDBUserData().SetUserData(

@@ -235,7 +235,6 @@ void SetEntityDataFromBenefit(const CreditCardBenefit& benefit,
 
 // static
 void AutofillWalletSyncBridge::CreateForWebDataServiceAndBackend(
-    const std::string& app_locale,
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
   web_data_service->GetDBUserData().SetUserData(

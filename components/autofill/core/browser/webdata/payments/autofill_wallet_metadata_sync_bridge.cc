@@ -319,7 +319,6 @@ bool IsSyncedWalletCard(const CreditCard& card) {
 
 // static
 void AutofillWalletMetadataSyncBridge::CreateForWebDataServiceAndBackend(
-    const std::string& app_locale,
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
   web_data_service->GetDBUserData().SetUserData(

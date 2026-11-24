@@ -14,6 +14,7 @@ static_library("webdata_services") {
 
   deps = [
     "//base",
+    "//base/i18n:language_tag",
     "//build:blink_buildflags",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -49,6 +50,7 @@ source_set("unit_tests") {
   deps = [
     ":webdata_services",
     "//base",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//components/os_crypt/browser:test_support",
     "//components/search_engines",

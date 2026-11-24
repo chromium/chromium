@@ -30,10 +30,7 @@ std::unique_ptr<KeyedService> BuildWebDataService(ProfileIOS& profile) {
   // On iOS (and Android), the account storage is persisted on disk.
   return std::make_unique<WebDataServiceWrapper>(
       state_path,
-      std::string(GetApplicationContext()
-                      ->GetApplicationLocaleStorage()
-                      ->GetTag()
-                      .tag_string()),
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag(),
       web::GetUIThreadTaskRunner({}), base::DoNothing(),
       GetApplicationContext()->GetOSCryptAsync());
 }

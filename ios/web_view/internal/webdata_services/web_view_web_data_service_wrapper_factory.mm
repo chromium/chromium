@@ -9,6 +9,8 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/no_destructor.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -83,7 +85,9 @@ WebViewWebDataServiceWrapperFactory::BuildServiceInstanceFor(
   const base::FilePath& browser_state_path = context->GetStatePath();
   return std::make_unique<WebDataServiceWrapper>(
       browser_state_path,
-      ApplicationContext::GetInstance()->GetApplicationLocale(),
+      base::i18n::GetLanguageTagFromString(
+          ApplicationContext::GetInstance()->GetApplicationLocale())
+          .value_or(base::i18n::GetKnownLanguageTag("und")),
       web::GetUIThreadTaskRunner({}), base::DoNothing(),
       ApplicationContext::GetInstance()->GetOSCryptAsync());
 }

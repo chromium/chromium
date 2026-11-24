@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -51,7 +52,7 @@ namespace {
 void InitAutofillSyncBridgesOnDBSequence(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
 
@@ -69,20 +70,19 @@ void InitAutofillSyncBridgesOnDBSequence(
 void InitWalletSyncBridgesOnDBSequence(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
-    const std::string& app_locale,
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
 
   autofill::AutofillWalletSyncBridge::CreateForWebDataServiceAndBackend(
-      app_locale, autofill_backend, autofill_web_data.get());
+      autofill_backend, autofill_web_data.get());
   autofill::AutofillWalletMetadataSyncBridge::CreateForWebDataServiceAndBackend(
-      app_locale, autofill_backend, autofill_web_data.get());
+      autofill_backend, autofill_web_data.get());
 }
 
 void InitValuableSyncBridgeOnDBSequence(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
   autofill::ValuableSyncBridge::CreateForWebDataServiceAndBackend(
@@ -126,7 +126,7 @@ WebDataServiceWrapper::WebDataServiceWrapper() = default;
 
 WebDataServiceWrapper::WebDataServiceWrapper(
     const base::FilePath& context_path,
-    const std::string& application_locale,
+    const base::i18n::LanguageTag& application_locale,
     const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
     const ShowErrorCallback& show_error_callback,
     os_crypt_async::OSCryptAsync* os_crypt) {
@@ -191,7 +191,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
                      profile_autofill_web_data_, application_locale));
   profile_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletSyncBridgesOnDBSequence, db_task_runner,
-                     profile_autofill_web_data_, application_locale));
+                     profile_autofill_web_data_));
 #if !BUILDFLAG(IS_IOS)
   profile_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletUsageDataSyncBridgeOnDBSequence, db_task_runner,
@@ -236,7 +236,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
       base::BindOnce(show_error_callback, ERROR_LOADING_ACCOUNT_AUTOFILL));
   account_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletSyncBridgesOnDBSequence, db_task_runner,
-                     account_autofill_web_data_, application_locale));
+                     account_autofill_web_data_));
 #if !BUILDFLAG(IS_IOS)
   account_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletUsageDataSyncBridgeOnDBSequence, db_task_runner,

@@ -6,6 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -33,7 +34,8 @@ using testing::IsEmpty;
 // Some guids for testing.
 constexpr char kSmallerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 constexpr char kBiggerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
-constexpr char kLocaleString[] = "en-US";
+constexpr base::i18n::LanguageTag kLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 struct UpdatesToSync {
   std::vector<AutofillProfile> profiles_to_upload_to_sync;
@@ -385,7 +387,7 @@ class AutofillProfileInitialSyncDifferenceTrackerTest
 
   [[nodiscard]] std::optional<syncer::ModelError>
   MergeSimilarEntriesForInitialSync() {
-    return initial_tracker_.MergeSimilarEntriesForInitialSync(kLocaleString);
+    return initial_tracker_.MergeSimilarEntriesForInitialSync(kLocale);
   }
 
   AutofillProfileSyncDifferenceTracker* tracker() override {

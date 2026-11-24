@@ -32,6 +32,9 @@ class AutofillWebDataService;
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
+namespace i18n {
+class LanguageTag;
+}  // namespace i18n
 }  // namespace base
 
 namespace os_crypt_async {
@@ -67,7 +70,7 @@ class WebDataServiceWrapper : public KeyedService {
   // WebDataServices.
   WebDataServiceWrapper(
       const base::FilePath& context_path,
-      const std::string& application_locale,
+      const base::i18n::LanguageTag& application_locale,
       const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
       const ShowErrorCallback& show_error_callback,
       os_crypt_async::OSCryptAsync* os_crypt);

@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -287,7 +288,7 @@ optional<ModelError> AutofillProfileInitialSyncDifferenceTracker::FlushToSync(
 
 optional<ModelError>
 AutofillProfileInitialSyncDifferenceTracker::MergeSimilarEntriesForInitialSync(
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   if (!GetLocalOnlyEntries()) {
     return ModelError(
         FROM_HERE,
@@ -307,11 +308,12 @@ AutofillProfileInitialSyncDifferenceTracker::MergeSimilarEntriesForInitialSync(
   // Loop over all new remote entries to find merge candidates. Using
   // non-const reference because we want to update |remote| in place if
   // needed.
+  const std::string app_locale_str(app_locale.tag_string());
   for (AutofillProfile& remote : add_to_local_) {
     const AutofillProfile remote_before_merge = remote;
     const std::string* matched_storage_key = nullptr;
     for (const auto& [storage_key, local_candidate] : *GetLocalOnlyEntries()) {
-      if (remote.MergeDataFrom(local_candidate, app_locale) !=
+      if (remote.MergeDataFrom(local_candidate, app_locale_str) !=
           AutofillProfile::ProfileMergeResult::kMergeFailed) {
         matched_storage_key = &storage_key;
         break;

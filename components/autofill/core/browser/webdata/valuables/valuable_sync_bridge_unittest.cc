@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -139,7 +140,8 @@ class ValuableSyncBridgeTest : public testing::Test {
   }
 
   // (Re)creates the `bridge()` with the given `app_locale`.
-  void ResetBridge(const std::string& app_locale = "en-US") {
+  void ResetBridge(const base::i18n::LanguageTag& app_locale =
+                       base::i18n::GetKnownLanguageTag("en-US")) {
     bridge_ = std::make_unique<ValuableSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), app_locale, &backend_);
   }
@@ -266,8 +268,8 @@ TEST_F(ValuableSyncBridgeTest, InitializationFailure) {
   ON_CALL(backend(), GetDatabase()).WillByDefault(Return(nullptr));
   EXPECT_CALL(mock_processor(), ReportError);
   // The `bridge()` was already initialized during `SetUp()`. Recreate it.
-  ValuableSyncBridge(mock_processor().CreateForwardingProcessor(), "en-US",
-                     &backend());
+  ValuableSyncBridge(mock_processor().CreateForwardingProcessor(),
+                     base::i18n::GetKnownLanguageTag("en-US"), &backend());
 }
 
 // Tests that for specifics that represent AutofillAi entities, import
@@ -675,7 +677,7 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_FeatureDisabled) {
 TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_LocaleNotSupported) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableWalletDirectOffers};
-  ResetBridge("fr-FR");
+  ResetBridge(base::i18n::GetKnownLanguageTag("fr-FR"));
   EXPECT_FALSE(bridge().IsEntityDataValid(
       *CreateEntityDataFromSpecifics(TestOfferSpecifics(kId1))));
 }
@@ -1440,7 +1442,7 @@ class ValuableSyncBridgeWithIncrementalUpdates : public ValuableSyncBridge {
  public:
   ValuableSyncBridgeWithIncrementalUpdates(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       AutofillWebDataBackend* web_data_backend)
       : ValuableSyncBridge(std::move(change_processor),
                            app_locale,
@@ -1455,7 +1457,8 @@ class ValuableSyncBridgeIncrementalUpdatesTest : public ValuableSyncBridgeTest {
   void SetUp() override {
     ValuableSyncBridgeTest::SetUp();
     bridge_ = std::make_unique<ValuableSyncBridgeWithIncrementalUpdates>(
-        mock_processor().CreateForwardingProcessor(), "en-US", &backend());
+        mock_processor().CreateForwardingProcessor(),
+        base::i18n::GetKnownLanguageTag("en-US"), &backend());
   }
 };
 

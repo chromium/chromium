@@ -9,10 +9,12 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/sql_init_error_message_ids.h"
 #include "chrome/browser/ui/profiles/profile_error_dialog.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/webdata/token_web_data.h"
@@ -62,7 +64,8 @@ std::unique_ptr<KeyedService> BuildWebDataService(
     content::BrowserContext* context) {
   const base::FilePath& profile_path = context->GetPath();
   return std::make_unique<WebDataServiceWrapper>(
-      profile_path, g_browser_process->GetApplicationLocale(),
+      profile_path,
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag(),
       content::GetUIThreadTaskRunner({}),
       base::BindRepeating(&ProfileErrorCallback),
       g_browser_process->os_crypt_async());
