@@ -33,16 +33,8 @@ There are two distinct versions in play, and they are deliberately different:
 
 ### Why 7.4.1 specifically?
 
-The usable range is bounded on both sides. All of this was determined from
-actual `3pp-linux-amd64-packager` / `3pp-mac-arm64-packager` runs.
-
-Floor:
-
-* **>= 4.1** — `//third_party/android_build_tools/bazel_java_builder` pins 3.7.2,
-  but that predates native macOS arm64 support, so bazelisk falls back to the
-  `darwin-x86_64` binary and would produce x86_64 tools on the mac-arm64 bot.
-
-Ceiling — 8.x was tried (tag 8.8.0) and failed on *both* platforms:
+8.x was tried (tag 8.8.0) on `3pp-linux-amd64-packager` and
+`3pp-mac-arm64-packager`, and failed on *both* platforms:
 
 * **linux-amd64** — bazelisk runs the release named by the tree's
   `.bazelversion` (8.7.0 for tag 8.8.0). That binary needs `GLIBC_2.25`,

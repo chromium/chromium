@@ -33,8 +33,8 @@ Reference implementations in tree:
   builds a fat jar from Maven Central.
 - `//third_party/android_build_tools/bazel_tools` — raw git source, builds
   native binaries per platform (`linux-amd64` + `mac-arm64`).
-- `//third_party/android_build_tools/bazel_java_builder` — raw git source with
-  `patch_dir`, builds a universal `.jar`.
+- `//third_party/jacoco` — raw git source with `patch_dir`, builds universal
+  `.jar` files.
 
 ______________________________________________________________________
 

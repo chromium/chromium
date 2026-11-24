@@ -29,9 +29,9 @@ create {
   build {
     install: "install.py"
     external_tool: "infra/3pp/tools/bazelisk/${platform}@3@1.29.0"
-    # Unlike bazel_java_builder, no "chromium/third_party/jdk" external_dep is
-    # needed: only C++ targets are built, and the Bazel distribution that
-    # bazelisk downloads embeds its own JDK to run the Bazel server.
+    # No "chromium/third_party/jdk" external_dep is needed: only C++ targets
+    # are built, and the Bazel distribution that bazelisk downloads embeds its
+    # own JDK to run the Bazel server.
   }
 }
 

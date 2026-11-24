@@ -271,7 +271,6 @@ third_party/abseil-cpp/absl/random
 third_party/abseil-cpp/absl/random/internal
 third_party/abseil-cpp/absl/status
 third_party/abseil-cpp/ci
-third_party/android_build_tools/bazel_java_builder
 third_party/android_build_tools/json
 third_party/android_deps/buildSrc/src/main/groovy
 third_party/android_deps/libs
