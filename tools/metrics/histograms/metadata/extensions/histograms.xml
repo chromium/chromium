@@ -914,7 +914,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Database.Local.ErrorByOperation"
-    enum="ExtensionsDatabaseOperation" expires_after="2027-03-07">
+    enum="ExtensionsDatabaseOperation" expires_after="2027-11-23">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -925,7 +925,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Database.Local.RestoreStatus"
-    enum="BackingStoreRestoreStatus" expires_after="2027-01-03">
+    enum="BackingStoreRestoreStatus" expires_after="2027-11-23">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -937,7 +937,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.Database.Local.StatusCodeByOperation.{StorageOperation}"
-    enum="ValueStoreStatusCode" expires_after="2027-02-07">
+    enum="ValueStoreStatusCode" expires_after="2027-11-23">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
