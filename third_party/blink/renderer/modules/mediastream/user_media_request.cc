@@ -925,7 +925,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
     case Result::CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS:
     case Result::STREAM_NOT_FOUND_IN_REGISTRY:
     case Result::REGISTRY_REQUEST_UNVERIFIED:
-    case Result::START_TIMEOUT:
+    case Result::START_VIDEO_SOURCE_TIMEOUT:
     case Result::INVALID_DISPLAY_CAPTURE_CONSTRAINTS:
     case Result::INVALID_GUM_TAB_CAPTURE_CONSTRAINTS:
     case Result::INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS:

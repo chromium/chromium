@@ -343,7 +343,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Device in use";
     case MediaStreamRequestResult::DEVICE_REMOVED:
       return "Device was removed";
-    case MediaStreamRequestResult::START_TIMEOUT:
+    case MediaStreamRequestResult::START_VIDEO_SOURCE_TIMEOUT:
       return "Timeout starting video source";
     case MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:
       return "Constraint not satisfied";

@@ -442,7 +442,7 @@ void MediaStreamVideoCapturerSource::OnRunStateChanged(
             result = MediaStreamRequestResult::DEVICE_IN_USE;
             break;
           case VideoCaptureRunState::kStartTimeoutError:
-            result = MediaStreamRequestResult::START_TIMEOUT;
+            result = MediaStreamRequestResult::START_VIDEO_SOURCE_TIMEOUT;
             break;
           case VideoCaptureRunState::kStopped:
             result = MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO;

@@ -22743,7 +22743,7 @@ from previous Chrome versions.
   <int value="14" label="KillSwitch on (NotAllowedError)"/>
   <int value="15" label="Permission denied by System (NotAllowedError)"/>
   <int value="16" label="Device in use (NotReadableError)"/>
-  <int value="18" label="Start timeout (AbortError)"/>
+  <int value="18" label="Video source start timeout (AbortError)"/>
   <int value="19" label="Permission denied by user (NotAllowedError)"/>
   <int value="20" label="Audio device socket error (NotReadableError)"/>
   <int value="21" label="No Transient activation (InvalidStateError)"/>
