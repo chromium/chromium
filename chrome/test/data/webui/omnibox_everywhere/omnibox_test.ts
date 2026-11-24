@@ -5083,7 +5083,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       });
 
   test(
-      'onScreenshotCaptureCancelled reverts to searchbox if initiated from ' +
+      'onContextUploadCancelled reverts to searchbox if initiated from ' +
           'searchbox',
       async () => {
         // Initially in searchbox mode.
@@ -5111,8 +5111,8 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         // Reset the mock calls before cancelling.
         testEverywhereHandler.reset();
 
-        // Cancel the screenshot capture.
-        testEverywherePage.onScreenshotCaptureCancelled();
+        // Cancel the context upload.
+        testEverywherePage.onContextUploadCancelled();
         await microtasksFinished();
 
         // App should revert to searchbox mode.
@@ -5126,7 +5126,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       });
 
   test(
-      'onScreenshotCaptureCancelled remains in composebox if initiated from ' +
+      'onContextUploadCancelled remains in composebox if initiated from ' +
           'composebox',
       async () => {
         // First transition to composebox mode normally (e.g. from context
@@ -5165,8 +5165,8 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         assertTrue(composebox.isPendingContextUpload);
         assertEquals('existing multiline query', composebox.input);
 
-        // Cancel the screenshot capture.
-        testEverywherePage.onScreenshotCaptureCancelled();
+        // Cancel the context upload.
+        testEverywherePage.onContextUploadCancelled();
         await microtasksFinished();
 
         // Should remain in composebox mode with isPendingContextUpload reset to

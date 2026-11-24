@@ -336,7 +336,7 @@ export class OmniboxEverywhereComposeboxElement extends
     super.onInputInput(e);
   }
 
-  onScreenshotCaptureCancelled() {
+  onContextUploadCancelled() {
     this.isPendingContextUpload = false;
     this.refreshTabSuggestions(/*forceRefresh=*/ true);
     this.queryAutocomplete(/* clearMatches= */ true);

@@ -188,7 +188,7 @@ export class OmniboxEverywhereAppElement extends
   // Tracks whether the current pending context upload (screenshot capture or
   // native file chooser) was initiated while the user was in the Searchbox
   // (`!isComposeboxMode_`) rather than already inside the Composebox. If the
-  // user cancels the picker, this flag tells `onScreenshotCaptureCancelled` to
+  // user cancels the picker, this flag tells `onContextUploadCancelled` to
   // return the view back to the Searchbox instead of leaving an empty
   // Composebox open.
   private contextUploadOriginWasSearchbox_: boolean = false;
@@ -296,10 +296,7 @@ export class OmniboxEverywhereAppElement extends
     // shrink before presenting the native UI), restore the Searchbox view and
     // focus its input; otherwise keep the existing Composebox open and restore
     // its suggestions.
-    // TODO(b/581982262): Rename `onScreenshotCaptureCancelled` (and its mojom
-    // method) to `onContextUploadCancelled` now that it is shared with the
-    // native file chooser.
-    const onScreenshotCaptureCancelled = async () => {
+    const onContextUploadCancelled = async () => {
       this.isPendingContextUpload_ = false;
       if (this.contextUploadOriginWasSearchbox_) {
         this.contextUploadOriginWasSearchbox_ = false;
@@ -311,7 +308,7 @@ export class OmniboxEverywhereAppElement extends
         this.searchbox?.focusInput?.();
         return;
       }
-      this.composebox?.onScreenshotCaptureCancelled();
+      this.composebox?.onContextUploadCancelled();
     };
 
     this.searchboxListenerIds_.push(
@@ -354,8 +351,8 @@ export class OmniboxEverywhereAppElement extends
             onContextMenuClosed),
         omniboxEverywhereCallbackRouter.onOverflowMenuClosed.addListener(
             () => this.searchbox?.onOverflowMenuClosed()),
-        omniboxEverywhereCallbackRouter.onScreenshotCaptureCancelled
-            .addListener(onScreenshotCaptureCancelled),
+        omniboxEverywhereCallbackRouter.onContextUploadCancelled
+            .addListener(onContextUploadCancelled),
         omniboxEverywhereCallbackRouter.focusInput.addListener(() => {
           // Expand even if the input can't take focus (e.g. under the FRE
           // intro modal).

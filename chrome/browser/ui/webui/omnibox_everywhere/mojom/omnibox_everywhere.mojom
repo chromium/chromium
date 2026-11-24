@@ -79,9 +79,9 @@ interface Page {
   // actions) with optional initial configuration (tool, model, or tab).
   OpenComposebox(ComposeboxInitialState? initial_state);
 
-  // Notifies the WebUI that a pending screenshot capture (e.g. region or
-  // window selection) was cancelled by the user or failed.
-  OnScreenshotCaptureCancelled();
+  // Notifies the WebUI that a pending context upload (e.g. screenshot capture
+  // or native file chooser) was cancelled by the user or failed.
+  OnContextUploadCancelled();
 
   // Notifies the WebUI to focus the active text input whenever the browser
   // programmatically activates the widget (e.g. hotkey, tray, shortcut, or
