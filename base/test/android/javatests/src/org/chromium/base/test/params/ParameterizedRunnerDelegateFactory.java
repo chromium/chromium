@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.TestClass;
 
+import org.chromium.base.test.params.ParameterAnnotations.GroupTestsByParameterSet;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 
 import java.lang.reflect.InvocationTargetException;
@@ -58,20 +59,55 @@ public class ParameterizedRunnerDelegateFactory {
             TestClass testClass, String suffix) {
         // Represent the list of all ParameterizedFrameworkMethod in this test class
         List<FrameworkMethod> returnList = new ArrayList<>();
+        // Position of each method's parameter set in a provider annotated with
+        // @GroupTestsByParameterSet, or -1 for other methods. Parallel to |returnList|.
+        List<Integer> groups = new ArrayList<>();
+        boolean anyGrouped = false;
 
         for (FrameworkMethod method : testClass.getAnnotatedMethods(Test.class)) {
             if (method.getMethod().isAnnotationPresent(UseMethodParameter.class)) {
-                Iterable<ParameterSet> parameterSets =
-                        getParameters(method.getAnnotation(UseMethodParameter.class).value());
-                returnList.addAll(createParameterizedMethods(method, parameterSets, suffix));
+                Class<? extends ParameterProvider> providerClass =
+                        method.getAnnotation(UseMethodParameter.class).value();
+                boolean grouped = providerClass.isAnnotationPresent(GroupTestsByParameterSet.class);
+                anyGrouped |= grouped;
+                List<FrameworkMethod> parameterizedMethods =
+                        createParameterizedMethods(method, getParameters(providerClass), suffix);
+                for (int i = 0; i < parameterizedMethods.size(); i++) {
+                    returnList.add(parameterizedMethods.get(i));
+                    groups.add(grouped ? i : -1);
+                }
             } else {
                 // If test method is not parameterized (does not have UseMethodParameter annotation)
                 returnList.add(
                         new ParameterizedFrameworkMethod(method.getMethod(), null, suffix, null));
+                groups.add(-1);
             }
         }
 
+        if (anyGrouped) {
+            returnList = groupByParameterSet(returnList, groups);
+        }
+
         return Collections.unmodifiableList(returnList);
+    }
+
+    /**
+     * Stable-sorts |methods| by |groups|, so that methods in the same group run consecutively and
+     * keep their relative order.
+     */
+    private static List<FrameworkMethod> groupByParameterSet(
+            List<FrameworkMethod> methods, List<Integer> groups) {
+        List<Integer> indices = new ArrayList<>();
+        for (int i = 0; i < methods.size(); i++) {
+            indices.add(i);
+        }
+        // List.sort() is stable.
+        indices.sort((a, b) -> Integer.compare(groups.get(a), groups.get(b)));
+        List<FrameworkMethod> sorted = new ArrayList<>();
+        for (int i : indices) {
+            sorted.add(methods.get(i));
+        }
+        return sorted;
     }
 
     /**

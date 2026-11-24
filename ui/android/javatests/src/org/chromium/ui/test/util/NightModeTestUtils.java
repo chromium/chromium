@@ -7,6 +7,7 @@ package org.chromium.ui.test.util;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.params.ParameterAnnotations.GroupTestsByParameterSet;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 
@@ -15,7 +16,13 @@ import java.util.List;
 
 /** Helper methods to be used in tests to specify night mode state. */
 public class NightModeTestUtils {
-    /** {@link ParameterProvider} used for parameterized test that provides the night mode state. */
+    /**
+     * {@link ParameterProvider} used for parameterized test that provides the night mode state.
+     *
+     * <p>Tests that use it as a method parameter run grouped by night mode, since changing the
+     * night mode recreates Activities reused by batched tests.
+     */
+    @GroupTestsByParameterSet
     public static class NightModeParams implements ParameterProvider {
         private static final List<ParameterSet> sNightModeParams =
                 Arrays.asList(

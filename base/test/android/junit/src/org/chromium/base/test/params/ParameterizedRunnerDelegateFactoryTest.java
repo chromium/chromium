@@ -12,10 +12,12 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
 
+import org.chromium.base.test.params.ParameterAnnotations.GroupTestsByParameterSet;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterizedRunnerDelegateFactory.ParameterizedRunnerDelegateInstantiationException;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -126,5 +128,83 @@ public class ParameterizedRunnerDelegateFactoryTest {
             expectedTests.remove(method.getName());
         }
         Assert.assertTrue(expectedTests.isEmpty());
+    }
+
+    static class GroupedExampleTestClass {
+        @GroupTestsByParameterSet
+        static class GroupedParams implements ParameterProvider {
+            @Override
+            public Iterable<ParameterSet> getParameters() {
+                return Arrays.asList(
+                        new ParameterSet().value(false).name("Off"),
+                        new ParameterSet().value(true).name("On"));
+            }
+        }
+
+        static class UngroupedParams implements ParameterProvider {
+            @Override
+            public Iterable<ParameterSet> getParameters() {
+                return Arrays.asList(
+                        new ParameterSet().value(1).name("One"),
+                        new ParameterSet().value(2).name("Two"));
+            }
+        }
+
+        @SuppressWarnings("unused")
+        @UseMethodParameter(GroupedParams.class)
+        @Test
+        public void testA(boolean on) {}
+
+        @SuppressWarnings("unused")
+        @UseMethodParameter(GroupedParams.class)
+        @Test
+        public void testB(boolean on) {}
+
+        @SuppressWarnings("unused")
+        @UseMethodParameter(UngroupedParams.class)
+        @Test
+        public void testC(int value) {}
+
+        @Test
+        public void testD() {}
+    }
+
+    @Test
+    public void testGroupTestsByParameterSet() {
+        TestClass testClass = new TestClass(GroupedExampleTestClass.class);
+        List<String> ungroupedOrder = new ArrayList<>();
+        for (FrameworkMethod method : testClass.getAnnotatedMethods(Test.class)) {
+            ungroupedOrder.add(method.getName());
+        }
+
+        List<String> names = new ArrayList<>();
+        for (FrameworkMethod method :
+                ParameterizedRunnerDelegateFactory.generateUnmodifiableFrameworkMethodList(
+                        testClass, "")) {
+            names.add(method.getName());
+        }
+
+        // Tests that don't use GroupedParams come first, then the "Off" tests, then the "On" tests,
+        // each group in method order.
+        List<String> expectedUngrouped = new ArrayList<>();
+        List<String> expectedOff = new ArrayList<>();
+        List<String> expectedOn = new ArrayList<>();
+        for (String method : ungroupedOrder) {
+            switch (method) {
+                case "testA", "testB" -> {
+                    expectedOff.add(method + "__Off");
+                    expectedOn.add(method + "__On");
+                }
+                case "testC" -> {
+                    expectedUngrouped.add("testC__One");
+                    expectedUngrouped.add("testC__Two");
+                }
+                default -> expectedUngrouped.add(method);
+            }
+        }
+        List<String> expected = new ArrayList<>(expectedUngrouped);
+        expected.addAll(expectedOff);
+        expected.addAll(expectedOn);
+        Assert.assertEquals(expected, names);
     }
 }

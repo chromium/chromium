@@ -49,6 +49,22 @@ public class ParameterAnnotations {
         Class<? extends ParameterProvider> value();
     }
 
+    /**
+     * Annotation for a {@link ParameterProvider} whose parameter sets are expensive to switch
+     * between in a {@link org.chromium.base.test.util.Batch}, e.g. night mode, which requires
+     * relaunching the Activity that batched tests reuse.
+     *
+     * <p>Tests that use the provider through {@link UseMethodParameter} are run grouped by
+     * parameter set: first the tests that do not use the provider, then the tests with the first
+     * parameter set, then the tests with the second parameter set, and so on, each group in method
+     * order. This way the switch happens once per parameter set instead of once per test. Without
+     * this annotation, each test method runs with all of its parameter sets before the next test
+     * method.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    public @interface GroupTestsByParameterSet {}
+
     /** Annotation for static field of a `List<ParameterSet>` for entire test class */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
