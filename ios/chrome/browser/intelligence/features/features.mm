@@ -136,15 +136,6 @@ bool IsPageActionMenuAuthFlowEnabled() {
          base::FeatureList::IsEnabled(kPageActionMenuAuthFlow);
 }
 
-BASE_FEATURE(kProactiveSuggestionsFramework, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsProactiveSuggestionsFrameworkEnabled() {
-  if (!IsPageActionMenuEnabled()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kProactiveSuggestionsFramework);
-}
-
 BASE_FEATURE(kAskGeminiChipIgnoreCriteria, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAskGeminiChipIgnoreCriteriaEnabled() {

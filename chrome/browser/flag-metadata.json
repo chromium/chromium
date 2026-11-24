@@ -8415,14 +8415,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "proactive-suggestions-framework",
-    "owners": [
-      "kanouche@google.com",
-      "bling-alchemy-eng@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "profile-creation-decline-signin-cta-experiment",
     "owners": [ "saskekun@google.com", "chrome-signin-desktop-team@google.com" ],
     "expiry_milestone": 160

@@ -1796,13 +1796,6 @@ inline constexpr char kPriceTrackingPromoName[] =
 inline constexpr char kPriceTrackingPromoDescription[] =
     "Enables being able to show the card in the Magic Stack";
 
-inline constexpr char kProactiveSuggestionsFrameworkName[] =
-    "Proactive Suggestions Framework";
-inline constexpr char kProactiveSuggestionsFrameworkDescription[] =
-    "When enabled, consolidates omnibox proactive suggestions (Reader Mode, "
-    "Translate, Price History, etc.) into a unified badge system with "
-    "centralized settings access through the AI Hub Page Tools.";
-
 inline constexpr char kRecoverTabsOfLastClosedWindowName[] =
     "Recover Tabs of last closed window";
 inline constexpr char kRecoverTabsOfLastClosedWindowDescription[] =
