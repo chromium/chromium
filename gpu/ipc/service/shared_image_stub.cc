@@ -779,6 +779,11 @@ gfx::GpuMemoryBufferHandle SharedImageStub::CreateSharedImageWithHandle(
 
 bool SharedImageStub::ValidateGpuMemoryBufferHandle(
     const gfx::GpuMemoryBufferHandle& buffer_handle) {
+  if (buffer_handle.is_null()) {
+    LOG(ERROR) << "SharedImageStub: GpuMemoryBufferHandle is null.";
+    return false;
+  }
+
   // Shared memory always allowed.
   if (buffer_handle.type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
     return true;

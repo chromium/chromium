@@ -912,6 +912,8 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
     const Mailbox& mailbox,
     const SharedImageInfo& si_info,
     gfx::GpuMemoryBufferHandle buffer_handle) {
+  CHECK(!buffer_handle.is_null());
+
   auto& format = si_info.format;
   auto& size = si_info.size;
   auto& usage = si_info.usage;
