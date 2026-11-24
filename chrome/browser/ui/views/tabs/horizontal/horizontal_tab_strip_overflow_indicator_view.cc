@@ -24,14 +24,14 @@
 #include "ui/views/controls/scroll_view.h"
 
 // static
-int HorizontalTabStripOverflowIndicatorView::GetMaxOpaqueThickness() {
+int HorizontalTabStripOverflowIndicatorView::GetMaxOverlap() {
   return std::max(TabStyle::Get()->GetBottomExtensionWidth(),
                   TabStyle::Get()->GetTabOverlap());
 }
 
 // static
 int HorizontalTabStripOverflowIndicatorView::GetMaxTotalThickness() {
-  return GetMaxOpaqueThickness() + kShadowThickness;
+  return GetMaxOverlap() + kShadowThickness;
 }
 
 HorizontalTabStripOverflowIndicatorView::
@@ -51,14 +51,13 @@ HorizontalTabStripOverflowIndicatorView::
 HorizontalTabStripOverflowIndicatorView::
     ~HorizontalTabStripOverflowIndicatorView() = default;
 
-void HorizontalTabStripOverflowIndicatorView::SetOpaqueThickness(
-    int opaque_thickness) {
-  CHECK_GE(opaque_thickness, 0);
-  CHECK_LE(opaque_thickness, GetMaxOpaqueThickness());
-  if (opaque_thickness_ == opaque_thickness) {
+void HorizontalTabStripOverflowIndicatorView::SetOverlap(int overlap) {
+  CHECK_GE(overlap, 0);
+  CHECK_LE(overlap, GetMaxOverlap());
+  if (overlap_ == overlap) {
     return;
   }
-  opaque_thickness_ = opaque_thickness;
+  overlap_ = overlap;
   SchedulePaint();
 }
 
@@ -71,7 +70,7 @@ void HorizontalTabStripOverflowIndicatorView::OnPaint(gfx::Canvas* canvas) {
   const ui::ColorProvider* color_provider = GetColorProvider();
   const bool is_left = (side_ == views::OverflowIndicatorAlignment::kLeft) !=
                        base::i18n::IsRTL();
-  const int inset_width = std::min(opaque_thickness_, contents_bounds.width());
+  const int inset_width = std::min(overlap_, contents_bounds.width());
   const int shadow_width =
       std::min(kShadowThickness, contents_bounds.width() - inset_width);
   if (shadow_width <= 0) {

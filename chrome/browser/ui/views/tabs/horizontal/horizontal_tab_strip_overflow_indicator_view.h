@@ -14,13 +14,13 @@ enum class OverflowIndicatorAlignment;
 
 // Draws an inner shadow gradient over the edge of a horizontal tab strip
 // scroll view when content overflows, inset past any clipped viewport overlap
-// (`opaque_thickness_`).
+// (`overlap_`).
 class HorizontalTabStripOverflowIndicatorView : public views::View {
   METADATA_HEADER(HorizontalTabStripOverflowIndicatorView, views::View)
 
  public:
   static constexpr int kShadowThickness = 6;
-  static int GetMaxOpaqueThickness();
+  static int GetMaxOverlap();
   static int GetMaxTotalThickness();
 
   explicit HorizontalTabStripOverflowIndicatorView(
@@ -31,8 +31,8 @@ class HorizontalTabStripOverflowIndicatorView : public views::View {
       const HorizontalTabStripOverflowIndicatorView&) = delete;
   ~HorizontalTabStripOverflowIndicatorView() override;
 
-  int opaque_thickness() const { return opaque_thickness_; }
-  void SetOpaqueThickness(int opaque_thickness);
+  int overlap() const { return overlap_; }
+  void SetOverlap(int overlap);
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
@@ -40,7 +40,7 @@ class HorizontalTabStripOverflowIndicatorView : public views::View {
 
  private:
   const views::OverflowIndicatorAlignment side_;
-  int opaque_thickness_ = 0;
+  int overlap_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_HORIZONTAL_HORIZONTAL_TAB_STRIP_OVERFLOW_INDICATOR_VIEW_H_

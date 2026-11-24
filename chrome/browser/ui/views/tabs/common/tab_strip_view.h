@@ -69,7 +69,7 @@ class TabStripView final : public views::View,
   }
 
   // Returns `scroll_view`'s local bounds (mirrored for RTL) inset by any
-  // active horizontal overflow indicator opaque regions or seam padding.
+  // active horizontal overflow indicator overlaps or seam padding.
   gfx::Rect GetScrollViewUnmaskedBounds(
       const views::ScrollView* scroll_view) const;
 
@@ -170,7 +170,7 @@ class TabStripView final : public views::View,
 
   bool ShouldDrawPinnedAboveUnpinned() const;
 
-  // Updates overflow indicator opaque widths, viewport layer clips, and layer
+  // Updates overflow indicator overlaps, viewport layer clips, and layer
   // z-order for the pinned and unpinned scroll views.
   void UpdateScrollViewLayers();
   void OnContentsScrolled();

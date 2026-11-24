@@ -28,7 +28,7 @@ class HorizontalTabStripOverflowIndicatorViewTest : public ChromeViewsTestBase {
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     auto* indicator = widget->SetContentsView(
         std::make_unique<HorizontalTabStripOverflowIndicatorView>(side));
-    indicator->SetOpaqueThickness(inset);
+    indicator->SetOverlap(inset);
     widget->SetBounds(gfx::Rect(
         0, 0, HorizontalTabStripOverflowIndicatorView::GetMaxTotalThickness(),
         40));

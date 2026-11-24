@@ -62,7 +62,7 @@
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/view_utils.h"
 
-// Excludes visible leading and seam overflow indicator opaque regions from
+// Excludes visible leading and seam overflow indicator overlaps from
 // scroll view hit-testing so events pass through to the overlapping view.
 class TabStripView::ScrollViewTargeter : public views::ViewTargeterDelegate {
  public:
@@ -81,13 +81,11 @@ class TabStripView::ScrollViewTargeter : public views::ViewTargeterDelegate {
       const int left_inset =
           (tab_strip_view_->pinned_left_overflow_indicator_ &&
            tab_strip_view_->pinned_left_overflow_indicator_->GetVisible())
-              ? tab_strip_view_->pinned_left_overflow_indicator_
-                    ->opaque_thickness()
+              ? tab_strip_view_->pinned_left_overflow_indicator_->overlap()
               : 0;
       const int right_inset =
           tab_strip_view_->pinned_right_overflow_indicator_
-              ? tab_strip_view_->pinned_right_overflow_indicator_
-                    ->opaque_thickness()
+              ? tab_strip_view_->pinned_right_overflow_indicator_->overlap()
               : 0;
       hit_bounds.Inset(gfx::Insets::TLBR(0, left_inset, 0, right_inset));
     } else if (target == tab_strip_view_->unpinned_tabs_scroll_view_ &&
@@ -98,8 +96,7 @@ class TabStripView::ScrollViewTargeter : public views::ViewTargeterDelegate {
       const int left_inset =
           (has_pinned ||
            tab_strip_view_->unpinned_left_overflow_indicator_->GetVisible())
-              ? tab_strip_view_->unpinned_left_overflow_indicator_
-                    ->opaque_thickness()
+              ? tab_strip_view_->unpinned_left_overflow_indicator_->overlap()
               : 0;
       hit_bounds.Inset(gfx::Insets::TLBR(0, left_inset, 0, 0));
     }
@@ -645,16 +642,16 @@ gfx::Rect TabStripView::GetUnmirroredScrollViewUnmaskedBounds(
   if (scroll_view == pinned_tabs_scroll_view_) {
     if (pinned_left_overflow_indicator_ &&
         pinned_left_overflow_indicator_->GetVisible()) {
-      left_inset = pinned_left_overflow_indicator_->opaque_thickness();
+      left_inset = pinned_left_overflow_indicator_->overlap();
     }
     if (pinned_right_overflow_indicator_ &&
         pinned_tabs_scroll_view_->GetDrawOverflowIndicator()) {
-      right_inset = pinned_right_overflow_indicator_->opaque_thickness();
+      right_inset = pinned_right_overflow_indicator_->overlap();
     }
   } else if (scroll_view == unpinned_tabs_scroll_view_) {
     if (unpinned_left_overflow_indicator_ &&
         unpinned_left_overflow_indicator_->GetVisible()) {
-      left_inset = unpinned_left_overflow_indicator_->opaque_thickness();
+      left_inset = unpinned_left_overflow_indicator_->overlap();
     }
   }
   bounds.Inset(gfx::Insets::TLBR(0, left_inset, 0, right_inset));
@@ -1093,28 +1090,28 @@ gfx::Rect TabStripView::GetOpaqueVisibleRectForScrollTarget(
       unpinned_tabs_scroll_view_ && unpinned_tabs_scroll_view_->width() > 0;
   const bool is_pinned_overflowing =
       has_pinned && pinned_tabs_scroll_view_->GetDrawOverflowIndicator();
-  const int leading_opaque_thickness = std::clamp(
-      leading_overlap_, 0,
-      HorizontalTabStripOverflowIndicatorView::GetMaxOpaqueThickness());
-  const int left_opaque_thickness =
+  const int leading_overlap =
+      std::clamp(leading_overlap_, 0,
+                 HorizontalTabStripOverflowIndicatorView::GetMaxOverlap());
+  const int left_overlap =
       (scroll_view == unpinned_tabs_scroll_view_ && has_pinned)
           ? (is_pinned_overflowing ? 0 : TabStyle::Get()->GetTabOverlap())
-          : leading_opaque_thickness;
-  const int right_opaque_thickness =
+          : leading_overlap;
+  const int right_overlap =
       (scroll_view == pinned_tabs_scroll_view_ && has_unpinned)
           ? TabStyle::Get()->GetTabOverlap() / 2
           : 0;
   const int left_indicator_width =
       left_indicator
           ? std::min(
-                left_opaque_thickness +
+                left_overlap +
                     HorizontalTabStripOverflowIndicatorView::kShadowThickness,
                 std::max(0, target_bounds.x()))
           : 0;
   const int right_indicator_width =
       right_indicator
           ? std::min(
-                right_opaque_thickness +
+                right_overlap +
                     HorizontalTabStripOverflowIndicatorView::kShadowThickness,
                 std::max(0, scroll_view->contents()->width() -
                                 target_bounds.right()))
@@ -1152,9 +1149,9 @@ void TabStripView::UpdateScrollViewLayers() {
     return;
   }
 
-  const int leading_opaque_thickness = std::clamp(
-      leading_overlap_, 0,
-      HorizontalTabStripOverflowIndicatorView::GetMaxOpaqueThickness());
+  const int leading_overlap =
+      std::clamp(leading_overlap_, 0,
+                 HorizontalTabStripOverflowIndicatorView::GetMaxOverlap());
   const bool has_pinned =
       pinned_tabs_scroll_view_ && pinned_tabs_scroll_view_->width() > 0;
   const int container_overlap =
@@ -1169,23 +1166,20 @@ void TabStripView::UpdateScrollViewLayers() {
   const bool unpinned_left_visible =
       unpinned_left_overflow_indicator_ &&
       unpinned_left_overflow_indicator_->GetVisible();
-  const int seam_pinned_opaque_thickness =
+  const int seam_pinned_overlap =
       is_pinned_overflowing
           ? container_overlap
           : (unpinned_left_visible ? 0 : container_overlap / 2);
-  const int seam_unpinned_opaque_thickness =
-      container_overlap - seam_pinned_opaque_thickness;
+  const int seam_unpinned_overlap = container_overlap - seam_pinned_overlap;
   if (pinned_left_overflow_indicator_) {
-    pinned_left_overflow_indicator_->SetOpaqueThickness(
-        leading_opaque_thickness);
+    pinned_left_overflow_indicator_->SetOverlap(leading_overlap);
   }
   if (pinned_right_overflow_indicator_) {
-    pinned_right_overflow_indicator_->SetOpaqueThickness(
-        seam_pinned_opaque_thickness);
+    pinned_right_overflow_indicator_->SetOverlap(seam_pinned_overlap);
   }
   if (unpinned_left_overflow_indicator_) {
-    unpinned_left_overflow_indicator_->SetOpaqueThickness(
-        has_pinned ? seam_unpinned_opaque_thickness : leading_opaque_thickness);
+    unpinned_left_overflow_indicator_->SetOverlap(
+        has_pinned ? seam_unpinned_overlap : leading_overlap);
   }
   UpdateScrollViewViewportClip(pinned_tabs_scroll_view_);
   UpdateScrollViewViewportClip(unpinned_tabs_scroll_view_);
