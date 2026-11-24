@@ -3,13 +3,19 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""File for testing monitors.py."""
+"""File for testing component_storage.py and component_storage_test.py."""
 
+import json
+import os
+import shutil
+import sys
+import tempfile
 import unittest
 import unittest.mock as mock
 
 from types import SimpleNamespace
 
+import component_storage_test
 from component_storage import ComponentStorage
 
 
@@ -104,6 +110,104 @@ class ComponentStorageTest(unittest.TestCase):
                 "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cm",
                 "fuchsia-ac67-8464-ea93",
             )
+
+    @mock.patch('component_storage.run_ffx_command')
+    def test_default_target_reads_fuchsia_nodename_at_init(
+        self, mock_ffx
+    ) -> None:
+        mock_ffx.return_value = SimpleNamespace(
+            stdout='{"instance_id": "1234abcd"}'
+        )
+        with mock.patch.dict(
+            os.environ, {'FUCHSIA_NODENAME': 'fuchsia-emulator-9876'}
+        ):
+            self.assertEqual(
+                ComponentStorage('core/feedback')._target,
+                'fuchsia-emulator-9876',
+            )
+        mock_ffx.assert_called_once_with(
+            cmd=('--machine', 'json', 'component', 'show', 'core/feedback'),
+            target_id='fuchsia-emulator-9876',
+            capture_output=True,
+        )
+
+    @mock.patch('component_storage.run_ffx_command')
+    @mock.patch('component_storage_test.subprocess.Popen')
+    def test_component_storage_test_main_orchestrate_args_and_env(
+        self, mock_popen, mock_ffx
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp_root:
+            mock_proc = mock.MagicMock()
+            mock_proc.pid = 4321
+            mock_proc.wait.return_value = 0
+            mock_popen.return_value = mock_proc
+            with open(
+                os.path.join(tmp_root, 'test_env_setup.4321.pid'), 'w'
+            ) as pid_file:
+                json.dump(
+                    {'FUCHSIA_NODENAME': 'fuchsia-emulator-4321'}, pid_file
+                )
+
+            remote_files = set()
+            uploaded_src = []
+
+            def fake_ffx(*, cmd, target_id=None, **_kwargs):
+                self.assertEqual(target_id, 'fuchsia-emulator-4321')
+                if 'show' in cmd:
+                    return SimpleNamespace(stdout='{"instance_id": "inst1"}')
+                action = cmd[4]
+                if action == 'copy':
+                    if cmd[5].startswith('inst1::'):
+                        dest = cmd[6]
+                        if os.path.isdir(dest):
+                            dest = os.path.join(
+                                dest, 'component_storage_test.txt'
+                            )
+                        shutil.copyfile(uploaded_src[-1], dest)
+                    else:
+                        uploaded_src.append(cmd[5])
+                        remote_files.add('component_storage_test.txt')
+                    return SimpleNamespace(stdout='')
+                if action == 'delete':
+                    remote_files.discard('component_storage_test.txt')
+                    return SimpleNamespace(stdout='')
+                return SimpleNamespace(stdout='\n'.join(remote_files))
+
+            mock_ffx.side_effect = fake_ffx
+
+            with mock.patch.object(
+                sys,
+                'argv',
+                [
+                    '../../build/fuchsia/test/component_storage_test.py',
+                    '--isolated-script-test-output=/tmp/output.json',
+                    '--isolated-script-test-perf-output=/tmp/perf.json',
+                    '--device-spec=x64-emu-large',
+                    '--orchestrate',
+                ],
+            ), mock.patch.object(
+                component_storage_test, 'LOG_DIR', tmp_root
+            ), mock.patch.object(
+                component_storage_test, 'TMP', tmp_root
+            ), mock.patch.dict(os.environ, {}, clear=False):
+                os.environ.pop('FUCHSIA_NODENAME', None)
+                self.assertEqual(component_storage_test.main(), 0)
+
+            mock_popen.assert_called_once_with(
+                [
+                    os.path.join(
+                        os.path.dirname(component_storage_test.__file__),
+                        'test_env_setup.py',
+                    ),
+                    '--logs-dir',
+                    tmp_root,
+                    '--out-dir',
+                    '.',
+                    '--device-spec=x64-emu-large',
+                    '--orchestrate',
+                ]
+            )
+            mock_proc.terminate.assert_called_once()
 
 
 if __name__ == '__main__':

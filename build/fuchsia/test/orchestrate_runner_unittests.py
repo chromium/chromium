@@ -16,21 +16,6 @@ import orchestrate_runner
 class OrchestrateRunnerTest(unittest.TestCase):
     """Unittests for orchestrate_runner.py."""
 
-    def test_support_orchestrate(self) -> None:
-        self.assertTrue(
-            orchestrate_runner.support_orchestrate('base_unittests')
-        )
-        self.assertTrue(
-            orchestrate_runner.support_orchestrate('test_env_expose.py')
-        )
-        self.assertTrue(
-            orchestrate_runner.support_orchestrate('web_engine_unittests')
-        )
-        self.assertFalse(
-            orchestrate_runner.support_orchestrate('bundled_test_runner.py')
-        )
-        self.assertFalse(orchestrate_runner.support_orchestrate('unknown_test'))
-
     def test_run_tests_with_orchestrate_missing_out_dir(self) -> None:
         with self.assertRaises(ValueError):
             orchestrate_runner.run_tests_with_orchestrate(

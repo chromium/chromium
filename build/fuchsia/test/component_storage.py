@@ -23,17 +23,15 @@ class ComponentStorage:
     Unless otherwise mentioned, functions assert on any failures.
     """
 
-    def __init__(
-        self, component: str, target: str = os.getenv('FUCHSIA_NODENAME')
-    ):
+    def __init__(self, component: str, target: Optional[str] = None):
+        self._target = target or os.getenv('FUCHSIA_NODENAME')
         self._instance_id = json.loads(
             run_ffx_command(
                 cmd=('--machine', 'json', 'component', 'show', component),
-                target_id=target,
+                target_id=self._target,
                 capture_output=True,
             ).stdout.strip()
         )["instance_id"]
-        self._target = target
 
     def push(
         self,

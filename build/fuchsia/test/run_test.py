@@ -43,7 +43,7 @@ from run_telemetry_test import TelemetryTestRunner
 from run_webpage_test import WebpageTestRunner
 from serve_repo import register_serve_args, serve_repository
 from start_emulator import create_emulator_from_args, register_emulator_args
-from orchestrate_runner import run_tests_with_orchestrate, support_orchestrate
+from orchestrate_runner import run_tests_with_orchestrate
 from test_connection import test_connection, test_device_connection
 from test_runner import TestRunner
 
@@ -131,8 +131,20 @@ def main():
     use_orchestrate = (
         runner_args.orchestrate
         and not runner_args.device
+        and not runner_args.everlasting
+        and not runner_args.product
+        and not runner_args.product_bundle
+        and not runner_args.wait_for_log_pattern
         and get_host_arch() in {'x64', 'arm64'}
-        and support_orchestrate(runner_args.test_type)
+        and runner_args.test_type
+        not in {
+            'blink',
+            'bundled-tests',
+            'gpu',
+            'perf',
+            'perf_gtest',
+            'webpage',
+        }
     )
 
     monitors.tag('fuchsia')

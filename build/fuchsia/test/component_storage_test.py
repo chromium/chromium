@@ -23,7 +23,7 @@ TMP = os.getenv('TMPDIR', '/tmp')
 def main() -> int:
     """Entry of the test."""
     extra_args = []
-    for arg in sys.argv:
+    for arg in sys.argv[1:]:
         if not arg.startswith(
             '--isolated-script-test-output'
         ) and not arg.startswith('--isolated-script-test-perf-output'):
@@ -33,6 +33,8 @@ def main() -> int:
             os.path.join(os.path.dirname(__file__), 'test_env_setup.py'),
             '--logs-dir',
             LOG_DIR,
+            '--out-dir',
+            '.',
         ]
         + extra_args
     )
