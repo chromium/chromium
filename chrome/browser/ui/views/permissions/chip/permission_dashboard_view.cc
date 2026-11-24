@@ -116,14 +116,9 @@ PermissionDashboardView::PermissionDashboardView() {
   request_chip->SetVisible(false);
   request_chip_ = AddChildView(std::move(request_chip));
 
-  // This is needed to make sure that the permission dashboard view is
-  // recognized as a single button. Individual elements inside this view should
-  // not be accessible and/or focusable.
-  indicator_chip_->GetViewAccessibility().SetIsIgnored(true);
-  request_chip_->GetViewAccessibility().SetIsIgnored(true);
+  // `chip_divider_view_` is purely decorative; the chips themselves are
+  // accessible, focusable buttons.
   chip_divider_view_->GetViewAccessibility().SetIsIgnored(true);
-
-  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }
 
 PermissionDashboardView::~PermissionDashboardView() = default;
@@ -229,6 +224,19 @@ views::View::Views PermissionDashboardView::GetChildrenInZOrder() {
 void PermissionDashboardView::ChildVisibilityChanged(views::View* child) {
   if (child == indicator_chip_ || child == request_chip_) {
     UpdateDividerViewVisibility();
+  }
+}
+
+void PermissionDashboardView::RequestFocus() {
+  // The dashboard is an accessible pane (see BrowserView::GetAccessiblePanes())
+  // but can't take focus itself, so pass focus on to a visible chip. Prefer the
+  // request chip, since it needs a response.
+  for (PermissionChipView* const chip :
+       {request_chip_.get(), indicator_chip_.get()}) {
+    if (chip->GetVisible()) {
+      chip->RequestFocus();
+      return;
+    }
   }
 }
 

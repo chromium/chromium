@@ -326,6 +326,7 @@ bool PermissionDashboardController::Update(
           location_bar_->GetWebContents()->GetPrimaryMainFrame());
 
   indicator_chip->SetVisible(true);
+  indicator_chip->SetAccessibilityIgnored(false);
 
   if (ShouldExpandChipIndicator(content_settings)) {
     is_verbose_ = false;

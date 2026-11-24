@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/time/time.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_test_accessor.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -27,6 +30,8 @@
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
@@ -34,6 +39,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
@@ -57,6 +63,7 @@
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -1075,6 +1082,130 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+}
+
+// Uses the Views location bar, which the field trial testing config may
+// otherwise replace with the WebUI one.
+class QuietChipViewsLocationBarInteractiveTest
+    : public QuietChipAutoPopupBubbleInteractiveTest {
+ public:
+  QuietChipViewsLocationBarInteractiveTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kWebUILocationBar);
+  }
+
+ protected:
+  // Moves focus to the web contents and waits for it to settle, since focusing
+  // the web contents is asynchronous on some platforms (e.g. Mac). Otherwise
+  // focus may still be in the omnibox, from where F6 moves to the next pane.
+  void FocusWebContents() {
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+    views::View* const contents_web_view =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetActiveContentsWebView();
+    contents_web_view->RequestFocus();
+    ui_test_utils::WaitForViewFocus(browser(), contents_web_view, true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// F6 (or the platform's equivalent) moves focus to the request chip when no
+// prompt bubble is open, e.g. for a quiet chip.
+IN_PROC_BROWSER_TEST_F(QuietChipViewsLocationBarInteractiveTest,
+                       FocusNextPaneFocusesRequestChip) {
+  SetCannedUiDecision(Decision::UseQuietUi(QuietUiReason::kEnabledInPrefs,
+                                           Decision::ShowNoWarning()));
+  RequestPermission(permissions::RequestType::kNotifications);
+  ASSERT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP);
+  ASSERT_FALSE(GetChipController()->IsBubbleShowing());
+
+  LocationBarView* const location_bar_view =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+  ASSERT_TRUE(location_bar_view);
+  PermissionDashboardView* const dashboard =
+      location_bar_view->permission_dashboard_view();
+  PermissionChipView* const request_chip = dashboard->GetRequestChip();
+  ASSERT_TRUE(request_chip->GetVisible());
+  EXPECT_TRUE(request_chip->GetViewAccessibility().IsAccessibilityFocusable());
+
+  FocusWebContents();
+  ASSERT_FALSE(request_chip->HasFocus());
+
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_FOCUS_NEXT_PANE));
+  EXPECT_TRUE(request_chip->HasFocus());
+
+  // The dashboard is a single pane, so F6 again moves focus out of it.
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_FOCUS_NEXT_PANE));
+  EXPECT_FALSE(
+      dashboard->Contains(request_chip->GetFocusManager()->GetFocusedView()));
+}
+
+// F6 moves focus to the indicator chip (including after it has been hidden and
+// shown again), and prefers the request chip when both chips are visible.
+IN_PROC_BROWSER_TEST_F(QuietChipViewsLocationBarInteractiveTest,
+                       FocusNextPaneFocusesIndicatorChip) {
+  const GURL url("https://example.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  LocationBarView* const location_bar_view =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+  ASSERT_TRUE(location_bar_view);
+  PermissionDashboardView* const dashboard =
+      location_bar_view->permission_dashboard_view();
+  PermissionChipView* const indicator_chip = dashboard->GetIndicatorChip();
+
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      GetActiveMainFrame());
+  ASSERT_TRUE(pscs);
+  pscs->OnMediaStreamPermissionSet(
+      url, {content_settings::PageSpecificContentSettings::kCameraAccessed});
+  views::test::RunScheduledLayout(location_bar_view);
+  ASSERT_TRUE(indicator_chip->GetVisible());
+
+  // Hiding and re-showing the indicator chip should leave it focusable.
+  location_bar_view->GetPermissionDashboardController()
+      ->HideIndicatorsForTesting();
+  ASSERT_FALSE(indicator_chip->GetVisible());
+  GetLocationBar()->UpdateContentSettingsIcons();
+  views::test::RunScheduledLayout(location_bar_view);
+  ASSERT_TRUE(indicator_chip->GetVisible());
+  EXPECT_TRUE(
+      indicator_chip->GetViewAccessibility().IsAccessibilityFocusable());
+
+  FocusWebContents();
+  ASSERT_FALSE(indicator_chip->HasFocus());
+
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_FOCUS_NEXT_PANE));
+  EXPECT_TRUE(indicator_chip->HasFocus());
+
+  // The dashboard is a single pane, so F6 again moves focus out of it.
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_FOCUS_NEXT_PANE));
+  EXPECT_FALSE(
+      dashboard->Contains(indicator_chip->GetFocusManager()->GetFocusedView()));
+
+  // Return focus to the web contents (closing any omnibox popup that hid
+  // location bar icons) and show a quiet request chip alongside the indicator.
+  // When both chips are visible, F6 prefers the request chip.
+  FocusWebContents();
+  SetCannedUiDecision(Decision::UseQuietUi(QuietUiReason::kEnabledInPrefs,
+                                           Decision::ShowNoWarning()));
+  test_api_->AddSimpleRequest(GetActiveMainFrame(),
+                              permissions::RequestType::kNotifications);
+  base::RunLoop().RunUntilIdle();
+  views::test::RunScheduledLayout(location_bar_view);
+  PermissionChipView* const request_chip = dashboard->GetRequestChip();
+  ASSERT_TRUE(indicator_chip->GetVisible());
+  ASSERT_TRUE(request_chip->GetVisible());
+
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_FOCUS_NEXT_PANE));
+  EXPECT_TRUE(request_chip->HasFocus());
+
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_FOCUS_NEXT_PANE));
+  EXPECT_FALSE(
+      dashboard->Contains(request_chip->GetFocusManager()->GetFocusedView()));
 }
 
 class QuietChipFailFastInteractiveTest

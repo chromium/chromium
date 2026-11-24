@@ -42,6 +42,7 @@ class PermissionDashboardView : public views::View,
       const views::SizeBounds& available_size) const override;
   views::View::Views GetChildrenInZOrder() override;
   void ChildVisibilityChanged(views::View* child) override;
+  void RequestFocus() override;
 
  private:
   // This chip is used to display in-use left-hand side activity indicators.
