@@ -28,13 +28,14 @@ import java.util.Set;
  * AdaptiveUiProperties#CUSTOM_VIEW_SCROLLS_ITSELF}, {@link
  * AdaptiveUiProperties#SECONDARY_BUTTON_BEHAVIOR}, and {@link
  * AdaptiveUiProperties#FILTER_TOUCH_FOR_SECURITY}) and event-time action keys ({@link
- * AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
- * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
- * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, and {@link
- * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are handled by {@link AdaptiveUiDialogCoordinator}; the
- * lifecycle callbacks ({@link AdaptiveUiProperties#ON_SHOWN} and {@link
- * AdaptiveUiProperties#ON_DISMISSED}) are run by {@link AdaptiveUiControllerImpl}; sheet-only keys
- * ({@link AdaptiveUiProperties#SHEET_OPENED_ACCESSIBILITY_STRING_ID}, {@link
+ * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN} and {@link
+ * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are handled by {@link AdaptiveUiDialogCoordinator};
+ * {@link AdaptiveUiProperties#DELEGATE} is invoked by {@link AdaptiveUiDialogCoordinator} ({@link
+ * AdaptiveUiProperties.Delegate#onPrimaryButtonClicked} and {@link
+ * AdaptiveUiProperties.Delegate#onSecondaryButtonClicked}) and {@link AdaptiveUiControllerImpl}
+ * ({@link AdaptiveUiProperties.Delegate#onShown} and {@link
+ * AdaptiveUiProperties.Delegate#onDismissed}); sheet-only keys ({@link
+ * AdaptiveUiProperties#SHEET_OPENED_ACCESSIBILITY_STRING_ID}, {@link
  * AdaptiveUiProperties#SHEET_CLOSED_ACCESSIBILITY_STRING_ID}, {@link
  * AdaptiveUiProperties#SHEET_INITIAL_STATE}, {@link AdaptiveUiProperties#SHEET_USER_INITIATED},
  * {@link AdaptiveUiProperties#SHEET_USER_CRITICAL}, {@link
@@ -46,14 +47,14 @@ import java.util.Set;
 @NullMarked
 final class AdaptiveUiDialogViewBinder {
     /**
-     * Keys handled at creation time or click time by {@link AdaptiveUiDialogCoordinator}, lifecycle
-     * callbacks run by {@link AdaptiveUiControllerImpl}, or sheet-only keys ignored by dialogs,
-     * rather than bound 1:1 by {@link #bind}.
+     * Keys handled at creation time or event time by {@link AdaptiveUiDialogCoordinator}, {@link
+     * AdaptiveUiProperties#DELEGATE} (invoked by {@link AdaptiveUiDialogCoordinator} and {@link
+     * AdaptiveUiControllerImpl}), or sheet-only keys ignored by dialogs, rather than bound 1:1 by
+     * {@link #bind}.
      */
     static final Set<PropertyKey> COORDINATOR_HANDLED_KEYS =
             Set.of(
-                    AdaptiveUiProperties.ON_SHOWN,
-                    AdaptiveUiProperties.ON_DISMISSED,
+                    AdaptiveUiProperties.DELEGATE,
                     AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
                     AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
                     AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
@@ -67,8 +68,6 @@ final class AdaptiveUiDialogViewBinder {
                     AdaptiveUiProperties.CUSTOM_VIEW,
                     AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                     AdaptiveUiProperties.BACK_PRESS_HANDLER,
-                    AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
-                    AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
                     AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                     AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY);

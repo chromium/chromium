@@ -15,7 +15,9 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,6 +54,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.CloseButtonVisibility;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.Delegate;
 import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.SecondaryButtonBehavior;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
@@ -79,6 +82,7 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private BottomSheetContent mOtherSheetContent;
+    @Mock private Delegate mDelegate;
 
     private Activity mActivity;
     private boolean mInitialInTouchMode;
@@ -228,8 +232,7 @@ public class AdaptiveUiSheetCoordinatorTest {
     public void testNonVisualSheetKeysAreExpectedSet() {
         Set<PropertyKey> expected =
                 Set.of(
-                        AdaptiveUiProperties.ON_SHOWN,
-                        AdaptiveUiProperties.ON_DISMISSED,
+                        AdaptiveUiProperties.DELEGATE,
                         AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
                         AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
                         AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
@@ -242,8 +245,6 @@ public class AdaptiveUiSheetCoordinatorTest {
                         AdaptiveUiProperties.BACK_PRESS_HANDLER,
                         AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                         AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED,
-                        AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
-                        AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
                         AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                         AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS);
@@ -279,13 +280,11 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     @Test
     public void testButtonTapProtection_DefaultOffAllowsImmediateClicks() {
-        int[] primaryClicks = new int[1];
+        Delegate primaryDelegate = mock(Delegate.class);
         PropertyModel primaryModel =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                        .with(
-                                AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
-                                () -> primaryClicks[0]++)
+                        .with(AdaptiveUiProperties.DELEGATE, primaryDelegate)
                         .build();
         assertEquals(0L, primaryModel.get(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));
         AdaptiveUiSheetCoordinator primaryContent = createContent(primaryModel);
@@ -294,7 +293,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         primaryObserver.onSheetContentChanged(primaryContent);
 
         find(primaryContent, R.id.adaptive_ui_sheet_primary_button).performClick();
-        assertEquals(1, primaryClicks[0]);
+        verify(primaryDelegate).onPrimaryButtonClicked();
         verify(mBottomSheetController)
                 .hideContent(
                         primaryContent,
@@ -304,13 +303,11 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         clearInvocations(mBottomSheetController);
 
-        int[] secondaryClicks = new int[1];
+        Delegate secondaryDelegate = mock(Delegate.class);
         PropertyModel secondaryModel =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
-                        .with(
-                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
-                                () -> secondaryClicks[0]++)
+                        .with(AdaptiveUiProperties.DELEGATE, secondaryDelegate)
                         .build();
         AdaptiveUiSheetCoordinator secondaryContent = createContent(secondaryModel);
         BottomSheetObserver secondaryObserver = showAndCaptureObserver(secondaryContent);
@@ -318,7 +315,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         secondaryObserver.onSheetContentChanged(secondaryContent);
 
         find(secondaryContent, R.id.adaptive_ui_sheet_secondary_button).performClick();
-        assertEquals(1, secondaryClicks[0]);
+        verify(secondaryDelegate).onSecondaryButtonClicked();
         verify(mBottomSheetController)
                 .hideContent(
                         secondaryContent,
@@ -333,22 +330,15 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     @Test
     public void testButtonTapProtection_BlocksQueuedAndPrematureTapsAndResetsTimer() {
-        int[] primaryClicks = new int[1];
-        int[] secondaryClicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                        .with(
-                                AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
-                                () -> primaryClicks[0]++)
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
-                        .with(
-                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
-                                () -> secondaryClicks[0]++)
                         .with(
                                 AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                                 SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN)
                         .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 500L)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
         BottomSheetObserver observer = showAndCaptureObserver(content);
@@ -359,8 +349,8 @@ public class AdaptiveUiSheetCoordinatorTest {
         ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
         primary.performClick();
         secondary.performClick();
-        assertEquals(0, primaryClicks[0]);
-        assertEquals(0, secondaryClicks[0]);
+        verify(mDelegate, never()).onPrimaryButtonClicked();
+        verify(mDelegate, never()).onSecondaryButtonClicked();
         verify(mBottomSheetController, never()).hideContent(eq(content), anyBoolean(), anyInt());
 
         // Sheet becomes current and settles open at t0.
@@ -370,33 +360,33 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         // Clicks at +0ms and +300ms are ignored and each resets the protection start timestamp.
         primary.performClick();
-        assertEquals(0, primaryClicks[0]);
+        verify(mDelegate, never()).onPrimaryButtonClicked();
 
         ShadowSystemClock.advanceBy(Duration.ofMillis(300));
         primary.performClick();
-        assertEquals(0, primaryClicks[0]);
+        verify(mDelegate, never()).onPrimaryButtonClicked();
 
         // At +600ms from show (300ms after the premature tap, <= 500ms), click is still blocked.
         ShadowSystemClock.advanceBy(Duration.ofMillis(300));
         primary.performClick();
-        assertEquals(0, primaryClicks[0]);
+        verify(mDelegate, never()).onPrimaryButtonClicked();
 
         // Exact inclusive boundary (+500ms since last tap) is also blocked and resets the timer.
         ShadowSystemClock.advanceBy(Duration.ofMillis(500));
         secondary.performClick();
-        assertEquals(0, secondaryClicks[0]);
+        verify(mDelegate, never()).onSecondaryButtonClicked();
 
         // Advancing +501ms allows the secondary click and restarts the protection window.
         ShadowSystemClock.advanceBy(Duration.ofMillis(501));
         secondary.performClick();
-        assertEquals(1, secondaryClicks[0]);
+        verify(mDelegate).onSecondaryButtonClicked();
         primary.performClick();
-        assertEquals(0, primaryClicks[0]);
+        verify(mDelegate, never()).onPrimaryButtonClicked();
 
         // Advancing another +501ms allows the primary click and dismisses the sheet.
         ShadowSystemClock.advanceBy(Duration.ofMillis(501));
         primary.performClick();
-        assertEquals(1, primaryClicks[0]);
+        verify(mDelegate).onPrimaryButtonClicked();
         verify(mBottomSheetController)
                 .hideContent(content, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
         content.destroy();
@@ -405,17 +395,15 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     @Test
     public void testButtonTapProtection_CloseButtonAndBackPressUnaffected() {
-        int[] primaryClicks = new int[1];
+        Delegate closeDelegate = mock(Delegate.class);
         PropertyModel closeModel =
                 newModelBuilder()
                         .with(
                                 AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
                                 CloseButtonVisibility.SHOWN)
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                        .with(
-                                AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
-                                () -> primaryClicks[0]++)
                         .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 500L)
+                        .with(AdaptiveUiProperties.DELEGATE, closeDelegate)
                         .build();
         AdaptiveUiSheetCoordinator closeContent = createContent(closeModel);
         BottomSheetObserver closeObserver = showAndCaptureObserver(closeContent);
@@ -424,7 +412,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         closeObserver.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
 
         find(closeContent, R.id.adaptive_ui_sheet_primary_button).performClick();
-        assertEquals(0, primaryClicks[0]);
+        verify(closeDelegate, never()).onPrimaryButtonClicked();
 
         find(closeContent, R.id.adaptive_ui_sheet_close_button).performClick();
         verify(mBottomSheetController)
@@ -433,13 +421,12 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         clearInvocations(mBottomSheetController);
 
+        Delegate backDelegate = mock(Delegate.class);
         PropertyModel backModel =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                        .with(
-                                AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
-                                () -> primaryClicks[0]++)
                         .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 500L)
+                        .with(AdaptiveUiProperties.DELEGATE, backDelegate)
                         .build();
         AdaptiveUiSheetCoordinator backContent = createContent(backModel);
         BottomSheetObserver backObserver = showAndCaptureObserver(backContent);
@@ -448,7 +435,8 @@ public class AdaptiveUiSheetCoordinatorTest {
         backObserver.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
 
         find(backContent, R.id.adaptive_ui_sheet_primary_button).performClick();
-        assertEquals(0, primaryClicks[0]);
+        verify(backDelegate, never()).onPrimaryButtonClicked();
+        verify(closeDelegate, never()).onPrimaryButtonClicked();
 
         backContent.onBackPressed();
         verify(mBottomSheetController)
@@ -461,12 +449,11 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     @Test
     public void testButtonTapProtection_BlocksDuringSlideInUntilSettled() {
-        int[] clicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                        .with(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED, () -> clicks[0]++)
                         .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 100L)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
         BottomSheetObserver observer = showAndCaptureObserver(content);
@@ -478,12 +465,12 @@ public class AdaptiveUiSheetCoordinatorTest {
         observer.onSheetStateChanged(SheetState.SCROLLING, StateChangeReason.NONE);
         ShadowSystemClock.advanceBy(Duration.ofMillis(200));
         primary.performClick();
-        assertEquals(0, clicks[0]);
+        verify(mDelegate, never()).onPrimaryButtonClicked();
 
         observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
         ShadowSystemClock.advanceBy(Duration.ofMillis(150));
         primary.performClick();
-        assertEquals(0, clicks[0]);
+        verify(mDelegate, never()).onPrimaryButtonClicked();
 
         observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
 
@@ -494,7 +481,7 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         ShadowSystemClock.advanceBy(Duration.ofMillis(51));
         primary.performClick();
-        assertEquals(1, clicks[0]);
+        verify(mDelegate).onPrimaryButtonClicked();
         verify(mBottomSheetController)
                 .hideContent(content, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
         content.destroy();
@@ -503,13 +490,12 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     @Test
     public void testButtonTapProtection_ReshowResetsPeriod() {
-        int[] clicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                        .with(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED, () -> clicks[0]++)
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN, true)
                         .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 500L)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
         BottomSheetObserver observer = showAndCaptureObserver(content);
@@ -520,7 +506,7 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         ShadowSystemClock.advanceBy(Duration.ofMillis(501));
         primary.performClick();
-        assertEquals(1, clicks[0]);
+        verify(mDelegate).onPrimaryButtonClicked();
         ShadowSystemClock.advanceBy(Duration.ofMillis(501));
 
         // Swapping into an already-open sheet (FULL) arms immediately without a state change.
@@ -528,17 +514,17 @@ public class AdaptiveUiSheetCoordinatorTest {
         observer.onSheetContentChanged(mOtherSheetContent);
         ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
         primary.performClick();
-        assertEquals(1, clicks[0]);
+        verify(mDelegate).onPrimaryButtonClicked();
 
         when(mBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
         observer.onSheetContentChanged(content);
         primary.performClick();
-        assertEquals(1, clicks[0]);
+        verify(mDelegate).onPrimaryButtonClicked();
 
         ShadowSystemClock.advanceBy(Duration.ofMillis(501));
         primary.performClick();
-        assertEquals(2, clicks[0]);
+        verify(mDelegate, times(2)).onPrimaryButtonClicked();
         ShadowSystemClock.advanceBy(Duration.ofMillis(501));
 
         // Hiding and re-opening while still current (no content swap) stays blocked through
@@ -547,24 +533,24 @@ public class AdaptiveUiSheetCoordinatorTest {
         observer.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.OMNIBOX_FOCUS);
         ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
         primary.performClick();
-        assertEquals(2, clicks[0]);
+        verify(mDelegate, times(2)).onPrimaryButtonClicked();
 
         observer.onSheetStateChanged(SheetState.NONE, StateChangeReason.NONE);
         primary.performClick();
-        assertEquals(2, clicks[0]);
+        verify(mDelegate, times(2)).onPrimaryButtonClicked();
 
         observer.onSheetStateChanged(SheetState.SCROLLING, StateChangeReason.NONE);
         ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
         primary.performClick();
-        assertEquals(2, clicks[0]);
+        verify(mDelegate, times(2)).onPrimaryButtonClicked();
 
         observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
         primary.performClick();
-        assertEquals(2, clicks[0]);
+        verify(mDelegate, times(2)).onPrimaryButtonClicked();
 
         ShadowSystemClock.advanceBy(Duration.ofMillis(501));
         primary.performClick();
-        assertEquals(3, clicks[0]);
+        verify(mDelegate, times(3)).onPrimaryButtonClicked();
     }
 
     @Test
@@ -592,26 +578,19 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     @Test
     public void testFilterTouchForSecurity_EnabledFiltersObscuredTouchesOnActionButtonsOnly() {
-        int[] primaryClicks = new int[1];
-        int[] secondaryClicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(
                                 AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
                                 CloseButtonVisibility.SHOWN)
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                        .with(
-                                AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
-                                () -> primaryClicks[0]++)
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN, true)
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
-                        .with(
-                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
-                                () -> secondaryClicks[0]++)
                         .with(
                                 AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                                 SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN)
                         .with(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY, true)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
         View root = content.getContentView();
@@ -646,8 +625,8 @@ public class AdaptiveUiSheetCoordinatorTest {
         assertFalse(secondary.isPressed());
         assertTrue(secondary.dispatchTouchEvent(obscuredUp));
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(0, primaryClicks[0]);
-        assertEquals(0, secondaryClicks[0]);
+        verify(mDelegate, never()).onPrimaryButtonClicked();
+        verify(mDelegate, never()).onSecondaryButtonClicked();
 
         // Unobscured touch events (flags = 0) are not consumed by the security listener.
         long later = SystemClock.uptimeMillis();
@@ -659,8 +638,8 @@ public class AdaptiveUiSheetCoordinatorTest {
         secondary.dispatchTouchEvent(unobscuredDown);
         secondary.dispatchTouchEvent(unobscuredUp);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(1, primaryClicks[0]);
-        assertEquals(1, secondaryClicks[0]);
+        verify(mDelegate).onPrimaryButtonClicked();
+        verify(mDelegate).onSecondaryButtonClicked();
 
         obscuredDown.recycle();
         obscuredUp.recycle();
@@ -1076,44 +1055,41 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     @Test
     public void testPrimaryClick_RunsCallbackAndRequestsDismiss() {
-        int[] clicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                        .with(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED, () -> clicks[0]++)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
 
         find(content, R.id.adaptive_ui_sheet_primary_button).performClick();
 
-        assertEquals(1, clicks[0]);
+        verify(mDelegate).onPrimaryButtonClicked();
         assertEquals(List.of(DismissReason.PRIMARY_ACTION), mSheetDismissals);
     }
 
     @Test
     public void testSecondaryClick_RunsCallbackAndRequestsDismiss() {
-        int[] clicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
-                        .with(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED, () -> clicks[0]++)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
 
         find(content, R.id.adaptive_ui_sheet_secondary_button).performClick();
 
-        assertEquals(1, clicks[0]);
+        verify(mDelegate).onSecondaryButtonClicked();
         assertEquals(List.of(DismissReason.SECONDARY_ACTION), mSheetDismissals);
     }
 
     @Test
     public void testPrimaryClick_KeepsOpen() {
-        int[] clicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                        .with(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED, () -> clicks[0]++)
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN, true)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
 
@@ -1121,26 +1097,25 @@ public class AdaptiveUiSheetCoordinatorTest {
         primary.performClick();
         primary.performClick();
 
-        assertEquals(2, clicks[0]);
+        verify(mDelegate, times(2)).onPrimaryButtonClicked();
         assertTrue(mSheetDismissals.isEmpty());
     }
 
     @Test
     public void testSecondaryClick_KeepsOpen() {
-        int[] clicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
-                        .with(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED, () -> clicks[0]++)
                         .with(
                                 AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                                 SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
 
         find(content, R.id.adaptive_ui_sheet_secondary_button).performClick();
 
-        assertEquals(1, clicks[0]);
+        verify(mDelegate).onSecondaryButtonClicked();
         assertTrue(mSheetDismissals.isEmpty());
     }
 
@@ -1229,7 +1204,6 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     @Test
     public void testCloseButtonClick_DoesNotRunSecondaryCallback() {
-        int[] secondaryClicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.TITLE, "Title")
@@ -1240,9 +1214,7 @@ public class AdaptiveUiSheetCoordinatorTest {
                         .with(
                                 AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                                 SecondaryButtonBehavior.CLOSE)
-                        .with(
-                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
-                                () -> secondaryClicks[0]++)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
         View closeButton = find(content, R.id.adaptive_ui_sheet_close_button);
@@ -1253,14 +1225,13 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         closeButton.performClick();
 
-        assertEquals(0, secondaryClicks[0]);
+        verify(mDelegate, never()).onSecondaryButtonClicked();
         assertEquals(List.of(DismissReason.CLOSE_BUTTON), mSheetDismissals);
     }
 
     @Test
     public void testSecondaryClick_CloseBehaviorDismissesWithoutCallback() {
         String secondaryText = "No thanks";
-        int[] secondaryClicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.TITLE, "Title")
@@ -1268,9 +1239,7 @@ public class AdaptiveUiSheetCoordinatorTest {
                         .with(
                                 AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                                 SecondaryButtonBehavior.CLOSE)
-                        .with(
-                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
-                                () -> secondaryClicks[0]++)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
         TextView secondaryButton = find(content, R.id.adaptive_ui_sheet_secondary_button);
@@ -1282,23 +1251,20 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         secondaryButton.performClick();
 
-        assertEquals(0, secondaryClicks[0]);
+        verify(mDelegate, never()).onSecondaryButtonClicked();
         assertEquals(List.of(DismissReason.SECONDARY_ACTION), mSheetDismissals);
     }
 
     @Test
     public void testSecondaryClick_CloseBehaviorRespectsButtonTapProtection() {
-        int[] secondaryClicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
                         .with(
                                 AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                                 SecondaryButtonBehavior.CLOSE)
-                        .with(
-                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
-                                () -> secondaryClicks[0]++)
                         .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 500L)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
         BottomSheetObserver observer = showAndCaptureObserver(content);
@@ -1308,13 +1274,13 @@ public class AdaptiveUiSheetCoordinatorTest {
         View secondaryButton = find(content, R.id.adaptive_ui_sheet_secondary_button);
 
         secondaryButton.performClick();
-        assertEquals(0, secondaryClicks[0]);
+        verify(mDelegate, never()).onSecondaryButtonClicked();
         verify(mBottomSheetController, never()).hideContent(eq(content), anyBoolean(), anyInt());
         assertTrue(mSheetDismissals.isEmpty());
 
         ShadowSystemClock.advanceBy(Duration.ofMillis(501));
         secondaryButton.performClick();
-        assertEquals(0, secondaryClicks[0]);
+        verify(mDelegate, never()).onSecondaryButtonClicked();
         verify(mBottomSheetController)
                 .hideContent(content, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
         content.destroy();
@@ -1323,11 +1289,10 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     @Test
     public void testClicksAfterDestroyAreIgnored() {
-        int[] clicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                        .with(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED, () -> clicks[0]++)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
         View primary = find(content, R.id.adaptive_ui_sheet_primary_button);
@@ -1336,7 +1301,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         primary.performClick();
         content.onBackPressed();
 
-        assertEquals(0, clicks[0]);
+        verify(mDelegate, never()).onPrimaryButtonClicked();
         // Only destroy() reports, with the fallback reason; the later clicks are ignored.
         assertEquals(List.of(DismissReason.NAVIGATION), mSheetDismissals);
     }
@@ -1919,11 +1884,10 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     @Test
     public void testRequeuedAfterInSheetClose_AcceptsInputAgain() {
-        int[] clicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                        .with(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED, () -> clicks[0]++)
+                        .with(AdaptiveUiProperties.DELEGATE, mDelegate)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
         BottomSheetObserver observer = showAndCaptureObserver(content);
@@ -1934,7 +1898,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         // The primary button requests a close; while it is in flight, input is ignored.
         primaryButton.performClick();
         primaryButton.performClick();
-        assertEquals(1, clicks[0]);
+        verify(mDelegate).onPrimaryButtonClicked();
         assertTrue(mSheetDismissals.isEmpty());
 
         // Higher-priority content pushed the sheet back and it is shown again: the close never
@@ -1942,7 +1906,7 @@ public class AdaptiveUiSheetCoordinatorTest {
         observer.onSheetContentChanged(mOtherSheetContent);
         observer.onSheetContentChanged(content);
         primaryButton.performClick();
-        assertEquals(2, clicks[0]);
+        verify(mDelegate, times(2)).onPrimaryButtonClicked();
         assertEquals(1, mShownCount);
 
         content.destroy();

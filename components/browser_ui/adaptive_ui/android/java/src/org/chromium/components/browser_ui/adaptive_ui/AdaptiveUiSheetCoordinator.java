@@ -20,6 +20,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.Delegate;
 import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.SecondaryButtonBehavior;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -405,8 +406,8 @@ final class AdaptiveUiSheetCoordinator
 
     private void onPrimaryButtonClicked() {
         if (isDismissing() || isWithinButtonTapProtectionPeriod()) return;
-        Runnable callback = mModel.get(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED);
-        if (callback != null) callback.run();
+        Delegate delegate = mModel.get(AdaptiveUiProperties.DELEGATE);
+        if (delegate != null) delegate.onPrimaryButtonClicked();
         if (mModel.get(AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN)) return;
         requestDismiss(DismissReason.PRIMARY_ACTION);
     }
@@ -429,8 +430,8 @@ final class AdaptiveUiSheetCoordinator
     }
 
     private void runSecondaryButtonCallback() {
-        Runnable callback = mModel.get(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED);
-        if (callback != null) callback.run();
+        Delegate delegate = mModel.get(AdaptiveUiProperties.DELEGATE);
+        if (delegate != null) delegate.onSecondaryButtonClicked();
     }
 
     private boolean isWithinButtonTapProtectionPeriod() {

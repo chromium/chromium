@@ -11,6 +11,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.Delegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -33,7 +34,8 @@ import java.util.Set;
  * {@link AdaptiveUiSheetCoordinator}) for the entry. This class keeps no queue: the container
  * ({@link ModalDialogManager} or {@link BottomSheetController}) owns the queue, and the coordinator
  * may wait in it. This class picks the container and forwards the coordinator's callbacks to the
- * entry's {@link AdaptiveUiProperties#ON_SHOWN} and {@link AdaptiveUiProperties#ON_DISMISSED}.
+ * entry's {@link AdaptiveUiProperties#DELEGATE} ({@link Delegate#onShown} and {@link
+ * Delegate#onDismissed}).
  */
 @NullMarked
 public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
@@ -225,13 +227,12 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
     }
 
     private static void notifyShown(AdaptiveUiEntry entry, @AdaptiveUiContainer int container) {
-        Callback<Integer> onShown = entry.getPropertyModel().get(AdaptiveUiProperties.ON_SHOWN);
-        if (onShown != null) onShown.onResult(container);
+        Delegate delegate = entry.getPropertyModel().get(AdaptiveUiProperties.DELEGATE);
+        if (delegate != null) delegate.onShown(container);
     }
 
     private static void notifyDismissed(AdaptiveUiEntry entry, @DismissReason int reason) {
-        Callback<Integer> onDismissed =
-                entry.getPropertyModel().get(AdaptiveUiProperties.ON_DISMISSED);
-        if (onDismissed != null) onDismissed.onResult(reason);
+        Delegate delegate = entry.getPropertyModel().get(AdaptiveUiProperties.DELEGATE);
+        if (delegate != null) delegate.onDismissed(reason);
     }
 }

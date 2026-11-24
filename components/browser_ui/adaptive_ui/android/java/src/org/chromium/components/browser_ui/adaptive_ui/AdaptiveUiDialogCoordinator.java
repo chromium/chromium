@@ -17,6 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.CloseButtonVisibility;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.Delegate;
 import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.SecondaryButtonBehavior;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -366,8 +367,8 @@ final class AdaptiveUiDialogCoordinator
 
     private void onPrimaryButtonClicked() {
         if (isDismissing()) return;
-        Runnable callback = mModel.get(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED);
-        if (callback != null) callback.run();
+        Delegate delegate = mModel.get(AdaptiveUiProperties.DELEGATE);
+        if (delegate != null) delegate.onPrimaryButtonClicked();
         if (mModel.get(AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN)) return;
         requestDismiss(DismissReason.PRIMARY_ACTION);
     }
@@ -390,8 +391,8 @@ final class AdaptiveUiDialogCoordinator
     }
 
     private void runSecondaryButtonCallback() {
-        Runnable callback = mModel.get(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED);
-        if (callback != null) callback.run();
+        Delegate delegate = mModel.get(AdaptiveUiProperties.DELEGATE);
+        if (delegate != null) delegate.onSecondaryButtonClicked();
     }
 
     private void onCloseButtonClicked(View view) {

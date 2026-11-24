@@ -12,6 +12,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
 
@@ -34,6 +36,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -48,6 +51,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.CloseButtonVisibility;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.Delegate;
 import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.SecondaryButtonBehavior;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
@@ -212,6 +216,33 @@ public class AdaptiveUiIntegrationTest {
                 List.of(DismissReason.PRIMARY_ACTION, DismissReason.PRIMARY_ACTION),
                 mDismissReasons);
         assertFalse(mDialogManager.isShowing());
+    }
+
+    @Test
+    public void testDelegate_RunsShownThenClickThenDismissedInOrder() {
+        Delegate sheetDelegate = mock(Delegate.class);
+        showSheet(
+                newModelBuilder(sheetDelegate)
+                        .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, str(R.string.ok))
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
+                        .build());
+        clickSheet(R.id.adaptive_ui_sheet_primary_button);
+        InOrder sheetOrder = inOrder(sheetDelegate);
+        sheetOrder.verify(sheetDelegate).onShown(AdaptiveUiContainer.BOTTOM_SHEET);
+        sheetOrder.verify(sheetDelegate).onPrimaryButtonClicked();
+        sheetOrder.verify(sheetDelegate).onDismissed(DismissReason.PRIMARY_ACTION);
+
+        Delegate dialogDelegate = mock(Delegate.class);
+        showDialog(
+                newModelBuilder(dialogDelegate)
+                        .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, str(R.string.ok))
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
+                        .build());
+        dialogButton(ButtonType.POSITIVE).performClick();
+        InOrder dialogOrder = inOrder(dialogDelegate);
+        dialogOrder.verify(dialogDelegate).onShown(AdaptiveUiContainer.MODAL_DIALOG);
+        dialogOrder.verify(dialogDelegate).onPrimaryButtonClicked();
+        dialogOrder.verify(dialogDelegate).onDismissed(DismissReason.PRIMARY_ACTION);
     }
 
     @Test
@@ -750,14 +781,13 @@ public class AdaptiveUiIntegrationTest {
     public void testCloseSecondaryBehavior_SecurityFilterWithoutPrimaryShowsOnDialog() {
         int[] clicks = new int[1];
         PropertyModel filterTouchModel =
-                newModelBuilder()
+                newModelBuilder(newDelegate(/* onPrimary= */ null, () -> clicks[0]++))
                         .with(AdaptiveUiProperties.TITLE, str(R.string.ok))
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, str(R.string.cancel))
                         .with(
                                 AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                                 SecondaryButtonBehavior.CLOSE)
                         .with(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY, true)
-                        .with(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED, () -> clicks[0]++)
                         .build();
         HistogramWatcher closeWatcher =
                 watchDismissReason(/* isDialog= */ true, DismissReason.CLOSE_BUTTON);
@@ -812,16 +842,10 @@ public class AdaptiveUiIntegrationTest {
         int[] primaryClicks = new int[1];
         int[] secondaryClicks = new int[1];
         var model =
-                newModelBuilder()
+                newModelBuilder(newDelegate(() -> primaryClicks[0]++, () -> secondaryClicks[0]++))
                         .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, str(R.string.ok))
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
-                        .with(
-                                AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
-                                () -> primaryClicks[0]++)
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, str(R.string.cancel))
-                        .with(
-                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
-                                () -> secondaryClicks[0]++)
                         .with(
                                 AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                                 SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN)
@@ -873,39 +897,63 @@ public class AdaptiveUiIntegrationTest {
         return mActivity.getResources().getString(resId);
     }
 
-    /** Every model records its lifecycle callbacks in the test's lists. */
+    private Delegate newDelegate(@Nullable Runnable onPrimary, @Nullable Runnable onSecondary) {
+        return new Delegate() {
+            @Override
+            public void onShown(@AdaptiveUiContainer int container) {
+                mShownContainers.add(container);
+            }
+
+            @Override
+            public void onPrimaryButtonClicked() {
+                if (onPrimary != null) onPrimary.run();
+            }
+
+            @Override
+            public void onSecondaryButtonClicked() {
+                if (onSecondary != null) onSecondary.run();
+            }
+
+            @Override
+            public void onDismissed(@DismissReason int reason) {
+                mDismissReasons.add(reason);
+            }
+        };
+    }
+
+    /** Every model records its lifecycle events in the test's lists. */
     private PropertyModel.Builder newModelBuilder() {
+        return newModelBuilder(newDelegate(/* onPrimary= */ null, /* onSecondary= */ null));
+    }
+
+    private PropertyModel.Builder newModelBuilder(Delegate delegate) {
         return new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
-                .with(AdaptiveUiProperties.ON_SHOWN, mShownContainers::add)
-                .with(AdaptiveUiProperties.ON_DISMISSED, mDismissReasons::add);
+                .with(AdaptiveUiProperties.DELEGATE, delegate);
     }
 
     private PropertyModel primaryModel(Runnable onPrimary, long tapProtectionMs) {
-        return newModelBuilder()
+        return newModelBuilder(newDelegate(onPrimary, /* onSecondary= */ null))
                 .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, str(R.string.ok))
                 .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
-                .with(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED, onPrimary)
                 .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, tapProtectionMs)
                 .build();
     }
 
     private PropertyModel secondaryModel(Runnable onSecondary) {
-        return newModelBuilder()
+        return newModelBuilder(newDelegate(/* onPrimary= */ null, onSecondary))
                 .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, str(R.string.cancel))
                 .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, str(R.string.cancel))
-                .with(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED, onSecondary)
                 .build();
     }
 
     private PropertyModel closeSecondaryModel(
             Runnable onSecondary, @CloseButtonVisibility int closeButtonVisibility) {
-        return newModelBuilder()
+        return newModelBuilder(newDelegate(/* onPrimary= */ null, onSecondary))
                 .with(AdaptiveUiProperties.TITLE, str(R.string.ok))
                 .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
                 .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, str(R.string.cancel))
                 .with(AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR, SecondaryButtonBehavior.CLOSE)
                 .with(AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY, closeButtonVisibility)
-                .with(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED, onSecondary)
                 .build();
     }
 

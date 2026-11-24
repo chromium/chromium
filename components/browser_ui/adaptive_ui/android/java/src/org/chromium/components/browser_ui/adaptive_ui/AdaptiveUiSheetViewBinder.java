@@ -34,28 +34,29 @@ import java.util.Set;
  * AdaptiveUiProperties#SHEET_HALF_HEIGHT_RATIO}, {@link
  * AdaptiveUiProperties#SHEET_FULL_HEIGHT_RATIO}, {@link AdaptiveUiProperties#SHOW_SHEET_HANDLEBAR},
  * {@link AdaptiveUiProperties#CUSTOM_VIEW_SCROLLS_ITSELF}, {@link
- * AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
- * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, {@link
  * AdaptiveUiProperties#SECONDARY_BUTTON_BEHAVIOR}, {@link
  * AdaptiveUiProperties#BUTTON_TAP_PROTECTION_PERIOD_MS}, {@link
  * AdaptiveUiProperties#GESTURE_DISMISSAL_DISABLED}, and {@link
  * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are read directly by {@link
- * AdaptiveUiSheetCoordinator}. The lifecycle callbacks ({@link AdaptiveUiProperties#ON_SHOWN} and
- * {@link AdaptiveUiProperties#ON_DISMISSED}) are run by {@link AdaptiveUiControllerImpl}. {@link
+ * AdaptiveUiSheetCoordinator}. {@link AdaptiveUiProperties#DELEGATE} is invoked by {@link
+ * AdaptiveUiSheetCoordinator} ({@link AdaptiveUiProperties.Delegate#onPrimaryButtonClicked} and
+ * {@link AdaptiveUiProperties.Delegate#onSecondaryButtonClicked}) and {@link
+ * AdaptiveUiControllerImpl} ({@link AdaptiveUiProperties.Delegate#onShown} and {@link
+ * AdaptiveUiProperties.Delegate#onDismissed}). {@link
  * AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION} is dialog-only and ignored by sheets.
  */
 @NullMarked
 final class AdaptiveUiSheetViewBinder {
     /**
      * Keys read directly by {@link AdaptiveUiSheetCoordinator} (for interaction or {@code
-     * BottomSheetContent} metadata), run by {@link AdaptiveUiControllerImpl} (lifecycle callbacks),
-     * or used exclusively by dialogs.
+     * BottomSheetContent} metadata), {@link AdaptiveUiProperties#DELEGATE} (invoked by {@link
+     * AdaptiveUiSheetCoordinator} and {@link AdaptiveUiControllerImpl}), or keys used exclusively
+     * by dialogs.
      */
     static final Set<PropertyKey> NON_VISUAL_SHEET_KEYS =
             Set.of(
-                    AdaptiveUiProperties.ON_SHOWN,
-                    AdaptiveUiProperties.ON_DISMISSED,
+                    AdaptiveUiProperties.DELEGATE,
                     AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
                     AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
                     AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
@@ -68,8 +69,6 @@ final class AdaptiveUiSheetViewBinder {
                     AdaptiveUiProperties.BACK_PRESS_HANDLER,
                     AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                     AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED,
-                    AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
-                    AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
                     AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                     AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS);

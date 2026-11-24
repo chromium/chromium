@@ -52,8 +52,7 @@ public class AdaptiveUiEntryTest {
     public void testLifecycleAndSheetKeyDefaults() {
         PropertyModel model = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
 
-        assertNull(model.get(AdaptiveUiProperties.ON_SHOWN));
-        assertNull(model.get(AdaptiveUiProperties.ON_DISMISSED));
+        assertNull(model.get(AdaptiveUiProperties.DELEGATE));
         assertEquals(SheetState.FULL, model.get(AdaptiveUiProperties.SHEET_INITIAL_STATE));
         assertFalse(model.get(AdaptiveUiProperties.SHEET_USER_INITIATED));
         assertEquals(UserCriticalFeature.NONE, model.get(AdaptiveUiProperties.SHEET_USER_CRITICAL));

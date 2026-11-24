@@ -10,7 +10,6 @@ import android.view.View;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -32,37 +31,60 @@ import java.lang.annotation.Target;
 
 /**
  * Shared model properties for an {@link AdaptiveUiEntry} presented as a bottom sheet or a modal
- * dialog. The model holds what the entry shows, its callbacks (including the lifecycle callbacks
- * {@link #ON_SHOWN} and {@link #ON_DISMISSED}) and its container-specific options; {@link
- * AdaptiveUiEntry} holds where the entry may be shown (scope and allowed containers).
+ * dialog. The model holds what the entry shows, its {@link #DELEGATE} (lifecycle and button events)
+ * and its container-specific options; {@link AdaptiveUiEntry} holds where the entry may be shown
+ * (scope and allowed containers).
  *
  * <p>Features should handle each user response once. Handle the primary button, and a secondary
  * button with {@link SecondaryButtonBehavior#ACTION_THEN_DISMISS} or {@link
- * SecondaryButtonBehavior#ACTION_THEN_STAY_OPEN}, in {@link #ON_PRIMARY_BUTTON_CLICKED} and {@link
- * #ON_SECONDARY_BUTTON_CLICKED}. Handle closes that run no callback, such as the close ('X') button
- * or a {@link SecondaryButtonBehavior#CLOSE} button (reported as {@link
- * DismissReason#SECONDARY_ACTION}), in {@link #ON_DISMISSED}.
+ * SecondaryButtonBehavior#ACTION_THEN_STAY_OPEN}, in {@link Delegate#onPrimaryButtonClicked} and
+ * {@link Delegate#onSecondaryButtonClicked}. Handle closes that run no button callback, such as the
+ * close ('X') button or a {@link SecondaryButtonBehavior#CLOSE} button (reported as {@link
+ * DismissReason#SECONDARY_ACTION}), in {@link Delegate#onDismissed}.
  */
 @NullMarked
 public class AdaptiveUiProperties {
     /**
-     * Optional callback run at most once per {@link AdaptiveUiController#show}, when the container
-     * starts showing the entry (a dialog right after it is shown, a sheet once it takes the entry's
-     * content). Receives the {@link AdaptiveUiContainer} that presents the entry. Not run if the
-     * entry is closed while it still waits in a queue, and not run again if the container
-     * temporarily hides the entry and shows it again. Read-only so it stays the same for the whole
-     * show.
+     * Receives an entry's lifecycle and button events. Every method has an empty default, so a
+     * feature only overrides what it needs.
      */
-    public static final ReadableObjectPropertyKey<@Nullable Callback<Integer>> ON_SHOWN =
-            new ReadableObjectPropertyKey<>();
+    public interface Delegate {
+        /**
+         * Runs at most once per {@link AdaptiveUiController#show}, when the container starts
+         * showing the entry (a dialog right after it is shown, a sheet once it takes the entry's
+         * content). Receives the {@link AdaptiveUiContainer} that presents the entry. Not run if
+         * the entry is closed while it still waits in a queue, and not run again if the container
+         * temporarily hides the entry and shows it again.
+         */
+        default void onShown(@AdaptiveUiContainer int container) {}
+
+        /**
+         * Runs when the primary button is clicked, before the framework closes the entry (unless
+         * {@link AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN} is {@code true}).
+         */
+        default void onPrimaryButtonClicked() {}
+
+        /**
+         * Runs when the secondary button is clicked for {@link
+         * SecondaryButtonBehavior#ACTION_THEN_DISMISS} (before the framework closes the entry) and
+         * {@link SecondaryButtonBehavior#ACTION_THEN_STAY_OPEN}. Not run for {@link
+         * SecondaryButtonBehavior#CLOSE} or when the close ('X') button is clicked.
+         */
+        default void onSecondaryButtonClicked() {}
+
+        /**
+         * Runs exactly once per {@link AdaptiveUiController#show}, when the entry is closed,
+         * whether or not it was ever shown. Receives the {@link DismissReason}. Features can rely
+         * on it to release what they set up for the entry.
+         */
+        default void onDismissed(@DismissReason int reason) {}
+    }
 
     /**
-     * Optional callback run exactly once per {@link AdaptiveUiController#show}, when the entry is
-     * closed, whether or not it was ever shown. Receives the {@link DismissReason}. Features can
-     * rely on it to release what they set up for the entry. Read-only so it stays the same for the
-     * whole show.
+     * Optional {@link Delegate} for the entry's lifecycle and button events. Read-only so it stays
+     * the same for the whole show.
      */
-    public static final ReadableObjectPropertyKey<@Nullable Callback<Integer>> ON_DISMISSED =
+    public static final ReadableObjectPropertyKey<@Nullable Delegate> DELEGATE =
             new ReadableObjectPropertyKey<>();
 
     /** Optional icon displayed in the header. */
@@ -240,13 +262,6 @@ public class AdaptiveUiProperties {
     public static final WritableObjectPropertyKey<@Nullable String> PRIMARY_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
 
-    /**
-     * Callback invoked when the primary button is clicked, before the framework closes the entry
-     * (unless {@link #PRIMARY_BUTTON_KEEPS_OPEN} is {@code true}).
-     */
-    public static final WritableObjectPropertyKey<@Nullable Runnable> ON_PRIMARY_BUTTON_CLICKED =
-            new WritableObjectPropertyKey<>();
-
     /** Whether the primary action button is disabled. Defaults to {@code false} (enabled). */
     public static final WritableBooleanPropertyKey PRIMARY_BUTTON_DISABLED =
             new WritableBooleanPropertyKey();
@@ -260,15 +275,6 @@ public class AdaptiveUiProperties {
 
     /** Text for the secondary action button. Leaving this unset hides the secondary button. */
     public static final WritableObjectPropertyKey<@Nullable String> SECONDARY_BUTTON_TEXT =
-            new WritableObjectPropertyKey<>();
-
-    /**
-     * Callback invoked when the secondary button is clicked for {@link
-     * SecondaryButtonBehavior#ACTION_THEN_DISMISS} (before the framework closes the entry) and
-     * {@link SecondaryButtonBehavior#ACTION_THEN_STAY_OPEN}. Not invoked for {@link
-     * SecondaryButtonBehavior#CLOSE} or when the close ('X') button is clicked.
-     */
-    public static final WritableObjectPropertyKey<@Nullable Runnable> ON_SECONDARY_BUTTON_CLICKED =
             new WritableObjectPropertyKey<>();
 
     /** Whether the secondary action button is disabled. Defaults to {@code false} (enabled). */
@@ -287,22 +293,22 @@ public class AdaptiveUiProperties {
         /**
          * A real choice or secondary action, such as starting another flow or recording an explicit
          * decision. Drawn on both bottom sheets and dialogs. Runs {@link
-         * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, then closes the entry with {@link
+         * Delegate#onSecondaryButtonClicked}, then closes the entry with {@link
          * DismissReason#SECONDARY_ACTION}.
          */
         int ACTION_THEN_DISMISS = 0;
 
         /**
          * An in-place secondary action. Drawn on both bottom sheets and dialogs. Runs {@link
-         * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED} and keeps the entry open.
+         * Delegate#onSecondaryButtonClicked} and keeps the entry open.
          */
         int ACTION_THEN_STAY_OPEN = 1;
 
         /**
          * Only closes the entry, like the close ('X') button, Esc, back, or a scrim tap (such as
-         * "No thanks"). Never runs {@link AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}; handle
-         * the outcome in {@link AdaptiveUiProperties#ON_DISMISSED}. Bottom sheets and dialogs with
-         * {@link CloseButtonVisibility#HIDDEN} draw this button and close the entry with {@link
+         * "No thanks"). Never runs {@link Delegate#onSecondaryButtonClicked}; handle the outcome in
+         * {@link Delegate#onDismissed}. Bottom sheets and dialogs with {@link
+         * CloseButtonVisibility#HIDDEN} draw this button and close the entry with {@link
          * DismissReason#SECONDARY_ACTION}; dialogs omit it while the close ('X') button is shown.
          */
         int CLOSE = 2;
@@ -340,8 +346,7 @@ public class AdaptiveUiProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                ON_SHOWN,
-                ON_DISMISSED,
+                DELEGATE,
                 HEADER_ICON,
                 TITLE,
                 DIALOG_CONTENT_DESCRIPTION,
@@ -361,11 +366,9 @@ public class AdaptiveUiProperties {
                 CUSTOM_VIEW,
                 CUSTOM_VIEW_SCROLLS_ITSELF,
                 PRIMARY_BUTTON_TEXT,
-                ON_PRIMARY_BUTTON_CLICKED,
                 PRIMARY_BUTTON_DISABLED,
                 PRIMARY_BUTTON_KEEPS_OPEN,
                 SECONDARY_BUTTON_TEXT,
-                ON_SECONDARY_BUTTON_CLICKED,
                 SECONDARY_BUTTON_DISABLED,
                 SECONDARY_BUTTON_BEHAVIOR,
                 BUTTON_TAP_PROTECTION_PERIOD_MS,

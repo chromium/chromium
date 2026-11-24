@@ -26,21 +26,21 @@ public interface AdaptiveUiController {
 
     /**
      * Requests that {@code entry} be shown. The entry may wait in the chosen container's queue;
-     * {@link AdaptiveUiProperties#ON_SHOWN} runs once it is visible.
+     * {@link AdaptiveUiProperties.Delegate#onShown} runs once it is visible.
      *
      * @param entry The entry to show.
      * @return The container that is now showing the entry or actively taking over for it (such as
      *     superseding a lower-precedence sheet); null if the entry was queued behind existing
      *     content, suppressed, or dropped (e.g. already showing or queued, or destroyed). A queued
-     *     entry learns its container from {@link AdaptiveUiProperties#ON_SHOWN}.
+     *     entry learns its container from {@link AdaptiveUiProperties.Delegate#onShown}.
      */
     @Nullable
     @AdaptiveUiContainer
     Integer show(AdaptiveUiEntry entry);
 
     /**
-     * Dismisses {@code entry} if it is showing or queued. {@link AdaptiveUiProperties#ON_DISMISSED}
-     * runs with {@code reason}.
+     * Dismisses {@code entry} if it is showing or queued. {@link
+     * AdaptiveUiProperties.Delegate#onDismissed} runs with {@code reason}.
      *
      * @param entry The entry to dismiss.
      * @param reason Why the feature dismissed the entry.
