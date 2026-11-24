@@ -6,8 +6,10 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
+#include "base/containers/extend.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -92,6 +94,9 @@ void JingleAuthenticationToProto(const JingleAuthentication& auth,
   if (auth.pairing_info) {
     proto->mutable_pairing_info()->set_client_id(auth.pairing_info->client_id);
   }
+  if (!auth.pairing_error.empty()) {
+    proto->mutable_pairing_failed()->set_error(auth.pairing_error);
+  }
 }
 
 void JingleAuthenticationFromProto(const ftl::Authentication& proto,
@@ -119,6 +124,11 @@ void JingleAuthenticationFromProto(const ftl::Authentication& proto,
     JingleAuthentication::PairingInfo pairing_info;
     pairing_info.client_id = proto.pairing_info().client_id();
     auth->pairing_info = std::move(pairing_info);
+  }
+  if (proto.has_pairing_failed()) {
+    auth->pairing_error = proto.pairing_failed().error().empty()
+                              ? JingleAuthentication::kDefaultPairingError
+                              : proto.pairing_failed().error();
   }
   if (proto.has_session_authz_host_token()) {
     // TODO(joedow): Note that if raw bytes happen to form a valid Base64 string
@@ -544,9 +554,17 @@ bool JingleMessageFromProto(const ftl::IqStanza& stanza,
     Attachment attachment;
     if (proto_attachment.has_host_attributes()) {
       HostAttributesAttachment host_attributes;
-      host_attributes.attribute.assign(
-          proto_attachment.host_attributes().attribute().begin(),
-          proto_attachment.host_attributes().attribute().end());
+      // Hosts prior to M160 emitted comma-joined attribute strings inside a
+      // single repeated element. Split on ',' for parity with
+      // JingleMessageFromXml (ToSerializedXml() logging and the JingleMessage
+      // model spec).
+      for (const std::string& raw_attribute :
+           proto_attachment.host_attributes().attribute()) {
+        base::Extend(
+            host_attributes.attribute,
+            base::SplitString(raw_attribute, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY));
+      }
       attachment.host_attributes = std::move(host_attributes);
     } else if (proto_attachment.has_host_config()) {
       HostConfigAttachment host_config;

@@ -159,6 +159,15 @@ message PairingInfo {
   optional string client_id = 1;
 }
 
+// Indicates that paired authentication failed and the peer must fall back to
+// PIN authentication. Sent alongside the sender's first PIN-derived SPAKE2
+// message after switching from the paired secret to the PIN.
+message PairingFailed {
+  // Informational diagnostic reason why pairing failed (logged only; never
+  // switched on programmatically). Senders should populate a non-empty value.
+  optional string error = 1;
+}
+
 // The authentication payload used in session-initiate, session-accept, and
 // session-info messages.
 message Authentication {
@@ -185,6 +194,10 @@ message Authentication {
 
   // Pairing information.
   optional PairingInfo pairing_info = 8;
+
+  // Presence instructs the peer to fall back from paired authentication to PIN
+  // authentication; accompanies the sender's first PIN-derived SPAKE2 message.
+  optional PairingFailed pairing_failed = 9;
 }
 
 // Jingle action "session-initiate": Sent by client to start a session.

@@ -391,6 +391,88 @@ TEST(JingleMessageXmlConverterTest, JingleAuthentication_RoundTrip) {
   EXPECT_EQ(parsed_auth.test_key, auth.test_key);
 }
 
+TEST(JingleMessageXmlConverterTest,
+     JingleAuthentication_PairingFailedEmptyErrorUsesFallback) {
+  // Missing error attribute (<pairing-failed/>) must still populate a non-empty
+  // pairing_error so PairingAuthenticatorBase::HasErrorMessage triggers PIN
+  // fallback.
+  {
+    auto jingle_tag = std::make_unique<XmlElement>(
+        QName("urn:xmpp:jingle:1", "jingle"), true);
+    auto auth_tag = std::make_unique<XmlElement>(
+        QName("google:remoting", "authentication"), true);
+    auth_tag->AddElement(
+        new XmlElement(QName("google:remoting", "pairing-failed")));
+    jingle_tag->AddElement(auth_tag.release());
+
+    SessionInfo parsed_info;
+    ASSERT_TRUE(SessionInfoFromXml(jingle_tag.get(), &parsed_info));
+    ASSERT_TRUE(parsed_info.authentication.has_value());
+    EXPECT_EQ(parsed_info.authentication->pairing_error,
+              JingleAuthentication::kDefaultPairingError);
+  }
+
+  // Explicit empty error="" attribute must also normalize to "unknown".
+  {
+    auto jingle_tag = std::make_unique<XmlElement>(
+        QName("urn:xmpp:jingle:1", "jingle"), true);
+    auto auth_tag = std::make_unique<XmlElement>(
+        QName("google:remoting", "authentication"), true);
+    auto pairing_failed_tag = std::make_unique<XmlElement>(
+        QName("google:remoting", "pairing-failed"));
+    pairing_failed_tag->SetAttr(QName("", "error"), "");
+    auth_tag->AddElement(pairing_failed_tag.release());
+    jingle_tag->AddElement(auth_tag.release());
+
+    SessionInfo parsed_info;
+    ASSERT_TRUE(SessionInfoFromXml(jingle_tag.get(), &parsed_info));
+    ASSERT_TRUE(parsed_info.authentication.has_value());
+    EXPECT_EQ(parsed_info.authentication->pairing_error,
+              JingleAuthentication::kDefaultPairingError);
+  }
+
+  // Also verify empty/missing error normalization through session-accept
+  // (JingleMessageFromXml -> ParseInitiateOrAccept -> ContentDescription).
+  for (bool set_empty_attr : {false, true}) {
+    JingleMessage base_msg = CreateBaseJingleMessage();
+    JingleAuthentication auth;
+    auth.method = AuthenticationMethod::PAIRED_SPAKE2_CURVE25519;
+    auth.spake_message = {1, 2, 3};
+    base_msg.description = std::make_unique<ContentDescription>(auth);
+    SessionAccept accept;
+    accept.authentication = auth;
+    base_msg.SetPayload(std::move(accept));
+
+    std::unique_ptr<XmlElement> iq = JingleMessageToXml(base_msg);
+    ASSERT_TRUE(iq);
+    XmlElement* auth_el =
+        iq->FirstNamed(QName("urn:xmpp:jingle:1", "jingle"))
+            ->FirstNamed(QName("urn:xmpp:jingle:1", "content"))
+            ->FirstNamed(QName("google:remoting", "description"))
+            ->FirstNamed(QName("google:remoting", "authentication"));
+    ASSERT_TRUE(auth_el);
+    auto pairing_failed_tag = std::make_unique<XmlElement>(
+        QName("google:remoting", "pairing-failed"));
+    if (set_empty_attr) {
+      pairing_failed_tag->SetAttr(QName("", "error"), "");
+    }
+    auth_el->AddElement(pairing_failed_tag.release());
+
+    JingleMessage parsed_msg;
+    std::string error;
+    ASSERT_TRUE(JingleMessageFromXml(iq.get(), &parsed_msg, &error)) << error;
+    ASSERT_TRUE(parsed_msg.description);
+    EXPECT_EQ(parsed_msg.description->authentication().pairing_error,
+              JingleAuthentication::kDefaultPairingError);
+    const auto* parsed_accept =
+        std::get_if<SessionAccept>(&parsed_msg.payload());
+    ASSERT_TRUE(parsed_accept);
+    ASSERT_TRUE(parsed_accept->authentication.has_value());
+    EXPECT_EQ(parsed_accept->authentication->pairing_error,
+              JingleAuthentication::kDefaultPairingError);
+  }
+}
+
 TEST(JingleMessageXmlConverterTest, SessionInfo_Authentication_RoundTrip) {
   SessionInfo info;
   info.authentication.emplace();

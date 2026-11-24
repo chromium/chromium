@@ -114,6 +114,11 @@ struct JingleAuthentication {
   // SessionAuthz session token.
   std::string session_authz_session_token;
 
+  // Fallback value populated when an incoming pairing-failure element/message
+  // omits or leaves the diagnostic error string empty, ensuring
+  // `!pairing_error.empty()` still triggers PIN fallback.
+  static constexpr char kDefaultPairingError[] = "unknown";
+
   // Pairing error message, if any.
   std::string pairing_error;
 

@@ -113,6 +113,7 @@ void VerifyAuthentication(const JingleAuthentication& actual,
   } else {
     EXPECT_FALSE(actual.pairing_info.has_value());
   }
+  EXPECT_EQ(actual.pairing_error, expected.pairing_error);
 }
 }  // namespace
 
@@ -645,6 +646,8 @@ TEST_F(JingleMessageProtoConverterTest, ConvertSessionAcceptWithAuth) {
 
   EXPECT_TRUE(stanza.jingle().has_session_accept());
   EXPECT_TRUE(stanza.jingle().session_accept().has_authentication());
+  EXPECT_FALSE(
+      stanza.jingle().session_accept().authentication().has_pairing_failed());
 
   JingleMessage converted_message;
   std::string error;
@@ -675,6 +678,8 @@ TEST_F(JingleMessageProtoConverterTest,
 
   EXPECT_TRUE(stanza.jingle().has_session_accept());
   EXPECT_TRUE(stanza.jingle().session_accept().has_authentication());
+  EXPECT_FALSE(
+      stanza.jingle().session_accept().authentication().has_pairing_failed());
   EXPECT_EQ(stanza.jingle().session_accept().authentication().method(),
             ftl::AUTHENTICATION_METHOD_SPAKE2_CURVE25519);
 
@@ -701,6 +706,8 @@ TEST_F(JingleMessageProtoConverterTest, ConvertSessionInfoWithAuth) {
 
   EXPECT_TRUE(stanza.jingle().has_session_info());
   EXPECT_TRUE(stanza.jingle().session_info().has_authentication());
+  EXPECT_FALSE(
+      stanza.jingle().session_info().authentication().has_pairing_failed());
 
   JingleMessage converted_message;
   std::string error;
@@ -742,6 +749,190 @@ TEST_F(JingleMessageProtoConverterTest, ConvertSessionInfo_VerificationHash) {
   ASSERT_TRUE(converted_info->authentication.has_value());
   EXPECT_EQ(converted_info->authentication->verification_hash,
             auth.verification_hash);
+}
+
+TEST_F(JingleMessageProtoConverterTest,
+       ConvertSessionAccept_PairingFailedWithSpakeMessage) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = "msg_accept_pairing_failed";
+  message.sid = "crd_sess_987654321";
+
+  JingleAuthentication auth;
+  auth.method = AuthenticationMethod::PAIRED_SPAKE2_CURVE25519;
+  auth.spake_message = std::vector<uint8_t>(32, 0x05);
+  auth.certificate = std::vector<uint8_t>(32, 0xBB);
+  auth.pairing_error = "unknown-client-id";
+  message.description = std::make_unique<ContentDescription>(auth);
+  message.SetPayload(SessionAccept());
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  ASSERT_TRUE(stanza.jingle().has_session_accept());
+  ASSERT_TRUE(stanza.jingle().session_accept().has_authentication());
+  const auto& proto_auth = stanza.jingle().session_accept().authentication();
+  EXPECT_EQ(proto_auth.method(),
+            ftl::AUTHENTICATION_METHOD_PAIRED_SPAKE2_CURVE25519);
+  EXPECT_EQ(proto_auth.spake_message(), std::string(32, '\x05'));
+  EXPECT_EQ(proto_auth.certificate(), std::string(32, '\xBB'));
+  ASSERT_TRUE(proto_auth.has_pairing_failed());
+  EXPECT_EQ(proto_auth.pairing_failed().error(), "unknown-client-id");
+
+  std::string wire_bytes;
+  ASSERT_TRUE(stanza.SerializeToString(&wire_bytes));
+  ftl::IqStanza wire_stanza;
+  ASSERT_TRUE(wire_stanza.ParseFromString(wire_bytes));
+
+  JingleMessage converted;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(wire_stanza, &converted, &error)) << error;
+  ASSERT_TRUE(converted.description);
+  EXPECT_FALSE(converted.description->authentication().is_empty());
+  EXPECT_EQ(converted.description->authentication().method,
+            AuthenticationMethod::PAIRED_SPAKE2_CURVE25519);
+  EXPECT_EQ(converted.description->authentication().pairing_error,
+            "unknown-client-id");
+  EXPECT_EQ(converted.description->authentication().spake_message,
+            auth.spake_message);
+  EXPECT_EQ(converted.description->authentication().certificate,
+            auth.certificate);
+
+  const auto* converted_accept =
+      std::get_if<SessionAccept>(&converted.payload());
+  ASSERT_TRUE(converted_accept);
+  ASSERT_TRUE(converted_accept->authentication.has_value());
+  EXPECT_EQ(converted_accept->authentication->method,
+            AuthenticationMethod::PAIRED_SPAKE2_CURVE25519);
+  EXPECT_EQ(converted_accept->authentication->pairing_error,
+            "unknown-client-id");
+  EXPECT_EQ(converted_accept->authentication->spake_message,
+            auth.spake_message);
+  EXPECT_EQ(converted_accept->authentication->certificate, auth.certificate);
+}
+
+// Note: Live Chromium authenticators always attach pairing_error alongside the
+// new PIN authenticator's spake_message. This test strictly exercises
+// converter-level preservation when pairing_failed is the only populated field
+// on Authentication.
+TEST_F(JingleMessageProtoConverterTest,
+       ConvertSessionInfo_StandalonePairingFailed) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = "msg_info_002c";
+  message.sid = "crd_sess_987654321";
+
+  SessionInfo session_info;
+  JingleAuthentication auth;
+  auth.pairing_error = "invalid-shared-secret";
+  session_info.authentication = std::move(auth);
+  message.SetPayload(std::move(session_info));
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  ASSERT_TRUE(stanza.jingle().has_session_info());
+  ASSERT_TRUE(stanza.jingle().session_info().has_authentication());
+  const auto& proto_auth = stanza.jingle().session_info().authentication();
+  EXPECT_FALSE(proto_auth.has_spake_message());
+  ASSERT_TRUE(proto_auth.has_pairing_failed());
+  EXPECT_EQ(proto_auth.pairing_failed().error(), "invalid-shared-secret");
+
+  std::string wire_bytes;
+  ASSERT_TRUE(stanza.SerializeToString(&wire_bytes));
+  ftl::IqStanza wire_stanza;
+  ASSERT_TRUE(wire_stanza.ParseFromString(wire_bytes));
+
+  JingleMessage converted;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(wire_stanza, &converted, &error)) << error;
+  const auto* converted_info = std::get_if<SessionInfo>(&converted.payload());
+  ASSERT_TRUE(converted_info);
+  ASSERT_TRUE(converted_info->authentication.has_value());
+  EXPECT_FALSE(converted_info->authentication->is_empty());
+  EXPECT_TRUE(converted_info->authentication->spake_message.empty());
+  EXPECT_EQ(converted_info->authentication->pairing_error,
+            "invalid-shared-secret");
+}
+
+TEST_F(JingleMessageProtoConverterTest,
+       ConvertSessionInfo_PairingFailedWithSpakeMessage) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = "msg_info_pairing_failed_spake";
+  message.sid = "crd_sess_987654321";
+
+  SessionInfo session_info;
+  JingleAuthentication auth;
+  auth.spake_message = std::vector<uint8_t>(32, 0x07);
+  auth.pairing_error = "invalid-shared-secret";
+  session_info.authentication = auth;
+  message.SetPayload(std::move(session_info));
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  ASSERT_TRUE(stanza.jingle().has_session_info());
+  ASSERT_TRUE(stanza.jingle().session_info().has_authentication());
+  const auto& proto_auth = stanza.jingle().session_info().authentication();
+  EXPECT_EQ(proto_auth.spake_message(), std::string(32, '\x07'));
+  ASSERT_TRUE(proto_auth.has_pairing_failed());
+  EXPECT_EQ(proto_auth.pairing_failed().error(), "invalid-shared-secret");
+
+  JingleMessage converted;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(stanza, &converted, &error)) << error;
+  const auto* converted_info = std::get_if<SessionInfo>(&converted.payload());
+  ASSERT_TRUE(converted_info);
+  ASSERT_TRUE(converted_info->authentication.has_value());
+  EXPECT_EQ(converted_info->authentication->spake_message, auth.spake_message);
+  EXPECT_EQ(converted_info->authentication->pairing_error,
+            "invalid-shared-secret");
+}
+
+TEST_F(JingleMessageProtoConverterTest,
+       ConvertSessionInfo_PairingFailedEmptyErrorUsesFallback) {
+  JingleMessage template_msg;
+  template_msg.from = from_address_;
+  template_msg.to = to_address_;
+  template_msg.message_id = "msg_info_pairing_failed_empty";
+  template_msg.sid = "crd_sess_987654321";
+  template_msg.SetPayload(SessionInfo());
+
+  // 1. Submessage present with unset `error` field (`pairing_failed {}`).
+  ftl::IqStanza unset_error_stanza = template_msg.ToFtlIqStanza();
+  unset_error_stanza.mutable_jingle()
+      ->mutable_session_info()
+      ->mutable_authentication()
+      ->mutable_pairing_failed();
+
+  JingleMessage converted_unset;
+  std::string error;
+  ASSERT_TRUE(
+      JingleMessageFromProto(unset_error_stanza, &converted_unset, &error))
+      << error;
+  const auto* unset_info = std::get_if<SessionInfo>(&converted_unset.payload());
+  ASSERT_TRUE(unset_info);
+  ASSERT_TRUE(unset_info->authentication.has_value());
+  EXPECT_FALSE(unset_info->authentication->is_empty());
+  EXPECT_EQ(unset_info->authentication->pairing_error,
+            JingleAuthentication::kDefaultPairingError);
+
+  // 2. Submessage present with empty `error` string (`error: ""`).
+  ftl::IqStanza empty_error_stanza = template_msg.ToFtlIqStanza();
+  empty_error_stanza.mutable_jingle()
+      ->mutable_session_info()
+      ->mutable_authentication()
+      ->mutable_pairing_failed()
+      ->set_error("");
+
+  JingleMessage converted_empty;
+  ASSERT_TRUE(
+      JingleMessageFromProto(empty_error_stanza, &converted_empty, &error))
+      << error;
+  const auto* empty_info = std::get_if<SessionInfo>(&converted_empty.payload());
+  ASSERT_TRUE(empty_info);
+  ASSERT_TRUE(empty_info->authentication.has_value());
+  EXPECT_FALSE(empty_info->authentication->is_empty());
+  EXPECT_EQ(empty_info->authentication->pairing_error,
+            JingleAuthentication::kDefaultPairingError);
 }
 
 TEST_F(JingleMessageProtoConverterTest,
@@ -1100,6 +1291,34 @@ TEST_F(JingleMessageProtoConverterTest, ConvertAttachmentsRoundTrip) {
   EXPECT_EQ(converted_message.attachments[1]
                 .host_config->settings["Av1-Encoder-Speed"],
             "11");
+}
+
+TEST_F(JingleMessageProtoConverterTest,
+       ConvertHostAttributesAttachment_SplitsLegacyCommaJoinedTokens) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = kMessageId;
+  message.sid = kSid;
+  message.SetPayload(SessionAccept());
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  auto* proto_host_attributes =
+      stanza.mutable_jingle()->add_attachments()->mutable_host_attributes();
+  proto_host_attributes->add_attribute("Debug-Build, HWEncoder ");
+  proto_host_attributes->add_attribute("MultiProcessHost");
+
+  JingleMessage converted;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(stanza, &converted, &error)) << error;
+  ASSERT_EQ(converted.attachments.size(), 1u);
+  ASSERT_TRUE(converted.attachments[0].host_attributes.has_value());
+  EXPECT_THAT(
+      converted.attachments[0].host_attributes->attribute,
+      testing::ElementsAre("Debug-Build", "HWEncoder", "MultiProcessHost"));
+  EXPECT_THAT(converted.ToSerializedXml(),
+              testing::HasSubstr(
+                  "host-attributes>Debug-Build,HWEncoder,MultiProcessHost</"));
 }
 
 TEST_F(JingleMessageProtoConverterTest, ConvertUnknownTerminateReason) {

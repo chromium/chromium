@@ -1118,7 +1118,9 @@ bool JingleAuthenticationFromXml(const jingle_xmpp::XmlElement* element,
   const XmlElement* pairing_failed_el =
       element->FirstNamed(kQNamePairingFailed);
   if (pairing_failed_el) {
-    authentication->pairing_error = pairing_failed_el->Attr(kQNameError);
+    const std::string& error = pairing_failed_el->Attr(kQNameError);
+    authentication->pairing_error =
+        error.empty() ? JingleAuthentication::kDefaultPairingError : error;
   }
 
   const XmlElement* test_id_el = element->FirstNamed(kQNameTestId);
