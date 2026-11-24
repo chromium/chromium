@@ -227,6 +227,10 @@ const CGFloat kSelectionUICornerRadius = 13.0;
     self.sidePanelOpen = YES;
     self.selectionViewController.view.layer.cornerRadius =
         kSelectionUICornerRadius;
+    [self.selectionViewController
+        zoomImageToCenter:UIEdgeInsetsMake(0, kSidePanelSelectionPadding, 0,
+                                           kSidePanelSelectionPadding)];
+    [self.view layoutIfNeeded];
     if (completion) {
       completion();
     }

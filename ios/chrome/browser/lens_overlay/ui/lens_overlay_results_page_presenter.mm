@@ -511,6 +511,8 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 // Called after the results page has appeared.
 - (void)resultsPagePresentationDidAppear {
   _presentingAnimationInProgress = NO;
+
+  [self adjustSelectionOcclusionInsets];
 }
 
 // Called before the results page is dismissed.
