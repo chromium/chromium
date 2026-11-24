@@ -118,10 +118,11 @@ BASE_FEATURE(kScopedBestEffortExecutionFenceForTaskQueue,
 // This feature is only in effect when BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 // is on and `TraceStackFramePointers` would run stack scanning. Default gap
 // threshold is an absurdly large 100MB.
-// The feature is enabled by default on ChromeOS where crashes caused by
-// unreliable stack end are found. See https://crbug.com/402542102
+// The feature is enabled by default on ChromeOS and Linux where crashes caused
+// by unreliable stack end are found. See https://crbug.com/402542102 and
+// https://crbug.com/558415432.
 BASE_FEATURE(kStackScanMaxFramePointerToStackEndGap,
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
              FEATURE_ENABLED_BY_DEFAULT
 #else
              FEATURE_DISABLED_BY_DEFAULT
