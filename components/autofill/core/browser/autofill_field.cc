@@ -345,13 +345,11 @@ bool IsAutofillAiPrediction(const FieldPrediction& prediction) {
 bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
                              const AutofillField::FieldLogEventType& event2) {
   return std::visit(
-      [](const auto& e1, const auto& e2) {
-        if constexpr (std::is_same_v<decltype(e1), decltype(e2)>) {
-          return AreCollapsible(e1, e2);
-        }
-        return false;
+      [&event2]<typename T>(const T& e1) {
+        const auto* e2 = std::get_if<T>(&event2);
+        return e2 && AreCollapsible(e1, *e2);
       },
-      event1, event2);
+      event1);
 }
 
 }  // namespace
