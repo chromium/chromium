@@ -139,7 +139,13 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
 
   // syncer::DeviceInfoSyncClient:
   bool GetDesktopToIOSPromoReceivingEnabled() const override {
-    return MobilePromoOnDesktopEnabled();
+    // The legacy boolean only represents the original promos (ESB and
+    // Autofill/Passwords, or kAllPromos) for backwards compatibility with
+    // older Desktop clients.
+    return GetDesktopToIOSPromoReceivingTypes().HasAny(
+        {MobilePromoOnDesktopPromoType::kAllPromos,
+         MobilePromoOnDesktopPromoType::kAutofillPromo,
+         MobilePromoOnDesktopPromoType::kESBPromo});
   }
 
   // syncer::DeviceInfoSyncClient:

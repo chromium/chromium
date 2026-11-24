@@ -77,7 +77,9 @@ class IOSPromoControllerBrowserTest : public InProcessBrowserTest {
   IOSPromoControllerBrowserTest() {
     feature_list_.InitWithFeatures(
         {kMobilePromoOnDesktopWithReminder,
+         kMobilePromoOnDesktopWithReminderWave1,
          feature_engagement::kIPHiOSPasswordPromoDesktopFeature,
+         feature_engagement::kIPHiOSLensPromoDesktopFeature,
          sync_preferences::features::kEnableCrossDevicePrefTracker},
         {});
   }
@@ -287,6 +289,28 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
 
   // Trigger the promo.
   promo_service()->NotifyPromoShouldBeShown(PromoType::kPassword);
+}
+
+// Verifies that a non-Wave 0 promo is not shown for a legacy iOS client that
+// only populates the legacy boolean and has an empty types list.
+IN_PROC_BROWSER_TEST_F(
+    IOSPromoControllerBrowserTest,
+    ShowPromo_ReceivingEnabled_LegacyClient_NonLegacyPromoNotShown) {
+  // Add a device with legacy receiving enabled and an empty types list.
+  device_info_tracker()->Add(
+      CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true, {}));
+
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  views::test::WidgetTest::SimulateNativeActivate(widget);
+  views::test::WaitForWidgetActive(widget, true);
+
+  EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
+      .Times(0);
+
+  // Trigger a Wave 1 promo (Lens), which is not supported by the legacy
+  // boolean fallback.
+  promo_service()->NotifyPromoShouldBeShown(PromoType::kLens);
 }
 
 // Verifies that the promo is shown when the specific promo type is enabled,
