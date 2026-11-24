@@ -130,6 +130,10 @@ BASE_FEATURE_PARAM(bool,
                    "bookmark",
                    true);
 BASE_FEATURE(kMenuSimplification, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kMenuSimplificationGlicSearchAboveSaveAndPrint,
+                   &kMenuSimplification,
+                   false);
 BASE_FEATURE(kTabGroupColorRefresh, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebuiRefresh2026, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAppMenuGlowUp, base::FEATURE_DISABLED_BY_DEFAULT);
