@@ -1881,13 +1881,8 @@ OrderedMarker GetLetterMarker(
   // their first item, which "i" is as a Roman numeral.
   //
   // "v" and "x" would start partway through either kind of list, so they're
-  // read as letters.
-  //
-  // TODO(crbug.com/525509231): Lists end at each page break, so the first item
-  // on a new page has no list to follow. If the guess above is wrong, e.g.
-  // letter "i" after "h" or Roman "v" after "iv", the next marker doesn't
-  // confirm a list and the item becomes a paragraph. Try the other style when
-  // the first one doesn't confirm a list.
+  // read as letters. If this guess doesn't confirm a list,
+  // `CheckOrderedMarkerInEitherStyle()` tries the other style.
   return letters == "i" ? roman_marker : letter_marker;
 }
 
@@ -2134,6 +2129,42 @@ OrderedListCheck ContinuesOrConfirmsOrderedList(
   return IsOrderedListStartConfirmed(context, run_index, ordered_kind);
 }
 
+// Checks `ordered_kind` with `ContinuesOrConfirmsOrderedList()`, then tries the
+// other style if it doesn't match. A lone "i", "v" or "x" may be read in the
+// wrong style, e.g. letter "i" at the top of a page that continues an "h." list
+// from the previous page.
+//
+// Keeps the first check's lookahead if neither style matches.
+OrderedListCheck CheckOrderedMarkerInEitherStyle(
+    const ListMarkerContext& context,
+    size_t run_index,
+    const ListMarkerKind& ordered_kind) {
+  const PageLayoutData& layout = *context.layout;
+  const OrderedListCheck check =
+      ContinuesOrConfirmsOrderedList(context, run_index, ordered_kind);
+  const OrderedMarkerType::CounterStyle counter_style =
+      ordered_kind.ordered_marker->type.counter_style;
+  if (check.kind.form != ListMarkerForm::kNone ||
+      counter_style == OrderedMarkerType::CounterStyle::kDecimal) {
+    return check;
+  }
+  const OrderedMarker other_style_marker = {
+      .type = {.counter_style =
+                   counter_style == OrderedMarkerType::CounterStyle::kLowerRoman
+                       ? OrderedMarkerType::CounterStyle::kLowerAlpha
+                       : OrderedMarkerType::CounterStyle::kLowerRoman}};
+  const ListMarkerKind other_kind = ClassifyOrderedMarker(
+      GetTextRunContext(layout, run_index), other_style_marker);
+  // Changing the style keeps the same marker text, so it still matches.
+  CHECK(other_kind.ordered_marker.has_value());
+  if (other_kind.ordered_marker->type == ordered_kind.ordered_marker->type) {
+    return check;
+  }
+  const OrderedListCheck other_check =
+      ContinuesOrConfirmsOrderedList(context, run_index, other_kind);
+  return other_check.kind.form != ListMarkerForm::kNone ? other_check : check;
+}
+
 // Classifies whether the run at `run_index` is a standalone list marker run or
 // combines a list marker with item text.
 ListMarkerKind ClassifyListMarker(
@@ -2194,7 +2225,7 @@ ListMarkerKind ClassifyListMarker(
   }
 
   const OrderedListCheck check =
-      ContinuesOrConfirmsOrderedList(context, run_index, ordered_kind);
+      CheckOrderedMarkerInEitherStyle(context, run_index, ordered_kind);
   if (check.lookahead_lines.has_value()) {
     RecordOrderedListLookaheadLines(run_index, *check.lookahead_lines,
                                     last_recorded_lookahead_run_index);

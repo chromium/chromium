@@ -7878,6 +7878,37 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListLowerAlphaStartsAtX) {
       ListStartReason::kLowerAlphaStartsAboveA, 1);
 }
 
+// A list starting at "i." is lettered when "j." follows, e.g. when a lettered
+// list continues at the top of a new page.
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListLowerAlphaStartsAtI) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"i.", "Item I", "j.", "Item J", "k.", "Item K"},
+      {
+          gfx::RectF(30.0f, 20.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 20.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 35.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 35.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 50.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 50.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Item I", "Item J", "Item K"},
+                   {"i. ", "j. ", "k. "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kLowerAlphaStartsAboveA, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 0, 1);
+}
+
 // A lone letter followed by a period (e.g. "v." in a case name) needs the next
 // letter to confirm a list, and abbreviations such as "e.g." aren't markers.
 TEST_F(PdfAccessibilityTreeTest,
@@ -8129,6 +8160,104 @@ TEST_F(PdfAccessibilityTreeTest,
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.ListStartReason",
       ListStartReason::kLowerRomanStartsAboveI, 1);
+}
+
+// A list starting at "v." is Roman when "vi." follows, e.g. when a Roman list
+// continues at the top of a new page.
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListLowerRomanStartsAtV) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"v.", "Item v", "vi.", "Item vi", "vii.", "Item vii"},
+      {
+          gfx::RectF(30.0f, 20.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 20.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 35.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 35.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 50.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 50.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Item v", "Item vi", "Item vii"},
+                   {"v. ", "vi. ", "vii. "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kLowerRomanStartsAboveI, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 0, 1);
+}
+
+// A list starting at "x." is Roman when "xi." follows.
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListLowerRomanStartsAtX) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"x.", "Item x", "xi.", "Item xi", "xii.", "Item xii"},
+      {
+          gfx::RectF(30.0f, 20.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 20.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 35.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 35.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 50.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 50.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Item x", "Item xi", "Item xii"},
+                   {"x. ", "xi. ", "xii. "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kLowerRomanStartsAboveI, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 0, 1);
+}
+
+// The letter "v." reads the Roman list below it as item text and reaches the
+// lookahead limit. The lookahead histogram records the Roman retry instead,
+// which confirms the list on the next line.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListLowerRomanStartsAtVRecordsRetryLookahead) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // "vi." is followed by 15 lines of its item text, so the letter "v." scans
+  // 16 lines without finding "w.".
+  std::vector<std::string> texts = {"v.", "Item v", "vi.", "Item vi"};
+  std::vector<gfx::RectF> bounds = {gfx::RectF(30.0f, 20.0f, 20.0f, 12.0f),
+                                    gfx::RectF(55.0f, 20.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 35.0f, 20.0f, 12.0f),
+                                    gfx::RectF(55.0f, 35.0f, 60.0f, 12.0f)};
+  for (int i = 2; i <= 16; ++i) {
+    texts.push_back("Line");
+    bounds.emplace_back(55.0f, 20.0f + i * 15.0f, 60.0f, 12.0f);
+  }
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(texts, bounds);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+  const ui::AXNode* list = page->GetChildAtIndex(0u);
+  EXPECT_EQ(ax::mojom::Role::kList, list->GetRole());
+  EXPECT_EQ(2u, list->GetChildCount());
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kLowerRomanStartsAboveI, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 0, 1);
 }
 
 // "x." after "ix." is a Roman numeral, not a letter, and numerals past ten
