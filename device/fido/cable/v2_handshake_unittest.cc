@@ -9,8 +9,8 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
+#include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -409,7 +409,7 @@ TEST(CableV2Encoding, Digits) {
   base::RandBytes(test_data);
 
   // |BytesToDigits| and |DigitsToBytes| should round-trip.
-  for (size_t i = 0; i < base::SpanificationSizeofForStdArray(test_data); i++) {
+  for (size_t i = 0; i < test_data.size(); i++) {
     std::string digits = qr::BytesToDigits(base::span(test_data).first(i));
     std::optional<std::vector<uint8_t>> test_data_again =
         qr::DigitsToBytes(digits);
