@@ -273,12 +273,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   virtual void OnImmersiveXrSessionStopped() = 0;
   virtual bool HasImmersiveXrSessionForTesting() const = 0;
 
-  // Returns true if the process is hosting a Top Chrome WebUI, e.g., Tab
-  // Search, Side Panel, Initial WebUI. High-privilege WebUIs that share
-  // processes use this to ensure they don't share with non-Top Chrome WebUIs.
-  //
-  // This function is defined on all platforms, but is expected to always return
-  // false on platforms that do not support Top Chrome WebUIs, e.g., Android.
+  // Returns true if this process was created for a Top Chrome WebUI, i.e. for
+  // a `SiteInstance` whose site URL satisfies
+  // `ContentBrowserClient::IsTopChromeWebUIURL()`. The value is set once when
+  // the process is created. Such a renderer is launched with
+  // `--top-chrome-webui` and gets Top Chrome WebUI-specific behavior, and the
+  // browser process also checks this to treat the process differently.
   virtual bool IsForTopChromeWebUI() const = 0;
 
   // Returns true if the GPU channel should be established early for this

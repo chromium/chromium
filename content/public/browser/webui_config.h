@@ -39,7 +39,10 @@ class CONTENT_EXPORT WebUIConfig {
   // can share a renderer process while keeping their own site URL
   // (`chrome://<host>/`), so their `WebUIType` remains distinct. Note that
   // WebUIs with the same `process_lock_host` are not process-isolated from each
-  // other.
+  // other. Properties that the embedder decides per renderer process from a
+  // site URL (e.g. `ContentBrowserClient::IsTopChromeWebUIURL()`) are
+  // evaluated once when the process is created, so they must be the same for
+  // all WebUIs with the same `process_lock_host`.
   //
   // CHECKs that `process_lock_host` is `std::nullopt` for any non-`chrome://`
   // scheme. `WebUIConfigMap` also CHECKs that it is not the host of a

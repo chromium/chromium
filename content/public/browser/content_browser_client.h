@@ -854,13 +854,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // by features like the WebUI reload button.
   virtual bool IsInitialWebUIURL(const GURL& url);
 
-  // Returns true if the given `url` hosts a Top Chrome WebUI.
-  // This allows the embedder to identify WebUIs that are part of the browser
-  // chrome, e.g., Tab Search, Side Panel, Initial WebUI etc., so that content/
-  // can apply specific process-sharing or metric-gathering logic.
-  //
-  // This function is defined on all platforms, but is expected to always return
-  // false on platforms that do not support Top Chrome WebUIs, e.g., Android.
+  // Returns true if `url` is a Top Chrome WebUI, i.e. a WebUI that is part of
+  // the embedder's browser UI rather than web content (e.g. Tab Search in
+  // Chrome). A renderer process created for such a WebUI is treated specially;
+  // see `RenderProcessHost::IsForTopChromeWebUI()`. Returns false by default.
   virtual bool IsTopChromeWebUIURL(const GURL& url);
 
   // Returns true if the given `render_frame_host` is allowed to use MojoJS
