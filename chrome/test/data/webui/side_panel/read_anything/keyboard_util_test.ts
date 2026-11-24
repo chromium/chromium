@@ -123,6 +123,22 @@ suite('Keyboard utils', () => {
     assertFalse(isLineFocusShortcut(
         new KeyboardEvent('keydown', {key: 'l', shiftKey: true})));
 
+    // Key repeat should fail
+    assertFalse(isLineFocusShortcut(
+        new KeyboardEvent('keydown', {key: 'l', altKey: true, repeat: true})));
+
+    // Alt combined with Ctrl, Meta, or Shift should fail
+    assertFalse(isLineFocusShortcut(
+        new KeyboardEvent('keydown', {key: 'l', altKey: true, ctrlKey: true})));
+    assertFalse(isLineFocusShortcut(
+        new KeyboardEvent('keydown', {key: 'l', altKey: true, metaKey: true})));
+    assertFalse(isLineFocusShortcut(new KeyboardEvent(
+        'keydown', {key: 'l', altKey: true, shiftKey: true})));
+
+    // AltGr (reported as Ctrl+Alt) should fail, e.g. Polish ł
+    assertFalse(isLineFocusShortcut(new KeyboardEvent(
+        'keydown', {key: 'ł', code: 'KeyL', altKey: true, ctrlKey: true})));
+
     // Other keys should fail even with Alt
     assertFalse(isLineFocusShortcut(
         new KeyboardEvent('keydown', {key: 'k', altKey: true})));

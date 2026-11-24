@@ -371,6 +371,18 @@ suite('LineFocusController', () => {
     assertFalse(await metrics.whenCalled('recordLineFocusToggled'));
   });
 
+  test('repeated toggle key is ignored', () => {
+    const container = createShortContainer();
+    lineFocusController.toggle(false, container, defaultHeight);
+    metrics.reset();
+
+    assertFalse(lineFocusController.onKeyDown(
+        new KeyboardEvent('keydown', {key: 'l', altKey: true, repeat: true}),
+        container, defaultHeight));
+    assertFalse(lineFocusController.isEnabled());
+    assertEquals(0, metrics.getCallCount('recordLineFocusToggled'));
+  });
+
   test('onMouseMove does nothing when speech active', () => {
     readAloudModel.setInitialized(false);
     const container = createLongContainer();

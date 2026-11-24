@@ -56,11 +56,17 @@ function hasNoModifiers(e: KeyboardEvent): boolean {
   return !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey;
 }
 
+// Ignores held-down keys, so holding Alt+L doesn't keep turning line focus on
+// and off.
+//
+// AltGr (the right Alt key on many non-US keyboards) types extra characters,
+// e.g. ł on Polish layouts. Windows reports it as Ctrl+Alt, so Ctrl must be up.
 export function isLineFocusShortcut(e: KeyboardEvent): boolean {
-  return e.altKey && !e.shiftKey &&
+  return !e.repeat && e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey &&
       (e.key?.toLowerCase() === 'l' || e.code === 'KeyL');
 }
 
+// TODO(crbug.com/590149401): Ignore key repeat here too.
 export function isPlayPauseShortcut(e: KeyboardEvent): boolean {
   return e.key?.toLowerCase() === 'k' && hasNoModifiers(e);
 }
