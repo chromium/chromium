@@ -11,15 +11,7 @@ stages {
   input {
     patch { copybara {} }
   }
-  publish {
-    git {
-      # Publish removes every src/ below this directory. Keep the src/ of
-      # the nested Crowbar packages.
-      patterns: "!/libprocinfo/src/"
-      patterns: "!/libbase/src/"
-      patterns: "!/art/src/"
-    }
-  }
+  publish { git {} }
 }
 latest {
   generic {

@@ -6,7 +6,7 @@ Chromium's android-binary-size check fails on new static initializers,
 which blocked rolls (crbug.com/375463618).
 
 Chromium commit d1e3895 in libunwindstack.git. Its DexFile part is
-0016 in //third_party/libunwindstack/patches.
+0016 in //third_party/libunwindstack/unwinding/patches.
 
 diff --git a/src/libdexfile/dex/dex_file_loader.cc b/src/libdexfile/dex/dex_file_loader.cc
 index 3ceb754..a3184ae 100644

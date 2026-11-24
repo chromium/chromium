@@ -3,7 +3,7 @@ URL: https://android.googlesource.com/platform/system/unwinding
 Version: android-17.0.0_r1
 Revision: 31327c70da147fdc069598c4a5fd075aea8d3312
 License: Apache-2.0, BSD-2-Clause
-License File: LICENSE, src/libunwindstack/LICENSE_BSD
+License File: //third_party/libunwindstack/LICENSE, src/libunwindstack/LICENSE_BSD
 Shipped: yes
 Security Critical: yes
 Update Mechanism: Manual
@@ -23,7 +23,7 @@ this complexity.
 `libunwindstack` is copied from the Android tree and utilizes common Android
 libraries from that tree. This is analagous to how a static library that is
 built within the Chromium tree might utilize `//base` and `//threading`. For
-`libunwindstack`, we copy its Android tree dependencies into this directory.
+`libunwindstack`, we copy its Android tree dependencies next to this directory.
 
 `libunwindstack` uses `libdexfile` for symbolizing interpreted java frames
 client-side, as doing this server-side is not currently practical. `libdexfile`
@@ -37,14 +37,14 @@ Update commit hashes in crowbar.txtpb, then run from this directory:
 crowbar build --no-dry-run ./
 
 copy.bara.sky lists every file it imports. If the new upstream version
-adds a file Chromium needs, add it there and to BUILD.gn.
-libprocinfo/, libbase/ and art/ are separate Crowbar packages with
+adds a file Chromium needs, add it there and to ../BUILD.gn.
+../libprocinfo/, ../libbase/ and ../art/ are separate Crowbar packages with
 their own update instructions.
 
 
 Local Modifications:
 The patches are in patches/; copy.bara.sky applies them in this order.
-The libbase and ART patches are in libbase/patches/ and art/patches/.
+The libbase and ART patches are in ../libbase/patches/ and ../art/patches/.
 - 0002-create-local-process-memory.patch: add
   Memory::CreateLocalProcessMemory().
 - 0004-dont-include-bionic-headers.patch: no <bionic/mte.h> or
