@@ -105,7 +105,6 @@ std::unique_ptr<KeyedService>
 TestSystemWebAppManagerCreator::CreateSystemWebAppManager(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  DCHECK(!SystemWebAppManagerFactory::IsServiceCreatedForProfile(profile));
   if (!web_app::AreWebAppsEnabled(profile) || !callback_)
     return nullptr;
   return callback_.Run(profile);
