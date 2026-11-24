@@ -11,12 +11,11 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -35,63 +34,62 @@ namespace {
 
 using FlatUrlRuleList = flatbuffers::Vector<flatbuffers::Offset<flat::UrlRule>>;
 
-using ActivationTypeMap =
-    base::flat_map<proto::ActivationType, flat::ActivationType>;
-using ElementTypeMap = base::flat_map<proto::ElementType, flat::ElementType>;
+// Returns a bitmask of all the keys of the `map` passed.
+template <typename T>
+consteval int GetKeysMask(const T& map) {
+  int mask = 0;
+  for (const auto& pair : map) {
+    mask |= pair.first;
+  }
+  return mask;
+}
 
 // Maps proto::ActivationType to flat::ActivationType.
-const ActivationTypeMap& GetActivationTypeMap() {
-  static base::NoDestructor<ActivationTypeMap> activation_type_map(
-      std::initializer_list<ActivationTypeMap::value_type>{
-          {proto::ACTIVATION_TYPE_UNSPECIFIED, flat::ActivationType_NONE},
-          {proto::ACTIVATION_TYPE_DOCUMENT, flat::ActivationType_DOCUMENT},
-          // ELEMHIDE is not supported.
-          {proto::ACTIVATION_TYPE_ELEMHIDE, flat::ActivationType_NONE},
-          // GENERICHIDE is not supported.
-          {proto::ACTIVATION_TYPE_GENERICHIDE, flat::ActivationType_NONE},
-          {proto::ACTIVATION_TYPE_GENERICBLOCK,
-           flat::ActivationType_GENERIC_BLOCK},
-      });
-  return *activation_type_map;
-}
+constexpr auto kActivationTypeMap =
+    base::MakeFixedFlatMap<proto::ActivationType, flat::ActivationType>({
+        {proto::ACTIVATION_TYPE_UNSPECIFIED, flat::ActivationType_NONE},
+        {proto::ACTIVATION_TYPE_DOCUMENT, flat::ActivationType_DOCUMENT},
+        // ELEMHIDE is not supported.
+        {proto::ACTIVATION_TYPE_ELEMHIDE, flat::ActivationType_NONE},
+        // GENERICHIDE is not supported.
+        {proto::ACTIVATION_TYPE_GENERICHIDE, flat::ActivationType_NONE},
+        {proto::ACTIVATION_TYPE_GENERICBLOCK,
+         flat::ActivationType_GENERIC_BLOCK},
+    });
+static_assert(proto::ACTIVATION_TYPE_ALL == GetKeysMask(kActivationTypeMap),
+              "All proto::ActivationType(s) must be mapped.");
 
 // Maps proto::ElementType to flat::ElementType.
-const ElementTypeMap& GetElementTypeMap() {
-  static base::NoDestructor<ElementTypeMap> element_type_map(
-      std::initializer_list<ElementTypeMap::value_type>{
-          {proto::ELEMENT_TYPE_UNSPECIFIED, flat::ElementType_NONE},
-          {proto::ELEMENT_TYPE_OTHER, flat::ElementType_OTHER},
-          {proto::ELEMENT_TYPE_SCRIPT, flat::ElementType_SCRIPT},
-          {proto::ELEMENT_TYPE_IMAGE, flat::ElementType_IMAGE},
-          {proto::ELEMENT_TYPE_STYLESHEET, flat::ElementType_STYLESHEET},
-          {proto::ELEMENT_TYPE_OBJECT, flat::ElementType_OBJECT},
-          {proto::ELEMENT_TYPE_XMLHTTPREQUEST,
-           flat::ElementType_XMLHTTPREQUEST},
-          {proto::ELEMENT_TYPE_OBJECT_SUBREQUEST,
-           flat::ElementType_OBJECT_SUBREQUEST},
-          {proto::ELEMENT_TYPE_SUBDOCUMENT, flat::ElementType_SUBDOCUMENT},
-          {proto::ELEMENT_TYPE_PING, flat::ElementType_PING},
-          {proto::ELEMENT_TYPE_MEDIA, flat::ElementType_MEDIA},
-          {proto::ELEMENT_TYPE_FONT, flat::ElementType_FONT},
-          // Filtering popups is not supported.
-          {proto::ELEMENT_TYPE_POPUP, flat::ElementType_NONE},
-          {proto::ELEMENT_TYPE_WEBSOCKET, flat::ElementType_WEBSOCKET},
-          {proto::ELEMENT_TYPE_WEBTRANSPORT, flat::ElementType_WEBTRANSPORT},
-          {proto::ELEMENT_TYPE_WEBBUNDLE, flat::ElementType_WEBBUNDLE},
-      });
-  return *element_type_map;
-}
+constexpr auto kElementTypeMap =
+    base::MakeFixedFlatMap<proto::ElementType, flat::ElementType>({
+        {proto::ELEMENT_TYPE_UNSPECIFIED, flat::ElementType_NONE},
+        {proto::ELEMENT_TYPE_OTHER, flat::ElementType_OTHER},
+        {proto::ELEMENT_TYPE_SCRIPT, flat::ElementType_SCRIPT},
+        {proto::ELEMENT_TYPE_IMAGE, flat::ElementType_IMAGE},
+        {proto::ELEMENT_TYPE_STYLESHEET, flat::ElementType_STYLESHEET},
+        {proto::ELEMENT_TYPE_OBJECT, flat::ElementType_OBJECT},
+        {proto::ELEMENT_TYPE_XMLHTTPREQUEST, flat::ElementType_XMLHTTPREQUEST},
+        {proto::ELEMENT_TYPE_OBJECT_SUBREQUEST,
+         flat::ElementType_OBJECT_SUBREQUEST},
+        {proto::ELEMENT_TYPE_SUBDOCUMENT, flat::ElementType_SUBDOCUMENT},
+        {proto::ELEMENT_TYPE_PING, flat::ElementType_PING},
+        {proto::ELEMENT_TYPE_MEDIA, flat::ElementType_MEDIA},
+        {proto::ELEMENT_TYPE_FONT, flat::ElementType_FONT},
+        // Filtering popups is not supported.
+        {proto::ELEMENT_TYPE_POPUP, flat::ElementType_NONE},
+        {proto::ELEMENT_TYPE_WEBSOCKET, flat::ElementType_WEBSOCKET},
+        {proto::ELEMENT_TYPE_WEBTRANSPORT, flat::ElementType_WEBTRANSPORT},
+        {proto::ELEMENT_TYPE_WEBBUNDLE, flat::ElementType_WEBBUNDLE},
+    });
+static_assert(proto::ELEMENT_TYPE_ALL == GetKeysMask(kElementTypeMap),
+              "All proto::ElementType(s) must be mapped.");
 
 flat::ActivationType ProtoToFlatActivationType(proto::ActivationType type) {
-  const auto it = GetActivationTypeMap().find(type);
-  CHECK(it != GetActivationTypeMap().end());
-  return it->second;
+  return kActivationTypeMap.at(type);
 }
 
 flat::ElementType ProtoToFlatElementType(proto::ElementType type) {
-  const auto it = GetElementTypeMap().find(type);
-  CHECK(it != GetElementTypeMap().end());
-  return it->second;
+  return kElementTypeMap.at(type);
 }
 
 std::string_view ToStringView(const flatbuffers::String* string) {
@@ -109,15 +107,6 @@ bool UrlRuleDescendingPriorityComparator(const flat::UrlRule* lhs,
   DCHECK(lhs);
   DCHECK(rhs);
   return lhs->priority() > rhs->priority();
-}
-
-// Returns a bitmask of all the keys of the |map| passed.
-template <typename T>
-int GetKeysMask(const T& map) {
-  int mask = 0;
-  for (const auto& pair : map)
-    mask |= pair.first;
-  return mask;
 }
 
 // Checks whether a URL |rule| can be converted to its FlatBuffers equivalent,
@@ -336,15 +325,13 @@ class UrlRuleFlatBufferConverter {
       return true;
     }
 
-    const ElementTypeMap& element_type_map = GetElementTypeMap();
-    // Ensure all proto::ElementType(s) are mapped in |element_type_map|.
-    DCHECK_EQ(proto::ELEMENT_TYPE_ALL, GetKeysMask(element_type_map));
-
     element_types_ = flat::ElementType_NONE;
 
-    for (const auto& pair : element_type_map)
-      if (rule_->element_types() & pair.first)
-        element_types_ |= pair.second;
+    for (const auto& [proto_type, flat_type] : kElementTypeMap) {
+      if (rule_->element_types() & proto_type) {
+        element_types_ |= flat_type;
+      }
+    }
 
     // Normally we can not distinguish between the main plugin resource and any
     // other loads it makes. We treat them both as OBJECT requests. Hence an
@@ -361,15 +348,13 @@ class UrlRuleFlatBufferConverter {
         flat::ActivationType_ANY <= std::numeric_limits<uint8_t>::max(),
         "Activation types can not be stored in uint8_t.");
 
-    const ActivationTypeMap& activation_type_map = GetActivationTypeMap();
-    // Ensure all proto::ActivationType(s) are mapped in |activation_type_map|.
-    DCHECK_EQ(proto::ACTIVATION_TYPE_ALL, GetKeysMask(activation_type_map));
-
     activation_types_ = flat::ActivationType_NONE;
 
-    for (const auto& pair : activation_type_map)
-      if (rule_->activation_types() & pair.first)
-        activation_types_ |= pair.second;
+    for (const auto& [proto_type, flat_type] : kActivationTypeMap) {
+      if (rule_->activation_types() & proto_type) {
+        activation_types_ |= flat_type;
+      }
+    }
 
     return true;
   }
