@@ -35,6 +35,7 @@
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -175,6 +176,7 @@ class ExtendedUpdatesControllerTest : public ChromeAshTestBase {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   base::CallbackListSubscription subscription_;
+  apps::AppServiceRegistry app_service_registry_;
   TestingProfileManager profile_manager_;
   base::test::ScopedFeatureList feature_list_{
       features::kExtendedUpdatesOptInFeature};

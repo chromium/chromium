@@ -12,21 +12,25 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/update_model.h"
 #include "base/callback_list.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_notification.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/account_id/account_id.h"
 #include "components/ownership/owner_settings_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_service.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 
@@ -46,20 +50,20 @@ bool CheckEolParams(const ExtendedUpdatesController::Params& params) {
 }
 
 // Returns true if the user could have apps but doesn't have any Android apps.
+// `context` must be the device owner's Profile, which is verified by
+// IsOptInEligible() beforehand.
 bool HasNoAndroidApps(content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    // Likely incognito profile, which is not applicable here.
-    return false;
-  }
+  const AccountId& account_id = CHECK_DEREF(AnnotatedAccountId::Get(context));
+  apps::AppService& app_service =
+      CHECK_DEREF(apps::AppServiceRegistry::Get()->Find(account_id));
 
+  Profile* profile = Profile::FromBrowserContext(context);
   if (!arc::IsArcPlayStoreEnabledForProfile(profile)) {
     // Play store turned off.
     return true;
   }
 
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  auto& registry = proxy->AppRegistryCache();
+  auto& registry = app_service.AppRegistryCache();
   if (!registry.IsAppTypeInitialized(apps::AppType::kArc)) {
     // If ARC app type hasn't been initialized by now, there are no ARC apps.
     return true;
