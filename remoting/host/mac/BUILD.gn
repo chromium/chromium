@@ -75,6 +75,18 @@ source_set("trust_util") {
   ]
 }
 
+source_set("sandbox_mac") {
+  sources = [
+    "sandbox_mac.cc",
+    "sandbox_mac.h",
+  ]
+  deps = [
+    "//base",
+    "//remoting/host/base",
+    "//sandbox/mac:seatbelt",
+  ]
+}
+
 source_set("agent_process_broker_constants") {
   sources = [ "agent_process_broker_constants.h" ]
 }
@@ -332,18 +344,24 @@ target("mac_app_bundle", "remoting_native_messaging_host") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "agent_process_broker_unittest.cc" ]
+  sources = [
+    "agent_process_broker_unittest.cc",
+    "sandbox_mac_unittest.cc",
+  ]
 
   deps = [
     ":agent_process_broker",
     ":agent_process_broker_client",
+    ":sandbox_mac",
     "//base",
     "//base/test:test_support",
     "//components/named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
     "//remoting/host:chromoting_host_services_client",
     "//remoting/host:chromoting_host_services_server",
+    "//remoting/host/base",
     "//remoting/host/mojom",
+    "//sandbox/mac:seatbelt",
     "//testing/gmock",
     "//testing/gtest",
   ]

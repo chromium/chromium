@@ -70,6 +70,7 @@
 
 #include "remoting/host/audio_capturer_mac.h"
 #include "remoting/host/mac/permission_utils.h"
+#include "remoting/host/mac/sandbox_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -330,6 +331,20 @@ int HostMain(int argc, char** argv) {
     process_type = command_line->GetSwitchValueASCII(kProcessTypeSwitchName);
   }
 
+#if BUILDFLAG(IS_MAC)
+  const bool is_sandboxed_worker = process_type == kProcessTypeNetwork ||
+                                   process_type == kProcessTypePeerConnection;
+  if (is_sandboxed_worker) {
+    // Unlike Linux (`fork()` + `LaunchOptions::PreExecDelegate` in
+    // `LinuxWorkerProcessLauncherDelegate`), `base::LaunchProcess()` on macOS
+    // uses `posix_spawn()`, which has no `PreExecDelegate`
+    // (`!BUILDFLAG(IS_APPLE)`) and no public macOS `posix_spawn` API to switch
+    // to an arbitrary UID/GID before `exec`. Drop `root -> nobody` (-2) here at
+    // the start of `HostMain()`.
+    mac::DropRootPrivilegesAndAcquireBootstrapPort();
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_LINUX)
   if (process_type == kProcessTypePeerConnection) {
     // The peer connection process handles untrusted network traffic, and all
@@ -485,6 +500,12 @@ int HostMain(int argc, char** argv) {
   base::i18n::InitializeICU();
 
   remoting::LoadResources("");
+
+#if BUILDFLAG(IS_MAC)
+  if (is_sandboxed_worker) {
+    mac::EnterSeatbeltSandbox(process_type);
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   bool is_broker_process = false;
 #if !BUILDFLAG(IS_MAC)

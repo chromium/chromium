@@ -1428,7 +1428,10 @@ if (enable_me2me_host) {
       ]
     }
     if (is_mac) {
-      deps += [ "//remoting/host/mac:permission_checking" ]
+      deps += [
+        "//remoting/host/mac:permission_checking",
+        "//remoting/host/mac:sandbox_mac",
+      ]
     }
   }
 
