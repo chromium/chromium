@@ -99,6 +99,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper> {
               "The url of the icon for the extension, which includes the "
               "extension id."
             destination: GOOGLE_OWNED_SERVICE
+            static_content: true
             internal {
               contacts {
                 owners: "//extensions/OWNERS"
