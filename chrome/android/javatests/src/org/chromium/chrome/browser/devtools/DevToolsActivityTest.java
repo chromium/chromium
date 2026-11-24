@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
@@ -196,6 +197,43 @@ public class DevToolsActivityTest {
         ApplicationTestUtils.waitForActivityState(mTestRule.getActivity(), Stage.RESUMED);
     }
 
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testRecreateOnNightModeChange() {
+        Tab inspectedTab = mTestRule.startOnBlankPage().getTab();
+        verifyRecreateOnNightModeChange(inspectedTab, /* incognito= */ false);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testRecreateOnNightModeChangeForIncognitoTab() {
+        Tab inspectedTab = mTestRule.startOnIncognitoBlankPage().getTab();
+        assertTrue(runOnUiThreadBlocking(() -> inspectedTab.getProfile().isPrimaryOtrProfile()));
+        verifyRecreateOnNightModeChange(inspectedTab, /* incognito= */ true);
+    }
+
+    private void verifyRecreateOnNightModeChange(Tab inspectedTab, boolean incognito) {
+        DevToolsActivity initialActivity = openDevToolsAndWait(inspectedTab);
+        assertDevToolsTabAttached(initialActivity, incognito);
+        WebContents devToolsWebContents =
+                runOnUiThreadBlocking(() -> initialActivity.getActivityTab().getWebContents());
+        assertNotNull(devToolsWebContents);
+
+        // Recreate on night mode change (e.g. light -> dark) and verify DevTools stays open with
+        // the same frontend WebContents.
+        DevToolsActivity recreatedOnce = recreateOnNightModeChange(initialActivity);
+        assertDevToolsActivityAliveWithWebContents(recreatedOnce, devToolsWebContents, incognito);
+
+        // Recreate a second time (e.g. dark -> light) to verify repeated theme toggles.
+        DevToolsActivity recreatedTwice = recreateOnNightModeChange(recreatedOnce);
+        assertDevToolsActivityAliveWithWebContents(recreatedTwice, devToolsWebContents, incognito);
+
+        // Closing the inspected tab should still close the recreated DevToolsActivity.
+        closeInspectedTabAndWaitForDevToolsToClose(inspectedTab, recreatedTwice);
+    }
+
     /** Opens DevTools for the given tab and waits for the DevToolsActivity to be initialized. */
     private DevToolsActivity openDevToolsAndWait(Tab inspectedTab) {
         Profile profile = runOnUiThreadBlocking(inspectedTab::getProfile);
@@ -274,5 +312,35 @@ public class DevToolsActivityTest {
                 "DevToolsActivity wasn't closed.",
                 CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL_LONG,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    private static DevToolsActivity recreateOnNightModeChange(DevToolsActivity activity) {
+        DevToolsActivity recreated =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        DevToolsActivity.class, Stage.RESUMED, activity::onNightModeStateChanged);
+        assertNotSame(activity, recreated);
+        CriteriaHelper.pollUiThread(
+                activity::isDestroyed,
+                "Previous DevToolsActivity wasn't destroyed.",
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL_LONG,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                recreated::didFinishNativeInitialization,
+                "Recreated DevToolsActivity did not finish native initialization.");
+        return recreated;
+    }
+
+    private static void assertDevToolsActivityAliveWithWebContents(
+            DevToolsActivity activity, WebContents expectedWebContents, boolean incognito) {
+        assertDevToolsTabAttached(activity, incognito);
+        runOnUiThreadBlocking(
+                () -> {
+                    assertFalse("DevToolsActivity should not be destroyed", activity.isDestroyed());
+                    assertNotNull(activity.getActivityTab());
+                    assertSame(expectedWebContents, activity.getActivityTab().getWebContents());
+                    assertFalse(
+                            "DevTools WebContents should not be destroyed",
+                            expectedWebContents.isDestroyed());
+                });
     }
 }

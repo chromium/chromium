@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.devtools;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.SparseArray;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -18,10 +19,12 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
@@ -66,11 +69,26 @@ public class DevToolsActivity extends BaseCustomTabActivity {
         return IntentUtils.safeGetParcelableExtra(intent, WEB_CONTENTS_KEY);
     }
 
+    private static boolean isTabAwaitingReparentingFor(WebContents webContents) {
+        SparseArray<AsyncTabParams> params =
+                AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams();
+        for (int i = 0; i < params.size(); i++) {
+            Tab tab = params.valueAt(i).getTabToReparent();
+            if (tab != null && tab.getWebContents() == webContents) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected @LaunchIntentDispatcher.Action int maybeDispatchLaunchIntent(
             Intent intent, @Nullable Bundle savedInstanceState) {
         WebContents webContents = getWebContentsFromIntent(intent);
-        if (savedInstanceState != null || webContents == null || webContents.isDestroyed()) {
+        if (webContents == null || webContents.isDestroyed()) {
+            return LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK;
+        }
+        if (savedInstanceState != null && !isTabAwaitingReparentingFor(webContents)) {
             return LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK;
         }
         return super.maybeDispatchLaunchIntent(intent, savedInstanceState);
@@ -106,6 +124,12 @@ public class DevToolsActivity extends BaseCustomTabActivity {
 
         // Attach the given DevTools frontend web contents to the browser window.
         WebContents webContents = getWebContentsFromIntent(getIntent());
+        // When the activity is recreated in-process (e.g. on a theme or display configuration
+        // change), the reparented tab already hosts the DevTools frontend WebContents.
+        if (webContents != null && existingTab.getWebContents() == webContents) {
+            return;
+        }
+
         ChromeAndroidTask task = getChromeAndroidTaskSupplier().get();
         Profile profile = tabModel.getProfile();
         // NOTE: If this condition is not met, this activity briefly shows up, but quickly
