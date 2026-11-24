@@ -2909,13 +2909,15 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
 
   // The matched text is highlighted and not treated as a mnemonic.
   EXPECT_EQ(result->title(), u"Downloads");
-  EXPECT_EQ(result->highlight_range(), gfx::Range(0, 9));
+  EXPECT_THAT(result->highlight_ranges(),
+              testing::ElementsAre(gfx::Range(0, 9)));
   EXPECT_FALSE(result->may_have_mnemonics());
 
   // The title and highlight overrides are kept when the bound action changes.
   downloads_action->SetText(u"Changed");
   EXPECT_EQ(result->title(), u"Downloads");
-  EXPECT_EQ(result->highlight_range(), gfx::Range(0, 9));
+  EXPECT_THAT(result->highlight_ranges(),
+              testing::ElementsAre(gfx::Range(0, 9)));
 
   // Clicking a result runs its action.
   EXPECT_CALL(mock_action_invoked_,

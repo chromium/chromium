@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
@@ -106,6 +107,48 @@ TEST_F(MenuItemViewUnitTest, AppendMenuItemSeparator) {
   EXPECT_EQ(submenu->GetMenuItems().size(), 2u);
   EXPECT_EQ(submenu->GetMenuItems()[0], item1);
   EXPECT_EQ(submenu->GetMenuItems()[1], item2);
+}
+
+TEST_F(MenuItemViewUnitTest, HighlightRanges) {
+  views::TestMenuItemView root_menu;
+  MenuItemView* item = root_menu.AppendMenuItem(1, u"New Tab");
+  EXPECT_TRUE(item->highlight_ranges().empty());
+
+  ViewTestApi(item).ClearNeedsPaint();
+  item->SetHighlightRanges({gfx::Range(0, 3)});
+  EXPECT_EQ(item->highlight_ranges(), std::vector({gfx::Range(0, 3)}));
+  EXPECT_TRUE(ViewTestApi(item).needs_paint());
+
+  // Invalid, empty, reversed, and out-of-bounds ranges are filtered out before
+  // checking whether the effective ranges changed.
+  ViewTestApi(item).ClearNeedsPaint();
+  item->SetHighlightRanges({gfx::Range::InvalidRange(), gfx::Range(0, 3),
+                            gfx::Range(3, 0), gfx::Range(2, 2),
+                            gfx::Range(4, 8), gfx::Range(7, 10)});
+  EXPECT_EQ(item->highlight_ranges(), std::vector({gfx::Range(0, 3)}));
+  EXPECT_FALSE(ViewTestApi(item).needs_paint());
+
+  // Passing only out-of-bounds ranges clears active highlights.
+  ViewTestApi(item).ClearNeedsPaint();
+  item->SetHighlightRanges({gfx::Range(4, 8), gfx::Range(7, 10)});
+  EXPECT_TRUE(item->highlight_ranges().empty());
+  EXPECT_TRUE(ViewTestApi(item).needs_paint());
+
+  // Calling SetTitle with the same title preserves highlight_ranges, while a
+  // different title clears them.
+  item->SetHighlightRanges({gfx::Range(0, 3), gfx::Range(5, 7)});
+  item->SetTitle(u"New Tab");
+  EXPECT_EQ(item->highlight_ranges(),
+            std::vector({gfx::Range(0, 3), gfx::Range(5, 7)}));
+  item->SetTitle(u"Close Tab");
+  EXPECT_TRUE(item->highlight_ranges().empty());
+
+  // Clearing active ranges with `{}` schedules a paint.
+  item->SetHighlightRanges({gfx::Range(0, 5)});
+  ViewTestApi(item).ClearNeedsPaint();
+  item->SetHighlightRanges({});
+  EXPECT_TRUE(item->highlight_ranges().empty());
+  EXPECT_TRUE(ViewTestApi(item).needs_paint());
 }
 
 namespace {
@@ -1117,9 +1160,10 @@ TEST_F(MenuItemViewPaintUnitTest, DontSchedulePaintFromOnPaint) {
   EXPECT_FALSE(ViewTestApi(submenu_arrow_image_view).needs_paint());
 }
 
-TEST_F(MenuItemViewPaintUnitTest, HighlightRangePaintCoverage) {
+TEST_F(MenuItemViewPaintUnitTest, HighlightRangesPaintCoverage) {
   MenuItemView* item = menu_item_view()->AppendMenuItem(1, u"New Tab");
-  EXPECT_FALSE(item->highlight_range().IsValid());
+  // Add a wider sibling so bolding doesn't elide the second word in `item`.
+  menu_item_view()->AppendMenuItem(2, u"New Tab Wider Sibling");
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
@@ -1133,35 +1177,21 @@ TEST_F(MenuItemViewPaintUnitTest, HighlightRangePaintCoverage) {
 
   const SkBitmap unhighlighted = paint();
 
-  ViewTestApi(item).ClearNeedsPaint();
-  item->SetHighlightRange(gfx::Range(0, 3));
-  EXPECT_EQ(item->highlight_range(), gfx::Range(0, 3));
-  EXPECT_TRUE(ViewTestApi(item).needs_paint());
-  const SkBitmap highlighted = paint();
-  EXPECT_FALSE(gfx::BitmapsAreEqual(unhighlighted, highlighted));
+  item->SetHighlightRanges({gfx::Range(0, 3)});
+  const SkBitmap single_highlighted = paint();
+  EXPECT_FALSE(gfx::BitmapsAreEqual(unhighlighted, single_highlighted));
 
-  ViewTestApi(item).ClearNeedsPaint();
-  item->SetHighlightRange(gfx::Range(0, 3));
-  EXPECT_FALSE(ViewTestApi(item).needs_paint());
+  // Multiple disjoint ranges bold each range regardless of order.
+  item->SetHighlightRanges({gfx::Range(0, 3), gfx::Range(5, 7)});
+  const SkBitmap multi_highlighted = paint();
+  EXPECT_FALSE(gfx::BitmapsAreEqual(unhighlighted, multi_highlighted));
+  EXPECT_FALSE(gfx::BitmapsAreEqual(single_highlighted, multi_highlighted));
 
-  item->SetHighlightRange(gfx::Range());
-  EXPECT_FALSE(item->highlight_range().IsValid());
+  item->SetHighlightRanges({gfx::Range(5, 7), gfx::Range(0, 3)});
+  EXPECT_TRUE(gfx::BitmapsAreEqual(multi_highlighted, paint()));
+
+  item->SetHighlightRanges({});
   EXPECT_TRUE(gfx::BitmapsAreEqual(unhighlighted, paint()));
-
-  item->SetHighlightRange(gfx::Range(3, 0));
-  EXPECT_FALSE(item->highlight_range().IsValid());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(unhighlighted, paint()));
-
-  item->SetHighlightRange(gfx::Range(0, 100));
-  EXPECT_TRUE(gfx::BitmapsAreEqual(unhighlighted, paint()));
-
-  // Calling SetTitle with the same title preserves highlight_range, while a
-  // different title resets it.
-  item->SetHighlightRange(gfx::Range(0, 3));
-  item->SetTitle(u"New Tab");
-  EXPECT_EQ(item->highlight_range(), gfx::Range(0, 3));
-  item->SetTitle(u"Close Tab");
-  EXPECT_FALSE(item->highlight_range().IsValid());
 }
 
 // Tests that the selection highlight doesn't cover the background's padding,

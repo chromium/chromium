@@ -337,9 +337,13 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   void SetTitle(const std::u16string& title);
   const std::u16string& title() const { return title_; }
 
-  // Sets/Gets the character range in `title_` to render in bold.
-  void SetHighlightRange(const gfx::Range& highlight_range);
-  const gfx::Range& highlight_range() const { return highlight_range_; }
+  // Sets/Gets the `[start, end)` character ranges in `title_` to render in
+  // bold. Invalid, empty, reversed, or out-of-bounds ranges are ignored.
+  // Calling `SetTitle()` with a different title clears the highlight ranges.
+  void SetHighlightRanges(std::vector<gfx::Range> highlight_ranges);
+  const std::vector<gfx::Range>& highlight_ranges() const {
+    return highlight_ranges_;
+  }
 
   // Sets/Gets the secondary title. When not empty, they are shown in the line
   // below the title.
@@ -642,7 +646,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
                        PaintMode mode,
                        bool paint_as_selected);
 
-  // Paints the title text, bolding `highlight_range_` if valid.
+  // Paints the title text, bolding `highlight_ranges_` if non-empty.
   void PaintTitle(gfx::Canvas* canvas,
                   const gfx::FontList& font_list,
                   SkColor color,
@@ -821,7 +825,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   ui::ElementIdentifier submenu_id_;
 
   std::u16string title_;
-  gfx::Range highlight_range_ = gfx::Range::InvalidRange();
+  std::vector<gfx::Range> highlight_ranges_;
   std::u16string secondary_title_;
   std::u16string minor_text_;
   bool minor_text_is_url_ = false;

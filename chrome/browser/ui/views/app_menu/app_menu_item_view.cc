@@ -82,7 +82,7 @@ class AppMenuItemActionViewInterface
       menu_item->SetTitle(*menu_item->text_override());
     }
     if (menu_item->highlight_range_override().has_value()) {
-      menu_item->SetHighlightRange(*menu_item->highlight_range_override());
+      menu_item->SetHighlightRanges({*menu_item->highlight_range_override()});
     }
 
     const int default_icon_size = menu_item->default_icon_size();

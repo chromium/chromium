@@ -14,6 +14,7 @@
 #include <ranges>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/i18n/case_conversion.h"
@@ -671,22 +672,23 @@ void MenuItemView::SetSubmenuId(ui::ElementIdentifier id) {
 void MenuItemView::SetTitle(const std::u16string& title) {
   if (title_ != title) {
     title_ = title;
-    highlight_range_ = gfx::Range::InvalidRange();
+    highlight_ranges_.clear();
   }
   invalidate_dimensions();  // Triggers preferred size recalculation.
   UpdateAccessibleKeyShortcuts();
 }
 
-void MenuItemView::SetHighlightRange(const gfx::Range& highlight_range) {
-  const gfx::Range valid_range =
-      (highlight_range.IsValid() && !highlight_range.is_empty() &&
-       !highlight_range.is_reversed())
-          ? highlight_range
-          : gfx::Range::InvalidRange();
-  if (highlight_range_ == valid_range) {
+void MenuItemView::SetHighlightRanges(
+    std::vector<gfx::Range> highlight_ranges) {
+  const size_t title_length = title_.length();
+  std::erase_if(highlight_ranges, [title_length](const gfx::Range& range) {
+    return !range.IsValid() || range.is_empty() || range.is_reversed() ||
+           range.end() > title_length;
+  });
+  if (highlight_ranges_ == highlight_ranges) {
     return;
   }
-  highlight_range_ = valid_range;
+  highlight_ranges_ = std::move(highlight_ranges);
   SchedulePaint();
 }
 
@@ -1577,8 +1579,7 @@ void MenuItemView::PaintTitle(gfx::Canvas* canvas,
                               SkColor color,
                               const gfx::Rect& bounds,
                               int flags) {
-  if (highlight_range_.IsValid() &&
-      highlight_range_.end() <= title().length()) {
+  if (!highlight_ranges_.empty()) {
     std::unique_ptr<gfx::RenderText> render_text =
         gfx::RenderText::CreateRenderText();
     render_text->SetText(title());
@@ -1591,7 +1592,9 @@ void MenuItemView::PaintTitle(gfx::Canvas* canvas,
     render_text->SetElideBehavior(gfx::ELIDE_TAIL);
     render_text->set_subpixel_rendering_suppressed(
         (flags & gfx::Canvas::NO_SUBPIXEL_RENDERING) != 0);
-    render_text->ApplyWeight(gfx::Font::Weight::BOLD, highlight_range_);
+    for (const gfx::Range& range : highlight_ranges_) {
+      render_text->ApplyWeight(gfx::Font::Weight::BOLD, range);
+    }
     render_text->Draw(canvas);
     return;
   }
