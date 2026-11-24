@@ -136,6 +136,7 @@
 #include "net/base/auth.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/disk_cache/backend_experiment.h"
 #include "net/disk_cache/buildflags.h"
@@ -2837,8 +2838,9 @@ void StoragePartitionImpl::OnClearSiteData(
   // some cases (like cross-site fetches). Ideally the network service would be
   // able to calculate and send the accurate storage key directly.
   std::optional<blink::StorageKey> storage_key =
-      CalculateStorageKeyForClearSiteData(url::Origin::Create(url),
-                                          top_level_site, nonce);
+      CalculateStorageKeyForClearSiteData(
+          url::Origin::Create(url), top_level_site, nonce,
+          base::OptionalToPtr(cookie_partition_key));
 
   ClearSiteDataHandler::HandleHeader(
       browser_context()->GetWeakPtr(), context.navigation_or_document(),
@@ -3768,9 +3770,14 @@ std::optional<blink::StorageKey>
 StoragePartitionImpl::CalculateStorageKeyForClearSiteData(
     const url::Origin& origin,
     const std::optional<net::SchemefulSite>& top_level_site,
-    const std::optional<base::UnguessableToken>& nonce) {
+    const std::optional<base::UnguessableToken>& nonce,
+    const net::CookiePartitionKey* cookie_partition_key) {
   if (!blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()) {
     return std::nullopt;
+  }
+
+  if (nonce) {
+    return blink::StorageKey::CreateWithNonce(origin, *nonce);
   }
 
   const URLLoaderNetworkContext& context =
@@ -3779,38 +3786,33 @@ StoragePartitionImpl::CalculateStorageKeyForClearSiteData(
           std::get_if<URLLoaderNetworkContext::SharedOrServiceWorkerContext>(
               &context.context())) {
     if (worker_context->storage_key.has_value()) {
-      if (nonce) {
-        return blink::StorageKey::CreateWithNonce(origin, *nonce);
-      }
       return worker_context->storage_key->WithOrigin(origin);
     }
     return std::nullopt;
   }
 
   NavigationOrDocumentHandle* handle = context.navigation_or_document();
-  if (!handle) {
-    return std::nullopt;
-  }
-  FrameTreeNode* node = handle->GetFrameTreeNode();
-  if (!node) {
-    return std::nullopt;
-  }
-  RenderFrameHostImpl* frame_host = node->current_frame_host();
-  if (!frame_host) {
+  FrameTreeNode* node = handle ? handle->GetFrameTreeNode() : nullptr;
+  RenderFrameHostImpl* frame_host = node ? node->current_frame_host() : nullptr;
+  if (!frame_host && !top_level_site) {
     return std::nullopt;
   }
 
   blink::StorageKey proposed_storage_key =
-      frame_host->CalculateStorageKey(origin, base::OptionalToPtr(nonce));
+      frame_host ? frame_host->CalculateStorageKey(origin, /*nonce=*/nullptr)
+                 : blink::StorageKey::CreateFirstParty(origin);
 
-  // It's possible to get a 1P key above despite being in a cross-site fetch.
-  // The logic below resolves the issue by reconstructing the 3P key using
-  // trusted data from the network service to derive the correct 3P StorageKey.
-  // This ensures when a Clear-Site-Data header is seen in a 1P context on a
-  // fetch we clear 1P and 3P data, but when the same header is seen in a 3P
-  // context, only the 3P data is cleared.
+  // It's possible to get a 1P key above despite being in a cross-site context,
+  // e.g. for a cross-site fetch, a fetch from a cross-site subframe, or when
+  // the initiating frame was already destroyed. The logic below resolves the
+  // issue by reconstructing the 3P key using trusted data from the network
+  // service to derive the correct 3P StorageKey. This ensures when a
+  // Clear-Site-Data header is seen in a 1P context on a fetch we clear 1P and
+  // 3P data, but when the same header is seen in a 3P context, only the 3P
+  // data is cleared.
   if (proposed_storage_key.IsFirstPartyContext() && top_level_site &&
-      *top_level_site != proposed_storage_key.top_level_site()) {
+      (*top_level_site != proposed_storage_key.top_level_site() ||
+       (cookie_partition_key && cookie_partition_key->IsThirdParty()))) {
     proposed_storage_key = blink::StorageKey::Create(
         proposed_storage_key.origin(), *top_level_site,
         blink::mojom::AncestorChainBit::kCrossSite);

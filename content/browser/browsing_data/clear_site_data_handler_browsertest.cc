@@ -18,8 +18,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/thread_annotations.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
@@ -112,6 +114,34 @@ void AddWillProcessResponseThrottle(
 
 // For use with TestBrowsingDataRemoverDelegate::ExpectClearSiteDataCall.
 enum class SetStorageKey { kYes, kNo };
+
+// An `HttpResponse` that withholds sending the response until the closure
+// passed to `on_request_received` is invoked.
+class DeferredBasicHttpResponse : public net::test_server::BasicHttpResponse {
+ public:
+  explicit DeferredBasicHttpResponse(
+      base::OnceCallback<void(base::OnceClosure)> on_request_received)
+      : on_request_received_(std::move(on_request_received)) {}
+
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
+    base::OnceClosure send_now = base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&DeferredBasicHttpResponse::SendResponseNow,
+                       weak_factory_.GetWeakPtr(), std::move(delegate)));
+    std::move(on_request_received_).Run(std::move(send_now));
+  }
+
+ private:
+  void SendResponseNow(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
+    if (delegate) {
+      net::test_server::BasicHttpResponse::SendResponse(std::move(delegate));
+    }
+  }
+
+  base::OnceCallback<void(base::OnceClosure)> on_request_received_;
+  base::WeakPtrFactory<DeferredBasicHttpResponse> weak_factory_{this};
+};
 
 // A helper class to observe BrowsingDataRemover deletion tasks coming from
 // ClearSiteData.
@@ -345,6 +375,15 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
     return EvalJs(shell()->web_contents(), script).ExtractBool();
   }
 
+  // Holds back the response to the next request whose URL has a "defer" query
+  // parameter and passes a closure to `callback` that sends the response when
+  // run.
+  void DeferNextResponse(base::OnceCallback<void(base::OnceClosure)> callback) {
+    base::AutoLock lock(deferred_response_lock_);
+    defer_next_response_callback_ =
+        base::BindPostTaskToCurrentDefault(std::move(callback));
+  }
+
  private:
   // Handles all requests.
   //
@@ -353,6 +392,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
   // <key>="redirect"     responds with a redirect to the url <value>
   // <key>="html"         responds with a text/html content <value>
   // <key>="file"         responds with the content of file <value>
+  // <key>="defer"        holds back the response if `DeferNextResponse()` was
+  //                      called before
   //
   // Example: "https://localhost/?header={}&redirect=example.com" will respond
   // with headers
@@ -371,8 +412,18 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
   // and content from the file content/test/data/file.html
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    std::unique_ptr<net::test_server::BasicHttpResponse> response(
-        new net::test_server::BasicHttpResponse());
+    std::unique_ptr<net::test_server::BasicHttpResponse> response;
+    if (std::string defer;
+        net::GetValueForKeyInQuery(request.GetURL(), "defer", &defer)) {
+      base::AutoLock lock(deferred_response_lock_);
+      if (defer_next_response_callback_) {
+        response = std::make_unique<DeferredBasicHttpResponse>(
+            std::move(defer_next_response_callback_));
+      }
+    }
+    if (!response) {
+      response = std::make_unique<net::test_server::BasicHttpResponse>();
+    }
 
     {
       base::AutoLock lock(clear_site_data_header_lock_);
@@ -441,6 +492,10 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
   // If this is set, |HandleRequest| will always respond with Clear-Site-Data.
   base::Lock clear_site_data_header_lock_;
   std::string clear_site_data_header_ GUARDED_BY(clear_site_data_header_lock_);
+
+  base::Lock deferred_response_lock_;
+  base::OnceCallback<void(base::OnceClosure)> defer_next_response_callback_
+      GUARDED_BY(deferred_response_lock_);
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   TestBrowsingDataRemoverDelegate embedder_delegate_;
@@ -1714,5 +1769,136 @@ IN_PROC_BROWSER_TEST_P(ClearSiteDataHandlerStorageBucketsBrowserTest,
   delegate()->VerifyAndClearExpectations();
 }
 
+// Verifies that when a keepalive fetch receives a `Clear-Site-Data` response
+// after the initiating frame has been destroyed, the deletion filter remains
+// scoped to the initiating frame's `blink::StorageKey` partition rather than
+// falling back to an unpartitioned deletion scope.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
+                       KeepAliveFetchAfterFrameDestroyedScopesToPartition) {
+  StoragePartition* partition = storage_partition();
+  net::EmbeddedTestServer* server = https_server();
+
+  browsing_data_browsertest_utils::AddServiceWorker("origin2.com", partition,
+                                                    server);
+  ASSERT_EQ(
+      1u, browsing_data_browsertest_utils::GetServiceWorkers(partition).size());
+
+  GURL csd_url = server->GetURL("origin2.com", "/resource");
+  AddQuery(&csd_url, "header", "\"storage\"");
+  AddQuery(&csd_url, "defer", "1");
+
+  static constexpr struct {
+    const char* main_frame_host;
+    const char* subframe_host;
+    bool override_partition_key_cross_site;
+    size_t expected_remaining_workers;
+  } kTestCases[] = {
+      // Cross-site keepalive fetch from a same-site subframe (`origin1.com` in
+      // `origin1.com`) to `origin2.com`.
+      {"origin1.com", "origin1.com", false, 1u},
+      // Keepalive fetch from a cross-site subframe (`origin2.com` in
+      // `origin1.com`) to `origin2.com`.
+      {"origin1.com", "origin2.com", false, 1u},
+      // Keepalive fetch from a cross-site subframe (`origin1.com` in
+      // `origin2.com`) to `origin2.com`.
+      {"origin2.com", "origin1.com", true, 1u},
+      // First-party keepalive fetch (`origin2.com` in `origin2.com`) to
+      // `origin2.com` clears `origin2.com`'s first-party storage.
+      {"origin2.com", "origin2.com", false, 0u},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    GURL subframe_url = server->GetURL(test_case.subframe_host, "/resource");
+    GURL main_url = server->GetURL(test_case.main_frame_host, "/resource");
+    AddQuery(&main_url, "html",
+             "<html><body><iframe src=\"" + subframe_url.spec() +
+                 "\"></iframe></body></html>");
+    ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+    RenderFrameHost* main_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+    RenderFrameHostWrapper subframe_rfh(ChildFrameAt(main_rfh, 0));
+    ASSERT_TRUE(subframe_rfh);
+
+    base::test::TestFuture<base::OnceClosure> deferred_response;
+    DeferNextResponse(deferred_response.GetCallback());
+    ASSERT_TRUE(ExecJs(
+        subframe_rfh.get(),
+        JsReplace("void fetch($1, {keepalive: true, credentials: 'include', "
+                  "mode: 'no-cors'}).catch(() => {});",
+                  csd_url)));
+    base::OnceClosure send_response = deferred_response.Take();
+
+    ASSERT_TRUE(ExecJs(main_rfh, "document.querySelector('iframe').remove();"));
+    ASSERT_TRUE(subframe_rfh.WaitUntilRenderFrameDeleted());
+    ASSERT_TRUE(subframe_rfh.IsDestroyed());
+
+    delegate()->ExpectClearSiteDataCall(
+        storage_partition_config(), url::Origin::Create(csd_url),
+        net::SchemefulSite(main_url), /*cookies=*/false, /*storage=*/true,
+        /*cache=*/false, test_case.override_partition_key_cross_site);
+
+    base::RunLoop loop;
+    browser_context()
+        ->GetBrowsingDataRemover()
+        ->SetWouldCompleteCallbackForTesting(
+            base::BindLambdaForTesting([&](base::OnceClosure callback) {
+              std::move(callback).Run();
+              loop.Quit();
+            }));
+    std::move(send_response).Run();
+    loop.Run();
+    browser_context()
+        ->GetBrowsingDataRemover()
+        ->SetWouldCompleteCallbackForTesting(base::NullCallback());
+    delegate()->VerifyAndClearExpectations();
+
+    EXPECT_EQ(
+        test_case.expected_remaining_workers,
+        browsing_data_browsertest_utils::GetServiceWorkers(partition).size());
+  }
+}
+
+// Verifies that when a cross-site subframe fetches a resource of the top-level
+// site, a `Clear-Site-Data` response is scoped to the subframe's third-party
+// partition and doesn't clear the top-level site's first-party storage.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
+                       CrossSiteSubframeFetchOfTopLevelSiteScopesToPartition) {
+  StoragePartition* partition = storage_partition();
+  net::EmbeddedTestServer* server = https_server();
+
+  browsing_data_browsertest_utils::AddServiceWorker("origin2.com", partition,
+                                                    server);
+  ASSERT_EQ(
+      1u, browsing_data_browsertest_utils::GetServiceWorkers(partition).size());
+
+  GURL csd_url = server->GetURL("origin2.com", "/resource");
+  AddQuery(&csd_url, "header", "\"storage\"");
+
+  GURL subframe_url = server->GetURL("origin1.com", "/");
+  GURL main_url = server->GetURL("origin2.com", "/resource");
+  AddQuery(&main_url, "html",
+           "<html><body><iframe src=\"" + subframe_url.spec() +
+               "\"></iframe></body></html>");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHost* subframe_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe_rfh);
+
+  delegate()->ExpectClearSiteDataCall(
+      storage_partition_config(), url::Origin::Create(csd_url),
+      net::SchemefulSite(main_url),
+      /*cookies=*/false, /*storage=*/true, /*cache=*/false,
+      /*override_partition_key_cross_site=*/true);
+
+  ASSERT_TRUE(
+      ExecJs(subframe_rfh,
+             JsReplace("fetch($1, {credentials: 'include', mode: 'no-cors'})",
+                       csd_url)));
+  delegate()->VerifyAndClearExpectations();
+
+  EXPECT_EQ(
+      1u, browsing_data_browsertest_utils::GetServiceWorkers(partition).size());
+}
 
 }  // namespace content
