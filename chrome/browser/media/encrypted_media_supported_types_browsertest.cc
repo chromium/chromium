@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
@@ -528,6 +529,15 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     // TODO(crbug.com/40226210): Fix this so that we can inject HEVC support on
     // Windows.
     EXPECT_UNSUPPORTED(hevc_supported);
+#elif BUILDFLAG(IS_MAC)
+    // Browser tests disable accelerated video decode on Mac VMs (see
+    // content/public/test/test_launcher.cc), so HEVC isn't supported there.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kDisableAcceleratedVideoDecode)) {
+      EXPECT_UNSUPPORTED(hevc_supported);
+    } else {
+      EXPECT_ECK_PROPRIETARY(hevc_supported);
+    }
 #else
     // On other platforms, HEVC support should be available if
     // kPlatformHEVCDecoderSupport is enabled.
@@ -910,8 +920,6 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
                                             video_mp4_hevc_codecs()));
 
   // Video_MP4.
-  // TODO(crbug.com/40915599): Flaky on "Mac12 Tests" builder.
-#if !BUILDFLAG(IS_MAC)
   // Valid video types.
   EXPECT_PROPRIETARY(
       IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType, video_mp4_codecs()));
@@ -923,10 +931,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
                                         vp9_profile2_codecs()));
   EXPECT_AV1(
-      IsSupportedByKeySystem(kClearKey, kVideoWebMMimeType, av1_codecs()));
+      IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType, av1_codecs()));
 
-// High 10-bit Profile is supported when using ClearKey if it is supported for
-// clear content on this platform.
+  // High 10-bit Profile is supported when using ClearKey if it is supported for
+  // clear content on this platform.
   if (media::IsDecoderBuiltInVideoCodec(media::VideoCodec::kH264)) {
     EXPECT_PROPRIETARY(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
                                               video_mp4_hi10p_codecs()));
@@ -948,7 +956,6 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
                                             audio_webm_codecs()));
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
                                             video_webm_codecs()));
-#endif  // !BUILDFLAG(IS_MAC)
 
   // Audio_MP4.
   // Valid audio types.
@@ -1034,9 +1041,6 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                                     audio_mp4_flac_codecs()));
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
-
-  CheckPlatformHevcSupport(kExternalClearKey);
-
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kAudioMP4MimeType, audio_mp4_codecs()));
 
@@ -1133,8 +1137,6 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kAudioWebMMimeType, video_mp4_hevc_codecs()));
 
   // Video_MP4.
-  // TODO(crbug.com/40915599): Flaky on "Mac12 Tests" builder.
-#if !BUILDFLAG(IS_MAC)
   // Valid video types.
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
@@ -1145,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                                     vp9_profile0_codecs()));
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kVideoMP4MimeType,
                                     vp9_profile2_codecs()));
-  EXPECT_ECK_AV1(IsSupportedByKeySystem(kExternalClearKey, kVideoWebMMimeType,
+  EXPECT_ECK_AV1(IsSupportedByKeySystem(kExternalClearKey, kVideoMP4MimeType,
                                         av1_codecs()));
 
   // High 10-bit Profile is not supported when using ExternalClearKey.
@@ -1165,7 +1167,6 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kVideoMP4MimeType, audio_webm_codecs()));
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_webm_codecs()));
-#endif  // !BUILDFLAG(IS_MAC)
 
   // Audio_MP4.
   // Valid audio types.
