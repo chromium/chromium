@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+#include <vector>
+
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -13,6 +17,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -20,14 +25,17 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/reporting/reporting_report.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/reporting_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
@@ -90,7 +98,14 @@ class CrossOriginOpenerPolicyReportingBrowserTest
         &net::test_server::HandlePrefixedRequest, "/coop-reporting",
         base::BindRepeating(&CrossOriginOpenerPolicyReportingBrowserTest::
                                 COOPReportingNavHandler,
-                            base::Unretained(this))));
+                            base::Unretained(this),
+                            "Cross-Origin-Opener-Policy")));
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest, "/coop-report-only-reporting",
+        base::BindRepeating(&CrossOriginOpenerPolicyReportingBrowserTest::
+                                COOPReportingNavHandler,
+                            base::Unretained(this),
+                            "Cross-Origin-Opener-Policy-Report-Only")));
     ASSERT_TRUE(https_server_.Start());
   }
 
@@ -124,14 +139,15 @@ class CrossOriginOpenerPolicyReportingBrowserTest
     return http_response;
   }
 
-  // Send response with COOP and Reporting-Endpoints headers, content set to
-  // the request url.
+  // Send response with the given COOP header (`Cross-Origin-Opener-Policy` or
+  // `Cross-Origin-Opener-Policy-Report-Only`) and Reporting-Endpoints headers.
   std::unique_ptr<net::test_server::HttpResponse> COOPReportingNavHandler(
+      const std::string& header_name,
       const net::test_server::HttpRequest& request) {
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HttpStatusCode::HTTP_OK);
-    http_response->AddCustomHeader("Cross-Origin-Opener-Policy",
+    http_response->AddCustomHeader(header_name,
                                    "same-origin; report-to=\"default\"");
     http_response->AddCustomHeader(
         "Reporting-Endpoints", "default=\"" + GetCollectorURL().spec() + "\"");
@@ -336,6 +352,101 @@ IN_PROC_BROWSER_TEST_F(CrossOriginOpenerPolicyReportingBrowserTest,
   // Redirecting should produce zero report, reports queued against transient
   // reporting sources will be dropped after navigation failed.
   EXPECT_THAT(reports_uploaded(), Eq(0));
+}
+
+class TestCoopReportingApiObserver
+    : public network::mojom::ReportingApiObserver {
+ public:
+  explicit TestCoopReportingApiObserver(
+      network::mojom::NetworkContext* network_context) {
+    mojo::PendingRemote<network::mojom::ReportingApiObserver> remote;
+    receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+    network_context->AddReportingApiObserver(std::move(remote));
+  }
+
+  void OnReportAdded(const net::ReportingReport& report) override {
+    if (report.type == "coop") {
+      report_bodies_.push_back(report.body.Clone());
+    }
+  }
+  void OnReportUpdated(const net::ReportingReport& report) override {}
+  void OnEndpointsUpdatedForOrigin(
+      const std::vector<net::ReportingEndpoint>& endpoints) override {}
+
+  std::string WaitForNextResponseURL() {
+    const auto find_report = [&]() -> const base::DictValue* {
+      for (const base::DictValue& body : report_bodies_) {
+        const std::string* type = body.FindString("type");
+        if (type && *type == "navigation-from-response") {
+          return &body;
+        }
+      }
+      return nullptr;
+    };
+    EXPECT_TRUE(
+        base::test::RunUntil([&]() { return find_report() != nullptr; }));
+    const base::DictValue* report = find_report();
+    if (!report) {
+      return "<missing>";
+    }
+    EXPECT_THAT(report->FindString("disposition"),
+                ::testing::Pointee(std::string("reporting")));
+    const std::string* next_url = report->FindString("nextResponseURL");
+    std::string result = next_url ? *next_url : "<missing>";
+    report_bodies_.clear();
+    return result;
+  }
+
+ private:
+  std::vector<base::DictValue> report_bodies_;
+  mojo::Receiver<network::mojom::ReportingApiObserver> receiver_{this};
+};
+
+// Regression test for b/572310924: a history traversal away from a document
+// with COOP-Report-Only must not treat that document as the navigation source,
+// so `nextResponseURL` must not expose a cross-origin post-redirect URL.
+IN_PROC_BROWSER_TEST_F(CrossOriginOpenerPolicyReportingBrowserTest,
+                       HistoryNavigationDoesNotLeakNextResponseURL) {
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL(kReportingHost, "/echo")));
+
+  const GURL secret_url =
+      https_server()->GetURL(kCrossOriginHost, "/echo?token=s3cr3t");
+  const GURL redirect_url = https_server()->GetURL(
+      kCrossOriginHost, "/redirect-coop-reporting?dest=" + secret_url.spec());
+  const GURL coop_ro_url =
+      https_server()->GetURL(kReportingHost, "/coop-report-only-reporting");
+
+  WebContentsAddedObserver popup_observer;
+  ASSERT_TRUE(ExecJs(shell(), "popup = window.open()"));
+  WebContents* popup = popup_observer.GetWebContents();
+  ASSERT_TRUE(
+      ExecJs(shell(), JsReplace("popup.location.href = $1;", redirect_url)));
+  WaitForLoadStop(popup);
+  EXPECT_EQ(secret_url, popup->GetLastCommittedURL());
+
+  ASSERT_TRUE(
+      ExecJs(shell(), JsReplace("popup.location.href = $1;", coop_ro_url)));
+  WaitForLoadStop(popup);
+
+  TestCoopReportingApiObserver observer(
+      popup->GetPrimaryMainFrame()->GetStoragePartition()->GetNetworkContext());
+  popup->GetController().GetBackForwardCache().Flush();
+  ASSERT_TRUE(ExecJs(popup, "history.back();"));
+  WaitForLoadStop(popup);
+  EXPECT_EQ(secret_url, popup->GetLastCommittedURL());
+  EXPECT_EQ("", observer.WaitForNextResponseURL());
+
+  // Non-history navigation initiated by the COOP-Report-Only page still keeps
+  // `nextResponseURL`.
+  ASSERT_TRUE(
+      ExecJs(shell(), JsReplace("popup.location.href = $1;", coop_ro_url)));
+  WaitForLoadStop(popup);
+  const GURL normal_next_url =
+      https_server()->GetURL(kCrossOriginHost, "/echo?public=1");
+  ASSERT_TRUE(ExecJs(popup, JsReplace("location.href = $1;", normal_next_url)));
+  WaitForLoadStop(popup);
+  EXPECT_EQ(normal_next_url.spec(), observer.WaitForNextResponseURL());
 }
 
 }  // namespace content

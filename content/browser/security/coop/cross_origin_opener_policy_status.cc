@@ -102,7 +102,12 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
           frame_tree_node_->current_frame_host()->GetLastCommittedOrigin()),
       current_url_(
           frame_tree_node_->current_frame_host()->GetLastCommittedURL()),
+      // Best effort: history (including restore) and reload navigations reuse a
+      // stored URL that may differ from what the current document knows, so
+      // they never count as navigation sources. This may hide
+      // `nextResponseURL` in some cases where it was safe, which is fine.
       is_navigation_source_(
+          !navigation_request->IsHistory() && !navigation_request->IsReload() &&
           navigation_request->common_params().initiator_origin.has_value() &&
           navigation_request->common_params()
               .initiator_origin->IsSameOriginWith(
