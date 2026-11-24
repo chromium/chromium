@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="KeyboardAccessory.TouchEventFiltered" enum="BooleanYesNo"
-    expires_after="2025-04-22">
+    expires_after="2027-05-23">
   <owner>tchudakov@google.com</owner>
   <owner>friedrichh@chromium.org</owner>
   <summary>
@@ -300,7 +300,8 @@ chromium-metrics-reviews@google.com.
     event because the Chrome window was fully or partially obscured. The metric
     is logged immediately if the Keyboard Accessory receives a filtered event.
     Otherwise, the metric is logged when the Keyboard Accessory if dismissed
-    only if it received at least 1 touch event.
+    only if it received at least 1 touch event. Warning: this histogram was
+    expired from 2025-04-22 to 2026-11-23; data may be missing.
   </summary>
 </histogram>
 
