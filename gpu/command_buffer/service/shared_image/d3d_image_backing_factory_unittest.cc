@@ -3593,6 +3593,155 @@ TEST_F(D3DImageBackingFactoryBufferTest,
       gfx::EMPTY_BUFFER, GrContextType::kGL, /*pixel_data=*/{}));
 }
 
+// Verifies that a WebNN-only D3D factory restricts support to WebNN shared
+// tensors and that buffer support validates GMB type, pixel data, and devices.
+TEST_F(D3DImageBackingFactoryBufferTest, WebNNOnlyFactoryValidation) {
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+  ASSERT_TRUE(d3d11_device);
+
+  auto webnn_factory = std::make_unique<D3DImageBackingFactory>(
+      d3d11_device, shared_image_manager_.dxgi_shared_handle_manager(),
+      GLFormatCaps(), GpuDriverBugWorkarounds(),
+      /*enable_webnn_only_d3d_factory=*/true);
+
+  constexpr auto kWebGpuTextureUsage = gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                       gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  constexpr auto kWebGpuBufferUsage =
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER;
+  constexpr auto kWebNnBufferUsage =
+      gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER;
+  constexpr auto kWebNnTextureUsage =
+      gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+
+  // The WebNN-only factory must reject 2D WebGPU textures without WebNN tensor
+  // usage, allowing them to fall through to other factories.
+  EXPECT_FALSE(webnn_factory->IsSupported(
+      kWebGpuTextureUsage, viz::SinglePlaneFormat::kRGBA_8888,
+      gfx::Size(100, 100), /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, /*pixel_data=*/{}));
+
+  // The standard factory supports 2D WebGPU textures.
+  EXPECT_TRUE(shared_image_factory_->IsSupported(
+      kWebGpuTextureUsage, viz::SinglePlaneFormat::kRGBA_8888,
+      gfx::Size(100, 100), /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, /*pixel_data=*/{}));
+
+  // The WebNN-only factory must reject standard WebGPU buffers that lack WebNN
+  // tensor usage.
+  EXPECT_FALSE(webnn_factory->IsSupported(
+      kWebGpuBufferUsage, viz::SharedImageFormat(), gfx::Size(100, 1),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+
+  // The standard factory supports standard WebGPU buffers.
+  EXPECT_TRUE(shared_image_factory_->IsSupported(
+      kWebGpuBufferUsage, viz::SharedImageFormat(), gfx::Size(100, 1),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+
+  // WebNN tensors must be buffer-backed; 2D textures are rejected.
+  EXPECT_FALSE(webnn_factory->IsSupported(
+      kWebNnTextureUsage, viz::SinglePlaneFormat::kRGBA_8888,
+      gfx::Size(100, 100), /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, /*pixel_data=*/{}));
+  EXPECT_FALSE(shared_image_factory_->IsSupported(
+      kWebNnTextureUsage, viz::SinglePlaneFormat::kRGBA_8888,
+      gfx::Size(100, 100), /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, /*pixel_data=*/{}));
+
+  // A valid WebNN tensor buffer with a single-plane format is supported by both
+  // factories.
+  EXPECT_TRUE(webnn_factory->IsSupported(
+      kWebNnBufferUsage, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 1),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+  EXPECT_TRUE(webnn_factory->IsSupported(
+      kWebNnBufferUsage, viz::SinglePlaneFormat::kR_F16, gfx::Size(100, 1),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+
+  // WebNN tensor buffers can have height > 1 because the factory flattens them.
+  EXPECT_TRUE(webnn_factory->IsSupported(
+      kWebNnBufferUsage, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 2),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+
+  // Standard WebGPU buffers cannot have height > 1.
+  EXPECT_FALSE(shared_image_factory_->IsSupported(
+      kWebGpuBufferUsage, viz::SharedImageFormat(), gfx::Size(100, 2),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+
+  // Disallowed usages for WebNN tensor buffer return false.
+  constexpr auto kWebNnBufferWithDisallowedUsage =
+      kWebNnBufferUsage | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+  EXPECT_FALSE(webnn_factory->IsSupported(
+      kWebNnBufferWithDisallowedUsage, viz::SinglePlaneFormat::kRGBA_8888,
+      gfx::Size(100, 1), /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, /*pixel_data=*/{}));
+
+  // WebNN buffer with SCANOUT must be rejected.
+  constexpr auto kWebNnBufferWithScanout =
+      kWebNnBufferUsage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  EXPECT_FALSE(webnn_factory->IsSupported(
+      kWebNnBufferWithScanout, viz::SinglePlaneFormat::kRGBA_8888,
+      gfx::Size(100, 1), /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, /*pixel_data=*/{}));
+  EXPECT_FALSE(shared_image_factory_->IsSupported(
+      kWebNnBufferWithScanout, viz::SinglePlaneFormat::kRGBA_8888,
+      gfx::Size(100, 1), /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, /*pixel_data=*/{}));
+
+  // WebNN tensors must be single-plane and uncompressed.
+  EXPECT_FALSE(webnn_factory->IsSupported(
+      kWebNnBufferUsage, viz::MultiPlaneFormat::kNV12, gfx::Size(100, 1),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+  EXPECT_FALSE(webnn_factory->IsSupported(
+      kWebNnBufferUsage, viz::SinglePlaneFormat::kY210, gfx::Size(100, 1),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+
+  // Buffers must reject non-empty GMB types (e.g. DXGI_SHARED_HANDLE).
+  EXPECT_FALSE(shared_image_factory_->IsSupported(
+      kWebGpuBufferUsage, viz::SharedImageFormat(), gfx::Size(100, 1),
+      /*thread_safe=*/false, gfx::DXGI_SHARED_HANDLE, GrContextType::kGL,
+      /*pixel_data=*/{}));
+  EXPECT_FALSE(webnn_factory->IsSupported(
+      kWebNnBufferUsage, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 1),
+      /*thread_safe=*/false, gfx::DXGI_SHARED_HANDLE, GrContextType::kGL,
+      /*pixel_data=*/{}));
+
+  // Buffers must reject non-empty initial pixel data.
+  constexpr uint8_t kInitialData[] = {0x12, 0x34, 0x56, 0x78};
+  EXPECT_FALSE(shared_image_factory_->IsSupported(
+      kWebGpuBufferUsage, viz::SharedImageFormat(), gfx::Size(100, 1),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      kInitialData));
+  EXPECT_FALSE(webnn_factory->IsSupported(
+      kWebNnBufferUsage, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 1),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      kInitialData));
+
+  // Buffers must reject if no D3D device is present.
+  auto no_device_factory = std::make_unique<D3DImageBackingFactory>(
+      nullptr, shared_image_manager_.dxgi_shared_handle_manager(),
+      GLFormatCaps(), GpuDriverBugWorkarounds(),
+      /*enable_webnn_only_d3d_factory=*/true);
+  EXPECT_FALSE(no_device_factory->IsSupported(
+      kWebNnBufferUsage, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 1),
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
+      /*pixel_data=*/{}));
+}
+
 // Disabled by default as it requires DX11.
 TEST_F(D3DImageBackingFactoryTest, DISABLED_CreateGpuMemoryBuffer) {
   for (auto format : {

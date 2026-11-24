@@ -1179,18 +1179,54 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
     return false;
   }
 
-  constexpr auto kAllowedWebNNUsages =
-      gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR |
-      gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER |
-      gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ |
-      gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE |
-      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  // WebNN tensors must always be buffer-backed.
+  if (usage.Has(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR) &&
+      !is_webgpu_shared_buffer) {
+    return false;
+  }
 
-  // If this factory was created to support WebNN, reject any usage that isn't
-  // allowed by WebNN.
-  if (enable_webnn_only_d3d_factory_) {
-    return kAllowedWebNNUsages.HasAll(usage);
+  // WebNN-only factory can only create WebNN tensors.
+  if (enable_webnn_only_d3d_factory_ &&
+      !usage.Has(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
+    return false;
+  }
+
+  if (is_webgpu_shared_buffer) {
+    if (is_concurrent_read_write || gmb_type != gfx::EMPTY_BUFFER ||
+        !pixel_data.empty() || (!d3d11_device_ && !d3d12_device_) ||
+        format == viz::SinglePlaneFormat::kY210) {
+      return false;
+    }
+
+    // If the SharedImage can be used as a WebGPU buffer, that means it's
+    // readable and writable and must have those usages.
+    if (!usage.HasAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
+      return false;
+    }
+
+    // If this buffer is for WebNN, only allow usages that WebNN supports.
+    // We allow height > 1 because the factory flattens it to a 1D D3D buffer.
+    if (usage.Has(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
+      if (!format.is_single_plane() || format.IsCompressed()) {
+        return false;
+      }
+      constexpr auto kAllowedWebNNUsages =
+          gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR |
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER |
+          gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ |
+          gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE |
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+      return kAllowedWebNNUsages.HasAll(usage);
+    }
+
+    // Standard WebGPU buffers must be 1D (height of 1).
+    if (size.height() != 1) {
+      return false;
+    }
+
+    return true;
   }
 
   if (!pixel_data.empty() && !IsFormatSupportedForInitialData(format)) {
@@ -1236,12 +1272,6 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
   const bool is_scanout = usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   const bool is_video_decode = usage.Has(gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE);
 
-  // WebNN tensors must always be buffer-backed.
-  if (usage.Has(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR) &&
-      !is_webgpu_shared_buffer) {
-    return false;
-  }
-
   if (is_scanout) {
     if (is_video_decode || gmb_type == gfx::DXGI_SHARED_HANDLE ||
         is_concurrent_read_write) {
@@ -1253,28 +1283,6 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
       return gl::DirectCompositionTextureSupported() &&
              IsFormatSupportedForDCompTexture(ToDXGIFormat(format));
     }
-  }
-
-  if (is_webgpu_shared_buffer) {
-    // If the SharedImage can be used as a WebGPU buffer, that means it's
-    // readable and writable and must have those usages.
-    if (!usage.HasAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
-      return false;
-    }
-
-    // If this buffer is for WebNN, only allow usages that WebNN supports.
-    // We allow height > 1 because the factory flattens it to a 1D D3D buffer.
-    if (usage.Has(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
-      return kAllowedWebNNUsages.HasAll(usage);
-    }
-
-    // Standard WebGPU buffers must be 1D (height of 1).
-    if (size.height() != 1) {
-      return false;
-    }
-
-    return true;
   }
 
   if (gmb_type == gfx::EMPTY_BUFFER) {
