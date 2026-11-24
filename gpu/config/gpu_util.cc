@@ -1204,8 +1204,6 @@ void RecordDevicePerfInfoHistograms() {
   UMA_HISTOGRAM_COUNTS_1000("Hardware.TotalDiskSpace",
                             device_perf_info->total_disk_space_mb / 1024);
 #if BUILDFLAG(IS_WIN)
-  UMA_HISTOGRAM_COUNTS_100("Memory.Total.SystemCommitLimit",
-                           device_perf_info->system_commit_limit_mb / 1024);
   UMA_HISTOGRAM_ENUMERATION("GPU.D3D11FeatureLevel",
                             ConvertToHistogramD3D11FeatureLevel(
                                 device_perf_info->d3d11_feature_level));

@@ -3526,17 +3526,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Total.SystemCommitLimit" units="GB"
-    expires_after="2023-05-07">
-  <owner>zmo@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Records the system commit limit (number of total pages) x page size,
-    collected in the info collection GPU process, once per UMA ping. This is
-    Windows platform only.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Total.TileMemory" units="MB" expires_after="2027-04-04">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>
