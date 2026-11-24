@@ -939,7 +939,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, HttpsSlow) {
               ElementsAre(MakeIPEndPoint("::1", 443)),
               ConnectionEndpointMetadata(
                   /*supported_protocol_alpns=*/{"http/1.1"},
-                  /*ech_config_list=*/{}, std::string("https_slow_ok"), {})),
+                  /*ech_config_list=*/{}, std::string("https_slow_ok"))),
           // Non-SVCB endpoints.
           ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
                                 ElementsAre(MakeIPEndPoint("::1", 443)))));
@@ -968,7 +968,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, Ipv4SlowWithHttpsRecord) {
 
   const ConnectionEndpointMetadata expected_metadata(
       /*supported_protocol_alpns=*/{"http/1.1"},
-      /*ech_config_list=*/{}, host, {});
+      /*ech_config_list=*/{}, host);
 
   // AAAA and HTTPS should complete. Intermediate results should include both
   // the HTTPS endpoint and the non-SVCB fallback endpoint.
@@ -3057,8 +3057,7 @@ TEST_F(HostResolverServiceEndpointRequestAddressHintsTest,
       [&] { return requester.request()->EndpointsCryptoReady(); }));
 
   const ConnectionEndpointMetadata expected_metadata(
-      /*supported_protocol_alpns=*/{"http/1.1"}, /*ech_config_list=*/{}, kHost,
-      {});
+      /*supported_protocol_alpns=*/{"http/1.1"}, /*ech_config_list=*/{}, kHost);
 
   // IPv6 hints should be published while waiting for AAAA response.
   ASSERT_FALSE(requester.finished_result().has_value());

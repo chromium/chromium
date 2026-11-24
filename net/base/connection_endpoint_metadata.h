@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <compare>
 #include <optional>
 #include <string>
 #include <tuple>
@@ -25,11 +26,9 @@ struct NET_EXPORT_PRIVATE ConnectionEndpointMetadata {
   using EchConfigList = std::vector<uint8_t>;
 
   ConnectionEndpointMetadata();
-  ConnectionEndpointMetadata(
-      std::vector<std::string> supported_protocol_alpns,
-      EchConfigList ech_config_list,
-      std::string target_name,
-      std::vector<std::vector<uint8_t>> trust_anchor_ids);
+  ConnectionEndpointMetadata(std::vector<std::string> supported_protocol_alpns,
+                             EchConfigList ech_config_list,
+                             std::string target_name);
   ~ConnectionEndpointMetadata();
 
   ConnectionEndpointMetadata(const ConnectionEndpointMetadata&);
@@ -40,7 +39,7 @@ struct NET_EXPORT_PRIVATE ConnectionEndpointMetadata {
 
   bool operator==(const ConnectionEndpointMetadata& other) const = default;
   // Needed to be an element of std::set.
-  bool operator<(const ConnectionEndpointMetadata& other) const;
+  auto operator<=>(const ConnectionEndpointMetadata& other) const = default;
 
   base::Value ToValue() const;
   static std::optional<ConnectionEndpointMetadata> FromValue(
@@ -62,13 +61,6 @@ struct NET_EXPORT_PRIVATE ConnectionEndpointMetadata {
 
   // The target domain name of this metadata.
   std::string target_name;
-
-  // A list of TLS Trust Anchor IDs advertised by the server, indicating
-  // different options for trust anchors that it can offer. The client can
-  // choose a subset of these to advertise in the TLS ClientHello to guide the
-  // server as to which certificate it should serve so that the client will
-  // trust it.
-  std::vector<std::vector<uint8_t>> trust_anchor_ids;
 };
 
 }  // namespace net

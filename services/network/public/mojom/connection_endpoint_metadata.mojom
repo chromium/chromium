@@ -9,5 +9,4 @@ struct ConnectionEndpointMetadata {
   array<string> supported_protocol_alpns;
   array<uint8> ech_config_list;
   string target_name;
-  array<array<uint8>> trust_anchor_ids;
 };

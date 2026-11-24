@@ -335,9 +335,9 @@ TEST_F(HostResolverCacheTest, CacheHttpsResult) {
   const std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
       kMetadatas = {
           {2, ConnectionEndpointMetadata({"h2", "h3"},
-                                         /*ech_config_list=*/{}, kName, {})},
-          {1, ConnectionEndpointMetadata({"h2"}, /*ech_config_list=*/{}, kName,
-                                         {})}};
+                                         /*ech_config_list=*/{}, kName)},
+          {1,
+           ConnectionEndpointMetadata({"h2"}, /*ech_config_list=*/{}, kName)}};
   auto result = std::make_unique<HostResolverInternalMetadataResult>(
       kName, DnsQueryType::HTTPS, tick_clock_.NowTicks() + kTtl,
       clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns, kMetadatas,
@@ -440,7 +440,7 @@ TEST_F(HostResolverCacheTest, RespectsSchemeAndPortInName) {
       clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns,
       std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>{
           {4, ConnectionEndpointMetadata({kAlpn1}, /*ech_config_list=*/{},
-                                         kNameWithScheme, {})}},
+                                         kNameWithScheme)}},
       /*address_hints=*/
       HostResolverInternalMetadataResult::AddressHintsMap());
 
@@ -451,7 +451,7 @@ TEST_F(HostResolverCacheTest, RespectsSchemeAndPortInName) {
       clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns,
       std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>{
           {7, ConnectionEndpointMetadata({kAlpn2}, /*ech_config_list=*/{},
-                                         kNameWithoutScheme, {})}},
+                                         kNameWithoutScheme)}},
       /*address_hints=*/
       HostResolverInternalMetadataResult::AddressHintsMap());
 
