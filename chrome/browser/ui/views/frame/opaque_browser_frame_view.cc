@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
@@ -779,9 +780,16 @@ void OpaqueBrowserFrameView::InitWindowCaptionButton(
     views::Button::PressedCallback callback,
     int accessibility_string_id,
     ViewID view_id) {
+  const std::u16string accessible_name =
+      l10n_util::GetStringUTF16(accessibility_string_id);
   button->SetCallback(std::move(callback));
-  button->GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(accessibility_string_id));
+  button->GetViewAccessibility().SetName(accessible_name);
+#if !BUILDFLAG(IS_WIN)
+  // Windows handles non-client caption button tooltips natively via
+  // HTMINBUTTON/HTMAXBUTTON/HTCLOSE (and sets Views tooltips separately for
+  // Window Controls Overlay). Other platforms use Views tooltips directly.
+  button->SetTooltipText(accessible_name);
+#endif
   button->SetID(view_id);
   button->SetPaintToLayer();
   button->layer()->SetFillsBoundsOpaquely(false);

@@ -701,5 +701,33 @@ IN_PROC_BROWSER_TEST_F(LinuxNativeBrowserFrameViewTest,
   ui::LinuxUiGetter::set_instance(nullptr);
 }
 
+using OpaqueBrowserFrameViewLinuxTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(OpaqueBrowserFrameViewLinuxTest, CaptionButtonsTooltip) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::View* root_view = browser_view->GetWidget()->GetRootView();
+  views::test::RunScheduledLayout(root_view);
+
+  views::FrameView* frame_view = browser_view->browser_widget()->GetFrameView();
+  ASSERT_TRUE(views::IsViewClass<OpaqueBrowserFrameView>(frame_view));
+
+  for (ViewID view_id : {VIEW_ID_MINIMIZE_BUTTON, VIEW_ID_MAXIMIZE_BUTTON,
+                         VIEW_ID_RESTORE_BUTTON, VIEW_ID_CLOSE_BUTTON}) {
+    views::View* button = frame_view->GetViewByID(view_id);
+    ASSERT_TRUE(button);
+    const std::u16string& expected =
+        button->GetViewAccessibility().GetCachedName();
+    EXPECT_FALSE(expected.empty());
+    EXPECT_EQ(button->GetTooltipText(), expected);
+    if (button->GetVisible()) {
+      const gfx::Point center_in_root =
+          views::View::ConvertRectToTarget(button, root_view,
+                                           button->GetLocalBounds())
+              .CenterPoint();
+      EXPECT_EQ(root_view->GetTooltipHandlerForPoint(center_in_root), button);
+    }
+  }
+}
+
 }  // namespace
 #endif  // BUILDFLAG(IS_LINUX)
