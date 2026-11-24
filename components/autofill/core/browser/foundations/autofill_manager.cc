@@ -54,6 +54,7 @@
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
+#include "components/autofill/core/browser/integrators/custom_form_controls/metrics/custom_form_control_metrics.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
@@ -1212,7 +1213,9 @@ void AutofillManager::MaybeLoadCustomFormControlScript() {
     LOG_AF(log_manager()) << LoggingScope::kCustomFormControls
                           << LogMessage::kCustomFormControlScriptAvailable
                           << url.host();
-    driver().LoadCustomFormControlScript(*script);
+    driver().LoadCustomFormControlScript(
+        *script,
+        autofill_metrics::CreateCustomFormControlScriptLoadLoggingCallback());
   }
 }
 

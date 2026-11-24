@@ -324,6 +324,17 @@ TEST_F(CustomFormControlScriptRunnerTest, LoadsScriptIntoRenderer) {
   run_loop.Run();
 }
 
+// Tests that the latency of loading the script is logged.
+TEST_F(CustomFormControlScriptRunnerTest, LogsScriptLoadLatency) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(LoadScript());
+  EXPECT_TRUE(base::test::RunUntil([&histogram_tester] {
+    return histogram_tester
+               .GetAllSamples("Autofill.CustomFormControls.ScriptLoadLatency")
+               .size() == 1;
+  }));
+}
+
 // Tests that the controls are detected when a fill starts, not when the script
 // is loaded, and that the controls that the script detects are stored.
 TEST_F(CustomFormControlScriptRunnerTest, DetectsControlsWhenFillStarts) {

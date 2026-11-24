@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
@@ -286,7 +287,9 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // Group (1d): browser -> renderer events, unrouted (see comment above).
   // autofill::AutofillDriver:
-  void LoadCustomFormControlScript(const std::string& script) override;
+  void LoadCustomFormControlScript(
+      const std::string& script,
+      base::OnceCallback<void(bool success)> callback) override;
   void TriggerFormExtractionInDriverFrame(
       AutofillDriverRouterAndFormForestPassKey pass_key,
       bool force) override;

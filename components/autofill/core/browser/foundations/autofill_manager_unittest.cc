@@ -13,6 +13,7 @@
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -42,6 +43,7 @@ namespace autofill {
 namespace {
 
 using ::base::test::RunClosure;
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::ElementsAre;
@@ -83,7 +85,7 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
   MOCK_METHOD(void,
               LoadCustomFormControlScript,
-              (const std::string&),
+              (const std::string&, base::OnceCallback<void(bool)>),
               (override));
 };
 
@@ -926,7 +928,7 @@ TEST_F(AutofillManagerTest,
       {{.host = "example.com", .script = "const x = 1;"}});
   std::vector<FormData> forms = CreateTestForms(1);
 
-  EXPECT_CALL(autofill_driver(), LoadCustomFormControlScript("const x = 1;"))
+  EXPECT_CALL(autofill_driver(), LoadCustomFormControlScript("const x = 1;", _))
       .Times(1);
 
   // Empty `updated_forms` does not trigger script loading.
@@ -953,7 +955,7 @@ TEST_F(AutofillManagerTest,
       {{.host = "example.com", .script = "const x = 1;"}});
   std::vector<FormData> forms = CreateTestForms(1);
 
-  EXPECT_CALL(autofill_driver(), LoadCustomFormControlScript("const x = 1;"))
+  EXPECT_CALL(autofill_driver(), LoadCustomFormControlScript("const x = 1;", _))
       .Times(2);
 
   OnFormsSeenWithExpectations(autofill_manager(), /*updated_forms=*/forms,
@@ -980,6 +982,26 @@ TEST_F(AutofillManagerTest,
   EXPECT_CALL(autofill_driver(1), LoadCustomFormControlScript).Times(0);
   OnFormsSeenWithExpectations(autofill_manager(1), /*updated_forms=*/forms,
                               /*removed_forms=*/{}, /*expectation=*/forms);
+}
+
+// Tests that the custom form control script load latency is recorded when the
+// script was loaded successfully.
+TEST_F(AutofillManagerTest, OnFormsSeen_RecordsCustomFormControlScriptLatency) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillCustomFormControlExtraction};
+  base::HistogramTester histogram_tester;
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://example.com/"));
+  autofill_client().GetCustomFormControlScriptIndex()->SetEntries(
+      {{.host = "example.com", .script = "const x = 1;"}});
+  std::vector<FormData> forms = CreateTestForms(1);
+
+  EXPECT_CALL(autofill_driver(), LoadCustomFormControlScript)
+      .WillOnce(RunOnceCallback<1>(true));
+  OnFormsSeenWithExpectations(autofill_manager(), /*updated_forms=*/forms,
+                              /*removed_forms=*/{}, /*expectation=*/forms);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.CustomFormControls.ScriptLoadLatency", 1);
 }
 
 // Ensure that `FieldClassificationModelHandler`s are called when parsing the

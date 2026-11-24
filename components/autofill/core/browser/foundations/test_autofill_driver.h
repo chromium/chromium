@@ -99,7 +99,9 @@ class TestAutofillDriverTemplate : public T {
                                   const std::string& email,
                                   const std::string& token) override {}
   void ScrollFieldIntoView(FieldGlobalId field_id) override {}
-  void LoadCustomFormControlScript(const std::string& script) override {}
+  void LoadCustomFormControlScript(
+      const std::string& script,
+      base::OnceCallback<void(bool success)> callback) override {}
 
   base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::FormActionType action_type,

@@ -436,12 +436,14 @@ void ContentAutofillDriver::ExtractLabeledTextNodeValue(
 }
 
 void ContentAutofillDriver::LoadCustomFormControlScript(
-    const std::string& script) {
+    const std::string& script,
+    base::OnceCallback<void(bool success)> callback) {
   if (!IsActive()) {
+    std::move(callback).Run(false);
     return;
   }
   GetCustomFormControlAgent()->LoadUnsafeScript(
-      render_frame_host_->GetDocumentToken(), script, base::DoNothing());
+      render_frame_host_->GetDocumentToken(), script, std::move(callback));
 }
 
 // static

@@ -16,7 +16,6 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -116,8 +115,9 @@ void CustomFormControlScriptRunner::OnAfterFormsSeen(
   if (script_found_callback_for_testing_) {
     script_found_callback_for_testing_.Run(*script);
   }
-  driver.GetCustomFormControlAgent()->LoadUnsafeScript(document_token, *script,
-                                                       base::DoNothing());
+  driver.GetCustomFormControlAgent()->LoadUnsafeScript(
+      document_token, *script,
+      autofill_metrics::CreateCustomFormControlScriptLoadLoggingCallback());
 }
 
 void CustomFormControlScriptRunner::Reset() {

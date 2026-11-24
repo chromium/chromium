@@ -4701,6 +4701,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.CustomFormControls.ScriptLoadLatency" units="ms"
+    expires_after="2027-12-12">
+  <owner>luchenpeng@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the time between the browser asking the renderer to load the custom
+    form control script of the primary main frame's document and the renderer
+    replying that the script was loaded successfully. Recorded at most once per
+    document, only for sites that have a custom form control script, and only if
+    loading succeeded.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CvcAuth.{CardType}.Attempt" enum="BooleanAttempted"
     expires_after="2027-04-30">
   <owner>vinnypersky@google.com</owner>
