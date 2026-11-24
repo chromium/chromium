@@ -67,7 +67,6 @@ class AutocompleteSuggestionGenerator : public SuggestionGenerator {
   // `result` contains the Autocomplete suggestions retrieved from the DB that,
   // if valid, will be passed to the callback in `query_handler`.
   void OnAutofillValuesReturned(QueryHandler query_handler,
-                                bool is_at_memory_enabled,
                                 WebDataServiceBase::Handle current_handle,
                                 std::unique_ptr<WDTypedResult> result);
 

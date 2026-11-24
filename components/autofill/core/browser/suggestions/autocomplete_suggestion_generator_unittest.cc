@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
-#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -174,65 +173,6 @@ TEST_F(AutocompleteSuggestionGeneratorTest,
   generator().GenerateSuggestions(form, form.fields()[0], &form_structure,
                                   form_structure.field(0), client(),
                                   suggestions_generated_callback.Get());
-}
-
-
-// Tests that if there are no autocomplete suggestions returned from the
-// database, we do not generate any suggestions at all, even if the "At Memory"
-// promo button feature is enabled. We should not show a popup containing only
-// the promo button.
-TEST_F(AutocompleteSuggestionGeneratorTest,
-       EmptyResultWithAtMemoryButtonEnabled_NoSuggestions) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kShowAutocompleteAtMemoryButton, features::kAutofillAtMemory,
-       features::debug::kAtMemorySkipEnablementChecks},
-      /*disabled_features=*/{});
-  RecreateGenerator();
-
-  FormFieldData field_data =
-      test::CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
-                                FormControlType::kInputText);
-  FormData form_data;
-  form_data.set_url(GURL("https://www.foo.com"));
-  form_data.set_fields({field_data});
-
-  std::vector<AutocompleteEntry> expected_values = {};
-  std::unique_ptr<WDTypedResult> mocked_results =
-      std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
-          AUTOFILL_VALUE_RESULT, expected_values);
-
-  base::MockCallback<
-      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
-      suggestions_generated_callback;
-  SuggestionGenerator::ReturnedSuggestions
-      saved_on_suggestions_generated_argument;
-
-  EXPECT_CALL(
-      *web_data_service(),
-      GetFormValuesForElementName(field_data.name(), field_data.value(), _, _))
-      .WillOnce([&](auto, auto, int, DbCallback callback) {
-        task_environment().GetMainThreadTaskRunner()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), kDbQueryId,
-                                      std::move(mocked_results)));
-        return kDbQueryId;
-      });
-
-  EXPECT_CALL(suggestions_generated_callback,
-              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
-                       IsEmpty())))
-      .WillOnce(SaveArg<0>(&saved_on_suggestions_generated_argument));
-
-  generator().GenerateSuggestions(form_data, field_data,
-                                  /*form_structure=*/nullptr,
-                                  /*trigger_autofill_field=*/nullptr, client(),
-                                  suggestions_generated_callback.Get());
-  EXPECT_TRUE(
-      base::test::RunUntil([&saved_on_suggestions_generated_argument]() {
-        return saved_on_suggestions_generated_argument.first ==
-               SuggestionGenerator::SuggestionDataSource::kAutocomplete;
-      }));
 }
 
 }  // namespace
@@ -452,100 +392,6 @@ TEST_P(AutocompleteSuggestionGeneratorLabelSensitiveTest, NullResult) {
       base::test::RunUntil([&saved_on_suggestions_generated_argument]() {
         return saved_on_suggestions_generated_argument.first ==
                SuggestionGenerator::SuggestionDataSource::kAutocomplete;
-      }));
-}
-
-// Tests that AtMemory button and separator are properly appended when
-// suggestions are returned (in both legacy and label-sensitive modes).
-TEST_P(AutocompleteSuggestionGeneratorLabelSensitiveTest,
-       AtMemoryButton_AppendedWithSuggestions) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kShowAutocompleteAtMemoryButton, features::kAutofillAtMemory,
-       features::debug::kAtMemorySkipEnablementChecks},
-      /*disabled_features=*/{});
-  RecreateGenerator();
-
-  const std::u16string kLabel = u"Label";
-  const std::u16string kName = u"Some Field Name";
-  const std::u16string kPrefix = u"SomePrefix";
-
-  FormFieldData field_data = test::CreateTestFormField(
-      kLabel, kName, kPrefix, FormControlType::kInputText);
-  FormData form_data;
-  form_data.set_url(GURL("https://www.foo.com"));
-  form_data.set_fields({field_data});
-
-  std::unique_ptr<WDTypedResult> mocked_results;
-  if (IsLabelSensitiveAutocompleteEnabled()) {
-    std::vector<AutocompleteSearchResultLabelSensitive> expected_values = {
-        AutocompleteSearchResultLabelSensitive(
-            u"SomePrefixOne", MatchingType::kLabel, kName, kLabel, 1),
-        AutocompleteSearchResultLabelSensitive(
-            u"SomePrefixTwo", MatchingType::kName, kName, kLabel, 1)};
-    mocked_results = std::make_unique<
-        WDResult<std::vector<AutocompleteSearchResultLabelSensitive>>>(
-        AUTOCOMPLETE_SEARCH_RESULT, expected_values);
-  } else {
-    std::vector<AutocompleteEntry> expected_values = {
-        GetAutocompleteEntry(kName, u"SomePrefixOne"),
-        GetAutocompleteEntry(kName, u"SomePrefixTwo")};
-    mocked_results = std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
-        AUTOFILL_VALUE_RESULT, expected_values);
-  }
-
-  base::MockCallback<
-      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
-      suggestions_generated_callback;
-  SuggestionGenerator::ReturnedSuggestions
-      saved_on_suggestions_generated_argument;
-
-  if (IsLabelSensitiveAutocompleteEnabled()) {
-    EXPECT_CALL(*web_data_service(),
-                GetFormValuesForElementNameAndLabel(Eq(kName), Eq(kLabel),
-                                                    Eq(kPrefix), _, _))
-        .WillOnce([&](std::u16string_view, std::u16string_view,
-                      std::u16string_view, int, DbCallback callback) {
-          task_environment().GetMainThreadTaskRunner()->PostTask(
-              FROM_HERE, base::BindOnce(std::move(callback), kDbQueryId,
-                                        std::move(mocked_results)));
-          return kDbQueryId;
-        });
-  } else {
-    EXPECT_CALL(*web_data_service(),
-                GetFormValuesForElementName(kName, kPrefix, _, _))
-        .WillOnce([&](auto, auto, int, DbCallback callback) {
-          task_environment().GetMainThreadTaskRunner()->PostTask(
-              FROM_HERE, base::BindOnce(std::move(callback), kDbQueryId,
-                                        std::move(mocked_results)));
-          return kDbQueryId;
-        });
-  }
-
-  auto IsSeparator = []() {
-    return Field(&Suggestion::type, SuggestionType::kSeparator);
-  };
-  auto IsAtMemoryButton = []() {
-    return Field(&Suggestion::type,
-                 SuggestionType::kAutocompleteAtMemoryButton);
-  };
-
-  EXPECT_CALL(suggestions_generated_callback,
-              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
-                       UnorderedElementsAre(
-                           HasSingleSuggestionWithMainText(u"SomePrefixOne"),
-                           HasSingleSuggestionWithMainText(u"SomePrefixTwo"),
-                           IsSeparator(), IsAtMemoryButton()))))
-      .WillOnce(SaveArg<0>(&saved_on_suggestions_generated_argument));
-
-  generator().GenerateSuggestions(form_data, field_data,
-                                  /*form_structure=*/nullptr,
-                                  /*trigger_autofill_field=*/nullptr, client(),
-                                  suggestions_generated_callback.Get());
-  EXPECT_TRUE(
-      base::test::RunUntil([&saved_on_suggestions_generated_argument]() {
-        return saved_on_suggestions_generated_argument.second.size() == 4;
       }));
 }
 

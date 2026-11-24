@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -32,10 +31,8 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -143,22 +140,11 @@ void AutocompleteSuggestionGenerator::GenerateSuggestions(
     std::move(callback).Run({SuggestionDataSource::kAutocomplete, {}});
     return;
   }
-  // The permission to show the AtMemory button is checked now and passed into
-  // the asynchronous callback. As a result, there is a marginal delay between
-  // when the permission is checked and when the button is actually shown
-  // (when the database read completes).
-  bool is_at_memory_enabled =
-      MayPerformAtMemoryAction(AtMemoryAction::kShowAutocompleteAtMemoryButton,
-                               client,
-                               client.GetLastCommittedPrimaryMainFrameURL()) &&
-      MayPerformAtMemoryAction(AtMemoryAction::kShowAutocompleteAtMemoryButton,
-                               client, trigger_field.origin().GetURL());
 
   auto on_autofill_values_returned =
       base::BindOnce(&AutocompleteSuggestionGenerator::OnAutofillValuesReturned,
                      weak_ptr_factory_.GetWeakPtr(),
-                     QueryHandler(trigger_field.value(), std::move(callback)),
-                     is_at_memory_enabled);
+                     QueryHandler(trigger_field.value(), std::move(callback)));
   if (base::FeatureList::IsEnabled(
           features::kAutofillLabelSensitiveAutocomplete)) {
     pending_query_ = profile_database_->GetFormValuesForElementNameAndLabel(
@@ -173,7 +159,6 @@ void AutocompleteSuggestionGenerator::GenerateSuggestions(
 
 void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
     QueryHandler query_handler,
-    bool is_at_memory_enabled,
     WebDataServiceBase::Handle current_handle,
     std::unique_ptr<WDTypedResult> result) {
   if (!result) {
@@ -249,14 +234,6 @@ void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
           suggestion.payload = std::move(entry);
           return suggestion;
         });
-  }
-  if (is_at_memory_enabled &&
-      base::FeatureList::IsEnabled(features::kShowAutocompleteAtMemoryButton)) {
-    suggestions.emplace_back(SuggestionType::kSeparator);
-    suggestions.emplace_back(
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_TITLE),
-        SuggestionType::kAutocompleteAtMemoryButton);
   }
   std::move(query_handler.on_suggestions_returned)
       .Run({SuggestionDataSource::kAutocomplete, std::move(suggestions)});
