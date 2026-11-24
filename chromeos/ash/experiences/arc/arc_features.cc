@@ -13,6 +13,10 @@ namespace arc {
 BASE_FEATURE(kArcExchangeVersionOnMojoHandshake,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the enabled and active ARC IMEs on the host are managed by
+// ChromeOS settings rather than synced from Android settings.
+BASE_FEATURE(kArcImeHostSideSettings, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether to always start ARC automatically, or wait for the user's
 // action to start it later in an on-demand manner. Already enabled by default
 // for managed users. In V2, it will be expand to more users such as unmanaged

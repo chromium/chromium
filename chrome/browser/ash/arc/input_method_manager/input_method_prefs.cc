@@ -19,16 +19,23 @@ namespace arc {
 namespace ce = ::ash::extension_ime_util;
 using ::ash::input_method::InputMethodDescriptors;
 
+namespace {
+
+std::vector<std::string> SplitImeList(const std::string& ime_ids) {
+  return base::SplitString(ime_ids, ",", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY);
+}
+
+}  // namespace
+
 InputMethodPrefs::InputMethodPrefs(PrefService* prefs)
     : prefs_(CHECK_DEREF(prefs)) {}
 InputMethodPrefs::~InputMethodPrefs() = default;
 
 void InputMethodPrefs::UpdateEnabledImes(
     InputMethodDescriptors enabled_arc_imes) {
-  const std::string enabled_ime_ids =
-      prefs_->GetString(ash::prefs::kLanguageEnabledImes);
-  std::vector<std::string> enabled_ime_list = base::SplitString(
-      enabled_ime_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> enabled_ime_list =
+      SplitImeList(prefs_->GetString(ash::prefs::kLanguageEnabledImes));
 
   std::erase_if(enabled_ime_list, [](const auto& id) {
     return ash::extension_ime_util::IsArcIME(id);
@@ -36,6 +43,26 @@ void InputMethodPrefs::UpdateEnabledImes(
   for (const auto& descriptor : enabled_arc_imes)
     enabled_ime_list.push_back(descriptor.id());
 
+  SetEnabledImes(enabled_ime_list);
+}
+
+void InputMethodPrefs::DisableIme(const std::string& ime_id) {
+  std::vector<std::string> enabled_ime_list =
+      SplitImeList(prefs_->GetString(ash::prefs::kLanguageEnabledImes));
+  if (std::erase(enabled_ime_list, ime_id) == 0) {
+    return;
+  }
+  SetEnabledImes(enabled_ime_list);
+}
+
+std::set<std::string> InputMethodPrefs::GetEnabledImes() const {
+  const std::vector<std::string> imes =
+      SplitImeList(prefs_->GetString(ash::prefs::kLanguageEnabledImes));
+  return std::set<std::string>(imes.begin(), imes.end());
+}
+
+void InputMethodPrefs::SetEnabledImes(
+    const std::vector<std::string>& enabled_ime_list) {
   prefs_->SetString(ash::prefs::kLanguageEnabledImes,
                     base::JoinString(enabled_ime_list, ","));
 
@@ -51,13 +78,6 @@ void InputMethodPrefs::UpdateEnabledImes(
       !std::ranges::contains(enabled_ime_list, previous_ime)) {
     prefs_->SetString(ash::prefs::kLanguagePreviousInputMethod, std::string());
   }
-}
-
-std::set<std::string> InputMethodPrefs::GetEnabledImes() const {
-  const std::vector<std::string> imes =
-      base::SplitString(prefs_->GetString(ash::prefs::kLanguageEnabledImes),
-                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return std::set<std::string>(imes.begin(), imes.end());
 }
 
 }  // namespace arc

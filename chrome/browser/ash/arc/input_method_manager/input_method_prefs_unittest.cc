@@ -118,4 +118,43 @@ TEST_F(InputMethodPrefsTest, UpdateEnabledImes) {
   }
 }
 
+TEST_F(InputMethodPrefsTest, DisableIme) {
+  namespace aeiu = ::ash::extension_ime_util;
+  using crx_file::id_util::GenerateId;
+
+  const std::string component_extension_ime_id =
+      aeiu::GetComponentInputMethodID(
+          GenerateId("test.component.extension.ime"), "us");
+  const std::string arc_ime_id1 =
+      aeiu::GetArcInputMethodID(GenerateId("test.arc.ime"), "us");
+  const std::string arc_ime_id2 =
+      aeiu::GetArcInputMethodID(GenerateId("test.arc.ime2"), "us");
+
+  PrefService* pref_service = profile()->GetPrefs();
+  pref_service->SetString(
+      ash::prefs::kLanguageEnabledImes,
+      base::StringPrintf("%s,%s,%s", component_extension_ime_id.c_str(),
+                         arc_ime_id1.c_str(), arc_ime_id2.c_str()));
+  pref_service->SetString(ash::prefs::kLanguageCurrentInputMethod, arc_ime_id1);
+  pref_service->SetString(ash::prefs::kLanguagePreviousInputMethod,
+                          arc_ime_id2);
+
+  InputMethodPrefs prefs(pref_service);
+
+  // Disabling a not-enabled IME is no-op.
+  prefs.DisableIme(aeiu::GetArcInputMethodID(GenerateId("unknown"), "us"));
+  EXPECT_EQ(3u, prefs.GetEnabledImes().size());
+
+  // Disabling one ARC IME keeps the others in the same order.
+  prefs.DisableIme(arc_ime_id1);
+  EXPECT_EQ(base::StringPrintf("%s,%s", component_extension_ime_id.c_str(),
+                               arc_ime_id2.c_str()),
+            pref_service->GetString(ash::prefs::kLanguageEnabledImes));
+  // The current IME is reset since it's disabled.
+  EXPECT_EQ("",
+            pref_service->GetString(ash::prefs::kLanguageCurrentInputMethod));
+  EXPECT_EQ(arc_ime_id2,
+            pref_service->GetString(ash::prefs::kLanguagePreviousInputMethod));
+}
+
 }  // namespace arc

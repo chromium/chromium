@@ -7,6 +7,7 @@
 
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
@@ -31,10 +32,16 @@ class InputMethodPrefs {
   void UpdateEnabledImes(
       ash::input_method::InputMethodDescriptors enabled_arc_imes);
 
+  // Removes `ime_id` from the enabled IMEs on the pref. It's no-op if the IME
+  // is not enabled.
+  void DisableIme(const std::string& ime_id);
+
   // Returns the list of IMEs on the pref.
   std::set<std::string> GetEnabledImes() const;
 
  private:
+  void SetEnabledImes(const std::vector<std::string>& enabled_ime_list);
+
   const raw_ref<PrefService> prefs_;
 };
 

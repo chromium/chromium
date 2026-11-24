@@ -10,7 +10,9 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/mojom/input_method_manager.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -66,21 +68,26 @@ void ArcInputMethodState::InitializeWithImeInfo(
 }
 
 void ArcInputMethodState::DisableInputMethod(const std::string& ime_id) {
+  CHECK(!base::FeatureList::IsEnabled(kArcImeHostSideSettings));
   SetInputMethodEnabled(ime_id, false);
 }
 
 InputMethodDescriptors ArcInputMethodState::GetAvailableInputMethods() const {
   const bool all_allowed = delegate_->ShouldArcIMEAllowed();
+  const bool use_always_allowed =
+      !base::FeatureList::IsEnabled(kArcImeHostSideSettings);
 
   InputMethodDescriptors result;
   for (const auto& entry : installed_imes_) {
-    if (all_allowed || entry.always_allowed_)
+    if (all_allowed || (use_always_allowed && entry.always_allowed_)) {
       result.push_back(entry.descriptor_);
+    }
   }
   return result;
 }
 
 InputMethodDescriptors ArcInputMethodState::GetEnabledInputMethods() const {
+  CHECK(!base::FeatureList::IsEnabled(kArcImeHostSideSettings));
   const bool all_allowed = delegate_->ShouldArcIMEAllowed();
 
   InputMethodDescriptors result;

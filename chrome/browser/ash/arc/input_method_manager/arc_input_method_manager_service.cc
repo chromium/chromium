@@ -15,6 +15,7 @@
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/mojom/ime_mojom_traits.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "components/crx_file/id_util.h"
@@ -437,11 +439,13 @@ void ArcInputMethodManagerService::RemoveObserver(Observer* observer) {
 }
 
 void ArcInputMethodManagerService::Shutdown() {
-  // Remove any Arc IME entry from preferences before shutting down.
-  // IME states (installed/enabled/disabled) are stored in Android's settings,
-  // that will be restored after Arc container starts next time.
-  prefs_.UpdateEnabledImes({});
-  profile_->GetPrefs()->CommitPendingWrite();
+  if (!base::FeatureList::IsEnabled(kArcImeHostSideSettings)) {
+    // Remove any Arc IME entry from preferences before shutting down.
+    // IME states (installed/enabled/disabled) are stored in Android's
+    // settings, that will be restored after Arc container starts next time.
+    prefs_.UpdateEnabledImes({});
+    profile_->GetPrefs()->CommitPendingWrite();
+  }
 
   if (input_method_) {
     input_method_->RemoveObserver(input_method_observer_.get());
@@ -463,13 +467,11 @@ void ArcInputMethodManagerService::OnActiveImeChanged(
     const std::string& ime_id) {
   if (ime_id == kChromeOSIMEIdInArcContainer) {
     // Chrome OS Keyboard is selected in Android side.
-    auto* imm = ash::input_method::InputMethodManager::Get();
-    // Create a list of enabled Chrome OS IMEs.
-    auto enabled_imes = imm->GetActiveIMEState()->GetEnabledInputMethodIds();
-    std::erase_if(enabled_imes, ash::extension_ime_util::IsArcIME);
-    CHECK(!enabled_imes.empty(), base::NotFatalUntil::M160);
-    imm->GetActiveIMEState()->ChangeInputMethod(enabled_imes[0],
-                                                false /* show_message */);
+    SwitchToChromeOSIme();
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kArcImeHostSideSettings)) {
     return;
   }
 
@@ -482,13 +484,28 @@ void ArcInputMethodManagerService::OnActiveImeChanged(
 }
 
 void ArcInputMethodManagerService::OnImeDisabled(const std::string& ime_id) {
-  arc_ime_state_.DisableInputMethod(ime_id);
+  if (!base::FeatureList::IsEnabled(kArcImeHostSideSettings)) {
+    arc_ime_state_.DisableInputMethod(ime_id);
+    // Remove the IME from the prefs to disable it.
+    prefs_.UpdateEnabledImes(arc_ime_state_.GetEnabledInputMethods());
+    return;
+  }
 
-  // Remove the IME from the prefs to disable it.
-  prefs_.UpdateEnabledImes(arc_ime_state_.GetEnabledInputMethods());
+  const std::string input_method_id =
+      ash::extension_ime_util::GetArcInputMethodID(proxy_ime_extension_id_,
+                                                   ime_id);
 
-  // Note: Since this is not about uninstalling the IME, this method does not
-  // modify InputMethodManager::State.
+  // Fall back to a ChromeOS IME if the disabled IME is active.
+  auto* imm = ash::input_method::InputMethodManager::Get();
+  if (imm->GetActiveIMEState()->GetCurrentInputMethod().id() ==
+      input_method_id) {
+    SwitchToChromeOSIme();
+  }
+
+  // Android disables the IME e.g. when the user cancels the confirmation
+  // dialog shown after enabling the IME. Remove the IME from the prefs to
+  // disable it.
+  prefs_.DisableIme(input_method_id);
 }
 
 void ArcInputMethodManagerService::OnImeInfoChanged(
@@ -507,6 +524,8 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
     return;
   }
 
+  const bool host_side_settings =
+      base::FeatureList::IsEnabled(kArcImeHostSideSettings);
   base::AutoReset<bool> in_updating(&is_updating_imm_entry_, true);
   scoped_refptr<InputMethodManager::State> state = imm->GetActiveIMEState();
   const std::string current_ime_id = state->GetCurrentInputMethod().id();
@@ -517,10 +536,13 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
   const InputMethodDescriptors installed_imes =
       arc_ime_state_.GetAvailableInputMethods();
   if (installed_imes.empty()) {
-    // If no ARC IME is installed or allowed, remove ARC IME entry from
-    // preferences.
-    prefs_.UpdateEnabledImes({});
-
+    // No ARC IME is installed or allowed. With kArcImeHostSideSettings, keep
+    // the prefs as they are so that the IMEs enabled by the user are restored
+    // once they become available again (e.g. when the device goes back to
+    // tablet mode).
+    if (!host_side_settings) {
+      prefs_.UpdateEnabledImes({});
+    }
     SyncEnabledImesInArc();
     return;
   }
@@ -529,13 +551,23 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
   state->AddInputMethodExtension(proxy_ime_extension_id_, installed_imes,
                                  proxy_ime_engine_.get());
 
-  // Enable IMEs that are already enabled in the container.
-  // TODO(crbug.com/40577268): We should keep the order of the IMEs as same as
-  // in chrome://settings
-  prefs_.UpdateEnabledImes(arc_ime_state_.GetEnabledInputMethods());
-
-  for (const auto& descriptor : arc_ime_state_.GetEnabledInputMethods())
-    state->EnableInputMethod(descriptor.id());
+  if (host_side_settings) {
+    // Enable IMEs that the user has enabled via ChromeOS settings.
+    const std::set<std::string> enabled_ime_ids = prefs_.GetEnabledImes();
+    for (const auto& descriptor : installed_imes) {
+      if (enabled_ime_ids.contains(descriptor.id())) {
+        state->EnableInputMethod(descriptor.id());
+      }
+    }
+  } else {
+    // Enable IMEs that are already enabled in the container.
+    // TODO(crbug.com/40577268): We should keep the order of the IMEs as same
+    // as in chrome://settings
+    prefs_.UpdateEnabledImes(arc_ime_state_.GetEnabledInputMethods());
+    for (const auto& descriptor : arc_ime_state_.GetEnabledInputMethods()) {
+      state->EnableInputMethod(descriptor.id());
+    }
+  }
 
   state->ChangeInputMethod(current_ime_id, false);
 
@@ -543,13 +575,14 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
 }
 
 void ArcInputMethodManagerService::OnConnectionClosed() {
-  // Remove all ARC IMEs from the list and prefs.
+  // Remove all ARC IMEs from the list.
   const bool opted_out = !arc::IsArcPlayStoreEnabledForProfile(profile_);
   VLOG(1) << "Lost InputMethodManagerInstance. Reason="
           << (opted_out ? "opt-out" : "unknown");
-  // TODO(yhanada): Handle prefs better. For example, when this method is called
-  // because of the container crash (rather then opt-out), we might not want to
-  // modify the preference at all.
+  if (opted_out && base::FeatureList::IsEnabled(kArcImeHostSideSettings)) {
+    // Android data is removed on opt-out. Forget the enabled ARC IMEs too.
+    prefs_.UpdateEnabledImes({});
+  }
   OnImeInfoChanged({});
 }
 
@@ -681,6 +714,16 @@ void ArcInputMethodManagerService::SyncEnabledImesInArc() {
     }
   }
   enabled_arc_ime_ids_.swap(new_arc_enabled_ime_ids);
+}
+
+void ArcInputMethodManagerService::SwitchToChromeOSIme() {
+  auto* imm = ash::input_method::InputMethodManager::Get();
+  // Create a list of enabled Chrome OS IMEs.
+  auto enabled_imes = imm->GetActiveIMEState()->GetEnabledInputMethodIds();
+  std::erase_if(enabled_imes, ash::extension_ime_util::IsArcIME);
+  CHECK(!enabled_imes.empty(), base::NotFatalUntil::M160);
+  imm->GetActiveIMEState()->ChangeInputMethod(enabled_imes[0],
+                                              false /* show_message */);
 }
 
 void ArcInputMethodManagerService::SyncCurrentImeInArc() {

@@ -35,17 +35,21 @@ class ArcInputMethodState {
   void InitializeWithImeInfo(
       const std::string& proxy_ime_extension_id,
       const std::vector<mojom::ImeInfoPtr>& ime_info_array);
+  // Must not be called when kArcImeHostSideSettings is enabled.
   void DisableInputMethod(const std::string& ime_id);
 
   // Return the InputMethodDescriptors which are installed and allowed.
   ash::input_method::InputMethodDescriptors GetAvailableInputMethods() const;
   // Return the InputMethodDescriptors which are enabled and allowed.
+  // Must not be called when kArcImeHostSideSettings is enabled.
   ash::input_method::InputMethodDescriptors GetEnabledInputMethods() const;
 
  private:
   class InputMethodEntry {
    public:
     std::string ime_id_;
+    // The enabled state reported by Android. Not used when
+    // kArcImeHostSideSettings is enabled.
     bool enabled_{false};
     bool always_allowed_{false};
     ash::input_method::InputMethodDescriptor descriptor_;

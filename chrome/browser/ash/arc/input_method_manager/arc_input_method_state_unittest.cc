@@ -10,7 +10,9 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/mojom/input_method_manager.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,6 +50,8 @@ class FakeDelegate : public ArcInputMethodState::Delegate {
 }  // namespace
 
 TEST(ArcInputMethodState, Constructor) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kArcImeHostSideSettings);
   FakeDelegate delegate;
 
   ArcInputMethodState empty_state(&delegate);
@@ -57,6 +61,8 @@ TEST(ArcInputMethodState, Constructor) {
 }
 
 TEST(ArcInputMethodState, InstallInputMethod) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kArcImeHostSideSettings);
   FakeDelegate delegate;
 
   ArcInputMethodState state(&delegate);
@@ -78,6 +84,8 @@ TEST(ArcInputMethodState, InstallInputMethod) {
 }
 
 TEST(ArcInputMethodState, DisableInputMethod) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kArcImeHostSideSettings);
   FakeDelegate delegate;
 
   ArcInputMethodState state(&delegate);
@@ -91,6 +99,8 @@ TEST(ArcInputMethodState, DisableInputMethod) {
 }
 
 TEST(ArcInputMethodState, AllowDisallowInputMethods) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kArcImeHostSideSettings);
   FakeDelegate delegate;
 
   ArcInputMethodState state(&delegate);
@@ -108,6 +118,22 @@ TEST(ArcInputMethodState, AllowDisallowInputMethods) {
   delegate.allowed = false;
   EXPECT_EQ(1u, state.GetAvailableInputMethods().size());
   EXPECT_EQ("ime_a", state.GetAvailableInputMethods()[0].id());
+}
+
+TEST(ArcInputMethodState, AllowDisallowInputMethods_HostSideSettings) {
+  base::test::ScopedFeatureList feature_list(kArcImeHostSideSettings);
+  FakeDelegate delegate;
+
+  ArcInputMethodState state(&delegate);
+  std::vector<mojom::ImeInfoPtr> imes;
+  imes.push_back(GenerateImeInfo("ime_a", true, true));
+  imes.push_back(GenerateImeInfo("ime_b", true, false));
+  state.InitializeWithImeInfo("ime_id", imes);
+
+  EXPECT_EQ(0u, state.GetAvailableInputMethods().size());
+
+  delegate.allowed = true;
+  EXPECT_EQ(2u, state.GetAvailableInputMethods().size());
 }
 
 TEST(ArcInputMethodState, ValidateImeInfo) {

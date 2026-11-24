@@ -126,6 +126,8 @@ class ArcInputMethodManagerService
   void SyncEnabledImesInArc();
   // Notify ARC's IMM of the current active input method in Chrome.
   void SyncCurrentImeInArc();
+  // Switches the current input method to the first enabled ChromeOS IME.
+  void SwitchToChromeOSIme();
   ash::input_method::InputMethodDescriptor BuildInputMethodDescriptor(
       const mojom::ImeInfo* info);
   void Focus(int input_context_id);
