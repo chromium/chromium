@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_web_contents.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_bounds_observer.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
@@ -26,7 +26,9 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_host_delegate.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/virtual_keyboard_private.h"
 #include "extensions/common/constants.h"
@@ -46,7 +48,9 @@ namespace {
 class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
                                        public content::WebContentsObserver {
  public:
-  ChromeKeyboardContentsDelegate() = default;
+  ChromeKeyboardContentsDelegate()
+      : extension_host_delegate_(extensions::ExtensionsBrowserClient::Get()
+                                     ->CreateExtensionHostDelegate()) {}
 
   ChromeKeyboardContentsDelegate(const ChromeKeyboardContentsDelegate&) =
       delete;
@@ -114,7 +118,7 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
       extension = registry->enabled_extensions().GetByID(origin.GetHost());
       CHECK(extension, base::NotFatalUntil::M162);
     }
-    MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+    extension_host_delegate_->ProcessMediaAccessRequest(
         web_contents, request, std::move(callback), extension);
   }
 
@@ -143,6 +147,9 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override { delete this; }
+
+  const std::unique_ptr<extensions::ExtensionHostDelegate>
+      extension_host_delegate_;
 };
 
 }  // namespace
