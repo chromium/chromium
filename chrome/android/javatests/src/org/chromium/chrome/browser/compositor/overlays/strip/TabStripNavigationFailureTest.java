@@ -4,20 +4,25 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.base.test.transit.Condition.awaiting;
+import static org.chromium.base.test.transit.Condition.whether;
+
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.ConditionStatus;
+import org.chromium.base.test.transit.SimpleConditions;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -31,12 +36,19 @@ import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.page.PageLoadedCondition;
+import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.tab_strip.TabStripFacility;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
+
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** Instrumentation test verifying tab strip spinner behavior on background navigation failure. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -47,18 +59,18 @@ import org.chromium.ui.base.DeviceFormFactor;
 @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462592111
 public class TabStripNavigationFailureTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private EmbeddedTestServer mTestServer;
-    private StripLayoutHelper mStripLayoutHelper;
+    private WebPageStation mPage;
+    private TabStripFacility<CtaPageStation> mTabStrip;
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mTestServer = mActivityTestRule.getTestServer();
-        mStripLayoutHelper =
-                TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        mTabStrip = mPage.expectTabStrip();
     }
 
     @Test
@@ -89,34 +101,14 @@ public class TabStripNavigationFailureTest {
                                             });
                                 }
                             });
-                    mActivityTestRule
-                            .getActivity()
-                            .getCurrentTabCreator()
-                            .createNewTab(
-                                    new LoadUrlParams(mTestServer.getURL("/close-socket")),
-                                    TabLaunchType.FROM_LONGPRESS_BACKGROUND,
-                                    mActivityTestRule.getActivity().getActivityTab());
                 });
 
-        onPageLoadFailedHelper.waitForCallback(0);
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Tab bgTab = bgTabHolder[0];
-                    Criteria.checkThat(
-                            "Background tab should be created", bgTab, Matchers.notNullValue());
-                    StripLayoutTab stripTab =
-                            TabStripUtils.findStripLayoutTab(
-                                    mActivityTestRule.getActivity(), false, bgTab.getId());
-                    Criteria.checkThat(
-                            "StripLayoutTab should exist", stripTab, Matchers.notNullValue());
-                    Criteria.checkThat(
-                            "StripLayoutTab should not be loading on navigation failure",
-                            stripTab.isLoading(),
-                            Matchers.is(false));
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        createBackgroundTabTo(mTestServer.getURL("/close-socket"))
+                .waitFor(
+                        SimpleConditions.instrumentationThreadCondition(
+                                "Background tab navigation failed",
+                                () -> whether(onPageLoadFailedHelper.getCallCount() > 0)),
+                        stripTabLoadingCondition(() -> bgTabHolder[0], /* loading= */ false));
     }
 
     @Test
@@ -138,80 +130,26 @@ public class TabStripNavigationFailureTest {
                                     bgTabHolder[0] = tab;
                                 }
                             });
-                    mActivityTestRule
-                            .getActivity()
-                            .getCurrentTabCreator()
-                            .createNewTab(
-                                    new LoadUrlParams("about:blank"),
-                                    TabLaunchType.FROM_LONGPRESS_BACKGROUND,
-                                    mActivityTestRule.getActivity().getActivityTab());
                 });
 
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Tab bgTab = bgTabHolder[0];
-                    Criteria.checkThat(
-                            "Background tab should be created", bgTab, Matchers.notNullValue());
-                    StripLayoutTab stripTab =
-                            TabStripUtils.findStripLayoutTab(
-                                    mActivityTestRule.getActivity(), false, bgTab.getId());
-                    Criteria.checkThat(
-                            "StripLayoutTab should exist", stripTab, Matchers.notNullValue());
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        createBackgroundTabTo("about:blank")
+                .waitForAnd(
+                        new PageLoadedCondition(() -> bgTabHolder[0], TriState.FALSE),
+                        stripTabLoadingCondition(() -> bgTabHolder[0], /* loading= */ false))
+                .reach(mTabStrip.settled());
 
         Tab bgTab = bgTabHolder[0];
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            "Background tab should finish initial load",
-                            bgTab.isLoading(),
-                            Matchers.is(false));
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
-        ChromeTabUtils.loadUrlOnUiThread(bgTab, mTestServer.getURL("/slow?10"));
+        mPage.runTo(() -> ChromeTabUtils.loadUrlOnUiThread(bgTab, mTestServer.getURL("/slow?10")))
+                .waitFor(stripTabLoadingCondition(() -> bgTab, /* loading= */ true));
 
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    StripLayoutTab stripTab =
-                            TabStripUtils.findStripLayoutTab(
-                                    mActivityTestRule.getActivity(), false, bgTab.getId());
-                    Criteria.checkThat(
-                            "StripLayoutTab should exist", stripTab, Matchers.notNullValue());
-                    Criteria.checkThat(
-                            "StripLayoutTab should be loading",
-                            stripTab.isLoading(),
-                            Matchers.is(true));
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    for (TabObserver observer : TabTestUtils.getTabObservers(bgTab)) {
-                        observer.onLoadStopped(bgTab, /* toDifferentDocument= */ false);
-                    }
-                });
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    StripLayoutTab stripTab =
-                            TabStripUtils.findStripLayoutTab(
-                                    mActivityTestRule.getActivity(), false, bgTab.getId());
-                    Criteria.checkThat(
-                            "StripLayoutTab should exist", stripTab, Matchers.notNullValue());
-                    Criteria.checkThat(
-                            "StripLayoutTab should stop loading after same-document load stopped",
-                            stripTab.isLoading(),
-                            Matchers.is(false));
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        mPage.runOnUiThreadTo(
+                        () -> {
+                            for (TabObserver observer : TabTestUtils.getTabObservers(bgTab)) {
+                                observer.onLoadStopped(bgTab, /* toDifferentDocument= */ false);
+                            }
+                        })
+                .waitFor(stripTabLoadingCondition(() -> bgTab, /* loading= */ false));
     }
 
     @Test
@@ -233,77 +171,71 @@ public class TabStripNavigationFailureTest {
                                     bgTabHolder[0] = tab;
                                 }
                             });
-                    mActivityTestRule
-                            .getActivity()
-                            .getCurrentTabCreator()
-                            .createNewTab(
-                                    new LoadUrlParams("about:blank"),
-                                    TabLaunchType.FROM_LONGPRESS_BACKGROUND,
-                                    mActivityTestRule.getActivity().getActivityTab());
                 });
 
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Tab bgTab = bgTabHolder[0];
-                    Criteria.checkThat(
-                            "Background tab should be created", bgTab, Matchers.notNullValue());
-                    StripLayoutTab stripTab =
-                            TabStripUtils.findStripLayoutTab(
-                                    mActivityTestRule.getActivity(), false, bgTab.getId());
-                    Criteria.checkThat(
-                            "StripLayoutTab should exist", stripTab, Matchers.notNullValue());
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        createBackgroundTabTo("about:blank")
+                .waitForAnd(
+                        new PageLoadedCondition(() -> bgTabHolder[0], TriState.FALSE),
+                        stripTabLoadingCondition(() -> bgTabHolder[0], /* loading= */ false))
+                .reach(mTabStrip.settled());
 
         Tab bgTab = bgTabHolder[0];
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            "Background tab should finish initial load",
-                            bgTab.isLoading(),
-                            Matchers.is(false));
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         String testUrl = mTestServer.getURL("/iframe?" + mTestServer.getURL("/hung"));
 
-        ChromeTabUtils.loadUrlOnUiThread(bgTab, testUrl);
+        mPage.runTo(() -> ChromeTabUtils.loadUrlOnUiThread(bgTab, testUrl))
+                .waitForAnd(stripTabLoadingCondition(() -> bgTab, /* loading= */ true))
+                .reach(mTabStrip.settled());
 
-        CriteriaHelper.pollUiThread(
-                () -> {
+        mPage.noopTo()
+                .withTimeout(10000L)
+                .waitFor(stripTabLoadingCondition(() -> bgTab, /* loading= */ false));
+    }
+
+    /** Starts a Trip creating a background tab that loads {@code url}. */
+    private TripBuilder createBackgroundTabTo(String url) {
+        return mPage.runOnUiThreadTo(
+                () ->
+                        mActivityTestRule
+                                .getActivity()
+                                .getCurrentTabCreator()
+                                .createNewTab(
+                                        new LoadUrlParams(url),
+                                        TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                                        mActivityTestRule.getActivityTab()));
+    }
+
+    /** Fulfilled when the tab is on the regular strip and shows a loading spinner or not. */
+    private Condition stripTabLoadingCondition(Supplier<Tab> tabSupplier, boolean loading) {
+        return stripTabCondition(
+                "Tab on the strip with isLoading=" + loading,
+                tabSupplier,
+                stripTab ->
+                        whether(
+                                stripTab.isLoading() == loading,
+                                "isLoading=%b",
+                                stripTab.isLoading()));
+    }
+
+    private Condition stripTabCondition(
+            String description,
+            Supplier<Tab> tabSupplier,
+            Function<StripLayoutTab, ConditionStatus> check) {
+        return SimpleConditions.uiThreadCondition(
+                description,
+                mTabStrip.stripLayoutHelperManagerElement,
+                manager -> {
+                    Tab tab = tabSupplier.get();
+                    if (tab == null) {
+                        return awaiting("Tab not created");
+                    }
                     StripLayoutTab stripTab =
-                            TabStripUtils.findStripLayoutTab(
-                                    mActivityTestRule.getActivity(), false, bgTab.getId());
-                    Criteria.checkThat(
-                            "StripLayoutTab should exist", stripTab, Matchers.notNullValue());
-                    Criteria.checkThat(
-                            "StripLayoutTab should be loading",
-                            stripTab.isLoading(),
-                            Matchers.is(true));
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    StripLayoutTab stripTab =
-                            TabStripUtils.findStripLayoutTab(
-                                    mActivityTestRule.getActivity(), false, bgTab.getId());
-                    Criteria.checkThat(
-                            "StripLayoutTab should exist", stripTab, Matchers.notNullValue());
-                    Criteria.checkThat(
-                            "StripLayoutTab should stop loading after main document completion"
-                                    + " despite subframe activity",
-                            stripTab.isLoading(),
-                            Matchers.is(false));
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+                            manager.getStripLayoutHelper(/* incognito= */ false)
+                                    .findTabById(tab.getId());
+                    if (stripTab == null) {
+                        return awaiting("Not on the strip");
+                    }
+                    return check.apply(stripTab);
+                });
     }
 }
