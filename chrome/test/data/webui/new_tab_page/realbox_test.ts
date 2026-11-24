@@ -374,6 +374,39 @@ suite('NewTabPageRealboxNextTest', () => {
     assertEquals(ToolMode.kImageGen, event.detail.mode);
   });
 
+  test('hides the "+" entrypoint when PEC allows no inputs', async () => {
+    const entrypointAndMenu =
+        realbox.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
+            '#context');
+    assertTrue(!!entrypointAndMenu);
+    assertTrue(entrypointAndMenu.usePecApi);
+    assertTrue(!!entrypointAndMenu.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-button'));
+
+    testProxy.callbackRouterRemote.onInputStateChanged(new MockInputState());
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertFalse(!!entrypointAndMenu.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-button'));
+  });
+
+  test('reports the "+" element as it is added and removed', async () => {
+    const whenRemoved = eventToPromise<CustomEvent<HTMLElement|null>>(
+        'contextual-entrypoint-changed', realbox);
+    testProxy.callbackRouterRemote.onInputStateChanged(new MockInputState());
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertEquals(null, (await whenRemoved).detail);
+
+    const whenAdded = eventToPromise<CustomEvent<HTMLElement|null>>(
+        'contextual-entrypoint-changed', realbox);
+    testProxy.callbackRouterRemote.onInputStateChanged(SAMPLE_INPUT_STATE);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    const entrypoint = (await whenAdded).detail;
+    assertTrue(!!entrypoint);
+    assertEquals('entrypoint', entrypoint.id);
+  });
+
   test('pasting files opens composebox', async () => {
     loadTimeData.overrideValues({composeboxFileMaxCount: 2});
     realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});

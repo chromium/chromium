@@ -10,7 +10,9 @@ import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.j
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -82,6 +84,10 @@ suite('SearchboxFocusTest', () => {
     let realbox: NtpSearchboxElement;
 
     setup(async () => {
+      // The "+" only renders when PEC allows at least one input.
+      testProxy.handler.setResultFor('getInputState', Promise.resolve({
+        state: new MockInputState({allowedInputTypes: [InputType.kLensImage]}),
+      }));
       realbox = await createAndAppendRealbox(
           {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
     });

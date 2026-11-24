@@ -124,6 +124,17 @@ export class ContextualEntrypointAndMenuElement extends
     this.requestUpdate();
   }
 
+  // Lets hosts reach the "+" without depending on this element's private ids.
+  async getEntrypoint(): Promise<HTMLElement|null> {
+    await this.updateComplete;
+    const {entrypointButton} = this.getEntrypointElements_();
+    if (!entrypointButton) {
+      return null;
+    }
+    await entrypointButton.updateComplete;
+    return this.getEntrypointElements_().entrypoint ?? null;
+  }
+
   private getEntrypointElements_(): EntrypointElements {
     const entrypointButton =
         this.shadowRoot?.querySelector<ContextualEntrypointButtonElement>(

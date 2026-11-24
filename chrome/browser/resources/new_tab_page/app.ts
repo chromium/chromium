@@ -809,13 +809,6 @@ export class AppElement extends AppElementBase {
       this.recordBrowserPromoMetrics_();
     }
 
-    if (this.ntpRealboxNextEnabled_) {
-      this.registerHelpBubble(
-          CONTEXTUAL_ENTRYPOINT_ELEMENT_ID,
-          ['#searchbox', '#context', '#entrypointButton', '#entrypoint'],
-          {fixed: true});
-    }
-
     if (this.enableThreadsRail_) {
       this.observeRhsWrapperWidth_();
     }
@@ -1029,6 +1022,17 @@ export class AppElement extends AppElementBase {
 
   protected onContextMenuEntrypointClick_() {
     this.pageHandler_.onContextualSearchIPHEngaged();
+  }
+
+  // Unregistering reports the anchor as hidden, which closes the help bubble
+  // without counting as a dismissal.
+  protected onContextualEntrypointChanged_(e: CustomEvent<HTMLElement|null>) {
+    if (e.detail) {
+      this.registerHelpBubble(
+          CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, e.detail, {fixed: true});
+    } else {
+      this.unregisterHelpBubble(CONTEXTUAL_ENTRYPOINT_ELEMENT_ID);
+    }
   }
 
   private async openComposebox_(state: ComposeboxState|null = null) {

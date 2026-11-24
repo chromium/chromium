@@ -181,6 +181,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       //========================================================================
       tabSuggestions_: {type: Array},
       inputState_: {type: Object},
+      usePecApi_: {type: Boolean},
       recentTabId_: {type: Number},
       tabSuggestionsState_: {type: Number},
 
@@ -260,6 +261,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   accessor isListening: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor inputState_: InputState|null = null;
+  protected accessor usePecApi_: boolean =
+      loadTimeData.getBoolean('contextualMenuUsePecApi');
   protected accessor tabSuggestionsState_: TabSuggestionsState =
       TabSuggestionsState.NOT_STARTED;
   protected accessor searchboxIcon_: string =
@@ -282,6 +285,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
   private onTabStripChangedListenerId_: number|null = null;
   private contextMenuOpened_: boolean = false;
+  private contextualEntrypoint_: HTMLElement|null = null;
   private pageHandler_: PageHandlerInterface;
   private autocompleteResultChangedListenerId_: number|null = null;
   private inputStateListenerId_: number|null = null;
@@ -401,6 +405,18 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
             Number(config.fadeTextAnimationDuration.microseconds / 1000n));
         this.placeholderCycler_.start();
       });
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedProperties.has('ntpRealboxNextEnabled') ||
+        changedPrivateProperties.has('inputState_') ||
+        changedPrivateProperties.has('usePecApi_')) {
+      this.updateContextualEntrypoint_();
     }
   }
 
@@ -942,6 +958,21 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
 
   protected computePlaceholderText_(placeholderText: string): string {
     return placeholderText || '';
+  }
+
+  // The app anchors the contextual entrypoint help bubble to the "+", which
+  // only renders once the input state allows an input.
+  private async updateContextualEntrypoint_() {
+    const context =
+        this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
+            '#context');
+    const entrypoint = context ? await context.getEntrypoint() : null;
+    if (entrypoint === this.contextualEntrypoint_) {
+      return;
+    }
+    this.contextualEntrypoint_ = entrypoint;
+    this.dispatchEvent(
+        new CustomEvent('contextual-entrypoint-changed', {detail: entrypoint}));
   }
 
   private async openTabPicker() {

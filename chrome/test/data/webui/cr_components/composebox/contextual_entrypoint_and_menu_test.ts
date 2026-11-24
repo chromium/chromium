@@ -117,6 +117,15 @@ suite('ContextualEntrypointAndMenu', () => {
     assertFalse(!!entrypoint);
   });
 
+  test('getEntrypoint returns the "+" only while it renders', async () => {
+    const entrypoint = await entrypointAndMenu.getEntrypoint();
+    assertTrue(!!entrypoint);
+    assertEquals('entrypoint', entrypoint.id);
+
+    entrypointAndMenu.inputState = null;
+    assertEquals(null, await entrypointAndMenu.getEntrypoint());
+  });
+
   test('menu does not open if entrypoint button is hidden', async () => {
     entrypointAndMenu.inputState = null;
     await microtasksFinished();

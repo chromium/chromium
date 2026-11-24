@@ -3460,7 +3460,15 @@ suite('NewTabPageAppTest', () => {
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
     });
 
-    test('Contextual entrypoint IPH', () => {
+    test('Contextual entrypoint IPH waits for the "+"', async () => {
+      // setup()'s input state allows no inputs, so the "+" isn't rendered.
+      assertFalse(app.canShowHelpBubble(CONTEXTUAL_ENTRYPOINT_ELEMENT_ID));
+
+      searchboxHandler.setPromiseResolveFor('getInputState', {
+        state: new MockInputState({allowedTools: [ToolMode.kDeepSearch]}),
+      });
+      await recreateApp();
+
       assertTrue(app.canShowHelpBubble(CONTEXTUAL_ENTRYPOINT_ELEMENT_ID));
     });
 

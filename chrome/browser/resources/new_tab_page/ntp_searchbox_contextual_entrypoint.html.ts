@@ -24,7 +24,7 @@ export function getHtml(this: NtpSearchboxElement) {
         @context-menu-opened="${this.onContextMenuOpened_}"
         @open-drive-upload="${this.onOpenDriveUpload_}"
         @request-tab-suggestions-load="${this.onRequestTabSuggestionsLoad}"
-        .inputState="${this.inputState_}"
+        .inputState="${this.inputState_}" .usePecApi="${this.usePecApi_}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions_}"
         .tabSuggestionsState="${this.tabSuggestionsState_}"
