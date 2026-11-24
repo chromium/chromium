@@ -4,6 +4,10 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -15,6 +19,8 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -22,6 +28,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/features.h"
 #include "net/device_bound_sessions/test_support.h"
@@ -1731,17 +1738,40 @@ IN_PROC_BROWSER_TEST_F(
                   BlockListedFeatures()));
 }
 
+namespace {
+
+// Defers WillStartRequest and passes a closure that resumes the navigation to
+// `on_deferred`.
+class DeferWillStartRequestThrottle : public NavigationThrottle {
+ public:
+  DeferWillStartRequestThrottle(
+      NavigationThrottleRegistry& registry,
+      base::OnceCallback<void(base::OnceClosure)> on_deferred)
+      : NavigationThrottle(registry), on_deferred_(std::move(on_deferred)) {}
+
+  ThrottleCheckResult WillStartRequest() override {
+    std::move(on_deferred_)
+        .Run(base::BindOnce(&DeferWillStartRequestThrottle::Resume,
+                            weak_factory_.GetWeakPtr()));
+    return DEFER;
+  }
+  const char* GetNameForLogging() override {
+    return "DeferWillStartRequestThrottle";
+  }
+
+ private:
+  base::OnceCallback<void(base::OnceClosure)> on_deferred_;
+  base::WeakPtrFactory<DeferWillStartRequestThrottle> weak_factory_{this};
+};
+
+}  // namespace
+
 // Test that a page with `Cache-control: no-store` header gets evicted without
-// crashes if some cookie is modified immediately before the back navigation.
-// TODO: this test could be potentially flaky if the notification to
-// CookieChangeListener is only received after the entire back navigation
-// completes. If any flaky case is reported in the future, we should fix that by
-// ensuring the eviction to happen after the NavigationRequest starts to process
-// response but before it finishes committing the navigation.
-// See discussion from https://crrev.com/c/4408607.
+// crashes if some cookie is modified after the back navigation has started but
+// before it commits (https://crbug.com/1429151).
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
-    PagesWithCacheControlNoStoreNotBFCachedWithCookieSetImmediatelyBeforeNavigateBack) {
+    PagesWithCacheControlNoStoreNotBFCachedWithCookieSetDuringBackNavigation) {
   CreateHttpsServer();
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       "/title1.html");
@@ -1751,23 +1781,48 @@ IN_PROC_BROWSER_TEST_F(
   GURL url_a_2(https_server()->GetURL("a.com", "/title2.html"));
 
   // 1) Load the document and specify no-store for the main resource.
-  {
-    TestNavigationObserver observer(web_contents());
-    shell()->LoadURL(url_a);
-    RenderFrameHostImplWrapper rfh_a(current_frame_host());
-    response.WaitForRequest();
-    response.Send(kResponseWithNoCache);
-    response.Done();
-    observer.Wait();
-    rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
-  }
+  TestNavigationObserver observer(web_contents());
+  shell()->LoadURL(url_a);
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  response.WaitForRequest();
+  response.Send(kResponseWithNoCache);
+  response.Done();
+  observer.Wait();
+  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
 
-  // 2) Navigate away, and set a cookie from the new page.
+  // 2) Navigate away.
   EXPECT_TRUE(NavigateToURL(shell(), url_a_2));
-  EXPECT_TRUE(ExecJs(shell(), "document.cookie='foo=bar'"));
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // 3) Go back. |rfh_a| should be evicted upon restoration.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  // 3) Start going back, and pause the restore at WillStartRequest, before the
+  // entry is checked again when selecting the RenderFrameHost. The entry has
+  // no cookie change yet, so it is still restorable at this point.
+  base::test::TestFuture<base::OnceClosure> resume_future;
+  auto inserter = std::make_unique<TestNavigationThrottleInserter>(
+      web_contents(),
+      base::BindLambdaForTesting([&](NavigationThrottleRegistry& registry) {
+        registry.AddThrottle(std::make_unique<DeferWillStartRequestThrottle>(
+            registry, resume_future.GetCallback()));
+      }));
+  TestNavigationObserver back_observer(web_contents());
+  web_contents()->GetController().GoBack();
+  base::OnceClosure resume = resume_future.Take();
+  inserter.reset();
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 4) Set a cookie from the current page, and wait until the bfcached page's
+  // CookieChangeListener observes it. The notification arrives
+  // asynchronously from the network service.
+  EXPECT_TRUE(ExecJs(shell(), "document.cookie='foo=bar'"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return rfh_a->GetCookieChangeInfo().cookie_modification_count > 0;
+  }));
+
+  // 5) Resume the restore. |rfh_a| should be evicted mid-navigation, and the
+  // navigation restarted as a normal history navigation.
+  std::move(resume).Run();
+  back_observer.WaitForNavigationFinished();
+  EXPECT_EQ(url_a, web_contents()->GetLastCommittedURL());
   ExpectNotRestored({NotRestoredReason::kCacheControlNoStoreCookieModified}, {},
                     {}, {}, {}, FROM_HERE);
   EXPECT_THAT(GetTreeResult()->GetDocumentResult(),
