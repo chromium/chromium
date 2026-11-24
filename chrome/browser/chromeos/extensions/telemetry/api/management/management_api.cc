@@ -9,8 +9,8 @@
 #include <algorithm>
 #include <optional>
 
-#include "chrome/common/chromeos/extensions/api/management.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/management.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 namespace chromeos {

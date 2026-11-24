@@ -10,7 +10,7 @@
 
 #include "base/notreached.h"
 #include "base/uuid.h"
-#include "chrome/common/chromeos/extensions/api/diagnostics.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/diagnostics.h"
 
 namespace chromeos::converters::routines {
 

@@ -5,7 +5,7 @@ include_rules = [
   "-chrome/browser/extensions",
   "-chrome/browser/web_applications/isolated_web_apps",
   "-extensions",
-  "+chrome/common/chromeos/extensions",
+  "+chromeos/ash/experiences/extensions/common/telemetry",
   "+components/dbus",
   "+dbus",
   "+components/web_package",

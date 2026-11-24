@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_provider.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/chromeos_system_extensions_api_provider.h"
 
 #include <memory>
 #include <string_view>
 
 #include "base/logging.h"
-#include "chrome/common/chromeos/extensions/api/api_features.h"
-#include "chrome/common/chromeos/extensions/api/generated_schemas.h"
-#include "chrome/common/chromeos/extensions/api/manifest_features.h"
-#include "chrome/common/chromeos/extensions/api/permission_features.h"
-#include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_permissions.h"
-#include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_handler.h"
-#include "chrome/common/chromeos/extensions/grit/chromeos_system_extensions_resources.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/api_features.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/generated_schemas.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/manifest_features.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/permission_features.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/chromeos_system_extensions_api_permissions.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/chromeos_system_extensions_manifest_handler.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/grit/chromeos_system_extensions_resources.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/json_feature_provider_source.h"
 #include "extensions/common/manifest_handler.h"

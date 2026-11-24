@@ -19,7 +19,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chromeos/extensions/api/diagnostics.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/diagnostics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"

@@ -987,11 +987,11 @@
     'chromeos_diagnostics': {
       'filepath': 'ash/webui/diagnostics_ui/|'\
                   'ash/system/diagnostics/|'\
-                  'chrome/common/chromeos/extensions/|'\
                   'chrome/browser/ash/diagnostics/|'\
                   'chrome/browser/chromeos/extensions/telemetry/|'\
                   'chrome/browser/resources/chromeos/healthd_internals/|'\
                   'chrome/browser/ui/webui/ash/healthd_internals/|'\
+                  'chromeos/ash/experiences/extensions/common/telemetry/|'\
                   'chromeos/ash/services/cros_healthd/|'\
                   'chromeos/ash/components/telemetry_extension/|'\
                   'chromeos/ash/services/cros_healthd/public/mojom/|'\

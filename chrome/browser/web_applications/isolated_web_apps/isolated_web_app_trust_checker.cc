@@ -34,8 +34,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_policy_util.h"
-#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"  // nogncheck
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/chromeos_system_extension_info.h"  // nogncheck
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

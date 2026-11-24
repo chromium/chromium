@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/test/repeating_test_future.h"
-#include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/events.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/common/extension_id.h"

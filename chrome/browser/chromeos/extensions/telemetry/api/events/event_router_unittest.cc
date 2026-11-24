@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/events.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "extensions/browser/extensions_test.h"
 #include "mojo/public/cpp/bindings/remote.h"

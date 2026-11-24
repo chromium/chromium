@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_observation.h"
-#include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/events.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/extension_id.h"

@@ -67,7 +67,6 @@ chrome/browser/ui/views/search_engines
 chrome/browser/ui/webui/settings
 chrome/browser/win
 chrome/common
-chrome/common/chromeos/extensions
 chrome/common/extensions
 chrome/common/extensions/api
 chrome/docs
@@ -102,6 +101,7 @@ chromeos/ash/components/network/onc
 chromeos/ash/components/telemetry_extension
 chromeos/ash/experiences/arc
 chromeos/ash/experiences/arc/mojom
+chromeos/ash/experiences/extensions/common/telemetry
 chromeos/ash/services/ime/public/cpp/shared_lib/proto
 chromeos/ash/services/ime/public/mojom
 chromeos/process_proxy

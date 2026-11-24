@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/chromeos/extensions/api/api_sources.gni")
+import(
+    "//chromeos/ash/experiences/extensions/common/telemetry/api/api_sources.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -20,9 +21,9 @@ source_set("events") {
     ":event_router",
     "//base",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
-    "//chrome/common/chromeos/extensions/api",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",
+    "//chromeos/ash/experiences/extensions/common/telemetry/api",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//components/user_manager",
     "//extensions/browser",
@@ -41,7 +42,7 @@ source_set("event_router") {
   deps = [
     ":event_converters",
     "//base",
-    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/telemetry/api",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//content/public/browser",
     "//extensions/common",
@@ -62,7 +63,7 @@ source_set("event_manager") {
     "//base",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:util",
-    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/telemetry/api",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//content/public/browser",
@@ -82,7 +83,7 @@ source_set("event_converters") {
 
   deps = [
     "//base",
-    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/telemetry/api",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//third_party/abseil-cpp:absl",
   ]
@@ -106,11 +107,11 @@ source_set("browser_tests") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/web_applications/test:test_support_ui",
     "//chrome/browser/web_applications:web_applications_test_support",
-    "//chrome/common/chromeos/extensions",
-    "//chrome/common/chromeos/extensions/api",
     "//chrome/test/base:in_process_browser_test",
     "//chrome/test/base:ui_test_utils",
     "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/experiences/extensions/common/telemetry",
+    "//chromeos/ash/experiences/extensions/common/telemetry/api",
     "//chromeos/ash/services/cros_healthd/public/cpp:test_support",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//content/public/browser",
@@ -134,7 +135,7 @@ source_set("unit_tests") {
 
   deps = [
     ":event_converters",
-    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/telemetry/api",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
@@ -151,7 +152,7 @@ source_set("extensions_unittests") {
   deps = [
     ":event_router",
     "//base/test:test_support",
-    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/telemetry/api",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//content/test:test_support",
     "//extensions:test_support",

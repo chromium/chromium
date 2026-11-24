@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "ash/system/diagnostics/mojom/input.mojom.h"
-#include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/events.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 
 namespace chromeos::converters::events {

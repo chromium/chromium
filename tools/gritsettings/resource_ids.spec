@@ -947,10 +947,6 @@
     "META": {"align": 100},
     "includes": [5500],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/common/chromeos/extensions/chromeos_system_extensions_resources.grd": {
-    "META": {"sizes": {"includes": [10],}},
-    "includes": [5520],
-  },
   "chrome/credential_provider/gaiacp/gaia_resources.grd": {
     "includes": [5540],
     "messages": [5560],
@@ -1589,6 +1585,10 @@
   },
   "chromeos/ash/experiences/extensions/chromeos_extensions_resources.grd": {
     "includes": [9015],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chromeos/ash/experiences/extensions/common/telemetry/chromeos_system_extensions_resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [9016],
   },
   "chromeos/ash/experiences/settings_ui/resources/ash_settings_strings.grd": {
     "messages": [9018],

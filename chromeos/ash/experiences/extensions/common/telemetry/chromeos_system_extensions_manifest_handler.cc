@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_handler.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/chromeos_system_extensions_manifest_handler.h"
 
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
-#include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_constants.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/chromeos_system_extension_info.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/chromeos_system_extensions_manifest_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "extensions/common/extension.h"

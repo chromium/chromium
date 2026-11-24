@@ -3386,7 +3386,6 @@ test("unit_tests") {
       deps += [
         "//chrome/browser/chromeos/extensions/wm:unit_tests",
         "//chrome/common/apps/platform_apps:unit_tests",
-        "//chrome/common/chromeos/extensions:unit_tests",
       ]
     } else {
       deps += [ "//chrome/browser/extensions/api/messaging:unit_tests" ]

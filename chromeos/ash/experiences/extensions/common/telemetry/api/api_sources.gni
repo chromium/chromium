@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions_core && is_chromeos)
@@ -19,5 +18,4 @@ chromeos_system_extensions_api_schema_sources =
 
 chromeos_system_extensions_api_root_namespace = "chromeos::api::%(namespace)s"
 
-chromeos_system_extensions_api_schema_include_rules =
-    "chrome/common/chromeos/extensions/api:extensions::api::%(namespace)s"
+chromeos_system_extensions_api_schema_include_rules = "chromeos/ash/experiences/extensions/common/telemetry/api:extensions::api::%(namespace)s"

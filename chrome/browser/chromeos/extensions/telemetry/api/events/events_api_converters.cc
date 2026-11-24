@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "base/notreached.h"
-#include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/events.h"
 
 namespace chromeos::converters::events {
 

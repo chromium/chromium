@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/uuid.h"
-#include "chrome/common/chromeos/extensions/api/diagnostics.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/diagnostics.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 

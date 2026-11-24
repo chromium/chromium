@@ -2,16 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(enable_extensions_core && is_chromeos)
+assert(is_chromeos)
+assert(enable_extensions_core)
 
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
-static_library("extensions") {
+static_library("telemetry") {
   sources = [
     "chromeos_system_extension_info.cc",
     "chromeos_system_extension_info.h",
@@ -31,19 +31,12 @@ static_library("extensions") {
     ":resources",
     "api",
     "api:extensions_features",
+    "//ash/constants",
     "//base",
-    "//chrome/common:url_constants",
     "//chromeos/constants",
+    "//components/webapps/isolated_web_apps:scheme",
     "//extensions/common",
   ]
-
-  if (is_mac || is_win || is_linux || is_chromeos) {
-    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//ash/constants" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -53,16 +46,20 @@ source_set("unit_tests") {
     "manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",
   ]
   deps = [
-    ":extensions",
+    ":telemetry",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/common/extensions:test_support",
+    "//components/version_info",
     "//components/web_package",
+    "//components/webapps/isolated_web_apps:scheme",
+    "//extensions:test_support",
     "//extensions/common",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
+  data = [ "//chromeos/ash/experiences/extensions/test/data/" ]
 }
 
 grd_file = "$target_gen_dir/chromeos_system_extensions_resources.grd"
@@ -76,9 +73,9 @@ generate_grd("build_grd") {
 
 grit("resources") {
   source = grd_file
-  defines = chrome_grit_defines
   enable_input_discovery_for_gn_analyze = false
-  output_dir = "$root_gen_dir/chrome/common/chromeos/extensions"
+  output_dir =
+      "$root_gen_dir/chromeos/ash/experiences/extensions/common/telemetry"
   output_name = "chromeos_system_extensions_resources"
   outputs = [
     "grit/chromeos_system_extensions_resources.h",

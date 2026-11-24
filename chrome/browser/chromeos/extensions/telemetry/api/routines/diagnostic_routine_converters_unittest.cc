@@ -7,7 +7,7 @@
 #include <cstdint>
 
 #include "base/uuid.h"
-#include "chrome/common/chromeos/extensions/api/diagnostics.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/diagnostics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

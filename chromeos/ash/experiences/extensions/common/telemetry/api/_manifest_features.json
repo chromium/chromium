@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 // This features file defines manifest keys implemented under
-// src/chrome/common/chromeos/extensions.
+// src/chromeos/ash/experiences/extensions/common/telemetry.
 //
 // See chrome/common/extensions/api/_features.md to understand this file, as
 // well as feature.h, simple_feature.h, and feature_provider.h.

@@ -15,7 +15,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "chrome/common/chromeos/extensions/api/telemetry.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/telemetry.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 

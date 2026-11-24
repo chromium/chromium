@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "chrome/common/chromeos/extensions/api/telemetry.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/telemetry.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"

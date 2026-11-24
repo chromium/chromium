@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/chromeos/extensions/api/api_sources.gni")
+import(
+    "//chromeos/ash/experiences/extensions/common/telemetry/api/api_sources.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -22,8 +23,8 @@ source_set("diagnostics") {
     "//base",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/chromeos/extensions/telemetry/api/routines:routine_manager",
-    "//chrome/common/chromeos/extensions/api",
     "//chromeos/ash/components/telemetry_extension/diagnostics",
+    "//chromeos/ash/experiences/extensions/common/telemetry/api",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//extensions/browser",
@@ -71,7 +72,7 @@ source_set("unit_tests") {
   deps = [
     ":diagnostics",
     "//base/test:test_support",
-    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/telemetry/api",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//testing/gtest",
   ]

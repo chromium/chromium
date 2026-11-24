@@ -19,10 +19,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
-#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"  // nogncheck
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/chromeos_system_extension_info.h"  // nogncheck
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api_converters.h"
 
-#include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/events.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/chromeos_system_extension_info.h"
 
 #include <memory>
 #include <optional>

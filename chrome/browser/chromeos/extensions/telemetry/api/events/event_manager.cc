@@ -12,7 +12,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/util.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
-#include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/ash/experiences/extensions/common/telemetry/api/events.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"

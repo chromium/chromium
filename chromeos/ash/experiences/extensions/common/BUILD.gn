@@ -35,6 +35,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":common",
+    "telemetry:unit_tests",
     "//base",
     "//base/test:test_support",
     "//components/version_info",

@@ -340,8 +340,8 @@ static_library("common_lib") {
     public_deps += [ "//ash/keyboard/ui" ]
     deps += [
       "//ash/constants",
-      "//chrome/common/chromeos/extensions",
       "//chromeos/ash/components/logging",
+      "//chromeos/ash/experiences/extensions/common/telemetry",
     ]
   }
 
