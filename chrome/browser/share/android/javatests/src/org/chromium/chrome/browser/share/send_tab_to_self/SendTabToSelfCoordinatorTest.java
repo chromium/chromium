@@ -80,6 +80,8 @@ import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -104,7 +106,13 @@ import java.util.stream.IntStream;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SendTabToSelfCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+
+    @Rule(order = 0)
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+
+    @Rule(order = 1)
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     @Mock private Tracker mTracker;
@@ -113,6 +121,7 @@ public class SendTabToSelfCoordinatorTest {
 
     @Before
     public void setUp() {
+        mCtaTestRule.startOnBlankPage();
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Skip device lock UI on automotive.
@@ -142,10 +151,10 @@ public class SendTabToSelfCoordinatorTest {
         // Dismiss any active IPH text bubbles shown during the test.
         ThreadUtils.runOnUiThreadBlocking(TextBubble::dismissBubbles);
         // Reset screen orientation to avoid leaking state across tests.
-        if (mSyncTestRule.getActivity() != null) {
+        if (mCtaTestRule.getActivity() != null) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mSyncTestRule
+                        mCtaTestRule
                                 .getActivity()
                                 .setRequestedOrientation(
                                         ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
@@ -169,7 +178,7 @@ public class SendTabToSelfCoordinatorTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 BottomSheetControllerProvider.from(
-                                        mSyncTestRule.getActivity().getWindowAndroid()));
+                                        mCtaTestRule.getActivity().getWindowAndroid()));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> new BottomSheetTestSupport(controller).setSheetState(SheetState.FULL, false));
         BottomSheetTestSupport.waitForState(controller, SheetState.FULL);
@@ -550,7 +559,7 @@ public class SendTabToSelfCoordinatorTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return BottomSheetControllerProvider.from(
-                                    mSyncTestRule.getActivity().getWindowAndroid());
+                                    mCtaTestRule.getActivity().getWindowAndroid());
                         });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> new BottomSheetTestSupport(controller).setSheetState(SheetState.FULL, false));
@@ -576,7 +585,7 @@ public class SendTabToSelfCoordinatorTest {
     }
 
     private void buildAndShowCoordinator() {
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        ChromeTabbedActivity activity = mCtaTestRule.getActivity();
         WindowAndroid windowAndroid = activity.getWindowAndroid();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -603,7 +612,7 @@ public class SendTabToSelfCoordinatorTest {
     // TODO(crbug.com/448227402): Remove this method once the migration to the activity-less sign-in
     // flow is complete.
     private @Nullable View getBottomSheetView() {
-        WindowAndroid windowAndroid = mSyncTestRule.getActivity().getWindowAndroid();
+        WindowAndroid windowAndroid = mCtaTestRule.getActivity().getWindowAndroid();
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var content =
@@ -673,7 +682,7 @@ public class SendTabToSelfCoordinatorTest {
         waitForViewHidden(R.id.sheet_item_list);
 
         // Verify that the snackbar is shown.
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        ChromeTabbedActivity activity = mCtaTestRule.getActivity();
         CriteriaHelper.pollUiThread(
                 () -> {
                     SnackbarManager snackbarManager = activity.getSnackbarManager();
@@ -723,7 +732,7 @@ public class SendTabToSelfCoordinatorTest {
                 });
 
         // Verify that the snackbar is shown on the activity.
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        ChromeTabbedActivity activity = mCtaTestRule.getActivity();
         CriteriaHelper.pollUiThread(
                 () -> {
                     SnackbarManager snackbarManager = activity.getSnackbarManager();
@@ -820,7 +829,7 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     public void testShow_nullDisplayReasonDoesNotCrash() {
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        ChromeTabbedActivity activity = mCtaTestRule.getActivity();
         WindowAndroid windowAndroid = activity.getWindowAndroid();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -900,7 +909,7 @@ public class SendTabToSelfCoordinatorTest {
                 .getFakeServerHelper()
                 .injectDeviceInfoEntity("Guid2", "My Laptop", mSetUpTimeMs, mSetUpTimeMs);
 
-        Activity activity = mSyncTestRule.getActivity();
+        Activity activity = mCtaTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -930,7 +939,7 @@ public class SendTabToSelfCoordinatorTest {
     public void testEnhancedDevicePicker_landscapeModeOverflowWithManyDevices() {
         injectFakeDevices(20);
 
-        Activity activity = mSyncTestRule.getActivity();
+        Activity activity = mCtaTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -970,7 +979,7 @@ public class SendTabToSelfCoordinatorTest {
         signInAndShowDevicePicker();
 
         // Rotate to landscape while the sheet is currently displayed in portrait.
-        Activity activity = mSyncTestRule.getActivity();
+        Activity activity = mCtaTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -1004,7 +1013,7 @@ public class SendTabToSelfCoordinatorTest {
                 .getFakeServerHelper()
                 .injectDeviceInfoEntity("Guid2", "My Laptop", mSetUpTimeMs, mSetUpTimeMs);
 
-        Activity activity = mSyncTestRule.getActivity();
+        Activity activity = mCtaTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -1035,7 +1044,7 @@ public class SendTabToSelfCoordinatorTest {
     public void testEnhancedDevicePicker_tabletLandscapeModeOverflowWithManyDevices() {
         injectFakeDevices(20);
 
-        Activity activity = mSyncTestRule.getActivity();
+        Activity activity = mCtaTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -1077,7 +1086,7 @@ public class SendTabToSelfCoordinatorTest {
         signInAndShowDevicePicker();
 
         // Rotate to landscape while the sheet is currently displayed in portrait.
-        Activity activity = mSyncTestRule.getActivity();
+        Activity activity = mCtaTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -1106,7 +1115,7 @@ public class SendTabToSelfCoordinatorTest {
                 .when(bridgeMock)
                 .getEntryPointDisplayReason(any(), any());
 
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        ChromeTabbedActivity activity = mCtaTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> activity.findViewById(R.id.url_bar).performLongClick());
         waitForView(withText(R.string.menu_send_to_devices)).click();
