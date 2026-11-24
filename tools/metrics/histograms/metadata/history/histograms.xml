@@ -482,19 +482,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="History.Clusters.Actions.FinalState.WasSuccessful"
-    enum="BooleanSuccess" expires_after="2025-09-14">
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    Logged when the user closes the chrome://history/journeys page (e.g., closed
-    tab, navigated in the same tab, or closed browser). Logs whether the users
-    interaction with the UI was deemed successful or not. Success is defined as
-    a link was clicked, a cluster was opened, or a deletion event occurred.
-  </summary>
-</histogram>
-
 <histogram name="History.Clusters.Actions.InitialState"
     enum="HistoryClustersInitialState" expires_after="never">
 <!-- expires-never: part of vital metric ChromeSearch.Actions -->

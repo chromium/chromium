@@ -155,8 +155,6 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   destroyed_watcher.Wait();
 
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Actions.FinalState.WasSuccessful", true, 1);
-  histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.FinalState.NumberLinksOpened", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.FinalState.NumberIndividualVisitsDeleted", 1,
@@ -183,8 +181,6 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   destroyed_watcher.Wait();
 
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Actions.FinalState.WasSuccessful", true, 1);
-  histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.FinalState.NumberClustersDeleted", 1, 1);
 }
 
@@ -205,8 +201,6 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   destroyed_watcher.Wait();
 
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Actions.FinalState.WasSuccessful", true, 1);
-  histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.FinalState.NumberRelatedSearchesClicked", 1, 1);
 }
 
@@ -226,8 +220,6 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Actions.FinalState.WasSuccessful", false, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.FinalState.NumberVisibilityToggles", 1, 1);
 }

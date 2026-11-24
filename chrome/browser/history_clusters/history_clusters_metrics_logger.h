@@ -92,10 +92,6 @@ class HistoryClustersMetricsLogger
   void WasShown();
 
  private:
-  // Whether the journeys interaction captured by |this| is considered a
-  // successful outcome.
-  bool IsCurrentlySuccessfulHistoryClustersOutcome();
-
   // The navigation ID of the navigation handle that this data is associated
   // with, used for recording the metrics to UKM.
   std::optional<int64_t> navigation_id_;
