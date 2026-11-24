@@ -10,11 +10,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -139,7 +143,8 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
             @JniType("std::vector<std::u16string>") final String[] permissionsVisibleDetails,
             @JniType("std::vector<std::u16string>") final String[] permissionsDetails,
             @JniType("std::u16string") final String permissionsShowDetails,
-            @JniType("std::u16string") final String permissionsHideDetails) {
+            @JniType("std::u16string") final String permissionsHideDetails,
+            final boolean showBulletPoints) {
         View contentView = getContentView();
         LinearLayout scrollViewContainer = contentView.findViewById(R.id.scroll_view_container);
 
@@ -165,6 +170,13 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
             // Add the permission's main text.
             TextViewWithLeading mainText = permissionRow.findViewById(R.id.permission_item_text);
             mainText.setText(permissionsText[i]);
+            if (showBulletPoints) {
+                TextViewWithLeading bullet =
+                        permissionRow.findViewById(R.id.permission_item_bullet);
+                bullet.setText("• ");
+                bullet.setVisibility(View.VISIBLE);
+                mainText.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
+            }
 
             // Add visible details, if existent.
             TextViewWithLeading visibleDetails =
@@ -249,35 +261,208 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
     }
 
     /**
-     * Populates the site access options section of the dialog.
-     *
-     * @param siteAccessHeading The heading text for the site access section.
-     * @param onClickText The label text for the "on click" option.
-     * @param alwaysAllSitesText The label text for the "always on all sites" option.
+     * Populates the site access options radio group inside the permissions section ("It can:") of
+     * the dialog.
      */
     @CalledByNative
     public void withSiteAccessOptions(
-            @JniType("std::u16string") final String siteAccessHeading,
-            @JniType("std::u16string") final String onClickText,
-            @JniType("std::u16string") final String alwaysAllSitesText) {
+            @JniType("std::u16string") final String permissionsHeading,
+            @JniType("std::u16string") final String siteAccessHeader,
+            @JniType("std::u16string") final String onClickTitle,
+            @JniType("std::u16string") final String onClickSubtext,
+            @JniType("std::u16string") final String alwaysOptionTitle,
+            @JniType("std::u16string") final String alwaysOptionSubtext,
+            @JniType("std::vector<std::u16string>") final String[] visibleHosts,
+            @JniType("std::vector<std::u16string>") final String[] collapsedHosts,
+            @JniType("std::u16string") final String showAllText,
+            @JniType("std::u16string") final String showAllAccessibleText,
+            @JniType("std::u16string") final String showLessText,
+            @JniType("std::u16string") final String listedSitesAccessibleText) {
         View contentView = getContentView();
         LinearLayout scrollViewContainer = contentView.findViewById(R.id.scroll_view_container);
 
+        LinearLayout permissionsContainer =
+                scrollViewContainer.findViewById(R.id.permissions_container);
+        permissionsContainer.setVisibility(View.VISIBLE);
+        TextView permissionsHeadingView =
+                permissionsContainer.findViewById(R.id.permissions_heading);
+        permissionsHeadingView.setText(permissionsHeading);
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
         LinearLayout siteAccessContainer =
-                scrollViewContainer.findViewById(R.id.site_access_container);
-        siteAccessContainer.setVisibility(View.VISIBLE);
+                (LinearLayout)
+                        inflater.inflate(
+                                R.layout.extension_install_dialog_site_access,
+                                permissionsContainer,
+                                false);
+        // Insert right below `permissions_heading` (index 0) and above non-host permission rows.
+        permissionsContainer.addView(siteAccessContainer, 1);
+
+        TextView siteAccessHeadingBulletView =
+                siteAccessContainer.findViewById(R.id.site_access_heading_bullet);
+        siteAccessHeadingBulletView.setText("• ");
 
         TextView siteAccessHeadingView = siteAccessContainer.findViewById(R.id.site_access_heading);
-        siteAccessHeadingView.setText(siteAccessHeading);
+        siteAccessHeadingView.setText(siteAccessHeader);
+
+        RadioGroup radioGroup = siteAccessContainer.findViewById(R.id.site_access_radio_group);
+        radioGroup.setContentDescription(siteAccessHeader);
 
         mOnClickRadioButton = siteAccessContainer.findViewById(R.id.site_access_on_click);
-        mOnClickRadioButton.setText(onClickText);
+        mOnClickRadioButton.setText(onClickTitle);
         mOnClickRadioButton.setChecked(true);
+        mOnClickRadioButton.setContentDescription(onClickTitle + "\n" + onClickSubtext);
 
-        RadioButton alwaysAllSitesRadioButton =
-                siteAccessContainer.findViewById(R.id.site_access_always_all_sites);
-        alwaysAllSitesRadioButton.setText(alwaysAllSitesText);
-        alwaysAllSitesRadioButton.setChecked(false);
+        TextView onClickSubtextView =
+                siteAccessContainer.findViewById(R.id.site_access_on_click_subtext);
+        onClickSubtextView.setText(onClickSubtext);
+
+        RadioButton alwaysRadioButton = siteAccessContainer.findViewById(R.id.site_access_always);
+        alwaysRadioButton.setText(alwaysOptionTitle);
+        alwaysRadioButton.setChecked(false);
+
+        TextView alwaysSubtextView =
+                siteAccessContainer.findViewById(R.id.site_access_always_subtext);
+        alwaysSubtextView.setText(alwaysOptionSubtext);
+
+        LinearLayout hostsContainer =
+                siteAccessContainer.findViewById(R.id.site_access_hosts_container);
+        if (visibleHosts.length == 0) {
+            hostsContainer.setVisibility(View.GONE);
+            alwaysRadioButton.setContentDescription(alwaysOptionTitle + "\n" + alwaysOptionSubtext);
+            return;
+        }
+
+        hostsContainer.setVisibility(View.VISIBLE);
+        hostsContainer.setContentDescription(listedSitesAccessibleText);
+
+        LinearLayout visibleHostsContainer =
+                hostsContainer.findViewById(R.id.site_access_visible_hosts);
+        populateSiteListColumn(
+                inflater, visibleHostsContainer, visibleHosts, 0, visibleHosts.length);
+
+        LinearLayout expandedHostsContainer =
+                hostsContainer.findViewById(R.id.site_access_expanded_hosts);
+        TextViewWithLeading toggleView = hostsContainer.findViewById(R.id.site_access_hosts_toggle);
+
+        String visibleHostsText = String.join("\n", visibleHosts);
+        alwaysRadioButton.setContentDescription(
+                alwaysOptionTitle + "\n" + alwaysOptionSubtext + "\n" + visibleHostsText);
+
+        if (collapsedHosts.length == 0) {
+            expandedHostsContainer.setVisibility(View.GONE);
+            toggleView.setVisibility(View.GONE);
+            return;
+        }
+
+        LinearLayout expandedColumn1 =
+                expandedHostsContainer.findViewById(R.id.site_access_hosts_column_1);
+        LinearLayout expandedColumn2 =
+                expandedHostsContainer.findViewById(R.id.site_access_hosts_column_2);
+        String[] allHosts = new String[visibleHosts.length + collapsedHosts.length];
+        System.arraycopy(visibleHosts, 0, allHosts, 0, visibleHosts.length);
+        System.arraycopy(collapsedHosts, 0, allHosts, visibleHosts.length, collapsedHosts.length);
+        String allHostsText = String.join("\n", allHosts);
+
+        int col1Count = (allHosts.length + 1) / 2;
+        populateSiteListColumn(inflater, expandedColumn1, allHosts, 0, col1Count);
+        populateSiteListColumn(inflater, expandedColumn2, allHosts, col1Count, allHosts.length);
+        expandedHostsContainer.setVisibility(View.GONE);
+
+        toggleView.setText(showAllText);
+        toggleView.setContentDescription(showAllAccessibleText);
+        toggleView.setVisibility(View.VISIBLE);
+        toggleView.setAccessibilityDelegate(
+                new View.AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            View host, AccessibilityNodeInfo info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
+                        info.setClassName(Button.class.getName());
+                        info.addAction(
+                                expandedHostsContainer.getVisibility() == View.VISIBLE
+                                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_COLLAPSE
+                                        : AccessibilityNodeInfo.AccessibilityAction.ACTION_EXPAND);
+                    }
+
+                    @Override
+                    public boolean performAccessibilityAction(
+                            View host, int action, @Nullable Bundle args) {
+                        boolean isExpanded = expandedHostsContainer.getVisibility() == View.VISIBLE;
+                        if ((!isExpanded
+                                        && action
+                                                == AccessibilityNodeInfo.AccessibilityAction
+                                                        .ACTION_EXPAND
+                                                        .getId())
+                                || (isExpanded
+                                        && action
+                                                == AccessibilityNodeInfo.AccessibilityAction
+                                                        .ACTION_COLLAPSE
+                                                        .getId())) {
+                            host.performClick();
+                            return true;
+                        }
+                        return super.performAccessibilityAction(host, action, args);
+                    }
+                });
+
+        toggleView.setOnClickListener(
+                v -> {
+                    if (expandedHostsContainer.getVisibility() == View.VISIBLE) {
+                        expandedHostsContainer.setVisibility(View.GONE);
+                        visibleHostsContainer.setVisibility(View.VISIBLE);
+                        toggleView.setText(showAllText);
+                        toggleView.setContentDescription(showAllAccessibleText);
+                        alwaysRadioButton.setContentDescription(
+                                alwaysOptionTitle
+                                        + "\n"
+                                        + alwaysOptionSubtext
+                                        + "\n"
+                                        + visibleHostsText);
+                    } else {
+                        visibleHostsContainer.setVisibility(View.GONE);
+                        expandedHostsContainer.setVisibility(View.VISIBLE);
+                        toggleView.setText(showLessText);
+                        toggleView.setContentDescription(showLessText);
+                        alwaysRadioButton.setContentDescription(
+                                alwaysOptionTitle
+                                        + "\n"
+                                        + alwaysOptionSubtext
+                                        + "\n"
+                                        + allHostsText);
+                    }
+                    v.requestFocus();
+                });
+    }
+
+    private void populateSiteListColumn(
+            LayoutInflater inflater,
+            LinearLayout column,
+            String[] hosts,
+            int startIndex,
+            int endIndex) {
+        int itemVerticalMarginPx =
+                Math.round(4 * mContext.getResources().getDisplayMetrics().density);
+        for (int i = startIndex; i < endIndex; i++) {
+            String siteText = hosts[i];
+            if (siteText.isEmpty()) continue;
+
+            View row =
+                    inflater.inflate(
+                            R.layout.extension_install_dialog_site_access_item, column, false);
+            TextViewWithLeading bulletView = row.findViewById(R.id.site_access_item_bullet);
+            bulletView.setText("• ");
+            TextViewWithLeading domainView = row.findViewById(R.id.site_access_item_domain);
+            domainView.setText(siteText);
+            row.setContentDescription(siteText);
+
+            if (column.getChildCount() > 0) {
+                LinearLayout.LayoutParams params =
+                        (LinearLayout.LayoutParams) row.getLayoutParams();
+                params.topMargin = itemVerticalMarginPx;
+            }
+            column.addView(row);
+        }
     }
 
     @CalledByNative

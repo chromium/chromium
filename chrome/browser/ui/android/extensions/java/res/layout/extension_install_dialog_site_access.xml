@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/site_access_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    style="@style/AlertDialogContent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/site_access_heading_bullet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+            app:leading="@dimen/text_size_medium_leading" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/site_access_heading"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+            app:leading="@dimen/text_size_medium_leading" />
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/site_access_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/site_access_on_click"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/site_access_on_click_subtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:importantForAccessibility="no"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            app:leading="@dimen/text_size_medium_leading" />
+
+        <RadioButton
+            android:id="@+id/site_access_always"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/site_access_always_subtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:importantForAccessibility="no"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            app:leading="@dimen/text_size_medium_leading" />
+
+        <LinearLayout
+            android:id="@+id/site_access_hosts_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/site_access_visible_hosts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/site_access_expanded_hosts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/site_access_hosts_column_1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:id="@+id/site_access_hosts_column_2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/site_access_hosts_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:textAppearance="@style/TextAppearance.TextMedium.Link"
+                app:leading="@dimen/text_size_medium_leading"
+                android:visibility="gone" />
+        </LinearLayout>
+    </RadioGroup>
+</LinearLayout>

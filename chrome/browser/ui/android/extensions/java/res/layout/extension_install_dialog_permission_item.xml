@@ -11,12 +11,29 @@ found in the LICENSE file.
     android:orientation="vertical"
     style="@style/AlertDialogContent" >
 
-    <org.chromium.ui.widget.TextViewWithLeading
-        android:id="@+id/permission_item_text"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        app:leading="@dimen/text_size_medium_leading"/>
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/permission_item_bullet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+            android:visibility="gone"
+            app:leading="@dimen/text_size_medium_leading" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/permission_item_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            app:leading="@dimen/text_size_medium_leading" />
+    </LinearLayout>
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/permission_item_visible_details"

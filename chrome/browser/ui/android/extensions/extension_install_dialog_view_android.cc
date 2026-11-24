@@ -7,10 +7,13 @@
 #include <jni.h>
 
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/strings/string_split.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,6 +22,7 @@
 #include "extensions/browser/install_prompt_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/strings/grit/extensions_strings.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/modal_dialog_manager_bridge.h"
@@ -35,6 +39,20 @@
 using extensions::InstallPromptData;
 
 namespace {
+
+std::vector<std::u16string> ParseHostList(std::u16string_view details) {
+  std::vector<std::u16string_view> lines = base::SplitStringPiece(
+      details, u"\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::u16string> hosts;
+  hosts.reserve(lines.size());
+  for (std::u16string_view line : lines) {
+    if (line.starts_with(u"• ")) {
+      line.remove_prefix(2);
+    }
+    hosts.emplace_back(line);
+  }
+  return hosts;
+}
 
 void ShowExtensionInstallDialogAndroid(
     std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
@@ -139,10 +157,17 @@ void ExtensionInstallDialogViewAndroid::OnStoreLinkClicked(
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
+// TODO(crbug.com/588536354): Add an end-to-end integration test covering
+// `BuildPropertyModel()` across JNI (including verifying JNI argument
+// ordering).
 void ExtensionInstallDialogViewAndroid::BuildPropertyModel() {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  bool has_permissions = prompt_->GetPermissionCount() > 0;
+  bool has_site_access_options =
+      prompt_->ShouldWithheldPermissionsOnDialogAccept();
+  bool has_permissions = has_site_access_options
+                             ? prompt_->GetNonHostPermissionCount() > 0
+                             : prompt_->GetPermissionCount() > 0;
   if (has_permissions) {
     std::u16string permissions_heading = prompt_->GetPermissionsHeading();
     std::u16string permissions_show_details =
@@ -150,20 +175,14 @@ void ExtensionInstallDialogViewAndroid::BuildPropertyModel() {
     std::u16string permissions_hide_details =
         l10n_util::GetStringUTF16(IDS_EXTENSIONS_SHOW_LESS);
 
-    std::vector<std::u16string> permissions_text;
-    std::vector<std::u16string> permissions_visible_details;
-    std::vector<std::u16string> permissions_details;
-    auto permissions = prompt_->GetPermissions();
-    for (size_t i = 0; i < permissions.permissions.size(); ++i) {
-      permissions_text.push_back(permissions.permissions[i]);
-      permissions_visible_details.push_back(permissions.visible_details[i]);
-      permissions_details.push_back(permissions.collapsed_details[i]);
-    }
-
+    auto permissions = has_site_access_options
+                           ? prompt_->GetNonHostPermissions()
+                           : prompt_->GetPermissions();
     Java_ExtensionInstallDialogBridge_withPermissions(
-        env, java_object_, permissions_heading, permissions_text,
-        permissions_visible_details, permissions_details,
-        permissions_show_details, permissions_hide_details);
+        env, java_object_, permissions_heading, permissions.permissions,
+        permissions.visible_details, permissions.collapsed_details,
+        permissions_show_details, permissions_hide_details,
+        /*show_bullet_points=*/has_site_access_options);
   }
 
   bool requires_justification =
@@ -178,17 +197,22 @@ void ExtensionInstallDialogViewAndroid::BuildPropertyModel() {
         env, java_object_, justification_heading, justification_placeholder);
   }
 
-  if (prompt_->ShouldWithheldPermissionsOnDialogAccept()) {
-    std::u16string site_access_heading =
-        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_ALLOW_SITE_ACCESS_TITLE);
-    std::u16string on_click_text = l10n_util::GetStringUTF16(
-        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_CLICK);
-    std::u16string always_all_sites_text = l10n_util::GetStringUTF16(
-        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_ALL_SITES_V2);
-
+  if (has_site_access_options) {
     Java_ExtensionInstallDialogBridge_withSiteAccessOptions(
-        env, java_object_, site_access_heading, on_click_text,
-        always_all_sites_text);
+        env, java_object_, prompt_->GetPermissionsHeading(),
+        prompt_->GetSiteAccessHeader(),
+        prompt_->GetSiteAccessOnClickOptionText(),
+        prompt_->GetSiteAccessOnClickOptionSubtext(),
+        prompt_->GetSiteAccessAlwaysOptionText(),
+        prompt_->GetSiteAccessAlwaysOptionSubtext(),
+        ParseHostList(prompt_->GetVisibleHostPermissions()),
+        ParseHostList(prompt_->GetCollapsedHostPermissions()),
+        l10n_util::GetStringUTF16(IDS_EXTENSIONS_SHOW_ALL),
+        l10n_util::GetStringUTF16(
+            IDS_EXTENSION_PROMPT_SITE_ACCESS_SHOW_ALL_SITES_ARIA_LABEL),
+        l10n_util::GetStringUTF16(IDS_EXTENSIONS_SHOW_LESS),
+        l10n_util::GetStringUTF16(
+            IDS_EXTENSION_PROMPT_SITE_ACCESS_LISTED_SITES_ARIA_LABEL));
   }
 
   if (prompt_->has_webstore_data()) {

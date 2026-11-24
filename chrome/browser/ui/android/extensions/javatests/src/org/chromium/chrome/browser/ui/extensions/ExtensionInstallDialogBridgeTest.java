@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -61,9 +62,18 @@ public class ExtensionInstallDialogBridgeTest {
             "Justification for requesting this extension:";
     private static final String JUSTIFICATION_PLACEHOLDER = "Enter justification...";
     private static final String JUSTIFICATION_TEXT_INPUT = "This is a test justification.";
-    private static final String SITE_ACCESS_HEADING = "Allow site access";
-    private static final String SITE_ACCESS_ON_CLICK = "When you click the extension";
+    private static final String SITE_ACCESS_HEADER = "Read and change your data";
+    private static final String SITE_ACCESS_ON_CLICK = "Only when you click the extension";
+    private static final String SITE_ACCESS_ON_CLICK_SUBTEXT =
+            "Grants temporary access to your data on the site";
     private static final String SITE_ACCESS_ALWAYS_ALL_SITES = "Always on all sites";
+    private static final String SITE_ACCESS_ALWAYS_ALL_SITES_SUBTEXT =
+            "Grants permanent access to your data on all sites";
+    private static final String SITE_ACCESS_ALWAYS_LISTED_SITES = "Always on the listed sites";
+    private static final String SITE_ACCESS_ALWAYS_LISTED_SITES_SUBTEXT =
+            "Grants permanent access to your data on the sites listed below";
+    private static final String SHOW_ALL_SITES_ACCESSIBLE = "Show all sites";
+    private static final String LISTED_SITES_ACCESSIBLE = "Listed sites";
     private static final Bitmap ICON = Bitmap.createBitmap(24, 24, Bitmap.Config.ARGB_8888);
 
     @Mock private Natives mNativeMock;
@@ -143,7 +153,8 @@ public class ExtensionInstallDialogBridgeTest {
                 permissionsVisibleDetails,
                 permissionsDetails,
                 PERMISSIONS_SHOW_DETAILS,
-                PERMISSIONS_HIDE_DETAILS);
+                PERMISSIONS_HIDE_DETAILS,
+                /* showBulletPoints= */ false);
         buildAndShowDialog();
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
 
@@ -160,6 +171,8 @@ public class ExtensionInstallDialogBridgeTest {
         // Verify first permission with details.
         int permissionOneIndex = 0;
         View permissionOne = permissionsContainer.getChildAt(permissionOneIndex + 1);
+        TextViewWithLeading permissionOneBullet =
+                permissionOne.findViewById(R.id.permission_item_bullet);
         TextViewWithLeading permissionOneMainText =
                 permissionOne.findViewById(R.id.permission_item_text);
         TextViewWithLeading permissionOneVisibleDetails =
@@ -168,6 +181,10 @@ public class ExtensionInstallDialogBridgeTest {
                 permissionOne.findViewById(R.id.permission_item_toggle);
         TextViewWithLeading permissionOneDetails =
                 permissionOne.findViewById(R.id.permission_item_details);
+        Assert.assertEquals(
+                "Permission one bullet should be hidden when showBulletPoints is false.",
+                View.GONE,
+                permissionOneBullet.getVisibility());
         Assert.assertEquals(
                 "Permission one text does not match.",
                 permissionsText[permissionOneIndex],
@@ -470,39 +487,267 @@ public class ExtensionInstallDialogBridgeTest {
         verify(mNativePtr, times(1)).destroy();
     }
 
-    /** Tests that the dialog displays the site access options correctly. */
-    @Test
-    public void testDialogWithSiteAccessOptions() throws Exception {
+    private void withAllSitesAccessOptions() {
         mExtensionInstallDialogBridge.withSiteAccessOptions(
-                SITE_ACCESS_HEADING, SITE_ACCESS_ON_CLICK, SITE_ACCESS_ALWAYS_ALL_SITES);
+                PERMISSIONS_HEADING,
+                SITE_ACCESS_HEADER,
+                SITE_ACCESS_ON_CLICK,
+                SITE_ACCESS_ON_CLICK_SUBTEXT,
+                SITE_ACCESS_ALWAYS_ALL_SITES,
+                SITE_ACCESS_ALWAYS_ALL_SITES_SUBTEXT,
+                /* visibleHosts= */ new String[0],
+                /* collapsedHosts= */ new String[0],
+                PERMISSIONS_SHOW_DETAILS,
+                SHOW_ALL_SITES_ACCESSIBLE,
+                PERMISSIONS_HIDE_DETAILS,
+                LISTED_SITES_ACCESSIBLE);
+    }
+
+    /** Tests that the dialog displays the all-sites access options under "It can:" correctly. */
+    @Test
+    public void testDialogWithSiteAccessOptionsAllSites() throws Exception {
+        withAllSitesAccessOptions();
         buildAndShowDialog();
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
         View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
 
+        LinearLayout permissionsContainer = customView.findViewById(R.id.permissions_container);
+        Assert.assertEquals(View.VISIBLE, permissionsContainer.getVisibility());
+        TextView permissionsHeadingView = customView.findViewById(R.id.permissions_heading);
+        Assert.assertEquals(PERMISSIONS_HEADING, permissionsHeadingView.getText());
+
         LinearLayout siteAccessContainer = customView.findViewById(R.id.site_access_container);
+        Assert.assertSame(siteAccessContainer, permissionsContainer.getChildAt(1));
         Assert.assertEquals(View.VISIBLE, siteAccessContainer.getVisibility());
 
+        TextView headingBulletView = customView.findViewById(R.id.site_access_heading_bullet);
+        Assert.assertEquals("• ", headingBulletView.getText().toString());
         TextView headingView = customView.findViewById(R.id.site_access_heading);
-        Assert.assertEquals(SITE_ACCESS_HEADING, headingView.getText());
+        Assert.assertEquals(SITE_ACCESS_HEADER, headingView.getText().toString());
 
         RadioGroup radioGroup = customView.findViewById(R.id.site_access_radio_group);
         Assert.assertNotNull("Site access radio group must exist.", radioGroup);
+        Assert.assertEquals(SITE_ACCESS_HEADER, radioGroup.getContentDescription().toString());
 
         RadioButton onClickRadioButton = customView.findViewById(R.id.site_access_on_click);
         Assert.assertNotNull("On click radio button must exist.", onClickRadioButton);
-        Assert.assertEquals(SITE_ACCESS_ON_CLICK, onClickRadioButton.getText());
+        Assert.assertEquals(SITE_ACCESS_ON_CLICK, onClickRadioButton.getText().toString());
         Assert.assertTrue(
                 "On click radio button should be checked by default.",
                 onClickRadioButton.isChecked());
+        Assert.assertEquals(
+                SITE_ACCESS_ON_CLICK + "\n" + SITE_ACCESS_ON_CLICK_SUBTEXT,
+                onClickRadioButton.getContentDescription().toString());
 
-        RadioButton alwaysAllSitesRadioButton =
-                customView.findViewById(R.id.site_access_always_all_sites);
-        Assert.assertNotNull(
-                "Always all sites radio button must exist.", alwaysAllSitesRadioButton);
-        Assert.assertEquals(SITE_ACCESS_ALWAYS_ALL_SITES, alwaysAllSitesRadioButton.getText());
+        TextView onClickSubtext = customView.findViewById(R.id.site_access_on_click_subtext);
+        Assert.assertEquals(SITE_ACCESS_ON_CLICK_SUBTEXT, onClickSubtext.getText().toString());
+
+        RadioButton alwaysRadioButton = customView.findViewById(R.id.site_access_always);
+        Assert.assertNotNull("Always radio button must exist.", alwaysRadioButton);
+        Assert.assertEquals(SITE_ACCESS_ALWAYS_ALL_SITES, alwaysRadioButton.getText().toString());
         Assert.assertFalse(
-                "Always all sites radio button should not be checked by default.",
-                alwaysAllSitesRadioButton.isChecked());
+                "Always radio button should not be checked by default.",
+                alwaysRadioButton.isChecked());
+        Assert.assertEquals(
+                SITE_ACCESS_ALWAYS_ALL_SITES + "\n" + SITE_ACCESS_ALWAYS_ALL_SITES_SUBTEXT,
+                alwaysRadioButton.getContentDescription().toString());
+
+        TextView alwaysSubtext = customView.findViewById(R.id.site_access_always_subtext);
+        Assert.assertEquals(
+                SITE_ACCESS_ALWAYS_ALL_SITES_SUBTEXT, alwaysSubtext.getText().toString());
+
+        LinearLayout hostsContainer = customView.findViewById(R.id.site_access_hosts_container);
+        Assert.assertEquals(View.GONE, hostsContainer.getVisibility());
+    }
+
+    private static void assertSiteColumnDomains(LinearLayout column, String... expectedDomains) {
+        Assert.assertEquals(expectedDomains.length, column.getChildCount());
+        for (int i = 0; i < expectedDomains.length; i++) {
+            View row = column.getChildAt(i);
+            TextViewWithLeading bulletView = row.findViewById(R.id.site_access_item_bullet);
+            TextViewWithLeading domainView = row.findViewById(R.id.site_access_item_domain);
+            Assert.assertEquals("• ", bulletView.getText().toString());
+            Assert.assertEquals(expectedDomains[i], domainView.getText().toString());
+            Assert.assertEquals(expectedDomains[i], row.getContentDescription().toString());
+        }
+    }
+
+    /** Tests that 1-3 listed sites show the bulleted host list without a "Show all" toggle. */
+    @Test
+    public void testDialogWithSiteAccessOptionsFewListedSites() throws Exception {
+        String[] visibleHosts = {"a.com", "b.com"};
+        mExtensionInstallDialogBridge.withSiteAccessOptions(
+                PERMISSIONS_HEADING,
+                SITE_ACCESS_HEADER,
+                SITE_ACCESS_ON_CLICK,
+                SITE_ACCESS_ON_CLICK_SUBTEXT,
+                SITE_ACCESS_ALWAYS_LISTED_SITES,
+                SITE_ACCESS_ALWAYS_LISTED_SITES_SUBTEXT,
+                visibleHosts,
+                /* collapsedHosts= */ new String[0],
+                PERMISSIONS_SHOW_DETAILS,
+                SHOW_ALL_SITES_ACCESSIBLE,
+                PERMISSIONS_HIDE_DETAILS,
+                LISTED_SITES_ACCESSIBLE);
+        buildAndShowDialog();
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        RadioButton alwaysRadioButton = customView.findViewById(R.id.site_access_always);
+        Assert.assertEquals(
+                SITE_ACCESS_ALWAYS_LISTED_SITES, alwaysRadioButton.getText().toString());
+        Assert.assertEquals(
+                SITE_ACCESS_ALWAYS_LISTED_SITES
+                        + "\n"
+                        + SITE_ACCESS_ALWAYS_LISTED_SITES_SUBTEXT
+                        + "\na.com\nb.com",
+                alwaysRadioButton.getContentDescription().toString());
+
+        LinearLayout hostsContainer = customView.findViewById(R.id.site_access_hosts_container);
+        Assert.assertEquals(View.VISIBLE, hostsContainer.getVisibility());
+        Assert.assertEquals(
+                LISTED_SITES_ACCESSIBLE, hostsContainer.getContentDescription().toString());
+
+        LinearLayout visibleHostsContainer =
+                customView.findViewById(R.id.site_access_visible_hosts);
+        Assert.assertEquals(View.VISIBLE, visibleHostsContainer.getVisibility());
+        assertSiteColumnDomains(visibleHostsContainer, "a.com", "b.com");
+
+        LinearLayout expandedHostsContainer =
+                customView.findViewById(R.id.site_access_expanded_hosts);
+        TextViewWithLeading toggleView = customView.findViewById(R.id.site_access_hosts_toggle);
+        Assert.assertEquals(View.GONE, expandedHostsContainer.getVisibility());
+        Assert.assertEquals(View.GONE, toggleView.getVisibility());
+    }
+
+    /**
+     * Tests that >3 listed sites show 1 column of 3 sites when collapsed, and expand into a
+     * 2-column layout when "Show all" is clicked or activated via {@code ACTION_EXPAND}/{@code
+     * ACTION_COLLAPSE} without changing the radio selection.
+     */
+    @Test
+    public void testDialogWithSiteAccessOptionsExpandableListedSites() throws Exception {
+        String[] visibleHosts = {"a.com", "b.com", "c.com"};
+        String[] collapsedHosts = {"d.com", "e.com"};
+        mExtensionInstallDialogBridge.withSiteAccessOptions(
+                PERMISSIONS_HEADING,
+                SITE_ACCESS_HEADER,
+                SITE_ACCESS_ON_CLICK,
+                SITE_ACCESS_ON_CLICK_SUBTEXT,
+                SITE_ACCESS_ALWAYS_LISTED_SITES,
+                SITE_ACCESS_ALWAYS_LISTED_SITES_SUBTEXT,
+                visibleHosts,
+                collapsedHosts,
+                PERMISSIONS_SHOW_DETAILS,
+                SHOW_ALL_SITES_ACCESSIBLE,
+                PERMISSIONS_HIDE_DETAILS,
+                LISTED_SITES_ACCESSIBLE);
+        buildAndShowDialog();
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        RadioButton onClickRadioButton = customView.findViewById(R.id.site_access_on_click);
+        RadioButton alwaysRadioButton = customView.findViewById(R.id.site_access_always);
+        LinearLayout visibleHostsContainer =
+                customView.findViewById(R.id.site_access_visible_hosts);
+        LinearLayout expandedHostsContainer =
+                customView.findViewById(R.id.site_access_expanded_hosts);
+        LinearLayout expandedColumn1 = customView.findViewById(R.id.site_access_hosts_column_1);
+        LinearLayout expandedColumn2 = customView.findViewById(R.id.site_access_hosts_column_2);
+        TextViewWithLeading toggleView = customView.findViewById(R.id.site_access_hosts_toggle);
+
+        Assert.assertEquals(View.VISIBLE, visibleHostsContainer.getVisibility());
+        assertSiteColumnDomains(visibleHostsContainer, "a.com", "b.com", "c.com");
+        Assert.assertEquals(View.GONE, expandedHostsContainer.getVisibility());
+        Assert.assertEquals(View.VISIBLE, toggleView.getVisibility());
+        Assert.assertEquals(PERMISSIONS_SHOW_DETAILS, toggleView.getText().toString());
+        Assert.assertEquals(
+                SHOW_ALL_SITES_ACCESSIBLE, toggleView.getContentDescription().toString());
+
+        AccessibilityNodeInfo collapsedNodeInfo = toggleView.createAccessibilityNodeInfo();
+        Assert.assertTrue(
+                collapsedNodeInfo
+                        .getActionList()
+                        .contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_EXPAND));
+        Assert.assertFalse(
+                toggleView.performAccessibilityAction(
+                        AccessibilityNodeInfo.AccessibilityAction.ACTION_COLLAPSE.getId(), null));
+
+        // Expand via ACTION_EXPAND: 1-column visible list hides, 2-column expanded list appears
+        // with ceil(5/2)=3 sites in column 1 and 2 sites in column 2, toggle updates to
+        // "Show less", and radio selection remains on "Only when you click the extension".
+        Assert.assertTrue(
+                toggleView.performAccessibilityAction(
+                        AccessibilityNodeInfo.AccessibilityAction.ACTION_EXPAND.getId(), null));
+        Assert.assertEquals(View.GONE, visibleHostsContainer.getVisibility());
+        Assert.assertEquals(View.VISIBLE, expandedHostsContainer.getVisibility());
+        assertSiteColumnDomains(expandedColumn1, "a.com", "b.com", "c.com");
+        assertSiteColumnDomains(expandedColumn2, "d.com", "e.com");
+        Assert.assertEquals(PERMISSIONS_HIDE_DETAILS, toggleView.getText().toString());
+        Assert.assertEquals(
+                PERMISSIONS_HIDE_DETAILS, toggleView.getContentDescription().toString());
+        Assert.assertEquals(
+                SITE_ACCESS_ALWAYS_LISTED_SITES
+                        + "\n"
+                        + SITE_ACCESS_ALWAYS_LISTED_SITES_SUBTEXT
+                        + "\na.com\nb.com\nc.com\nd.com\ne.com",
+                alwaysRadioButton.getContentDescription().toString());
+        Assert.assertTrue(onClickRadioButton.isChecked());
+        Assert.assertFalse(alwaysRadioButton.isChecked());
+
+        AccessibilityNodeInfo expandedNodeInfo = toggleView.createAccessibilityNodeInfo();
+        Assert.assertTrue(
+                expandedNodeInfo
+                        .getActionList()
+                        .contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_COLLAPSE));
+        Assert.assertFalse(
+                toggleView.performAccessibilityAction(
+                        AccessibilityNodeInfo.AccessibilityAction.ACTION_EXPAND.getId(), null));
+
+        // Collapse via ACTION_COLLAPSE: 2-column container hides and 1-column container returns.
+        Assert.assertTrue(
+                toggleView.performAccessibilityAction(
+                        AccessibilityNodeInfo.AccessibilityAction.ACTION_COLLAPSE.getId(), null));
+        Assert.assertEquals(View.VISIBLE, visibleHostsContainer.getVisibility());
+        Assert.assertEquals(View.GONE, expandedHostsContainer.getVisibility());
+        Assert.assertEquals(PERMISSIONS_SHOW_DETAILS, toggleView.getText().toString());
+        Assert.assertEquals(
+                SHOW_ALL_SITES_ACCESSIBLE, toggleView.getContentDescription().toString());
+    }
+
+    /**
+     * Tests that site access options appear at the top of "It can:" (index 1) above non-host
+     * permissions even when {@code withPermissions} is called before {@code withSiteAccessOptions}.
+     */
+    @Test
+    public void testDialogWithPermissionsAndSiteAccessOptionsOrdering() throws Exception {
+        String[] nonHostPermissions = {"Read your browsing history"};
+        String[] emptyDetails = {""};
+        mExtensionInstallDialogBridge.withPermissions(
+                PERMISSIONS_HEADING,
+                nonHostPermissions,
+                emptyDetails,
+                emptyDetails,
+                PERMISSIONS_SHOW_DETAILS,
+                PERMISSIONS_HIDE_DETAILS,
+                /* showBulletPoints= */ true);
+        withAllSitesAccessOptions();
+        buildAndShowDialog();
+
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        LinearLayout permissionsContainer = customView.findViewById(R.id.permissions_container);
+
+        Assert.assertEquals(3, permissionsContainer.getChildCount());
+        Assert.assertEquals(R.id.permissions_heading, permissionsContainer.getChildAt(0).getId());
+        Assert.assertEquals(R.id.site_access_container, permissionsContainer.getChildAt(1).getId());
+        View nonHostRow = permissionsContainer.getChildAt(2);
+        TextViewWithLeading nonHostBullet = nonHostRow.findViewById(R.id.permission_item_bullet);
+        TextViewWithLeading nonHostPermissionText =
+                nonHostRow.findViewById(R.id.permission_item_text);
+        Assert.assertEquals(View.VISIBLE, nonHostBullet.getVisibility());
+        Assert.assertEquals("• ", nonHostBullet.getText().toString());
+        Assert.assertEquals(nonHostPermissions[0], nonHostPermissionText.getText().toString());
     }
 
     /**
@@ -511,8 +756,7 @@ public class ExtensionInstallDialogBridgeTest {
      */
     @Test
     public void testAcceptWithSiteAccessOnClickWithholdsPermissions() throws Exception {
-        mExtensionInstallDialogBridge.withSiteAccessOptions(
-                SITE_ACCESS_HEADING, SITE_ACCESS_ON_CLICK, SITE_ACCESS_ALWAYS_ALL_SITES);
+        withAllSitesAccessOptions();
         buildAndShowDialog();
 
         mModalDialogManager.clickPositiveButton();
@@ -527,15 +771,16 @@ public class ExtensionInstallDialogBridgeTest {
      */
     @Test
     public void testAcceptWithSiteAccessAlwaysAllSitesGrantsPermissions() throws Exception {
-        mExtensionInstallDialogBridge.withSiteAccessOptions(
-                SITE_ACCESS_HEADING, SITE_ACCESS_ON_CLICK, SITE_ACCESS_ALWAYS_ALL_SITES);
+        withAllSitesAccessOptions();
         buildAndShowDialog();
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
         View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
 
-        RadioButton alwaysAllSitesRadioButton =
-                customView.findViewById(R.id.site_access_always_all_sites);
-        alwaysAllSitesRadioButton.performClick();
+        RadioButton onClickRadioButton = customView.findViewById(R.id.site_access_on_click);
+        RadioButton alwaysRadioButton = customView.findViewById(R.id.site_access_always);
+        alwaysRadioButton.performClick();
+        Assert.assertFalse(onClickRadioButton.isChecked());
+        Assert.assertTrue(alwaysRadioButton.isChecked());
 
         mModalDialogManager.clickPositiveButton();
 
@@ -551,8 +796,7 @@ public class ExtensionInstallDialogBridgeTest {
     public void testDialogWithJustificationAndSiteAccessOptions() throws Exception {
         mExtensionInstallDialogBridge.withJustification(
                 JUSTIFICATION_HEADING, JUSTIFICATION_PLACEHOLDER);
-        mExtensionInstallDialogBridge.withSiteAccessOptions(
-                SITE_ACCESS_HEADING, SITE_ACCESS_ON_CLICK, SITE_ACCESS_ALWAYS_ALL_SITES);
+        withAllSitesAccessOptions();
         buildAndShowDialog();
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
         View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
