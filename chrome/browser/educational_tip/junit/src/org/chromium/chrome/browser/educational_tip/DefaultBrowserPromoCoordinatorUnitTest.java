@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -11,6 +14,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.ScrollView;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -77,5 +82,21 @@ public class DefaultBrowserPromoCoordinatorUnitTest {
         verify(mBottomSheetController).hideContent(any(), anyBoolean(), anyInt());
         verify(mOnModuleClickedCallback).run();
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testShowHandlebar() {
+        mDefaultBrowserPromoCoordinator.onCardClicked();
+
+        DefaultBrowserPromoBottomSheetContent defaultBrowserBottomSheetContent =
+                mDefaultBrowserPromoCoordinator.getDefaultBrowserBottomSheetContent();
+        assertNotNull(defaultBrowserBottomSheetContent);
+        assertTrue(defaultBrowserBottomSheetContent.showHandlebar());
+
+        View contentView = defaultBrowserBottomSheetContent.getContentView();
+        assertTrue(contentView instanceof ScrollView);
+        ScrollView scrollView = (ScrollView) contentView;
+        assertEquals(1, scrollView.getChildCount());
+        assertEquals(R.id.scroll_view, scrollView.getChildAt(0).getId());
     }
 }

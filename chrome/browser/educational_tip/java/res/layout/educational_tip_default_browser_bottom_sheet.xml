@@ -5,29 +5,12 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:orientation="vertical">
-
-<!-- Drag handlebar -->
-<ImageView
-    android:id="@+id/drag_handle_bar"
-    android:importantForAccessibility="no"
-    android:layout_gravity="center_horizontal"
-    android:layout_height="@dimen/default_browser_bottom_sheet_drag_handel_bar_height"
-    android:layout_marginVertical="@dimen/default_browser_bottom_sheet_drag_handel_bar_margin_vertical"
-    android:layout_width="@dimen/default_browser_bottom_sheet_drag_handle_bar_width"
-    android:src="@drawable/drag_handlebar"
-    app:tint="@macro/drag_handle_color" />
-
-  <ScrollView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="vertical"
-      android:scrollbars="none">
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
     <LinearLayout
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
@@ -183,5 +166,4 @@ found in the LICENSE file.
           android:singleLine="true"
           android:text="@string/educational_tip_default_browser_bottom_sheet_button" />
    </LinearLayout>
-  </ScrollView>
-</LinearLayout>
+</ScrollView>

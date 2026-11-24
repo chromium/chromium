@@ -28,7 +28,7 @@ found in the LICENSE file.
   <dimen name="default_browser_bottom_sheet_drag_handel_bar_margin_vertical">8dp</dimen>
   <dimen name="default_browser_bottom_sheet_drag_handle_bar_width">32dp</dimen>
   <dimen name="default_browser_bottom_sheet_icon_container_height">99dp</dimen>
-  <dimen name="default_browser_bottom_sheet_icon_container_margin_top">4dp</dimen>
+  <dimen name="default_browser_bottom_sheet_icon_container_margin_top">12dp</dimen>
   <dimen name="default_browser_bottom_sheet_icon_container_padding_bottom">26dp</dimen>
   <dimen name="default_browser_bottom_sheet_icon_container_padding_top">25dp</dimen>
   <dimen name="default_browser_bottom_sheet_scroll_view_padding_lateral">24dp</dimen>
