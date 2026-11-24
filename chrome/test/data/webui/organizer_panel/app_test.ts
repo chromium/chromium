@@ -834,4 +834,22 @@ suite('OrganizerPanelAppTest', () => {
           assertEquals(0, mockOrganizerPanelHandler.getCallCount('showUI'));
         });
       });
+
+  test('window focus preserves existing focus on list control', async () => {
+    const sections = app.$.list.getVisibleSections();
+    const lastSection = sections[sections.length - 1]!;
+    lastSection.expanded = true;
+    await microtasksFinished();
+
+    lastSection.$.header.focusMenuButton();
+    await microtasksFinished();
+    assertEquals(lastSection.$.header.$.menuButton, getDeepActiveElement());
+    assertEquals(app.$.list, app.shadowRoot.activeElement);
+
+    window.dispatchEvent(new Event('focus'));
+    await microtasksFinished();
+
+    assertEquals(lastSection.$.header.$.menuButton, getDeepActiveElement());
+    assertEquals(app.$.list, app.shadowRoot.activeElement);
+  });
 });
