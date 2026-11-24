@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui_factory.h"
@@ -112,6 +113,36 @@ TEST_F(GtkUiTest, DefaultFontFollowsGtkFontName) {
   EXPECT_EQ(font_changed_count, 1);
   EXPECT_GT(theme_observer.count(), 0);
   EXPECT_GT(gtk_ui->GetDefaultFontDescription().size_pixels, small_size);
+}
+
+// When the font scale isn't part of the device scale factor (as with the stub
+// platform, or Wayland with kWaylandTextScaleTextOnly), changing the text
+// scaling factor should scale the default UI font, not the display.
+TEST_F(GtkUiTest, DefaultFontFollowsXftDpi) {
+  SetGtkFontName("Sans 10");
+  int original_dpi = -1;
+  g_object_get(settings_, "gtk-xft-dpi", &original_dpi, nullptr);
+  g_object_set(settings_, "gtk-xft-dpi", 96 * 1024, nullptr);
+  absl::Cleanup restore_dpi = [&] {
+    g_object_set(settings_, "gtk-xft-dpi", original_dpi, nullptr);
+  };
+
+  StubLinuxUiDelegate delegate;
+  std::unique_ptr<ui::LinuxUiAndTheme> gtk_ui = BuildGtkUi();
+  ASSERT_TRUE(gtk_ui->Initialize());
+
+  int font_changed_count = 0;
+  base::CallbackListSubscription subscription =
+      gtk_ui->RegisterDefaultFontChangedCallback(
+          base::BindLambdaForTesting([&] { ++font_changed_count; }));
+  const int size = gtk_ui->GetDefaultFontDescription().size_pixels;
+  ASSERT_GT(size, 0);
+
+  g_object_set(settings_, "gtk-xft-dpi", 144 * 1024, nullptr);
+  EXPECT_EQ(font_changed_count, 1);
+  EXPECT_NEAR(gtk_ui->GetDefaultFontDescription().size_pixels, size * 1.5, 1);
+  const ui::LinuxUi& linux_ui = *gtk_ui;
+  EXPECT_EQ(linux_ui.display_config().font_scale, 1.0f);
 }
 
 }  // namespace gtk

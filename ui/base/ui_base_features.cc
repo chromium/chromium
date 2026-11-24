@@ -139,6 +139,10 @@ BASE_FEATURE(kWaylandSessionManagement, base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether external begin frames are driven by Wayland frame callbacks.
 BASE_FEATURE(kWaylandExternalBeginFrameSource,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the toolkit's text scaling factor (eg. GNOME's Large Text)
+// only scales UI text on Wayland, instead of scaling the whole UI.
+BASE_FEATURE(kWaylandTextScaleTextOnly, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_LINUX)

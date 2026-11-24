@@ -8253,6 +8253,13 @@ inline constexpr char kWaylandSessionManagementName[] =
 inline constexpr char kWaylandSessionManagementDescription[] =
     "Enable Wayland's xx/xdg-session-management-v1 experimental support.";
 
+inline constexpr char kWaylandTextScaleTextOnlyName[] =
+    "Wayland text scaling affects text only";
+inline constexpr char kWaylandTextScaleTextOnlyDescription[] =
+    "On Wayland, apply the desktop text scaling factor (eg. GNOME's Large "
+    "Text) to UI text only, instead of scaling the whole browser UI and web "
+    "content.";
+
 // Random platform combinations -----------------------------------------------
 
 inline constexpr char kZeroCopyVideoCaptureName[] =

@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/linux/linux_ui_delegate_stub.h"
@@ -107,6 +109,16 @@ TEST_F(GtkUiPlatformWaylandTest, DestroyBeforeHandle) {
 
   ASSERT_TRUE(delegate_.HasExportCallback());
   delegate_.RunExportCallback(std::string());
+}
+
+// The font scale is applied as a UI scale by Ozone/Wayland, unless it should
+// only scale text.
+TEST_F(GtkUiPlatformWaylandTest, IncludeFontScaleInDeviceScale) {
+  EXPECT_TRUE(platform_.IncludeFontScaleInDeviceScale());
+
+  base::test::ScopedFeatureList feature_list(
+      features::kWaylandTextScaleTextOnly);
+  EXPECT_FALSE(platform_.IncludeFontScaleInDeviceScale());
 }
 
 }  // namespace gtk

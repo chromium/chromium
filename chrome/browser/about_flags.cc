@@ -6129,6 +6129,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWaylandSessionManagementName,
      flag_descriptions::kWaylandSessionManagementDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWaylandSessionManagement)},
+
+    {"wayland-text-scale-text-only",
+     flag_descriptions::kWaylandTextScaleTextOnlyName,
+     flag_descriptions::kWaylandTextScaleTextOnlyDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(features::kWaylandTextScaleTextOnly)},
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_VR)

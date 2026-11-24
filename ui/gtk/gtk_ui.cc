@@ -975,8 +975,12 @@ void GtkUi::UpdateDeviceScaleFactor() {
     device_scale_factor_observer_list().Notify(
         &ui::DeviceScaleFactorObserver::OnDeviceScaleFactorChanged);
   }
-  set_default_font_settings(std::nullopt);
   default_font_render_params_.reset();
+  // When the font scale isn't included in the device scale factor, it scales
+  // the default font instead, so a DPI change may change the default font.
+  if (UpdateDefaultFont()) {
+    native_theme_->NotifyOnNativeThemeUpdated();
+  }
   // On GTK4, the cursor theme size depends on the display scale factor.
   OnCursorThemeSizeChanged(gtk_settings_get_default(), nullptr);
 }

@@ -5,6 +5,7 @@
 #include "ui/gtk/wayland/gtk_ui_platform_wayland.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -120,8 +121,9 @@ GtkUiPlatformWayland::CreateInputMethodContext(
 }
 
 bool GtkUiPlatformWayland::IncludeFontScaleInDeviceScale() const {
-  // Assume font scaling will be handled by Ozone/Wayland.
-  return true;
+  // Ozone/Wayland applies the font scale as a UI scale, unless the font scale
+  // should only scale text, in which case GtkUi scales the default font.
+  return !base::FeatureList::IsEnabled(features::kWaylandTextScaleTextOnly);
 }
 
 bool GtkUiPlatformWayland::IncludeScaleInCursorSize() const {
