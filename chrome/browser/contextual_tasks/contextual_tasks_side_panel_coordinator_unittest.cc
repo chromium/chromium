@@ -810,8 +810,11 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
   SessionID active_tab_id =
       sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  ContextualTask active_task(active_task_id);
+  active_task.AddThread(
+      Thread(ThreadType::kAiMode, "thread_123", "Title", 1000));
   EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
-      .WillRepeatedly(Return(ContextualTask(active_task_id)));
+      .WillRepeatedly(Return(active_task));
   EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(active_task_id))
       .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
 
@@ -945,7 +948,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, OpenInZeroStateCreatesNewTask) {
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
-       CloseZeroStateTaskPreservesTabWhenEphemeralBranded) {
+       CloseZeroStateTaskDisassociatesTabWhenEphemeralBranded) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       kContextualTasksEphemeralBrandedEntryPoint,
@@ -965,9 +968,46 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_CALL(
       *mock_controller_,
       DisassociateTabFromTask(zero_state_task.GetTaskId(), active_tab_id))
+      .Times(1);
+
+  coordinator_->Close();
+}
+
+TEST_F(
+    ContextualTasksSidePanelCoordinatorTest,
+    CloseZeroStateTaskWithUnsubmittedInputPreservesTabWhenEphemeralBranded) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kContextualTasksEphemeralBrandedEntryPoint,
+      {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}});
+
+  ContextualTask zero_state_task(base::Uuid::GenerateRandomV4());
+  CreateCachedWebContentsWithUrlForTesting(
+      zero_state_task.GetTaskId(), /*is_open=*/true,
+      GURL("https://www.google.com/search?udm=50"));
+  content::WebContents* zero_state_wc =
+      GetWebContentsForTaskForTesting(zero_state_task.GetTaskId());
+  mock_panel_host_->SetWebContents(zero_state_wc);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(zero_state_wc)
+      ->set_has_unsubmitted_query(true);
+
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
+      .WillRepeatedly(Return(zero_state_task));
+  EXPECT_CALL(*mock_controller_,
+              GetTabsAssociatedWithTask(zero_state_task.GetTaskId()))
+      .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
+
+  EXPECT_CALL(
+      *mock_controller_,
+      DisassociateTabFromTask(zero_state_task.GetTaskId(), active_tab_id))
       .Times(0);
 
   coordinator_->Close();
+  EXPECT_EQ(1u, GetNumberOfActiveTasksForTesting(zero_state_task.GetTaskId()));
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
@@ -1097,6 +1137,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       {});
 
   ContextualTask task(base::Uuid::GenerateRandomV4());
+  task.AddThread(Thread(ThreadType::kAiMode, "thread_123", "Title", 1000));
   tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
   tabs::TabInterface* tab_b = CreateMockTab();
   ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
@@ -1143,6 +1184,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   base::HistogramTester histogram_tester;
 
   ContextualTask task(base::Uuid::GenerateRandomV4());
+  task.AddThread(Thread(ThreadType::kAiMode, "thread_123", "Title", 1000));
   tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
   tabs::TabInterface* tab_b = CreateMockTab();
   ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
@@ -1495,6 +1537,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       {});
 
   ContextualTask task(base::Uuid::GenerateRandomV4());
+  task.AddThread(Thread(ThreadType::kAiMode, "thread_123", "Title", 1000));
   tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
   tabs::TabInterface* tab_b = CreateMockTab();
   ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
@@ -1785,6 +1828,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
                            /*should_pin=*/true);
 
   ContextualTask task(base::Uuid::GenerateRandomV4());
+  task.AddThread(Thread(ThreadType::kAiMode, "thread_123", "Title", 1000));
   tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
   SessionID active_tab_id =
       sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
@@ -1799,6 +1843,93 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       .Times(0);
 
   coordinator_->Close();
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseZeroStateTaskDisassociatesTabWhenToolbarButtonPinned) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksEphemeralBrandedEntryPoint,
+        {{"ContextualTasksEntryPoint", "no-entry-point"}}},
+       {kEnableContextualTasksPinButtonInToolbar, {}},
+       {kContextualTasksPinningV2, {}}},
+      {});
+
+  auto* model = PinnedToolbarActionsModel::Get(profile_.get());
+  ASSERT_TRUE(model);
+  model->UpdatePinnedState(kActionSidePanelShowContextualTasks,
+                           /*should_pin=*/true);
+
+  ContextualTask zero_state_task(base::Uuid::GenerateRandomV4());
+  CreateCachedWebContentsWithUrlForTesting(
+      zero_state_task.GetTaskId(), /*is_open=*/true,
+      GURL("https://www.google.com/search?udm=50"));
+  content::WebContents* zero_state_wc =
+      GetWebContentsForTaskForTesting(zero_state_task.GetTaskId());
+  mock_panel_host_->SetWebContents(zero_state_wc);
+
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
+      .WillRepeatedly(Return(zero_state_task));
+  EXPECT_CALL(*mock_controller_,
+              GetTabsAssociatedWithTask(zero_state_task.GetTaskId()))
+      .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
+
+  EXPECT_CALL(
+      *mock_controller_,
+      DisassociateTabFromTask(zero_state_task.GetTaskId(), active_tab_id))
+      .Times(1);
+
+  coordinator_->Close();
+  EXPECT_EQ(0u, GetNumberOfActiveTasksForTesting(zero_state_task.GetTaskId()));
+}
+
+TEST_F(
+    ContextualTasksSidePanelCoordinatorTest,
+    CloseZeroStateTaskWithUnsubmittedInputPreservesTabWhenToolbarButtonPinned) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksEphemeralBrandedEntryPoint,
+        {{"ContextualTasksEntryPoint", "no-entry-point"}}},
+       {kEnableContextualTasksPinButtonInToolbar, {}},
+       {kContextualTasksPinningV2, {}}},
+      {});
+
+  auto* model = PinnedToolbarActionsModel::Get(profile_.get());
+  ASSERT_TRUE(model);
+  model->UpdatePinnedState(kActionSidePanelShowContextualTasks,
+                           /*should_pin=*/true);
+
+  ContextualTask zero_state_task(base::Uuid::GenerateRandomV4());
+  CreateCachedWebContentsWithUrlForTesting(
+      zero_state_task.GetTaskId(), /*is_open=*/true,
+      GURL("https://www.google.com/search?udm=50"));
+  content::WebContents* zero_state_wc =
+      GetWebContentsForTaskForTesting(zero_state_task.GetTaskId());
+  mock_panel_host_->SetWebContents(zero_state_wc);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(zero_state_wc)
+      ->set_has_unsubmitted_query(true);
+
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
+      .WillRepeatedly(Return(zero_state_task));
+  EXPECT_CALL(*mock_controller_,
+              GetTabsAssociatedWithTask(zero_state_task.GetTaskId()))
+      .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
+
+  EXPECT_CALL(
+      *mock_controller_,
+      DisassociateTabFromTask(zero_state_task.GetTaskId(), active_tab_id))
+      .Times(0);
+
+  coordinator_->Close();
+  EXPECT_EQ(1u, GetNumberOfActiveTasksForTesting(zero_state_task.GetTaskId()));
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
@@ -3719,7 +3850,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   mock_panel_host_->SetWebContents(panel_contents);
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      panel_contents, GURL(permissions::MockPermissionRequest::kDefaultOrigin));
+      panel_contents, GURL(permissions::MockPermissionRequest::kDefaultOrigin)
+                          .Resolve("/search?udm=50&q=test"));
 
   auto* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(panel_contents);
@@ -3770,29 +3902,35 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, IsShowingResults) {
   EXPECT_FALSE(IsShowingAimResults());
 
   // 1a. An unsubmitted query (added context) in AIM zero state
-  // counts as having an active session so the ephemeral and pinned buttons
-  // stay active when the side panel is closed.
+  // counts as having a resumable session (`HasUnsubmittedInput()` is `true`)
+  // so the ephemeral and pinned buttons stay active when the side panel
+  // is closed, while `IsShowingResults()` and `HasResults()` remain `false`
+  // because the panel is still in zero state.
   auto* zero_state_user_data =
       ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
           zero_state_wc);
   zero_state_user_data->set_has_unsubmitted_query(true);
-  EXPECT_TRUE(coordinator_->IsShowingResults());
-  EXPECT_TRUE(coordinator_->HasResults());
+  EXPECT_FALSE(coordinator_->IsShowingResults());
+  EXPECT_FALSE(coordinator_->HasResults());
+  EXPECT_TRUE(coordinator_->HasUnsubmittedInput());
   EXPECT_FALSE(IsShowingLensResults());
-  EXPECT_TRUE(IsShowingAimResults());
+  EXPECT_FALSE(IsShowingAimResults());
 
   // Closing the panel with an unsubmitted query in zero state keeps
-  // HasResults() true while IsShowingResults() becomes false.
+  // `HasUnsubmittedInput()` `true` while `IsShowingResults()` and
+  // `HasResults()` remain `false`.
   ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
       .WillByDefault(Return(false));
   EXPECT_FALSE(coordinator_->IsShowingResults());
-  EXPECT_TRUE(coordinator_->HasResults());
+  EXPECT_FALSE(coordinator_->HasResults());
+  EXPECT_TRUE(coordinator_->HasUnsubmittedInput());
   ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
       .WillByDefault(Return(true));
 
   zero_state_user_data->set_has_unsubmitted_query(false);
   EXPECT_FALSE(coordinator_->IsShowingResults());
   EXPECT_FALSE(coordinator_->HasResults());
+  EXPECT_FALSE(coordinator_->HasUnsubmittedInput());
   EXPECT_FALSE(IsShowingLensResults());
   EXPECT_FALSE(IsShowingAimResults());
 

@@ -70,6 +70,7 @@ class MockContextualTasksPanelController
   MOCK_METHOD(bool, IsPanelOpenForContextualTask, (), (const, override));
   MOCK_METHOD(bool, IsShowingResults, (), (const, override));
   MOCK_METHOD(bool, HasResults, (), (const, override));
+  MOCK_METHOD(bool, HasUnsubmittedInput, (), (const, override));
   MOCK_METHOD(ContextualTasksPanelController::EntrySource,
               GetActiveEntrySource,
               (),

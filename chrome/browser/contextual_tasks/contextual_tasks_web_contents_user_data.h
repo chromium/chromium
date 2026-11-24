@@ -283,7 +283,9 @@ class ContextualTasksWebContentsUserData
   }
   bool submit_pending() const { return pending_submit_.has_value(); }
   std::optional<base::UnguessableToken> pending_submit_overlay_token() const;
-  bool has_unsubmitted_query() const { return has_unsubmitted_query_; }
+  // Returns true if the user has input that has not been submitted yet: typed
+  // text in the AIM input plate, a mounted Lens crop, or a manually added tab.
+  bool HasUnsubmittedQuery() const;
   void set_has_unsubmitted_query(bool has_unsubmitted_query) {
     has_unsubmitted_query_ = has_unsubmitted_query;
   }
@@ -453,7 +455,7 @@ class ContextualTasksWebContentsUserData
   const PageSearchState* GetPrimaryPageSearchState() const;
   // Returns true if both the profile allows sharing tab context and the
   // current page's server handshake did not disable the `TABS` capability.
-  bool CanShareTabsForCurrentPage();
+  bool CanShareTabsForCurrentPage() const;
   // Returns true if the session has tabs for the context library to show:
   // unsubmitted tabs, submitted (persisted) tabs, or tabs restored from the AIM
   // thread. Keep in sync with

@@ -342,7 +342,7 @@ void ContextualTasksEphemeralButtonController::OnEntryWillHide(
 
   contextual_tasks::ContextualTasksService* service =
       GetContextualTasksService();
-  if (!HasPanelResults()) {
+  if (!HasPanelResultsOrUnsubmittedInput()) {
     for (SessionID tab_id : service->GetTabsAssociatedWithTask(*task_id)) {
       ClearTabEligibility(tab_id);
     }
@@ -761,11 +761,13 @@ bool ContextualTasksEphemeralButtonController::IsActiveTabAssociatedToTask() {
   return GetActiveTaskId().has_value();
 }
 
-bool ContextualTasksEphemeralButtonController::HasPanelResults() const {
+bool ContextualTasksEphemeralButtonController::
+    HasPanelResultsOrUnsubmittedInput() const {
   auto* const panel_controller =
       contextual_tasks::ContextualTasksPanelController::From(
           browser_window_interface_);
-  return panel_controller && panel_controller->HasResults();
+  return panel_controller && (panel_controller->HasResults() ||
+                              panel_controller->HasUnsubmittedInput());
 }
 
 void ContextualTasksEphemeralButtonController::OnActiveTabChange(

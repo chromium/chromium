@@ -207,6 +207,7 @@ class ContextualTasksSidePanelCoordinator
   bool IsPanelOpenForContextualTask() const override;
   bool IsShowingResults() const override;
   bool HasResults() const override;
+  bool HasUnsubmittedInput() const override;
   ContextualTasksPanelController::EntrySource GetActiveEntrySource()
       const override;
   bool IsOnboardingTooltipVisible() const override;
@@ -371,7 +372,8 @@ class ContextualTasksSidePanelCoordinator
   void DisassociateTabFromTask(content::WebContents* web_contents);
 
   // Returns whether the current task and its tab associations should be
-  // preserved when the side panel is closed so the user can resume it from the
+  // preserved when the side panel is closed (when the panel has an active
+  // thread/results or unsubmitted inputs) so the user can resume it from the
   // ephemeral toolbar button or the pinned toolbar button (under Pinning V2).
   bool ShouldPreserveTaskOnClose() const;
 

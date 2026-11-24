@@ -149,6 +149,12 @@ class ContextualTasksPanelController {
   // or was closed and can be reopened to resume those results.
   virtual bool HasResults() const = 0;
 
+  // Returns true if the active tab's side panel has unsubmitted input in AIM
+  // zero state (e.g. text in the input plate, an added tab, or a Lens crop),
+  // whether the side panel is currently open or was closed. Together with
+  // `HasResults()`, this indicates a session the user can resume.
+  virtual bool HasUnsubmittedInput() const = 0;
+
   // Returns the entry source of the currently active panel.
   virtual EntrySource GetActiveEntrySource() const = 0;
 
