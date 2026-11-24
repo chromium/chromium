@@ -4,10 +4,14 @@
 
 #include "chromeos/ash/components/login/auth/public/sync_trusted_vault_keys.h"
 
+#include <cstdint>
 #include <optional>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -31,26 +35,20 @@ struct KeyMaterialAndVersion {
 
 std::optional<KeyMaterialAndVersion> ParseSingleEncryptionKey(
     const base::DictValue& js_object) {
-  const base::Value::BlobStorage* key_material =
-      js_object.FindBlob(kKeyMaterialDictKey);
-  if (key_material == nullptr) {
-    return std::nullopt;
-  }
+  ASSIGN_OR_RETURN(base::span<const uint8_t> key_material,
+                   js_object.FindBlob(kKeyMaterialDictKey));
 
-  return KeyMaterialAndVersion{*key_material,
+  return KeyMaterialAndVersion{base::ToVector(key_material),
                                js_object.FindInt(kVersionDictKey).value_or(0)};
 }
 
 std::optional<SyncTrustedVaultKeys::TrustedRecoveryMethod>
 ParseSingleTrustedRecoveryMethod(const base::DictValue& js_object) {
-  const base::Value::BlobStorage* public_key =
-      js_object.FindBlob(kPublicKeyDictKey);
-  if (public_key == nullptr) {
-    return std::nullopt;
-  }
+  ASSIGN_OR_RETURN(base::span<const uint8_t> public_key,
+                   js_object.FindBlob(kPublicKeyDictKey));
 
   SyncTrustedVaultKeys::TrustedRecoveryMethod method;
-  method.public_key = *public_key;
+  method.public_key = base::ToVector(public_key);
   method.type_hint = js_object.FindInt(kMethodTypeHintDictKey).value_or(0);
   return method;
 }

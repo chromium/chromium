@@ -4,14 +4,17 @@
 
 #include "chromeos/ash/components/platform_keys/keystore_service_util.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <variant>
-#include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -83,19 +86,16 @@ std::optional<chromeos::KeystoreAlgorithm> MakeKeystoreAlgorithmFromDictionary(
   }
 
   if (*name == kWebCryptoRsassaPkcs1v15) {
-    std::optional<int> modulus_length = dictionary.FindInt("modulusLength");
-    const std::vector<uint8_t>* public_exponent =
-        dictionary.FindBlob("publicExponent");
-    if (!modulus_length || !public_exponent) {
-      return std::nullopt;
-    }
-    if (!base::IsValueInRangeForNumericType<uint32_t>(modulus_length.value())) {
+    ASSIGN_OR_RETURN(int modulus_length, dictionary.FindInt("modulusLength"));
+    ASSIGN_OR_RETURN(base::span<const uint8_t> public_exponent,
+                     dictionary.FindBlob("publicExponent"));
+    if (!base::IsValueInRangeForNumericType<uint32_t>(modulus_length)) {
       return std::nullopt;
     }
     chromeos::RsassaPkcs115Params params;
     params.rsa_params.modulus_length =
-        base::checked_cast<uint32_t>(modulus_length.value());
-    params.rsa_params.public_exponent = *public_exponent;
+        base::checked_cast<uint32_t>(modulus_length);
+    params.rsa_params.public_exponent = base::ToVector(public_exponent);
     return params;
   }
 
@@ -110,19 +110,16 @@ std::optional<chromeos::KeystoreAlgorithm> MakeKeystoreAlgorithmFromDictionary(
   }
 
   if (*name == kWebCryptoRsaOaep) {
-    std::optional<int> modulus_length = dictionary.FindInt("modulusLength");
-    const std::vector<uint8_t>* public_exponent =
-        dictionary.FindBlob("publicExponent");
-    if (!modulus_length || !public_exponent) {
-      return std::nullopt;
-    }
-    if (!base::IsValueInRangeForNumericType<uint32_t>(modulus_length.value())) {
+    ASSIGN_OR_RETURN(int modulus_length, dictionary.FindInt("modulusLength"));
+    ASSIGN_OR_RETURN(base::span<const uint8_t> public_exponent,
+                     dictionary.FindBlob("publicExponent"));
+    if (!base::IsValueInRangeForNumericType<uint32_t>(modulus_length)) {
       return std::nullopt;
     }
     chromeos::RsaOaepParams params;
     params.rsa_params.modulus_length =
-        base::checked_cast<uint32_t>(modulus_length.value());
-    params.rsa_params.public_exponent = *public_exponent;
+        base::checked_cast<uint32_t>(modulus_length);
+    params.rsa_params.public_exponent = base::ToVector(public_exponent);
     return params;
   }
 

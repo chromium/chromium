@@ -66,6 +66,7 @@ class _Generator(object):
       .Append()
       .Append('#include "base/check.h"')
       .Append('#include "base/check_op.h"')
+      .Append('#include "base/containers/to_vector.h"')
       .Append('#include "base/notreached.h"')
       .Append('#include "base/strings/string_number_conversions.h"')
       .Append('#include "base/strings/utf_string_conversions.h"')
@@ -1534,7 +1535,7 @@ class _Generator(object):
         .Append('return %(failure_value)s;')
       )
       (c.Eblock('}').Sblock('else {'))
-      c.Append('%(dst_var)s = %(src_var)s.GetBlob();')
+      c.Append('%(dst_var)s = base::ToVector(%(src_var)s.GetBlob());')
       c.Eblock('}')
     else:
       raise NotImplementedError(type_)

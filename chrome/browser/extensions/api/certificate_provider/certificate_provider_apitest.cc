@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -416,7 +417,8 @@ class CertificateProviderApiMockedExtensionTest
     GetExtensionMainFrame()->ExecuteJavaScriptForTests(
         u"signatureRequestData;", exec_js_future.GetCallback(),
         content::ISOLATED_WORLD_ID_GLOBAL);
-    std::vector<uint8_t> request_data(exec_js_future.Get().GetBlob());
+    std::vector<uint8_t> request_data(std::from_range,
+                                      exec_js_future.Get().GetBlob());
 
     // Load the private key.
     std::optional<crypto::keypair::PrivateKey> key =

@@ -125,6 +125,7 @@ using ::testing::IsTrue;
 using ::testing::Matcher;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Pointwise;
@@ -3696,9 +3697,7 @@ TEST_P(PdfViewWebPluginInkTest, SendThumbnail) {
         EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
 
         // Test `dict` contains the image data, but not the exact value.
-        const auto* blob = dict.FindBlob("imageData");
-        ASSERT_TRUE(blob);
-        EXPECT_FALSE(blob->empty());
+        EXPECT_THAT(dict.FindBlob("imageData"), Optional(Not(IsEmpty())));
       });
   SendThumbnail(/*message_id=*/"foo", /*page_size=*/{50, 25});
 }
@@ -3715,9 +3714,7 @@ TEST_P(PdfViewWebPluginInkTest, SendThumbnailWithNoStrokes) {
         EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
 
         // Test `dict` contains the image data, but not the exact value.
-        const auto* blob = dict.FindBlob("imageData");
-        ASSERT_TRUE(blob);
-        EXPECT_FALSE(blob->empty());
+        EXPECT_THAT(dict.FindBlob("imageData"), Optional(Not(IsEmpty())));
       });
   SendThumbnail(/*message_id=*/"foo", /*page_size=*/{50, 25});
 }

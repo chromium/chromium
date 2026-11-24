@@ -4,6 +4,7 @@
 
 #include "components/viz/common/quads/render_pass_io.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -352,7 +353,7 @@ base::Value::BlobStorage SkPathToBlob(const SkPath& path) {
   return blob;
 }
 
-bool SkPathFromBlob(const base::Value::BlobStorage& blob, SkPath* out) {
+bool SkPathFromBlob(base::span<const uint8_t> blob, SkPath* out) {
   if (auto path = SkPath::ReadFromMemory(blob.data(), blob.size())) {
     *out = std::move(*path);
     return true;
@@ -1349,7 +1350,7 @@ bool CompositorRenderPassDrawQuadFromDict(
   const base::DictValue* mask_texture_size = dict.FindDict("mask_texture_size");
   const base::ListValue* filters = dict.FindList("filters");
   const base::ListValue* backdrop_filters = dict.FindList("backdrop_filters");
-  const base::Value::BlobStorage* backdrop_filter_bounds =
+  std::optional<base::span<const uint8_t>> backdrop_filter_bounds =
       dict.FindBlob("backdrop_filter_bounds");
   const base::DictValue* filters_scale = dict.FindDict("filters_scale");
   const base::DictValue* filters_origin = dict.FindDict("filters_origin");

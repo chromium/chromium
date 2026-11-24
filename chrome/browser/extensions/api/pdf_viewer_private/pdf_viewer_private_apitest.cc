@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
+
+#include "base/containers/span.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -110,12 +114,10 @@ IN_PROC_BROWSER_TEST_F(PdfViewerPrivateApiTest, GetTextInfo_MojoSerialization) {
   ASSERT_TRUE(result.is_dict());
   const base::DictValue& text_info_dict = result.ExtractDict();
 
-  const std::vector<uint8_t>* text_info_blob =
-      text_info_dict.FindBlob("mojoTextInfo");
-  ASSERT_TRUE(text_info_blob);
+  ASSERT_OK_AND_ASSIGN(base::span<const uint8_t> text_info_blob,
+                       text_info_dict.FindBlob("mojoTextInfo"));
   pdf::mojom::InkTextInfoPtr text_info;
-  ASSERT_TRUE(
-      pdf::mojom::InkTextInfo::Deserialize(*text_info_blob, &text_info));
+  ASSERT_TRUE(pdf::mojom::InkTextInfo::Deserialize(text_info_blob, &text_info));
   ASSERT_TRUE(text_info);
 
   // Check that every field is non-zero.

@@ -4,6 +4,7 @@
 
 #include "tools/json_schema_compiler/util.h"
 
+#include "base/containers/to_vector.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -94,7 +95,7 @@ bool PopulateItem(const base::Value& from, std::vector<uint8_t>& out) {
   if (!from.is_blob()) {
     return false;
   }
-  out = from.GetBlob();
+  out = base::ToVector(from.GetBlob());
   return true;
 }
 
@@ -104,7 +105,7 @@ bool PopulateItem(const base::Value& from,
   if (!from.is_blob()) {
     return ReportError(from, base::Value::Type::BINARY, error);
   }
-  out = from.GetBlob();
+  out = base::ToVector(from.GetBlob());
   return true;
 }
 

@@ -671,7 +671,7 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
   const base::DictValue* audio = args()[1].GetIfDict();
   EXTENSION_FUNCTION_VALIDATE(audio);
 
-  const std::vector<uint8_t>* audio_buffer_blob =
+  std::optional<base::span<const uint8_t>> audio_buffer_blob =
       audio->FindBlob(tts_extension_api_constants::kAudioBufferKey);
   if (!audio_buffer_blob)
     return RespondNow(Error("No audio buffer found."));

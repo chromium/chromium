@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -19,6 +20,7 @@
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1695,12 +1697,13 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
     const base::DictValue& item_as_dict = item.GetDict();
     FontId unique_id(item_as_dict.FindInt("uniqueId").value());
     const std::string font_name = *item_as_dict.FindString("name");
-    const std::vector<uint8_t>& serialized_typeface =
-        *item_as_dict.FindBlob("serializedTypeface");
+    base::span<const uint8_t> serialized_typeface =
+        item_as_dict.FindBlob("serializedTypeface").value();
     client_->AddFont(unique_id, font_name, serialized_typeface);
   }
 
-  const std::vector<uint8_t>& text_info_blob = *data.FindBlob("mojoTextInfo");
+  base::span<const uint8_t> text_info_blob =
+      data.FindBlob("mojoTextInfo").value();
   pdf::mojom::InkTextInfoPtr text_info_mojo;
   CHECK(pdf::mojom::InkTextInfo::Deserialize(text_info_blob, &text_info_mojo));
 

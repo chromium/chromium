@@ -8,6 +8,7 @@
 #include <array>
 #include <cmath>
 #include <compare>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <ostream>
@@ -254,12 +255,8 @@ std::string* Value::GetIfString() {
   return std::get_if<std::string>(&data_);
 }
 
-const Value::BlobStorage* Value::GetIfBlob() const {
-  return std::get_if<BlobStorage>(&data_);
-}
-
-Value::BlobStorage* Value::GetIfBlob() {
-  return std::get_if<BlobStorage>(&data_);
+std::optional<span<const uint8_t>> Value::GetIfBlob() const {
+  return is_blob() ? std::make_optional(GetBlob()) : std::nullopt;
 }
 
 const DictValue* Value::GetIfDict() const {
@@ -306,12 +303,7 @@ std::string& Value::GetString() {
   return std::get<std::string>(data_);
 }
 
-const Value::BlobStorage& Value::GetBlob() const {
-  DCHECK(is_blob());
-  return std::get<BlobStorage>(data_);
-}
-
-Value::BlobStorage& Value::GetBlob() {
+span<const uint8_t> Value::GetBlob() const {
   DCHECK(is_blob());
   return std::get<BlobStorage>(data_);
 }
@@ -341,7 +333,8 @@ std::string Value::TakeString() && {
 }
 
 Value::BlobStorage Value::TakeBlob() && {
-  return std::move(GetBlob());
+  DCHECK(is_blob());
+  return std::move(std::get<BlobStorage>(data_));
 }
 
 DictValue Value::TakeDict() && {
@@ -497,14 +490,10 @@ std::string* DictValue::FindString(std::string_view key) {
   return v ? v->GetIfString() : nullptr;
 }
 
-const Value::BlobStorage* DictValue::FindBlob(std::string_view key) const {
+std::optional<span<const uint8_t>> DictValue::FindBlob(
+    std::string_view key) const {
   const Value* v = Find(key);
-  return v ? v->GetIfBlob() : nullptr;
-}
-
-Value::BlobStorage* DictValue::FindBlob(std::string_view key) {
-  Value* v = Find(key);
-  return v ? v->GetIfBlob() : nullptr;
+  return v ? v->GetIfBlob() : std::nullopt;
 }
 
 const DictValue* DictValue::FindDict(std::string_view key) const {
@@ -751,15 +740,10 @@ std::string* DictValue::FindStringByDottedPath(std::string_view path) {
   return v ? v->GetIfString() : nullptr;
 }
 
-const Value::BlobStorage* DictValue::FindBlobByDottedPath(
+std::optional<span<const uint8_t>> DictValue::FindBlobByDottedPath(
     std::string_view path) const {
   const Value* v = FindByDottedPath(path);
-  return v ? v->GetIfBlob() : nullptr;
-}
-
-Value::BlobStorage* DictValue::FindBlobByDottedPath(std::string_view path) {
-  Value* v = FindByDottedPath(path);
-  return v ? v->GetIfBlob() : nullptr;
+  return v ? v->GetIfBlob() : std::nullopt;
 }
 
 const DictValue* DictValue::FindDictByDottedPath(std::string_view path) const {
@@ -1124,7 +1108,7 @@ bool ListValue::contains(const char* val) const {
 }
 
 bool ListValue::contains(const BlobStorage& val) const {
-  return contains(val, &Value::GetIfBlob);
+  return contains(span<const uint8_t>(val), &Value::GetIfBlob);
 }
 
 bool ListValue::contains(const DictValue& val) const {
@@ -1355,7 +1339,8 @@ size_t Value::EstimateMemoryUsage() const {
     case Type::STRING:
       return base::trace_event::EstimateMemoryUsage(GetString());
     case Type::BINARY:
-      return base::trace_event::EstimateMemoryUsage(GetBlob());
+      return base::trace_event::EstimateMemoryUsage(
+          std::get<BlobStorage>(data_));
     case Type::DICT:
       return GetDict().EstimateMemoryUsage();
     case Type::LIST:

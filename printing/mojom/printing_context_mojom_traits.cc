@@ -242,13 +242,13 @@ bool StructTraits<
     if (!destination_type.has_value()) {
       return false;
     }
-    const base::Value::BlobStorage* page_format =
+    std::optional<base::span<const uint8_t>> page_format =
         system_print_dialog_data.FindBlob(
             printing::kMacSystemPrintDialogDataPageFormat);
     if (!page_format || page_format->empty()) {
       return false;
     }
-    const base::Value::BlobStorage* print_settings =
+    std::optional<base::span<const uint8_t>> print_settings =
         system_print_dialog_data.FindBlob(
             printing::kMacSystemPrintDialogDataPrintSettings);
     if (!print_settings || print_settings->empty()) {

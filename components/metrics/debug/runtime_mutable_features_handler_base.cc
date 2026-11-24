@@ -4,10 +4,11 @@
 
 #include "components/metrics/debug/runtime_mutable_features_handler_base.h"
 
+#include <cstdint>
 #include <string_view>
 #include <utility>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/feature_list_internal.h"
 #include "base/logging.h"
@@ -121,7 +122,7 @@ void RuntimeMutableFeaturesHandlerBase::HandleUploadSeed(
     const base::Value& callback_id,
     const base::Value& seed_value) {
   CHECK(seed_value.is_blob());
-  const std::vector<uint8_t>& seed_bytes = seed_value.GetBlob();
+  base::span<const uint8_t> seed_bytes = seed_value.GetBlob();
 
   DVLOG(1) << "RuntimeMutableFeaturesHandler: UploadSeed (size: "
            << seed_bytes.size() << " bytes)";

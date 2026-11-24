@@ -9,6 +9,8 @@
 #include <fcntl.h>
 #include <sys/types.h>
 
+#include <cstdint>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -676,7 +678,7 @@ void PrintDialogLinuxPortal::LoadPrintSettings(const PrintSettings& settings) {
   }
   settings_ = std::make_unique<PrintSettings>(settings);
 
-  const std::vector<uint8_t>* settings_data =
+  std::optional<base::span<const uint8_t>> settings_data =
       settings.system_print_dialog_data().FindBlob(
           kLinuxSystemPrintDialogDataPrintSettingsBin);
   if (settings_data) {
@@ -685,7 +687,7 @@ void PrintDialogLinuxPortal::LoadPrintSettings(const PrintSettings& settings) {
     }
   }
 
-  const std::vector<uint8_t>* page_setup_data =
+  std::optional<base::span<const uint8_t>> page_setup_data =
       settings.system_print_dialog_data().FindBlob(
           kLinuxSystemPrintDialogDataPageSetupBin);
   if (page_setup_data) {

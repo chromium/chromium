@@ -10,6 +10,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
@@ -66,7 +67,9 @@ auto ArbitraryValueBlob() {
   return fuzztest::ReversibleMap(
       [](std::vector<uint8_t> blob) { return base::Value(std::move(blob)); },
       [](const base::Value& value) {
-        return Wrap<std::vector<uint8_t>>(value.GetIfBlob());
+        return value.GetIfBlob().transform([](base::span<const uint8_t> b) {
+          return std::tuple{base::ToVector(b)};
+        });
       },
       fuzztest::Arbitrary<std::vector<uint8_t>>());
 }

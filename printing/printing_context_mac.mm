@@ -253,7 +253,7 @@ mojom::ResultCode ApplySystemPrintSettings(
     NSPrintInfo* print_info,
     PMPrintSession& print_session,
     PMPrintSettings& print_settings) {
-  const base::Value::BlobStorage* data =
+  std::optional<base::span<const uint8_t>> data =
       system_print_dialog_data.FindBlob(kMacSystemPrintDialogDataPrintSettings);
   CHECK(data);
   uint32_t data_size = data->size();
@@ -293,7 +293,7 @@ mojom::ResultCode ApplySystemPageFormat(
     NSPrintInfo* print_info,
     PMPrintSession& print_session,
     PMPageFormat& page_format) {
-  const base::Value::BlobStorage* data =
+  std::optional<base::span<const uint8_t>> data =
       system_print_dialog_data.FindBlob(kMacSystemPrintDialogDataPageFormat);
   CHECK(data);
   uint32_t data_size = data->size();

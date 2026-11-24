@@ -5,10 +5,12 @@
 #ifndef MOJO_PUBLIC_CPP_BASE_VALUES_MOJOM_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BASE_VALUES_MOJOM_TRAITS_H_
 
+#include <cstdint>
 #include <string_view>
-#include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/map_traits.h"
@@ -112,19 +114,23 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     return value.GetDouble();
   }
 
-  static std::string_view string_value(const base::Value& value) {
+  static std::string_view string_value(
+      const base::Value& value LIFETIME_BOUND) {
     return value.GetString();
   }
 
-  static const std::vector<uint8_t>& binary_value(const base::Value& value) {
+  static base::span<const uint8_t> binary_value(
+      const base::Value& value LIFETIME_BOUND) {
     return value.GetBlob();
   }
 
-  static const base::DictValue& dictionary_value(const base::Value& value) {
+  static const base::DictValue& dictionary_value(
+      const base::Value& value LIFETIME_BOUND) {
     return value.GetDict();
   }
 
-  static const base::ListValue& list_value(const base::Value& value) {
+  static const base::ListValue& list_value(
+      const base::Value& value LIFETIME_BOUND) {
     return value.GetList();
   }
 
