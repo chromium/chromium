@@ -339,16 +339,17 @@ const QualifiedName& DeprecatedAriaRowtextAttrName() {
 
 const AtomicString& AriaTokenAttributeFromValue(const QualifiedName& attribute,
                                                 const AtomicString& value) {
+  DCHECK(IsAriaTokenAttribute(attribute) || IsAriaTokenListAttribute(attribute))
+      << "Not a token attribute. Use AriaFloatAttribute(), "
+         "AriaIntAttribute(), AriaStringAttribute(), etc. instead.";
+  if (value.empty()) {
+    return g_null_atom;
+  }
   static const base::NoDestructor<AtomicString> undefined_value(
       AtomicString::FromLiteral<"undefined">());
-  if (IsAriaTokenAttribute(attribute) || IsAriaTokenListAttribute(attribute)) {
-    // These properties support a list of tokens, and "undefined"/"" is
-    // equivalent to not setting the attribute.
-    return value.empty() || value == *undefined_value ? g_null_atom : value;
-  }
-  DCHECK(false) << "Not a token attribute. Use AriaFloatAttribute(), "
-                   "AriaIntAttribute(), AriaStringAttribute(), etc. instead.";
-  return value;
+  // These properties support a list of tokens, and "undefined"/"" is
+  // equivalent to not setting the attribute.
+  return value == *undefined_value ? g_null_atom : value;
 }
 
 void SerializeDisplayStyle(const ComputedStyle& computed_style,
@@ -1062,10 +1063,13 @@ void AXObject::ShowAXTreeForThis() const {
 // static
 bool AXObject::HasAriaAttribute(const Element& element,
                                 const QualifiedName& attribute) {
-  if (element.FastHasAttribute(attribute)) {
+  if (element.HasElementData() && element.FastHasAttribute(attribute)) {
     return true;
   }
 
+  if (!element.IsCustomElement()) {
+    return false;
+  }
   const ElementInternals* internals = element.GetElementInternals();
   return internals && internals->HasAttribute(attribute);
 }
@@ -1081,9 +1085,11 @@ bool AXObject::HasAriaAttribute(const QualifiedName& attribute) const {
 // static
 const AtomicString& AXObject::AriaAttribute(const Element& element,
                                             const QualifiedName& attribute) {
-  const AtomicString& value = element.FastGetAttribute(attribute);
-  if (!value.IsNull()) {
-    return value;
+  if (element.HasElementData()) {
+    const AtomicString& value = element.FastGetAttribute(attribute);
+    if (!value.IsNull()) {
+      return value;
+    }
   }
   return GetInternalsAttribute(element, attribute);
 }
@@ -1196,6 +1202,9 @@ const AtomicString& AXObject::AriaTokenAttribute(
 const AtomicString& AXObject::GetInternalsAttribute(
     const Element& element,
     const QualifiedName& attribute) {
+  if (!element.IsCustomElement()) {
+    return g_null_atom;
+  }
   const ElementInternals* internals = element.GetElementInternals();
   if (!internals) {
     return g_null_atom;
@@ -4298,18 +4307,14 @@ bool AXObject::ComputeIsInert(IgnoredReasons* ignored_reasons) const {
 }
 
 bool AXObject::IsAriaHiddenRoot() const {
-  if (AXObjectCache().HasBadAriaHidden(*this)) {
-    return false;
-  }
-
+  const Element* element = GetElement();
   // aria-hidden:true works a bit like display:none.
   // * aria-hidden=true affects entire subtree.
   // * aria-hidden=false is a noop.
-  if (!IsAriaAttributeTrue(html_names::kAriaHiddenAttr)) {
+  if (!element || !IsAriaAttributeTrue(*element, html_names::kAriaHiddenAttr) ||
+      AXObjectCache().HasBadAriaHidden(*this)) {
     return false;
   }
-
-  auto* node = GetNode();
 
   // The aria-hidden attribute is not valid for the main html and body elements:
   // See more at https://github.com/w3c/aria/pull/1880.
@@ -4317,8 +4322,9 @@ bool AXObject::IsAriaHiddenRoot() const {
   // logic in the case where the option is selected, and aria-hidden does not
   // prevent selection of the option (it cannot because ARIA does not affect
   // behavior outside of assistive tech driven by a11y API).
-  if (IsA<HTMLBodyElement>(node) || node == GetDocument()->documentElement() ||
-      IsA<HTMLOptionElement>(node)) {
+  if (IsA<HTMLBodyElement>(element) ||
+      element == GetDocument()->documentElement() ||
+      IsA<HTMLOptionElement>(element)) {
     AXObjectCache().DiscardBadAriaHiddenBecauseOfElement(*this);
     return false;
   }
@@ -4427,12 +4433,17 @@ bool AXObject::IsDescendantOfDisabledNode() {
 }
 
 bool AXObject::ComputeIsDescendantOfDisabledNode() {
-  if (IsA<Document>(GetNode()))
+  Node* node = GetNode();
+  if (IsA<Document>(node)) {
     return false;
+  }
 
-  bool disabled = false;
-  if (AriaBooleanAttribute(html_names::kAriaDisabledAttr, &disabled)) {
-    return disabled;
+  if (const Element* element = DynamicTo<Element>(node)) {
+    bool disabled = false;
+    if (AriaBooleanAttribute(*element, html_names::kAriaDisabledAttr,
+                             &disabled)) {
+      return disabled;
+    }
   }
 
   if (AXObject* parent = ParentObject()) {
@@ -4550,13 +4561,15 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
     return false;
   }
 
-  if (AXObjectCache().IsAriaOwned(this) || HasARIAOwns(GetElement())) {
+  Node* node = GetNode();
+  Element* element = DynamicTo<Element>(node);
+
+  if (AXObjectCache().IsAriaOwned(this, /*checks=*/DCHECK_IS_ON()) ||
+      HasARIAOwns(element)) {
     // Always include an aria-owned object. It must be a child of the
     // element with aria-owns.
     return true;
   }
-
-  const Node* node = GetNode();
 
   if (!node) {
     if (GetLayoutObject()) {
@@ -4655,8 +4668,6 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
     }
   }
 
-  Element* element = GetElement();
-
   // Include all pseudo-element content. Any anonymous subtree is included
   // from above, in the condition where there is no node.
   if (element && element->IsPseudoElement()) {
@@ -4669,16 +4680,7 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   // pseudo-elements: Specifically, ::first-letter/::backdrop are not visited by
   // LayoutTreeBuilderTraversal, and cannot be in the tree, therefore do not add
   // a special rule to include their parents.
-  if (element && (element->GetPseudoElement(kPseudoIdBefore) ||
-                  element->GetPseudoElement(kPseudoIdAfter) ||
-                  element->GetPseudoElement(kPseudoIdMarker) ||
-                  element->GetPseudoElement(kPseudoIdScrollButtonBlockStart) ||
-                  element->GetPseudoElement(kPseudoIdScrollButtonInlineStart) ||
-                  element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd) ||
-                  element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd) ||
-                  element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore) ||
-                  element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter) ||
-                  element->GetPseudoElement(kPseudoIdScrollMarker))) {
+  if (element && element->HasAXIncludedPseudos()) {
     return true;
   }
 
@@ -4767,7 +4769,7 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   }
 
   // Preserve nodes with language attributes.
-  if (HasAriaAttribute(html_names::kLangAttr)) {
+  if (HasAriaAttribute(*element, html_names::kLangAttr)) {
     return true;
   }
 
@@ -5215,10 +5217,10 @@ const ComputedStyle* AXObject::GetComputedStyle() const {
   }
 
   // For elements with layout objects we can get their style directly.
-  if (GetLayoutObject()) {
-    return &GetLayoutObject()->Style();
+  if (LayoutObject* layout_object = GetLayoutObject()) {
+    return &layout_object->Style();
   }
-  if (const Element* element = GetElement()) {
+  if (const Element* element = DynamicTo<Element>(node)) {
     return element->GetComputedStyle();
   }
   return nullptr;
@@ -6166,36 +6168,23 @@ bool AXObject::IsActiveLiveRegionRoot() const {
 }
 
 const AtomicString& AXObject::LiveRegionStatus() const {
-  static const base::NoDestructor<AtomicString> live_region_status_assertive(
-      AtomicString::FromLiteral<"assertive">());
-  static const base::NoDestructor<AtomicString> live_region_status_polite(
-      AtomicString::FromLiteral<"polite">());
   static const base::NoDestructor<AtomicString> live_region_status_undefined(
       AtomicString::FromLiteral<"undefined">());
 
-  const AtomicString& live_region_status =
-      AriaTokenAttribute(html_names::kAriaLiveAttr);
-  if (!live_region_status.empty()) {
-    return live_region_status;
+  if (const Element* element = GetElement()) {
+    const AtomicString& live_region_status = AriaTokenAttributeFromValue(
+        html_names::kAriaLiveAttr,
+        AriaAttribute(*element, html_names::kAriaLiveAttr));
+    if (!live_region_status.empty()) {
+      return live_region_status;
+    }
   }
 
   const AtomicString& implicit_value = GetImplicitAriaLive(RoleValue());
   // "undefined" means this element is not a live region.
   // See: https://github.com/w3c/aria/issues/2653
-  if (implicit_value == *live_region_status_undefined) {
-    return g_null_atom;
-  }
-  if (implicit_value == *live_region_status_assertive) {
-    return *live_region_status_assertive;
-  }
-  if (implicit_value == *live_region_status_polite) {
-    return *live_region_status_polite;
-  }
-  if (implicit_value == keywords::kOff) {
-    return keywords::kOff;
-  }
-
-  return g_null_atom;
+  return implicit_value == *live_region_status_undefined ? g_null_atom
+                                                         : implicit_value;
 }
 
 const AtomicString& AXObject::LiveRegionRelevant() const {
@@ -6212,34 +6201,36 @@ const AtomicString& AXObject::LiveRegionRelevant() const {
 }
 
 bool AXObject::IsDisabled() const {
+  Element* element = GetElement();
+  if (!element) {
+    return false;
+  }
+
   // <embed> or <object> with unsupported plugin, or more iframes than allowed.
   if (IsEmbeddingElement()) {
     if (IsAriaHidden()) {
       return true;
     }
-    auto* html_frame_owner_element = To<HTMLFrameOwnerElement>(GetElement());
+    auto* html_frame_owner_element = To<HTMLFrameOwnerElement>(element);
     return !html_frame_owner_element->ContentFrame();
   }
 
-  Node* node = GetNode();
-  if (node) {
-    // Check for HTML form control with the disabled attribute.
-    if (GetElement() && GetElement()->IsDisabledFormControl()) {
+  // Check for HTML form control with the disabled attribute.
+  if (element->IsDisabledFormControl()) {
+    return true;
+  }
+  // This is for complex pickers, such as a date picker.
+  if (AXObject::IsControl()) {
+    Element* owner_shadow_host = element->OwnerShadowHost();
+    if (owner_shadow_host &&
+        owner_shadow_host->FastHasAttribute(html_names::kDisabledAttr)) {
       return true;
-    }
-    // This is for complex pickers, such as a date picker.
-    if (AXObject::IsControl()) {
-      Element* owner_shadow_host = node->OwnerShadowHost();
-      if (owner_shadow_host &&
-          owner_shadow_host->FastHasAttribute(html_names::kDisabledAttr)) {
-        return true;
-      }
     }
   }
   // Check aria-disabled. According to ARIA in HTML section 3.1, aria-disabled
   // attribute does NOT override the native HTML disabled attribute.
   // https://www.w3.org/TR/html-aria/
-  if (IsAriaAttributeTrue(html_names::kAriaDisabledAttr)) {
+  if (IsAriaAttributeTrue(*element, html_names::kAriaDisabledAttr)) {
     return true;
   }
 

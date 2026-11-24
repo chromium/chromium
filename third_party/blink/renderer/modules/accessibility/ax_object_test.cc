@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -4367,6 +4368,89 @@ TEST_F(AccessibilityTest, SerializeDisplayStyleMatchesCSSValue) {
                   ax::mojom::blink::StringAttribute::kDisplay));
   }
   element->SetComputedStyle(original_style);
+}
+
+TEST_F(AccessibilityTest, AriaAttributeLookupsAndElementInternals) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        #with-before::before { content: "prefix"; }
+        #with-first-letter::first-letter { color: red; }
+      </style>
+      <div id="standard" aria-label="Standard Label" aria-live="polite"
+           aria-disabled="true"></div>
+      <span id="with-before">Text</span>
+      <p id="with-first-letter">Paragraph</p>
+      <my-widget></my-widget>
+      )HTML");
+
+  Element* bare_div = GetDocument().CreateRawElement(html_names::kDivTag);
+  GetDocument().body()->AppendChild(bare_div);
+
+  Element* widget = GetDocument().QuerySelector(AtomicString("my-widget"));
+  ASSERT_NE(nullptr, widget);
+  ElementInternals& internals = widget->EnsureElementInternals();
+  internals.setAttribute(html_names::kRoleAttr, AtomicString("status"));
+  internals.setAttribute(html_names::kAriaLabelAttr,
+                         AtomicString("Internals Label"));
+  internals.setAttribute(html_names::kAriaLiveAttr, AtomicString("assertive"));
+  internals.setAttribute(html_names::kAriaDisabledAttr, AtomicString("true"));
+
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  // 1. Element without `ElementData` or custom element internals.
+  EXPECT_TRUE(bare_div->AttributesWithoutUpdate().IsEmpty());
+  EXPECT_FALSE(bare_div->IsCustomElement());
+  EXPECT_FALSE(
+      AXObject::HasAriaAttribute(*bare_div, html_names::kAriaLabelAttr));
+  EXPECT_EQ(g_null_atom,
+            AXObject::AriaAttribute(*bare_div, html_names::kAriaLabelAttr));
+  AXObject* ax_bare = GetAXObjectCache().Get(bare_div);
+  ASSERT_NE(nullptr, ax_bare);
+  EXPECT_EQ(g_null_atom, ax_bare->LiveRegionStatus());
+  EXPECT_FALSE(ax_bare->IsAriaHidden());
+  EXPECT_FALSE(ax_bare->IsDisabled());
+
+  // 2. Standard element with content ARIA attributes.
+  AXObject* ax_standard = GetAXObjectByElementId("standard");
+  ASSERT_NE(nullptr, ax_standard);
+  EXPECT_TRUE(ax_standard->HasAriaAttribute(html_names::kAriaLabelAttr));
+  EXPECT_EQ("Standard Label",
+            ax_standard->AriaAttribute(html_names::kAriaLabelAttr));
+  EXPECT_EQ("polite", ax_standard->LiveRegionStatus());
+  EXPECT_TRUE(ax_standard->IsDisabled());
+
+  // 3. Custom element with `ElementInternals` and no `ElementData`.
+  EXPECT_TRUE(widget->AttributesWithoutUpdate().IsEmpty());
+  EXPECT_TRUE(widget->IsCustomElement());
+  EXPECT_TRUE(AXObject::HasAriaAttribute(*widget, html_names::kAriaLabelAttr));
+  EXPECT_EQ("Internals Label",
+            AXObject::AriaAttribute(*widget, html_names::kAriaLabelAttr));
+
+  AXObject* ax_widget = GetAXObjectCache().Get(widget);
+  ASSERT_NE(nullptr, ax_widget);
+  EXPECT_EQ("assertive", ax_widget->LiveRegionStatus());
+  EXPECT_TRUE(ax_widget->IsDisabled());
+
+  // Content attribute overrides `ElementInternals`.
+  widget->setAttribute(html_names::kAriaLabelAttr,
+                       AtomicString("DOM Override"));
+  EXPECT_FALSE(widget->AttributesWithoutUpdate().IsEmpty());
+  EXPECT_EQ("DOM Override",
+            AXObject::AriaAttribute(*widget, html_names::kAriaLabelAttr));
+
+  // 4. `HasAXIncludedPseudos()` distinguishes AX-included pseudos (`::before`)
+  // from non-AX-included pseudos (`::first-letter`) and elements without
+  // `RareData`.
+  EXPECT_FALSE(bare_div->HasAXIncludedPseudos());
+  Element* with_before = GetElementById("with-before");
+  Element* with_first_letter = GetElementById("with-first-letter");
+  ASSERT_NE(nullptr, with_before);
+  ASSERT_NE(nullptr, with_first_letter);
+  EXPECT_TRUE(with_before->HasAXIncludedPseudos());
+  EXPECT_FALSE(with_first_letter->HasAXIncludedPseudos());
+  AXObject* ax_with_before = GetAXObjectCache().Get(with_before);
+  ASSERT_NE(nullptr, ax_with_before);
+  EXPECT_TRUE(ax_with_before->IsIncludedInTree());
 }
 
 }  // namespace test

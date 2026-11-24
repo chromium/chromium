@@ -200,6 +200,7 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
       const AtomicString& document_transition_tag = g_null_atom) const;
   bool HasAnyPseudos() const;
   bool HasScrollButtonOrMarkerGroupPseudos() const;
+  bool HasAXIncludedPseudos() const;
   PseudoElementData::PseudoElementVector GetPseudoElements() const;
 
   [[nodiscard]] RareDataUpdate<void> AddColumnPseudoElement(

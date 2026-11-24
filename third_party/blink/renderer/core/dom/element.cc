@@ -11623,6 +11623,10 @@ bool Element::HasScrollButtonOrMarkerGroupPseudos() const {
   return data && data->HasScrollButtonOrMarkerGroupPseudos();
 }
 
+bool Element::HasAXIncludedPseudosInternal() const {
+  return RareData()->HasAXIncludedPseudos();
+}
+
 Element* Element::GetStyledPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) const {

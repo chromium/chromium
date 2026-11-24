@@ -6,6 +6,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_UTILITIES_GENERATED_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_UTILITIES_GENERATED_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -16,11 +17,11 @@ namespace blink {
 class QualifiedName;
 
 // All ARIA attributes.
-CORE_EXPORT Vector<const QualifiedName*> GetAriaAttributes();
+CORE_EXPORT base::span<const QualifiedName* const> GetAriaAttributes();
 
 // ARIA attributes grouped by type.
 {% for type_info in attributes_by_type.values()|sort(attribute='type_name') %}
-CORE_EXPORT Vector<const QualifiedName*> GetAria{{ type_info.type_name }}Attributes();
+CORE_EXPORT base::span<const QualifiedName* const> GetAria{{ type_info.type_name }}Attributes();
 {% endfor %}
 
 // ARIA attribute type classification functions.

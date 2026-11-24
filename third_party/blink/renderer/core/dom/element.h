@@ -1681,6 +1681,11 @@ class CORE_EXPORT Element : public ContainerNode {
   // Returns true if this element contains any ::scroll-button or
   // ::scroll-marker-group pseudos.
   bool HasScrollButtonOrMarkerGroupPseudos() const;
+  // Returns true if this element contains any pseudo-elements whose originating
+  // element must be included in the accessibility tree.
+  bool HasAXIncludedPseudos() const {
+    return RareData() && HasAXIncludedPseudosInternal();
+  }
   // Returns true if this element contains an ::interest-button pseudo.
   bool HasInterestButtonPseudo() const;
 
@@ -2731,6 +2736,7 @@ class CORE_EXPORT Element : public ContainerNode {
   virtual int DefaultTabIndex() const;
 
   bool WasLastFocusFromUserGestureInternal() const;
+  bool HasAXIncludedPseudosInternal() const;
 
   inline void UpdateCallbackSelectors(const ComputedStyle* old_style,
                                       const ComputedStyle* new_style);

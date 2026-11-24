@@ -14,7 +14,7 @@
 namespace blink {
 
 // All ARIA attributes.
-Vector<const QualifiedName*> GetAriaAttributes() {
+base::span<const QualifiedName* const> GetAriaAttributes() {
   static const QualifiedName* const kAriaAttributes[] = {
     {% for type_info in attributes_by_type.values() %}
     {% for attr in type_info.attributes %}
@@ -22,26 +22,25 @@ Vector<const QualifiedName*> GetAriaAttributes() {
     {% endfor %}
     {% endfor %}
   };
-  return Vector<const QualifiedName*>(kAriaAttributes);
+  return kAriaAttributes;
 }
 
 // ARIA attributes grouped by type.
 {% for type_info in attributes_by_type.values()|sort(attribute='type_name') %}
-Vector<const QualifiedName*> GetAria{{ type_info.type_name }}Attributes() {
+base::span<const QualifiedName* const> GetAria{{ type_info.type_name }}Attributes() {
   static const QualifiedName* const kAria{{ type_info.type_name }}Attributes[] = {
     {% for attr in type_info.attributes %}
     &html_names::k{{ attr.base_name }}Attr,
     {% endfor %}
   };
-  return Vector<const QualifiedName*>(kAria{{ type_info.type_name }}Attributes);
+  return kAria{{ type_info.type_name }}Attributes;
 }
 {% endfor %}
 
 // ARIA attribute type classification functions.
 {% for type_info in attributes_by_type.values()|sort(attribute='type_name') %}
 bool IsAria{{ type_info.type_name }}Attribute(const QualifiedName& attribute) {
-  const auto& attributes = GetAria{{ type_info.type_name }}Attributes();
-  return std::find(attributes.begin(), attributes.end(), &attribute) != attributes.end();
+  return std::ranges::contains(GetAria{{ type_info.type_name }}Attributes(), &attribute);
 }
 {% endfor %}
 

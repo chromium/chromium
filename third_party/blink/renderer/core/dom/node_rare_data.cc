@@ -187,6 +187,12 @@ bool NodeRareData::HasScrollButtonOrMarkerGroupPseudos() const {
   return data && data->HasScrollButtonOrMarkerGroupPseudos();
 }
 
+bool NodeRareData::HasAXIncludedPseudos() const {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  return data && data->HasAXIncludedPseudos();
+}
+
 PseudoElementData::PseudoElementVector NodeRareData::GetPseudoElements() const {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));

@@ -31,6 +31,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
       const AtomicString& pseudo_argument = g_null_atom) const;
 
   bool HasScrollButtonOrMarkerGroupPseudos() const;
+  bool HasAXIncludedPseudos() const;
 
   using PseudoElementVector = HeapVector<Member<PseudoElement>, 2>;
   PseudoElementVector GetPseudoElements() const;
@@ -359,6 +360,11 @@ inline bool PseudoElementData::HasScrollButtonOrMarkerGroupPseudos() const {
          generated_scroll_button_inline_start_ ||
          generated_scroll_button_inline_end_ ||
          generated_scroll_button_block_end_;
+}
+
+inline bool PseudoElementData::HasAXIncludedPseudos() const {
+  return generated_before_ || generated_after_ || generated_marker_ ||
+         generated_scroll_marker_ || HasScrollButtonOrMarkerGroupPseudos();
 }
 
 inline PseudoElementData::PseudoElementVector
