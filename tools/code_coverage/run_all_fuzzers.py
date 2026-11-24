@@ -530,8 +530,11 @@ def _run_full_corpus(target_details) -> bool:
   profraw_dir = tempfile.TemporaryDirectory()
   fullcorpus_profraw = os.path.join(profraw_dir.name, target + "_%p.profraw")
   env['LLVM_PROFILE_FILE'] = fullcorpus_profraw
+  full_corpus_timeout = target_details.get(
+    'full_corpus_timeout', WHOLE_CORPUS_TIMEOUT_SECS
+  )
   if cmd_runner.run_full_corpus(
-    env, WHOLE_CORPUS_TIMEOUT_SECS, 'full corpus attempt', corpus_dir
+    env, full_corpus_timeout, 'full corpus attempt', corpus_dir
   ):
     matching_profraws = list(_matching_profraws(fullcorpus_profraw))
     logging.info(
@@ -886,12 +889,22 @@ def _parse_command_arguments():
   )
 
   arg_parser.add_argument(
+    '--full-corpus-timeout',
+    type=int,
+    default=WHOLE_CORPUS_TIMEOUT_SECS,
+    help='Timeout in seconds for running a target over its whole corpus '
+    'before falling back to chunked runs. Defaults to %(default)s seconds.',
+  )
+
+  arg_parser.add_argument(
     '--target-args',
     default='',
     help='Extra arguments for the blackbox target, as one shell-quoted '
     'string, e.g. --target-args="--use-fake-ui-for-media-stream".',
   )
   args = arg_parser.parse_args()
+  if args.full_corpus_timeout <= 0:
+    arg_parser.error('--full-corpus-timeout must be a positive integer.')
   return args
 
 
@@ -960,6 +973,7 @@ def _get_all_target_details(args):
           'corpus': fuzzer_target_corporadir,
           'files': '*',
           'testcase_timeout': args.testcase_timeout,
+          'full_corpus_timeout': args.full_corpus_timeout,
         }
       )
 
@@ -1028,6 +1042,7 @@ def _get_blackbox_target_details(args):
     'corpus': args.fuzzer_corpora_dir,
     'files': file_pattern,
     'testcase_timeout': args.testcase_timeout,
+    'full_corpus_timeout': args.full_corpus_timeout,
     'fuzzer_type': args.fuzzer,
     'continuous_profiling': True,
   }
@@ -1080,6 +1095,7 @@ def _get_fuzzilli_target_details(args):
           'corpus': None,
           'files': chunk,
           'testcase_timeout': args.testcase_timeout,
+          'full_corpus_timeout': args.full_corpus_timeout,
           'fuzzer_type': FUZZILLI,
         }
       )

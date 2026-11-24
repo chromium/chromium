@@ -200,6 +200,7 @@ class TargetDetailsWindowsTest(unittest.TestCase):
       fuzzer_corpora_dir=self.corpora_dir,
       fuzzer='libfuzzer',
       testcase_timeout=60,
+      full_corpus_timeout=2400,
     )
 
     with mock.patch('sys.platform', 'win32'):
@@ -213,6 +214,7 @@ class TargetDetailsWindowsTest(unittest.TestCase):
       target_map['target1']['cmd_runner'].cmd[0],
       os.path.join(self.bin_dir, 'target1.exe'),
     )
+    self.assertEqual(target_map['target1']['full_corpus_timeout'], 2400)
 
   def test_resolve_target_binary_non_windows_requires_executable_bit(self):
     exec_bin = os.path.join(self.bin_dir, 'exec_fuzzer')
@@ -285,11 +287,28 @@ class BlackboxCoverageTest(unittest.TestCase):
         target='chrome',
         target_args='--foo "--bar=a b"',
         testcase_timeout=20,
+        full_corpus_timeout=run_all_fuzzers.WHOLE_CORPUS_TIMEOUT_SECS,
       )
       with mock.patch.dict(os.environ, {'DISPLAY': ':99'}):
         (details,) = run_all_fuzzers._get_blackbox_target_details(args)
     self.assertEqual(details['cmd_runner'].cmd, [chrome, '--foo', '--bar=a b'])
     self.assertTrue(details['continuous_profiling'])
+
+
+class FullCorpusTimeoutTest(unittest.TestCase):
+  def test_run_full_corpus_passes_timeout_to_runner(self):
+    runner = mock.Mock()
+    runner.run_full_corpus.return_value = False
+    details = {
+      'name': 'target1',
+      'cmd_runner': runner,
+      'env': {},
+      'corpus': 'corpus_dir',
+      'profdata_file': 'target1.profdata',
+      'full_corpus_timeout': 2400,
+    }
+    run_all_fuzzers._run_full_corpus(details)
+    self.assertEqual(runner.run_full_corpus.call_args[0][1], 2400)
 
 
 if __name__ == '__main__':
