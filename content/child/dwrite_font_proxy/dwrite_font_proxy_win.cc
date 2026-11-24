@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -28,33 +27,6 @@ namespace mswr = Microsoft::WRL;
 namespace content {
 
 namespace {
-
-// Limits to 20 the number of family names that can be accessed by a renderer.
-// This feature will be enabled for a subset of users to assess the impact on
-// input delay. It will not ship as-is, because it breaks some pages. Local
-// experiments show that accessing >20 fonts is typically done by fingerprinting
-// scripts.
-// TODO(crbug.com/40133493): Remove this feature when the experiment is
-// complete. If the experiment shows a significant input delay improvement,
-// replace with a more refined mitigation for pages that access many fonts.
-BASE_FEATURE(kLimitFontFamilyNamesPerRenderer,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr size_t kFamilyNamesLimit = 20;
-
-// Family names that opted-out from the limit enforced by
-// |kLimitFontFamilyNamesPerRenderer|. This is required because Blink uses these
-// fonts as last resort and crashes if they can't be loaded.
-const char16_t* kLastResortFontNames[] = {
-    u"Sans",     u"Arial",   u"MS UI Gothic",    u"Microsoft Sans Serif",
-    u"Segoe UI", u"Calibri", u"Times New Roman", u"Courier New"};
-
-bool IsLastResortFontName(const std::u16string& font_name) {
-  for (const char16_t* last_resort_font_name : kLastResortFontNames) {
-    if (font_name == last_resort_font_name)
-      return true;
-  }
-  return false;
-}
 
 // Binds a DWriteFontProxy pending receiver. Must be invoked from the main
 // thread.
@@ -176,12 +148,6 @@ std::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     if (iter != family_names_.end()) {
       if (iter->second != kFamilyNotFound)
         return iter->second;
-      return std::nullopt;
-    }
-
-    if (base::FeatureList::IsEnabled(kLimitFontFamilyNamesPerRenderer) &&
-        family_names_.size() > kFamilyNamesLimit &&
-        !IsLastResortFontName(family_name)) {
       return std::nullopt;
     }
   }
