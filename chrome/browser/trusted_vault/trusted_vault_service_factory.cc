@@ -42,7 +42,7 @@ constexpr char kICloudKeychainAccessGroupPrefix[] = MAC_TEAM_IDENTIFIER_STRING;
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<trusted_vault::TrustedVaultService> CreateTrustedVaultService(
     Profile* profile) {
-  TrustedVaultClientAndroid::GetAccountInfoByGaiaIdCallback
+  trusted_vault::TrustedVaultClientAndroid::GetAccountInfoByGaiaIdCallback
       account_info_callback = base::BindRepeating(
           [](signin::IdentityManager* identity_manager,
              const GaiaId& gaia_id) -> CoreAccountInfo {
@@ -52,9 +52,9 @@ std::unique_ptr<trusted_vault::TrustedVaultService> CreateTrustedVaultService(
           IdentityManagerFactory::GetForProfile(profile));
 
   return std::make_unique<trusted_vault::TrustedVaultService>(
-      std::make_unique<TrustedVaultClientAndroid>(
+      std::make_unique<trusted_vault::TrustedVaultClientAndroid>(
           trusted_vault::SecurityDomainId::kChromeSync, account_info_callback),
-      std::make_unique<TrustedVaultClientAndroid>(
+      std::make_unique<trusted_vault::TrustedVaultClientAndroid>(
           trusted_vault::SecurityDomainId::kPasskeys, account_info_callback));
 }
 #else

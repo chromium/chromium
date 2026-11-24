@@ -41,10 +41,12 @@ FromJniType<trusted_vault::TrustedVaultKeyAndVersion>(
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/trusted_vault/android/jni_headers/TrustedVaultClient_jni.h"
 
+namespace trusted_vault {
+
 TrustedVaultClientAndroid::OngoingFetchKeys::OngoingFetchKeys(
     const CoreAccountInfo& account_info,
-    base::OnceCallback<void(
-        const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)> callback)
+    base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
+        callback)
     : account_info(account_info), callback(std::move(callback)) {}
 
 TrustedVaultClientAndroid::OngoingFetchKeys::OngoingFetchKeys(
@@ -103,7 +105,7 @@ TrustedVaultClientAndroid::OngoingEnroll::OngoingEnroll(
 TrustedVaultClientAndroid::OngoingEnroll::~OngoingEnroll() = default;
 
 TrustedVaultClientAndroid::TrustedVaultClientAndroid(
-    trusted_vault::SecurityDomainId security_domain_id,
+    SecurityDomainId security_domain_id,
     const GetAccountInfoByGaiaIdCallback& gaia_account_info_by_gaia_id_cb)
     : security_domain_id_(security_domain_id),
       gaia_account_info_by_gaia_id_cb_(gaia_account_info_by_gaia_id_cb) {
@@ -124,7 +126,7 @@ void TrustedVaultClientAndroid::FetchKeysCompleted(
     JNIEnv* env,
     int32_t request_id,
     const std::string& gaia_id,
-    const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys) {
+    const std::vector<TrustedVaultKeyAndVersion>& keys) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
@@ -206,9 +208,8 @@ void TrustedVaultClientAndroid::NotifyKeysChanged(
   for (Observer& observer : observer_list_) {
     observer.OnTrustedVaultKeysChanged(
         trigger
-            ? std::optional(static_cast<
-                            trusted_vault::TrustedVaultUserActionTriggerForUMA>(
-                  *trigger))
+            ? std::optional(
+                  static_cast<TrustedVaultUserActionTriggerForUMA>(*trigger))
             : std::nullopt);
   }
 }
@@ -237,10 +238,8 @@ void TrustedVaultClientAndroid::FetchKeys(
   // `TrustedVaultClient::FetchKeys()` returns `TrustedVaultKeyAndVersion`.
   const RequestId request_id = RegisterNewOngoingRequest(OngoingFetchKeys(
       account_info,
-      base::BindOnce([](const std::vector<
-                         trusted_vault::TrustedVaultKeyAndVersion>& keys) {
-        return base::ToVector(keys,
-                              &trusted_vault::TrustedVaultKeyAndVersion::key);
+      base::BindOnce([](const std::vector<TrustedVaultKeyAndVersion>& keys) {
+        return base::ToVector(keys, &TrustedVaultKeyAndVersion::key);
       }).Then(std::move(cb))));
 
   // Trigger the fetching keys from the implementation in Java, which will
@@ -254,7 +253,7 @@ void TrustedVaultClientAndroid::StoreKeys(
     const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version,
-    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
+    std::optional<TrustedVaultUserActionTriggerForUMA> trigger) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JNIEnv* const env = base::android::AttachCurrentThread();
   const base::android::ScopedJavaLocalRef<jobjectArray> java_keys =
@@ -313,7 +312,7 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
 
   // TODO(crbug.com/540854648): Record the same metric for the passkeys security
   // domain.
-  if (security_domain_id_ == trusted_vault::SecurityDomainId::kChromeSync) {
+  if (security_domain_id_ == SecurityDomainId::kChromeSync) {
     base::UmaHistogramBoolean(
         "Sync.TrustedVaultJavascriptAddRecoveryMethodUserKnown",
         account_info != CoreAccountInfo());
@@ -398,15 +397,17 @@ TrustedVaultClientAndroid::GetAndUnregisterOngoingRequest(RequestId id) {
 static void JNI_TrustedVaultClient_RecordKeyRetrievalTrigger(JNIEnv* env,
                                                              int trigger) {
   syncer::RecordKeyRetrievalTrigger(
-      static_cast<trusted_vault::TrustedVaultUserActionTriggerForUMA>(trigger));
+      static_cast<TrustedVaultUserActionTriggerForUMA>(trigger));
 }
 
 static void JNI_TrustedVaultClient_RecordRecoverabilityDegradedFixTrigger(
     JNIEnv* env,
     int trigger) {
   syncer::RecordRecoverabilityDegradedFixTrigger(
-      static_cast<trusted_vault::TrustedVaultUserActionTriggerForUMA>(trigger));
+      static_cast<TrustedVaultUserActionTriggerForUMA>(trigger));
 }
+
+}  // namespace trusted_vault
 
 DEFINE_JNI(TrustedVaultClient)
 DEFINE_JNI(TrustedVaultKeyAndVersion)

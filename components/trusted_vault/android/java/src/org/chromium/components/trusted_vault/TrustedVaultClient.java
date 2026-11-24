@@ -13,6 +13,7 @@ import android.util.Pair;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -36,6 +37,7 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 
 /** Client used to communicate with GmsCore about sync encryption keys. */
+@JNINamespace("trusted_vault")
 @NullMarked
 public class TrustedVaultClient {
     /** Interface to downstream functionality. */
