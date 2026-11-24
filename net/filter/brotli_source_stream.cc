@@ -141,8 +141,9 @@ class BrotliSourceStream : public FilterSourceStream {
           produced_bytes_ >= kMinBytesForDecodingThroughput &&
           decoding_time_.is_positive()) {
         // Bytes per microsecond are KB (1000 bytes) per millisecond.
-        const int kb_per_ms = base::ClampRound(
-            produced_bytes_ / decoding_time_.InMicrosecondsF());
+        const int kb_per_ms =
+            base::ClampRound(static_cast<double>(produced_bytes_) /
+                             decoding_time_.InMicrosecondsF());
         RecordWithEncodingVariant(
             kDecodingThroughputHistograms, [&](std::string_view name) {
               base::UmaHistogramCustomCounts(name, kb_per_ms, 1, 10000, 100);
@@ -272,8 +273,8 @@ class BrotliSourceStream : public FilterSourceStream {
 
   DecodingStatus decoding_status_ = DecodingStatus::DECODING_IN_PROGRESS;
 
-  size_t consumed_bytes_ = 0;
-  size_t produced_bytes_ = 0;
+  uint64_t consumed_bytes_ = 0;
+  uint64_t produced_bytes_ = 0;
 
   // The time spent in the decoder. It doesn't include the time waiting for
   // input.

@@ -26,6 +26,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
@@ -676,6 +677,7 @@ TEST_P(BrotliSourceStreamTest, RecordsDecodingThroughput) {
       base::as_byte_span(body).data(), &encoded_size, encoded.data()));
   encoded.resize(encoded_size);
 
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
   base::HistogramTester histograms;
   source()->AddReadResult(base::as_string_view(encoded), OK,
                           MockSourceStream::SYNC);
