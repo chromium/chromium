@@ -247,6 +247,20 @@ TEST_F(ExtensionInstallPromptTestSiteAccessOptionsEnabled,
 }
 
 TEST_F(ExtensionInstallPromptTestSiteAccessOptionsEnabled,
+       DoesntShowForPlatformApp) {
+  scoped_refptr<const Extension> app =
+      ExtensionBuilder("platform_app", ExtensionBuilder::Type::PLATFORM_APP)
+          .AddHostPermission("<all_urls>")
+          .AddAPIPermission("notifications")
+          .Build();
+  std::unique_ptr<InstallPromptData> install_prompt =
+      ShowPromptAndGetData(app.get());
+  EXPECT_FALSE(install_prompt->ShouldWithheldPermissionsOnDialogAccept());
+  ASSERT_EQ(1u, install_prompt->GetPermissionCount());
+  EXPECT_EQ(u"Display notifications", install_prompt->GetPermission(0));
+}
+
+TEST_F(ExtensionInstallPromptTestSiteAccessOptionsEnabled,
        DoesntShowWhenAPIPermissionImpliesAllHosts) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("proxy_and_host")

@@ -414,6 +414,15 @@ TEST_F(PermissionsManagerUnittest, CanAffectExtension_ByLocation) {
   }
 }
 
+TEST_F(PermissionsManagerUnittest, CanAffectExtension_PlatformApp) {
+  scoped_refptr<const Extension> platform_app =
+      ExtensionBuilder("app", ExtensionBuilder::Type::PLATFORM_APP)
+          .AddHostPermission("<all_urls>")
+          .Build();
+  EXPECT_FALSE(util::CanWithholdPermissionsFromExtension(*platform_app));
+  EXPECT_FALSE(manager_->CanAffectExtension(*platform_app));
+}
+
 TEST_F(PermissionsManagerUnittest, CanUserSelectSiteAccess_AllUrls) {
   auto extension =
       AddExtensionWithHostPermission("AllUrls Extension", "<all_urls>");

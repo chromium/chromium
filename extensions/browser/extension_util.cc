@@ -423,6 +423,13 @@ bool CanWithholdPermissionsFromExtension(const Extension& extension) {
 bool CanWithholdPermissionsFromExtension(const ExtensionId& extension_id,
                                          Manifest::Type type,
                                          mojom::ManifestLocation location) {
+  // Platform apps run in standalone windows with isolated storage and do not
+  // run on web pages or inject content scripts, so runtime host permission
+  // withholding does not apply to them.
+  if (type == Manifest::Type::kPlatformApp) {
+    return false;
+  }
+
   // Some extensions must retain privilege to all requested host permissions.
   // Specifically, extensions that don't show up in chrome:extensions (where
   // withheld permissions couldn't be granted), extensions that are part of
