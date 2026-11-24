@@ -308,6 +308,7 @@
 <translation id="1308105352527684175">一部のコンテンツにアクセスできない可能性があります</translation>
 <translation id="1311092170520822848">このサイトは、デバイスに接続されているスマートカード リーダーと、リーダーで読み取り可能なスマートカードを制御しています</translation>
 <translation id="131112695174432497">広告のパーソナライズに影響するデータは削除されます</translation>
+<translation id="13115907161008983">リンクをコピー</translation>
 <translation id="131188242279372879">Chrome の最高レベルのセキュリティでダウンロードを保護する保護強化機能について確認する</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{ブラウザの動作を遅くしているタブを修正}other{ブラウザの動作を遅くしているタブを修正}}</translation>
 <translation id="1312721752506309252">保護強化機能がオンになっています</translation>
@@ -443,6 +444,7 @@
 <translation id="1482626744466814421">このタブをブックマークに追加...</translation>
 <translation id="1482772681918035149">パスワードを編集</translation>
 <translation id="1483137792530497944">川</translation>
+<translation id="1483148302144576204">リンクをコピー</translation>
 <translation id="1483151333977672176">送信しました。</translation>
 <translation id="1483431819520123112">表示名をクリップボードにコピーしました</translation>
 <translation id="1483493594462132177">送信</translation>
@@ -1057,6 +1059,7 @@
 <translation id="2168036794078614559">報告を送信しました</translation>
 <translation id="2168735174585029637">新しい透明なタブデザイン</translation>
 <translation id="217120844667431680">AI モードでさらに便利に</translation>
+<translation id="2172046302886074612">「<ph name="MODEL_CATEGORY" />」を削除しました</translation>
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
 <translation id="2175384018164129879">検索エンジンとサイト内検索を管理する(&amp;M)</translation>
 <translation id="2175773164573457310">Gemini に質問するにはテキストまたは画像を選択してください</translation>
@@ -2079,6 +2082,7 @@
 <translation id="3270965368676314374">パソコンからの写真、音楽、その他のメディアの読み取り、変更、削除</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> を折りたたむ</translation>
 <translation id="3275778913554317645">ウィンドウとして開く</translation>
+<translation id="3277325180914877290">テキストを拡大</translation>
 <translation id="3280237271814976245">名前を付けて保存(&amp;A)...</translation>
 <translation id="3280243678470289153">Chrome に留まる</translation>
 <translation id="3282210178675490297">タブを <ph name="APP_NAME" /> と共有します</translation>
@@ -2587,6 +2591,7 @@
 <translation id="3786890785076278600">静的な行</translation>
 <translation id="3787434344076711519">翻訳中</translation>
 <translation id="3789432704615470433">SharePoint ファイルと OneDrive ファイル</translation>
+<translation id="3789493399245366422">全画面表示, フルスクリーン, 最大化, 没入型, ツールバーを非表示, プレゼンテーション, F11</translation>
 <translation id="3789841737615482174">インストール</translation>
 <translation id="3790417903123637354">エラーが発生しました。しばらくしてからもう一度お試しください</translation>
 <translation id="379082410132524484">カードの有効期限が切れています</translation>
@@ -3357,6 +3362,7 @@
 <translation id="4665035764476941598">ここをクリックすると、他のタブを再び表示できます</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> で保存されたすべてのデータが削除されます。</translation>
 <translation id="4666483368282673356">Gemini の履歴を管理する</translation>
+<translation id="4667646546186544608">ズームアウト, 縮小, 小さく, 減らす, 減少, スケールダウン, ページズーム</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">おめでとうございます。<ph name="APP_NAME" /> をデバイスにインストールしました</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> を今すぐ開く</translation>
@@ -4757,6 +4763,7 @@
 <translation id="6255253900817321392">Mac のどこからでも、新しいタブを開くことなくすばやく検索できます</translation>
 <translation id="6257602895346497974">同期を有効にする...</translation>
 <translation id="6258818697161346451">このデバイスでパスキーを使用する</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{リンクをコピー}other{リンクをコピー}}</translation>
 <translation id="6261688934280090835">ChromeOS キオスクアプリのログ</translation>
 <translation id="6263082573641595914">Microsoft CA バージョン</translation>
 <translation id="6264060420924719834">このアプリには他のサイトのウェブ コンテンツが含まれています</translation>
@@ -4885,6 +4892,7 @@
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">画像ファイル</translation>
 <translation id="6410390304316730527">セーフ ブラウジングは、不正なソフトウェアのインストールや個人情報（パスワード、電話番号、クレジット カードなど）の入力といった危険な操作を行うよう誘導する悪意のあるユーザーから保護します。オフにする場合、なじみのないサイトや評判の悪いサイトを閲覧する際は十分に注意してください。</translation>
+<translation id="6411490324917773403">テキストを縮小</translation>
 <translation id="6416743254476733475">パソコンで許可またはブロックしてください。</translation>
 <translation id="6416856063840710198">利便性を高めるため、サイトがあなたのアクティビティをお使いのデバイスに保存することがよくあります。<ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">デフォルトの動作</translation>
@@ -6375,6 +6383,7 @@
 <translation id="8041093619605951337">幸せ</translation>
 <translation id="8042142357103597104">テキストの不透明度</translation>
 <translation id="8042331986490021244">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します</translation>
+<translation id="8042441076562098746">ズームイン, 拡大, 増やす, 大きく, 広げる, 増加, スケールアップ, ページズーム</translation>
 <translation id="8045253504249021590">同期は Google ダッシュボードで停止されています。</translation>
 <translation id="8045752459073395242">会社での生成 AI の使用に関する詳細</translation>
 <translation id="8045923671629973368">アプリケーション ID またはウェブストアの URL を入力します</translation>
@@ -6729,6 +6738,7 @@
 <translation id="844059392176531372">「<ph name="GROUP_NAME" />」タブグループを共有</translation>
 <translation id="844063558976952706">常にこのサイトのプラグインを実行する</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{シークレット ウィンドウまたはアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}other{プロファイル全体で # 個のシークレット ウィンドウとアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}}</translation>
+<translation id="84426883520448311">テーマ, 色, 背景, 壁紙, ライト, ダーク, モード, ライトモード, ダークモード, 個人, スタイル, 見た目</translation>
 <translation id="8443986842926457191">URL が 2048 文字を超えています</translation>
 <translation id="8445281870900174108">このタブはカメラを使用しています</translation>
 <translation id="8446884382197647889">詳細</translation>
@@ -7319,6 +7329,7 @@
 <translation id="9076821103818989526">サイドパネル</translation>
 <translation id="907779190626433918">サイトやアプリごとに異なるパスワードを使用してください。使い回しているパスワードが他人に知られると、そのパスワードであなたの他のアカウントにもアクセスされる恐れがあります。</translation>
 <translation id="9078546160009814724">ユーザー名: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{リンクをコピー}other{リンクをコピー}}</translation>
 <translation id="907972398081911688">不正使用されたパスワードを自動的に変更</translation>
 <translation id="9081543426177426948">シークレット モードでは、アクセスしたサイトは保存されません</translation>
 <translation id="9082750838489080452">アプリケーション: <ph name="APP_NAME" /></translation>

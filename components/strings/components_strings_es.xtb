@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1131264053432022307">Imagen copiada</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: para salir de la pantalla completa, arrastra desde la parte superior y toca el botón para volver</translation>
+<translation id="11370190534773372">Se ha rellenado la información de la tarjeta</translation>
 <translation id="1138458427267715730">Recibe alertas cuando el precio baje en cualquier sitio de la Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1142965388643537393">Información sobre viajes</translation>
@@ -4550,6 +4551,7 @@ Más información:
 <translation id="8577348305244205642">Tarjeta virtual no disponible</translation>
 <translation id="8579000896558714521">Anulación del teclado</translation>
 <translation id="8579561564816585231">Has iniciado sesión con un servicio de Google, como el Gestor de contraseñas</translation>
+<translation id="8580478010934016252">Ir a métodos de pago</translation>
 <translation id="8581064022803799721">Esta página se ha guardado en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="858637041960032120">Añade un teléfono</translation>
 <translation id="8587100480629037893">Seguimiento de manos no permitido</translation>
@@ -4906,7 +4908,7 @@ Más información:
 <translation id="9215416866750762878">Hay una aplicación que impide que Chrome se conecte a este sitio web de forma segura</translation>
 <translation id="9217513960785028513">Pregunta a <ph name="ENGINE_NAME" /> o escribe una URL</translation>
 <translation id="92178312226016010">Estás haciendo el seguimiento de este producto.</translation>
-<translation id="9218430445555521422">Establecer como predeterminado</translation>
+<translation id="9218430445555521422">Establecer como predeterminada</translation>
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="9221566509053798696">Google no es tu proveedor de autocompletado</translation>

@@ -6213,6 +6213,13 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
 
 注: このポリシーは非推奨です。代わりに <ph name="ISOLATE_ORIGINS_POLICY_NAME" />（高性能デバイスの場合）または <ph name="ISOLATE_ORIGINS_SHORTLIST_POLICY_NAME" /> を使用してください。このポリシーは、厳密に 1 GB より大きい RAM を搭載した <ph name="ANDROID_NAME" /> デバイスの Chrome のみに適用されます。このようなデバイスでのプロセス分離の設定は推奨されません。</translation>
 <translation id="4991786313466977061">企業バッジの公開設定を管理する</translation>
+<translation id="4991886408515766724">このポリシーでは、USB デバイスへのアクセス許可をユーザーに要求できるサイトの URL パターンリストを指定できます。
+
+      このポリシーを未設定のままにした場合、<ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
+
+      URL パターンは、<ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> と競合しないようにする必要があります。URL が両方のポリシーの URL パターンと一致する場合、どちらのポリシーも優先されません。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="4995123966071996433">Linux 仮想マシンへのポート転送を許可しない</translation>
 <translation id="4996068111491152684"><ph name="PRODUCT_OS_NAME" /> のログイン認証情報をネットワーク認証に使用しない。</translation>
 <translation id="4996086761250834365"><ph name="PLUGIN_VM_NAME" /> のサービス分析を許可する</translation>

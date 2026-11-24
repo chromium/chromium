@@ -13,7 +13,7 @@
 <translation id="1047095725494118091">Non se puido realizar a descarga. Téntao de novo ou reinicia o teu dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novas funcións dispoñibles. Utilizar frecha arriba para obter máis información.</translation>
-<translation id="1049324577536766607">{COUNT,plural, =1{Recibindo <ph name="ATTACHMENTS" /> do dispositivo (<ph name="DEVICE_NAME" />)}many{Receiving <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{Recibindo <ph name="ATTACHMENTS" /> do dispositivo (<ph name="DEVICE_NAME" />)}}</translation>
+<translation id="1049324577536766607">{COUNT,plural, =1{Recibindo <ph name="ATTACHMENTS" /> do dispositivo (<ph name="DEVICE_NAME" />)}other{Recibindo <ph name="ATTACHMENTS" /> do dispositivo (<ph name="DEVICE_NAME" />)}}</translation>
 <translation id="1049663189809099096">amarela pastel</translation>
 <translation id="1053371972724535586">As miñas gravacións</translation>
 <translation id="1056898198331236512">Advertencia</translation>
@@ -65,7 +65,7 @@
 <translation id="1223498995510244364">Resumir</translation>
 <translation id="123124571410524056">Posible portal</translation>
 <translation id="1232610416724362657">fervenza</translation>
-<translation id="1235924639474699896">{COUNT,plural, =1{texto}many{# texts}other{# textos}}</translation>
+<translation id="1235924639474699896">{COUNT,plural, =1{texto}other{# textos}}</translation>
 <translation id="1238163879850290856">Fai un restablecemento para evitar que outras persoas accedan aos datos. Usa só métodos de introdución nos que confíes.</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
 <translation id="1252766349417594414">Panca de control</translation>
@@ -246,7 +246,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">bolboretas</translation>
 <translation id="188114911237521550">Quitar modo escuro</translation>
-<translation id="1881577802939775675">{COUNT,plural, =1{Elemento}many{# items}other{# elementos}}</translation>
+<translation id="1881577802939775675">{COUNT,plural, =1{Elemento}other{# elementos}}</translation>
 <translation id="1884340228047885921">Visibilidade actual configurada como Algúns contactos</translation>
 <translation id="1884794756658039602">Máis información sobre as etiquetas de interlocutor.</translation>
 <translation id="1885577615937958993">avanzar rapidamente o contido multimedia</translation>
@@ -294,7 +294,7 @@
 <translation id="2086091080968010660">Pode que os cambios baseados na hora non sexan precisos. Activa o acceso á localización do sistema na configuración.</translation>
 <translation id="2102231663024125441">Edición de texto</translation>
 <translation id="2105810540595158374">O dispositivo é un mando de xogos.</translation>
-<translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}many{# phone numbers}other{# números de teléfono}}</translation>
+<translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Actualmente esta opción só está dispoñible en inglés (EUA)</translation>
 <translation id="2126937207024182736">Memoria dispoñible: <ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB</translation>
@@ -410,7 +410,7 @@
 <translation id="2589921777872778654">Editar e eliminar o menú</translation>
 <translation id="2597073208962000830">A función Compartir por Nearby usa o Bluetooth para buscar dispositivos próximos.</translation>
 <translation id="2597774443162333062">Enviaranse os ficheiros a Google para proceder á depuración</translation>
-<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{A operación rematou. Explorouse 1 páxina}many{Scanning completed. {NUMBER_OF_PAGES} pages scanned}other{A operación rematou. Exploráronse {NUMBER_OF_PAGES} páxinas}}</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{A operación rematou. Explorouse 1 páxina}other{A operación rematou. Exploráronse {NUMBER_OF_PAGES} páxinas}}</translation>
 <translation id="261322795497077164">Identificación de interlocutores</translation>
 <translation id="2617397783536231890">algodón</translation>
 <translation id="2618015542787108131">duna</translation>
@@ -499,13 +499,13 @@
 <translation id="3102119246920354026">Caché</translation>
 <translation id="3103783611481501187">surrealista</translation>
 <translation id="3108931485517391283">Non se puido recibir o ficheiro</translation>
-<translation id="3117791853215125017">{COUNT,plural, =1{Produciuse un erro ao enviar <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}many{Failed to send <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}other{Produciuse un erro ao enviar <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3117791853215125017">{COUNT,plural, =1{Produciuse un erro ao enviar <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}other{Produciuse un erro ao enviar <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3119672627216736407">Tradución dispoñible</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">estanques</translation>
 <translation id="3122883569442693641">Máis detalles</translation>
 <translation id="3124039320086536031">O dispositivo está conectado.</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Queres quitar a páxina?}=1{Queres quitar a páxina {PAGE_NUMBER}?}many{Remove page {PAGE_NUMBER}?}other{Queres quitar a páxina {PAGE_NUMBER}?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Queres quitar a páxina?}=1{Queres quitar a páxina {PAGE_NUMBER}?}other{Queres quitar a páxina {PAGE_NUMBER}?}}</translation>
 <translation id="3134486240968249588">Uns detalliños que debes ter en conta</translation>
 <translation id="3140130301071865159">neve</translation>
 <translation id="3146655726035122603">Exclusivo de <ph name="PRODUCT_NAME" /></translation>
@@ -534,10 +534,10 @@
 <translation id="324961752321393509">A persoa administradora non permite que se peche esta aplicación</translation>
 <translation id="3263941347294171263">Desconecta e volve conectar o dispositivo (<ph name="DEVICE_NAME" />) para seguir co proceso de actualización</translation>
 <translation id="3268178239013324452">Produciuse un erro: a tapa da impresora está aberta</translation>
-<translation id="3269689705184377744">{COUNT,plural, =1{Ficheiro}many{# files}other{# ficheiros}}</translation>
+<translation id="3269689705184377744">{COUNT,plural, =1{Ficheiro}other{# ficheiros}}</translation>
 <translation id="3275729367986477355">Imaxe de avatar</translation>
 <translation id="3279092821516760512">Os contactos seleccionados poden compartir ficheiros contigo cando estean preto. As transferencias non comezarán ata que as aceptes.</translation>
-<translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}many{Edit files}other{Editar ficheiros}}</translation>
+<translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}other{Editar ficheiros}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="3291996639387199448">Dirección da clave</translation>
@@ -555,7 +555,7 @@
 <translation id="3347558044552027859">moderna</translation>
 <translation id="3359218928534347896">activar ou desactivar o son do micrófono</translation>
 <translation id="3360306038446926262">Ventás</translation>
-<translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> está compartindo <ph name="ATTACHMENTS" /> contigo.}many{<ph name="DEVICE_NAME" /> is sharing <ph name="ATTACHMENTS" /> with you.}other{<ph name="DEVICE_NAME" /> está compartindo <ph name="ATTACHMENTS" /> contigo.}}</translation>
+<translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> está compartindo <ph name="ATTACHMENTS" /> contigo.}other{<ph name="DEVICE_NAME" /> está compartindo <ph name="ATTACHMENTS" /> contigo.}}</translation>
 <translation id="3361618936611118375">sushi</translation>
 <translation id="3368922792935385530">Conectada</translation>
 <translation id="3369013195428705271">Seguro que queres borrar todo o historial de impresión? Non se borrarán os traballos de impresión en curso.</translation>
@@ -616,13 +616,13 @@
 <translation id="3614639364827854748">Mover este menú cara á esquerda</translation>
 <translation id="361575905210396100">Grazas polos teus comentarios</translation>
 <translation id="3621072146987826699">elefantes</translation>
-<translation id="362266093274784978">{COUNT,plural, =1{1 aplicación}many{# apps}other{# aplicacións}}</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{1 aplicación}other{# aplicacións}}</translation>
 <translation id="3628462041319107639">Descargando modelo de transcrición…</translation>
 <translation id="3632040286124154621">Boa suxestión</translation>
 <translation id="3632579075709132555">Activar/Desactivar pantalla de privacidade</translation>
 <translation id="3634941468757842845">Escoller un tema</translation>
 <translation id="3644695927181369554">Mala suxestión</translation>
-<translation id="3647998456578545569">{COUNT,plural, =1{Recibiches <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> received from <ph name="DEVICE_NAME" />}other{Recibiches <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3647998456578545569">{COUNT,plural, =1{Recibiches <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}other{Recibiches <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3651050199673793219">Seleccionar unidade de temperatura</translation>
 <translation id="3662461537616691585">vermella escura e granate</translation>
 <translation id="3664755900672940272">Solicitudes de exemplo ordenadas aleatoriamente</translation>
@@ -640,7 +640,7 @@
 <translation id="3748026146096797577">Non conectado</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
 <translation id="3763034084412196440">Axustar o volume</translation>
-<translation id="3764974059056958214">{COUNT,plural, =1{Enviando <ph name="ATTACHMENTS" /> a: <ph name="DEVICE_NAME" />}many{Sending <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}other{Enviando <ph name="ATTACHMENTS" /> a: <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3764974059056958214">{COUNT,plural, =1{Enviando <ph name="ATTACHMENTS" /> a: <ph name="DEVICE_NAME" />}other{Enviando <ph name="ATTACHMENTS" /> a: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3767737419527918477">Buscar ficheiros de gravación</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
 <translation id="3771694256347217732">Condicións de servizo de Google</translation>
@@ -673,7 +673,7 @@
 <translation id="3885327323343477505">Cambiar protector de pantalla</translation>
 <translation id="3889954687526985291">moto futurista feita de papel negro con luces de neon sobre fondo escuro</translation>
 <translation id="3897092660631435901">Menú</translation>
-<translation id="3897298432557662720">{COUNT,plural, =1{1 imaxe}many{# images}other{# imaxes}}</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{1 imaxe}other{# imaxes}}</translation>
 <translation id="3902271751020176019">Idioma da transcrición</translation>
 <translation id="390890062090528082">ceo estrelado</translation>
 <translation id="391412459402535266">Non se puido realizar a proba do dispositivo. Cambia ao modo de ordenador portátil para realizala.</translation>
@@ -782,7 +782,7 @@
 <translation id="4297501883039923494">Detívose (produciuse un erro descoñecido)</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imaxes</translation>
 <translation id="4300272766492248925">Abrir aplicación</translation>
-<translation id="4301697210743228350">{COUNT,plural, =1{# contacto non está dispoñible. Para utilizar con esa persoa a función <ph name="FEATURE_NAME" />, engade aos teus contactos o enderezo de correo electrónico asociado á súa Conta de Google.}many{# contacts are not available. To use <ph name="FEATURE_NAME" /> with them, add the email addresses associated with their Google Accounts to your contacts.}other{# contactos non están dispoñibles. Para utilizar con esas persoas a función <ph name="FEATURE_NAME" />, engade aos teus contactos os enderezos de correo electrónico asociados á súas Contas de Google.}}</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{# contacto non está dispoñible. Para utilizar con esa persoa a función <ph name="FEATURE_NAME" />, engade aos teus contactos o enderezo de correo electrónico asociado á súa Conta de Google.}other{# contactos non están dispoñibles. Para utilizar con esas persoas a función <ph name="FEATURE_NAME" />, engade aos teus contactos os enderezos de correo electrónico asociados á súas Contas de Google.}}</translation>
 <translation id="430786093962686457">gasa</translation>
 <translation id="4309762678330556039">Busca audio e crea transcripcións automaticamente. Poderás crear gravacións mesmo cando non teñas conexión a Internet.</translation>
 <translation id="4310735698903592804">Fondos de pantalla recentes con tecnoloxía da IA de Google</translation>
@@ -856,7 +856,7 @@
 <translation id="4600301862817165514">Delorean con luces de neon viaxando pola galaxia e estrelas pasando</translation>
 <translation id="4609350030397390689">Reducir brillo do teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Para cancelar o traballo de impresión, preme Intro.</translation>
-<translation id="4637252186848840278">{COUNT,plural, =1{Texto}many{# texts}other{# textos}}</translation>
+<translation id="4637252186848840278">{COUNT,plural, =1{Texto}other{# textos}}</translation>
 <translation id="463791356324567266">Cancelando escaneamento…</translation>
 <translation id="4644611440022666152">Activar e descargar</translation>
 <translation id="4646949265910132906">Conexión wifi segura</translation>
@@ -864,7 +864,7 @@
 <translation id="4654236001025007561">Comparte ficheiros con Chromebooks e con dispositivos Android que estean preto de ti</translation>
 <translation id="4654549501020883054">Cambiar todos os días</translation>
 <translation id="4655868084888499342">Imaxe definida como fondo de pantalla</translation>
-<translation id="4660465405448977105">{COUNT,plural, =1{Imaxe}many{# images}other{# imaxes}}</translation>
+<translation id="4660465405448977105">{COUNT,plural, =1{Imaxe}other{# imaxes}}</translation>
 <translation id="4660989616054030633">A IA xenerativa pode cometer erros (mesmo no referente á información sobre persoas), polo que debes revisar os resultados</translation>
 <translation id="4661249927038176904">surrealista</translation>
 <translation id="4661392828086261436">O fabricante do dispositivo forneceu esta actualización, pero non está verificada por Google</translation>
@@ -914,7 +914,7 @@
 <translation id="4848429997038228357">EN CURSO</translation>
 <translation id="4854586501323951986">Pantalla táctil integrada</translation>
 <translation id="4855250849489639581">Pasa o dedo cara abaixo para ver máis opcións de deseño</translation>
-<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento}many{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos}}</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos}}</translation>
 <translation id="4868181314237714900">vélaro</translation>
 <translation id="4873827928179867585">Algoritmo de autenticación</translation>
 <translation id="4880328057631981605">Nome do punto de acceso</translation>
@@ -940,7 +940,7 @@
 <translation id="4946927805998996217">Xerando resumo</translation>
 <translation id="4950314376641394653">O firmware do dispositivo (<ph name="DEVICE_NAME" />) actualizouse coa versión <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">túnel de árbores</translation>
-<translation id="495164417696120157">{COUNT,plural, =1{1 ficheiro}many{# files}other{# ficheiros}}</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="4964806321337443935">4K</translation>
 <translation id="4965661459364092269">Completouse o restablecemento de seguranza</translation>
 <translation id="4965703485264574128">Para obter un resultado aproximado, multiplica o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
@@ -1007,7 +1007,7 @@
 <translation id="5229344016299762883">Saír da pantalla completa</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="5236119614998611749">Produciuse un erro ao xerar o resumo</translation>
-<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{A persoa administradora configurou <ph name="APP_NAME" /> para que arranque automaticamente cando inicies sesión.}=2{A persoa administradora configurou <ph name="APP_NAME" /> e 1 aplicación máis para que arranquen automaticamente cando inicies sesión.}many{Your administrator has set up "<ph name="APP_NAME" />" and # other apps to start automatically every time you log in.}other{A persoa administradora configurou <ph name="APP_NAME" /> e # aplicacións máis para que arranquen automaticamente cando inicies sesión.}}</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{A persoa administradora configurou <ph name="APP_NAME" /> para que arranque automaticamente cando inicies sesión.}=2{A persoa administradora configurou <ph name="APP_NAME" /> e 1 aplicación máis para que arranquen automaticamente cando inicies sesión.}other{A persoa administradora configurou <ph name="APP_NAME" /> e # aplicacións máis para que arranquen automaticamente cando inicies sesión.}}</translation>
 <translation id="5248419081947706722">azul</translation>
 <translation id="5252456968953390977">Itinerancia</translation>
 <translation id="5254600740122644523">Un estante para libros cunha fasquía <ph name="SIMPLE_STYLE" /> nunha sala de cor <ph name="SIMPLE_TONE" /></translation>
@@ -1049,7 +1049,7 @@
 <translation id="5384401776498845256">Quen pode compartir contido contigo?</translation>
 <translation id="5389159777326897627">Estilo e fondo de pantalla</translation>
 <translation id="5389224261615877010">Arco da vella</translation>
-<translation id="5393761864111565424">{COUNT,plural, =1{Ligazón}many{# links}other{# ligazóns}}</translation>
+<translation id="5393761864111565424">{COUNT,plural, =1{Ligazón}other{# ligazóns}}</translation>
 <translation id="5400907029458559844">O dispositivo estase conectando.</translation>
 <translation id="5401938042319910061">Executar todas as rutinas</translation>
 <translation id="5410755018770633464">bocadillos de salchicha</translation>
@@ -1060,12 +1060,12 @@
 <translation id="54609108002486618">Dispositivo xestionado</translation>
 <translation id="5461608756903394951">Descarga do modelo de transcrición de <ph name="LANGUAGE_NAME" /> en curso</translation>
 <translation id="5470776029649730099">tea de saco</translation>
-<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intento}many{{0} attempts left}other{Quedan {0} intentos}}</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intento}other{Quedan {0} intentos}}</translation>
 <translation id="5488280942828718790">maxenta</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Non se puido completar o escaneamento</translation>
 <translation id="5499762266711462226">A cor do teclado baséase no fondo de pantalla</translation>
-<translation id="5501809658163361512">{COUNT,plural, =1{Produciuse un erro ao recibir <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}many{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{Produciuse un erro ao recibir <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}}</translation>
+<translation id="5501809658163361512">{COUNT,plural, =1{Produciuse un erro ao recibir <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}other{Produciuse un erro ao recibir <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502931783115429516">Android non se está executando</translation>
 <translation id="550600468576850160">prado</translation>
 <translation id="5507504956167780539">foto profesional minimalista de dunas de area negra brillante con sombras dramáticas</translation>
@@ -1154,7 +1154,7 @@
 <translation id="5915794087373112615">A persoa docente verá a túa pantalla dentro de <ph name="NUM_SECONDS" /> segundos</translation>
 <translation id="5916084858004523819">Prohibida</translation>
 <translation id="5916664084637901428">Si</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{O teu ficheiro escaneouse e gardouse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os teus ficheiros escaneáronse e gardáronse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{O teu ficheiro escaneouse e gardouse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os teus ficheiros escaneáronse e gardáronse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Botón para eliminar de <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Escena onírica</translation>
 <translation id="5931523347251946569">Non se encontrou o ficheiro</translation>
@@ -1286,7 +1286,7 @@
 <translation id="6447630859861661624">Ir á configuración da conta</translation>
 <translation id="6452181791372256707">Rexeitar</translation>
 <translation id="6462978824459367242">O botón para engadir APN agora está activado</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Queres volver escanear a páxina?}=1{Queres volver escanear a páxina {PAGE_NUMBER}?}many{Rescan page {PAGE_NUMBER}?}other{Queres volver escanear a páxina {PAGE_NUMBER}?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Queres volver escanear a páxina?}=1{Queres volver escanear a páxina {PAGE_NUMBER}?}other{Queres volver escanear a páxina {PAGE_NUMBER}?}}</translation>
 <translation id="6468146470109254228">As túas tres solicitudes e resultados máis recentes. Só poderás acceder a eles cando esteas usando a función Estilo e fondo de pantalla.</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ficheiros</translation>
 <translation id="6472207088655375767">Contrasinal dun só uso</translation>
@@ -1340,7 +1340,7 @@
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="66621959568103627">rosa coral</translation>
 <translation id="6669485505082792176">Non se poden crear imaxes disto neste momento. Proba a reformular a descrición. Ten en conta que non se poden crear imaxes de persoas nin imaxes que inclúan contido explícito ou daniño. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="6671320560732140690">{COUNT,plural, =1{1 enderezo}many{# addresses}other{# enderezos}}</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{1 enderezo}other{# enderezos}}</translation>
 <translation id="6673898378497337661">aumentar o brillo do teclado</translation>
 <translation id="6692996468359469499">Consultar a información relacionada coa túa selección</translation>
 <translation id="6694534975463174713">cadeado</translation>
@@ -1422,7 +1422,7 @@
 <translation id="6978396562261420054">Imaxe xerada</translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
 <translation id="6982462588253070448">dunas</translation>
-<translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ficheiro}many{{COUNT} files}other{{COUNT} ficheiros}}</translation>
+<translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ficheiro}other{{COUNT} ficheiros}}</translation>
 <translation id="7005833343836210400">O dispositivo non ten conexión</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
 <translation id="7035168792582749309">patacas</translation>
@@ -1454,7 +1454,7 @@
 <translation id="7118522231018231199">Asegúrate de seleccionar os APN que forneza o teu operador móbil ou persoa administradora. Ao seleccionar un APN, desactivaranse os APN personalizados. Os APN non válidos poden provocar que se desconecte a conexión móbil.</translation>
 <translation id="7119389851461848805">alimentación</translation>
 <translation id="7130438335435247835">Nome do punto de acceso (APN)</translation>
-<translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}many{Name servers}other{Servidores de nomes}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Busca atallos</translation>
 <translation id="7138614237884624401">Texto simplificado</translation>
 <translation id="7138668887584231801">Non hai suficientes palabras para xerar un resumo</translation>
@@ -1534,7 +1534,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Non se puido desactivar ou quitar este APN. Asegúrate de que os APN <ph name="ATTACH" /> activados estean desactivados ou quitados.</translation>
 <translation id="7439519621174723623">Engade un nome de dispositivo para continuar</translation>
-<translation id="7457831169406914076">{COUNT,plural, =1{1 ligazón}many{# links}other{# ligazóns}}</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{1 ligazón}other{# ligazóns}}</translation>
 <translation id="7458970041932198923">Para ver e definir os avatares, conéctate a unha rede e volve cargar a páxina.</translation>
 <translation id="7469648432129124067">Detectouse un portal</translation>
 <translation id="7481312909269577407">Adiante</translation>
@@ -1618,7 +1618,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7824219488248240180">postimpresionista</translation>
 <translation id="7828503206075800057">Unha cafetaría <ph name="CAFE_TYPE" /> <ph name="CAFE_STYLE" /></translation>
 <translation id="7838838951812478896">Non se puido gardar a rede <ph name="NETWORK_NAME" /> desde o dispositivo <ph name="DEVICE_NAME" /></translation>
-<translation id="7838971600045234625">{COUNT,plural, =1{Enviouse <ph name="ATTACHMENTS" /> ao dispositivo (<ph name="DEVICE_NAME" />)}many{<ph name="ATTACHMENTS" /> sent to <ph name="DEVICE_NAME" />}other{Enviáronse <ph name="ATTACHMENTS" /> ao dispositivo (<ph name="DEVICE_NAME" />)}}</translation>
+<translation id="7838971600045234625">{COUNT,plural, =1{Enviouse <ph name="ATTACHMENTS" /> ao dispositivo (<ph name="DEVICE_NAME" />)}other{Enviáronse <ph name="ATTACHMENTS" /> ao dispositivo (<ph name="DEVICE_NAME" />)}}</translation>
 <translation id="7841134249932030522">Activar modo escuro</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7847923465436619066">Selector de idioma da transcrición</translation>
@@ -1635,7 +1635,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
 <translation id="7882501334836096755">Clave pública</translation>
-<translation id="7886279613512920452">{COUNT,plural, =1{1 elemento}many{# items}other{# elementos}}</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{1 elemento}other{# elementos}}</translation>
 <translation id="7889966925761734854">Buscar</translation>
 <translation id="78957024357676568">esquerda</translation>
 <translation id="7897043345768902965">vía peonil</translation>
@@ -1660,7 +1660,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7978412674231730200">Clave privada</translation>
 <translation id="7979468455552394856">Ferramentas de clase está conectada aos estudantes</translation>
 <translation id="7982789257301363584">Rede</translation>
-<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> arrancou automaticamente}many{# apps were started automatically}other{# aplicacións arrancaron automaticamente}}</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> arrancou automaticamente}other{# aplicacións arrancaron automaticamente}}</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8010765388850538088">Máis información sobre a IA xenerativa</translation>
@@ -1697,14 +1697,14 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8135609423982943441">Restableceuse o teu Chromebook aos valores predeterminados seguros. Podes axustar estes cambios cando queiras na configuración.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Crear un propio</translation>
-<translation id="814204052173971714">{COUNT,plural, =1{1 vídeo}many{# videos}other{# vídeos}}</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{1 vídeo}other{# vídeos}}</translation>
 <translation id="8142182840415860496">primeiro plano de varias flores brancas e amarelas, imaxe estática dunha película de animación, delicada flor de cor rosa pálida con pétalos longos e tallo verde colocada entre dous tulipáns amarelos grandes contra un ceo azul sen follas ni follaxe en tons pastel, imaxe estática cinematográfica en alta resolución e con moitos detalles complexos, OctaneRender cunha bonita iluminación, luz volumétrica e luz melancólica.</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Ferramentas para programadores</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">máxica</translation>
 <translation id="8162776280680283326">raposos</translation>
-<translation id="816704878106051517">{COUNT,plural, =1{1 número de teléfono}many{# phone numbers}other{# números de teléfono}}</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{1 número de teléfono}other{# números de teléfono}}</translation>
 <translation id="8167413449582155132">Fondo con tecnoloxía da IA de Google</translation>
 <translation id="8171020708598805594">Crea transcricións automaticamente, obtén resumos das gravacións grazas á IA de Google e busca audio. Crea gravacións mesmo cando non teñas conexión a Internet.</translation>
 <translation id="8179976553408161302">Intro</translation>
@@ -1729,7 +1729,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8291967909914612644">País do fornecedor de orixe</translation>
 <translation id="8294431847097064396">Fonte</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
-<translation id="8303616404642252802">{COUNT,plural, =1{Enderezo}many{# addresses}other{# enderezos}}</translation>
+<translation id="8303616404642252802">{COUNT,plural, =1{Enderezo}other{# enderezos}}</translation>
 <translation id="8308787307410010965">Configuración de contido do sitio</translation>
 <translation id="8312330582793120272">reproducir o contido multimedia</translation>
 <translation id="8318753676953949627">Sen imaxes</translation>
@@ -1811,7 +1811,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8669187096858652220">Facer clic para mostrar as pestanas</translation>
 <translation id="8670574982334489519">dereita</translation>
 <translation id="8675354002693747642">Clave compartida previamente</translation>
-<translation id="8676152597179121671">{COUNT,plural, =1{Vídeo}many{# videos}other{# vídeos}}</translation>
+<translation id="8676152597179121671">{COUNT,plural, =1{Vídeo}other{# vídeos}}</translation>
 <translation id="8677859815076891398">Non hai ningún álbum. Crea un en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Volve inserir o cable USB do dispositivo (<ph name="DEVICE_NAME" />) para seguir co proceso de actualización</translation>
@@ -1889,7 +1889,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8968751544471797276">Taxa de carga</translation>
 <translation id="8970109610781093811">Repetir proba</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escanear}=1{Escanear páxina {NUMBER_OF_PAGES}}many{Scan page {NUMBER_OF_PAGES}}other{Escanear páxina {NUMBER_OF_PAGES}}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escanear}=1{Escanear páxina {NUMBER_OF_PAGES}}other{Escanear páxina {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">vila</translation>
 <translation id="8997710128084572139">Nivel de batería do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8998002498898621320">foto realista</translation>
@@ -1938,7 +1938,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="9173638680043580060">Queda menos dun minuto</translation>
 <translation id="9174334653006917325">Cor da interface de usuario</translation>
 <translation id="917720651393141712">Probar</translation>
-<translation id="918352324374649435">{COUNT,plural, =1{Aplicación}many{# apps}other{# aplicacións}}</translation>
+<translation id="918352324374649435">{COUNT,plural, =1{Aplicación}other{# aplicacións}}</translation>
 <translation id="9188992814426075118">O teclado pode combinar automaticamente co teu fondo de pantalla</translation>
 <translation id="9189000703457422362">Non se puido conectar con esta rede a través de ningún APN detectado automaticamente. Se necesitas máis información, ponte en contacto co teu operador móbil.</translation>
 <translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>

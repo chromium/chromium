@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" যোগ কৰিবনে?</translation>
 <translation id="2159915644201199628">ছবি ডিক’ড কৰিব পৰা নগ’ল: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">আপোনাৰ অভিভাৱকে এই এক্সটেনশ্বনটোত অনুমোদন জনোৱা নাই</translation>
+<translation id="2207866393056347613">আটাইবোৰ ছাইটত আপোনাৰ ডেটাৰ স্থায়ী এক্সেছ প্ৰদান কৰে</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />"এ অতিৰিক্ত অনুমতি বিচাৰিছে।</translation>
 <translation id="2327492829706409234">এপ্‌ সক্ষম কৰক</translation>
 <translation id="2350172092385603347">ল’কেলাইজেশ্বন ব্যৱহাৰ কৰা হৈছে কিন্তু মেনিফেষ্টত default_locale নির্দিষ্ট কৰা হোৱা নাই।</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">পুনঃসক্ষম কৰক</translation>
 <translation id="2743583586211388067">আপোনাৰ প্ৰতিষ্ঠানৰ এক্সটেনশ্বনৰ বিপদাশংকাৰ নীতিৰ অধীনত এই এক্সটেনশ্বনটোৰ এক্সেছ অৱৰোধ কৰা হৈছে।</translation>
 <translation id="2766161002040448006">এগৰাকী অভিভাৱকক সোধক</translation>
+<translation id="2775557057525247505">আটাইবোৰ ছাইট দেখুৱাওক</translation>
 <translation id="2785530881066938471">সমলৰ স্ক্ৰিপ্টৰ বাবে ফাইল ’<ph name="RELATIVE_PATH" />’ ল’ড কৰিব পৰা নগ’ল। এই UTF-8ৰে এনক’ড কৰা নাই।</translation>
 <translation id="2850541429955027218">থীম যোগ কৰক</translation>
 <translation id="2883143988769190738">এই এক্সটেনশ্বনটোৱে তলত উল্লেখিত অনুমতিসমূহ বিচাৰিছে:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">বিক্ৰেতা <ph name="VENDOR_ID" />ৰ <ph name="PRODUCT_NAME" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ব্যক্তিগত কীৰ বাবে ইনপুট মান কোনো মান্য পথ হ'বই লাগিব।</translation>
+<translation id="3769470010314114481">ছাইটটোত আপোনাৰ ডেটাৰ সাময়িক এক্সেছ প্ৰদান কৰে</translation>
 <translation id="3788401245189148511">ই তলত দিয়াখিনি কৰিব পাৰে:</translation>
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />"ৰ সৈতে বিৰোধ ঘটাৰ বাবে "<ph name="TO_INSTALL_APP_NAME" />"ক যোগ কৰিব পৰা নগ'ল।</translation>
 <translation id="388442998277590542">বিকল্পৰ পৃষ্ঠা ’<ph name="OPTIONS_PAGE" />’ ল’ড কৰিবপৰা নগ’ল।</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">এক্সটেনশ্বন সক্ষম কৰক</translation>
 <translation id="3927932062596804919">অস্বীকাৰ কৰক</translation>
 <translation id="3984413272403535372">এক্সটেনশ্বন ছাইনিং কৰি থাকোঁতে আঁসোৱাহ হ’ল।</translation>
+<translation id="3990894032742690314">সূচীবদ্ধ কৰা ছাইটসমূহত সদায়</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" মেৰামতি কৰিবনে?</translation>
 <translation id="4061696872429826774">আপোনাৰ কম্পিউটাৰৰ অন্য কোনো প্ৰ’গ্ৰামে এটা এক্সটেনশ্বন যোগ কৰিছে যিয়ে Chromium কাৰ্যপ্ৰণালী সলনি কৰিব পাৰে।
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">পৃষ্ঠাৰ বিষয়ে ‘<ph name="ABOUT_PAGE" />’ তথ্য ল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="424963718355121712">এপে্ প্ৰভাৱ পেলোৱা হ'ষ্টসমূহৰ পৰাই এপ্ পৰিবেশন কৰিব লাগিব</translation>
 <translation id="4306119971288449206">এপ্ "<ph name="CONTENT_TYPE" />" প্ৰকাৰৰ সমলৰ সৈতে দিবই লাগিব</translation>
+<translation id="4307774243840254737">তলত সূচীবদ্ধ কৰা ছাইটসমূহত আপোনাৰ ডেটাৰ স্থায়ী এক্সেছ প্ৰদান কৰে</translation>
 <translation id="4349181963619779233">এক্সটেনশ্বন আৰু এপ্‌সমূহ এই ৱেবছাইটটোৰ পৰা যোগ দিব নোৱাৰি</translation>
 <translation id="4625078469366263107">এপ্ সক্ষম কৰক</translation>
 <translation id="4633003931260532286">এক্সটেনশ্বনৰ বাবে অতিকমেও "<ph name="IMPORT_VERSION" />" সংস্কৰণৰ সৈতে "<ph name="IMPORT_NAME" />"ৰ প্ৰয়োজন কিন্তু কেৱল "<ph name="INSTALLED_VERSION" />" সংস্কৰণটো ইনষ্টল কৰা হৈছে</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />"ৰ নতুন সংস্কৰণটো অক্ষম কৰা হৈছে কাৰণ ইয়াক অধিক অনুমতিৰ প্ৰয়োজন।</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" সক্ষম কৰিবনে?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">কেৱল আপুনি এক্সটেনশ্বনটোত ক্লিক কৰিলে</translation>
 <translation id="5405650547142096840">Chromiumৰ পৰা আঁতৰাওক</translation>
 <translation id="5456409301717116725">এই এক্সটেনশ্বনত ব্যক্তিগত চাবি অন্তর্ভুক্ত '<ph name="KEY_PATH" />' আছে। আপুনি হয়তো সেয়া কৰিবলৈ নোখোজে।</translation>
 <translation id="5485102783864353244">এপ্ যোগ কৰক</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">মাইমহেণ্ডেলাৰ: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">এই এক্সটেনশ্বনটো নিজে নিজে খুব সঘনাই পুনৰ ল'ড হৈছিল।</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" />ৰ অজ্ঞাত প্ৰ’ডাক্ট <ph name="PRODUCT_ID" /></translation>
+<translation id="7017635639223148413">সূচীবদ্ধ ছাইটসমূহ</translation>
 <translation id="7068383018033524534">মেনিফেষ্ট ফাইলটো অমান্য</translation>
 <translation id="7217838517480956708">এই মেছিনৰ প্ৰশাসকৰ বাবে <ph name="EXTENSION_NAME" /> ইনষ্টল কৰি ৰখাটো আৱশ্যক। এইটো আঁতৰাব বা সংশোধন কৰিব নোৱাৰি।</translation>
 <translation id="7287143125007575591">এক্সেছ অস্বীকাৰ কৰা হৈছে।</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">ব্যৱহাৰকাৰীৰ ফালে মুখ কৰি থকা</translation>
 <translation id="8047248493720652249">এই এক্সটেনশ্বনটোৱে ডাউনল'ড হোৱা ফাইলটোৰ নাম "<ph name="ATTEMPTED_FILENAME" />" কৰিব নোৱাৰিলে কিয়নো অন্য এটা এক্সটেনশ্বন (<ph name="EXTENSION_NAME" />)এ সেইটোৰ কাৰণে এটা বেলেগ নাম "<ph name="ACTUAL_FILENAME" />" নির্ধাৰণ কৰিছে।</translation>
 <translation id="8049705080247101012">Googleএ "<ph name="EXTENSION_NAME" />"ক ক্ষতিকাৰক হিচাপে চিহ্নিত কৰিছে আৰু ইনষ্টলেশ্বন প্ৰক্ৰিয়াক বাধা প্ৰদান কৰিছে</translation>
+<translation id="823691536304079791">আপোনাৰ ডেটা পঢ়ক আৰু সলনি কৰক</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" />ৰ <ph name="PRODUCT_NAME" /></translation>
 <translation id="8353683614194668312">ই এই কার্য কৰিব পাৰে:</translation>
 <translation id="8517576857589387417">ঘোষণা প্ৰদান কৰা ফাইলটো নাই বা সেইটো পঢ়িব নোৱাৰি</translation>

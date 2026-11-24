@@ -447,6 +447,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2053312383184521053">Podaci o stanju mirovanja</translation>
 <translation id="2058456167109518507">Otkriven je uređaj</translation>
 <translation id="2064048859448024834">Pregled kamere uključen</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 veza}one{# veza}few{# veze}other{# veza}}</translation>
 <translation id="2067220651560163985">Prikaži temperaturu u Celzijima</translation>
 <translation id="206960706005837784">Aplikacija <ph name="APP_NAME" /> dovršila je ispis na pisaču <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Uključite ili isključite značajku <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>

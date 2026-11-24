@@ -308,6 +308,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1308105352527684175">Možda nećete moći pristupiti određenom sadržaju</translation>
 <translation id="1311092170520822848">Web-lokacija upravlja čitačima pametnih kartica povezanim s vašim uređajem, pa bi možda mogla upravljati i pametnim karticama kojima ti čitači mogu pristupiti</translation>
 <translation id="131112695174432497">Brišu se podaci koji utječu na personalizaciju oglasa</translation>
+<translation id="13115907161008983">Kopiraj veze</translation>
 <translation id="131188242279372879">Otkrijte poboljšanu zaštitu da biste dobili najvišu Chromeovu razinu sigurnosti za preuzimanja</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Ispravite karticu koja usporava preglednik}one{Ispravite kartice koje usporavaju preglednik}few{Ispravite kartice koje usporavaju preglednik}other{Ispravite kartice koje usporavaju preglednik}}</translation>
 <translation id="1312721752506309252">Uključena je Poboljšana zaštita</translation>
@@ -443,6 +444,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1482626744466814421">Označavanje ove kartice...</translation>
 <translation id="1482772681918035149">urediti zaporke</translation>
 <translation id="1483137792530497944">Rijeka</translation>
+<translation id="1483148302144576204">Kopiraj veze</translation>
 <translation id="1483151333977672176">Poslano!</translation>
 <translation id="1483431819520123112">Naziv za prikaz kopiran je u međuspremnik</translation>
 <translation id="1483493594462132177">Pošalji</translation>
@@ -1058,6 +1060,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="2168036794078614559">Prijava je poslana</translation>
 <translation id="2168735174585029637">Isprobajte novi prozirni izgled kartica</translation>
 <translation id="217120844667431680">Iskoristite više mogućnosti AI načina</translation>
+<translation id="2172046302886074612">Uklonjeno: <ph name="MODEL_CATEGORY" /></translation>
 <translation id="2173302385160625112">Provjerite internetsku vezu</translation>
 <translation id="2175384018164129879">Upravljanje tražilicama i pretraživanje web-lokacija</translation>
 <translation id="2175773164573457310">Odaberite bilo koji tekst ili sliku da biste postavili pitanje Geminiju</translation>
@@ -2082,6 +2085,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3270965368676314374">čitati, mijenjati i brisati fotografije, glazbu i ostale medije s vašeg računala</translation>
 <translation id="3275464924531706548">Sažmi <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Otvori kao prozor</translation>
+<translation id="3277325180914877290">Uvećanje teksta</translation>
 <translation id="3280237271814976245">Spremi &amp;kao...</translation>
 <translation id="3280243678470289153">Ostani u Chromeu</translation>
 <translation id="3282210178675490297">Jedna kartica dijeli se s aplikacijom <ph name="APP_NAME" /></translation>
@@ -2590,6 +2594,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3786890785076278600">Statični redak</translation>
 <translation id="3787434344076711519">Čekanje na prijevod</translation>
 <translation id="3789432704615470433">Datoteke na SharePointu i OneDriveu</translation>
+<translation id="3789493399245366422">cijeli zaslon, na cijelom zaslonu, maksimiziraj, interaktivno, sakrij alatnu traku, prezentacija, F11</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="3790417903123637354">Nešto nije u redu. Pokušajte ponovo kasnije</translation>
 <translation id="379082410132524484">Vaša je kartica istekla</translation>
@@ -3360,6 +3365,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="4665035764476941598">Kliknite ovdje da biste vratili druge kartice</translation>
 <translation id="4665446389743427678">Izbrisat će se svi podaci koje je pohranila web-lokacija <ph name="SITE" />.</translation>
 <translation id="4666483368282673356">Upravljajte svojom poviješću na Geminiju</translation>
+<translation id="4667646546186544608">smanjivanje, smanji, manje, smanjivanje, smanjivanje, smanjivanje, zumiranje stranice</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Čestitamo! Aplikacija <ph name="APP_NAME" /> uspješno je instalirana na vašem uređaju</translation>
 <translation id="4672759829555593783">Odmah otvori <ph name="FILE_NAME" /></translation>
@@ -4758,6 +4764,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="6255253900817321392">Pretražujte brže s bilo kojeg mjesta na Macu bez otvaranja nove kartice</translation>
 <translation id="6257602895346497974">Uključite sinkronizaciju...</translation>
 <translation id="6258818697161346451">Upotrebljavajte svoje pristupne ključeve na ovom uređaju</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopiraj vezu}one{Kopiraj veze}few{Kopiraj veze}other{Kopiraj veze}}</translation>
 <translation id="6261688934280090835">Zapisnici aplikacija za ChromeOS Kiosk</translation>
 <translation id="6263082573641595914">Microsoft CA verzija</translation>
 <translation id="6264060420924719834">Ova aplikacija uključuje web-sadržaj s drugih web-lokacija</translation>
@@ -4886,6 +4893,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Slikovne datoteke</translation>
 <translation id="6410390304316730527">Sigurno pregledavanje štiti vas od napadača koji vas mogu na prijevaru pokušati navesti da napravite nešto opasno kao što je instaliranje zlonamjernog softvera ili otkrivanje osobnih podataka kao što su zaporke, telefonski brojevi ili kreditne kartice. Ako ga isključite, pripazite kada pregledavate nepoznate ili nepouzdane web-lokacije.</translation>
+<translation id="6411490324917773403">Smanjenje teksta</translation>
 <translation id="6416743254476733475">Dopustite ili blokirajte na računalu.</translation>
 <translation id="6416856063840710198">Da bi poboljšale vaš posjet, web-lokacije često spremaju vašu aktivnost i to često na vaš uređaj. <ph name="SETTINGS" />.</translation>
 <translation id="6417468503703810114">Zadano ponašanje</translation>
@@ -6380,6 +6388,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8041093619605951337">Sretno</translation>
 <translation id="8042142357103597104">Prozirnost teksta</translation>
 <translation id="8042331986490021244">Vaše se zaporke šifriraju na uređaju prije spremanja na Google upravitelj zaporki</translation>
+<translation id="8042441076562098746">povećaj, uvećaj, povećavanje, veće, povećanje, povećavanje mjerila, zumiranje stranice</translation>
 <translation id="8045253504249021590">Sinkronizacija je zaustavljena putem Google nadzorne ploče.</translation>
 <translation id="8045752459073395242">Saznajte više o upotrebi generativnog AI-ja na poslu</translation>
 <translation id="8045923671629973368">Unesite ID aplikacije ili URL web-trgovine</translation>
@@ -6734,6 +6743,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="844059392176531372">Podijelite grupu kartica <ph name="GROUP_NAME" /></translation>
 <translation id="844063558976952706">Uvijek na ovoj web-lokaciji</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Otvoren je anonimni ili izolirani prozor. Neće se ponovno otvoriti.}one{Otvoren je # anonimni i izolirani prozor na svim profilima. Neće se ponovno otvoriti.}few{Otvorena su # anonimna i izolirana prozora na svim profilima. Neće se ponovno otvoriti.}other{Otvoreno je # anonimnih i izoliranih prozora na svim profilima. Neće se ponovno otvoriti.}}</translation>
+<translation id="84426883520448311">tema, boja, pozadina, pozadina, svijetlo, tamno, način, svijetli način, tamni način, osobno, stil, estetika</translation>
 <translation id="8443986842926457191">URL ima više od 2048 znakova</translation>
 <translation id="8445281870900174108">Ova kartica upotrebljava vašu kameru</translation>
 <translation id="8446884382197647889">Saznajte više</translation>
@@ -7324,6 +7334,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9076821103818989526">Bočna ploča</translation>
 <translation id="907779190626433918">Koristite jedinstvenu zaporku za svaku web-lokaciju ili aplikaciju. Ako netko otkrije višestruko korištenu zaporku, može je upotrijebiti da bi pristupio vašim drugim računima.</translation>
 <translation id="9078546160009814724">Korisničko ime: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopiraj vezu}one{Kopiraj veze}few{Kopiraj veze}other{Kopiraj veze}}</translation>
 <translation id="907972398081911688">Automatski promijenite ugroženu zaporku</translation>
 <translation id="9081543426177426948">Web-lokacije koje posjećujete ne spremaju se u anonimnom načinu</translation>
 <translation id="9082750838489080452">Aplikacija: <ph name="APP_NAME" /></translation>

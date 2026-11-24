@@ -447,6 +447,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2053312383184521053">Data sa Idle na Estado</translation>
 <translation id="2058456167109518507">Na-detect ang device</translation>
 <translation id="2064048859448024834">Naka-on ang preview ng camera</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 link}one{# link}other{# na link}}</translation>
 <translation id="2067220651560163985">Ipakita ang temperatura sa Celsius</translation>
 <translation id="206960706005837784">Natapos na ang pag-print ng <ph name="APP_NAME" /> sa <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">I-toggle ang <ph name="CAPTURE_MEDIUM" />. Ang <ph name="CAPTURE_MEDIUM" /> ay <ph name="CAPTURE_STATE" /></translation>

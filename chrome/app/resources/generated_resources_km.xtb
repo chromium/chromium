@@ -858,6 +858,7 @@
 <translation id="1921544956190977703">អ្នកមាន​សុវត្ថិភាព​ខ្លាំងបំផុត​របស់ Chrome ប្រឆាំងនឹង​គេហទំព័រ ការទាញយក និងកម្មវិធី​បន្ថែមដែលមាន​គ្រោះថ្នាក់</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">"<ph name="NAME" />" ត្រូវបាន​រក្សាទុក​តែនៅក្នុង​ឧបករណ៍នេះ​ប៉ុណ្ណោះ។ ដើម្បីប្រើវា​នៅលើ​ឧបករណ៍​ផ្សេងទៀត​របស់អ្នក សូម​រក្សាទុកវា​នៅក្នុង​គណនី​របស់អ្នក។</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">បើកដោយប្រើ</translation>
 <translation id="1925017091976104802">ចុច <ph name="MODIFIER_KEY_DESCRIPTION" /> ដើម្បី​ដាក់ចូល</translation>
 <translation id="1925021887439448749">បញ្ចូល​អាសយដ្ឋាន​ទំព័រ​ផ្ទាល់ខ្លួន</translation>
@@ -1409,6 +1410,7 @@
 <translation id="2528487766183344810">សូម​ដោះសោ <ph name="TOKEN_NAME" /> ដើម្បី​នាំចេញ​វិញ្ញាបនបត្រ​កុំព្យូទ័រភ្ញៀវ។</translation>
 <translation id="2532198298278778531">គ្រប់គ្រង DNS សុវត្ថិភាព​នៅក្នុង​ការកំណត់ ChromeOS Flex</translation>
 <translation id="253434972992662860">ផ្អាក</translation>
+<translation id="2534439599863644240">ច្រកស៊េរី</translation>
 <translation id="253498598929009420">គេហទំព័រ​នេះ​នឹង​អាច​មើលឃើញ​ខ្លឹមសារ​​លើ​អេក្រង់​របស់​អ្នក</translation>
 <translation id="253557089021624350">ចំនួន Keepalive</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> អាចមើល និងកែថត និងឯកសារខាងក្រោម</translation>

@@ -126,7 +126,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="6542902059648396432">Báo cáo sự cố…</translation>
 <translation id="6583902294974160967">Hỗ trợ</translation>
 <translation id="6612717000975622067">Gửi Ctrl-Alt-Del</translation>
-<translation id="6625262630437221505">{0,plural, =1{Nếu bạn không thực hiện hành động nào, thiết bị của bạn sẽ tự động bắt đầu chia sẻ sau # giây.}one{If you don’t take action, your device will automatically start sharing in # seconds.}other{Nếu bạn không thực hiện hành động nào, thiết bị của bạn sẽ tự động bắt đầu chia sẻ sau # giây.}}</translation>
+<translation id="6625262630437221505">{0,plural, =1{Nếu bạn không thực hiện hành động nào, thiết bị của bạn sẽ tự động bắt đầu chia sẻ sau # giây.}other{Nếu bạn không thực hiện hành động nào, thiết bị của bạn sẽ tự động bắt đầu chia sẻ sau # giây.}}</translation>
 <translation id="6654753848497929428">Chia sẻ</translation>
 <translation id="677755392401385740">Máy chủ đã khởi động cho người dùng: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Ứng dụng trợ giúp để mở một URL trên máy khách của <ph name="PRODUCT_NAME" /></translation>

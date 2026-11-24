@@ -28,6 +28,6 @@
 <translation id="781351614677332494"><ph name="APP_NAME" /> necesita acceder á túa localización para compartila con este sitio.</translation>
 <translation id="7884346424584885269">Chrome necesita permiso para buscar dispositivos próximos. <ph name="BEGIN_LINK" />Actualizar permisos<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">Dispositivo descoñecido ou non compatible (<ph name="DEVICE_ID" />)</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Nivel de intensidade do sinal: # barra}many{Signal Strength Level: # bars}other{Nivel de intensidade do sinal: # barras}}</translation>
+<translation id="8687353297350450808">{N_BARS,plural, =1{Nivel de intensidade do sinal: # barra}other{Nivel de intensidade do sinal: # barras}}</translation>
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 </translationbundle>

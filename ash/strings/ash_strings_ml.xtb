@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">നിഷക്രിയ നില ഡാറ്റ</translation>
 <translation id="2058456167109518507">ഉപകരണം കണ്ടെത്തി</translation>
 <translation id="2064048859448024834">ക്യാമറാ പ്രിവ്യു ഓണാണ്</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{ഒരു ലിങ്ക്}other{# ലിങ്കുകൾ}}</translation>
 <translation id="2067220651560163985">താപനില, സെൽഷ്യസിൽ കാണിക്കുക</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> എന്നത് <ph name="PRINTER_NAME" /> എന്നതിലേക്ക് അയച്ച് പ്രിന്റ് ചെയ്യൽ പൂർത്തിയാക്കി</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ടോഗിൾ ചെയ്യുക. <ph name="CAPTURE_MEDIUM" />, <ph name="CAPTURE_STATE" /></translation>

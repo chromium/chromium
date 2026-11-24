@@ -447,6 +447,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2053312383184521053">Datos de estado de inactividad</translation>
 <translation id="2058456167109518507">Dispositivo detectado</translation>
 <translation id="2064048859448024834">Vista previa de cámara activada</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 enlace}other{# enlaces}}</translation>
 <translation id="2067220651560163985">Mostrar temperatura en Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ha terminado de imprimir en <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Activar/Desactivar <ph name="CAPTURE_MEDIUM" />. Estado de <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>

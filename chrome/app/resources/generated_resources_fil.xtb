@@ -308,6 +308,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1308105352527684175">Posibleng hindi mo ma-access ang ilang partikular na content</translation>
 <translation id="1311092170520822848">Kinokontrol ng site na ito ang mga smart card reader na nakakonekta sa iyong device at mga smart card na posibleng available sa mga ito</translation>
 <translation id="131112695174432497">Dine-delete ang data na nakakaapekto sa pag-personalize ng ad</translation>
+<translation id="13115907161008983">Kopyahin ang Mga Link</translation>
 <translation id="131188242279372879">Alamin ang pinaigting na proteksyon para makuha ang pinakamataas na level ng seguridad ng Chrome para sa mga pag-download</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Ayusin ang Tab na Nagpapabagal sa Iyong Browser}one{Ayusin ang Mga Tab na Nagpapabagal sa Iyong Browser}other{Ayusin ang Mga Tab na Nagpapabagal sa Iyong Browser}}</translation>
 <translation id="1312721752506309252">Naka-on ang pinaigting na proteksyon</translation>
@@ -444,6 +445,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1482626744466814421">I-bookmark ang Tab na Ito...</translation>
 <translation id="1482772681918035149">i-edit ang mga password</translation>
 <translation id="1483137792530497944">Ilog</translation>
+<translation id="1483148302144576204">Kopyahin ang mga link</translation>
 <translation id="1483151333977672176">Naipadala!</translation>
 <translation id="1483431819520123112">Nakopya sa clipboard ang display name</translation>
 <translation id="1483493594462132177">Ipadala</translation>
@@ -1069,6 +1071,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2168036794078614559">Naipadala ang ulat</translation>
 <translation id="2168735174585029637">Bigyan ng bagong transparent na hitsura ang iyong mga tab</translation>
 <translation id="217120844667431680">Gumawa ng higit pa gamit ang AI Mode</translation>
+<translation id="2172046302886074612">Inalis ang '<ph name="MODEL_CATEGORY" />'</translation>
 <translation id="2173302385160625112">Suriin ang iyong koneksyon sa internet</translation>
 <translation id="2175384018164129879">Pamahalaan ang mga Search Engine at Site Search</translation>
 <translation id="2175773164573457310">Pumili ng anumang teksto o larawan na itatanong sa Gemini</translation>
@@ -2097,6 +2100,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3270965368676314374">Basahin, baguhin at i-delete ang mga larawan, musika at iba pang media sa iyong computer</translation>
 <translation id="3275464924531706548">I-collapse ang <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Buksan bilang window</translation>
+<translation id="3277325180914877290">Palakihin ang text</translation>
 <translation id="3280237271814976245">I-save &amp;bilang...</translation>
 <translation id="3280243678470289153">Manatili sa Chrome</translation>
 <translation id="3282210178675490297">Nagbabahagi ng tab sa <ph name="APP_NAME" /></translation>
@@ -2605,6 +2609,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3786890785076278600">Static na linya</translation>
 <translation id="3787434344076711519">Naghihintay na isalin</translation>
 <translation id="3789432704615470433">Mga file sa SharePoint at OneDrive</translation>
+<translation id="3789493399245366422">fullscreen, full-screen, i-maximize, i-maximise, immersive, i-hide ang toolbar, presentation, F11</translation>
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3790417903123637354">Nagkaproblema. Subukan ulit sa ibang pagkakataon</translation>
 <translation id="379082410132524484">Nag-expire na ang iyong card</translation>
@@ -3375,6 +3380,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4665035764476941598">Mag-click dito para ibalik ang iba mo pang tab</translation>
 <translation id="4665446389743427678">Ide-delete ang lahat ng data na naka-store sa <ph name="SITE" />.</translation>
 <translation id="4666483368282673356">Pamahalaan ang iyong history sa Gemini</translation>
+<translation id="4667646546186544608">mag-zoom out, paliitin, mas maliit, bawasan, babaan, i-scale down, pag-zoom ng page</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Congrats! Na-install na ang <ph name="APP_NAME" /> sa iyong device</translation>
 <translation id="4672759829555593783">Buksan ang <ph name="FILE_NAME" /> ngayon</translation>
@@ -4778,6 +4784,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="6255253900817321392">Maghanap nang mas mabilis mula sa kahit saan sa iyong Mac nang hindi nagbubukas ng bagong tab</translation>
 <translation id="6257602895346497974">I-on ang pag-sync...</translation>
 <translation id="6258818697161346451">Gamitin ang iyong mga passkey sa device na ito</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopyahin ang link}one{Kopyahin ang mga link}other{Kopyahin ang mga link}}</translation>
 <translation id="6261688934280090835">Mga log sa Kiosk App sa ChromeOS</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6264060420924719834">Naglalaman ang app na ito ng content sa web mula sa iba pang site</translation>
@@ -4906,6 +4913,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Mga File ng Larawan</translation>
 <translation id="6410390304316730527">Pinoprotektahan ka ng Ligtas na Pag-browse laban sa mga attacker na posibleng manlinlang sa iyong gumawa ng anumang mapanganib na bagay tulad ng pag-install ng nakakapinsalang software o paghahayag ng personal na impormasyon tulad ng mga password, numero ng telepono, o credit card. Kung io-off mo ito, maging maingat kapag nagba-browse sa mga hindi pamilyar o hindi mapagkakatiwalaang site.</translation>
+<translation id="6411490324917773403">Paliitin ang text</translation>
 <translation id="6416743254476733475">Payagan o i-block sa iyong computer.</translation>
 <translation id="6416856063840710198">Para mapaganda ang iyong pagbisita, kadalasang sine-save ng mga site ang iyong aktibidad – kadalasan sa device mo. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Default na gawi</translation>
@@ -6398,6 +6406,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8041093619605951337">Masaya</translation>
 <translation id="8042142357103597104">Opacity ng text</translation>
 <translation id="8042331986490021244">Ine-encrypt ang iyong mga password sa device mo bago i-save ang mga ito sa Google Password Manager</translation>
+<translation id="8042441076562098746">mag-zoom in, i-magnify, palakihin, mas malaki, mas malawak, dagdagan, i-scale up, pag-zoom ng page</translation>
 <translation id="8045253504249021590">Inihinto ang pag-sync sa pamamagitan ng Google Dashboard.</translation>
 <translation id="8045752459073395242">Matuto pa tungkol sa paggamit ng generative AI sa trabaho</translation>
 <translation id="8045923671629973368">Maglagay ng application ID o URL ng webstore</translation>
@@ -6752,6 +6761,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="844059392176531372">I-share ang Grupo ng Tab na “<ph name="GROUP_NAME" />”</translation>
 <translation id="844063558976952706">Palagi sa site na ito</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{May Incognito o Isolated window na nakabukas. Hindi na ito magbubukas ulit.}one{May # Incognito at Isolated window na nakabukas sa mga profile. Hindi na magbubukas ulit ang mga ito.}other{May # na Incognito at Isolated window na nakabukas sa mga profile. Hindi na magbubukas ulit ang mga ito.}}</translation>
+<translation id="84426883520448311">tema, kulay, background, wallpaper, light, dark, mode, light mode, dark mode, personal, pag-iistilo, aesthetic</translation>
 <translation id="8443986842926457191">Mahigit 2048 character ang URL</translation>
 <translation id="8445281870900174108">Ginagamit ng tab na ito ang iyong camera</translation>
 <translation id="8446884382197647889">Matuto Pa</translation>
@@ -7343,6 +7353,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="9076821103818989526">Panel sa gilid</translation>
 <translation id="907779190626433918">Gumamit ng natatanging password para sa bawat site o app. Kung may makakatuklas ng password na ginamit ulit, posibleng gamitin ito para i-access ang iyong iba pang account.</translation>
 <translation id="9078546160009814724">Username: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopyahin ang Link}one{Kopyahin ang Mga Link}other{Kopyahin ang Mga Link}}</translation>
 <translation id="907972398081911688">Awtomatikong palitan ang iyong na-breach na password</translation>
 <translation id="9081543426177426948">Hindi nase-save sa Incognito ang mga site na binibisita mo</translation>
 <translation id="9082750838489080452">Application: <ph name="APP_NAME" /></translation>

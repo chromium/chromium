@@ -136,6 +136,7 @@
 <translation id="2295218613066132598">‏הצגת קיצורי דרך לאתרים ב-Chrome</translation>
 <translation id="2301513536169703857">‏כדי לקבל גישה לסיסמאות, לסימניות ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס ל-Chrome</translation>
 <translation id="2307973900865360088">‏אני רוצה להשאיר את Chromium ב-Dock</translation>
+<translation id="2308558013860776484">‏אפשר לשתף צילום מסך של תוכן מחוץ ל-Chrome, כמו אפליקציות או קבצים אחרים</translation>
 <translation id="2309047409763057870">‏זוהי התקנה משנית של Google Chrome, ולא ניתן להפוך אותו לדפדפן ברירת המחדל שלך.</translation>
 <translation id="2345992953227471816">‏התוספים האלה שנמצאו ב-Chrome מכילים תכונה זדונית:</translation>
 <translation id="2358140144860869442">‏כדי לקבל גישה לרשימת הקריאה ולנתונים נוספים מכל המכשירים, צריך להתחבר ל-Chrome</translation>
@@ -242,6 +243,7 @@
 <translation id="3294686910656423119">נתוני שימוש ודוחות קריסה</translation>
 <translation id="3327226547491422998">‏בהמשך, תוצג לך שאלה ב-Chrome אם להשתמש במידע השמור כדי למלא בשבילך טפסים באופן אוטומטי</translation>
 <translation id="3352986031709923790">‏הפינה הימנית העליונה של אזור החיפוש: ‎<ph name="RIGHT" />%‎ מימין, ‎<ph name="TOP" />%‎ מלמעלה</translation>
+<translation id="3370239327277137701">‏אתרים ו-Chrome יכולים להשתמש ב-AI שפועל ישירות במכשיר שלך כדי להפעיל תכונות כמו סיכומים, הגהה, כתוביות ועוד. התכונה הזו נפרדת מ-Gemini ב-Chrome. <ph name="BEGIN_LINK" />מידע נוסף על AI במכשיר<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">‏חלק מהתכונות והתוספים של Chrome מגיעים עם מקשי קיצור. אפשר להפעיל אותם מחדש.</translation>
 <translation id="3379938682270551431">{0,plural, =0{‏Chrome יופעל מחדש עכשיו}=1{‏Chrome יופעל מחדש בעוד שנייה}one{‏Chrome יופעל מחדש בעוד # שניות}two{‏Chrome יופעל מחדש בעוד # שניות}other{‏Chrome יופעל מחדש בעוד # שניות}}</translation>
 <translation id="3380249972812870825">‏כדי לפתוח את Gemini ב-Chrome, צריך ללחוץ על <ph name="GLOBAL_HOTKEY" /></translation>
@@ -338,6 +340,7 @@
 <translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
 <translation id="4434353761996769206">שגיאת מנהל התקנה: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">‏כדי לקבל סקירה כללית זריזה ולשאול שאלות המשך, אפשר לשתף את המסמך הזה עם Gemini ב-Chrome</translation>
+<translation id="4440999670272408191">‏אפשר להסיר אותם בכל שלב. יכול להיות ש-Chrome יוריד אותם שוב באופן אוטומטי כשהם יידרשו לאתר או לתכונה.</translation>
 <translation id="4450664632294415862">‏Chrome – כניסה לרשת – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">‏מתבצעת כרגע פעולה אחרת ב-Google Chrome. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="4493028449971051158">שגיאת הפעלה: יש להפעיל את מנהל ההתקנה כאדמין.</translation>
@@ -345,6 +348,7 @@
 <translation id="4501839397124711198">‏כדי לשאול שאלות בזמן הגלישה, אפשר להצמיד את חיפוש Google בחלונית הצד</translation>
 <translation id="4571503333518166079">‏מעבר אל הגדרות של הודעות ב-Chrome</translation>
 <translation id="4580939929828762295">‏מנהל הסיסמאות של Google עוזר לשמור על הבטיחות שלך</translation>
+<translation id="4589544932092381064">‏הצגת החיפוש באמצעות Chrome בסרגל המשימות של Windows והפעלת מקשי הקיצור</translation>
 <translation id="459622048091363950">‏אחרי מתן גישה ל-Chrome, אתרים יוכלו לבקש ממך גישה.</translation>
 <translation id="4598116752460667024">מחפשים תהליך כלשהו מהרשימה.</translation>
 <translation id="4600710005438004015">‏עדכון Chrome לגרסה האחרונה לא הצליח, ולכן אין לך גישה אל תכונות חדשות ותיקוני אבטחה.</translation>
@@ -360,6 +364,7 @@
 <translation id="4754614261631455953">‏גרסה ניסיונית של Google Chrome‏ (mDNS-In)</translation>
 <translation id="4756182432527369254">‏אפשר להאיץ ביצועים של אתרים באמצעות מנוע V8 של Chrome, אבל Chrome יהיה קצת פחות עמיד בפני מתקפות</translation>
 <translation id="4768676935374695498">‏חיפוש בסרטון בעזרת Google Lens</translation>
+<translation id="4783580253728290203">‏כשההגדרה מושבתת, Chrome מסיר את המודלים של AI שמותקנים במכשיר ולא מוריד אותם שוב. יכול להיות שחלק מהאתרים והתכונות של Chrome לא יפעלו.</translation>
 <translation id="479167709087336770">‏נעשה כאן שימוש בבדיקת האיות של חיפוש Google. הטקסט המוקלד בדפדפן נשלח אל Google. אפשר לשנות את ההתנהגות הזו בכל שלב דרך ההגדרות.</translation>
 <translation id="4793679854893018356">‏איך מערכת Chromium שומרת על האבטחה שלך</translation>
 <translation id="4803313124144656665">‏סגירת חיפוש Google ב-Chrome</translation>
@@ -441,6 +446,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">‏לא ניתן להתחבר לאינטרנט. נדרש אימות של שרת ה-proxy.</translation>
 <translation id="5709557627224531708">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
+<translation id="5715427327524421317">‏‫Chrome מוריד ומעדכן את המודלים של AI האלה באופן אוטומטי</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{‏ההגנה המתקדמת מחייבת אותך להפעיל מחדש את Chrome כדי שהעדכון ייכנס לתוקף. החלון המבודד לא ייפתח מחדש.}one{‏ההגנה המתקדמת מחייבת אותך להפעיל מחדש את Chrome כדי שהעדכון ייכנס לתוקף. ‫# החלונות המבודדים לא ייפתחו מחדש.}two{‏ההגנה המתקדמת מחייבת אותך להפעיל מחדש את Chrome כדי שהעדכון ייכנס לתוקף. ‫# החלונות המבודדים לא ייפתחו מחדש.}other{‏ההגנה המתקדמת מחייבת אותך להפעיל מחדש את Chrome כדי שהעדכון ייכנס לתוקף. ‫# החלונות המבודדים לא ייפתחו מחדש.}}</translation>
 <translation id="5719246646468301581">‏תנאים והגבלות נוספים של Google Chrome ו-ChromeOS</translation>
 <translation id="5736850870166430177">‏אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים</translation>
@@ -531,6 +537,7 @@
 <translation id="6491330562720922580">‏קוד QR להורדת הדפדפן Chrome למכשירים ניידים</translation>
 <translation id="6493527311031785448">‏Google Chrome מנסה <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">‏Chrome נסגר באופן אוטומטי</translation>
+<translation id="650039555447046671">‏‫Chrome יסיר את המודלים של AI מהמכשיר הזה. יכול להיות שחלק מהאתרים והתכונות של Chrome לא יפעלו.</translation>
 <translation id="6506909944137591434">‏נדרשת הרשאת גישה למצלמה ב-Chrome כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת פיתוח</translation>
 <translation id="6520670145826811516">‏כדי להשתמש בשירותי המיקום, צריך להיכנס אל <ph name="BEGIN_LINK" />הגדרות המערכת<ph name="END_LINK" /> ולתת ל-Chrome גישה</translation>
@@ -568,6 +575,7 @@
 <translation id="6877155553248388166">‏הפינה הימנית התחתונה של אזור החיפוש: ‎<ph name="RIGHT" />%‎ מימין, ‎<ph name="BOTTOM" />%‎ מלמטה</translation>
 <translation id="6879791154455204815">‏פתיחת החיפוש באמצעות Chrome</translation>
 <translation id="6881299373831449287">‏מתבצע עדכון של Chrome</translation>
+<translation id="6881997500528805781">‏‫Chrome משתמש בנפח האחסון במכשיר. מודלים של AI שלא נעשה בהם שימוש מוסרים מ-Chrome אחרי 45 ימים או כשנפח האחסון נמוך</translation>
 <translation id="6885412569789873916">‏אפליקציות לגרסת הבטא של Chrome</translation>
 <translation id="6893363893008038481">‏הסרת החשבון מ-Chrome</translation>
 <translation id="6896758677409633944">העתקה</translation>

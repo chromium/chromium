@@ -49,6 +49,7 @@
 <translation id="1562320819937089394">‏הצמדת Chromium</translation>
 <translation id="1574377791422810894">‏הכלים לבטיחות של Chromium</translation>
 <translation id="1594928384848033697">‏‫Chromium רוצה למחוק את הנתונים שלך במנהל הסיסמאות. כדי לאפשר זאת, צריך להזין את הסיסמה שלך ל-Windows.</translation>
+<translation id="1599690375407103815">‏כשההגדרה מושבתת, Chromium מסיר את המודלים של AI שמותקנים במכשיר ולא מוריד אותם שוב. יכול להיות שחלק מהאתרים והתכונות של Chromium לא יפעלו.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון}=1{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. החלון האנונימי לא ייפתח מחדש.}one{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}two{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
 <translation id="1625909126243026060">‏בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה ב-Chromium</translation>
 <translation id="1640672724030957280">מוריד...</translation>
@@ -63,6 +64,7 @@
 <translation id="1745121272106313518">‏Chromium יופעל מחדש בעוד <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">‏כש-HTTPS לא יהיה זמין, Chromium ישתמש בחיבור לא מאובטח בלי להציג אזהרה</translation>
 <translation id="1774152462503052664">‏התרה ל-Chromium לפעול ברקע</translation>
+<translation id="1792680680989393197">‏אפשר להסיר אותם בכל שלב. יכול להיות ש-Chromium יוריד אותם שוב באופן אוטומטי כשהם יידרשו לאתר או לתכונה.</translation>
 <translation id="1793486931176048546">‏כדי להצמיד את Chromium לסרגל האפליקציות לגישה מהירה, צריך ללחוץ על <ph name="BEGIN_BOLD" />כן<ph name="END_BOLD" /> בהתראה של Windows.</translation>
 <translation id="1808667845054772817">‏התקנת Chromium מחדש</translation>
 <translation id="1820835682567584003">‏Chromium מנסה <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -238,6 +240,7 @@
 <translation id="3729187154190517324">כדי להעמיק את החיפוש, אפשר להוסיף כמה כרטיסיות, קבצים וכלים באמצעות הכפתור "הוספת כרטיסייה ועוד".</translation>
 <translation id="3788675262216168505">‏ניהול הפרופילים ב-Chromium</translation>
 <translation id="3790262771324122253">‏למה הורדות מסוימות נחסמות ב-Chromium</translation>
+<translation id="3793196697433239004">‏‫Chromium משתמש בנפח האחסון במכשיר. מודלים של AI שלא נעשה בהם שימוש מוסרים מ-Chromium אחרי 45 ימים או כשנפח האחסון נמוך</translation>
 <translation id="379589255253486813">‏Chromium יעדכן אותך אם יש משהו שצריך לבדוק</translation>
 <translation id="3802055581630249637">‏כדי שהדפים שבהם מבקרים ייטענו מהר יותר, מערכת Chromium טוענת מראש דפים שיש סיכוי גבוה שייפתחו.</translation>
 <translation id="3810973564298564668">ניהול</translation>
@@ -316,6 +319,7 @@
 <translation id="4621240073146040695">‏העדכון כמעט הושלם! הפעל מחדש את Chromium‏ כדי לסיים את העדכון.</translation>
 <translation id="4625064703209785397">‏אפשר להאיץ ביצועים של אתרים באמצעות מנוע V8 של Chromium, אבל Chromium יהיה קצת פחות עמיד בפני מתקפות.</translation>
 <translation id="4626321472657185181">‏פתיחת החיפוש באמצעות Chromium</translation>
+<translation id="4639628733881319833">‏אפשר לשתף צילום מסך של תוכן מחוץ ל-Chromium, כמו אפליקציות או קבצים אחרים</translation>
 <translation id="4654639495249754755">‏פרופיל Chromium</translation>
 <translation id="4665829708273112819">‏אזהרה: Chromium לא יכול למנוע מתוספים לתעד את היסטוריית הגלישה שלך. כדי להשבית את התוסף הזה במצב אנונימי, צריך לבטל את הבחירה של האפשרות הזו.</translation>
 <translation id="4673151026126227699">‏אם בנוסף ישותפו דוחות שימוש ב-Chromium, הדוחות האלה יכללו את כתובות ה-URL שבהן ביקרת</translation>
@@ -370,6 +374,7 @@
 <translation id="5405650547142096840">‏להסיר מ-‏Chromium‏</translation>
 <translation id="5424544524441439284">‏ירידה ברמת הביצועים בתמורה להגברת העמידות של Chromium בפני מתקפות</translation>
 <translation id="5427571867875391349">‏הגדרת Chromium כדפדפן ברירת המחדל שלך</translation>
+<translation id="5435079900593041559">‏הצגת החיפוש באמצעות Chromium בסרגל המשימות של Windows והפעלת מקשי הקיצור</translation>
 <translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - Chromium בגרסת בטא</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{‏ההמלצה של Chromium היא להשהות את הכרטיסייה שמאטה את הדפדפן}one{‏ההמלצה של Chromium היא להשהות את הכרטיסיות שמאטות את הדפדפן}two{‏ההמלצה של Chromium היא להשהות את הכרטיסיות שמאטות את הדפדפן}other{‏ההמלצה של Chromium היא להשהות את הכרטיסיות שמאטות את הדפדפן}}</translation>
 <translation id="5473971139929175403">‏יכול להיות ש-Chromium לא יפעל כראוי כי הוא כבר לא נתמך בגרסה הזו של Linux</translation>
@@ -395,6 +400,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏הצגת Chromium בשפה זו</translation>
 <translation id="569897634095159764">‏לא ניתן להתחבר לאינטרנט. נדרש אימות של שרת ה-proxy.</translation>
+<translation id="5755377560105094542">‏אתרים ו-Chromium יכולים להשתמש ב-AI שפועל ישירות במכשיר שלך כדי להפעיל תכונות כמו סיכומים, הגהה, כתוביות ועוד. ההגדרה הזו נפרדת מ-Gemini ב-Chromium. <ph name="BEGIN_LINK" />מידע נוסף על AI במכשיר<ph name="END_LINK" /></translation>
 <translation id="5768371961535086509">‏‫Chromium מפנה מקום בזיכרון שמוקצה לכרטיסיות לא פעילות. כך, לכרטיסיות הפעילות ולאפליקציות אחרות יש יותר משאבים מהמחשב ו-Chromium פועל מהר. כשחוזרים לכרטיסיות הלא פעילות, הן מופעלות מחדש באופן אוטומטי. <ph name="BEGIN_LINK" />מידע נוסף על מצב חיסכון בזיכרון<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, עליך <ph name="SETTINGS_LINK" /> את נתוני Chromium בחשבון</translation>
 <translation id="5802618941556161431">‏רוצה סנכרון מושלם של הסיסמאות, הסימניות וההיסטוריה שלך בין מכשירים? כדאי להגדיר את Chromium כדפדפן ברירת המחדל.</translation>
@@ -446,6 +452,7 @@
 <translation id="6245734527075554892">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chromium</translation>
 <translation id="6248213926982192922">‏יש להפוך את Chromium לדפדפן ברירת המחדל</translation>
 <translation id="6248988683584659830">חיפוש בהגדרות</translation>
+<translation id="6251986571402453005">‏‫Chromium מוריד ומעדכן את המודלים של AI האלה באופן אוטומטי</translation>
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
 <translation id="6270547683008298381">‏הכרטיסיות האלה משתמשות במשאבים נוספים. כדי לשפר את הביצועים, כדאי לאפשר ל-Chromium להשבית אותן.</translation>
 <translation id="6281746429495226318">‏התאמה אישית של פרופיל Chromium</translation>
@@ -722,6 +729,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8981886272598860786">‏כדי לחפש באמצעות Chromium או להתאים אישית ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">‏ניהול הפרופילים ב-Chromium</translation>
 <translation id="8993855408334954620">‏כדי לעבור בין Gemini ב-Chromium לבין הכרטיסייה הפתוחה, אפשר להשתמש במקלדת.</translation>
+<translation id="9002987346523307190">‏Chromium יסיר את המודלים של AI מהמכשיר הזה. יכול להיות שחלק מהאתרים והתכונות של Chromium לא יפעלו.</translation>
 <translation id="9018218886431812662">ההתקנה הושלמה</translation>
 <translation id="9022552996538154597">‏כניסה אל Chromium</translation>
 <translation id="9035791714111278917">‏הצגת החיפוש באמצעות Chromium בסרגל התפריטים של Mac והפעלת מקשי הקיצור</translation>

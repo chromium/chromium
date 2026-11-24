@@ -447,6 +447,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2053312383184521053">Dades de l'estat d'inactivitat</translation>
 <translation id="2058456167109518507">S'ha detectat un dispositiu</translation>
 <translation id="2064048859448024834">La previsualització de la càmera està activada</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 enllaç}other{# enllaços}}</translation>
 <translation id="2067220651560163985">Mostra la temperatura en graus Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ha acabat d'imprimir a <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Commuta <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> està <ph name="CAPTURE_STATE" />.</translation>

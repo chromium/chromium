@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">निष्क्रिय स्थिति लगत</translation>
 <translation id="2058456167109518507">यन्त्र पत्ता लाग्यो</translation>
 <translation id="2064048859448024834">क्यामेरामा फोटोको प्रिभ्यू हेर्ने सुविधा अन छ</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{एउटा लिंक}other{# वटा लिंक}}</translation>
 <translation id="2067220651560163985">तापक्रम सेल्सियसमा देखाउनुहोस्</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ले <ph name="PRINTER_NAME" /> मार्फत प्रिन्ट गर्ने प्रक्रिया पूरा गरेको छ</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> टगल गर्नुहोस्। <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>

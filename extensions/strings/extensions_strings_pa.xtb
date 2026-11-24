@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">ਕੀ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਜੋੜਨਾ ਹੈ?</translation>
 <translation id="2159915644201199628">ਚਿੱਤਰ ਡੀਕੋਡ ਨਹੀਂ ਕਰ ਸਕਿਆ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਨੇ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਮਨਜ਼ੂਰੀ ਨਹੀਂ ਦਿੱਤੀ</translation>
+<translation id="2207866393056347613">ਸਾਰੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਤੁਹਾਡੇ ਡਾਟੇ ਤੱਕ ਸਥਾਈ ਪਹੁੰਚ ਦਿੰਦਾ ਹੈ</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ਨੇ ਵਾਧੂ ਅਨੁਮਤੀਆਂ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ।</translation>
 <translation id="2327492829706409234">ਐਪ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2350172092385603347">ਸਥਾਨੀਕਰਨ ਵਰਤਿਆ, ਪਰ default_locale ਮੈਨੀਫ਼ੈਸਟ ਵਿੱਚ ਨਹੀਂ ਦਿੱਤਾ ਹੋਇਆ ਸੀ।</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">ਮੁੜ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2743583586211388067">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਐਕਸਟੈਂਸ਼ਨ ਜੋਖਮ ਨੀਤੀ ਦੇ ਤਹਿਤ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਤੱਕ ਪਹੁੰਚ ਬਲਾਕ ਹੈ।</translation>
 <translation id="2766161002040448006">ਮਾਂ-ਪਿਓ ਨੂੰ ਪੁੱਛੋ</translation>
+<translation id="2775557057525247505">ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਦਿਖਾਓ</translation>
 <translation id="2785530881066938471">ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਲਈ ਫ਼ਾਈਲ '<ph name="RELATIVE_PATH" />' ਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਇਹ UTF-8 ਇਨਕੋਡ ਵਿੱਚ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2850541429955027218">ਥੀਮ ਜੋੜੋ</translation>
 <translation id="2883143988769190738">ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਅੱਗੇ ਦਿੱਤੀਆਂ ਇਜਾਜ਼ਤਾਂ ਦੀ ਬੇਨਤੀ ਕਰਦੀ ਹੈ:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ <ph name="PRODUCT_NAME" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ਨਿੱਜੀ ਕੁੰਜੀ ਲਈ ਇਨਪੁਟ ਵੈਲਯੂ ਇੱਕ ਪ੍ਰਮਾਣਿਕ ਮਾਰਗ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
+<translation id="3769470010314114481">ਸਾਈਟ 'ਤੇ ਤੁਹਾਡੇ ਡਾਟੇ ਤੱਕ ਅਸਥਾਈ ਪਹੁੰਚ ਦਿੰਦਾ ਹੈ</translation>
 <translation id="3788401245189148511">ਇਹ ਕਰ ਸਕਦਾ ਹੈ:</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਇਸਦੀ "<ph name="INSTALLED_APP_NAME" />" ਨਾਲ ਵਿਰੋਧਤਾ ਹੈ।</translation>
 <translation id="388442998277590542">ਵਿਕਲਪ ਪੰਨਾ '<ph name="OPTIONS_PAGE" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3927932062596804919">ਅਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="3984413272403535372">ਐਕਸਟੈਂਸ਼ਨ ਸਾਈਨ-ਇਨ ਕਰਨ ਵੇਲੇ ਗੜਬੜ।</translation>
+<translation id="3990894032742690314">ਸੂਚੀਬੱਧ ਸਾਈਟਾਂ 'ਤੇ ਹਮੇਸ਼ਾਂ ਪਹੁੰਚ ਮਿਲਦੀ ਹੈ</translation>
 <translation id="4014432863917027322">ਕੀ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਰਿਪੇਅਰ ਕਰਨਾ ਹੈ?</translation>
 <translation id="4061696872429826774">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇੱਕ ਅਜਿਹੀ ਐਕਸਟੈਂਸ਼ਨ ਸ਼ਾਮਲ ਕੀਤੀ ਹੈ ਜੋ Chromium ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">ਬਾਰੇ ਪੰਨਾ '<ph name="ABOUT_PAGE" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="424963718355121712">ਐਪਾਂ ਨੂੰ ਲਾਜ਼ਮੀ ਤੌਰ 'ਤੇ ਉਸ ਹੋਸਟ ਤੋਂ ਦੇਣਾ ਚਾਹੀਦਾ ਹੈ ਜਿਸ ਨੂੰ ਉਹ ਪ੍ਰਭਾਵਿਤ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="4306119971288449206">ਐਪਾਂ ਨੂੰ ਲਾਜ਼ਮੀ ਤੌਰ 'ਤੇ ਸਮੱਗਰੀ-ਪ੍ਰਕਾਰ "<ph name="CONTENT_TYPE" />" ਵਿੱਚ ਦੇਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
+<translation id="4307774243840254737">ਹੇਠਾਂ ਸੂਚੀਬੱਧ ਸਾਈਟਾਂ 'ਤੇ ਤੁਹਾਡੇ ਡਾਟੇ ਤੱਕ ਪੱਕੀ ਪਹੁੰਚ ਦਿੰਦਾ ਹੈ</translation>
 <translation id="4349181963619779233">ਇਸ ਵੈੱਬਸਾਈਟ ਤੋਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="4625078469366263107">ਐਪ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4633003931260532286">ਐਕਸਟੈਂਸ਼ਨ ਲਈ "<ph name="IMPORT_NAME" />" ਨੂੰ ਨਿਊਨਤਮ "<ph name="IMPORT_VERSION" />" ਵਰਜਨ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ, ਪਰ ਸਿਰਫ਼ "<ph name="INSTALLED_VERSION" />" ਵਰਜਨ ਹੀ ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ਦੇ ਬਿਲਕੁਲ ਨਵੇਂ ਵਰਜਨ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਇਸਦੇ ਲਈ ਵੱਧ ਇਜਾਜ਼ਤਾਂ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="5242724311594467048">ਕੀ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">ਸਿਰਫ਼ ਉਦੋਂ, ਜਦੋਂ ਤੁਸੀਂ ਐਕਸਟੈਂਸ਼ਨ 'ਤੇ ਕਲਿੱਕ ਕਰਦੇ ਹੋ</translation>
 <translation id="5405650547142096840">Chromium ਤੋਂ ਹਟਾਓ</translation>
 <translation id="5456409301717116725">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਵਿੱਚ ਮੁੱਖ ਫਾਈਲ '<ph name="KEY_PATH" />' ਸ਼ਾਮਲ ਹੈ। ਸੰਭਵ ਤੌਰ 'ਤੇ ਤੁਸੀਂ ਇਹ ਨਹੀਂ ਚਾਹੁੰਦੇ।</translation>
 <translation id="5485102783864353244">ਐਪ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਬਹੁਤ ਵਾਰ ਖੁਦ ਹੀ ਰੀਲੋਡ ਕੀਤੀ ਗਈ।</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> ਤੋਂ ਅਗਿਆਤ ਉਤਪਾਦ <ph name="PRODUCT_ID" /></translation>
+<translation id="7017635639223148413">ਸੂਚੀਬੱਧ ਸਾਈਟਾਂ</translation>
 <translation id="7068383018033524534">ਮੈਨੀਫ਼ੈਸਟ ਫ਼ਾਈਲ ਅਵੈਧ ਹੈ</translation>
 <translation id="7217838517480956708">ਇਸ ਮਸ਼ੀਨ ਦੇ ਪ੍ਰਬੰਧਕ ਨੂੰ <ph name="EXTENSION_NAME" /> ਇੰਸਟੌਲ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। ਇਸਨੂੰ ਹਟਾਇਆ ਜਾਂ ਸੰਸ਼ੋਧਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="7287143125007575591">ਪਹੁੰਚ ਅਸਵੀਕਾਰ ਕੀਤੀ</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">ਅਗਲਾ ਕੈਮਰਾ</translation>
 <translation id="8047248493720652249">ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਡਾਊਨਲੋਡ "<ph name="ATTEMPTED_FILENAME" />" ਨੂੰ ਨਾਮ ਦੇਣ ਵਿੱਚ ਅਸਫਲ ਰਹੀ ਕਿਉਂਕਿ ਦੂਜੀ ਐਕਸਟੈਂਸ਼ਨ (<ph name="EXTENSION_NAME" />) ਨੇ ਇੱਕ ਵੱਖ ਫ਼ਾਈਲਨਾਮ "<ph name="ACTUAL_FILENAME" />" ਨਿਰਧਾਰਤ ਕੀਤਾ।</translation>
 <translation id="8049705080247101012">Google ਨੇ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਖਰਾਬ ਦੇ ਤੌਰ 'ਤੇ ਫਲੈਗ ਕੀਤਾ ਹੈ ਅਤੇ ਸਥਾਪਨਾ ਨੂੰ ਰੋਕ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
+<translation id="823691536304079791">ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> ਤੋਂ <ph name="PRODUCT_NAME" /></translation>
 <translation id="8353683614194668312">ਇਹ ਕਰ ਸਕਦਾ ਹੈ:</translation>
 <translation id="8517576857589387417">ਮੈਨੀਫ਼ੈਸਟ ਫ਼ਾਈਲ ਮੌਜੂਦ ਨਹੀਂ ਹੈ ਜਾਂ ਪੜ੍ਹਨਯੋਗ ਨਹੀਂ ਹੈ</translation>

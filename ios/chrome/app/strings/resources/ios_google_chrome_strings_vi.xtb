@@ -78,7 +78,7 @@ Những yếu tố cần xem xét:
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="2450221499140985490">Mở đường liên kết trong thư và tài liệu ngay trong Chrome.</translation>
 <translation id="2459400997522001951">Hoàn thành nhiệm vụ nhanh chóng và khám phá những cách khai thác tối đa Chrome:</translation>
-<translation id="2464852008153767546">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Phạm vi tác động có thể bao gồm nhật ký và tính năng tự động điền.}one{This happens when Chrome isn't used for {THRESHOLD} minutes. This could include history and autofill.}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Phạm vi tác động có thể bao gồm nhật ký và tính năng tự động điền.}}</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Phạm vi tác động có thể bao gồm nhật ký và tính năng tự động điền.}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Phạm vi tác động có thể bao gồm nhật ký và tính năng tự động điền.}}</translation>
 <translation id="2561231791489583059">Hãy đặt Chrome làm trình duyệt mặc định để luôn được bảo vệ khỏi các trang web nguy hiểm và giữ cho mật khẩu của bạn an toàn</translation>
 <translation id="2574249610672786438">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị.</translation>
 <translation id="2576431527583832481">Chrome được cải tiến hơn! Đã có phiên bản mới.</translation>
@@ -118,7 +118,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="3348862487678490430">Thêm mục trong danh sách đọc vào Chrome</translation>
 <translation id="3350281376951945723">Mở đường liên kết nhanh hơn khi đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="3357827134511189025">Đăng nhập bằng mật khẩu và khoá truy cập đã lưu từ mọi ứng dụng bằng cách sử dụng Chrome làm dịch vụ tự động điền</translation>
-<translation id="3360031466389132716">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome}one{This happens when Chrome isn't used for {THRESHOLD} minutes}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome}}</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome}}</translation>
 <translation id="3367797402528056312">Hoàn tất thiết lập Chrome</translation>
 <translation id="3371064404604898522">Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="3399930248910934354">Mở phần Cài đặt của Chrome</translation>
@@ -208,7 +208,7 @@ Trước khi đăng xuất, hãy đợi một vài phút. Nếu bạn đăng xu�
 <translation id="5642200033778930880">Google Chrome không thể sử dụng máy ảnh của bạn ở Chế độ xem phân tách</translation>
 <translation id="5661521615548540542">Trình quản lý mật khẩu của Google không thể kiểm tra tất cả mật khẩu. Hãy thử lại sau.</translation>
 <translation id="5681291952421236520">Bật/tắt Chrome</translation>
-<translation id="5690398455483874150">{count,plural, =1{Đang hiển thị 1 cửa sổ Chrome}one{Now showing {count} Chrome windows}other{Đang hiển thị {count} cửa sổ Chrome}}</translation>
+<translation id="5690398455483874150">{count,plural, =1{Đang hiển thị 1 cửa sổ Chrome}other{Đang hiển thị {count} cửa sổ Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="571296537125272375">Không có kết nối mạng, Chrome không thể kiểm tra xem có bản cập nhật mới nào không</translation>
