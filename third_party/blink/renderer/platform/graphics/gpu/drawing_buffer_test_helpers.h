@@ -101,7 +101,7 @@ class WebGraphicsContext3DProviderForTests
   void SetLostContextCallback(base::RepeatingClosure) override {}
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t id)>) override {}
-  cc::ImageDecodeCache* ImageDecodeCache(SkColorType color_type) override {
+  cc::ImageDecodeCache* ImageDecodeCache() override {
     return &image_decode_cache_;
   }
   SharedImageInterfaceForTests* SharedImageInterface() override {

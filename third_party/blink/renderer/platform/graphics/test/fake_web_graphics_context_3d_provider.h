@@ -103,7 +103,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   void SetLostContextCallback(base::RepeatingClosure) override {}
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t id)>) override {}
-  cc::ImageDecodeCache* ImageDecodeCache(SkColorType color_type) override {
+  cc::ImageDecodeCache* ImageDecodeCache() override {
     return image_decode_cache_;
   }
   gpu::TestSharedImageInterface* SharedImageInterface() override {

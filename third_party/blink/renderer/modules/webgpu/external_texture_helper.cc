@@ -457,12 +457,8 @@ std::optional<ExternalTexture> CreateExternalTexture(
 
       auto& context_provider = context_provider_wrapper->ContextProvider();
       CanvasImageProvider image_provider(
-          context_provider.ImageDecodeCache(kN32_SkColorType),
-          shared_image->format() == viz::SinglePlaneFormat::kRGBA_F16
-              ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
-              : nullptr,
-          shared_image->color_space(), shared_image->format(),
-          cc::PlaybackImageProvider::RasterMode::kGpu,
+          context_provider.ImageDecodeCache(), shared_image->color_space(),
+          shared_image->format(), cc::PlaybackImageProvider::RasterMode::kGpu,
           context_provider_wrapper);
 
       lease->SetSyncToken(context_provider.RasterInterface()->RasterSharedImage(

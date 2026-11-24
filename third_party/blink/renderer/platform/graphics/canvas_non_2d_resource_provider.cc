@@ -657,22 +657,9 @@ CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
   if (!canvas_image_provider_) {
     if (!is_software_) {
       if (!IsGpuContextLost()) {
-        // Create an ImageDecodeCache for half float images only if the canvas
-        // is using half float back storage.
-        cc::ImageDecodeCache* cache_f16 = nullptr;
-        if (format_ == viz::SinglePlaneFormat::kRGBA_F16) {
-          cache_f16 =
-              context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-                  kRGBA_F16_SkColorType);
-        }
-
-        cc::ImageDecodeCache* cache_rgba8 =
-            context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-                kN32_SkColorType);
-
         canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-            cache_rgba8, cache_f16, color_space_, format_,
-            cc::PlaybackImageProvider::RasterMode::kGpu,
+            context_provider_wrapper_->ContextProvider().ImageDecodeCache(),
+            color_space_, format_, cc::PlaybackImageProvider::RasterMode::kGpu,
             context_provider_wrapper_);
       }
     } else {
@@ -690,18 +677,8 @@ CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
         }
       }
 
-      // Create an ImageDecodeCache for half float images only if the canvas
-      // is using half float back storage.
-      cc::ImageDecodeCache* cache_f16 = nullptr;
-      if (format_ == viz::SinglePlaneFormat::kRGBA_F16) {
-        cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
-      }
-
-      cc::ImageDecodeCache* cache_rgba8 =
-          &Image::SharedCCDecodeCache(kN32_SkColorType);
-
       canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-          cache_rgba8, cache_f16, color_space_, format_,
+          &Image::SharedCCDecodeCache(), color_space_, format_,
           cc::PlaybackImageProvider::RasterMode::kSoftware,
           context_provider_wrapper_);
     }

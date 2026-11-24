@@ -761,32 +761,17 @@ CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
       is_accelerated_ ? image_pool_->GetImageInfo().format
                       : color_params_.GetSharedImageFormat();
 
-  cc::ImageDecodeCache* cache_f16 = nullptr;
-  cc::ImageDecodeCache* cache_rgba8 = nullptr;
+  cc::ImageDecodeCache* cache = nullptr;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper;
   if (is_accelerated_) {
     // Callsites are responsible for checking that the context is valid before
     // invoking this method.
     CHECK(context_provider_wrapper_);
 
-    // Create an ImageDecodeCache for half float images only if the canvas is
-    // using half float back storage.
-    if (format == viz::SinglePlaneFormat::kRGBA_F16) {
-      cache_f16 =
-          context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-              kRGBA_F16_SkColorType);
-    }
-
-    cache_rgba8 =
-        context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-            kN32_SkColorType);
+    cache = context_provider_wrapper_->ContextProvider().ImageDecodeCache();
     context_provider_wrapper = context_provider_wrapper_;
   } else {
-    if (format == viz::SinglePlaneFormat::kRGBA_F16) {
-      cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
-    }
-
-    cache_rgba8 = &Image::SharedCCDecodeCache(kN32_SkColorType);
+    cache = &Image::SharedCCDecodeCache();
 
     if (context_provider_wrapper_) {
       context_provider_wrapper = context_provider_wrapper_;
@@ -802,7 +787,7 @@ CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
   }
 
   canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-      cache_rgba8, cache_f16, color_params_.GetGfxColorSpace(), format,
+      cache, color_params_.GetGfxColorSpace(), format,
       is_accelerated_ ? cc::PlaybackImageProvider::RasterMode::kGpu
                       : cc::PlaybackImageProvider::RasterMode::kSoftware,
       std::move(context_provider_wrapper));

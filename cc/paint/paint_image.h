@@ -307,9 +307,6 @@ class CC_PAINT_EXPORT PaintImage {
   AnimationType animation_type() const { return animation_type_; }
   CompletionState completion_state() const { return completion_state_; }
   bool is_multipart() const { return is_multipart_; }
-  bool is_high_bit_depth() const {
-    return GetColorType() == kRGBA_F16_SkColorType;
-  }
   bool no_cache() const { return no_cache_; }
   // Returns true if pixel readback of this image is disallowed (e.g., cross-
   // origin images without CORS access).

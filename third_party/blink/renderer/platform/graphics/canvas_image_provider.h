@@ -30,8 +30,7 @@ class WebGraphicsContext3DProviderWrapper;
 
 class PLATFORM_EXPORT CanvasImageProvider : public cc::ImageProvider {
  public:
-  CanvasImageProvider(cc::ImageDecodeCache* cache_n32,
-                      cc::ImageDecodeCache* cache_f16,
+  CanvasImageProvider(cc::ImageDecodeCache* cache,
                       const gfx::ColorSpace& target_color_space,
                       viz::SharedImageFormat canvas_format,
                       cc::PlaybackImageProvider::RasterMode raster_mode,
@@ -59,8 +58,7 @@ class PLATFORM_EXPORT CanvasImageProvider : public cc::ImageProvider {
   bool cleanup_task_pending_ = false;
   Vector<ScopedResult> locked_images_;
   Vector<cc::PaintImage> bound_texture_backed_images_;
-  std::optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
-  std::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
+  std::optional<cc::PlaybackImageProvider> playback_image_provider_;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 
   base::WeakPtrFactory<CanvasImageProvider> weak_factory_{this};

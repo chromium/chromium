@@ -15,8 +15,7 @@
 namespace blink {
 
 CanvasImageProvider::CanvasImageProvider(
-    cc::ImageDecodeCache* cache_n32,
-    cc::ImageDecodeCache* cache_f16,
+    cc::ImageDecodeCache* cache,
     const gfx::ColorSpace& target_color_space,
     viz::SharedImageFormat canvas_format,
     cc::PlaybackImageProvider::RasterMode raster_mode,
@@ -29,17 +28,13 @@ CanvasImageProvider::CanvasImageProvider(
 
   cc::TargetColorParams target_color_params;
   target_color_params.color_space = target_color_space;
-  playback_image_provider_n32_.emplace(cache_n32, target_color_params,
-                                       std::move(settings));
-  // If the image provider may require to decode to half float instead of
-  // uint8, create a f16 PlaybackImageProvider with the passed cache.
+  // If the canvas is half float, then have the cache store high bit depth
+  // images as half float, instead of reducing them to uint8.
   if (canvas_format == viz::SinglePlaneFormat::kRGBA_F16) {
-    DCHECK(cache_f16);
-    settings = cc::PlaybackImageProvider::Settings();
-    settings->raster_mode = raster_mode_;
-    playback_image_provider_f16_.emplace(cache_f16, target_color_params,
-                                         std::move(settings));
+    target_color_params.preserve_image_precision = true;
   }
+  playback_image_provider_.emplace(cache, target_color_params,
+                                   std::move(settings));
 }
 
 CanvasImageProvider::~CanvasImageProvider() = default;
@@ -54,12 +49,7 @@ void CanvasImageProvider::UnbindTextureBackedImages() {
 
 void CanvasImageProvider::SetAnimatedImageFrameIndexes(
     scoped_refptr<const cc::AnimatedImageFrameIndexMap> indexes) {
-  if (playback_image_provider_n32_) {
-    playback_image_provider_n32_->SetAnimatedImageFrameIndexes(indexes);
-  }
-  if (playback_image_provider_f16_) {
-    playback_image_provider_f16_->SetAnimatedImageFrameIndexes(indexes);
-  }
+  playback_image_provider_->SetAnimatedImageFrameIndexes(indexes);
 }
 
 cc::ImageProvider::ScopedResult CanvasImageProvider::GetRasterContent(
@@ -78,15 +68,8 @@ cc::ImageProvider::ScopedResult CanvasImageProvider::GetRasterContent(
     }
   }
 
-  ImageProvider::ScopedResult scoped_decoded_image;
-  if (playback_image_provider_f16_ &&
-      draw_image.paint_image().is_high_bit_depth()) {
-    scoped_decoded_image =
-        playback_image_provider_f16_->GetRasterContent(draw_image);
-  } else {
-    scoped_decoded_image =
-        playback_image_provider_n32_->GetRasterContent(draw_image);
-  }
+  ImageProvider::ScopedResult scoped_decoded_image =
+      playback_image_provider_->GetRasterContent(draw_image);
 
   if (!scoped_decoded_image.needs_unlock() || !IsHardwareDecodeCache()) {
     return scoped_decoded_image;

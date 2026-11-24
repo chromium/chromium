@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_WEBGRAPHICSCONTEXT3D_PROVIDER_IMPL_H_
 #define CONTENT_RENDERER_WEBGRAPHICSCONTEXT3D_PROVIDER_IMPL_H_
 
-#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -56,7 +55,7 @@ class WebGraphicsContext3DProviderImpl
   void SetLostContextCallback(base::RepeatingClosure) override;
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)>) override;
-  cc::ImageDecodeCache* ImageDecodeCache(SkColorType color_type) override;
+  cc::ImageDecodeCache* ImageDecodeCache() override;
   gpu::SharedImageInterface* SharedImageInterface() override;
   viz::RasterContextProvider* RasterContextProvider() const override;
 
@@ -67,8 +66,7 @@ class WebGraphicsContext3DProviderImpl
   scoped_refptr<viz::ContextProviderCommandBuffer> provider_;
   scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner_;
   base::RepeatingClosure context_lost_callback_;
-  base::flat_map<SkColorType, std::unique_ptr<cc::ImageDecodeCache>>
-      image_decode_cache_map_;
+  std::unique_ptr<cc::ImageDecodeCache> image_decode_cache_;
 };
 
 }  // namespace content

@@ -61,18 +61,18 @@ class ImageProviderImpl : public cc::ImageProvider {
       const cc::DrawImage& draw_image) override {
     CHECK(!draw_image.paint_image().IsDeferredPaintRecord());
 
-    // To decode high bit depth image source to half float backed image, we need
-    // to sniff the image bit depth here to avoid double decoding.
-    auto target_color_type =
-        (is_f16_ && draw_image.paint_image().is_high_bit_depth())
-            ? kRGBA_F16_SkColorType
-            : kN32_SkColorType;
     cc::TargetColorParams target_color_params;
     target_color_params.color_space = color_space_;
 
-    return cc::PlaybackImageProvider(
-               &Image::SharedCCDecodeCache(target_color_type),
-               target_color_params, cc::PlaybackImageProvider::Settings())
+    // If the target is half float, then have the cache store high bit depth
+    // images as half float, instead of reducing them to uint8.
+    if (is_f16_) {
+      target_color_params.preserve_image_precision = true;
+    }
+
+    return cc::PlaybackImageProvider(&Image::SharedCCDecodeCache(),
+                                     target_color_params,
+                                     cc::PlaybackImageProvider::Settings())
         .GetRasterContent(draw_image);
   }
 
@@ -339,20 +339,9 @@ VideoFrameAcceleratedSnapshotPool::CreateSnapshot(
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
 
-    // Create an ImageDecodeCache for half float images only if the backing
-    // SharedImage is using half float storage.
-    cc::ImageDecodeCache* cache_f16 = nullptr;
-    if (info_.format == viz::SinglePlaneFormat::kRGBA_F16) {
-      cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-          kRGBA_F16_SkColorType);
-    }
-
-    cc::ImageDecodeCache* cache_rgba8 =
-        context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-            kN32_SkColorType);
-
     CanvasImageProvider image_provider(
-        cache_rgba8, cache_f16, info_.color_space, info_.format,
+        context_provider_wrapper_->ContextProvider().ImageDecodeCache(),
+        info_.color_space, info_.format,
         cc::PlaybackImageProvider::RasterMode::kGpu, context_provider_wrapper_);
 
     gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(

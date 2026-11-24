@@ -80,8 +80,7 @@ UnacceleratedStaticBitmapImage::CreateFromRaster(
   settings.raster_mode = cc::PlaybackImageProvider::RasterMode::kSoftware;
 
   cc::PlaybackImageProvider image_provider(
-      &Image::SharedCCDecodeCache(kN32_SkColorType), target_color_params,
-      std::move(settings));
+      &Image::SharedCCDecodeCache(), target_color_params, std::move(settings));
   image_provider.SetAnimatedImageFrameIndexes(animated_image_frame_index_map);
 
   {

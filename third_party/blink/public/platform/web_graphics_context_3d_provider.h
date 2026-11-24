@@ -100,8 +100,8 @@ class WebGraphicsContext3DProvider {
   virtual void SetLostContextCallback(base::RepeatingClosure) = 0;
   virtual void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char* msg, int32_t id)>) = 0;
-  // Return a static software image decode cache for a given color type.
-  virtual cc::ImageDecodeCache* ImageDecodeCache(SkColorType color_type) = 0;
+  // Return the image decode cache for this context.
+  virtual cc::ImageDecodeCache* ImageDecodeCache() = 0;
   virtual gpu::SharedImageInterface* SharedImageInterface() = 0;
   virtual viz::RasterContextProvider* RasterContextProvider() const = 0;
 };

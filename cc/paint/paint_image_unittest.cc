@@ -129,7 +129,6 @@ TEST(PaintImageTest, SrgbImage) {
                          .set_id(PaintImage::GetNextId())
                          .set_paint_image_generator(generator)
                          .TakePaintImage();
-  EXPECT_TRUE(image.is_high_bit_depth());
   EXPECT_EQ(image.GetContentColorUsage(), gfx::ContentColorUsage::kSRGB);
 }
 
@@ -141,7 +140,6 @@ TEST(PaintImageTest, HbdImage) {
                          .set_id(PaintImage::GetNextId())
                          .set_paint_image_generator(generator)
                          .TakePaintImage();
-  EXPECT_TRUE(image.is_high_bit_depth());
   EXPECT_EQ(image.GetContentColorUsage(),
             gfx::ContentColorUsage::kWideColorGamut);
 }
@@ -154,7 +152,6 @@ TEST(PaintImageTest, PqHdrImage) {
                          .set_id(PaintImage::GetNextId())
                          .set_paint_image_generator(generator)
                          .TakePaintImage();
-  EXPECT_TRUE(image.is_high_bit_depth());
   EXPECT_EQ(image.GetContentColorUsage(), gfx::ContentColorUsage::kHDR);
 }
 
@@ -166,8 +163,6 @@ TEST(PaintImageTest, HlgHdrImage) {
                          .set_id(PaintImage::GetNextId())
                          .set_paint_image_generator(generator)
                          .TakePaintImage();
-
-  EXPECT_TRUE(image.is_high_bit_depth());
   EXPECT_EQ(image.GetContentColorUsage(), gfx::ContentColorUsage::kHDR);
 }
 

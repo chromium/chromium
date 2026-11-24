@@ -158,25 +158,18 @@ void WebGraphicsContext3DProviderImpl::OnContextLost() {
     context_lost_callback_.Run();
 }
 
-cc::ImageDecodeCache* WebGraphicsContext3DProviderImpl::ImageDecodeCache(
-    SkColorType color_type) {
-  auto cache_iterator = image_decode_cache_map_.find(color_type);
-  if (cache_iterator != image_decode_cache_map_.end())
-    return cache_iterator->second.get();
+cc::ImageDecodeCache* WebGraphicsContext3DProviderImpl::ImageDecodeCache() {
+  if (!image_decode_cache_) {
+    // This denotes the allocated GPU memory budget for the cache used for
+    // book-keeping. The cache indicates when the total memory locked exceeds
+    // this budget in cc::DecodedDrawImage.
+    static const size_t kMaxWorkingSetBytes = 64 * 1024 * 1024;
 
-  // This denotes the allocated GPU memory budget for the cache used for
-  // book-keeping. The cache indicates when the total memory locked exceeds this
-  // budget in cc::DecodedDrawImage.
-  static const size_t kMaxWorkingSetBytes = 64 * 1024 * 1024;
-
-  auto insertion_result = image_decode_cache_map_.emplace(
-      color_type,
-      std::make_unique<cc::GpuImageDecodeCache>(
-          provider_.get(), color_type, kMaxWorkingSetBytes,
-          provider_->ContextCapabilities().max_texture_size, nullptr));
-  DCHECK(insertion_result.second);
-  cache_iterator = insertion_result.first;
-  return cache_iterator->second.get();
+    image_decode_cache_ = std::make_unique<cc::GpuImageDecodeCache>(
+        provider_.get(), kN32_SkColorType, kMaxWorkingSetBytes,
+        provider_->ContextCapabilities().max_texture_size, nullptr);
+  }
+  return image_decode_cache_.get();
 }
 
 gpu::SharedImageInterface*
