@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.glic.settings.GlicNavigationUtils;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.metrics.UmaSessionStatsJni;
@@ -81,6 +82,8 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -389,6 +392,53 @@ public class TabbedRootUiCoordinatorTest {
 
         // Verify histogram was logged.
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.ONLY_TABLET})
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void testGlicToolbarButtonWithVerticalTabs_SidePanelFormFactor() {
+        startWithVerticalTabsAndGlic(/* isSidePanelFormFactor= */ true);
+
+        // The pinned tab strip Glic button moves to the toolbar.
+        assertTrue(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> getTopToolbarCoordinator().shouldShowGlicToolbarButton()));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.ONLY_TABLET})
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void testGlicToolbarButtonWithVerticalTabs_NotSidePanelFormFactor() {
+        // Foldables use the Glic bottom sheet and have no tab strip Glic button, so Glic must not
+        // be pinned, which would hide the adaptive toolbar Glic button.
+        startWithVerticalTabsAndGlic(/* isSidePanelFormFactor= */ false);
+
+        assertFalse(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> getTopToolbarCoordinator().shouldShowGlicToolbarButton()));
+    }
+
+    private void startWithVerticalTabsAndGlic(boolean isSidePanelFormFactor) {
+        GlicEnabling.setEnabledForTesting(true);
+        GlicUtils.setIsSidePanelFormFactorForTesting(isSidePanelFormFactor);
+        VerticalTabUtils.setVerticalTabsEnabled(true);
+        ResettersForTesting.register(VerticalTabUtils::resetSharedPrefsForTesting);
+
+        mPage = mActivityTestRule.startOnBlankPage();
+        // Vertical tabs are set up asynchronously, together with the pinned Glic state.
+        mPage.expectVerticalTabs();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+    }
+
+    private TopToolbarCoordinator getTopToolbarCoordinator() {
+        return mTabbedRootUiCoordinator
+                .getToolbarManagerSupplier()
+                .get()
+                .getTopToolbarCoordinator();
     }
 
     @Test

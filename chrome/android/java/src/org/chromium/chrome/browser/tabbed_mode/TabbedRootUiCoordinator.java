@@ -2753,7 +2753,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // Need to pass originalProfile here for the glic button to show in incognito at all.
             if (originalProfile != null
                     && originalProfile.isNativeInitialized()
-                    && GlicEnabling.isEnabledForProfile(originalProfile)) {
+                    && GlicUtils.isTabStripGlicSupported(mActivity, originalProfile)) {
 
                 mIsGlicPinnedSupplier.set(GlicUtils.isButtonPinnedToTabStrip(originalProfile));
 
