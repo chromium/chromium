@@ -8,18 +8,77 @@ rest of the perf test code should not need to know whether the sender is local.
 """
 
 import abc
+import atexit
+import base64
+import http.client
 import logging
 import os
 import shutil
 import socket
 import subprocess
+import tempfile
 import time
+import urllib.error
+import urllib.request
 
 import perf_config
 
 LOCAL_SENDERS = ('localhost', '127.0.0.1', None)
 SSH_PORT = 22
 SSH_KEY_PATH = os.path.expanduser('~/.ssh/id_ed25519')
+# Canonical ChromeOS test SSH key in chromite. third_party/chromite is gated on
+# checkout_chromeos in DEPS and is absent on non-CrOS builders such as
+# mediarouter-perf (mac), so fall back to fetching it from Gitiles when needed.
+TESTING_RSA_URL = (
+    'https://chromium.googlesource.com/chromiumos/chromite/'
+    '+/HEAD/ssh_keys/testing_rsa?format=TEXT'
+)
+_TESTING_RSA_FETCH_TIMEOUT_SECS = 15
+_testing_rsa_path = None
+
+
+def _read_testing_rsa_bytes():
+    """Loads ChromeOS testing_rsa from chromite, ~/.ssh, or Gitiles."""
+    candidates = (
+        os.path.join(
+            perf_config.REPO_ROOT,
+            'third_party',
+            'chromite',
+            'ssh_keys',
+            'testing_rsa',
+        ),
+        os.path.expanduser('~/.ssh/testing_rsa'),
+    )
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            with open(candidate, 'rb') as fp:
+                key_bytes = fp.read()
+            break
+    else:
+        with urllib.request.urlopen(
+            TESTING_RSA_URL, timeout=_TESTING_RSA_FETCH_TIMEOUT_SECS
+        ) as response:
+            key_bytes = base64.b64decode(response.read())
+    if not key_bytes.startswith(b'-----BEGIN '):
+        raise ValueError('Loaded testing_rsa does not contain a PEM key.')
+    return key_bytes
+
+
+def get_testing_rsa_path():
+    """Returns a 0600 path to the ChromeOS testing_rsa private key."""
+    global _testing_rsa_path
+    if _testing_rsa_path and os.path.exists(_testing_rsa_path):
+        return _testing_rsa_path
+    key_bytes = _read_testing_rsa_bytes()
+    fd, path = tempfile.mkstemp(prefix='cros_testing_rsa_')
+    os.chmod(path, 0o600)
+    with os.fdopen(fd, 'wb') as fp:
+        fp.write(key_bytes)
+    atexit.register(lambda p=path: os.path.exists(p) and os.remove(p))
+    _testing_rsa_path = path
+    return path
+
+
 # BatchMode makes ssh fail instead of hanging on a password/passphrase prompt,
 # and ConnectTimeout bounds how long ssh waits for an unreachable host.
 SSH_BASE_OPTS = [
@@ -50,6 +109,7 @@ ADB_COMMAND_TIMEOUT_SECS = 10
 # RemoteDeviceError that made the connectivity check fail. Keeps the check to
 # once per process.
 _preflight_results = {}
+_testing_rsa_hosts = set()
 
 
 class RemoteDeviceError(RuntimeError):
@@ -193,6 +253,11 @@ class LocalTransport(Transport):
 class SshTransport(Transport):
     """Runs commands on the sender over SSH."""
 
+    def __init__(self, host, username, allow_testing_rsa=False):
+        super().__init__(host, username)
+        self._allow_testing_rsa = allow_testing_rsa
+        self._use_testing_rsa = False
+
     @property
     def is_local(self):
         return False
@@ -201,12 +266,27 @@ class SshTransport(Transport):
     def _destination(self):
         return f'{self.username}@{self.host}'
 
+    @property
+    def using_testing_rsa(self):
+        return self._allow_testing_rsa and (
+            self._use_testing_rsa or self._cache_key in _testing_rsa_hosts
+        )
+
+    def _ssh_identity_opts(self):
+        if self.using_testing_rsa:
+            return [
+                '-o',
+                'PubkeyAcceptedAlgorithms=+ssh-rsa',
+                '-i',
+                get_testing_rsa_path(),
+            ]
+        return ['-i', SSH_KEY_PATH]
+
     def _ssh_argv(self, command):
         return [
             'ssh',
             *SSH_BASE_OPTS,
-            '-i',
-            SSH_KEY_PATH,
+            *self._ssh_identity_opts(),
             self._destination,
             command,
         ]
@@ -241,8 +321,7 @@ class SshTransport(Transport):
         res = subprocess.run(
             [
                 'scp',
-                '-i',
-                SSH_KEY_PATH,
+                *self._ssh_identity_opts(),
                 *SSH_BASE_OPTS,
                 f'{self._destination}:{remote_path}',
                 local_path,
@@ -271,8 +350,7 @@ class SshTransport(Transport):
         tunnel_argv = [
             'ssh',
             *SSH_BASE_OPTS,
-            '-i',
-            SSH_KEY_PATH,
+            *self._ssh_identity_opts(),
             # Optimization for tunnel throughput. Disable compression as video
             # data is already compressed.
             '-o',
@@ -432,6 +510,41 @@ class SshTransport(Transport):
             ) from e
 
         stdout = (result.stdout or '').strip()
+        if (
+            self._allow_testing_rsa
+            and result.returncode == SSH_CONNECT_ERROR
+            and 'Permission denied' in (result.stderr or '')
+            and not self.using_testing_rsa
+        ):
+            self._use_testing_rsa = True
+            try:
+                fallback = self.run('echo ok')
+                if (
+                    fallback.returncode == 0
+                    and (fallback.stdout or '').strip() == 'ok'
+                ):
+                    _testing_rsa_hosts.add(self._cache_key)
+                    logging.warning(
+                        'SSH to %s fell back to ChromeOS testing_rsa.',
+                        self._destination,
+                    )
+                    return
+                result = fallback
+                stdout = (result.stdout or '').strip()
+            except (
+                subprocess.TimeoutExpired,
+                urllib.error.URLError,
+                http.client.HTTPException,
+                OSError,
+                ValueError,
+            ) as e:
+                logging.warning(
+                    'ChromeOS testing_rsa SSH fallback for %s failed: %s',
+                    self._destination,
+                    e,
+                )
+            self._use_testing_rsa = False
+
         if result.returncode != 0 or stdout != 'ok':
             stderr = (result.stderr or '').strip() or '<empty>'
             reason = f'rc={result.returncode}, stdout={stdout!r}: {stderr}'
@@ -607,11 +720,11 @@ def verify_receiver_connectivity(receiver_addr, adb_path='adb'):
     raise last_error
 
 
-def make_transport(host, username):
+def make_transport(host, username, allow_testing_rsa=False):
     """Returns a LocalTransport for local senders, else an SshTransport."""
     if host in LOCAL_SENDERS:
         return LocalTransport(host, username)
-    return SshTransport(host, username)
+    return SshTransport(host, username, allow_testing_rsa=allow_testing_rsa)
 
 
 def reset_connectivity_cache():
@@ -620,3 +733,4 @@ def reset_connectivity_cache():
     Tests use this for isolation. Production code has no need to call it.
     """
     _preflight_results.clear()
+    _testing_rsa_hosts.clear()

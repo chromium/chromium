@@ -16,6 +16,7 @@ import typing_extensions
 from selenium.common.exceptions import WebDriverException
 
 import perf_config
+import remote_transport
 import senders
 
 # Optional Crossbench dependencies that the perf bots do not install.
@@ -36,6 +37,7 @@ _EXCLUDED_FLAGS = [
     '--start-fullscreen',
 ]
 _CROS_CHROME_PATH = "/opt/google/chrome/chrome"
+_PREINSTALLED_CHROMEDRIVER = "/usr/local/chromedriver/chromedriver"
 
 
 class _MockFinder(importlib.abc.MetaPathFinder, importlib.abc.Loader):
@@ -115,15 +117,19 @@ def detect_milestone(cb_platform):
 
 
 def install_chromedriver(sender, milestone):
-    """Installs a chromedriver matching `milestone` on the DUT.
+    """Returns a working chromedriver path on the ChromeOS DUT.
 
-    Crossbench's SSH platform expects the driver to be on the remote device.
-    Install failures propagate: without a matching chromedriver the run
-    cannot produce valid results.
-
-    Returns:
-        The remote chromedriver path.
+    Prefers the native ChromeOS test-image binary when present so it matches
+    the DUT's shared libraries (such as avoiding linux64 X11 deps).
     """
+    result = sender.run(f"{_PREINSTALLED_CHROMEDRIVER} --version")
+    if result.returncode == 0:
+        logging.info(
+            "Using preinstalled ChromeOS chromedriver %s (%s).",
+            _PREINSTALLED_CHROMEDRIVER,
+            (result.stdout or "").strip(),
+        )
+        return _PREINSTALLED_CHROMEDRIVER
     sender.install_chrome(milestone)
     return sender.driver_path
 
@@ -178,6 +184,14 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
         ssh_port=22,
         ssh_user=args.username,
     )
+    if getattr(sender.transport, 'using_testing_rsa', False):
+        cb_platform.SSH_OPTIONS = (
+            *cb_platform.SSH_OPTIONS,
+            '-o',
+            'PubkeyAcceptedAlgorithms=+ssh-rsa',
+            '-i',
+            remote_transport.get_testing_rsa_path(),
+        )
 
     # Enable detailed logging for Crossbench to debug autologin issues.
     logging.getLogger('crossbench').setLevel(logging.DEBUG)

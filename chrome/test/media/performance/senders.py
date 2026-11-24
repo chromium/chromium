@@ -1059,5 +1059,9 @@ def make_sender(args):
             f"Unsupported sender_os: {args.sender_os}"
         ) from None
     return sender_class(
-        remote_transport.make_transport(args.sender, args.username)
+        remote_transport.make_transport(
+            args.sender,
+            args.username,
+            allow_testing_rsa=(args.sender_os == 'cros'),
+        )
     )

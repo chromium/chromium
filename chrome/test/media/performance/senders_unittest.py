@@ -110,6 +110,19 @@ class MakeSenderTest(unittest.TestCase):
         self.assertEqual(senders.CrosSender.TMP_DIR, '/usr/local/tmp')
         self.assertEqual(senders.WindowsSender.TMP_DIR, 'C:/cft_temp')
 
+    def test_testing_rsa_fallback_only_enabled_for_cros(self):
+        for sender_os in ('mac', 'linux', 'win', 'cros'):
+            with self.subTest(sender_os=sender_os):
+                with mock.patch(
+                    'remote_transport.make_transport'
+                ) as make_transport:
+                    senders.make_sender(make_args(sender_os=sender_os))
+                make_transport.assert_called_once_with(
+                    MAC_HOST,
+                    fakes.USER,
+                    allow_testing_rsa=(sender_os == 'cros'),
+                )
+
 
 class DownloadCftUrlsTest(unittest.TestCase):
     def setUp(self):

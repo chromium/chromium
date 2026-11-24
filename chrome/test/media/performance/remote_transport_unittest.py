@@ -4,11 +4,17 @@
 # found in the LICENSE file.
 """Unit tests for remote_transport.py."""
 
+import base64
 import errno
+import io
+import os
 import socket
+import stat
 import subprocess
+import tempfile
 import unittest
 from unittest import mock
+import urllib.error
 
 import perf_test_fakes as fakes
 from perf_test_fakes import IP, MAC_HOST, NO_ROUTE, USER, WIN_HOST, completed
@@ -27,8 +33,10 @@ from remote_transport import (
 RECEIVER = '172.16.0.3:5555'
 
 
-def _ssh(host=MAC_HOST, username=USER):
-    return remote_transport.make_transport(host, username)
+def _ssh(host=MAC_HOST, username=USER, allow_testing_rsa=False):
+    return remote_transport.make_transport(
+        host, username, allow_testing_rsa=allow_testing_rsa
+    )
 
 
 class VerifyConnectivityTest(fakes.SenderTestCase):
@@ -106,6 +114,60 @@ class VerifyConnectivityTest(fakes.SenderTestCase):
             f'ERROR:root:SSH to {MAC_HOST} failed (rc=255): '
             f'{fakes.PUBKEY_DENIED}',
             logs.output,
+        )
+
+    def test_testing_rsa_fallback_is_disabled_by_default(self):
+        self.ssh.responses['echo ok'] = completed(
+            255, stderr=fakes.PUBKEY_DENIED
+        )
+        with mock.patch.object(
+            remote_transport, 'get_testing_rsa_path'
+        ) as get_key:
+            with self.assertLogs(level='WARNING'):
+                with self.assertRaises(SenderSshError):
+                    _ssh().verify_connectivity()
+
+        get_key.assert_not_called()
+        for call in self.run.call_args_list:
+            self.assertNotIn('PubkeyAcceptedAlgorithms=+ssh-rsa', call.args[0])
+
+    def test_testing_rsa_fallback_works_when_enabled(self):
+        self._patch(
+            'remote_transport.get_testing_rsa_path',
+            return_value='/tmp/fake_testing_rsa',
+        )
+
+        def dispatch(argv, **kwargs):
+            del kwargs
+            if 'PubkeyAcceptedAlgorithms=+ssh-rsa' in argv:
+                return completed(stdout='ok\n')
+            return completed(255, stderr=fakes.PUBKEY_DENIED)
+
+        self.run.side_effect = dispatch
+        transport = _ssh(allow_testing_rsa=True)
+        with self.assertLogs(level='WARNING') as logs:
+            transport.verify_connectivity()
+
+        self.assertTrue(transport.using_testing_rsa)
+        self.assertTrue(
+            any('fell back to ChromeOS testing_rsa' in m for m in logs.output)
+        )
+
+    def test_testing_rsa_fetch_failure_raises_ssh_error(self):
+        self.ssh.responses['echo ok'] = completed(
+            255, stderr=fakes.PUBKEY_DENIED
+        )
+        self._patch(
+            'remote_transport.get_testing_rsa_path',
+            side_effect=urllib.error.URLError('offline'),
+        )
+        with self.assertLogs(level='WARNING') as logs:
+            with self.assertRaises(SenderSshError) as ctx:
+                _ssh(allow_testing_rsa=True).verify_connectivity()
+
+        self.assertIn(fakes.PUBKEY_DENIED, str(ctx.exception))
+        self.assertTrue(
+            any('testing_rsa SSH fallback' in m for m in logs.output)
         )
 
     def test_ssh_unexpected_stdout_raises_ssh_error(self):
@@ -460,6 +522,75 @@ class VerifyReceiverConnectivityTest(fakes.SenderTestCase):
                 verify_receiver_connectivity(RECEIVER)
         self.assertIn('device offline', str(ctx.exception))
         self.assertEqual(self.sleep.call_count, 2)
+
+
+class TestingRsaLoaderTest(unittest.TestCase):
+    _FAKE_PEM = b'-----BEGIN TEST KEY-----\nfake\n-----END TEST KEY-----\n'
+
+    def setUp(self):
+        super().setUp()
+        self._orig_path = getattr(remote_transport, '_testing_rsa_path')
+        self.addCleanup(self._cleanup_temp_key)
+        setattr(remote_transport, '_testing_rsa_path', None)
+
+    def _cleanup_temp_key(self):
+        path = getattr(remote_transport, '_testing_rsa_path')
+        if path and path != self._orig_path and os.path.exists(path):
+            os.remove(path)
+        setattr(remote_transport, '_testing_rsa_path', self._orig_path)
+
+    def test_reads_local_chromite_key_into_0600_temp_file(self):
+        with tempfile.TemporaryDirectory() as repo_root:
+            key_path = os.path.join(
+                repo_root, 'third_party', 'chromite', 'ssh_keys', 'testing_rsa'
+            )
+            os.makedirs(os.path.dirname(key_path))
+            with open(key_path, 'wb') as fp:
+                fp.write(self._FAKE_PEM)
+            os.chmod(key_path, 0o644)
+
+            with (
+                mock.patch.object(
+                    remote_transport.perf_config, 'REPO_ROOT', repo_root
+                ),
+                mock.patch.object(
+                    remote_transport.urllib.request, 'urlopen'
+                ) as urlopen,
+            ):
+                loaded_path = remote_transport.get_testing_rsa_path()
+
+            urlopen.assert_not_called()
+            self.assertEqual(stat.S_IMODE(os.stat(loaded_path).st_mode), 0o600)
+            with open(loaded_path, 'rb') as fp:
+                self.assertEqual(fp.read(), self._FAKE_PEM)
+
+    def test_fetches_from_gitiles_when_not_on_disk(self):
+        encoded = base64.b64encode(self._FAKE_PEM)
+        with tempfile.TemporaryDirectory() as empty_dir:
+            with (
+                mock.patch.object(
+                    remote_transport.perf_config, 'REPO_ROOT', empty_dir
+                ),
+                mock.patch.object(
+                    remote_transport.os.path,
+                    'expanduser',
+                    return_value=os.path.join(empty_dir, 'missing_testing_rsa'),
+                ),
+                mock.patch.object(
+                    remote_transport.urllib.request,
+                    'urlopen',
+                    return_value=io.BytesIO(encoded),
+                ) as urlopen,
+            ):
+                loaded_path = remote_transport.get_testing_rsa_path()
+
+            urlopen.assert_called_once_with(
+                remote_transport.TESTING_RSA_URL,
+                timeout=remote_transport._TESTING_RSA_FETCH_TIMEOUT_SECS,
+            )
+            self.assertEqual(stat.S_IMODE(os.stat(loaded_path).st_mode), 0o600)
+            with open(loaded_path, 'rb') as fp:
+                self.assertEqual(fp.read(), self._FAKE_PEM)
 
 
 if __name__ == '__main__':

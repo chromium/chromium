@@ -28,6 +28,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 import common
+import cros_updater
 import test_results
 
 # Must follow common, which puts these modules on sys.path.
@@ -795,6 +796,11 @@ def _run_tests(reporter):
         choices=['mac', 'win', 'linux', 'cros'],
         help='OS of the sender device.',
     )
+    parser.add_argument(
+        '--skip-cros-update',
+        action='store_true',
+        help='Skip auto-updating a ChromeOS sender DUT to LATEST-main.',
+    )
     args, _ = parser.parse_known_args()
     cv = args.chrome_version
     run_vp9_tests = should_run_vp9_tests(args)
@@ -809,6 +815,9 @@ def _run_tests(reporter):
 
     # Fail fast if the Chromecast receiver cannot be reached over ADB.
     common.verify_receiver_connectivity(RECEIVER_IP, ADB_PATH)
+
+    if args.sender_os == 'cros' and not args.skip_cros_update:
+        cros_updater.ensure_latest_canary(args)
 
     # Configure Perfetto tracing on the ADB receiver.
     try:
