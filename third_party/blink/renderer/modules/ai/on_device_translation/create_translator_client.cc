@@ -159,7 +159,8 @@ void CreateTranslatorClient::Trace(Visitor* visitor) const {
 void CreateTranslatorClient::OnResult(
     mojom::blink::CreateTranslatorResultPtr result,
     mojom::blink::TranslatorLanguageCodePtr source_language,
-    mojom::blink::TranslatorLanguageCodePtr target_language) {
+    mojom::blink::TranslatorLanguageCodePtr target_language,
+    std::optional<uint64_t> input_quota) {
   // Call `Cleanup` when this function returns.
   RunOnDestruction run_on_destruction(
       BindOnce(&CreateTranslatorClient::Cleanup, WrapWeakPersistent(this)));
@@ -174,6 +175,7 @@ void CreateTranslatorClient::OnResult(
     CHECK(result->is_error());
     CHECK(!source_language);
     CHECK(!target_language);
+    CHECK(!input_quota);
 
     GetExecutionContext()->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kJavaScript,
@@ -197,7 +199,7 @@ void CreateTranslatorClient::OnResult(
   GetResolver()->Resolve(MakeGarbageCollected<Translator>(
       GetScriptState(), std::move(result->get_translator()), task_runner_,
       std::move(source_language_), std::move(target_language_),
-      GetAbortSignal()));
+      GetAbortSignal(), input_quota));
 }
 
 void CreateTranslatorClient::OnGotAvailability(

@@ -5,8 +5,10 @@
 #include "chrome/browser/on_device_translation/translation_manager_impl.h"
 
 #include <array>
+#include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -110,7 +112,8 @@ class TestCreateTranslatorClient
   // blink::mojom::TranslationManagerCreateTranslatorClient:
   void OnResult(blink::mojom::CreateTranslatorResultPtr result,
                 blink::mojom::TranslatorLanguageCodePtr source_lang,
-                blink::mojom::TranslatorLanguageCodePtr target_lang) override {
+                blink::mojom::TranslatorLanguageCodePtr target_lang,
+                std::optional<uint64_t> input_quota) override {
     result_future_.SetValue(std::move(result));
   }
 

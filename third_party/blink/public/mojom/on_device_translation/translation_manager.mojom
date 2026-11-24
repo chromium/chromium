@@ -126,9 +126,12 @@ interface TranslationManagerCreateTranslatorClient {
   // Called with a created Translator's mojo interface as a result for the
   // CreateTranslator() method of the TranslationManager. When failed to create
   // a Translator, this method is called with an error result.
+  // input_quota is the maximum UTF-8 byte length accepted per translation
+  // call, or null when there is no per-call input limit.
   OnResult(CreateTranslatorResult result,
            TranslatorLanguageCode? source_lang,
-           TranslatorLanguageCode? target_lang);
+           TranslatorLanguageCode? target_lang,
+           uint64? input_quota);
 };
 
 // This is used when creating a new Translator for Translator API.

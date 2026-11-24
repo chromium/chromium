@@ -4,6 +4,8 @@
 
 #include "chrome/browser/on_device_translation/translation_manager_impl.h"
 
+#include <cstdint>
+#include <optional>
 #include <string_view>
 
 #include "base/feature_list.h"
@@ -12,6 +14,7 @@
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
 #include "components/component_updater/component_updater_service.h"
@@ -339,7 +342,8 @@ void TranslationManagerImpl::ReplyWithCreateTranslatorError(
     CreateTranslatorError error) {
   if (TranslationManagerCreateTranslatorClient* client =
           pending_clients_.Get(client_id)) {
-    client->OnResult(CreateTranslatorResult::NewError(error), nullptr, nullptr);
+    client->OnResult(CreateTranslatorResult::NewError(error), nullptr, nullptr,
+                     std::nullopt);
     pending_clients_.Remove(client_id);
   }
 }
@@ -385,10 +389,15 @@ void TranslationManagerImpl::CreateTranslatorImpl(
               browser_context_),
           source_language, target_language, std::move(result.value())),
       blink_remote.InitWithNewPipeAndPassReceiver());
+  const int max_input_size = kTranslationAPIMaxInputSizeBytes.Get();
+  const std::optional<uint64_t> input_quota =
+      max_input_size > 0
+          ? std::make_optional(base::checked_cast<uint64_t>(max_input_size))
+          : std::nullopt;
   client->OnResult(
       CreateTranslatorResult::NewTranslator(std::move(blink_remote)),
       TranslatorLanguageCode::New(source_language),
-      TranslatorLanguageCode::New(target_language));
+      TranslatorLanguageCode::New(target_language), input_quota);
   pending_clients_.Remove(client_id);
 
   // TODO(crbug.com/414393698): Ensure stored WebsiteSetting is not

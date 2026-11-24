@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_CREATE_TRANSLATOR_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_CREATE_TRANSLATOR_CLIENT_H_
 
+#include <cstdint>
+#include <optional>
+
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_translator_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -31,10 +34,10 @@ class CreateTranslatorClient
 
   void Trace(Visitor* visitor) const override;
 
-  void OnResult(
-      mojom::blink::CreateTranslatorResultPtr result,
-      mojom::blink::TranslatorLanguageCodePtr source_language,
-      mojom::blink::TranslatorLanguageCodePtr target_language) override;
+  void OnResult(mojom::blink::CreateTranslatorResultPtr result,
+                mojom::blink::TranslatorLanguageCodePtr source_language,
+                mojom::blink::TranslatorLanguageCodePtr target_language,
+                std::optional<uint64_t> input_quota) override;
 
   void OnGotAvailability(mojom::blink::CanCreateTranslatorResult result);
 

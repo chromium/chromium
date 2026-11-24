@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
 
+#include <cstdint>
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom-blink.h"
@@ -33,7 +36,8 @@ class MODULES_EXPORT Translator final : public ScriptWrappable {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       String source_language,
       String target_language,
-      AbortSignal* abort_signal);
+      AbortSignal* abort_signal,
+      std::optional<uint64_t> input_quota);
   ~Translator() override = default;
 
   mojo::PendingReceiver<blink::mojom::blink::Translator>
@@ -81,6 +85,8 @@ class MODULES_EXPORT Translator final : public ScriptWrappable {
 
   String source_language_;
   String target_language_;
+
+  const std::optional<uint64_t> input_quota_;
 
   AbortManager abort_manager_;
 };

@@ -4,11 +4,16 @@
 
 #include "third_party/blink/renderer/modules/ai/on_device_translation/translator.h"
 
+#include <unicode/utf.h>
+#include <unicode/utf8.h>
+
+#include <cstdint>
 #include <limits>
 
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom-blink.h"
@@ -29,6 +34,8 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 namespace {
@@ -59,6 +66,21 @@ bool ValidateAndCanonicalizeSourceAndTargetLanguages(
   return true;
 }
 
+// Computes the UTF-8 byte length of `ReplaceUnmatchedSurrogates(input)`
+// without allocating a UTF-8 buffer.
+uint64_t MeasureUtf8ByteLength(const String& input) {
+  if (input.empty()) {
+    return 0;
+  }
+  uint64_t length = 0;
+  for (UChar32 cp : StringView(input)) {
+    // U8_LENGTH returns 0 for surrogates, but ReplaceUnmatchedSurrogates()
+    // replaces unmatched surrogates with U+FFFD (3 UTF-8 bytes).
+    length += U_IS_SURROGATE(cp) ? 3 : U8_LENGTH(cp);
+  }
+  return length;
+}
+
 }  // namespace
 
 Translator::Translator(
@@ -67,10 +89,12 @@ Translator::Translator(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     String source_language,
     String target_language,
-    AbortSignal* abort_signal)
+    AbortSignal* abort_signal,
+    std::optional<uint64_t> input_quota)
     : task_runner_(std::move(task_runner)),
       source_language_(std::move(source_language)),
       target_language_(std::move(target_language)),
+      input_quota_(input_quota),
       abort_manager_(script_state, abort_signal, this) {
   translator_remote_.Bind(std::move(pending_remote), task_runner_);
 }
@@ -292,15 +316,22 @@ ScriptPromise<IDLDouble> Translator::measureInputUsage(
   auto* resolver = MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(
       script_state, signal);
 
+  // The browser enforces `TranslationAPIMaxInputSizeBytes` on the UTF-8 string
+  // sent over Mojo, so measure usage in UTF-8 bytes to match `inputQuota` and
+  // `QuotaExceededError.requested`.
+  const double usage =
+      input_quota_ ? base::strict_cast<double>(MeasureUtf8ByteLength(input))
+                   : 0.0;
   task_runner_->PostTask(
       FROM_HERE, BindOnce(&ResolverWithAbortSignal<IDLDouble>::Resolve<double>,
-                          WrapPersistent(resolver), 0));
+                          WrapPersistent(resolver), usage));
 
   return resolver->Promise();
 }
 
 double Translator::inputQuota() const {
-  return std::numeric_limits<double>::infinity();
+  return input_quota_ ? base::strict_cast<double>(*input_quota_)
+                      : std::numeric_limits<double>::infinity();
 }
 
 }  // namespace blink
