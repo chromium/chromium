@@ -695,7 +695,9 @@ suite('AppMenuButtonTest', function() {
         await microtasksFinished();
         assertEquals(
             prefersReducedMotion ? '0s' : '0.25s',
-            window.getComputedStyle(appMenuButton.$.button.$.button, '::before')
+            window
+                .getComputedStyle(
+                    appMenuButton.$.button.$.background, '::before')
                 .transitionDuration);
         if (prefersReducedMotion) {
           assertFalse(appMenuButton.glowUpActive);

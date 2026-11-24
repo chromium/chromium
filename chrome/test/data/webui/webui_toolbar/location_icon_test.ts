@@ -133,9 +133,10 @@ suite('LocationIconTest', function() {
     assertTrue(locationIcon.hasAttribute('is-text-dangerous'));
     assertTrue(locationIcon.hasAttribute('is-dangerous'));
 
-    const innerButton = locationIcon.$.button.$.button;
-    assertTrue(hasStyle(innerButton, 'background-color', 'rgb(0, 0, 255)'));
-    assertTrue(hasStyle(innerButton, 'color', 'rgb(0, 255, 0)'));
+    const chip = locationIcon.$.button;
+    assertTrue(
+        hasStyle(chip.$.background, 'background-color', 'rgb(0, 0, 255)'));
+    assertTrue(hasStyle(chip.$.button, 'color', 'rgb(0, 255, 0)'));
   });
 
   test('Dangerous level, Not secure text', async function() {
@@ -794,9 +795,9 @@ suite('LocationIconTest', function() {
           };
           await microtasksFinished();
         };
-        const innerButton = locationIcon.$.button.$.button;
+        const visualTarget = locationIcon.$.button.$.background;
         const getPulseStyle = () =>
-            window.getComputedStyle(innerButton, '::before');
+            window.getComputedStyle(visualTarget, '::before');
 
         locationIcon.hasHelpBubble = true;
         const pressedGradient = (color: string) => `linear-gradient(${color})`;
@@ -816,7 +817,7 @@ suite('LocationIconTest', function() {
         // highlighted).
         locationIcon.$.button.toggleAttribute('is-menu-open', true);
         assertEquals(
-            '0', window.getComputedStyle(innerButton, '::after').opacity);
+            '0', window.getComputedStyle(visualTarget, '::after').opacity);
         locationIcon.$.button.toggleAttribute('is-menu-open', false);
 
         await setState(/*isClickable=*/ true, /*isTextDangerous=*/ true);

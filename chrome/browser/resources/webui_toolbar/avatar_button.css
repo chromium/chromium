@@ -44,10 +44,11 @@
   --toolbar-chip-fg-color: var(--cr-toolbar-button-highlight-text-color);
 }
 
+/* Painted by toolbar-chip-button around its visible pill, which is inset from
+ * the button in touch mode. Like native ToolbarButton's border, it takes no
+ * extra space. */
 #button[has-border] {
-  border: 1px solid var(--cr-toolbar-button-border-color);
-  border-radius: var(--toolbar-chip-border-radius);
-  box-sizing: border-box;
+  --toolbar-chip-border: 1px solid var(--cr-toolbar-button-border-color);
 }
 
 #icon {

@@ -34,9 +34,19 @@
   --toolbar-chip-ink-drop-ripple-color: var(--color-toolbar-ink-drop-ripple);
 
   --toolbar-chip-height: var(--toolbar-button-height);
+  /* Like native ToolbarButton::UpdateColorsAndInsets() and
+   * GetToolbarInkDropInsets(), the background, highlights and focus ring
+   * (#background) are painted no taller than the location bar, inset by the
+   * same amount on all sides, while #button keeps its full size as the hit
+   * target. This is 0 unless the chip is taller than the location bar (toolbar
+   * buttons in touch mode). */
+  --toolbar-chip-paint-inset: max(0px, round(down,
+      (var(--toolbar-chip-height) -
+       var(--location-bar-height, var(--toolbar-chip-height))) / 2, 1px));
   --toolbar-chip-icon-size: var(--toolbar-button-icon-size);
   --toolbar-chip-icon-label-gap: 0px;
-  --toolbar-chip-border-radius: calc(var(--toolbar-chip-height) / 2);
+  --toolbar-chip-border-radius: calc(var(--toolbar-chip-height) / 2 -
+                                     var(--toolbar-chip-paint-inset));
   --toolbar-chip-collapsed-padding-start: 0px;
   --toolbar-chip-collapsed-padding-end: 0px;
   --toolbar-chip-padding-start: 0px;
@@ -56,13 +66,13 @@
   --toolbar-chip-pressed-fade-duration: 300ms;
 }
 
-/* The base layer of the button, defining its shape, size, and base background
-   color, etc. */
+/* The base layer of the button, defining its size (the hit target) and the
+   layout of its content. */
 #button {
   align-items: center;
-  background-color: var(--toolbar-chip-bg-color, transparent);
+  /* Resets the UA button background; #background paints the chip. */
+  background-color: transparent;
   border: none;
-  border-radius: var(--toolbar-chip-border-radius);
   color: inherit;
   cursor: default;
   display: flex;
@@ -86,24 +96,38 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* The painted layer of the button, defining its shape, base background color,
+ * border and focus ring. Its ::before/::after are the highlights. Inset by
+ * --toolbar-chip-paint-inset, see above. Slotted content paints above it (see
+ * ::slotted(*) below). */
+#background {
+  background-color: var(--toolbar-chip-bg-color, transparent);
+  border: var(--toolbar-chip-border, none);
+  border-radius: var(--toolbar-chip-border-radius);
+  box-sizing: border-box;
+  inset: var(--toolbar-chip-paint-inset);
+  pointer-events: none;
+  position: absolute;
+}
+
 /* --- SPLIT BUTTON ---
  * Flattens the inner side of the chip so it visually joins an adjacent
  * companion chip. Logical longhands are used so RTL mirrors automatically.
  * The ::before/::after highlights, the help-bubble anchor and both focus ring
  * variants inherit or follow these radii, matching Views'
  * ToolbarButtonHighlightPathGenerator. */
-:host([flat-edge]) #button {
+:host([flat-edge]) #background {
   /* Matches Views kSplitFlatEdgetRadius / kSplitLeftEdgeRadius
    * (glic_button.h, glic_actor_task_icon.h). */
   --flat-edge-radius: 2px;
 }
 
-:host([flat-edge='start']) #button {
+:host([flat-edge='start']) #background {
   border-end-start-radius: var(--flat-edge-radius);
   border-start-start-radius: var(--flat-edge-radius);
 }
 
-:host([flat-edge='end']) #button {
+:host([flat-edge='end']) #background {
   border-end-end-radius: var(--flat-edge-radius);
   border-start-end-radius: var(--flat-edge-radius);
 }
@@ -111,7 +135,7 @@
 /* Pressed color painted in the IPH pulse; see help_bubble_anchor.css.
  * Like [is-menu-open] below, suppressed when [disable-hover-highlight] is set
  * for chips that are not currently interactive (native InkDropMode::OFF). */
-:host(:not([disable-hover-highlight])) #button {
+:host(:not([disable-hover-highlight])) #background {
   --iph-pressed-color: var(--toolbar-chip-ink-drop-ripple-color);
 }
 
@@ -120,9 +144,9 @@
  * We use ::before for the hover highlight and ::after for the pressed
  * highlight.
  * Slotted elements are positioned (position: relative; z-index: 1) to paint
- * cleanly on top of these absolute background highlights. */
+ * cleanly on top of #background and these highlights. */
 
-#button::before {
+#background::before {
   border-radius: inherit;
   content: '';
   inset: 0;
@@ -133,7 +157,7 @@
   transition: opacity var(--toolbar-chip-highlight-fade-duration) ease-in-out;
 }
 
-#button::after {
+#background::after {
   border-radius: inherit;
   content: '';
   inset: 0;
@@ -150,9 +174,9 @@
  *
  * The [disable-hover-highlight] attribute suppresses the highlight (including
  * the [is-menu-open] state) for chips that are not currently interactive. */
-:host(:hover:not([disable-hover-highlight])) #button::before,
-:host(:active:not([disable-hover-highlight])) #button::before,
-:host([is-menu-open]:not([disable-hover-highlight])) #button::before {
+:host(:hover:not([disable-hover-highlight])) #background::before,
+:host(:active:not([disable-hover-highlight])) #background::before,
+:host([is-menu-open]:not([disable-hover-highlight])) #background::before {
   opacity: 1;
 }
 
@@ -163,8 +187,8 @@
  * The [disable-pressed-highlight] attribute suppresses the pointer-driven
  * (:active) pressed highlight, e.g. for chips that are not currently
  * interactive, or that play their own press animation. */
-:host(:active:not([disable-pressed-highlight])) #button::after,
-:host([is-menu-open]:not([disable-hover-highlight])) #button::after {
+:host(:active:not([disable-pressed-highlight])) #background::after,
+:host([is-menu-open]:not([disable-hover-highlight])) #background::after {
   opacity: 1;
   transition-duration: 0s; /* Instant for pressed state */
 }
@@ -173,8 +197,8 @@
  * natively creates an inset focus ring. Note that some subclasses manually
  * re-enable outset rings dynamically (e.g., App Menu, Avatar Button) when their
  * labels expand. */
-#button:focus-visible,
-:host([force-focus-ring]) #button {
+#button:focus-visible #background,
+:host([force-focus-ring]) #background {
   box-shadow: inset 0 0 0 2px
       var(--color-toolbar-focus-ring, var(--cr-focus-outline-color));
 }
@@ -185,8 +209,8 @@
  *
  * It is also used dynamically by some buttons (e.g., Avatar Button and App Menu
  * when they expand. */
-:host([outset-focus-ring]) #button:focus-visible,
-:host([outset-focus-ring][force-focus-ring]) #button {
+:host([outset-focus-ring]) #button:focus-visible #background,
+:host([outset-focus-ring][force-focus-ring]) #background {
   box-shadow: none;
   outline: 2px solid
       var(--color-toolbar-focus-ring, var(--cr-focus-outline-color));
@@ -198,14 +222,14 @@
    * box-shadow. Match native Views FocusRing (kColorToolbarFocusRing, which
    * blends kColorFocusableBorderFocused against kColorToolbar for >= 3:1
    * contrast). */
-  #button:focus-visible,
-  :host([force-focus-ring]) #button {
+  #button:focus-visible #background,
+  :host([force-focus-ring]) #background {
     box-shadow: none;
     outline: 2px solid var(--color-toolbar-focus-ring, ButtonText);
   }
 
-  :host([outset-focus-ring]) #button:focus-visible,
-  :host([outset-focus-ring][force-focus-ring]) #button {
+  :host([outset-focus-ring]) #button:focus-visible #background,
+  :host([outset-focus-ring][force-focus-ring]) #background {
     outline-color: var(--color-toolbar-focus-ring, ButtonText);
   }
 }
@@ -254,9 +278,12 @@
 }
 
 /* Tonal look for chips with labels. */
-:host([has-label]) #button {
+:host([has-label]) #background {
   background-color: var(--toolbar-chip-bg-color,
                         var(--color-toolbar-background-subtle-emphasis));
+}
+
+:host([has-label]) #button {
   color: inherit;
   gap: var(--toolbar-chip-icon-label-gap);
 
@@ -313,7 +340,11 @@
       padding-inline-start var(--toolbar-chip-expand-duration, 600ms)
           var(--ease-out-cubic-bezier),
       padding-inline-end var(--toolbar-chip-expand-duration, 600ms)
-          var(--ease-out-cubic-bezier),
+          var(--ease-out-cubic-bezier);
+}
+
+:host([animates-label]) #background {
+  transition:
       background-color var(--toolbar-chip-expand-duration, 600ms)
           var(--ease-out-cubic-bezier);
 }
@@ -354,14 +385,16 @@
 /* Use !important to unconditionally suppress transitions regardless of selector
  * specificity or rule ordering (matching prefers-reduced-motion below). */
 :host([disable-transitions]) #button,
+:host([disable-transitions]) #background,
 :host([disable-transitions]) ::slotted(*) {
   transition: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
   #button,
-  #button::before,
-  #button::after,
+  #background,
+  #background::before,
+  #background::after,
   ::slotted(*) {
     animation: none;
     transition: none !important;

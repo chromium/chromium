@@ -8,13 +8,14 @@ import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 export function getHtml(this: ToolbarChipButtonElement) {
   return html`<!--_html_template_start_-->
-<button id="button" class="iph-visual-target" tabindex="${this.buttonTabIndex}"
+<button id="button" tabindex="${this.buttonTabIndex}"
     ?disabled="${this.disabled}" aria-label="${this.ariaLabel}"
     aria-description="${this.ariaDescription}"
     aria-haspopup="${this.ariaHasPopup || nothing}"
     aria-expanded="${this.ariaExpanded || nothing}"
     aria-pressed="${this.ariaPressed || nothing}"
     role="${this.buttonRole || nothing}" title="${this.tooltip || ''}">
+  <span id="background" class="iph-visual-target"></span>
   <slot name="prefix-icon" @slotchange="${this.onPrefixIconSlotchange_}"></slot>
   <slot></slot>
   <slot name="suffix-icon" @slotchange="${this.onSuffixIconSlotchange_}"></slot>

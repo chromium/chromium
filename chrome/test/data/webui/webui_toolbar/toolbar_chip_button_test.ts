@@ -5,7 +5,7 @@
 import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {ToolbarChipButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
 suite('ToolbarChipButtonTest', function() {
@@ -169,6 +169,51 @@ suite('ToolbarChipButtonTest', function() {
     assertEquals('none', window.getComputedStyle(content).maxWidth);
   });
 
+  // Like native ToolbarButton, a chip taller than the location bar (toolbar
+  // buttons in touch mode) keeps its full height as the hit target, but paints
+  // its background, highlights and focus ring at the location bar height,
+  // inset evenly on all sides.
+  test('PaintsAtLocationBarHeight', async function() {
+    // Only the inset layer paints; #button (a real <button>) must not show its
+    // UA background, with or without a label.
+    const transparent = 'rgba(0, 0, 0, 0)';
+    assertTrue(hasStyle(element.$.button, 'background-color', transparent));
+
+    const label = document.createElement('span');
+    label.textContent = 'label';
+    element.appendChild(label);
+    element.toggleAttribute('has-label', true);
+    // The painted layer is also the IPH visual target.
+    const painted = element.$.background;
+    assertTrue(painted.classList.contains('iph-visual-target'));
+
+    async function assertPaintInset(
+        buttonHeight: number, locationBarHeight: number, inset: number) {
+      element.style.setProperty('--toolbar-button-height', `${buttonHeight}px`);
+      element.style.setProperty(
+          '--location-bar-height', `${locationBarHeight}px`);
+      await microtasksFinished();
+
+      assertTrue(hasStyle(element.$.button, 'background-color', transparent));
+      const buttonRect = element.$.button.getBoundingClientRect();
+      assertEquals(buttonHeight, buttonRect.height);
+      const paintedRect = painted.getBoundingClientRect();
+      assertEquals(buttonRect.top + inset, paintedRect.top);
+      assertEquals(buttonRect.bottom - inset, paintedRect.bottom);
+      assertEquals(buttonRect.left + inset, paintedRect.left);
+      assertEquals(buttonRect.right - inset, paintedRect.right);
+      assertTrue(hasStyle(
+          painted, 'border-top-left-radius', `${paintedRect.height / 2}px`));
+    }
+
+    // Touch mode.
+    await assertPaintInset(48, 36, 6);
+    // Non-touch mode, where both heights match.
+    await assertPaintInset(34, 34, 0);
+    // Chips shorter than the location bar (location bar chips) aren't inset.
+    await assertPaintInset(24, 36, 0);
+  });
+
   function getCornerRadii(el: Element, pseudo?: string) {
     const style = window.getComputedStyle(el, pseudo);
     return {
@@ -184,7 +229,7 @@ suite('ToolbarChipButtonTest', function() {
     await microtasksFinished();
 
     assertFalse(element.hasAttribute('flat-edge'));
-    const radii = getCornerRadii(element.$.button);
+    const radii = getCornerRadii(element.$.background);
     assertEquals('14px', radii.topLeft);
     assertEquals('14px', radii.topRight);
     assertEquals('14px', radii.bottomLeft);
@@ -197,7 +242,7 @@ suite('ToolbarChipButtonTest', function() {
     element.flatEdge = 'end';
     await microtasksFinished();
 
-    let radii = getCornerRadii(element.$.button);
+    let radii = getCornerRadii(element.$.background);
     assertEquals('14px', radii.topLeft);
     assertEquals('14px', radii.bottomLeft);
     assertEquals('2px', radii.topRight);
@@ -206,7 +251,7 @@ suite('ToolbarChipButtonTest', function() {
     element.flatEdge = null;
     await microtasksFinished();
 
-    radii = getCornerRadii(element.$.button);
+    radii = getCornerRadii(element.$.background);
     assertEquals('14px', radii.topLeft);
     assertEquals('14px', radii.bottomLeft);
     assertEquals('14px', radii.topRight);
@@ -218,7 +263,7 @@ suite('ToolbarChipButtonTest', function() {
     element.flatEdge = 'start';
     await microtasksFinished();
 
-    const radii = getCornerRadii(element.$.button);
+    const radii = getCornerRadii(element.$.background);
     assertEquals('2px', radii.topLeft);
     assertEquals('2px', radii.bottomLeft);
     assertEquals('14px', radii.topRight);
@@ -231,7 +276,7 @@ suite('ToolbarChipButtonTest', function() {
     element.flatEdge = 'end';
     await microtasksFinished();
 
-    const radii = getCornerRadii(element.$.button);
+    const radii = getCornerRadii(element.$.background);
     assertEquals('2px', radii.topLeft);
     assertEquals('2px', radii.bottomLeft);
     assertEquals('14px', radii.topRight);
@@ -245,24 +290,24 @@ suite('ToolbarChipButtonTest', function() {
     element.flatEdge = 'end';
     await microtasksFinished();
 
-    const buttonRadii = getCornerRadii(element.$.button);
+    const layerRadii = getCornerRadii(element.$.background);
     for (const pseudo of ['::before', '::after']) {
-      const radii = getCornerRadii(element.$.button, pseudo);
-      assertEquals(buttonRadii.topLeft, radii.topLeft, pseudo);
-      assertEquals(buttonRadii.topRight, radii.topRight, pseudo);
-      assertEquals(buttonRadii.bottomLeft, radii.bottomLeft, pseudo);
-      assertEquals(buttonRadii.bottomRight, radii.bottomRight, pseudo);
+      const radii = getCornerRadii(element.$.background, pseudo);
+      assertEquals(layerRadii.topLeft, radii.topLeft, pseudo);
+      assertEquals(layerRadii.topRight, radii.topRight, pseudo);
+      assertEquals(layerRadii.bottomLeft, radii.bottomLeft, pseudo);
+      assertEquals(layerRadii.bottomRight, radii.bottomRight, pseudo);
     }
   });
 
   test('PreservesForcedColorsBehavior', async function() {
-    assertEquals('none', window.getComputedStyle(element).forcedColorAdjust);
-    assertEquals(
-        'none', window.getComputedStyle(element.$.button).forcedColorAdjust);
+    assertTrue(hasStyle(element, 'forced-color-adjust', 'none'));
+    assertTrue(hasStyle(element.$.button, 'forced-color-adjust', 'none'));
+    assertTrue(hasStyle(element.$.background, 'forced-color-adjust', 'none'));
 
     element.toggleAttribute('disabled', true);
     await microtasksFinished();
-    assertEquals('none', window.getComputedStyle(element).forcedColorAdjust);
+    assertTrue(hasStyle(element, 'forced-color-adjust', 'none'));
   });
 
   test('PreservesCustomForegroundColorOnMenuOpen', async function() {
@@ -327,7 +372,7 @@ suite('ToolbarChipButtonTest', function() {
     const buttonTextColor = window.getComputedStyle(probe).color;
     probe.remove();
 
-    let style = window.getComputedStyle(element.$.button);
+    let style = window.getComputedStyle(element.$.background);
     if (forcedColors) {
       assertEquals('none', style.boxShadow);
       assertEquals('solid', style.outlineStyle);
@@ -341,7 +386,7 @@ suite('ToolbarChipButtonTest', function() {
       await microtasksFinished();
       assertEquals(
           'rgb(12, 34, 56)',
-          window.getComputedStyle(element.$.button).outlineColor);
+          window.getComputedStyle(element.$.background).outlineColor);
       element.style.removeProperty('--color-toolbar-focus-ring');
       await microtasksFinished();
     } else {
@@ -351,7 +396,7 @@ suite('ToolbarChipButtonTest', function() {
       element.style.setProperty(
           '--color-toolbar-focus-ring', 'rgb(12, 34, 56)');
       await microtasksFinished();
-      assertTrue(window.getComputedStyle(element.$.button)
+      assertTrue(window.getComputedStyle(element.$.background)
                      .boxShadow.includes('rgb(12, 34, 56)'));
       element.style.removeProperty('--color-toolbar-focus-ring');
       await microtasksFinished();
@@ -360,7 +405,7 @@ suite('ToolbarChipButtonTest', function() {
     element.toggleAttribute('outset-focus-ring', true);
     await microtasksFinished();
 
-    style = window.getComputedStyle(element.$.button);
+    style = window.getComputedStyle(element.$.background);
     assertEquals('none', style.boxShadow);
     assertEquals('solid', style.outlineStyle);
     assertEquals('2px', style.outlineWidth);
@@ -373,6 +418,6 @@ suite('ToolbarChipButtonTest', function() {
     await microtasksFinished();
     assertEquals(
         'rgb(12, 34, 56)',
-        window.getComputedStyle(element.$.button).outlineColor);
+        window.getComputedStyle(element.$.background).outlineColor);
   });
 });

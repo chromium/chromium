@@ -522,7 +522,7 @@ suite('PinnedToolbarAction', function() {
         '--color-toolbar-feature-promo-highlight', 'rgb(70, 80, 90)');
     try {
       const button = action.shadowRoot!.querySelector('toolbar-chip-button')!;
-      const innerButton = button.shadowRoot!.querySelector('#button')!;
+      const background = button.shadowRoot!.querySelector('#background')!;
       const indicator: HTMLElement =
           action.shadowRoot!.querySelector('.status-indicator');
 
@@ -559,7 +559,7 @@ suite('PinnedToolbarAction', function() {
       assertTrue(button.hasAttribute('has-circle-highlight'));
       assertEquals('rgb(1, 2, 3)', getComputedStyle(button).color);
       assertEquals(
-          'rgb(40, 50, 60)', getComputedStyle(innerButton).backgroundColor);
+          'rgb(40, 50, 60)', getComputedStyle(background).backgroundColor);
 
       // During an IPH, the circle highlight background is suppressed by the
       // pulsing IPH highlight and the icon uses the feature promo highlight
@@ -569,14 +569,14 @@ suite('PinnedToolbarAction', function() {
       assertTrue(button.classList.contains('help-anchor-highlight'));
       assertEquals('rgb(70, 80, 90)', getComputedStyle(button).color);
       assertEquals(
-          'rgba(0, 0, 0, 0)', getComputedStyle(innerButton).backgroundColor);
+          'rgba(0, 0, 0, 0)', getComputedStyle(background).backgroundColor);
 
       action.hasHelpBubble = false;
       await microtasksFinished();
       assertFalse(button.classList.contains('help-anchor-highlight'));
       assertEquals('rgb(1, 2, 3)', getComputedStyle(button).color);
       assertEquals(
-          'rgb(40, 50, 60)', getComputedStyle(innerButton).backgroundColor);
+          'rgb(40, 50, 60)', getComputedStyle(background).backgroundColor);
 
       // Highlighting the button (e.g. open side panel or bubble) suppresses
       // the circle highlight background, matching native !IsActive().

@@ -668,8 +668,8 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
       expected_highlight_rgb,
       EvalJsOnPinnedAction(
           mojom_action,
-          "return innerBtn ? getComputedStyle(innerBtn).backgroundColor : "
-          "'(null)';"));
+          "const bg = btn?.shadowRoot?.querySelector('#background'); "
+          "return bg ? getComputedStyle(bg).backgroundColor : '(null)';"));
 
   // While the action is highlighted (e.g. side panel open), the circle
   // highlight background is suppressed.

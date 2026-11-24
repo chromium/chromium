@@ -458,10 +458,11 @@ SkColor PageActionTestAccessor::GetBackgroundColor() const {
             ? el.shadowRoot.querySelector('#button')
             : null;
         if (!chipBtn) return '';
-        const btn = chipBtn.shadowRoot
-            ? (chipBtn.shadowRoot.querySelector('#button') || chipBtn)
+        // toolbar-chip-button paints its background on #background.
+        const background = chipBtn.shadowRoot
+            ? (chipBtn.shadowRoot.querySelector('#background') || chipBtn)
             : chipBtn;
-        return window.getComputedStyle(btn).backgroundColor;
+        return window.getComputedStyle(background).backgroundColor;
       })");
   if (color_str.has_value()) {
     SkColor color;

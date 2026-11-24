@@ -138,12 +138,12 @@ suite('PageActionIconTest', function() {
 
   test('Background color', async function() {
     const button = icon.$.button;
-    const actualButton = button.$.button;
+    const paintLayer = button.$.background;
     icon.style.setProperty(
         '--color-omnibox-icon-background-tonal', 'rgb(255, 0, 0)');
 
     // Default: transparent.
-    const style = actualButton.computedStyleMap();
+    const style = paintLayer.computedStyleMap();
     assertEquals('rgba(0, 0, 0, 0)', style.get('background-color')?.toString());
 
     // Show a text chip, should now use --color-omnibox-icon-background-tonal
@@ -229,7 +229,11 @@ suite('PageActionIconTest', function() {
     await microtasksFinished();
 
     assertEquals('rgb(0, 0, 255)', style.get('color')?.toString());
-    assertEquals('rgb(255, 0, 255)', style.get('background-color')?.toString());
+    assertEquals(
+        'rgb(255, 0, 255)',
+        button.$.background.computedStyleMap()
+            .get('background-color')
+            ?.toString());
 
     // And back to no custom color again.
     icon.state = {
@@ -254,16 +258,16 @@ suite('PageActionIconTest', function() {
     document.documentElement.style.setProperty(
         '--color-omnibox-icon-hover', kIconHoverColor);
 
-    const actualButton = icon.$.button.$.button;
+    const paintLayer = icon.$.button.$.background;
 
     // Default icon-only chip uses kColorOmniboxActionIconHover and
     // kColorOmniboxIconPressed.
     assertEquals(
         kActionHoverColor,
-        window.getComputedStyle(actualButton, '::before').backgroundColor);
+        window.getComputedStyle(paintLayer, '::before').backgroundColor);
     assertEquals(
         kIconPressedColor,
-        window.getComputedStyle(actualButton, '::after').backgroundColor);
+        window.getComputedStyle(paintLayer, '::after').backgroundColor);
 
     // When label is shown, hover switches to kColorOmniboxIconHover while
     // ripple remains kColorOmniboxIconPressed.
@@ -276,10 +280,10 @@ suite('PageActionIconTest', function() {
 
     assertEquals(
         kIconHoverColor,
-        window.getComputedStyle(actualButton, '::before').backgroundColor);
+        window.getComputedStyle(paintLayer, '::before').backgroundColor);
     assertEquals(
         kIconPressedColor,
-        window.getComputedStyle(actualButton, '::after').backgroundColor);
+        window.getComputedStyle(paintLayer, '::after').backgroundColor);
 
     // Verify inside a page-action-icons container (capsule vs. non-capsule):
     // native doesn't tie inkdrop colors to the capsule, so they always use
@@ -293,23 +297,27 @@ suite('PageActionIconTest', function() {
     const nonCapsuleIcon =
         container.shadowRoot.querySelector('page-action-icon');
     assertTrue(!!nonCapsuleIcon);
-    const nonCapsuleButton = nonCapsuleIcon.$.button.$.button;
+    const nonCapsulePaintLayer = nonCapsuleIcon.$.button.$.background;
     assertEquals(
         kActionHoverColor,
-        window.getComputedStyle(nonCapsuleButton, '::before').backgroundColor);
+        window.getComputedStyle(nonCapsulePaintLayer, '::before')
+            .backgroundColor);
     assertEquals(
         kIconPressedColor,
-        window.getComputedStyle(nonCapsuleButton, '::after').backgroundColor);
+        window.getComputedStyle(nonCapsulePaintLayer, '::after')
+            .backgroundColor);
 
     // Capsule
     container.toggleAttribute('is-capsule', true);
     await microtasksFinished();
     assertEquals(
         kActionHoverColor,
-        window.getComputedStyle(nonCapsuleButton, '::before').backgroundColor);
+        window.getComputedStyle(nonCapsulePaintLayer, '::before')
+            .backgroundColor);
     assertEquals(
         kIconPressedColor,
-        window.getComputedStyle(nonCapsuleButton, '::after').backgroundColor);
+        window.getComputedStyle(nonCapsulePaintLayer, '::after')
+            .backgroundColor);
 
     container.remove();
   });
@@ -326,6 +334,7 @@ suite('PageActionIconTest', function() {
   test('Tonal styling while anchored message is visible', async function() {
     const button = icon.$.button;
     const actualButton = button.$.button;
+    const paintLayer = button.$.background;
     const textEl = icon.shadowRoot.querySelector<HTMLElement>('#text')!;
     const kActionHoverColor = 'rgb(11, 22, 33)';
     const kIconHoverColor = 'rgb(77, 88, 99)';
@@ -336,12 +345,12 @@ suite('PageActionIconTest', function() {
         '--color-omnibox-icon-hover', kIconHoverColor);
     toolbarUiHandler.resetResolver('onPageActionChipShowingChanged');
 
-    const style = actualButton.computedStyleMap();
+    const style = paintLayer.computedStyleMap();
     assertEquals('rgba(0, 0, 0, 0)', style.get('background-color')?.toString());
     assertEquals('rgb(1, 2, 3)', style.get('color')?.toString());
     assertEquals(
         kActionHoverColor,
-        window.getComputedStyle(actualButton, '::before').backgroundColor);
+        window.getComputedStyle(paintLayer, '::before').backgroundColor);
 
     // Showing an anchored message applies tonal pill and solid-background hover
     // colors while keeping the button collapsed to icon-only size (no expanded
@@ -359,7 +368,7 @@ suite('PageActionIconTest', function() {
     assertEquals('rgb(0, 128, 255)', style.get('color')?.toString());
     assertEquals(
         kIconHoverColor,
-        window.getComputedStyle(actualButton, '::before').backgroundColor);
+        window.getComputedStyle(paintLayer, '::before').backgroundColor);
     assertFalse(button.hasAttribute('has-label'));
     assertFalse(textEl.hasAttribute('visible'));
     assertEquals(28, actualButton.offsetHeight);
@@ -383,7 +392,7 @@ suite('PageActionIconTest', function() {
     assertEquals('rgb(1, 2, 3)', style.get('color')?.toString());
     assertEquals(
         kActionHoverColor,
-        window.getComputedStyle(actualButton, '::before').backgroundColor);
+        window.getComputedStyle(paintLayer, '::before').backgroundColor);
     assertEquals(
         0, toolbarUiHandler.getCallCount('onPageActionChipShowingChanged'));
   });
@@ -392,7 +401,7 @@ suite('PageActionIconTest', function() {
       'Color overrides take precedence over anchored message tonal colors',
       async function() {
         setUpAnchoredMessageColors();
-        const style = icon.$.button.$.button.computedStyleMap();
+        const style = icon.$.button.$.background.computedStyleMap();
 
         icon.state = {
           ...createBaseState(),

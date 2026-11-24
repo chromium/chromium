@@ -10,6 +10,7 @@ import {getHtml} from './toolbar_chip_button.html.js';
 export interface ToolbarChipButtonElement {
   $: {
     button: HTMLElement,
+    background: HTMLElement,
   };
 }
 
