@@ -208,7 +208,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Query) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/query")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Highlight) {
+// TODO(crbug.com/590085184): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Highlight DISABLED_Highlight
+#else
+#define MAYBE_Highlight Highlight
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_Highlight) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/highlight")) << message_;
 }
 
