@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">閒置狀態數據</translation>
 <translation id="2058456167109518507">偵測到的裝置</translation>
 <translation id="2064048859448024834">開咗攝錄機預覽</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 個連結}other{# 個連結}}</translation>
 <translation id="2067220651560163985">顯示攝氏溫度</translation>
 <translation id="206960706005837784">「<ph name="APP_NAME" />」已完成使用「<ph name="PRINTER_NAME" />」列印</translation>
 <translation id="2075520525463668108">切換<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>

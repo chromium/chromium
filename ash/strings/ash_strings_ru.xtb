@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">Данные о состоянии бездействия</translation>
 <translation id="2058456167109518507">Обнаружено устройство</translation>
 <translation id="2064048859448024834">Предварительный просмотр для камеры включен</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 ссылка}one{# ссылка}few{# ссылки}many{# ссылок}other{# ссылки}}</translation>
 <translation id="2067220651560163985">Использовать градусы Цельсия</translation>
 <translation id="206960706005837784">Приложение "<ph name="APP_NAME" />" завершило печать на принтере "<ph name="PRINTER_NAME" />".</translation>
 <translation id="2075520525463668108">Включить или отключить функцию "<ph name="CAPTURE_MEDIUM" />". Функция "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>

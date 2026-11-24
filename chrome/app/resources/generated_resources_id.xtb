@@ -308,6 +308,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1308105352527684175">Anda mungkin tidak dapat mengakses konten tertentu</translation>
 <translation id="1311092170520822848">Situs ini mengontrol pembaca kartu smart yang terhubung ke perangkat Anda dan kartu smart yang mungkin tersedia untuk pembaca kartu tersebut</translation>
 <translation id="131112695174432497">Data yang memengaruhi personalisasi iklan dihapus</translation>
+<translation id="13115907161008983">Salin Link</translation>
 <translation id="131188242279372879">Temukan perlindungan yang ditingkatkan untuk mendapatkan tingkat keamanan tertinggi Chrome untuk hasil download</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Perbaiki Tab yang Memperlambat Browser Anda}other{Perbaiki Tab yang Memperlambat Browser Anda}}</translation>
 <translation id="1312721752506309252">Perlindungan yang ditingkatkan aktif</translation>
@@ -444,6 +445,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1482626744466814421">Bookmark Tab Ini...</translation>
 <translation id="1482772681918035149">mengedit sandi</translation>
 <translation id="1483137792530497944">Sungai</translation>
+<translation id="1483148302144576204">Salin link</translation>
 <translation id="1483151333977672176">Terkirim!</translation>
 <translation id="1483431819520123112">Nama tampilan disalin ke papan klip</translation>
 <translation id="1483493594462132177">Kirim</translation>
@@ -1067,6 +1069,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="2168036794078614559">Laporan dikirim</translation>
 <translation id="2168735174585029637">Berikan tampilan transparan baru pada tab Anda</translation>
 <translation id="217120844667431680">Lakukan lebih banyak hal dengan Mode AI</translation>
+<translation id="2172046302886074612">'<ph name="MODEL_CATEGORY" />' dihapus</translation>
 <translation id="2173302385160625112">Periksa koneksi internet Anda</translation>
 <translation id="2175384018164129879">&amp;Kelola Mesin Telusur dan Penelusuran Situs</translation>
 <translation id="2175773164573457310">Pilih teks atau gambar untuk ditanyakan kepada Gemini</translation>
@@ -2094,6 +2097,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="3270965368676314374">Membaca, mengubah, dan menghapus foto, musik, serta media lain dari komputer Anda</translation>
 <translation id="3275464924531706548">Ciutkan <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Buka sebagai jendela</translation>
+<translation id="3277325180914877290">Perbesar teks</translation>
 <translation id="3280237271814976245">Simp&amp;an sebagai...</translation>
 <translation id="3280243678470289153">Tetap di Chrome</translation>
 <translation id="3282210178675490297">Membagikan tab ke <ph name="APP_NAME" /></translation>
@@ -2602,6 +2606,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="3786890785076278600">Baris statis</translation>
 <translation id="3787434344076711519">Menunggu terjemahan</translation>
 <translation id="3789432704615470433">File SharePoint dan OneDrive</translation>
+<translation id="3789493399245366422">layar penuh, maksimalkan, imersif, sembunyikan toolbar, presentasi, F11</translation>
 <translation id="3789841737615482174">Instal</translation>
 <translation id="3790417903123637354">Terjadi error. Coba lagi nanti</translation>
 <translation id="379082410132524484">Kartu Anda telah habis masa berlakunya</translation>
@@ -3372,6 +3377,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="4665035764476941598">Klik di sini untuk menampilkan kembali tab Anda yang lain</translation>
 <translation id="4665446389743427678">Semua data yang disimpan oleh <ph name="SITE" /> akan dihapus.</translation>
 <translation id="4666483368282673356">Kelola histori Gemini Anda</translation>
+<translation id="4667646546186544608">perkecil, kecilkan, lebih kecil, kurangi, turunkan, perkecil skala, zoom halaman</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Selamat! <ph name="APP_NAME" /> berhasil diinstal di perangkat Anda</translation>
 <translation id="4672759829555593783">Buka <ph name="FILE_NAME" /> sekarang</translation>
@@ -4775,6 +4781,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="6255253900817321392">Telusuri lebih cepat dari mana saja di Mac Anda tanpa membuka tab baru</translation>
 <translation id="6257602895346497974">Aktifkan sinkronisasi...</translation>
 <translation id="6258818697161346451">Gunakan kunci sandi Anda di perangkat ini</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Salin link}other{Salin link}}</translation>
 <translation id="6261688934280090835">Log Aplikasi Kios ChromeOS</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6264060420924719834">Aplikasi ini berisi konten web dari situs lain</translation>
@@ -4903,6 +4910,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">File Gambar</translation>
 <translation id="6410390304316730527">Safe Browsing akan melindungi Anda dari penyerang yang dapat mengelabui Anda agar melakukan sesuatu yang berbahaya, misalnya menginstal software berbahaya atau mengungkap informasi pribadi seperti sandi, nomor telepon, atau kartu kredit. Jika dinonaktifkan, harap berhati-hati saat mengakses situs tidak dikenal atau tidak tepercaya.</translation>
+<translation id="6411490324917773403">Perkecil teks</translation>
 <translation id="6416743254476733475">Izinkan atau blokir di komputer Anda.</translation>
 <translation id="6416856063840710198">Untuk meningkatkan kualitas kunjungan Anda, situs sering kali menyimpan aktivitas Anda – biasanya ke perangkat Anda. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Perilaku default</translation>
@@ -6393,6 +6401,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8041093619605951337">Bahagia</translation>
 <translation id="8042142357103597104">Opasitas teks</translation>
 <translation id="8042331986490021244">Sandi Anda dienkripsi di perangkat sebelum disimpan ke Pengelola Sandi Google</translation>
+<translation id="8042441076562098746">pembesaran, perbesar, memperbesar, lebih besar, perbesar ukuran, tingkatkan, perbesar skala, zoom halaman</translation>
 <translation id="8045253504249021590">Sinkronisasi telah dihentikan melalui Dasbor Google.</translation>
 <translation id="8045752459073395242">Pelajari lebih lanjut cara menggunakan AI generatif di tempat kerja</translation>
 <translation id="8045923671629973368">Masukan ID aplikasi atau URL toko web</translation>
@@ -6747,6 +6756,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="844059392176531372">Bagikan Grup Tab “<ph name="GROUP_NAME" />”</translation>
 <translation id="844063558976952706">Selalu di halaman ini</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Ada jendela Samaran atau Terisolasi yang terbuka. Jendela tersebut tidak akan dibuka lagi.}other{Ada # jendela Samaran dan Terisolasi yang terbuka di seluruh profil. Jendela tersebut tidak akan dibuka lagi.}}</translation>
+<translation id="84426883520448311">tema, warna, latar belakang, wallpaper, terang, gelap, mode, mode terang, mode gelap, pribadi, gaya visual, estetika</translation>
 <translation id="8443986842926457191">URL berisi lebih dari 2048 karakter</translation>
 <translation id="8445281870900174108">Tab ini menggunakan kamera Anda</translation>
 <translation id="8446884382197647889">Pelajari Lebih Lanjut</translation>
@@ -7337,6 +7347,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9076821103818989526">Panel samping</translation>
 <translation id="907779190626433918">Gunakan sandi unik untuk setiap situs atau aplikasi. Jika seseorang menemukan sandi yang digunakan ulang, sandi tersebut dapat digunakan untuk mengakses akun Anda yang lain.</translation>
 <translation id="9078546160009814724">Nama pengguna: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Salin Link}other{Salin Link}}</translation>
 <translation id="907972398081911688">Ubah sandi Anda yang telah dibobol secara otomatis</translation>
 <translation id="9081543426177426948">Situs yang Anda buka tidak disimpan dalam mode Samaran</translation>
 <translation id="9082750838489080452">Aplikasi: <ph name="APP_NAME" /></translation>

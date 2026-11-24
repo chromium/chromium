@@ -69,6 +69,7 @@
 <translation id="1792680680989393197">Ularni istalgan vaqt olib tashlashingiz mumkin. Sayt yoki funksiya talab qilganda Chromium ularni avtomatik qayta yuklab olishi mumkin.</translation>
 <translation id="1793486931176048546">Tezkor kirish uchun Chromiumni vazifalar paneliga mahkamlash uchun Windows bildirishnomasida <ph name="BEGIN_BOLD" />Ha<ph name="END_BOLD" /> tugmasini bosing</translation>
 <translation id="1808667845054772817">Chromium brauzerini qayta o‘rnatish</translation>
+<translation id="1814482312667514397">Telefondagi Chromium ilovasi bilan eng yaxshi Chromium xavfsizlik funksiyalari doim yoningizda boʻlsin</translation>
 <translation id="1820835682567584003">Chromium buni bajarmoqchi: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromiumga shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, <ph name="DEVICE" /> qurilmasidagi kengaytmalar va boshqa maʼlumotlardan foydalana olasiz.</translation>
 <translation id="183031085822326697">Keyingi safar <ph name="DEVICE_TYPE" /> qurilmangizda Chromium ilovasini ochganingizda Google Parollar menejeridan foydalanish taklifi chiqadi.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 ta HID qurilmasi kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}=1{1 ta HID qurilmasi kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}other{# ta HID qurilmasi kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}}</translation>
 <translation id="2401032172288869980">Chromium bu saytda kamera va mikrofondan foydalanishiga ruxsat kerak</translation>
 <translation id="2403703063067034158">Ishga tushirishda xato: boshqa oʻrnatish jarayoni ishga tushgan, keyinroq qayta urining.</translation>
+<translation id="241044568699443215"><ph name="DEVICE_TYPE" /> qurilmangizda Chromium ilovasi bilan Chromium xavfsizligi doim yoningizda boʻlsin</translation>
 <translation id="2418322681019544463">Istalgan ilovadagi havolalarni Chromiumda oching va brauzerni vazifalar panelida saqlang</translation>
 <translation id="2425157128016763890">Tezkor xulosa olish va qoʻshimcha savollar berish maqsadida bu hujjatni Chromium ichida Gemini bilan ulashish uchun Xulosalash tugmasini bosing</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium vositalari yordamida<ph name="END_LINK" /> xavfsiz kezishingiz va nazoratni ushlab turishingiz mumkin</translation>
@@ -753,6 +755,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8910309838319708610">Tayyor! Endi Qidiruv AI rejimi bilan internetni kezish davomida savollaringizga javoblarni oson olishingiz mumkin</translation>
 <translation id="8915682436012075700">Bu boshqariladigan brauzer <ph name="DOMAIN" /> tomonidan ish uchun sozlangan Gemini assistentidan foydalanishi mumkin. U tashkilot fayllari va tasdiqlangan xizmatlar asosida maʼlumot topishi va javob berishi mumkin. Uni shaxsiy profil bilan ishlatish tavsiya etilmaydi. Chat tarixi koʻchirilmaydi. Almashtirish uchun Chromium qayta ishga tushirilishi kerak.</translation>
 <translation id="8932992523185907506">Chromium endi birlamchi brauzeringiz emas. Chromium birlamchi brauzer etib tayinlansinmi?</translation>
+<translation id="8940844567350264767">Chromium ilovasi bilan eng yaxshi Chromium xavfsizlik funksiyalari doim yoningizda boʻlsin.</translation>
 <translation id="8941642502866065432">Chromiumni yangilab bo‘lmadi</translation>
 <translation id="8944232836376404813">Bunda:
           <ph name="LINE_BREAKS" />

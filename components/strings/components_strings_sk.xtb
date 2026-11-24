@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Vyrovnávacia pamäť pravidla je v poriadku</translation>
 <translation id="1131264053432022307">Skopírovaný obrázok</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Ak chcete ukončiť režim celej obrazovky, potiahnite zhora a klepnite na tlačidlo Späť</translation>
+<translation id="11370190534773372">Boli vyplnené údaje karty</translation>
 <translation id="1138458427267715730">Dostávajte upozornenia na pokles ceny na ľubovoľnom webe na internete</translation>
 <translation id="1142713751288681188">Typ papiera</translation>
 <translation id="1142965388643537393">Informácie o cestovaní</translation>
@@ -4545,6 +4546,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8577348305244205642">Virtuálna karta nie je k dispozícii</translation>
 <translation id="8579000896558714521">Prepísanie klávesnice</translation>
 <translation id="8579561564816585231">Prihlásenie pomocou služby Googlu, napríklad Správcu hesiel</translation>
+<translation id="8580478010934016252">Prejsť na spôsoby platby</translation>
 <translation id="8581064022803799721">Táto stránka je uložená v priečinku <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="858637041960032120">Pridať telefón
 </translation>

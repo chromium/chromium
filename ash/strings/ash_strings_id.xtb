@@ -447,6 +447,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2053312383184521053">Data Status Menganggur</translation>
 <translation id="2058456167109518507">Perangkat terdeteksi</translation>
 <translation id="2064048859448024834">Pratinjau kamera aktif</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 link}other{# link}}</translation>
 <translation id="2067220651560163985">Tampilkan suhu dalam Celcius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> telah selesai mencetak ke <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Tombol <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>

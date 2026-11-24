@@ -6399,6 +6399,13 @@ Als je het beleid instelt op een lege tekenreeks of niet instelt, is site-isolat
 
 Opmerking: Dit beleid is beëindigd. Gebruik in plaats daarvan <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> (voor apparaten met hoge prestaties) of <ph name="ISOLATE_ORIGINS_SHORTLIST_POLICY_NAME" />. Dit beleid is alleen van toepassing op Chrome op <ph name="ANDROID_NAME" /> op apparaten met meer dan 1 GB RAM. Het wordt niet aanbevolen om specifieke procesisolatie in te stellen.</translation>
 <translation id="4991786313466977061">De zichtbaarheid van zakelijke badges beheren</translation>
+<translation id="4991886408515766724">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers mogen vragen om toegang tot een USB-apparaat.
+
+      Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van gebruikers.
+
+      URL-patronen mogen geen conflict vormen met <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
+
+      Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="4995123966071996433">Poortdoorschakeling naar virtuele Linux-machines niet toestaan</translation>
 <translation id="4996068111491152684">De inloggegevens van <ph name="PRODUCT_OS_NAME" /> worden niet gebruikt voor netwerkverificatie.</translation>
 <translation id="4996086761250834365">Productanalyse van <ph name="PLUGIN_VM_NAME" /> toestaan</translation>

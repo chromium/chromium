@@ -308,6 +308,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1308105352527684175">Je hebt misschien geen toegang tot bepaalde content</translation>
 <translation id="1311092170520822848">Deze site beheert smartcardlezers die zijn aangesloten op je apparaat en misschien tot smartcards die beschikbaar zijn voor deze lezers</translation>
 <translation id="131112695174432497">Gegevens die van invloed zijn op advertentiepersonalisatie, worden verwijderd</translation>
+<translation id="13115907161008983">Links kopiëren</translation>
 <translation id="131188242279372879">Ontdek Geoptimaliseerde beveiliging voor het hoogste beveiligingsniveau van Chrome voor downloads</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Het tabblad corrigeren dat je browser vertraagt}other{De tabbladen corrigeren die je browser vertragen}}</translation>
 <translation id="1312721752506309252">Geoptimaliseerde beveiliging staat aan</translation>
@@ -443,6 +444,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1482626744466814421">Bookmark toevoegen voor dit tabblad…</translation>
 <translation id="1482772681918035149">wachtwoorden bewerken</translation>
 <translation id="1483137792530497944">Rivier</translation>
+<translation id="1483148302144576204">Links kopiëren</translation>
 <translation id="1483151333977672176">Verzonden.</translation>
 <translation id="1483431819520123112">Weergavenaam gekopieerd naar klembord</translation>
 <translation id="1483493594462132177">Verzenden</translation>
@@ -1058,6 +1060,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="2168036794078614559">Melding gestuurd</translation>
 <translation id="2168735174585029637">Geef je tabbladen een nieuwe transparante look</translation>
 <translation id="217120844667431680">Meer doen met de AI-modus</translation>
+<translation id="2172046302886074612"><ph name="MODEL_CATEGORY" /> verwijderd</translation>
 <translation id="2173302385160625112">Controleer je internetverbinding</translation>
 <translation id="2175384018164129879">Zoek&amp;machines en Site Search beheren</translation>
 <translation id="2175773164573457310">Selecteer tekst of een afbeelding om Gemini vragen te stellen</translation>
@@ -2080,6 +2083,7 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3270965368676314374">Foto's, muziek en andere media van je computer lezen, wijzigen en verwijderen</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> samenvouwen</translation>
 <translation id="3275778913554317645">Openen als venster</translation>
+<translation id="3277325180914877290">Tekst groter maken</translation>
 <translation id="3280237271814976245">Opslaan &amp;als...</translation>
 <translation id="3280243678470289153">In Chrome blijven</translation>
 <translation id="3282210178675490297">Er wordt een tabblad gedeeld met <ph name="APP_NAME" /></translation>
@@ -2588,6 +2592,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3786890785076278600">Statische regel</translation>
 <translation id="3787434344076711519">Wachten op vertaling</translation>
 <translation id="3789432704615470433">SharePoint- en OneDrive-bestanden</translation>
+<translation id="3789493399245366422">fullscreen, volledig scherm, maximaliseren, immersief, werkbalk verbergen, presentatie, F11</translation>
 <translation id="3789841737615482174">Installeren</translation>
 <translation id="3790417903123637354">Er is iets misgegaan. Probeer het later opnieuw</translation>
 <translation id="379082410132524484">Je pas is verlopen</translation>
@@ -3357,6 +3362,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4665035764476941598">Klik hier om je andere tabbladen terug te halen</translation>
 <translation id="4665446389743427678">Alle gegevens die zijn opgeslagen door <ph name="SITE" />, worden verwijderd.</translation>
 <translation id="4666483368282673356">Je Gemini-geschiedenis beheren</translation>
+<translation id="4667646546186544608">uitzoomen, verkleinen, kleiner maken, verminderen, afnemen afschalen, pagina uitzoomen</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086"><ph name="APP_NAME" /> is geïnstalleerd op je apparaat</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> nu openen</translation>
@@ -4755,6 +4761,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6255253900817321392">Zoek sneller vanaf elke plek op je Mac zonder een nieuw tabblad te openen</translation>
 <translation id="6257602895346497974">Synchronisatie aanzetten...</translation>
 <translation id="6258818697161346451">Je toegangssleutels gebruiken op dit apparaat</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Link kopiëren}other{Links kopiëren}}</translation>
 <translation id="6261688934280090835">Logboeken van ChromeOS-kiosk-app</translation>
 <translation id="6263082573641595914">CA-versie van Microsoft</translation>
 <translation id="6264060420924719834">Deze app heeft webcontent van andere sites</translation>
@@ -4883,6 +4890,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Afbeeldingsbestanden</translation>
 <translation id="6410390304316730527">Safe Browsing beschermt je tegen aanvallers die je proberen te misleiden zodat je iets gevaarlijks doet, zoals schadelijke software installeren of persoonlijke informatie zoals wachtwoorden, telefoonnummers of creditcards openbaar maken. Als je deze functie uitzet, moet je voorzichtig zijn als je op onbekende of onbetrouwbare sites browst.</translation>
+<translation id="6411490324917773403">Tekst kleiner maken</translation>
 <translation id="6416743254476733475">Toestaan of blokkeren op je computer.</translation>
 <translation id="6416856063840710198">Sites slaan je activiteit vaak op (meestal op je apparaat) om je bezoek te verbeteren. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Standaardgedrag</translation>
@@ -6373,6 +6381,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8041093619605951337">Blij</translation>
 <translation id="8042142357103597104">Ondoorzichtigheid van tekst</translation>
 <translation id="8042331986490021244">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
+<translation id="8042441076562098746">inzoomen, vergroten, groter, groter maken, verhogen, opschalen, pagina inzoomen</translation>
 <translation id="8045253504249021590">Synchronisatie is gestopt via het Google Dashboard.</translation>
 <translation id="8045752459073395242">Meer informatie over het gebruik van generatieve AI op het werk</translation>
 <translation id="8045923671629973368">Geef de app-ID of URL voor Web Store op</translation>
@@ -6727,6 +6736,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="844059392176531372">Tabbladgroep <ph name="GROUP_NAME" /> delen</translation>
 <translation id="844063558976952706">Altijd op deze site</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Er is een incognito- of geïsoleerd venster geopend. Het wordt niet opnieuw geopend.}other{Er zijn # incognito- en geïsoleerde vensters geopend in verschillende profielen. Ze worden niet opnieuw geopend.}}</translation>
+<translation id="84426883520448311">thema, kleur, achtergrond, licht, donker, modus, lichte modus, donkere modus, persoonlijk, stijl, opmaak, look, vormgeving, esthetisch</translation>
 <translation id="8443986842926457191">De URL is langer dan 2048 tekens</translation>
 <translation id="8445281870900174108">Dit tabblad gebruikt je camera</translation>
 <translation id="8446884382197647889">Meer informatie</translation>
@@ -7318,6 +7328,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9076821103818989526">Zijvenster</translation>
 <translation id="907779190626433918">Gebruik voor elke site of app een uniek wachtwoord. Als iemand een hergebruikt wachtwoord vindt, kan diegene daarmee ook inloggen op je andere accounts.</translation>
 <translation id="9078546160009814724">Gebruikersnaam: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Link kopiëren}other{Links kopiëren}}</translation>
 <translation id="907972398081911688">Je gelekte wachtwoord automatisch wijzigen</translation>
 <translation id="9081543426177426948">Sites die je bezoekt, worden niet opgeslagen in de incognitomodus</translation>
 <translation id="9082750838489080452">App: <ph name="APP_NAME" /></translation>

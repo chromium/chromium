@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">要新增「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="2159915644201199628">無法將圖片解碼：「<ph name="IMAGE_NAME" />」</translation>
 <translation id="2193567467390483943">家長未核准這個擴充功能</translation>
+<translation id="2207866393056347613">允許永久存取你在所有網站上的資料</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
 <translation id="2327492829706409234">啟用應用程式</translation>
 <translation id="2350172092385603347">已使用語言代碼，但是仍未在資訊清單中指定 default_locale。</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">重新啟用</translation>
 <translation id="2743583586211388067">根據貴組織的擴充功能風險政策，你無法存取這個擴充功能。</translation>
 <translation id="2766161002040448006">詢問家長</translation>
+<translation id="2775557057525247505">顯示所有網站</translation>
 <translation id="2785530881066938471">無法載入內容指令碼的「<ph name="RELATIVE_PATH" />」檔案，因為該檔案未使用 UTF-8 編碼。</translation>
 <translation id="2850541429955027218">新增主題</translation>
 <translation id="2883143988769190738">這項擴充功能要求以下權限：</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">供應商 <ph name="VENDOR_ID" /> 提供的 <ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">私密金鑰的輸入值必須是有效的路徑。</translation>
+<translation id="3769470010314114481">允許臨時存取你在此網站上的資料</translation>
 <translation id="3788401245189148511">要求下列權限：</translation>
 <translation id="3834775135533257713">「<ph name="TO_INSTALL_APP_NAME" />」應用程式和「<ph name="INSTALLED_APP_NAME" />」發生衝突，因此無法新增。</translation>
 <translation id="388442998277590542">無法載入「<ph name="OPTIONS_PAGE" />」選項頁面。</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">啟用擴充功能</translation>
 <translation id="3927932062596804919">拒絕</translation>
 <translation id="3984413272403535372">簽署擴充功能時出現錯誤。</translation>
+<translation id="3990894032742690314">始終在列出的網站上執行</translation>
 <translation id="4014432863917027322">修復「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="4061696872429826774">電腦中的其他程式新增了一個擴充功能，可能會改變 Chromium 的運作方式。
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">無法載入簡介網頁「<ph name="ABOUT_PAGE" />」。</translation>
 <translation id="424963718355121712">應用程式的安裝來源應與應用程式影響所及的主機相同</translation>
 <translation id="4306119971288449206">應用程式的內容類型應設為「<ph name="CONTENT_TYPE" />」</translation>
+<translation id="4307774243840254737">允許永久存取你在下列網站上的資料</translation>
 <translation id="4349181963619779233">無法從這個網站新增擴充功能和應用程式</translation>
 <translation id="4625078469366263107">啟用應用程式</translation>
 <translation id="4633003931260532286">擴充功能要求的最低「<ph name="IMPORT_NAME" />」版本是「<ph name="IMPORT_VERSION" />」，但目前只安裝了版本「<ph name="INSTALLED_VERSION" />」</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">由於最新版本的 <ph name="EXTENSION_NAME" /> 需要更多權限，因此已經停用。</translation>
 <translation id="5242724311594467048">啟用「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="5356315618422219272">Appview：<ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">僅在你點選擴充功能時執行</translation>
 <translation id="5405650547142096840">從 Chromium 中移除</translation>
 <translation id="5456409301717116725">這個擴充功能含有金鑰檔「<ph name="KEY_PATH" />」。你不妨重新考慮是否仍要進行。</translation>
 <translation id="5485102783864353244">新增應用程式</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">MIME 處理常式：<ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">這項擴充功能自動重新載入的頻率過高。</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> 提供的不明產品 <ph name="PRODUCT_ID" /></translation>
+<translation id="7017635639223148413">列出的網站</translation>
 <translation id="7068383018033524534">資訊清單檔案無效</translation>
 <translation id="7217838517480956708">這台電腦的管理員要求安裝 <ph name="EXTENSION_NAME" />，因此你無法移除或修改它。</translation>
 <translation id="7287143125007575591">存取遭拒。</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">前置鏡頭</translation>
 <translation id="8047248493720652249">擴充功能無法將下載的檔案命名為「<ph name="ATTEMPTED_FILENAME" />」，因為其他擴充功能 (<ph name="EXTENSION_NAME" />) 已為將此檔案命名為「<ph name="ACTUAL_FILENAME" />」。</translation>
 <translation id="8049705080247101012">Google 已將「<ph name="EXTENSION_NAME" />」標示為惡意擴充功能並禁止安裝</translation>
+<translation id="823691536304079791">讀取及變更你的資料</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> (供應商：<ph name="VENDOR_NAME" />)</translation>
 <translation id="8353683614194668312">可用權限：</translation>
 <translation id="8517576857589387417">資訊清單檔案遺失或無法讀取</translation>

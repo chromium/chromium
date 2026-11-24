@@ -308,6 +308,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1308105352527684175">K určitému obsahu možno nebudete mať prístup</translation>
 <translation id="1311092170520822848">Tento web ovláda čítačky inteligentných kariet pripojené k vášmu zariadeniu a potenciálne inteligentné karty, ktoré majú k dispozícii</translation>
 <translation id="131112695174432497">Dáta, ktoré ovplyvňujú prispôsobenie reklám, sa odstránia</translation>
+<translation id="13115907161008983">Kopírovať odkazy</translation>
 <translation id="131188242279372879">Preskúmajte rozšírenú ochranu a získajte najvyššiu úroveň zabezpečenia Chromu pri sťahovaní</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Opravte kartu, ktorá spomaľuje váš prehliadač}few{Opravte karty, ktoré spomaľujú váš prehliadač}many{Fix the Tabs Slowing Your Browser}other{Opravte karty, ktoré spomaľujú váš prehliadač}}</translation>
 <translation id="1312721752506309252">Je zapnutá rozšírená ochrana</translation>
@@ -443,6 +444,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1482626744466814421">Pridať kartu medzi záložky…</translation>
 <translation id="1482772681918035149">upraviť heslá</translation>
 <translation id="1483137792530497944">Rieka</translation>
+<translation id="1483148302144576204">Kopírovať odkazy</translation>
 <translation id="1483151333977672176">Odoslané.</translation>
 <translation id="1483431819520123112">Zobrazovaný názov bol skopírovaný do schránky</translation>
 <translation id="1483493594462132177">Odoslať</translation>
@@ -1058,6 +1060,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="2168036794078614559">Hlásenie bolo odoslané</translation>
 <translation id="2168735174585029637">Dajte svojim kartám nový priehľadný vzhľad</translation>
 <translation id="217120844667431680">Zvládnite viac s režimom AI</translation>
+<translation id="2172046302886074612">Model <ph name="MODEL_CATEGORY" /> bol odstránený</translation>
 <translation id="2173302385160625112">Skontrolujte svoje internetové pripojenie</translation>
 <translation id="2175384018164129879">&amp;Spravovať vyhľadávače a vyhľadávanie na webe</translation>
 <translation id="2175773164573457310">Vyberte ľubovoľný text alebo obrázok a opýtajte sa Gemini</translation>
@@ -2082,6 +2085,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="3270965368676314374">Čítať, meniť a odstraňovať fotky, hudbu a ďalšie médiá z počítača</translation>
 <translation id="3275464924531706548">Zbaliť <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Otvárať ako okno</translation>
+<translation id="3277325180914877290">Zväčšiť text</translation>
 <translation id="3280237271814976245">Uložiť &amp;ako...</translation>
 <translation id="3280243678470289153">Zostať v Chrome</translation>
 <translation id="3282210178675490297">Zdieľa sa karta v aplikácii <ph name="APP_NAME" /></translation>
@@ -2590,6 +2594,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="3786890785076278600">Statická čiara</translation>
 <translation id="3787434344076711519">Čaká sa na preklad</translation>
 <translation id="3789432704615470433">Súbory SharePoint a OneDrive</translation>
+<translation id="3789493399245366422">celá obrazovka, maximalizovať, pohlcujúci, skryť panel s nástrojmi, prezentácia, F11</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
 <translation id="3790417903123637354">Vyskytol sa problém. Skúste to neskôr.</translation>
 <translation id="379082410132524484">Platnosť vašej karty vypršala</translation>
@@ -3360,6 +3365,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="4665035764476941598">Kliknutím tu vrátite späť ostatné karty</translation>
 <translation id="4665446389743427678">Odstránia sa všetky údaje, ktoré uložil web <ph name="SITE" />.</translation>
 <translation id="4666483368282673356">Spravovať históriu Gemini</translation>
+<translation id="4667646546186544608">oddialiť, zmenšiť, menšie, znížiť, zmenšiť, oddialenie stránky</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Super! Aplikácia <ph name="APP_NAME" /> bola úspešne nainštalovaná v zariadení.</translation>
 <translation id="4672759829555593783">Otvoriť súbor <ph name="FILE_NAME" /></translation>
@@ -4761,6 +4767,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="6255253900817321392">Vyhľadávajte rýchlejšie odkiaľkoľvek v Macu bez otvárania novej karty</translation>
 <translation id="6257602895346497974">Zapnúť synchronizáciu…</translation>
 <translation id="6258818697161346451">Používajte prístupové kľúče v tomto zariadení</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopírovať odkaz}few{Kopírovať odkazy}many{Copy links}other{Kopírovať odkazy}}</translation>
 <translation id="6261688934280090835">Denníky verejnej aplikácie ChromeOS</translation>
 <translation id="6263082573641595914">Certifikačná autorita spoločnosti Microsoft – verzia</translation>
 <translation id="6264060420924719834">V tejto aplikácii sa nachádza webový obsah z iných webov</translation>
@@ -4889,6 +4896,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Súbory obrázkov</translation>
 <translation id="6410390304316730527">Bezpečné prehliadanie vás chráni pred útočníkmi, ktorí vás môžu oklamať, aby ste urobili niečo nebezpečné, napríklad nainštalovali škodlivý softvér alebo odhalili osobné údaje, ako sú heslá, telefónne čísla alebo kreditné karty. Ak ho vypnete, pri prehliadaní neznámych alebo pochybných webov postupujte opatrne.</translation>
+<translation id="6411490324917773403">Zmenšiť text</translation>
 <translation id="6416743254476733475">Povoľte alebo zablokujte vo svojom počítači.</translation>
 <translation id="6416856063840710198">Weby na zlepšenie návštevy často ukladajú vašu aktivitu (zvyčajne do vášho zariadenia). <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Predvolené správanie</translation>
@@ -6383,6 +6391,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8041093619605951337">Šťastná</translation>
 <translation id="8042142357103597104">Nepriehľadnosť textu</translation>
 <translation id="8042331986490021244">Heslá sú šifrované v zariadení ešte pred ich uložením do správcu hesiel Google</translation>
+<translation id="8042441076562098746">priblížiť, zväčšiť, väčšie, zvýšiť, priblíženie stránky</translation>
 <translation id="8045253504249021590">Synchronizácia bola zastavená prostredníctvom Informačného panela Google.</translation>
 <translation id="8045752459073395242">Ďalšie informácie o používaní generatívnej umelej inteligencie v práci</translation>
 <translation id="8045923671629973368">Zadajte ID aplikácie alebo adresu webového obchodu</translation>
@@ -6737,6 +6746,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="844059392176531372">Zdieľanie skupiny kariet <ph name="GROUP_NAME" /></translation>
 <translation id="844063558976952706">Vždy na týchto stránkach</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Je otvorené okno inkognito alebo izolované okno. Znova sa neotvorí.}few{V rámci profilov sú otvorené # okná inkognito a izolované okná. Znova sa neotvoria.}many{There are # Incognito and Isolated windows open across profiles. They won't reopen.}other{V rámci profilov je otvorených # okien inkognito a izolovaných okien. Znova sa neotvoria.}}</translation>
+<translation id="84426883520448311">motív, farba, pozadie, tapeta, svetlý, tmavý, režim, svetlý režim, tmavý režim, osobné, štýly, estetika</translation>
 <translation id="8443986842926457191">Webová adresa obsahuje viac ako 2 048 znakov.</translation>
 <translation id="8445281870900174108">Táto karta používa vašu kameru</translation>
 <translation id="8446884382197647889">Ďalšie informácie</translation>
@@ -7327,6 +7337,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9076821103818989526">Bočný panel</translation>
 <translation id="907779190626433918">Používajte pre jednotlivé weby a aplikácie jedinečné heslá. Ak niekto odhalí recyklované heslo, bude ním môcť získať prístup do vašich ďalších účtov.</translation>
 <translation id="9078546160009814724">Používateľské meno: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopírovať odkaz}few{Kopírovať odkazy}many{Copy Links}other{Kopírovať odkazy}}</translation>
 <translation id="907972398081911688">Automatická zmena odhaleného hesla</translation>
 <translation id="9081543426177426948">Navštívené weby sa v režime inkognito neukladajú</translation>
 <translation id="9082750838489080452">Aplikácia: <ph name="APP_NAME" /></translation>

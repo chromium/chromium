@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Установить "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Не удалось декодировать изображение: <ph name="IMAGE_NAME" /></translation>
 <translation id="2193567467390483943">Родитель не одобрил это расширение.</translation>
+<translation id="2207866393056347613">Постоянный доступ к вашим данным на всех сайтах</translation>
 <translation id="23030561267973084">Приложение "<ph name="EXTENSION_NAME" />" запросило дополнительные разрешения.</translation>
 <translation id="2327492829706409234">Включить приложение</translation>
 <translation id="2350172092385603347">Локализация используется, однако в манифесте не указан атрибут default_locale.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Включить снова</translation>
 <translation id="2743583586211388067">Доступ к этому расширению заблокирован согласно правилам вашей организации в отношении безопасности расширений.</translation>
 <translation id="2766161002040448006">Отправить запрос родителям</translation>
+<translation id="2775557057525247505">Показать все сайты</translation>
 <translation id="2785530881066938471">Не удается загрузить файл <ph name="RELATIVE_PATH" /> для скрипта содержания. Кодировка отличается от UTF-8.</translation>
 <translation id="2850541429955027218">Добавить тему</translation>
 <translation id="2883143988769190738">Это расширение запрашивает следующие разрешения:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> от поставщика <ph name="VENDOR_ID" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Входное значение закрытого ключа должно предоставлять собой допустимый путь.</translation>
+<translation id="3769470010314114481">Временный доступ к вашим данным на сайте</translation>
 <translation id="3788401245189148511">Разрешения:</translation>
 <translation id="3834775135533257713">Не удалось установить приложение "<ph name="TO_INSTALL_APP_NAME" />", так как оно конфликтует с приложением "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Не удалось загрузить страницу параметров <ph name="OPTIONS_PAGE" />.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Включить расширение</translation>
 <translation id="3927932062596804919">Запретить</translation>
 <translation id="3984413272403535372">Ошибка при подписи расширения.</translation>
+<translation id="3990894032742690314">Всегда на указанных сайтах</translation>
 <translation id="4014432863917027322">Восстановить "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4061696872429826774">Одна из программ на вашем компьютере установила расширение, которое может влиять на работу Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Не удалось загрузить страницу <ph name="ABOUT_PAGE" />.</translation>
 <translation id="424963718355121712">Приложения должны загружаться с того сайта, с которым они работают</translation>
 <translation id="4306119971288449206">Приложения должны иметь тип контента "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4307774243840254737">Постоянный доступ к вашим данным на сайтах, перечисленных ниже</translation>
 <translation id="4349181963619779233">С этого сайта нельзя добавлять расширения и приложения.</translation>
 <translation id="4625078469366263107">Включить приложение</translation>
 <translation id="4633003931260532286">Для расширения требуется <ph name="IMPORT_NAME" /> версии не ранее <ph name="IMPORT_VERSION" />. Сейчас установлена версия <ph name="INSTALLED_VERSION" />.</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Новая версия "<ph name="EXTENSION_NAME" />" была отключена, так как для нее требуются дополнительные разрешения.</translation>
 <translation id="5242724311594467048">Включить приложение "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Только при нажатии на расширение</translation>
 <translation id="5405650547142096840">Удалить из Chromium</translation>
 <translation id="5456409301717116725">Это расширение содержит файл ключа <ph name="KEY_PATH" />. Вероятно, это неприемлемо.</translation>
 <translation id="5485102783864353244">Установить приложение</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Это расширение слишком часто перезагружалось.</translation>
 <translation id="7003844668372540529">Неизвестный продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Сайты из списка</translation>
 <translation id="7068383018033524534">Недопустимый файл манифеста</translation>
 <translation id="7217838517480956708">Удаление и изменение расширения <ph name="EXTENSION_NAME" /> на этом компьютере запрещено администратором.</translation>
 <translation id="7287143125007575591">Доступ запрещен.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Фронтальная</translation>
 <translation id="8047248493720652249">Данному расширению не удалось присвоить скачанному файлу имя "<ph name="ATTEMPTED_FILENAME" />", поскольку другое расширение (<ph name="EXTENSION_NAME" />) уже присвоило ему другое имя: "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">Google заблокировал установку потенциально опасной программы (<ph name="EXTENSION_NAME" />).</translation>
+<translation id="823691536304079791">Просматривать и изменять ваши данные</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> от <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Разрешения:</translation>
 <translation id="8517576857589387417">Файл манифеста отсутствует или недоступен для чтения</translation>

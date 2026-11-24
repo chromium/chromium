@@ -308,6 +308,7 @@
 <translation id="1308105352527684175">你可能無法存取特定內容</translation>
 <translation id="1311092170520822848">這個網站正在控制裝置連接的智慧卡讀卡機，以及可讀取的智慧卡</translation>
 <translation id="131112695174432497">系統會刪除影響廣告個人化的資料</translation>
+<translation id="13115907161008983">複製連結</translation>
 <translation id="131188242279372879">探索強化防護，享有 Chrome 最強大的下載項目安全防護機制</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{修正導致瀏覽器運作緩慢的分頁}other{修正導致瀏覽器運作緩慢的分頁}}</translation>
 <translation id="1312721752506309252">已啟用強化防護功能</translation>
@@ -443,6 +444,7 @@
 <translation id="1482626744466814421">將此分頁加入書籤...</translation>
 <translation id="1482772681918035149">編輯密碼</translation>
 <translation id="1483137792530497944">河流</translation>
+<translation id="1483148302144576204">複製連結</translation>
 <translation id="1483151333977672176">傳送成功！</translation>
 <translation id="1483431819520123112">顯示名稱已複製到剪貼簿</translation>
 <translation id="1483493594462132177">傳送</translation>
@@ -1058,6 +1060,7 @@
 <translation id="2168036794078614559">已回報</translation>
 <translation id="2168735174585029637">為分頁換上全新透明外觀</translation>
 <translation id="217120844667431680">運用 AI 模式完成更多工作</translation>
+<translation id="2172046302886074612">已移除「<ph name="MODEL_CATEGORY" />」</translation>
 <translation id="2173302385160625112">檢查你的網際網路連線</translation>
 <translation id="2175384018164129879">管理搜尋引擎和站內搜尋</translation>
 <translation id="2175773164573457310">選取要問 Gemini 的文字或圖片</translation>
@@ -2080,6 +2083,7 @@
 <translation id="3270965368676314374">讀取、變更及刪除你電腦中的相片、音樂及其他媒體</translation>
 <translation id="3275464924531706548">收合「<ph name="HEADER" />」</translation>
 <translation id="3275778913554317645">以視窗開啟</translation>
+<translation id="3277325180914877290">放大文字</translation>
 <translation id="3280237271814976245">另存新檔(&amp;A)...</translation>
 <translation id="3280243678470289153">繼續使用 Chrome</translation>
 <translation id="3282210178675490297">正在與 <ph name="APP_NAME" /> 共用這個分頁</translation>
@@ -2588,6 +2592,7 @@
 <translation id="3786890785076278600">靜態行</translation>
 <translation id="3787434344076711519">正在等待翻譯</translation>
 <translation id="3789432704615470433">SharePoint 和 OneDrive 檔案</translation>
+<translation id="3789493399245366422">全螢幕, 全螢幕模式, 放到最大, 最大化, 沉浸式, 隱藏工具列, 簡報, F11</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3790417903123637354">發生錯誤，請稍後再試</translation>
 <translation id="379082410132524484">你的卡片已過期</translation>
@@ -3354,6 +3359,7 @@
 <translation id="4665035764476941598">按這裡即可找回其他分頁</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> 儲存的所有資料都將遭到刪除。</translation>
 <translation id="4666483368282673356">管理 Gemini 記錄</translation>
+<translation id="4667646546186544608">縮小, 調小, 更小, 變小, 減少, 縮減, 頁面縮放</translation>
 <translation id="4668929960204016307">、</translation>
 <translation id="4670909875730475086">恭喜！「<ph name="APP_NAME" />」已成功安裝在裝置上</translation>
 <translation id="4672759829555593783">立即開啟「<ph name="FILE_NAME" />」</translation>
@@ -4752,6 +4758,7 @@
 <translation id="6255253900817321392">在 Mac 上隨時隨地快速搜尋，不必開啟新分頁</translation>
 <translation id="6257602895346497974">開啟同步功能...</translation>
 <translation id="6258818697161346451">在這部裝置上使用密碼金鑰</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{複製連結}other{複製連結}}</translation>
 <translation id="6261688934280090835">ChromeOS 資訊站應用程式記錄</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6264060420924719834">這個應用程式含有來自其他網站的網路內容</translation>
@@ -4880,6 +4887,7 @@
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">圖片檔</translation>
 <translation id="6410390304316730527">安全瀏覽功能可保護你不受到攻擊，攻擊者可能會誘騙你從事一些危險行為，例如安裝惡意軟體或洩漏個人資訊 (例如密碼、電話號碼或信用卡資訊)。如果你停用這項功能，瀏覽不熟悉或風評不佳的網站時，請提高警覺。</translation>
+<translation id="6411490324917773403">縮小文字</translation>
 <translation id="6416743254476733475">請透過電腦允許或封鎖相關要求。</translation>
 <translation id="6416856063840710198">為了提升瀏覽體驗，網站通常會將你的活動記錄儲存到裝置。<ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">預設設定</translation>
@@ -6370,6 +6378,7 @@
 <translation id="8041093619605951337">開心</translation>
 <translation id="8042142357103597104">文字不透明度</translation>
 <translation id="8042331986490021244">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員</translation>
+<translation id="8042441076562098746">放大, 變大, 調大, 更大, 加大, 增大, 放大比例, 頁面縮放</translation>
 <translation id="8045253504249021590">已透過 Google 資訊主頁停止同步功能。</translation>
 <translation id="8045752459073395242">進一步瞭解如何將生成式 AI 用於工作</translation>
 <translation id="8045923671629973368">輸入應用程式 ID 或線上應用程式商店網址</translation>
@@ -6724,6 +6733,7 @@
 <translation id="844059392176531372">共用「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="844063558976952706">永遠在這個網站上使用</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{目前有開啟無痕或隔離視窗。這個視窗不會重新開啟。}other{各設定檔中目前共開啟 # 個無痕和隔離視窗。這些視窗不會重新開啟。}}</translation>
+<translation id="84426883520448311">主題, 顏色, 背景, 桌布, 亮度, 深色, 模式, 淺色模式, 深色模式, 個人化, 樣式, 美感</translation>
 <translation id="8443986842926457191">網址包含的字元數超過 2048 個</translation>
 <translation id="8445281870900174108">這個分頁正在使用攝影機</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
@@ -7314,6 +7324,7 @@
 <translation id="9076821103818989526">側邊面板</translation>
 <translation id="907779190626433918">請為每個網站或應用程式設定專屬密碼。假如有人取得你重複使用的密碼，就能用來存取你的其他帳戶。</translation>
 <translation id="9078546160009814724">使用者名稱：<ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{複製連結}other{複製連結}}</translation>
 <translation id="907972398081911688">自動變更外洩的密碼</translation>
 <translation id="9081543426177426948">無痕模式不會儲存你造訪的網站</translation>
 <translation id="9082750838489080452">應用程式：<ph name="APP_NAME" /></translation>

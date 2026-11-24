@@ -447,6 +447,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2053312383184521053">Gegevens van inactieve status</translation>
 <translation id="2058456167109518507">Apparaat gedetecteerd</translation>
 <translation id="2064048859448024834">Het cameravoorbeeld staat aan</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{Eén link}other{# links}}</translation>
 <translation id="2067220651560163985">Temperatuur tonen in Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> is klaar met afdrukken naar <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> schakelen. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>

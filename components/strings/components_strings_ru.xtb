@@ -78,6 +78,7 @@
 <translation id="112840717907525620">В кеше политики ошибок не найдено</translation>
 <translation id="1131264053432022307">Скопированное изображение</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
+<translation id="11370190534773372">Реквизиты карты автоматически подставлены</translation>
 <translation id="1138458427267715730">Получайте оповещения о скидках, когда они появляются на каком-либо сайте.</translation>
 <translation id="1142713751288681188">Тип бумаги</translation>
 <translation id="1142965388643537393">Информация о поездке</translation>
@@ -4549,6 +4550,7 @@
 <translation id="8577348305244205642">Виртуальная карта недоступна</translation>
 <translation id="8579000896558714521">Переопределение клавиш</translation>
 <translation id="8579561564816585231">Выполнен вход с использованием сервиса Google, например Менеджера паролей</translation>
+<translation id="8580478010934016252">Перейти к способам оплаты</translation>
 <translation id="8581064022803799721">Эта страница сохранена в папке "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="858637041960032120">Добавьте номер</translation>
 <translation id="8587100480629037893">Отслеживание рук запрещено</translation>

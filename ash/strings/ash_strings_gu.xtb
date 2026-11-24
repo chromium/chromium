@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">નિષ્ક્રિય સ્થિતિ ડેટા</translation>
 <translation id="2058456167109518507">ઉપકરણ મળ્યું</translation>
 <translation id="2064048859448024834">કૅમેરા પ્રીવ્યૂ ચાલુ છે</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 લિંક}one{# લિંક}other{# લિંક}}</translation>
 <translation id="2067220651560163985">સેલ્સિયસમાં તાપમાન બતાવો</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> દ્વારા <ph name="PRINTER_NAME" /> પર પ્રિન્ટ કરવાનું સમાપ્ત કરવામાં આવ્યું</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ટૉગલ કરો. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> છે</translation>
