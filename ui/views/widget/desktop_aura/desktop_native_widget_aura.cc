@@ -157,6 +157,13 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
           aura::client::kOwnedWindowAnchor, *anchor);
       child_window->ClearProperty(aura::client::kOwnedWindowAnchor);
     }
+    // Forward animation suppression (e.g. from UnboundedSurfaceWindowAura,
+    // whose popped-out DOM surface must appear on its first frame without a
+    // window manager fade crossfading with the page).
+    if (child_window->GetProperty(aura::client::kAnimationsDisabledKey)) {
+      init_params.init_properties_container.SetProperty(
+          aura::client::kAnimationsDisabledKey, true);
+    }
 
     // This widget instance will get deleted when the window is
     // destroyed.

@@ -47,6 +47,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/core/shadow_types.h"
+#include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -615,7 +616,8 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
   void CreateTopLevelWindow(const gfx::Rect& bounds,
                             bool fullscreen,
                             bool transparent = false,
-                            bool shadowless = false) {
+                            bool shadowless = false,
+                            bool animations_disabled = false) {
     Widget::InitParams init_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                                    Widget::InitParams::TYPE_WINDOW);
     init_params.bounds = bounds;
@@ -639,6 +641,9 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
     }
     if (shadowless) {
       wm::SetShadowElevation(owned_window_, wm::kShadowElevationNone);
+    }
+    if (animations_disabled) {
+      owned_window_->SetProperty(aura::client::kAnimationsDisabledKey, true);
     }
     aura::client::ParentWindowWithContext(
         owned_window_, widget_.GetNativeView()->GetRootWindow(),
@@ -808,6 +813,27 @@ TEST_F(DesktopNativeWidgetAuraTest,
   EXPECT_EQ(DWORD{0}, handler->window_style() & WS_THICKFRAME);
   EXPECT_EQ(0, ::GetWindowLong(handler->hwnd(), GWL_STYLE) & WS_THICKFRAME);
 #endif
+
+  RunPendingMessages();
+  ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
+  RunPendingMessages();
+}
+
+// Verifies that a transparent menu popup with kAnimationsDisabledKey set (such
+// as UnboundedSurfaceWindowAura) forwards animation suppression to the
+// top-level wrapper widget's content window.
+TEST_F(DesktopNativeWidgetAuraTest,
+       TopLevelOwnedTransparentPopupForwardsAnimationsDisabled) {
+  DesktopAuraTopLevelWindowTest popup_window;
+  ASSERT_NO_FATAL_FAILURE(popup_window.CreateTopLevelWindow(
+      gfx::Rect(0, 0, 200, 200), /*fullscreen=*/false, /*transparent=*/true,
+      /*shadowless=*/true, /*animations_disabled=*/true));
+
+  aura::Window* content_window =
+      popup_window.top_level_widget()->GetNativeView();
+  EXPECT_TRUE(
+      content_window->GetProperty(aura::client::kAnimationsDisabledKey));
+  EXPECT_TRUE(wm::WindowAnimationsDisabled(content_window));
 
   RunPendingMessages();
   ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());

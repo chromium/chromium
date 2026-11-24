@@ -22,6 +22,7 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -340,6 +341,9 @@ bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_screen) {
       std::make_unique<aura::Window>(this, aura::client::WINDOW_TYPE_MENU);
   window_->Init(ui::LayerType::LAYER_SURFACE);
   window_->SetTransparent(true);
+  // The popped-out DOM surface must appear on its first frame; a window
+  // manager fade-in crossfades with the page that stopped painting it.
+  window_->SetProperty(aura::client::kAnimationsDisabledKey, true);
   if (base::FeatureList::IsEnabled(
           features::kOmitNativeFrameOnShadowlessMenus)) {
     wm::SetShadowElevation(window_.get(), wm::kShadowElevationNone);
