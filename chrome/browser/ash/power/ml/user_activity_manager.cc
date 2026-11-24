@@ -40,10 +40,6 @@ namespace ml {
 
 namespace {
 
-void LogPowerMLPreviousEventLoggingResult(PreviousEventLoggingResult result) {
-  UMA_HISTOGRAM_ENUMERATION("PowerML.PreviousEventLogging.Result", result);
-}
-
 void LogPowerMLDimImminentAction(DimImminentAction action) {
   UMA_HISTOGRAM_ENUMERATION("PowerML.DimImminent.Action", action);
 }
@@ -586,32 +582,16 @@ void UserActivityManager::MaybeLogEvent(
 
 void UserActivityManager::PopulatePreviousEventData(
     const base::TimeDelta& now) {
-  PreviousEventLoggingResult result = PreviousEventLoggingResult::kSuccess;
-  if (!model_prediction_) {
-    result = base::FeatureList::IsEnabled(features::kUserActivityPrediction)
-                 ? PreviousEventLoggingResult::kErrorModelPredictionMissing
-                 : PreviousEventLoggingResult::kErrorModelDisabled;
-    LogPowerMLPreviousEventLoggingResult(result);
-  }
-
   if (previous_idle_event_data_) {
-    result = PreviousEventLoggingResult::kErrorMultiplePreviousEvents;
     previous_idle_event_data_.reset();
-    LogPowerMLPreviousEventLoggingResult(result);
-  }
-
-  if (!idle_event_start_since_boot_) {
-    result = PreviousEventLoggingResult::kErrorIdleStartMissing;
-    LogPowerMLPreviousEventLoggingResult(result);
-  }
-
-  if (result != PreviousEventLoggingResult::kSuccess) {
-    LogPowerMLPreviousEventLoggingResult(PreviousEventLoggingResult::kError);
     return;
   }
-
-  // Only log if none of the errors above occurred.
-  LogPowerMLPreviousEventLoggingResult(result);
+  // Skip recording the previous idle event if Smart Dim did not produce a
+  // prediction (e.g. disabled by policy or feature flag) or the idle start
+  // timestamp is missing.
+  if (!model_prediction_ || !idle_event_start_since_boot_) {
+    return;
+  }
 
   previous_idle_event_data_ = std::make_unique<PreviousIdleEventData>();
   previous_idle_event_data_->smart_dim_request_interval =

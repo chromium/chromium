@@ -1981,16 +1981,6 @@ tools/metrics/histograms/metadata/stability/enums.xml
   </summary>
 </histogram>
 
-<histogram name="PowerML.PreviousEventLogging.Result"
-    enum="PowerMLPreviousEventLoggingResult" expires_after="2020-12-13">
-  <owner>napper@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    Status of logging previous idle event after a screen dim imminent signal is
-    received. Only applicable to Chrome OS.
-  </summary>
-</histogram>
-
 <histogram name="PowerML.SmartDimComponent.LoadComponentEvent"
     enum="PowerMLSmartDimComponentLoadComponentEvent"
     expires_after="2027-04-01">

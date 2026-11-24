@@ -24791,26 +24791,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Off">System was suspended after dim.</int>
 </enum>
 
-<enum name="PowerMLPreviousEventLoggingResult">
-  <int value="0" label="Success">Previous event was logged successfully.</int>
-  <int value="1" label="Error">Previous event was not logged successfully.</int>
-  <int value="2" label="ErrorModelPredictionMissing">
-    Previous event was not logged successfully because model was enabled but
-    there was no prediction for the previous event.
-  </int>
-  <int value="3" label="ErrorModelDisabled">
-    Previous event was not logged successfully because model was disabled.
-  </int>
-  <int value="4" label="ErrorMultiplePreviousEvents">
-    Previous event was not logged successfully because of multiple previous
-    events.
-  </int>
-  <int value="5" label="ErrorIdleStartMissing">
-    Previous event was not logged successfully because previous idle event had
-    no event start time.
-  </int>
-</enum>
-
 <enum name="PowerMLSmartDimComponentLoadComponentEvent">
   <int value="0" label="Success">
     Smart dim component is loaded successfully.
