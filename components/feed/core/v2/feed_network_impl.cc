@@ -526,14 +526,15 @@ void FeedNetworkImpl::SendQueryRequest(
     const feedwire::Request& request,
     const AccountInfo& account_info,
     base::OnceCallback<void(QueryRequestResult)> callback) {
+  GURL url = GetFeedQueryURL(request.feed_request().feed_query().reason());
+  if (url.is_empty()) {
+    return std::move(callback).Run({});
+  }
+
   std::string binary_proto;
   request.SerializeToString(&binary_proto);
   std::string base64proto = base::Base64UrlEncode(
       binary_proto, base::Base64UrlEncodePolicy::INCLUDE_PADDING);
-
-  GURL url = GetFeedQueryURL(request.feed_request().feed_query().reason());
-  if (url.is_empty())
-    return std::move(callback).Run({});
 
   // Override url if requested from internals page.
   bool host_overridden = false;
