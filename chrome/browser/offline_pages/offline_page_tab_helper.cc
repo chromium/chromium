@@ -100,6 +100,7 @@ void OfflinePageTabHelper::LoadedOfflinePageInfo::Clear() {
   offline_page.reset();
   offline_header.Clear();
   trusted_state = OfflinePageTrustedState::UNTRUSTED;
+  untrusted_online_url = GURL();
   is_showing_offline_preview = false;
 }
 
@@ -276,6 +277,12 @@ void OfflinePageTabHelper::FinalizeOfflineInfo(
       offline_info_ = LoadedOfflinePageInfo::MakeUntrusted();
     }
     if (offline_info_.trusted_state == OfflinePageTrustedState::UNTRUSTED) {
+      // The renderer-reported URL can't be verified, so it must not become the
+      // page's URL, which is shown as its origin. It is kept aside only so
+      // that reloading can still navigate to the online version.
+      if (offline_info_.offline_page->url.SchemeIsHTTPOrHTTPS()) {
+        offline_info_.untrusted_online_url = offline_info_.offline_page->url;
+      }
       offline_info_.offline_page->url = navigated_url;
     }
   } else if (navigated_url.SchemeIsHTTPOrHTTPS()) {

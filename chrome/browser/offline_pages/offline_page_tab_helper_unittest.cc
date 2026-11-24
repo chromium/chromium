@@ -376,8 +376,29 @@ TEST_F(OfflinePageTabHelperTest, UntrustedMhtmlFileLoadOriginNotSpoofed) {
   EXPECT_EQ(kTestMhtmlCreationTime,
             tab_helper()->offline_page()->creation_time);
   // Offline page URL must reflect the actual navigated file URL, preventing
-  // origin spoofing in Page Info and open-online reload.
+  // origin spoofing in Page Info.
   EXPECT_EQ(kFileUrl, tab_helper()->offline_page()->url);
+  // The renderer-reported URL is only kept as the target for reloading the
+  // page from the network.
+  EXPECT_EQ(kSpoofedUrl, tab_helper()->untrusted_online_url());
+
+  // The reported URL must not outlive the page it was reported for.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/page.html"));
+  EXPECT_TRUE(tab_helper()->untrusted_online_url().is_empty());
+}
+
+TEST_F(OfflinePageTabHelperTest, UntrustedMhtmlFileLoadWithoutReportedUrl) {
+  const GURL kFileUrl("file:///sdcard/Download/page.mhtml");
+
+  CreateNavigationSimulator(kFileUrl);
+  navigation_simulator()->Start();
+  navigation_simulator()->SetContentsMimeType("multipart/related");
+  navigation_simulator()->Commit();
+
+  ASSERT_NE(nullptr, tab_helper()->offline_page());
+  EXPECT_EQ(kFileUrl, tab_helper()->offline_page()->url);
+  EXPECT_TRUE(tab_helper()->untrusted_online_url().is_empty());
 }
 
 TEST_F(OfflinePageTabHelperTest, HttpMhtmlLoadMismatchedUrlRejected) {

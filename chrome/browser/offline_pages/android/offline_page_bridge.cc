@@ -676,6 +676,26 @@ bool OfflinePageBridge::IsShowingTrustedOfflinePage(
       web_contents);
 }
 
+GURL OfflinePageBridge::GetUntrustedOnlineUrl(
+    content::WebContents* web_contents) {
+  // Going through GetOfflinePageFromWebContents ensures the tab helper's info
+  // is not stale relative to a pending navigation.
+  if (!web_contents ||
+      !offline_pages::OfflinePageUtils::GetOfflinePageFromWebContents(
+          web_contents)) {
+    return GURL();
+  }
+  OfflinePageTabHelper* tab_helper =
+      OfflinePageTabHelper::FromWebContents(web_contents);
+  // The tab helper only records this URL for untrusted pages. Checking here as
+  // well keeps that guarantee local to this method, so a trusted page can
+  // never be reloaded through an unverified URL.
+  if (tab_helper->IsShowingTrustedOfflinePage()) {
+    return GURL();
+  }
+  return tab_helper->untrusted_online_url();
+}
+
 void OfflinePageBridge::GetPageByOfflineIdDone(
     offline_items_collection::LaunchLocation launch_location,
     const ScopedJavaGlobalRef<jobject>& j_callback_obj,

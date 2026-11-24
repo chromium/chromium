@@ -47,6 +47,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -730,7 +731,20 @@ public class OfflinePageUtils {
             return;
         }
 
-        LoadUrlParams params = new LoadUrlParams(offlinePage.getUrl(), transitionTypeForReload);
+        // An untrusted offline page is a local archive, so loading its own URL again would only
+        // show the same offline content. Navigate to the online URL the archive claims to have been
+        // saved from when there is one, without granting browser-initiated privileges
+        // (SameSite=Strict cookies, Sec-Fetch-Site: none) to untrusted archive contents.
+        OfflinePageBridge offlinePageBridge =
+                getInstance().getOfflinePageBridge(Profile.fromWebContents(webContents));
+        GURL onlineUrl =
+                offlinePageBridge == null
+                        ? GURL.emptyGURL()
+                        : offlinePageBridge.getUntrustedOnlineUrl(webContents);
+        LoadUrlParams params =
+                GURL.isEmptyOrInvalid(onlineUrl)
+                        ? new LoadUrlParams(offlinePage.getUrl(), transitionTypeForReload)
+                        : LoadUrlParams.createOpaqueRendererInitiatedParams(onlineUrl);
         loadUrlDelegate.loadUrl(params);
     }
 

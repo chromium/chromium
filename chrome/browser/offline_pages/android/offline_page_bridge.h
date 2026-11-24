@@ -169,6 +169,10 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
 
   bool IsShowingTrustedOfflinePage(content::WebContents* web_contents);
 
+  // Returns the unverified online URL of the untrusted offline page shown in
+  // |web_contents|, or an empty GURL if there is none.
+  GURL GetUntrustedOnlineUrl(content::WebContents* web_contents);
+
  private:
   void GetPageByOfflineIdDone(
       offline_items_collection::LaunchLocation launch_location,

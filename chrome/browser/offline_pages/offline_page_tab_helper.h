@@ -101,6 +101,14 @@ class OfflinePageTabHelper
     return offline_info_.trusted_state;
   }
 
+  // Returns the HTTP/HTTPS URL an untrusted archive claims to have been saved
+  // from, or an empty URL if there is none. It is unverified, so it must only
+  // be used as a navigation target for reaching the online version of the page
+  // and never be presented as the identity of the displayed content.
+  const GURL& untrusted_online_url() const {
+    return offline_info_.untrusted_online_url;
+  }
+
   // Returns whether a trusted offline page is being displayed.
   bool IsShowingTrustedOfflinePage() const;
 
@@ -171,6 +179,11 @@ class OfflinePageTabHelper
 
     // The trusted state of the page.
     OfflinePageTrustedState trusted_state;
+
+    // For untrusted pages only: the online URL reported by the renderer from
+    // the archive's contents. Kept apart from |offline_page->url| because the
+    // latter is shown to the user as the page's origin.
+    GURL untrusted_online_url;
 
     // Whether the page is an offline preview. Offline page previews are shown
     // when a user's effective connection type is prohibitively slow.

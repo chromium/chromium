@@ -578,6 +578,20 @@ public class OfflinePageBridge {
                 .isShowingTrustedOfflinePage(mNativeOfflinePageBridge, webContents);
     }
 
+    /**
+     * Returns the online URL an untrusted offline page claims to have been saved from. It is
+     * unverified, so it must only be used as a navigation target and never be shown as the origin
+     * of the displayed content.
+     *
+     * @param webContents Web contents shown.
+     * @return The online URL, or an empty GURL if an untrusted offline page is not being shown or
+     *     it didn't report one.
+     */
+    public GURL getUntrustedOnlineUrl(WebContents webContents) {
+        return OfflinePageBridgeJni.get()
+                .getUntrustedOnlineUrl(mNativeOfflinePageBridge, webContents);
+    }
+
     @CalledByNative
     protected void offlinePageModelLoaded() {
         mIsNativeOfflinePageModelLoaded = true;
@@ -819,6 +833,11 @@ public class OfflinePageBridge {
                 Callback<LoadUrlParams> callback);
 
         boolean isShowingTrustedOfflinePage(
+                long nativeOfflinePageBridge,
+                @JniType("content::WebContents*") WebContents webContents);
+
+        @JniType("GURL")
+        GURL getUntrustedOnlineUrl(
                 long nativeOfflinePageBridge,
                 @JniType("content::WebContents*") WebContents webContents);
 

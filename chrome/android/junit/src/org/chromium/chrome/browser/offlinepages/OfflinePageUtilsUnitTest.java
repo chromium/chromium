@@ -5,11 +5,15 @@
 package org.chromium.chrome.browser.offlinepages;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,14 +41,22 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.SadTabRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.Origin;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for OfflinePageUtils. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {OfflinePageUtilsUnitTest.WrappedEnvironment.class})
 public class OfflinePageUtilsUnitTest {
+    private static final String UNTRUSTED_PAGE_FILE_URL = "file:///sdcard/Download/page.mhtml";
+
     @Mock public Profile.Natives mMockProfileNatives;
 
     @Mock private File mMockDataDirectory;
@@ -52,6 +64,7 @@ public class OfflinePageUtilsUnitTest {
     @Mock private WebContents mWebContents;
     @Mock private OfflinePageBridge mOfflinePageBridge;
     @Mock private OfflinePageUtils.Internal mOfflinePageUtils;
+    @Mock private Origin mOpaqueOrigin;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final SadTabRule mSadTabRule = new SadTabRule();
@@ -60,6 +73,7 @@ public class OfflinePageUtilsUnitTest {
     public void setUp() {
         ProfileJni.setInstanceForTesting(mMockProfileNatives);
         WrappedEnvironment.setDataDirectoryForTest(mMockDataDirectory);
+        Origin.setOpaqueOriginFactoryForTesting(() -> mOpaqueOrigin);
 
         // Setting up a mock tab. These are the values common to most tests, but individual
         // tests might easily overwrite them.
@@ -170,6 +184,48 @@ public class OfflinePageUtilsUnitTest {
                         eq(mWebContents),
                         any(ClientId.class),
                         any(OfflinePageBridge.SavePageCallback.class));
+    }
+
+    @Test
+    @Feature({"OfflinePages"})
+    public void testReloadUntrustedPage_loadsOnlineUrl() {
+        setUpUntrustedOfflinePage(JUnitTestGURLs.EXAMPLE_URL);
+
+        AtomicReference<LoadUrlParams> loadedParams = new AtomicReference<>();
+        OfflinePageUtils.reload(mWebContents, loadedParams::set);
+
+        // Reloading the local archive URL would keep showing the offline page, and the
+        // archive-reported URL must not receive browser-initiated navigation privileges.
+        LoadUrlParams params = loadedParams.get();
+        assertEquals(JUnitTestGURLs.EXAMPLE_URL.getSpec(), params.getUrl());
+        assertTrue(params.getIsRendererInitiated());
+        assertEquals(mOpaqueOrigin, params.getInitiatorOrigin());
+        assertEquals(PageTransition.LINK, params.getTransitionType());
+    }
+
+    @Test
+    @Feature({"OfflinePages"})
+    public void testReloadUntrustedPage_noOnlineUrl() {
+        setUpUntrustedOfflinePage(GURL.emptyGURL());
+
+        AtomicReference<LoadUrlParams> loadedParams = new AtomicReference<>();
+        OfflinePageUtils.reload(mWebContents, loadedParams::set);
+
+        LoadUrlParams params = loadedParams.get();
+        assertEquals(UNTRUSTED_PAGE_FILE_URL, params.getUrl());
+        assertFalse(params.getIsRendererInitiated());
+        assertNull(params.getInitiatorOrigin());
+        assertEquals(
+                PageTransition.RELOAD | PageTransition.FROM_ADDRESS_BAR,
+                params.getTransitionType());
+    }
+
+    private void setUpUntrustedOfflinePage(GURL onlineUrl) {
+        OfflinePageItem offlinePage = mock(OfflinePageItem.class);
+        doReturn(UNTRUSTED_PAGE_FILE_URL).when(offlinePage).getUrl();
+        doReturn(offlinePage).when(mOfflinePageBridge).getOfflinePage(mWebContents);
+        doReturn(onlineUrl).when(mOfflinePageBridge).getUntrustedOnlineUrl(mWebContents);
+        doReturn(false).when(mOfflinePageUtils).isShowingTrustedOfflinePage(mWebContents);
     }
 
     /** A shadow/wrapper of android.os.Environment that allows injecting a test directory. */

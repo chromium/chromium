@@ -40,10 +40,13 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.offlinepages.SavePageResult;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -386,18 +389,28 @@ public class OfflinePageUtilsTest {
         mActivityTestRule.loadUrl(testUrl);
 
         final AtomicReference<OfflinePageItem> offlinePageItem = new AtomicReference<>();
+        final AtomicReference<GURL> onlineUrl = new AtomicReference<>();
+        final AtomicReference<LoadUrlParams> reloadParams = new AtomicReference<>();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    offlinePageItem.set(
-                            OfflinePageUtils.getOfflinePage(
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getActivityTab()
-                                            .getWebContents()));
+                    WebContents webContents =
+                            mActivityTestRule.getActivity().getActivityTab().getWebContents();
+                    offlinePageItem.set(OfflinePageUtils.getOfflinePage(webContents));
+                    onlineUrl.set(mOfflinePageBridge.getUntrustedOnlineUrl(webContents));
+                    // Capturing the params instead of loading them exercises the reload path
+                    // against the real native state without making a network request.
+                    OfflinePageUtils.reload(webContents, reloadParams::set);
                 });
 
         Assert.assertEquals(testUrl, offlinePageItem.get().getUrl());
+        // The URL claimed by the archive is only exposed as the target for reloading online.
+        Assert.assertEquals("http://www.example.com/", onlineUrl.get().getSpec());
         Assert.assertEquals(1321901946000L, offlinePageItem.get().getCreationTimeMs());
+
+        // Reload must go to the claimed online URL without browser-initiated privileges.
+        Assert.assertEquals("http://www.example.com/", reloadParams.get().getUrl());
+        Assert.assertTrue(reloadParams.get().getIsRendererInitiated());
+        Assert.assertTrue(reloadParams.get().getInitiatorOrigin().isOpaque());
     }
 
     /**
