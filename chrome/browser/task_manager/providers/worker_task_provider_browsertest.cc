@@ -79,8 +79,8 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
   }
 
   void StopUpdating() {
-    task_provider_->ClearObserver();
     tasks_.clear();
+    task_provider_->ClearObserver();
     task_provider_.reset();
   }
 
@@ -133,9 +133,7 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
     }
   }
 
-  const std::vector<raw_ptr<Task, DanglingUntriaged>>& tasks() const {
-    return tasks_;
-  }
+  const std::vector<raw_ptr<Task>>& tasks() const { return tasks_; }
   TaskProvider* task_provider() const { return task_provider_.get(); }
 
  protected:
@@ -156,7 +154,7 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
   std::unique_ptr<WorkerTaskProvider> task_provider_;
 
   // Tasks created by |task_provider_|.
-  std::vector<raw_ptr<Task, DanglingUntriaged>> tasks_;
+  std::vector<raw_ptr<Task>> tasks_;
 
   base::OnceClosure quit_closure_for_waiting_;
 
