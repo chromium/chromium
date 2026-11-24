@@ -2272,6 +2272,10 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
     return;
   }
 
+  // Protect `this` across NavigateClient(), which can synchronously activate a
+  // waiting version or run `callback` and drop the last reference to `this`
+  // before NotifyClientNavigated() reads `script_url_`.
+  scoped_refptr<ServiceWorkerVersion> protect(this);
   service_worker_client_utils::NavigateClient(
       url, script_url_, key_, service_worker_client->GetRenderFrameHostId(),
       BuildClientSecurityState(), policy_container_host(), context_,
@@ -2403,6 +2407,10 @@ void ServiceWorkerVersion::OpenWindow(
     return;
   }
 
+  // Protect `this` across OpenWindow(), which can synchronously run `callback`
+  // and drop the last reference to `this` before NotifyWindowOpened() reads
+  // `script_url_`.
+  scoped_refptr<ServiceWorkerVersion> protect(this);
   // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   service_worker_client_utils::OpenWindow(
       url, script_url_, key_, embedded_worker_->embedded_worker_id(),
@@ -3418,6 +3426,10 @@ void ServiceWorkerVersion::CleanUpExternalRequest(
 void ServiceWorkerVersion::OnNoWorkInBrowser() {
   DCHECK(!HasWorkInBrowser());
   if (context_ && worker_is_idle_on_renderer_) {
+    // Protect `this` because ServiceWorkerRegistration::OnNoWork() can
+    // synchronously activate a waiting version and drop the registration's
+    // reference to `this` before `observers_` are notified.
+    scoped_refptr<ServiceWorkerVersion> protect(this);
     scoped_refptr<ServiceWorkerRegistration> registration =
         context_->GetLiveRegistration(registration_id());
     if (registration) {
