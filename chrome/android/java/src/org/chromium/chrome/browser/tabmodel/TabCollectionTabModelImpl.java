@@ -460,6 +460,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         removeObserver(mTabOpenerTrackerHelper);
 
         mTabIdToTabs.clear();
+        mMultiSelectedTabs.clear();
         mTabCountSupplier.set(0);
         mTabModelObservers.clear();
         mTabGroupObservers.clear();
@@ -852,9 +853,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         } else {
             mMultiSelectedTabs.removeAll(tabIds);
         }
-        for (TabModelObserver obs : mTabModelObservers) {
-            obs.onTabsSelectionChanged();
-        }
+        notifyTabsSelectionChanged();
         assert mMultiSelectedTabs.isEmpty()
                         || TabModelUtils.getCurrentTabId(this) == Tab.INVALID_TAB_ID
                         || mMultiSelectedTabs.contains(TabModelUtils.getCurrentTabId(this))
@@ -868,9 +867,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         if (mMultiSelectedTabs.isEmpty()) return;
         mMultiSelectedTabs.clear();
         if (notifyObservers) {
-            for (TabModelObserver obs : mTabModelObservers) {
-                obs.onTabsSelectionChanged();
-            }
+            notifyTabsSelectionChanged();
         }
     }
 
@@ -983,11 +980,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 || mTabIdToTabs.indexOfKey(tab.getId()) < 0) {
             return;
         }
-        TabCollectionTabModelImplJni.get()
-                .removeTab(assertNonNull(mNativeTabCollectionTabModelImplPtr), tab);
-        tab.onRemovedFromTabModel(mCurrentTabSupplier, DetachReason.INSERT_INTO_OTHER_WINDOW);
-        mTabIdToTabs.remove(tab.getId());
-        mMultiSelectedTabs.remove(tab.getId());
+        detachTabInternal(tab, DetachReason.INSERT_INTO_OTHER_WINDOW);
         invalidateCache();
         if (mCurrentTabSupplier.get() == tab) {
             mCurrentTabSupplier.set(null);
@@ -1966,10 +1959,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         ObserverList.RewindableIterator<TabModelObserver> observers =
                 mTabModelObservers.rewindableIterator();
 
-        Set<Integer> tabsToCloseIds = new ArraySet<>(tabsToClose.size());
-        for (Tab tab : tabsToClose) {
-            tabsToCloseIds.add(tab.getId());
-        }
         boolean isClosingAllTabs = tabsToClose.size() == getCount();
 
         observers.rewind();
@@ -2035,8 +2024,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 mHidingTabGroups.remove(tabGroupId);
             }
         }
-
-        setTabsMultiSelected(tabsToCloseIds, /* isSelected= */ false);
 
         return true;
     }
@@ -2236,6 +2223,26 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         return !isIncognito() && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
     }
 
+    private void notifyTabsSelectionChanged() {
+        for (TabModelObserver obs : mTabModelObservers) {
+            obs.onTabsSelectionChanged();
+        }
+    }
+
+    /**
+     * Detaches {@code tab} from the native collection, disconnects its supplier state, and removes
+     * its Java tracking entries (including multi-selection membership).
+     *
+     * @return Whether {@code tab} was explicitly present in {@link #mMultiSelectedTabs}.
+     */
+    private boolean detachTabInternal(Tab tab, @DetachReason int detachReason) {
+        TabCollectionTabModelImplJni.get()
+                .removeTab(assertNonNull(mNativeTabCollectionTabModelImplPtr), tab);
+        tab.onRemovedFromTabModel(mCurrentTabSupplier, detachReason);
+        mTabIdToTabs.remove(tab.getId());
+        return mMultiSelectedTabs.remove(tab.getId());
+    }
+
     private void removeTabsAndSelectNext(
             List<Tab> tabsToRemove,
             @Nullable Tab recommendedNextTab,
@@ -2283,6 +2290,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             mCurrentTabSupplier.willSet(nearbyTab);
         }
 
+        boolean removedFromMultiSelection = false;
         Map<Token, @Nullable Tab> tabGroupShownTabs = new ArrayMap<>();
         for (Tab tab : tabsToRemove) {
             assert mTabIdToTabs.indexOfKey(tab.getId()) >= 0 : "Tab not found in tab model.";
@@ -2297,10 +2305,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
             // TODO(crbug.com/428692223): Vectorize this so all the tabs get removed from the
             // collection in a single pass.
-            TabCollectionTabModelImplJni.get()
-                    .removeTab(assertNonNull(mNativeTabCollectionTabModelImplPtr), tab);
-            tab.onRemovedFromTabModel(mCurrentTabSupplier, detachReason);
-            mTabIdToTabs.remove(tab.getId());
+            removedFromMultiSelection |= detachTabInternal(tab, detachReason);
         }
         invalidateCache();
         mTabCountSupplier.set(getCount());
@@ -2312,6 +2317,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
             TabModel nextModel = mModelDelegate.getModel(nextIsIncognito);
             nextModel.setIndex(nextModel.indexOf(nextTab), selectionType);
+            // setIndexInternal notifies observers on this model when a remaining tab becomes
+            // active; otherwise notify directly if multi-selection or the active tab changed.
+            if ((nextIsInOtherModel || getCount() == 0 || isArchivedTabModel())
+                    && (removedFromMultiSelection
+                            || currentTabInModel != mCurrentTabSupplier.get())) {
+                notifyTabsSelectionChanged();
+            }
+        } else if (removedFromMultiSelection) {
+            notifyTabsSelectionChanged();
         }
 
         if (updatePendingTabClosureManager && supportsPendingClosures()) {

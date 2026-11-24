@@ -132,6 +132,7 @@ public class TabCollectionTabModelImplUnitTest {
     @Mock private PendingTabClosureManager mPendingTabClosureManager;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
+    @Mock private TabModel mIncognitoTabModel;
 
     private TabCollectionTabModelImpl mTabModel;
     private List<Tab> mTabs;
@@ -1074,8 +1075,8 @@ public class TabCollectionTabModelImplUnitTest {
         mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         verifyBatchedAndReset();
         mTabModel.setTabsMultiSelected(Collections.singleton(1), /* isSelected= */ true);
+        reset(mTabModelObserver);
 
-        mTabModel.addObserver(mTabModelObserver);
         mTabModel.detachTabForReparenting(tab);
 
         assertEquals(0, mTabModel.getCount());
@@ -1085,6 +1086,7 @@ public class TabCollectionTabModelImplUnitTest {
         verify(mTabCollectionTabModelImplJni).removeTab(any(), eq(tab));
         verify(mTabModelObserver, never()).tabRemoved(any());
         verify(mTabModelObserver, never()).willCloseTabs(any(), anyBoolean(), anyBoolean());
+        verify(mTabModelObserver, never()).onTabsSelectionChanged();
 
         // Restore the tab into the recreated Activity's model, remove its AsyncTabParams, and run
         // OldActivity.onDestroy(). The tab in newTabModel must remain live (not destroyed).
@@ -1202,6 +1204,220 @@ public class TabCollectionTabModelImplUnitTest {
         mTabModel.clearMultiSelection(/* notifyObservers= */ false);
         mTabModel.destroy();
         assertTrue(mTabModel.getHighlightedTabs().isEmpty());
+    }
+
+    @Test
+    public void testRemoveTab_MultiSelectedNonActiveTab_ClearsSelectionAndNotifies() {
+        setUpMultiSelectedTabs(
+                /* tabCount= */ 2, /* isActive= */ true, new HashSet<>(Arrays.asList(1, 2)));
+        Tab tab1 = mTabModel.getTabById(1);
+        Tab tab2 = mTabModel.getTabById(2);
+
+        mTabModel.removeTab(tab2);
+
+        assertEquals(tab1, mTabModel.getCurrentTabSupplier().get());
+        assertFalse(mTabModel.isTabMultiSelected(2));
+        assertTrue(mTabModel.isTabMultiSelected(1));
+        assertEquals(1, mTabModel.getMultiSelectedTabsCount());
+        assertEquals(List.of(1), mTabModel.getOrderedMultiSelectedTabIds());
+        verify(mTabModelObserver).tabRemoved(tab2);
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testRemoveTab_UnselectedNonActiveTab_PreservesSelectionWithoutNotifying() {
+        setUpMultiSelectedTabs(
+                /* tabCount= */ 3, /* isActive= */ true, new LinkedHashSet<>(Arrays.asList(1, 2)));
+        Tab tab1 = mTabModel.getTabById(1);
+        Tab tab3 = mTabModel.getTabById(3);
+
+        mTabModel.removeTab(tab3);
+
+        assertEquals(tab1, mTabModel.getCurrentTabSupplier().get());
+        assertTrue(mTabModel.isTabMultiSelected(1));
+        assertTrue(mTabModel.isTabMultiSelected(2));
+        assertFalse(mTabModel.isTabMultiSelected(3));
+        assertEquals(2, mTabModel.getMultiSelectedTabsCount());
+        assertEquals(List.of(1, 2), mTabModel.getOrderedMultiSelectedTabIds());
+        verify(mTabModelObserver).tabRemoved(tab3);
+        verify(mTabModelObserver, never()).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testRemoveTab_MultiSelectedActiveTab_ClearsSelectionAndNotifiesOnce() {
+        when(mNextTabPolicySupplier.get()).thenReturn(NextTabPolicy.LOCATIONAL);
+        setUpMultiSelectedTabs(
+                /* tabCount= */ 2, /* isActive= */ true, new HashSet<>(Arrays.asList(1, 2)));
+        Tab tab1 = mTabModel.getTabById(1);
+        Tab tab2 = mTabModel.getTabById(2);
+
+        mTabModel.removeTab(tab1);
+
+        assertEquals(tab2, mTabModel.getCurrentTabSupplier().get());
+        assertFalse(mTabModel.isTabMultiSelected(1));
+        assertTrue(mTabModel.isTabMultiSelected(2));
+        assertEquals(1, mTabModel.getMultiSelectedTabsCount());
+        assertEquals(List.of(2), mTabModel.getOrderedMultiSelectedTabIds());
+        verify(mTabModelObserver).tabRemoved(tab1);
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testRemoveTab_LastTab_ClearsSelectionAndNotifiesOnce() {
+        when(mNextTabPolicySupplier.get()).thenReturn(NextTabPolicy.LOCATIONAL);
+        setUpMultiSelectedTabs(/* tabCount= */ 1, /* isActive= */ true, Collections.singleton(1));
+        Tab tab1 = mTabModel.getTabById(1);
+
+        mTabModel.removeTab(tab1);
+
+        assertNull(mTabModel.getCurrentTabSupplier().get());
+        assertFalse(mTabModel.isTabMultiSelected(1));
+        assertEquals(0, mTabModel.getMultiSelectedTabsCount());
+        assertTrue(mTabModel.getOrderedMultiSelectedTabIds().isEmpty());
+        verify(mTabModelObserver).tabRemoved(tab1);
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testRemoveTab_LastUnselectedTab_NotifiesOnce() {
+        when(mTabModelDelegate.getModel(false)).thenReturn(mTabModel);
+        when(mNextTabPolicySupplier.get()).thenReturn(NextTabPolicy.LOCATIONAL);
+        addTabsAndResetObserver(/* count= */ 1);
+        mTabModel.setActive(true);
+        Tab tab1 = mTabModel.getTabById(1);
+
+        mTabModel.removeTab(tab1);
+
+        assertNull(mTabModel.getCurrentTabSupplier().get());
+        assertFalse(mTabModel.isTabMultiSelected(1));
+        assertEquals(0, mTabModel.getMultiSelectedTabsCount());
+        verify(mTabModelObserver).tabRemoved(tab1);
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testCloseTabs_MultiSelectedNonActiveTab_ClearsSelectionAndNotifiesOnce() {
+        setUpMultiSelectedTabs(
+                /* tabCount= */ 2, /* isActive= */ true, new HashSet<>(Arrays.asList(1, 2)));
+        Tab tab1 = mTabModel.getTabById(1);
+        Tab tab2 = mTabModel.getTabById(2);
+
+        mTabModel.closeTabs(TabClosureParams.closeTab(tab2).allowUndo(false).build());
+
+        assertEquals(tab1, mTabModel.getCurrentTabSupplier().get());
+        assertFalse(mTabModel.isTabMultiSelected(2));
+        assertTrue(mTabModel.isTabMultiSelected(1));
+        assertEquals(1, mTabModel.getMultiSelectedTabsCount());
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testCloseTabs_UnselectedNonActiveTab_PreservesSelectionWithoutNotifying() {
+        setUpMultiSelectedTabs(
+                /* tabCount= */ 3, /* isActive= */ true, new LinkedHashSet<>(Arrays.asList(1, 2)));
+        Tab tab3 = mTabModel.getTabById(3);
+
+        mTabModel.closeTabs(TabClosureParams.closeTab(tab3).allowUndo(false).build());
+
+        assertEquals(2, mTabModel.getMultiSelectedTabsCount());
+        assertEquals(List.of(1, 2), mTabModel.getOrderedMultiSelectedTabIds());
+        verify(mTabModelObserver, never()).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testCloseTabs_MultiSelectedActiveTab_ClearsSelectionAndNotifiesOnce() {
+        when(mNextTabPolicySupplier.get()).thenReturn(NextTabPolicy.LOCATIONAL);
+        setUpMultiSelectedTabs(
+                /* tabCount= */ 2, /* isActive= */ true, new HashSet<>(Arrays.asList(1, 2)));
+        Tab tab1 = mTabModel.getTabById(1);
+        Tab tab2 = mTabModel.getTabById(2);
+
+        mTabModel.closeTabs(TabClosureParams.closeTab(tab1).allowUndo(false).build());
+
+        assertEquals(tab2, mTabModel.getCurrentTabSupplier().get());
+        assertFalse(mTabModel.isTabMultiSelected(1));
+        assertTrue(mTabModel.isTabMultiSelected(2));
+        assertEquals(1, mTabModel.getMultiSelectedTabsCount());
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testCloseTabs_InactiveModelActiveTab_NotifiesOnce() {
+        // Inactive model: NextTabSelectionUtil returns null, and setIndexInternal clamps to tab2.
+        setUpMultiSelectedTabs(
+                /* tabCount= */ 2, /* isActive= */ false, new HashSet<>(Arrays.asList(1, 2)));
+        Tab tab1 = mTabModel.getTabById(1);
+        Tab tab2 = mTabModel.getTabById(2);
+
+        mTabModel.closeTabs(TabClosureParams.closeTab(tab1).allowUndo(false).build());
+
+        assertEquals(tab2, mTabModel.getCurrentTabSupplier().get());
+        assertFalse(mTabModel.isTabMultiSelected(1));
+        assertTrue(mTabModel.isTabMultiSelected(2));
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testCloseTabs_NextInOtherModel_ClearsMultiSelectionAndNotifies() {
+        when(mOrderController.determineInsertionIndex(anyInt(), anyInt(), any()))
+                .thenAnswer(invocation -> invocation.getArgument(1));
+        setUpMultiSelectedTabs(
+                /* tabCount= */ 2, /* isActive= */ false, new LinkedHashSet<>(Arrays.asList(1, 2)));
+        Tab tab1 = mTabModel.getTabById(1);
+        Tab tab2 = mTabModel.getTabById(2);
+
+        MockTab nextTab = createMockTab(456, mOtrProfile);
+        nextTab.setIsInitialized(true);
+        when(mTabModelDelegate.getModel(true)).thenReturn(mIncognitoTabModel);
+
+        mTabModel.closeTabs(
+                TabClosureParams.closeTab(tab1)
+                        .allowUndo(false)
+                        .recommendedNextTab(nextTab)
+                        .build());
+
+        // Retain a remaining tab so getCount() stays non-zero, isolating nextIsInOtherModel.
+        assertEquals(1, mTabModel.getCount());
+        assertEquals(tab2, mTabModel.getCurrentTabSupplier().get());
+        assertFalse(mTabModel.isTabMultiSelected(1));
+        assertTrue(mTabModel.isTabMultiSelected(2));
+        assertEquals(1, mTabModel.getMultiSelectedTabsCount());
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testCloseTabs_NextInOtherModel_UnselectedActiveTab_NotifiesOnce() {
+        when(mOrderController.determineInsertionIndex(anyInt(), anyInt(), any()))
+                .thenAnswer(invocation -> invocation.getArgument(1));
+        addTabsAndResetObserver(/* count= */ 2);
+        Tab tab1 = mTabModel.getTabById(1);
+        Tab tab2 = mTabModel.getTabById(2);
+
+        MockTab nextTab = createMockTab(456, mOtrProfile);
+        nextTab.setIsInitialized(true);
+        when(mTabModelDelegate.getModel(true)).thenReturn(mIncognitoTabModel);
+
+        mTabModel.closeTabs(
+                TabClosureParams.closeTab(tab1)
+                        .allowUndo(false)
+                        .recommendedNextTab(nextTab)
+                        .build());
+
+        assertEquals(1, mTabModel.getCount());
+        assertEquals(tab2, mTabModel.getCurrentTabSupplier().get());
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testDestroy_ClearsMultiSelectedTabs() {
+        setUpMultiSelectedTabs(
+                /* tabCount= */ 2, /* isActive= */ false, new HashSet<>(Arrays.asList(1, 2)));
+
+        mTabModel.destroy();
+
+        assertFalse(mTabModel.isTabMultiSelected(1));
+        assertFalse(mTabModel.isTabMultiSelected(2));
+        verify(mTabModelObserver, never()).onTabsSelectionChanged();
     }
 
     @Test
@@ -1711,6 +1927,15 @@ public class TabCollectionTabModelImplUnitTest {
                     TabCreationState.LIVE_IN_FOREGROUND);
             verifyBatchedAndReset();
         }
+        reset(mTabModelObserver);
+    }
+
+    private void setUpMultiSelectedTabs(
+            int tabCount, boolean isActive, Set<Integer> selectedTabIds) {
+        when(mTabModelDelegate.getModel(false)).thenReturn(mTabModel);
+        addTabsAndResetObserver(tabCount);
+        if (isActive) mTabModel.setActive(true);
+        mTabModel.setTabsMultiSelected(selectedTabIds, /* isSelected= */ true);
         reset(mTabModelObserver);
     }
 

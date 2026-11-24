@@ -403,6 +403,34 @@ public class TabCollectionsTabModelObserversUnitTest {
         verify(mTabModelObserver).onTabsSelectionChanged();
     }
 
+    @Test
+    public void testOnTabsSelectionChanged_removeTab_multiSelectedNonActive() {
+        Tab tab1 = addTwoTabsForSelectionTest(/* multiSelectBoth= */ true);
+        mTabModel.removeTab(tab1);
+        verify(mTabModelObserver).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testOnTabsSelectionChanged_removeTab_unselectedNonActive() {
+        Tab tab1 = addTwoTabsForSelectionTest(/* multiSelectBoth= */ false);
+        mTabModel.removeTab(tab1);
+        verify(mTabModelObserver, never()).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testOnTabsSelectionChanged_closeTabs_multiSelectedNonActive() {
+        Tab tab1 = addTwoTabsForSelectionTest(/* multiSelectBoth= */ true);
+        mTabModel.closeTabs(TabClosureParams.closeTab(tab1).allowUndo(false).build());
+        verify(mTabModelObserver).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testOnTabsSelectionChanged_closeTabs_unselectedNonActive() {
+        Tab tab1 = addTwoTabsForSelectionTest(/* multiSelectBoth= */ false);
+        mTabModel.closeTabs(TabClosureParams.closeTab(tab1).allowUndo(false).build());
+        verify(mTabModelObserver, never()).onTabsSelectionChanged();
+    }
+
     // didMoveTab
 
     @Test
@@ -1017,6 +1045,20 @@ public class TabCollectionsTabModelObserversUnitTest {
         MockTab tab = MockTab.createAndInitialize(tabId, profile);
         tab.setWebContentsOverrideForTesting(mock(WebContents.class));
         return tab;
+    }
+
+    private Tab addTwoTabsForSelectionTest(boolean multiSelectBoth) {
+        MockTab tab1 = createMockTab(101, mProfile);
+        MockTab tab2 = createMockTab(102, mProfile);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        if (multiSelectBoth) {
+            mTabModel.setTabsMultiSelected(Set.of(101, 102), true);
+        }
+        reset(mTabModelObserver);
+        return tab1;
     }
 
     private List<Tab> addThreeTabsWithTwoInGroup(Token groupId) {
