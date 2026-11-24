@@ -7,7 +7,6 @@
 #include <iostream>
 #include <string_view>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -18,6 +17,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "content/public/browser/content_browser_client.h"
@@ -922,8 +922,8 @@ void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
         CHECK_EQ(static_cast<int>(kHeaderSizeInBytes + kSHAKeySizeInBytes),
                  op->small_buffer()->size(), base::NotFatalUntil::M159);
         std::string checksum_key(
-            UNSAFE_TODO(op->small_buffer()->data() + kHeaderSizeInBytes),
-            kSHAKeySizeInBytes);
+            base::as_string_view(op->small_buffer()->span().subspan(
+                kHeaderSizeInBytes, kSHAKeySizeInBytes)));
         auto small_buffer = base::MakeRefCounted<net::IOBufferWithSize>(0);
         auto large_buffer = base::MakeRefCounted<BigIOBuffer>(data_size);
         auto op2 = std::make_unique<PendingOperation>(
