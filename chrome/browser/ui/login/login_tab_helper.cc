@@ -87,6 +87,15 @@ void LoginTabHelper::DidFinishNavigation(
     return;
   }
 
+  // Only show a login prompt for a navigation that committed. The prompt is
+  // displayed on top of the blank error page that
+  // WillProcessMainFrameUnauthorizedResponse() commits. A navigation that
+  // finishes without committing leaves the previous document in place, so
+  // there is nothing to show a prompt for.
+  if (!navigation_handle->HasCommitted()) {
+    return;
+  }
+
   if (!navigation_handle->GetAuthChallengeInfo() ||
       !ChallengeMatchesNavigation(
           navigation_handle->GetAuthChallengeInfo().value(),

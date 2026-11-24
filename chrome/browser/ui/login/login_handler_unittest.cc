@@ -6,12 +6,20 @@
 
 #include <stddef.h>
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/login_delegate.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/base/auth.h"
+#include "net/http/http_response_headers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -128,6 +136,67 @@ class LoginHandlerWithWebContentsTest : public ChromeRenderViewHostTestHarness {
   ~LoginHandlerWithWebContentsTest() override = default;
 };
 
+// A LoginHandler that does not build any UI.
+class TestLoginHandler : public LoginHandler {
+ public:
+  TestLoginHandler(
+      const net::AuthChallengeInfo& auth_info,
+      content::WebContents* web_contents,
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
+      : LoginHandler(auth_info,
+                     web_contents,
+                     std::move(auth_required_callback)) {}
+  ~TestLoginHandler() override = default;
+
+ protected:
+  // LoginHandler:
+  bool BuildViewImpl(const std::u16string& authority,
+                     const std::u16string& explanation,
+                     LoginModelData* login_model_data) override {
+    return true;
+  }
+  void CloseDialog() override {}
+};
+
+// A LoginTabHelper that creates TestLoginHandlers and counts them.
+class TestLoginTabHelper : public LoginTabHelper {
+ public:
+  explicit TestLoginTabHelper(content::WebContents* web_contents)
+      : LoginTabHelper(web_contents) {}
+  ~TestLoginTabHelper() override = default;
+
+  int handlers_created() const { return handlers_created_; }
+
+ protected:
+  // LoginTabHelper:
+  std::unique_ptr<LoginHandler> CreateLoginHandler(
+      const net::AuthChallengeInfo& auth_info,
+      content::WebContents* web_contents,
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
+      override {
+    ++handlers_created_;
+    return std::make_unique<TestLoginHandler>(
+        auth_info, web_contents, std::move(auth_required_callback));
+  }
+
+ private:
+  int handlers_created_ = 0;
+};
+
+// Sets up `handle` as a navigation to `url` that received an HTTP 401 response
+// with an auth challenge from the server at `url`.
+void SetUpUnauthorizedResponse(content::MockNavigationHandle& handle,
+                               const GURL& url) {
+  net::AuthChallengeInfo challenge;
+  challenge.is_proxy = false;
+  challenge.challenger = url::SchemeHostPort(url);
+  challenge.scheme = kBasicAuthScheme;
+  challenge.realm = kFooRealm;
+  handle.SetAuthChallengeInfo(challenge);
+  handle.set_response_headers(net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 401 Unauthorized\r\n\r\n"));
+}
+
 }  // namespace
 
 TEST(LoginHandlerTest, DialogStringsAndRealm) {
@@ -239,6 +308,38 @@ TEST_F(LoginHandlerWithWebContentsTest, ProxyChallengerCancelsForPrompt) {
   content::NavigationThrottle::ThrottleCheckResult result =
       helper->WillProcessMainFrameUnauthorizedResponse(&handle);
   EXPECT_EQ(content::NavigationThrottle::CANCEL, result.action());
+}
+
+// Tests that DidFinishNavigation() does not show a login prompt for a
+// navigation that received an auth challenge but finished without committing.
+TEST_F(LoginHandlerWithWebContentsTest, NoPromptForUncommittedNavigation) {
+  TestLoginTabHelper helper(web_contents());
+  const GURL url("https://requested.test/page");
+
+  testing::NiceMock<content::MockNavigationHandle> handle(url, main_rfh());
+  SetUpUnauthorizedResponse(handle, url);
+  handle.set_has_committed(false);
+
+  helper.DidFinishNavigation(&handle);
+
+  EXPECT_FALSE(helper.IsShowingPrompt());
+  EXPECT_EQ(0, helper.handlers_created());
+}
+
+// Tests that DidFinishNavigation() shows a login prompt for a committed
+// navigation that received an auth challenge.
+TEST_F(LoginHandlerWithWebContentsTest, PromptForCommittedNavigation) {
+  TestLoginTabHelper helper(web_contents());
+  const GURL url("https://requested.test/page");
+
+  testing::NiceMock<content::MockNavigationHandle> handle(url, main_rfh());
+  SetUpUnauthorizedResponse(handle, url);
+  handle.set_has_committed(true);
+
+  helper.DidFinishNavigation(&handle);
+
+  EXPECT_TRUE(helper.IsShowingPrompt());
+  EXPECT_EQ(1, helper.handlers_created());
 }
 
 TEST(LoginHandlerTest, MakeInputForPasswordManager) {
