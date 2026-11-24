@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/browser_window_util.h"
@@ -17,24 +18,18 @@
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window_deleter.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -46,9 +41,16 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "extensions/test/extension_background_page_waiter.h"
+#endif
+
 namespace {
 
 class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
@@ -57,6 +59,8 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
     DevToolsProtocolTestBase::SetUpOnMainThread();
     AttachToBrowserTarget();
   }
+
+  Profile* profile() { return chrome_test_utils::GetProfile(this); }
 
   const base::DictValue* SendLoadUnpackedCommand(
       const std::string& path,
@@ -78,7 +82,7 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
       const std::string& path,
       std::optional<extensions::mojom::ManifestLocation> location =
           std::nullopt) {
-    extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
+    extensions::ChromeTestExtensionLoader loader(profile());
     if (location.has_value()) {
       loader.set_location(*location);
       loader.set_pack_extension(true);
@@ -120,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->FindString("id"));
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -129,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_EQ(extension->location(),
             extensions::mojom::ManifestLocation::kUnpacked);
   ASSERT_FALSE(extensions::util::IsIncognitoEnabled(*result->FindString("id"),
-                                                    browser()->GetProfile()));
+                                                    profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
@@ -139,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->FindString("id"));
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
 
   const extensions::Extension* extension =
       registry->enabled_extensions().GetByID(*result->FindString("id"));
@@ -148,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
             extensions::mojom::ManifestLocation::kUnpacked);
 
   ASSERT_TRUE(extensions::util::IsIncognitoEnabled(*result->FindString("id"),
-                                                   browser()->GetProfile()));
+                                                   profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, ThrowsOnWrongPath) {
@@ -163,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->FindString("id"));
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -174,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   // Verify that the extension is not enabled in incognito, as `false` was
   // passed for `enable_in_incognito`.
   ASSERT_FALSE(extensions::util::IsIncognitoEnabled(*result->FindString("id"),
-                                                    browser()->GetProfile()));
+                                                    profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanUninstallExtension) {
@@ -183,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanUninstallExtension) {
 
   std::string id = *install_result->FindString("id");
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
   const extensions::Extension* extension_before =
       registry->GetInstalledExtension(id);
   ASSERT_TRUE(extension_before);
@@ -199,6 +203,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanUninstallExtension) {
   ASSERT_FALSE(extension_after);
 }
 
+// `PRE_` browser-restart tests are not supported in `android_browsertests`.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        PRE_ExtensionMarkedAsInstalledViaCdp) {
   const base::DictValue* install_result =
@@ -206,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 
   std::string id = *install_result->FindString("id");
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
   const extensions::Extension* extension = registry->GetInstalledExtension(id);
   ASSERT_TRUE(extension);
   EXPECT_TRUE(extension->creation_flags() &
@@ -216,13 +222,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        ExtensionMarkedAsInstalledViaCdp) {
   base::RunLoop run_loop;
-  extensions::ExtensionSystem::Get(browser()->GetProfile())
-      ->ready()
-      .Post(FROM_HERE, run_loop.QuitWhenIdleClosure());
+  extensions::ExtensionSystem::Get(profile())->ready().Post(
+      FROM_HERE, run_loop.QuitWhenIdleClosure());
   run_loop.Run();
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
   // The extension should not be loaded on a subsequent run.
 
   // Verify that the extension is not in the registry.
@@ -236,6 +241,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   }
   EXPECT_FALSE(found);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        CannotUninstallNonUnpackedExtension) {
@@ -243,12 +249,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
       extensions::ExtensionBuilder("unpacked")
           .SetLocation(extensions::mojom::ManifestLocation::kComponent)
           .Build();
-  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
-      ->AddExtension(extension.get());
+  extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension.get());
 
   std::string id = extension.get()->id();
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
   const extensions::Extension* extension_before =
       registry->GetInstalledExtension(id);
   ASSERT_TRUE(extension_before);
@@ -267,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        FailsToUninstallNonexistentExtension) {
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
 
   std::string id = "non-existent-id";
   const extensions::Extension* extension = registry->GetInstalledExtension(id);
@@ -297,6 +302,7 @@ scoped_refptr<content::DevToolsAgentHost> FindExtensionHost(
   return nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Returns the `DevToolsAgentHost` associated with an extension page if
 // available.
 scoped_refptr<content::DevToolsAgentHost> FindBackgroundPageHost(
@@ -309,6 +315,7 @@ scoped_refptr<content::DevToolsAgentHost> FindBackgroundPageHost(
   }
   return nullptr;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns the `DevToolsAgentHost` associated with an extension page if
 // available.
@@ -331,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanGetStorageValues) {
   ASSERT_TRUE(load_result);
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -388,6 +395,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanGetStorageValues) {
   ASSERT_FALSE(get_result_3->FindDict("data")->contains("remove-on-clear"));
 }
 
+// TODO(crbug.com/588407621): Enable on Android once
+// DevToolsManagerDelegateAndroid classifies extension background pages and
+// offscreen documents as "background_page".
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        CanGetStorageValuesBackgroundPage) {
   const base::DictValue* load_result =
@@ -395,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(load_result);
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -403,13 +414,45 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 
   DetachProtocolClient();
 
-  extensions::ExtensionBackgroundPageWaiter(browser()->GetProfile(), *extension)
+  extensions::ExtensionBackgroundPageWaiter(profile(), *extension)
       .WaitForBackgroundOpen();
   agent_host_ = FindBackgroundPageHost("/_generated_background_page.html");
   agent_host_->AttachClient(this);
 
   ASSERT_TRUE(SendStorageCommand("Extensions.getStorageItems", extension,
                                  base::DictValue()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
+                       CanGetStorageValuesExtensionPage) {
+  // Wait for the extension's service worker to finish initializing before
+  // navigating to an extension resource.
+  ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
+
+  scoped_refptr<const extensions::Extension> extension =
+      InstallExtensionFromPath("service_worker");
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(activated_listener.WaitUntilSatisfied());
+
+  // Navigate to a resource on the extension origin so the page target's
+  // renderer hosts the extension origin.
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents(), extension->GetResourceURL("manifest.json")));
+
+  DetachProtocolClient();
+  Attach();
+
+  ASSERT_TRUE(SendStorageCommand(
+      "Extensions.setStorageItems", extension.get(),
+      base::DictValue().Set("values",
+                            base::DictValue().Set("page_key", "page_value"))));
+
+  const base::DictValue* get_result = SendStorageCommand(
+      "Extensions.getStorageItems", extension.get(), base::DictValue());
+  ASSERT_TRUE(get_result);
+  EXPECT_EQ(*get_result->FindDict("data")->FindString("page_key"),
+            "page_value");
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
@@ -419,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(load_result);
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -428,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url =
       embedded_test_server()->GetURL("/devtools/page_with_content_script.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
 
   DetachProtocolClient();
   agent_host_ = FindPageHost("/devtools/page_with_content_script.html");
@@ -450,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url =
       embedded_test_server()->GetURL("/devtools/page_with_content_script.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
 
   DetachProtocolClient();
   agent_host_ = FindPageHost("/devtools/page_with_content_script.html");
@@ -489,14 +532,14 @@ IN_PROC_BROWSER_TEST_F(
           extensions::mojom::ManifestLocation::kExternalPolicyDownload);
   ASSERT_TRUE(policy_extension);
 
-  browser()->GetProfile()->GetPrefs()->SetInteger(
+  profile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(policy::DeveloperToolsAvailability::kAllowed));
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url =
       embedded_test_server()->GetURL("/devtools/page_with_content_script.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
 
   DetachProtocolClient();
   agent_host_ = FindPageHost("/devtools/page_with_content_script.html");
@@ -539,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url =
       embedded_test_server()->GetURL("/devtools/page_with_content_script.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
 
   DetachProtocolClient();
   agent_host_ = FindPageHost("/devtools/page_with_content_script.html");
@@ -565,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(load_result);
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -574,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url =
       embedded_test_server()->GetURL("/devtools/page_with_content_script.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
 
   DetachProtocolClient();
   agent_host_ = FindPageHost("/devtools/page_with_content_script.html");
@@ -646,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanGetExtensions) {
 
   // Load packed extension
   extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
-  extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
+  extensions::ChromeTestExtensionLoader loader(profile());
   loader.set_location(extensions::mojom::ManifestLocation::kInternal);
   loader.set_pack_extension(true);
   auto packed_extension = loader.LoadExtension(packed_path);
@@ -656,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanGetExtensions) {
 
   // Verify the internal extension is actually in the registry.
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+      extensions::ExtensionRegistry::Get(profile());
   ASSERT_TRUE(registry->enabled_extensions().Contains(packed_id));
 
   content::RunAllTasksUntilIdle();
@@ -678,9 +721,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanGetExtensions) {
             unpacked_path.AsUTF8Unsafe());
 }
 
+// Desktop `SidePanelUI` is not used on Android.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        TriggerActionShowsSidePanel) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(
+      chrome_test_utils::NavigateToURL(web_contents(), GURL("about:blank")));
   ExtensionTestMessageListener activated_listener("running");
   scoped_refptr<const extensions::Extension> extension =
       InstallExtensionFromPath("side_panel_action");
@@ -688,8 +734,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 
   extensions::ResultCatcher result_catcher;
   scoped_refptr<content::DevToolsAgentHost> page_host =
-      content::DevToolsAgentHost::GetOrCreateForTab(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      content::DevToolsAgentHost::GetOrCreateForTab(web_contents());
   base::DictValue trigger_extension_params;
   trigger_extension_params.Set("id", extension->id());
   trigger_extension_params.Set("targetId", page_host->GetId());
@@ -705,18 +750,19 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id())));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        TriggerActionShowsPopup) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(
+      chrome_test_utils::NavigateToURL(web_contents(), GURL("about:blank")));
 
   extensions::ResultCatcher result_catcher;
   scoped_refptr<const extensions::Extension> extension =
       InstallExtensionFromPath("popup_action");
 
   scoped_refptr<content::DevToolsAgentHost> page_host =
-      content::DevToolsAgentHost::GetOrCreateForTab(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      content::DevToolsAgentHost::GetOrCreateForTab(web_contents());
   base::DictValue trigger_extension_params;
   trigger_extension_params.Set("id", extension->id());
   trigger_extension_params.Set("targetId", page_host->GetId());
@@ -729,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 
   BrowserWindowInterface* bwi =
       extensions::browser_window_util::GetBrowserForTabContents(
-          *browser()->tab_strip_model()->GetActiveWebContents());
+          *web_contents());
   auto* extensions_container = ExtensionsContainer::From(*bwi);
 
   ASSERT_TRUE(extensions_container);
@@ -740,7 +786,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        TriggerActionDispatchesEvent) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(
+      chrome_test_utils::NavigateToURL(web_contents(), GURL("about:blank")));
 
   extensions::ResultCatcher result_catcher;
 
@@ -748,8 +795,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
       InstallExtensionFromPath("on_clicked_action");
 
   scoped_refptr<content::DevToolsAgentHost> page_host =
-      content::DevToolsAgentHost::GetOrCreateForTab(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      content::DevToolsAgentHost::GetOrCreateForTab(web_contents());
 
   base::DictValue trigger_extension_params;
   trigger_extension_params.Set("id", extension->id());
@@ -764,11 +810,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        TriggerActionFailsForUnknownExtension) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(
+      chrome_test_utils::NavigateToURL(web_contents(), GURL("about:blank")));
 
   scoped_refptr<content::DevToolsAgentHost> page_host =
-      content::DevToolsAgentHost::GetOrCreateForTab(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      content::DevToolsAgentHost::GetOrCreateForTab(web_contents());
   base::DictValue trigger_extension_params;
   trigger_extension_params.Set("id", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
   trigger_extension_params.Set("targetId", page_host->GetId());
@@ -790,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   // A WebContents that is not in any tab strip has no browser window.
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->GetProfile()));
+          content::WebContents::CreateParams(profile()));
   scoped_refptr<content::DevToolsAgentHost> page_host =
       content::DevToolsAgentHost::GetOrCreateForTab(web_contents.get());
   base::DictValue trigger_extension_params;

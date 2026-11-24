@@ -515,8 +515,6 @@ static_library("devtools") {
       "protocol/cast_handler.h",
       "protocol/emulation_handler.cc",
       "protocol/emulation_handler.h",
-      "protocol/extensions_handler.cc",
-      "protocol/extensions_handler.h",
       "protocol/page_handler.cc",
       "protocol/page_handler.h",
       "protocol/page_handler_desktop.cc",
@@ -554,10 +552,17 @@ static_library("devtools") {
 
   sources += rebase_path(_protocol_generated, ".", target_gen_dir)
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
+    sources += [
+      "protocol/extensions_handler.cc",
+      "protocol/extensions_handler.h",
+    ]
     deps += [
+      "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/toolbar",
       "//chrome/common/extensions/api",
       "//extensions/browser",
+      "//extensions/common",
     ]
   }
 
@@ -767,6 +772,7 @@ if (enable_devtools_frontend) {
       "//components/infobars/content",
       "//components/javascript_dialogs",
       "//components/language/core/browser",
+      "//components/prefs",
       "//components/private_verification_tokens/common:private_verification_tokens_token",
       "//components/ukm:test_support",
       "//content/test:test_support",
@@ -782,18 +788,30 @@ if (enable_devtools_frontend) {
         "//chrome/browser/apps/app_service",
         "//chrome/browser/media/webrtc",
         "//chrome/browser/ui:browser_commands",
+        "//chrome/browser/ui/side_panel",
+        "//chrome/browser/ui/side_panel:side_panel_views_dependent",
         "//chrome/browser/ui/views/frame:browser_view_header",
         "//chrome/browser/ui/web_applications/test:test_support_ui",
         "//chrome/browser/ui/webui/top_chrome",
         "//chrome/browser/web_applications:web_applications_test_support",
-        "//components/prefs",
         "//media:media_buildflags",
         "//ui/views:test_support",
       ]
     }
 
     if (enable_extensions_core) {
-      deps += [ "//chrome/browser/ui/extensions" ]
+      sources += [ "protocol/devtools_extensions_browsertest.cc" ]
+      deps += [
+        "//chrome/browser/extensions",
+        "//chrome/browser/extensions:test_support",
+        "//chrome/browser/policy",
+        "//chrome/browser/ui/extensions",
+        "//chrome/browser/ui/toolbar",
+        "//chrome/common:constants",
+        "//extensions:test_support",
+        "//extensions/browser",
+        "//extensions/common",
+      ]
     }
 
     if (is_android) {
@@ -849,7 +867,6 @@ if (!is_android) {
       "devtools_navigation_throttle_browsertest.cc",
       "devtools_policy_browsertest.cc",
       "protocol/audits_protocol_test.cc",
-      "protocol/devtools_extensions_browsertest.cc",
       "protocol/devtools_iwa_browsertest.cc",
       "protocol/devtools_pwa_browsertest.cc",
       "protocol/devtools_tab_discard_browsertest.cc",

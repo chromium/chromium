@@ -14,6 +14,10 @@
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/devtools/protocol/extensions_handler.h"
+#endif
+
 namespace {
 
 template <typename Handler>
@@ -51,6 +55,15 @@ ChromeDevToolsSessionAndroid::ChromeDevToolsSessionAndroid(
     browser_handler_ = std::make_unique<BrowserHandlerAndroid>(
         dispatcher(), agent_host->GetId());
   }
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // Keep in sync with `ChromeDevToolsSession::ChromeDevToolsSession()`.
+  if (IsDomainAvailableToUntrustedClient<ExtensionsHandler>() ||
+      channel->GetClient()->IsTrusted()) {
+    extensions_handler_ = std::make_unique<ExtensionsHandler>(
+        dispatcher(), agent_host->GetId(),
+        agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser);
+  }
+#endif
   if (IsDomainAvailableToUntrustedClient<TargetHandlerAndroid>() ||
       channel->GetClient()->IsTrusted()) {
     target_handler_ = std::make_unique<TargetHandlerAndroid>(

@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
 #include "chrome/browser/devtools/features.h"
@@ -30,6 +30,10 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/unpacked_installer.h"
 #include "extensions/common/manifest.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
+#endif
 
 namespace {
 
@@ -83,9 +87,17 @@ bool CanAccessStorage(scoped_refptr<content::DevToolsAgentHost> host,
   // Allow a page or frame target to access extension storage if it is
   // associated with a renderer that hosts an extension origin or has an
   // extension injected into it.
-  if (host->GetType() == ChromeDevToolsManagerDelegate::kTypeBackgroundPage ||
+  bool is_page_like_target =
       host->GetType() == content::DevToolsAgentHost::kTypePage ||
-      host->GetType() == content::DevToolsAgentHost::kTypeFrame) {
+      host->GetType() == content::DevToolsAgentHost::kTypeFrame;
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/588407621): Share "background_page" extension target
+  // classification with DevToolsManagerDelegateAndroid and remove this guard.
+  is_page_like_target =
+      is_page_like_target ||
+      host->GetType() == ChromeDevToolsManagerDelegate::kTypeBackgroundPage;
+#endif
+  if (is_page_like_target) {
     if (!host->GetWebContents() ||
         !host->GetWebContents()->GetPrimaryMainFrame()) {
       return false;

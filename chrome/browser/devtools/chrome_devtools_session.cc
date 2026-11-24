@@ -98,6 +98,8 @@ ChromeDevToolsSession::ChromeDevToolsSession(
           dispatcher(), agent_host->GetWebContents());
     }
   }
+  // Keep in sync with
+  // `ChromeDevToolsSessionAndroid::ChromeDevToolsSessionAndroid()`.
   if (IsDomainAvailableToUntrustedClient<ExtensionsHandler>() ||
       channel->GetClient()->IsTrusted()) {
     extensions_handler_ = std::make_unique<ExtensionsHandler>(
