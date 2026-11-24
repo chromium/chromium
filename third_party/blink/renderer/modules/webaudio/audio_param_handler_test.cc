@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/oscillator_node.h"
 #include "third_party/blink/renderer/modules/webaudio/testing/fake_audio_thread.h"
+#include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -360,6 +361,83 @@ TEST(AudioParamHandlerTest, SetTargetFollowedByRampAtSameTime) {
   for (wtf_size_t i = 1; i < handler.events_.size(); ++i) {
     EXPECT_LE(handler.events_[i - 1]->Time(), handler.events_[i]->Time());
   }
+}
+
+TEST(AudioParamHandlerTest, SetValueCurveWithTinyDuration) {
+  test::TaskEnvironment task_environment;
+  auto page = std::make_unique<DummyPageHolder>();
+
+  DummyExceptionStateForTesting exception_state;
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      page->GetFrame().DomWindow(), 1, 128, 48000, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  OscillatorNode* osc = context->createOscillator(exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  AudioParamHandler& handler = osc->frequency()->Handler();
+  // Use 6 points and a normalized duration > DBL_MIN so that
+  // (curve.size() - 1) / duration overflows double to +Infinity while
+  // surviving DenormalDisabler (FTZ/DAZ) on the audio thread.
+  const Vector<float> curve = {100.0f, 140.0f, 180.0f, 220.0f, 260.0f, 300.0f};
+  constexpr double kTinyDuration = 2.3e-308;
+  constexpr double kCancelTime = 2.25e-308;
+  ASSERT_GT(kTinyDuration, std::numeric_limits<double>::min());
+  ASSERT_GT(kCancelTime, std::numeric_limits<double>::min());
+  ASSERT_LT(kCancelTime, kTinyDuration);
+  ASSERT_TRUE(std::isinf((curve.size() - 1) / kTinyDuration));
+
+  handler.SetValueCurveAtTime(curve, 0.0, kTinyDuration, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  // Verify CancelAndHoldAtTime within a tiny-duration curve does not produce
+  // NaN or overflow when interpolating the hold value, and actually evaluates
+  // to the expected interpolated value on the audio thread.
+  handler.CancelAndHoldAtTime(kCancelTime, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  FakeAudioThread audio_thread(ThreadType::kRealtimeAudioWorkletThread);
+  constexpr float kExpectedHoldValue =
+      static_cast<float>(100.0 + 200.0 * (kCancelTime / kTinyDuration));
+  audio_thread.RunOnAudioThreadWithContext(
+      context,
+      CrossThreadBindOnce(
+          [](AudioParam* param, float expected_hold_value) {
+            DenormalDisabler denormal_disabler;
+            AudioParamHandler& h = param->Handler();
+            h.SetAutomationRate(V8AutomationRate::Enum::kARate);
+            std::array<float, 128> values{};
+            h.CalculateSampleAccurateValues(values);
+            EXPECT_FLOAT_EQ(values[0], 100.0f);
+            EXPECT_NEAR(values[1], expected_hold_value, 1e-3f);
+            EXPECT_NEAR(values[127], expected_hold_value, 1e-3f);
+          },
+          WrapCrossThreadPersistent(osc->frequency()), kExpectedHoldValue));
+
+  // Re-schedule the tiny-duration curve and verify both k-rate and a-rate
+  // evaluation produce finite curve values rather than NaN from 0 * inf.
+  handler.CancelScheduledValues(0.0, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  handler.SetValueCurveAtTime(curve, 0.0, kTinyDuration, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  handler.SetAutomationRate(V8AutomationRate::Enum::kKRate);
+  audio_thread.RunOnAudioThreadWithContext(
+      context, CrossThreadBindOnce(
+                   [](AudioParam* param) {
+                     DenormalDisabler denormal_disabler;
+                     AudioParamHandler& h = param->Handler();
+                     EXPECT_FLOAT_EQ(h.FinalValue(), 100.0f);
+                     EXPECT_FLOAT_EQ(h.Value(), 100.0f);
+
+                     h.SetAutomationRate(V8AutomationRate::Enum::kARate);
+                     std::array<float, 128> values{};
+                     h.CalculateSampleAccurateValues(values);
+                     EXPECT_FLOAT_EQ(values[0], 100.0f);
+                     EXPECT_FLOAT_EQ(values[1], 300.0f);
+                     EXPECT_FLOAT_EQ(values[127], 300.0f);
+                   },
+                   WrapCrossThreadPersistent(osc->frequency())));
 }
 
 }  // namespace blink

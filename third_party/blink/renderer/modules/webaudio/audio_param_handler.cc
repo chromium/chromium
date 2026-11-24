@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_param_handler.h"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <memory>
 
@@ -173,14 +174,19 @@ float ValueCurveAtTime(double t,
                        double time1,
                        double duration,
                        base::span<const float> curve_data) {
-  double curve_index = (curve_data.size() - 1) / duration * (t - time1);
-  size_t k = std::min(static_cast<size_t>(curve_index), curve_data.size() - 1);
-  size_t k1 = std::min(k + 1, curve_data.size() - 1);
-  float c0 = curve_data[k];
-  float c1 = curve_data[k1];
-  float delta = std::min(curve_index - k, 1.0);
-
-  return c0 + (c1 - c0) * delta;
+  if (t <= time1 || duration <= 0) {
+    return curve_data.front();
+  }
+  const double max_index = curve_data.size() - 1;
+  const double curve_index = max_index * ((t - time1) / duration);
+  if (curve_index >= max_index) {
+    return curve_data.back();
+  }
+  const size_t k = static_cast<size_t>(curve_index);
+  // Interpolate in double precision to preserve the full precision of
+  // `curve_index - k` and avoid intermediate float rounding error.
+  return static_cast<float>(
+      std::lerp(curve_data[k], curve_data[k + 1], curve_index - k));
 }
 
 }  // namespace
@@ -2138,14 +2144,19 @@ std::tuple<size_t, float, size_t> AudioParamHandler::ProcessSetValueCurve(
   // Index into the curve data using a floating-point value.
   // We're scaling the number of curve points by the duration (see
   // curvePointsPerFrame).
+  const double max_curve_index = curve_data.size() - 1;
   double curve_virtual_index = 0;
   if (time1 < current_frame / sample_rate) {
     // Index somewhere in the middle of the curve data.
     // Don't use timeToSampleFrame() since we want the exact
     // floating-point frame.
     double frame_offset = current_frame - time1 * sample_rate;
-    curve_virtual_index = curve_points_per_frame * frame_offset;
+    if (frame_offset > 0) {
+      curve_virtual_index =
+          std::min(curve_points_per_frame * frame_offset, max_curve_index);
+    }
   }
+  curve_points_per_frame = std::min(curve_points_per_frame, max_curve_index);
 
   // Set the default value in case fillToFrame is 0.
   value = curve_end_value;
