@@ -2468,7 +2468,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3683524264665795342">Solicitude para compartir a pantalla de <ph name="APP_NAME" /></translation>
 <translation id="3686108296937784939">Atallos da miña organización</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{Atopouse 1 contrasinal vulnerado}many{Found {NUM_SITES} compromised passwords}other{Atopáronse {NUM_SITES} contrasinais vulnerados}}</translation>
-<translation id="3687463694814266645">Reordenar</translation>
 <translation id="3688507211863392146">Escribir nos ficheiros e cartafoles que abres na aplicación</translation>
 <translation id="3688578402379768763">Actualizado</translation>
 <translation id="3690369331356918524">Avísate se os teus contrasinais están en risco debido a unha violación da seguranza dos datos</translation>

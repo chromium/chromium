@@ -2479,7 +2479,6 @@
 <translation id="3683524264665795342"><ph name="APP_NAME" /> 要求共用螢幕</translation>
 <translation id="3686108296937784939">我機構的捷徑</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{找到 1 個被盜用的密碼}other{找到 {NUM_SITES} 個被盜用的密碼}}</translation>
-<translation id="3687463694814266645">重新排序</translation>
 <translation id="3688507211863392146">寫入您在應用程式中開啟的檔案和資料夾</translation>
 <translation id="3688578402379768763">最新狀態</translation>
 <translation id="3690369331356918524">密碼因資料外洩而被洩露時接收警告</translation>

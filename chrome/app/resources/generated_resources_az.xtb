@@ -308,6 +308,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1308105352527684175">Müəyyən kontentə daxil ola bilməyəcəksiniz</translation>
 <translation id="1311092170520822848">Bu sayt cihazınıza qoşulmuş smart kart oxucularını və onlar üçün əlçatan olan potensial smart kartları idarə edir</translation>
 <translation id="131112695174432497">Reklamın fərdiləşdirilməsinə təsir edən data silinir</translation>
+<translation id="13115907161008983">Keçidlər kopiyalayın</translation>
 <translation id="131188242279372879">Chrome-un endirmələr üzrə ən yüksək güvənlik səviyyəsini əldə etmək üçün təkmil qorumanı kəşf edin</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Brauzeri yavaşladan tabı düzəldin}other{Brauzeri yavaşladan tabları düzəldin}}</translation>
 <translation id="1312721752506309252">Qabaqcıl qoruma aktivdir</translation>
@@ -443,6 +444,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1482626744466814421">Bu tabı əlfəcinlərə əlavə edin...</translation>
 <translation id="1482772681918035149">parolları redaktə edin</translation>
 <translation id="1483137792530497944">Çay</translation>
+<translation id="1483148302144576204">Keçidlər kopiyalayın</translation>
 <translation id="1483151333977672176">Göndərildi!</translation>
 <translation id="1483431819520123112">Displey adı mübadilə buferinə kopyalandı</translation>
 <translation id="1483493594462132177">Göndərin</translation>
@@ -1059,6 +1061,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="2168036794078614559">Şikayət göndərildi</translation>
 <translation id="2168735174585029637">Tablara yeni şəffaf görünüş qazandırın</translation>
 <translation id="217120844667431680">Sİ rejimi ilə daha çoxunu edin</translation>
+<translation id="2172046302886074612">"<ph name="MODEL_CATEGORY" />" silindi</translation>
 <translation id="2173302385160625112">İnternet bağlantısını yoxlayın</translation>
 <translation id="2175384018164129879">&amp;Axtarış Sistemlərini və Sayt Axtarışını idarə edin</translation>
 <translation id="2175773164573457310">Gemini-dan soruşmaq üçün istənilən mətn və ya şəkli seçin</translation>
@@ -2086,6 +2089,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="3270965368676314374">Kompüterinizdə foto, musiqi və digər medianı oxuyun, dəyişin və silin</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> başlığını yığcamlaşdırın</translation>
 <translation id="3275778913554317645">Pəncərə kimi açın</translation>
+<translation id="3277325180914877290">Mətni böyüdün</translation>
 <translation id="3280237271814976245">Saxlama formatı:</translation>
 <translation id="3280243678470289153">Chrome'da qalın</translation>
 <translation id="3282210178675490297">Tab <ph name="APP_NAME" /> ilə paylaşılır</translation>
@@ -2472,7 +2476,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="3683524264665795342"><ph name="APP_NAME" /> Ekran Paylaşımı Sorğusu</translation>
 <translation id="3686108296937784939">Təşkilatımın qısayolları</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{1 oğurlanmış parol tapıldı}other{{NUM_SITES} oğurlanmış parol tapıldı}}</translation>
-<translation id="3687463694814266645">Yenidən sifariş edin</translation>
 <translation id="3688507211863392146">Tətbiqdə açdığınız fayl və qovluqlara yazın</translation>
 <translation id="3688578402379768763">Güncəl</translation>
 <translation id="3690369331356918524">Data pozulması halında parolların ələ keçirilib-keçirilmədiyini Sizə bildirir</translation>
@@ -2595,6 +2598,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="3786890785076278600">Statik sətir</translation>
 <translation id="3787434344076711519">Tərcümə gözlənilir</translation>
 <translation id="3789432704615470433">SharePoint və OneDrive faylları</translation>
+<translation id="3789493399245366422">tam ekran, tam-ekran, böyütmək, immersiv, alətlər panelini gizlətmək, təqdimat, F11</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="3790417903123637354">Xəta baş verdi. Sonra cəhd edin</translation>
 <translation id="379082410132524484">Kartın vaxtı bitib</translation>
@@ -3363,6 +3367,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="4665035764476941598">Digər tabları geri qaytarmaq üçün bura klikləyin</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> tərəfindən saxlanılan bütün data silinəcək.</translation>
 <translation id="4666483368282673356">Gemini tarixçənizi idarə edin</translation>
+<translation id="4667646546186544608">kiçiltmək, kiçildin, daha kiçik, azaldın, miqyası azaldın, miqyası kiçildin, səhifə miqyası</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Təbriklər! <ph name="APP_NAME" /> cihazınızda quraşdırıldı</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> faylını indi açın</translation>
@@ -4766,6 +4771,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="6255253900817321392">Yeni tab açmadan Mac cihazında istənilən yerdən daha sürətli axtarış edin</translation>
 <translation id="6257602895346497974">Sinxronizasiyanı aktiv edin...</translation>
 <translation id="6258818697161346451">Bu cihazda giriş açarlarından istifadə edin</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Keçid kopiyalayın}other{Keçidlər kopiyalayın}}</translation>
 <translation id="6261688934280090835">ChromeOS Köşk tətbiqi loqları</translation>
 <translation id="6263082573641595914">Microsoft CA Versiyası</translation>
 <translation id="6264060420924719834">Bu tətbiqdə digər saytlardan veb-kontent var</translation>
@@ -4894,6 +4900,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Təsvir Faylları</translation>
 <translation id="6410390304316730527">Təhlükəsiz Baxış sizi zərərli proqram təminatı quraşdırmaq və ya parol, telefon nömrəsi, kredit kartı kimi şəxsi məlumatlarınızı aşkar etmək kimi təhlükəli əməliyyatlara sövq etmək üçün aldada biləcək hücumlardan qoruyur. Bu xüsusiyyəti söndürsəniz, tanış və ya məşhur olmayan saytlara baxarkən ehtiyatlı olun.</translation>
+<translation id="6411490324917773403">Mətni kiçildin</translation>
 <translation id="6416743254476733475">Kompüterdə icazə verin və ya blok edin.</translation>
 <translation id="6416856063840710198">Ziyarəti təkmilləşdirmək üçün saytlar fəaliyyəti çox vaxt cihazda yadda saxlayır. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Defolt davranış</translation>
@@ -6384,6 +6391,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8041093619605951337">Xoşbəxt</translation>
 <translation id="8042142357103597104">Mətnin qeyri-şəffaflığı</translation>
 <translation id="8042331986490021244">Parollarınız Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir</translation>
+<translation id="8042441076562098746">yaxınlaşdırmaq, böyütmək, genişləndirmək, daha böyük, daha geniş, artırmaq, miqyası böyütmək, səhifəni yaxınlaşdırmaq</translation>
 <translation id="8045253504249021590">Sinxronizasiya Google Alətlər Paneli vasitəsilə dayandırıldı.</translation>
 <translation id="8045752459073395242">İşdə yaradan Sİ-dən istifadə haqqında ətraflı məlumat əldə edin</translation>
 <translation id="8045923671629973368">Tətbiqin ID və ya veb mağaza linkini daxil edin</translation>
@@ -6739,6 +6747,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="844059392176531372">"<ph name="GROUP_NAME" />" tab qrupunu paylaşın</translation>
 <translation id="844063558976952706">Həmişə bu saytda</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Açıq Anonim və ya İzolə edilmiş pəncərə var. Yenidən açılmayacaq.}other{Profillər üzrə # Anonim və İzolə edilmiş pəncərə açıqdır. Onlar yenidən açılmayacaq.}}</translation>
+<translation id="84426883520448311">tema, rəng, arxa fon, divar kağızı, işıqlı, qaranlıq, rejim, işıqlı rejim, qaranlıq rejim, şəxsi, üslub, estetik</translation>
 <translation id="8443986842926457191">Keçid 2048 simvoldan uzundur</translation>
 <translation id="8445281870900174108">Bu tab kameradan istifadə edir</translation>
 <translation id="8446884382197647889">Ətraflı Məlumat</translation>
@@ -7327,6 +7336,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9076821103818989526">Yan panel</translation>
 <translation id="907779190626433918">Hər sayt və ya tətbiq üçün unikal parol istifadə edin. Kimsə yenidən istifadə edilmiş parol aşkar edərsə, o, digər hesablarınıza giriş üçün istifadə edilə bilər.</translation>
 <translation id="9078546160009814724">İstifadəçi adı: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Keçid kopiyalayın}other{Keçidlər kopiyalayın}}</translation>
 <translation id="907972398081911688">Oğurlanmış parolu avtomatik dəyişin</translation>
 <translation id="9081543426177426948">Anonim rejimdə daxil olduğunuz saytlar yadda saxlanılmır</translation>
 <translation id="9082750838489080452">Tətbiq: <ph name="APP_NAME" /></translation>

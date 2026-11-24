@@ -447,6 +447,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2053312383184521053">Podatki o stanju nedejavnosti</translation>
 <translation id="2058456167109518507">Zaznana je bila naprava</translation>
 <translation id="2064048859448024834">Predogled kamere je vklopljen</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 povezava}one{# povezava}two{# povezavi}few{# povezave}other{# povezav}}</translation>
 <translation id="2067220651560163985">Prikaz temperature v stopinjah Celzija</translation>
 <translation id="206960706005837784">Aplikacija <ph name="APP_NAME" /> je končala tiskanje s tiskalnikom <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Preklop funkcije <ph name="CAPTURE_MEDIUM" />. Nastavitev funkcije <ph name="CAPTURE_MEDIUM" /> je: <ph name="CAPTURE_STATE" />.</translation>

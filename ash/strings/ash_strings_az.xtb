@@ -447,6 +447,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2053312383184521053">Fəaliyyətsizlik Vəziyyəti Məlumatı</translation>
 <translation id="2058456167109518507">Cihaz aşkarlandı</translation>
 <translation id="2064048859448024834">Kamera önizləməsi aktivdir</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 keçid}other{# keçid}}</translation>
 <translation id="2067220651560163985">Temperaturu Selsi ilə göstərin</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" /> printerində çapı yekunlaşdırdı</translation>
 <translation id="2075520525463668108">Keçirin: <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" /></translation>

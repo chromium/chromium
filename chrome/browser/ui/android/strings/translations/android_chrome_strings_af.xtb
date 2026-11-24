@@ -386,6 +386,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2496180316473517155">Blaaigeskiedenis</translation>
 <translation id="250020030759455918">Jy sal jou <ph name="SITE_NAME" />-aanmeldingstatus, -blaaierdata en -werfdata in Chrome sien</translation>
 <translation id="2501278716633472235">Gaan terug</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# aflaai is aan die gang}other{# aflaaie is aan die gang}}</translation>
 <translation id="2510106555128151389">Installeer tans <ph name="WEBAPK_NAME" /> …</translation>
 <translation id="2512234228327349533">Soek koopopsies</translation>
 <translation id="2513403576141822879">Sien <ph name="BEGIN_LINK" />Sinkornisering en Google-dienste<ph name="END_LINK" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling</translation>
@@ -697,6 +698,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3740290940447881599">Maak seker jy vertrou hierdie werf</translation>
 <translation id="3740525748616366977">Stemsoektog is nie op hierdie toestel beskikbaar nie</translation>
 <translation id="3749289110408117711">Lêernaam</translation>
+<translation id="3751708358601675711">Wysig prysnasporing</translation>
 <translation id="3756823472711156529">Stel groep terug</translation>
 <translation id="3759306015475526475">Bestuur gebruik- en omvaldatainstellings</translation>
 <translation id="3763110477555836428">’n Virtuelekaartnommer sal ingevul word wanneer jy met hierdie kaart betaal om jou werklike besonderhede te beskerm. Bestuur in Google Wallet. <ph name="BEGIN_LINK1" />Meer inligting oor virtuele kaarte<ph name="END_LINK1" /></translation>

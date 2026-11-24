@@ -386,6 +386,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2496180316473517155">Tarama geçmişi</translation>
 <translation id="250020030759455918"><ph name="SITE_NAME" /> sitenizin oturum açma durumunu, tarama verilerini ve site verilerini Chrome'da görürsünüz</translation>
 <translation id="2501278716633472235">Geri dön</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# indirme işlemi devam ediyor}other{# indirme işlemi devam ediyor}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> yükleniyor...</translation>
 <translation id="2512234228327349533">Satın alma seçeneklerini arayın</translation>
 <translation id="2513403576141822879">Gizlilik, güvenlik ve veri toplamayla ilgili daha fazla ayar için <ph name="BEGIN_LINK" />Senkronizasyon ve Google hizmetleri<ph name="END_LINK" /> konusuna bakın</translation>
@@ -697,6 +698,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3740290940447881599">Bu siteye güvendiğinizden emin olun</translation>
 <translation id="3740525748616366977">Sesle Arama bu cihazda kullanılamıyor</translation>
 <translation id="3749289110408117711">Dosya adı</translation>
+<translation id="3751708358601675711">Fiyat takibini düzenle</translation>
 <translation id="3756823472711156529">Grubu geri yükle</translation>
 <translation id="3759306015475526475">Kullanım ve kilitlenme veri ayarlarını yönetin</translation>
 <translation id="3763110477555836428">Bu kartla ödeme yaptığınızda gerçek bilgilerinizin korunması için sanal kart numarası girilir. Google Cüzdan'da yönetin. <ph name="BEGIN_LINK1" />Sanal kartlar hakkında daha fazla bilgi<ph name="END_LINK1" /></translation>

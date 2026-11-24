@@ -2482,7 +2482,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3683524264665795342"><ph name="APP_NAME" /> screen sharing request</translation>
 <translation id="3686108296937784939">My organisation's shortcuts</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{Found 1 compromised password}other{Found {NUM_SITES} compromised passwords}}</translation>
-<translation id="3687463694814266645">Reorder</translation>
 <translation id="3688507211863392146">Write to files and folders that you open in the application</translation>
 <translation id="3688578402379768763">Up-to-date</translation>
 <translation id="3690369331356918524">Warns you if passwords are exposed in a data breach</translation>

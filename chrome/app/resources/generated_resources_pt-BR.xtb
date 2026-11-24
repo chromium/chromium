@@ -2482,7 +2482,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="3683524264665795342">Solicitação de compartilhamento da tela do <ph name="APP_NAME" /></translation>
 <translation id="3686108296937784939">Atalhos da minha organização</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{1 senha comprometida encontrada}one{{NUM_SITES} senha comprometida encontrada}other{{NUM_SITES} senhas comprometidas encontradas}}</translation>
-<translation id="3687463694814266645">Reordenar</translation>
 <translation id="3688507211863392146">Realizar gravações em arquivos e pastas que você abre no aplicativo</translation>
 <translation id="3688578402379768763">Atualizado</translation>
 <translation id="3690369331356918524">Avisa caso suas senhas sejam expostas em uma violação de dados</translation>

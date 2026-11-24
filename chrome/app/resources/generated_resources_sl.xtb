@@ -308,6 +308,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1308105352527684175">Morda ne boste mogli dostopati do določene vsebine</translation>
 <translation id="1311092170520822848">To spletno mesto upravlja bralnike pametnih kartic, ki so povezani z vašo napravo, in morebitnih pametnih kartic, ki so jim na voljo</translation>
 <translation id="131112695174432497">Podatki, ki vplivajo na osebno prilagajanje oglasov, so izbrisani.</translation>
+<translation id="13115907161008983">Kopiraj povezave</translation>
 <translation id="131188242279372879">Odkrijte izboljšano zaščito, če si želite zagotoviti Chromovo najvišjo raven varnosti pri prenosih</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Odpravite težavo z zavihkom, ki upočasnjuje brskalnik}one{Odpravite težavo z zavihki, ki upočasnjujejo brskalnik}two{Odpravite težavo z zavihki, ki upočasnjujejo brskalnik}few{Odpravite težavo z zavihki, ki upočasnjujejo brskalnik}other{Odpravite težavo z zavihki, ki upočasnjujejo brskalnik}}</translation>
 <translation id="1312721752506309252">Izboljšana zaščita je vklopljena.</translation>
@@ -444,6 +445,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1482626744466814421">Dodajanje tega zavihka med zaznamke ...</translation>
 <translation id="1482772681918035149">urejati gesla</translation>
 <translation id="1483137792530497944">Reka</translation>
+<translation id="1483148302144576204">Kopiraj povezave</translation>
 <translation id="1483151333977672176">Poslano!</translation>
 <translation id="1483431819520123112">Prikazno ime je kopirano v odložišče</translation>
 <translation id="1483493594462132177">Pošlji</translation>
@@ -1068,6 +1070,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="2168036794078614559">Prijava je poslana</translation>
 <translation id="2168735174585029637">Zavihkom zagotovite nov prosojen videz</translation>
 <translation id="217120844667431680">Opravite več z načinom umetne inteligence</translation>
+<translation id="2172046302886074612">Model »<ph name="MODEL_CATEGORY" />« je odstranjen</translation>
 <translation id="2173302385160625112">Preverite internetno povezavo</translation>
 <translation id="2175384018164129879">&amp;Upravljanje iskalnikov in iskanja po spletnih mestih</translation>
 <translation id="2175773164573457310">Izberite besedilo ali sliko, če želite vprašati Geminija</translation>
@@ -2095,6 +2098,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="3270965368676314374">Branje, spreminjanje in izbris fotografij, glasbe in drugih predstavnosti v računalniku</translation>
 <translation id="3275464924531706548">Strni <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Odpri kot okno</translation>
+<translation id="3277325180914877290">Povečanje besedila</translation>
 <translation id="3280237271814976245">Shrani &amp;kot ...</translation>
 <translation id="3280243678470289153">Ostani v Chromu</translation>
 <translation id="3282210178675490297">Deljenje zavihka z aplikacijo <ph name="APP_NAME" /></translation>
@@ -2481,7 +2485,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="3683524264665795342">Zahteva za skupno rabo zaslona aplikacije <ph name="APP_NAME" /></translation>
 <translation id="3686108296937784939">Bližnjice moje organizacije</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{Najdeno je bilo 1 ogroženo geslo}one{Najdeno je bilo {NUM_SITES} ogroženo geslo}two{Najdeni sta bili {NUM_SITES} ogroženi gesli}few{Najdena so bila {NUM_SITES} ogrožena gesla}other{Najdenih je bilo {NUM_SITES} ogroženih gesel}}</translation>
-<translation id="3687463694814266645">Razporedi</translation>
 <translation id="3688507211863392146">Zapisovanje v datoteke in mape, ki jih odprete v aplikaciji</translation>
 <translation id="3688578402379768763">Je posodobljeno</translation>
 <translation id="3690369331356918524">Posvari, če so gesla razkrita zaradi podatkovne kršitve</translation>
@@ -2604,6 +2607,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="3786890785076278600">Statična vrstica</translation>
 <translation id="3787434344076711519">Čakanje na prevod</translation>
 <translation id="3789432704615470433">Datoteke v storitvah SharePoint in OneDrive</translation>
+<translation id="3789493399245366422">celozaslonski način, celozaslonsko, povečaj, povečava, poglobljeno, skrij orodno vrstico, predstavitev, F11</translation>
 <translation id="3789841737615482174">Namesti</translation>
 <translation id="3790417903123637354">Prišlo je do napake. Poskusite znova pozneje.</translation>
 <translation id="379082410132524484">Kartica je potekla</translation>
@@ -3374,6 +3378,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="4665035764476941598">Kliknite tukaj, če želite znova prikazati druge zavihke</translation>
 <translation id="4665446389743427678">Vsi podatki, ki jih shrani <ph name="SITE" />, bodo izbrisani.</translation>
 <translation id="4666483368282673356">Upravljanje zgodovine v Geminiju</translation>
+<translation id="4667646546186544608">pomanjšaj, skrči, manjše, zmanjšaj, pomanjšanje, pomanjšava, pomanjšava strani</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Čestitamo! Aplikacija <ph name="APP_NAME" /> je bila uspešno nameščena v napravi.</translation>
 <translation id="4672759829555593783">Odpiranje datoteke <ph name="FILE_NAME" /></translation>
@@ -4778,6 +4783,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6255253900817321392">Iščite hitreje kjer koli v računalniku Mac, ne da bi odprli nov zavihek</translation>
 <translation id="6257602895346497974">Vklopi sinhronizacijo …</translation>
 <translation id="6258818697161346451">Uporaba ključev za dostop v tej napravi</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopiraj povezavo}one{Kopiraj povezave}two{Kopiraj povezave}few{Kopiraj povezave}other{Kopiraj povezave}}</translation>
 <translation id="6261688934280090835">Dnevniki aplikacij za kioske ChromeOS</translation>
 <translation id="6263082573641595914">Microsoftova različica overitelja potrdil</translation>
 <translation id="6264060420924719834">Ta aplikacija vsebuje spletno vsebino z drugih spletnih mest</translation>
@@ -4906,6 +4912,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="640980925764810750"><ph name="MENU_ITEM" /> …</translation>
 <translation id="6410257289063177456">Slikovne datoteke</translation>
 <translation id="6410390304316730527">Varno brskanje vas ščiti pred napadalci, ki vas lahko z zavajanjem morda pripravijo do tega, da storite kaj nevarnega – denimo, da namestite zlonamerno programsko opremo ali razkrijete osebne podatke, na primer gesla, telefonske številke ali podatke kreditnih kartic. Če ga izklopite, bodite previdni pri brskanju po neznanih ali razvpitih spletnih mestih.</translation>
+<translation id="6411490324917773403">Pomanjšanje besedila</translation>
 <translation id="6416743254476733475">Dovolite ali blokirajte v računalniku.</translation>
 <translation id="6416856063840710198">Spletna mesta zaradi izboljšanja obiska pogosto shranjujejo vašo dejavnost – pogosto v napravo. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Privzeto delovanje</translation>
@@ -6403,6 +6410,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8041093619605951337">Veselo</translation>
 <translation id="8042142357103597104">Neprosojnost besedila</translation>
 <translation id="8042331986490021244">Gesla so šifrirana v napravi, preden se shranijo v Google Upravitelju gesel.</translation>
+<translation id="8042441076562098746">povečava, povečaj, povečati, večje, večja, povečanje, povečanje strani, povečava strani</translation>
 <translation id="8045253504249021590">Sinhronizacija je bila ustavljena prek Google Nadzorne plošče.</translation>
 <translation id="8045752459073395242">Preberite več o uporabi generativne umetne inteligence na delovnem mestu</translation>
 <translation id="8045923671629973368">Vnesite ID aplikacije ali URL spletne trgovine</translation>
@@ -6758,6 +6766,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="844059392176531372">Deljenje skupine zavihkov »<ph name="GROUP_NAME" />«</translation>
 <translation id="844063558976952706">Vedno na tem mestu</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Odprto je anonimno ali izolirano okno. Ne bo se znova odprlo.}one{V profilih je odprto # anonimno in izolirano okno. Ne bodo se znova odprla.}two{V profilih sta odprti # anonimni in izolirani okni. Ne bodo se znova odprla.}few{V profilih so odprta # anonimna in izolirana okna. Ne bodo se znova odprla.}other{V profilih je odprtih # anonimnih in izoliranih oken. Ne bodo se znova odprla.}}</translation>
+<translation id="84426883520448311">tema, barva, ozadje, zaslonsko ozadje, svetlo, temno, način, svetli način, temni način, osebno, prilagajanje sloga, estetika</translation>
 <translation id="8443986842926457191">URL vsebuje več kot 2048 znakov</translation>
 <translation id="8445281870900174108">Zavihek uporablja kamero</translation>
 <translation id="8446884382197647889">Več o tem</translation>
@@ -7348,6 +7357,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="9076821103818989526">Stransko podokno</translation>
 <translation id="907779190626433918">Za vsako spletno mesto ali aplikacijo uporabite edinstveno geslo. Če nekdo odkrije znova uporabljeno geslo, lahko z njim dostopa do drugih vaših računov.</translation>
 <translation id="9078546160009814724">Uporabniško ime: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopiraj povezavo}one{Kopiraj povezave}two{Kopiraj povezave}few{Kopiraj povezave}other{Kopiraj povezave}}</translation>
 <translation id="907972398081911688">Samodejna sprememba razkritega gesla</translation>
 <translation id="9081543426177426948">Spletna mesta, ki jih obiščete v anonimnem načinu, se ne shranijo.</translation>
 <translation id="9082750838489080452">Aplikacija: <ph name="APP_NAME" /></translation>

@@ -1394,6 +1394,7 @@
 <translation id="2519517390894391510">Тастыктама профилинин аталышы</translation>
 <translation id="2520644704042891903">Мүмкүн болгон чанак күтүлүүдө…</translation>
 <translation id="2522757085249311407">Жакын жердеги Bluetooth түзмөктөрүнө бул түзмөктү аныктап, туташууга уруксат берет.</translation>
+<translation id="2523048609826818526">Жалпы максаттагы жазуу</translation>
 <translation id="2523184218357549926">Баш баккан барактарыңыздын URL'дерин Google'га жөнөтөт</translation>
 <translation id="252513908494776481">Бул өтмөк жөнүндө суроо берүү</translation>
 <translation id="2525746158911982776">Тутумдун сактагычында орун жетишсиз болгондуктан, жаңыртуу ишке ашкан жок.</translation>
@@ -2481,7 +2482,6 @@
 <translation id="3683524264665795342"><ph name="APP_NAME" /> экран бөлүшүү суранычы</translation>
 <translation id="3686108296937784939">Уюмумдун ыкчам баскычтары</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{1 уурдалган сырсөз табылды}other{{NUM_SITES} уурдалган сырсөз табылды}}</translation>
-<translation id="3687463694814266645">Иретин өзгөртүү</translation>
 <translation id="3688507211863392146">Колдонмодо ачылган файлдарга жана папкаларга жазыңыз</translation>
 <translation id="3688578402379768763">Жаңы</translation>
 <translation id="3690369331356918524">Сырсөзүңүздү кимдир-бирөө билип алса, эскертүү жөнөтөт</translation>

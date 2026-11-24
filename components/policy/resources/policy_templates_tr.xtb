@@ -2403,6 +2403,13 @@ Bu politika, özelliği kontrol etmek için geçici bir çözüm olup M154 sür�
 <translation id="2467181864598429837">Varsayılan tarayıcı davranışı</translation>
 <translation id="2467896267442150508">En fazla bir haftayı kapsayan zaman aralığı. Başlangıç zamanı bitiş zamanından sonra olursa aralık başa döner.</translation>
 <translation id="2476249479201711962">Varsayılan arama sağlayıcısı içerik menüsüne erişimi etkinleştir</translation>
+<translation id="247659494993692492">Politikanın ayarlanması, entegre kimlik doğrulama için hangi sunuculara izin verileceğini belirtir. Entegre kimlik doğrulaması yalnızca <ph name="PRODUCT_NAME" /> bir proxy veya söz konusu izin verilenler listesindeki bir sunucudan kimlik doğrulaması daveti aldığında etkinleşir.
+
+      Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, sunucunun intranette olup olmadığını saptamaya çalışır. Yalnızca intranetteyse IWA isteklerini yanıtlar. Sunucunun internette olduğu saptanırsa sunucudan gelen IWA istekleri <ph name="PRODUCT_NAME" /> tarafından yok sayılır.
+
+      Not: Birden fazla sunucu adını virgülle ayırın. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+      <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> ve <ph name="PRODUCT_OS_NAME" /> üzerinde sistem GSSAPI/Kerberos kitaplığı, bir sunucu ana makine adını farklı bir hizmet sorumlusu ana makinesine dönüştürebilir (örneğin, DNS CNAME veya ters DNS PTR aramalarıyla). Bu durumda, ana makineye bu politika tarafından da izin verilmediği sürece Negotiate kimlik doğrulaması başarısız olur.</translation>
 <translation id="2478756867046106663">Kötüye kullanım deneyimi yaşatan sitelerin yeni pencere veya sekme açmasına izin ver</translation>
 <translation id="2479760962196319822">Bu politika, <ph name="PRODUCT_OS_NAME" /> kullanıcılarının yerel olarak veri depolayıp depolayamayacağını kontrol eder.
       Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> sisteminde yerel depolama engellenir. Dolayısıyla, kullanıcılar yerel olarak veri depolayamaz ve yerel dizinlere erişemez.
@@ -4799,6 +4806,11 @@ Politika, <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" /
 
       Not: Bu politika, <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> politikası ile birlikte kullanılmalıdır.</translation>
 <translation id="3918339829588313389">Kullanıcıların zayıf bir PIN belirlemesine izin ver</translation>
+<translation id="3920151704940430728">Politika Etkin değerine ayarlanırsa CNAME araması atlanır. Kerberos SPN oluşturulurken sunucu adı girildiği şekliyle kullanılır.
+
+Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa CNAME araması, Kerberos SPN'i oluşturulurken sunucunun standart adını belirler.
+
+Not: <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> ve <ph name="PRODUCT_OS_NAME" /> üzerinde bu politika etkinleştirildiğinde <ph name="PRODUCT_NAME" /> tarafından yapılan CNAME araması atlanır ancak sistem GSSAPI/Kerberos kitaplığı, hizmet sorumlusu ana makinesini standartlaştırmaya devam edebilir (örneğin, <ph name="KRB5_CONFIG" /> DNS ayarları aracılığıyla). Bu durumda, ana makineye <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" /> tarafından izin verilmediği sürece Negotiate kimlik doğrulaması başarısız olur ve <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> tarafından da izin verilmediği sürece yetki devri yapılmaz.</translation>
 <translation id="392227823425989489">Tüm sistem kısayolları her zaman beklendiği gibi etkinleştirilir.</translation>
 <translation id="3924506460382372403">Cihaz grafik durumu raporlamasını devre dışı bırak</translation>
 <translation id="3925377537407648234">Ekran çözünürlüğünü ve ölçek faktörünü ayarlama</translation>
@@ -6889,6 +6901,13 @@ Bu politika dinamik yenilemeyi destekler.
 Bu politika geçici bir çözüm olup gelecekteki <ph name="PRODUCT_NAME" /> sürümlerinden kaldırılacaktır.</translation>
 <translation id="5212810195096589189">Sanal makine KSA izinlerini belirleme</translation>
 <translation id="5213038356678567351">Hiçbir zaman başka bir tarayıcıya geçişi tetiklememesi gereken web siteleri.</translation>
+<translation id="5213420013031914763">Politika, Etkin değerine ayarlandığında klavye kısayolları veya uzantı API'leriyle ekran görüntüsü alınmasına izin verilmez. Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ekran görüntülerine izin verilir.
+
+<ph name="PRODUCT_NAME" /> 155 ila 158 sürümlerinde bu politikanın etkinleştirilmesi, uzantıların "chrome.debugger.attach()" aracılığıyla hata ayıklayıcı eklemesini de engelleyebilir. Örneğin, <ph name="CHROME_VARIATIONS_POLICY_NAME" /> Politikası tüm varyasyonları devre dışı bıraktığında bu durum geçerlidir.
+
+Bu politikanın <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> ve <ph name="LINUX_OS_NAME" /> üzerinde işletim sistemi veya üçüncü taraf uygulamalarıyla alınan ekran görüntülerini engellemediğini unutmayın.
+
+<ph name="IOS_NAME" /> üzerinde politika Etkin değerine ayarlanırsa sistem ekran görüntülerinde ve ekran kayıtlarında <ph name="PRODUCT_NAME" /> pencereleri gizlenir ve Tam Sayfa ekran görüntüleri kullanılamaz.</translation>
 <translation id="5216710229085956333">Krisp gürültü giderme özelliğini etkinleştir</translation>
 <translation id="5216815237712190041">Henüz cihazda oturum açmış kullanıcı yoksa giriş ekranında gösterilecek cihaz düzeyinde duvar kağıdı resmini yapılandırın. Politikayı ayarlamak için ChromeOS cihazın, duvar kağıdı resmini hangi URL'den indireceği ve indirme işleminin bütünlüğünü doğrulamak için kullanılacak şifreleme karması belirtilmelidir. Resim JPEG biçiminde olmalı, dosya boyutu 16 MB'tan fazla olmamalıdır. URL'ye kimlik doğrulaması yapmadan erişilebilmelidir. Duvar kağıdı resmi indirilir ve önbelleğe alınır. URL veya karma her değiştiğinde bu tekrar indirilir.
 
@@ -8040,15 +8059,6 @@ Bu politika yalnızca bulut kullanıcı politikası olarak ayarlanabilir.</trans
 <translation id="5899751601113377553">Kullanıcıların <ph name="LACROS_NAME" /> tarayıcısını kullanmasını engelle</translation>
 <translation id="5900919753933009463">Ağ yapılandırmasını raporla</translation>
 <translation id="5901427587865226597">Yalnızca dupleks yazdır</translation>
-<translation id="5903484826174648217">Politika, Etkin değerine ayarlanırsa Güvenli Tarama, belirttiğiniz alan adlarına güvenir. Bu alan adlarında kimlik avı, kötü amaçlı yazılım veya istenmeyen yazılım gibi tehlikeli kaynakların bulunup bulunmadığı kontrol edilmez. Güvenli Tarama'nın indirme koruma hizmeti, bu alan adlarında barındırılan indirmeleri kontrol etmez. Şifre koruma hizmeti, şifre yeniden kullanımını kontrol etmez.
-
-Politika ayarlanmadan bırakılırsa varsayılan Güvenli Tarama koruması tüm kaynaklar için geçerli olur.
-
-Bu politika normal ifadeleri desteklemez ancak belirli bir alanın alt alan adları, izin verilenler listesine alınır. Tam etki alan adları (FQDN'ler) gerekli değildir.
-
-<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
-
-<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="5905114360004248993">Bu sitelerde pop-up'lara izin ver</translation>
 <translation id="5905473632148429217">Online OCSP/CRL denetimlerini etkinleştir</translation>
 <translation id="590591187943862671">Bu politika ayarlanırsa kullanıcılardan ana makine işletim sisteminin dosya sisteminde bulunan dosya veya dizinlere File System API üzerinden okuma erişimi vermelerini isteyebilecek sitelerin belirtildiği URL kalıpları listesini oluşturabilirsiniz.
@@ -11566,6 +11576,11 @@ Yerel cihaza yönelik istekleri etkileyen ve içinde kaynakların listelendiği 
 <translation id="8062485064082966327">Etiketlenmemiş resimlere otomatik olarak açıklama sağlamak için anonim bir Google hizmeti kullan</translation>
 <translation id="8064875716442437829">Oluşturucu erişilebilirliğini etkinleştirme</translation>
 <translation id="8066428282805800713">ChromeOS Flex'te ek donanım verisi gönder</translation>
+<translation id="8070654368411601340">Politikayı ayarlamak <ph name="PRODUCT_NAME" /> ürününün yetki verebileceği sunucular atar. Birden fazla sunucu adını virgülle ayırın. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+      Politika ayarlanmadan bırakılırsa bir sunucunun intranet olduğu belirlense dahi <ph name="PRODUCT_NAME" />, kullanıcı kimlik bilgilerine yeki vermez.
+
+      <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> ve <ph name="PRODUCT_OS_NAME" /> üzerinde bu politika bir sunucuya yetki devrine izin verdiğinde sistem GSSAPI/Kerberos kitaplığı, sunucunun ana makine adını farklı bir hizmet sorumlusu ana makinesine standartlaştırabilir (örneğin, DNS CNAME veya ters DNS PTR aramalarıyla). Bu ana makineye de politika tarafından izin verilmediği sürece <ph name="PRODUCT_NAME" /> söz konusu hizmet sorumlusuna yetki devretmez.</translation>
 <translation id="8071371098891664137"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> için <ph name="PRINTERS_BLOCKLIST" /> seçiliyken <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa kullanıcıların hangi yazıcıları kullanamayacağı belirlenir. Bu politikada listelenen kimlikler dışında kalan tüm yazıcılar kullanıcıya sağlanır. Kimliklerin, <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> politikasında belirtilen dosyadaki <ph name="ID_FIELD" /> veya <ph name="GUID_FIELD" /> alanlarına karşılık gelmesi gerekir.</translation>
 <translation id="8076539570602616846"><ph name="PRODUCT_NAME" /> PDF görüntüleyicideki PDF dosyalarını Google Drive'a kaydetmeye uygun Google Hesaplarını kısıtla</translation>
 <translation id="8078224178125125527">Politika ayarlandığında <ph name="AUTH_SCHEMES_POLICY_NAME" /> politikasından bağımsız olarak hangi proxy sunucuları için <ph name="PRODUCT_NAME" /> tarafından desteklenen tüm HTTP kimlik doğrulama şemalarına izin verileceğini belirtir.

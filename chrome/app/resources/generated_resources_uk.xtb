@@ -2482,7 +2482,6 @@
 <translation id="3683524264665795342">Запит на спільний доступ до екрана від програми <ph name="APP_NAME" /></translation>
 <translation id="3686108296937784939">Ярлики моєї організації</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{Знайдено 1 зламаний пароль}one{Знайдено {NUM_SITES} зламаний пароль}few{Знайдено {NUM_SITES} зламані паролі}many{Знайдено {NUM_SITES} зламаних паролів}other{Знайдено {NUM_SITES} зламаного пароля}}</translation>
-<translation id="3687463694814266645">Змінити порядок</translation>
 <translation id="3688507211863392146">Записувати у файли та папки, які ви відкриваєте в програмі</translation>
 <translation id="3688578402379768763">Оновлено</translation>
 <translation id="3690369331356918524">Попереджає, якщо паролі розкрито через порушення безпеки даних</translation>

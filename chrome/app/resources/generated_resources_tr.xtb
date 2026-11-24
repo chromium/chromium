@@ -1381,6 +1381,7 @@
 <translation id="2519517390894391510">Sertifika Profil Adı</translation>
 <translation id="2520644704042891903">Kullanılabilir soket bekleniyor...</translation>
 <translation id="2522757085249311407">Yakındaki Bluetooth cihazların bu cihazı keşfedip bağlanmasına izin verebilir.</translation>
+<translation id="2523048609826818526">Genel amaçlı yazma</translation>
 <translation id="2523184218357549926">Ziyaret ettiğiniz sayfaların URL'lerini Google'a gönderir</translation>
 <translation id="252513908494776481">Bu sekme hakkında soru sorun</translation>
 <translation id="2525746158911982776">Sistemde yeterli depolama alanı olmadığı için güncelleme başarısız oldu.</translation>
@@ -2466,7 +2467,6 @@
 <translation id="3683524264665795342"><ph name="APP_NAME" /> Ekran Paylaşım Talebi</translation>
 <translation id="3686108296937784939">Kuruluşumun kısayolları</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{Güvenliği ihlal edilmiş 1 şifre bulundu}other{Güvenliği ihlal edilmiş {NUM_SITES} şifre bulundu}}</translation>
-<translation id="3687463694814266645">Yeniden Sırala</translation>
 <translation id="3688507211863392146">Uygulamada açtığınız dosyalara ve klasörlere yazma</translation>
 <translation id="3688578402379768763">Güncel</translation>
 <translation id="3690369331356918524">Şifreleriniz bir veri ihlalinde ifşa olursa uyarır</translation>

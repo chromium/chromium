@@ -2484,7 +2484,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3683524264665795342">Yêu cầu chia sẻ màn hình <ph name="APP_NAME" /></translation>
 <translation id="3686108296937784939">Các lối tắt của tổ chức của tôi</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{Đã phát hiện 1 mật khẩu bị lộ}one{Found {NUM_SITES} compromised passwords}other{Đã phát hiện {NUM_SITES} mật khẩu bị lộ}}</translation>
-<translation id="3687463694814266645">Sắp xếp lại</translation>
 <translation id="3688507211863392146">Ghi vào têp và thư mục bạn mở trong ứng dụng</translation>
 <translation id="3688578402379768763">Cập nhật</translation>
 <translation id="3690369331356918524">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu</translation>

@@ -8060,15 +8060,6 @@ Bạn chỉ có thể đặt chính sách này thành chính sách người 
 <translation id="5899751601113377553">Ngăn người dùng sử dụng <ph name="LACROS_NAME" /></translation>
 <translation id="5900919753933009463">Báo cáo cấu hình mạng</translation>
 <translation id="5901427587865226597">Chỉ in hai mặt</translation>
-<translation id="5903484826174648217">Khi bạn đặt chính sách này thành Bật, tính năng Duyệt web an toàn sẽ tin cậy các miền mà bạn chỉ định. Tính năng này sẽ không dò tìm tài nguyên nguy hiểm trong các miền đó, chẳng hạn như dò tìm hoạt động lừa đảo, phần mềm độc hại hoặc phần mềm không mong muốn. Dịch vụ bảo vệ tệp đã tải xuống của tính năng Duyệt web an toàn sẽ không kiểm tra các tệp đã tải xuống được lưu trữ trên những miền này. Dịch vụ bảo vệ mật khẩu của tính năng này sẽ không dò tìm mật khẩu trùng lặp.
-
-Nếu bạn không đặt chính sách này, dịch vụ bảo vệ mặc định của tính năng Duyệt web an toàn sẽ được áp dụng cho mọi tài nguyên.
-
-Chính sách này không hỗ trợ biểu thức chính quy. Tuy nhiên, miền con của một miền cụ thể sẽ được đưa vào danh sách cho phép. Không bắt buộc phải sử dụng tên miền đủ điều kiện (FQDN).
-
-Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5905114360004248993">Cho phép cửa sổ bật lên trên các trang web này</translation>
 <translation id="5905473632148429217">Bật tính năng kiểm tra OCSP/CRL trực tuyến</translation>
 <translation id="590591187943862671">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những trang web được phép yêu cầu người dùng cấp quyền đọc các tệp hoặc thư mục trong hệ thống tệp của hệ điều hành máy chủ qua API Hệ thống tệp.

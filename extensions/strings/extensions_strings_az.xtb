@@ -30,6 +30,7 @@
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" əlavə edilsin?</translation>
 <translation id="2159915644201199628">Təsviri deşifrələmək olmadı: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">Valideyniniz bu artırmanı təsdiqləmədi</translation>
+<translation id="2207866393056347613">Bütün saytlarda datanıza daimi giriş imkanı verir</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" əlavə icazə istəyir.</translation>
 <translation id="2327492829706409234">Tətbiqi aktiv edin</translation>
 <translation id="2350172092385603347">Lokalizasiya işlənir, lakin defolt default_locale manifestdə göstərilməyib.</translation>
@@ -38,6 +39,7 @@
 <translation id="2678063897982469759">Yenidən aktivləşdirin</translation>
 <translation id="2743583586211388067">Bu artırmaya giriş təşkilatınızın artırma riski siyasətinə əsasən bloklanıb.</translation>
 <translation id="2766161002040448006">Valideyndən soruşun</translation>
+<translation id="2775557057525247505">Bütün saytları göstərin</translation>
 <translation id="2785530881066938471">Məzmun skripti üçün '<ph name="RELATIVE_PATH" />' yükləmək alınmadı. UTF-8 kodlu deyil.</translation>
 <translation id="2850541429955027218">Tema əlavə edin</translation>
 <translation id="2883143988769190738">Bu artırma aşağıdakı icazələri tələb edir:</translation>
@@ -56,6 +58,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> <ph name="PRODUCT_NAME" /> vendordan (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Şəxsi açar üçün giriş dəyəri düzgün yol olmalıdır.</translation>
+<translation id="3769470010314114481">Saytdakı datanıza müvəqqəti giriş imkanı verir</translation>
 <translation id="3788401245189148511">Edə bilərdi:</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" tətbiqi əlavə edilmədi, cünki "<ph name="INSTALLED_APP_NAME" />" tətbiqi ilə zddiyət təşkil edir.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' variantlar səhifəsini yükləmək olmadı.</translation>
@@ -63,6 +66,7 @@
 <translation id="3908501907586732282">Artırmanı aktiv edin</translation>
 <translation id="3927932062596804919">Rədd edin</translation>
 <translation id="3984413272403535372">Artırmaya daxil olarkən xəta baş verdi.</translation>
+<translation id="3990894032742690314">Həmişə siyahıdakı saytlarda</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" təmir olunsun?</translation>
 <translation id="4061696872429826774">Kompüterinizdə başqa bir proqram Chromium-un fəaliyyət göstərmə formasını dəyişən artırma əlavə etdi.
 
@@ -71,6 +75,7 @@
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' səhifəsi haqqında endirmək alınmadı.</translation>
 <translation id="424963718355121712">Tətbiqlər təsir etdiyi hostdan təmin edilməlidirlər</translation>
 <translation id="4306119971288449206">Tətbiqlər "<ph name="CONTENT_TYPE" />" ilə təmin edilməlidirlər</translation>
+<translation id="4307774243840254737">Aşağıda qeyd olunan saytlardakı datanıza daimi giriş icazəsi verir</translation>
 <translation id="4349181963619779233">Bu veb-saytdan artırma və tətbiq əlavə etmək mümkün deyil</translation>
 <translation id="4625078469366263107">Tətbiqi Aktiv Edin</translation>
 <translation id="4633003931260532286">Artırma minimum "<ph name="IMPORT_VERSION" />" versiyalı <ph name="IMPORT_NAME" /> tələb edir, lakin yalnız "<ph name="INSTALLED_VERSION" />" versiyası quraşdırılıb</translation>
@@ -88,6 +93,7 @@
 <translation id="5185386675596372454">Yeni "<ph name="EXTENSION_NAME" />" versiyası daha çox icazə tələb etdiyi üçün deaktiv edildi.</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" aktiv edilsin?</translation>
 <translation id="5356315618422219272">Tətbiqə baxış: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Yalnız artırmaya kliklədiyiniz zaman</translation>
 <translation id="5405650547142096840">Chromium'dan silin</translation>
 <translation id="5456409301717116725">Bu artırma <ph name="KEY_PATH" /> açar faylını içərir.</translation>
 <translation id="5485102783864353244">Tətbiq əlavə edin</translation>
@@ -116,6 +122,7 @@
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Bu artırma özünü çox tez-tez yüklədi.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu</translation>
+<translation id="7017635639223148413">Siyahıya alınmış saytlar</translation>
 <translation id="7068383018033524534">Manifest faylı yanlışdır</translation>
 <translation id="7217838517480956708">Bu cihazın administratoru <ph name="EXTENSION_NAME" /> artırmasının quraşdırılmasını tələb edir.</translation>
 <translation id="7287143125007575591">Giriş rədd edildi.</translation>
@@ -134,6 +141,7 @@
 <translation id="8035920974645200807">Ön kamera</translation>
 <translation id="8047248493720652249">Bu artırma "<ph name="ATTEMPTED_FILENAME" />" endirə bilmədi, çünki digər artırma (<ph name="EXTENSION_NAME" />) fərqli fayl adı "<ph name="ACTUAL_FILENAME" />" bəlirlədi.</translation>
 <translation id="8049705080247101012">Google <ph name="EXTENSION_NAME" /> adlı artırmanı zərərli qeyd edərək quraşdırmanı ləğv etdi</translation>
+<translation id="823691536304079791">Datanızı oxuyun və dəyişdirin</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> vendorundan <ph name="PRODUCT_NAME" /> məhsulu</translation>
 <translation id="8353683614194668312">Bunu bacarır:</translation>
 <translation id="8517576857589387417">Manifest faylı yoxdur və ya oxunmur</translation>

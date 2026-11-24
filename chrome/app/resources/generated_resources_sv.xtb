@@ -308,6 +308,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1308105352527684175">Du kanske inte kan komma åt visst innehåll</translation>
 <translation id="1311092170520822848">Den här webbplatsen styr smartkortsläsare som är anslutna till enheten och eventuellt smartkort som är tillgängliga för dem</translation>
 <translation id="131112695174432497">Data som påverkar annonsanpassning raderas</translation>
+<translation id="13115907161008983">Kopiera länkar</translation>
 <translation id="131188242279372879">Upptäck utökat skydd och få Chromes bästa säkerhet för nedladdningar</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Åtgärda fliken som saktar ned webbläsaren}other{Åtgärda flikarna som saktar ned webbläsaren}}</translation>
 <translation id="1312721752506309252">Förbättrat skydd är aktiverat</translation>
@@ -444,6 +445,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1482626744466814421">Bokmärk den här fliken …</translation>
 <translation id="1482772681918035149">redigera lösenord</translation>
 <translation id="1483137792530497944">Flod</translation>
+<translation id="1483148302144576204">Kopiera länkar</translation>
 <translation id="1483151333977672176">Skickat!</translation>
 <translation id="1483431819520123112">Visningsnamnet har kopierats till urklipp</translation>
 <translation id="1483493594462132177">Skicka</translation>
@@ -1070,6 +1072,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2168036794078614559">Rapporten har skickats</translation>
 <translation id="2168735174585029637">Ge dina flikar ett nytt genomskinligt utseende</translation>
 <translation id="217120844667431680">Gör mer i AI-läget</translation>
+<translation id="2172046302886074612"><ph name="MODEL_CATEGORY" /> har tagits bort</translation>
 <translation id="2173302385160625112">Kontrollera internetanslutningen</translation>
 <translation id="2175384018164129879">&amp;Hantera sökmotorer och webbplatssökning</translation>
 <translation id="2175773164573457310">Välj text eller bild att fråga Gemini om</translation>
@@ -2098,6 +2101,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3270965368676314374">Läsa, ändra och ta bort foton, musik och andra media från datorn</translation>
 <translation id="3275464924531706548">Komprimera <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Öppna som fönster</translation>
+<translation id="3277325180914877290">Förstora texten</translation>
 <translation id="3280237271814976245">Spara so&amp;m...</translation>
 <translation id="3280243678470289153">Fortsätt i Chrome</translation>
 <translation id="3282210178675490297">En flik delas med <ph name="APP_NAME" /></translation>
@@ -2484,7 +2488,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3683524264665795342">Förfrågan från <ph name="APP_NAME" /> om skärmdelning</translation>
 <translation id="3686108296937784939">Min organisations genvägar</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{1 utsatt lösenord hittades}other{{NUM_SITES} utsatta lösenord hittades}}</translation>
-<translation id="3687463694814266645">Ändra ordning</translation>
 <translation id="3688507211863392146">Skriva till filer och mappar som du öppnar i appen</translation>
 <translation id="3688578402379768763">Uppdaterad</translation>
 <translation id="3690369331356918524">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
@@ -2607,6 +2610,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3786890785076278600">Statisk rad</translation>
 <translation id="3787434344076711519">Väntar på översättning</translation>
 <translation id="3789432704615470433">SharePoint- och OneDrive-filer</translation>
+<translation id="3789493399245366422">helskärmsläge, maximera, visa i helskärm, dölj verktygsfält, presentation, F11</translation>
 <translation id="3789841737615482174">Installera</translation>
 <translation id="3790417903123637354">Något gick fel. Försök igen senare</translation>
 <translation id="379082410132524484">Kortets giltighetstid har löpt ut</translation>
@@ -3377,6 +3381,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4665035764476941598">Klicka här om du vill få tillbaka de andra flikarna</translation>
 <translation id="4665446389743427678">All data som lagrats av <ph name="SITE" /> raderas.</translation>
 <translation id="4666483368282673356">Hantera din Gemini-historik</translation>
+<translation id="4667646546186544608">zooma ut, förminska, mindre, mindre text, minska zoom, sidzoom</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Grattis! <ph name="APP_NAME" /> har installerats på enheten</translation>
 <translation id="4672759829555593783">Öppna <ph name="FILE_NAME" /> nu</translation>
@@ -4780,6 +4785,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6255253900817321392">Sök snabbare var som helst på din Mac utan att öppna en ny flik</translation>
 <translation id="6257602895346497974">Aktivera synkronisering …</translation>
 <translation id="6258818697161346451">Använd dina nycklar på den här enheten</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopiera länk}other{Kopiera länkar}}</translation>
 <translation id="6261688934280090835">Loggar för ChromeOS-kioskappen</translation>
 <translation id="6263082573641595914">Microsofts version av certifikatutfärdare</translation>
 <translation id="6264060420924719834">Den här appen innehåller webbinnehåll från andra webbplatser</translation>
@@ -4908,6 +4914,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="640980925764810750"><ph name="MENU_ITEM" /> …</translation>
 <translation id="6410257289063177456">Bildfiler</translation>
 <translation id="6410390304316730527">Säker webbsökning skyddar dig mot angripare som kan försöka lura dig att göra något riskfyllt, till exempel installera skadlig kod eller avslöja personliga uppgifter som lösenord, telefonnummer eller kreditkortsuppgifter. Om du inaktiverar detta bör du vara försiktig när du besöker okända webbplatser.</translation>
+<translation id="6411490324917773403">Förminska texten</translation>
 <translation id="6416743254476733475">Tillåt eller blockera på datorn.</translation>
 <translation id="6416856063840710198">Webbplatser sparar ofta din aktivitet i syfte att förbättra ditt besök. Den sparas vanligen på din enhet. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Standardbeteende</translation>
@@ -6399,6 +6406,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8041093619605951337">Glad</translation>
 <translation id="8042142357103597104">Textopacitet</translation>
 <translation id="8042331986490021244">Dina lösenord krypteras på enheten innan de sparas i Google Lösenordshantering</translation>
+<translation id="8042441076562098746">zooma in, förstora, större, större text, öka zoom, sidzoom</translation>
 <translation id="8045253504249021590">Synkronisering har stoppats via Google Översikt.</translation>
 <translation id="8045752459073395242">Läs mer om att använda generativ AI på jobbet</translation>
 <translation id="8045923671629973368">Ange program-id eller adress i webbutik</translation>
@@ -6754,6 +6762,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="844059392176531372">Dela flikgruppen <ph name="GROUP_NAME" /></translation>
 <translation id="844063558976952706">Alltid på den här webbplatsen</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte igen.}other{Det finns # inkognitofönster eller isolerade fönster öppna i olika profiler. De öppnas inte igen.}}</translation>
+<translation id="84426883520448311">tema, färg, färgschema, bakgrund, bakgrundsbild, ljust läge, mörkt läge, anpassa, utseende</translation>
 <translation id="8443986842926457191">Webbadressen är längre än 2 048 tecken</translation>
 <translation id="8445281870900174108">Den här fliken använder kameran</translation>
 <translation id="8446884382197647889">Läs mer</translation>
@@ -7344,6 +7353,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9076821103818989526">Sidopanel</translation>
 <translation id="907779190626433918">Använd ett unikt lösenord till varje webbplats eller app. Om någon får tag på ett återanvänt lösenord kan det användas till att få åtkomst till dina andra konton.</translation>
 <translation id="9078546160009814724">Användarnamn: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopiera länk}other{Kopiera länkar}}</translation>
 <translation id="907972398081911688">Ändra automatiskt lösenordet som läckt ut</translation>
 <translation id="9081543426177426948">Webbplatser du besöker sparas inte i inkognitoläget</translation>
 <translation id="9082750838489080452">App: <ph name="APP_NAME" /></translation>

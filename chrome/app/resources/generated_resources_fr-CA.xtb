@@ -2471,7 +2471,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3683524264665795342">Demande de partage d'écran de <ph name="APP_NAME" /></translation>
 <translation id="3686108296937784939">Les raccourcis de mon organisation</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{1 mot de passe compromis trouvé}one{{NUM_SITES} mot de passe compromis trouvé}other{{NUM_SITES} mots de passe compromis trouvés}}</translation>
-<translation id="3687463694814266645">Réorganiser</translation>
 <translation id="3688507211863392146">Accéder en écriture aux fichiers et aux dossiers ouverts dans l'application</translation>
 <translation id="3688578402379768763">Mise à jour effectuée</translation>
 <translation id="3690369331356918524">Vous avertit si des mots de passe sont exposés dans une violation de données</translation>
@@ -4231,6 +4230,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="5633149627228920745">En savoir plus sur la configuration système requise</translation>
 <translation id="5633597859549257840">Obtenez le meilleur de l'IA de Google. Épinglez Gemini à votre barre d'outils pour y accéder facilement ou ouvrez-le à tout moment à partir du menu Chrome.</translation>
 <translation id="5635312199252507107">Autoriser sur des sites particuliers</translation>
+<translation id="5636363757061959967">avatar, image, nom, compte, profil</translation>
 <translation id="5638202526629811571">Montre cet écran à ton parent ou à ton tuteur pour que cette personne puisse indiquer si tu as l'autorisation d'ajouter cette extension</translation>
 <translation id="563821631542362636">Autoriser le site à enregistrer des données</translation>
 <translation id="5638309510554459422">Trouvez des extensions et des thèmes dans la boutique en ligne <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>

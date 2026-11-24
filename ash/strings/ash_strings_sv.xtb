@@ -447,6 +447,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2053312383184521053">Data om läget inaktiv</translation>
 <translation id="2058456167109518507">En enhet har upptäckts</translation>
 <translation id="2064048859448024834">Förhandsgranskning av kamera visas</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 länk}other{# länkar}}</translation>
 <translation id="2067220651560163985">Visa temperaturen i Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> har skrivit ut på till <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Aktivera och inaktivera <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> är <ph name="CAPTURE_STATE" /></translation>

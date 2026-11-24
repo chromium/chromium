@@ -2466,7 +2466,6 @@
 <translation id="3683524264665795342"><ph name="APP_NAME" /> 屏幕共享请求</translation>
 <translation id="3686108296937784939">我所属组织的快捷方式</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{发现了 1 个已泄露的密码}other{发现了 {NUM_SITES} 个已泄露的密码}}</translation>
-<translation id="3687463694814266645">调整顺序</translation>
 <translation id="3688507211863392146">写入您在此应用中打开的文件和文件夹</translation>
 <translation id="3688578402379768763">已是最新</translation>
 <translation id="3690369331356918524">密码遭遇数据泄露时向您发出警告</translation>
@@ -4223,6 +4222,7 @@
 <translation id="5633149627228920745">详细了解系统要求</translation>
 <translation id="5633597859549257840">尽享 Google AI 的强大功能。将 Gemini 固定到工具栏，即可轻松访问；或者随时从 Chrome 菜单中打开 Gemini。</translation>
 <translation id="5635312199252507107">在特定网站上允许</translation>
+<translation id="5636363757061959967">头像, 照片, 名称, 账号, 个人资料, avatar, picture, name, account, profile</translation>
 <translation id="5638202526629811571">请向家长或监护人展示此界面，以便他们决定是否同意你添加此扩展程序</translation>
 <translation id="563821631542362636">允许网站保存数据</translation>
 <translation id="5638309510554459422">在 <ph name="BEGIN_LINK" />Chrome 应用商店<ph name="END_LINK" />中查找扩展程序和主题背景</translation>

@@ -7736,15 +7736,6 @@ https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元
 <translation id="5899751601113377553">禁止使用者使用 <ph name="LACROS_NAME" /></translation>
 <translation id="5900919753933009463">回報網路設定</translation>
 <translation id="5901427587865226597">僅限雙面列印</translation>
-<translation id="5903484826174648217">如果將這項政策設為啟用，安全瀏覽功能會信任你指定的網域，不會確認這些網域是否含有網路釣魚、惡意軟體或垃圾軟體等危險資源。安全瀏覽功能的下載保護服務不會檢查這些網域代管的下載內容，密碼保護服務也不會檢查密碼是否重複使用。
-
-如果不設定這項政策，系統會將預設的安全瀏覽保護功能套用至所有資源。
-
-這項政策不支援規則運算式，不過特定網域的子網域可加入許可清單，而且不一定要有完整網域名稱 (FQDN)。
-
-<ph name="MS_WIN_NAME" /> 執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能使用這項政策。
-
-<ph name="MAC_OS_NAME" /> 執行個體必須透過行動裝置管理 (MDM) 軟體管理、透過 MCX 加入網域，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能使用這項政策。</translation>
 <translation id="5905114360004248993">允許這些網站的彈出式視窗</translation>
 <translation id="5905473632148429217">啟用線上 OCSP/CRL 檢查</translation>
 <translation id="590591187943862671">設定這項政策後，你可以使用網址模式清單，指定哪些網站能夠要求使用者授予讀取權限，以透過 File System API 讀取主機作業系統中檔案系統的檔案或目錄。
@@ -10988,6 +10979,11 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
           指定政策值時需以毫秒為單位。設定值必須小於或等於閒置延遲時間。</translation>
 <translation id="7992613144342460685">允許這些網站取得視窗放置權限</translation>
 <translation id="7995610550667275367">掃描 (自 87 版起開始支援)</translation>
+<translation id="7997288303774758253">你可以透過這項政策，指定向裝置管理服務查詢使用者政策資訊的時間範圍 (以毫秒為單位)。有效值範圍介於 1,800,000 (30 分鐘) 到 86,400,000 (1 天) 之間。超出這個範圍的值會調整為相應的邊界值，但在 Android 和 iOS 裝置上，超出這個範圍的值會調整為 604,800,000 (1 週)。
+
+      如果不設定這項政策，系統會使用預設值 3 小時，Android 和 iOS 裝置則為 1 天。
+
+      注意：政策通知會在政策變更時強制重新整理，因此系統不需要時常重新整理。如果平台支援這類通知，重新整理延遲時間會是 24 小時 (系統會忽略預設值以及這項政策的值)。</translation>
 <translation id="7999023147219236247">這項政策可控管如何授予應用程式要求的權限。PERMISSION_POLICY_UNSPECIFIED：未指定政策。如未針對任何層級的權限指定政策，系統會預設採取「PROMPT」值對應的行為。PROMPT：提示使用者授予權限。GRANT：自動授予權限。DENY：自動拒絕授予權限。</translation>
 <translation id="7999336306414770162">停用裝置 VPD 資訊回報功能</translation>
 <translation id="7999818120028621358">啟用資料外洩防護事件的回報功能</translation>

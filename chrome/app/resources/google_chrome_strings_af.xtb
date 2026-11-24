@@ -81,6 +81,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1688214853608504530">Wanneer jy in die adresbalk of soekkassie tik, stuur Chrome dit wat jy tik na jou organisasie se soek-, KI- en agentnutsgoed om voorstelle te kry.</translation>
 <translation id="1698376642261615901">Google Chrome is 'n webblaaier wat webbladsye en programme teen die spoed van lig laat loop. Dit is vinnig, stabiel en maklik om te gebruik. Blaai veiliger deur die web aangesien wanware- en uitvissingbeskerming by Google Chrome ingebou is.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome sal oor 'n uur herbegin}other{Chrome sal oor # uur herbegin}}</translation>
+<translation id="1713866023633141719">KI op die toestel is gereed</translation>
 <translation id="1722488837206509557">Hiermee sal jy uit beskikbare toestelle kan kies en inhoud daarop kan wys.</translation>
 <translation id="1724094881572874997">Jou organisasie sal sekere inligting kan bekyk of bestuur om jou werk op Chrome te beveilig wanneer jy by Chrome aangemeld is.</translation>
 <translation id="1769661297620183092">Jy kan die Google Search-paneel weer oopmaak om vrae te vra terwyl jy blaai</translation>
@@ -155,6 +156,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2513154137948333830">Herselflaai word vereis: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">jou organisasie</translation>
 <translation id="2521391734665471391">Maak Google Search KI-modus toe</translation>
+<translation id="2523048609826818526">Algemene skryfwerk</translation>
 <translation id="2523492931736391680">Jou werk is veilig op Chrome</translation>
 <translation id="2534365042754120737">Laat Chrome toestemmings van werwe verwyder wat jy nie onlangs besoek het nie om jou data te beskerm. Stop nie kennisgewings nie.</translation>
 <translation id="2556847002339236023">Jou organisasie maak Chrome toe wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie. Blaaierdata is uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.</translation>
@@ -253,6 +255,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="3373752068427117404">Sommige Chrome-kenmerke en -uitbreidings kom met kortpaaie. Jy kan kies om hulle weer aan te skakel.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sal nou herbegin}=1{Chrome sal oor 1 sekonde herbegin}other{Chrome sal oor # sekondes herbegin}}</translation>
 <translation id="3380249972812870825">Druk <ph name="GLOBAL_HOTKEY" /> om Gemini in Chrome oop te maak</translation>
+<translation id="3392127217442962664">Chrome het KI bygevoeg wat op jou toestel loop. Werwe en Chrome kan dit gebruik vir kenmerke soos:</translation>
 <translation id="3396977131400919238">'n Bedryfstelselfout het met installering voorgekom. Laai Google Chrome asseblief weer af.</translation>
 <translation id="3428747202529429621">Hou jou veilig op Chrome en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is</translation>
 <translation id="3438681572027105609">Meld aan by Chrome om jou wagwoorde en meer op al jou toestelle te kry.</translation>
@@ -302,6 +305,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="3973161977468201858">Google Chrome wil jou Google Wagwoordbestuurder-data uitvee. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="3984557288004650913">Jy kan Google Search in Chrome vanaf die “Google Search in Chrome”-knoppie op die nutsbalk weer oopmaak om vrae te vra terwyl jy blaai</translation>
 <translation id="399788104667917863">Spel aan nutsbalk vas</translation>
+<translation id="4000385468528550798">KI op die toestel is opgedateer</translation>
 <translation id="400161754580828648">Om jou skerm te deel, moet jy skermopname vir Chrome in Stelselinstellings toelaat.</translation>
 <translation id="4012899077942246412">Terwyl jy aangemeld is, kan jy jou wagwoorde en meer uit jou Google-rekening in Chrome gebruik. Gaan na “Jou rekening in Chrome” toe om dit te verander.</translation>
 <translation id="4022972681110646219">Vertaal skerm</translation>
@@ -561,6 +565,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6632012506031284914">om met Chrome te soek.</translation>
 <translation id="6634299872736643004">Veranderinge aan hierdie instelling sal toegepas word sodra Chrome herbegin.</translation>
 <translation id="6644846457769259194">Dateer tans jou toestel op (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">KI op die toestel is bygewerk</translation>
 <translation id="6660596345553328257">Meld by Chrome aan?</translation>
 <translation id="6664219008737641504"><ph name="SETTINGS_LINK" /> die Chrome-data in jou rekening indien jy jou wagfrase vergeet het of hierdie instelling wil verander</translation>
 <translation id="6676384891291319759">Gaan by die internet in</translation>
@@ -602,6 +607,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7024536598735240744">Uitpakfout: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Jy kan hier tussen Chrome-profiele wissel</translation>
 <translation id="7026856149118332950">Klik <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> in die Windows-kennisgewing om Chrome vir kitstoegang op jou taakbalk vas te speld.</translation>
+<translation id="7033785662379319359">’n Nuwe, meer kompakte weergawe van KI op die toestel is gereed om gebruik te word vir take soos opsommings, proeflees en meer</translation>
 <translation id="7047386856539490735">Is hierdie resultate nuttig?</translation>
 <translation id="7051685429025310665">Jy het nie onlangs die webwerf besoek nie. Chrome het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> verwyder.</translation>
 <translation id="7059914902409643750">Maak Chrome jou eie</translation>

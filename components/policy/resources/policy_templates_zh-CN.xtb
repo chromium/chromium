@@ -7815,15 +7815,6 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
 <translation id="5899751601113377553">禁止用户使用 <ph name="LACROS_NAME" /></translation>
 <translation id="5900919753933009463">报告网络配置</translation>
 <translation id="5901427587865226597">仅限双面打印</translation>
-<translation id="5903484826174648217">如果已启用此政策，“安全浏览”功能将会信任您指定的网域。此功能将不会检查这类网域是否含有危险资源，例如钓鱼式攻击、恶意软件或垃圾软件。“安全浏览”功能的下载保护服务将不会检查托管在这类网域上的下载内容。此功能的密码保护服务将不会检查密码重用情况。
-
-如果未设置此政策，系统便会将默认开启的“安全浏览”保护功能应用于所有资源。
-
-此政策不支持正则表达式，但会将指定网域的子网域列入许可名单。完全限定域名 (FQDN) 不是必需项。
-
-在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例或已在 <ph name="CHROME_ENTERPRISE_CORE_NAME" />中注册的实例。
-
-在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例或已在 <ph name="CHROME_ENTERPRISE_CORE_NAME" />中注册的实例。</translation>
 <translation id="5905114360004248993">允许这些网站显示弹出式窗口</translation>
 <translation id="5905473632148429217">启用在线 OCSP/CRL 检查</translation>
 <translation id="590591187943862671">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站可以通过 File System API 请求用户授予对主机操作系统的文件系统中文件或目录的读取权限。
@@ -11139,6 +11130,11 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
           指定的政策值应以毫秒为单位，且不得大于闲置延迟时间。</translation>
 <translation id="7992613144342460685">向这些网站授予窗口放置权限</translation>
 <translation id="7995610550667275367">扫描（自 87 版起受支持）</translation>
+<translation id="7997288303774758253">通过设置此政策，您可以指定向设备管理服务查询用户政策信息的周期（以毫秒为单位）。有效值范围为 1,800,000（30 分钟）至 86,400,000（1 天）。超出此范围的值会被调整为相应的边界值；但在 Android 和 iOS 设备上，高于此范围的值会被调整为 604,800,000（1 周）。
+
+      如果您未设置此政策，系统会使用默认值 3 小时（在 Android 和 iOS 上为 1 天）。
+
+      注意：当此政策有变时，政策通知会强制进行刷新，因此您不必频繁刷新。如果平台支持此类通知，刷新延迟时间将为 24 小时（忽略默认值和此政策的值）。</translation>
 <translation id="7999023147219236247">此政策用于向应用授予所请求的权限。PERMISSION_POLICY_UNSPECIFIED：未指定此政策。如果在任何等级都未针对相应权限指定政策，系统便会默认使用“PROMPT”行为。PROMPT：提示用户授予相应权限。GRANT：自动授予相应权限。DENY：自动拒绝授予相应权限。</translation>
 <translation id="7999336306414770162">停用设备 VPD 信息报告功能</translation>
 <translation id="7999818120028621358">启用关于数据泄露预防事件的报告</translation>

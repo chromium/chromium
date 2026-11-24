@@ -2467,7 +2467,6 @@
 <translation id="3683524264665795342"><ph name="APP_NAME" /> 要求共用畫面</translation>
 <translation id="3686108296937784939">機構的捷徑</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{找到 1 個遭外洩的密碼}other{找到 {NUM_SITES} 個遭外洩的密碼}}</translation>
-<translation id="3687463694814266645">重新排序</translation>
 <translation id="3688507211863392146">寫入你在應用程式中開啟的檔案和資料夾</translation>
 <translation id="3688578402379768763">最新狀態</translation>
 <translation id="3690369331356918524">可在發生資料侵害事件導致密碼外洩時顯示警告訊息</translation>
@@ -4221,6 +4220,7 @@
 <translation id="5633149627228920745">進一步瞭解系統需求</translation>
 <translation id="5633597859549257840">盡情體驗 Google AI 的強大功能。將 Gemini 固定到工具列方便存取，或隨時從 Chrome 選單開啟。</translation>
 <translation id="5635312199252507107">允許在特定網站上執行</translation>
+<translation id="5636363757061959967">頭像, 大頭貼, 顯示圖片, 圖片, 名稱, 姓名, 帳戶, 個人資料, 設定檔</translation>
 <translation id="5638202526629811571">請向家長或監護人顯示這個畫面，讓他們決定是否允許你新增這個擴充功能</translation>
 <translation id="563821631542362636">允許網站儲存資料</translation>
 <translation id="5638309510554459422">歡迎前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />尋找擴充功能和主題</translation>
