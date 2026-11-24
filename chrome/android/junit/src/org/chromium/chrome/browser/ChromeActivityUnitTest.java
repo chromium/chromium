@@ -22,7 +22,9 @@ import android.app.Activity;
 import android.app.PictureInPictureUiState;
 import android.app.assist.AssistContent;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -90,6 +92,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.BottomContainer;
+import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -123,6 +126,7 @@ public class ChromeActivityUnitTest {
     @Mock ReaderModeManager mReaderModeManager;
     @Mock FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
     @Mock PictureInPictureUiState mPictureInPictureUiState;
+    @Mock ExclusiveAccessManager mExclusiveAccessManager;
     @Mock EnterpriseInfo mEnterpriseInfo;
     @Mock UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock WebDistillerUrlUtilsJni mWebDistillerUrlUtilsJni;
@@ -361,6 +365,41 @@ public class ChromeActivityUnitTest {
         chromeActivity.onPictureInPictureUiStateChanged(mPictureInPictureUiState);
         Mockito.verify(mFullscreenVideoPictureInPictureController, Mockito.never())
                 .onStashReported(Mockito.anyBoolean());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testPictureInPictureTransition_hidesExclusiveAccessBubble() {
+        // Verify that the fullscreen notice is hidden before the window animates into PiP.
+        TestChromeActivity chromeActivity = new TestChromeActivity();
+        when(mRootUiCoordinatorMock.getExclusiveAccessManager())
+                .thenReturn(mExclusiveAccessManager);
+
+        when(mPictureInPictureUiState.isTransitioningToPip()).thenReturn(false);
+        chromeActivity.onPictureInPictureUiStateChanged(mPictureInPictureUiState);
+        verify(mExclusiveAccessManager, never()).hideExclusiveAccessBubble();
+
+        when(mPictureInPictureUiState.isTransitioningToPip()).thenReturn(true);
+        chromeActivity.onPictureInPictureUiStateChanged(mPictureInPictureUiState);
+        verify(mExclusiveAccessManager).hideExclusiveAccessBubble();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.FULLSCREEN_VIDEO_PICTURE_IN_PICTURE)
+    public void testEnterPictureInPicture_hidesExclusiveAccessBubble() {
+        // Verify that the fullscreen notice is hidden once in PiP, also when no transition was
+        // reported beforehand.
+        TestChromeActivity chromeActivity =
+                new TestChromeActivity() {
+                    // The actor PiP controller requires a profile, which is not needed here.
+                    @Override
+                    public void maybeCreateActorPipController() {}
+                };
+        when(mRootUiCoordinatorMock.getExclusiveAccessManager())
+                .thenReturn(mExclusiveAccessManager);
+
+        chromeActivity.onPictureInPictureModeChanged(/* inPicture= */ true, new Configuration());
+        verify(mExclusiveAccessManager).hideExclusiveAccessBubble();
     }
 
     @Test

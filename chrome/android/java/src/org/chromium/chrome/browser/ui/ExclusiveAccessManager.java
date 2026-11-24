@@ -295,6 +295,13 @@ public class ExclusiveAccessManager
         mExclusiveAccessState.set(false);
     }
 
+    /** Hides the fullscreen exit notice when the activity enters picture-in-picture. */
+    public void hideExclusiveAccessBubble() {
+        if (mExclusiveAccessManagerAndroidNativePointer == null) return;
+        ExclusiveAccessManagerJni.get()
+                .hideExclusiveAccessBubble(mExclusiveAccessManagerAndroidNativePointer);
+    }
+
     /** Checks if any of the fullscreen, keyboard lock or pointer lock is on */
     public boolean hasExclusiveAccess() {
         if (mExclusiveAccessManagerAndroidNativePointer == null) {
@@ -539,6 +546,8 @@ public class ExclusiveAccessManager
         void exitExclusiveAccess(JniPtr<NativeExclusiveAccessManagerAndroid> self);
 
         void exitAllExclusiveAccess(JniPtr<NativeExclusiveAccessManagerAndroid> self);
+
+        void hideExclusiveAccessBubble(JniPtr<NativeExclusiveAccessManagerAndroid> self);
 
         boolean hasExclusiveAccess(JniPtr<NativeExclusiveAccessManagerAndroid> self);
 

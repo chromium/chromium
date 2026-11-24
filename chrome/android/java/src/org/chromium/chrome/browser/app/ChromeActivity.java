@@ -233,6 +233,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.ui.BottomContainer;
 import org.chromium.chrome.browser.ui.ChromeActivitySnackbarHelper;
+import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -1600,6 +1601,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         super.onPictureInPictureUiStateChanged(pipState);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
         if (isActivityFinishingOrDestroyed()) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                && pipState.isTransitioningToPip()) {
+            // Hide the notice before the transition starts, so that it is not visible while the
+            // window animates into picture-in-picture.
+            hideExclusiveAccessBubble();
+        }
         FullscreenVideoPictureInPictureController controller =
                 ensureFullscreenVideoPictureInPictureController();
         if (controller != null) {
@@ -1621,6 +1628,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 wasInPictureInPictureForMinimizedCustomTabs());
         if (wasInPictureInPictureForMinimizedCustomTabs()) return;
         if (inPicture) {
+            hideExclusiveAccessBubble();
             mLastPictureInPictureModeForTesting = true;
             maybeCreateActorPipController();
             if (mActorPipController != null && mActorPipController.shouldEnterPip()) return;
@@ -1639,6 +1647,17 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             }
             mLastPictureInPictureModeForTesting = false;
         }
+    }
+
+    /**
+     * Hides the exclusive access notice (e.g. the fullscreen exit instructions), which must not
+     * cover the content of a picture-in-picture window.
+     */
+    private void hideExclusiveAccessBubble() {
+        if (mRootUiCoordinator == null) return;
+        ExclusiveAccessManager exclusiveAccessManager =
+                mRootUiCoordinator.getExclusiveAccessManager();
+        if (exclusiveAccessManager != null) exclusiveAccessManager.hideExclusiveAccessBubble();
     }
 
     /**

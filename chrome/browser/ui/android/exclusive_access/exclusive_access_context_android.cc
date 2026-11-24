@@ -135,6 +135,12 @@ bool ExclusiveAccessContextAndroid::IsExclusiveAccessBubbleDisplayed() const {
   return exclusive_access_bubble_ && exclusive_access_bubble_->IsVisible();
 }
 
+void ExclusiveAccessContextAndroid::HideExclusiveAccessBubble() {
+  if (exclusive_access_bubble_) {
+    exclusive_access_bubble_->HideImmediately();
+  }
+}
+
 void ExclusiveAccessContextAndroid::OnExclusiveAccessUserInput() {
   // Notifies the security notice bubble that user input has occurred. This may
   // re-snooze the bubble's hide timer or re-show it if the snooze period has

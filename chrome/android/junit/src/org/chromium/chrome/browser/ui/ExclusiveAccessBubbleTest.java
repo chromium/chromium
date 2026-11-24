@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ui;
 
 import android.app.Activity;
+import android.app.PictureInPictureParams;
+import android.content.pm.PackageManager;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,7 +19,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -59,6 +63,27 @@ public class ExclusiveAccessBubbleTest {
         bubble.show();
         Assert.assertTrue(bubble.isVisible());
         Mockito.verify(mSnackbarManager, Mockito.times(1)).showSnackbar(Mockito.any());
+    }
+
+    @Test
+    public void testNoticeIsNotShownInPictureInPicture() {
+        Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager())
+                .setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
+        Activity pipActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        pipActivity.enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
+        Assert.assertTrue(pipActivity.isInPictureInPictureMode());
+        Mockito.when(mExclusiveAccessContext.getActivity()).thenReturn(pipActivity);
+        ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
+
+        bubble.update("Exit fullscreen");
+        Assert.assertFalse(bubble.isVisible());
+        Mockito.verify(mSnackbarManager, Mockito.never()).showSnackbar(Mockito.any());
+
+        // The notice is shown once the activity is no longer in picture-in-picture.
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        Mockito.when(mExclusiveAccessContext.getActivity()).thenReturn(activity);
+        bubble.show();
+        Assert.assertTrue(bubble.isVisible());
     }
 
     @Test

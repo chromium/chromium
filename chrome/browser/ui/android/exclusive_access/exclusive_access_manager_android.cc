@@ -34,6 +34,10 @@ ExclusiveAccessManagerAndroid::~ExclusiveAccessManagerAndroid() {
   }
 }
 
+void ExclusiveAccessManagerAndroid::HideExclusiveAccessBubble(JNIEnv* env) {
+  eac_->HideExclusiveAccessBubble();
+}
+
 bool ExclusiveAccessManagerAndroid::CanEnterFullscreenModeForTab(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jrender_frame_host_android) {

@@ -74,6 +74,8 @@ class ExclusiveAccessManagerAndroid {
 
   void ExitAllExclusiveAccess(JNIEnv* env);
 
+  void HideExclusiveAccessBubble(JNIEnv* env);
+
   bool HasExclusiveAccess(JNIEnv* env);
 
   void OnTabDeactivated(JNIEnv* env,

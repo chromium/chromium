@@ -52,6 +52,8 @@ public class ExclusiveAccessBubble {
         if (mText == null || mSnackbar != null) {
             return;
         }
+        Activity activity = mParentContext.getActivity();
+        if (activity != null && activity.isInPictureInPictureMode()) return;
         SnackbarManager snackbarManager = mParentContext.getSnackbarManager();
         if (snackbarManager == null || !snackbarManager.canShowSnackbar()) {
             return;

@@ -57,6 +57,9 @@ class ExclusiveAccessContextAndroid : public ExclusiveAccessContext {
   // Returns whether the exclusive access bubble is currently shown.
   bool IsExclusiveAccessBubbleDisplayed() const override;
 
+  // The fullscreen exit notice should not cover picture-in-picture video.
+  void HideExclusiveAccessBubble();
+
   // Informs the exclusive access system of some user input, which may update
   // internal timers and/or re-display the bubble.
   void OnExclusiveAccessUserInput() override;
