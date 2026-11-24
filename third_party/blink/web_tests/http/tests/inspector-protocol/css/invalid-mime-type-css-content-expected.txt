@@ -1,0 +1,17 @@
+Tests that content is correctly shown for css loaded with invalid mime type in quirks mode. https://bugs.webkit.org/show_bug.cgi?id=80528
+
+document.compatMode: BackCompat
+http://127.0.0.1:8000/inspector-protocol/css/resources/stylesheet-text-plain.php
+Page resource type: Stylesheet
+Page resource mimeType: text/plain
+Page resource failed: false
+Network response type: Stylesheet
+Network response mimeType: text/plain
+Network response status: 200
+CSS header loadingFailed: false
+Matched stylesheet rules on body: 1
+Resource.content: body {
+    background-color: green:
+}
+
+
