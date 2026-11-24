@@ -70,6 +70,7 @@ import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.components.web_distiller.core.DistillerHeuristicsType;
 import org.chromium.components.web_distiller.core.WebDistillerService;
 import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;

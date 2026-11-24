@@ -24,7 +24,7 @@ ScopedJavaLocalRef<jobject> ReaderModeServiceFactoryAndroid::GetForProfile(
       reader_mode::ReaderModeServiceFactory::GetForBrowserContext(profile);
   web_distiller::android::WebDistillerServiceAndroid* service_android =
       new web_distiller::android::WebDistillerServiceAndroid(service);
-  return ScopedJavaLocalRef<jobject>(service_android->java_ref_);
+  return service_android->GetJavaObject();
 }
 
 static ScopedJavaLocalRef<jobject> JNI_ReaderModeServiceFactory_GetForProfile(

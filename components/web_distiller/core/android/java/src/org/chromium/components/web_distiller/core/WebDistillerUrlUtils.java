@@ -78,21 +78,6 @@ public final class WebDistillerUrlUtils {
         return isDistilledPage(url.getSpec());
     }
 
-    /**
-     * Returns whether the navigation is an exit from Reader Mode back to the original article.
-     *
-     * @param previousUrl The URL of the previously seen page.
-     * @param currentUrl The URL of the current page.
-     * @return whether the navigation is an exit from Reader Mode.
-     */
-    public static boolean isExitingReaderMode(
-            @Nullable GURL previousUrl, @Nullable GURL currentUrl) {
-        if (previousUrl == null || currentUrl == null) return false;
-        if (!isDistilledPage(previousUrl) || isDistilledPage(currentUrl)) return false;
-        GURL originalUrl = getOriginalUrlFromDistillerUrl(previousUrl);
-        return !GURL.isEmptyOrInvalid(originalUrl) && originalUrl.equalsIgnoringRef(currentUrl);
-    }
-
     public static @Nullable String getValueForKeyInUrl(String url, String key) {
         assert key != null;
         if (TextUtils.isEmpty(url)) return null;

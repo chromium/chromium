@@ -886,7 +886,6 @@ if (_is_default_toolchain) {
       "//components/sharing_message:sharing_send_message_result_generated_enum",
       "//components/supervised_user/core/browser:supervised_user_utils_enum_javagen",
       "//components/touch_to_search/core/browser:quick_action_category_enum_javagen",
-      "//components/web_distiller/core:distiller_type_java",
     ]
 
     # From java_sources.gni.

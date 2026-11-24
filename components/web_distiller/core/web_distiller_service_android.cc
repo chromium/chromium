@@ -36,6 +36,11 @@ int64_t WebDistillerServiceAndroid::GetDistilledPagePrefsPtr(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(service_->GetDistilledPagePrefs());
 }
 
+base::android::ScopedJavaLocalRef<jobject>
+WebDistillerServiceAndroid::GetJavaObject() const {
+  return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
+}
+
 }  // namespace android
 }  // namespace web_distiller
 

@@ -24,7 +24,10 @@ android_library("web_distiller_core_java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/web_distiller/core:distiller_type_java",
+  ]
   sources = [
     "java/src/org/chromium/components/web_distiller/core/DistilledPagePrefs.java",
     "java/src/org/chromium/components/web_distiller/core/WebDistillerService.java",

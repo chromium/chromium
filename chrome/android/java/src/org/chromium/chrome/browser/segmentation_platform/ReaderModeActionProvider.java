@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.reader_mode.ReaderModeActionRateLimiter;
 import org.chromium.chrome.browser.reader_mode.ReaderModeManager;
 import org.chromium.chrome.browser.reader_mode.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.reader_mode.ReaderModeMetrics;
+import org.chromium.chrome.browser.reader_mode.ReaderModeTabUtils;
 import org.chromium.chrome.browser.reader_mode.TabDistillabilityProvider;
 import org.chromium.chrome.browser.reader_mode.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -155,7 +156,7 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         }
 
         boolean isExitingReaderMode =
-                isSameTab && WebDistillerUrlUtils.isExitingReaderMode(mLastSeenUrl, tab.getUrl());
+                isSameTab && ReaderModeTabUtils.isExitingReaderMode(mLastSeenUrl, tab.getUrl());
         mLastSeenUrl = tab.getUrl();
 
         if (isExitingReaderMode) {

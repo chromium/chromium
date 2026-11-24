@@ -11,10 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/web_distiller/core/web_distiller_service.h"
 
-namespace reader_mode::android {
-class ReaderModeServiceFactoryAndroid;
-}  // namespace reader_mode::android
-
 namespace web_distiller::android {
 
 // Native implementation of WebDistillerService,
@@ -26,11 +22,10 @@ class WebDistillerServiceAndroid {
   // Returns native pointer to native DistilledPagePrefs registered with
   // WebDistillerService.
   int64_t GetDistilledPagePrefsPtr(JNIEnv* env);
+  // Returns a local reference to the Java WebDistillerService.
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 
  private:
-  // Friend class so that ReaderModeServiceFactoryAndroid has access to
-  // private member object java_ref_.
-  friend class ::reader_mode::android::ReaderModeServiceFactoryAndroid;
   // Points to a Java instance of WebDistillerService.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   raw_ptr<WebDistillerService> service_;

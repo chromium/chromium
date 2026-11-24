@@ -19,6 +19,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.web_distiller.core.DistillerHeuristicsType;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -98,6 +100,24 @@ public class ReaderModeTabUtils {
      */
     public static boolean isHeuristicAlwaysTrue() {
         return getDistillerHeuristics() == DistillerHeuristicsType.ALWAYS_TRUE;
+    }
+
+    /**
+     * Returns whether the navigation is an exit from Reader Mode back to the original article.
+     *
+     * @param previousUrl The URL of the previously seen page.
+     * @param currentUrl The URL of the current page.
+     * @return whether the navigation is an exit from Reader Mode.
+     */
+    public static boolean isExitingReaderMode(
+            @Nullable GURL previousUrl, @Nullable GURL currentUrl) {
+        if (previousUrl == null || currentUrl == null) return false;
+        if (!WebDistillerUrlUtils.isDistilledPage(previousUrl)
+                || WebDistillerUrlUtils.isDistilledPage(currentUrl)) {
+            return false;
+        }
+        GURL originalUrl = WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(previousUrl);
+        return !GURL.isEmptyOrInvalid(originalUrl) && originalUrl.equalsIgnoringRef(currentUrl);
     }
 
     /** Returns whether the reader mode accessibility setting is enabled. */

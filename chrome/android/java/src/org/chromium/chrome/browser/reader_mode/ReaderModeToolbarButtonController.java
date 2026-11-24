@@ -88,8 +88,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
                         GURL currentUrl = tab == null ? null : tab.getUrl();
                         if (Objects.equals(currentUrl, mTabLastUrlSeen)) return;
                         boolean isExitingReaderMode =
-                                WebDistillerUrlUtils.isExitingReaderMode(
-                                        mTabLastUrlSeen, currentUrl);
+                                ReaderModeTabUtils.isExitingReaderMode(mTabLastUrlSeen, currentUrl);
                         mTabLastUrlSeen = currentUrl;
 
                         maybeRefreshButton(tab, isExitingReaderMode);
