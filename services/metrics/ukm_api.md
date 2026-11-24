@@ -13,20 +13,38 @@ Last proofread and updated on 2025/12/18.
 Any events and metrics you collect need to be defined in
 [//tools/metrics/ukm/ukm.xml](https://cs.chromium.org/chromium/src/tools/metrics/ukm/ukm.xml).
 
+Before uploading changes to `ukm.xml`, run
+[/tools/metrics/ukm/pretty_print.py](/tools/metrics/ukm/pretty_print.py) (which
+alphabetizes events and metrics and removes `<obsolete>` nodes) and
+[/tools/metrics/ukm/validate_format.py](/tools/metrics/ukm/validate_format.py)
+to verify formatting and schema rules. Changes to `ukm.xml` require approval
+from [/tools/metrics/ukm/PRIVACY_OWNERS](/tools/metrics/ukm/PRIVACY_OWNERS);
+include a link to the approved UKM privacy review in your CL description.
+
 ### Required Details
 
-*   Metric `owner`: the email of someone who can answer questions about how this
-    metric is recorded, what it means, and how it should be used. This can
-    include multiple people and/or a team alias.
+*   Event `owner`: the `@chromium.org` or `@google.com` email address of someone
+    who can answer questions about how the event is recorded, what it means, and
+    how it should be used. List at least two owners, a primary individual owner
+    plus a secondary individual and/or team mailing list, so the event is not
+    orphaned if someone changes teams.
+*   Valid event and metric `name`s:
+    *   Event names must match `^[A-Za-z][A-Za-z0-9.]*$` (no underscores) and
+        must be case-insensitively unique across `ukm.xml`.
+    *   Metric names must match `^[A-Za-z][A-Za-z0-9_.]*$`, cannot be `Event` or
+        `Metadata` (case-insensitive), and if reused across multiple events must
+        use the exact same casing.
 *   A `summary` of the event about which you are recording details, including a
     description of when the event will be recorded.
 *   For each metric in the event: a `summary` of the data and what it means.
-*   The `enum` type if the metric is enumerated which ensures that every value
-    is accounted independently with no attempt to "bucket" the results. The enum
-    uses the
+*   The `enum` type if the metric is enumerated or boolean, which ensures that
+    every value is accounted independently with no attempt to "bucket" the
+    results (for boolean metrics, use `enum="Boolean"` or a more descriptive
+    `Boolean*` enum). Enum definitions are shared with UMA histograms and live
+    in
     [//tools/metrics/histograms/enums.xml](https://cs.chromium.org/chromium/src/tools/metrics/histograms/enums.xml)
-    file for definitions. Note this is the same file for UMA histogram
-    definitions so these can ideally be reused.
+    or domain-specific
+    `//tools/metrics/histograms/metadata/<domain>/enums.xml` files.
 *   If the metric is numeric, then its unit should be described in the
     `summary`. For example, "seconds", "ms", "KiB". For metrics that denote time
     durations, the metric name should have a unit suffix, e.g.
@@ -90,8 +108,10 @@ stored unaggregated in reports and logs.
 
 However, it increases the workload for UKM data processing pipelines. The
 computation can be especially costly for frequently emitted events. Therefore,
-please only add aggregations when necessary. This tag can be added to an
-existing metric later or removed any time.
+please only add aggregations when necessary, and remove the `<aggregation>`
+block once active monitoring on the UKM dashboard or `UkmHistory` table is no
+longer needed. This tag can be added to an existing metric later or removed any
+time.
 
 ```xml
 <event name="Goat.Teleported">
@@ -120,19 +140,25 @@ Supported statistic types are:
     below.)
 
 There can also be one or more `index` tags which define additional aggregation
-keys. These are a comma-separated list of keys that is appended to the
-[standard set](http://go/aggregated-ukm#history-table). These additional keys
-are optional but, if present, are always present together. In other words,
-"fields=profile.country,profile.form_factor" will cause all the standard
-aggregations plus each with *both* country *and* form_factor but **not** with
-all the standard aggregations (see above) plus only one of them. If individual
-and combined versions are desired, use multiple index tags.
+keys. Each `index` tag specifies a comma-separated list of fields that
+duplicates all 5 combinations in the
+[standard set](http://go/aggregated-ukm#history-table) with those extra fields
+included (note that in `UkmHistory`'s `keys_list` column, all key names are
+sorted alphabetically rather than appended at the end, e.g.
+`profile.channel,profile.country,profile.platform`). These additional keys are
+optional when querying, but within a single `index` tag they are always grouped
+together. In other words, `fields="profile.country,profile.form_factor"`
+produces all the standard aggregations plus each standard aggregation with
+*both* `country` *and* `form_factor`, **not** with only one of them. If
+individual and combined versions are desired, use multiple `index` tags.
 
-Currently supported additional index fields are:
+Commonly used additional `profile.*` index fields are:
 
 *   `profile.country`
 *   `profile.form_factor`
 *   `profile.system_ram`
+*   `profile.is_dominant_version`
+*   `profile.is_latest_version`
 
 ### Enumeration Proportions
 
@@ -337,7 +363,10 @@ void OnKangarooJumped() {
 }
 ```
 
-If the event name in the XML contains a period (`.`), it is replaced with an underscore (`_`) in the method name.
+Periods (`.`) in XML event or metric names are replaced with underscores (`_`)
+in both the generated C++ builder class name (e.g.
+`ukm::builders::Goat_Teleported`) and metric setter/constant names (e.g.
+`SetSubPart_MetricName()`, `kSubPart_MetricNameName`).
 
 To avoid having UKM report becoming unbounded in size, an upper limit is placed on the number of events recorded for each event type. Events that are recorded too frequently may be subject to downsampling on the Stable and Beta channels (see [go/ukm-downsampling](http://go/ukm-downsampling)). As a rule of thumb, it is recommended that most events be recorded at most once per 100 page loads on average to limit data volume. In addition, if an event type is observed to be spammy, is heavily downsampled, or to account for more than 10% of all recorded UKM events combined on any platform, you will be asked to reduce the event emission frequency.
 
@@ -506,7 +535,8 @@ The full metrics will not be keyed off the subframe URL. Rather, the subframe UR
 </event>
 ```
 
-And in the UKM enums.xml:
+And in `enums.xml` (either `//tools/metrics/histograms/enums.xml` or a
+domain-specific `//tools/metrics/histograms/metadata/<domain>/enums.xml`):
 
 ```xml
 <enum name="WebFrameworkName">
