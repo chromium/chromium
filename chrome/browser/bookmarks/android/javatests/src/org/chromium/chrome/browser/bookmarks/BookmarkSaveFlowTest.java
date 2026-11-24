@@ -48,6 +48,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -70,7 +72,12 @@ import java.util.concurrent.ExecutionException;
 // TODO(crbug.com/40743432): Once SyncTestRule supports batching, investigate batching this suite.
 @DoNotBatch(reason = "SyncTestRule doesn't support batching.")
 public class BookmarkSaveFlowTest {
-    @Rule public final SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule(order = 0)
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+
+    @Rule(order = 1)
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -94,8 +101,9 @@ public class BookmarkSaveFlowTest {
 
     @Before
     public void setUp() throws ExecutionException {
+        mCtaTestRule.startOnBlankPage();
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        mActivity = mSyncTestRule.getActivity();
+        mActivity = mCtaTestRule.getActivity();
 
         // Setup mocks.
         PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
@@ -380,7 +388,7 @@ public class BookmarkSaveFlowTest {
 
     private void loadBookmarkModel() {
         // Do not read partner bookmarks in setUp(), so that the lazy reading is covered.
-        BookmarkTestUtil.readPartnerBookmarks(mSyncTestRule);
+        BookmarkTestUtil.readPartnerBookmarks(mCtaTestRule.getActivityTestRule());
         BookmarkTestUtil.waitForBookmarkModelLoaded();
     }
 
