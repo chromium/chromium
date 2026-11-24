@@ -5,11 +5,16 @@
 #include "components/critical_actions/core/browser/critical_action_types.h"
 
 #include <optional>
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/list_formatter.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -70,6 +75,58 @@ FormFillTypes ParseFormFillTypes(const base::DictValue& metadata_dict) {
   return types;
 }
 
+// Returns the localized name of one filled contact info attribute, e.g.
+// "Address".
+std::u16string GetContactInfoTypeName(FormFillType type) {
+  switch (type) {
+    case FormFillType::kAddress:
+      return l10n_util::GetStringUTF16(
+          IDS_HISTORY_CRITICAL_ACTION_FORM_FILL_TYPE_ADDRESS);
+    case FormFillType::kName:
+      return l10n_util::GetStringUTF16(
+          IDS_HISTORY_CRITICAL_ACTION_FORM_FILL_TYPE_NAME);
+    case FormFillType::kEmail:
+      return l10n_util::GetStringUTF16(
+          IDS_HISTORY_CRITICAL_ACTION_FORM_FILL_TYPE_EMAIL);
+    case FormFillType::kPhone:
+      return l10n_util::GetStringUTF16(
+          IDS_HISTORY_CRITICAL_ACTION_FORM_FILL_TYPE_PHONE);
+    case FormFillType::kCreditCard:
+    case FormFillType::kUnknown:
+      // Only contact info attributes are listed, and `FormFillTypes` never
+      // contains `kUnknown`.
+      NOTREACHED();
+  }
+}
+
+// Joins `names` into a localized list, e.g. "Address, Name, Email" in
+// English.
+std::u16string JoinFormFillTypeNames(const std::vector<std::u16string>& names) {
+  return base::i18n::IcuBridge::GetInstance()
+      .list_formatter()
+      ->FormatNarrowList(names);
+}
+
+// Returns the label of a contact info form fill with `types`, e.g. "Contact
+// info filled: Address, Name", or "Contact info filled" if it has no contact
+// info attributes.
+std::string GetContactInfoLabel(FormFillTypes types) {
+  std::vector<std::u16string> names;
+  for (FormFillType type : types) {
+    // Skip attributes of another group, which don't belong under this
+    // action's label, tooltip and linkout.
+    if (GetFormFillGroup(type) == ActionType::kFormFillContactInfo) {
+      names.push_back(GetContactInfoTypeName(type));
+    }
+  }
+  if (names.empty()) {
+    return l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_FORM_FILLED);
+  }
+  return l10n_util::GetStringFUTF8(
+      IDS_HISTORY_CRITICAL_ACTION_CONTACT_INFO_FILLED_WITH_TYPES,
+      JoinFormFillTypeNames(names));
+}
+
 }  // namespace
 
 bool IsGranularFormFill(ActionType type) {
@@ -87,6 +144,22 @@ bool IsGranularFormFill(ActionType type) {
     case ActionType::kCredentialsOtp:
     case ActionType::kWebMcpTool:
       return false;
+  }
+}
+
+ActionType GetFormFillGroup(FormFillType type) {
+  switch (type) {
+    case FormFillType::kAddress:
+    case FormFillType::kName:
+    case FormFillType::kEmail:
+    case FormFillType::kPhone:
+      return ActionType::kFormFillContactInfo;
+    case FormFillType::kCreditCard:
+      return ActionType::kFormFillPayments;
+    case FormFillType::kUnknown:
+      // `FormFillType::kUnknown` is never parsed from metadata or produced
+      // when logging.
+      NOTREACHED();
   }
 }
 
@@ -126,8 +199,9 @@ std::string CriticalActionEntry::GetLabel() const {
       return l10n_util::GetStringUTF8(
           IDS_HISTORY_CRITICAL_ACTION_CREDENTIALS_OTP);
     case ActionType::kFormFill:
-    case ActionType::kFormFillContactInfo:
       return l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_FORM_FILLED);
+    case ActionType::kFormFillContactInfo:
+      return GetContactInfoLabel(GetFormFillTypes());
     case ActionType::kFormFillPayments:
       return l10n_util::GetStringUTF8(
           IDS_HISTORY_CRITICAL_ACTION_CARD_DETAILS_FILLED);

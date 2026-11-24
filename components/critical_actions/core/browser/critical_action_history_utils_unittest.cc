@@ -152,4 +152,113 @@ TEST(CriticalActionHistoryUtilsTest, DoesNotMergeDifferentKeys) {
   EXPECT_THAT(IdsForVisit(result, 2), ElementsAre("other_visit"));
 }
 
+TEST(CriticalActionHistoryUtilsTest, MergesFormFillTypesOfGranularFormFills) {
+  CriticalActionEntry autofill = CreateAction("autofill", /*visit_id=*/1, kNow,
+                                              ActionType::kFormFillContactInfo);
+  autofill.metadata = R"({"form_fill_types":["ADDRESS","NAME"]})";
+  CriticalActionEntry actor =
+      CreateAction("actor", /*visit_id=*/1, kNow - base::Seconds(2),
+                   ActionType::kFormFillContactInfo);
+  actor.metadata = R"({"form_fill_types":["ADDRESS","EMAIL"]})";
+  // Records without attributes still merge, and add nothing.
+  CriticalActionEntry actor_no_types =
+      CreateAction("actor_no_types", /*visit_id=*/1, kNow - base::Seconds(3),
+                   ActionType::kFormFillContactInfo);
+  // A different group is never merged with Contact info.
+  CriticalActionEntry card =
+      CreateAction("card", /*visit_id=*/1, kNow - base::Seconds(1),
+                   ActionType::kFormFillPayments);
+  card.metadata = R"({"form_fill_types":["CREDIT_CARD"]})";
+
+  CriticalActionsByVisitId result =
+      GroupCriticalActionsByVisitId({autofill, card, actor, actor_no_types});
+
+  ASSERT_THAT(IdsForVisit(result, 1), ElementsAre("autofill", "card"));
+  EXPECT_EQ(result[1][0].GetFormFillTypes(),
+            FormFillTypes({FormFillType::kAddress, FormFillType::kName,
+                           FormFillType::kEmail}));
+  EXPECT_EQ(result[1][1].GetFormFillTypes(),
+            FormFillTypes({FormFillType::kCreditCard}));
+}
+
+TEST(CriticalActionHistoryUtilsTest,
+     DoesNotMergeFormFillTypesOutsideTolerance) {
+  CriticalActionEntry latest = CreateAction("latest", /*visit_id=*/1, kNow,
+                                            ActionType::kFormFillContactInfo);
+  latest.metadata = R"({"form_fill_types":["ADDRESS"]})";
+  CriticalActionEntry older =
+      CreateAction("older", /*visit_id=*/1, kNow - base::Seconds(6),
+                   ActionType::kFormFillContactInfo);
+  older.metadata = R"({"form_fill_types":["PHONE"]})";
+
+  CriticalActionsByVisitId result =
+      GroupCriticalActionsByVisitId({latest, older});
+
+  ASSERT_THAT(IdsForVisit(result, 1), ElementsAre("latest", "older"));
+  EXPECT_EQ(result[1][0].GetFormFillTypes(),
+            FormFillTypes({FormFillType::kAddress}));
+  EXPECT_EQ(result[1][1].GetFormFillTypes(),
+            FormFillTypes({FormFillType::kPhone}));
+}
+
+// A duplicate merges into the most recently kept action of its group, not the
+// first one.
+TEST(CriticalActionHistoryUtilsTest, MergesFormFillTypesIntoLatestKeptAction) {
+  CriticalActionEntry latest = CreateAction("latest", /*visit_id=*/1, kNow,
+                                            ActionType::kFormFillContactInfo);
+  latest.metadata = R"({"form_fill_types":["ADDRESS"]})";
+  CriticalActionEntry older =
+      CreateAction("older", /*visit_id=*/1, kNow - base::Seconds(6),
+                   ActionType::kFormFillContactInfo);
+  older.metadata = R"({"form_fill_types":["PHONE"]})";
+  CriticalActionEntry older_dup =
+      CreateAction("older_dup", /*visit_id=*/1, kNow - base::Seconds(8),
+                   ActionType::kFormFillContactInfo);
+  older_dup.metadata = R"({"form_fill_types":["EMAIL"]})";
+
+  CriticalActionsByVisitId result =
+      GroupCriticalActionsByVisitId({latest, older, older_dup});
+
+  ASSERT_THAT(IdsForVisit(result, 1), ElementsAre("latest", "older"));
+  EXPECT_EQ(result[1][0].GetFormFillTypes(),
+            FormFillTypes({FormFillType::kAddress}));
+  EXPECT_EQ(result[1][1].GetFormFillTypes(),
+            FormFillTypes({FormFillType::kPhone, FormFillType::kEmail}));
+}
+
+// Attributes are kept when only the dropped duplicate has them.
+TEST(CriticalActionHistoryUtilsTest,
+     MergesFormFillTypesIntoKeptActionWithoutTypes) {
+  CriticalActionEntry latest = CreateAction("latest", /*visit_id=*/1, kNow,
+                                            ActionType::kFormFillContactInfo);
+  CriticalActionEntry dup =
+      CreateAction("dup", /*visit_id=*/1, kNow - base::Seconds(1),
+                   ActionType::kFormFillContactInfo);
+  dup.metadata = R"({"form_fill_types":["NAME"]})";
+
+  CriticalActionsByVisitId result =
+      GroupCriticalActionsByVisitId({latest, dup});
+
+  ASSERT_THAT(IdsForVisit(result, 1), ElementsAre("latest"));
+  EXPECT_EQ(result[1][0].GetFormFillTypes(),
+            FormFillTypes({FormFillType::kName}));
+}
+
+// Legacy `kFormFill` duplicates are dropped as before, without touching the
+// kept action's metadata.
+TEST(CriticalActionHistoryUtilsTest, DoesNotMergeMetadataOfLegacyFormFills) {
+  CriticalActionEntry latest =
+      CreateAction("latest", /*visit_id=*/1, kNow, ActionType::kFormFill);
+  latest.metadata = R"({"filled_types":["NAME_FULL"]})";
+  CriticalActionEntry dup = CreateAction(
+      "dup", /*visit_id=*/1, kNow - base::Seconds(1), ActionType::kFormFill);
+  dup.metadata = R"({"form_fill_types":["ADDRESS"]})";
+
+  CriticalActionsByVisitId result =
+      GroupCriticalActionsByVisitId({latest, dup});
+
+  ASSERT_THAT(IdsForVisit(result, 1), ElementsAre("latest"));
+  EXPECT_EQ(result[1][0].metadata, latest.metadata);
+}
+
 }  // namespace critical_actions

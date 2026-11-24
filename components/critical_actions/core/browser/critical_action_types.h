@@ -90,6 +90,9 @@ using FormFillTypes = base::
 // FormFillTypes in their metadata.
 bool IsGranularFormFill(ActionType type);
 
+// Returns the form fill group `ActionType` that `type` belongs to.
+ActionType GetFormFillGroup(FormFillType type);
+
 // Writes `types` into `metadata_dict` under the "form_fill_types" key.
 void SetFormFillTypes(base::DictValue& metadata_dict, FormFillTypes types);
 
@@ -108,7 +111,9 @@ struct CriticalActionEntry {
   CriticalActionEntry& operator=(CriticalActionEntry&&) noexcept;
   ~CriticalActionEntry();
 
-  // Returns the user-facing localized label for the critical action.
+  // Returns the user-facing localized label for the critical action. For
+  // contact info form fills with attributes, lists them, e.g. "Contact info
+  // filled: Address, Name, Email".
   std::string GetLabel() const;
 
   // Returns the user-facing localized tooltip / description for the action.

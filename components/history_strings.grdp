@@ -270,6 +270,21 @@
   <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_TOOLTIP" desc="Tooltip for form filled critical action in history item.">
     Go to contact info
   </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_CONTACT_INFO_FILLED_WITH_TYPES" desc="Label for a critical action in a history item indicating Gemini filled saved contact info into a form, followed by the list of what was filled.">
+    Contact info filled: <ph name="FILLED_TYPES">$1<ex>Address, Name, Email</ex></ph>
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_FILL_TYPE_ADDRESS" desc="One item in the list of saved contact info Gemini filled into a form, shown in a history item after 'Contact info filled:'. Refers to a postal address.">
+    Address
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_FILL_TYPE_NAME" desc="One item in the list of saved contact info Gemini filled into a form, shown in a history item after 'Contact info filled:'. Refers to a person's name.">
+    Name
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_FILL_TYPE_EMAIL" desc="One item in the list of saved contact info Gemini filled into a form, shown in a history item after 'Contact info filled:'. Refers to an email address.">
+    Email
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_FILL_TYPE_PHONE" desc="One item in the list of saved contact info Gemini filled into a form, shown in a history item after 'Contact info filled:'.">
+    Phone number
+  </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_CARD_DETAILS_FILLED" desc="Label for a critical action in a history item indicating Gemini filled saved credit or debit card details into a form.">
     Card details filled
   </message>

@@ -183,6 +183,19 @@ TEST(CriticalActionTypesTest, IsGranularFormFill) {
   EXPECT_FALSE(IsGranularFormFill(ActionType::kUnknown));
 }
 
+TEST(CriticalActionTypesTest, FormFillGroups) {
+  EXPECT_EQ(GetFormFillGroup(FormFillType::kAddress),
+            ActionType::kFormFillContactInfo);
+  EXPECT_EQ(GetFormFillGroup(FormFillType::kName),
+            ActionType::kFormFillContactInfo);
+  EXPECT_EQ(GetFormFillGroup(FormFillType::kEmail),
+            ActionType::kFormFillContactInfo);
+  EXPECT_EQ(GetFormFillGroup(FormFillType::kPhone),
+            ActionType::kFormFillContactInfo);
+  EXPECT_EQ(GetFormFillGroup(FormFillType::kCreditCard),
+            ActionType::kFormFillPayments);
+}
+
 TEST(CriticalActionTypesTest, FormFillTypesRoundTrip) {
   // Every `FormFillType` survives a write and read.
   base::DictValue all_types_dict;
@@ -210,7 +223,7 @@ TEST(CriticalActionTypesTest, FormFillTypesIgnoresUnknownAndLegacyMetadata) {
   entry.metadata = R"({"form_fill_types":["NAME","PASSPORT",42]})";
   EXPECT_EQ(entry.GetFormFillTypes(), FormFillTypes({FormFillType::kName}));
 
-  // A legacy kFormFill row.
+  // A legacy `kFormFill` row.
   entry.metadata = R"({"filled_types":["NAME_FULL"]})";
   EXPECT_TRUE(entry.GetFormFillTypes().empty());
 
@@ -222,6 +235,43 @@ TEST(CriticalActionTypesTest, FormFillTypesIgnoresUnknownAndLegacyMetadata) {
 
   entry.metadata = "";
   EXPECT_TRUE(entry.GetFormFillTypes().empty());
+}
+
+TEST(CriticalActionTypesTest, ContactInfoLabelListsAttributes) {
+  // Attributes are listed in `FormFillType` order, not in stored order.
+  CriticalActionEntry contact_info;
+  contact_info.action_type = ActionType::kFormFillContactInfo;
+  contact_info.metadata =
+      R"({"form_fill_types":["PHONE","EMAIL","NAME","ADDRESS"]})";
+  EXPECT_EQ(contact_info.GetLabel(),
+            "Contact info filled: Address, Name, Email, Phone number");
+
+  // Without attributes, the group label is used.
+  contact_info.metadata = "";
+  EXPECT_EQ(contact_info.GetLabel(),
+            l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_FORM_FILLED));
+
+  // Attributes of another group are skipped.
+  contact_info.metadata = R"({"form_fill_types":["ADDRESS","CREDIT_CARD"]})";
+  EXPECT_EQ(contact_info.GetLabel(), "Contact info filled: Address");
+  contact_info.metadata = R"({"form_fill_types":["CREDIT_CARD"]})";
+  EXPECT_EQ(contact_info.GetLabel(),
+            l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_FORM_FILLED));
+
+  // Payments keeps its group label.
+  CriticalActionEntry payments;
+  payments.action_type = ActionType::kFormFillPayments;
+  payments.metadata = R"({"form_fill_types":["CREDIT_CARD"]})";
+  EXPECT_EQ(payments.GetLabel(),
+            l10n_util::GetStringUTF8(
+                IDS_HISTORY_CRITICAL_ACTION_CARD_DETAILS_FILLED));
+
+  // Other types ignore "form_fill_types".
+  CriticalActionEntry legacy;
+  legacy.action_type = ActionType::kFormFill;
+  legacy.metadata = R"({"form_fill_types":["PHONE"]})";
+  EXPECT_EQ(legacy.GetLabel(),
+            l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_FORM_FILLED));
 }
 
 TEST(CriticalActionTypesTest, AddFormFillTypesMergesWithoutDuplicates) {

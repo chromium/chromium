@@ -33,7 +33,9 @@ inline constexpr base::TimeDelta kDefaultCriticalActionDedupTolerance =
 // Two actions are considered duplicates if they share the same conversation
 // ID, actor task ID, visit ID and action type, and the older one falls within
 // `dedup_tolerance` of the most recently kept one. Actions of type
-// ActionType::kUnknown are dropped.
+// `ActionType::kUnknown` are dropped. For granular form fill types (see
+// `IsGranularFormFill()`), the form fill attributes of each dropped duplicate
+// are added to the kept action, so that each filled attribute appears once.
 CriticalActionsByVisitId GroupCriticalActionsByVisitId(
     const std::vector<CriticalActionEntry>& raw_actions,
     base::TimeDelta dedup_tolerance = kDefaultCriticalActionDedupTolerance);
