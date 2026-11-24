@@ -168,7 +168,7 @@ public class PersistentStoreCleanerUnitTest {
         verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
         List<String> windowTags = mWindowTagsCaptor.getValue();
         assertArrayEquals(
-                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "Custom_2"},
                 windowTags.toArray());
     }
 
@@ -203,7 +203,7 @@ public class PersistentStoreCleanerUnitTest {
         verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
         List<String> windowTags = mWindowTagsCaptor.getValue();
         assertArrayEquals(
-                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "Custom_2"},
                 windowTags.toArray());
 
         verify(mLease).destroy();
@@ -276,7 +276,7 @@ public class PersistentStoreCleanerUnitTest {
         verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
         List<String> windowTags = mWindowTagsCaptor.getValue();
         assertArrayEquals(
-                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "Custom_2"},
                 windowTags.toArray());
         verify(mLease).destroy();
         assertNull(mCleaner.getArchivedTabsLeaseForTesting());
@@ -362,7 +362,8 @@ public class PersistentStoreCleanerUnitTest {
         verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
         List<String> windowTags = mWindowTagsCaptor.getValue();
         assertArrayEquals(
-                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "2"}, windowTags.toArray());
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "Custom_2"},
+                windowTags.toArray());
 
         assertNull(mCleaner.getArchivedTabsLeaseForTesting());
         assertFalse(mCleaner.hasUnusedDataDepsForTesting());
@@ -387,7 +388,7 @@ public class PersistentStoreCleanerUnitTest {
         verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
         List<String> windowTags = mWindowTagsCaptor.getValue();
         assertArrayEquals(
-                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "Custom_2"},
                 windowTags.toArray());
         assertNull(mCleaner.getArchivedTabsLeaseForTesting());
     }
@@ -409,7 +410,7 @@ public class PersistentStoreCleanerUnitTest {
         verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
         List<String> windowTags = mWindowTagsCaptor.getValue();
         assertArrayEquals(
-                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "Custom_2"},
                 windowTags.toArray());
     }
 
@@ -474,7 +475,7 @@ public class PersistentStoreCleanerUnitTest {
         verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
         List<String> windowTags = mWindowTagsCaptor.getValue();
         assertArrayEquals(
-                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "Custom_2"},
                 windowTags.toArray());
         verify(mLease).destroy();
         assertNull(mCleaner.getArchivedTabsLeaseForTesting());
@@ -782,11 +783,25 @@ public class PersistentStoreCleanerUnitTest {
                 new int[] {ARCHIVED_TAB_ID, TAB_ID, CUSTOM_TAB_ID}, mTabIdsCaptor.getValue());
         verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
         assertArrayEquals(
-                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "Custom_2"},
                 mWindowTagsCaptor.getValue().toArray());
         verify(mLease).destroy();
         verify(mTabWindowManager).removeObserver(observer);
         assertNull(mCleaner.getArchivedTabsLeaseForTesting());
         assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+    }
+
+    @Test
+    public void testCleanUnusedWindows_CustomTabUsesFormattedWindowTag() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabWindowManager.getTaskIdForCustomTab(mCustomTabModelSelector)).thenReturn(7);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
+        assertArrayEquals(
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "Custom_7"},
+                mWindowTagsCaptor.getValue().toArray());
     }
 }

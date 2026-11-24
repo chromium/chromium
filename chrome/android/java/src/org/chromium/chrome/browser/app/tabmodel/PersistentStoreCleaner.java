@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
+import static org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator.getCustomTabsWindowTag;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -332,7 +333,7 @@ public class PersistentStoreCleaner implements Destroyable {
 
             selectors.add(selector);
             int taskId = tabWindowManager.getTaskIdForCustomTab(selector);
-            windowTags.add(String.valueOf(taskId));
+            windowTags.add(getCustomTabsWindowTag(taskId));
         }
 
         // If there are no selectors available (e.g. during activity teardown or window detachment),
