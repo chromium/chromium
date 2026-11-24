@@ -263,6 +263,18 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
             // by `EXECUTION_MODE_HINT`. To improve robustness and ensure
             // accurate inference results, we explicitly set
             // `INFERENCE_PRECISION_HINT` to `dynamic`.
+            //
+            // On OpenVINO NPU, `NPU_USE_NPUW` and `NPU_ALLOW_BYTECODE` are set
+            // to `NO` to restrict compiled blob import to native ELF blobs, so
+            // a forged blob is refused at import. These options require
+            // OpenVINO EP 1.8.0 (package version 2.1080.97.0) or later, which
+            // `min_package_version` guarantees:
+            //   - `NPU_USE_NPUW: NO` refuses NPUW blobs before they reach the
+            //     NPUW deserializers.
+            //   - `NPU_ALLOW_BYTECODE: NO` refuses blobs whose metadata
+            //     declares a bytecode payload, which a host VM runtime would
+            //     run on the CPU in the GPU process; an ELF blob is parsed by
+            //     the NPU driver and runs on the NPU.
             .config_entries =
                 (const SessionConfigEntry[]){
                     {.key = "ep.openvinoexecutionprovider.load_config",
@@ -272,7 +284,9 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
                                 "INFERENCE_PRECISION_HINT": "dynamic"
                             },
                             "NPU": {
-                                "EXECUTION_MODE_HINT": "ACCURACY"
+                                "EXECUTION_MODE_HINT": "ACCURACY",
+                                "NPU_USE_NPUW": "NO",
+                                "NPU_ALLOW_BYTECODE": "NO"
                             }
                         })"},
                 },

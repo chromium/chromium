@@ -81,3 +81,15 @@ declare `kEpContext` if it compiles into an EPContext node.
 The model bytes may arrive in shared memory the Compiler can still
 write, so they are moved into private memory before validation; the
 bytes validated are the bytes ORT loads.
+
+### OpenVINO NPU blob import
+
+The EPContext blob produced for the OpenVINO execution provider is
+loaded by the OpenVINO NPU plugin in the GPU process. The plugin is
+configured (`NPU_USE_NPUW` and `NPU_ALLOW_BYTECODE` set to `NO` in
+`public/cpp/execution_providers_info.h`) to accept only native ELF
+blobs at import. A compromised Compiler therefore cannot make the GPU
+process deserialize an NPUW blob, or a blob whose metadata declares a
+bytecode payload. These options require OpenVINO EP 1.8.0 (package
+version 2.1080.97.0) or later, which the OpenVINO EP
+`min_package_version` enforces.
