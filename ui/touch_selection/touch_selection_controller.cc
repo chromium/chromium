@@ -579,6 +579,14 @@ void TouchSelectionController::OnLongPressDragActiveStateChanged() {
   // The handles should remain hidden for the duration of a longpress drag,
   // including the time between a longpress and the start of drag motion.
   RefreshHandleVisibility();
+
+  // Reposition the selection menu if the handles have become visible after
+  // ending a longpress or double press so the menu doesn't occlude them.
+  if (!longpress_drag_selector_.IsActive() &&
+      active_status_ == ActiveStatus::kSelectionActive &&
+      (GetStartVisible() || GetEndVisible())) {
+    NotifySelectionEvent(SELECTION_HANDLES_MOVED);
+  }
 }
 
 gfx::PointF TouchSelectionController::GetSelectionStart() const {
@@ -748,10 +756,10 @@ void TouchSelectionController::DeactivateSelection() {
   }
   CHECK(start_selection_handle_, base::NotFatalUntil::M163);
   CHECK(end_selection_handle_, base::NotFatalUntil::M163);
+  active_status_ = ActiveStatus::kInactive;
   longpress_drag_selector_.OnSelectionDeactivated();
   start_selection_handle_->SetEnabled(false);
   end_selection_handle_->SetEnabled(false);
-  active_status_ = ActiveStatus::kInactive;
   NotifySelectionEvent(SELECTION_HANDLES_CLEARED);
 }
 

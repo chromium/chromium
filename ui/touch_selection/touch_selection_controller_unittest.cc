@@ -1036,7 +1036,8 @@ TEST_F(TouchSelectionControllerTest, LongPressDrag) {
 
   // Releasing the touch sequence should end the drag and show the handles.
   EXPECT_FALSE(controller().WillHandleTouchEvent(event.ReleasePoint()));
-  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLE_DRAG_STOPPED));
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLE_DRAG_STOPPED,
+                                               SELECTION_HANDLES_MOVED));
   EXPECT_TRUE(test_controller.GetStartVisible());
   EXPECT_TRUE(test_controller.GetEndVisible());
 }
@@ -1106,7 +1107,8 @@ TEST_F(TouchSelectionControllerTest, DoublePressDrag) {
 
   // Releasing the touch sequence should end the drag and show the handles.
   EXPECT_FALSE(controller().WillHandleTouchEvent(event.ReleasePoint()));
-  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLE_DRAG_STOPPED));
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLE_DRAG_STOPPED,
+                                               SELECTION_HANDLES_MOVED));
   EXPECT_TRUE(test_controller.GetStartVisible());
   EXPECT_TRUE(test_controller.GetEndVisible());
 }
@@ -1143,7 +1145,7 @@ TEST_F(TouchSelectionControllerTest, LongPressNoDrag) {
   // If no drag movement occurs, the handles should reappear after the touch
   // is released.
   EXPECT_FALSE(controller().WillHandleTouchEvent(event.ReleasePoint()));
-  EXPECT_THAT(GetAndResetEvents(), IsEmpty());
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLES_MOVED));
   EXPECT_TRUE(test_controller.GetStartVisible());
   EXPECT_TRUE(test_controller.GetEndVisible());
 }
