@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom-forward.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -94,6 +95,8 @@ class CustomFormControlScriptRunner : public AutofillManager::Observer {
     AutofillProfile profile;
     // The index of the next control in `detected_controls_` to fill.
     size_t next_control = 0;
+    // When filling the detected controls started, for metrics.
+    base::TimeTicks start_time;
   };
 
   // Forgets `frame_token_` and the detected controls, ends the fill in
@@ -113,6 +116,9 @@ class CustomFormControlScriptRunner : public AutofillManager::Observer {
   // Extracts the options of the next control in `detected_controls_` to fill,
   // or ends the fill if there is none or `manager` is gone.
   void FillNextControl(base::WeakPtr<AutofillManager> manager);
+
+  // Ends a fill that handled all `detected_controls_` and records its latency.
+  void OnFillingComplete();
 
   // Chooses the option among the extracted `options` of `control` to fill it
   // with and applies it (see `ApplyOption()`), or skips `control` if its

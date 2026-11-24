@@ -4685,6 +4685,22 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.CustomFormControls.FillLatency" units="ms"
+    expires_after="2027-12-12">
+  <owner>luchenpeng@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the time it takes to fill the custom form controls (e.g. custom
+    selects) of the primary main frame's document when a form is filled: from
+    when the fill starts, until the renderer replies to the last operation on
+    the last custom form control. Recorded once per fill (not per control), only
+    if at least one custom form control is detected and the fill isn't ended
+    early (e.g. by a navigation).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CvcAuth.{CardType}.Attempt" enum="BooleanAttempted"
     expires_after="2027-04-30">
   <owner>vinnypersky@google.com</owner>

@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -28,6 +29,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
+#include "components/autofill/core/browser/integrators/custom_form_controls/metrics/custom_form_control_metrics.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -193,9 +195,20 @@ void CustomFormControlScriptRunner::OnFillOrPreviewForm(
   }
   filling_state_.emplace(**profile);
   DetectControls(
-      manager,
-      base::BindOnce(&CustomFormControlScriptRunner::FillNextControl,
-                     weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr()));
+      manager, base::BindOnce(
+                   [](base::WeakPtr<CustomFormControlScriptRunner> self,
+                      base::WeakPtr<AutofillManager> manager) {
+                     if (!self) {
+                       return;
+                     }
+                     if (self->detected_controls_.empty()) {
+                       self->filling_state_.reset();
+                       return;
+                     }
+                     self->filling_state_->start_time = base::TimeTicks::Now();
+                     self->FillNextControl(std::move(manager));
+                   },
+                   weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr()));
 }
 
 void CustomFormControlScriptRunner::FillNextControl(
@@ -203,8 +216,12 @@ void CustomFormControlScriptRunner::FillNextControl(
   // `filling_state_` is set: `Reset()` ends the fill and invalidates the
   // pending replies that would call this, and the fill only ends when none is
   // pending.
-  if (!manager || filling_state_->next_control >= detected_controls_.size()) {
+  if (!manager) {
     filling_state_.reset();
+    return;
+  }
+  if (filling_state_->next_control >= detected_controls_.size()) {
+    OnFillingComplete();
     return;
   }
   // `detected_controls_` and `frame_token_`'s document don't change during the
@@ -217,6 +234,12 @@ void CustomFormControlScriptRunner::FillNextControl(
       driver.render_frame_host()->GetDocumentToken(), control.field_id,
       base::BindOnce(&CustomFormControlScriptRunner::OnOptionsExtracted,
                      weak_ptr_factory_.GetWeakPtr(), manager, control));
+}
+
+void CustomFormControlScriptRunner::OnFillingComplete() {
+  autofill_metrics::LogCustomFormControlFillLatency(base::TimeTicks::Now() -
+                                                    filling_state_->start_time);
+  filling_state_.reset();
 }
 
 void CustomFormControlScriptRunner::OnOptionsExtracted(

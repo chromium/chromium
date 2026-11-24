@@ -20,7 +20,10 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/autofill/content/browser/integrators/custom_form_controls/custom_form_control_script_runner_test_api.h"
 #include "components/autofill/content/browser/integrators/custom_form_controls/mock_custom_form_control_agent.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -89,6 +92,10 @@ MATCHER_P(OptionWithValue, value, "") {
 class CustomFormControlScriptRunnerTest
     : public content::RenderViewHostTestHarness {
  public:
+  CustomFormControlScriptRunnerTest()
+      : content::RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -527,6 +534,62 @@ TEST_F(CustomFormControlScriptRunnerTest, FillsCustomSelects) {
   ASSERT_TRUE(FillForm(manager(), &profile));
 }
 
+// Tests that the fill latency is recorded once per fill that handled all
+// detected custom selects: from when the controls are detected until the
+// replies for the last control. The detection itself isn't included.
+TEST_F(CustomFormControlScriptRunnerTest, RecordsFillLatency) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(InitializeIndex("example.com", "example script"));
+  NavigateAndCommit(GURL("https://example.com/checkout"));
+  // The detection takes 1 s, which isn't part of the fill latency.
+  EXPECT_CALL(BindAgent(), DetectCustomFormControls)
+      .WillOnce(
+          [this](const blink::DocumentToken&,
+                 MockCustomFormControlAgent::DetectCustomFormControlsCallback
+                     callback) {
+            task_environment()->AdvanceClock(base::Seconds(1));
+            std::vector<mojom::DetectedCustomFormControlPtr> controls;
+            controls.push_back(MakeControl(1, "ADDRESS_HOME_STATE"));
+            controls.push_back(MakeControl(2, "ADDRESS_HOME_COUNTRY"));
+            std::move(callback).Run(std::move(controls));
+          });
+  SeeForms();
+  // Each control takes 2 ms to extract its options and 3 ms to set its value.
+  EXPECT_CALL(agent(), ExtractOptions)
+      .Times(2)
+      .WillRepeatedly(
+          [this](const blink::DocumentToken&, FieldRendererId,
+                 MockCustomFormControlAgent::ExtractOptionsCallback callback) {
+            task_environment()->AdvanceClock(base::Milliseconds(2));
+            std::move(callback).Run(MakeOptions(
+                {{u"CA", u"California"}, {u"US", u"United States"}}));
+          });
+  EXPECT_CALL(agent(), SetValue)
+      .Times(2)
+      .WillRepeatedly(
+          [this](const blink::DocumentToken&, FieldRendererId,
+                 mojom::SelectOptionPtr,
+                 MockCustomFormControlAgent::SetValueCallback callback) {
+            task_environment()->AdvanceClock(base::Milliseconds(3));
+            std::move(callback).Run();
+          });
+  const AutofillProfile profile = test::GetFullProfile();
+  ASSERT_TRUE(FillForm(manager(), &profile));
+  histogram_tester.ExpectUniqueTimeSample(
+      "Autofill.CustomFormControls.FillLatency", base::Milliseconds(10), 1);
+}
+
+// Tests that no fill latency is recorded if no custom select was detected.
+TEST_F(CustomFormControlScriptRunnerTest,
+       DoesNotRecordFillLatencyWithoutControls) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(LoadScriptAndDetect({}));
+  const AutofillProfile profile = test::GetFullProfile();
+  ASSERT_TRUE(FillForm(manager(), &profile));
+  histogram_tester.ExpectTotalCount("Autofill.CustomFormControls.FillLatency",
+                                    0);
+}
+
 // Tests that the popover that the extraction left open is closed if no option
 // matches the profile.
 TEST_F(CustomFormControlScriptRunnerTest, ClosesPopoverIfNoOptionMatches) {
@@ -666,9 +729,11 @@ TEST_F(CustomFormControlScriptRunnerTest, DetectsControlsForEachFill) {
               ElementsAre(FieldsAre(FieldRendererId(2), ADDRESS_HOME_COUNTRY)));
 }
 
-// Tests that the fill ends when the main frame's manager is reset, and that the
-// agent's pending replies for the fill are ignored.
+// Tests that the fill ends when the main frame's manager is reset, that the
+// agent's pending replies for the fill are ignored, and that no fill latency is
+// recorded for the fill.
 TEST_F(CustomFormControlScriptRunnerTest, EndsFillOnReset) {
+  base::HistogramTester histogram_tester;
   std::vector<mojom::DetectedCustomFormControlPtr> controls;
   controls.push_back(MakeControl(1, "ADDRESS_HOME_STATE"));
   ASSERT_TRUE(LoadScriptAndDetect(std::move(controls)));
@@ -686,6 +751,8 @@ TEST_F(CustomFormControlScriptRunnerTest, EndsFillOnReset) {
   EXPECT_FALSE(test_api(runner()).is_filling());
   std::move(extract_reply).Run(MakeOptions({{u"CA", u"California"}}));
   agent().Flush();
+  histogram_tester.ExpectTotalCount("Autofill.CustomFormControls.FillLatency",
+                                    0);
 }
 
 }  // namespace
