@@ -91,7 +91,9 @@ public class WebViewCrashLogParserTest {
     @MediumTest
     public void testdeleteOldFiles() throws Exception {
         final long oldTimeStamp =
-                System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
+                System.currentTimeMillis()
+                        - TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS)
+                        - 1000;
         File oldFile1 =
                 writeLogFile(
                         "crash_file_crash1.json",
