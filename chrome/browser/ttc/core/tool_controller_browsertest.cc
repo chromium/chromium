@@ -2396,7 +2396,6 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshot) {
   // The image travels next to the result rather than as text inside it, so
   // the result only describes it.
   EXPECT_EQ(response.GetResult(), base::DictValue()
-                                      .Set("mime_type", "image/jpeg")
                                       .Set("width", bitmap.width())
                                       .Set("height", bitmap.height()));
 }

@@ -10,7 +10,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/values.h"
 #include "chrome/browser/actor/tool_result_data.h"
 #include "chrome/browser/actor/tools/tool_result.h"
@@ -26,11 +25,7 @@ TEST(ScreenshotToolResultTest, ToDict) {
   ScreenshotToolResult result(image_bytes, "image/jpeg", gfx::Size(800, 600));
 
   EXPECT_EQ(result.ToDict(),
-            base::DictValue()
-                .Set("mime_type", "image/jpeg")
-                .Set("width", 800)
-                .Set("height", 600)
-                .Set("image_b64", base::Base64Encode(image_bytes)));
+            base::DictValue().Set("width", 800).Set("height", 600));
 }
 
 TEST(ScreenshotToolResultTest, GetImage) {

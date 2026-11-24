@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/values.h"
 #include "chrome/browser/actor/tool_result_data.h"
 #include "ui/gfx/geometry/size.h"
@@ -38,10 +37,8 @@ ScreenshotToolResult::~ScreenshotToolResult() = default;
 
 base::DictValue ScreenshotToolResult::ToDict() const {
   return base::DictValue()
-      .Set("mime_type", mime_type)
       .Set("width", dimensions.width())
-      .Set("height", dimensions.height())
-      .Set("image_b64", base::Base64Encode(image_data));
+      .Set("height", dimensions.height());
 }
 
 std::optional<ToolResultImage> ScreenshotToolResult::GetImage() const {

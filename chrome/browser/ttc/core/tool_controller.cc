@@ -1163,20 +1163,18 @@ void ToolController::OnActionsFinished(
     return;
   }
 
-  base::DictValue result_dict = data->ToDict();
   std::optional<actor::ToolResultImage> image = data->GetImage();
-  if (image) {
-    // The image is sent to the model as visual content, i.e. as image bytes
-    // next to the result, so the result only describes it.
-    result_dict.Remove("image_b64");
-    std::move(callback).Run(ToolResponse::Success(
-        std::move(result_dict),
-        VisualContent{.image_data = base::ToVector(image->data),
-                      .mime_type = std::string(image->mime_type)}));
+  if (!image) {
+    std::move(callback).Run(ToolResponse::Success(data->ToDict()));
     return;
   }
 
-  std::move(callback).Run(ToolResponse::Success(std::move(result_dict)));
+  // The image is sent to the model as visual content, i.e. as image bytes
+  // next to the result, so the result only describes it.
+  std::move(callback).Run(ToolResponse::Success(
+      data->ToDict(),
+      VisualContent{.image_data = base::ToVector(image->data),
+                    .mime_type = std::string(image->mime_type)}));
 }
 
 }  // namespace ttc
