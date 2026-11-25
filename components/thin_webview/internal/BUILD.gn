@@ -12,6 +12,7 @@ static_library("internal") {
     "compositor_view_impl.h",
     "thin_webview.cc",
     "thin_webview.h",
+    "thin_webview_feature_map.cc",
   ]
 
   deps = [
@@ -35,6 +36,7 @@ android_library("internal_java") {
     "java/src/org/chromium/components/thinwebview/internal/CompositorViewImpl.java",
     "java/src/org/chromium/components/thinwebview/internal/ThinWebViewActionModeCallback.java",
     "java/src/org/chromium/components/thinwebview/internal/ThinWebViewContextMenuItemDelegate.java",
+    "java/src/org/chromium/components/thinwebview/internal/ThinWebViewFeatureMap.java",
     "java/src/org/chromium/components/thinwebview/internal/ThinWebViewImpl.java",
   ]
 
@@ -77,6 +79,7 @@ generate_jni("jni_headers") {
   visibility = [ ":*" ]
   sources = [
     "java/src/org/chromium/components/thinwebview/internal/CompositorViewImpl.java",
+    "java/src/org/chromium/components/thinwebview/internal/ThinWebViewFeatureMap.java",
     "java/src/org/chromium/components/thinwebview/internal/ThinWebViewImpl.java",
   ]
 }
