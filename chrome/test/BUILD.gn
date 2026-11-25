@@ -3209,6 +3209,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/discards:unit_tests",
       "//chrome/browser/ui/webui/downloads:unit_tests",
       "//chrome/browser/ui/webui/drive_picker_host:unit_tests",
+      "//chrome/browser/ui/webui/omnibox_internals/aim_eligibility:unit_tests",
       "//chrome/browser/ui/webui/omnibox_popup:unit_tests",
       "//chrome/browser/ui/webui/searchbox:unit_tests",
       "//chrome/browser/ui/webui/segmentation_internals:unit_tests",

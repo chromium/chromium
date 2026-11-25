@@ -45,3 +45,27 @@ static_library("aim_eligibility") {
     deps += [ "//chrome/browser/ui/webui/drive_picker_host" ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "aim_eligibility_page_handler_unittest.cc" ]
+
+  deps = [
+    ":aim_eligibility",
+    ":mojo_bindings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/signin",
+    "//chrome/test:test_support",
+    "//components/keyed_service/core",
+    "//components/omnibox/browser:test_support",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
