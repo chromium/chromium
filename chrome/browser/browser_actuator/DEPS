@@ -1,7 +1,9 @@
 include_rules = [
   # Minimize dependencies on internal code, but allow service construction.
   "+components/browser_actuator/internal/browser_actuator_service_impl.h",
+  "+components/browser_actuator/internal/browser_actuator_task_client_impl.h",
   "+components/browser_actuator/internal/proto",
+  "+components/browser_actuator/internal/task_ingress_transport_handler_factory.h",
   "+components/sharing_message/proto",
   "+components/stream_transport/internal/proto",
 ]
