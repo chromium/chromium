@@ -969,6 +969,7 @@ cc_test("cc_unittests") {
     "trees/swap_promise_manager_unittest.cc",
     "trees/throttle_decider_unittest.cc",
     "trees/tree_synchronizer_unittest.cc",
+    "trees/unbounded_frame_sink_handler_unittest.cc",
     "view_transition/view_transition_request_unittest.cc",
 
     # Animation test files.
