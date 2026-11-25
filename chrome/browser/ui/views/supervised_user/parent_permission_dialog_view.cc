@@ -51,7 +51,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/color_palette.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
@@ -465,12 +465,6 @@ void ParentPermissionDialogView::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(std::move(message_container).Build());
 }
 
-void ParentPermissionDialogView::OnThemeChanged() {
-  views::DialogDelegateView::OnThemeChanged();
-  invalid_credential_label_->SetEnabledColor(
-      GetColorProvider()->GetColor(ui::kColorAlertHighSeverity));
-}
-
 bool ParentPermissionDialogView::Cancel() {
   SendResultOnce(ParentPermissionDialog::Result::kParentPermissionCanceled);
   return true;
@@ -588,6 +582,7 @@ void ParentPermissionDialogView::CreateContents() {
                         content_insets.left(), 0, content_insets.right())));
   invalid_credential_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   invalid_credential_label->SetMultiLine(true);
+  invalid_credential_label->SetEnabledColor(ui::kColorAlertHighSeverity);
 
   // Cache the pointer so we we can update the invalid credential label when we
   // get an incorrect password.

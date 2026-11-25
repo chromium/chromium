@@ -85,7 +85,6 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
  private:
   // views::View:
   void AddedToWidget() override;
-  void OnThemeChanged() override;
 
   // views::DialogDelegate:
   bool Cancel() override;
