@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/webauthn/model/ios_chrome_passkey_client.h"
 
 #import <utility>
+#import <vector>
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/containers/span.h"
+#import "base/containers/to_vector.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
@@ -26,6 +28,7 @@
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_service.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/ios/features.h"
@@ -232,12 +235,17 @@ void IOSChromePasskeyClient::FetchTrustedVaultKeys(
       [](id<IOSPasskeyClientCommands> handler,
          IOSChromePasskeyClientBridgeDelegate* delegate, bool allow_ui,
          webauthn::FetchTrustedVaultKeysCallback inner_callback,
-         webauthn::SharedKeyList trusted_vault_keys, NSError* error) {
+         std::vector<trusted_vault::TrustedVaultKeyAndVersion>
+             trusted_vault_keys,
+         NSError* error) {
         bool did_complete_uv =
             [delegate userVerificationStatus] ==
             webauthn::PasskeyUserVerificationStatus::kCompleted;
+        // TODO(crbug.com/588274186): Clean this up after refactor.
         std::move(inner_callback)
-            .Run(std::move(trusted_vault_keys), did_complete_uv);
+            .Run(base::ToVector(trusted_vault_keys,
+                                &trusted_vault::TrustedVaultKeyAndVersion::key),
+                 did_complete_uv);
         if (allow_ui) {
           [handler dismissPasskeyWelcomeScreen];
         }

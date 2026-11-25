@@ -5,7 +5,7 @@
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/containers/to_vector.h"
+#import "base/check.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -35,15 +35,20 @@ enum class KeyFetchInteractionMode {
   kSilent,
 };
 
-// Returns whether there's at least one valid key in the keys array.
-bool ContainsValidKey(const webauthn::SharedKeyList& keys,
-                      id<Credential> credential) {
-  for (const webauthn::SharedKey& key : keys) {
+// Returns whether there's at least one valid key in `keys`.
+bool ContainsValidKey(
+    const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys,
+    id<Credential> credential) {
+  for (const trusted_vault::TrustedVaultKeyAndVersion& key_with_version :
+       keys) {
     sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
     // TODO(crbug.com/405036154): Validate only the trusted vault key for
     // passkeys in the `security_domain_encrypted` format.
+    // TODO(crbug.com/588274186): Check if `key_version` of
+    // `WebauthnCredentialSpecifics` matches `key_with_version.version` before
+    // attempting decryption, and consider extracting a shared helper.
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-            key, /*device_authorization_key=*/{},
+            key_with_version.key, /*device_authorization_key=*/{},
             PasskeyFromCredential(credential), &decrypted)) {
       return true;
     }
@@ -120,7 +125,8 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
   // case of e.g. a double tap. More details in crbug.com/525411441.
   __block bool completion_executed = false;
   FetchTrustedVaultKeysCompletionBlock completion =
-      ^(webauthn::SharedKeyList keyList, NSError* error) {
+      ^(std::vector<trusted_vault::TrustedVaultKeyAndVersion> keyList,
+        NSError* error) {
         if (!completion_executed) {
           completion_executed = true;
           fetchTrustedVaultKeysCompletion(std::move(keyList), error);
@@ -240,14 +246,15 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
 
   __weak __typeof(self) weakSelf = self;
   auto fetchKeysCompletion =
-      ^(webauthn::SharedKeyList key_list, NSError* fetchKeysError) {
+      ^(std::vector<trusted_vault::TrustedVaultKeyAndVersion> keyList,
+        NSError* fetchKeysError) {
         [weakSelf onKeysFetchedForGaia:gaia
                             credential:credential
                     canMarkKeysAsStale:canMarkKeysAsStale
                                purpose:purpose
                        interactionMode:interactionMode
                             completion:fetchTrustedVaultKeysCompletion
-                               keyList:std::move(key_list)
+                               keyList:std::move(keyList)
                                  error:fetchKeysError];
       };
   [self fetchKeysForGaia:gaia purpose:purpose completion:fetchKeysCompletion];
@@ -258,17 +265,9 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
 - (void)fetchKeysForGaia:(NSString*)gaia
                  purpose:(webauthn::ReauthenticatePurpose)purpose
               completion:(FetchTrustedVaultKeysCompletionBlock)completion {
-  _passkeyKeychainProvider->FetchKeys(
-      gaia, purpose,
-      base::BindOnce(^(std::vector<trusted_vault::TrustedVaultKeyAndVersion>
-                           trustedVaultKeys,
-                       NSError* error) {
-        // TODO(crbug.com/588274186): Clean this up after refactor.
-        completion(
-            base::ToVector(trustedVaultKeys,
-                           &trusted_vault::TrustedVaultKeyAndVersion::key),
-            error);
-      }));
+  CHECK(completion);
+  _passkeyKeychainProvider->FetchKeys(gaia, purpose,
+                                      base::BindOnce(completion));
 }
 
 // Handles the outcome of the key fetch process.
@@ -281,7 +280,9 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
                      purpose:(webauthn::ReauthenticatePurpose)purpose
              interactionMode:(KeyFetchInteractionMode)interactionMode
                   completion:(FetchTrustedVaultKeysCompletionBlock)completion
-                     keyList:(webauthn::SharedKeyList)keyList
+                     keyList:
+                         (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+                             keyList
                        error:(NSError*)error {
   __weak __typeof(self) weakSelf = self;
   if (!keyList.empty()) {
@@ -360,12 +361,9 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
       base::BindOnce(^(std::vector<trusted_vault::TrustedVaultKeyAndVersion>
                            trustedVaultKeys,
                        NSError* error) {
-        // TODO(crbug.com/588274186): Clean this up after refactor.
-        webauthn::SharedKeyList key_list = base::ToVector(
-            trustedVaultKeys, &trusted_vault::TrustedVaultKeyAndVersion::key);
         // If we got nonempty keys, that means the reauthentication was a
         // success. Report this back to the delegate.
-        if (!key_list.empty()) {
+        if (!trustedVaultKeys.empty()) {
           [weakSelf.delegate providerDidCompleteReauthentication];
         }
 
@@ -376,7 +374,7 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
                          purpose:purpose
                  interactionMode:KeyFetchInteractionMode::kInteractiveNoReauth
                       completion:completion
-                         keyList:std::move(key_list)
+                         keyList:std::move(trustedVaultKeys)
                            error:error];
       }));
 }
@@ -425,7 +423,7 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
 // completion block.
 - (void)
     performUserVerificationIfNeededAndCallCompletionWithKeys:
-        (webauthn::SharedKeyList)keys
+        (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)keys
                                                   completion:
                                                       (FetchTrustedVaultKeysCompletionBlock)
                                                           completion {

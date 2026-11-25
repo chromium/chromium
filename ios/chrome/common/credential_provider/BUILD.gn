@@ -111,12 +111,12 @@ template("passkey_keychain_provider") {
       "passkey_keychain_provider_bridge.h",
       "passkey_keychain_provider_bridge.mm",
     ]
+    public_deps = [ "//components/trusted_vault:trusted_vault_key_and_version" ]
     deps = [
       ":${_provider_target_name}",
       ":credential_provider",
       "//base",
       "//components/sync/protocol",
-      "//components/trusted_vault:trusted_vault_key_and_version",
       "//components/webauthn/core/browser:passkey_model",
       "//components/webauthn/ios:passkey_types",
     ]

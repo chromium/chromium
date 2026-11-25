@@ -7,6 +7,9 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <UIKit/UIKit.h>
 
+#import <vector>
+
+#import "base/containers/to_vector.h"
 #import "base/ios/block_types.h"
 #import "base/not_fatal_until.h"
 #import "base/notreached.h"
@@ -21,6 +24,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -254,8 +258,14 @@
       __weak __typeof(self) weakSelf = self;
       auto completion_block = base::CallbackToBlock(base::BindOnce(
           [](__weak __typeof(self) weakSelf,
-             webauthn::SharedKeyList trustedVaultKeys, NSError* error) {
-            [weakSelf onTrustedVaultKeysFetched:std::move(trustedVaultKeys)
+             std::vector<trusted_vault::TrustedVaultKeyAndVersion>
+                 trustedVaultKeys,
+             NSError* error) {
+            // TODO(crbug.com/588274186): Clean this up after refactor.
+            [weakSelf onTrustedVaultKeysFetched:
+                          base::ToVector(
+                              trustedVaultKeys,
+                              &trusted_vault::TrustedVaultKeyAndVersion::key)
                                           error:error];
           },
           weakSelf));

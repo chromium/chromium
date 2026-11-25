@@ -6,13 +6,17 @@
 
 #import <Foundation/Foundation.h>
 
+#import <vector>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/command_line.h"
+#import "base/containers/to_vector.h"
 #import "base/ios/block_types.h"
 #import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "components/password_manager/core/common/browser_assisted_login_type.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
@@ -303,10 +307,11 @@ enum class PasskeyCreationEligibility {
 - (void)prepareInterfaceForExtensionConfiguration {
   if (HasSavedPasskeys(self.credentialStore.credentials)) {
     __weak __typeof__(self) weakSelf = self;
-    auto completion =
-        ^(webauthn::SharedKeyList trustedVaultKeys, NSError* error) {
-          [weakSelf completeTrustedVaultKeyFetchForExtensionConfiguration];
-        };
+    auto completion = ^(
+        std::vector<trusted_vault::TrustedVaultKeyAndVersion> trustedVaultKeys,
+        NSError* error) {
+      [weakSelf completeTrustedVaultKeyFetchForExtensionConfiguration];
+    };
 
     // Trigger trusted vault keys fetch to know whether the user needs to
     // bootstrap (create/enter their GPM pin) to use passkeys on their device.
@@ -581,12 +586,18 @@ enum class PasskeyCreationEligibility {
 - (void)userSelectedPasskey:(id<Credential>)credential
       passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails {
   __weak __typeof(self) weakSelf = self;
-  auto completion =
-      ^(webauthn::SharedKeyList trustedVaultKeys, NSError* error) {
-        [weakSelf passkeyAssertionWithCredential:credential
-                           passkeyRequestDetails:passkeyRequestDetails
-                                trustedVaultKeys:std::move(trustedVaultKeys)];
-      };
+  auto completion = ^(
+      std::vector<trusted_vault::TrustedVaultKeyAndVersion> trustedVaultKeys,
+      NSError* error) {
+    // TODO(crbug.com/588274186): Clean this up after refactor.
+    [weakSelf
+        passkeyAssertionWithCredential:credential
+                 passkeyRequestDetails:passkeyRequestDetails
+                      trustedVaultKeys:
+                          base::ToVector(
+                              trustedVaultKeys,
+                              &trusted_vault::TrustedVaultKeyAndVersion::key)];
+  };
 
   [self fetchTrustedVaultKeysForGaia:credential.gaia
                           credential:credential
@@ -1202,12 +1213,17 @@ enum class PasskeyCreationEligibility {
 - (void)createPasskeyWithDetails:(PasskeyRequestDetails*)passkeyRequestDetails
                             gaia:(NSString*)gaia {
   __weak __typeof(self) weakSelf = self;
-  auto completion =
-      ^(webauthn::SharedKeyList trustedVaultKeys, NSError* error) {
-        [weakSelf createPasskeyWithDetails:passkeyRequestDetails
-                                      gaia:gaia
-                          trustedVaultKeys:std::move(trustedVaultKeys)];
-      };
+  auto completion = ^(
+      std::vector<trusted_vault::TrustedVaultKeyAndVersion> trustedVaultKeys,
+      NSError* error) {
+    // TODO(crbug.com/588274186): Clean this up after refactor.
+    [weakSelf createPasskeyWithDetails:passkeyRequestDetails
+                                  gaia:gaia
+                      trustedVaultKeys:
+                          base::ToVector(
+                              trustedVaultKeys,
+                              &trusted_vault::TrustedVaultKeyAndVersion::key)];
+  };
 
   [self fetchTrustedVaultKeysForGaia:gaia
                           credential:nil

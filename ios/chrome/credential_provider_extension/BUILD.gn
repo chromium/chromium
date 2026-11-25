@@ -41,6 +41,7 @@ source_set("credential_provider") {
     ":reauthentication_handler",
     "//base",
     "//components/password_manager/core/common:browser_assisted_login_type",
+    "//components/trusted_vault:trusted_vault_key_and_version",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webauthn/ios:passkey_types",
     "//ios/chrome/common/app_group",

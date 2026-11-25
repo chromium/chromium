@@ -7,6 +7,7 @@
 #import <string>
 #import <vector>
 
+#import "base/containers/to_vector.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -18,6 +19,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_export_mediator.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller.h"
@@ -189,10 +191,15 @@
   auto completion_block = base::CallbackToBlock(base::BindOnce(
       [](__weak __typeof(self) weakSelf,
          void (^completion)(webauthn::SharedKeyList),
-         webauthn::SharedKeyList trustedVaultKeys, NSError* error) {
-        [weakSelf onTrustedVaultKeysFetched:std::move(trustedVaultKeys)
-                                      error:error
-                                 completion:completion];
+         std::vector<trusted_vault::TrustedVaultKeyAndVersion> trustedVaultKeys,
+         NSError* error) {
+        // TODO(crbug.com/588274186): Clean this up after refactor.
+        [weakSelf
+            onTrustedVaultKeysFetched:
+                base::ToVector(trustedVaultKeys,
+                               &trusted_vault::TrustedVaultKeyAndVersion::key)
+                                error:error
+                           completion:completion];
       },
       weakSelf, completion));
   [_passkeyKeychainProviderBridge

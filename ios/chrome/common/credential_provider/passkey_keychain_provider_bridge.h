@@ -6,15 +6,17 @@
 #define IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_PASSKEY_KEYCHAIN_PROVIDER_BRIDGE_H_
 
 #include <memory>
+#import <vector>
 
 #import "base/ios/block_types.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
 
 @protocol Credential;
 
 typedef void (^FetchTrustedVaultKeysCompletionBlock)(
-    webauthn::SharedKeyList trustedVaultKeys,
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> trustedVaultKeys,
     NSError* error);
 
 typedef void (^UserVerificationCompletionBlock)(BOOL success);
@@ -66,11 +68,11 @@ enum class PasskeyKeychainError : NSInteger {
 
 @property(nonatomic, weak) id<PasskeyKeychainProviderBridgeDelegate> delegate;
 
-// Initiates the process to fetch the trusted vault key and calls the completion
-// block with the trusted vault key the input argument. `credential` will be
-// used to validate the trusted vault key. When `allowUI` is `NO`, no UI is
-// presented and `fetchTrustedVaultKeysCompletionBlock` is called with empty
-// keys if keys cannot be retrieved silently.
+// Initiates the process to fetch the trusted vault keys and their versions, and
+// calls the completion block with them as input. `credential` will be used to
+// validate the trusted vault key. When `allowUI` is `NO`, no UI is presented
+// and `fetchTrustedVaultKeysCompletionBlock` is called with empty keys if keys
+// cannot be retrieved silently.
 - (void)fetchTrustedVaultKeysForGaia:(NSString*)gaia
                           credential:(id<Credential>)credential
                              purpose:(webauthn::ReauthenticatePurpose)purpose

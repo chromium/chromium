@@ -65,6 +65,7 @@ source_set("ios_chrome_passkey_client") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync/protocol",
+    "//components/trusted_vault:trusted_vault_key_and_version",
     "//components/webauthn/core/browser/device_authorization",
     "//components/webauthn/ios",
     "//components/webauthn/ios:features",
