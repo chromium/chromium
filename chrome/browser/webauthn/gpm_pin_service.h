@@ -8,16 +8,13 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "base/types/strong_alias.h"
+#include "chrome/browser/webauthn/gpm/gpm_pin.h"
 #include "chrome/browser/webauthn/gpm_pin_availability.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "crypto/process_bound_string.h"
 
 struct CoreAccountInfo;
 
 namespace webauthn {
-
-using GpmPin = base::StrongAlias<class GpmPinTag, crypto::ProcessBoundString>;
 
 // Verifies and sets the Google Password Manager (GPM) PIN for the in-browser
 // GPM passkey authenticator.
