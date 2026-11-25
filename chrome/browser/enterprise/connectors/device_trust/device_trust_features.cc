@@ -26,7 +26,7 @@ bool IsDTCKeyUploadedBySharedAPI() {
   return base::FeatureList::IsEnabled(kDTCKeyUploadedBySharedAPIEnabled);
 }
 
-BASE_FEATURE(kDeviceTrustConnectorAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDeviceTrustConnectorAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeviceTrustConnectorDesktopFormFactors,
              base::FEATURE_DISABLED_BY_DEFAULT);
