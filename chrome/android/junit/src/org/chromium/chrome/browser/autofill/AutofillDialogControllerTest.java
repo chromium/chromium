@@ -5,16 +5,25 @@
 package org.chromium.chrome.browser.autofill;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,21 +37,25 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillDialogController.NativeAutofillDialogViewAndroid;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogParams;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DismissHandler;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link AutofillDialogController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillDialogControllerTest {
-    private static final long NATIVE_AUTOFILL_DIALOG_VIEW = 1234L;
     private static final String TEST_TITLE = "Test Title";
     private static final String TEST_DESCRIPTION = "Test Description";
     private static final String TEST_NEGATIVE_BUTTON_TEXT = "Test Negative Button";
@@ -50,6 +63,7 @@ public class AutofillDialogControllerTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private JniRawPtr<NativeAutofillDialogViewAndroid> mNativeAutofillDialogView;
     @Mock private AutofillDialogController.Natives mNativeMock;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private ActionConfirmationDialog mDialog;
@@ -66,9 +80,15 @@ public class AutofillDialogControllerTest {
     public void setUp() {
         mActivity = Robolectric.setupActivity(TestActivity.class);
         AutofillDialogControllerJni.setInstanceForTesting(mNativeMock);
+        mNativeAutofillDialogView = spy(JniRawPtr.createForTesting(100L));
         mController =
                 new AutofillDialogController(
-                        NATIVE_AUTOFILL_DIALOG_VIEW, mActivity, mModalDialogManager, mDialog);
+                        mNativeAutofillDialogView, mActivity, mModalDialogManager, mDialog);
+    }
+
+    @After
+    public void tearDown() {
+        mController.dismiss();
     }
 
     @Test
@@ -100,10 +120,11 @@ public class AutofillDialogControllerTest {
                 mDismissHandler, ButtonClickResult.POSITIVE, /* stopShowing= */ false);
 
         // Simulate dismissal after positive button click.
-        verify(mNativeMock).onPositiveButtonClicked(NATIVE_AUTOFILL_DIALOG_VIEW);
-        verify(mNativeMock, never()).onNegativeButtonClicked(NATIVE_AUTOFILL_DIALOG_VIEW);
+        verify(mNativeMock).onPositiveButtonClicked(same(mNativeAutofillDialogView));
+        verify(mNativeMock, never()).onNegativeButtonClicked(any());
         // The onDismissed should only be called if the dialog was dismissed by the user.
-        verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_DIALOG_VIEW);
+        verify(mNativeMock).onDismissed(same(mNativeAutofillDialogView));
+        verify(mNativeAutofillDialogView).release();
     }
 
     @Test
@@ -117,10 +138,11 @@ public class AutofillDialogControllerTest {
                 mDismissHandler, ButtonClickResult.NEGATIVE, /* stopShowing= */ false);
 
         // Simulate dismissal after negative button click.
-        verify(mNativeMock, times(0)).onPositiveButtonClicked(NATIVE_AUTOFILL_DIALOG_VIEW);
-        verify(mNativeMock).onNegativeButtonClicked(NATIVE_AUTOFILL_DIALOG_VIEW);
+        verify(mNativeMock, never()).onPositiveButtonClicked(any());
+        verify(mNativeMock).onNegativeButtonClicked(same(mNativeAutofillDialogView));
         // The onDismissed should only be called if the dialog was dismissed by the user.
-        verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_DIALOG_VIEW);
+        verify(mNativeMock).onDismissed(same(mNativeAutofillDialogView));
+        verify(mNativeAutofillDialogView).release();
     }
 
     @Test
@@ -131,7 +153,37 @@ public class AutofillDialogControllerTest {
 
         verify(mModalDialogManager).dismissAllDialogs(DialogDismissalCause.DISMISSED_BY_NATIVE);
         // The onDismissed should only be called if the dialog was dismissed by the user.
-        verify(mNativeMock, times(0)).onDismissed(NATIVE_AUTOFILL_DIALOG_VIEW);
+        verify(mNativeMock, never()).onDismissed(any());
+        verify(mNativeAutofillDialogView).release();
+    }
+
+    @Test
+    public void testCreate_NullContextReleasesPointer() {
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(windowAndroid.getContext()).thenReturn(new WeakReference<>(null));
+        JniRawPtr<NativeAutofillDialogViewAndroid> nativeView =
+                spy(JniRawPtr.createForTesting(200L));
+
+        assertNull(AutofillDialogController.create(nativeView, windowAndroid));
+        verify(nativeView).release();
+    }
+
+    @Test
+    public void testCreate_ValidContextCreatesController() {
+        Context context =
+                mock(Context.class, withSettings().extraInterfaces(ModalDialogManagerHolder.class));
+        when(((ModalDialogManagerHolder) context).getModalDialogManager())
+                .thenReturn(mModalDialogManager);
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(windowAndroid.getContext()).thenReturn(new WeakReference<>(context));
+        JniRawPtr<NativeAutofillDialogViewAndroid> nativeView =
+                spy(JniRawPtr.createForTesting(200L));
+
+        AutofillDialogController controller =
+                AutofillDialogController.create(nativeView, windowAndroid);
+        assertNotNull(controller);
+        verify(nativeView, never()).release();
+        controller.dismiss();
     }
 
     @Test
@@ -150,6 +202,7 @@ public class AutofillDialogControllerTest {
         dialogModel
                 .get(ModalDialogProperties.CONTROLLER)
                 .onDismiss(dialogModel, DialogDismissalCause.UNKNOWN);
-        verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_DIALOG_VIEW);
+        verify(mNativeMock).onDismissed(same(mNativeAutofillDialogView));
+        verify(mNativeAutofillDialogView).release();
     }
 }

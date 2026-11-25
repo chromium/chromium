@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/check_deref.h"
 #include "chrome/browser/ui/android/autofill/autofill_dialog_view.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -53,6 +54,9 @@ void AutofillDialogViewAndroid::ShowLoadingDialog() {
 }
 
 void AutofillDialogViewAndroid::InitJavaObject() {
+  if (!java_object_.is_null()) {
+    return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = controller_->GetWebContents().GetNativeView();
   if (!view_android) {
@@ -64,7 +68,7 @@ void AutofillDialogViewAndroid::InitJavaObject() {
   }
 
   java_object_.Reset(Java_AutofillDialogController_create(
-      env, reinterpret_cast<intptr_t>(this), window_android));
+      env, jni_zero::MakeRaw(this), window_android));
 }
 
 void AutofillDialogViewAndroid::Dismiss() {
@@ -86,7 +90,12 @@ void AutofillDialogViewAndroid::OnDismissed() {
   controller_->OnDismissed();
 }
 
-AutofillDialogViewAndroid::~AutofillDialogViewAndroid() = default;
+AutofillDialogViewAndroid::~AutofillDialogViewAndroid() {
+  if (!java_object_.is_null()) {
+    Java_AutofillDialogController_clearNativePtr(
+        base::android::AttachCurrentThread(), java_object_);
+  }
+}
 
 }  // namespace autofill
 

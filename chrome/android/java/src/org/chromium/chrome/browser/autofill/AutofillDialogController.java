@@ -13,7 +13,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -36,12 +39,16 @@ import org.chromium.ui.widget.LoadingView;
 @JNINamespace("autofill")
 @NullMarked
 public class AutofillDialogController {
-    private long mNativeAutofillDialogView;
+    @JniType("::autofill::AutofillDialogViewAndroid")
+    interface NativeAutofillDialogViewAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAutofillDialogViewAndroid> mNativeAutofillDialogView;
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
     private final ActionConfirmationDialog mDialog;
 
-    private AutofillDialogController(long nativeAutofillDialogView, Context context) {
+    private AutofillDialogController(
+            JniRawPtr<NativeAutofillDialogViewAndroid> nativeAutofillDialogView, Context context) {
         this(
                 nativeAutofillDialogView,
                 context,
@@ -52,7 +59,7 @@ public class AutofillDialogController {
 
     @VisibleForTesting
     AutofillDialogController(
-            long nativeAutofillDialogView,
+            JniRawPtr<NativeAutofillDialogViewAndroid> nativeAutofillDialogView,
             Context context,
             ModalDialogManager modalDialogManager,
             ActionConfirmationDialog dialog) {
@@ -64,10 +71,11 @@ public class AutofillDialogController {
 
     @CalledByNative
     static @Nullable AutofillDialogController create(
-            long nativeAutofillDialogView,
+            JniRawPtr<NativeAutofillDialogViewAndroid> nativeAutofillDialogView,
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         Context context = windowAndroid.getContext().get();
         if (context == null) {
+            nativeAutofillDialogView.release();
             return null;
         }
         return new AutofillDialogController(nativeAutofillDialogView, context);
@@ -130,10 +138,10 @@ public class AutofillDialogController {
                                             @DialogDismissalCause int dismissalCause) {
                                         loadingView.hideLoadingUi();
                                         loadingView.destroy();
-                                        if (mNativeAutofillDialogView != 0) {
+                                        if (mNativeAutofillDialogView != null) {
                                             AutofillDialogControllerJni.get()
                                                     .onDismissed(mNativeAutofillDialogView);
-                                            mNativeAutofillDialogView = 0;
+                                            clearNativePtr();
                                         }
                                     }
                                 })
@@ -147,9 +155,15 @@ public class AutofillDialogController {
     @CalledByNative
     @VisibleForTesting
     void dismiss() {
-        if (mDialog != null) {
-            mModalDialogManager.dismissAllDialogs(DialogDismissalCause.DISMISSED_BY_NATIVE);
-            mNativeAutofillDialogView = 0;
+        clearNativePtr();
+        mModalDialogManager.dismissAllDialogs(DialogDismissalCause.DISMISSED_BY_NATIVE);
+    }
+
+    @CalledByNative
+    private void clearNativePtr() {
+        if (mNativeAutofillDialogView != null) {
+            mNativeAutofillDialogView.release();
+            mNativeAutofillDialogView = null;
         }
     }
 
@@ -157,25 +171,26 @@ public class AutofillDialogController {
             DismissHandler dismissHandler,
             @ButtonClickResult int buttonClickResult,
             boolean stopShowing) {
-        if (mNativeAutofillDialogView == 0) {
+        JniRawPtr<NativeAutofillDialogViewAndroid> nativeView = mNativeAutofillDialogView;
+        if (nativeView == null) {
             return DialogDismissType.DISMISS_IMMEDIATELY;
         }
         if (buttonClickResult == ButtonClickResult.POSITIVE) {
-            AutofillDialogControllerJni.get().onPositiveButtonClicked(mNativeAutofillDialogView);
+            AutofillDialogControllerJni.get().onPositiveButtonClicked(nativeView);
         } else if (buttonClickResult == ButtonClickResult.NEGATIVE) {
-            AutofillDialogControllerJni.get().onNegativeButtonClicked(mNativeAutofillDialogView);
+            AutofillDialogControllerJni.get().onNegativeButtonClicked(nativeView);
         }
-        AutofillDialogControllerJni.get().onDismissed(mNativeAutofillDialogView);
-        mNativeAutofillDialogView = 0;
+        AutofillDialogControllerJni.get().onDismissed(nativeView);
+        clearNativePtr();
         return DialogDismissType.DISMISS_IMMEDIATELY;
     }
 
     @NativeMethods
     interface Natives {
-        void onPositiveButtonClicked(long nativeAutofillDialogViewAndroid);
+        void onPositiveButtonClicked(JniPtr<NativeAutofillDialogViewAndroid> self);
 
-        void onNegativeButtonClicked(long nativeAutofillDialogViewAndroid);
+        void onNegativeButtonClicked(JniPtr<NativeAutofillDialogViewAndroid> self);
 
-        void onDismissed(long nativeAutofillDialogViewAndroid);
+        void onDismissed(JniPtr<NativeAutofillDialogViewAndroid> self);
     }
 }
