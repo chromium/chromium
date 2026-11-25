@@ -300,7 +300,7 @@ std::string Origin::GetDebugString(bool include_nonce) const {
 
 Origin::Origin(SchemeHostPort tuple) : tuple_(std::move(tuple)) {
   DCHECK(!opaque());
-  DCHECK(tuple_.IsValid());
+  CHECK(tuple_.IsValid());
 }
 
 // Constructs an opaque origin derived from |precursor|.
@@ -363,18 +363,15 @@ std::optional<Origin> Origin::Deserialize(std::string_view value) {
   // If only a tuple was serialized, then this origin is not opaque. For opaque
   // origins, we expect two uint64's to be left in the pickle.
   bool is_opaque = !reader.ReachedEnd();
-
-  // Opaque origins without a tuple are ok.
-  if (!is_opaque && !url.is_valid())
-    return std::nullopt;
   SchemeHostPort tuple(url);
 
   // Possible successful early return if the pickled Origin was not opaque.
   if (!is_opaque) {
-    Origin origin(std::move(tuple));
-    if (origin.opaque())
-      return std::nullopt;  // Something went horribly wrong.
-    return origin;
+    // Unlike opaque origins, non-opaque origins need a valid tuple.
+    if (!tuple.IsValid()) {
+      return std::nullopt;
+    }
+    return Origin(std::move(tuple));
   }
 
   uint64_t nonce_high = 0;

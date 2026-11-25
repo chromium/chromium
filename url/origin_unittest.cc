@@ -9,7 +9,9 @@
 
 #include <type_traits>
 
+#include "base/base64.h"
 #include "base/memory/raw_ptr.h"
+#include "base/pickle.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -743,6 +745,12 @@ TEST_F(OriginTest, DeserializeInvalid) {
   EXPECT_EQ(std::nullopt, Deserialize("0123456789"));
   EXPECT_EQ(std::nullopt, Deserialize("https://a.com"));
   EXPECT_EQ(std::nullopt, Deserialize("https://192.168.1.1"));
+
+  // A non-opaque origin needs a valid tuple. "data:,foo" is a valid URL, but it
+  // doesn't have a valid tuple.
+  base::Pickle pickle;
+  pickle.WriteString("data:,foo");
+  EXPECT_EQ(std::nullopt, Deserialize(base::Base64Encode(pickle.AsBytes())));
 }
 
 TEST_F(OriginTest, SerializeTBDNonce) {
