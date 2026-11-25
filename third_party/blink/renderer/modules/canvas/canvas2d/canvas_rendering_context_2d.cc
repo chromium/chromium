@@ -1172,7 +1172,7 @@ void CanvasRenderingContext2D::ResetBacking() {
 }
 
 void CanvasRenderingContext2D::DropAndRecreateExistingBacking() {
-  if (!canvas() || !HasBacking()) {
+  if (!HasBacking()) {
     return;
   }
 
