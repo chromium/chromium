@@ -46,6 +46,8 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_onboarding_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
@@ -87,6 +89,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/views_switches.h"
 #include "ui/views/widget/widget_deletion_observer.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -98,7 +101,6 @@
 #include "extensions/test/test_extension_dir.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/toggle_button.h"
-#include "ui/views/views_switches.h"
 #endif
 
 using testing::AtLeast;
@@ -339,8 +341,32 @@ class ContextualTasksSidePanelPermissionDashboardInteractiveUiTest
         /*enabled_features=*/{kContextualTasks,
                               kContextualTasksForceEntryPointEligibility,
                               kContextualTasksEphemeralBrandedEntryPoint,
+                              kContextualTasksRearchitecture,
                               kContextualTasksSidePanelRearchitecture},
         /*disabled_features=*/{kContextualTasksSidePanelTabState});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContextualTasksSidePanelCoordinatorInteractiveUiTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    ContextualTasksSidePanelCoordinatorInteractiveUiTest::
+        SetUpBrowserContextKeyedServices(context);
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          return std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+              CHECK_DEREF(profile->GetPrefs()),
+              /*template_url_service=*/nullptr,
+              /*url_loader_factory=*/nullptr,
+              IdentityManagerFactory::GetForProfile(profile));
+        }));
   }
 };
 
@@ -503,6 +529,215 @@ IN_PROC_BROWSER_TEST_F(
       CheckResult([&]() { return indicator_chip->GetVisible(); }, true),
       CheckResult([&]() { return indicator_chip->GetTextForTesting(); },
                   l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSidePanelPermissionDashboardInteractiveUiTest,
+    IndicatorChipOpensSiteSettingsInNewTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kToolbarWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSiteSettingsTabId);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMicrophoneIndicatorShownEvent);
+  constexpr char kSiteSettingsButtonName[] = "SiteSettingsButton";
+
+  SetUpTasks();
+  EXPECT_CALL(mock_active_task_context_provider_observer_,
+              OnContextTabsChanged(testing::_))
+      .Times(AtLeast(1));
+
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+  ContextualTasksLocationBar* location_bar =
+      coordinator->permission_controller()->GetLocationBarForTesting();
+  ASSERT_NE(nullptr, location_bar);
+  location_bar->GetPermissionDashboardController()->DoNotCollapseForTesting();
+
+  const DeepQuery kPathToIndicatorChip = {
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "permission-dashboard",
+      "#indicator-chip",
+  };
+  const DeepQuery kPathToIndicatorChipButton = {
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "permission-dashboard",
+      "#indicator-chip",
+      "#chip",
+  };
+
+  StateChange microphone_indicator_shown;
+  microphone_indicator_shown.type = StateChange::Type::kExistsAndConditionTrue;
+  microphone_indicator_shown.event = kMicrophoneIndicatorShownEvent;
+  microphone_indicator_shown.where = kPathToIndicatorChip;
+  microphone_indicator_shown.test_function =
+      "el => el.hasAttribute('visible') && "
+      "el.getBoundingClientRect().width > 0";
+
+  RunTestSequence(
+      Do([&]() {
+        coordinator->Show(
+            false, omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelToolbarWebView",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->toolbar_web_view();
+                       }),
+      InstrumentNonTabWebView(kToolbarWebContentsId, "SidePanelToolbarWebView"),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebView",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelContentWebContentsId,
+                              "SidePanelContentWebView"),
+      Do([&]() {
+        coordinator->GetActiveWebContents()->GetController().LoadURL(
+            GURL("https://www.google.com/search?q=test&udm=50"),
+            content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+      }),
+      WaitForWebContentsNavigation(kSidePanelContentWebContentsId), Do([&]() {
+        content::WebContents* contents = coordinator->GetActiveWebContents();
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            contents->GetPrimaryMainFrame())
+            ->OnMediaStreamPermissionSet(
+                contents->GetLastCommittedURL(),
+                {content_settings::PageSpecificContentSettings::
+                     kMicrophoneAccessed});
+      }),
+      WaitForStateChange(kToolbarWebContentsId, microphone_indicator_shown),
+      ClickElement(kToolbarWebContentsId, kPathToIndicatorChipButton),
+      WaitForShow(PageInfoMainView::kMainLayoutElementId),
+      InstrumentNextTab(kSiteSettingsTabId),
+      NameDescendantView(
+          PageInfoMainView::kMainLayoutElementId, kSiteSettingsButtonName,
+          base::BindRepeating([](const views::View* view) {
+            return view->GetID() ==
+                   PageInfoViewFactory::
+                       VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS;
+          })),
+      PressButton(kSiteSettingsButtonName),
+      WaitForWebContentsReady(kSiteSettingsTabId),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL();
+          },
+          GURL("chrome://settings/content/"
+               "siteDetails?site=https%3A%2F%2Fwww.google.com")));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSidePanelPermissionDashboardInteractiveUiTest,
+    ConfirmationChipOpensSiteSettingsInNewTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kToolbarWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSiteSettingsTabId);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kRequestChipShownEvent);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kConfirmationChipShownEvent);
+  constexpr char kSiteSettingsButtonName[] = "SiteSettingsButton";
+
+  SetUpTasks();
+  EXPECT_CALL(mock_active_task_context_provider_observer_,
+              OnContextTabsChanged(testing::_))
+      .Times(AtLeast(1));
+
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+  ContextualTasksLocationBar* location_bar =
+      coordinator->permission_controller()->GetLocationBarForTesting();
+  ASSERT_NE(nullptr, location_bar);
+  location_bar->GetChipController()->DoNotCollapseForTesting();
+
+  const DeepQuery kPathToRequestChip = {
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "permission-dashboard",
+      "#request-chip",
+  };
+  const DeepQuery kPathToRequestChipButton = {
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "permission-dashboard",
+      "#request-chip",
+      "#chip",
+  };
+
+  StateChange request_chip_shown;
+  request_chip_shown.type = StateChange::Type::kExistsAndConditionTrue;
+  request_chip_shown.event = kRequestChipShownEvent;
+  request_chip_shown.where = kPathToRequestChip;
+  request_chip_shown.test_function =
+      "el => el.hasAttribute('visible') && "
+      "el.getBoundingClientRect().width > 0";
+
+  StateChange confirmation_chip_shown;
+  confirmation_chip_shown.type = StateChange::Type::kExistsAndConditionTrue;
+  confirmation_chip_shown.event = kConfirmationChipShownEvent;
+  confirmation_chip_shown.where = kPathToRequestChip;
+  confirmation_chip_shown.test_function =
+      "el => el.hasAttribute('visible') && "
+      "el.chipState?.userDecision !== null && "
+      "el.getBoundingClientRect().width > 0";
+
+  RunTestSequence(
+      Do([&]() {
+        coordinator->Show(
+            false, omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelToolbarWebView",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->toolbar_web_view();
+                       }),
+      InstrumentNonTabWebView(kToolbarWebContentsId, "SidePanelToolbarWebView"),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebView",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelContentWebContentsId,
+                              "SidePanelContentWebView"),
+      Do([&]() {
+        coordinator->GetActiveWebContents()->GetController().LoadURL(
+            GURL("https://www.google.com/search?q=test&udm=50"),
+            content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+      }),
+      WaitForWebContentsNavigation(kSidePanelContentWebContentsId),
+      ExecuteJs(kSidePanelContentWebContentsId,
+                "() => { Notification.requestPermission(); }",
+                ExecuteJsMode::kFireAndForget),
+      WaitForStateChange(kToolbarWebContentsId, request_chip_shown), Do([&]() {
+        auto* prm = permissions::PermissionRequestManager::FromWebContents(
+            coordinator->GetActiveWebContents());
+        ASSERT_NE(nullptr, prm);
+        prm->Accept(/*prompt_options=*/std::monostate());
+      }),
+      WaitForStateChange(kToolbarWebContentsId, confirmation_chip_shown),
+      ClickElement(kToolbarWebContentsId, kPathToRequestChipButton),
+      WaitForShow(PageInfoMainView::kMainLayoutElementId),
+      InstrumentNextTab(kSiteSettingsTabId),
+      NameDescendantView(
+          PageInfoMainView::kMainLayoutElementId, kSiteSettingsButtonName,
+          base::BindRepeating([](const views::View* view) {
+            return view->GetID() ==
+                   PageInfoViewFactory::
+                       VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS;
+          })),
+      PressButton(kSiteSettingsButtonName),
+      WaitForWebContentsReady(kSiteSettingsTabId),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL();
+          },
+          GURL("chrome://settings/content/"
+               "siteDetails?site=https%3A%2F%2Fwww.google.com")));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
