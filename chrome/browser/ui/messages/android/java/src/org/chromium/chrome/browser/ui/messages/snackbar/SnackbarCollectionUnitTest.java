@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.messages.snackbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -414,13 +415,14 @@ public class SnackbarCollectionUnitTest {
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
                         .setBackgroundColor(Color.BLACK)
-                        .setHighPriority(true);
+                        .setHighPriority(true)
+                        .setDuration(3800);
         manager.showSnackbar(hp1);
         assertEquals(hp1, manager.getCurrentSnackbarForTesting());
         assertEquals("Press Esc", manager.getCurrentSnackbarForTesting().getText());
 
-        // Advance 7000ms into the 10000ms TYPE_ACTION timeout (3000ms remaining).
-        ShadowLooper.idleMainLooper(7000, TimeUnit.MILLISECONDS);
+        // Advance 3000ms into the 3800ms actionless notice timeout (800ms remaining).
+        ShadowLooper.idleMainLooper(3000, TimeUnit.MILLISECONDS);
         assertTrue(manager.isShowing());
 
         Snackbar hp2 =
@@ -430,7 +432,8 @@ public class SnackbarCollectionUnitTest {
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
                         .setBackgroundColor(Color.BLACK)
-                        .setHighPriority(true);
+                        .setHighPriority(true)
+                        .setDuration(3800);
         manager.showSnackbar(hp2);
 
         // Verify hp1 was updated to hp2 without dismissing the controller.
@@ -438,15 +441,15 @@ public class SnackbarCollectionUnitTest {
         assertEquals(hp2, manager.getCurrentSnackbarForTesting());
         assertEquals("Press and hold Esc", manager.getCurrentSnackbarForTesting().getText());
 
-        // Advance another 7000ms (14000ms total elapsed > initial 10000ms duration).
+        // Advance another 3000ms (6000ms total elapsed > initial 3800ms duration).
         // Because the duration timeout was reset on update, the snackbar must still be showing.
-        ShadowLooper.idleMainLooper(7000, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(3000, TimeUnit.MILLISECONDS);
         verify(mMockController, never()).onDismissNoAction(any());
         assertTrue(manager.isShowing());
         assertEquals(hp2, manager.getCurrentSnackbarForTesting());
 
-        // Advance past the remaining 3000ms of the reset 10000ms duration; now it should time out.
-        ShadowLooper.idleMainLooper(3500, TimeUnit.MILLISECONDS);
+        // Advance past the remaining 800ms of the reset 3800ms duration; now it should time out.
+        ShadowLooper.idleMainLooper(1000, TimeUnit.MILLISECONDS);
         verify(mMockController, times(1)).onDismissNoAction(null);
         assertFalse(manager.isShowing());
         manager.destroy();
@@ -636,5 +639,33 @@ public class SnackbarCollectionUnitTest {
 
     private Snackbar makeNotificationSnackbar() {
         return makeNotificationSnackbar(mMockController);
+    }
+
+    @Test
+    public void testHighPriorityActionWithoutButtonSurvivesActionSnackbar() {
+        SnackbarCollection collection = new SnackbarCollection();
+        SnackbarController highPriorityActionController = mock(SnackbarController.class);
+        SnackbarController actionController = mock(SnackbarController.class);
+        Snackbar firstAction = makeActionSnackbar(actionController).setAction("Undo", null);
+        Snackbar highPriorityAction =
+                makeActionSnackbar(highPriorityActionController).setHighPriority(true);
+        Snackbar nextAction = makeActionSnackbar(actionController).setAction("Undo", null);
+        assertNull(highPriorityAction.getActionText());
+
+        collection.add(firstAction);
+        collection.add(highPriorityAction);
+        assertEquals(highPriorityAction, collection.getCurrent());
+        collection.add(nextAction);
+
+        assertEquals(highPriorityAction, collection.getCurrent());
+        verifyNoMoreInteractions(highPriorityActionController, actionController);
+
+        collection.removeCurrentDueToTimeout();
+        verify(highPriorityActionController).onDismissNoAction(null);
+        assertEquals(nextAction, collection.getCurrent());
+
+        collection.removeCurrentDueToTimeout();
+        verify(actionController).onDismissNoAction(null);
+        assertEquals(firstAction, collection.getCurrent());
     }
 }
