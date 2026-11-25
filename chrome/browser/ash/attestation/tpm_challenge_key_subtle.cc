@@ -716,7 +716,9 @@ void TpmChallengeKeySubtleImpl::SignChallengeCallback(
 void TpmChallengeKeySubtleImpl::StartRegisterKeyStep(
     TpmChallengeKeyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(callback_.is_null(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/589420061): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(callback_.is_null());
   CHECK(will_register_key_, base::NotFatalUntil::M161);
 
   callback_ = std::move(callback);
