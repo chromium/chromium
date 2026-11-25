@@ -15713,6 +15713,21 @@
             ]
         }
     ],
+    "PasskeyUnlockICloudRecovery": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasskeyUnlockICloudRecovery"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasskeyUnlockPromo": [
         {
             "platforms": [
