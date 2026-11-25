@@ -8,6 +8,7 @@
 #include <array>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -1263,6 +1264,8 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
   state->enable_client_storage =
       glic_service && glic_service->IsNoWebviewEnabled() &&
       base::FeatureList::IsEnabled(features::kGlicClientDataStorage);
+  state->actuation_locality =
+      mojom::ActuationLocalityState::NewNotLocal(std::monostate{});
   if (state->enable_client_storage && glic_service) {
     state->client_storage = glic_service->client_data_storage().GetAll();
   }

@@ -53,6 +53,7 @@
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
+#include "chrome/browser/glic/service/glic_actuation_locality_tracker.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_tab_group_utils.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
@@ -373,6 +374,8 @@ GlicInstanceImpl::GlicInstanceImpl(
           ->AddActiveActuationSessionChangedCallback(base::BindRepeating(
               &GlicInstanceImpl::OnExperimentalTriggeringSessionChanged,
               weak_ptr_factory_.GetWeakPtr()));
+  actuation_locality_tracker_ =
+      std::make_unique<GlicActuationLocalityTracker>(profile_, this);
 
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());
@@ -446,6 +449,10 @@ GlicSkillsManager& GlicInstanceImpl::skills_manager() {
 std::unique_ptr<GlicWebContentsManager>
 GlicInstanceImpl::CreateWebContentsManager() {
   return coordinator_delegate_->CreateWebContentsManager();
+}
+
+GlicActuationLocalityTracker& GlicInstanceImpl::actuation_locality_tracker() {
+  return *actuation_locality_tracker_;
 }
 
 bool GlicInstanceImpl::IsShowing() const {
@@ -2158,6 +2165,11 @@ tabs::TabInterface* GlicInstanceImpl::GetActiveEmbedderTabForTesting() {
     return nullptr;
   }
   return GetTabFromEmbedderKey(active_embedder_key_.value());
+}
+
+void GlicInstanceImpl::SetActiveEmbedderForTesting(
+    std::optional<EmbedderKey> new_key) {
+  SetActiveEmbedderAndNotifyVisibilityChange(new_key);
 }
 
 std::string GlicInstanceImpl::DescribeForTesting() {

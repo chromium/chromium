@@ -59,6 +59,7 @@ class TabInterface;
 namespace glic {
 class ContextualCueingService;
 class EmptyEmbedderDelegate;
+class GlicActuationLocalityTracker;
 class GlicExperimentalTriggeringManager;
 class GlicGeminiEnterpriseManager;
 class GlicInstanceObserver;
@@ -316,6 +317,7 @@ class GlicInstanceImpl : public GlicInstance,
       override;
   void CreateGeminiEnterpriseHandler(
       mojo::PendingReceiver<mojom::GeminiEnterpriseHandler> receiver) override;
+  GlicActuationLocalityTracker& actuation_locality_tracker() override;
   // GlicUiEmbedder::Delegate:
 
   void OnEmbedderWindowActivationChanged(bool has_focus) override;
@@ -357,6 +359,7 @@ class GlicInstanceImpl : public GlicInstance,
   class GlicFloatingUi* GetFloatingUiForTesting();
 #endif
   tabs::TabInterface* GetActiveEmbedderTabForTesting();
+  void SetActiveEmbedderForTesting(std::optional<EmbedderKey> new_key);
   std::string DescribeForTesting();
   bool is_offscreen_rendering_active_for_testing() const {
     return offscreen_rendering_controller_.is_active();
@@ -505,6 +508,10 @@ class GlicInstanceImpl : public GlicInstance,
   glic::EmptyEmbedderDelegate empty_embedder_delegate_;
   // `IsActive` can be called by `host_`, so the member needs to outlive it.
   bool is_active_ = false;
+  // Declared before `host_` so `host_` (and its `GlicWebClientHandler`
+  // callback subscription) is destroyed before the tracker, and after
+  // `observers_` so the tracker's `ScopedObservation` unregisters first.
+  std::unique_ptr<GlicActuationLocalityTracker> actuation_locality_tracker_;
   Host host_;
   // Never null
   mojom::ConversationInfoPtr conversation_info_ =

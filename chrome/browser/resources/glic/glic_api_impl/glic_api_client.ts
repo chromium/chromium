@@ -23,6 +23,7 @@ import {                                               //
   WebClientReceiver,                                   //
 } from '../glic.mojom-webui.js';
 import type {                                                          //
+             ActuationLocalityState as ActuationLocalityStateMojo,     //
              AdditionalContext as AdditionalContextMojo,               //
              CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, //
              CaptureRegionObserverInterface,                           //
@@ -663,6 +664,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   notifyActOnWebCapabilityChanged(canActOnWeb: boolean): void {
     this.actorClient.actOnWebCapabilityValue.assignAndSignal(canActOnWeb);
   }
+
+  notifyActuationLocalityChanged(_state: ActuationLocalityStateMojo): void {}
 
   notifyOnboardingCompletedChanged(completed: boolean): void {
     this.onboardingCompleted.assignAndSignal(completed);

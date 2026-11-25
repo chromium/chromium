@@ -70,6 +70,7 @@
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/service/glic_actuation_locality_tracker.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
@@ -625,10 +626,22 @@ class GlicWebClientHandler
                   base::Unretained(this)));
     }
 
+    actuation_locality_changed_subscription_ =
+        host()
+            .instance_delegate()
+            .actuation_locality_tracker()
+            .AddLocalityChangedCallback(base::BindRepeating(
+                &GlicWebClientHandler::NotifyActuationLocalityChanged,
+                base::Unretained(this)));
+
     auto state = glic::mojom::WebClientInitialState::New();
     PopulateGlobalClientInitialState(state.get(), profile_);
 
     state->panel_state = host().instance().GetPanelState()->Clone();
+    state->actuation_locality = host()
+                                    .instance_delegate()
+                                    .actuation_locality_tracker()
+                                    .GetCurrentState();
 
     state->focused_tab_data =
         CreateFocusedTabData(GetSharingManagerInternal().GetFocusedTabData());
@@ -1943,6 +1956,13 @@ class GlicWebClientHandler
     web_client_->NotifyActOnWebCapabilityChanged(can_act_on_web);
   }
 
+  void NotifyActuationLocalityChanged(
+      const mojom::ActuationLocalityState& state) {
+    if (web_client_) {
+      web_client_->NotifyActuationLocalityChanged(state.Clone());
+    }
+  }
+
   void SubscribeToTabData(
       int32_t tab_id,
       ::mojo::PendingRemote<mojom::TabDataHandler> receiver) override {
@@ -1997,6 +2017,7 @@ class GlicWebClientHandler
     action_first_suggestions_handlers_.Clear();
     pinned_tabs_changed_subscription_ = {};
     pinned_tab_data_changed_subscription_ = {};
+    actuation_locality_changed_subscription_ = {};
     web_actuation_pref_subscription_ = {};
     consent_subscription_ = {};
     client_storage_observation_.Reset();
@@ -2159,6 +2180,7 @@ class GlicWebClientHandler
   base::CallbackListSubscription active_browser_changed_subscription_;
   base::CallbackListSubscription actor_task_state_changed_subscription_;
   base::CallbackListSubscription act_on_web_capability_changed_subscription_;
+  base::CallbackListSubscription actuation_locality_changed_subscription_;
   base::CallbackListSubscription web_actuation_pref_subscription_;
   base::CallbackListSubscription consent_subscription_;
   base::ScopedObservation<GlicClientDataStorage,

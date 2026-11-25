@@ -43,6 +43,7 @@ class GlicWebContentsManager;
 class GlicInstanceMetrics;
 class GlicInstanceMetricsBackwardsCompatibility;
 
+class GlicActuationLocalityTracker;
 class GlicPinCandidateProvider;
 class GlicSkillsManager;
 class GlicExperimentalTriggeringManager;
@@ -144,6 +145,8 @@ class Host : public GlicSharingManagerProvider {
     CreateWebContentsManager() = 0;
     virtual GlicExperimentalTriggeringManager*
     GetExperimentalTriggeringManager() = 0;
+
+    virtual GlicActuationLocalityTracker& actuation_locality_tracker() = 0;
   };
 
   class Observer : public base::CheckedObserver {

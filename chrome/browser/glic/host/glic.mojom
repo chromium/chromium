@@ -13,6 +13,7 @@ import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/absl_status.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -354,6 +355,8 @@ struct WebClientInitialState {
   map<string, string> client_storage;
   // Whether features::kGlicActionFirstSuggestions is enabled.
   bool enable_action_first_suggestions;
+  // Current actuation locality for this instance's registered conversation.
+  ActuationLocalityState actuation_locality;
 };
 
 // @generate glic_api
@@ -2270,6 +2273,12 @@ interface WebClient {
   // Informs the client that the capability to act on web pages has changed.
   NotifyActOnWebCapabilityChanged(bool can_act_on_web);
 
+  // Informs the client when the actuation locality for this instance's
+  // registered conversation changes. Pushed from the browser process to the
+  // renderer whenever the matching local actuation task, target tab, or panel
+  // adjacency changes.
+  NotifyActuationLocalityChanged(ActuationLocalityState state);
+
   // The onboarding completed state has changed.
   NotifyOnboardingCompletedChanged(bool completed);
 
@@ -2828,4 +2837,24 @@ struct SwitchAssistantOptions {
 struct SwitchAssistantResponse {
   // The result of attempting to switch the active assistant provider.
   SwitchAssistantResult result;
+};
+
+// Details about an active local browser actuation tab for this instance's
+// registered conversation.
+struct LocalActuationTab {
+  // True when this Glic side panel instance is actively docked adjacent to
+  // `tab_id`.
+  bool is_adjacent;
+  // Browser-side TabHandle raw ID within the same profile.
+  int32 tab_id;
+};
+
+// Current locality state for this instance's registered conversation's
+// actuation task.
+union ActuationLocalityState {
+  // No active non-completed actuation task with a live tab exists for this
+  // instance's registered conversation in this profile.
+  mojo_base.mojom.Empty not_local;
+  // An active local actuation task is running on a live tab in this profile.
+  LocalActuationTab local_tab;
 };
