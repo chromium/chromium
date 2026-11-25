@@ -39,7 +39,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
@@ -615,7 +614,6 @@ public class SigninButtonCoordinatorTest {
         SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU,
         SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS
     })
-    @DisabledTest(message = "https://crbug.com/584456702")
     public void testClickSigninButton_managedAccount_opensManagementPage() {
         DeviceInfo.setIsDesktopForTesting(true);
         startActivityOnNtp();
