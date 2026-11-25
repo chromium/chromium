@@ -67,6 +67,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
+import org.chromium.url.GURL;
 
 import java.util.Map;
 import java.util.Set;
@@ -109,6 +110,8 @@ public class LocationBarTest {
                 () -> {
                     TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
                     LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
+                    doReturn(GURL.emptyGURL()).when(mGoogleSearchEngine).getFaviconURL();
+                    doReturn(GURL.emptyGURL()).when(mNonGoogleSearchEngine).getFaviconURL();
                 });
     }
 

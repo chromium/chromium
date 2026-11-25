@@ -121,11 +121,18 @@ public class TemplateUrl {
     }
 
     /**
+     * @return The PNG-encoded built-in Search Engine icon bytes (if any). Must be called on the UI
+     *     thread; callers should decode the returned bytes off the UI thread.
+     */
+    public byte @Nullable [] getBuiltInSearchEngineIconPngBytes() {
+        return TemplateUrlJni.get().getBuiltInSearchEngineIcon(mTemplateUrlPtr);
+    }
+
+    /**
      * @return The built-in Search Engine icon (if any)
      */
     public @Nullable Bitmap getBuiltInSearchEngineIcon() {
-        byte @Nullable [] pngData =
-                TemplateUrlJni.get().getBuiltInSearchEngineIcon(mTemplateUrlPtr);
+        byte @Nullable [] pngData = getBuiltInSearchEngineIconPngBytes();
         return pngData == null ? null : BitmapFactory.decodeByteArray(pngData, 0, pngData.length);
     }
 

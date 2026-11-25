@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 
 import androidx.annotation.ColorRes;
@@ -29,6 +30,8 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -54,6 +57,8 @@ import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServ
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -104,6 +109,43 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
             ProfileKeyedMap.createMapOfDestroyables();
 
     private static @Nullable SearchEngineService sInstanceForTesting;
+    private static @Nullable Boolean sIsChromeBrandedForTesting;
+
+    private static class DseIconKey {
+        private final String mKeyword;
+        private final @SearchEngineType int mSearchEngineType;
+        private final @StarterPackId int mStarterPackId;
+        private final String mUrl;
+        private final GURL mFaviconUrl;
+
+        DseIconKey(
+                String keyword,
+                @SearchEngineType int searchEngineType,
+                @StarterPackId int starterPackId,
+                String url,
+                GURL faviconUrl) {
+            mKeyword = keyword;
+            mSearchEngineType = searchEngineType;
+            mStarterPackId = starterPackId;
+            mUrl = url;
+            mFaviconUrl = faviconUrl;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object other) {
+            return other instanceof DseIconKey key
+                    && Objects.equals(mKeyword, key.mKeyword)
+                    && mSearchEngineType == key.mSearchEngineType
+                    && mStarterPackId == key.mStarterPackId
+                    && Objects.equals(mUrl, key.mUrl)
+                    && Objects.equals(mFaviconUrl, key.mFaviconUrl);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mKeyword, mSearchEngineType, mStarterPackId, mUrl, mFaviconUrl);
+        }
+    }
 
     private final Context mContext;
     private final Profile mProfile;
@@ -116,6 +158,7 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
             new ObserverList<>();
     private final ObserverList<SearchEngineIconObserver> mSearchEngineIconObservers =
             new ObserverList<>();
+    private final Map<String, StatusIconResource> mBuiltInIconCache = new HashMap<>();
 
     /**
      * Configuration of the AI Mode entry point offered by the current default search engine. {@code
@@ -138,6 +181,9 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
     private boolean mDoesDefaultSearchEngineHaveLogo;
     private @Nullable StatusIconResource mFavicon;
     private @Nullable String mSearchEngineName;
+    private @Nullable DseIconKey mDseIconKey;
+    private boolean mIsDseIconFetchInProgress;
+    private boolean mIsDestroyed;
 
     @FunctionalInterface
     public interface SearchEngineNameObserver {
@@ -214,6 +260,7 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
 
     @Override
     public void destroy() {
+        mIsDestroyed = true;
         if (mNativeSearchEngineServiceAndroid != 0) {
             SearchEngineServiceJni.get().destroy(mNativeSearchEngineServiceAndroid);
             mNativeSearchEngineServiceAndroid = 0;
@@ -221,6 +268,7 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         mTemplateUrlService.removeObserver(this);
         mFaviconHelper.destroy();
         mImageFetcher.destroy();
+        mBuiltInIconCache.clear();
         mSearchEngineIconObservers.clear();
         mSearchEngineNameObservers.clear();
     }
@@ -231,7 +279,10 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
 
         var templateUrl = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
         if (templateUrl == null) {
+            mDseIconKey = null;
+            mIsDseIconFetchInProgress = false;
             setSearchEngineName(null);
+            resetFavicon();
             return;
         }
 
@@ -241,7 +292,28 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
             setSearchEngineName(null);
         }
 
-        retrieveFavicon(templateUrl, this::setSearchEngineIcon);
+        String keyword = templateUrl.getKeyword();
+        DseIconKey newKey =
+                new DseIconKey(
+                        keyword,
+                        mTemplateUrlService.getSearchEngineTypeFromTemplateUrl(keyword),
+                        templateUrl.getStarterPackId(),
+                        templateUrl.getURL(),
+                        templateUrl.getFaviconURL());
+        if (Objects.equals(mDseIconKey, newKey)
+                && (mFavicon != null || mIsDseIconFetchInProgress)) {
+            return;
+        }
+
+        mDseIconKey = newKey;
+        mIsDseIconFetchInProgress = true;
+        retrieveFavicon(
+                templateUrl,
+                icon -> {
+                    if (mIsDestroyed || !Objects.equals(mDseIconKey, newKey)) return;
+                    mIsDseIconFetchInProgress = false;
+                    setSearchEngineIcon(icon);
+                });
     }
 
     @CalledByNative
@@ -371,17 +443,60 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
     private void retrieveFaviconFromBrandedResources(
             TemplateUrl templateUrl, Callback<@Nullable StatusIconResource> callback) {
         // Branded resources are only available on Chrome branded builds.
-        if (BuildConfig.IS_CHROME_BRANDED) {
-            @Nullable Bitmap bm = templateUrl.getBuiltInSearchEngineIcon();
-            if (bm != null) {
-                callback.onResult(
-                        new StatusIconResource(
-                                templateUrl.getFaviconURL().getSpec(), bm, Resources.ID_NULL));
+        if (isChromeBranded()) {
+            String faviconUrlSpec = templateUrl.getFaviconURL().getSpec();
+            if (!TextUtils.isEmpty(faviconUrlSpec)) {
+                StatusIconResource cachedIcon = mBuiltInIconCache.get(faviconUrlSpec);
+                if (cachedIcon != null) {
+                    callback.onResult(cachedIcon);
+                    return;
+                }
+            }
+
+            byte @Nullable [] pngData = templateUrl.getBuiltInSearchEngineIconPngBytes();
+            if (pngData != null) {
+                decodeBrandedIconAsync(pngData, faviconUrlSpec, callback);
                 return;
             }
         }
 
         retrieveFaviconForStarterPack(templateUrl, callback);
+    }
+
+    private void decodeBrandedIconAsync(
+            byte[] pngData,
+            String faviconUrlSpec,
+            Callback<@Nullable StatusIconResource> callback) {
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE,
+                () -> {
+                    Bitmap bm = BitmapFactory.decodeByteArray(pngData, 0, pngData.length);
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> onBrandedIconDecoded(bm, faviconUrlSpec, callback));
+                });
+    }
+
+    private void onBrandedIconDecoded(
+            @Nullable Bitmap bm,
+            String faviconUrlSpec,
+            Callback<@Nullable StatusIconResource> callback) {
+        if (mIsDestroyed) return;
+        if (bm == null) {
+            callback.onResult(null);
+            return;
+        }
+        StatusIconResource resource = new StatusIconResource(faviconUrlSpec, bm, Resources.ID_NULL);
+        if (!TextUtils.isEmpty(faviconUrlSpec)) {
+            mBuiltInIconCache.put(faviconUrlSpec, resource);
+        }
+        callback.onResult(resource);
+    }
+
+    private static boolean isChromeBranded() {
+        return sIsChromeBrandedForTesting != null
+                ? sIsChromeBrandedForTesting
+                : BuildConfig.IS_CHROME_BRANDED;
     }
 
     private void retrieveFaviconForStarterPack(
@@ -554,6 +669,12 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
                     mIsAiModeButtonUiConfigOverriddenForTesting = false;
                     mAiModeButtonUiConfigSupplier.set(oldConfig);
                 });
+    }
+
+    /** Overrides {@link BuildConfig#IS_CHROME_BRANDED} for testing. */
+    public static void setIsChromeBrandedForTesting(boolean isChromeBranded) {
+        sIsChromeBrandedForTesting = isChromeBranded;
+        ResettersForTesting.register(() -> sIsChromeBrandedForTesting = null);
     }
 
     /** Set the instance for testing. */
