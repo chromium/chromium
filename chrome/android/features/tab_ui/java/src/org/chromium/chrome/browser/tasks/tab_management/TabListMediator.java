@@ -2115,11 +2115,10 @@ public class TabListMediator implements TabListNotificationHandler {
         }
         TextResolver contentDescriptionResolver =
                 (context) -> {
-                    TabModel tabModel = getCurrentTabModelChecked();
                     Token tabGroupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
                     if (tabGroupId == null) {
                         if (mComponentId == TabComponentId.ARCHIVED_TABS_DIALOG) {
-                            Tab currentTab = tabModel.getTabById(model.get(TAB_ID));
+                            Tab currentTab = getTabById(model.get(TAB_ID));
                             if (currentTab == null) return "";
                             return context.getString(
                                     R.string.accessibility_restore_tab,
@@ -2127,6 +2126,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         }
                         return "";
                     }
+                    TabModel tabModel = getCurrentTabModelChecked();
                     int numTabsInGroup =
                             tabModel.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId));
                     if (numTabsInGroup == 0) return "";
@@ -2531,10 +2531,10 @@ public class TabListMediator implements TabListNotificationHandler {
         }
         assert mGridLayoutManager != null;
         int spanCount = mGridLayoutManager.getSpanCount();
-        int selectedTabIndex =
-                mTabListLayoutDelegate.getUiIndexForTab(
-                        TabModelUtils.getCurrentTabId(getCurrentTabModelChecked()));
         int indexAfterLastTab = mModelList.getTabIndexBefore(mModelList.size()) + 1;
+        Tab highlightedTab = getHighlightedTab();
+        if (highlightedTab == null) return indexAfterLastTab;
+        int selectedTabIndex = mTabListLayoutDelegate.getUiIndexForTab(highlightedTab.getId());
         if (selectedTabIndex == TabModel.INVALID_TAB_INDEX) {
             return indexAfterLastTab;
         }
@@ -2693,7 +2693,7 @@ public class TabListMediator implements TabListNotificationHandler {
      * @return The UI index of the group header, or {@link TabModel#INVALID_TAB_INDEX} if not found.
      */
     public int getGroupHeaderIndexForTabId(int tabId) {
-        Tab tab = getCurrentTabModelChecked().getTabById(tabId);
+        Tab tab = getTabById(tabId);
         if (tab != null) {
             Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId != null) {
@@ -2909,8 +2909,7 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param items The items that were removed.
      */
     private void onProviderItemsRemoved(List<? extends TabListItem> items) {
-        TabModel tabModel = mCurrentTabModelSupplier.get();
-        if (!mTrackingTabs || tabModel == null) return;
+        if (!mTrackingTabs || mCurrentTabModelSupplier.get() == null) return;
 
         beginProviderUpdate();
         for (TabListItem item : items) {
@@ -2924,7 +2923,7 @@ public class TabListMediator implements TabListNotificationHandler {
                 if (tab == null) continue;
                 // A tab merged into a group is removed as a TabItem but is still shown by the
                 // group card, so keep observing it.
-                if (tabModel.getTabById(tab.getId()) != null
+                if (getTabById(tab.getId()) != null
                         && mTabListLayoutDelegate.isChildTabRepresentedByGroupCard(tab)) {
                     continue;
                 }
@@ -3726,7 +3725,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private void updateTabItemGroupMembership(TabItem tabItem) {
         int index = mModelList.indexFromItem(tabItem);
         if (index == TabModel.INVALID_TAB_INDEX) return;
-        Tab tab = getCurrentTabModelChecked().getTabById(tabItem.getTabId());
+        Tab tab = getTabById(tabItem.getTabId());
         if (tab == null) return;
         PropertyModel model = mModelList.get(index).model;
         mTabListLayoutDelegate.setupGroupPropertiesForChildTab(tab, model);

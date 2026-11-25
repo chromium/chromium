@@ -246,7 +246,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         if (index != TabModel.INVALID_TAB_INDEX || !mUseTabGroupCardType) return index;
 
         // Fall back to resolving the containing group card when the tab has no direct card.
-        Tab tab = mMediator.getCurrentTabModelChecked().getTabById(tabId);
+        Tab tab = mMediator.getTabById(tabId);
         if (tab == null) return TabModel.INVALID_TAB_INDEX;
         Token tabGroupId = tab.getTabGroupId();
         if (tabGroupId == null) return TabModel.INVALID_TAB_INDEX;
@@ -554,9 +554,8 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     @Override
     void onTabSelectionToggled(PropertyModel model, int tabId, boolean wasSelected) {
         // Reset thumbnail to ensure the color of the blank tab slots is correct.
-        TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        Tab tab = tabModel.getTabById(tabId);
-        if (tab != null && tabModel.isTabInTabGroup(tab)) {
+        Tab tab = mMediator.getTabById(tabId);
+        if (tab != null && mMediator.isTabInTabGroup(tab)) {
             mMediator.updateThumbnailFetcher(model, tabId);
         }
     }

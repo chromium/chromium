@@ -3920,6 +3920,37 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testGetPriceWelcomeMessageInsertionIndex_DataProvider() {
+        setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        Tab tab4 = prepareTab(TAB4_ID, TAB4_TITLE, TAB4_URL);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, mTab2, tab3, tab4),
+                /* tabGroupSyncIds= */ null,
+                /* quickMode= */ false);
+        mDataObserver.onDataReset(
+                List.of(
+                        createTabItem(TAB1_ID),
+                        createTabItem(TAB2_ID),
+                        createTabItem(TAB3_ID),
+                        createTabItem(TAB4_ID)));
+        when(mGridLayoutManager.getSpanCount())
+                .thenReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
+        when(mTabModel.index()).thenReturn(2);
+        when(mTabModel.getTabAt(2)).thenReturn(tab3);
+        when(mTabListDataProvider.getSelectedTab()).thenReturn(mTab1);
+
+        // The message goes below the provider's highlighted tab, not the current TabModel's.
+        assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(2));
+
+        when(mTabModel.index()).thenReturn(POSITION1);
+        when(mTabListDataProvider.getSelectedTab()).thenReturn(null);
+
+        // With no highlighted tab, the message goes after the last tab.
+        assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(4));
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
     public void testGetPriceWelcomeMessageInsertionIndex_GroupedTab_featureDisabled() {
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -4374,6 +4405,46 @@ public class TabListMediatorUnitTest {
         assertThat(
                 mModelList
                         .get(POSITION2)
+                        .model
+                        .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext),
+                equalTo(targetString));
+    }
+
+    @Test
+    public void testTabDescriptionString_Archived_TabOfAnotherModel() {
+        mMediator.resetWithListOfTabs(
+                /* tabs= */ null, /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mMediator.destroy();
+        mModelList = new TabListModel();
+        mTabListConfig =
+                new TabListConfig.Builder(TabListLayoutType.GROUPED)
+                        .setTabUiType(UiType.TAB)
+                        .setSupportsTabGroups(/* supportsTabGroups= */ true)
+                        .setDataProvider(mTabListDataProvider)
+                        .build();
+        mMediator =
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(/* provider= */ null)
+                        .setComponentId(TabComponentId.ARCHIVED_TABS_DIALOG)
+                        .setTabListConfig(mTabListConfig)
+                        .build();
+        mMediator.initWithNative(mProfile);
+        verify(mTabListDataProvider).addObserver(mTabListDataObserverCaptor.capture());
+        mDataObserver = mTabListDataObserverCaptor.getValue();
+
+        Tab otherModelTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(null);
+        when(mTabListDataProvider.getTabById(TAB3_ID)).thenReturn(otherModelTab);
+        mMediator.resetWithListOfTabs(
+                List.of(otherModelTab), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB3_ID)));
+
+        String targetString = mResources.getString(R.string.accessibility_restore_tab, TAB3_TITLE);
+
+        assertThat(
+                mModelList
+                        .get(POSITION1)
                         .model
                         .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
                         .resolve(mContext),
@@ -4854,7 +4925,6 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.get(1).model.get(TabProperties.IS_SELECTED), equalTo(false));
         assertThat(mModelList.get(2).model.get(TabProperties.IS_SELECTED), equalTo(false));
 
-        when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(false);
         ThumbnailFetcher fetcher2 = mModelList.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
         mModelList
                 .get(1)
@@ -4888,7 +4958,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.get(1).model.get(TabProperties.IS_SELECTED), equalTo(false));
         assertThat(mModelList.get(2).model.get(TabProperties.IS_SELECTED), equalTo(false));
 
-        when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(true);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         ThumbnailFetcher fetcher2 = mModelList.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
         mModelList
                 .get(1)
@@ -8250,6 +8320,22 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testDataProvider_GetGroupHeaderIndexForTabId_TabOfAnotherModel() {
+        setUpProviderMediator(TabListLayoutType.NESTED, /* supportsModifierMultiSelect= */ false);
+        Tab otherModelTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        createTabGroup(List.of(otherModelTab), TAB_GROUP_ID);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(null);
+        when(mTabListDataProvider.getTabById(TAB3_ID)).thenReturn(otherModelTab);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, otherModelTab), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        TabGroupItem groupItem =
+                new TabGroupItem(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), groupItem));
+
+        assertEquals(1, mMediator.getGroupHeaderIndexForTabId(TAB3_ID));
+    }
+
+    @Test
     public void testDataProvider_OnDataReset_IgnoresEmptyGroup() {
         setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
         mMediator.resetWithListOfTabs(
@@ -8846,6 +8932,24 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testDataProvider_OnItemsRemoved_TabOfAnotherModelMergedIntoGroup_KeepsObserver() {
+        setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
+        Tab otherModelTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(null);
+        when(mTabListDataProvider.getTabById(TAB3_ID)).thenReturn(otherModelTab);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, otherModelTab), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB3_ID)));
+        when(otherModelTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        clearInvocations(otherModelTab);
+
+        mDataObserver.onItemsRemoved(List.of(createTabItem(TAB3_ID)));
+
+        assertTabIds(TAB1_ID);
+        verify(otherModelTab, never()).removeObserver(any());
+    }
+
+    @Test
     public void testDataProvider_OnItemsRemoved_TabGoneFromModel_DetachesObserver() {
         setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
         mMediator.resetWithListOfTabs(
@@ -9103,6 +9207,33 @@ public class TabListMediatorUnitTest {
         assertNull(model.get(TabProperties.TAB_GROUP_CARD_COLOR));
         assertEquals(TAB, model.get(CARD_TYPE));
         assertEquals(1, mModelList.size());
+    }
+
+    @Test
+    public void testDataProvider_OnItemUpdated_GroupMembership_TabOfAnotherModel() {
+        setUpProviderMediator(TabListLayoutType.NESTED, /* supportsModifierMultiSelect= */ false);
+        Tab otherModelTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(null);
+        when(mTabListDataProvider.getTabById(TAB3_ID)).thenReturn(otherModelTab);
+        mMediator.resetWithListOfTabs(
+                List.of(otherModelTab), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB3_ID)));
+        assertNull(mModelList.get(0).model.get(TabProperties.TAB_GROUP_ID));
+
+        when(otherModelTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(COLOR_2);
+        mDataObserver.onItemUpdated(createTabItem(TAB3_ID), PayloadType.GROUP_MEMBERSHIP);
+
+        PropertyModel model = mModelList.get(0).model;
+        assertEquals(TAB_GROUP_ID, model.get(TabProperties.TAB_GROUP_ID));
+        assertThat(model.get(TabProperties.TAB_GROUP_CARD_COLOR), equalTo(COLOR_2));
+
+        when(otherModelTab.getTabGroupId()).thenReturn(null);
+        mDataObserver.onItemUpdated(createTabItem(TAB3_ID), PayloadType.GROUP_MEMBERSHIP);
+
+        assertNull(model.get(TabProperties.TAB_GROUP_ID));
+        assertNull(model.get(TabProperties.TAB_GROUP_CARD_COLOR));
     }
 
     @Test
