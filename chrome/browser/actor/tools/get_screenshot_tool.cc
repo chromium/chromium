@@ -13,7 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/actor/actor_surface.h"
-#include "chrome/browser/actor/tools/screenshot_tool_result.h"
+#include "chrome/browser/actor/tools/get_screenshot_tool_result.h"
 #include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -160,7 +160,7 @@ void GetScreenshotTool::OnScreenshotFetched(
     return;
   }
 
-  ToolResult tool_result = ToolResult::Success(ScreenshotToolResult(
+  ToolResult tool_result = ToolResult::Success(GetScreenshotToolResult(
       std::move(screenshot_result.screenshot_data),
       std::move(screenshot_result.mime_type), screenshot_result.dimensions));
   tool_result.deprecated_action_result()->requires_page_stabilization = false;

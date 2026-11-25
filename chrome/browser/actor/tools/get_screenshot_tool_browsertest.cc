@@ -16,7 +16,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/get_screenshot_tool_request.h"
-#include "chrome/browser/actor/tools/screenshot_tool_result.h"
+#include "chrome/browser/actor/tools/get_screenshot_tool_result.h"
 #include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor/action_result.h"
@@ -63,8 +63,8 @@ IN_PROC_BROWSER_TEST_F(ActorGetScreenshotToolBrowserTest, GetScreenshot) {
       tool_result.deprecated_action_result()->requires_page_stabilization);
   ASSERT_NE(tool_result.data(), nullptr);
 
-  const ScreenshotToolResult* screenshot =
-      tool_result.data()->As<ScreenshotToolResult>();
+  const GetScreenshotToolResult* screenshot =
+      tool_result.data()->As<GetScreenshotToolResult>();
   ASSERT_NE(screenshot, nullptr);
   EXPECT_EQ(screenshot->mime_type, "image/jpeg");
 
