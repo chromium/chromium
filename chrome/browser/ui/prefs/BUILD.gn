@@ -46,7 +46,6 @@ source_set("impl") {
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
-    "//components/autofill/core/common",
     "//components/language/core/browser",
     "//components/live_caption:constants",
     "//components/pref_registry",

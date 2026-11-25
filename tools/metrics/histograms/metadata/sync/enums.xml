@@ -395,8 +395,8 @@ chromium-metrics-reviews@google.com.
   <int value="121" label="DriveConsentState"/>
   <int value="122" label="AutofillAiPrivateInferenceOptInStatus"/>
   <int value="123" label="AutofillWalletReminderNoticeShown"/>
-  <int value="124" label="AutofillAtMemoryDoubleCtrlTriggerEnabled"/>
-  <int value="125" label="AutofillAtMemoryShortcut"/>
+  <int value="124" label="(obsolete) AutofillAtMemoryDoubleCtrlTriggerEnabled"/>
+  <int value="125" label="(obsolete) AutofillAtMemoryShortcut"/>
   <int value="126" label="SubscriptionEligibilitySubscriptionBenefits"/>
   <int value="127" label="CustomLinksInitializedMobile"/>
   <int value="128" label="CustomLinksListMobile"/>

@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/convert_explicitly_allowed_network_ports_pref.h"
@@ -35,10 +34,7 @@
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/platform/ax_platform.h"
-#include "ui/base/accelerators/accelerator.h"
-#include "ui/base/accelerators/command.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/native_theme/native_theme.h"
 
 #if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
@@ -219,21 +215,6 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #endif
   prefs->caret_browsing_enabled =
       pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
-
-  const std::string& shortcut_string =
-      pref_service->GetString(autofill::prefs::kAutofillAtMemoryShortcut);
-  if (!shortcut_string.empty()) {
-    ui::Accelerator accelerator =
-        ui::Command::StringToAccelerator(shortcut_string);
-    prefs->autofill_shortcut_key_code = accelerator.key_code();
-    prefs->autofill_shortcut_modifiers = accelerator.modifiers();
-  } else {
-    prefs->autofill_shortcut_key_code = ui::VKEY_UNKNOWN;
-    prefs->autofill_shortcut_modifiers = 0;
-  }
-  prefs->autofill_at_memory_double_ctrl_trigger_enabled =
-      pref_service->GetBoolean(
-          autofill::prefs::kAutofillAtMemoryDoubleCtrlTriggerEnabled);
 
   ui::AXPlatform::GetInstance().SetCaretBrowsingState(
       prefs->caret_browsing_enabled);

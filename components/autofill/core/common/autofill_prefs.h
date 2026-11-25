@@ -82,13 +82,6 @@ inline constexpr char kAutofillHasSeenBnpl[] = "autofill.has_seen_bnpl";
 // terms.
 inline constexpr char kAutofillAmountExtractionAiTermsSeen[] =
     "autofill.amount_extraction_ai_terms_seen";
-// Boolean that is true if the Double Ctrl / Double Command trigger for
-// AtMemory is enabled.
-inline constexpr char kAutofillAtMemoryDoubleCtrlTriggerEnabled[] =
-    "autofill.at_memory.double_ctrl_trigger_enabled";
-// String representing the keyboard shortcut configured for AtMemory.
-inline constexpr char kAutofillAtMemoryShortcut[] =
-    "autofill.at_memory.shortcut";
 // Integer tracking the number of times the AtMemory keyboard shortcut
 // educational promo has been shown.
 inline constexpr char kAutofillAtMemoryShortcutPromoImpressionCount[] =

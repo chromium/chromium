@@ -212,12 +212,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kAutofillAmountExtractionAiTermsSeen, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-  registry->RegisterBooleanPref(
-      kAutofillAtMemoryDoubleCtrlTriggerEnabled,
-      features::kAutofillAtMemoryDoubleCtrlDefaultPref.Get(),
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterStringPref(kAutofillAtMemoryShortcut, "",
-                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(kAutofillAtMemoryShortcutPromoImpressionCount,
                                 0);
 

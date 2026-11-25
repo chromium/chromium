@@ -264,22 +264,6 @@ struct BLINK_COMMON_EXPORT
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  static int32_t autofill_shortcut_key_code(
-      const ::blink::RendererPreferences& data) {
-    return static_cast<int32_t>(data.autofill_shortcut_key_code);
-  }
-
-  static int32_t autofill_shortcut_modifiers(
-      const ::blink::RendererPreferences& data) {
-    return data.autofill_shortcut_modifiers;
-  }
-
-
-  static bool autofill_at_memory_double_ctrl_trigger_enabled(
-      const ::blink::RendererPreferences& data) {
-    return data.autofill_at_memory_double_ctrl_trigger_enabled;
-  }
-
   static const std::vector<uint16_t>& explicitly_allowed_network_ports(
       const ::blink::RendererPreferences& data) {
     return data.explicitly_allowed_network_ports;

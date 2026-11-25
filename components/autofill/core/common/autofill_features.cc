@@ -513,17 +513,6 @@ BASE_FEATURE(kAutofillAndroidUseGlobalIdForFormComparison,
 // Feature flag for kAutofillAtMemory.
 BASE_FEATURE(kAutofillAtMemory, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, AtMemory can be triggered by pressing Ctrl twice.
-BASE_FEATURE(kAutofillAtMemoryDoubleCtrl, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The default state for the `kAutofillAtMemoryDoubleCtrlTriggerEnabled`
-// preference.
-BASE_FEATURE_PARAM(bool,
-                   kAutofillAtMemoryDoubleCtrlDefaultPref,
-                   &kAutofillAtMemoryDoubleCtrl,
-                   "default_pref",
-                   true);
-
 // The subscription tiers for which AtMemory is eligible. Comma-separated list
 // of subscription tier integers. If empty/not defined, no tier restrictions
 // are applied.
@@ -563,11 +552,6 @@ BASE_FEATURE(kAutofillAtMemoryPreviouslyFilled,
 // suggestions on the same field. State is reset once a suggestion is accepted
 // or a different field is focused.
 BASE_FEATURE(kAutofillAtMemorySearchStatefulness,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, AtMemory can be triggered with a keyboard shortcut like
-// Ctrl+Space.
-BASE_FEATURE(kAutofillAtMemoryTriggerShortcut,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the placeholder is not considered a label fallback on the

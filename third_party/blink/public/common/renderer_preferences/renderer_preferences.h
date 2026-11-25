@@ -17,7 +17,6 @@
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_url_entry.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/font_render_params.h"
 
 namespace blink {
@@ -99,10 +98,6 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   bool system_color_chooser_is_modal{false};
   bool is_global_privacy_control_setting_enabled{false};
   std::optional<bool> global_privacy_control_devtools_override;
-
-  ui::KeyboardCode autofill_shortcut_key_code = ui::VKEY_UNKNOWN;
-  int autofill_shortcut_modifiers = 0;
-  bool autofill_at_memory_double_ctrl_trigger_enabled = false;
 
   RendererPreferences();
   RendererPreferences(const RendererPreferences& other);
