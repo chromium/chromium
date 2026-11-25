@@ -34,6 +34,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -77,8 +78,21 @@ class ExtensionSidePanelCoordinatorAndroidBrowserTest
     ExtensionSidePanelCoordinator* coordinator =
         manager->GetExtensionCoordinatorForTesting(extension_id);
     ASSERT_TRUE(coordinator);
+    const SkBitmap blank_bitmap = gfx::test::CreateBitmap(
+        extension_misc::EXTENSION_ICON_SMALLISH, SK_ColorTRANSPARENT);
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      return coordinator->extension_icon()->did_complete_initial_load();
+      const IconImage* icon_image = coordinator->extension_icon();
+      if (!icon_image->did_complete_initial_load()) {
+        return false;
+      }
+      // `ExtensionSidePanelCoordinator::LoadExtensionIcon()` calls
+      // `EnsureRepsForSupportedScales()`, which loads each supported scale
+      // concurrently, while `did_complete_initial_load()` becomes true on the
+      // first scale to finish. Wait until the 1x representation queried by
+      // `ToSkBitmap()` has replaced the blank placeholder.
+      const SkBitmap* bitmap = icon_image->image().ToSkBitmap();
+      return bitmap && !bitmap->drawsNothing() &&
+             !gfx::test::AreBitmapsEqual(*bitmap, blank_bitmap);
     }));
   }
 
