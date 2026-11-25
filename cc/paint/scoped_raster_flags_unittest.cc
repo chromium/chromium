@@ -62,7 +62,11 @@ class MockPaintWorkletImageProvider : public ImageProvider {
   ~MockPaintWorkletImageProvider() override = default;
 
   ScopedResult GetRasterContent(const DrawImage& draw_image) override {
-    return ScopedResult(PaintRecord());
+    NOTREACHED();
+  }
+  std::optional<PaintRecord> GetPaintRecord(
+      const PaintImage& paint_image) override {
+    return PaintRecord();
   }
 };
 }  // namespace

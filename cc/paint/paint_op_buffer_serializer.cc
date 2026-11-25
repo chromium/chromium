@@ -326,9 +326,9 @@ bool PaintOpBufferSerializer::WillSerializeNextOp<float>(
                              paint_image.height());
     }
 
-    ImageProvider::ScopedResult result =
-        options_.image_provider->GetRasterContent(DrawImage(paint_image));
-    if (!result || !result.has_paint_record()) {
+    std::optional<PaintRecord> record =
+        options_.image_provider->GetPaintRecord(paint_image);
+    if (!record) {
       return true;
     }
 
@@ -361,7 +361,7 @@ bool PaintOpBufferSerializer::WillSerializeNextOp<float>(
       }
     }
 
-    SerializeBuffer(canvas, result.ReleaseAsRecord().buffer(), nullptr);
+    SerializeBuffer(canvas, record->buffer(), nullptr);
     RestoreToCount(canvas, save_count, params);
     return true;
   } else {

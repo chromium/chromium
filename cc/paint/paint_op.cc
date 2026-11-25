@@ -1324,8 +1324,8 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
   SkPaint paint = flags ? flags->ToSkPaint() : SkPaint();
 
   if (params.image_provider && op->image.IsDeferredPaintRecord()) {
-    ImageProvider::ScopedResult result =
-        params.image_provider->GetRasterContent(DrawImage(op->image));
+    std::optional<PaintRecord> record =
+        params.image_provider->GetPaintRecord(op->image);
 
     // Check that we are not using loopers with paint worklets, since converting
     // PaintFlags to SkPaint drops loopers.
@@ -1340,8 +1340,8 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     // because a navigation is happening). In that case the PaintWorklet jobs
     // will fail and there will be no result to raster here. This state is
     // transient as the next main frame commit will remove the PaintWorklets.
-    if (result && result.has_paint_record()) {
-      result.ReleaseAsRecord().Playback(canvas, params);
+    if (record) {
+      record->Playback(canvas, params);
     }
     return;
   }
@@ -1440,8 +1440,8 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     // we should draw nothing.
     if (!params.image_provider)
       return;
-    ImageProvider::ScopedResult result =
-        params.image_provider->GetRasterContent(DrawImage(op->image));
+    std::optional<PaintRecord> record =
+        params.image_provider->GetPaintRecord(op->image);
 
     // Check that we are not using loopers with paint worklets, since converting
     // PaintFlags to SkPaint drops loopers.
@@ -1463,8 +1463,8 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     // because a navigation is happening). In that case the PaintWorklet jobs
     // will fail and there will be no result to raster here. This state is
     // transient as the next main frame commit will remove the PaintWorklets.
-    if (result && result.has_paint_record()) {
-      result.ReleaseAsRecord().Playback(canvas, params);
+    if (record) {
+      record->Playback(canvas, params);
     }
     return;
   }

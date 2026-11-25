@@ -21,16 +21,16 @@ PaintWorkletImageProvider::PaintWorkletImageProvider(
 PaintWorkletImageProvider& PaintWorkletImageProvider::operator=(
     PaintWorkletImageProvider&& other) = default;
 
-ImageProvider::ScopedResult PaintWorkletImageProvider::GetPaintRecordResult(
+std::optional<PaintRecord> PaintWorkletImageProvider::GetPaintRecordResult(
     scoped_refptr<PaintWorkletInput> input) {
   auto it = records_.find(input);
   // In the DiscardableImageMap::GatherDiscardableImages(), a DrawImageRect can
   // early exit the for loop if its paint rect is empty. In that case, the
   // |records_| will not contain that PaintWorkletInput, and we should return
-  // an empty result.
+  // std::nullopt.
   if (it == records_.end())
-    return ImageProvider::ScopedResult();
-  return ImageProvider::ScopedResult(it->second.second);
+    return std::nullopt;
+  return it->second.second;
 }
 
 }  // namespace cc

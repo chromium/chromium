@@ -84,10 +84,15 @@ class DispatchingImageProvider : public ImageProvider {
 
   ImageProvider::ScopedResult GetRasterContent(
       const DrawImage& draw_image) override {
-    return draw_image.paint_image().IsPaintWorklet()
-               ? paint_worklet_image_provider_.GetPaintRecordResult(
-                     draw_image.paint_image().GetPaintWorkletInput())
-               : playback_image_provider_.GetRasterContent(draw_image);
+    DCHECK(!draw_image.paint_image().IsPaintWorklet());
+    return playback_image_provider_.GetRasterContent(draw_image);
+  }
+
+  std::optional<PaintRecord> GetPaintRecord(
+      const PaintImage& paint_image) override {
+    DCHECK(paint_image.IsPaintWorklet());
+    return paint_worklet_image_provider_.GetPaintRecordResult(
+        paint_image.GetPaintWorkletInput());
   }
 
  private:

@@ -5,6 +5,8 @@
 #ifndef CC_PAINT_DECODE_STASHING_IMAGE_PROVIDER_H_
 #define CC_PAINT_DECODE_STASHING_IMAGE_PROVIDER_H_
 
+#include <optional>
+
 #include "base/memory/stack_allocated.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_export.h"
@@ -29,6 +31,8 @@ class CC_PAINT_EXPORT DecodeStashingImageProvider : public ImageProvider {
   // ImageProvider implementation.
   ImageProvider::ScopedResult GetRasterContent(
       const DrawImage& draw_image) override;
+  std::optional<PaintRecord> GetPaintRecord(
+      const PaintImage& paint_image) override;
 
   // Releases all stashed images. The caller must ensure that it is safe to
   // unlock any images acquired before this.

@@ -5,8 +5,10 @@
 #ifndef CC_RASTER_PAINT_WORKLET_IMAGE_PROVIDER_H_
 #define CC_RASTER_PAINT_WORKLET_IMAGE_PROVIDER_H_
 
+#include <optional>
+
 #include "cc/cc_export.h"
-#include "cc/paint/image_provider.h"
+#include "cc/paint/paint_record.h"
 #include "cc/paint/paint_worklet_input.h"
 
 namespace cc {
@@ -29,7 +31,7 @@ class CC_EXPORT PaintWorkletImageProvider {
       delete;
   PaintWorkletImageProvider& operator=(PaintWorkletImageProvider&& other);
 
-  ImageProvider::ScopedResult GetPaintRecordResult(
+  std::optional<PaintRecord> GetPaintRecordResult(
       scoped_refptr<PaintWorkletInput> input);
 
  private:

@@ -12,13 +12,13 @@
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_export.h"
-#include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_record.h"
 
 namespace cc {
 class PaintImage;
 
 // Used to replace lazy generated PaintImages with decoded images for
-// rasterization.
+// rasterization, or PaintWorklet-backed PaintImages with PaintRecords.
 class CC_PAINT_EXPORT ImageProvider {
  public:
   class CC_PAINT_EXPORT ScopedResult {
@@ -27,7 +27,6 @@ class CC_PAINT_EXPORT ImageProvider {
 
     ScopedResult();
     explicit ScopedResult(DecodedDrawImage image);
-    explicit ScopedResult(std::optional<PaintRecord> record);
     ScopedResult(DecodedDrawImage image, DestructionCallback callback);
     ScopedResult(const ScopedResult&) = delete;
     ScopedResult(ScopedResult&& other);
@@ -36,31 +35,31 @@ class CC_PAINT_EXPORT ImageProvider {
     ScopedResult& operator=(const ScopedResult&) = delete;
     ScopedResult& operator=(ScopedResult&& other);
 
-    explicit operator bool() const { return image_ || record_; }
+    explicit operator bool() const { return static_cast<bool>(image_); }
     const DecodedDrawImage& decoded_image() const { return image_; }
     bool needs_unlock() const { return !destruction_callback_.is_null(); }
-
-    bool has_paint_record() const { return record_.has_value(); }
-    PaintRecord ReleaseAsRecord() {
-      DCHECK(has_paint_record());
-      return std::move(record_.value());
-    }
 
    private:
     void DestroyDecode();
 
     DecodedDrawImage image_;
-    std::optional<PaintRecord> record_;
     DestructionCallback destruction_callback_;
   };
 
   virtual ~ImageProvider() = default;
 
-  // Returns either:
-  // 1. The DecodedDrawImage to use for this PaintImage. If no image is
-  // provided, the draw for this image will be skipped during raster. Or,
-  // 2. The PaintRecord produced by paint worklet JS paint callback.
+  // Callers must check `PaintImage::IsDeferredPaintRecord()` (which includes
+  // `IsPaintWorklet()`) before choosing an entry point: call `GetPaintRecord()`
+  // if true, and `GetRasterContent()` otherwise.
+
+  // Returns the DecodedDrawImage to use for this DrawImage. If no image is
+  // provided, the draw for this image will be skipped during raster.
   virtual ScopedResult GetRasterContent(const DrawImage& draw_image) = 0;
+
+  // Returns the PaintRecord produced by a paint worklet JS paint callback for
+  // `paint_image`.
+  virtual std::optional<PaintRecord> GetPaintRecord(
+      const PaintImage& paint_image);
 };
 
 }  // namespace cc

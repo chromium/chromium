@@ -3395,9 +3395,8 @@ class MockImageProvider : public ImageProvider {
 
   ImageProvider::ScopedResult GetRasterContent(
       const DrawImage& draw_image) override {
+    DCHECK(!draw_image.paint_image().IsPaintWorklet());
     decoded_images_.push_back(draw_image);
-    if (draw_image.paint_image().IsPaintWorklet())
-      return ScopedResult(record_);
 
     if (fail_all_decodes_)
       return ImageProvider::ScopedResult();
@@ -3409,6 +3408,12 @@ class MockImageProvider : public ImageProvider {
     size_t i = index_++;
     return ScopedResult(DecodedDrawImage(image, nullptr, src_rect_offset_[i],
                                          scale_[i], quality_[i], true));
+  }
+
+  std::optional<PaintRecord> GetPaintRecord(
+      const PaintImage& paint_image) override {
+    DCHECK(paint_image.IsPaintWorklet());
+    return record_;
   }
 
   void SetRecord(PaintRecord record) { record_ = std::move(record); }
@@ -3423,7 +3428,7 @@ class MockImageProvider : public ImageProvider {
   std::vector<PaintFlags::FilterQuality> quality_;
   size_t index_ = 0;
   bool fail_all_decodes_ = false;
-  PaintRecord record_;
+  std::optional<PaintRecord> record_;
   std::vector<DrawImage> decoded_images_;
 };
 
