@@ -274,6 +274,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     // thus masking the error away.
     if (!(old_count & kMemoryHeldByAllocatorBit)) [[unlikely]] {
       DoubleFreeOrCorruptionDetected(old_count, slot_start, slot_span);
+      // `DoubleFreeOrCorruptionDetected()` returns on iOS when crash
+      // suppression is enabled. Don't report the slot as reclaimable, so that
+      // the caller doesn't free it a second time.
+      return false;
     }
 
     // Release memory when no raw_ptr<> exists anymore:
