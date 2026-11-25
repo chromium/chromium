@@ -326,9 +326,14 @@ void TabGroupsOrganizerPageHandler::ShowContextMenu(
     organizer_controller->SetCloseAction(
         OrganizerPanelCloseAction::kOpenTabGroupMenu);
   }
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   context_menu_runner_->RunMenuAt(widget, nullptr, screen_rect,
                                   views::MenuAnchorPosition::kTopLeft,
                                   ui::mojom::MenuSourceType::kNone);
+  if (weak_this && on_menu_closed_callback_ &&
+      (!context_menu_runner_ || !context_menu_runner_->IsRunning())) {
+    OnContextMenuClosed();
+  }
 }
 
 void TabGroupsOrganizerPageHandler::CreateNewTabGroup() {
@@ -463,6 +468,7 @@ void TabGroupsOrganizerPageHandler::OnContextMenuClosed() {
     context_menu_runner_->Cancel();
   }
   context_menu_runner_.reset();
+  menu_model_.reset();
 }
 
 int TabGroupsOrganizerPageHandler::GetAndIncrementLatestCommandId() {
