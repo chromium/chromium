@@ -32,12 +32,6 @@ BASE_FEATURE(kAccessibilityExpandEventMetadata,
 BASE_FEATURE(kAccessibilityExposeNonAtomicTextFieldChildren,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables content-initiated, main frame navigations to data URLs.
-// TODO(meacer): Remove when the deprecation is complete.
-//               https://www.chromestatus.com/feature/5669602927312896
-BASE_FEATURE(kAllowContentInitiatedDataUrlNavigations,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables forwarding WebKeyboardEvent of type kKeyDown from confirmed physical
 // keyboards to KeyPressEventCallback listeners in RenderWidgetHostImpl on
 // Android.

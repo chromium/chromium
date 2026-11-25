@@ -627,37 +627,6 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
       NAVIGATION_BLOCKED);
 }
 
-class DataUrlNavigationBrowserTestWithFeatureFlag
-    : public BlockedSchemeNavigationBrowserTest {
- public:
-  DataUrlNavigationBrowserTestWithFeatureFlag() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAllowContentInitiatedDataUrlNavigations);
-  }
-
-  DataUrlNavigationBrowserTestWithFeatureFlag(
-      const DataUrlNavigationBrowserTestWithFeatureFlag&) = delete;
-  DataUrlNavigationBrowserTestWithFeatureFlag& operator=(
-      const DataUrlNavigationBrowserTestWithFeatureFlag&) = delete;
-
-  ~DataUrlNavigationBrowserTestWithFeatureFlag() override {}
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that a content initiated navigation to a data URL is allowed if
-// blocking is disabled with a feature flag.
-IN_PROC_BROWSER_TEST_F(DataUrlNavigationBrowserTestWithFeatureFlag,
-                       HTML_Navigation_Allow_FeatureFlag) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("/data_url_navigations.html")));
-  ExecuteScriptAndCheckNavigation(
-      shell(), shell()->web_contents()->GetPrimaryMainFrame(), url::kDataScheme,
-      "document.getElementById('navigate-top-frame-to-html').click()",
-      NAVIGATION_ALLOWED);
-}
-
 // Tests that a window.open to a blocked scheme with HTML mime type is blocked.
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
                        HTML_WindowOpen_Block) {

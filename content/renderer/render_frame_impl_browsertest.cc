@@ -573,7 +573,7 @@ namespace {
 
 constexpr char kTestFirstURL[] = "http://foo.com/1";
 constexpr char kTestSecondURL[] = "http://foo.com/2";
-// constexpr char kTestCrossOriginURL[] = "http://bar.com/";
+constexpr char kTestCrossOriginURL[] = "http://bar.com/";
 constexpr char kAboutBlankURL[] = "about:blank";
 
 constexpr char kFrameEventDidCreateNewFrame[] = "did-create-new-frame";
@@ -887,22 +887,14 @@ void ExpectPendingInterfaceReceiversFromSources(
 
 class RenderFrameRemoteInterfacesTest : public RenderViewTest {
  public:
-  RenderFrameRemoteInterfacesTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAllowContentInitiatedDataUrlNavigations);
-    blink::WebRuntimeFeatures::EnableFeatureFromString(
-        "AllowContentInitiatedDataUrlNavigations", true);
-  }
+  RenderFrameRemoteInterfacesTest() = default;
 
   RenderFrameRemoteInterfacesTest(const RenderFrameRemoteInterfacesTest&) =
       delete;
   RenderFrameRemoteInterfacesTest& operator=(
       const RenderFrameRemoteInterfacesTest&) = delete;
 
-  ~RenderFrameRemoteInterfacesTest() override {
-    blink::WebRuntimeFeatures::EnableFeatureFromString(
-        "AllowContentInitiatedDataUrlNavigations", false);
-  }
+  ~RenderFrameRemoteInterfacesTest() override = default;
 
  protected:
   void SetUp() override {
@@ -937,7 +929,6 @@ class RenderFrameRemoteInterfacesTest : public RenderViewTest {
   // Owned by RenderViewTest.
   raw_ptr<FrameCreationObservingRendererClient> frame_creation_observer_ =
       nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Expect that |remote_interfaces_| is bound before the first committed load in
@@ -976,12 +967,11 @@ TEST_F(RenderFrameRemoteInterfacesTest, ChildFrameAtFirstCommittedLoad) {
 // the main frame of an opened window, and then re-bound on the first commit.
 TEST_F(RenderFrameRemoteInterfacesTest,
        MainFrameOfOpenedWindowAtFirstCommittedLoad) {
-  const GURL new_window_url("data:text/html,NewWindow");
+  const GURL new_window_url(kTestCrossOriginURL);
   ScopedNewFrameInterfaceProviderExerciser main_frame_exerciser(
       frame_creation_observer(), std::string("foo"));
-  const std::string html =
-      base::StringPrintf("<script>window.open(\"%s\", \"_blank\")</script>",
-                         "data:text/html,NewWindow");
+  const std::string html = base::StringPrintf(
+      "<script>window.open(\"%s\", \"_blank\")</script>", kTestCrossOriginURL);
   LoadHTMLWithUrlOverride(html.c_str(), kTestSecondURL);
   ASSERT_NO_FATAL_FAILURE(
       main_frame_exerciser.ExpectNewFrameAndWaitForLoad(new_window_url));

@@ -103,9 +103,7 @@ void BlockedSchemeNavigationThrottle::MaybeCreateAndAdd(
   if (handle.IsInMainFrame() && handle.IsRendererInitiated() &&
       !handle.IsSameDocument() && !handle.IsHistory() &&
       (handle.GetURL().SchemeIs(url::kDataScheme) ||
-       handle.GetURL().SchemeIs(url::kFileSystemScheme)) &&
-      !base::FeatureList::IsEnabled(
-          features::kAllowContentInitiatedDataUrlNavigations)) {
+       handle.GetURL().SchemeIs(url::kFileSystemScheme))) {
     registry.AddThrottle(
         std::make_unique<BlockedSchemeNavigationThrottle>(registry));
     return;

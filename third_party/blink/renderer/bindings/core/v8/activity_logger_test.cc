@@ -543,8 +543,6 @@ TEST_F(ActivityLoggerTest, FormActionAttribute) {
 }
 
 TEST_F(ActivityLoggerTest, LocalDOMWindowAttribute) {
-  ScopedAllowContentInitiatedDataUrlNavigationsForTest allow_data_url(true);
-
   const char* code =
       "location.href = 'data:text/html;charset=utf-8,A';"
       "location.assign('data:text/html;charset=utf-8,B');"
@@ -559,13 +557,10 @@ TEST_F(ActivityLoggerTest, LocalDOMWindowAttribute) {
   const char* expected_activities =
       "blinkSetAttribute | LocalDOMWindow | url | about:blank | "
       "data:text/html;charset=utf-8,A\n"
-      "blinkRequestResource | Main resource | data:text/html;charset=utf-8,A\n"
       "blinkSetAttribute | LocalDOMWindow | url | about:blank | "
       "data:text/html;charset=utf-8,B\n"
-      "blinkRequestResource | Main resource | data:text/html;charset=utf-8,B\n"
       "blinkSetAttribute | LocalDOMWindow | url | about:blank | "
       "data:text/html;charset=utf-8,C\n"
-      "blinkRequestResource | Main resource | data:text/html;charset=utf-8,C\n"
       "blinkSetAttribute | LocalDOMWindow | url | about:blank | "
       "about:pathname\n"
       "blinkSetAttribute | LocalDOMWindow | url | about:blank | "
