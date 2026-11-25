@@ -181,7 +181,6 @@ bool OffscreenCanvasRenderingContext2D::InitializeBacking() {
     return false;
   }
 
-  gfx::Size surface_size(host->width(), host->height());
   const bool use_gpu_raster =
       SharedGpuContext::IsGpuCompositingEnabled() &&
       RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&

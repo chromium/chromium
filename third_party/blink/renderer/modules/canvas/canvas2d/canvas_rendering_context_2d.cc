@@ -140,9 +140,6 @@
 namespace base {
 struct PendingTask;
 }  // namespace base
-namespace cc {
-class PaintFlags;
-}  // namespace cc
 
 namespace blink {
 class ExecutionContext;
@@ -161,10 +158,6 @@ static mojom::blink::ColorScheme GetColorSchemeFromCanvas(
   }
   return mojom::blink::ColorScheme::kLight;
 }
-
-namespace {
-
-}  // namespace
 
 CanvasRenderingContext* CanvasRenderingContext2D::Factory::Create(
     ExecutionContext* execution_context,
