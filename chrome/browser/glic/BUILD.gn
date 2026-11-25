@@ -1203,7 +1203,6 @@ source_set("unit_tests") {
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/tab_model:test_support",
       "//chrome/common:chrome_features",
-      "//chrome/test:test_support",
       "//components/prefs:test_support",
       "//components/signin/public/identity_manager:test_support",
     ]
@@ -1285,11 +1284,17 @@ source_set("browser_tests") {
     "//chrome/browser/glic/gemini_enterprise:browser_tests",
     "//chrome/browser/glic/gemini_enterprise:geic_enabling",
     "//chrome/browser/glic/gemini_enterprise:geic_pref_names",
+    "//chrome/browser/glic/public:provider_features",
     "//chrome/browser/glic/test_support",
+    "//chrome/browser/interstitials:test_support",
     "//chrome/browser/performance_manager",
     "//chrome/browser/permissions:test_support",
     "//chrome/browser/preloading",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_test_util",
+    "//chrome/browser/sessions",
+    "//chrome/browser/signin:identity_test_support",
+    "//chrome/browser/signin:test_support",
     "//chrome/browser/skills",
     "//chrome/browser/skills:public",
     "//chrome/browser/sync",
@@ -1298,7 +1303,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/navigator",
     "//chrome/common:chrome_features",
-    "//chrome/test:test_support",
     "//chrome/test/base:browser_test_waiters",
     "//chrome/test/base:chrome_test_utils",
     "//chrome/test/base:drag_and_drop_test_utils",
@@ -1320,6 +1324,7 @@ source_set("browser_tests") {
     "//components/optimization_guide/content/browser:test_support",
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/content:metrics",
+    "//components/policy/core/common:test_support",
     "//components/prefs",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
@@ -1330,8 +1335,10 @@ source_set("browser_tests") {
     "//components/skills/public",
     "//components/sync_device_info:test_support",
     "//components/ukm:test_support",
+    "//components/zoom",
     "//content/test:test_support",
     "//pdf:buildflags",
+    "//services/device/public/cpp:test_support",
     "//third_party/blink/public/common:headers",
     "//ui/base/clipboard:clipboard_test_support",
     "//ui/gfx/geometry",
@@ -1426,7 +1433,6 @@ source_set("browser_tests") {
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/webui/drive_picker_host:drive_picker_host_request",
       "//chrome/common:constants",
-      "//chrome/test:test_support",
       "//components/enterprise/common/proto:dlp_policy_event_proto",
       "//components/enterprise/data_controls/content/browser",
       "//components/enterprise/data_controls/core/browser:test_support",
@@ -1462,6 +1468,7 @@ source_set("browser_tests") {
     ]
     deps += [
       "//chrome/app:generated_resources",
+      "//chrome/browser/android:tabs_public",
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/glic/android",
       "//chrome/browser/glic/browser_ui",
@@ -1490,6 +1497,7 @@ source_set("browser_tests") {
   if (is_desktop_android) {
     sources +=
         [ "widget/glic_side_panel_coordinator_desktop_android_browsertest.cc" ]
+    deps += [ "//chrome/browser/ui/side_panel:side_panel_views_dependent" ]
   }
 
   if (use_ozone) {
@@ -1592,7 +1600,6 @@ if (!is_android) {
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/zoom",
       "//chrome/common",
-      "//chrome/test:test_support",
       "//chrome/test/user_education:impl",
       "//components/autofill/core/browser/actor:test_support",
       "//components/optimization_guide/core",

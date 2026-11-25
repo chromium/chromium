@@ -111,12 +111,15 @@ if (!is_android) {
       "//chrome/browser/tab_list",
       "//chrome/browser/tab_list:test_support",
       "//chrome/browser/ui/views/controls",
-      "//chrome/test:test_support",
       "//chrome/test/base:testing_browser_process",
+      "//chrome/test/base:testing_profile",
+      "//chrome/test/views",
+      "//components/signin/public/identity_manager:test_support",
       "//components/tabs:test_support",
       "//components/vector_icons",
       "//testing/gtest",
       "//ui/color",
+      "//ui/views:test_support",
     ]
   }
 
@@ -135,13 +138,14 @@ if (!is_android) {
       "//chrome/browser/glic:interactive_ui_tests",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/test_support",
+      "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame:top_container_view",
-      "//chrome/test:test_support",
       "//testing/gtest",
       "//ui/base/interaction:test_support",
       "//ui/events:test_support",
+      "//ui/views:test_support",
     ]
   }
 

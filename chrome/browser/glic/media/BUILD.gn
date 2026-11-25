@@ -65,14 +65,15 @@ if (!is_android) {
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/prefs",
       "//chrome/browser/speech",
-      "//chrome/test:test_support",
       "//chrome/test/base:chrome_render_view_host_test_harness",
       "//chrome/test/base:testing_browser_process",
       "//components/live_caption",
       "//components/live_caption:constants",
       "//components/optimization_guide/content/browser",
       "//components/optimization_guide/content/browser:test_support",
+      "//components/prefs:test_support",
       "//components/soda",
+      "//components/sync_preferences:test_support",
       "//components/ukm:test_support",
       "//content/public/common",
       "//content/test:test_support",
@@ -81,7 +82,10 @@ if (!is_android) {
       "//testing/gtest",
     ]
     if (is_chromeos) {
-      deps += [ "//chrome/browser/ash/test:test_support" ]
+      deps += [
+        "//chrome/browser/ash/test:test_support",
+        "//components/user_manager:test_support",
+      ]
     }
   }
 }

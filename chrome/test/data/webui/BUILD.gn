@@ -315,6 +315,7 @@ source_set("browser_tests") {
       deps += [
         "//chrome/browser/ash/boca",
         "//chrome/browser/gcm",
+        "//chrome/browser/signin:identity_test_support",
         "//chromeos/ash/components/boca/proto",
         "//chromeos/ash/components/boca/session_api",
         "//components/gcm_driver",

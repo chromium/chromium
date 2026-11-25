@@ -65,6 +65,7 @@ source_set("test_support") {
     "//chrome/browser/glic/gemini_enterprise:guest_url",
     "//chrome/browser/glic/public:provider",
     "//chrome/browser/glic/public:provider_features",
+    "//chrome/browser/signin:identity_test_support",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window:create_browser_window",
@@ -104,12 +105,18 @@ source_set("test_support") {
   public_deps = [
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic/public:provider",
-    "//chrome/test:test_support",
     "//chrome/test/base:platform_browser_test",
+    "//components/metrics:content",
+    "//net:test_support",
+    "//ui/base:test_support",
   ]
   if (is_android) {
     public_deps += [ "//chrome/test/base:android_ui_test_utils" ]
   } else {
-    public_deps += [ "//chrome/test/user_education:impl" ]
+    public_deps += [
+      "//chrome/browser/picture_in_picture",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/test/user_education:impl",
+    ]
   }
 }
