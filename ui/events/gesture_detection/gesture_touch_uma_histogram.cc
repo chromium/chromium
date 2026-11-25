@@ -11,12 +11,6 @@
 
 namespace ui {
 
-void GestureTouchUMAHistogram::RecordGestureEvent(
-    const GestureEventData& gesture) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Event.GestureCreated", UMAEventTypeFromEvent(gesture), UMA_ET_COUNT);
-}
-
 void GestureTouchUMAHistogram::RecordGestureTimeout(
     const GestureEventData& gesture) {
   UMA_HISTOGRAM_ENUMERATION("Event.GestureTimeout",

@@ -169,19 +169,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.GestureCreated" enum="UIEventType"
-    expires_after="2025-06-22">
-  <owner>kuscher@google.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    The gesture-events recognized and dispatched by the browser gesture
-    recognizer. This replaces Ash.GestureCreated, which did not record events on
-    Android and Windows.
-
-    Note: this metric was expired from 2020-03-01 to 2023-04-04.
-  </summary>
-</histogram>
-
 <histogram name="Event.GestureScrollEnd.BrowserCompositorFrame.Count"
     units="counts" expires_after="2027-03-28">
   <owner>peilinwang@google.com</owner>

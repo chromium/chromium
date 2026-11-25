@@ -289,7 +289,6 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
 
     if (should_update) {
       UpdateStateForEventPost(gesture);
-      GestureTouchUMAHistogram::RecordGestureEvent(gesture);
     }
 
     client_->OnGestureEvent(gesture);
