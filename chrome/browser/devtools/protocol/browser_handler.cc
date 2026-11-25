@@ -5,8 +5,10 @@
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 
 #include <set>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -271,20 +273,20 @@ protocol::Response BrowserHandler::SetDockTile(
 
 protocol::Response BrowserHandler::ExecuteBrowserCommand(
     const protocol::Browser::BrowserCommandId& command_id) {
-  static auto& command_id_map =
-      *new std::map<protocol::Browser::BrowserCommandId, int>{
+  static constexpr auto kCommandIdMap =
+      base::MakeFixedFlatMap<std::string_view, int>({
           {protocol::Browser::BrowserCommandIdEnum::OpenTabSearch,
            IDC_TAB_SEARCH},
           {protocol::Browser::BrowserCommandIdEnum::CloseTabSearch,
            IDC_TAB_SEARCH_CLOSE},
           {protocol::Browser::BrowserCommandIdEnum::OpenGlic, IDC_OPEN_GLIC},
-      };
-  if (command_id_map.count(command_id) == 0) {
+      });
+  auto it = kCommandIdMap.find(command_id);
+  if (it == kCommandIdMap.end()) {
     return Response::InvalidParams("Invalid BrowserCommandId: " + command_id);
   }
   if (!chrome::ExecuteCommand(
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
-          command_id_map[command_id])) {
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile(), it->second)) {
     return Response::InvalidRequest(
         "Browser command not supported. BrowserCommandId: " + command_id);
   }
