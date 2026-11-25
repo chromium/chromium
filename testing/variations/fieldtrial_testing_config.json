@@ -869,9 +869,13 @@
                     "enable_features": [
                         "AndroidNewTabButtonTabstripWebUI",
                         "AndroidTopChromeWebUIBypassLoaderThrottles",
+                        "ColorIdCssStyleSheetCache",
+                        "ColorIdCssStyleSheetOptimization",
                         "InitialWebUI",
                         "InitialWebUISurfaceSync",
                         "InitialWebUIWithoutExtensions",
+                        "ThemeChangeOptimization",
+                        "ThemeChangeOptimizationV2",
                         "TopChromeWebUISharedRenderer",
                         "WebUIBypassMojoConnections",
                         "WebUIToolbarFrameEvictionOptOut",
