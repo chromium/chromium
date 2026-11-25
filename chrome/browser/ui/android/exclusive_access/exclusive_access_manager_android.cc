@@ -68,7 +68,9 @@ void ExclusiveAccessManagerAndroid::ExitFullscreenModeForTab(
     const jni_zero::JavaRef<jobject>& jweb_contents) {
   content::WebContents* wc =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  CHECK(wc != nullptr, base::NotFatalUntil::M162);
+  // TODO(crbug.com/589554572): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(wc != nullptr);
   eam_.fullscreen_controller()->ExitFullscreenModeForTab(wc);
 }
 
