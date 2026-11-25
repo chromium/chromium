@@ -49,13 +49,16 @@ class TestWebSelectionJavaScriptFeatureObserver
                             WebSelectionResponse* response) override {
     EXPECT_EQ(web_state, web_state_);
     response_ = response;
+    ++response_count_;
   }
 
   WebSelectionResponse* GetLastResponse() { return response_; }
+  int response_count() const { return response_count_; }
 
  private:
   raw_ptr<web::WebState> web_state_;
   WebSelectionResponse* response_;
+  int response_count_ = 0;
 };
 
 // Tests for the WebSelectionJavaScriptFeature.
@@ -147,4 +150,40 @@ TEST_F(WebSelectionJavaScriptFeatureTest, GetSelectionIFrame) {
   EXPECT_TRUE(response.valid);
   EXPECT_NSEQ(@"frame selection", response.selectedText);
   EXPECT_FALSE(CGRectEqualToRect(response.sourceRect, CGRectZero));
+}
+
+// Tests that malformed messages posted directly to the WebSelection handler are
+// ignored without crashing or notifying observers.
+TEST_F(WebSelectionJavaScriptFeatureTest, IgnoreMalformedMessages) {
+  web::test::ExecuteJavaScript(
+      @"const h = window.webkit.messageHandlers.WebSelection;"
+       "for (const payload of ["
+       "  'not-a-dict', 42, 3.14, true, [1, 2, 3],"
+       "  {}, {selectedText: 123}, {selectedText: null},"
+       "  {selectedText: 'hi'},"
+       "  {selectedText: 'hi', selectionRect: 'invalid'},"
+       "  {selectedText: 'hi', selectionRect: null},"
+       "  {selectedText: 'hi', selectionRect: {}},"
+       "  {selectedText: 'hi', selectionRect: {x: 'invalid', y: 0, width: 1,"
+       "                                        height: 1}},"
+       "  {selectedText: 'hi', selectionRect: {x: 0, y: 0, width: 1}},"
+       "]) { h.postMessage(payload); }"
+       "window.getSelection().selectAllChildren("
+       "  document.getElementById('selectid'));",
+      web_state());
+
+  // Trigger a valid selection response afterwards to flush prior IPC messages
+  // sent from the same frame.
+  ASSERT_TRUE(WebSelectionJavaScriptFeature::GetInstance()->GetSelectedText(
+      web_state()));
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForJSCompletionTimeout, ^{
+        return selection_observer_->GetLastResponse() != nil;
+      }));
+
+  EXPECT_EQ(1, selection_observer_->response_count());
+  EXPECT_TRUE(selection_observer_->GetLastResponse().valid);
+  EXPECT_NSEQ(@"selection",
+              selection_observer_->GetLastResponse().selectedText);
 }

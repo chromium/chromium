@@ -88,7 +88,7 @@ void WebSelectionJavaScriptFeature::ScriptMessageReceived(
   }
   base::Value* response = script_message.legacy_body();
   if (!response || !response->is_dict()) {
-    NOTREACHED();
+    return;
   }
   WebSelectionResponse* web_response =
       ParseResponse(web_state->GetWeakPtr(), response->GetDict());
