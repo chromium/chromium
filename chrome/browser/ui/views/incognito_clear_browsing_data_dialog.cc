@@ -30,8 +30,9 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
       dialog_type_(type),
       incognito_profile_(incognito_profile) {
   CHECK(incognito_profile_, base::NotFatalUntil::M162);
-  CHECK(incognito_profile_->IsPrimaryOTRProfileWithRegularParent(),
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/587127122): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(incognito_profile_->IsPrimaryOTRProfileWithRegularParent());
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
 
