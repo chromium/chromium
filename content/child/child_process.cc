@@ -117,7 +117,14 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  SetupCpuTimeMetrics();
+  // ProcessCpuTimeMetrics is process-wide and must be created on the main
+  // thread. Only set it up if this ChildProcess owns the process (i.e. it
+  // started the ThreadPool). Otherwise, it's either running on a secondary
+  // thread of the browser process (single-process mode, in-process GPU), which
+  // sets up ProcessCpuTimeMetrics itself, or in a test.
+  if (initialized_thread_pool_) {
+    SetupCpuTimeMetrics();
+  }
 #endif
 
   // We can't recover from failing to start the IO thread.
