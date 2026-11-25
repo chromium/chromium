@@ -44,6 +44,14 @@ public class CommonLeaks implements LeakCanaryConfigProvider {
             "android.view.selectiontoolbar.SelectionToolbarProviderFactory"
                     + "$SelectionToolbarProviderImpl$ServiceConnectionHandler#mContext";
 
+    // LeakCanary 3.0-alpha-9 (AndroidReferenceMatchers.INPUT_METHOD_MANAGER_IS_TERRIBLE) only
+    // ignores this framework leak for SDK_INT < 36. On Android 16+, InputMethodManager.sInstance
+    // can retain a finished Activity's detached DecorView via mNextServedView.
+    private static final String sInputMethodManagerClass =
+            "android.view.inputmethod.InputMethodManager";
+    private static final String sInputMethodManagerNextServedViewField =
+            "android.view.inputmethod.InputMethodManager#mNextServedView";
+
     @Override
     public Map<String, String> getInstanceFieldLeaks() {
         return Map.of(
@@ -54,6 +62,8 @@ public class CommonLeaks implements LeakCanaryConfigProvider {
                 sSelectionToolbarProviderClass,
                 sSelectionToolbarProviderField,
                 sSelectionToolbarServiceConnectionHandlerClass,
-                sSelectionToolbarServiceConnectionHandlerField);
+                sSelectionToolbarServiceConnectionHandlerField,
+                sInputMethodManagerClass,
+                sInputMethodManagerNextServedViewField);
     }
 }

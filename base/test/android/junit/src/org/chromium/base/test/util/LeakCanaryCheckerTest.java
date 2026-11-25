@@ -104,4 +104,13 @@ public class LeakCanaryCheckerTest {
                 IllegalStateException.class,
                 () -> LeakCanaryChecker.isEnabled(BothAnnotationsTest.class));
     }
+
+    @Test
+    public void testCommonLeaks_ignoresInputMethodManagerNextServedView() {
+        Assert.assertEquals(
+                "android.view.inputmethod.InputMethodManager#mNextServedView",
+                new CommonLeaks()
+                        .getInstanceFieldLeaks()
+                        .get("android.view.inputmethod.InputMethodManager"));
+    }
 }
