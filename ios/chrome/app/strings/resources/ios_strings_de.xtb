@@ -1212,6 +1212,7 @@
 <translation id="479628432297359449">Download beenden?</translation>
 <translation id="4796496140132859135">Tabgruppe. Minimiert.</translation>
 <translation id="4800912004582762296">Klickt</translation>
+<translation id="4800930308997591052">Wechsle zu <ph name="EMAIL" />, um Tabs nahtlos zwischen deinen Geräten zu teilen und deine Passwörter, Lesezeichen und andere Daten aus deinem Google-Konto abzurufen.</translation>
 <translation id="4802185666270672526">„Desktopwebsite anfordern“ ausblenden</translation>
 <translation id="4803185665210547709">Von deiner Organisation verwaltet.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -2147,6 +2148,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="7618220760967055820">Festlegen, welcher Button in der Symbolleiste angezeigt wird</translation>
 <translation id="7620522820075868385">Abbrechen</translation>
 <translation id="762078666799342162">Du kannst deine früheren Downloads in der App <ph name="BEGIN_LINK" />Dateien<ph name="END_LINK" /> ansehen</translation>
+<translation id="7636034359405891151">Auf dem Computer dort weitermachen, wo du aufgehört hast</translation>
 <translation id="7638584964844754484">Falsche Passphrase</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Gehackte Passwörter}=1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
 <translation id="7640669552036055091">Tabs von Android</translation>

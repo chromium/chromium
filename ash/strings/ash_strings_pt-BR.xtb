@@ -447,6 +447,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2053312383184521053">Dados em estado de inatividade</translation>
 <translation id="2058456167109518507">Dispositivo detectado</translation>
 <translation id="2064048859448024834">Visualização da câmera ativada</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 link}one{# link}other{# links}}</translation>
 <translation id="2067220651560163985">Mostrar temperatura em Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> terminou de imprimir em <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Ativar ou desativar o recurso <ph name="CAPTURE_MEDIUM" />. O recurso <ph name="CAPTURE_MEDIUM" /> está <ph name="CAPTURE_STATE" /></translation>

@@ -447,6 +447,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2053312383184521053">Tétlen állapot adatai</translation>
 <translation id="2058456167109518507">Eszköz észlelve</translation>
 <translation id="2064048859448024834">Kamera-előnézet bekapcsolva</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 link}other{# link}}</translation>
 <translation id="2067220651560163985">Hőmérséklet megjelenítése Celsius-fokban</translation>
 <translation id="206960706005837784">Az alkalmazás (<ph name="APP_NAME" />) befejezte a nyomtatást itt: <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> be-/kikapcsolása. A <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> van.</translation>

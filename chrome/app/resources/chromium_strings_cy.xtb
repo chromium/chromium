@@ -72,6 +72,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1792680680989393197">Gallwch eu tynnu unrhyw bryd. Mae'n bosib y bydd Chromium yn eu lawrlwytho'n awtomatig eto pan fydd eu hangen ar wefan neu nodwedd.</translation>
 <translation id="1793486931176048546">Cliciwch <ph name="BEGIN_BOLD" />Ie<ph name="END_BOLD" /> yn yr hysbysiad Windows i binio Chromium i'ch bar tasgau i gael mynediad cyflym.</translation>
 <translation id="1808667845054772817">Ailosod Chromium</translation>
+<translation id="1814482312667514397">Cael nodweddion diogelwch gorau Chromium wrth fynd, gyda'r ap Chromium ar eich ffôn</translation>
 <translation id="1820835682567584003">Mae Chromium yn ceisio <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi. I gadw'ch pori ar wahân, mewngofnodwch i Chromium yn eich proffil eich hun fel <ph name="USER_EMAIL_ADDRESS" />. Byddwch hefyd yn cael eich estyniadau a rhagor o <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Y tro nesaf y byddwch yn agor Chromium ar eich <ph name="DEVICE_TYPE" />, byddwch yn gweld anogwr i ddefnyddio Rheolwr Cyfrineiriau Google.</translation>
@@ -136,6 +137,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Roedd 1 ddyfais HID yn cael ei chyrchu gan un neu'n fwy o estyniadau Chromium}=1{Mae 1 ddyfais HID yn cael ei chyrchu gan un neu'n fwy o estyniadau Chromium}two{Mae # ddyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}few{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}many{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}other{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}}</translation>
 <translation id="2401032172288869980">Mae angen caniatâd camera a meicroffon ar Chromium ar gyfer y wefan hon</translation>
 <translation id="2403703063067034158">Gwall cychwyn: mae achos arall o osod yn rhedeg ar hyn o bryd, rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="241044568699443215">Ewch â diogelwch Chromium gyda chi wrth fynd gyda'r ap Chromium ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Agor dolenni yn Chromium o unrhyw ap a chadw'r porwr yn hygyrch ar eich bar tasgau</translation>
 <translation id="2425157128016763890">Cliciwch y botwm Crynhoi i rannu'r ddogfen hon gyda Gemini yn Chromium i gael trosolwg cyflym a gofyn cwestiynau dilynol</translation>
 <translation id="2440750600860946460">Gydag <ph name="BEGIN_LINK" />offer o Chromium<ph name="END_LINK" />, gallwch bori'n ddiogel ac aros mewn rheolaeth</translation>
@@ -758,6 +760,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8910309838319708610">Llwyddiant! Gallwch bellach ofyn cwestiynau yn hawdd wrth i chi bori gyda Dull AI Search</translation>
 <translation id="8915682436012075700">Gall y porwr hwn a reolir ddefnyddio cynorthwyydd Gemini a sefydlwyd ar gyfer gwaith gan <ph name="DOMAIN" />. Gall ddod o hyd i wybodaeth a darparu atebion sydd wedi'u seilio ar ffeiliau'r sefydliad a gwasanaethau cymeradwy. Mae'n bosib na fyddai'n cael ei argymell i'w ddefnyddio gyda phroffil personol. Ni fydd hanes sgwrsio yn cael ei drosglwyddo. Mae newid yn gofyn am ail-lansio Chromium.</translation>
 <translation id="8932992523185907506">Nid Chromium yw eich porwr diofyn mwyach. Gwneud Chromium yn borwr diofyn?</translation>
+<translation id="8940844567350264767">Cael nodweddion diogelwch gorau Chromium wrth fynd gyda Chromium</translation>
 <translation id="8941642502866065432">Methu â diweddaru Chromium</translation>
 <translation id="8944232836376404813">Bydd y weithred hon yn:
           <ph name="LINE_BREAKS" />

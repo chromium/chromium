@@ -449,6 +449,7 @@
 <translation id="2053312383184521053">بيانات حالة الخمول</translation>
 <translation id="2058456167109518507">تم رصد جهاز للاتصال</translation>
 <translation id="2064048859448024834">يتم عرض معاينة الكاميرا</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{رابط واحد}zero{‫# رابط}two{رابطان}few{‫# روابط}many{‫# رابطًا}other{‫# رابط}}</translation>
 <translation id="2067220651560163985">عرض درجة الحرارة بالدرجة المئوية</translation>
 <translation id="206960706005837784">أكمَل "<ph name="APP_NAME" />" مَهمة الطباعة باستخدام "<ph name="PRINTER_NAME" />"</translation>
 <translation id="2075520525463668108">انقر لتفعيل/إيقاف "<ph name="CAPTURE_MEDIUM" />". "<ph name="CAPTURE_MEDIUM" />" - <ph name="CAPTURE_STATE" /></translation>

@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Aggiungere "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Impossibile decodificare l'immagine: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">Il tuo genitore non ha approvato questa estensione</translation>
+<translation id="2207866393056347613">Concede l'accesso permanente ai tuoi dati su tutti i siti</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha richiesto altre autorizzazioni.</translation>
 <translation id="2327492829706409234">Attiva applicazione</translation>
 <translation id="2350172092385603347">Localizzazione utilizzata, ma default_locale non era specificato nel file manifest.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Riattiva</translation>
 <translation id="2743583586211388067">L'accesso a questa estensione è bloccato in base alla policy sui rischi delle estensioni della tua organizzazione.</translation>
 <translation id="2766161002040448006">Rivolgiti a un genitore</translation>
+<translation id="2775557057525247505">Mostra tutti i siti</translation>
 <translation id="2785530881066938471">Impossibile caricare il file "<ph name="RELATIVE_PATH" />" per la trascrizione dei contenuti. Non è codificato in UTF-8.</translation>
 <translation id="2850541429955027218">Aggiungi tema</translation>
 <translation id="2883143988769190738">Questa estensione richiede le seguenti autorizzazioni:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del fornitore <ph name="VENDOR_ID" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Il valore di input per la chiave privata deve essere un percorso valido.</translation>
+<translation id="3769470010314114481">Concede l'accesso temporaneo ai tuoi dati sul sito</translation>
 <translation id="3788401245189148511">Potrebbe:</translation>
 <translation id="3834775135533257713">Impossibile aggiungere l'applicazione "<ph name="TO_INSTALL_APP_NAME" />" perché è in conflitto con "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Impossibile caricare la pagina delle opzioni "<ph name="OPTIONS_PAGE" />".</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Attiva estensione</translation>
 <translation id="3927932062596804919">Non consentire</translation>
 <translation id="3984413272403535372">Errore durante la firma dell'estensione.</translation>
+<translation id="3990894032742690314">Sempre sui siti elencati</translation>
 <translation id="4014432863917027322">Riparare "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4061696872429826774">Un altro programma sul computer ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Impossibile caricare la pagina di informazioni "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Le app devono essere installate dall'host che controllano</translation>
 <translation id="4306119971288449206">Le app devono essere installate con il tipo di contenuto "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4307774243840254737">Concede l'accesso permanente ai tuoi dati sui siti elencati di seguito</translation>
 <translation id="4349181963619779233">Non è possibile aggiungere estensioni e app da questo sito web</translation>
 <translation id="4625078469366263107">Attiva app</translation>
 <translation id="4633003931260532286">L'estensione richiede "<ph name="IMPORT_NAME" />" con la versione minima "<ph name="IMPORT_VERSION" />", ma è installata soltanto la versione "<ph name="INSTALLED_VERSION" />"</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">La versione più recente di "<ph name="EXTENSION_NAME" />" è stata disattivata perché richiede altre autorizzazioni.</translation>
 <translation id="5242724311594467048">Attivare "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Solo quando fai clic sull'estensione</translation>
 <translation id="5405650547142096840">Rimuovi da Chromium</translation>
 <translation id="5456409301717116725">Questa estensione include il file di chiave "<ph name="KEY_PATH" />". Probabilmente preferiresti che non l'includesse.</translation>
 <translation id="5485102783864353244">Aggiungi app</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Gestore MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">L'estensione si è ricaricata automaticamente troppo spesso.</translation>
 <translation id="7003844668372540529">Prodotto sconosciuto <ph name="PRODUCT_ID" /> di <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Siti elencati</translation>
 <translation id="7068383018033524534">File manifest non valido</translation>
 <translation id="7217838517480956708">L'amministratore di questo computer richiede che l'estensione <ph name="EXTENSION_NAME" /> sia installata. Non è possibile rimuovere o modificare l'estensione.</translation>
 <translation id="7287143125007575591">Accesso negato.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Fotocamera anteriore</translation>
 <translation id="8047248493720652249">Questa estensione non è riuscita a denominare il download "<ph name="ATTEMPTED_FILENAME" />" perché un'altra estensione (<ph name="EXTENSION_NAME" />) ha determinato un nome di file diverso "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">Google ha contrassegnato l'estensione "<ph name="EXTENSION_NAME" />" come dannosa ed è stata impedita l'installazione</translation>
+<translation id="823691536304079791">Leggere e modificare i tuoi dati</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> di <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Può:</translation>
 <translation id="8517576857589387417">File manifest mancante o illeggibile</translation>

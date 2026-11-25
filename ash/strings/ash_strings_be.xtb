@@ -445,6 +445,7 @@
 <translation id="2053312383184521053">Даныя пра стан бяздзейнасці</translation>
 <translation id="2058456167109518507">Выяўлена прылада</translation>
 <translation id="2064048859448024834">Паказваецца папярэдні прагляд для камеры</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 спасылка}one{# спасылка}few{# спасылкі}many{# спасылак}other{# спасылкі}}</translation>
 <translation id="2067220651560163985">Паказваць тэмпературу ў градусах Цэльсія</translation>
 <translation id="206960706005837784">Праграма "<ph name="APP_NAME" />" скончыла друк на прынтары "<ph name="PRINTER_NAME" />"</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" />: уключыць/выключыць. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>

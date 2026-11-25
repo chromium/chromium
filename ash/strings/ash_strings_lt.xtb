@@ -447,6 +447,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2053312383184521053">Neveikos būsenos duomenys</translation>
 <translation id="2058456167109518507">Įrenginys aptiktas</translation>
 <translation id="2064048859448024834">Fotoaparato peržiūra įjungta</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 nuoroda}one{# nuoroda}few{# nuorodos}many{# nuorodos}other{# nuorodų}}</translation>
 <translation id="2067220651560163985">Rodyti temperatūrą Celsijaus laipsniais</translation>
 <translation id="206960706005837784">„<ph name="APP_NAME" />“ baigė spausdinti spausdintuvu „<ph name="PRINTER_NAME" />“</translation>
 <translation id="2075520525463668108">Perjungti „<ph name="CAPTURE_MEDIUM" />“. „<ph name="CAPTURE_MEDIUM" />“ būsena: <ph name="CAPTURE_STATE" /></translation>

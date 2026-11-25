@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Додати "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Не вдалося декодувати зображення: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">Батько або мати відхилили це розширення</translation>
+<translation id="2207866393056347613">Надає постійний доступ до ваших даних на всіх сайтах</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" запитує додаткові дозволи.</translation>
 <translation id="2327492829706409234">Увімкнути програму</translation>
 <translation id="2350172092385603347">Використано локалізацію, але параметр мови за умовчанням (default_locale) не визначено в маніфесті.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Знову ввімкнути</translation>
 <translation id="2743583586211388067">Доступ до цього розширення заблоковано згідно з правилами вашої організації щодо ризиків, пов’язаних із розширеннями.</translation>
 <translation id="2766161002040448006">Попросити батьків</translation>
+<translation id="2775557057525247505">Показати всі сайти</translation>
 <translation id="2785530881066938471">Неможливо завантажити файл "<ph name="RELATIVE_PATH" />" для сценарію вмісту. Кодування файлу не UTF-8.</translation>
 <translation id="2850541429955027218">Додати тему</translation>
 <translation id="2883143988769190738">Цьому розширенню потрібні наведені нижче дозволи.</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серійний номер: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> від постачальника <ph name="VENDOR_ID" /> (серійний номер: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Потрібно ввести правильний шлях до секретного ключа.</translation>
+<translation id="3769470010314114481">Надає тимчасовий доступ до ваших даних на сайті</translation>
 <translation id="3788401245189148511">Зможе:</translation>
 <translation id="3834775135533257713">Не вдалося додати додаток <ph name="TO_INSTALL_APP_NAME" /> через конфлікт із додатком <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="388442998277590542">Не вдалося завантажити сторінку параметрів "<ph name="OPTIONS_PAGE" />".</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Увімкнути розширення</translation>
 <translation id="3927932062596804919">Відмовити</translation>
 <translation id="3984413272403535372">Помилка під час підписування розширення.</translation>
+<translation id="3990894032742690314">Завжди на вказаних сайтах</translation>
 <translation id="4014432863917027322">Відновити розширення <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4061696872429826774">Інша програма на вашому комп’ютері додала розширення, яке може впливати на роботу Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Не вдалося завантажити сторінку з інформацією про "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Додатки мають встановлюватися з хосту, на якому вони працюють</translation>
 <translation id="4306119971288449206">Додатки мають наповнюватися вмістом типу "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4307774243840254737">Надає постійний доступ до ваших даних на сайтах, указаних нижче</translation>
 <translation id="4349181963619779233">Із цього вебсайту не можна встановлювати розширення й додатки</translation>
 <translation id="4625078469366263107">Увімкнути додаток</translation>
 <translation id="4633003931260532286"><ph name="IMPORT_NAME" /> з мінімальною версією <ph name="IMPORT_VERSION" /> – це обов’язковий компонент для роботи розширення, але встановлено версію <ph name="INSTALLED_VERSION" /></translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Нову версію розширення "<ph name="EXTENSION_NAME" />" вимкнено, оскільки для неї потрібно більше дозволів.</translation>
 <translation id="5242724311594467048">Увімкнути розширення "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Тег Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Лише коли ви натискаєте розширення</translation>
 <translation id="5405650547142096840">Видалити з Chromium</translation>
 <translation id="5456409301717116725">Це розширення включає файл ключа "<ph name="KEY_PATH" />". Можливо, ви не хочете цього робити.</translation>
 <translation id="5485102783864353244">Установити додаток</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Обробник MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Це розширення перезавантажувалося надто часто.</translation>
 <translation id="7003844668372540529">Невідомий продукт <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Указані сайти</translation>
 <translation id="7068383018033524534">Файл маніфесту недійсний</translation>
 <translation id="7217838517480956708">Адміністратор цього комп’ютера потребує встановленого розширення <ph name="EXTENSION_NAME" />. Його не можна видаляти чи змінювати.</translation>
 <translation id="7287143125007575591">У доступі відмовлено.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Фронтальна камера</translation>
 <translation id="8047248493720652249">Цьому розширенню не вдалося назвати завантаження "<ph name="ATTEMPTED_FILENAME" />", оскільки інше розширення (<ph name="EXTENSION_NAME" />) визначило іншу назву файлу "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">Система Google позначила розширення <ph name="EXTENSION_NAME" /> як шкідливе та заборонила встановлення</translation>
+<translation id="823691536304079791">Переглядати й змінювати ваші дані</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> від постачальника <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Дозволи</translation>
 <translation id="8517576857589387417">Файл маніфесту відсутній або нечитабельний</translation>

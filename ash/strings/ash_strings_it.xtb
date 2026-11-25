@@ -447,6 +447,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2053312383184521053">Dati sullo stato di inattività</translation>
 <translation id="2058456167109518507">Dispositivo rilevato</translation>
 <translation id="2064048859448024834">Anteprima della videocamera attiva</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 link}other{# link}}</translation>
 <translation id="2067220651560163985">Mostra la temperatura in gradi Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ha terminato la stampa su <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Attiva/disattiva <ph name="CAPTURE_MEDIUM" />. La funzionalità <ph name="CAPTURE_MEDIUM" /> è <ph name="CAPTURE_STATE" /></translation>

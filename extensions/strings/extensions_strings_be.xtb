@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Дадаць пашырэнне "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Не ўдалося дэкадаваць відарыс: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">Твае бацькі не ўхвалілі гэта пашырэнне</translation>
+<translation id="2207866393056347613">Вы даяце пастаянны доступ да сваіх даных на ўсіх сайтах</translation>
 <translation id="23030561267973084">Праграма "<ph name="EXTENSION_NAME" />" запатрабавала дадатковыя дазволы.</translation>
 <translation id="2327492829706409234">Уключыць праграму</translation>
 <translation id="2350172092385603347">Лакалізацыя выкарыстоўваецца, але ў маніфесце не вызначаны стандартныя рэгіянальныя налады (default_locale).</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Паўторна ўключыць</translation>
 <translation id="2743583586211388067">Доступ да пашырэння заблакіраваны ў адпаведнасці з палітыкай вашай арганізацыі ў дачыненні да рызык, звязаных з пашырэннямі.</translation>
 <translation id="2766161002040448006">Папрасіць дазвол у бацькоў</translation>
+<translation id="2775557057525247505">Паказаць усе сайты</translation>
 <translation id="2785530881066938471">Не ўдалося загрузіць файл "<ph name="RELATIVE_PATH" />" для сцэнарыя змесціва: яго кадаванне – не UTF-8.</translation>
 <translation id="2850541429955027218">Дадаць тэму</translation>
 <translation id="2883143988769190738">Гэта пашырэнне запытвае наступныя дазволы:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ад пастаўшчыка "<ph name="VENDOR_ID" />" (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Значэнне ўводу для персанальнага ключа павінна быць дапушчальным шляхам.</translation>
+<translation id="3769470010314114481">Вы даяце часовы доступ да сваіх даных на сайце</translation>
 <translation id="3788401245189148511">Гэта пашырэнне або ўбудова можа:</translation>
 <translation id="3834775135533257713">Не ўдалося дадаць праграму "<ph name="TO_INSTALL_APP_NAME" />", бо яна канфліктуе з праграмай "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Не ўдалося загрузіць старонку параметраў "<ph name="OPTIONS_PAGE" />".</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Уключыць пашырэнне</translation>
 <translation id="3927932062596804919">Адмовіць</translation>
 <translation id="3984413272403535372">Памылка падчас подпісу пашырэння.</translation>
+<translation id="3990894032742690314">Заўсёды на пералічаных у спісе сайтах</translation>
 <translation id="4014432863917027322">Выправіць "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4061696872429826774">Іншая праграма на камп’ютары дадала пашырэнне, якое можа змяніць працу Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Не ўдалося загрузіць старонку "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Праграмы павінны ўсталёўвацца з тых хостаў, з якімі яны працуюць</translation>
 <translation id="4306119971288449206">Праграмы павінны ўключаць наступны тып змесціва: <ph name="CONTENT_TYPE" /></translation>
+<translation id="4307774243840254737">Вы даяце пастаянны доступ да сваіх даных на сайтах, пералічаных у спісе ніжэй</translation>
 <translation id="4349181963619779233">Нельга дадаваць пашырэнні і праграмы з гэтага вэб-сайта</translation>
 <translation id="4625078469366263107">Уключыць праграму</translation>
 <translation id="4633003931260532286">Для пашырэння патрабуецца <ph name="IMPORT_NAME" /> версіі <ph name="IMPORT_VERSION" /> і вышэй, але ўсталявана толькі версія <ph name="INSTALLED_VERSION" /></translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Новая версія пашырэння "<ph name="EXTENSION_NAME" />" была выключана, бо яна патрабуе дадатковых дазволаў.</translation>
 <translation id="5242724311594467048">Уключыць пашырэнне "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Акно праграмы: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Толькі калі вы націскаеце на пашырэнне</translation>
 <translation id="5405650547142096840">Выдаліць з Chromium</translation>
 <translation id="5456409301717116725">Гэта пашырэнне змяшчае файл ключа "<ph name="KEY_PATH" />". Магчыма, вам не варта гэтага рабіць.</translation>
 <translation id="5485102783864353244">Дадаць праграму</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Апрацоўшчык MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Пашырэнне перазагружае сябе занадта часта.</translation>
 <translation id="7003844668372540529">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Спіс сайтаў</translation>
 <translation id="7068383018033524534">Файл маніфеста несапраўдны</translation>
 <translation id="7217838517480956708">Адміністратар гэтай прылады патрабуе, каб пашырэнне "<ph name="EXTENSION_NAME" />" было ўсталявана. Яго нельга выдаліць або змяніць.</translation>
 <translation id="7287143125007575591">Доступ забаронены.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Накіраваная на карыстальніка камера</translation>
 <translation id="8047248493720652249">Пашырэнне не змагло даць спампоўцы назву "<ph name="ATTEMPTED_FILENAME" />", бо іншае пашырэнне (<ph name="EXTENSION_NAME" />) вызначыла іншую назву файла: "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">У Google пашырэнне "<ph name="EXTENSION_NAME" />" абазначана як шкоднае. Яго ўсталяванне было прадухілена</translation>
+<translation id="823691536304079791">Чытаць і змяняць вашы даныя</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> ад <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Дазволы:</translation>
 <translation id="8517576857589387417">Файл маніфеста адсутнічае або не чытаецца</translation>

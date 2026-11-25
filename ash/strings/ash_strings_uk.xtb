@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">Дані про неактивний стан</translation>
 <translation id="2058456167109518507">Виявлено пристрій</translation>
 <translation id="2064048859448024834">Попередній перегляд зображення з камери ввімкнено</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 посилання}one{# посилання}few{# посилання}many{# посилань}other{# посилання}}</translation>
 <translation id="2067220651560163985">Показати температуру в градусах Цельсія</translation>
 <translation id="206960706005837784">Додаток <ph name="APP_NAME" /> завершив друк на принтері "<ph name="PRINTER_NAME" />"</translation>
 <translation id="2075520525463668108">Увімкнути або вимкнути функцію "<ph name="CAPTURE_MEDIUM" />". Функція "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>

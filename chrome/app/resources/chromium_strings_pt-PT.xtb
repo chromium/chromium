@@ -52,6 +52,7 @@
 <translation id="1572572333538561328">Reabra o Modo IA da Pesquisa</translation>
 <translation id="1574377791422810894">Ferramentas de segurança do Chromium</translation>
 <translation id="1594928384848033697">O Chromium quer eliminar os seus dados do Gestor de Palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
+<translation id="1599690375407103815">Quando a definição está desativada, o Chromium remove os modelos de IA no dispositivo e não os transfere novamente. Alguns sites e funcionalidades do Chromium podem não funcionar.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização.}=1{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="1625909126243026060">Reveja os principais controlos de privacidade e segurança no Chromium</translation>
 <translation id="1640672724030957280">A transferir...</translation>
@@ -66,6 +67,7 @@
 <translation id="1745121272106313518">O Chromium vai ser reiniciado dentro de <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Quando o HTTPS não está disponível, o Chromium usa uma ligação insegura sem lhe enviar um aviso</translation>
 <translation id="1774152462503052664">Permitir que o Chromium seja executado em segundo plano</translation>
+<translation id="1792680680989393197">Pode removê-los em qualquer altura. O Chromium pode voltar a transferi-los automaticamente quando um site ou uma funcionalidade precisar deles.</translation>
 <translation id="1793486931176048546">Clique em <ph name="BEGIN_BOLD" />Sim<ph name="END_BOLD" /> na notificação do Windows para afixar o Chromium à barra de tarefas para um acesso rápido.</translation>
 <translation id="1808667845054772817">Reinstalar Chromium</translation>
 <translation id="1820835682567584003">O Chromium está a tentar <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -252,6 +254,7 @@
 <translation id="3751920144677881410">A partir do botão "Painel lateral da Pesquisa" na barra de ferramentas, pode reabrir o painel lateral da Pesquisa para fazer perguntas enquanto navega</translation>
 <translation id="3788675262216168505">Gerir perfis do Chromium</translation>
 <translation id="3790262771324122253">Saiba por que motivo o Chromium bloqueia algumas transferências</translation>
+<translation id="3793196697433239004">Usa o armazenamento do dispositivo. O Chromium remove os modelos de IA não usados após 45 dias ou quando o armazenamento é reduzido</translation>
 <translation id="379589255253486813">O Chromium indica-lhe se algo precisar da sua revisão</translation>
 <translation id="3802055581630249637">O Chromium pré-carrega páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita</translation>
 <translation id="3810973564298564668">Administrar</translation>
@@ -333,6 +336,7 @@
 <translation id="4621240073146040695">Quase atualizado! Reinicie o Chromium para concluir a atualização.</translation>
 <translation id="4625064703209785397">Acelera os sites com o motor V8 do Chromium, mas torna o Chromium ligeiramente menos resistente a ataques</translation>
 <translation id="4626321472657185181">Abrir pesquisa com o Chromium</translation>
+<translation id="4639628733881319833">Partilhe uma captura de ecrã de conteúdo fora do Chromium, como outras apps ou ficheiros</translation>
 <translation id="4654639495249754755">Perfil do Chromium</translation>
 <translation id="4665829708273112819">Aviso: o Chromium não consegue impedir que as extensões gravem o seu histórico de navegação. Para desativar esta extensão no Modo de navegação anónima, desselecione esta opção.</translation>
 <translation id="4673151026126227699">Se também partilhar relatórios de utilização do Chromium, esses relatórios incluem os URLs que visita</translation>
@@ -391,6 +395,7 @@
 <translation id="5405650547142096840">Remover do Chromium</translation>
 <translation id="5424544524441439284">Reduz o desempenho, mas torna o Chromium mais resistente a ataques</translation>
 <translation id="5427571867875391349">Definir o Chromium como o seu navegador predefinido</translation>
+<translation id="5435079900593041559">Mostrar a pesquisa com o Chromium na barra de tarefas do Windows e ativar o atalho de teclado</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{O Chromium recomenda pausar o separador que está a abrandar o navegador}other{O Chromium recomenda pausar os separadores que estão a abrandar o navegador}}</translation>
 <translation id="5473971139929175403">O Chromium pode não funcionar corretamente, uma vez que já não é suportado nesta distribuição do Linux</translation>
@@ -417,6 +422,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Apresentar o Chromium neste idioma</translation>
 <translation id="569897634095159764">Não é possível ligar à Internet. O servidor proxy necessita de autenticação.</translation>
+<translation id="5755377560105094542">Os sites e o Chromium podem usar IA executada diretamente no seu dispositivo para funcionalidades como resumos, revisões, legendas e muito mais. Isto é realizado de forma independente do Gemini no Chromium. <ph name="BEGIN_LINK" />Saiba mais sobre a IA no dispositivo<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">A partir do botão "Painel da Pesquisa" na barra de ferramentas, pode reabrir o painel da Pesquisa para fazer perguntas enquanto navega</translation>
 <translation id="5768371961535086509">O Chromium liberta memória dos separadores inativos. Isto permite que os separadores ativos e outras apps tenham mais recursos do computador e mantém o Chromium rápido. Os seus separadores inativos ficam novamente ativos de forma automática quando regressa a eles. <ph name="BEGIN_LINK" />Saiba mais sobre a Poupança de memória<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Se se esqueceu da frase de acesso ou quiser alterar esta definição, <ph name="SETTINGS_LINK" /> os dados do Chromium na sua conta</translation>
@@ -473,6 +479,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6245734527075554892">Verifica os URLs com base numa lista de sites inseguros armazenada no Chromium</translation>
 <translation id="6248213926982192922">Definir o Chromium como navegador predefinido</translation>
 <translation id="6248988683584659830">Pesquise definições</translation>
+<translation id="6251986571402453005">O Chromium transfere e atualiza automaticamente estes modelos de IA</translation>
 <translation id="6268381023930128611">Quer terminar sessão no Chromium?</translation>
 <translation id="6270547683008298381">Estes separadores estão a usar recursos adicionais. Para melhorar o seu desempenho, permita que o Chromium os torne inativos.</translation>
 <translation id="6281746429495226318">Personalize o seu perfil do Chromium</translation>
@@ -765,6 +772,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8981886272598860786">para pesquisar com o Chromium ou personalizar nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Gerir perfis do Chromium</translation>
 <translation id="8993855408334954620">Use o teclado para navegar entre o Gemini no Chromium e o separador aberto.</translation>
+<translation id="9002987346523307190">O Chromium vai remover os modelos de IA deste dispositivo. Alguns sites e funcionalidades do Chromium podem não funcionar.</translation>
 <translation id="9018218886431812662">Instalação concluída</translation>
 <translation id="9022552996538154597">Iniciar sessão no Chromium</translation>
 <translation id="9035791714111278917">Mostrar a pesquisa com o Chromium na barra de menu do Mac e ativar o atalho de teclado</translation>

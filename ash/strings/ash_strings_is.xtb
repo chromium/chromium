@@ -447,6 +447,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2053312383184521053">Gögn aðgerðaleysis</translation>
 <translation id="2058456167109518507">Tæki fannst</translation>
 <translation id="2064048859448024834">Kveikt á forskoðun myndavélar</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{Einn tengill}one{# tengill}other{# tenglar}}</translation>
 <translation id="2067220651560163985">Sýna hitastig í gráðum á Celsíus</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> hefur lokið prentun í <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Kveikja/slökkva á <ph name="CAPTURE_MEDIUM" />. Staða „<ph name="CAPTURE_MEDIUM" />“ er: <ph name="CAPTURE_STATE" /></translation>

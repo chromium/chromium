@@ -308,6 +308,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1308105352527684175">Vous ne pourrez peut-être pas accéder à certains contenus</translation>
 <translation id="1311092170520822848">Ce site contrôle les lecteurs de cartes à puce connectés à votre appareil et les cartes à puce auxquelles ils ont potentiellement accès</translation>
 <translation id="131112695174432497">Les données qui influent sur la personnalisation des annonces seront supprimées</translation>
+<translation id="13115907161008983">Copier les liens</translation>
 <translation id="131188242279372879">Découvrir la protection renforcée pour bénéficier du plus haut niveau de sécurité de Chrome pour les téléchargements</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Corrigez l'onglet qui ralentit votre navigateur}one{Corrigez l'onglet qui ralentit votre navigateur}other{Corrigez les onglets qui ralentissent votre navigateur}}</translation>
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
@@ -443,6 +444,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1482626744466814421">Ajouter cet onglet aux favoris…</translation>
 <translation id="1482772681918035149">de modifier les mots de passe</translation>
 <translation id="1483137792530497944">Rivière</translation>
+<translation id="1483148302144576204">Copier les liens</translation>
 <translation id="1483151333977672176">Envoi réussi.</translation>
 <translation id="1483431819520123112">Nom à afficher copié dans le presse-papiers</translation>
 <translation id="1483493594462132177">Envoyer</translation>
@@ -1058,6 +1060,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="2168036794078614559">Signalement envoyé</translation>
 <translation id="2168735174585029637">Donnez un nouveau look transparent à vos onglets</translation>
 <translation id="217120844667431680">Mode IA : faites-en plus</translation>
+<translation id="2172046302886074612">"<ph name="MODEL_CATEGORY" />" supprimé</translation>
 <translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
 <translation id="2175384018164129879">&amp;Gérer les moteurs de recherche et Site Search</translation>
 <translation id="2175773164573457310">Sélectionnez un texte ou une image pour demander à Gemini</translation>
@@ -2080,6 +2083,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="3270965368676314374">Accéder aux photos, à la musique et aux autres fichiers multimédias stockés sur votre ordinateur, les modifier et les supprimer</translation>
 <translation id="3275464924531706548">Réduire <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Ouvrir dans une fenêtre</translation>
+<translation id="3277325180914877290">Agrandir le texte</translation>
 <translation id="3280237271814976245">Enregistrer &amp;sous...</translation>
 <translation id="3280243678470289153">Rester dans Chrome</translation>
 <translation id="3282210178675490297">Partage d'un onglet avec <ph name="APP_NAME" />…</translation>
@@ -2588,6 +2592,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="3786890785076278600">Ligne statique</translation>
 <translation id="3787434344076711519">En attente de traduction</translation>
 <translation id="3789432704615470433">Fichiers SharePoint et OneDrive</translation>
+<translation id="3789493399245366422">plein écran, maximiser, immersif, masquer la barre d'outils, présentation, F11</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3790417903123637354">Un problème est survenu. Réessayez plus tard</translation>
 <translation id="379082410132524484">Votre carte est arrivée à expiration</translation>
@@ -3358,6 +3363,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4665035764476941598">Cliquez ici pour réafficher vos autres onglets</translation>
 <translation id="4665446389743427678">Toutes les données stockées par <ph name="SITE" /> seront supprimées.</translation>
 <translation id="4666483368282673356">Gérer votre historique Gemini</translation>
+<translation id="4667646546186544608">zoom arrière, réduire, plus petit, diminuer, réduire la taille, zoom de la page</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Félicitations ! <ph name="APP_NAME" /> a bien été installé sur votre appareil.</translation>
 <translation id="4672759829555593783">Ouvrir <ph name="FILE_NAME" /> maintenant</translation>
@@ -4760,6 +4766,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6255253900817321392">Recherchez plus rapidement depuis n'importe où sur votre Mac sans ouvrir de nouvel onglet</translation>
 <translation id="6257602895346497974">Activer la synchronisation…</translation>
 <translation id="6258818697161346451">Utilisez vos clés d'accès sur cet appareil</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Copier le lien}one{Copier le lien}other{Copier les liens}}</translation>
 <translation id="6261688934280090835">Journaux de l'application kiosque ChromeOS</translation>
 <translation id="6263082573641595914">Version de l'autorité de certification Microsoft</translation>
 <translation id="6264060420924719834">Cette appli inclut du contenu Web provenant d'autres sites</translation>
@@ -4888,6 +4895,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="6410390304316730527">La fonctionnalité Navigation sécurisée vous protège contre les pirates informatiques qui pourraient vous inciter à effectuer des opérations dangereuses, comme installer des logiciels malveillants ou divulguer des informations personnelles (mots de passe, numéros de téléphone ou numéros de carte de crédit, par exemple). Si vous la désactivez, faites preuve de vigilance lorsque vous consultez des sites Web inconnus ou peu fiables.</translation>
+<translation id="6411490324917773403">Réduire la taille du texte</translation>
 <translation id="6416743254476733475">Autorisez ou bloquez ces actions sur votre ordinateur.</translation>
 <translation id="6416856063840710198">Pour améliorer votre visite, les sites enregistrent souvent votre activité (souvent sur votre appareil). <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Comportement par défaut</translation>
@@ -6380,6 +6388,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8041093619605951337">Heureux</translation>
 <translation id="8042142357103597104">Opacité du texte</translation>
 <translation id="8042331986490021244">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google</translation>
+<translation id="8042441076562098746">zoom avant, agrandir, plus large, plus grand, augmenter, augmenter la taille, zoom de la page</translation>
 <translation id="8045253504249021590">La synchronisation a été arrêtée via Google Dashboard.</translation>
 <translation id="8045752459073395242">En savoir plus sur l'utilisation de l'IA générative au travail</translation>
 <translation id="8045923671629973368">Saisissez l'ID de l'application ou l'URL du Chrome Web Store</translation>
@@ -6734,6 +6743,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="844059392176531372">Partager le groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
 <translation id="844063558976952706">Toujours pour ce site</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Une fenêtre de navigation privée ou isolée est ouverte. Elle ne sera pas rouverte.}one{# fenêtre de navigation privée ou isolée est ouverte sur l'ensemble des profils. Elle ne sera pas rouverte.}other{# fenêtres de navigation privée et isolées sont ouvertes sur l'ensemble des profils. Elle ne seront pas rouvertes.}}</translation>
+<translation id="84426883520448311">thème, couleur, arrière-plan, fond d'écran, clair, sombre, mode, mode clair, mode sombre, personnel, style, esthétique</translation>
 <translation id="8443986842926457191">L'URL contient plus de 2 048 caractères</translation>
 <translation id="8445281870900174108">Cet onglet utilise votre caméra</translation>
 <translation id="8446884382197647889">En savoir plus</translation>
@@ -7324,6 +7334,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9076821103818989526">Panneau latéral</translation>
 <translation id="907779190626433918">Choisissez un mot de passe différent pour chaque site ou appli. Si quelqu'un découvre un mot de passe réutilisé, il pourra s'en servir pour accéder à vos autres comptes.</translation>
 <translation id="9078546160009814724">Nom d'utilisateur : <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Copier le lien}one{Copier le lien}other{Copier les liens}}</translation>
 <translation id="907972398081911688">Modifiez automatiquement votre mot de passe compromis</translation>
 <translation id="9081543426177426948">Les sites que vous visitez ne sont pas enregistrés en navigation privée</translation>
 <translation id="9082750838489080452">Application : <ph name="APP_NAME" /></translation>

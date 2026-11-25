@@ -6542,6 +6542,13 @@ Nếu bạn đặt chính sách này thành một chuỗi trống hoặc không 
 
 Lưu ý: Chính sách này không còn được dùng nữa, hãy sử dụng <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> (cho thiết bị mang lại hiệu suất cao) hoặc <ph name="ISOLATE_ORIGINS_SHORTLIST_POLICY_NAME" />. Chính sách này chỉ áp dụng cho Chrome trên <ph name="ANDROID_NAME" /> chạy trên những thiết bị phải có RAM hơn 1 GB và không nên định cấu hình cụ thể bất kỳ công nghệ cô lập tiến trình nào.</translation>
 <translation id="4991786313466977061">Kiểm soát chế độ hiển thị huy hiệu doanh nghiệp</translation>
+<translation id="4991886408515766724">Nếu đặt chính sách này, bạn có thể liệt kê các mẫu URL chỉ định những trang web được phép yêu cầu người dùng cấp quyền truy cập vào thiết bị USB.
+
+      Khi bạn không đặt chính sách này, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web. Nếu không, các chế độ cài đặt cá nhân của người dùng sẽ được áp dụng.
+
+      Các mẫu URL không được xung đột với <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Không chính sách nào được ưu tiên nếu một URL khớp với cả hai chính sách.
+
+      Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="4995123966071996433">Không cho phép chuyển tiếp cổng vào các máy ảo Linux</translation>
 <translation id="4996068111491152684">Thông tin đăng nhập <ph name="PRODUCT_OS_NAME" /> sẽ không được dùng để xác thực mạng.</translation>
 <translation id="4996086761250834365">Cho phép Dữ liệu phân tích sản phẩm <ph name="PLUGIN_VM_NAME" /></translation>

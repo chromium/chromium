@@ -137,6 +137,7 @@
 <translation id="2295218613066132598">Näytä Chrome-sivustojen pikakuvakkeet</translation>
 <translation id="2301513536169703857">Kirjaudu sisään Chromeen, niin voit käyttää salasanoja, kirjanmerkkejä ja muita tietoja kaikilla laitteillasi</translation>
 <translation id="2307973900865360088">Pidä Dock-palkissa</translation>
+<translation id="2308558013860776484">Jaa kuvakaappaus Chromen ulkopuolisesta sisällöstä, kuten muista sovelluksista tai tiedostoista</translation>
 <translation id="2309047409763057870">Tämä on Google Chromen toissijainen asennus, eikä sitä voi asettaa oletusselaimeksi.</translation>
 <translation id="2345992953227471816">Chrome havaitsi, että näissä laajennuksissa on haittaohjelmia:</translation>
 <translation id="2350411688004301551">Vaihda Gemini Enterpriseen</translation>
@@ -248,6 +249,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="3294686910656423119">Käyttötilastot ja virheraportit</translation>
 <translation id="3327226547491422998">Chrome voi kysyä myöhemmin, haluatko käyttää tallennettuja tietoja lomakkeiden automaattiseen täyttöön</translation>
 <translation id="3352986031709923790">hakualueen oikea yläkulma: oikea <ph name="RIGHT" /> %, ylä <ph name="TOP" /> %</translation>
+<translation id="3370239327277137701">Sivustot ja Chrome voivat käyttää tekoälyä, joka toimii suoraan laitteella, esimerkiksi yhteenvetoihin, oikolukuun ja tekstityksiin. Tämä on erillinen Gemini in Chromesta. <ph name="BEGIN_LINK" />Lue lisää laitepohjaisesta tekoälystä<ph name="END_LINK" />.</translation>
 <translation id="3373752068427117404">Joissakin Chromen ominaisuuksissa ja laajennuksissa on pikanäppäimiä. Voit halutessasi laittaa ne takaisin päälle.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome käynnistetään uudelleen nyt}=1{Chrome käynnistetään uudelleen 1 sekunnin kuluttua}other{Chrome käynnistetään uudelleen # sekunnin kuluttua.}}</translation>
 <translation id="3380249972812870825">Avaa Gemini in Chrome painamalla <ph name="GLOBAL_HOTKEY" /></translation>
@@ -347,6 +349,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4427306783828095590">Parannettu suojaus torjuu tietojenkalastelua ja haittaohjelmia entistä tehokkaammin</translation>
 <translation id="4434353761996769206">Asennusohjelman virhe: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Jaa dokumentti Gemini in Chromelle, niin saat nopean yleiskatsauksen ja voit esittää jatkokysymyksiä</translation>
+<translation id="4440999670272408191">Voit poistaa niitä milloin tahansa. Chrome voi ladata ne automaattisesti uudelleen, kun sivusto tai ominaisuus tarvitsee niitä.</translation>
 <translation id="4450664632294415862">Chrome – Kirjautuminen verkkoon – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Toinen Google Chrome ‑prosessi on jo käynnissä. Yritä myöhemmin uudelleen.</translation>
 <translation id="4493028449971051158">Käynnistysvirhe: Suorita asennusohjelma järjestelmänvalvojana.</translation>
@@ -354,6 +357,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4501839397124711198">Voit kiinnittää Google Haun sivupaneeliin, jotta voit esittää kysymyksiä selailun aikana</translation>
 <translation id="4571503333518166079">Siirry Chromen ilmoitusasetuksiin</translation>
 <translation id="4580939929828762295">Pysy turvassa Google Salasanojen avulla</translation>
+<translation id="4589544932092381064">Näytä "Hae Chromella" Windowsin tehtäväpalkissa ja laita pikanäppäimet päälle</translation>
 <translation id="459622048091363950">Kun Chromella on käyttöoikeus, sivustot voivat pyytää sitä sinulta.</translation>
 <translation id="4598116752460667024">Hae mitä tahansa prosessia listalta.</translation>
 <translation id="4600710005438004015">Chromea ei voitu päivittää uusimpaan versioon, joten sinulta puuttuu joitakin uusia ominaisuuksia ja tietoturvakorjauksia.</translation>
@@ -369,6 +373,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4754614261631455953">Google Chrome Canary (saapuva mDNS)</translation>
 <translation id="4756182432527369254">Nopeuttaa sivustoja Chromen V8-moottorilla, mutta heikentää Chromen suojaa hyökkäyksiä vastaan</translation>
 <translation id="4768676935374695498">Hae tästä videosta Google Lensillä</translation>
+<translation id="4783580253728290203">Kun asetus on pois päältä, Chrome poistaa laitepohjaiset tekoälymallit eikä lataa niitä uudelleen. Jotkin sivustot ja Chromen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="479167709087336770">Tämä käyttää samaa oikeinkirjoituksen tarkistusta kuin Google Haku. Selaimeen kirjoittamasi teksti lähetetään Googlelle. Voit vaihtaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="4793679854893018356">Katso, miten Chrome pitää sinut turvassa</translation>
 <translation id="4803313124144656665">Sulje Google Haku Chromessa</translation>
@@ -451,6 +456,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Internetyhteyden muodostaminen ei onnistu. Välityspalvelin edellyttää todennusta.</translation>
 <translation id="5709557627224531708">Aseta Chrome oletusselaimeksi</translation>
+<translation id="5715427327524421317">Chrome lataa ja päivittää tekoälymallit automaattisesti</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Lisäsuojaus edellyttää Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Eristettyä selainikkunaa ei avata uudelleen.}other{Lisäsuojaus edellyttää Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # eristettyä ikkunaa ei avata uudelleen.}}</translation>
 <translation id="5719246646468301581">Google Chromen ja ChromeOS:n lisäkäyttöehdot</translation>
 <translation id="5736850870166430177">Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä</translation>
@@ -543,6 +549,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6491330562720922580">QR-koodi, jolla voi ladata Chrome-selaimen mobiililaitteelle</translation>
 <translation id="6493527311031785448">Google Chrome yrittää seuraavaa: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome on suljettu automaattisesti</translation>
+<translation id="650039555447046671">Chrome poistaa tekoälymallit laitteelta. Jotkin sivustot ja Chromen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="6506909944137591434">Chrome tarvitsee kameran luvan, jotta se voi luoda 3D-kartan ympäristöstäsi</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Anna Chromelle pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />, jotta voit käyttää sijaintia.</translation>
@@ -581,6 +588,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6877155553248388166">hakualueen oikea alakulma: oikea <ph name="RIGHT" /> %, ala <ph name="BOTTOM" /> %</translation>
 <translation id="6879791154455204815">Avaa haku Chromella</translation>
 <translation id="6881299373831449287">Päivitetään Chromea</translation>
+<translation id="6881997500528805781">Käyttää laitteen tallennustilaa. Chrome poistaa käyttämättömät tekoälymallit 45 päivän kuluttua tai kun tallennustila on vähissä.</translation>
 <translation id="6885412569789873916">Chromen betaversion sovellukset</translation>
 <translation id="6893363893008038481">Poista tili Chromesta</translation>
 <translation id="6896758677409633944">Kopioi</translation>

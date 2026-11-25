@@ -447,6 +447,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2053312383184521053">Dati par neaktīvu stāvokli</translation>
 <translation id="2058456167109518507">Atrastā ierīce</translation>
 <translation id="2064048859448024834">Kameras priekšskatījums tiek rādīts</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 saite}zero{# saišu}one{# saite}other{# saites}}</translation>
 <translation id="2067220651560163985">Rādīt temperatūru Celsija grādos</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> pabeidza drukāšanu, izmantojot printeri <ph name="PRINTER_NAME" />.</translation>
 <translation id="2075520525463668108">Pārslēgt funkciju “<ph name="CAPTURE_MEDIUM" />”. Funkcija “<ph name="CAPTURE_MEDIUM" />” ir <ph name="CAPTURE_STATE" />.</translation>

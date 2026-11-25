@@ -446,6 +446,7 @@
 <translation id="2053312383184521053">Подаци о стању мировања</translation>
 <translation id="2058456167109518507">Откривен је уређај</translation>
 <translation id="2064048859448024834">Преглед камере је укључен</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 линк}one{# линк}few{# линка}other{# линкова}}</translation>
 <translation id="2067220651560163985">Прикажи температуру у степенима Целзијуса</translation>
 <translation id="206960706005837784">Апликација <ph name="APP_NAME" /> је завршила штампање на штампачу <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Укључи/искључи функцију <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" /></translation>

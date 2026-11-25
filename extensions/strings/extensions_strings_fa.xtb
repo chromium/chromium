@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" اضافه شود؟</translation>
 <translation id="2159915644201199628">رمزگشایی تصویر امکان‌پذیر نیست: «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2193567467390483943">ولی‌تان این افزونه را تأیید نکرد</translation>
+<translation id="2207866393056347613">دسترسی دائمی به داده‌های شما در همه سایت‌ها اعطا می‌کند</translation>
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» اجازه‌های اضافی درخواست کرده است.</translation>
 <translation id="2327492829706409234">فعال کردن برنامه</translation>
 <translation id="2350172092385603347">‏بومی سازی استفاده شده است، اما default_locale در اظهارنامه مشخص نشده است.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">بازفعال‌سازی</translation>
 <translation id="2743583586211388067">دسترسی به این افزونه تحت خط‌مشی ریسک افزونه سازمانتان مسدود شده است.</translation>
 <translation id="2766161002040448006">از ولی پرسیدن</translation>
+<translation id="2775557057525247505">نشان دادن همه سایت‌ها</translation>
 <translation id="2785530881066938471">‏بارگیری فایل "<ph name="RELATIVE_PATH" />" برای اسکریپت محتوا ممکن نیست. رمزگذاری آن UTF-8 نیست.</translation>
 <translation id="2850541429955027218">افزودن زمینه</translation>
 <translation id="2883143988769190738">این افزونه اجازه‌های زیر را درخواست می‌کند:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (شماره سریال <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> از فروشنده <ph name="VENDOR_ID" /> (شماره سریال <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">مقدار ورودی برای کلید خصوصی باید یک مسیر معتبر باشد.</translation>
+<translation id="3769470010314114481">دسترسی موقت به داده‌هایتان در سایت را اعطا می‌کند</translation>
 <translation id="3788401245189148511">این می‌توانست:</translation>
 <translation id="3834775135533257713">برنامه «<ph name="TO_INSTALL_APP_NAME" />» اضافه نشد، چون با «<ph name="INSTALLED_APP_NAME" />» ناسازگار است.</translation>
 <translation id="388442998277590542">صفحه گزینه‌ها "<ph name="OPTIONS_PAGE" />" بارگیری نشد.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">فعال کردن برنامه افزودنی</translation>
 <translation id="3927932062596804919">رد کردن</translation>
 <translation id="3984413272403535372">هنگام امضای برنامهٔ افزودنی خطا رخ داد.</translation>
+<translation id="3990894032742690314">همیشه روشن در سایت‌های فهرست‌شده</translation>
 <translation id="4014432863917027322">«<ph name="EXTENSION_NAME" />» را اصلاح می‌کنید؟</translation>
 <translation id="4061696872429826774">‏برنامه‌ای دیگر در رایانه شما یک افزونه اضافه کرده است که ممکن است نحوه کارکرد Chromium را تغییر دهد.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">صفحه درباره «<ph name="ABOUT_PAGE" />» بارگیری نشد.</translation>
 <translation id="424963718355121712">برنامه‌ها باید ازجانب میزبانی ارائه شوند که بر آن‌ها تأثیر دارد</translation>
 <translation id="4306119971288449206">نوع محتوای برنامه باید «<ph name="CONTENT_TYPE" />» باشد</translation>
+<translation id="4307774243840254737">دسترسی دائمی به داده‌هایتان در سایت‌های فهرست‌شده در زیر اعطا می‌کند</translation>
 <translation id="4349181963619779233">امکان افزودن افزونه‌ها و برنامه‌ها از این وب‌سایت وجود ندارد</translation>
 <translation id="4625078469366263107">فعال کردن برنامه</translation>
 <translation id="4633003931260532286">افزونه به «<ph name="IMPORT_NAME" />» با نسخه حداقل «<ph name="IMPORT_VERSION" />» نیاز دارد اما تنها نسخه «<ph name="INSTALLED_VERSION" />» نصب شده است</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">جدیدترین نسخه از "<ph name="EXTENSION_NAME" />" غیر فعال شده است زیرا به مجوزهای بیشتری نیاز دارد.</translation>
 <translation id="5242724311594467048">«<ph name="EXTENSION_NAME" />» فعال شود؟</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">فقط وقتی روی افزونه کلیک می‌کنید</translation>
 <translation id="5405650547142096840">‏حذف از Chromium</translation>
 <translation id="5456409301717116725">این برنامهٔ افزودنی شامل فایل کلید «<ph name="KEY_PATH" />» است. احتمالاً نمی‌خواهید این کار را انجام دهید.</translation>
 <translation id="5485102783864353244">افزودن برنامه</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">این برنامه افزودنی بیش از حد خود را بارگیری مجدد می‌کند.</translation>
 <translation id="7003844668372540529">محصول نامشخص <ph name="PRODUCT_ID" /> از <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">سایت‌های فهرست‌شده</translation>
 <translation id="7068383018033524534">فایل مانیفست نامعتبر است</translation>
 <translation id="7217838517480956708">سرپرست این دستگاه نصب <ph name="EXTENSION_NAME" /> را لازم کرده است. آن را نمی‌توان تغییر داد یا حذف کرد.</translation>
 <translation id="7287143125007575591">دسترسی رد شد.</translation>
@@ -136,6 +143,7 @@
 <translation id="8035920974645200807">سَمت کاربر</translation>
 <translation id="8047248493720652249">این برنامه افزودنی نتوانست نام‌گذاری بارگیری «<ph name="ATTEMPTED_FILENAME" />» را انجام دهد زیرا یک برنامه افزودنی دیگر (<ph name="EXTENSION_NAME" />) نام فایل دیگری «<ph name="ACTUAL_FILENAME" />» را تعیین کرد.</translation>
 <translation id="8049705080247101012">‏‫Google‏ «<ph name="EXTENSION_NAME" />» را به عنوان برنامه مخرب پرچم‌‌گذاری کرده است و از نصب آن جلوگیری شده است</translation>
+<translation id="823691536304079791">خواندن و تغییر دادن داده‌های شما</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> از <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">این می‌تواند:</translation>
 <translation id="8517576857589387417">فایل مانیفست وجود ندارد یا قابل‌خواندن نیست</translation>

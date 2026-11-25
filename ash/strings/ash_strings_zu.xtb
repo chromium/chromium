@@ -447,6 +447,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2053312383184521053">Idatha yesimo sokungenzi lutho</translation>
 <translation id="2058456167109518507">Idivayisi itholakele</translation>
 <translation id="2064048859448024834">Ukuhlola kuqala kwekhamera kuvuliwe</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{Ilinki e-1}one{Amalinki angu-#}other{Amalinki angu-#}}</translation>
 <translation id="2067220651560163985">Bonisa izinga lokushisa ngeCelsius</translation>
 <translation id="206960706005837784">I-<ph name="APP_NAME" /> iqedile ukuphrinta ku-<ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Guqula i-<ph name="CAPTURE_MEDIUM" />. I-<ph name="CAPTURE_MEDIUM" /> yi-<ph name="CAPTURE_STATE" /></translation>

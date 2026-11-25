@@ -446,6 +446,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2053312383184521053">Podaci o stanju mirovanja</translation>
 <translation id="2058456167109518507">Otkriven je uređaj</translation>
 <translation id="2064048859448024834">Pregled kamere je uključen</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 link}one{# link}few{# linka}other{# linkova}}</translation>
 <translation id="2067220651560163985">Prikaži temperaturu u stepenima Celzijusa</translation>
 <translation id="206960706005837784">Aplikacija <ph name="APP_NAME" /> je završila štampanje na štampaču <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Uključi/isključi funkciju <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" /></translation>

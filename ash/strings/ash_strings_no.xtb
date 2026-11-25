@@ -447,6 +447,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2053312383184521053">Data om hviletilstand</translation>
 <translation id="2058456167109518507">Enhet oppdaget</translation>
 <translation id="2064048859448024834">Kameraforhåndsvisningen er på</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 link}other{# linker}}</translation>
 <translation id="2067220651560163985">Vis temperaturen i celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> er ferdig med å skrive ut på <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Slå av/på <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> er <ph name="CAPTURE_STATE" /></translation>

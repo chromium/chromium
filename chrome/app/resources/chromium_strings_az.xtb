@@ -54,6 +54,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1572572333538561328">Sİ rejimində axtarışı yenidən açın</translation>
 <translation id="1574377791422810894">Chromium-un güvənlik alətləri</translation>
 <translation id="1594928384848033697">Chromium Parol Meneceri datanızı silmək istəyir. İcazə vermək üçün Windows parolunu yazın.</translation>
+<translation id="1599690375407103815">Deaktiv olduqda Chromium cihazdakı Sİ modellərini silir və onları yenidən endirmir. Bəzi saytlar və Chromium funksiyaları işləməyə bilər.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator güncəlləməni tətbiq etmək üçün Chromium'u yenidən başlatmanızı tələb edir}=1{Administrator güncəlləməni tətbiq etmək üçün Chromium'u yenidən başlatmanızı tələb edir. Anonim pəncərəniz yenidən açılmayacaq.}other{Administrator güncəlləməni tətbiq etmək üçün Chromium'u yenidən başlatmanızı tələb edir. # Anonim pəncərəniz yenidən açılmayacaq.}}</translation>
 <translation id="1625909126243026060">Chromium'da əsas məxfilik və təhlükəsizlik nəzarətlərini nəzərdən keçirin</translation>
 <translation id="1640672724030957280">Endirilir...</translation>
@@ -68,6 +69,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" /> sonra yenidən başladılacaq</translation>
 <translation id="1749104137266986751">HTTPS əlçatan olmadıqda Chromium xəbərdarlıq etmədən təhlükəli bağlantı istifadə edəcək</translation>
 <translation id="1774152462503052664">Chromium'a fonda işləməyə icazə verin</translation>
+<translation id="1792680680989393197">Onları istənilən vaxt silə bilərsiniz. Sayt və ya funksiya tələb etdikdə Chromium onları avtomatik olaraq yenidən endirə bilər.</translation>
 <translation id="1793486931176048546">Sürətli giriş üçün Chromium-u tapşırıqlar panelinizə bərkitmək məqsədilə Windows bildirişində <ph name="BEGIN_BOLD" />Bəli<ph name="END_BOLD" /> seçiminə klikləyin.</translation>
 <translation id="1808667845054772817">Chromium'u yenidən quraşdırın</translation>
 <translation id="1820835682567584003">Chromium cəhd edir: <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -252,6 +254,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="3751920144677881410">Alətlər panelindəki "Axtarış yan paneli" düyməsindən istifadə edərək axtarış zamanı sual vermək üçün Axtarış yan panelini yenidən aça bilərsiniz</translation>
 <translation id="3788675262216168505">Chromium profillərini idarə edin</translation>
 <translation id="3790262771324122253">Chromium-un bəzi endirmələri bloklama səbəbini öyrənin</translation>
+<translation id="3793196697433239004">Cihaz yaddaşından istifadə edir. Chromium istifadə olunmayan Sİ modellərini 45 gündən sonra və ya yaddaş az olduqda silir</translation>
 <translation id="379589255253486813">Nəzərdən keçirilməli məqam olsa, Chromium sizə bildirəcək</translation>
 <translation id="3802055581630249637">Tez yüklənməsi üçün Chromium daxil ola biləcəyiniz səhifələri əvvəlcədən yükləyir</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
@@ -333,6 +336,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="4621240073146040695">Güncəllənmək üzrədir. Güncəlləşməni tamamlamaq üçün Chromium'u yenidən işə salın.</translation>
 <translation id="4625064703209785397">Chromium-un V8 mühərriki ilə saytları sürətləndirir, lakin Chromium-un hücumlara qarşı müqavimətini bir qədər azaldır</translation>
 <translation id="4626321472657185181">Chromium ilə Axtarışı açın</translation>
+<translation id="4639628733881319833">Digər tətbiqlər və ya fayllar kimi Chromium-dan kənar kontentin skrinşotunu paylaşın</translation>
 <translation id="4654639495249754755">Chromium profili</translation>
 <translation id="4665829708273112819">Xəbərdarlıq: Chromium artırmaların brauzer tarixçənizi yazmasının qarşısını ala bilməz. Bu artırmanı Anonim rejimdə deaktiv etmək üçün bu seçimi ləğv edin.</translation>
 <translation id="4673151026126227699">Chromium istifadə hesabatlarını da paylaşırsınızsa, bu hesabatlara ziyarət etdiyiniz keçidlər daxil olacaq</translation>
@@ -391,6 +395,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="5405650547142096840">Chromium'dan silin</translation>
 <translation id="5424544524441439284">Performansı azaldır, lakin Chromium-u hücumlara qarşı davamlı edir</translation>
 <translation id="5427571867875391349">Chromium'u defolt brauzer təyin edin</translation>
+<translation id="5435079900593041559">Chromium ilə axtarışı Windows tapşırıq panelində göstərin və klaviatura qısayolunu aktivləşdirin</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium brauzeri yavaşladan tabı durdurmağı tövsiyə edir}other{Chromium brauzeri yavaşladan tabları durdurmağı tövsiyə edir}}</translation>
 <translation id="5473971139929175403">Chromium düzgün işləməyə bilər, çünki daha Linux sistemi üzərində dəstəklənmir</translation>
@@ -417,6 +422,7 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="5690427481109656848">Google MMC</translation>
 <translation id="5698481217667032250">Chromium'u bu dildə görüntüləyin</translation>
 <translation id="569897634095159764">İnternetə qoşulmaq olmur. Proksi serveri identifikasiya tələb edir.</translation>
+<translation id="5755377560105094542">Saytlar və Chromium xülasələr, son redaktə, altyazılar və daha çoxu kimi funksiyalar üçün birbaşa cihazınızda işləyən Sİ-dən istifadə edə bilər. Bu, Chromium-da Gemini-dan ayrıdır. <ph name="BEGIN_LINK" />Cihazda Sİ haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">Alətlər panelindəki "Axtarış paneli" düyməsindən istifadə edərək axtarış zamanı sual vermək üçün Axtarış panelini yenidən aça bilərsiniz</translation>
 <translation id="5768371961535086509">Chromium deaktiv tabların yaddaşını boşaldır. Bu, aktiv tablara və digər tətbiqlərə daha çox kompüter resursu verir və Chromium-u sürətləndirir. Qayıtdığınız zaman deaktiv tablar avtomatik olaraq yenidən aktivləşir. <ph name="BEGIN_LINK" />Yaddaşa Qənaət haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, hesabdakı Chromium datasını <ph name="SETTINGS_LINK" /></translation>
@@ -473,6 +479,7 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="6245734527075554892">URL'ləri Chromium'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır</translation>
 <translation id="6248213926982192922">Chromium'u defolt brauzer edin</translation>
 <translation id="6248988683584659830">Axtarış ayarları</translation>
+<translation id="6251986571402453005">Chromium bu Sİ modellərini avtomatik endirir və güncəlləyir</translation>
 <translation id="6268381023930128611">Chromium'dan çıxılsın?</translation>
 <translation id="6270547683008298381">Bu tablar əlavə resurslar istifadə edir. Performansı təkmilləşdirmək üçün Chromium-a onları deaktiv etmək imkanı verin.</translation>
 <translation id="6281746429495226318">Chromium profilinizi fərdiləşdirin</translation>
@@ -763,6 +770,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8981886272598860786">Chromium ilə axtarmaq və ya <ph name="BEGIN_LINK" />Ayarlarda<ph name="END_LINK" /> fərdiləşdirmək üçün</translation>
 <translation id="8988036198400390003">Chromium profillərini idarə edin</translation>
 <translation id="8993855408334954620">Chromium-da Gemini və açıq tab arasında hərəkət etmək üçün klaviaturadan istifadə edin.</translation>
+<translation id="9002987346523307190">Chromium Sİ modellərini bu cihazdan siləcək. Bəzi saytlar və Chromium funksiyaları işləməyə bilər.</translation>
 <translation id="9018218886431812662">Quraşdırma tamamlandı</translation>
 <translation id="9022552996538154597">Chromium'a daxil olun</translation>
 <translation id="9035791714111278917">Mac menyu panelində Chromium ilə axtarış göstərilsin və klaviatura qısayolunu aktivləşdirin</translation>

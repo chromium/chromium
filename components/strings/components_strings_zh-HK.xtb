@@ -78,7 +78,7 @@
 <translation id="112840717907525620">政策快取正確</translation>
 <translation id="1131264053432022307">您複製的圖片</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />：如要離開全螢幕，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
-<translation id="11370190534773372">已填入卡片資料</translation>
+<translation id="11370190534773372">已填入信用卡詳情</translation>
 <translation id="1138458427267715730">如果產品在網絡上的任何網站降價，系統將通知你</translation>
 <translation id="1142713751288681188">紙張類型</translation>
 <translation id="1142965388643537393">旅遊資料</translation>
@@ -4550,7 +4550,7 @@
 <translation id="8577348305244205642">虛擬卡無法使用</translation>
 <translation id="8579000896558714521">取代鍵盤</translation>
 <translation id="8579561564816585231">使用「密碼管理工具」等 Google 服務登入</translation>
-<translation id="8580478010934016252">前往付款方式設定</translation>
+<translation id="8580478010934016252">前往付款方法</translation>
 <translation id="8581064022803799721">此網頁已儲存在「<ph name="LAST_BOOKMARKS_FOLDER" />」中。</translation>
 <translation id="858637041960032120">新增電話號碼</translation>
 <translation id="8587100480629037893">唔允許用手勢追蹤功能</translation>

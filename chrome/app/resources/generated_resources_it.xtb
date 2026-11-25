@@ -308,6 +308,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1308105352527684175">Potresti non riuscire ad accedere ad alcuni contenuti</translation>
 <translation id="1311092170520822848">Questo sito sta controllando i lettori di smart card collegati al tuo dispositivo e alle smart card potenzialmente disponibili</translation>
 <translation id="131112695174432497">I dati che influiscono sulla personalizzazione degli annunci vengono eliminati</translation>
+<translation id="13115907161008983">Copia link</translation>
 <translation id="131188242279372879">Scopri la Protezione avanzata per ottenere il massimo livello di sicurezza di Chrome per i download</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Risolvi il problema della scheda che rallenta il browser}other{Risolvi il problema delle schede che rallentano il browser}}</translation>
 <translation id="1312721752506309252">È attiva la protezione avanzata</translation>
@@ -443,6 +444,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1482626744466814421">Aggiungi questa scheda ai preferiti…</translation>
 <translation id="1482772681918035149">modificare le password</translation>
 <translation id="1483137792530497944">Fiume</translation>
+<translation id="1483148302144576204">Copia link</translation>
 <translation id="1483151333977672176">Inviata.</translation>
 <translation id="1483431819520123112">Nome visualizzato copiato negli appunti</translation>
 <translation id="1483493594462132177">Invia</translation>
@@ -844,6 +846,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1921544956190977703">Disponi della misura di sicurezza più efficace di Chrome contro estensioni, download e siti web pericolosi</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">L'estensione "<ph name="NAME" />" è salvata solo su questo dispositivo. Per usarla sugli altri dispositivi, salvala nel tuo Account Google.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Apri con</translation>
 <translation id="1925017091976104802">Premi <ph name="MODIFIER_KEY_DESCRIPTION" /> per incollare</translation>
 <translation id="1925021887439448749">Inserisci un indirizzo web personalizzato</translation>
@@ -1057,6 +1060,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2168036794078614559">Segnalazione inviata</translation>
 <translation id="2168735174585029637">Rinnova le tue schede con un look trasparente</translation>
 <translation id="217120844667431680">Fai di più con AI Mode</translation>
+<translation id="2172046302886074612">Elemento "<ph name="MODEL_CATEGORY" />" rimosso</translation>
 <translation id="2173302385160625112">Controlla la connessione a internet</translation>
 <translation id="2175384018164129879">Gestisci motori di ricerca e ricerca nei siti</translation>
 <translation id="2175773164573457310">Seleziona un testo o un'immagine per chiedere a Gemini</translation>
@@ -1390,6 +1394,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2528487766183344810">Sblocca <ph name="TOKEN_NAME" /> per esportare il certificato client.</translation>
 <translation id="2532198298278778531">Gestisci DNS sicuro nelle impostazioni di ChromeOS Flex</translation>
 <translation id="253434972992662860">&amp;Pausa</translation>
+<translation id="2534439599863644240">Porta seriale</translation>
 <translation id="253498598929009420">Il sito potrà vedere i contenuti del tuo schermo</translation>
 <translation id="253557089021624350">Conteggio attività keep-alive</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> può vedere e modificare i file e le cartelle indicati di seguito</translation>
@@ -2081,6 +2086,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3270965368676314374">Leggere, modificare ed eliminare foto, musica e altri contenuti multimediali del computer</translation>
 <translation id="3275464924531706548">Comprimi <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Apri come finestra</translation>
+<translation id="3277325180914877290">Ingrandisci le dimensioni del testo</translation>
 <translation id="3280237271814976245">Salva con &amp;nome...</translation>
 <translation id="3280243678470289153">Rimani in Chrome</translation>
 <translation id="3282210178675490297">Condivisione di una scheda con <ph name="APP_NAME" /></translation>
@@ -2589,6 +2595,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3786890785076278600">Riga statica</translation>
 <translation id="3787434344076711519">In attesa di traduzione</translation>
 <translation id="3789432704615470433">File di SharePoint e OneDrive</translation>
+<translation id="3789493399245366422">schermo intero, a schermo intero, massimizza, immersivo, nascondi barra degli strumenti, presentazione, F11</translation>
 <translation id="3789841737615482174">Installa</translation>
 <translation id="3790417903123637354">Si è verificato un problema. Riprova più tardi.</translation>
 <translation id="379082410132524484">La tua carta è scaduta</translation>
@@ -3359,6 +3366,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4665035764476941598">Fai clic qui per ripristinare le altre schede</translation>
 <translation id="4665446389743427678">Tutti i dati memorizzati da <ph name="SITE" /> saranno eliminati.</translation>
 <translation id="4666483368282673356">Gestisci la cronologia di Gemini</translation>
+<translation id="4667646546186544608">diminuisci lo zoom, rimpicciolisci, più piccolo, riduci, diminuisci, ridimensiona, zoom pagina</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Congratulazioni. <ph name="APP_NAME" /> è stata installata correttamente sul dispositivo</translation>
 <translation id="4672759829555593783">Apri subito il file <ph name="FILE_NAME" /></translation>
@@ -4758,6 +4766,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="6255253900817321392">Cerca più velocemente da qualsiasi punto del tuo Mac senza aprire una nuova scheda</translation>
 <translation id="6257602895346497974">Attiva la sincronizzazione...</translation>
 <translation id="6258818697161346451">Usa le tue passkey su questo dispositivo</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Copia link}other{Copia link}}</translation>
 <translation id="6261688934280090835">Log dell'app kiosk di ChromeOS</translation>
 <translation id="6263082573641595914">Versione CA Microsoft</translation>
 <translation id="6264060420924719834">Questa app include contenuti web di altri siti</translation>
@@ -4886,6 +4895,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">File di immagine</translation>
 <translation id="6410390304316730527">La Navigazione sicura ti protegge da attaccanti che potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software dannosi o rivelare informazioni personali (ad esempio password, numeri di telefono o carte di credito). Se la disattivi, fai attenzione quando navighi in siti sconosciuti o sospetti.</translation>
+<translation id="6411490324917773403">Riduci le dimensioni del testo</translation>
 <translation id="6416743254476733475">Consenti o blocca sul tuo computer.</translation>
 <translation id="6416856063840710198">Per migliorare la tua visita, i siti spesso salvano la tua attività, solitamente sul tuo dispositivo. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Comportamento predefinito</translation>
@@ -6376,6 +6386,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8041093619605951337">Felice</translation>
 <translation id="8042142357103597104">Opacità testo</translation>
 <translation id="8042331986490021244">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google</translation>
+<translation id="8042441076562098746">aumenta lo zoom, ingrandisci, allarga, più grande, dimensioni maggiori, aumenta, aumenta dimensioni, zoom pagina</translation>
 <translation id="8045253504249021590">La sincronizzazione è stata interrotta tramite Google Dashboard.</translation>
 <translation id="8045752459073395242">Scopri di più sull'utilizzo dell'AI generativa al lavoro</translation>
 <translation id="8045923671629973368">Inserisci l'ID applicazione o l'URL del webstore</translation>
@@ -6730,6 +6741,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="844059392176531372">Condividi il gruppo di schede "<ph name="GROUP_NAME" />"</translation>
 <translation id="844063558976952706">Sempre su questo sito</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{C'è una finestra Incognito o isolata aperta. Non verrà riaperta.}other{Ci sono # finestre Incognito e finestre isolate aperte nei profili. Non verranno riaperte.}}</translation>
+<translation id="84426883520448311">tema, colore, sfondo, immagine di sfondo, chiaro, scuro, modalità, modalità Luce, modalità Buio, personale, stile, estetica</translation>
 <translation id="8443986842926457191">L'URL contiene più di 2048 caratteri</translation>
 <translation id="8445281870900174108">Questa scheda sta usando la videocamera</translation>
 <translation id="8446884382197647889">Scopri di più</translation>
@@ -7320,6 +7332,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9076821103818989526">Riquadro laterale</translation>
 <translation id="907779190626433918">Usa una password univoca per ogni sito o app. Se qualcuno scopre una password riutilizzata, potrebbe usarla per accedere ai tuoi altri account.</translation>
 <translation id="9078546160009814724">Nome utente: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Copia link}other{Copia link}}</translation>
 <translation id="907972398081911688">Modifica automaticamente la password compromessa</translation>
 <translation id="9081543426177426948">I siti che visiti non vengono salvati in modalità Incognito</translation>
 <translation id="9082750838489080452">Applicazione: <ph name="APP_NAME" /></translation>

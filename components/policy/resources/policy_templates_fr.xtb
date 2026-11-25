@@ -6426,6 +6426,13 @@ Si cette règle est définie sur une chaîne vide ou qu'elle n'est pas configur�
 
 Remarque : Cette règle étant obsolète, utilisez <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> (pour les appareils hautes performances) ou <ph name="ISOLATE_ORIGINS_SHORTLIST_POLICY_NAME" /> à la place. Cette règle ne concerne que Chrome sur <ph name="ANDROID_NAME" />, sur les appareils avec plus de 1 Go de RAM pour lesquels il n'est pas recommandé de configurer spécifiquement l'isolation des processus.</translation>
 <translation id="4991786313466977061">Contrôler la visibilité des badges d'entreprise</translation>
+<translation id="4991886408515766724">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à demander aux utilisateurs à accéder à un appareil USB.
+
+      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
+
+      Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est listé dans les deux règles.
+
+      Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="4995123966071996433">Ne pas autoriser le transfert de port vers les machines virtuelles Linux</translation>
 <translation id="4996068111491152684">Les identifiants de connexion <ph name="PRODUCT_OS_NAME" /> ne seront pas utilisés pour l'authentification réseau.</translation>
 <translation id="4996086761250834365">Autoriser l'analyse de produit <ph name="PLUGIN_VM_NAME" /></translation>

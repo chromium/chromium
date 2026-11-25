@@ -447,6 +447,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2053312383184521053">Сенек абалындагы дайындар</translation>
 <translation id="2058456167109518507">Түзмөк табылды</translation>
 <translation id="2064048859448024834">Камерада алдын ала көрүү күйүк</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 шилтеме}other{# шилтеме}}</translation>
 <translation id="2067220651560163985">Температураны Цельсий менен көрсөтүү</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" /> принтеринде басып чыгарды</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> өчүрүү/күйгүзүү. <ph name="CAPTURE_MEDIUM" /> – <ph name="CAPTURE_STATE" />.</translation>

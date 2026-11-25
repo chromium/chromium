@@ -447,6 +447,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2053312383184521053">Données sur l'état de veille</translation>
 <translation id="2058456167109518507">Appareil détecté</translation>
 <translation id="2064048859448024834">Aperçu de la caméra affiché</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 lien}one{# lien}other{# liens}}</translation>
 <translation id="2067220651560163985">Afficher la température en Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> a terminé l'impression sur <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Activer/Désactiver <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" />.</translation>

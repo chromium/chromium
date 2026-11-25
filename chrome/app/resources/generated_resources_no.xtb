@@ -308,6 +308,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1308105352527684175">Du har kanskje ikke tilgang til visse typer innhold</translation>
 <translation id="1311092170520822848">Dette nettstedet kontrollerer smartkortlesere som er koblet til enheten din, og potensielt smartkort som er tilgjengelige for dem</translation>
 <translation id="131112695174432497">Data som påvirker personlig tilpasning av annonser, blir slettet</translation>
+<translation id="13115907161008983">Kopiér linkene</translation>
 <translation id="131188242279372879">Bruk økt beskyttelse for å få det høyeste sikkerhetsnivået for nedlastinger i Chrome</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Løs problemet med fanen som gjør nettleseren treg}other{Løs problemet med fanene som gjør nettleseren treg}}</translation>
 <translation id="1312721752506309252">Økt beskyttelse er på</translation>
@@ -444,6 +445,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1482626744466814421">Bokmerk denne fanen</translation>
 <translation id="1482772681918035149">endre passord</translation>
 <translation id="1483137792530497944">Elv</translation>
+<translation id="1483148302144576204">Kopiér linkene</translation>
 <translation id="1483151333977672176">Sendt!</translation>
 <translation id="1483431819520123112">Visningsnavnet er kopiert til utklippstavlen</translation>
 <translation id="1483493594462132177">Send</translation>
@@ -1065,6 +1067,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2168036794078614559">Rapporten er sendt</translation>
 <translation id="2168735174585029637">Gi fanene et nytt, gjennomsiktig utseende</translation>
 <translation id="217120844667431680">Gjør mer med AI-modus</translation>
+<translation id="2172046302886074612">«<ph name="MODEL_CATEGORY" />» er fjernet</translation>
 <translation id="2173302385160625112">Sjekk internettilkoblingen</translation>
 <translation id="2175384018164129879">&amp;Administrer søkemotorer og nettstedsøk</translation>
 <translation id="2175773164573457310">Velg tekst eller bilder for å spørre Gemini</translation>
@@ -2092,6 +2095,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3270965368676314374">lese, endre og slette bilder, musikk og andre medier fra datamaskinen din</translation>
 <translation id="3275464924531706548">Skjul <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Åpne som vindu</translation>
+<translation id="3277325180914877290">Forstørr teksten</translation>
 <translation id="3280237271814976245">L&amp;agre som...</translation>
 <translation id="3280243678470289153">Bli værende i Chrome</translation>
 <translation id="3282210178675490297">Deler en fane med <ph name="APP_NAME" /></translation>
@@ -2600,6 +2604,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3786890785076278600">Statisk linje</translation>
 <translation id="3787434344076711519">Venter på oversettelse</translation>
 <translation id="3789432704615470433">SharePoint- og OneDrive-filer</translation>
+<translation id="3789493399245366422">fullskjerm, maksimer, oppslukende, skjul verktøylinje, presentasjon, F11</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3790417903123637354">Noe gikk galt. Prøv på nytt senere</translation>
 <translation id="379082410132524484">Kortet ditt er utløpt</translation>
@@ -3368,6 +3373,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4665035764476941598">Klikk her for å få tilbake de andre fanene</translation>
 <translation id="4665446389743427678">Alle data som lagres av <ph name="SITE" />, blir slettet.</translation>
 <translation id="4666483368282673356">Administrer Gemini-loggen</translation>
+<translation id="4667646546186544608">zoom ut, krymp, mindre, reduser, forminsk, skaler ned, sidezoom</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Gratulerer! <ph name="APP_NAME" /> er installert på enheten din</translation>
 <translation id="4672759829555593783">Åpne <ph name="FILE_NAME" /> nå</translation>
@@ -4769,6 +4775,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="6255253900817321392">Søk raskere fra hvor som helst på Macen uten å åpne en ny fane</translation>
 <translation id="6257602895346497974">Slå på synkronisering</translation>
 <translation id="6258818697161346451">Bruk passnøklene dine på denne enheten</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopiér linken}other{Kopiér linkene}}</translation>
 <translation id="6261688934280090835">Logger for ChromeOS-kioskapper</translation>
 <translation id="6263082573641595914">Microsoft sertifiseringsinstansversjon</translation>
 <translation id="6264060420924719834">Denne appen har nettinnhold fra andre nettsteder</translation>
@@ -4897,6 +4904,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Bildefiler</translation>
 <translation id="6410390304316730527">Safe Browsing beskytter deg mot angripere som kan prøve å lure deg til å gjøre farlige ting, som å installere skadelig programvare eller avsløre personopplysninger, for eksempel passord, telefonnumre eller kredittkortinformasjon. Hvis du slår det av, må du være forsiktig når du surfer på ukjente eller useriøse nettsteder.</translation>
+<translation id="6411490324917773403">Forminsk teksten</translation>
 <translation id="6416743254476733475">Tillat eller blokkér på datamaskinen din.</translation>
 <translation id="6416856063840710198">For å gi deg en bedre opplevelse lagrer nettsteder ofte aktiviteten din – ofte på enheten din. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Standardatferd</translation>
@@ -6387,6 +6395,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8041093619605951337">Glad</translation>
 <translation id="8042142357103597104">Tekstopasitet</translation>
 <translation id="8042331986490021244">Passordene dine krypteres på enheten før de lagres i Google Passordlagring</translation>
+<translation id="8042441076562098746">zoom inn, forstørr, større, øk, skaler opp, sidezoom</translation>
 <translation id="8045253504249021590">Synkronisering er stoppet via Google-oversikten.</translation>
 <translation id="8045752459073395242">Finn ut mer om bruk av generativ AI på jobb</translation>
 <translation id="8045923671629973368">Skriv inn app-ID-en eller nettadressen til nettbutikken</translation>
@@ -6741,6 +6750,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="844059392176531372">Del fanegruppen «<ph name="GROUP_NAME" />»</translation>
 <translation id="844063558976952706">Alltid på dette nettstedet</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Det er ett inkognitovindu eller ett isolert vindu åpent. Gjenåpning skjer ikke.}other{Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. Gjenåpning skjer ikke.}}</translation>
+<translation id="84426883520448311">tema, farge, bakgrunn, bakgrunnsbilde, lys, mørk, modus, lys modus, mørk modus, personlig, stil, estetikk</translation>
 <translation id="8443986842926457191">Nettadressen er lengre enn 2048 tegn</translation>
 <translation id="8445281870900174108">Denne fanen bruker kameraet ditt</translation>
 <translation id="8446884382197647889">Les mer</translation>
@@ -7331,6 +7341,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9076821103818989526">Sidepanel</translation>
 <translation id="907779190626433918">Bruk et unikt passord for hvert nettsted og hver app. Hvis noen oppdager et passord som brukes flere steder, kan det brukes til å få tilgang til de andre kontoene dine.</translation>
 <translation id="9078546160009814724">Brukernavn: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopiér linken}other{Kopiér linkene}}</translation>
 <translation id="907972398081911688">Endre automatisk passord som er berørt av databrudd</translation>
 <translation id="9081543426177426948">Nettsteder du besøker, lagres ikke i inkognitomodus</translation>
 <translation id="9082750838489080452">App: <ph name="APP_NAME" /></translation>

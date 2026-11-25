@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Voeg "<ph name="EXTENSION_NAME" />" by?</translation>
 <translation id="2159915644201199628">Kon nie prent ontsyfer nie: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">Jou ouer het nie hierdie uitbreiding goedgekeur nie</translation>
+<translation id="2207866393056347613">Gee permanente toegang tot jou data op alle werwe</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" het bykomende toestemmings versoek.</translation>
 <translation id="2327492829706409234">Aktiveer app</translation>
 <translation id="2350172092385603347">Lokalisering is gebruik, maar verstek_ligging is nie in die manifes gespesifiseer nie.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Heraktiveer</translation>
 <translation id="2743583586211388067">Toegang tot hierdie uitbreiding word onder jou organisasie se uitbreidingrisikobeleid geblokkeer.</translation>
 <translation id="2766161002040448006">Vra 'n ouer</translation>
+<translation id="2775557057525247505">Wys alle werwe</translation>
 <translation id="2785530881066938471">Kon nie lêer '<ph name="RELATIVE_PATH" />' vir inhoudskrip laai nie. Dit is nie in UTF-8 geënkodeer nie.</translation>
 <translation id="2850541429955027218">Voeg tema by</translation>
 <translation id="2883143988769190738">Hierdie uitbreiding versoek die volgende toestemmings:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> vanaf verkoper <ph name="VENDOR_ID" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Invoerwaarde vir private sleutel moet 'n geldige pad wees.</translation>
+<translation id="3769470010314114481">Gee tydelike toegang tot jou data op die werf</translation>
 <translation id="3788401245189148511">Dit kan:</translation>
 <translation id="3834775135533257713">Kon nie app "<ph name="TO_INSTALL_APP_NAME" />" byvoeg nie omdat dit met "<ph name="INSTALLED_APP_NAME" />" bots.</translation>
 <translation id="388442998277590542">Kon nie opsiebladsy '<ph name="OPTIONS_PAGE" />' laai nie.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Aktiveer uitbreiding</translation>
 <translation id="3927932062596804919">Weier</translation>
 <translation id="3984413272403535372">Kon nie 'n uitbreiding onderteken nie.</translation>
+<translation id="3990894032742690314">Altyd op die gelyste werwe</translation>
 <translation id="4014432863917027322">Herstel "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4061696872429826774">’n Ander program op jou rekenaar het ’n uitbreiding bygevoeg wat dalk kan verander hoe Chromium werk.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Kon nie meer-oor-bladsy "<ph name="ABOUT_PAGE" />" laai nie.</translation>
 <translation id="424963718355121712">Programme moet bedien word vanaf die gasheer wat hulle raak</translation>
 <translation id="4306119971288449206">Programme moet met inhoudtipe "<ph name="CONTENT_TYPE" />" bedien word</translation>
+<translation id="4307774243840254737">Gee permanente toegang tot jou data op die werwe wat hier onder gelys word</translation>
 <translation id="4349181963619779233">Uitbreidings en apps kan nie vanaf hierdie webwerf bygevoeg word nie</translation>
 <translation id="4625078469366263107">Aktiveer app</translation>
 <translation id="4633003931260532286">Uitbreiding vereis "<ph name="IMPORT_NAME" />" met minstens weergawe "<ph name="IMPORT_VERSION" />", maar net weergawe "<ph name="INSTALLED_VERSION" />" is geïnstalleer</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Die nuutste weergawe van "<ph name="EXTENSION_NAME" />" is gedeaktiveer, want dit vereis nog toestemmings.</translation>
 <translation id="5242724311594467048">Aktiveer "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Programaansig: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Slegs wanneer jy die uitbreiding klik</translation>
 <translation id="5405650547142096840">Verwyder van Chromium af</translation>
 <translation id="5456409301717116725">Hierdie uitbreiding sluit die sleutellêer "<ph name="KEY_PATH" />" in. Jy wil dit waarskynlik nie doen nie.</translation>
 <translation id="5485102783864353244">Voeg app by</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">MIME-hanteerder: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Hierdie uitbreiding het homself te gereeld herlaai.</translation>
 <translation id="7003844668372540529">Onbekende produk <ph name="PRODUCT_ID" /> vanaf <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Gelyste werwe</translation>
 <translation id="7068383018033524534">Manifeslêer is ongeldig</translation>
 <translation id="7217838517480956708">Die administrateur van hierdie masjien vereis dat <ph name="EXTENSION_NAME" /> geïnstalleer word. Dit kan nie verwyder of aangepas word nie.</translation>
 <translation id="7287143125007575591">Toegang geweier.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Wys na gebruiker (voorste kamera)</translation>
 <translation id="8047248493720652249">Hierdie uitbreiding kon nie die "<ph name="ATTEMPTED_FILENAME" />" aflaai nie, omdat 'n ander uitbreiding (<ph name="EXTENSION_NAME" />) 'n ander lêernaam "<ph name="ACTUAL_FILENAME" />" bepaal het.</translation>
 <translation id="8049705080247101012">Google het "<ph name="EXTENSION_NAME" />" as kwaadwillig gevlag en installering is verhoed</translation>
+<translation id="823691536304079791">Lees en verander jou data</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> vanaf <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Dit kan:</translation>
 <translation id="8517576857589387417">Manifeslêer ontbreek of is onleesbaar</translation>

@@ -447,6 +447,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2053312383184521053">Rustoestand-data</translation>
 <translation id="2058456167109518507">Toestel is bespeur</translation>
 <translation id="2064048859448024834">Kameravoorskou is aan</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 skakel}other{# skakels}}</translation>
 <translation id="2067220651560163985">Wys temperatuur in Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> is klaar na <ph name="PRINTER_NAME" /> gedruk</translation>
 <translation id="2075520525463668108">Wissel <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>

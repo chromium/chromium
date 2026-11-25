@@ -99,6 +99,7 @@
 <translation id="1896602904211344018">Dapatkan apl Chrome</translation>
 <translation id="1919130412786645364">Benarkan log masuk Chrome</translation>
 <translation id="1925069572871307609">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan Windows 10 versi 1809 atau yang lebih baharu. Komputer ini menggunakan versi Windows 10 yang lebih lama.</translation>
+<translation id="1975069140856174874">Apabila anda membuka Chrome pada <ph name="DEVICE_TYPE" /> anda selepas ini, anda akan melihat gesaan untuk mendapatkan ciri keselamatan terbaik Google.</translation>
 <translation id="1975400514743766362">Manfaatkan keselamatan Google semasa dalam perjalanan dengan apl Chrome pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1979600810166324878">Kekal lebih selamat semasa dalam perjalanan dengan Penyemakan Imbas Selamat Dipertingkat pada Chrome untuk iOS</translation>
 <translation id="2001586581944147178">Jadikan lebih sukar untuk pengguna dengan akses kepada trafik Internet anda untuk melihat laman yang anda lawati. Chrome menggunakan sambungan selamat untuk mencari alamat IP laman dalam DNS (Sistem Nama Domain).</translation>
@@ -454,6 +455,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="568656514202614970">Berjaya! Kini anda boleh mengemukakan pertanyaan dengan mudah semasa anda menyemak imbas dengan panel sisi Google Search</translation>
 <translation id="5686916850681061684">Sesuaikan dan kawal Google Chrome. Perhatian anda diperlukan - klik untuk mendapatkan butiran.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Dapatkan ciri keselamatan terbaik Google semasa dalam perjalanan dengan Chrome</translation>
 <translation id="569897634095159764">Tidak dapat disambungkan kepada Internet. Pelayan proksi memerlukan pengesahan.</translation>
 <translation id="5709557627224531708">Tetapkan Chrome sebagai penyemak imbas lalai anda</translation>
 <translation id="5715427327524421317">Chrome memuat turun dan mengemaskinikan model AI ini secara automatik</translation>
@@ -620,6 +622,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="7099479769133613710">Lancarkan semula untuk mengemas kini &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Pengurus Tugas - Google Chrome</translation>
 <translation id="7121179479711575744">Log masuk ke Chrome</translation>
+<translation id="7137056136322108339">Dapatkan ciri keselamatan terbaik Google semasa dalam perjalanan, dengan apl Chrome pada telefon anda</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Kemas kini baharu tersedia untuk Chrome dan akan digunakan sebaik sahaja anda melancarkan semula Chrome.}=1{Kemas kini baharu tersedia untuk Chrome dan akan digunakan sebaik sahaja anda melancarkan semula Chrome. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Kemas kini baharu tersedia untuk Chrome dan akan digunakan sebaik sahaja anda melancarkan semula Chrome. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="7161904924553537242">Selamat Datang ke Google Chrome</translation>
 <translation id="7193885263065350793">Organisasi anda menutup Chrome apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>

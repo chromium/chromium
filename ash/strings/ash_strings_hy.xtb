@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">Անգործուն վիճակի տվյալներ</translation>
 <translation id="2058456167109518507">Հայտնաբերվել է սարք</translation>
 <translation id="2064048859448024834">Տեսախցիկի նախադիտումը միացված է</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 հղում}one{# հղում}other{# հղում}}</translation>
 <translation id="2067220651560163985">Ջերմաստիճանը ցուցադրել Ցելսիուսով</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> հավելվածն ավարտեց տպումը <ph name="PRINTER_NAME" /> տպիչում</translation>
 <translation id="2075520525463668108">Միացնել/անջատել <ph name="CAPTURE_MEDIUM" />ը։ <ph name="CAPTURE_MEDIUM" />ը <ph name="CAPTURE_STATE" /></translation>

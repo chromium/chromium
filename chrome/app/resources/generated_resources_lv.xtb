@@ -308,6 +308,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1308105352527684175">Iespējams, nevarēsiet piekļūt noteiktam saturam</translation>
 <translation id="1311092170520822848">Šī vietne kontrolē viedkaršu lasītājus, kas ir pievienoti jūsu ierīcei, un, iespējams, arī pieejamās viedkartes.</translation>
 <translation id="131112695174432497">Tiek dzēsti dati, kas ietekmē reklāmu personalizēšanu</translation>
+<translation id="13115907161008983">Kopēt saites</translation>
 <translation id="131188242279372879">Izmantojiet uzlabotu aizsardzību, kas nodrošina augstākā līmeņa drošību lejupielādēm pārlūkā Chrome</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Novērsiet problēmu cilnē, kas palēnina pārlūka darbību}zero{Novērsiet problēmas cilnēs, kas palēnina pārlūka darbību}one{Novērsiet problēmas cilnēs, kas palēnina pārlūka darbību}other{Novērsiet problēmas cilnēs, kas palēnina pārlūka darbību}}</translation>
 <translation id="1312721752506309252">Uzlabota aizsardzība ir ieslēgta</translation>
@@ -443,6 +444,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1482626744466814421">Saglabāt cilni kā grāmatzīmi...</translation>
 <translation id="1482772681918035149">rediģēt paroles</translation>
 <translation id="1483137792530497944">Upe</translation>
+<translation id="1483148302144576204">Kopēt saites</translation>
 <translation id="1483151333977672176">Nosūtīts!</translation>
 <translation id="1483431819520123112">Parādāmais vārds ir kopēts starpliktuvē</translation>
 <translation id="1483493594462132177">Sūtīt</translation>
@@ -1058,6 +1060,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="2168036794078614559">Ziņojums ir nosūtīts</translation>
 <translation id="2168735174585029637">Piešķiriet cilnēm jaunu, caurspīdīgu izskatu</translation>
 <translation id="217120844667431680">Paveiciet vairāk, izmantojot MI režīmu</translation>
+<translation id="2172046302886074612">Modelis “<ph name="MODEL_CATEGORY" />” ir noņemts.</translation>
 <translation id="2173302385160625112">Pārbaudiet interneta savienojumu</translation>
 <translation id="2175384018164129879">&amp;Pārvaldīt meklētājprogrammas un meklēšanu vietnē</translation>
 <translation id="2175773164573457310">Atlasiet jebkuru tekstu vai attēlu, lai uzdotu jautājumu Gemini</translation>
@@ -2080,6 +2083,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="3270965368676314374">Lasīt, mainīt un dzēst fotoattēlus, mūziku un citu datorā esošu multivides saturu</translation>
 <translation id="3275464924531706548">Sakļaut sarakstu “<ph name="HEADER" />”</translation>
 <translation id="3275778913554317645">Atvērt kā logu</translation>
+<translation id="3277325180914877290">Palielināt tekstu</translation>
 <translation id="3280237271814976245">Saglabāt kā...</translation>
 <translation id="3280243678470289153">Turpināt pārlūkā Chrome</translation>
 <translation id="3282210178675490297">Cilnes saturs tiek kopīgots lietotnē <ph name="APP_NAME" />.</translation>
@@ -2588,6 +2592,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="3786890785076278600">Statiska rindiņa</translation>
 <translation id="3787434344076711519">Tiek gaidīts tulkojums</translation>
 <translation id="3789432704615470433">SharePoint un OneDrive faili</translation>
+<translation id="3789493399245366422">pilnekrāna režīms, pilnekrāns, maksimizēt, visaptverošs, paslēpt rīkjoslu, prezentācija, F11</translation>
 <translation id="3789841737615482174">Instalēt</translation>
 <translation id="3790417903123637354">Radās kļūda. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="379082410132524484">Kartes derīguma termiņš ir beidzies</translation>
@@ -3358,6 +3363,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4665035764476941598">Noklikšķiniet šeit, lai atkal tiktu rādītas pārējās cilnes.</translation>
 <translation id="4665446389743427678">Tiks izdzēsti visi vietnes <ph name="SITE" /> saglabātie dati.</translation>
 <translation id="4666483368282673356">Pārvaldīt Gemini vēsturi</translation>
+<translation id="4667646546186544608">tālināt, samazināt, mazāks, samazināšana, samazinājums, mēroga samazināšana, lapas tālummaiņa</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Apsveicam! Lietotne <ph name="APP_NAME" /> ir sekmīgi instalēta jūsu ierīcē.</translation>
 <translation id="4672759829555593783">Atvērt failu “<ph name="FILE_NAME" />” tūlīt</translation>
@@ -4757,6 +4763,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6255253900817321392">Meklējiet ātrāk no jebkuras vietas Mac datorā, neatverot jaunu cilni.</translation>
 <translation id="6257602895346497974">Ieslēgt sinhronizāciju...</translation>
 <translation id="6258818697161346451">Izmantojiet savas piekļuves atslēgas šajā ierīcē</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopēt saiti}zero{Kopēt saites}one{Kopēt saites}other{Kopēt saites}}</translation>
 <translation id="6261688934280090835">ChromeOS kioska lietotņu žurnāli</translation>
 <translation id="6263082573641595914">Microsoft CA versija</translation>
 <translation id="6264060420924719834">Šajā lietotnē ir ietverts tīmekļa saturs no citām vietnēm</translation>
@@ -4885,6 +4892,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Attēlu faili</translation>
 <translation id="6410390304316730527">Izmantojot drošu pārlūkošanu, jūs iegūstat aizsardzību pret uzbrucējiem, kuri varētu mudināt jūs veikt bīstamas darbības, piemēram, instalēt ļaunprātīgu programmatūru vai atklāt personas informāciju — paroles, tālruņa numurus, kredītkaršu datus u.tml. Ja izslēgsiet drošu pārlūkošanu, ievērojiet piesardzību, pārlūkojot nepazīstamas vietnes vai vietnes ar sliktu reputāciju.</translation>
+<translation id="6411490324917773403">Samazināt tekstu</translation>
 <translation id="6416743254476733475">Atļaujiet vai bloķējiet savā datorā.</translation>
 <translation id="6416856063840710198">Lai uzlabotu jūsu apmeklējumu, vietnes bieži saglabā jūsu darbības — bieži vien jūsu ierīcē. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Noklusējuma iestatījums</translation>
@@ -6379,6 +6387,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8041093619605951337">Laimīgs</translation>
 <translation id="8042142357103597104">Teksta necaurredzamība</translation>
 <translation id="8042331986490021244">Jūsu paroles tiek šifrētas jūsu ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
+<translation id="8042441076562098746">tuvināt, palielināt, lielāks, palielināt, mērogot, lapas tālummaiņa</translation>
 <translation id="8045253504249021590">Sinhronizācija tika pārtraukta, izmantojot Google informācijas paneli.</translation>
 <translation id="8045752459073395242">Uzzināt vairāk par ģeneratīvā MI izmantošanu darbā</translation>
 <translation id="8045923671629973368">Ievadiet lietojumprogrammas ID vai interneta veikala URL</translation>
@@ -6733,6 +6742,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="844059392176531372">Ciļņu grupas “<ph name="GROUP_NAME" />” kopīgošana</translation>
 <translation id="844063558976952706">Vienmēr šajā vietnē</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Ir atvērts inkognito vai izolēts logs. Tas netiks atkārtoti atvērts.}zero{Dažādos profilos ir atvērti # inkognito režīma un izolēti logi. Tie netiks atkārtoti atvērti.}one{Dažādos profilos ir atvērts # inkognito režīma un izolēts logs. Tie netiks atkārtoti atvērti.}other{Dažādos profilos ir atvērti # inkognito režīma un izolēti logi. Tie netiks atkārtoti atvērti.}}</translation>
+<translation id="84426883520448311">motīvs, krāsa, fons, fona tapete, gaišais, tumšais, režīms, gaišais režīms, tumšais režīms, personisks, stils, estētika</translation>
 <translation id="8443986842926457191">URL garums pārsniedz 2048 rakstzīmes</translation>
 <translation id="8445281870900174108">Šī cilne izmanto jūsu kameru.</translation>
 <translation id="8446884382197647889">Uzzināt vairāk</translation>
@@ -7323,6 +7333,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="9076821103818989526">Sānu panelis</translation>
 <translation id="907779190626433918">Katrā vietnē vai lietotnē izmantojiet unikālu paroli. Ja kāds uzzinās jūsu atkārtoti izmantoto paroli, šī persona var piekļūt citiem jūsu kontiem ar šo paroli.</translation>
 <translation id="9078546160009814724">Lietotājvārds: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopēt saiti}zero{Kopēt saites}one{Kopēt saites}other{Kopēt saites}}</translation>
 <translation id="907972398081911688">Automātiski mainīt uzlauzto paroli</translation>
 <translation id="9081543426177426948">Inkognito režīmā apmeklētās vietnes netiek saglabātas</translation>
 <translation id="9082750838489080452">Lietojumprogramma: <ph name="APP_NAME" /></translation>

@@ -2604,7 +2604,7 @@
 <translation id="3786890785076278600">靜態線</translation>
 <translation id="3787434344076711519">正在等待翻譯</translation>
 <translation id="3789432704615470433">SharePoint 和 OneDrive 檔案</translation>
-<translation id="3789493399245366422">全螢幕, 全螢幕模式, 放到最大, 最大化, 沉浸式, 隱藏工具列, 簡報, F11</translation>
+<translation id="3789493399245366422">全螢幕, 全螢幕模式, 最大化, 沉浸式, 隱藏工具列, 簡報, F11</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3790417903123637354">發生錯誤，請稍後再試</translation>
 <translation id="379082410132524484">您的付款卡已過期</translation>
@@ -3375,7 +3375,7 @@
 <translation id="4665035764476941598">按此讓其他分頁再次顯示</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> 儲存的所有資料都會被刪除。</translation>
 <translation id="4666483368282673356">管理 Gemini 記錄</translation>
-<translation id="4667646546186544608">縮小, 調小, 更小, 變小, 減少, 縮減, 頁面縮放</translation>
+<translation id="4667646546186544608">縮小, 縮細, 縮減, 減少, 縮放頁面, 頁面縮放</translation>
 <translation id="4668929960204016307">，</translation>
 <translation id="4670909875730475086">恭喜！已成功在裝置上安裝「<ph name="APP_NAME" />」</translation>
 <translation id="4672759829555593783">立即開啟 <ph name="FILE_NAME" /></translation>
@@ -6392,7 +6392,7 @@
 <translation id="8041093619605951337">高興</translation>
 <translation id="8042142357103597104">文字透明度</translation>
 <translation id="8042331986490021244">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具</translation>
-<translation id="8042441076562098746">放大, 變大, 調大, 更大, 加大, 增大, 放大比例, 頁面縮放</translation>
+<translation id="8042441076562098746">放大, 拉近, 加大, 更大, 較大, 增加, 縮放頁面, 頁面縮放</translation>
 <translation id="8045253504249021590">已透過「Google 資訊主頁」停用同步功能。</translation>
 <translation id="8045752459073395242">進一步瞭解如何將生成式 AI 用於工作</translation>
 <translation id="8045923671629973368">請輸入應用程式 ID 或網上商店網址</translation>
@@ -6747,7 +6747,7 @@
 <translation id="844059392176531372">分享「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="844063558976952706">一律在此網站上允許</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{目前開啟了無痕或隔離視窗。視窗不會重開。}other{各設定檔目前開啟了 # 個無痕和隔離視窗。視窗不會重開。}}</translation>
-<translation id="84426883520448311">主題, 顏色, 背景, 桌布, 亮度, 深色, 模式, 淺色模式, 深色模式, 個人化, 樣式, 美感</translation>
+<translation id="84426883520448311">主題, 顏色, 背景, 桌布, 淺色, 深色, 模式, 淺色模式, 深色模式, 個人, 樣式, 美學</translation>
 <translation id="8443986842926457191">網址超過 2048 個字元</translation>
 <translation id="8445281870900174108">此分頁正在使用攝錄機</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>

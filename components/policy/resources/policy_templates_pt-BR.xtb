@@ -2594,6 +2594,19 @@ recurso de codificação de conteúdo <ph name="ZSTANDARD_SHORTNAME" /> será de
 <translation id="2521581787935130926">Exibir os atalhos de aplicativos na barra de favoritos</translation>
 <translation id="2522304491589804974">Configurar a lista de permissões para instalação de extensões</translation>
 <translation id="2523511232831599126">Ativar atalhos de acessibilidade na tela de login</translation>
+<translation id="2524400223625951315">Especifica o comportamento das extensões de instalação forçada no Modo Isolado.
+
+Isso se aplica a extensões configuradas usando <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou com <ph name="INSTALLATION_MODE_FIELD" /> definido como <ph name="FORCE_INSTALLED_VALUE" /> em <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. As extensões configuradas com <ph name="INSTALLATION_MODE_FIELD" /> definido como <ph name="NORMAL_INSTALLED_VALUE" /> são controladas por <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" />.
+
+Se forem definidas como 0 (sempre ativadas) ou deixadas sem definição, as extensões de instalação forçada vão ficar sempre ativadas no Modo Isolado e não poderão ser desativadas pelo usuário.
+
+Se forem definidas como 1 (ativadas por padrão), as extensões de instalação forçada serão ativadas por padrão no Modo Isolado e poderão ser desativadas pelo usuário. A escolha do usuário tem precedência enquanto a política permanece definida como 1. Fora do Modo Isolado, o usuário ainda não pode desativar as extensões de instalação forçada.
+
+As extensões que definem <ph name="INCOGNITO_MANIFEST_KEY" /> como <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> no manifesto não podem ser executadas no Modo Isolado, independentemente desta política.
+
+Esta política só entra em vigor quando a <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> está ativada.
+
+Esta política exige uma licença do <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> para entrar em vigor.</translation>
 <translation id="252742292004421898">Permitir a API Direct Sockets nestes sites</translation>
 <translation id="2528762900096510743">Ativar serviço automático de encerramento de sessão</translation>
 <translation id="2529880111512635313">Configurar a lista de extensões e aplicativos instalados forçadamente</translation>
@@ -4099,6 +4112,7 @@ Ele foi removido no Chrome 145, e é recomendável usar o método requestStorage
 
       Se esta política não for definida para um site, a política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> será aplicada, quando configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.</translation>
 <translation id="3435796032110614169">Permite a exclusão do histórico de trabalhos de impressão</translation>
+<translation id="3435849940943480491">As extensões de instalação forçada ficam sempre ativadas no Modo Isolado e não podem ser desativadas</translation>
 <translation id="3436217793443508863">O tempo, em milissegundos, sem entrada do usuário até que a tela seja bloqueada quando o dispositivo estiver funcionando com energia da bateria.</translation>
 <translation id="3437391374720747482">Preferir métodos de troca de chaves que atendam aos requisitos do CNSA 2.0</translation>
 <translation id="3437924696598384725">Permitir que o usuário gerencie conexões VPN</translation>
@@ -6504,6 +6518,7 @@ Não é recomendável desativar a decodificação de vídeo acelerada por hardwa
 <translation id="4927797103413916381">Se <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> não estiver definida como "Desativada", definir <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> como "Ativada" ou deixá-la sem definição impedirá sites com experiências ofensivas de serem abertos em novas janelas ou guias.
 
        Se <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> ou <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> forem definidas como "Desativadas", sites com experiências ofensivas poderão ser abertos em novas janelas ou guias.</translation>
+<translation id="4928435626872799127">Controlar o comportamento de extensões com instalação forçada no Modo Isolado</translation>
 <translation id="4929721861648439998">Ativar o recurso de acessibilidade de áudio mono na tela de login.
 
           Esse recurso permite alternar o modo dispositivo do padrão, áudio estéreo, para o áudio mono.
@@ -6656,6 +6671,13 @@ Se a política for definida como uma string vazia ou deixada sem definição, o 
 
 Observação: essa política foi descontinuada. Use <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> (para dispositivos de alto desempenho) ou <ph name="ISOLATE_ORIGINS_SHORTLIST_POLICY_NAME" />. Essa política se aplica apenas ao Chrome no <ph name="ANDROID_NAME" /> sendo executado em dispositivos com mais de 1 GB de RAM, que não são recomendados para configurar o isolamento de processos de maneira específica.</translation>
 <translation id="4991786313466977061">Controlar a visibilidade dos selos de empresas</translation>
+<translation id="4991886408515766724">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que o usuário conceda permissão de acesso ao dispositivo USB.
+
+      Se a política não tiver definição, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
+
+      Os padrões de URL não podem entrar em conflito com <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
+
+      Para informações mais detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="4995123966071996433">Não permitir o encaminhamento de portas a máquinas virtuais Linux</translation>
 <translation id="4996068111491152684">As credenciais de login do <ph name="PRODUCT_OS_NAME" /> não serão usadas para a autenticação de rede.</translation>
 <translation id="4996086761250834365">Permitir Analytics do produto <ph name="PLUGIN_VM_NAME" /></translation>
@@ -10151,6 +10173,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="7054840304131108563">Desativar recursos de acessibilidade do renderizador</translation>
 <translation id="7055022222176591388">Não permitir o <ph name="FLASH_PLUGIN_NAME" /> desatualizado</translation>
 <translation id="7056040036973126753">Os dados de confiabilidade do domínio podem ser enviados ao Google dependendo da Política de Métricas do Usuário (UMA, na sigla em inglês) do Chrome.</translation>
+<translation id="7057522375529097624">As extensões de instalação forçada são ativadas por padrão no Modo Isolado e podem ser desativadas</translation>
 <translation id="7062803946218028349">Permitir a ativação do recurso "Seu smartphone"</translation>
 <translation id="7063646777978847358">Esta política controla se as solicitações de busca em segundo plano feitas por service workers são restritas. Se um recurso que baixa arquivos em segundo plano for afetado, esta política poderá ser relevante.
 

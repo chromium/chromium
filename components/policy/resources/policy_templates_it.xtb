@@ -6518,6 +6518,13 @@ Se imposti la policy su una stringa vuota o la lasci non configurata, l'isolamen
 
 Nota: questa policy è deprecata. Utilizza <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> (per dispositivi ad alte prestazioni) o <ph name="ISOLATE_ORIGINS_SHORTLIST_POLICY_NAME" /> al suo posto. Questa policy si applica esclusivamente a Chrome su <ph name="ANDROID_NAME" /> in esecuzione su dispositivi con più di 1 GB di RAM, per i quali non è consigliata la configurazione specifica di alcun isolamento dei processi.</translation>
 <translation id="4991786313466977061">Controlla la visibilità dei badge aziendali</translation>
+<translation id="4991886408515766724">Se la policy viene configurata, puoi elencare i pattern URL che specificano quali siti possono chiedere agli utenti l'accesso a un dispositivo USB.
+
+      Se la policy non viene configurata, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> si applica a tutti i siti, se impostata. In caso contrario, vengono applicate le impostazioni personali degli utenti.
+
+      I pattern URL non devono essere in conflitto con <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Se un URL corrisponde a entrambe, nessuna delle due policy ha la precedenza.
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="4995123966071996433">Non consentire il port forwarding nelle macchine virtuali Linux</translation>
 <translation id="4996068111491152684">Non verranno usate le credenziali di accesso di <ph name="PRODUCT_OS_NAME" /> per l'autenticazione della rete.</translation>
 <translation id="4996086761250834365">Consenti analisi del prodotto di <ph name="PLUGIN_VM_NAME" /></translation>

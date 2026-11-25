@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Želite li da dodate „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2159915644201199628">Nije moguće dekodirati sliku: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2193567467390483943">Roditelj nije odobrio ovaj dodatak</translation>
+<translation id="2207866393056347613">Odobrava trajni pristup podacima na svim sajtovima</translation>
 <translation id="23030561267973084">Dodatak „<ph name="EXTENSION_NAME" />“ je zatražio dodatne dozvole.</translation>
 <translation id="2327492829706409234">Omogući aplikaciju</translation>
 <translation id="2350172092385603347">Korišćena je lokalizacija, ali parametar default_locale nije naveden u manifestu.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Ponovo omogući</translation>
 <translation id="2743583586211388067">Pristup ovom dodatku je blokiran u skladu sa smernicama organizacije u vezi sa rizikom od dodataka.</translation>
 <translation id="2766161002040448006">Zamoli roditelja</translation>
+<translation id="2775557057525247505">Prikaži sve sajtove</translation>
 <translation id="2785530881066938471">Učitavanje datoteke „<ph name="RELATIVE_PATH" />“ za skriptu sadržaja nije uspelo. Nema UTF-8 šifrovanje.</translation>
 <translation id="2850541429955027218">Dodaj temu</translation>
 <translation id="2883143988769190738">Ovaj dodatak zahteva sledeće dozvole:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Ulazna vrednost privatnog ključa mora biti važeća putanja.</translation>
+<translation id="3769470010314114481">Odobrava privremeni pristup podacima na sajtu</translation>
 <translation id="3788401245189148511">Mogli bi da:</translation>
 <translation id="3834775135533257713">Dodavanje aplikacije „<ph name="TO_INSTALL_APP_NAME" />“ nije uspelo zbog konflikta sa aplikacijom „<ph name="INSTALLED_APP_NAME" />“.</translation>
 <translation id="388442998277590542">Nije moguće učitati stranicu opcija „<ph name="OPTIONS_PAGE" />“.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Omogući dodatak</translation>
 <translation id="3927932062596804919">Odbij</translation>
 <translation id="3984413272403535372">Došlo je do greške prilikom potpisivanja dodatka.</translation>
+<translation id="3990894032742690314">Uvek na navedenim sajtovima</translation>
 <translation id="4014432863917027322">Želite li da popravite „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4061696872429826774">Drugi program na računaru je dodao dodatak koji može da promeni način na koji Chromium funkcioniše.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Nije moguće učitati stranicu sa osnovnim podacima „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="424963718355121712">Aplikacije moraju da se prikazuju sa hosta na koji utiču</translation>
 <translation id="4306119971288449206">Aplikacije moraju da se prikazuju sa tipom sadržaja „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4307774243840254737">Odobrava trajni pristup podacima na sajtovima navedenim u nastavku</translation>
 <translation id="4349181963619779233">Dodaci i aplikacije ne mogu da se dodaju sa ovog veb-sajta</translation>
 <translation id="4625078469366263107">Omogući aplikaciju</translation>
 <translation id="4633003931260532286">Dodatak zahteva „<ph name="IMPORT_NAME" />“ čija je najstarija verzija „<ph name="IMPORT_VERSION" />“, ali instalirana je samo verzija „<ph name="INSTALLED_VERSION" />“</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Najnovija verzija dodatka „<ph name="EXTENSION_NAME" />“ je onemogućena jer zahteva još dozvola.</translation>
 <translation id="5242724311594467048">Želite li da omogućite „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5356315618422219272">Prikaz aplikacije: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Samo kada kliknete na dodatak</translation>
 <translation id="5405650547142096840">Ukloni iz Chromium-a</translation>
 <translation id="5456409301717116725">Ovaj dodatak sadrži datoteku ključa „<ph name="KEY_PATH" />“. Verovatno to ne želite.</translation>
 <translation id="5485102783864353244">Dodaj aplikaciju</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Rukovalac za MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Ovaj dodatak se suviše često ponovo učitavao.</translation>
 <translation id="7003844668372540529">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Navedeni sajtovi</translation>
 <translation id="7068383018033524534">Datoteka manifesta je nevažeća</translation>
 <translation id="7217838517480956708">Administrator ovog uređaja zahteva da dodatak <ph name="EXTENSION_NAME" /> bude instaliran. Ne možete da ga uklonite ili izmenite.</translation>
 <translation id="7287143125007575591">Pristup je odbijen.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Prednja</translation>
 <translation id="8047248493720652249">Ovaj dodatak nije uspeo da preuzetoj datoteci dâ naziv „<ph name="ATTEMPTED_FILENAME" />“ zato što je jedan drugi dodatak (<ph name="EXTENSION_NAME" />) odredio drugačiji naziv datoteke „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8049705080247101012">Google je označio dodatak „<ph name="EXTENSION_NAME" />“ kao zlonameran i instalacija je sprečena</translation>
+<translation id="823691536304079791">Čita i menja podatke</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Može da:</translation>
 <translation id="8517576857589387417">Datoteka manifesta nedostaje ili nije mogla da se čita</translation>

@@ -308,6 +308,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1308105352527684175">Bạn có thể không truy cập được một số nội dung</translation>
 <translation id="1311092170520822848">Trang web này đang kiểm soát máy đọc thẻ thông minh được kết nối với thiết bị của bạn và có thể truy cập vào thẻ thông minh có sẵn cho máy đọc thẻ</translation>
 <translation id="131112695174432497">Dữ liệu có ảnh hưởng đến hoạt động cá nhân hoá quảng cáo sẽ bị xoá</translation>
+<translation id="13115907161008983">Sao chép các đường liên kết</translation>
 <translation id="131188242279372879">Khám phá chế độ bảo vệ nâng cao để có được cấp độ bảo mật cao nhất của Chrome đối với nội dung tải xuống</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Khắc phục thẻ làm chậm trình duyệt của bạn}other{Khắc phục các thẻ làm chậm trình duyệt của bạn}}</translation>
 <translation id="1312721752506309252">Chế độ Bảo vệ nâng cao đang bật</translation>
@@ -444,6 +445,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1482626744466814421">Đánh dấu thẻ này...</translation>
 <translation id="1482772681918035149">chỉnh sửa mật khẩu</translation>
 <translation id="1483137792530497944">Sông</translation>
+<translation id="1483148302144576204">Sao chép các đường liên kết</translation>
 <translation id="1483151333977672176">Đã gửi!</translation>
 <translation id="1483431819520123112">Đã sao chép tên hiển thị vào bảng nhớ tạm</translation>
 <translation id="1483493594462132177">Gửi</translation>
@@ -1069,6 +1071,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="2168036794078614559">Đã gửi báo cáo</translation>
 <translation id="2168735174585029637">Mang đến cho các thẻ giao diện trong suốt mới</translation>
 <translation id="217120844667431680">Làm được nhiều việc hơn cùng Chế độ AI</translation>
+<translation id="2172046302886074612">Đã xoá "<ph name="MODEL_CATEGORY" />"</translation>
 <translation id="2173302385160625112">Kiểm tra đường kết nối Internet của bạn</translation>
 <translation id="2175384018164129879">&amp;Quản lý Công cụ tìm kiếm và công cụ Tìm kiếm trang web</translation>
 <translation id="2175773164573457310">Chọn văn bản hoặc hình ảnh bất kỳ để hỏi Gemini</translation>
@@ -2097,6 +2100,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3270965368676314374">Đọc, thay đổi và xóa ảnh, nhạc và các phương tiện khác khỏi máy tính của bạn</translation>
 <translation id="3275464924531706548">Thu gọn <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Mở dưới dạng cửa sổ</translation>
+<translation id="3277325180914877290">Phóng to văn bản</translation>
 <translation id="3280237271814976245">Lưu &amp;thành...</translation>
 <translation id="3280243678470289153">Tiếp tục điều hướng trong Chrome</translation>
 <translation id="3282210178675490297">Đang chia sẻ một thẻ với <ph name="APP_NAME" /></translation>
@@ -2605,6 +2609,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3786890785076278600">Dòng tĩnh</translation>
 <translation id="3787434344076711519">Đang chờ bản dịch</translation>
 <translation id="3789432704615470433">Tệp SharePoint và OneDrive</translation>
+<translation id="3789493399245366422">toàn màn hình, xem toàn màn hình, tối đa hoá, mở rộng màn hình, ẩn thanh công cụ, trình chiếu, bản trình bày, F11, fullscreen</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
 <translation id="3790417903123637354">Đã xảy ra lỗi. Hãy thử lại sau</translation>
 <translation id="379082410132524484">Thẻ của bạn đã hết hạn</translation>
@@ -3375,6 +3380,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="4665035764476941598">Nhấp vào đây để hiện lại các thẻ khác</translation>
 <translation id="4665446389743427678">Tất cả dữ liệu do <ph name="SITE" /> lưu trữ sẽ bị xóa.</translation>
 <translation id="4666483368282673356">Quản lý nhật ký của bạn trên Gemini</translation>
+<translation id="4667646546186544608">thu nhỏ, thu nhỏ chữ, thu nhỏ trang, giảm kích thước chữ, chữ nhỏ, nhỏ hơn, thu phóng trang, zoom trang</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Chúc mừng bạn! <ph name="APP_NAME" /> đã được cài đặt thành công trên thiết bị của bạn</translation>
 <translation id="4672759829555593783">Mở <ph name="FILE_NAME" /> ngay</translation>
@@ -4778,6 +4784,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="6255253900817321392">Tìm kiếm nhanh hơn từ mọi nơi trên máy Mac mà không cần mở thẻ mới</translation>
 <translation id="6257602895346497974">Bật tính năng đồng bộ hóa...</translation>
 <translation id="6258818697161346451">Sử dụng khoá truy cập trên thiết bị này</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Sao chép đường liên kết}other{Sao chép các đường liên kết}}</translation>
 <translation id="6261688934280090835">Nhật ký ứng dụng Kiosk trên ChromeOS</translation>
 <translation id="6263082573641595914">Phiên bản CA của Microsoft</translation>
 <translation id="6264060420924719834">Ứng dụng này chứa nội dung trên web của các trang web khác</translation>
@@ -4906,6 +4913,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Tệp hình ảnh</translation>
 <translation id="6410390304316730527">Tính năng Duyệt web an toàn bảo vệ bạn trước những kẻ tấn công có thể đánh lừa bạn làm một việc gì đó nguy hiểm như cài đặt phần mềm độc hại hoặc tiết lộ thông tin cá nhân như mật khẩu, số điện thoại hoặc thẻ tín dụng. Nếu bạn tắt tính năng này, hãy cẩn thận khi duyệt các trang web lạ hoặc không có uy tín.</translation>
+<translation id="6411490324917773403">Thu nhỏ văn bản</translation>
 <translation id="6416743254476733475">Hãy cho phép hoặc chặn trên máy tính của bạn.</translation>
 <translation id="6416856063840710198">Để cải thiện trải nghiệm truy cập, các trang web thường lưu hoạt động của bạn vào thiết bị. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Chế độ mặc định</translation>
@@ -6396,6 +6404,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8041093619605951337">Vui vẻ</translation>
 <translation id="8042142357103597104">Độ mờ văn bản</translation>
 <translation id="8042331986490021244">Mật khẩu của bạn được mã hoá trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google</translation>
+<translation id="8042441076562098746">phóng to, phóng to chữ, phóng to trang, tăng kích thước chữ, chữ to, to hơn, lớn hơn, thu phóng trang, zoom</translation>
 <translation id="8045253504249021590">Đã ngừng đồng bộ hóa qua Trang tổng quan của Google.</translation>
 <translation id="8045752459073395242">Tìm hiểu thêm về việc sử dụng AI tạo sinh trong công việc</translation>
 <translation id="8045923671629973368">Hãy nhập ID ứng dụng hoặc URL cửa hàng trực tuyến</translation>
@@ -6750,6 +6759,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="844059392176531372">Chia sẻ nhóm thẻ "<ph name="GROUP_NAME" />"</translation>
 <translation id="844063558976952706">Luôn sẵn có trên trang web này</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại.}other{Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại.}}</translation>
+<translation id="84426883520448311">tuỳ chỉnh giao diện, giao diện, đổi màu, đổi nền, thay đổi hình nền, chỉnh nền, chế độ sáng, chế độ tối, giao diện cá nhân</translation>
 <translation id="8443986842926457191">URL dài hơn 2048 ký tự.</translation>
 <translation id="8445281870900174108">Thẻ này đang sử dụng camera của bạn</translation>
 <translation id="8446884382197647889">Tìm hiểu thêm</translation>
@@ -7340,6 +7350,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9076821103818989526">Bảng điều khiển bên</translation>
 <translation id="907779190626433918">Sử dụng mật khẩu khác biệt trên mỗi trang web hoặc ứng dụng. Nếu bạn sử dụng cùng một mật khẩu và có người biết được mật khẩu này thì họ có thể dùng mật khẩu này để đăng nhập vào các tài khoản khác của bạn.</translation>
 <translation id="9078546160009814724">Tên người dùng: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Sao chép đường liên kết}other{Sao chép các đường liên kết}}</translation>
 <translation id="907972398081911688">Tự động thay đổi mật khẩu bị lộ</translation>
 <translation id="9081543426177426948">Các trang web bạn truy cập không được lưu ở chế độ Ẩn danh</translation>
 <translation id="9082750838489080452">Ứng dụng: <ph name="APP_NAME" /></translation>
