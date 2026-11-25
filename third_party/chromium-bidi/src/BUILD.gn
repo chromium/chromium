@@ -363,6 +363,7 @@ ts_library("unit_tests") {
     "bidiMapper/modules/network/NetworkRequest.test.ts",
     "bidiMapper/modules/network/NetworkStorage.test.ts",
     "bidiMapper/modules/network/NetworkUtils.test.ts",
+    "bidiMapper/modules/script/PreloadScript.test.ts",
     "bidiMapper/modules/script/PreloadScriptStorage.test.ts",
     "bidiMapper/modules/script/SharedId.test.ts",
     "bidiMapper/modules/session/AclManager.test.ts",

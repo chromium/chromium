@@ -98,3 +98,54 @@ async def test_preloadScript_remove_addAndRemoveIsNoop_secondRemoval_fails(
                 },
             },
         )
+
+
+@pytest.mark.asyncio
+async def test_preloadScript_remove_afterUserContextClosed(websocket):
+    user_context = (
+        await execute_command(
+            websocket,
+            {
+                "method": "browser.createUserContext",
+                "params": {},
+            },
+        )
+    )["userContext"]
+
+    script_id = (
+        await execute_command(
+            websocket,
+            {
+                "method": "script.addPreloadScript",
+                "params": {
+                    "functionDeclaration": "() => {}",
+                    "userContexts": [user_context],
+                },
+            },
+        )
+    )["script"]
+
+    await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.create",
+            "params": {"type": "tab", "userContext": user_context},
+        },
+    )
+
+    await execute_command(
+        websocket,
+        {
+            "method": "browser.removeUserContext",
+            "params": {"userContext": user_context},
+        },
+    )
+
+    result = await execute_command(
+        websocket,
+        {
+            "method": "script.removePreloadScript",
+            "params": {"script": script_id},
+        },
+    )
+    assert result == {}

@@ -24,6 +24,7 @@ import type {
   Script,
 } from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
+import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 
@@ -159,18 +160,30 @@ export class PreloadScript {
    * Removes this script from all CDP targets.
    */
   async remove(): Promise<void> {
-    await Promise.all([
+    await Promise.all(
       this.#cdpPreloadScripts.map(async (cdpPreloadScript) => {
         const cdpTarget = cdpPreloadScript.target;
         const cdpPreloadScriptId = cdpPreloadScript.preloadScriptId;
-        return await cdpTarget.cdpClient.sendCommand(
-          'Page.removeScriptToEvaluateOnNewDocument',
-          {
-            identifier: cdpPreloadScriptId,
-          },
-        );
+        try {
+          await cdpTarget.cdpClient.sendCommand(
+            'Page.removeScriptToEvaluateOnNewDocument',
+            {
+              identifier: cdpPreloadScriptId,
+            },
+          );
+        } catch (error) {
+          if (
+            !cdpTarget.cdpClient.isCloseError(error) &&
+            (error as {code?: unknown})?.code !==
+              CdpErrorConstants.CONNECTION_CLOSED
+          ) {
+            throw error;
+          }
+        }
       }),
-    ]);
+    );
+    this.#cdpPreloadScripts = [];
+    this.#targetIds.clear();
   }
 
   /** Removes the provided cdp target from the list of cdp preload scripts. */
