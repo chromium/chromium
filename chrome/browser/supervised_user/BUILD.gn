@@ -548,6 +548,7 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/signin/services/android:java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//components/browser_ui/adaptive_ui/android:java",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/widget/android:java",
       "//components/signin/public/android:java",
@@ -716,6 +717,7 @@ if (is_android) {
       "//content/public/test/android:content_java_test_support",
       "//net/android:net_java_test_support",
       "//third_party/android_deps:espresso_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -732,6 +734,7 @@ if (is_android) {
     resources_package = "org.chromium.chrome.browser.supervised_user"
     sources = [
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/ParentApprovalMetricsTest.java",
+      "android/junit/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalCoordinatorTest.java",
       "android/junit/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalSheetContentTest.java",
     ]
     deps = [
@@ -742,8 +745,17 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//chrome/android:chrome_java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/signin/services/android:java",
+      "//components/browser_ui/adaptive_ui/android:java",
+      "//components/browser_ui/bottomsheet/android:java",
+      "//components/browser_ui/theme/android:java_resources",
+      "//components/signin/public/android:java",
+      "//google_apis/gaia/android:java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_no_recycler_view_java",
       "//url:gurl_java",
       "//url:gurl_junit_test_support",
     ]

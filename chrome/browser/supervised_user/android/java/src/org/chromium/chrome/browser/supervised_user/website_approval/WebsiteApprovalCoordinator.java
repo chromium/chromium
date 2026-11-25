@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -53,9 +54,10 @@ public class WebsiteApprovalCoordinator {
                         .with(WebsiteApprovalProperties.FAVICON, favicon)
                         .build();
 
+        AdaptiveUiController adaptiveUiController = AdaptiveUiController.from(windowAndroid);
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
-        assert bottomSheetController != null;
+        assert adaptiveUiController != null || bottomSheetController != null;
         WebsiteApprovalSheetContent sheetContent =
                 new WebsiteApprovalSheetContent(assertNonNull(windowAndroid.getContext().get()));
 
@@ -63,7 +65,12 @@ public class WebsiteApprovalCoordinator {
 
         mMediator =
                 new WebsiteApprovalMediator(
-                        completionCallback, bottomSheetController, sheetContent, model, profile);
+                        completionCallback,
+                        bottomSheetController,
+                        adaptiveUiController,
+                        sheetContent,
+                        model,
+                        profile);
     }
 
     /** Displays the UI to request parent approval in a new bottom sheet. */
