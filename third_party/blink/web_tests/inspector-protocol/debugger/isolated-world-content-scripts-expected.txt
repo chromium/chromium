@@ -4,7 +4,9 @@ Content Scripts:
 #1:
   sourceURL:239.js
   endColumn:20
+  isDefault:false type:isolated
 #2:
   sourceURL:42.js
   endColumn:19
+  isDefault:false type:isolated
 
