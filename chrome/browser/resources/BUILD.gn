@@ -7,6 +7,7 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//content/browser/devtools/features.gni")
 import("//pdf/features.gni")
@@ -165,10 +166,13 @@ group("resources") {
       "app_home:resources",
       "app_settings:resources",
       "browser_switch:resources",
-      "on_device_translation_internals:resources",
       "signin/history_sync_optin:resources",
       "updater:resources",
     ]
+  }
+
+  if (enable_on_device_translation && !is_chromeos) {
+    public_deps += [ "on_device_translation_internals:resources" ]
   }
 
   if (!is_android && !is_chromeos) {

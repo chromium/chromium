@@ -642,7 +642,6 @@ if (!is_android) {
         "//chrome/browser/ui/webui/app_settings",
         "//chrome/browser/ui/webui/intro",
         "//chrome/browser/ui/webui/intro:mojo_bindings",
-        "//chrome/browser/ui/webui/on_device_translation_internals",
         "//chrome/browser/ui/webui/signin",
         "//chrome/browser/ui/webui/signin:profile",
         "//chrome/browser/ui/webui/signin/history_sync_optin:mojo_bindings",
@@ -1662,8 +1661,14 @@ source_set("core") {
       "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/views/scheduled_restart",
       "//chrome/browser/ui/webui/app_settings",
-      "//chrome/browser/ui/webui/on_device_translation_internals",
       "//chrome/browser/ui/webui/updater",
+    ]
+  }
+
+  if (enable_on_device_translation && !is_chromeos) {
+    deps += [
+      "//chrome/browser/ui/webui/on_device_translation_internals",
+      "//chrome/browser/ui/webui/on_device_translation_internals:mojo_bindings",
     ]
   }
 
@@ -3366,10 +3371,15 @@ source_set("browser") {
       "//chrome/browser/ui/webui/signin:inline_login_impl",
     ]
   }
+  if (enable_on_device_translation && !is_chromeos) {
+    public_deps += [
+      "//chrome/browser/ui/webui/on_device_translation_internals:mojo_bindings",
+    ]
+    deps += [ "//chrome/browser/ui/webui/on_device_translation_internals" ]
+  }
   if (is_win || is_mac || is_linux) {
     public_deps += [
       "//chrome/browser/ui/webui/app_home:mojo_bindings",
-      "//chrome/browser/ui/webui/on_device_translation_internals:mojo_bindings",
       "//components/enterprise/device_trust/core/attestation/proto:attestation_ca_proto",
       "//components/enterprise/device_trust/core/attestation/proto:google_key_proto",
       "//components/enterprise/device_trust/core/attestation/proto:interface_proto",
@@ -3415,7 +3425,6 @@ source_set("browser") {
       "//chrome/browser/ui/webui/default_browser:default_browser_modal",
       "//chrome/browser/ui/webui/default_browser:modal_mojo_bindings",
       "//chrome/browser/ui/webui/intro",
-      "//chrome/browser/ui/webui/on_device_translation_internals",
       "//chrome/browser/ui/webui/signin:profile_impl",
       "//chrome/browser/ui/webui/updater",
       "//chrome/browser/ui/webui/updater:mojo_bindings",

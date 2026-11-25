@@ -9,6 +9,7 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
@@ -616,7 +617,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/app_home_resources.pak",
         "$root_gen_dir/chrome/app_settings_resources.pak",
         "$root_gen_dir/chrome/browser_switch_resources.pak",
-        "$root_gen_dir/chrome/on_device_translation_internals_resources.pak",
         "$root_gen_dir/chrome/signin_history_sync_optin_resources.pak",
         "$root_gen_dir/chrome/updater_resources.pak",
       ]
@@ -626,6 +626,15 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/browser_switch:resources",
         "//chrome/browser/resources/signin/history_sync_optin:resources",
         "//chrome/browser/resources/updater:resources",
+      ]
+    }
+
+    if (enable_on_device_translation && !is_chromeos) {
+      sources += [
+        "$root_gen_dir/chrome/on_device_translation_internals_resources.pak",
+      ]
+      deps += [
+        "//chrome/browser/resources/on_device_translation_internals:resources",
       ]
     }
 

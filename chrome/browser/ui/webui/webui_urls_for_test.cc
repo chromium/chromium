@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/on_device_translation/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -132,7 +133,7 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://omnibox-internals",
       "chrome://on-device-internals",
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && !BUILDFLAG(IS_CHROMEOS)
       "chrome://on-device-translation-internals",
 #endif
 

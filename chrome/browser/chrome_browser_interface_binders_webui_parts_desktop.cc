@@ -154,7 +154,6 @@
 #include "chrome/browser/ui/webui/intro/sign_in_celebration.mojom.h"  // nogncheck
 #include "chrome/browser/ui/webui/intro/sign_in_promo.mojom.h"  // nogncheck
 #include "chrome/browser/ui/webui/intro/welcome.mojom.h"  // nogncheck
-#include "chrome/browser/ui/webui/on_device_translation_internals/on_device_translation_internals_ui.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin.mojom.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
@@ -495,10 +494,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   RegisterWebUIControllerInterfaceBinder<
       app_management::mojom::PageHandlerFactory, WebAppSettingsUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      on_device_translation_internals::mojom::PageHandlerFactory,
-      OnDeviceTranslationInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       history_sync_optin::mojom::PageHandlerFactory, HistorySyncOptinUI>(map);

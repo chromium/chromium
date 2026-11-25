@@ -78,6 +78,10 @@
 #include "components/guest_view/browser/slim_web_view/slim_web_view.mojom.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/on_device_translation_internals/on_device_translation_internals.mojom.h"
+#include "chrome/browser/ui/webui/on_device_translation_internals/on_device_translation_internals_ui.h"
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_ui.h"
@@ -185,6 +189,11 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
   }
 #endif
 
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && !BUILDFLAG(IS_CHROMEOS)
+  RegisterWebUIControllerInterfaceBinder<
+      on_device_translation_internals::mojom::PageHandlerFactory,
+      OnDeviceTranslationInternalsUI>(map);
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   RegisterWebUIControllerInterfaceBinder<

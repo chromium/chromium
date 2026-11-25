@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/on_device_translation/buildflags/features.gni")
 import("../build_webui_tests.gni")
 
-assert(is_win || is_mac || is_linux)
+assert(enable_on_device_translation && !is_chromeos)
 
 build_webui_tests("build") {
   cc_test_files = [ "on_device_translation_internals_browsertest.cc" ]

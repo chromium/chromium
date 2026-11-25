@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/on_device_translation/buildflags/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
@@ -10,7 +11,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 }
 
-if (is_win || is_mac || is_linux) {
+if (enable_on_device_translation && !is_chromeos) {
   source_set("on_device_translation_internals") {
     sources = [
       "on_device_translation_internals_page_handler_impl.cc",
@@ -20,8 +21,8 @@ if (is_win || is_mac || is_linux) {
       "on_device_translation_internals_page_handler_impl.h",
       "on_device_translation_internals_ui.h",
     ]
+    public_deps = [ ":mojo_bindings" ]
     deps = [
-      ":mojo_bindings",
       "//base",
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
