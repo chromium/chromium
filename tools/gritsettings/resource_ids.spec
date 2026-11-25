@@ -625,6 +625,14 @@
     "META": {"sizes": {"includes": [15]}},
     "includes": [4390],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/new_tab_page/code_cache_resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4393],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/new_tab_page/eager_code_cache_resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4396],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/new_tab_page/resources.grd": {
     "META": {"sizes": {"includes": [200]}},
     "includes": [4400],

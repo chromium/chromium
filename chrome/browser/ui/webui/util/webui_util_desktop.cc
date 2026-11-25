@@ -6,6 +6,8 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +35,12 @@
 #include "chrome/grit/webui_toolbar_code_cache_resources_map.h"
 #include "content/public/common/content_features.h"
 #include "ui/webui/resources/grit/webui_code_cache_resources_map.h"
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "chrome/grit/new_tab_page_code_cache_resources_map.h"
+#include "chrome/grit/new_tab_page_eager_code_cache_resources_map.h"
+#include "components/search/ntp_features.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 #endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 
 namespace webui {
@@ -268,6 +276,24 @@ base::flat_map<GURL, int> GetWebUIResourceUrlToCodeCacheMap() {
           content::kChromeUIScheme, chrome::kChromeUIWebUIToolbarHost,
           kWebuiToolbarCodeCacheResources, url_to_code_cache_pairs);
     }
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+    // chrome://new-tab-page. Must mirror the lazy/eager bundle selection in
+    // `NewTabPageUI`; V8 rejects a cache built from the other bundle.
+    // TODO(crbug.com/576324502): Remove `kNewTabPageEagerCodeCacheResources`
+    // once `kNtpLazyLoadComposebox` launches.
+    if (base::FeatureList::IsEnabled(
+            features::kWebUIBundledCodeCacheForNewTabPage)) {
+      const base::span<const ResourcePath> resources =
+          base::FeatureList::IsEnabled(ntp_features::kNtpLazyLoadComposebox)
+              ? base::span<const ResourcePath>(kNewTabPageCodeCacheResources)
+              : base::span<const ResourcePath>(
+                    kNewTabPageEagerCodeCacheResources);
+      AppendWebUIResourceURLToCodeCachePairs(
+          content::kChromeUIScheme, chrome::kChromeUINewTabPageHost, resources,
+          url_to_code_cache_pairs);
+    }
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 

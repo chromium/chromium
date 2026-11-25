@@ -134,6 +134,7 @@
 #include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/webui/buildflags.h"
 #include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -2478,29 +2479,36 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
   EXPECT_TRUE(web_contents->HasRecentInteraction());
 }
 
+struct BundledCodeCacheClientTestParams {
+  const char* test_suffix;
+  bool bundled_code_cache_enabled;
+  bool ntp_bundled_code_cache_enabled;
+};
+
 class BundledCodeCacheChromeContentBrowserClientTest
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<BundledCodeCacheClientTestParams> {
  public:
   BundledCodeCacheChromeContentBrowserClientTest() {
-    feature_list_.InitWithFeatureState(features::kWebUIBundledCodeCache,
-                                       IsBundledCodeCacheEnabled());
+    feature_list_.InitWithFeatureStates(
+        {{features::kWebUIBundledCodeCache,
+          GetParam().bundled_code_cache_enabled},
+         {features::kWebUIBundledCodeCacheForNewTabPage,
+          GetParam().ntp_bundled_code_cache_enabled}});
   }
-
-  bool IsBundledCodeCacheEnabled() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Assert top-chrome webui renderers disallow v8 feature flag overrides only
-// when the bundled webui code cache is enabled.
+// Assert top-chrome and New Tab Page webui renderers disallow v8 feature flag
+// overrides only when their bundled webui code cache features are enabled.
 IN_PROC_BROWSER_TEST_P(BundledCodeCacheChromeContentBrowserClientTest,
                        ConfiguresRendererForDisallowV8FeatureOverrides) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL top_chrome_url1(chrome::kChromeUITabSearchURL);
   const GURL top_chrome_url2(chrome::kChromeUIReadLaterURL);
-  const GURL& non_top_chrome_url1 = chrome::ChromeUINewTabPageURLAsGURL();
+  const GURL non_top_chrome_url1(chrome::kChromeUISettingsURL);
   const GURL non_top_chrome_url2(
       embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(top_chrome_url1.DomainIs(chrome::kChromeUITopChromeDomain));
@@ -2508,8 +2516,8 @@ IN_PROC_BROWSER_TEST_P(BundledCodeCacheChromeContentBrowserClientTest,
   EXPECT_FALSE(non_top_chrome_url1.DomainIs(chrome::kChromeUITopChromeDomain));
   EXPECT_FALSE(non_top_chrome_url2.DomainIs(chrome::kChromeUITopChromeDomain));
 
-  // Disallow V8 feature flag overrides should only apply to top-chrome URLs
-  // when bundled code caching is enabled.
+  // Disallow V8 feature flag overrides should apply only to opted-in WebUI
+  // sites whose bundled code cache features are enabled.
   auto navigate_and_expect_policy_result = [this](const GURL& url,
                                                   bool expectation) {
     content::RenderFrameHost* rfh =
@@ -2517,21 +2525,37 @@ IN_PROC_BROWSER_TEST_P(BundledCodeCacheChromeContentBrowserClientTest,
     EXPECT_EQ(expectation, rfh->GetProcess()->DisallowV8FeatureFlagOverrides());
   };
   navigate_and_expect_policy_result(top_chrome_url1,
-                                    IsBundledCodeCacheEnabled());
+                                    GetParam().bundled_code_cache_enabled);
   navigate_and_expect_policy_result(top_chrome_url2,
-                                    IsBundledCodeCacheEnabled());
+                                    GetParam().bundled_code_cache_enabled);
   navigate_and_expect_policy_result(non_top_chrome_url1, false);
   navigate_and_expect_policy_result(non_top_chrome_url2, false);
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
+  const bool expect_ntp_disallow_overrides =
+      GetParam().bundled_code_cache_enabled &&
+      GetParam().ntp_bundled_code_cache_enabled;
+#else
+  const bool expect_ntp_disallow_overrides = false;
+#endif
+  navigate_and_expect_policy_result(chrome::ChromeUINewTabPageURLAsGURL(),
+                                    expect_ntp_disallow_overrides);
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     BundledCodeCacheChromeContentBrowserClientTest,
-    ::testing::Bool(),
+    ::testing::Values(
+        BundledCodeCacheClientTestParams{"BundledCodeCacheDisabled_NtpEnabled",
+                                         false, true},
+        BundledCodeCacheClientTestParams{"BundledCodeCacheEnabled_NtpDisabled",
+                                         true, false},
+        BundledCodeCacheClientTestParams{"BundledCodeCacheEnabled_NtpEnabled",
+                                         true, true}),
     [](const ::testing::TestParamInfo<
         BundledCodeCacheChromeContentBrowserClientTest::ParamType>& info) {
-      return base::StrCat(
-          {"BundledCodeCache", info.param ? "Enabled" : "Disabled"});
+      return info.param.test_suffix;
     });
 
 class DevToolsOverridesThirdPartyCookiesBrowserTest

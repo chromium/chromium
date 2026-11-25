@@ -22074,6 +22074,7 @@
                         "TopChromeWebUISharedRenderer",
                         "WebUIBackForwardButton",
                         "WebUIBundledCodeCache",
+                        "WebUIBundledCodeCacheForNewTabPage",
                         "WebUIBypassMojoConnections",
                         "WebUIHomeButton",
                         "WebUIInProcessResourceLoadingV2",

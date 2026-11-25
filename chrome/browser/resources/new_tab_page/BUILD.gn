@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/generate_code_cache.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 import("//ui/webui/webui_features.gni")
@@ -53,6 +55,7 @@ build_webui("build") {
   html_to_wrapper_scheme = "chrome"
   webui_context_type = "trusted"
   optimize = optimize_webui
+  generate_code_cache = enable_webui_generate_code_cache
   if (optimize) {
     extra_grdp_deps += [ ":build_eager_grdp" ]
     extra_grdp_files += [ "$target_gen_dir/eager_resources.grdp" ]
@@ -88,5 +91,57 @@ if (optimize_webui) {
     manifest_files = [ build_eager_manifest ]
     deps = [ ":build_eager" ]
     resource_path_prefix = "eager"
+  }
+
+  if (enable_webui_generate_code_cache) {
+    # Mirrors the code cache targets that build_webui() generates for the
+    # lazy-composebox bundle, since `build_eager` lives outside build_webui().
+    # TODO(crbug.com/576324502): Remove eager_code_cache_resources once
+    # kNtpLazyLoadComposebox launches.
+    eager_code_cache_grd_prefix = "new_tab_page_eager_code_cache"
+    eager_code_cache_manifest =
+        "$target_gen_dir/build_eager_code_cache_manifest.json"
+
+    generate_code_cache("build_eager_code_cache") {
+      visibility = [ ":build_eager_code_cache_grd" ]
+      eager_outputs =
+          filter_include(get_target_outputs(":build_eager"), [ "*.js" ])
+      in_files = []
+      foreach(eager_output, eager_outputs) {
+        in_files += [ rebase_path(eager_output, target_gen_dir) ]
+      }
+      in_folder = target_gen_dir
+      out_folder = "$target_gen_dir/eager_code_cache"
+      out_manifest = eager_code_cache_manifest
+      deps = [ ":build_eager" ]
+    }
+
+    generate_grd("build_eager_code_cache_grd") {
+      visibility = [ ":eager_code_cache_resources_grit" ]
+      grd_prefix = eager_code_cache_grd_prefix
+      out_grd = "$target_gen_dir/eager_code_cache_resources.grd"
+      manifest_files = [ eager_code_cache_manifest ]
+      deps = [ ":build_eager_code_cache" ]
+      resource_path_rewrites = [
+        "new_tab_page_eager.rollup.js.code_cache|new_tab_page.js.code_cache",
+        "lazy_load.rollup.js.code_cache|lazy_load.js.code_cache",
+      ]
+    }
+
+    grit("eager_code_cache_resources") {
+      enable_input_discovery_for_gn_analyze = false
+      source = "$target_gen_dir/eager_code_cache_resources.grd"
+
+      outputs = [
+        "grit/${eager_code_cache_grd_prefix}_resources.h",
+        "grit/${eager_code_cache_grd_prefix}_resources_map.cc",
+        "grit/${eager_code_cache_grd_prefix}_resources_map.h",
+        "${eager_code_cache_grd_prefix}_resources.pak",
+      ]
+
+      output_dir = "$root_gen_dir/chrome"
+      deps = [ ":build_eager_code_cache_grd" ]
+      public_deps = [ "//ui/base:webui_resource_path" ]
+    }
   }
 }

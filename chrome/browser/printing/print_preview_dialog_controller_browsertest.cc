@@ -831,6 +831,9 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   WebContents* web_contents_1 = tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(web_contents_1);
+  // Wait for navigation commit and renderer launch before `PrintPreviewNow()`
+  // and `CrashTab()`, since NTP bundled code cache skips warm spare renderers.
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents_1));
   EXPECT_EQ(2, tab_strip_model->count());
   printing::PrintPreviewDialogController* dialog_controller =
       printing::PrintPreviewDialogController::GetInstance();
@@ -848,6 +851,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   WebContents* web_contents_2 = tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(web_contents_2);
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents_2));
   EXPECT_EQ(3, tab_strip_model->count());
 
   // Create preview dialog for `web_contents_2`

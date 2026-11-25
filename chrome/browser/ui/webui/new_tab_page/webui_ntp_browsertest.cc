@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/common/content_features.h"
@@ -38,11 +39,20 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/memory_coordinator_browsertest_util.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
+#include "ui/webui/buildflags.h"
+#if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
+#include "base/containers/flat_map.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
+#include "content/public/common/content_features.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -98,8 +108,6 @@ std::set<content::ChildProcessId> LiveRenderProcessHostIds() {
   }
   return result;
 }
-
-}  // namespace
 
 class WebUiNtpBrowserTest : public PlatformBrowserTest {
  public:
@@ -190,9 +198,24 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, ProcessPerSite) {
   }
 }
 
+class WebUiNtpSpareRendererBrowserTest : public WebUiNtpBrowserTest {
+#if !BUILDFLAG(IS_ANDROID)
+ public:
+  WebUiNtpSpareRendererBrowserTest() {
+    // Bundled V8 code caching disallows V8 flag overrides, bypassing warm spare
+    // renderers; disable it here to test spare reuse when caching is off.
+    feature_list_.InitAndDisableFeature(
+        features::kWebUIBundledCodeCacheForNewTabPage);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+#endif
+};
+
 // Verify that the WebUI NTP uses an available spare process and does not
 // discard it as in https://crbug.com/40699271.
-IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
+IN_PROC_BROWSER_TEST_F(WebUiNtpSpareRendererBrowserTest, SpareRenderer) {
 #if BUILDFLAG(IS_ANDROID)
   // Android does not keep a spare renderer around by default, so create one.
   content::SpareRenderProcessHostManager::Get().WarmupSpare(GetProfile());
@@ -530,4 +553,98 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpKeepAliveBrowserTest,
                 ->GetPendingReuseRefCountForTesting(),
             0);
 }
+
+#if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
+struct BundledCodeCacheTestParams {
+  const char* test_suffix;
+  bool code_cache_enabled;
+  bool lazy_load_composebox;
+};
+
+class WebUiNtpBundledCodeCacheBrowserTest
+    : public WebUiNtpBrowserTest,
+      public testing::WithParamInterface<BundledCodeCacheTestParams> {
+ public:
+  WebUiNtpBundledCodeCacheBrowserTest() {
+    // Disable `kInitialWebUI` so async TopChrome InitialWebUI loads at browser
+    // startup do not record into the code-cache histograms asserted below.
+    scoped_feature_list_.InitWithFeatureStates({
+        {features::kInitialWebUI, false},
+        {features::kWebUIBundledCodeCache, true},
+        {features::kWebUIBundledCodeCacheForNewTabPage,
+         GetParam().code_cache_enabled},
+        {ntp_features::kNtpLazyLoadComposebox, GetParam().lazy_load_composebox},
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(WebUiNtpBundledCodeCacheBrowserTest,
+                       SuccessfullyLoadsCodeCache) {
+  static constexpr char kDidReceiveCachedCodeHistogram[] =
+      "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode";
+  static constexpr char kConsumeCacheHistogram[] =
+      "Blink.ResourceRequest.WebUIBundledCachedMetadataHandler.ConsumeCache";
+
+  // Every NTP bundle chunk maps to a code cache only when the feature is on.
+  const base::flat_map<GURL, int> code_cache_map =
+      webui::GetWebUIResourceUrlToCodeCacheMap();
+  for (const char* script_url : {"chrome://new-tab-page/new_tab_page.js",
+                                 "chrome://new-tab-page/lazy_load.js",
+                                 "chrome://new-tab-page/shared.rollup.js"}) {
+    EXPECT_EQ(GetParam().code_cache_enabled,
+              code_cache_map.contains(GURL(script_url)))
+        << script_url;
+  }
+
+  auto fetch_histograms = [] {
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  };
+  // Count only the samples recorded by the navigation below.
+  fetch_histograms();
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(content::NavigateToURL(web_contents,
+                                     chrome::ChromeUINewTabPageURLAsGURL()));
+  ExpectIsWebUiNtp(web_contents);
+  // Wait for deferred `lazy_load.js` execution so all 3 NTP chunks are tested.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents, "customElements.whenDefined('ntp-lens-upload-dialog');"));
+  fetch_histograms();
+
+  // V8 rejects a cache built from different source than the served bundle,
+  // e.g. on a lazy/eager mismatch or a build-time $i18n{} replacement.
+  histogram_tester.ExpectBucketCount(kDidReceiveCachedCodeHistogram, false, 0);
+  histogram_tester.ExpectBucketCount(kConsumeCacheHistogram, false, 0);
+  if (GetParam().code_cache_enabled) {
+    EXPECT_GE(
+        histogram_tester.GetBucketCount(kDidReceiveCachedCodeHistogram, true),
+        4);
+    EXPECT_GE(histogram_tester.GetBucketCount(kConsumeCacheHistogram, true), 4);
+  } else {
+    histogram_tester.ExpectTotalCount(kDidReceiveCachedCodeHistogram, 0);
+    histogram_tester.ExpectTotalCount(kConsumeCacheHistogram, 0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    WebUiNtpBundledCodeCacheBrowserTest,
+    testing::Values(
+        BundledCodeCacheTestParams{"NtpCodeCacheEnabled_LazyLoadComposebox",
+                                   true, true},
+        BundledCodeCacheTestParams{"NtpCodeCacheEnabled_EagerComposebox", true,
+                                   false},
+        BundledCodeCacheTestParams{"NtpCodeCacheDisabled_EagerComposebox",
+                                   false, false}),
+    [](const testing::TestParamInfo<BundledCodeCacheTestParams>& info) {
+      return info.param.test_suffix;
+    });
+#endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+}  // namespace

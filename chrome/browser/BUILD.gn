@@ -5357,6 +5357,7 @@ if (!is_android) {
       "//ui/native_theme:test_support",
       "//ui/shell_dialogs:test_support",
       "//ui/views:test_support",
+      "//ui/webui:buildflags",
     ]
 
     if (is_win || is_linux || is_chromeos) {

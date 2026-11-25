@@ -1602,6 +1602,28 @@ std::optional<GURL> GetIwaCustomManifestUrl(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
 
+// Returns whether WebUIs at `site_url` load build-time bundled V8 code caches.
+// The code cache opt-in and the V8 flag override policy share this predicate
+// because V8 rejects bundled bytecode in a process that allows flag overrides.
+bool IsWebUIBundledCodeCacheEnabledForSite(const GURL& site_url) {
+  if (!base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache)) {
+    return false;
+  }
+  if (::IsTopChromeWebUIURL(site_url)) {
+    return true;
+  }
+#if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE) && !BUILDFLAG(IS_ANDROID) && \
+    BUILDFLAG(ENABLE_WEBUI_NTP)
+  return site_url.SchemeIs(content::kChromeUIScheme) &&
+         site_url.host() == chrome::kChromeUINewTabPageHost &&
+         base::FeatureList::IsEnabled(
+             features::kWebUIBundledCodeCacheForNewTabPage);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE) &&
+        // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_WEBUI_NTP)
+}
+
 }  // namespace
 
 // static
@@ -3976,9 +3998,7 @@ std::string ChromeContentBrowserClient::GetWebUIHostnameForCodeCacheMetrics(
 
 bool ChromeContentBrowserClient::IsWebUIBundledCodeCachingEnabled(
     const GURL& site_url) const {
-  // Enable bundled code caching only for top-chrome WebUI hosts.
-  return base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache) &&
-         ::IsTopChromeWebUIURL(site_url);
+  return IsWebUIBundledCodeCacheEnabledForSite(site_url);
 }
 
 base::flat_map<GURL, int>
@@ -8741,9 +8761,7 @@ bool ChromeContentBrowserClient::AreV8OptimizationsEnabledForSite(
 
 bool ChromeContentBrowserClient::DisallowV8FeatureFlagOverridesForSite(
     const GURL& site_url) {
-  // Disable V8 feature flag overrides specifically for top-chrome WebUI URLs.
-  return base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache) &&
-         ::IsTopChromeWebUIURL(site_url);
+  return IsWebUIBundledCodeCacheEnabledForSite(site_url);
 }
 
 ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {

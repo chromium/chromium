@@ -29,6 +29,12 @@ _webui_code_cache_paks = [
   "$root_gen_dir/chrome/webui_toolbar_code_cache_resources.pak",
   "$root_gen_dir/ui/webui/resources/webui_code_cache_resources.pak",
 ]
+if (enable_webui_ntp) {
+  _webui_code_cache_paks += [
+    "$root_gen_dir/chrome/new_tab_page_code_cache_resources.pak",
+    "$root_gen_dir/chrome/new_tab_page_eager_code_cache_resources.pak",
+  ]
+}
 _webui_code_cache_pak_deps = [
   "//chrome/browser/resources:code_cache_resources",
   "//ui/webui/resources:code_cache_resources",

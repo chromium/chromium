@@ -392,6 +392,7 @@ source_set("browser_tests") {
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 
   # TODO(b:565412419): Enable new_tab_page_handler_browsertest on Android once
@@ -416,11 +417,14 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/most_visited",
       "//chrome/browser/ui/webui/customize_buttons",
+      "//chrome/browser/ui/webui/util",
       "//chrome/test/base:testing_browser_process",
       "//chrome/test/user_education:impl",
+      "//components/metrics:content",
       "//components/prefs",
       "//components/search",
       "//components/user_education/views",
+      "//ui/webui:buildflags",
     ]
   }
 

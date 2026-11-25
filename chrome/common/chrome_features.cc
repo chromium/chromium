@@ -2096,6 +2096,11 @@ BASE_FEATURE(kWebUILocationBar, base::FEATURE_DISABLED_BY_DEFAULT);
 // controls in chrome/browser/ui/ui_features.h will return true.
 BASE_FEATURE(kWebUIToolbar, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables build-time bundled V8 code caching for the WebUI New Tab Page.
+// Requires `kWebUIBundledCodeCache`.
+BASE_FEATURE(kWebUIBundledCodeCacheForNewTabPage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The following feature params control the crash recovery behavior of the Web
 // UI reload button. If the renderer crashes, we will try to recover it by
 // reloading the contents until the number of crashes reaches

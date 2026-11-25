@@ -249,6 +249,12 @@ if (enable_webui_generate_code_cache) {
       "side_panel/tabs_from_other_devices:code_cache_resources",
       "webui_toolbar:code_cache_resources",
     ]
+    if (enable_webui_ntp) {
+      public_deps += [
+        "new_tab_page:code_cache_resources",
+        "new_tab_page:eager_code_cache_resources",
+      ]
+    }
   }
 }
 

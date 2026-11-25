@@ -52,6 +52,9 @@ source_set("impl") {
       "//chrome/browser/resources:code_cache_resources",
       "//ui/webui/resources:code_cache_resources",
     ]
+    if (enable_webui_ntp) {
+      deps += [ "//components/search" ]
+    }
   }
 }
 
