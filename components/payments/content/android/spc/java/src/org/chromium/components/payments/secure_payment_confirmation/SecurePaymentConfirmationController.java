@@ -19,8 +19,15 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiContainer;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiController;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiEntry;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiScope;
+import org.chromium.components.browser_ui.adaptive_ui.DismissReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.components.payments.PaymentApp.PaymentEntityLogo;
 import org.chromium.components.payments.SPCTransactionMode;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationBottomSheetObserver.ControllerDelegate;
@@ -79,16 +86,184 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:SecurePaymentRequestOutcome)
 
-    private final SecurePaymentConfirmationBottomSheetContent mContent;
+    @IntDef({SpcState.NOT_SHOWN, SpcState.SHOWING, SpcState.CLOSING, SpcState.CLOSED})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface SpcState {
+        /** show() hasn't succeeded. */
+        int NOT_SHOWN = 0;
+
+        /** Showing, and no response sent yet. */
+        int SHOWING = 1;
+
+        /** The Adaptive UI primary button responded, and the framework is closing the UI. */
+        int CLOSING = 2;
+
+        /** A response was sent, or hide() ran. */
+        int CLOSED = 3;
+    }
+
+    /** Shows and hides the SPC UI, in the legacy bottom sheet or through Adaptive UI. */
+    /*package*/ interface Presenter {
+        /** Returns false if the UI couldn't be shown. */
+        boolean show();
+
+        /** Hides the UI. Sends no response. */
+        void hide();
+    }
+
+    /*package*/ final class BottomSheetPresenter implements Presenter {
+        private final BottomSheetController mBottomSheetController;
+        private final SecurePaymentConfirmationBottomSheetContent mContent;
+        private SecurePaymentConfirmationBottomSheetObserver mObserver;
+
+        BottomSheetPresenter(BottomSheetController bottomSheetController) {
+            mBottomSheetController = bottomSheetController;
+            mInputProtector.markShowTime();
+            mView.mContinueButton.setOnClickListener(
+                    (View button) -> {
+                        onContinue();
+                    });
+            mContent =
+                    new SecurePaymentConfirmationBottomSheetContent(
+                            mView.mContentView, mView.mScrollView);
+            mObserver = new SecurePaymentConfirmationBottomSheetObserver(bottomSheetController);
+        }
+
+        @Override
+        public boolean show() {
+            if (!mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
+                return false;
+            }
+            mObserver.begin(SecurePaymentConfirmationController.this);
+            return true;
+        }
+
+        @Override
+        public void hide() {
+            mObserver.end();
+            mBottomSheetController.hideContent(mContent, /* animate= */ true);
+        }
+
+        /*package*/ void setObserverForTesting(
+                SecurePaymentConfirmationBottomSheetObserver observer) {
+            mObserver = observer;
+        }
+    }
+
+    /*package*/ final class AdaptiveUiPresenter
+            implements Presenter, AdaptiveUiProperties.Delegate {
+        private final AdaptiveUiController mAdaptiveUiController;
+        private final AdaptiveUiEntry mEntry;
+
+        AdaptiveUiPresenter(
+                Context context,
+                AdaptiveUiController adaptiveUiController,
+                String primaryButtonText) {
+            mAdaptiveUiController = adaptiveUiController;
+            // Both Adaptive UI containers already host CUSTOM_VIEW inside a scroll container, so
+            // detach the inner body layout from SPC's own ScrollView and move the primary action
+            // onto AdaptiveUiProperties.
+            View customView = assertNonNull(mView.mContentView.getChildAt(0));
+            mView.mContentView.removeView(customView);
+            mView.mContinueButton.setVisibility(View.GONE);
+            // Clear the bottom padding that sat below SPC's hidden Continue button; the sheet and
+            // dialog add their own padding below the buttons.
+            customView.setPaddingRelative(
+                    customView.getPaddingStart(),
+                    customView.getPaddingTop(),
+                    customView.getPaddingEnd(),
+                    0);
+            PropertyModel adaptiveModel =
+                    new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                            .with(AdaptiveUiProperties.DELEGATE, this)
+                            .with(AdaptiveUiProperties.CUSTOM_VIEW, customView)
+                            .with(
+                                    AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
+                                    context.getString(
+                                            R.string
+                                                    .secure_payment_confirmation_authentication_sheet_description))
+                            .with(
+                                    AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
+                                    R.string
+                                            .secure_payment_confirmation_authentication_sheet_opened)
+                            .with(
+                                    AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
+                                    R.string
+                                            .secure_payment_confirmation_authentication_sheet_closed)
+                            .with(
+                                    AdaptiveUiProperties.SHEET_USER_CRITICAL,
+                                    UserCriticalFeature.SECURE_PAYMENT_CONFIRMATION)
+                            .with(AdaptiveUiProperties.SHOW_SHEET_HANDLEBAR, true)
+                            .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, primaryButtonText)
+                            .with(
+                                    AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
+                                    InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD)
+                            .build();
+            mEntry =
+                    new AdaptiveUiEntry.Builder(adaptiveModel)
+                            .setScope(AdaptiveUiScope.TRANSIENT)
+                            .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
+                            .addAllowedContainer(AdaptiveUiContainer.MODAL_DIALOG)
+                            .build();
+        }
+
+        @Override
+        public boolean show() {
+            if (mAdaptiveUiController.show(mEntry) == null) {
+                // SPC fails instead of waiting in a queue, so cancel any queued entry.
+                mAdaptiveUiController.dismiss(mEntry, DismissReason.DISMISSED_BY_FEATURE);
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public void hide() {
+            mAdaptiveUiController.dismiss(mEntry, DismissReason.DISMISSED_BY_FEATURE);
+        }
+
+        @Override
+        public void onShown(@AdaptiveUiContainer int container) {
+            // Start the input protector when the sheet or dialog is shown, like the primary
+            // button's tap protection.
+            mInputProtector.markShowTime();
+        }
+
+        @Override
+        public void onPrimaryButtonClicked() {
+            if (mState != SpcState.SHOWING) return;
+            mState = SpcState.CLOSING;
+            // Respond directly instead of through onContinue(). Adaptive UI already applied tap
+            // protection and will close the UI, so mInputProtector must not drop this tap.
+            mResponseCallback.onResult(
+                    mInformOnly ? SpcResponseStatus.ANOTHER_WAY : SpcResponseStatus.ACCEPT);
+        }
+
+        @Override
+        public void onDismissed(@DismissReason int reason) {
+            boolean wasShowing = mState == SpcState.SHOWING;
+            mState = SpcState.CLOSED;
+            if (wasShowing) {
+                // Respond directly instead of through onCancel() so mInputProtector does not hold
+                // back X, back, swipe, or outside taps.
+                mResponseCallback.onResult(SpcResponseStatus.CANCEL);
+            }
+        }
+
+        /*package*/ AdaptiveUiEntry getEntryForTesting() {
+            return mEntry;
+        }
+    }
+
     private final SecurePaymentConfirmationView mView;
     private final PropertyModel mModel;
-    private final BottomSheetController mBottomSheetController;
+    private final Presenter mPresenter;
     private final Boolean mShowOptOut;
     private final Boolean mInformOnly;
     private final Callback<Integer> mResponseCallback;
     private final @SPCTransactionMode int mTransactionMode;
-    private SecurePaymentConfirmationBottomSheetObserver mBottomSheetObserver;
     private InputProtector mInputProtector = new InputProtector();
+    private @SpcState int mState = SpcState.NOT_SHOWN;
 
     /**
      * Constructs the SPC UI component controller.
@@ -122,15 +297,10 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
             Callback<Integer> responseCallback,
             @SPCTransactionMode int transactionMode) {
         Context context = assertNonNull(window.getContext().get());
-        BottomSheetController bottomSheetController =
-                assertNonNull(BottomSheetControllerProvider.from(window));
-
-        mBottomSheetController = bottomSheetController;
         mShowOptOut = showOptOut;
         mInformOnly = informOnly;
         mResponseCallback = responseCallback;
         mTransactionMode = transactionMode;
-        mInputProtector.markShowTime();
 
         ModelList itemList = new ModelList();
         // Set the store primary and secondary text accordingly (whether only one or both are
@@ -285,6 +455,11 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
                                             context, (widget) -> onVerifyAnotherWay())));
         }
 
+        String continueButtonLabel =
+                mInformOnly
+                        ? context.getString(R.string.payments_confirm_button)
+                        : context.getString(
+                                R.string.secure_payment_confirmation_verify_button_label);
         mView = new SecurePaymentConfirmationView(context);
         mModel =
                 new PropertyModel.Builder(SecurePaymentConfirmationProperties.ALL_KEYS)
@@ -304,67 +479,67 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
                         .with(SecurePaymentConfirmationProperties.FOOTNOTE, footnote)
                         .with(
                                 SecurePaymentConfirmationProperties.CONTINUE_BUTTON_LABEL,
-                                mInformOnly
-                                        ? context.getString(R.string.payments_confirm_button)
-                                        : context.getString(
-                                                R.string
-                                                        .secure_payment_confirmation_verify_button_label))
+                                continueButtonLabel)
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, mView, SecurePaymentConfirmationViewBinder::bind);
-        mView.mContinueButton.setOnClickListener(
-                (View button) -> {
-                    onContinue();
-                });
 
-        mContent =
-                new SecurePaymentConfirmationBottomSheetContent(
-                        mView.mContentView, mView.mScrollView);
-        mBottomSheetObserver =
-                new SecurePaymentConfirmationBottomSheetObserver(mBottomSheetController);
+        AdaptiveUiController adaptiveUiController = AdaptiveUiController.from(window);
+        mPresenter =
+                adaptiveUiController != null
+                        ? new AdaptiveUiPresenter(
+                                context, adaptiveUiController, continueButtonLabel)
+                        : new BottomSheetPresenter(
+                                assertNonNull(BottomSheetControllerProvider.from(window)));
     }
 
-    /** Requests to show the SPC UI. Returns true if shown and false otherwise. */
+    /**
+     * Requests to show the SPC UI. Returns true if shown and false otherwise. Returns false if
+     * called again.
+     */
     public boolean show() {
-        if (mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
-            mBottomSheetObserver.begin(this);
+        if (mState != SpcState.NOT_SHOWN) return false;
+        // A dismissal during mPresenter.show() means it isn't showing.
+        if (!mPresenter.show() || mState != SpcState.NOT_SHOWN) return false;
+        mState = SpcState.SHOWING;
 
-            // For browser automation use-cases (such as WebDriver), SPC can be placed in
-            // transaction mode where it will immediately take some action on the dialog without
-            // user interaction.  We deliberately wait until after the dialog is created and shown
-            // to handle this, in order to keep the automation codepath close to the real one.
-            //
-            // https://w3c.github.io/secure-payment-confirmation/#sctn-transaction-ux-test-automation
-            switch (mTransactionMode) {
-                case SPCTransactionMode.AUTO_ACCEPT:
+        // For browser automation use-cases (such as WebDriver), SPC can be placed in
+        // transaction mode where it will immediately take some action on the dialog without
+        // user interaction.  We deliberately wait until after the dialog is created and shown
+        // to handle this, in order to keep the automation codepath close to the real one.
+        //
+        // https://w3c.github.io/secure-payment-confirmation/#sctn-transaction-ux-test-automation
+        switch (mTransactionMode) {
+            case SPCTransactionMode.AUTO_ACCEPT:
+                onContinue();
+                break;
+            case SPCTransactionMode.AUTO_AUTH_ANOTHER_WAY:
+                // To best mimic the underlying dialog, in mInformOnly mode we still click on
+                // the 'Continue' button.
+                if (mInformOnly) {
                     onContinue();
-                    break;
-                case SPCTransactionMode.AUTO_AUTH_ANOTHER_WAY:
-                    // To best mimic the underlying dialog, in mInformOnly mode we still click on
-                    // the 'Continue' button.
-                    if (mInformOnly) {
-                        onContinue();
-                    } else {
-                        onVerifyAnotherWay();
-                    }
-                    break;
-                case SPCTransactionMode.AUTO_OPT_OUT:
-                    onOptOut();
-                    break;
-                case SPCTransactionMode.AUTO_REJECT:
-                    onCancel();
-                    break;
-            }
-
-            return true;
+                } else {
+                    onVerifyAnotherWay();
+                }
+                break;
+            case SPCTransactionMode.AUTO_OPT_OUT:
+                onOptOut();
+                break;
+            case SPCTransactionMode.AUTO_REJECT:
+                onCancel();
+                break;
         }
-        return false;
+
+        return true;
     }
 
-    /** Hides the SPC UI (if showing). */
+    /** Hides the SPC UI. Sends no response. */
     public void hide() {
-        mBottomSheetObserver.end();
-        mBottomSheetController.hideContent(mContent, /* animate= */ true);
+        // ChromePaymentRequestService.close() re-enters hide() inside the primary response, when
+        // mState is CLOSING. Ignoring it keeps PRIMARY_ACTION as the dismiss reason.
+        if (mState == SpcState.CLOSING || mState == SpcState.CLOSED) return;
+        mState = SpcState.CLOSED;
+        mPresenter.hide();
     }
 
     private void onContinue() {
@@ -372,6 +547,7 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
                 && mTransactionMode == SPCTransactionMode.NONE) {
             return;
         }
+        if (mState != SpcState.SHOWING) return;
 
         hide();
         if (mInformOnly) {
@@ -387,6 +563,8 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
                 && mTransactionMode == SPCTransactionMode.NONE) {
             return;
         }
+        if (mState != SpcState.SHOWING) return;
+
         hide();
         mResponseCallback.onResult(SpcResponseStatus.CANCEL);
     }
@@ -396,6 +574,8 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
                 && mTransactionMode == SPCTransactionMode.NONE) {
             return;
         }
+        if (mState != SpcState.SHOWING) return;
+
         hide();
         mResponseCallback.onResult(SpcResponseStatus.ANOTHER_WAY);
     }
@@ -405,6 +585,8 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
                 && mTransactionMode == SPCTransactionMode.NONE) {
             return;
         }
+        if (mState != SpcState.SHOWING) return;
+
         hide();
         mResponseCallback.onResult(SpcResponseStatus.OPT_OUT);
     }
@@ -415,18 +597,22 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
      * test the input protector.
      */
     public boolean cancelForTest() {
+        if (mState != SpcState.SHOWING) return false;
         hide();
         mResponseCallback.onResult(SpcResponseStatus.CANCEL);
         return true;
     }
 
     public boolean optOutForTest() {
-        if (!mShowOptOut) {
-            return false;
-        }
+        if (!mShowOptOut) return false;
+        if (mState != SpcState.SHOWING) return false;
         hide();
         mResponseCallback.onResult(SpcResponseStatus.OPT_OUT);
         return true;
+    }
+
+    /*package*/ Presenter getPresenterForTesting() {
+        return mPresenter;
     }
 
     /*package*/ SecurePaymentConfirmationView getViewForTesting() {
@@ -439,10 +625,5 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
 
     /*package*/ void setInputProtectorForTesting(InputProtector inputProtector) {
         mInputProtector = inputProtector;
-    }
-
-    /*package*/ void setBottomSheetObserverForTesting(
-            SecurePaymentConfirmationBottomSheetObserver observer) {
-        mBottomSheetObserver = observer;
     }
 }
