@@ -87,6 +87,7 @@ void FaviconFetcher::OnGetFaviconFromCacheFinished(
               "access from their parents."
             data: "Page URL and desired icon size."
             destination: GOOGLE_OWNED_SERVICE
+            static_content: true
           }
           policy {
             cookies_allowed: NO
