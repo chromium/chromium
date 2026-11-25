@@ -1077,6 +1077,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Focus.NonGroupPromotedInSession" enum="Boolean"
+    expires_after="2027-05-09">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    [Desktop] Recorded on regular profiles when a user-initiated Focus Mode
+    session initially entered on ungrouped tab(s) exits Focus Mode (including
+    when the window closes) or switches directly to a persistent tab group
+    before promotion. Records true if the ephemeral selection was promoted into
+    a persistent tab group during the session, and false otherwise. Not recorded
+    for programmatic/restore entries.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.Focus.NonGroupTabsCount" units="tabs"
     expires_after="2027-02-04">
   <owner>kunaldaftari@google.com</owner>

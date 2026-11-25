@@ -9943,3 +9943,158 @@ TEST_F(TabStripModelTest, CommandCopyLinks) {
 
   tabstrip()->CloseAllTabs();
 }
+
+class TabStripModelFocusCujTest : public TabStripModelTest {
+ public:
+  void SetUp() override {
+    TabStripModelTest::SetUp();
+    focus_features_.InitWithFeatures(
+        {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+  }
+
+ protected:
+  using EntryPoint = TabGroupFocusEntryPoint;
+  using ExitReason = TabGroupFocusExitReason;
+
+  static constexpr char kPromotedHistogram[] =
+      "TabGroups.Focus.NonGroupPromotedInSession";
+
+  std::unique_ptr<TabStripModel> CreatePopulatedModel(int tab_count) {
+    auto model = std::make_unique<TabStripModel>(delegate(), profile());
+    PrepareTabs(model.get(), tab_count);
+    return model;
+  }
+
+  void ToggleFocusFromContextMenu(TabStripModel* model, int tab_index) {
+    model->ExecuteContextMenuCommand(tab_index,
+                                     TabStripModel::CommandToggleFocusGroup);
+  }
+
+ private:
+  base::test::ScopedFeatureList focus_features_;
+};
+
+TEST_F(TabStripModelFocusCujTest, ProgrammaticAndOtrEntriesDoNotRecord) {
+  base::HistogramTester histograms;
+  PrepareTabs(tabstrip(), 3);
+  const tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0});
+
+  // Programmatic persistent-group and ephemeral entries do not record.
+  tabstrip()->EnterFocusMode(group_a);
+  tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
+  const tab_groups::TabGroupId ephemeral = tabstrip()->EnterFocusMode({1});
+  tabstrip()->PromoteEphemeralTabGroup(ephemeral);
+  tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
+
+  // Off-the-record profiles do not record NonGroupPromotedInSession.
+  Profile* const otr_profile = profile()->GetPrimaryOTRProfile(true);
+  TabStripModel otr_model(delegate(), otr_profile);
+  otr_model.AppendWebContents(
+      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr),
+      true);
+  otr_model.EnterFocusMode({0}, EntryPoint::kTabContextMenuSingleTab);
+  otr_model.ExitFocusMode(ExitReason::kHeaderUnfocusButton);
+  otr_model.CloseAllTabs();
+
+  histograms.ExpectTotalCount(kPromotedHistogram, 0);
+}
+
+TEST_F(TabStripModelFocusCujTest, UnpromotedNonGroupFocusRecordsFalseOnExit) {
+  PrepareTabs(tabstrip(), 3);
+
+  // Single-tab unpromoted Non-Group session records false on exit.
+  {
+    base::HistogramTester histograms;
+    tabstrip()->ActivateTabAt(0);
+    ToggleFocusFromContextMenu(tabstrip(), 0);
+    tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
+    histograms.ExpectUniqueSample(kPromotedHistogram, false, 1);
+  }
+
+  // Multi-tab unpromoted Non-Group session records false on exit.
+  {
+    base::HistogramTester histograms;
+    tabstrip()->ActivateTabAt(0);
+    tabstrip()->ExtendSelectionTo(1);
+    ToggleFocusFromContextMenu(tabstrip(), 0);
+    tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
+    histograms.ExpectUniqueSample(kPromotedHistogram, false, 1);
+  }
+}
+
+TEST_F(TabStripModelFocusCujTest,
+       PromotedNonGroupFocusStaysContinuousAcrossRotation) {
+  base::HistogramTester histograms;
+  PrepareTabs(tabstrip(), 3);
+  const tab_groups::TabGroupId existing_group = tabstrip()->AddToNewGroup({0});
+
+  tabstrip()->ActivateTabAt(1);
+  ToggleFocusFromContextMenu(tabstrip(), 1);
+  ASSERT_TRUE(tabstrip()->GetFocusedGroup().has_value());
+  tabstrip()->PromoteEphemeralTabGroup(*tabstrip()->GetFocusedGroup());
+
+  // Promoting and rotating to another group keep the session active.
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  EXPECT_EQ(tabstrip()->GetFocusedGroup(), existing_group);
+  histograms.ExpectTotalCount(kPromotedHistogram, 0);
+
+  tabstrip()->ExitFocusMode(ExitReason::kEditorBubble);
+  histograms.ExpectUniqueSample(kPromotedHistogram, true, 1);
+}
+
+TEST_F(TabStripModelFocusCujTest,
+       UnpromotedNonGroupDirectSwitchToPersistentGroupRecordsFalse) {
+  base::HistogramTester histograms;
+  PrepareTabs(tabstrip(), 3);
+  const tab_groups::TabGroupId persistent_group =
+      tabstrip()->AddToNewGroup({0});
+
+  tabstrip()->ActivateTabAt(1);
+  ToggleFocusFromContextMenu(tabstrip(), 1);
+  tabstrip()->EnterFocusMode(persistent_group, EntryPoint::kTabContextMenu);
+  histograms.ExpectUniqueSample(kPromotedHistogram, false, 1);
+
+  tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
+  histograms.ExpectUniqueSample(kPromotedHistogram, false, 1);
+}
+
+TEST_F(TabStripModelFocusCujTest, SoleGroupCloseWithFallbackTabRecordsSession) {
+  base::HistogramTester histograms;
+  FallbackTabTestDelegate fallback_delegate;
+  TabStripModel fallback_model(&fallback_delegate, profile());
+  fallback_delegate.set_tabstrip(&fallback_model, profile());
+  fallback_delegate.set_insert_tab_on_add(true);
+
+  PrepareTabs(&fallback_model, 1);
+  fallback_model.EnterFocusMode({0}, EntryPoint::kTabContextMenuSingleTab);
+  const tab_groups::TabGroupId group_id = *fallback_model.GetFocusedGroup();
+  fallback_model.PromoteEphemeralTabGroup(group_id);
+  fallback_model.CloseAllTabsInGroup(group_id);
+
+  EXPECT_EQ(fallback_model.count(), 1);
+  histograms.ExpectUniqueSample(kPromotedHistogram, true, 1);
+  fallback_model.CloseAllTabs();
+}
+
+TEST_F(TabStripModelFocusCujTest, WindowEmptyingCloseRecordsSession) {
+  base::HistogramTester histograms;
+
+  // CloseAllTabs() iterates in reverse, so focusing tab 1 exercises exiting
+  // while `closing_all_` is true and tab 0 is still in the strip.
+  auto close_all_model = CreatePopulatedModel(2);
+  close_all_model->EnterFocusMode({1}, EntryPoint::kTabContextMenuSingleTab);
+  close_all_model->CloseAllTabs();
+  EXPECT_TRUE(close_all_model->empty());
+
+  // Closing the sole remaining tab in the window exercises exiting when
+  // `empty()` is true.
+  auto sole_tab_model = CreatePopulatedModel(1);
+  sole_tab_model->EnterFocusMode({0}, EntryPoint::kTabContextMenuSingleTab);
+  sole_tab_model->PromoteEphemeralTabGroup(*sole_tab_model->GetFocusedGroup());
+  sole_tab_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
+  EXPECT_TRUE(sole_tab_model->empty());
+
+  histograms.ExpectBucketCount(kPromotedHistogram, false, 1);
+  histograms.ExpectBucketCount(kPromotedHistogram, true, 1);
+  histograms.ExpectTotalCount(kPromotedHistogram, 2);
+}

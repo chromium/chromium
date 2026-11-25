@@ -209,20 +209,26 @@ void RecordToggleFocusGroupMetrics(bool is_unfocus,
     return;
   }
 
-  TabGroupFocusEntryPoint entry_point =
-      TabGroupFocusEntryPoint::kTabContextMenu;
-  if (is_non_group) {
-    entry_point = non_group_tabs_count == 1
-                      ? TabGroupFocusEntryPoint::kTabContextMenuSingleTab
-                      : TabGroupFocusEntryPoint::kTabContextMenuMultiTab;
-  }
-  base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint", entry_point);
   base::RecordAction(UserMetricsAction(is_non_group
                                            ? "TabContextMenu_FocusNonGroupTabs"
                                            : "TabContextMenu_FocusTabGroup"));
   if (is_non_group) {
     base::UmaHistogramCounts1000("TabGroups.Focus.NonGroupTabsCount",
                                  non_group_tabs_count);
+  }
+}
+
+bool IsGroupFocusEntryPoint(TabGroupFocusEntryPoint entry_point) {
+  switch (entry_point) {
+    case TabGroupFocusEntryPoint::kEditorBubble:
+    case TabGroupFocusEntryPoint::kTabContextMenu:
+    case TabGroupFocusEntryPoint::kBookmarksBarContextMenu:
+    case TabGroupFocusEntryPoint::kAppMenu:
+    case TabGroupFocusEntryPoint::kOrganizerPanel:
+      return true;
+    case TabGroupFocusEntryPoint::kTabContextMenuSingleTab:
+    case TabGroupFocusEntryPoint::kTabContextMenuMultiTab:
+      return false;
   }
 }
 
@@ -2485,6 +2491,7 @@ void TabStripModel::PromoteEphemeralTabGroup(
   }
 
   tab_group->SetIsEphemeral(false);
+  OnFocusCujGroupPromoted(group_id);
 
   // Ephemeral groups skip OnTabGroupAdded() at creation, so observers that
   // save or persist groups have never seen this one. Send it now, otherwise
@@ -2506,12 +2513,16 @@ std::optional<tab_groups::TabGroupId> TabStripModel::GetFocusedGroup() const {
   return selection_model_.focused_group();
 }
 
-void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
+void TabStripModel::EnterFocusMode(
+    const tab_groups::TabGroupId& group,
+    std::optional<TabGroupFocusEntryPoint> entry_point) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  EnterFocusModeImpl(group);
+  EnterFocusModeImpl(group, entry_point);
 }
 
-void TabStripModel::EnterFocusModeImpl(const tab_groups::TabGroupId& group) {
+void TabStripModel::EnterFocusModeImpl(
+    const tab_groups::TabGroupId& group,
+    std::optional<TabGroupFocusEntryPoint> entry_point) {
   CHECK(base::FeatureList::IsEnabled(features::kTabGroupsFocusing));
 
   CHECK(group_model_);
@@ -2524,15 +2535,19 @@ void TabStripModel::EnterFocusModeImpl(const tab_groups::TabGroupId& group) {
     return;
   }
 
+  TabGroup* const tab_group = group_model_->GetTabGroup(group);
+  CHECK(tab_group->tab_count() > 0);
+  if (entry_point.has_value()) {
+    CHECK_EQ(IsGroupFocusEntryPoint(*entry_point), !tab_group->is_ephemeral());
+    base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint", *entry_point);
+  }
+
   std::optional<tab_groups::TabGroupId> old_focused_group =
       selection_model_.focused_group();
 
   {
     tabs::TabStripModelSelectionState new_selection_model = selection_model_;
     new_selection_model.set_focused_group(group);
-
-    TabGroup* const tab_group = group_model_->GetTabGroup(group);
-    CHECK(tab_group->tab_count() > 0);
 
     // Copy the previous selection model, but remove tabs not part of the
     // tab_group in the list of selected tabs.
@@ -2587,22 +2602,25 @@ void TabStripModel::EnterFocusModeImpl(const tab_groups::TabGroupId& group) {
     }
 
     MaybeRemoveEphemeralGroup(old_focused_group);
+    StartOrContinueFocusCujSession(entry_point);
   }
 }
 
 tab_groups::TabGroupId TabStripModel::EnterFocusMode(
-    const std::vector<int>& indices) {
+    const std::vector<int>& indices,
+    std::optional<TabGroupFocusEntryPoint> entry_point) {
   CHECK(base::FeatureList::IsEnabled(features::kTabGroupsFocusing));
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   const tab_groups::TabGroupId group =
       AddToNewGroupAndNotifyImpl(indices, /*is_ephemeral=*/true);
-  EnterFocusModeImpl(group);
+  EnterFocusModeImpl(group, entry_point);
   return group;
 }
 
 tab_groups::TabGroupId TabStripModel::EnterFocusMode(
-    const std::vector<tabs::TabHandle>& tabs) {
-  return EnterFocusMode(GetSortedIndicesForTabs(tabs));
+    const std::vector<tabs::TabHandle>& tabs,
+    std::optional<TabGroupFocusEntryPoint> entry_point) {
+  return EnterFocusMode(GetSortedIndicesForTabs(tabs), entry_point);
 }
 
 void TabStripModel::ExitFocusMode(
@@ -2663,6 +2681,7 @@ void TabStripModel::ExitFocusModeImpl(
   }
 
   MaybeRemoveEphemeralGroup(old_focused_group);
+  FinishFocusCujSession();
 }
 
 base::ScopedClosureRunner TabStripModel::TakeEphemeralGroupRemovalLock(
@@ -2836,6 +2855,63 @@ void TabStripModel::LogTabGroupFocusMetrics(
     had_pinned_tabs_in_focus_session_ = (pinned_tabs_count > 0);
     base::UmaHistogramCounts100("TabGroups.Focus.PinnedTabCountOnEntry",
                                 pinned_tabs_count);
+  }
+}
+
+void TabStripModel::StartOrContinueFocusCujSession(
+    std::optional<TabGroupFocusEntryPoint> entry_point) {
+  if (!profile_ || !profile_->IsRegularProfile() || closing_all_ || empty()) {
+    AbortFocusCujSession();
+    return;
+  }
+
+  if (focus_cuj_session_.has_value()) {
+    if (!focus_cuj_session_->is_persistent_group_session()) {
+      // Switching directly from an unpromoted ephemeral selection into a
+      // persistent group destroys the ephemeral selection; finalize the
+      // Non-Group session before starting a new session for `entry_point`.
+      FinishFocusCujSession();
+    } else if (entry_point.has_value() &&
+               !IsGroupFocusEntryPoint(*entry_point)) {
+      // Never absorb an ephemeral entry into an active persistent-group
+      // session; finalize the persistent session first.
+      FinishFocusCujSession();
+    } else {
+      return;
+    }
+  }
+
+  if (!entry_point.has_value()) {
+    return;
+  }
+
+  focus_cuj_session_ = FocusCujSession{
+      .is_group_session = IsGroupFocusEntryPoint(*entry_point),
+  };
+}
+
+void TabStripModel::FinishFocusCujSession() {
+  if (!focus_cuj_session_.has_value()) {
+    return;
+  }
+
+  const FocusCujSession session =
+      *std::exchange(focus_cuj_session_, std::nullopt);
+  if (!session.is_group_session) {
+    base::UmaHistogramBoolean("TabGroups.Focus.NonGroupPromotedInSession",
+                              session.promoted);
+  }
+}
+
+void TabStripModel::AbortFocusCujSession() {
+  focus_cuj_session_.reset();
+}
+
+void TabStripModel::OnFocusCujGroupPromoted(
+    const tab_groups::TabGroupId& group_id) {
+  if (focus_cuj_session_.has_value() && !focus_cuj_session_->is_group_session &&
+      GetFocusedGroup() == group_id) {
+    focus_cuj_session_->promoted = true;
   }
 }
 
@@ -3604,7 +3680,10 @@ void TabStripModel::ExecuteContextMenuCommand(tabs::TabHandle context_tab,
         std::vector<tabs::TabHandle> tabs = GetTabsForCommand(context_tab);
         RecordToggleFocusGroupMetrics(/*is_unfocus=*/false,
                                       /*is_non_group=*/true, tabs.size());
-        EnterFocusMode(tabs);
+        EnterFocusMode(tabs,
+                       tabs.size() == 1
+                           ? TabGroupFocusEntryPoint::kTabContextMenuSingleTab
+                           : TabGroupFocusEntryPoint::kTabContextMenuMultiTab);
         break;
       }
       if (GetFocusedGroup() == group_id) {
@@ -3614,7 +3693,8 @@ void TabStripModel::ExecuteContextMenuCommand(tabs::TabHandle context_tab,
       } else {
         RecordToggleFocusGroupMetrics(/*is_unfocus=*/false,
                                       /*is_non_group=*/false);
-        EnterFocusMode(group_id.value());
+        EnterFocusMode(group_id.value(),
+                       TabGroupFocusEntryPoint::kTabContextMenu);
       }
       break;
     }

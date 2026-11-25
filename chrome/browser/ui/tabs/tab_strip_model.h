@@ -760,16 +760,22 @@ class TabStripModel {
   // returns nullopt.
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const;
 
-  // Enters focus mode for `group`.
-  void EnterFocusMode(const tab_groups::TabGroupId& group);
+  // Enters focus mode for `group`, recording `entry_point` (if provided) in
+  // TabGroups.Focus.EntryPoint.
+  void EnterFocusMode(
+      const tab_groups::TabGroupId& group,
+      std::optional<TabGroupFocusEntryPoint> entry_point = std::nullopt);
 
   // Non-group focus: creates an ephemeral group from the tabs at `indices` or
   // `tabs` and enters focus mode for it. Ephemeral groups only exist to back
   // focus mode and cannot be created any other way. `indices` must be sorted
   // in ascending order. Returns the new group.
-  tab_groups::TabGroupId EnterFocusMode(const std::vector<int>& indices);
   tab_groups::TabGroupId EnterFocusMode(
-      const std::vector<tabs::TabHandle>& tabs);
+      const std::vector<int>& indices,
+      std::optional<TabGroupFocusEntryPoint> entry_point = std::nullopt);
+  tab_groups::TabGroupId EnterFocusMode(
+      const std::vector<tabs::TabHandle>& tabs,
+      std::optional<TabGroupFocusEntryPoint> entry_point = std::nullopt);
 
   // Exits focus mode, recording `reason` (if provided) in
   // TabGroups.Focus.ExitReason. If an ephemeral (non-group focus) group was
@@ -1039,6 +1045,14 @@ class TabStripModel {
   void LogTabGroupFocusMetrics(
       const std::optional<tab_groups::TabGroupId>& old_focused_group,
       const std::optional<tab_groups::TabGroupId>& new_focused_group);
+
+  // Tracks continuous user-initiated Focus Mode sessions across group switches
+  // and ephemeral promotions.
+  void StartOrContinueFocusCujSession(
+      std::optional<TabGroupFocusEntryPoint> entry_point);
+  void FinishFocusCujSession();
+  void AbortFocusCujSession();
+  void OnFocusCujGroupPromoted(const tab_groups::TabGroupId& group_id);
 
   // Notify observers that a `group` was created.
   void NotifyTabGroupVisualsChanged(const tab_groups::TabGroupId& group_id,
@@ -1328,7 +1342,9 @@ class TabStripModel {
 
   // Enters / exits focus mode. Used by `EnterFocusMode()` / `ExitFocusMode()`
   // and by other mutations that change focus as a side effect.
-  void EnterFocusModeImpl(const tab_groups::TabGroupId& group);
+  void EnterFocusModeImpl(
+      const tab_groups::TabGroupId& group,
+      std::optional<TabGroupFocusEntryPoint> entry_point = std::nullopt);
   void ExitFocusModeImpl(std::optional<TabGroupFocusExitReason> reason);
 
   // Runs when the runner returned by `TakeEphemeralGroupRemovalLock()` runs or
@@ -1627,6 +1643,19 @@ class TabStripModel {
   // The ephemeral group kept in the model by an outstanding removal lock (see
   // `TakeEphemeralGroupRemovalLock()`).
   std::optional<tab_groups::TabGroupId> locked_ephemeral_group_;
+
+  // Tracks a continuous user-initiated Focus Mode session on a regular profile
+  // across group switches and ephemeral promotions (unlike
+  // `focus_mode_session_start_time_`, which resets per focus slice).
+  struct FocusCujSession {
+    bool is_group_session = false;
+    bool promoted = false;
+
+    bool is_persistent_group_session() const {
+      return is_group_session || promoted;
+    }
+  };
+  std::optional<FocusCujSession> focus_cuj_session_;
 
   base::WeakPtrFactory<TabStripModel> weak_factory_{this};
 };
