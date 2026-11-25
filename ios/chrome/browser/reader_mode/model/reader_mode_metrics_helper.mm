@@ -9,6 +9,7 @@
 #import "base/timer/elapsed_timer.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/web_state.h"
@@ -150,7 +151,7 @@ void ReaderModeMetricsHelper::RecordReaderHeuristicTriggered() {
 }
 
 void ReaderModeMetricsHelper::RecordReaderHeuristicCompleted(
-    ReaderModeHeuristicResult result) {
+    web_distiller::ReaderModeEligibility result) {
   base::UmaHistogramEnumeration(kReaderModeHeuristicResultHistogram, result);
 
   last_reader_mode_state_ = ReaderModeState::kHeuristicCompleted;

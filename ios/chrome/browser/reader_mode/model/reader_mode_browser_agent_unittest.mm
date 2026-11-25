@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
@@ -85,9 +86,9 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
     std::unique_ptr<web::FakeWebState> web_state = CreateWebState();
     GURL test_url = GURL(kTestURL);
     web_state->SetCurrentURL(test_url);
-    SetReaderModeState(web_state.get(), test_url,
-                       ReaderModeHeuristicResult::kReaderModeEligible,
-                       "content");
+    SetReaderModeState(
+        web_state.get(), test_url,
+        web_distiller::ReaderModeEligibility::kReaderModeEligible, "content");
 
     GetWebStateList()->InsertWebState(std::move(web_state));
   }

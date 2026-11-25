@@ -10,6 +10,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/web_distiller/model/distiller_service_factory.h"
@@ -304,7 +305,7 @@ TEST_F(ReaderModeMetricsHelperTest, FlushMultipleReaderModeStates) {
   Flush();
 
   metrics_helper()->RecordReaderHeuristicCompleted(
-      ReaderModeHeuristicResult::kReaderModeEligible);
+      web_distiller::ReaderModeEligibility::kReaderModeEligible);
   Flush();
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
@@ -312,7 +313,8 @@ TEST_F(ReaderModeMetricsHelperTest, FlushMultipleReaderModeStates) {
                          Bucket(ReaderModeState::kHeuristicCompleted, 1)));
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
-      BucketsAre(Bucket(ReaderModeHeuristicResult::kReaderModeEligible, 1)));
+      BucketsAre(Bucket(
+          web_distiller::ReaderModeEligibility::kReaderModeEligible, 1)));
   // The second flushed recording did not trigger any latency collection.
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicLatencyHistogram, 0);
 }
@@ -512,9 +514,10 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests metrics functionality based on the heuristic result.
 class ReaderModeMetricsHelperWithEligibilityTest
     : public ReaderModeMetricsHelperTest,
-      public ::testing::WithParamInterface<ReaderModeHeuristicResult> {
+      public ::testing::WithParamInterface<
+          web_distiller::ReaderModeEligibility> {
  public:
-  ReaderModeHeuristicResult GetEligibility() { return GetParam(); }
+  web_distiller::ReaderModeEligibility GetEligibility() { return GetParam(); }
 };
 
 // Tests that recording a heuristic trigger and its completion catpures elapsed
@@ -523,7 +526,7 @@ TEST_P(ReaderModeMetricsHelperWithEligibilityTest, RecordHeuristicElapsedTime) {
   metrics_helper()->RecordReaderHeuristicTriggered();
   task_environment_.AdvanceClock(base::Seconds(1));
 
-  ReaderModeHeuristicResult heuristic_result = GetEligibility();
+  web_distiller::ReaderModeEligibility heuristic_result = GetEligibility();
   metrics_helper()->RecordReaderHeuristicCompleted(heuristic_result);
   Flush();
 
@@ -553,8 +556,8 @@ TEST_P(ReaderModeMetricsHelperWithEligibilityTest, RecordHeuristicElapsedTime) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     ReaderModeMetricsHelperWithEligibilityTest,
-    ::testing::Values(
-        ReaderModeHeuristicResult::kMalformedResponse,
-        ReaderModeHeuristicResult::kReaderModeEligible,
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength),
+    ::testing::Values(web_distiller::ReaderModeEligibility::kMalformedResponse,
+                      web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                      web_distiller::ReaderModeEligibility::
+                          kReaderModeNotEligibleContentAndLength),
     ReaderModeTest::TestParametersReaderModeHeuristicResultToString);

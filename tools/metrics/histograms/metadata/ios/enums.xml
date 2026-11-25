@@ -2968,7 +2968,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Not eligible (optimization guide unknown)"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeHeuristicResult) -->
+<!-- LINT.ThenChange(/components/web_distiller/core/eligibility/reader_mode_eligibility.h:ReaderModeEligibility) -->
 
 <!-- LINT.IfChange(ReaderModeState) -->
 

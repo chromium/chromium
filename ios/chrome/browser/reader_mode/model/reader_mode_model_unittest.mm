@@ -8,6 +8,7 @@
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/prefs/pref_service.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
@@ -83,7 +84,8 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForHTMLContent) {
 
   GURL test_url("https://test.org/doc.html");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
   LoadWebpage(web_state(), test_url);
   WaitForPageLoadDelayAndRunUntilIdle();
 
@@ -116,7 +118,8 @@ TEST_F(ReaderModeModelTest, FetchConfigurationDisabledByPref) {
 
   GURL test_url("https://test.org/doc.html");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
   LoadWebpage(web_state(), test_url);
   task_environment()->FastForwardBy(kReaderModeHeuristicPageLoadDelay);
 
@@ -153,7 +156,8 @@ TEST_F(ReaderModeModelTest, FetchConfigurationPreventedByGemini) {
 
   GURL test_url("https://test.org/doc.html");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
   LoadWebpage(web_state(), test_url);
   task_environment()->FastForwardBy(base::Seconds(1));
 

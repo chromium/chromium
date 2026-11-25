@@ -53,11 +53,11 @@ source_set("model") {
     ":reader_mode_scroll_anchor_js",
     "//base",
     "//components/feature_engagement/public",
-    "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/language/core/browser",
     "//components/language/ios/browser",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
     "//components/strings",
     "//components/ukm/ios:ukm_url_recorder",
@@ -104,7 +104,10 @@ source_set("model") {
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/re2",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/web_distiller/core/eligibility",
+  ]
 }
 
 optimize_ts("reader_mode_scroll_anchor_js") {
@@ -184,6 +187,7 @@ source_set("unit_tests") {
     "reader_mode_dependency_bridge_unittest.mm",
     "reader_mode_distiller_page_unittest.mm",
     "reader_mode_distiller_viewer_unittest.mm",
+    "reader_mode_eligibility_decider_unittest.mm",
     "reader_mode_font_size_utils_unittest.mm",
     "reader_mode_java_script_feature_unittest.mm",
     "reader_mode_metrics_helper_unittest.mm",
@@ -207,6 +211,7 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//components/ukm/ios:ukm_url_recorder",
     "//components/web_distiller/core",
+    "//components/web_distiller/core/eligibility",
     "//components/web_distiller/core/mojom",
     "//ios/chrome/browser/browser_content/model",
     "//ios/chrome/browser/contextual_panel/model:public",
@@ -239,6 +244,7 @@ source_set("unit_tests") {
     "//ios/chrome/test/fakes",
     "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:content_world_header",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

@@ -9,6 +9,7 @@
 #import "base/observer_list.h"
 #import "base/scoped_observation.h"
 #import "base/timer/timer.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_viewer.h"
@@ -100,7 +101,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   id<ReaderModeCommands> GetReaderModeHandler() const;
 
   // Processes the result of the Reader Mode heuristic trigger.
-  void HandleReaderModeHeuristicResult(ReaderModeHeuristicResult result);
+  void HandleReaderModeHeuristicResult(
+      web_distiller::ReaderModeEligibility result);
 
   // web::WebStateObserver overrides:
   void PageLoaded(

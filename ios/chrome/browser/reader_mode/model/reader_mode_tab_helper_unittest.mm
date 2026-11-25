@@ -17,6 +17,7 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/browser_content/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/fake_infobar_overlay_request_factory.h"
@@ -157,7 +158,8 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
 
   GURL test_url("https://test.url/");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
   LoadWebpage(web_state(), test_url);
   task_environment()->RunUntilIdle();
 
@@ -175,13 +177,14 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
                          Bucket(ReaderModeState::kHeuristicCompleted, 1)));
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
-      BucketsAre(Bucket(ReaderModeHeuristicResult::kReaderModeEligible, 1)));
+      BucketsAre(Bucket(
+          web_distiller::ReaderModeEligibility::kReaderModeEligible, 1)));
   std::vector<int64_t> ukm_entries = test_ukm_recorder_.GetMetricsEntryValues(
       IOS_ReaderMode_Heuristic_Result::kEntryName,
       IOS_ReaderMode_Heuristic_Result::kResultName);
   EXPECT_THAT(ukm_entries,
               testing::UnorderedElementsAre(static_cast<int>(
-                  ReaderModeHeuristicResult::kReaderModeEligible)));
+                  web_distiller::ReaderModeEligibility::kReaderModeEligible)));
 }
 
 // Tests that multiple navigations after the trigger heuristic delay records
@@ -192,12 +195,14 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicFlushedOnNewNavigation) {
 
   GURL test_url("https://test.url/");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
   LoadWebpage(web_state(), test_url);
   WaitForPageLoadDelayAndRunUntilIdle();
 
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
   LoadWebpage(web_state(), test_url);
   WaitForPageLoadDelayAndRunUntilIdle();
 
@@ -207,14 +212,16 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicFlushedOnNewNavigation) {
               BucketsAre(Bucket(ReaderModeState::kHeuristicCompleted, 2)));
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
-      BucketsAre(Bucket(ReaderModeHeuristicResult::kReaderModeEligible, 2)));
+      BucketsAre(Bucket(
+          web_distiller::ReaderModeEligibility::kReaderModeEligible, 2)));
 }
 
 // Tests that trigger heuristic is canceled after a web state is destroyed.
 TEST_F(ReaderModeTabHelperTest, WebStateDestructionCancelsHeuristic) {
   GURL test_url("https://test.url/");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
   LoadWebpage(web_state(), test_url);
   task_environment()->RunUntilIdle();
 
@@ -237,7 +244,8 @@ TEST_F(ReaderModeTabHelperTest, WebStateDestructionCancelsHeuristic) {
 TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnGoogleSearch) {
   GURL google_search_url("https://www.google.com/search?q=test");
   SetReaderModeState(web_state(), google_search_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
 
   LoadWebpage(web_state(), google_search_url);
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -249,7 +257,8 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnGoogleSearch) {
 TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnGoogleHomePage) {
   GURL google_home_page_url("https://www.google.com");
   SetReaderModeState(web_state(), google_home_page_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
 
   LoadWebpage(web_state(), google_home_page_url);
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -261,7 +270,8 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnGoogleHomePage) {
 TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnYoutube) {
   GURL youtube_url("https://www.youtube.com/watch?v=test");
   SetReaderModeState(web_state(), youtube_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
 
   LoadWebpage(web_state(), youtube_url);
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -273,7 +283,8 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnYoutube) {
 TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnGoogleWorkspace) {
   GURL docs_url("https://docs.google.com/document/d/test");
   SetReaderModeState(web_state(), docs_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
 
   LoadWebpage(web_state(), docs_url);
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -285,7 +296,8 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnGoogleWorkspace) {
 TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnChromeURL) {
   GURL chrome_url("chrome://version");
   SetReaderModeState(web_state(), chrome_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
 
   LoadWebpage(web_state(), chrome_url);
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -297,7 +309,8 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnChromeURL) {
 TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnNtp) {
   GURL ntp_url("chrome://newtab");
   SetReaderModeState(web_state(), ntp_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
 
   LoadWebpage(web_state(), ntp_url);
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -309,7 +322,8 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnNtp) {
 TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnNonHTML) {
   GURL test_url("https://test.url/");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
   LoadWebpage(web_state(), test_url);
   web_state()->SetContentIsHTML(false);
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -321,7 +335,8 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnNonHTML) {
 TEST_F(ReaderModeTabHelperTest, ReaderModeEligibleForSamePageNavigation) {
   GURL test_url("https://test.url/ref");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
 
   LoadWebpage(web_state(), test_url);
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -360,7 +375,8 @@ TEST_F(ReaderModeTabHelperTest,
        ReaderModeEligibleForFragmentChangeNavigations) {
   GURL test_url("https://test.url/ref-with-page-one");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
 
   LoadWebpage(web_state(), test_url);
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -397,7 +413,8 @@ TEST_F(ReaderModeTabHelperTest,
 TEST_F(ReaderModeTabHelperTest, FetchLastCommittedUrlDistillabilityResult) {
   GURL test_url("https://test.url/ref");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
 
   LoadWebpage(web_state(), test_url);
   __block std::optional<bool>
@@ -425,7 +442,8 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfAvailability) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
 
   // Initially, no observer methods should be called.
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -479,7 +497,8 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfDistillationFailure) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
 
   // Initially, no observer methods should be called.
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -510,7 +529,8 @@ TEST_F(ReaderModeTabHelperTest, DistillationFailureOnIneligiblePage) {
   GURL test_url("https://www.google.com");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "");
 
   // Initially, no observer methods should be called.
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -538,7 +558,8 @@ TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
   WaitForPageLoadDelayAndRunUntilIdle();
 
   MockReaderModeTabHelperObserver mock_observer;
@@ -575,7 +596,8 @@ TEST_F(ReaderModeTabHelperTest, TestTabHelpers) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
 
   // Initially, no observer methods should be called.
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -598,7 +620,8 @@ TEST_F(ReaderModeTabHelperTest, TestEligibleContentIsDisplayed) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
 
   // Initially, no observer methods should be called.
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -622,7 +645,8 @@ TEST_F(ReaderModeTabHelperTest, TestMultipleActivationsOnURL) {
   GURL test_url("https://test.url");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
 
   // Initially, no observer methods should be called.
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -654,7 +678,8 @@ TEST_F(ReaderModeTabHelperTest, TestMultipleActivationsOnFragmentURL) {
   GURL test_url("https://test.url/page#fragment");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
 
   // Initially, no observer methods should be called.
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -693,7 +718,8 @@ TEST_F(ReaderModeTabHelperTest, TestDistillationTimeout) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
 
   // Move past the custom heuristic page load time.
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -719,7 +745,8 @@ TEST_F(ReaderModeTabHelperTest, TestDistillationCompletedAfterTimeout) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
 
   // Move past the custom heuristic page load time.
   WaitForPageLoadDelayAndRunUntilIdle();
@@ -750,7 +777,8 @@ TEST_F(ReaderModeTabHelperTest, TestDistillationCompletedAfterTimeout) {
 TEST_F(ReaderModeTabHelperTest, EligibilityForEligiblePage) {
   GURL test_url("https://test.url/");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "",
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "",
                      /*mock_opt_guide=*/false);
 
   // Prepare optimization guide metadata.
@@ -769,7 +797,8 @@ TEST_F(ReaderModeTabHelperTest, EligibilityForEligiblePage) {
   ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageIsDistillable());
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
-      BucketsAre(Bucket(ReaderModeHeuristicResult::kReaderModeEligible, 1)));
+      BucketsAre(Bucket(
+          web_distiller::ReaderModeEligibility::kReaderModeEligible, 1)));
 }
 
 // Tests that reader mode is not eligible when the heuristic is not eligible
@@ -777,9 +806,10 @@ TEST_F(ReaderModeTabHelperTest, EligibilityForEligiblePage) {
 TEST_F(ReaderModeTabHelperTest,
        EligibilityForNotEligiblePage) {
   GURL test_url("https://test.url/");
-  SetReaderModeState(
-      web_state(), test_url,
-      ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength, "");
+  SetReaderModeState(web_state(), test_url,
+                     web_distiller::ReaderModeEligibility::
+                         kReaderModeNotEligibleContentAndLength,
+                     "");
 
   // Prepare optimization guide metadata.
   OptimizationGuideService* optimization_guide_service =
@@ -797,9 +827,9 @@ TEST_F(ReaderModeTabHelperTest,
   ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsDistillable());
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
-      BucketsAre(Bucket(
-          ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength,
-          1)));
+      BucketsAre(Bucket(web_distiller::ReaderModeEligibility::
+                            kReaderModeNotEligibleContentAndLength,
+                        1)));
 }
 
 // Tests that reader mode is not eligible when the OptimizationGuideService hint
@@ -808,7 +838,8 @@ TEST_F(ReaderModeTabHelperTest,
        NotEligibleWithOptimizationGuide) {
   GURL test_url("https://test.url/");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "",
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "",
                      /*mock_opt_guide=*/false);
 
   // No optimization guide metadata provided.
@@ -818,16 +849,17 @@ TEST_F(ReaderModeTabHelperTest,
   ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsDistillable());
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
-      BucketsAre(Bucket(ReaderModeHeuristicResult::
+      BucketsAre(Bucket(web_distiller::ReaderModeEligibility::
                             kReaderModeNotEligibleOptimizationGuideIneligible,
                         1)));
 }
 
 class ReaderModeTabHelperWithEligibilityTest
     : public ReaderModeTabHelperTest,
-      public ::testing::WithParamInterface<ReaderModeHeuristicResult> {
+      public ::testing::WithParamInterface<
+          web_distiller::ReaderModeEligibility> {
  protected:
-  ReaderModeHeuristicResult GetEligibility() { return GetParam(); }
+  web_distiller::ReaderModeEligibility GetEligibility() { return GetParam(); }
 };
 
 // Tests that metrics are recorded correctly when the trigger heuristic runs
@@ -836,15 +868,16 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerHeuristicOnPageLoad) {
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
   ASSERT_EQ(0u, GetHeuristicResultEntries().size());
 
-  ReaderModeHeuristicResult eligibility = GetEligibility();
+  web_distiller::ReaderModeEligibility eligibility = GetEligibility();
   GURL test_url("https://test.url/");
   SetReaderModeState(web_state(), test_url, eligibility, "");
 
   LoadWebpage(web_state(), test_url);
   WaitForPageLoadDelayAndRunUntilIdle();
 
-  ASSERT_EQ(eligibility == ReaderModeHeuristicResult::kReaderModeEligible,
-            reader_mode_tab_helper()->CurrentPageIsDistillable());
+  ASSERT_EQ(
+      eligibility == web_distiller::ReaderModeEligibility::kReaderModeEligible,
+      reader_mode_tab_helper()->CurrentPageIsDistillable());
 
   // The metrics for the navigation are recorded.
   FlushMetrics();
@@ -901,7 +934,8 @@ TEST_F(ReaderModeTabHelperTest, AddsInfobarWhenActivated) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
   WaitForPageLoadDelayAndRunUntilIdle();
 
   reader_mode_tab_helper()->ActivateReader(
@@ -927,7 +961,8 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeContentDidCancelRequestForwarding) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
   WaitForPageLoadDelayAndRunUntilIdle();
 
   // Activate Reader Mode.
@@ -975,7 +1010,8 @@ TEST_F(ReaderModeTabHelperTest, RevertsTranslationBeforeFindingScrollAnchor) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
   task_environment()->FastForwardBy(base::Seconds(1));
   ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageIsEligibleForReaderMode());
 
@@ -1032,7 +1068,8 @@ TEST_F(ReaderModeTabHelperTest, BlurOverlayShownAndNotHiddenBeforeTimeout) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
   task_environment()->FastForwardBy(base::Seconds(1));
   ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageIsEligibleForReaderMode());
 
@@ -1080,7 +1117,8 @@ TEST_F(ReaderModeTabHelperTest, UncommittedNavigationDoesNotDeactivateReader) {
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "Content");
   WaitForPageLoadDelayAndRunUntilIdle();
 
   EXPECT_CALL(mock_observer,
@@ -1137,8 +1175,8 @@ TEST_F(ReaderModeTabHelperTest, UncommittedNavigationDoesNotDeactivateReader) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     ReaderModeTabHelperWithEligibilityTest,
-    ::testing::Values(
-        ReaderModeHeuristicResult::kMalformedResponse,
-        ReaderModeHeuristicResult::kReaderModeEligible,
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength),
+    ::testing::Values(web_distiller::ReaderModeEligibility::kMalformedResponse,
+                      web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                      web_distiller::ReaderModeEligibility::
+                          kReaderModeNotEligibleContentAndLength),
     ReaderModeTest::TestParametersReaderModeHeuristicResultToString);

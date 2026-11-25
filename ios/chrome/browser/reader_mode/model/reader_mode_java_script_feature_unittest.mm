@@ -7,6 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -75,7 +76,8 @@ class ReaderModeJavaScriptFeatureTest : public PlatformTest {
 
   // Asserts that a unique heuristic result event was recorded with the result
   // value equal to `result`.
-  void AssertHeuristicResultUniqueUKM(ReaderModeHeuristicResult result) {
+  void AssertHeuristicResultUniqueUKM(
+      web_distiller::ReaderModeEligibility result) {
     const auto entries = test_ukm_recorder_.GetEntriesByName(
         IOS_ReaderMode_Heuristic_Result::kEntryName);
     ASSERT_EQ(1u, entries.size());
@@ -147,10 +149,11 @@ TEST_F(ReaderModeJavaScriptFeatureTest, MalformedResponseNotDict) {
   // Test heuristic result histogram.
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
-      base::BucketsAre(
-          base::Bucket(ReaderModeHeuristicResult::kMalformedResponse, 1)));
+      base::BucketsAre(base::Bucket(
+          web_distiller::ReaderModeEligibility::kMalformedResponse, 1)));
   // Test heuristic result UKM.
-  AssertHeuristicResultUniqueUKM(ReaderModeHeuristicResult::kMalformedResponse);
+  AssertHeuristicResultUniqueUKM(
+      web_distiller::ReaderModeEligibility::kMalformedResponse);
 }
 
 // Tests that a JavaScript response with missing features records malformed
@@ -167,10 +170,11 @@ TEST_F(ReaderModeJavaScriptFeatureTest, MalformedResponseMissingFeatures) {
   // Test heuristic result histogram.
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
-      base::BucketsAre(
-          base::Bucket(ReaderModeHeuristicResult::kMalformedResponse, 1)));
+      base::BucketsAre(base::Bucket(
+          web_distiller::ReaderModeEligibility::kMalformedResponse, 1)));
   // Test heuristic result UKM.
-  AssertHeuristicResultUniqueUKM(ReaderModeHeuristicResult::kMalformedResponse);
+  AssertHeuristicResultUniqueUKM(
+      web_distiller::ReaderModeEligibility::kMalformedResponse);
 }
 
 // Tests that a set of valid derived features records reader mode eligibility.
@@ -181,7 +185,7 @@ TEST_F(ReaderModeJavaScriptFeatureTest, ValidDerivedFeatures) {
   // Test heuristic result histogram.
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
-      base::BucketsAre(base::Bucket(
-          ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength,
-          1)));
+      base::BucketsAre(base::Bucket(web_distiller::ReaderModeEligibility::
+                                        kReaderModeNotEligibleContentAndLength,
+                                    1)));
 }

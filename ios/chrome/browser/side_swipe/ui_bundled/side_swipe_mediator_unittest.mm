@@ -11,6 +11,7 @@
 #import "base/test/bind.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -165,7 +166,8 @@ TEST_F(SideSwipeMediatorTest, TestEdgeNavigationEnabledForReaderMode) {
   // Set up Reading Mode for web page.
   GURL test_url("http://wwww.test.test");
   SetReaderModeState(fake_web_state.get(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "content");
+                     web_distiller::ReaderModeEligibility::kReaderModeEligible,
+                     "content");
   LoadWebpage(fake_web_state.get(), test_url);
   EnableReaderMode(fake_web_state.get(),
                    ReaderModeAccessPoint::kContextualChip);

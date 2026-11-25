@@ -4,94 +4,58 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_eligibility_decider.h"
 
-#import "base/containers/fixed_flat_set.h"
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/google/core/common/google_util.h"
-#import "components/web_distiller/core/extraction_utils.h"
+#import "components/optimization_guide/proto/hints.pb.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
-
-namespace {
-
-// Returns the heuristic result if it is available otherwise returns
-// `kMalformedResponse`.
-ReaderModeHeuristicResult GetReaderModeHeuristicResult(
-    const base::Value* result) {
-  if (!result) {
-    return ReaderModeHeuristicResult::kMalformedResponse;
-  }
-  std::optional<bool> result_conversion = result->GetIfBool();
-  if (result_conversion.has_value()) {
-    return result_conversion.value()
-               ? ReaderModeHeuristicResult::kReaderModeEligible
-               : ReaderModeHeuristicResult::
-                     kReaderModeNotEligibleContentAndLength;
-  }
-  return ReaderModeHeuristicResult::kMalformedResponse;
-}
-
-// These are known google websites that don't support reader mode.
-static constexpr auto kGoogleWorkspaceBlocklist =
-    base::MakeFixedFlatSet<std::string_view>(
-        {"assistant.google.com", "calendar.google.com", "docs.google.com",
-         "drive.google.com", "mail.google.com", "photos.google.com"});
-
-}  // namespace
 
 ReaderModeEligibilityDecider::ReaderModeEligibilityDecider(
     web::WebState* web_state,
     ReaderModeMetricsHelper* metrics_helper)
-    : web_state_(web_state), metrics_helper_(metrics_helper) {
+    : web_state_(web_state),
+      metrics_helper_(metrics_helper),
+      // Unretained is safe because `decider_` is owned by this object.
+      decider_(*this,
+               OptimizationGuideServiceFactory::GetForProfile(
+                   ProfileIOS::FromBrowserState(web_state->GetBrowserState())),
+               kReaderModeHeuristicPageLoadDelay,
+               base::BindRepeating(
+                   &ReaderModeEligibilityDecider::OnEligibilityResult,
+                   base::Unretained(this))) {
+  CHECK(web_state_);
   OptimizationGuideService* optimization_guide_service =
       OptimizationGuideServiceFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
+          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
   if (optimization_guide_service) {
     optimization_guide_service->RegisterOptimizationTypes(
         {optimization_guide::proto::READER_MODE_ELIGIBLE});
-    optimization_guide_decider_ = optimization_guide_service;
   }
 }
 
 ReaderModeEligibilityDecider::~ReaderModeEligibilityDecider() = default;
 
 void ReaderModeEligibilityDecider::HandleReaderModeHeuristicResult(
-    ReaderModeHeuristicResult result) {
-  if (result == ReaderModeHeuristicResult::kReaderModeEligible &&
-      optimization_guide_decider_ && eligibility_heuristic_url_.has_value()) {
-    // Do additional checks.
-    optimization_guide_decider_->CanApplyOptimization(
-        eligibility_heuristic_url_.value(),
-        optimization_guide::proto::READER_MODE_ELIGIBLE,
-        base::BindOnce(
-            &ReaderModeEligibilityDecider::OnOptimizationGuideDecision,
-            weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-  CompleteHeuristic(result);
+    web_distiller::ReaderModeEligibility result) {
+  metrics_helper_->RecordReaderHeuristicCompleted(result);
 }
 
 void ReaderModeEligibilityDecider::StartDecision(const GURL& url) {
   // Guarantee that there is only one trigger heuristic running at a time.
   ResetDecision(url);
-
-  trigger_reader_mode_timer_.Start(
-      FROM_HERE, kReaderModeHeuristicPageLoadDelay,
-      base::BindOnce(&ReaderModeEligibilityDecider::TriggerReaderModeHeuristic,
-                     weak_ptr_factory_.GetWeakPtr(), url));
+  decider_.Start(url);
 }
 
 void ReaderModeEligibilityDecider::ResetDecision(const GURL& url) {
-  // Ensure that only one asynchronous eligibility check is running at a time.
-  if (trigger_reader_mode_timer_.IsRunning()) {
-    trigger_reader_mode_timer_.Stop();
+  if (decider_.Cancel()) {
     metrics_helper_->RecordReaderHeuristicCanceled();
   } else {
     // If there is no trigger in progress ensure any metrics related to a
@@ -99,7 +63,6 @@ void ReaderModeEligibilityDecider::ResetDecision(const GURL& url) {
     metrics_helper_->Flush(
         ReaderModeDeactivationReason::kNavigationDeactivated);
   }
-  eligibility_heuristic_url_.reset();
 
   // Do not reset URL eligibility for same-page navigations.
   if (!reader_mode_eligible_url_.EqualsIgnoringRef(url)) {
@@ -108,19 +71,7 @@ void ReaderModeEligibilityDecider::ResetDecision(const GURL& url) {
 }
 
 bool ReaderModeEligibilityDecider::CurrentPageIsEligibleForReaderMode() const {
-  bool eligible = web_state_ && !web_state_->IsBeingDestroyed() &&
-                  web_state_->ContentIsHTML();
-  if (!eligible) {
-    return false;
-  }
-  GURL current_url = web_state_->GetLastCommittedURL();
-  return current_url.SchemeIsHTTPOrHTTPS() &&
-         !google_util::IsGoogleHomePageUrl(current_url) &&
-         !google_util::IsGoogleSearchUrl(current_url) &&
-         !google_util::IsYoutubeDomainUrl(
-             current_url, google_util::ALLOW_SUBDOMAIN,
-             google_util::ALLOW_NON_STANDARD_PORTS) &&
-         !kGoogleWorkspaceBlocklist.contains(current_url.host());
+  return IsContentHTML() && web_distiller::IsUrlEligible(GetLastCommittedURL());
 }
 
 bool ReaderModeEligibilityDecider::CurrentPageIsDistillable() const {
@@ -152,15 +103,18 @@ void ReaderModeEligibilityDecider::SetLastCommittedUrl(const GURL& url) {
   CallLastCommittedUrlEligibilityCallbacks(std::nullopt);
 }
 
-void ReaderModeEligibilityDecider::TriggerReaderModeHeuristic(const GURL& url) {
-  if (!CurrentPageIsEligibleForReaderMode()) {
-    // If the current page does not support running the heuristic, then the
-    // eligibility of the current page is already known.
-    last_committed_url_eligibility_ready_ = true;
-    CallLastCommittedUrlEligibilityCallbacks(false);
-    return;
-  }
+GURL ReaderModeEligibilityDecider::GetLastCommittedURL() const {
+  return !web_state_->IsBeingDestroyed() ? web_state_->GetLastCommittedURL()
+                                         : GURL();
+}
 
+bool ReaderModeEligibilityDecider::IsContentHTML() const {
+  return !web_state_->IsBeingDestroyed() && web_state_->ContentIsHTML();
+}
+
+void ReaderModeEligibilityDecider::ExecuteScript(
+    const std::string& script,
+    base::OnceCallback<void(const base::Value*)> callback) {
   web::WebFramesManager* web_frames_manager =
       ReaderModeJavaScriptFeature::GetInstance()->GetWebFramesManager(
           web_state_);
@@ -173,61 +127,38 @@ void ReaderModeEligibilityDecider::TriggerReaderModeHeuristic(const GURL& url) {
   }
 
   metrics_helper_->RecordReaderHeuristicTriggered();
-  eligibility_heuristic_url_ = url;
-  main_frame->ExecuteJavaScript(
-      base::UTF8ToUTF16(web_distiller::GetDistillerTriggeringScript()),
-      base::BindOnce(&GetReaderModeHeuristicResult)
-          .Then(base::BindOnce(
-              &ReaderModeEligibilityDecider::HandleReaderModeHeuristicResult,
-              weak_ptr_factory_.GetWeakPtr())));
+  main_frame->ExecuteJavaScript(base::UTF8ToUTF16(script), std::move(callback));
 }
 
-void ReaderModeEligibilityDecider::OnOptimizationGuideDecision(
-    optimization_guide::OptimizationGuideDecision decision,
-    const optimization_guide::OptimizationMetadata& metadata) {
-  ReaderModeHeuristicResult result;
-  switch (decision) {
-    case optimization_guide::OptimizationGuideDecision::kTrue: {
-      result = ReaderModeHeuristicResult::kReaderModeEligible;
-      break;
-    }
-    case optimization_guide::OptimizationGuideDecision::kFalse: {
-      result = ReaderModeHeuristicResult::
-          kReaderModeNotEligibleOptimizationGuideIneligible;
-      break;
-    }
-    case optimization_guide::OptimizationGuideDecision::kUnknown: {
-      result = ReaderModeHeuristicResult::
-          kReaderModeNotEligibleOptimizationGuideUnknown;
-      break;
-    }
+void ReaderModeEligibilityDecider::OnEligibilityResult(
+    const GURL& url,
+    std::optional<web_distiller::ReaderModeEligibility> result,
+    bool is_current_url) {
+  if (!result.has_value()) {
+    // If the current page does not support running the heuristic, then the
+    // eligibility of the current page is already known.
+    last_committed_url_eligibility_ready_ = true;
+    CallLastCommittedUrlEligibilityCallbacks(false);
+    return;
   }
-  return CompleteHeuristic(result);
-}
 
-void ReaderModeEligibilityDecider::CompleteHeuristic(
-    ReaderModeHeuristicResult result) {
-  metrics_helper_->RecordReaderHeuristicCompleted(result);
+  metrics_helper_->RecordReaderHeuristicCompleted(result.value());
 
-  if (!eligibility_heuristic_url_.has_value() ||
-      !eligibility_heuristic_url_->EqualsIgnoringRef(
-          web_state_->GetLastCommittedURL())) {
+  if (!is_current_url) {
     // There has been a change in the committed URL since the last heuristic
     // run, do not process the result.
-    eligibility_heuristic_url_.reset();
     return;
   }
 
   reader_mode_eligible_url_ =
-      result == ReaderModeHeuristicResult::kReaderModeEligible
-          ? eligibility_heuristic_url_.value()
+      result.value() ==
+              web_distiller::ReaderModeEligibility::kReaderModeEligible
+          ? url
           : GURL();
-  if (last_committed_url_without_ref_.EqualsIgnoringRef(
-          eligibility_heuristic_url_.value())) {
+  if (last_committed_url_without_ref_.EqualsIgnoringRef(url)) {
     last_committed_url_eligibility_ready_ = true;
     CallLastCommittedUrlEligibilityCallbacks(CurrentPageIsDistillable());
   }
-  eligibility_heuristic_url_.reset();
 }
 
 void ReaderModeEligibilityDecider::CallLastCommittedUrlEligibilityCallbacks(

@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "//base/i18n:test_support",
     "//base/test:test_support",
     "//components/feature_engagement/test:test_support",
+    "//components/web_distiller/core/eligibility",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/reader_mode/model:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

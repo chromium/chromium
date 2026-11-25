@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/web_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 
 namespace base {
@@ -29,7 +30,8 @@ class ReaderModeMetricsHelper
 
   // Records histograms for the Reading Mode heuristic event.
   void RecordReaderHeuristicTriggered();
-  void RecordReaderHeuristicCompleted(ReaderModeHeuristicResult result);
+  void RecordReaderHeuristicCompleted(
+      web_distiller::ReaderModeEligibility result);
 
   // Records the heuristic cancelation and resets state for the next event.
   void RecordReaderHeuristicCanceled();

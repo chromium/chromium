@@ -6,6 +6,7 @@
 
 #import "base/values.h"
 #import "components/web_distiller/core/distillable_page_detector.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "components/web_distiller/core/page_features.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
@@ -16,12 +17,14 @@
 #import "ios/web/public/web_state.h"
 
 namespace {
+using web_distiller::ReaderModeEligibility;
+
 const char kScriptName[] = "reader_mode";
 const char kScriptHandlerName[] = "ReaderModeMessageHandler";
 
 // Tab helper method to process the result of the distillability heuristic.
 void ReaderModeHeuristicResultAvailable(web::WebState* web_state,
-                                        ReaderModeHeuristicResult result) {
+                                        ReaderModeEligibility result) {
   ReaderModeTabHelper* tab_helper =
       ReaderModeTabHelper::FromWebState(web_state);
   if (tab_helper) {
@@ -67,7 +70,7 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
   const web::ScriptMessageValue& body = message.body();
   if (body.type() != base::Value::Type::DICT) {
     ReaderModeHeuristicResultAvailable(
-        web_state, ReaderModeHeuristicResult::kMalformedResponse);
+        web_state, ReaderModeEligibility::kMalformedResponse);
     return;
   }
 
@@ -75,7 +78,7 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
       TransformToDerivedFeatures(body.GetDict(), url.value());
   if (!result.has_value()) {
     ReaderModeHeuristicResultAvailable(
-        web_state, ReaderModeHeuristicResult::kMalformedResponse);
+        web_state, ReaderModeEligibility::kMalformedResponse);
     return;
   }
 
@@ -88,18 +91,17 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
   double long_page_score = long_page_detector->Score(result.value()) -
                            long_page_detector->GetThreshold();
 
-  ReaderModeHeuristicResult heuristic_result;
+  ReaderModeEligibility heuristic_result;
   if (long_page_score > 0 && page_score > 0) {
-    heuristic_result = ReaderModeHeuristicResult::kReaderModeEligible;
+    heuristic_result = ReaderModeEligibility::kReaderModeEligible;
   } else if (page_score <= 0 && long_page_score <= 0) {
     heuristic_result =
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength;
+        ReaderModeEligibility::kReaderModeNotEligibleContentAndLength;
   } else if (page_score <= 0) {
-    heuristic_result =
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly;
+    heuristic_result = ReaderModeEligibility::kReaderModeNotEligibleContentOnly;
   } else {
     heuristic_result =
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength;
+        ReaderModeEligibility::kReaderModeNotEligibleContentLength;
   }
   ReaderModeHeuristicResultAvailable(web_state, heuristic_result);
 }

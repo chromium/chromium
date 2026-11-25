@@ -36,21 +36,6 @@ enum class ReaderModeDistillerResult {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeDistillerResult)
 
-// Recorded for IOS.ReaderMode.Heuristic.Result. Entries should not
-// be renumbered and numeric values should never be reused.
-// LINT.IfChange(ReaderModeHeuristicResult)
-enum class ReaderModeHeuristicResult {
-  kMalformedResponse = 0,
-  kReaderModeEligible = 1,
-  kReaderModeNotEligibleContentOnly = 2,
-  kReaderModeNotEligibleContentLength = 3,
-  kReaderModeNotEligibleContentAndLength = 4,
-  kReaderModeNotEligibleOptimizationGuideIneligible = 5,
-  kReaderModeNotEligibleOptimizationGuideUnknown = 6,
-  kMaxValue = kReaderModeNotEligibleOptimizationGuideUnknown,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeHeuristicResult)
-
 // Recorded for IOS.ReaderMode.Heuristic.Classification.
 // Compares the state between the Reader Mode heuristic classification
 // and the result of the distiller. Entries should not

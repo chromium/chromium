@@ -7,6 +7,7 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -23,9 +24,10 @@ class ReaderModeTest : public PlatformTest {
   ReaderModeTest();
   ~ReaderModeTest() override;
 
-  // Returns the human-readable label for the ReaderModeHeuristicResult.
+  // Returns the human-readable label for the
+  // web_distiller::ReaderModeEligibility.
   static std::string TestParametersReaderModeHeuristicResultToString(
-      testing::TestParamInfo<ReaderModeHeuristicResult> info);
+      testing::TestParamInfo<web_distiller::ReaderModeEligibility> info);
 
  protected:
   void SetUp() override;
@@ -46,7 +48,7 @@ class ReaderModeTest : public PlatformTest {
   // to the provided `url`.
   void SetReaderModeState(web::FakeWebState* web_state,
                           const GURL& url,
-                          ReaderModeHeuristicResult eligibility,
+                          web_distiller::ReaderModeEligibility eligibility,
                           std::string distilled_content,
                           bool mock_opt_guide = true);
 
@@ -65,11 +67,11 @@ class ReaderModeTest : public PlatformTest {
   // Triggers Reading Mode with the result from the distillability heuristic.
   void OnDomFeaturesRetrieved(base::WeakPtr<web::WebState> weak_web_state,
                               base::WeakPtr<web::WebFrame> weak_web_frame,
-                              ReaderModeHeuristicResult result);
+                              web_distiller::ReaderModeEligibility result);
 
   // Adds the given heuristic result to the heuristic JavaScript callback for
   // the specified frame.
-  void AddHeuristicResultToFrame(ReaderModeHeuristicResult result,
+  void AddHeuristicResultToFrame(web_distiller::ReaderModeEligibility result,
                                  web::FakeWebFrame* web_frame);
 
   web::WebTaskEnvironment task_environment_{

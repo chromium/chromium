@@ -17,6 +17,7 @@
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "components/web_distiller/core/distiller_options.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "components/web_distiller/core/extraction_utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -131,11 +132,12 @@ void ReaderModeTest::LoadWebpage(web::FakeWebState* web_state,
   web_state->LoadSimulatedRequest(url, @"<html><body>Content</body></html>");
 }
 
-void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
-                                        const GURL& url,
-                                        ReaderModeHeuristicResult result,
-                                        std::string distilled_content,
-                                        bool mock_opt_guide) {
+void ReaderModeTest::SetReaderModeState(
+    web::FakeWebState* web_state,
+    const GURL& url,
+    web_distiller::ReaderModeEligibility result,
+    std::string distilled_content,
+    bool mock_opt_guide) {
   // Set up the fake web frame to return a custom result after executing
   // the heuristic Javascript callback.
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
@@ -182,7 +184,7 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
                           result));
 
   if (mock_opt_guide &&
-      result == ReaderModeHeuristicResult::kReaderModeEligible) {
+      result == web_distiller::ReaderModeEligibility::kReaderModeEligible) {
     OptimizationGuideService* optimization_guide_service =
         OptimizationGuideServiceFactory::GetForProfile(profile());
     if (optimization_guide_service) {
@@ -219,7 +221,7 @@ bool ReaderModeTest::WaitForAvailableReaderModeContentInWebState(
 void ReaderModeTest::OnDomFeaturesRetrieved(
     base::WeakPtr<web::WebState> weak_web_state,
     base::WeakPtr<web::WebFrame> weak_web_frame,
-    ReaderModeHeuristicResult result) {
+    web_distiller::ReaderModeEligibility result) {
   web::WebState* web_state = weak_web_state.get();
   web::WebFrame* web_frame = weak_web_frame.get();
   if (!web_state || !web_frame) {
@@ -234,26 +236,30 @@ void ReaderModeTest::OnDomFeaturesRetrieved(
   tab_helper->HandleReaderModeHeuristicResult(result);
 }
 
-void ReaderModeTest::AddHeuristicResultToFrame(ReaderModeHeuristicResult result,
-                                               web::FakeWebFrame* web_frame) {
+void ReaderModeTest::AddHeuristicResultToFrame(
+    web_distiller::ReaderModeEligibility result,
+    web::FakeWebFrame* web_frame) {
   std::u16string heuristic_script =
       base::UTF8ToUTF16(web_distiller::GetDistillerTriggeringScript());
   switch (result) {
-    case ReaderModeHeuristicResult::kReaderModeEligible:
-    case ReaderModeHeuristicResult::
+    case web_distiller::ReaderModeEligibility::kReaderModeEligible:
+    case web_distiller::ReaderModeEligibility::
         kReaderModeNotEligibleOptimizationGuideIneligible:
-    case ReaderModeHeuristicResult::
+    case web_distiller::ReaderModeEligibility::
         kReaderModeNotEligibleOptimizationGuideUnknown:
       heuristic_value_ = std::make_unique<base::Value>(true);
       break;
-    case ReaderModeHeuristicResult::kMalformedResponse:
+    case web_distiller::ReaderModeEligibility::kMalformedResponse:
       heuristic_value_ = std::make_unique<base::Value>();
       break;
-    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength:
+    case web_distiller::ReaderModeEligibility::
+        kReaderModeNotEligibleContentAndLength:
       heuristic_value_ = std::make_unique<base::Value>(false);
       break;
-    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly:
-    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength:
+    case web_distiller::ReaderModeEligibility::
+        kReaderModeNotEligibleContentOnly:
+    case web_distiller::ReaderModeEligibility::
+        kReaderModeNotEligibleContentLength:
       NOTREACHED();
   }
   web_frame->AddResultForExecutedJs(heuristic_value_.get(), heuristic_script);
@@ -261,22 +267,25 @@ void ReaderModeTest::AddHeuristicResultToFrame(ReaderModeHeuristicResult result,
 
 // static
 std::string ReaderModeTest::TestParametersReaderModeHeuristicResultToString(
-    testing::TestParamInfo<ReaderModeHeuristicResult> info) {
+    testing::TestParamInfo<web_distiller::ReaderModeEligibility> info) {
   switch (info.param) {
-    case ReaderModeHeuristicResult::kMalformedResponse:
+    case web_distiller::ReaderModeEligibility::kMalformedResponse:
       return "MalformedResponse";
-    case ReaderModeHeuristicResult::kReaderModeEligible:
+    case web_distiller::ReaderModeEligibility::kReaderModeEligible:
       return "ReaderModeEligible";
-    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly:
+    case web_distiller::ReaderModeEligibility::
+        kReaderModeNotEligibleContentOnly:
       return "ReaderModeNotEligibleContentOnly";
-    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength:
+    case web_distiller::ReaderModeEligibility::
+        kReaderModeNotEligibleContentLength:
       return "ReaderModeNotEligibleContentLength";
-    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength:
+    case web_distiller::ReaderModeEligibility::
+        kReaderModeNotEligibleContentAndLength:
       return "ReaderModeNotEligibleContentAndLength";
-    case ReaderModeHeuristicResult::
+    case web_distiller::ReaderModeEligibility::
         kReaderModeNotEligibleOptimizationGuideIneligible:
       return "ReaderModeNotEligibleOptimizationGuideIneligible";
-    case ReaderModeHeuristicResult::
+    case web_distiller::ReaderModeEligibility::
         kReaderModeNotEligibleOptimizationGuideUnknown:
       return "ReaderModeNotEligibleOptimizationGuideUnknown";
   }

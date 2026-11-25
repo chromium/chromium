@@ -5,36 +5,41 @@
 #ifndef IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_ELIGIBILITY_DECIDER_H_
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_ELIGIBILITY_DECIDER_H_
 
+#import <optional>
+#import <string>
+#import <vector>
+
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
-#import "base/scoped_observation.h"
-#import "base/timer/timer.h"
-#import "base/values.h"
-#import "components/optimization_guide/core/hints/optimization_guide_decider.h"
-#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
-#import "components/optimization_guide/core/hints/optimization_metadata.h"
-#import "ios/chrome/browser/reader_mode/model/constants.h"
+#import "components/web_distiller/core/eligibility/eligibility_decider.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_metrics_helper.h"
-#import "ios/web/public/web_state_observer.h"
 #import "url/gurl.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace web {
 class WebState;
 }  // namespace web
 
-enum class ReaderModeHeuristicResult;
-
 // Responsible for determining the eligibility of a web page for Reader Mode.
-class ReaderModeEligibilityDecider {
+class ReaderModeEligibilityDecider final
+    : public web_distiller::EligibilityDecider::Delegate {
  public:
   ReaderModeEligibilityDecider(web::WebState* web_state,
                                ReaderModeMetricsHelper* metrics_helper);
   ReaderModeEligibilityDecider(const ReaderModeEligibilityDecider&) = delete;
   ReaderModeEligibilityDecider& operator=(const ReaderModeEligibilityDecider&) =
       delete;
-  ~ReaderModeEligibilityDecider();
+  ~ReaderModeEligibilityDecider() override;
 
-  // Processes the result of the Reader Mode heuristic trigger.
-  void HandleReaderModeHeuristicResult(ReaderModeHeuristicResult result);
+  // Records a heuristic result produced outside of a decision, by the DOM
+  // features message of ReaderModeJavaScriptFeature. It doesn't change the
+  // eligibility of the current page.
+  void HandleReaderModeHeuristicResult(
+      web_distiller::ReaderModeEligibility result);
 
   // Initiates the decision process for Reader Mode eligibility for the given
   // `url`.
@@ -60,41 +65,32 @@ class ReaderModeEligibilityDecider {
     return last_committed_url_without_ref_;
   }
 
-  const base::OneShotTimer& GetTimerForTesting() const {
-    return trigger_reader_mode_timer_;
-  }
-
  private:
-  // Trigger the heuristic to determine reader mode eligibility.
-  void TriggerReaderModeHeuristic(const GURL& url);
+  // web_distiller::EligibilityDecider::Delegate:
+  GURL GetLastCommittedURL() const override;
+  bool IsContentHTML() const override;
+  void ExecuteScript(
+      const std::string& script,
+      base::OnceCallback<void(const base::Value*)> callback) override;
 
-  // Handles the result from the Optimization guide service.
-  void OnOptimizationGuideDecision(
-      optimization_guide::OptimizationGuideDecision decision,
-      const optimization_guide::OptimizationMetadata& metadata);
-
-  // Performs the final operations related to the heuristic result.
-  void CompleteHeuristic(ReaderModeHeuristicResult result);
+  // Handles the result of a decision started for `url`. `result` is nullopt
+  // when the page can't run the heuristic.
+  void OnEligibilityResult(
+      const GURL& url,
+      std::optional<web_distiller::ReaderModeEligibility> result,
+      bool is_current_url);
 
   // Called when the distillability of the page is known.
   void CallLastCommittedUrlEligibilityCallbacks(std::optional<bool> result);
-
-  base::OneShotTimer trigger_reader_mode_timer_;
 
   raw_ptr<web::WebState> web_state_ = nullptr;
 
   raw_ptr<ReaderModeMetricsHelper> metrics_helper_ = nullptr;
 
-  // The optimization guide decider for page metadata.
-  raw_ptr<optimization_guide::OptimizationGuideDecider>
-      optimization_guide_decider_ = nullptr;
-
   // The URL for which reader mode is eligible.
   GURL reader_mode_eligible_url_;
   // The last committed URL without the ref.
   GURL last_committed_url_without_ref_;
-  // The URL for which the eligibility heuristic is running.
-  std::optional<GURL> eligibility_heuristic_url_;
   // Whether the eligibility of the last committed URL is ready.
   bool last_committed_url_eligibility_ready_ = false;
 
@@ -103,7 +99,9 @@ class ReaderModeEligibilityDecider {
   std::vector<base::OnceCallback<void(std::optional<bool>)>>
       last_committed_url_eligibility_callbacks_;
 
-  base::WeakPtrFactory<ReaderModeEligibilityDecider> weak_ptr_factory_{this};
+  // Runs the eligibility decision. Declared last so it's destroyed first,
+  // since it calls back into this object.
+  web_distiller::EligibilityDecider decider_;
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_ELIGIBILITY_DECIDER_H_

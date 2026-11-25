@@ -17,6 +17,7 @@
 #import "components/translate/core/browser/translate_infobar_delegate.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "components/web_distiller/core/eligibility/reader_mode_eligibility.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -382,7 +383,7 @@ base::WeakPtr<ReaderModeTabHelper> ReaderModeTabHelper::GetWeakPtr() {
 }
 
 void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
-    ReaderModeHeuristicResult result) {
+    web_distiller::ReaderModeEligibility result) {
   eligibility_decider_.HandleReaderModeHeuristicResult(result);
 }
 
