@@ -164,12 +164,24 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",
-    "//chrome/test:test_support",
     "//components/version_info",
     "//extensions/browser",
     "//extensions/common",
     "//testing/gtest",
   ]
+
+  if (enable_extensions && !is_chromeos) {
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/test/base:testing_profile",
+      "//components/policy:generated",
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+      "//components/policy/core/common:common_constants",
+      "//components/prefs",
+      "//content/test:test_support",
+    ]
+  }
 }
 
 source_set("platform_browser_tests") {
@@ -187,20 +199,29 @@ source_set("platform_browser_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ssl",
-    "//chrome/test:test_support",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/common:constants",
     "//components/embedder_support",
     "//components/infobars/content",
+    "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/browser",
     "//extensions/browser:test_support",
     "//extensions/common",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//net:test_support",
     "//testing/gtest",
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui:browser_commands" ]
+    deps += [
+      "//chrome/browser/ui:browser_commands",
+      "//chrome/test/base:ui_test_utils",
+    ]
   }
 }
 
@@ -219,15 +240,25 @@ if (!is_android) {
       ":test_support",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/startup",
-      "//chrome/test:test_support",
+      "//chrome/common:chrome_features",
+      "//chrome/common:constants",
+      "//chrome/common:non_code_constants",
+      "//chrome/test/base:testing_profile",
       "//components/infobars/content",
+      "//components/keep_alive_registry",
+      "//content/test:test_support",
       "//extensions:test_support",
       "//extensions/browser",
+      "//extensions/browser:test_support",
       "//extensions/common",
+      "//net:test_support",
       "//testing/gtest",
     ]
 
@@ -250,10 +281,11 @@ if (enable_desktop_android_extensions) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/extensions",
-      "//chrome/test:test_support",
+      "//chrome/browser/extensions:test_support",
       "//content/test:test_support",
       "//extensions:test_support",
       "//extensions/browser",
+      "//extensions/browser:test_support",
       "//extensions/common",
       "//testing/gtest",
     ]

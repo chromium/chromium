@@ -43,12 +43,14 @@ if (enterprise_cloud_content_analysis) {
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/extensions",
       "//chrome/browser/safe_browsing:test_support",
-      "//chrome/test:test_support",
+      "//chrome/browser/signin:identity_test_support",
       "//chrome/test/base:testing_browser_process",
+      "//chrome/test/base:testing_profile",
       "//components/enterprise/connectors/core:test_support",
       "//components/enterprise/isolated_mode",
       "//components/safe_browsing/core/common",
       "//components/signin/public/identity_manager:test_support",
+      "//extensions:test_support",
       "//extensions/browser:test_support",
     ]
 

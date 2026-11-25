@@ -52,9 +52,10 @@ source_set("browser_tests") {
   deps = [
     ":pdf_viewer_private",
     "//chrome/browser/glic",
+    "//chrome/browser/glic/public:provider_features",
     "//chrome/browser/glic/test_support",
-    "//chrome/test:test_support",
     "//content/test:test_support",
+    "//extensions:test_support",
   ]
 }
 
@@ -67,12 +68,13 @@ source_set("unit_tests") {
     ":pdf_viewer_private",
     "//base",
     "//chrome/browser/extensions",
+    "//chrome/browser/extensions:test_support",
     "//chrome/browser/pdf",
     "//chrome/browser/pdf:unit_tests",
-    "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/pdf/common:constants",
     "//content/test:test_support",
+    "//extensions:test_support",
     "//extensions/browser",
     "//extensions/browser/mime_handler",
     "//extensions/browser/mime_handler:stream_container",

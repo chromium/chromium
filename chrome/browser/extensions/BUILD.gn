@@ -1807,7 +1807,10 @@ if (enable_extensions) {
       # dependencies that require us linking against the whole //c/b.
       "//chrome/browser",
 
-      # Pull test-specific stubs for symbols needed by //c/b.
+      # Pull test-specific stubs for symbols needed by //c/b (e.g. the
+      # chrome_elf-provided IsTemporaryUserDataDirectoryCreatedForHeadless() on
+      # Windows). Migrating this fuzzer off //chrome/test:test_support needs
+      # dedicated win-libfuzzer validation; left for a follow-up.
       "//chrome/test:test_support",
     ]
     if (toolkit_views) {
@@ -2102,7 +2105,6 @@ source_set("unit_tests") {
     "//chrome/browser/ui/supervised_user",
     "//chrome/browser/update_client",
     "//chrome/common:test_support",
-    "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:chrome_test_scoped_utils",
     "//chrome/test/base:test_switches",
