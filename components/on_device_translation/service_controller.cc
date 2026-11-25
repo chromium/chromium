@@ -527,6 +527,10 @@ bool OnDeviceTranslationServiceController::IsServiceRunning() const {
   return !!service_remote_;
 }
 
+bool OnDeviceTranslationServiceController::IsIdle() const {
+  return pending_tasks_.empty() && !IsServiceRunning();
+}
+
 bool OnDeviceTranslationServiceController::MaybeStartService() {
   if (service_remote_) {
     return true;

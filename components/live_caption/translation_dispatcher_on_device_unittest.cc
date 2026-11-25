@@ -40,6 +40,7 @@ class MockOnDeviceTranslationServiceController
                CanTranslateCallback callback),
               (override));
   bool IsServiceRunning() const override { return true; }
+  bool IsIdle() const override { return false; }
 };
 
 class TranslationDispatcherOnDeviceTest : public testing::Test {

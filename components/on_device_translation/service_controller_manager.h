@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_MANAGER_H_
 #define COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_MANAGER_H_
 
+#include <cstddef>
 #include <map>
 #include <memory>
 
@@ -12,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/on_device_translation/service_controller.h"
 #include "url/origin.h"
@@ -27,7 +27,6 @@ namespace on_device_translation {
 
 class OnDeviceTranslationController;
 class OnDeviceTranslationServiceLauncher;
-class ServiceControllerManagerFactory;
 
 // Manages the OnDeviceTranslationServiceControllers for a BrowserContext.
 // This class is responsible for creating the per origin
@@ -38,13 +37,8 @@ class ServiceControllerManager : public KeyedService {
       std::unique_ptr<OnDeviceTranslationServiceLauncher>()>;
 
   ServiceControllerManager(PrefService* local_state,
-                           LauncherFactory launcher_factory,
-                           base::PassKey<ServiceControllerManagerFactory>);
-  ~ServiceControllerManager() override;
-
-  // Constructor for testing.
-  ServiceControllerManager(PrefService* local_state,
                            LauncherFactory launcher_factory);
+  ~ServiceControllerManager() override;
 
   ServiceControllerManager(const ServiceControllerManager&) = delete;
   ServiceControllerManager& operator=(const ServiceControllerManager&) = delete;
@@ -80,13 +74,15 @@ class ServiceControllerManager : public KeyedService {
   OnDeviceTranslationController* GetOrCreateController(
       const url::Origin& origin);
 
-  // This LRU cache maintains at most K service controllers in it. We assume
-  // that all of them have services running. Whenever a new controller needs to
-  // be created, the cache will remove the least used one. To be able to do
-  // this, we do not expose the controller directly, rather we expose its
-  // methods `CreateTranslator` and `CanTranslate` here.
-  base::LRUCache<url::Origin, std::unique_ptr<OnDeviceTranslationController>>
-      service_controllers_;
+  using ServiceControllerMap =
+      base::LRUCache<url::Origin,
+                     std::unique_ptr<OnDeviceTranslationController>>;
+
+  // Holds at most `max_service_count_` controllers. Uses `NO_AUTO_EVICT` so
+  // `LRUCacheMemoryConsumer` cannot shrink the cache and destroy controllers
+  // that still have a running service or pending download.
+  const size_t max_service_count_;
+  ServiceControllerMap service_controllers_;
   LauncherFactory launcher_factory_;
   // Safe because BrowserProcess::local_state() outlives the Profile.
   raw_ptr<PrefService> local_state_;

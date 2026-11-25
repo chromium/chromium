@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/types/pass_key.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -44,8 +43,7 @@ ServiceControllerManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<ServiceControllerManager>(
       g_browser_process->local_state(),
-      base::BindRepeating(&CreateOnDeviceTranslationServiceLauncher),
-      base::PassKey<ServiceControllerManagerFactory>());
+      base::BindRepeating(&CreateOnDeviceTranslationServiceLauncher));
 }
 
 }  // namespace on_device_translation

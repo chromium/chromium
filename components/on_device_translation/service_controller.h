@@ -69,6 +69,12 @@ class OnDeviceTranslationController {
   using CanTranslateCallback = base::OnceCallback<void(CanTranslateResult)>;
 
   virtual bool IsServiceRunning() const = 0;
+
+  // Returns whether destroying this controller loses nothing: no
+  // `CreateTranslator()` request waits for a download, and the service is not
+  // running.
+  virtual bool IsIdle() const = 0;
+
   // Creates a translator class that implements `mojom::Translator` for the
   // given language pair.
   virtual void CreateTranslator(const std::string& source_lang,
@@ -103,6 +109,7 @@ class OnDeviceTranslationServiceController
       const OnDeviceTranslationServiceController&) = delete;
 
   bool IsServiceRunning() const override;
+  bool IsIdle() const override;
   // Creates a translator class that implements `mojom::Translator` for the
   // given language pair.
   void CreateTranslator(const std::string& source_lang,

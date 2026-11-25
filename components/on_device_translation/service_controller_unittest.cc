@@ -12,7 +12,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/memory_limit.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -657,10 +661,23 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
 class ServiceControllerManagerTest : public testing::Test {
  protected:
   void SetUp() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kTranslationAPI,
+        {{"TranslationAPIMaxServiceCount", "2"}});
     fake_installer_ =
         std::make_unique<FakeOnDeviceTranslationInstaller>(base::FilePath());
     fake_installer_->InitNow(base::DoNothing());
     fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+    CreateManager();
+  }
+
+  void TearDown() override {
+    manager_.reset();
+    services_.clear();
+    fake_installer_.reset();
+  }
+
+  void CreateManager() {
     manager_ = std::make_unique<ServiceControllerManager>(
         /*local_state=*/nullptr,
         base::BindRepeating(&ServiceControllerManagerTest::CreateLauncher,
@@ -668,18 +685,38 @@ class ServiceControllerManagerTest : public testing::Test {
     manager_->SetInstallerForTesting(fake_installer_.get());
   }
 
-  void TearDown() override {
-    manager_.reset();
-    fake_installer_.reset();
+  // Returns whether `CreateTranslator()` succeeds for `origin`.
+  bool CreateTranslator(const url::Origin& origin) {
+    base::test::TestFuture<base::expected<
+        mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+        future;
+    manager_->CreateTranslator(origin, "en", "es", future.GetCallback());
+    return future.Get().has_value();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  // Ends the service that was launched `index`-th and waits for `origin` to
+  // observe the disconnect.
+  void EndService(size_t index, const url::Origin& origin) {
+    services_.at(index).reset();
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return !manager_->IsServiceRunning(origin); }));
+  }
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FakeOnDeviceTranslationInstaller> fake_installer_;
+  std::vector<std::unique_ptr<FakeOnDeviceTranslationService>> services_;
   std::unique_ptr<ServiceControllerManager> manager_;
 
  private:
   std::unique_ptr<OnDeviceTranslationServiceLauncher> CreateLauncher() {
-    return std::make_unique<MockServiceLauncher>();
+    auto launcher = std::make_unique<MockServiceLauncher>();
+    EXPECT_CALL(*launcher, Launch).WillRepeatedly([this]() {
+      auto& service = services_.emplace_back(
+          std::make_unique<FakeOnDeviceTranslationService>());
+      return service->BindNewPipeAndPassRemote();
+    });
+    return launcher;
   }
 };
 
@@ -699,6 +736,93 @@ TEST_F(ServiceControllerManagerTest,
   ASSERT_TRUE(pending_future.IsReady());
   EXPECT_EQ(pending_future.Get().error(),
             CreateTranslatorError::kExceedsServiceCountLimitation);
+}
+
+TEST_F(ServiceControllerManagerTest, RefusesNewOriginWhenAllServicesRun) {
+  const auto origin_a = url::Origin::Create(GURL("https://a.test"));
+  const auto origin_b = url::Origin::Create(GURL("https://b.test"));
+  const auto origin_c = url::Origin::Create(GURL("https://c.test"));
+  EXPECT_TRUE(CreateTranslator(origin_a));
+  EXPECT_TRUE(CreateTranslator(origin_b));
+  EXPECT_FALSE(CreateTranslator(origin_c));
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_a));
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_b));
+}
+
+// Tests that a new origin replaces a controller whose service ended, even when
+// it isn't the least recently used one.
+TEST_F(ServiceControllerManagerTest, ReplacesControllerWithoutService) {
+  const auto origin_a = url::Origin::Create(GURL("https://a.test"));
+  const auto origin_b = url::Origin::Create(GURL("https://b.test"));
+  const auto origin_c = url::Origin::Create(GURL("https://c.test"));
+  EXPECT_TRUE(CreateTranslator(origin_a));
+  EXPECT_TRUE(CreateTranslator(origin_b));
+
+  // The service of `origin_b` ends, for example after its idle timeout. The
+  // least recently used controller, the one of `origin_a`, still runs.
+  EndService(1, origin_b);
+  ASSERT_FALSE(manager_->IsServiceRunning(origin_b));
+  ASSERT_TRUE(manager_->IsServiceRunning(origin_a));
+
+  EXPECT_TRUE(CreateTranslator(origin_c));
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_a));
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_c));
+}
+
+// Tests that a controller with a request that waits for a download is kept,
+// even when its service isn't running.
+TEST_F(ServiceControllerManagerTest, KeepsControllerWithPendingRequest) {
+  const auto origin_a = url::Origin::Create(GURL("https://a.test"));
+  const auto origin_b = url::Origin::Create(GURL("https://b.test"));
+  const auto origin_c = url::Origin::Create(GURL("https://c.test"));
+  EXPECT_TRUE(CreateTranslator(origin_a));
+
+  // The en-ja language pack isn't installed, so the request waits.
+  fake_installer_->set_install_language_packs_automatically(false);
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      pending_future;
+  manager_->CreateTranslator(origin_b, "en", "ja",
+                             pending_future.GetCallback());
+  ASSERT_FALSE(pending_future.IsReady());
+  ASSERT_FALSE(manager_->IsServiceRunning(origin_b));
+
+  EXPECT_FALSE(CreateTranslator(origin_c));
+  EXPECT_FALSE(pending_future.IsReady());
+
+  // The request still completes once the language pack is installed.
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
+  EXPECT_TRUE(pending_future.Get().has_value());
+}
+
+// Tests that critical memory pressure with `kLRUCacheMemoryConsumer` enabled
+// does not shrink the controller cache or evict busy services.
+TEST_F(ServiceControllerManagerTest,
+       KeepsBusyControllersUnderCriticalMemoryPressure) {
+  manager_.reset();
+  feature_list_.Reset();
+  feature_list_.InitWithFeaturesAndParameters(
+      {{blink::features::kTranslationAPI,
+        {{"TranslationAPIMaxServiceCount", "2"}}},
+       {base::kLRUCacheMemoryConsumer, {}}},
+      {});
+  base::TestMemoryConsumerRegistry memory_consumer_registry;
+  CreateManager();
+
+  const auto origin_a = url::Origin::Create(GURL("https://a.test"));
+  const auto origin_b = url::Origin::Create(GURL("https://b.test"));
+  const auto origin_c = url::Origin::Create(GURL("https://c.test"));
+  EXPECT_TRUE(CreateTranslator(origin_a));
+  EXPECT_TRUE(CreateTranslator(origin_b));
+
+  memory_consumer_registry.NotifyUpdateMemoryLimitAndRelease(
+      base::MemoryLimit::CriticalPressureThreshold());
+
+  EXPECT_FALSE(CreateTranslator(origin_c));
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_a));
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_b));
+
+  manager_.reset();
 }
 
 }  // namespace

@@ -4,7 +4,10 @@
 
 #include "components/on_device_translation/service_controller_manager.h"
 
+#include <algorithm>
+
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
@@ -16,22 +19,12 @@ namespace on_device_translation {
 
 ServiceControllerManager::ServiceControllerManager(
     PrefService* local_state,
-    LauncherFactory launcher_factory,
-    base::PassKey<ServiceControllerManagerFactory>)
-    : service_controllers_(kTranslationAPIMaxServiceCount.Get()),
-      launcher_factory_(std::move(launcher_factory)),
-      local_state_(local_state) {
-  CHECK_GT(service_controllers_.max_size(), 0u);
-}
-
-ServiceControllerManager::ServiceControllerManager(
-    PrefService* local_state,
     LauncherFactory launcher_factory)
-    : service_controllers_(kTranslationAPIMaxServiceCount.Get()),
+    : max_service_count_(
+          std::max<size_t>(1, kTranslationAPIMaxServiceCount.Get())),
+      service_controllers_(ServiceControllerMap::NO_AUTO_EVICT),
       launcher_factory_(std::move(launcher_factory)),
-      local_state_(local_state) {
-  CHECK_GT(service_controllers_.max_size(), 0u);
-}
+      local_state_(local_state) {}
 
 ServiceControllerManager::~ServiceControllerManager() = default;
 
@@ -49,11 +42,20 @@ OnDeviceTranslationController* ServiceControllerManager::GetOrCreateController(
     return nullptr;
   }
 
-  // If we are at maximum capacity and the least-used item is running, we cannot
-  // add a new service.
-  if (service_controllers_.size() == service_controllers_.max_size() &&
-      service_controllers_.rbegin()->second->IsServiceRunning()) {
-    return nullptr;
+  // At maximum capacity, make room by removing the least recently used
+  // controller that is idle: no request waits in it, and its service isn't
+  // running. If no controller is idle, we cannot add a new service. Checking
+  // only the least recently used controller would refuse a new origin while
+  // another controller sits idle.
+  CHECK_LE(service_controllers_.size(), max_service_count_);
+  if (service_controllers_.size() == max_service_count_) {
+    auto idle_it = std::ranges::find_if(
+        service_controllers_.rbegin(), service_controllers_.rend(),
+        [](const auto& entry) { return entry.second->IsIdle(); });
+    if (idle_it == service_controllers_.rend()) {
+      return nullptr;
+    }
+    service_controllers_.Erase(idle_it);
   }
 
   auto service_controller =
