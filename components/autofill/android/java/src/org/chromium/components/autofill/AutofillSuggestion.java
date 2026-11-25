@@ -10,8 +10,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -42,12 +40,11 @@ public class AutofillSuggestion {
     private final @Nullable String mIphDescriptionText;
     private final @Nullable GURL mCustomIconUrl;
     private final @Nullable Payload mPayload;
-    private final List<AutofillSuggestion> mChildren;
     private final @Acceptability int mAcceptability;
     private final int mOriginalIndex;
 
     public sealed interface Payload
-            permits AtMemoryPayload, AutofillAiPayload, AutofillProfilePayload, PaymentsPayload {}
+            permits AutofillAiPayload, AutofillProfilePayload, PaymentsPayload {}
 
     /**
      * Constructs a Autofill suggestion container. Use the {@link AutofillSuggestion.Builder}
@@ -68,7 +65,6 @@ public class AutofillSuggestion {
      * @param showLoadingOnAcceptance Whether accepting this suggestion should show a loading UI
      *     (e.g., if it requires a fetch from the server).
      * @param payload Additional data passed with the suggestion.
-     * @param children The list of children suggestions.
      * @param acceptability The acceptability state of the suggestion.
      * @param originalIndex The index of the suggestion in the list provided by the C++
      *     AutofillKeyboardAccessoryController.
@@ -88,7 +84,6 @@ public class AutofillSuggestion {
             @Nullable String iphDescriptionText,
             @Nullable GURL customIconUrl,
             @Nullable Payload payload,
-            List<AutofillSuggestion> children,
             @Acceptability int acceptability,
             int originalIndex) {
         mLabel = label;
@@ -105,7 +100,6 @@ public class AutofillSuggestion {
         mIphDescriptionText = iphDescriptionText;
         mCustomIconUrl = customIconUrl;
         mPayload = payload;
-        mChildren = children;
         mAcceptability = acceptability;
         mOriginalIndex = originalIndex;
     }
@@ -176,13 +170,6 @@ public class AutofillSuggestion {
         return aiPayload != null && aiPayload.requiresServerFetch();
     }
 
-    public @Nullable AtMemoryPayload getAtMemoryPayload() {
-        if (mPayload instanceof AtMemoryPayload) {
-            return (AtMemoryPayload) mPayload;
-        }
-        return null;
-    }
-
     public @Nullable AutofillAiPayload getAutofillAiPayload() {
         if (mPayload instanceof AutofillAiPayload) {
             return (AutofillAiPayload) mPayload;
@@ -202,10 +189,6 @@ public class AutofillSuggestion {
             return (PaymentsPayload) mPayload;
         }
         return null;
-    }
-
-    public List<AutofillSuggestion> getChildren() {
-        return mChildren;
     }
 
     public boolean isSelectable() {
@@ -260,7 +243,6 @@ public class AutofillSuggestion {
                 && Objects.equals(this.mIphDescriptionText, other.mIphDescriptionText)
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
                 && Objects.equals(this.mPayload, other.mPayload)
-                && Objects.equals(this.mChildren, other.mChildren)
                 && this.mAcceptability == other.mAcceptability
                 && this.mOriginalIndex == other.mOriginalIndex;
     }
@@ -281,7 +263,6 @@ public class AutofillSuggestion {
                 this.mIphDescriptionText,
                 this.mCustomIconUrl,
                 this.mPayload,
-                this.mChildren,
                 this.mAcceptability,
                 this.mOriginalIndex);
     }
@@ -302,7 +283,6 @@ public class AutofillSuggestion {
         private @Nullable String mVoiceOver;
         private int mSuggestionType;
         private @Nullable Payload mPayload;
-        private List<AutofillSuggestion> mChildren = Collections.emptyList();
         private @Acceptability int mAcceptability;
         private int mOriginalIndex;
 
@@ -376,11 +356,6 @@ public class AutofillSuggestion {
             return this;
         }
 
-        public Builder setChildren(List<AutofillSuggestion> children) {
-            this.mChildren = children;
-            return this;
-        }
-
         public Builder setAcceptability(@Acceptability int acceptability) {
             this.mAcceptability = acceptability;
             return this;
@@ -393,12 +368,10 @@ public class AutofillSuggestion {
 
         public AutofillSuggestion build() {
             assert mSuggestionType == SuggestionType.SEPARATOR
-                            || mSuggestionType == SuggestionType.PERSONAL_CONTEXT_NOTICE
-                            || mSuggestionType == SuggestionType.AT_MEMORY_AI_DISCLOSURE
                             || mSuggestionType
                                     == SuggestionType.AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE
                             || !TextUtils.isEmpty(mLabel)
-                    : "Only separators and personal context notices may have an empty label.";
+                    : "Only separators and private inference notices may have an empty label.";
             assert (mSubLabel != null)
                     : "The AutofillSuggestion sublabel can be empty but never null.";
             return new AutofillSuggestion(
@@ -416,7 +389,6 @@ public class AutofillSuggestion {
                     mIphDescriptionText,
                     mCustomIconUrl,
                     mPayload,
-                    mChildren,
                     mAcceptability,
                     mOriginalIndex);
         }

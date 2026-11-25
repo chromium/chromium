@@ -144,7 +144,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillAndroidDesktopSuppressAccessoryOnEmpty,
     &autofill::features::kAutofillAndroidKeyboardAccessoryDynamicPositioning,
     &autofill::features::kAutofillAndroidKeyboardAccessoryHoverPreview,
-    &autofill::features::kAutofillAtMemory,
     &autofill::features::kAutofillCardScanningBugfixes,
     &autofill::features::kAutofillEnableAiBasedAmountExtraction,
     &autofill::features::kAutofillEnableBuyNowPayLater,

@@ -264,7 +264,6 @@ android_library("main_autofill_java") {
   ]
   sources = [
     "java/src/org/chromium/components/autofill/AddressNormalizer.java",
-    "java/src/org/chromium/components/autofill/AtMemoryPayload.java",
     "java/src/org/chromium/components/autofill/AutofillAddressEditorUiInfo.java",
     "java/src/org/chromium/components/autofill/AutofillAddressUiComponent.java",
     "java/src/org/chromium/components/autofill/AutofillAiPayload.java",
@@ -299,7 +298,6 @@ android_library("main_autofill_java") {
 generate_jni("main_autofill_jni_headers") {
   sources = [
     "java/src/org/chromium/components/autofill/AddressNormalizer.java",
-    "java/src/org/chromium/components/autofill/AtMemoryPayload.java",
     "java/src/org/chromium/components/autofill/AutofillAddressEditorUiInfo.java",
     "java/src/org/chromium/components/autofill/AutofillAddressUiComponent.java",
     "java/src/org/chromium/components/autofill/AutofillAiPayload.java",

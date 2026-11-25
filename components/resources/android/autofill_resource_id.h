@@ -142,7 +142,5 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_WALLET, R.drawable.google_wallet_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_EMAIL,
                     R.drawable.ic_outline_email_24dp)
 
-// AtMemory search icon.
-DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_SEARCH_SPARK, R.drawable.search_spark)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_SAD_TAB, R.drawable.autofill_sad_tab)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_SETTINGS, R.drawable.ic_chrome)
