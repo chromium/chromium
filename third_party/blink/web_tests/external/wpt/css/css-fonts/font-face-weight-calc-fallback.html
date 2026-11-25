@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Fonts: @font-face out-of-bounds or NaN calc() weight falls back to normal (400)</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-4/#font-prop-desc">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  for (const [index, weight] of [
+    'calc(2000) calc(0)',
+    'calc(0 / 0) calc(0 / 0)',
+    'calc(0 / 0)',
+  ].entries()) {
+    promise_test(async (t) => {
+      const family = `TestFallbackFamily${index}`;
+      const face900 = new FontFace(family, "url('/fonts/Ahem.ttf')", {
+        weight: '900',
+      });
+      const faceFallback = new FontFace(
+        family,
+        "url('/fonts/Lato-Medium.ttf')",
+        {
+          weight,
+        }
+      );
+      document.fonts.add(face900);
+      document.fonts.add(faceFallback);
+      t.add_cleanup(() => {
+        document.fonts.delete(face900);
+        document.fonts.delete(faceFallback);
+      });
+
+      const loaded900 = await document.fonts.load(`900 16px ${family}`);
+      assert_equals(loaded900.length, 1);
+      assert_equals(loaded900[0].weight, '900', '900 should match the 900 face');
+
+      const loaded400 = await document.fonts.load(`400 16px ${family}`);
+      assert_equals(loaded400.length, 1);
+      assert_equals(
+        loaded400[0],
+        faceFallback,
+        `400 should match the fallback face for ${weight}`
+      );
+    }, `@font-face weight "${weight}" falls back to normal (400)`);
+  }
+</script>

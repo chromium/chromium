@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_metrics_override.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
@@ -744,8 +745,23 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
       // https://drafts.csswg.org/css-fonts/#font-prop-desc
       // "User agents must swap the computed value of the startpoint and
       // endpoint of the range in order to forbid decreasing ranges."
-      if (stretch_from->ComputeValueInCanonicalUnit(EnsureLengthResolver()) <
-          stretch_to->ComputeValueInCanonicalUnit(EnsureLengthResolver())) {
+      if (RuntimeEnabledFeatures::
+              FontFaceCapabilitiesRangeValidationEnabled()) {
+        const float from_value =
+            stretch_from->ComputeValueInCanonicalUnit(EnsureLengthResolver());
+        const float to_value =
+            stretch_to->ComputeValueInCanonicalUnit(EnsureLengthResolver());
+        if (std::isnan(from_value) || std::isnan(to_value)) {
+          return normal_capabilities;
+        }
+        const auto [min_width, max_width] = std::minmax(from_value, to_value);
+        capabilities.width = {FontSelectionValue(min_width),
+                              FontSelectionValue(max_width),
+                              FontSelectionRange::RangeType::kSetExplicitly};
+      } else if (stretch_from->ComputeValueInCanonicalUnit(
+                     EnsureLengthResolver()) <
+                 stretch_to->ComputeValueInCanonicalUnit(
+                     EnsureLengthResolver())) {
         capabilities.width = {
             FontSelectionValue(stretch_from->ComputeValueInCanonicalUnit(
                 EnsureLengthResolver())),
@@ -762,9 +778,14 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
       }
     } else if (auto* stretch_primitive_value =
                    DynamicTo<CSSPrimitiveValue>(stretch_.Get())) {
-      float stretch_value =
+      const float stretch_value =
           stretch_primitive_value->ComputeValueInCanonicalUnit(
               EnsureLengthResolver());
+      if (std::isnan(stretch_value) &&
+          RuntimeEnabledFeatures::
+              FontFaceCapabilitiesRangeValidationEnabled()) {
+        return normal_capabilities;
+      }
       capabilities.width = {FontSelectionValue(stretch_value),
                             FontSelectionValue(stretch_value),
                             FontSelectionRange::RangeType::kSetExplicitly};
@@ -817,9 +838,14 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
           if (oblique_values_size == 1) {
             const auto& range_start =
                 To<CSSPrimitiveValue>(range_value->GetObliqueValues()->Item(0));
-            FontSelectionValue oblique_range(
-                range_start.ComputeValueInCanonicalUnit(
-                    EnsureLengthResolver()));
+            const float oblique_value =
+                range_start.ComputeValueInCanonicalUnit(EnsureLengthResolver());
+            if (std::isnan(oblique_value) &&
+                RuntimeEnabledFeatures::
+                    FontFaceCapabilitiesRangeValidationEnabled()) {
+              return normal_capabilities;
+            }
+            FontSelectionValue oblique_range(oblique_value);
             capabilities.slope = {
                 oblique_range, oblique_range,
                 FontSelectionRange::RangeType::kSetExplicitly};
@@ -832,9 +858,24 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
             // https://drafts.csswg.org/css-fonts/#font-prop-desc
             // "User agents must swap the computed value of the startpoint and
             // endpoint of the range in order to forbid decreasing ranges."
-            if (range_start.ComputeValueInCanonicalUnit(
-                    EnsureLengthResolver()) <
-                range_end.ComputeValueInCanonicalUnit(EnsureLengthResolver())) {
+            if (RuntimeEnabledFeatures::
+                    FontFaceCapabilitiesRangeValidationEnabled()) {
+              const float start_value = range_start.ComputeValueInCanonicalUnit(
+                  EnsureLengthResolver());
+              const float end_value =
+                  range_end.ComputeValueInCanonicalUnit(EnsureLengthResolver());
+              if (std::isnan(start_value) || std::isnan(end_value)) {
+                return normal_capabilities;
+              }
+              const auto [min_slope, max_slope] =
+                  std::minmax(start_value, end_value);
+              capabilities.slope = {
+                  FontSelectionValue(min_slope), FontSelectionValue(max_slope),
+                  FontSelectionRange::RangeType::kSetExplicitly};
+            } else if (range_start.ComputeValueInCanonicalUnit(
+                           EnsureLengthResolver()) <
+                       range_end.ComputeValueInCanonicalUnit(
+                           EnsureLengthResolver())) {
               capabilities.slope = {
                   FontSelectionValue(range_start.ComputeValueInCanonicalUnit(
                       EnsureLengthResolver())),
@@ -887,37 +928,60 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
       if (!weight_from || !weight_to) {
         return normal_capabilities;
       }
-      if (!weight_from->IsNumber() || !weight_to->IsNumber() ||
-          weight_from->ComputeValueInCanonicalUnit(EnsureLengthResolver()) <
-              1 ||
-          weight_to->ComputeValueInCanonicalUnit(EnsureLengthResolver()) >
-              1000) {
-        return normal_capabilities;
-      }
-      // https://drafts.csswg.org/css-fonts/#font-prop-desc
-      // "User agents must swap the computed value of the startpoint and
-      // endpoint of the range in order to forbid decreasing ranges."
-      if (weight_from->ComputeValueInCanonicalUnit(EnsureLengthResolver()) <
-          weight_to->ComputeValueInCanonicalUnit(EnsureLengthResolver())) {
-        capabilities.weight = {
-            FontSelectionValue(weight_from->ComputeValueInCanonicalUnit(
-                EnsureLengthResolver())),
-            FontSelectionValue(
-                weight_to->ComputeValueInCanonicalUnit(EnsureLengthResolver())),
-            FontSelectionRange::RangeType::kSetExplicitly};
+      if (RuntimeEnabledFeatures::
+              FontFaceCapabilitiesRangeValidationEnabled()) {
+        if (!weight_from->IsNumber() || !weight_to->IsNumber()) {
+          return normal_capabilities;
+        }
+        const float from_value =
+            weight_from->ComputeValueInCanonicalUnit(EnsureLengthResolver());
+        const float to_value =
+            weight_to->ComputeValueInCanonicalUnit(EnsureLengthResolver());
+        if (!(from_value >= 1 && from_value <= 1000) ||
+            !(to_value >= 1 && to_value <= 1000)) {
+          return normal_capabilities;
+        }
+        // https://drafts.csswg.org/css-fonts/#font-prop-desc
+        // "User agents must swap the computed value of the startpoint and
+        // endpoint of the range in order to forbid decreasing ranges."
+        const auto [min_weight, max_weight] = std::minmax(from_value, to_value);
+        capabilities.weight = {FontSelectionValue(min_weight),
+                               FontSelectionValue(max_weight),
+                               FontSelectionRange::RangeType::kSetExplicitly};
       } else {
-        capabilities.weight = {
-            FontSelectionValue(
-                weight_to->ComputeValueInCanonicalUnit(EnsureLengthResolver())),
-            FontSelectionValue(weight_from->ComputeValueInCanonicalUnit(
-                EnsureLengthResolver())),
-            FontSelectionRange::RangeType::kSetExplicitly};
+        if (!weight_from->IsNumber() || !weight_to->IsNumber() ||
+            weight_from->ComputeValueInCanonicalUnit(EnsureLengthResolver()) <
+                1 ||
+            weight_to->ComputeValueInCanonicalUnit(EnsureLengthResolver()) >
+                1000) {
+          return normal_capabilities;
+        }
+        if (weight_from->ComputeValueInCanonicalUnit(EnsureLengthResolver()) <
+            weight_to->ComputeValueInCanonicalUnit(EnsureLengthResolver())) {
+          capabilities.weight = {
+              FontSelectionValue(weight_from->ComputeValueInCanonicalUnit(
+                  EnsureLengthResolver())),
+              FontSelectionValue(weight_to->ComputeValueInCanonicalUnit(
+                  EnsureLengthResolver())),
+              FontSelectionRange::RangeType::kSetExplicitly};
+        } else {
+          capabilities.weight = {
+              FontSelectionValue(weight_to->ComputeValueInCanonicalUnit(
+                  EnsureLengthResolver())),
+              FontSelectionValue(weight_from->ComputeValueInCanonicalUnit(
+                  EnsureLengthResolver())),
+              FontSelectionRange::RangeType::kSetExplicitly};
+        }
       }
     } else if (auto* weight_primitive_value =
                    DynamicTo<CSSPrimitiveValue>(weight_.Get())) {
-      float weight_value = weight_primitive_value->ComputeValueInCanonicalUnit(
-          EnsureLengthResolver());
-      if (weight_value < 1 || weight_value > 1000) {
+      const float weight_value =
+          weight_primitive_value->ComputeValueInCanonicalUnit(
+              EnsureLengthResolver());
+      if (!(weight_value >= 1 && weight_value <= 1000) &&
+          (RuntimeEnabledFeatures::
+               FontFaceCapabilitiesRangeValidationEnabled() ||
+           weight_value < 1 || weight_value > 1000)) {
         return normal_capabilities;
       }
       capabilities.weight = {FontSelectionValue(weight_value),
