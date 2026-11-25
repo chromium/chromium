@@ -916,20 +916,11 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_FETCH_ERROR_NOTIFICATION" desc="A toast message appearing at the top of the screen when fetching AtMemory information fails." translateable="false">
     Something went wrong. Try again
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_REAUTH_IN_PROGRESS_ERROR_NOTIFICATION" desc="A toast message appearing at the top of the screen when fetching AtMemory information fails due to reauth already in progress." translateable="false">
-    Another verification is in progress. Try again later.
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_TITLE" desc="Title of the AtMemory search trigger affordance." translateable="false">
-    Try searching in Chrome Memory
-  </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE" desc="Descriptor under the query for enhanced autofill. 'Gemini' is a brand name and should match standard branding guidelines across languages.">
     Find and fill with Gemini
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_SEARCH_RESULTS_A11Y_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Screen reader announcement when AtMemory search results are presented to the user." translateable="false">
     Search results available. Use up and down arrow keys to navigate.
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_FETCHING" desc="Descriptor for the loading state when enhanced autofill is fetching results. 'Gemini' is a brand name and should match standard branding guidelines across languages.">
-    Find and fill with Gemini
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_FETCHING_FINDING_INFO_WITH_GEMINI" desc="Loading message shown while finding info with Gemini during enhanced autofill search." translateable="false">
     Finding info with Gemini...
@@ -1982,25 +1973,6 @@ You can remove this suggestion from Chrome. Your original source won't be delete
 
   <message name="IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_TITLE" desc="The title of the toggle shown in the settings page that allows managing the authentication requirement before seeings smarter form understanding settings sensitive fields, such as passport number and national id card number." formatter_data="android_java">
     Verify it’s you to autofill sensitive info
-  </message>
-  <if expr="is_macosx">
-    <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the AtMemory promo bubble on macOS.">
-      Autofill works in more places — press ⌘ twice to find and fill info
-    </message>
-  </if>
-  <if expr="not is_macosx">
-    <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the AtMemory promo bubble.">
-      Autofill works in more places — press Ctrl twice to find and fill info
-    </message>
-  </if>
-  <message name="IDS_AT_MEMORY_PROMO_DESCRIPTION" desc="Body text of the AtMemory promo bubble detailing the new autofill capabilities and data sources.">
-    Enhanced autofill can now find and fill info — like order numbers and flight confirmation codes — from apps like Gmail and Photos
-  </message>
-  <message name="IDS_AT_MEMORY_PROMO_LEARN_MORE_BUTTON" desc="Label of the 'Learn more' button in the at-memory promo bubble.">
-    Learn more
-  </message>
-  <message name="IDS_AT_MEMORY_PROMO_GOT_IT_BUTTON" desc="Label of the 'Got it' button in the at-memory promo bubble.">
-    Got it
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_SUBTITLE" desc="The subtitle of the toggle shown in the settings page that allows managing the authentication requirement before seeings smarter form understanding settings sensitive fields, such as passport number and natinal id card number." formatter_data="android_java">
     For added protection, always use your fingerprint, face, or other screen lock when you use sensitive info like travel and identity docs
