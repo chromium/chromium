@@ -35,13 +35,22 @@ gfx::Rect BorderBoxRelativeToAncestor(const LayoutBox& box,
 }
 
 gfx::Rect ComputeControlsRect(const LayoutObject& container) {
-  // Determine the area covered by the media controls, if any. For this, the
-  // LayoutVTTCue will walk the tree up to the HTMLMediaElement, then ask for
-  // the MediaControls.
-  DCHECK(container.GetNode()->IsTextTrackContainer());
-
-  auto* media_element = To<HTMLMediaElement>(container.Parent()->GetNode());
-  DCHECK(media_element);
+  // Determine the area covered by the media controls, if any. Author CSS on
+  // ::-webkit-media-text-track-container (e.g. `column-count`) can insert
+  // anonymous layout wrappers such as LayoutFlowThread between VTTCueBox and
+  // HTMLMediaElement, so walk up the layout tree to find the owning media
+  // element instead of assuming `container.Parent()` is the media element.
+  HTMLMediaElement* media_element = nullptr;
+  for (const LayoutObject* ancestor = &container; ancestor;
+       ancestor = ancestor->Parent()) {
+    media_element = DynamicTo<HTMLMediaElement>(ancestor->GetNode());
+    if (media_element) {
+      break;
+    }
+  }
+  if (!media_element) {
+    return gfx::Rect();
+  }
 
   MediaControls* controls = media_element->GetMediaControls();
   if (!controls || !controls->ContainerLayoutObject())
@@ -120,9 +129,13 @@ PhysicalSize VttCueLayoutAlgorithm::FirstInlineBoxSize(
   // VTTCueBackgroundBox is a non-atomic inline. If the UA style ever makes it
   // an atomic inline (e.g. inline-block), its border box could grow past the
   // line box and adjacent cues would visually overlap at this step size.
+  // (Author CSS can still trigger inline-block adjustment when an orthogonal
+  // writing-mode is forced on the parent VTTCueBox.)
   if (const LayoutObject* background = cue_box.SlowFirstChild()) {
     DCHECK(!IsA<VTTCueBackgroundBox>(background->GetNode()) ||
-           background->IsLayoutInline());
+           background->IsLayoutInline() ||
+           background->Style().GetWritingMode() !=
+               cue_box.Style().GetWritingMode());
   }
 #endif
   return cursor.CurrentItem()->Size();
@@ -229,9 +242,17 @@ bool VttCueLayoutAlgorithm::ShouldSwitchDirection(
   //     Vertical: If step is negative and the left edge of ...
   if (step_ < 0 && cue_block_position < margin_)
     return true;
+  // In addition to `cue_block_position + cue_block_size + margin_ >
+  // full_dimension`, also check the rearranged subtraction form: the spec uses
+  // unbounded real numbers, whereas LayoutUnit arithmetic saturates at
+  // LayoutUnit::Max(). When `full_dimension` is already LayoutUnit::Max(), the
+  // left-hand sum also saturates to LayoutUnit::Max() and `>` would evaluate to
+  // false even though the box overflows the title area.
   if (step_ > 0 &&
-      cue_block_position + cue_block_size + margin_ > full_dimension)
+      (cue_block_position + cue_block_size + margin_ > full_dimension ||
+       cue_block_position > full_dimension - margin_ - cue_block_size)) {
     return true;
+  }
   return false;
 }
 
@@ -332,10 +353,19 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
       // 15. Horizontal: Move all the boxes in boxes down by the distance
       // given by step.
       //     Vertical: Move all the boxes in boxes right ...
+      const LayoutUnit previous_position = adjusted_position;
       adjusted_position += step_;
 
       // 16. Jump back to the step labeled step loop.
-      continue;
+      //
+      // Deviate from the spec's unconditional jump if fixed-point LayoutUnit
+      // addition saturated at LayoutUnit::Min() or LayoutUnit::Max() and made
+      // no progress (`adjusted_position == previous_position`); otherwise the
+      // step loop would never terminate. Fall through to step 17 (Switch
+      // direction) instead.
+      if (adjusted_position != previous_position) {
+        continue;
+      }
     }
 
     // 17. Switch direction: If switched is true, then remove all the boxes in

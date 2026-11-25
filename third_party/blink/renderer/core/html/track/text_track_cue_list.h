@@ -43,6 +43,7 @@ class CORE_EXPORT TextTrackCueList final : public ScriptWrappable {
 
   TextTrackCue* AnonymousIndexedGetter(wtf_size_t index) const;
   TextTrackCue* getCueById(const AtomicString&) const;
+  const HeapVector<Member<TextTrackCue>>& GetCueList() const { return list_; }
 
   bool Add(TextTrackCue*);
   bool Remove(TextTrackCue*);

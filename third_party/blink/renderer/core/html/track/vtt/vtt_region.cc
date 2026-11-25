@@ -72,6 +72,23 @@ constexpr float kLineHeight = 5.33;
 // Default scrolling animation time period (s).
 constexpr base::TimeDelta kScrollTime = base::Milliseconds(433);
 
+// The region display tree and its cue container live in the media element's
+// UA shadow tree and are reachable by author style sheets through
+// ::-webkit-media-text-track-region and
+// ::-webkit-media-text-track-region-container. Like VTTCueBox and
+// TextTrackContainer, they must never take focus: removing or reparenting a
+// focused element would synchronously dispatch blur/focusout from inside
+// CueTimeline/TextTrack mutations.
+class VTTRegionDisplayBox final : public HTMLDivElement {
+ public:
+  explicit VTTRegionDisplayBox(Document& document) : HTMLDivElement(document) {}
+
+ protected:
+  FocusableState SupportsFocus(UpdateBehavior) const override {
+    return FocusableState::kNotFocusable;
+  }
+};
+
 bool IsNonPercentage(double value,
                      const char* method,
                      ExceptionState& exception_state) {
@@ -268,7 +285,7 @@ const AtomicString& VTTRegion::TextTrackCueContainerScrollingClass() {
 
 HTMLDivElement* VTTRegion::GetDisplayTree(Document& document) {
   if (!region_display_tree_) {
-    region_display_tree_ = MakeGarbageCollected<HTMLDivElement>(document);
+    region_display_tree_ = MakeGarbageCollected<VTTRegionDisplayBox>(document);
     PrepareRegionDisplayTree();
   }
 
@@ -277,7 +294,12 @@ HTMLDivElement* VTTRegion::GetDisplayTree(Document& document) {
 
 void VTTRegion::WillRemoveVTTCueBox(VTTCueBox* box) {
   DVLOG(VTT_LOG_LEVEL) << "willRemoveVTTCueBox";
-  DCHECK(cue_container_->contains(box));
+  // A cue keeps its display tree after being deactivated, and script can move
+  // the cue to a different region at any time. The box may therefore belong
+  // to a region whose display tree was never created, or to another region.
+  if (!cue_container_ || !cue_container_->contains(box)) {
+    return;
+  }
 
   double box_height = box->GetBoundingClientRect()->height();
 
@@ -376,8 +398,8 @@ void VTTRegion::PrepareRegionDisplayTree() {
 
   // The cue container is used to wrap the cues and it is the object which is
   // gradually scrolled out as multiple cues are appended to the region.
-  cue_container_ =
-      MakeGarbageCollected<HTMLDivElement>(region_display_tree_->GetDocument());
+  cue_container_ = MakeGarbageCollected<VTTRegionDisplayBox>(
+      region_display_tree_->GetDocument());
   cue_container_->SetInlineStyleProperty(CSSPropertyID::kTop, 0.0,
                                          CSSPrimitiveValue::UnitType::kPixels);
 

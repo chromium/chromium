@@ -196,27 +196,24 @@ bool VTTCueBox::IsInRegion() const {
 LayoutUnit& VTTCueBox::StartAdjustment(LayoutUnit new_value,
                                        base::PassKey<VttCueLayoutAlgorithm>) {
   adjusted_position_ = new_value;
-  DCHECK(IsAdjusted()) << new_value;
-  return adjusted_position_;
+  return *adjusted_position_;
 }
 
 void VTTCueBox::StartInlineAdjustment(LayoutUnit new_value,
                                       base::PassKey<VttCueLayoutAlgorithm>) {
   adjusted_inline_position_ = new_value;
-  DCHECK(HasInlineAdjustment()) << new_value;
 }
 
 void VTTCueBox::RevertAdjustment() {
-  adjusted_position_ = LayoutUnit::Min();
-  adjusted_inline_position_ = LayoutUnit::Min();
+  adjusted_position_.reset();
+  adjusted_inline_position_.reset();
 }
 
 LayoutUnit VTTCueBox::AdjustedPosition(
     LayoutUnit full_dimention,
     base::PassKey<VttCueLayoutAlgorithm>) const {
-  return IsAdjusted()
-             ? adjusted_position_
-             : LayoutUnit(full_dimention * original_percent_position_ / 100);
+  return adjusted_position_.value_or(
+      LayoutUnit(full_dimention * original_percent_position_ / 100));
 }
 
 }  // namespace blink

@@ -109,11 +109,14 @@ bool TextTrack::IsValidKindKeyword(const String& value) {
 }
 
 void TextTrack::SetTrackList(TextTrackList* track_list) {
-  if (!track_list && GetCueTimeline() && cues_)
-    GetCueTimeline()->RemoveCues(this, cues_.Get());
+  CueTimeline* cue_timeline = !track_list ? GetCueTimeline() : nullptr;
 
   track_list_ = track_list;
   InvalidateTrackIndex();
+
+  if (cue_timeline && cues_) {
+    cue_timeline->RemoveCues(this, cues_.Get());
+  }
 }
 
 bool TextTrack::IsVisualKind() const {
@@ -169,17 +172,19 @@ void TextTrack::Reset() {
   if (!cues_)
     return;
 
-  if (GetCueTimeline())
-    GetCueTimeline()->RemoveCues(this, cues_.Get());
-
-  for (wtf_size_t i = 0; i < cues_->length(); ++i)
-    cues_->AnonymousIndexedGetter(i)->SetTrack(nullptr);
-
-  cues_->RemoveAll();
-  if (active_cues_)
-    active_cues_->RemoveAll();
-
   style_sheets_.clear();
+
+  CueList removed_cues(cues_->GetCueList());
+  for (TextTrackCue* cue : removed_cues) {
+    cue->SetTrack(nullptr);
+  }
+  cues_->RemoveAll();
+  if (active_cues_) {
+    active_cues_->RemoveAll();
+  }
+  if (GetCueTimeline()) {
+    GetCueTimeline()->RemoveCues(this, removed_cues);
+  }
 }
 
 void TextTrack::AddListOfCues(
@@ -315,9 +320,10 @@ void TextTrack::CueDidChange(TextTrackCue* cue, bool update_cue_index) {
   DCHECK(!cue->IsActive());
 
   // Removing the display tree may synchronously dispatch blur/focusout events
-  // whose listeners move the cue or disable the track.
+  // whose listeners move the cue, mutate it, or disable the track.
   cue->RemoveDisplayTree(TextTrackCue::kDontNotifyRegion);
-  if (cue->track() != this || mode_ == TextTrackMode::kDisabled) {
+  if (cue->track() != this || mode_ == TextTrackMode::kDisabled ||
+      cue->IsActive()) {
     return;
   }
 

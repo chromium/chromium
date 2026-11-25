@@ -80,6 +80,11 @@ class VTTCueBackgroundBox final : public HTMLDivElement {
 
   const TextTrack* GetTrack() const { return track_.Get(); }
 
+ protected:
+  FocusableState SupportsFocus(UpdateBehavior) const override {
+    return FocusableState::kNotFocusable;
+  }
+
  private:
   void DidRecalcStyle(const StyleRecalcChange) override;
 
@@ -119,6 +124,8 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
 
   VTTCue(Document&, double start_time, double end_time, const String& text);
   ~VTTCue() override;
+
+  void SetTrack(TextTrack*) override;
 
   VTTRegion* region() const { return region_.Get(); }
   void setRegion(VTTRegion*);

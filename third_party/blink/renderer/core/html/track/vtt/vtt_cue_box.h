@@ -30,6 +30,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_CUE_BOX_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_CUE_BOX_H_
 
+#include <optional>
+
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 
@@ -42,7 +45,7 @@ struct VTTDisplayParameters;
 //
 // It is an element in a media element shadow tree, and is always a child of
 // TextTrackContainer. It always has a single VTTCueBackgroundBox child.
-class VTTCueBox final : public HTMLDivElement {
+class CORE_EXPORT VTTCueBox final : public HTMLDivElement {
  public:
   explicit VTTCueBox(Document&);
   void Trace(Visitor* visitor) const override;
@@ -52,7 +55,7 @@ class VTTCueBox final : public HTMLDivElement {
 
   float SnapToLinesPosition() const { return snap_to_lines_position_; }
   LineAlignSetting LineAlign() const { return line_align_; }
-  bool IsAdjusted() const { return adjusted_position_ != LayoutUnit::Min(); }
+  bool IsAdjusted() const { return adjusted_position_.has_value(); }
   // IsAdjusted() becomes true after calling this.
   LayoutUnit& StartAdjustment(LayoutUnit new_value,
                               base::PassKey<VttCueLayoutAlgorithm>);
@@ -62,16 +65,25 @@ class VTTCueBox final : public HTMLDivElement {
   void StartInlineAdjustment(LayoutUnit new_value,
                              base::PassKey<VttCueLayoutAlgorithm>);
   bool HasInlineAdjustment() const {
-    return adjusted_inline_position_ != LayoutUnit::Min();
+    return adjusted_inline_position_.has_value();
   }
   LayoutUnit AdjustedInlinePosition(
       base::PassKey<VttCueLayoutAlgorithm>) const {
-    return adjusted_inline_position_;
+    return *adjusted_inline_position_;
   }
   // Returns adjusted_position_ if IsAdjusted(), or the initial position
   // without adjustment otherwise.
   LayoutUnit AdjustedPosition(LayoutUnit full_dimention,
                               base::PassKey<VttCueLayoutAlgorithm>) const;
+
+ protected:
+  // Cue boxes are UA-internal rendering output that author style sheets can
+  // reach via ::-webkit-media-text-track-display. They must never take focus:
+  // removing or reparenting a focused box would synchronously dispatch
+  // blur/focusout events from inside CueTimeline/TextTrack mutations.
+  FocusableState SupportsFocus(UpdateBehavior) const override {
+    return FocusableState::kNotFocusable;
+  }
 
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
@@ -92,10 +104,9 @@ class VTTCueBox final : public HTMLDivElement {
 
   LineAlignSetting line_align_ = LineAlignSetting::kStart;
 
-  // Pixel position after adjustment. LayoutUnit::Min() means this box is not
-  // adjusted yet.
-  LayoutUnit adjusted_position_ = LayoutUnit::Min();
-  LayoutUnit adjusted_inline_position_ = LayoutUnit::Min();
+  // Pixel position after adjustment, or std::nullopt if not adjusted yet.
+  std::optional<LayoutUnit> adjusted_position_;
+  std::optional<LayoutUnit> adjusted_inline_position_;
 };
 
 template <>

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track_list.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -47,10 +48,20 @@ void MediaControlsTextTrackManager::ShowTextTrackAtIndex(
 
 void MediaControlsTextTrackManager::DisableShowingTextTracks() {
   TextTrackList* track_list = media_element_->textTracks();
+  // Snapshot the list: SetModeEnum() can run synchronous script (e.g.
+  // blur/focusout while removing cue display boxes), which may add or remove
+  // tracks and invalidate index-based iteration.
+  HeapVector<Member<TextTrack>> showing_tracks;
   for (unsigned i = 0; i < track_list->length(); ++i) {
     TextTrack* track = track_list->AnonymousIndexedGetter(i);
-    if (track->mode() == TextTrackMode::kShowing)
+    if (track->mode() == TextTrackMode::kShowing) {
+      showing_tracks.push_back(track);
+    }
+  }
+  for (TextTrack* track : showing_tracks) {
+    if (track->mode() == TextTrackMode::kShowing) {
       track->SetModeEnum(TextTrackMode::kDisabled);
+    }
   }
 }
 

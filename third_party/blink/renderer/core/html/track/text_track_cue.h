@@ -55,7 +55,7 @@ class CORE_EXPORT TextTrackCue : public EventTarget {
   ~TextTrackCue() override = default;
 
   TextTrack* track() const;
-  void SetTrack(TextTrack*);
+  virtual void SetTrack(TextTrack*);
 
   Node* Owner() const;
 

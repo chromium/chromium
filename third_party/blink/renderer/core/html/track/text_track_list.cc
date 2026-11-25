@@ -173,10 +173,10 @@ void TextTrackList::Remove(TextTrack* track) {
 
   InvalidateTrackIndexesAfterTrack(track);
 
+  tracks->EraseAt(index);
+
   DCHECK_EQ(track->TrackList(), this);
   track->SetTrackList(nullptr);
-
-  tracks->EraseAt(index);
 
   ScheduleRemoveTrackEvent(track);
 }

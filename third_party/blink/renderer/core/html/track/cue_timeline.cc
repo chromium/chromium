@@ -83,14 +83,33 @@ void CueTimeline::AddCue(TextTrack* track, TextTrackCue* cue) {
 void CueTimeline::AddCueInternal(TextTrackCue* cue) {
   newly_introduced_cues_.insert(cue);
   CueInterval interval = CreateCueInterval(cue);
-  if (!cue_tree_.Contains(interval))
-    cue_tree_.Add(interval);
+  CueTimes times(interval.Low(), interval.High());
+
+  auto it = tree_intervals_.find(cue);
+  if (it != tree_intervals_.end()) {
+    if (it->value == times) {
+      return;
+    }
+    // The cue is already in the tree under a different interval (its timing
+    // changed without going through CueWillChange()/CueDidChange()). Replace
+    // the stale interval rather than leaving two entries for the same cue.
+    cue_tree_.Remove(CueIntervalTree::CreateInterval(it->value.first,
+                                                     it->value.second, cue));
+    it->value = times;
+  } else {
+    tree_intervals_.insert(cue, times);
+  }
+  cue_tree_.Add(interval);
 }
 
-void CueTimeline::RemoveCues(TextTrack*, const TextTrackCueList* cues) {
-  HeapVector<Member<TextTrackCue>> deactivated_cues;
-  for (wtf_size_t i = 0; i < cues->length(); ++i) {
-    TextTrackCue* cue = cues->AnonymousIndexedGetter(i);
+void CueTimeline::RemoveCues(TextTrack* track, const TextTrackCueList* cues) {
+  CueList cue_list(cues->GetCueList());
+  RemoveCues(track, cue_list);
+}
+
+void CueTimeline::RemoveCues(TextTrack*, const CueList& cues) {
+  CueList deactivated_cues;
+  for (TextTrackCue* cue : cues) {
     if (RemoveCueInternal(cue)) {
       deactivated_cues.push_back(cue);
     }
@@ -126,8 +145,15 @@ void CueTimeline::WillChangeCue(TextTrack*, TextTrackCue* cue) {
 
 bool CueTimeline::RemoveCueInternal(TextTrackCue* cue) {
   newly_introduced_cues_.erase(cue);
-  CueInterval interval = CreateCueInterval(cue);
-  cue_tree_.Remove(interval);
+  // Remove the interval the cue was inserted under, not one recomputed from
+  // its current timing, so the tree can never retain an entry for `cue`.
+  auto it = tree_intervals_.find(cue);
+  if (it != tree_intervals_.end()) {
+    cue_tree_.Remove(CueIntervalTree::CreateInterval(it->value.first,
+                                                     it->value.second, cue));
+    tree_intervals_.erase(it);
+  }
+  DCHECK(!cue_tree_.Contains(CreateCueInterval(cue)));
 
   wtf_size_t index = currently_active_cues_.Find(cue);
   if (index != kNotFound) {
@@ -139,9 +165,13 @@ bool CueTimeline::RemoveCueInternal(TextTrackCue* cue) {
   return false;
 }
 
-void CueTimeline::HideCues(TextTrack*, const TextTrackCueList* cues) {
-  for (wtf_size_t i = 0; i < cues->length(); ++i)
-    cues->AnonymousIndexedGetter(i)->RemoveDisplayTree();
+void CueTimeline::HideCues(TextTrack* track, const TextTrackCueList* cues) {
+  CueList cues_to_hide(cues->GetCueList());
+  for (TextTrackCue* cue : cues_to_hide) {
+    if (cue->track() == track && !track->IsRendered()) {
+      cue->RemoveDisplayTree();
+    }
+  }
 }
 
 static bool TrackIndexCompare(TextTrack* a, TextTrack* b) {
@@ -220,6 +250,9 @@ void CueTimeline::TimeMarchesOn() {
         cue_tree_.AllOverlaps(movie_time, movie_time);
     current_cues.reserve(current_intervals.size());
     for (const auto& interval : current_intervals) {
+      // Every tree entry must be mirrored (and kept alive) by
+      // `tree_intervals_`; see the comment on that member.
+      DCHECK(tree_intervals_.Contains(interval.Data()));
       current_cues.push_back(interval.Data());
     }
   }
@@ -424,12 +457,20 @@ void CueTimeline::TimeMarchesOn() {
   for (const auto& previous_cue : previous_cues) {
     if (!current_cues.Contains(previous_cue)) {
       previous_cue->SetIsActive(false);
+    }
+  }
+
+  // Update the current active cues before removing display trees, as
+  // RemoveDisplayTree() may synchronously dispatch blur/focusout events that
+  // re-enter CueTimeline.
+  currently_active_cues_ = current_cues;
+
+  for (const auto& previous_cue : previous_cues) {
+    if (!current_cues.Contains(previous_cue) && !previous_cue->IsActive()) {
       previous_cue->RemoveDisplayTree();
     }
   }
 
-  // Update the current active cues.
-  currently_active_cues_ = current_cues;
   media_element.UpdateTextTrackDisplay();
 }
 
@@ -579,6 +620,7 @@ void CueTimeline::DidMoveToNewDocument(Document& /*old_document*/) {
 
 void CueTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(media_element_);
+  visitor->Trace(tree_intervals_);
   visitor->Trace(currently_active_cues_);
   visitor->Trace(newly_introduced_cues_);
   visitor->Trace(cue_event_timer_);

@@ -59,6 +59,14 @@ class TextTrackContainer final : public HTMLDivElement {
 
   void Trace(Visitor*) const override;
 
+ protected:
+  // Author style sheets can reach this element via
+  // ::-webkit-media-text-track-container. It must never take focus; see the
+  // same override in VTTCueBox.
+  FocusableState SupportsFocus(UpdateBehavior) const override {
+    return FocusableState::kNotFocusable;
+  }
+
  private:
   bool IsTextTrackContainer() const override { return true; }
   void ObserveSizeChanges(Element&);

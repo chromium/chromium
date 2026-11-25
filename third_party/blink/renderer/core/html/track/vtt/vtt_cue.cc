@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -184,9 +185,28 @@ String VTTCue::ToString() const {
 }
 #endif
 
-void VTTCue::CueDidChange(CueMutationAffectsOrder affects_order) {
-  TextTrackCue::CueDidChange(affects_order);
+void VTTCue::SetTrack(TextTrack* track) {
+  if (this->track() == track) {
+    return;
+  }
+  TextTrackCue::SetTrack(track);
+  cue_background_box_->SetTrack(track);
+  if (vtt_node_tree_) {
+    for (VTTElement& vtt_element :
+         Traversal<VTTElement>::DescendantsOf(*vtt_node_tree_)) {
+      vtt_element.SetTrack(track);
+    }
+  }
+  for (VTTElement& vtt_element :
+       Traversal<VTTElement>::DescendantsOf(*cue_background_box_)) {
+    vtt_element.SetTrack(track);
+  }
   display_tree_should_change_ = true;
+}
+
+void VTTCue::CueDidChange(CueMutationAffectsOrder affects_order) {
+  display_tree_should_change_ = true;
+  TextTrackCue::CueDidChange(affects_order);
 }
 
 V8DirectionSetting VTTCue::vertical() const {
@@ -861,9 +881,11 @@ VTTCueBox* VTTCue::GetDisplayTree() {
   if (!display_tree_should_change_)
     return display_tree_.Get();
 
-  CreateVTTNodeTree();
-
   cue_background_box_->RemoveChildren();
+  if (!IsActive() || !track() || !track()->IsRendered()) {
+    return nullptr;
+  }
+  CreateVTTNodeTree();
   NodeCloningData data{CloneOption::kIncludeDescendants};
   cue_background_box_->CloneChildNodesFrom(*vtt_node_tree_, data,
                                            /*fallback_registry*/ nullptr);
@@ -916,6 +938,9 @@ void VTTCue::UpdateDisplay(HTMLDivElement& container) {
     UseCounter::Count(GetDocument(), WebFeature::kVTTCueRenderAlignNotCenter);
 
   VTTCueBox* display_box = GetDisplayTree();
+  if (!display_box || !IsActive() || !track() || !track()->IsRendered()) {
+    return;
+  }
   if (!region()) {
     if (display_box->HasChildren() && !container.contains(display_box)) {
       // Note: the display tree of a cue is removed when the active flag of the

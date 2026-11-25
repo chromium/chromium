@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -25,10 +27,9 @@ class TextTrackCueList;
 
 // TODO(Oilpan): This needs to be PodIntervalTree<double, Member<TextTrackCue>>.
 // However, it is not easy to move PodIntervalTree to the heap (for a
-// C++-template reason) so we leave it as a raw pointer at the moment. This is
-// safe because CueTimeline and TextTrackCue are guaranteed to die at the same
-// time when the owner HTMLMediaElement dies. Thus the raw TextTrackCue* cannot
-// become stale pointers.
+// C++-template reason) so we leave it as a raw pointer at the moment. The raw
+// pointers are kept alive by `CueTimeline::tree_intervals_`, which mirrors the
+// tree contents with traced Members; see the comment there.
 using CueIntervalTree = PodIntervalTree<double, TextTrackCue*>;
 typedef CueIntervalTree::IntervalType CueInterval;
 using CueList = HeapVector<Member<TextTrackCue>>;
@@ -63,6 +64,7 @@ class CORE_EXPORT CueTimeline final : public GarbageCollected<CueTimeline> {
   void AddCues(TextTrack*, const TextTrackCueList*);
   void AddCue(TextTrack*, TextTrackCue*);
   void RemoveCues(TextTrack*, const TextTrackCueList*);
+  void RemoveCues(TextTrack*, const CueList&);
   void RemoveCue(TextTrack*, TextTrackCue*);
   void WillChangeCue(TextTrack*, TextTrackCue*);
   void HideCues(TextTrack*, const TextTrackCueList*);
@@ -107,6 +109,18 @@ class CORE_EXPORT CueTimeline final : public GarbageCollected<CueTimeline> {
   Member<HTMLMediaElement> media_element_;
 
   CueIntervalTree cue_tree_;
+
+  // Mirrors `cue_tree_`: every cue currently in the tree is a key here, mapped
+  // to the (start, end) interval it was inserted under. This serves two
+  // purposes:
+  //  1. The Member keys keep the raw TextTrackCue* stored in `cue_tree_` alive,
+  //     so an ordering mistake between a script call-out (e.g. blur/focusout
+  //     from VTTCue::RemoveDisplayTree()) and a tree removal cannot leave a
+  //     dangling pointer in the tree.
+  //  2. RemoveCueInternal() removes the interval that was actually inserted,
+  //     rather than one recomputed from the cue's current start/end time.
+  using CueTimes = std::pair<double, double>;
+  HeapHashMap<Member<TextTrackCue>, CueTimes> tree_intervals_;
 
   CueList currently_active_cues_;
   HeapHashSet<Member<TextTrackCue>> newly_introduced_cues_;

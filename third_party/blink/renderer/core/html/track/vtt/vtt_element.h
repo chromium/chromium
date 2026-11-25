@@ -83,6 +83,11 @@ class VTTElement final : public Element {
   void SetTrack(TextTrack*);
   void Trace(Visitor*) const override;
 
+ protected:
+  FocusableState SupportsFocus(UpdateBehavior) const override {
+    return FocusableState::kNotFocusable;
+  }
+
  private:
   Member<TextTrack> track_;
   unsigned is_past_node_ : 1;
