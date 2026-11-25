@@ -30,6 +30,7 @@
 #include "chrome/browser/context_hub/record_replay/skill_audio_capturer.h"
 #include "chrome/browser/context_hub/record_replay/tab_active_observer.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -38,7 +39,10 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
+#include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/ax_mode.h"
 #include "url/gurl.h"
 
 namespace context_hub {
@@ -78,6 +82,11 @@ void SkillRecordingService::StartRecording() {
   }
   artifacts_ = RecordingArtifacts();
   start_time_ = base::TimeTicks::Now();
+  scoped_accessibility_mode_ =
+      content::BrowserAccessibilityState::GetInstance()
+          ->CreateScopedModeForBrowserContext(
+              &profile_.get(),
+              ui::kAXModeBasic | ui::AXMode::kExtendedProperties);
 
   if (ProfileBrowserCollection* collection =
           ProfileBrowserCollection::GetForProfile(&profile_.get())) {
@@ -91,6 +100,8 @@ void SkillRecordingService::StartRecording() {
   ObserveActiveTabInBrowser(GetLastActiveBrowser(*profile_));
 
   if (!audio_capturer_) {
+    // Safe because this service owns `audio_capturer_` and resets it in
+    // `Shutdown()`.
     audio_capturer_ = std::make_unique<SkillAudioCapturer>(
         &profile_.get(),
         base::BindRepeating(&SkillRecordingService::OnTranscriptUpdate,
@@ -115,6 +126,7 @@ void SkillRecordingService::StopRecording() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   tab_observer_.reset();
   browser_tab_strip_tracker_.reset();
+  scoped_accessibility_mode_.reset();
 }
 
 void SkillRecordingService::CaptureAction(

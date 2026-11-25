@@ -5,16 +5,19 @@
 #include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
 
 #include <cstddef>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -43,6 +46,7 @@
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/content/page_context_fetcher_manager.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/site_instance.h"
@@ -56,11 +60,19 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
-#include "ui/base/test/mock_base_window.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_manager.h"
+#include "ui/accessibility/ax_tree_update.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
+#include "chrome/browser/speech/cros_speech_recognition_service_factory.h"  // nogncheck
 #else
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
 #endif
@@ -115,8 +127,6 @@ class TestBrowserInstance {
         .WillByDefault(testing::Return(&profile_.get()));
     ON_CALL(mock_bwi_, GetTabStripModel())
         .WillByDefault(testing::Return(&tab_strip_model_));
-    ON_CALL(mock_bwi_, GetWindow())
-        .WillByDefault(testing::Return(&mock_window_));
     ON_CALL(mock_bwi_, RegisterDidBecomeActive(testing::_))
         .WillByDefault(
             [this](BrowserWindowInterface::DidBecomeActiveCallback cb) {
@@ -149,7 +159,6 @@ class TestBrowserInstance {
   const raw_ref<Profile> profile_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
   TabStripModel tab_strip_model_;
-  testing::NiceMock<ui::MockBaseWindow> mock_window_;
   testing::NiceMock<MockBrowserWindowInterface> mock_bwi_;
   base::RepeatingCallbackList<void(BrowserWindowInterface*)> active_callbacks_;
   base::RepeatingCallbackList<void(BrowserWindowInterface*)> close_callbacks_;
@@ -205,6 +214,15 @@ class SkillRecordingServiceTest : public testing::Test {
   ~SkillRecordingServiceTest() override = default;
 
  protected:
+  void PrepareWebContentsForInput(content::WebContents* web_contents) {
+    content::RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame())
+        ->InitializeRenderFrameIfNeeded();
+    // Flush post-navigation paint-holding so `ForwardMouseEvent()` dispatches
+    // immediately in unit tests without a real compositor frame.
+    web_contents->WasHidden();
+    web_contents->WasShown();
+  }
+
   content::WebContents* AddTab(TestBrowserInstance* browser_instance,
                                const GURL& url) {
     std::unique_ptr<content::WebContents> contents =
@@ -214,10 +232,39 @@ class SkillRecordingServiceTest : public testing::Test {
                 browser_instance->bwi()->GetProfile()));
     content::WebContents* raw_contents = contents.get();
     content::WebContentsTester::For(raw_contents)->NavigateAndCommit(url);
+    PrepareWebContentsForInput(raw_contents);
+    SetDefaultClickableAXTree(raw_contents, "Submit");
     browser_instance->tab_strip_model()->InsertWebContentsAt(
         browser_instance->tab_strip_model()->count(), std::move(contents),
         AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE);
     return raw_contents;
+  }
+
+  void SetDefaultClickableAXTree(content::WebContents* web_contents,
+                                 const std::string& button_name) {
+    ui::AXNodeData root;
+    root.id = 1;
+    root.role = ax::mojom::Role::kRootWebArea;
+    root.relative_bounds.bounds = gfx::RectF(0, 0, 800, 600);
+    root.child_ids = {2};
+
+    ui::AXNodeData button;
+    button.id = 2;
+    button.role = ax::mojom::Role::kButton;
+    button.SetNameChecked(button_name);
+    button.relative_bounds.bounds = gfx::RectF(0, 0, 300, 300);
+
+    const ui::AXTreeID tree_id =
+        web_contents->GetPrimaryMainFrame()->GetAXTreeID();
+    ui::AXTreeUpdate update;
+    update.has_tree_data = true;
+    update.tree_data.tree_id = tree_id;
+    update.root_id = 1;
+    update.nodes = {root, button};
+    ax_tree_managers_.erase(tree_id);
+    ax_tree_managers_.emplace(tree_id,
+                              std::make_unique<ui::AXTreeManager>(
+                                  std::make_unique<ui::AXTree>(update)));
   }
 
   void SimulateMouseDown(content::WebContents* web_contents,
@@ -231,7 +278,7 @@ class SkillRecordingServiceTest : public testing::Test {
         base::TimeTicks::Now());
     web_contents->GetPrimaryMainFrame()
         ->GetRenderWidgetHost()
-        ->SimulateUserInteraction(mouse_event);
+        ->ForwardMouseEvent(mouse_event);
   }
 
   void ExpectExecuteModel(Matcher<std::string> user_command_matcher,
@@ -265,6 +312,7 @@ class SkillRecordingServiceTest : public testing::Test {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfile profile_;
   NiceMock<optimization_guide::MockRemoteModelExecutor> mock_model_executor_;
+  std::map<ui::AXTreeID, std::unique_ptr<ui::AXTreeManager>> ax_tree_managers_;
   SkillRecordingService service_{&profile_, &mock_model_executor_};
 };
 
@@ -277,14 +325,26 @@ TEST_F(SkillRecordingServiceTest, InitialState) {
 }
 
 TEST_F(SkillRecordingServiceTest, StartAndStopRecording) {
+  constexpr ui::AXMode kExpectedRecordingAxMode =
+      ui::kAXModeBasic | ui::AXMode::kExtendedProperties;
+  content::BrowserAccessibilityState* ax_state =
+      content::BrowserAccessibilityState::GetInstance();
+  const ui::AXMode initial_ax_mode =
+      ax_state->GetAccessibilityModeForBrowserContext(&profile_);
+  EXPECT_FALSE(initial_ax_mode.has_mode(kExpectedRecordingAxMode.flags()));
+
   service_.StartRecording();
   EXPECT_TRUE(service_.is_recording());
   EXPECT_EQ(service_.start_time(), base::TimeTicks::Now());
+  EXPECT_EQ(ax_state->GetAccessibilityModeForBrowserContext(&profile_),
+            initial_ax_mode | kExpectedRecordingAxMode);
 
   service_.StopRecording();
   EXPECT_FALSE(service_.is_recording());
   EXPECT_FALSE(service_.start_time().has_value());
   EXPECT_TRUE(service_.artifacts().actions.empty());
+  EXPECT_EQ(ax_state->GetAccessibilityModeForBrowserContext(&profile_),
+            initial_ax_mode);
 }
 
 TEST_F(SkillRecordingServiceTest, OnScreenshotCapturedWithValidResult) {
@@ -474,9 +534,41 @@ TEST_F(SkillRecordingServiceTest, RecordsLeftMouseClicksOnHttpOrHttpsTab) {
   const RecordingArtifacts& result = service_.artifacts();
   ASSERT_EQ(result.actions.size(), 1u);
   EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:42, Y:84");
+  EXPECT_EQ(result.actions[0].description, "Clicked on 'Submit'");
   EXPECT_EQ(result.actions[0].timestamp, base::Milliseconds(150));
   EXPECT_EQ(result.actions[0].current_url, GURL("https://example.com/page"));
+}
+
+TEST_F(SkillRecordingServiceTest,
+       FallsBackToCoordinatesAndCapturesScreenshotWhenAxTreeUnavailable) {
+  TestBrowserInstance browser(&profile_);
+  std::unique_ptr<content::WebContents> contents =
+      content::WebContentsTester::CreateTestWebContents(
+          &profile_, content::SiteInstance::Create(&profile_));
+  content::WebContents* tab = contents.get();
+  content::WebContentsTester::For(tab)->NavigateAndCommit(
+      GURL("https://example.com/fresh"));
+  PrepareWebContentsForInput(tab);
+  browser.tab_strip_model()->InsertWebContentsAt(
+      0, std::move(contents),
+      AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE);
+
+  service_.StartRecording();
+  EXPECT_EQ(
+      page_content_annotations::PageContextFetcherManager::FromWebContents(tab),
+      nullptr);
+  SimulateMouseDown(tab, 42.4f, 84.6f,
+                    blink::WebPointerProperties::Button::kLeft);
+  EXPECT_NE(
+      page_content_annotations::PageContextFetcherManager::FromWebContents(tab),
+      nullptr);
+
+  service_.StopRecording();
+  const RecordingArtifacts& result = service_.artifacts();
+  ASSERT_EQ(result.actions.size(), 1u);
+  EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
+  EXPECT_EQ(result.actions[0].description, "Clicked at X:42, Y:85");
+  EXPECT_EQ(result.actions[0].current_url, GURL("https://example.com/fresh"));
 }
 
 TEST_F(SkillRecordingServiceTest, SanitizesRecordedUrls) {
@@ -487,16 +579,24 @@ TEST_F(SkillRecordingServiceTest, SanitizesRecordedUrls) {
   service_.StartRecording();
   SimulateMouseDown(tab, 10.0f, 20.0f);
 
-  // Navigate to a URL whose path exceeds `kMaxRecordedUrlLength` (500 chars);
-  // the path should be cleared while preserving the origin.
-  content::WebContentsTester::For(tab)->NavigateAndCommit(
-      GURL("https://example.com/" + std::string(500, 'a')));
+  // Navigate to a URL whose path exceeds `kMaxRecordedUrlBytes` and includes
+  // query/fragment tokens; the path, query, and fragment should be cleared in
+  // `current_url`.
+  content::WebContentsTester::For(tab)->NavigateAndCommit(GURL(base::StrCat(
+      {"https://example.com/", std::string(kMaxRecordedUrlBytes, 'a'),
+       "?token=secret#frag"})));
+  PrepareWebContentsForInput(tab);
+  SetDefaultClickableAXTree(tab, "Submit");
   SimulateMouseDown(tab, 30.0f, 40.0f);
 
   service_.StopRecording();
   const RecordingArtifacts& result = service_.artifacts();
   ASSERT_EQ(result.actions.size(), 2u);
+  EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
+  EXPECT_EQ(result.actions[0].description, "Clicked on 'Submit'");
   EXPECT_EQ(result.actions[0].current_url, GURL("https://example.com/page"));
+  EXPECT_EQ(result.actions[1].type, SkillRecordingActionType::kLeftClick);
+  EXPECT_EQ(result.actions[1].description, "Clicked on 'Submit'");
   EXPECT_EQ(result.actions[1].current_url, GURL("https://example.com/"));
 }
 
@@ -547,7 +647,8 @@ TEST_F(SkillRecordingServiceTest, IgnoresClicksOnContextHubAndNonHttpUrls) {
   service_.StopRecording();
   const RecordingArtifacts& result = service_.artifacts();
   ASSERT_EQ(result.actions.size(), 1u);
-  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:55, Y:65");
+  EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
+  EXPECT_EQ(result.actions[0].description, "Clicked on 'Submit'");
 }
 
 TEST_F(SkillRecordingServiceTest,
@@ -555,10 +656,12 @@ TEST_F(SkillRecordingServiceTest,
   TestBrowserInstance window1(&profile_);
   content::WebContents* tab1 =
       AddTab(&window1, GURL("https://example.com/window1"));
+  SetDefaultClickableAXTree(tab1, "Window 1 Button");
 
   TestBrowserInstance window2(&profile_);
   content::WebContents* tab2 =
       AddTab(&window2, GURL("https://example.com/window2"));
+  SetDefaultClickableAXTree(tab2, "Window 2 Button");
 
   // Make `window2` the most recently active window before starting recording.
   window2.Activate();
@@ -579,9 +682,11 @@ TEST_F(SkillRecordingServiceTest,
   service_.StopRecording();
   const RecordingArtifacts& result = service_.artifacts();
   ASSERT_EQ(result.actions.size(), 2u);
-  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:33, Y:44");
+  EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
+  EXPECT_EQ(result.actions[0].description, "Clicked on 'Window 2 Button'");
   EXPECT_EQ(result.actions[0].current_url, GURL("https://example.com/window2"));
-  EXPECT_EQ(result.actions[1].description, "Mouse Clicked at X:77, Y:88");
+  EXPECT_EQ(result.actions[1].type, SkillRecordingActionType::kLeftClick);
+  EXPECT_EQ(result.actions[1].description, "Clicked on 'Window 1 Button'");
   EXPECT_EQ(result.actions[1].current_url, GURL("https://example.com/window1"));
 }
 
@@ -605,7 +710,7 @@ TEST_F(SkillRecordingServiceTest, IgnoresClicksFromOtherProfiles) {
   service_.StopRecording();
   const RecordingArtifacts& result = service_.artifacts();
   ASSERT_EQ(result.actions.size(), 1u);
-  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:30, Y:40");
+  EXPECT_EQ(result.actions[0].description, "Clicked on 'Submit'");
 }
 
 TEST_F(SkillRecordingServiceTest,
@@ -613,6 +718,7 @@ TEST_F(SkillRecordingServiceTest,
   TestBrowserInstance browser(&profile_);
   content::WebContents* original_tab =
       AddTab(&browser, GURL("https://example.com/original"));
+  SetDefaultClickableAXTree(original_tab, "Original Button");
 
   service_.StartRecording();
 
@@ -622,6 +728,8 @@ TEST_F(SkillRecordingServiceTest,
   content::WebContents* raw_replacement = replacement_contents.get();
   content::WebContentsTester::For(raw_replacement)
       ->NavigateAndCommit(GURL("https://example.com/replacement"));
+  PrepareWebContentsForInput(raw_replacement);
+  SetDefaultClickableAXTree(raw_replacement, "Replacement Button");
 
   std::unique_ptr<content::WebContents> old_contents =
       browser.tab_strip_model()->DiscardWebContents(
@@ -633,7 +741,7 @@ TEST_F(SkillRecordingServiceTest,
   service_.StopRecording();
   const RecordingArtifacts& result = service_.artifacts();
   ASSERT_EQ(result.actions.size(), 1u);
-  EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:50, Y:60");
+  EXPECT_EQ(result.actions[0].description, "Clicked on 'Replacement Button'");
   EXPECT_EQ(result.actions[0].current_url,
             GURL("https://example.com/replacement"));
 }

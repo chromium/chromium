@@ -31,6 +31,7 @@ class Profile;
 class ProfileBrowserCollection;
 
 namespace content {
+class ScopedAccessibilityMode;
 class WebContents;
 }  // namespace content
 
@@ -159,12 +160,13 @@ class SkillRecordingService final : public KeyedService,
   RecordingArtifacts artifacts_;
   base::ObserverList<Observer> observers_;
 
+  std::unique_ptr<RecordReplayMesClient> mes_client_;
+  std::unique_ptr<SkillAudioCapturer> audio_capturer_;
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
   std::unique_ptr<TabActiveObserver> tab_observer_;
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
-  std::unique_ptr<SkillAudioCapturer> audio_capturer_;
-  std::unique_ptr<RecordReplayMesClient> mes_client_;
 
   base::WeakPtrFactory<SkillRecordingService> weak_ptr_factory_{this};
 };

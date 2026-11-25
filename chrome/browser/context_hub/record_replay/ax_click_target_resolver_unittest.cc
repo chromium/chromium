@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -73,7 +72,7 @@ class AxClickTargetResolverTest : public ChromeRenderViewHostTestHarness {
     SetAXTreeForTreeId(main_rfh()->GetAXTreeID(), std::move(update));
   }
 
-  std::optional<std::string> ResolveAt(float x, float y) {
+  ClickTargetResolution ResolveAt(float x, float y) {
     return ResolveClickedElementLabel(*main_rfh(), main_rfh(),
                                       gfx::PointF(x, y));
   }
@@ -83,9 +82,9 @@ class AxClickTargetResolverTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(AxClickTargetResolverTest,
-       ReturnsNulloptForMissingTreeNullTargetOrCrossOriginSubframe) {
-  // Missing `AXTreeManager` for `main_rfh()`.
-  EXPECT_EQ(ResolveAt(10.0f, 10.0f), std::nullopt);
+       DistinguishesUnavailableTreeFromNullOrCrossOriginTargets) {
+  // Missing `AXTreeManager` for `main_rfh()` reports `kTreeUnavailable`.
+  EXPECT_EQ(ResolveAt(10.0f, 10.0f), ClickTargetResolution::TreeUnavailable());
 
   ui::AXNodeData root;
   root.id = 1;
@@ -106,17 +105,22 @@ TEST_F(AxClickTargetResolverTest,
 
   EXPECT_EQ(
       ResolveClickedElementLabel(*main_rfh(), nullptr, gfx::PointF(10, 10)),
-      std::nullopt);
-  EXPECT_EQ(ResolveAt(10.0f, 10.0f), "Submit");
+      ClickTargetResolution::Ignored());
+  EXPECT_EQ(ResolveAt(10.0f, 10.0f), ClickTargetResolution::Resolved("Submit"));
 
   content::RenderFrameHost* cross_rfh =
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("cross");
   cross_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://other.example/sub"), cross_rfh);
+  // A cross-origin subframe must remain `kIgnored` even when its `AXTree` is
+  // not populated yet.
+  EXPECT_EQ(
+      ResolveClickedElementLabel(*main_rfh(), cross_rfh, gfx::PointF(10, 10)),
+      ClickTargetResolution::Ignored());
   SetAXTreeForTreeId(cross_rfh->GetAXTreeID(), main_update);
   EXPECT_EQ(
       ResolveClickedElementLabel(*main_rfh(), cross_rfh, gfx::PointF(10, 10)),
-      std::nullopt);
+      ClickTargetResolution::Ignored());
 }
 
 TEST_F(AxClickTargetResolverTest,
@@ -167,10 +171,12 @@ TEST_F(AxClickTargetResolverTest,
                   password_field, search_box, unnamed_button};
   SetMainFrameAXTree(std::move(update));
 
-  EXPECT_EQ(ResolveAt(20.0f, 15.0f), std::nullopt);
-  EXPECT_EQ(ResolveAt(20.0f, 70.0f), std::nullopt);
-  EXPECT_EQ(ResolveAt(20.0f, 120.0f), "Search");
-  EXPECT_EQ(ResolveAt(20.0f, 170.0f), "button");
+  EXPECT_EQ(ResolveAt(20.0f, 15.0f), ClickTargetResolution::Ignored());
+  EXPECT_EQ(ResolveAt(20.0f, 70.0f), ClickTargetResolution::Ignored());
+  EXPECT_EQ(ResolveAt(20.0f, 120.0f),
+            ClickTargetResolution::Resolved("Search"));
+  EXPECT_EQ(ResolveAt(20.0f, 170.0f),
+            ClickTargetResolution::Resolved("button"));
 }
 
 TEST_F(AxClickTargetResolverTest, ResolvesClickInSameOriginChildIframe) {
@@ -198,6 +204,11 @@ TEST_F(AxClickTargetResolverTest, ResolvesClickInSameOriginChildIframe) {
   main_update.nodes = {main_root, iframe_node};
   SetMainFrameAXTree(std::move(main_update));
 
+  // Before the same-origin child iframe's `AXTree` is populated, clicks inside
+  // it report `kTreeUnavailable` instead of `kIgnored`.
+  EXPECT_EQ(ResolveAt(120.0f, 130.0f),
+            ClickTargetResolution::TreeUnavailable());
+
   ui::AXNodeData child_root;
   child_root.id = 1;
   child_root.role = ax::mojom::Role::kRootWebArea;
@@ -218,8 +229,9 @@ TEST_F(AxClickTargetResolverTest, ResolvesClickInSameOriginChildIframe) {
   child_update.nodes = {child_root, iframe_button};
   SetAXTreeForTreeId(child_tree_id, std::move(child_update));
 
-  EXPECT_EQ(ResolveAt(105.0f, 105.0f), std::nullopt);
-  EXPECT_EQ(ResolveAt(120.0f, 130.0f), "Iframe Action");
+  EXPECT_EQ(ResolveAt(105.0f, 105.0f), ClickTargetResolution::Ignored());
+  EXPECT_EQ(ResolveAt(120.0f, 130.0f),
+            ClickTargetResolution::Resolved("Iframe Action"));
 }
 
 TEST_F(AxClickTargetResolverTest,
@@ -285,13 +297,15 @@ TEST_F(AxClickTargetResolverTest,
   SetMainFrameAXTree(std::move(update));
 
   // Clicking empty dialog surface must not hit `occluded_backdrop_button`.
-  EXPECT_EQ(ResolveAt(140.0f, 130.0f), std::nullopt);
+  EXPECT_EQ(ResolveAt(140.0f, 130.0f), ClickTargetResolution::Ignored());
   // Clicking `dialog_button` must not be stolen by smaller
   // `occluded_tiny_button`.
-  EXPECT_EQ(ResolveAt(265.0f, 265.0f), "Confirm");
+  EXPECT_EQ(ResolveAt(265.0f, 265.0f),
+            ClickTargetResolution::Resolved("Confirm"));
   // Controls outside the active dialog bounds remain reachable even under an
   // ignored modal node.
-  EXPECT_EQ(ResolveAt(20.0f, 20.0f), "Outside Action");
+  EXPECT_EQ(ResolveAt(20.0f, 20.0f),
+            ClickTargetResolution::Resolved("Outside Action"));
 }
 
 TEST_F(AxClickTargetResolverTest, SkipsPartiallyOffscreenOversizedContainer) {
@@ -327,7 +341,7 @@ TEST_F(AxClickTargetResolverTest, SkipsPartiallyOffscreenOversizedContainer) {
   scrolled_update.nodes = {root, scrolled_container, plain_text};
   SetMainFrameAXTree(std::move(scrolled_update));
 
-  EXPECT_EQ(ResolveAt(20.0f, 25.0f), std::nullopt);
+  EXPECT_EQ(ResolveAt(20.0f, 25.0f), ClickTargetResolution::Ignored());
 }
 
 TEST_F(AxClickTargetResolverTest, BoundsTraversalAtMaxVisitedNodes) {
@@ -375,8 +389,9 @@ TEST_F(AxClickTargetResolverTest, BoundsTraversalAtMaxVisitedNodes) {
   wide_update.nodes = std::move(nodes);
   SetMainFrameAXTree(std::move(wide_update));
 
-  EXPECT_EQ(ResolveAt(210.0f, 20.0f), "Within Budget");
-  EXPECT_EQ(ResolveAt(20.0f, 20.0f), std::nullopt);
+  EXPECT_EQ(ResolveAt(210.0f, 20.0f),
+            ClickTargetResolution::Resolved("Within Budget"));
+  EXPECT_EQ(ResolveAt(20.0f, 20.0f), ClickTargetResolution::Ignored());
 }
 
 TEST_F(
@@ -443,10 +458,12 @@ TEST_F(
       dialog_link, hidden_container, visible_child_button};
   SetMainFrameAXTree(std::move(update));
 
-  EXPECT_EQ(ResolveAt(130.0f, 130.0f), "Link inside the dialog.");
-  EXPECT_EQ(ResolveAt(350.0f, 350.0f), std::nullopt);
-  EXPECT_EQ(ResolveAt(40.0f, 470.0f), "Visible Child");
-  EXPECT_EQ(ResolveAt(160.0f, 470.0f), std::nullopt);
+  EXPECT_EQ(ResolveAt(130.0f, 130.0f),
+            ClickTargetResolution::Resolved("Link inside the dialog."));
+  EXPECT_EQ(ResolveAt(350.0f, 350.0f), ClickTargetResolution::Ignored());
+  EXPECT_EQ(ResolveAt(40.0f, 470.0f),
+            ClickTargetResolution::Resolved("Visible Child"));
+  EXPECT_EQ(ResolveAt(160.0f, 470.0f), ClickTargetResolution::Ignored());
 }
 
 TEST_F(AxClickTargetResolverTest,
@@ -531,6 +548,13 @@ TEST_F(AxClickTargetResolverTest,
       same_iframe,  overlay_above_same};
   SetMainFrameAXTree(std::move(main_update));
 
+  // Before either child `AXTree` is populated, the cross-origin iframe must
+  // still return `kIgnored` while the same-origin iframe reports
+  // `kTreeUnavailable`.
+  EXPECT_EQ(ResolveAt(120.0f, 115.0f), ClickTargetResolution::Ignored());
+  EXPECT_EQ(ResolveAt(420.0f, 115.0f),
+            ClickTargetResolution::TreeUnavailable());
+
   ui::AXNodeData cross_root;
   cross_root.id = 1;
   cross_root.role = ax::mojom::Role::kRootWebArea;
@@ -574,16 +598,19 @@ TEST_F(AxClickTargetResolverTest,
   // Click inside in-process cross-origin `cross_iframe` must not leak
   // `"Cross Secret"`, walk up to `"Outer Clickable Wrapper"`, or hit
   // `"Occluded Behind Cross Iframe"`.
-  EXPECT_EQ(ResolveAt(120.0f, 115.0f), std::nullopt);
+  EXPECT_EQ(ResolveAt(120.0f, 115.0f), ClickTargetResolution::Ignored());
   // Click on `clickable_wrapper` outside `cross_iframe` still resolves.
-  EXPECT_EQ(ResolveAt(320.0f, 115.0f), "Outer Clickable Wrapper");
+  EXPECT_EQ(ResolveAt(320.0f, 115.0f),
+            ClickTargetResolution::Resolved("Outer Clickable Wrapper"));
   // Empty space in `same_iframe` must not hit `"Occluded Behind Same Empty"`.
-  EXPECT_EQ(ResolveAt(420.0f, 115.0f), std::nullopt);
+  EXPECT_EQ(ResolveAt(420.0f, 115.0f), ClickTargetResolution::Ignored());
   // Large button in `same_iframe` must not be stolen by smaller
   // `"Occluded Tiny Parent Button"`.
-  EXPECT_EQ(ResolveAt(425.0f, 185.0f), "Same Origin Button");
+  EXPECT_EQ(ResolveAt(425.0f, 185.0f),
+            ClickTargetResolution::Resolved("Same Origin Button"));
   // Later-in-DOM overlay button above `same_iframe` remains reachable.
-  EXPECT_EQ(ResolveAt(595.0f, 120.0f), "Floating Overlay");
+  EXPECT_EQ(ResolveAt(595.0f, 120.0f),
+            ClickTargetResolution::Resolved("Floating Overlay"));
 }
 
 TEST_F(AxClickTargetResolverTest,
@@ -626,8 +653,9 @@ TEST_F(AxClickTargetResolverTest,
                   typed_value_text};
   SetMainFrameAXTree(std::move(update));
 
-  EXPECT_EQ(ResolveAt(30.0f, 25.0f), "Open");
-  EXPECT_EQ(ResolveAt(30.0f, 95.0f), "textField");
+  EXPECT_EQ(ResolveAt(30.0f, 25.0f), ClickTargetResolution::Resolved("Open"));
+  EXPECT_EQ(ResolveAt(30.0f, 95.0f),
+            ClickTargetResolution::Resolved("textField"));
 }
 
 TEST_F(AxClickTargetResolverTest,
@@ -700,17 +728,18 @@ TEST_F(AxClickTargetResolverTest,
                   nav_link,  clickable_article, article_text};
   SetMainFrameAXTree(std::move(update));
 
-  // Disabled controls and scrollbars return `std::nullopt` without bubbling up
+  // Disabled controls and scrollbars return `kIgnored` without bubbling up
   // to `clickable_card`, while clicking the card background still resolves.
-  EXPECT_EQ(ResolveAt(40.0f, 35.0f), std::nullopt);
-  EXPECT_EQ(ResolveAt(298.0f, 50.0f), std::nullopt);
-  EXPECT_EQ(ResolveAt(180.0f, 100.0f), "Product Card");
+  EXPECT_EQ(ResolveAt(40.0f, 35.0f), ClickTargetResolution::Ignored());
+  EXPECT_EQ(ResolveAt(298.0f, 50.0f), ClickTargetResolution::Ignored());
+  EXPECT_EQ(ResolveAt(180.0f, 100.0f),
+            ClickTargetResolution::Resolved("Product Card"));
 
   // Landmarks and `kArticle` with delegated `kClick` are skipped unless an
   // inner control is hit.
-  EXPECT_EQ(ResolveAt(40.0f, 240.0f), std::nullopt);
-  EXPECT_EQ(ResolveAt(160.0f, 240.0f), "Home");
-  EXPECT_EQ(ResolveAt(40.0f, 325.0f), std::nullopt);
+  EXPECT_EQ(ResolveAt(40.0f, 240.0f), ClickTargetResolution::Ignored());
+  EXPECT_EQ(ResolveAt(160.0f, 240.0f), ClickTargetResolution::Resolved("Home"));
+  EXPECT_EQ(ResolveAt(40.0f, 325.0f), ClickTargetResolution::Ignored());
 }
 
 }  // namespace

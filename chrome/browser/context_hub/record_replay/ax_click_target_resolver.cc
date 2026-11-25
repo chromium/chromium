@@ -10,7 +10,9 @@
 #include <ranges>
 #include <set>
 #include <string>
+#include <utility>
 
+#include "base/check.h"
 #include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -61,7 +63,9 @@ bool IsSameOriginDirectDescendant(const content::RenderFrameHost& main_rfh,
 // eligible in-process same-origin child frame trees) within bounded depth and
 // node budgets, updating `best_node` and `best_area` with the smallest visible
 // unignored node containing `hit_point` while respecting modal/dialog and
-// subframe scoping.
+// subframe scoping. Sets `hit_unavailable_child_tree` if the winning hit lands
+// inside an eligible in-process same-origin child iframe whose `AXTree` is not
+// available yet.
 void FindBestHitNode(const ui::AXTree& tree,
                      const ui::AXNode* current_node,
                      const gfx::PointF& hit_point,
@@ -71,7 +75,8 @@ void FindBestHitNode(const ui::AXTree& tree,
                      size_t& visited_nodes,
                      std::set<ui::AXTreeID>& visited_trees,
                      float& best_area,
-                     const ui::AXNode*& best_node) {
+                     const ui::AXNode*& best_node,
+                     bool& hit_unavailable_child_tree) {
   constexpr size_t kMaxTraversalDepth = 256;
   constexpr size_t kMaxVisitedNodes = 10000;
   if (!current_node || depth > kMaxTraversalDepth ||
@@ -109,6 +114,7 @@ void FindBestHitNode(const ui::AXTree& tree,
       best_area > 0.0f && best_area >= area) {
     float dialog_best_area = std::numeric_limits<float>::max();
     const ui::AXNode* dialog_best_node = nullptr;
+    bool dialog_hit_unavailable_tree = false;
     for (const ui::AXNode* child :
          std::views::reverse(current_node->GetAllChildren())) {
       if (visited_nodes >= kMaxVisitedNodes) {
@@ -116,10 +122,11 @@ void FindBestHitNode(const ui::AXTree& tree,
       }
       FindBestHitNode(tree, child, hit_point, main_rfh, target_rwh, depth + 1,
                       visited_nodes, visited_trees, dialog_best_area,
-                      dialog_best_node);
+                      dialog_best_node, dialog_hit_unavailable_tree);
     }
     best_node = dialog_best_node ? dialog_best_node : current_node;
     best_area = 0.0f;
+    hit_unavailable_child_tree = dialog_hit_unavailable_tree;
     return;
   }
 
@@ -138,31 +145,36 @@ void FindBestHitNode(const ui::AXTree& tree,
       const bool same_widget_child =
           child_rfh && child_rfh->GetRenderWidgetHost() == target_rwh;
       if (same_widget_child && best_area > 0.0f && best_area >= area) {
-        if (!IsSameOriginDirectDescendant(main_rfh, child_rfh)) {
+        if (!IsSameOriginDirectDescendant(main_rfh, child_rfh) ||
+            !visited_trees.insert(child_tree_id.value()).second) {
           best_node = current_node;
           best_area = 0.0f;
+          hit_unavailable_child_tree = false;
           return;
         }
-        if (ui::AXTreeManager* child_manager =
-                ui::AXTreeManager::ForChildTree(*current_node)) {
-          if (const ui::AXTree* child_tree = child_manager->ax_tree();
-              child_tree && child_tree->root() &&
-              visited_trees.insert(child_tree_id.value()).second) {
-            const gfx::RectF unclipped_bounds = tree.GetTreeBounds(
-                current_node, /*offscreen=*/nullptr, /*clip_bounds=*/false);
-            float child_best_area = std::numeric_limits<float>::max();
-            const ui::AXNode* child_best_node = nullptr;
-            FindBestHitNode(*child_tree, child_tree->root(),
-                            hit_point - unclipped_bounds.OffsetFromOrigin(),
-                            main_rfh, target_rwh, depth + 1, visited_nodes,
-                            visited_trees, child_best_area, child_best_node);
-            best_node = child_best_node ? child_best_node : current_node;
-            best_area = 0.0f;
-            return;
-          }
+        ui::AXTreeManager* child_manager =
+            ui::AXTreeManager::ForChildTree(*current_node);
+        const ui::AXTree* child_tree =
+            child_manager ? child_manager->ax_tree() : nullptr;
+        if (!child_tree || !child_tree->root()) {
+          best_node = current_node;
+          best_area = 0.0f;
+          hit_unavailable_child_tree = true;
+          return;
         }
-        best_node = current_node;
+        const gfx::RectF unclipped_bounds = tree.GetTreeBounds(
+            current_node, /*offscreen=*/nullptr, /*clip_bounds=*/false);
+        float child_best_area = std::numeric_limits<float>::max();
+        const ui::AXNode* child_best_node = nullptr;
+        bool child_hit_unavailable_tree = false;
+        FindBestHitNode(*child_tree, child_tree->root(),
+                        hit_point - unclipped_bounds.OffsetFromOrigin(),
+                        main_rfh, target_rwh, depth + 1, visited_nodes,
+                        visited_trees, child_best_area, child_best_node,
+                        child_hit_unavailable_tree);
+        best_node = child_best_node ? child_best_node : current_node;
         best_area = 0.0f;
+        hit_unavailable_child_tree = child_hit_unavailable_tree;
         return;
       }
     }
@@ -177,13 +189,15 @@ void FindBestHitNode(const ui::AXTree& tree,
       break;
     }
     FindBestHitNode(tree, child, hit_point, main_rfh, target_rwh, depth + 1,
-                    visited_nodes, visited_trees, best_area, best_node);
+                    visited_nodes, visited_trees, best_area, best_node,
+                    hit_unavailable_child_tree);
   }
 
   if (contains_point && !skip_node) {
     if (area < best_area) {
       best_area = area;
       best_node = current_node;
+      hit_unavailable_child_tree = false;
     }
   }
 }
@@ -246,12 +260,36 @@ const ui::AXNode* FindClickableTargetNode(const ui::AXNode& best_node,
 
 }  // namespace
 
-std::optional<std::string> ResolveClickedElementLabel(
+ClickTargetResolution ClickTargetResolution::Resolved(std::string label) {
+  CHECK(!label.empty());
+  return ClickTargetResolution(Status::kResolved, std::move(label));
+}
+
+ClickTargetResolution ClickTargetResolution::TreeUnavailable() {
+  return ClickTargetResolution(Status::kTreeUnavailable, {});
+}
+
+ClickTargetResolution ClickTargetResolution::Ignored() {
+  return ClickTargetResolution(Status::kIgnored, {});
+}
+
+ClickTargetResolution::ClickTargetResolution(ClickTargetResolution&&) noexcept =
+    default;
+
+ClickTargetResolution& ClickTargetResolution::operator=(
+    ClickTargetResolution&&) noexcept = default;
+
+ClickTargetResolution::~ClickTargetResolution() = default;
+
+ClickTargetResolution::ClickTargetResolution(Status status, std::string label)
+    : status(status), label(std::move(label)) {}
+
+ClickTargetResolution ResolveClickedElementLabel(
     content::RenderFrameHost& main_rfh,
     content::RenderFrameHost* target_rfh,
     const gfx::PointF& point_in_widget_dips) {
   if (!IsSameOriginDirectDescendant(main_rfh, target_rfh)) {
-    return std::nullopt;
+    return ClickTargetResolution::Ignored();
   }
 
   float scale = 1.0f;
@@ -269,24 +307,29 @@ std::optional<std::string> ResolveClickedElementLabel(
   const ui::AXTreeID target_tree_id = target_rfh->GetAXTreeID();
   ui::AXTreeManager* manager = ui::AXTreeManager::FromID(target_tree_id);
   if (!manager || !manager->ax_tree() || !manager->ax_tree()->root()) {
-    return std::nullopt;
+    return ClickTargetResolution::TreeUnavailable();
   }
 
   size_t visited_nodes = 0;
   std::set<ui::AXTreeID> visited_trees = {target_tree_id};
   const ui::AXNode* best_node = nullptr;
   float best_area = std::numeric_limits<float>::max();
+  bool hit_unavailable_child_tree = false;
   FindBestHitNode(*manager->ax_tree(), manager->ax_tree()->root(), hit_point,
                   main_rfh, target_rfh->GetRenderWidgetHost(), /*depth=*/0,
-                  visited_nodes, visited_trees, best_area, best_node);
+                  visited_nodes, visited_trees, best_area, best_node,
+                  hit_unavailable_child_tree);
 
+  if (hit_unavailable_child_tree) {
+    return ClickTargetResolution::TreeUnavailable();
+  }
   if (!best_node) {
-    return std::nullopt;
+    return ClickTargetResolution::Ignored();
   }
 
   const ui::AXNode* target_node = FindClickableTargetNode(*best_node, scale);
   if (!target_node) {
-    return std::nullopt;
+    return ClickTargetResolution::Ignored();
   }
 
   std::string name = SanitizeRecordedText(target_node->GetNameUTF8());
@@ -297,7 +340,7 @@ std::optional<std::string> ResolveClickedElementLabel(
   if (name.empty()) {
     name = ui::ToString(target_node->GetRole());
   }
-  return name;
+  return ClickTargetResolution::Resolved(std::move(name));
 }
 
 }  // namespace context_hub
