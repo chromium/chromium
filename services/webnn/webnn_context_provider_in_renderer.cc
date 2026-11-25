@@ -48,9 +48,13 @@ void WebNNContextProviderInRenderer::CreateWebNNContext(
                    !webgpu_context_helper_.is_null();
 #endif  // BUILDFLAG(BUILD_LITERT_WITH_ML_DRIFT) && BUILDFLAG(WEBNN_USE_DAWN)
 #endif  // BUILDFLAG(WEBNN_USE_LITERT)
-  // Fall back to CPU for non-GPU requests (e.g. NPU) or when in-renderer
-  // WebGPU execution is unavailable.
-  if (options->device != mojom::Device::kGpu || !can_use_webgpu) {
+  // LiteRT has no NPU accelerator yet, so NPU requests run on the GPU like GPU
+  // requests.
+  if (options->device == mojom::Device::kNpu) {
+    options->device = mojom::Device::kGpu;
+  }
+  // Fall back to CPU when in-renderer WebGPU execution is unavailable.
+  if (!can_use_webgpu) {
     options->device = mojom::Device::kCpu;
   }
   mojo::PendingRemote<mojom::WebNNContext> remote;
