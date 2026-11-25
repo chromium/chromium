@@ -47,7 +47,9 @@ class DefaultBrowserSetter {
   virtual DefaultBrowserSetterType GetType() const = 0;
 
   // Asynchronously starts the process of setting the browser as default.
-  // Accepts a callback for success/failure handling.
+  // `on_complete` may run before this returns, and may destroy the setter, so
+  // implementations run it last. Destroying the setter ends the run without
+  // running `on_complete`.
   virtual void Execute(DefaultBrowserSetterCompletionCallback on_complete,
                        const ExecuteParams& params) = 0;
 };

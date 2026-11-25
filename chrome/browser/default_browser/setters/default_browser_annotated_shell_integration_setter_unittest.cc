@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -202,6 +203,30 @@ TEST_F(DefaultBrowserAnnotatedShellIntegrationSetterTest,
   EXPECT_FALSE(state.guidance_alive);
   histograms_.ExpectUniqueSample(kOutcomeHistogram, RecordedOutcome::kAbandoned,
                                  1);
+}
+
+// The setter can be destroyed from inside its completion callback.
+TEST_F(DefaultBrowserAnnotatedShellIntegrationSetterTest,
+       CompletionCallbackCanDestroyTheSetter) {
+  FakeState state;
+  auto setter = std::make_unique<DefaultBrowserAnnotatedShellIntegrationSetter>(
+      std::make_unique<FakeShellIntegrationSetter>(state),
+      base::BindRepeating(&FakeBubbleController::Create,
+                          base::Unretained(&state)));
+  base::test::TestFuture<DefaultBrowserState> result;
+  setter->Execute(
+      base::BindLambdaForTesting([&](DefaultBrowserState result_state) {
+        setter.reset();
+        result.SetValue(result_state);
+      }),
+      DefaultBrowserSetter::ExecuteParams());
+
+  std::move(state.shell_integration_complete)
+      .Run(DefaultBrowserState::IS_DEFAULT);
+
+  EXPECT_EQ(result.Get(), DefaultBrowserState::IS_DEFAULT);
+  histograms_.ExpectUniqueSample(kOutcomeHistogram,
+                                 RecordedOutcome::kFlowFinishedDefaultSet, 1);
 }
 
 TEST_F(DefaultBrowserAnnotatedShellIntegrationSetterTest,

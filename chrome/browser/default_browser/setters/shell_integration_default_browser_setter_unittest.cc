@@ -4,6 +4,9 @@
 
 #include "chrome/browser/default_browser/setters/shell_integration_default_browser_setter.h"
 
+#include <memory>
+
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/shell_integration.h"
 #include "content/public/test/browser_task_environment.h"
@@ -45,6 +48,23 @@ TEST(ShellIntegrationDefaultBrowserSetterTest, ConcurrentExecuteCompletesBoth) {
       << "Second operation's callback must be invoked";
   EXPECT_LT(first_future.Get(), DefaultBrowserState::NUM_DEFAULT_STATES);
   EXPECT_LT(second_future.Get(), DefaultBrowserState::NUM_DEFAULT_STATES);
+}
+
+// Relies on ASan to catch a use after free.
+TEST(ShellIntegrationDefaultBrowserSetterTest,
+     CompletionCallbackCanDestroyTheSetter) {
+  content::BrowserTaskEnvironment task_environment_;
+  shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
+
+  auto setter = std::make_unique<ShellIntegrationDefaultBrowserSetter>();
+  base::test::TestFuture<DefaultBrowserState> future;
+  setter->Execute(base::BindLambdaForTesting([&](DefaultBrowserState state) {
+                    setter.reset();
+                    future.SetValue(state);
+                  }),
+                  /*params=*/{});
+
+  ASSERT_TRUE(future.Wait());
 }
 
 }  // namespace default_browser

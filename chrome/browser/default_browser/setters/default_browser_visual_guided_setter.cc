@@ -39,11 +39,8 @@ class DefaultBrowserVisualGuidedSetter::ExecutionRunner
                   DefaultBrowserSetterCompletionCallback on_complete)
       : profile_(profile), on_complete_(std::move(on_complete)) {}
 
-  ~ExecutionRunner() override {
-    if (on_complete_) {
-      std::move(on_complete_).Run(DefaultBrowserState::NOT_DEFAULT);
-    }
-  }
+  // Destroying the runner ends the run without reporting.
+  ~ExecutionRunner() override = default;
 
   void Run(const ExecuteParams& params) {
     GURL url = GetDefaultBrowserVisualGuideURL();
