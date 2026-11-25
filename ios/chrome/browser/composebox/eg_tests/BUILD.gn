@@ -59,7 +59,15 @@ source_set("eg_test_support+eg2") {
   sources = [
     "composebox_app_interface.h",
     "composebox_app_interface_stub.mm",
+    "composebox_egtest_util.h",
+    "composebox_egtest_util.mm",
   ]
-  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+  deps = [
+    "//ios/chrome/browser/composebox/shared/ui:ui_constants",
+    "//ios/chrome/browser/tab_picker/ui:ui_constants",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
   public_deps = [ "//third_party/omnibox_proto" ]
 }

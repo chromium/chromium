@@ -6,6 +6,7 @@
 
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/composebox/eg_tests/composebox_app_interface.h"
+#import "ios/chrome/browser/composebox/eg_tests/composebox_egtest_util.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/scene/ui/scene_ui_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -51,6 +53,16 @@ NSString* const kChromiumLogoPageTitle = @"chromium logo";
 // link.
 std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
     const net::test_server::HttpRequest& request) {
+  if (request.relative_url.find("/page") == 0) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content_type("text/html");
+    std::string page_id = request.relative_url.substr(1);
+    response->set_content("<html><head><title>Title " + page_id +
+                          "</title></head><body>Content " + page_id +
+                          "</body></html>");
+    return response;
+  }
   if (request.relative_url.find("/search") != 0) {
     return nullptr;
   }
@@ -108,7 +120,8 @@ void OpenCoBrowse(const GURL& url) {
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kCobrowseTabSharingConsentAccepted];
 
-  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey loadURL:url
+              withTimeout:base::test::ios::kWaitForPageLoadTimeout];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Focus the omnibox. Tapping fake omnibox might not be enough on all pages.
@@ -117,30 +130,39 @@ void OpenCoBrowse(const GURL& url) {
   // Wait for the composebox to be visible.
   id<GREYMatcher> composeboxMatcher =
       grey_accessibilityID(kComposeboxAccessibilityIdentifier);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:composeboxMatcher];
+  if (![ChromeEarlGrey testUIElementAppearanceWithMatcher:composeboxMatcher]) {
+    [ChromeEarlGreyUI focusOmnibox];
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:composeboxMatcher];
+  }
 
   // Tap on the plus button to open the menu.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
-      performAction:grey_tap()];
+  id<GREYMatcher> plusButton = grey_allOf(
+      grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusButton];
+  [[EarlGrey selectElementWithMatcher:plusButton] performAction:grey_tap()];
 
   // Tap "Attach current tab" to trigger Co-browse.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kComposeboxAttachCurrentTabActionAccessibilityIdentifier)]
+  id<GREYMatcher> attachCurrentTabMatcher =
+      grey_allOf(grey_accessibilityID(
+                     kComposeboxAttachCurrentTabActionAccessibilityIdentifier),
+                 grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:attachCurrentTabMatcher];
+  [[EarlGrey selectElementWithMatcher:attachCurrentTabMatcher]
       performAction:grey_tap()];
 
-  // Wait for the send button to be enabled.
+  // Wait for the send button to be enabled. Attaching a tab extracts page
+  // context and encodes a full-screen snapshot, which can exceed the default
+  // 10s UI element timeout when multiple tabs are open on iPad.
+  id<GREYMatcher> sendButtonMatcher = grey_allOf(
+      grey_accessibilityID(kComposeboxSendButtonAccessibilityIdentifier),
+      grey_enabled(), nil);
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kComposeboxSendButtonAccessibilityIdentifier),
-                     grey_enabled(), nil)];
+      waitForUIElementToAppearWithMatcher:sendButtonMatcher
+                                  timeout:base::test::ios::
+                                              kWaitForPageLoadTimeout];
 
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kComposeboxSendButtonAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:sendButtonMatcher]
       performAction:grey_tap()];
 }
 
@@ -203,9 +225,31 @@ void VerifySharedTabs(NSArray<NSString*>* expectedTitles,
         grey_sufficientlyVisible(), nil);
   };
 
+  id<GREYMatcher> sharedTabsCollectionView = grey_allOf(
+      grey_kindOfClassName(@"UICollectionView"),
+      grey_descendant(grey_kindOfClassName(@"UICollectionViewListCell")),
+      grey_sufficientlyVisible(), nil);
+
   {
     ScopedSynchronizationDisabler disabler;
     for (NSString* title in expectedTitles) {
+      NSError* error = nil;
+      [[EarlGrey selectElementWithMatcher:cellMatcher(title)]
+          assertWithMatcher:grey_sufficientlyVisible()
+                      error:&error];
+      while (error) {
+        NSError* scrollError = nil;
+        [[EarlGrey selectElementWithMatcher:sharedTabsCollectionView]
+            performAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+                    error:&scrollError];
+        if (scrollError) {
+          break;
+        }
+        error = nil;
+        [[EarlGrey selectElementWithMatcher:cellMatcher(title)]
+            assertWithMatcher:grey_sufficientlyVisible()
+                        error:&error];
+      }
       [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cellMatcher(title)];
     }
     for (NSString* title in absentTitles) {
@@ -366,7 +410,8 @@ void RemoveSharedTab(NSString* title) {
                   testCobrowseRemovedTabStaysRemovedAfterRefocusingOrQuery)] ||
       [self
           isRunningTest:
-              @selector(testCobrowseNavigatingToChromeURLDoesNotAutoAttach)]) {
+              @selector(testCobrowseNavigatingToChromeURLDoesNotAutoAttach)] ||
+      [self isRunningTest:@selector(testScrollSharedTabsSheetWithManyTabs)]) {
     config.features_enabled.push_back(kComposeboxPlusButtonBottomSheet);
   }
 
@@ -1762,21 +1807,8 @@ void RemoveSharedTab(NSString* title) {
                    /*dismissAfterVerification=*/YES);
 
   // 6. Explicitly re-add pony.html manually via the Tab Picker.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
-      performAction:grey_tap()];
-  id<GREYMatcher> selectTabsMatcher = grey_allOf(
-      grey_accessibilityID(kComposeboxSelectTabsActionAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:selectTabsMatcher];
-  [[EarlGrey selectElementWithMatcher:selectTabsMatcher]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kTabPickerCollectionViewAccessibilityIdentifier)];
-  [[EarlGrey selectElementWithMatcher:TabWithTitle(kPonyPageTitle)]
-      performAction:grey_tap()];
+  OpenComposeboxTabPicker();
+  SelectTabInTabPickerWithTitle(kPonyPageTitle);
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
@@ -2048,6 +2080,103 @@ void RemoveSharedTab(NSString* title) {
 
   [[EarlGrey selectElementWithMatcher:CloseButton()]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that scrolling the Shared Tabs sheet with more than 7 shared tabs does
+// not crash and displays all selected tabs. Regression test for
+// crbug.com/585069126.
+- (void)testScrollSharedTabsSheetWithManyTabs {
+  constexpr int kExtraTabCount = 8;
+  NSMutableArray<NSString*>* expectedTitles = [NSMutableArray array];
+  for (int i = 1; i <= kExtraTabCount; ++i) {
+    if (i > 1) {
+      [ChromeEarlGrey openNewTab];
+    }
+    std::string path = "/page" + base::NumberToString(i);
+    [ChromeEarlGrey loadURL:self.testServer->GetURL(path)
+                withTimeout:base::test::ios::kWaitForPageLoadTimeout];
+    [ChromeEarlGrey
+        waitForWebStateContainingText:"Content page" + base::NumberToString(i)];
+    NSString* pageTitle = [NSString stringWithFormat:@"Title page%d", i];
+    [ChromeEarlGrey waitForCurrentTabTitle:pageTitle];
+    [expectedTitles addObject:pageTitle];
+  }
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:kExtraTabCount + 1];
+  OpenCoBrowse(self.testServer->GetURL(kPonyPagePath));
+  [expectedTitles addObject:kPonyPageTitle];
+
+  // Wait for the assistant to appear in its default expanded detent.
+  AssistantContainerDetent initialDetent = [self defaultExpandedDetent];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+  WaitForDetent(initialDetent);
+
+  // Focus the input plate inside the Cobrowse assistant to expand to Large
+  // and trigger auto-attachment of the active tab.
+  id<GREYMatcher> cobrowseOmniboxInitial = grey_allOf(
+      chrome_test_util::Omnibox(),
+      grey_ancestor(grey_accessibilityID(DetentIdentifier(initialDetent))),
+      nil);
+  [[EarlGrey selectElementWithMatcher:cobrowseOmniboxInitial]
+      performAction:grey_tap()];
+  WaitForDetent(AssistantContainerDetent::kLarge);
+
+  // Wait for the auto-attached tab accordion animation to finish before
+  // tapping the plus button so the delayed slide animation does not intercept
+  // the tap.
+  id<GREYMatcher> cobrowseTabsAccordion = grey_allOf(
+      grey_accessibilityID(kComposeboxTabsAccordionAccessibilityIdentifier),
+      grey_ancestor(
+          grey_accessibilityID(kAssistantContainerDetentLargeIdentifier)),
+      grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:cobrowseTabsAccordion
+                                  timeout:base::test::ios::
+                                              kWaitForPageLoadTimeout];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:cobrowseTabsAccordion
+                                     timeout:base::test::ios::
+                                                 kWaitForPageLoadTimeout];
+
+  // Open the Tab Picker and select all 8 extra tabs (9 tabs total including
+  // pony).
+  OpenComposeboxTabPicker();
+
+  // Ensure the current selected tab is visible as the tab picker requires to
+  // scroll to the bottom on iPad to see the current tab.
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kPonyPageTitle)]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (error) {
+    [[EarlGrey selectElementWithMatcher:
+                   grey_accessibilityID(
+                       kTabPickerCollectionViewAccessibilityIdentifier)]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+    [[EarlGrey selectElementWithMatcher:TabWithTitle(kPonyPageTitle)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+
+  for (int i = kExtraTabCount; i >= 1; --i) {
+    SelectTabInTabPickerWithTitle(
+        [NSString stringWithFormat:@"Title page%d", i]);
+  }
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(
+                          kTabPickerCollectionViewAccessibilityIdentifier)];
+  // Extracting Rich APC and encoding full-screen snapshots across 8 tabs can
+  // exceed the single-page 20s timeout on 13-inch iPad simulators under load.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:cobrowseTabsAccordion
+                                                 timeout:base::Seconds(60)];
+
+  // Verify that all 9 shared tabs appear in the Shared Tabs sheet when
+  // scrolling.
+  VerifySharedTabs(expectedTitles, @[],
+                   /*dismissAfterVerification=*/YES);
 }
 
 @end

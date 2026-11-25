@@ -1,6 +1,8 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/aim/model",
+  "+ios/chrome/browser/tab_picker/ui",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/test",
   "+third_party/omnibox_proto",
   # keep-sorted end
 ]

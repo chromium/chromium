@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/eg_tests/composebox_app_interface.h"
+#import "ios/chrome/browser/composebox/eg_tests/composebox_egtest_util.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_constants.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
@@ -89,50 +90,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       "%d</title></head><body class='page-%d'>Content %d</body></html>",
       page_number, page_number, page_number));
   return http_response;
-}
-
-// Opens the tab picker from the composebox.
-void OpenTabPicker() {
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      performAction:grey_tap()
-              error:&error];
-  if (error) {
-    [ChromeEarlGreyUI focusOmnibox];
-  }
-
-  // Wait for the composebox to be visible.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
-
-  // Tap the plus button.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
-      performAction:grey_tap()];
-
-  // Tap the select tabs button.
-  id<GREYMatcher> selectTabsMatcher = grey_allOf(
-      grey_accessibilityID(kComposeboxSelectTabsActionAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:selectTabsMatcher];
-  [[EarlGrey selectElementWithMatcher:selectTabsMatcher]
-      assertWithMatcher:grey_enabled()];
-  [[EarlGrey selectElementWithMatcher:selectTabsMatcher]
-      performAction:grey_tap()];
-}
-
-// Selects a tab in the tab picker with the given `title`.
-void SelectTabWithTitle(NSString* title) {
-  id<GREYMatcher> tab_matcher =
-      grey_allOf(TabWithTitle(title), grey_minimumVisiblePercent(0.8), nil);
-  [[[EarlGrey selectElementWithMatcher:tab_matcher]
-         usingSearchAction:grey_scrollInDirectionWithStartPoint(
-                               kGREYDirectionUp, /*amount=*/150,
-                               /*xOriginStartPercentage=*/0.5,
-                               /*yOriginStartPercentage=*/0.5)
-      onElementWithMatcher:grey_accessibilityID(
-                               kTabPickerCollectionViewAccessibilityIdentifier)]
-      performAction:grey_tap()];
 }
 
 id<GREYMatcher> TabCellAttachmentMatcherWithTitle(NSString* title) {
@@ -885,7 +842,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
 - (void)testTabPickerUI {
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  OpenTabPicker();
+  OpenComposeboxTabPicker();
 
   // Check that the tab picker is visible.
   [[EarlGrey
@@ -953,7 +910,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey waitForMainTabCount:2];
 
-  OpenTabPicker();
+  OpenComposeboxTabPicker();
 
   // Check that the empty state view is visible.
   [[EarlGrey
@@ -1006,7 +963,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
                @"Page title failed to update.");
   }
   [ChromeEarlGrey waitForMainTabCount:totalNumberOfTabs];
-  OpenTabPicker();
+  OpenComposeboxTabPicker();
 
   // Ensure the current selected tab is visible as the tab picker requires to
   // scroll to the bottom to see the current tab.
@@ -1029,7 +986,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   for (NSUInteger i = totalNumberOfTabs; i > 1; --i) {
     NSString* pageTitle =
         base::SysUTF8ToNSString(base::StringPrintf(kPageTitle, i));
-    SelectTabWithTitle(pageTitle);
+    SelectTabInTabPickerWithTitle(pageTitle);
     [[EarlGrey
         selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
                                      IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE,
@@ -1041,7 +998,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   // is displayed.
   NSString* firstPageTitle =
       base::SysUTF8ToNSString(base::StringPrintf(kPageTitle, 1));
-  SelectTabWithTitle(firstPageTitle);
+  SelectTabInTabPickerWithTitle(firstPageTitle);
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
@@ -1121,12 +1078,12 @@ void RemoveAttachmentWithTitle(NSString* title) {
       waitForWebStateContainingText:base::StringPrintf(kPageContent, 2)];
 
   // Open the Tab Picker from the Composebox.
-  OpenTabPicker();
+  OpenComposeboxTabPicker();
 
   // Select the first tab (which is currently unrealized).
   NSString* firstPageTitle =
       base::SysUTF8ToNSString(base::StringPrintf(kPageTitle, 1));
-  SelectTabWithTitle(firstPageTitle);
+  SelectTabInTabPickerWithTitle(firstPageTitle);
 
   // Attach the selected tab.
   [[EarlGrey
@@ -1150,7 +1107,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  OpenTabPicker();
+  OpenComposeboxTabPicker();
 
   // Tap the cancel button in the navigation bar.
   [[EarlGrey
@@ -1243,10 +1200,10 @@ void RemoveAttachmentWithTitle(NSString* title) {
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey
       waitForWebStateContainingText:base::StringPrintf(kPageContent, 1)];
-  OpenTabPicker();
+  OpenComposeboxTabPicker();
   NSString* pageTitle =
       base::SysUTF8ToNSString(base::StringPrintf(kPageTitle, 1));
-  SelectTabWithTitle(pageTitle);
+  SelectTabInTabPickerWithTitle(pageTitle);
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
@@ -1392,7 +1349,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
   [ChromeEarlGrey waitForMainTabCount:totalNumberOfTabs];
 
-  OpenTabPicker();
+  OpenComposeboxTabPicker();
 
   // The last tab opened is the active one.
   NSString* currentPageTitle = base::SysUTF8ToNSString(
