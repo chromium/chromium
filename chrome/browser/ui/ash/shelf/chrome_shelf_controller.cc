@@ -752,7 +752,9 @@ void ChromeShelfController::UpdateBrowserItemState() {
 
   int browser_index = model_->ItemIndexByID(chrome_id);
   if (browser_index < 0) {
-    CHECK_EQ(browser_status, ash::STATUS_CLOSED, base::NotFatalUntil::M162);
+    // TODO(crbug.com/590153468): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(browser_status, ash::STATUS_CLOSED);
     return;
   }
   ash::ShelfItem browser_item = model_->items()[browser_index];
