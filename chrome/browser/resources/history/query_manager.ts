@@ -34,10 +34,6 @@ export class HistoryQueryManagerElement extends CrLitElement {
     return 'history-query-manager';
   }
 
-  static get template() {
-    return null;
-  }
-
   static override get properties() {
     return {
       queryState: {

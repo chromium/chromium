@@ -27,10 +27,6 @@ export class HistoryRouterElement extends CrLitElement {
     return 'history-router';
   }
 
-  static get template() {
-    return null;
-  }
-
   static override get properties() {
     return {
       lastSelectedTab: {

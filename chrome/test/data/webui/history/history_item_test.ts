@@ -103,6 +103,41 @@ suite('<history-item> unit test', function() {
                 .trim());
       });
   // </if>
+
+  test('debug info visibility follows isUrlInLocalDatabase', async function() {
+    item.item = {
+      ...createHistoryEntry('2016-03-16 10:00', 'http://www.google.com'),
+      debug: {
+        isUrlInLocalDatabase: true,
+        visitCount: 5,
+        typedCount: 2,
+      },
+    };
+    await microtasksFinished();
+
+    let debugInfos = item.shadowRoot.querySelectorAll<HTMLElement>(
+        '#debug-container .debug-info');
+    assertEquals(5, debugInfos.length);
+    assertEquals('typed count: 2', debugInfos[3]!.textContent.trim());
+    assertEquals('visit count: 5', debugInfos[4]!.textContent.trim());
+    assertTrue(isVisible(debugInfos[3]!));
+    assertTrue(isVisible(debugInfos[4]!));
+
+    item.item = {
+      ...createHistoryEntry('2016-03-16 10:00', 'http://www.google.com'),
+      debug: {
+        isUrlInLocalDatabase: false,
+        visitCount: 5,
+        typedCount: 2,
+      },
+    };
+    await microtasksFinished();
+
+    debugInfos = item.shadowRoot.querySelectorAll<HTMLElement>(
+        '#debug-container .debug-info');
+    assertFalse(isVisible(debugInfos[3]!));
+    assertFalse(isVisible(debugInfos[4]!));
+  });
 });
 
 // <if expr="is_android">

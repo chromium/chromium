@@ -152,7 +152,6 @@ export class HistoryItemElement extends HistoryItemElementBase {
     if (changedProperties.has('item')) {
       this.isExpanded_ = false;
       this.itemChanged_();
-      this.fire('iron-resize');
     }
   }
 
@@ -318,7 +317,6 @@ export class HistoryItemElement extends HistoryItemElementBase {
     BrowserProxyImpl.getInstance().recordAction(
         this.isExpanded_ ? 'HistoryPage_CriticalActionsExpanded' :
                            'HistoryPage_CriticalActionsCollapsed');
-    this.fire('iron-resize');
   }
 
   protected getCriticalActions_(): CriticalAction[] {
