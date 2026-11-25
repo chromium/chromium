@@ -4,24 +4,6 @@
 
 PRESUBMIT_VERSION = '2.0.0'
 
-
-def CheckStdlib(input_api, output_api):
-  if not input_api.HasAffectedFiles(path=['stdlib', 'test', 'protos']):
-    return []
-  stdlib_dir = input_api.PresubmitLocalPath()
-  chromium_src_dir = input_api.os_path.abspath(
-    input_api.os_path.join(stdlib_dir, '..', '..')
-  )
-  tool = input_api.os_path.join(
-    chromium_src_dir, 'tools', 'tracing', 'check_stdlib.py'
-  )
-  cmd = [input_api.python3_executable, tool]
-  test_cmd = input_api.Command(
-    name='check_stdlib', cmd=cmd, kwargs={}, message=output_api.PresubmitError
-  )
-  return input_api.RunTests([test_cmd])
-
-
 _STDLIB_PATHS = (
   r"^base/tracing/stdlib/",
   r"^base/tracing/test/",

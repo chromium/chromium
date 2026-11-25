@@ -49,6 +49,9 @@ generate_wrapper("perfetto_diff_tests") {
   _perfetto_script =
       rebase_path("//third_party/perfetto/tools/diff_test_trace_processor.py",
                   root_build_dir)
+  _check_sql_modules_script =
+      rebase_path("//third_party/perfetto/tools/check_sql_modules.py",
+                  root_build_dir)
   _chrome_stdlib = rebase_path("//base/tracing/stdlib/chrome", root_build_dir)
   _test_dir = rebase_path("//base/tracing", root_build_dir)
 
@@ -58,6 +61,8 @@ generate_wrapper("perfetto_diff_tests") {
   executable_args = [
     "--trace-processor-shell",
     "@WrappedPath(./trace_processor_shell)",
+    "--pfsql-binary",
+    "@WrappedPath(./pfsql)",
     "--chrome-stdlib",
     "@WrappedPath($_chrome_stdlib)",
     "--test-dir",
@@ -82,6 +87,8 @@ generate_wrapper("perfetto_diff_tests") {
     "@WrappedPath($_rebased_trace_summary_descriptor)",
     "--script",
     "@WrappedPath($_perfetto_script)",
+    "--check-sql-modules-script",
+    "@WrappedPath($_check_sql_modules_script)",
   ]
 
   data_deps = [
@@ -95,13 +102,15 @@ generate_wrapper("perfetto_diff_tests") {
     "//third_party/perfetto/protos/perfetto/trace/gpu:gpu_track_event_descriptor",
     "//third_party/perfetto/protos/perfetto/trace_summary:descriptor",
     "//third_party/perfetto/protos/third_party/android:extension_descriptor_gen",
+    "//third_party/perfetto/src/tools/pfsql",
     "//third_party/perfetto/src/trace_processor:trace_processor_shell",
   ]
 
   data = [
     "//third_party/perfetto/test/trace_processor/",
-    "//third_party/perfetto/tools/diff_test_trace_processor.py",
+    "//third_party/perfetto/tools/",
     "//third_party/perfetto/python/generators/diff_tests/",
+    "//third_party/perfetto/python/generators/sql_processing/",
     "//base/tracing/",
     _trace_descriptor,
     _test_extensions_descriptor,

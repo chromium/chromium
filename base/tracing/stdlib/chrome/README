@@ -12,4 +12,4 @@ If you make changes to the chrome stdlib, you should add/modify a diff test too.
 
 ## PerfettoSQL Schema
 
-The Perfetto CI runs a [script](https://source.chromium.org/chromium/chromium/src/+/main:third_party/perfetto/tools/check_sql_modules.py) to check that standard library modules are documented with the proper schema. In Chromium, we can run these checks locally by running `tools/tracing/check_stdlib.py`. This is also run as a presubmit check, so you could also run `git cl presubmit` to run these after you've created a CL.
+The Perfetto CI runs a [script](https://source.chromium.org/chromium/chromium/src/+/main:third_party/perfetto/tools/check_sql_modules.py) to check that standard library modules are documented with the proper schema. In Chromium, these checks are run as part of `perfetto_diff_tests` (`run_perfetto_diff_tests`).

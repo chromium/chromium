@@ -32,10 +32,21 @@ def main():
   parser.add_argument('--chrome-stdlib', type=str, required=True)
   parser.add_argument('--test-dir', type=str, required=True)
   parser.add_argument('--trace-processor-shell', type=str, required=True)
+  parser.add_argument('--pfsql-binary', type=str, required=True)
   parser.add_argument("--name-filter", default="", type=str, required=False)
   parser.add_argument("--script", type=str, required=True)
+  parser.add_argument("--check-sql-modules-script", type=str, required=True)
   parser.add_argument('--isolated-script-test-output', type=str, required=False)
   args, _ = parser.parse_known_args()
+
+  check_sql_modules_cmd = [
+    "vpython3",
+    args.check_sql_modules_script,
+    "--pfsql-binary",
+    args.pfsql_binary,
+    "--stdlib-sources",
+    os.path.dirname(os.path.abspath(args.chrome_stdlib)),
+  ]
 
   cmd = [
     "vpython3",
@@ -70,13 +81,18 @@ def main():
   )
 
   test_start_time = time.time()
-  completed_process = subprocess.run(cmd, capture_output=True)
+  check_process = subprocess.run(check_sql_modules_cmd, capture_output=True)
+  sys.stderr.buffer.write(check_process.stderr)
+  sys.stdout.buffer.write(check_process.stdout)
 
+  completed_process = subprocess.run(cmd, capture_output=True)
   sys.stderr.buffer.write(completed_process.stderr)
   sys.stdout.buffer.write(completed_process.stdout)
 
+  returncode = check_process.returncode or completed_process.returncode
+
   if args.isolated_script_test_output:
-    failure_type = 'PASS' if completed_process.returncode == 0 else 'FAIL'
+    failure_type = 'PASS' if returncode == 0 else 'FAIL'
     results_json = {
       'version': 3,
       'interrupted': False,
@@ -94,7 +110,7 @@ def main():
     with open(args.isolated_script_test_output, 'w') as fp:
       json.dump(results_json, fp)
 
-  return completed_process.returncode
+  return returncode
 
 
 if __name__ == '__main__':
