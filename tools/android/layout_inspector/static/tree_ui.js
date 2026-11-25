@@ -5,7 +5,15 @@
 'use strict';
 
 /******** TreeVis ********/
-/** Renders and manages the interactive, hierarchical DOM-based View list. */
+/**
+ * Renders and manages the interactive, hierarchical DOM-based View list.
+ *
+ * Employs a Nearest Visible Ancestor (NVA) map to handle deep element
+ * highlights. If a hovered (or upcoming selected) View is hidden inside a
+ * collapsed parent node, the NVA map resolves the closest visible parent,
+ * allowing the parent row to render an active ancestor highlight (e.g.,
+ * 'hides-hover').
+ */
 class TreeVis {
   /**
    * @param {!Element} divViewTree
@@ -21,6 +29,8 @@ class TreeVis {
     this.viewRows = [];
     /** @type {!Array<boolean>} View Row (by index) expansion state. */
     this.expandedMap = [];
+    /** @type {!Int32Array} View Row (by index) NVA (possibly self). */
+    this.nvaMap = new Int32Array(0);
     /** @type {?number} Nullable index of the View Row with hover visuals. */
     this.hoverIndex = null;
   }
@@ -29,26 +39,39 @@ class TreeVis {
     // No need to call `_syncHover(false)`.
     this.el.root.innerHTML = '';
     this.hoverIndex = null;
+    this.nvaMap = new Int32Array(0);
     this.expandedMap.length = 0;
     this.viewRows.length = 0;
   }
 
+  _recalcNVA() {
+    // Calculate the Nearest Visible Ancestor (NVA) for every node in a single
+    // pass. Because the views array is pre-sorted in pre-order DFS traversal, a
+    // parent's visibility and NVA are guaranteed to be computed before we visit
+    // its children. This allows us to propagate visibility state down the tree
+    // in O(N) time without any recursion or back-tracking!
+    for (const node of this.model.views) {
+      if (!node.parent) {
+        this.nvaMap[node.index] = node.index;
+      } else {
+        const pNva = this.nvaMap[node.parent.index];
+        const isParentVisible = (pNva === node.parent.index);
+        const isParentExpanded = this.expandedMap[node.parent.index];
+        this.nvaMap[node.index] =
+            (isParentVisible && isParentExpanded) ? node.index : pNva;
+      }
+    }
+  }
+
   updateVisibility() {
+    this._recalcNVA();
+
     for (const view of this.model.views) {
       const row = this.viewRows[view.index];
 
       // Visibility (Row).
-      // Node is visible if and only if all of its ancestors are expanded.
-      // NOTE: This parent-walk is a simple O(depth) implementation. We'll
-      // optimize this to O(1) in a follow-up CL using a Nearest Visible
-      // Ancestor (NVA) map once hover/selection highlights are introduced.
-      let isVisible = true;
-      for (let curView = view.parent; curView; curView = curView.parent) {
-        if (!this.expandedMap[curView.index]) {
-          isVisible = false;
-          break;
-        }
-      }
+      // Node is visible if its NVA is itself.
+      const isVisible = (this.nvaMap[view.index] === view.index);
       row.classList.toggle('hidden', !isVisible);
 
       // Toggle Icon (Arrow).
@@ -73,6 +96,7 @@ class TreeVis {
       this.expandedMap[view.index] = initiallyExpanded;
     }
 
+    this.nvaMap = new Int32Array(views.length);
     this.viewRows = new Array(views.length);
 
     // Look-up to determine whether a View (identified by index) should have a
@@ -174,11 +198,17 @@ class TreeVis {
     if (this.hoverIndex == null) return;
 
     this.viewRows[this.hoverIndex].classList.toggle('hovered-view', enable);
+    const nvaIndex = this.nvaMap[this.hoverIndex];
+    if (nvaIndex !== this.hoverIndex) {
+      this.viewRows[nvaIndex].classList.toggle('hides-hover', enable);
+    }
   }
 
   /**
    * Transactional wrapper to temporarily remove hover visuals, run state
    * changes that would affect DOM and Vis states, then restore (if needed).
+   * In particular, this allows ancestor hover highlights to gracefully update
+   * as View Rows dynamically show / hide, and `nvaMap` updates.
    * @template T
    * @param {function(): T} fun The state mutation transaction callback.
    * @return {T}

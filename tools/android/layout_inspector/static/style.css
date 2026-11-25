@@ -298,6 +298,10 @@ label:has(#sel-zoom) {
       background-color: var(--bg-hover);
     }
 
+    &.hides-hover {
+      border-left-color: var(--color-hover);
+    }
+
     &.is-window {
       font-weight: bold;
     }
