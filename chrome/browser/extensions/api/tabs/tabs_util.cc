@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/constants.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/error_utils.h"
@@ -107,12 +108,18 @@ base::expected<void, std::string> ValidateTabForMove(
     return base::unexpected(tabs_constants::kNotAllowedForDevToolsError);
   }
 
-  if (PictureInPictureWindowManager::IsChildWebContents(web_contents)) {
+  if (IsPictureInPictureContents(web_contents)) {
     return base::unexpected(
         tabs_constants::kNotAllowedForPictureInPictureError);
   }
 
   return {};
+}
+
+bool IsPictureInPictureContents(content::WebContents* web_contents) {
+  return web_contents &&
+         (PictureInPictureWindowManager::IsChildWebContents(web_contents) ||
+          web_contents->GetPictureInPictureOptions().has_value());
 }
 
 int MoveTabToWindow(ExtensionFunction* function,

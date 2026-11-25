@@ -29,7 +29,6 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 #include "chrome/browser/resource_coordinator/utils.h"
@@ -1464,12 +1463,8 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   }
 
   // Picture-in-Picture windows host a single tab that is always active,
-  // highlighted, unpinned, and never discarded. Also check
-  // `GetPictureInPictureOptions()` because a closing Document PiP window clears
-  // `PictureInPictureWindowManager`'s child pointer while async page unload is
-  // still in flight and the tab remains reachable by ID.
-  if (PictureInPictureWindowManager::IsChildWebContents(contents) ||
-      contents->GetPictureInPictureOptions().has_value()) {
+  // highlighted, unpinned, and never discarded.
+  if (tabs_util::IsPictureInPictureContents(contents)) {
     // Validate all properties before applying any update so that a rejected
     // call does not perform a partial update. Requests matching the tab's
     // fixed state are no-ops.
@@ -1925,7 +1920,7 @@ bool TabsMoveFunction::MoveTab(int tab_id,
     return false;
   }
 
-  if (PictureInPictureWindowManager::IsChildWebContents(contents)) {
+  if (tabs_util::IsPictureInPictureContents(contents)) {
     *error = tabs_constants::kNotAllowedForPictureInPictureError;
     return false;
   }
@@ -2087,7 +2082,7 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
     }
   }
 
-  if (PictureInPictureWindowManager::IsChildWebContents(web_contents)) {
+  if (tabs_util::IsPictureInPictureContents(web_contents)) {
     return RespondNow(
         Error(tabs_constants::kNotAllowedForPictureInPictureError));
   }
@@ -2312,7 +2307,7 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
       return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
     }
 
-    if (PictureInPictureWindowManager::IsChildWebContents(web_contents)) {
+    if (tabs_util::IsPictureInPictureContents(web_contents)) {
       return RespondNow(
           Error(tabs_constants::kNotAllowedForPictureInPictureError));
     }
@@ -3196,7 +3191,7 @@ ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
       return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
     }
 
-    if (PictureInPictureWindowManager::IsChildWebContents(contents)) {
+    if (tabs_util::IsPictureInPictureContents(contents)) {
       return RespondNow(
           Error(tabs_constants::kNotAllowedForPictureInPictureError));
     }

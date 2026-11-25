@@ -49,6 +49,14 @@ base::expected<void, std::string> ValidateTabForMove(
     content::WebContents* web_contents,
     bool is_locked_fullscreen = false);
 
+// Returns true if `web_contents` is the child WebContents of a Document
+// Picture-in-Picture window. In addition to
+// PictureInPictureWindowManager::IsChildWebContents(), this checks
+// WebContents::GetPictureInPictureOptions() because a closing Document PiP
+// window clears the manager's child pointer while async page unload is still in
+// flight and the tab remains reachable through the tabs and windows APIs.
+bool IsPictureInPictureContents(content::WebContents* web_contents);
+
 // Moves the given tab to the `target_browser`. On success, returns the new
 // index of the tab in the target tabstrip. On failure, returns -1. Assumes that
 // the caller has already checked whether the target window is different from

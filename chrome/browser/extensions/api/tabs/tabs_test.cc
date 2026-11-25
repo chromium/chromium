@@ -6742,4 +6742,63 @@ IN_PROC_BROWSER_TEST_F(
       api::windows::OnFocusChanged::kEventName, process, extension->url());
 }
 
+// Verifies that tabs API functions keep rejecting operations on a Document
+// Picture-in-Picture child WebContents while its window is being torn down,
+// when `PictureInPictureWindowManager` has already cleared its child pointer
+// but the tab remains reachable by ID.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       PictureInPictureTabRejectedDuringTeardown) {
+  content::WebContents::CreateParams create_params(profile());
+  create_params.picture_in_picture_options =
+      blink::mojom::PictureInPictureWindowOptions();
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(create_params);
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(standalone_window_id);
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents.get());
+  ASSERT_NE(tab_id, api::tabs::TAB_ID_NONE);
+  ASSERT_FALSE(
+      PictureInPictureWindowManager::IsChildWebContents(web_contents.get()));
+
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      web_contents.get());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("PiPTeardownTest").Build();
+  const int normal_window_id =
+      ExtensionTabUtil::GetWindowId(browser_window_interface());
+  auto run_expect_error = [&](scoped_refptr<ExtensionFunction> function,
+                              const std::string& args) {
+    function->set_extension(extension.get());
+    return utils::RunFunctionAndReturnError(function.get(), args, profile());
+  };
+
+  EXPECT_EQ(tabs_constants::kNotAllowedForPictureInPictureError,
+            run_expect_error(base::MakeRefCounted<TabsReloadFunction>(),
+                             base::StringPrintf("[%d]", tab_id)));
+  EXPECT_EQ(tabs_constants::kNotAllowedForPictureInPictureError,
+            run_expect_error(base::MakeRefCounted<TabsDiscardFunction>(),
+                             base::StringPrintf("[%d]", tab_id)));
+  EXPECT_EQ(tabs_constants::kNotAllowedForPictureInPictureError,
+            run_expect_error(
+                base::MakeRefCounted<TabsMoveFunction>(),
+                base::StringPrintf(R"([%d, {"windowId": %d, "index": 0}])",
+                                   tab_id, normal_window_id)));
+  EXPECT_EQ(tabs_constants::kNotAllowedForPictureInPictureError,
+            run_expect_error(
+                base::MakeRefCounted<TabsGroupFunction>(),
+                base::StringPrintf(
+                    R"([{"tabIds": %d, "createProperties": {"windowId": %d}}])",
+                    tab_id, normal_window_id)));
+  EXPECT_EQ(tabs_constants::kNotAllowedForPictureInPictureError,
+            run_expect_error(
+                base::MakeRefCounted<TabsUpdateFunction>(),
+                base::StringPrintf(R"([%d, {"url": "https://example.com/"}])",
+                                   tab_id)));
+}
+
 }  // namespace extensions
