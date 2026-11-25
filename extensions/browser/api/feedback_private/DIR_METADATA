@@ -1,6 +1,4 @@
-monorail: {
-  component: "Platform>Apps>Feedback"
-}
-buganizer_public: {
-  component_id: 1456349
+# ChromeOS > Software > Feedback
+buganizer {
+  component_id: 1033360
 }
