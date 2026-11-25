@@ -2941,6 +2941,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Intercept.DestinationUrlResolution"
+    enum="SigninInterceptDestinationUrlResolution" expires_after="2027-09-30">
+  <owner>ydago@chromium.org</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records the destination URL resolution outcome each time an intercepted tab
+    is moved to the destination profile (new or existing) while the tab is still
+    open. Not recorded when there is no tab to move.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.EnterprisePolicyDecisionSource"
     enum="SigninInterceptEnterprisePolicyDecisionSource"
     expires_after="2027-09-30">

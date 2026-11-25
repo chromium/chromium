@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -43,21 +44,72 @@
 
 namespace {
 
+using DestinationUrlResolution =
+    DiceInterceptedSessionStartupHelper::DestinationUrlResolution;
 using NewProfileOAuthMultiLoginResult =
     DiceInterceptedSessionStartupHelper::NewProfileOAuthMultiLoginResult;
 
-// Returns true for an HTTPS google.<TLD> or youtube.<TLD> URL without
-// credentials that isn't on the Gaia origin.
-bool IsAllowedContinueURL(const GURL& continue_url) {
-  return continue_url.is_valid() && continue_url.SchemeIs(url::kHttpsScheme) &&
-         !continue_url.has_username() && !continue_url.has_password() &&
-         !gaia::HasGaiaSchemeHostPort(continue_url) &&
-         (google_util::IsGoogleDomainUrl(
-              continue_url, google_util::ALLOW_SUBDOMAIN,
-              google_util::DISALLOW_NON_STANDARD_PORTS) ||
-          google_util::IsYoutubeDomainUrl(
-              continue_url, google_util::ALLOW_SUBDOMAIN,
-              google_util::DISALLOW_NON_STANDARD_PORTS));
+// Classifies the `continue` URL extracted from an intercepted Gaia URL.
+// `HasGaiaSchemeHostPort()` precedes the domain/port check so a custom
+// `--gaia-url` origin is classified as same-origin Gaia rather than generic
+// disallowed.
+DestinationUrlResolution ClassifyContinueUrl(const GURL& continue_url) {
+  if (!continue_url.is_valid() || !continue_url.SchemeIs(url::kHttpsScheme) ||
+      continue_url.has_username() || continue_url.has_password()) {
+    return DestinationUrlResolution::kGaiaDisallowedContinueFallbackToNtp;
+  }
+  if (gaia::HasGaiaSchemeHostPort(continue_url)) {
+    return DestinationUrlResolution::kGaiaSameOriginContinueFallbackToNtp;
+  }
+  if (!google_util::IsGoogleDomainUrl(
+          continue_url, google_util::ALLOW_SUBDOMAIN,
+          google_util::DISALLOW_NON_STANDARD_PORTS) &&
+      !google_util::IsYoutubeDomainUrl(
+          continue_url, google_util::ALLOW_SUBDOMAIN,
+          google_util::DISALLOW_NON_STANDARD_PORTS)) {
+    return DestinationUrlResolution::kGaiaDisallowedContinueFallbackToNtp;
+  }
+  return DestinationUrlResolution::kGaiaAllowedContinueUrl;
+}
+
+// Returns the URL to open in the destination profile for `intercepted_url` and
+// the resolution bucket to record.
+std::pair<GURL, DestinationUrlResolution> ResolveDestinationUrl(
+    const GURL& intercepted_url) {
+  if (!intercepted_url.is_valid()) {
+    return {chrome::ChromeUINewTabURLAsGURL(),
+            DestinationUrlResolution::kInvalidUrlFallbackToNtp};
+  }
+  if (!base::FeatureList::IsEnabled(switches::kDiceInterceptSanitizeGaiaUrl)) {
+    return {intercepted_url,
+            DestinationUrlResolution::kSanitizationDisabledKeepUrl};
+  }
+  if (!gaia::HasGaiaSchemeHostPort(intercepted_url)) {
+    // Only standard HTTP(S) web navigations represent external web sessions
+    // intended to be transferred across profile boundaries. Non-HTTP(S) schemes
+    // (such as `chrome://` internal pages, `data:`, or `javascript:`) can carry
+    // profile-specific internal state or script execution across the profile
+    // boundary, so they fall back to the New Tab Page in the destination
+    // profile.
+    if (intercepted_url.SchemeIsHTTPOrHTTPS()) {
+      return {intercepted_url,
+              DestinationUrlResolution::kNonGaiaHttpOrHttpsKeepUrl};
+    }
+    return {chrome::ChromeUINewTabURLAsGURL(),
+            DestinationUrlResolution::kNonGaiaNonHttpOrHttpsFallbackToNtp};
+  }
+  std::string continue_spec;
+  if (!net::GetValueForKeyInQuery(intercepted_url, "continue",
+                                  &continue_spec)) {
+    return {chrome::ChromeUINewTabURLAsGURL(),
+            DestinationUrlResolution::kGaiaWithoutContinueFallbackToNtp};
+  }
+  GURL continue_url(continue_spec);
+  DestinationUrlResolution resolution = ClassifyContinueUrl(continue_url);
+  if (resolution == DestinationUrlResolution::kGaiaAllowedContinueUrl) {
+    return {std::move(continue_url), resolution};
+  }
+  return {chrome::ChromeUINewTabURLAsGURL(), resolution};
 }
 
 // Returns true if |account_id| is signed in the cookies.
@@ -187,31 +239,10 @@ void DiceInterceptedSessionStartupHelper::Startup(
 // static
 GURL DiceInterceptedSessionStartupHelper::GetDestinationURLForInterceptedTab(
     const GURL& intercepted_url) {
-  if (!intercepted_url.is_valid()) {
-    return chrome::ChromeUINewTabURLAsGURL();
-  }
-  if (!base::FeatureList::IsEnabled(switches::kDiceInterceptSanitizeGaiaUrl)) {
-    return intercepted_url;
-  }
-  if (!gaia::HasGaiaSchemeHostPort(intercepted_url)) {
-    // Only standard HTTP(S) web navigations represent external web sessions
-    // intended to be transferred across profile boundaries. Non-HTTP(S) schemes
-    // (such as chrome:// internal pages, data:, or javascript:) can carry
-    // profile-specific internal state or script execution across the profile
-    // boundary, so they fall back to the New Tab Page in the destination
-    // profile.
-    return intercepted_url.SchemeIsHTTPOrHTTPS()
-               ? intercepted_url
-               : chrome::ChromeUINewTabURLAsGURL();
-  }
-  std::string continue_spec;
-  if (!net::GetValueForKeyInQuery(intercepted_url, "continue",
-                                  &continue_spec)) {
-    return chrome::ChromeUINewTabURLAsGURL();
-  }
-  GURL continue_url(continue_spec);
-  return IsAllowedContinueURL(continue_url) ? continue_url
-                                            : chrome::ChromeUINewTabURLAsGURL();
+  auto [destination_url, resolution] = ResolveDestinationUrl(intercepted_url);
+  base::UmaHistogramEnumeration(kSigninInterceptDestinationUrlResolution,
+                                resolution);
+  return destination_url;
 }
 
 void DiceInterceptedSessionStartupHelper::OnAccountsInCookieUpdated(

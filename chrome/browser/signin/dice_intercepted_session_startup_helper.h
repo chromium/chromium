@@ -22,6 +22,8 @@ inline constexpr char kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin[] =
     "Signin.Dice.LinkedAccounts.Latency.NewProfileOAuthMultiLogin";
 inline constexpr char kDiceLinkedAccountsNewProfileOAuthMultiLoginResult[] =
     "Signin.Dice.LinkedAccounts.NewProfileOAuthMultiLoginResult";
+inline constexpr char kSigninInterceptDestinationUrlResolution[] =
+    "Signin.Intercept.DestinationUrlResolution";
 
 class GURL;
 
@@ -65,6 +67,25 @@ class DiceInterceptedSessionStartupHelper
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:DiceLinkedAccountsNewProfileOAuthMultiLoginResult)
 
+  // Outcome of resolving the destination URL when moving an intercepted tab to
+  // the destination profile.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(SigninInterceptDestinationUrlResolution)
+  enum class DestinationUrlResolution {
+    kInvalidUrlFallbackToNtp = 0,
+    kSanitizationDisabledKeepUrl = 1,
+    kNonGaiaHttpOrHttpsKeepUrl = 2,
+    kNonGaiaNonHttpOrHttpsFallbackToNtp = 3,
+    kGaiaWithoutContinueFallbackToNtp = 4,
+    kGaiaAllowedContinueUrl = 5,
+    kGaiaSameOriginContinueFallbackToNtp = 6,
+    kGaiaDisallowedContinueFallbackToNtp = 7,
+    kMaxValue = kGaiaDisallowedContinueFallbackToNtp,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninInterceptDestinationUrlResolution)
+
   // |profile| is the new profile that was created after signin interception.
   // |account_id| is the main account for the profile, it's already in the
   // profile.
@@ -88,7 +109,8 @@ class DiceInterceptedSessionStartupHelper
   void Startup(base::OnceCallback<void(BrowserWindowInterface*)> callback);
 
   // Resolves the destination URL to open in the destination browser (new or
-  // existing profile) when moving the intercepted tab.
+  // existing profile) when moving the intercepted tab, and records the outcome
+  // to `Signin.Intercept.DestinationUrlResolution` on each call.
   // - Empty or invalid URLs return the New Tab Page (even if the killswitch
   //   `kDiceInterceptSanitizeGaiaUrl` is disabled).
   // - When `kDiceInterceptSanitizeGaiaUrl` is disabled, returns valid URLs
@@ -97,7 +119,7 @@ class DiceInterceptedSessionStartupHelper
   //   - Non-Gaia HTTP(S) URLs are returned unchanged.
   //   - Non-Gaia non-HTTP(S) URLs return the New Tab Page.
   //   - Gaia URLs return the `continue` query parameter if it is a valid HTTPS
-  //     google.<TLD> or youtube.<TLD> URL on a standard port without
+  //     `google.<TLD>` or `youtube.<TLD>` URL on a standard port without
   //     credentials and not on the Gaia origin, or the New Tab Page otherwise.
   static GURL GetDestinationURLForInterceptedTab(const GURL& intercepted_url);
 

@@ -716,9 +716,6 @@ class DiceWebSigninInterceptorGaiaBrowserTest
 
   net::EmbeddedTestServer* gaia_server() { return &https_server_; }
 
-  // TODO(crbug.com/390905260): Add browser test coverage for new profile
-  // creation when intercepting a Gaia URL.
-
  protected:
   // Performs a DICE profile switch interception for a tab opened at
   // `intercepted_url` and verifies that the moved tab in the target browser
@@ -726,6 +723,8 @@ class DiceWebSigninInterceptorGaiaBrowserTest
   void SwitchToExistingProfileAndVerifyMovedTabUrl(
       const GURL& intercepted_url,
       const GURL& expected_url,
+      DiceInterceptedSessionStartupHelper::DestinationUrlResolution
+          expected_resolution,
       base::HistogramTester& histogram_tester) {
     AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
         "alice@example.com", /*hosted_domain=*/std::string());
@@ -793,11 +792,63 @@ class DiceWebSigninInterceptorGaiaBrowserTest
     CheckHistograms(
         histogram_tester,
         SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
+    histogram_tester.ExpectUniqueSample(
+        kSigninInterceptDestinationUrlResolution, expected_resolution, 1);
 
     EXPECT_EQ(other_browser->GetTabStripModel()
                   ->GetActiveWebContents()
                   ->GetVisibleURL(),
               expected_url);
+  }
+
+  // Performs a DICE multi-user new-profile interception for a tab opened at
+  // `intercepted_url` and verifies that the moved tab in the new browser
+  // navigates to `expected_url`.
+  void CreateNewProfileAndVerifyMovedTabUrl(
+      const GURL& intercepted_url,
+      const GURL& expected_url,
+      DiceInterceptedSessionStartupHelper::DestinationUrlResolution
+          expected_resolution,
+      base::HistogramTester& histogram_tester) {
+    identity_test_env()->MakePrimaryAccountAvailable(
+        "alice@example.com", signin::ConsentLevel::kSignin);
+    AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+        "bob@example.com", /*hosted_domain=*/std::string());
+
+    SetupGaiaResponses();
+
+    content::WebContents* web_contents = AddTab(intercepted_url);
+    int original_tab_count = browser()->GetTabStripModel()->count();
+    ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
+    Profile* new_profile = InterceptAndWaitProfileCreation(
+        web_contents, account_info.GetAccountId());
+    ASSERT_TRUE(new_profile);
+    signin::IdentityManager* new_identity_manager =
+        IdentityManagerFactory::GetForProfile(new_profile);
+    EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
+        account_info.GetAccountId()));
+
+    IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
+    adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+
+    BrowserWindowInterface* added_browser = browser_created_observer.Wait();
+    ASSERT_TRUE(added_browser);
+    ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
+    EXPECT_EQ(added_browser->GetProfile(), new_profile);
+    EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
+    EXPECT_EQ(added_browser->GetTabStripModel()
+                  ->GetActiveWebContents()
+                  ->GetVisibleURL(),
+              expected_url);
+
+    CheckHistograms(histogram_tester,
+                    SigninInterceptionHeuristicOutcome::kInterceptMultiUser);
+    histogram_tester.ExpectUniqueSample(
+        kSigninInterceptDestinationUrlResolution, expected_resolution, 1);
+    EXPECT_EQ(GetInterceptorDelegate(new_profile)->fre_browser(),
+              added_browser);
   }
 
  private:
@@ -830,7 +881,10 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaSanitizeDisabledBrowserTest,
   GURL intercepted_url =
       gaia_server()->GetURL("accounts.google.com", "/defaultresponse");
   SwitchToExistingProfileAndVerifyMovedTabUrl(
-      intercepted_url, /*expected_url=*/intercepted_url, histogram_tester);
+      intercepted_url, /*expected_url=*/intercepted_url,
+      DiceInterceptedSessionStartupHelper::DestinationUrlResolution::
+          kSanitizationDisabledKeepUrl,
+      histogram_tester);
 }
 
 // Tests that profile switch from a Gaia signin URL without a continue URL
@@ -843,6 +897,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
       gaia_server()->GetURL("accounts.google.com", "/defaultresponse");
   SwitchToExistingProfileAndVerifyMovedTabUrl(
       intercepted_url, /*expected_url=*/GURL("chrome://newtab/"),
+      DiceInterceptedSessionStartupHelper::DestinationUrlResolution::
+          kGaiaWithoutContinueFallbackToNtp,
       histogram_tester);
 }
 
@@ -857,7 +913,43 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
       gaia_server()->GetURL("accounts.google.com", "/defaultresponse"),
       "continue", continue_url.spec());
   SwitchToExistingProfileAndVerifyMovedTabUrl(
-      intercepted_url, /*expected_url=*/continue_url, histogram_tester);
+      intercepted_url, /*expected_url=*/continue_url,
+      DiceInterceptedSessionStartupHelper::DestinationUrlResolution::
+          kGaiaAllowedContinueUrl,
+      histogram_tester);
+}
+
+// Tests that creating a new profile from a Gaia signin URL without a continue
+// URL opens the New Tab Page instead of reopening the Gaia signin page.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
+                       NewProfile_GaiaSigninUrlRedirectsToNtp) {
+  base::HistogramTester histogram_tester;
+
+  GURL intercepted_url =
+      gaia_server()->GetURL("accounts.google.com", "/defaultresponse");
+  CreateNewProfileAndVerifyMovedTabUrl(
+      intercepted_url, /*expected_url=*/GURL("chrome://newtab/"),
+      DiceInterceptedSessionStartupHelper::DestinationUrlResolution::
+          kGaiaWithoutContinueFallbackToNtp,
+      histogram_tester);
+}
+
+// Tests that creating a new profile from a Gaia signin URL with a valid Google
+// continue URL opens the continue URL instead of reopening the Gaia signin
+// page.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
+                       NewProfile_GaiaSigninUrlWithContinue) {
+  base::HistogramTester histogram_tester;
+
+  const GURL continue_url("https://mail.google.com/");
+  GURL intercepted_url = net::AppendQueryParameter(
+      gaia_server()->GetURL("accounts.google.com", "/defaultresponse"),
+      "continue", continue_url.spec());
+  CreateNewProfileAndVerifyMovedTabUrl(
+      intercepted_url, /*expected_url=*/continue_url,
+      DiceInterceptedSessionStartupHelper::DestinationUrlResolution::
+          kGaiaAllowedContinueUrl,
+      histogram_tester);
 }
 
 // Close the source tab during the interception and check that the NTP is opened

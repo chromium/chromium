@@ -1570,6 +1570,21 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failure"/>
 </enum>
 
+<!-- LINT.IfChange(SigninInterceptDestinationUrlResolution) -->
+
+<enum name="SigninInterceptDestinationUrlResolution">
+  <int value="0" label="Invalid URL, fallback to NTP"/>
+  <int value="1" label="Sanitization disabled, keep URL"/>
+  <int value="2" label="Non-Gaia HTTP(S) URL, keep URL"/>
+  <int value="3" label="Non-Gaia non-HTTP(S) URL, fallback to NTP"/>
+  <int value="4" label="Gaia URL without continue, fallback to NTP"/>
+  <int value="5" label="Gaia URL with allowed continue URL"/>
+  <int value="6" label="Gaia URL with same-origin continue, fallback to NTP"/>
+  <int value="7" label="Gaia URL with disallowed continue, fallback to NTP"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/dice_intercepted_session_startup_helper.h:SigninInterceptDestinationUrlResolution) -->
+
 <!-- LINT.IfChange(SigninInterceptEnterprisePolicyDecisionSource) -->
 
 <enum name="SigninInterceptEnterprisePolicyDecisionSource">

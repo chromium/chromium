@@ -37,6 +37,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_request_headers.h"
@@ -80,6 +81,8 @@ constexpr char kMultiloginInvalidInputResponse[] =
        }
 )";
 
+using DestinationUrlResolution =
+    DiceInterceptedSessionStartupHelper::DestinationUrlResolution;
 using NewProfileOAuthMultiLoginResult =
     DiceInterceptedSessionStartupHelper::NewProfileOAuthMultiLoginResult;
 
@@ -200,6 +203,8 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
       kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, 0);
   histogram_tester.ExpectTotalCount(
       kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, 0);
+  histogram_tester.ExpectTotalCount(kSigninInterceptDestinationUrlResolution,
+                                    0);
 }
 
 TEST_F(DiceInterceptedSessionStartupHelperTest,
@@ -453,6 +458,8 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
       kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, 0);
   histogram_tester.ExpectTotalCount(
       kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, 0);
+  histogram_tester.ExpectTotalCount(kSigninInterceptDestinationUrlResolution,
+                                    0);
 }
 
 TEST_F(DiceInterceptedSessionStartupHelperTest,
@@ -484,12 +491,14 @@ struct DestinationURLTestCase {
   const char* test_name;
   const char* intercepted_url;
   const char* expected_url;
+  DestinationUrlResolution expected_resolution;
 };
 
 class DiceInterceptedSessionStartupHelperUrlTest
     : public testing::TestWithParam<DestinationURLTestCase> {};
 
 TEST_P(DiceInterceptedSessionStartupHelperUrlTest, GetDestinationURL) {
+  base::HistogramTester histogram_tester;
   const DestinationURLTestCase& test_case = GetParam();
   GURL intercepted_url(test_case.intercepted_url);
   GURL expected_url = (test_case.expected_url == nullptr)
@@ -500,6 +509,8 @@ TEST_P(DiceInterceptedSessionStartupHelperUrlTest, GetDestinationURL) {
       DiceInterceptedSessionStartupHelper::GetDestinationURLForInterceptedTab(
           intercepted_url),
       expected_url);
+  histogram_tester.ExpectUniqueSample(kSigninInterceptDestinationUrlResolution,
+                                      test_case.expected_resolution, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -511,97 +522,160 @@ INSTANTIATE_TEST_SUITE_P(
             .intercepted_url =
                 "https://accounts.google.com/"
                 "AddSession?continue=https%3A%2F%2Fmail.google.com%2Fmail",
-            .expected_url = "https://mail.google.com/mail"},
+            .expected_url = "https://mail.google.com/mail",
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaAllowedContinueUrl},
         DestinationURLTestCase{
             .test_name = "YoutubeDomainContinue",
             .intercepted_url =
                 "https://accounts.google.com/"
                 "AddSession?continue=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%"
                 "3D123",
-            .expected_url = "https://www.youtube.com/watch?v=123"},
+            .expected_url = "https://www.youtube.com/watch?v=123",
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaAllowedContinueUrl},
         DestinationURLTestCase{
             .test_name = "UntrustedExternalContinue",
             .intercepted_url =
                 "https://accounts.google.com/"
                 "AddSession?continue=https%3A%2F%2Fevil.example.com",
-            .expected_url = nullptr},
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaDisallowedContinueFallbackToNtp},
         DestinationURLTestCase{
             .test_name = "GoogleUserContentContinue",
             .intercepted_url =
                 "https://accounts.google.com/"
                 "AddSession?continue=https%3A%2F%2Fstorage.googleusercontent."
                 "com%2Ffile",
-            .expected_url = nullptr},
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaDisallowedContinueFallbackToNtp},
         DestinationURLTestCase{
             .test_name = "NonStandardPortContinue",
             .intercepted_url =
                 "https://accounts.google.com/"
                 "AddSession?continue=https%3A%2F%2Fmail.google.com%3A8443%"
                 "2Fmail",
-            .expected_url = nullptr},
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaDisallowedContinueFallbackToNtp},
         DestinationURLTestCase{
             .test_name = "HttpContinue",
             .intercepted_url =
                 "https://accounts.google.com/"
                 "AddSession?continue=http%3A%2F%2Fmail.google.com%2Fmail",
-            .expected_url = nullptr},
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaDisallowedContinueFallbackToNtp},
         DestinationURLTestCase{
             .test_name = "CredentialsInContinue",
             .intercepted_url =
                 "https://accounts.google.com/"
                 "AddSession?continue=https%3A%2F%2Fuser%3Apass%40mail.google."
                 "com%2F",
-            .expected_url = nullptr},
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaDisallowedContinueFallbackToNtp},
         DestinationURLTestCase{
             .test_name = "GaiaContinue",
             .intercepted_url =
                 "https://accounts.google.com/"
                 "AddSession?continue=https%3A%2F%2Faccounts.google.com%"
                 "2FServiceLogin",
-            .expected_url = nullptr},
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaSameOriginContinueFallbackToNtp},
         DestinationURLTestCase{
             .test_name = "GaiaWithoutContinue",
             .intercepted_url = "https://accounts.google.com/AddSession",
-            .expected_url = nullptr},
-        DestinationURLTestCase{.test_name = "NonGaiaHttpUrl",
-                               .intercepted_url = "https://example.com/page",
-                               .expected_url = "https://example.com/page"},
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaWithoutContinueFallbackToNtp},
         DestinationURLTestCase{
-            .test_name = "AccountsGoogleCountryDomainUrl",
-            .intercepted_url = "https://accounts.google.de/page",
-            .expected_url = "https://accounts.google.de/page"},
+            .test_name = "NonGaiaHttpUrl",
+            .intercepted_url = "https://example.com/page",
+            .expected_url = "https://example.com/page",
+            .expected_resolution =
+                DestinationUrlResolution::kNonGaiaHttpOrHttpsKeepUrl},
         DestinationURLTestCase{
             .test_name = "AccountsYoutubeContinue",
             .intercepted_url =
                 "https://accounts.google.com/"
                 "AddSession?continue=https%3A%2F%2Faccounts.youtube.com%2F",
-            .expected_url = "https://accounts.youtube.com/"},
+            .expected_url = "https://accounts.youtube.com/",
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaAllowedContinueUrl},
         DestinationURLTestCase{
             .test_name = "AccountsGoogleCountryDomainContinue",
             .intercepted_url =
                 "https://accounts.google.com/"
                 "AddSession?continue=https%3A%2F%2Faccounts.google.de%2F",
-            .expected_url = "https://accounts.google.de/"},
-        DestinationURLTestCase{.test_name = "NonGaiaNonHttpUrl",
-                               .intercepted_url = "chrome://settings/",
-                               .expected_url = nullptr},
+            .expected_url = "https://accounts.google.de/",
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaAllowedContinueUrl},
+        DestinationURLTestCase{
+            .test_name = "MyAccountGoogleContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Fmyaccount.google.com%2F",
+            .expected_url = "https://myaccount.google.com/",
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaAllowedContinueUrl},
+        DestinationURLTestCase{
+            .test_name = "AccountsExternalDomainContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Faccounts.evil.example.com%"
+                "2F",
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaDisallowedContinueFallbackToNtp},
+        // Pre-sign-in guard: before the outer AddSession hop redirects,
+        // single-level query unescaping yields a first-level continue URL on
+        // the Gaia origin, which is rejected as same-origin Gaia.
+        DestinationURLTestCase{
+            .test_name = "DoubleNestedGaiaThenAccountsContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Faccounts.google.com%"
+                "2FAddSession%3Fcontinue%3Dhttps%253A%252F%252Faccounts.google."
+                "de%252FAddSession",
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kGaiaSameOriginContinueFallbackToNtp},
+        DestinationURLTestCase{
+            .test_name = "NonGaiaNonHttpUrl",
+            .intercepted_url = "chrome://settings/",
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kNonGaiaNonHttpOrHttpsFallbackToNtp},
         DestinationURLTestCase{
             .test_name = "ChromeUrlWithContinue",
             .intercepted_url =
                 "chrome://something?continue=https://accounts.youtube.com/",
-            .expected_url = nullptr},
-        DestinationURLTestCase{.test_name = "EmptyUrl",
-                               .intercepted_url = "",
-                               .expected_url = nullptr},
-        DestinationURLTestCase{.test_name = "InvalidUrl",
-                               .intercepted_url = "http://?",
-                               .expected_url = nullptr}),
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kNonGaiaNonHttpOrHttpsFallbackToNtp},
+        DestinationURLTestCase{
+            .test_name = "EmptyUrl",
+            .intercepted_url = "",
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kInvalidUrlFallbackToNtp},
+        DestinationURLTestCase{
+            .test_name = "InvalidUrl",
+            .intercepted_url = "http://?",
+            .expected_url = nullptr,
+            .expected_resolution =
+                DestinationUrlResolution::kInvalidUrlFallbackToNtp}),
     [](const testing::TestParamInfo<
         DiceInterceptedSessionStartupHelperUrlTest::ParamType>& info) {
       return info.param.test_name;
     });
 
 TEST(DiceInterceptedSessionStartupHelperUrlTest, FeatureDisabled) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(switches::kDiceInterceptSanitizeGaiaUrl);
 
@@ -622,4 +696,31 @@ TEST(DiceInterceptedSessionStartupHelperUrlTest, FeatureDisabled) {
       DiceInterceptedSessionStartupHelper::GetDestinationURLForInterceptedTab(
           GURL("http://?")),
       chrome::ChromeUINewTabURLAsGURL());
+
+  histogram_tester.ExpectBucketCount(
+      kSigninInterceptDestinationUrlResolution,
+      DestinationUrlResolution::kSanitizationDisabledKeepUrl, 1);
+  histogram_tester.ExpectBucketCount(
+      kSigninInterceptDestinationUrlResolution,
+      DestinationUrlResolution::kInvalidUrlFallbackToNtp, 2);
+  histogram_tester.ExpectTotalCount(kSigninInterceptDestinationUrlResolution,
+                                    3);
+}
+
+TEST(DiceInterceptedSessionStartupHelperUrlTest,
+     CustomGaiaOriginContinueRejected) {
+  base::HistogramTester histogram_tester;
+  GaiaUrlsOverriderForTesting gaia_urls_overrider(
+      "gaia_url", "https://gaia-staging.google.com/");
+
+  GURL intercepted_url(
+      "https://gaia-staging.google.com/"
+      "AddSession?continue=https%3A%2F%2Fgaia-staging.google.com%2F");
+  EXPECT_EQ(
+      DiceInterceptedSessionStartupHelper::GetDestinationURLForInterceptedTab(
+          intercepted_url),
+      chrome::ChromeUINewTabURLAsGURL());
+  histogram_tester.ExpectUniqueSample(
+      kSigninInterceptDestinationUrlResolution,
+      DestinationUrlResolution::kGaiaSameOriginContinueFallbackToNtp, 1);
 }
