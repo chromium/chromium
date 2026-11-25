@@ -2727,8 +2727,9 @@ void BrowserView::FocusAppMenu() {
   if (toolbar_->GetAppMenuFocused()) {
     RestoreFocus();
   } else {
-    CHECK(!ImmersiveModeController::From(browser())->IsEnabled(),
-          base::NotFatalUntil::M162);
+    // TODO(crbug.com/590115814): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!ImmersiveModeController::From(browser())->IsEnabled());
     toolbar_->SetPaneFocusAndFocusAppMenu();
   }
 }
