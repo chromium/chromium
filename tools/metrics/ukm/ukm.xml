@@ -6700,25 +6700,11 @@ be describing additional metrics about the same event.
     <summary>
       Whether the website can be an installable web app.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
     <summary>
       An enum that records the user type and the device type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -6744,25 +6730,11 @@ be describing additional metrics about the same event.
     <summary>
       An enum that records the app type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
     <summary>
       An enum that records the user type and the device type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -6779,13 +6751,6 @@ be describing additional metrics about the same event.
     <summary>
       An enum that records the app type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="InstallReason" enum="InstallReason">
     <summary>
@@ -6803,37 +6768,16 @@ be describing additional metrics about the same event.
     <summary>
       An enum that records where the app was installed.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="InstallTime" enum="InstallTime">
     <summary>
       An enum that records when the app was installed.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
     <summary>
       An enum that records the user type and the device type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -6862,25 +6806,11 @@ be describing additional metrics about the same event.
     <summary>
       An enum that records where the app was launched.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
     <summary>
       An enum that records the user type and the device type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -6897,37 +6827,16 @@ be describing additional metrics about the same event.
     <summary>
       An enum that records the app type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="UninstallSource" enum="UninstallSource">
     <summary>
       An enum that records how the app was uninstalled.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
     <summary>
       An enum that records the user type and the device type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -6945,13 +6854,6 @@ be describing additional metrics about the same event.
     <summary>
       An enum that records the app type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Duration">
     <summary>
@@ -6969,13 +6871,6 @@ be describing additional metrics about the same event.
     <summary>
       An enum that records the user type and the device type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -6993,37 +6888,16 @@ be describing additional metrics about the same event.
     <summary>
       An enum that records the app type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Duration">
     <summary>
       The milliseconds that the app was used.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
     <summary>
       An enum that records the user type and the device type.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
