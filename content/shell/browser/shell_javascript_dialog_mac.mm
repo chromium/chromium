@@ -123,7 +123,7 @@ ShellJavaScriptDialog::ShellJavaScriptDialog(
     other.keyEquivalent = @"\e";
   }
 
-  [alert beginSheetModalForWindow:nil  // nil here makes it app-modal
+  [alert beginSheetModalForWindow:parent_window.GetNativeNSWindow()
                 completionHandler:^(NSModalResponse returnCode) {
                   [objc_storage_->helper alertDidEndWithResult:returnCode
                                                         dialog:this];
