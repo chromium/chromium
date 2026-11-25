@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/stack.h"
 #include "base/logging.h"
 #include "ui/display/types/display_constants.h"
@@ -227,7 +228,10 @@ bool BuildUnifiedDesktopMatrix(const DisplayIdList& ids_list,
 
   // This map is used to validate that each display has no more than one child
   // on either of its sides.
-  std::map<int64_t, std::set<DisplayPlacement::Position>> displays_filled_sides;
+  using PositionSet =
+      base::EnumSet<DisplayPlacement::Position, DisplayPlacement::TOP,
+                    DisplayPlacement::LEFT>;
+  std::map<int64_t, PositionSet> displays_filled_sides;
 
   // This map is used to validate that all displays has a path to the primary
   // (root) display with no cycles.
@@ -265,14 +269,15 @@ bool BuildUnifiedDesktopMatrix(const DisplayIdList& ids_list,
       return false;
     }
 
-    if (!displays_filled_sides[placement.parent_display_id]
-             .emplace(placement.position)
-             .second) {
+    PositionSet& filled_sides =
+        displays_filled_sides[placement.parent_display_id];
+    if (filled_sides.Has(placement.position)) {
       LOG(ERROR) << "Parent display with ID: " << placement.parent_display_id
                  << " has more than one display on the same side: "
                  << placement.position;
       return false;
     }
+    filled_sides.Put(placement.position);
 
     if (!child_to_parent
              .emplace(placement.display_id, placement.parent_display_id)
