@@ -1950,10 +1950,14 @@ void OmniboxViewViews::OnBlur() {
         controller()->popup_state_manager()->SetPopupState(
             OmniboxPopupState::kNone);
       }
+      return;
     }
-    return;
   }
 
+  HandleLogicalBlur();
+}
+
+void OmniboxViewViews::HandleLogicalBlur() {
   // Save the user's existing selection to restore it later.
   saved_selection_for_focus_change_ = GetSelectedRange();
 

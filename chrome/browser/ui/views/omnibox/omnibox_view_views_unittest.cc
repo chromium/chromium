@@ -2276,3 +2276,60 @@ TEST_F(OmniboxViewViewsTest,
   EXPECT_EQ(u"Search Google or type a URL",
             omnibox_view()->GetPlaceholderText());
 }
+
+TEST_F(OmniboxViewViewsTest, OnBlurToAnotherViewClearsFocusDuringAimPopup) {
+  omnibox_view()->RequestFocus();
+  ASSERT_TRUE(omnibox_view()->HasFocus());
+  ASSERT_TRUE(omnibox_controller()->edit_model()->has_focus());
+
+  omnibox_controller()->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  // Moving focus to another view in the same widget while the AIM popup is
+  // open should kill focus on the edit model so a restored draft does not
+  // appear focused or block subsequent URL updates.
+  views::View* other_view =
+      omnibox_view()->parent()->AddChildView(std::make_unique<views::View>());
+  other_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  other_view->RequestFocus();
+
+  EXPECT_FALSE(omnibox_view()->HasFocus());
+  EXPECT_FALSE(omnibox_controller()->edit_model()->has_focus());
+}
+
+TEST_F(OmniboxViewViewsTest,
+       OnBlurWithoutTargetViewPreservesFocusDuringAimPopup) {
+  omnibox_view()->RequestFocus();
+  ASSERT_TRUE(omnibox_view()->HasFocus());
+  ASSERT_TRUE(omnibox_controller()->edit_model()->has_focus());
+
+  omnibox_controller()->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  // Clearing focus (e.g. widget deactivation when the AIM popup widget takes
+  // activation) should keep the edit model focused.
+  omnibox_view()->GetFocusManager()->ClearFocus();
+
+  EXPECT_FALSE(omnibox_view()->HasFocus());
+  EXPECT_TRUE(omnibox_controller()->edit_model()->has_focus());
+}
+
+TEST_F(OmniboxViewViewsTest,
+       OnBlurToAnotherViewClearsFocusDuringNonFullWebUiPopup) {
+  omnibox_view()->RequestFocus();
+  ASSERT_TRUE(omnibox_view()->HasFocus());
+  ASSERT_TRUE(omnibox_controller()->edit_model()->has_focus());
+
+  omnibox_controller()->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kFull);
+
+  // When not in Full WebUI Omnibox mode, moving focus to another view while
+  // popup state is `kFull` should also clear edit model focus.
+  views::View* other_view =
+      omnibox_view()->parent()->AddChildView(std::make_unique<views::View>());
+  other_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  other_view->RequestFocus();
+
+  EXPECT_FALSE(omnibox_view()->HasFocus());
+  EXPECT_FALSE(omnibox_controller()->edit_model()->has_focus());
+}

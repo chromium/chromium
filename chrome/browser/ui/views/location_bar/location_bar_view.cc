@@ -2161,6 +2161,20 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
           }
         }
         GetOmniboxController()->edit_model()->OnKillFocus();
+      } else if (old_state == OmniboxPopupState::kAim &&
+                 GetOmniboxController()->edit_model()->has_focus()) {
+        // When the AIM popup closes without returning focus (or stored focus)
+        // to `omnibox_view_`, run the full logical blur so the edit model and
+        // view do not stay in a focused state.
+        auto* focus_manager = GetFocusManager();
+        const bool omnibox_will_hold_focus =
+            omnibox_view_->HasFocus() ||
+            (focus_manager &&
+             (focus_manager->GetFocusedView() == omnibox_view_.get() ||
+              focus_manager->GetStoredFocusView() == omnibox_view_.get()));
+        if (!omnibox_will_hold_focus) {
+          omnibox_view_->HandleLogicalBlur();
+        }
       }
       break;
   }

@@ -149,6 +149,12 @@ class OmniboxViewViews
   // "Search Google or type a URL" when the Omnibox is empty and unfocused.
   void InstallPlaceholderText();
 
+  // Completes the logical blur sequence on the edit model and view (saving
+  // selection, reverting unedited text, killing model focus, eliding text,
+  // notifying `location_bar_view_`, and resetting placeholder/accessibility
+  // state).
+  void HandleLogicalBlur();
+
   // Indicates if the cursor is at the end of the input. Requires that both
   // ends of the selection reside there.
   bool GetSelectionAtEnd() const;
