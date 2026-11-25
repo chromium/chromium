@@ -493,10 +493,6 @@ void CanvasRenderingContext2D::WillDraw(
     CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
   }
 
-  if (!canvas()) {
-    return;
-  }
-
   // Always draw everything during printing.
   if (layer_count_ == 0) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
