@@ -545,10 +545,22 @@ TEST_F(DocumentPipHostTest,
   auto* controller = FindExtensionWindow(host->GetSessionId().id());
   ASSERT_TRUE(controller);
   observer.bounds_changed = 0;
+
+  // Initial bounds are seeded when the controller is created, so a redundant
+  // callback with unchanged bounds does not emit a duplicate notification.
+  host->OnWidgetBoundsChanged(host->GetWidget(),
+                              host->GetWidget()->GetWindowBoundsInScreen());
+  EXPECT_EQ(0, observer.bounds_changed);
+
   const gfx::Rect bounds(45, 55, 450, 350);
   controller->window()->SetBounds(bounds);
   EXPECT_EQ(bounds, controller->window()->GetBounds());
-  EXPECT_GT(observer.bounds_changed, 0);
+  EXPECT_EQ(1, observer.bounds_changed);
+
+  // Duplicate bounds updates are suppressed.
+  host->GetWidget()->SetBounds(bounds);
+  host->OnWidgetBoundsChanged(host->GetWidget(), bounds);
+  EXPECT_EQ(1, observer.bounds_changed);
 
   // Only activation notifies WindowControllerList on desktop; focus leaving all
   // Chrome windows is handled separately by WindowsEventRouter.
@@ -557,6 +569,79 @@ TEST_F(DocumentPipHostTest,
   EXPECT_TRUE(observer.focus_changes.empty());
   host->OnWidgetActivationChanged(host->GetWidget(), true);
   EXPECT_EQ(std::vector<bool>{true}, observer.focus_changes);
+}
+
+TEST_F(DocumentPipHostTest, ExtensionWindowCoalescesUserBoundsChanges) {
+  PipExtensionWindowObserver observer;
+  auto* host = CreateHostAndOpenPipWindow();
+  views::Widget* widget = host->GetWidget();
+  ASSERT_TRUE(widget);
+  ASSERT_TRUE(FindExtensionWindow(host->GetSessionId().id()));
+  observer.bounds_changed = 0;
+
+  TestModalDialogHostObserver modal_observer;
+  host->AddObserver(&modal_observer);
+
+  // During an interactive user move/resize, extension bounds notifications are
+  // suppressed while modal dialog repositioning still updates live.
+  widget->OnNativeWidgetBeginUserBoundsChange();
+  const gfx::Rect step1_bounds(50, 60, 420, 310);
+  const gfx::Rect step2_bounds(70, 80, 460, 340);
+  widget->SetBounds(step1_bounds);
+  EXPECT_EQ(0, observer.bounds_changed);
+  const int modal_updates_after_step1 =
+      modal_observer.on_position_requires_update_count();
+  EXPECT_GT(modal_updates_after_step1, 0);
+
+  widget->SetBounds(step2_bounds);
+  EXPECT_EQ(0, observer.bounds_changed);
+  EXPECT_GT(modal_observer.on_position_requires_update_count(),
+            modal_updates_after_step1);
+
+  widget->OnNativeWidgetEndUserBoundsChange();
+  EXPECT_EQ(1, observer.bounds_changed);
+  EXPECT_EQ(step2_bounds, widget->GetWindowBoundsInScreen());
+
+  // A user drag that returns to the starting bounds before ending does not emit
+  // a redundant notification.
+  widget->OnNativeWidgetBeginUserBoundsChange();
+  widget->SetBounds(step1_bounds);
+  widget->SetBounds(step2_bounds);
+  EXPECT_EQ(1, observer.bounds_changed);
+  widget->OnNativeWidgetEndUserBoundsChange();
+  EXPECT_EQ(1, observer.bounds_changed);
+
+  host->RemoveObserver(&modal_observer);
+}
+
+TEST_F(DocumentPipHostTest,
+       ExtensionWindowCloseMidUserBoundsChangeResetsStateForReopen) {
+  PipExtensionWindowObserver observer;
+  auto* host = CreateHostAndOpenPipWindow();
+  views::Widget* widget = host->GetWidget();
+  ASSERT_TRUE(widget);
+  observer.bounds_changed = 0;
+
+  // Begin an interactive user bounds change and close the window without ending
+  // the drag loop.
+  widget->OnNativeWidgetBeginUserBoundsChange();
+  widget->SetBounds(gfx::Rect(60, 70, 430, 320));
+  EXPECT_EQ(0, observer.bounds_changed);
+  host->Close();
+  ASSERT_EQ(nullptr, host->GetWidget());
+
+  // Late begin/end callbacks when no widget is open must be safe no-ops.
+  host->OnWindowBeginUserBoundsChange();
+  host->OnWindowEndUserBoundsChange();
+  EXPECT_EQ(0, observer.bounds_changed);
+
+  // Reopening a new PiP window on the same host must start with clean bounds
+  // tracking state so subsequent programmatic bounds changes notify normally.
+  EXPECT_EQ(host, CreateHostAndOpenPipWindow());
+  observer.bounds_changed = 0;
+  const gfx::Rect reopened_bounds(85, 95, 470, 360);
+  host->GetWidget()->SetBounds(reopened_bounds);
+  EXPECT_EQ(1, observer.bounds_changed);
 }
 
 TEST_F(DocumentPipHostTest, ExtensionWindowControllerUsesHostWidget) {

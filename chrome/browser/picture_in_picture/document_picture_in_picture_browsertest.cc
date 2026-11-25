@@ -555,6 +555,26 @@ IN_PROC_BROWSER_TEST_P(DocumentPipExtensionApiParityBrowserTest,
   WaitForWindowBoundsChangedEvent(event_observer, pip_window_id, new_width,
                                   new_height);
 
+  // Interactive user move/resize coalesces intermediate bounds updates until
+  // the drag/resize ends, matching BrowserView parity.
+  views::Widget* pip_widget =
+      views::Widget::GetWidgetForNativeWindow(child->GetTopLevelNativeWindow());
+  ASSERT_NE(nullptr, pip_widget);
+  event_observer.ClearEvents();
+  pip_widget->OnNativeWidgetBeginUserBoundsChange();
+  gfx::Rect drag_bounds = pip_widget->GetWindowBoundsInScreen();
+  drag_bounds.set_width(drag_bounds.width() + 20);
+  pip_widget->SetBounds(drag_bounds);
+  drag_bounds.set_width(drag_bounds.width() + 20);
+  pip_widget->SetBounds(drag_bounds);
+  EXPECT_FALSE(HasWindowEventForId(
+      event_observer, extensions::api::windows::OnBoundsChanged::kEventName,
+      pip_window_id));
+  pip_widget->OnNativeWidgetEndUserBoundsChange();
+  WaitForWindowEventForId(event_observer,
+                          extensions::api::windows::OnBoundsChanged::kEventName,
+                          pip_window_id);
+
   for (const char* state : {"fullscreen", "maximized", "minimized"}) {
     EXPECT_EQ(extensions::tabs_constants::kNotAllowedForPictureInPictureError,
               utils::RunFunctionAndReturnError(

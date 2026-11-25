@@ -422,6 +422,8 @@ void DocumentPipHost::CreateAndShowPipWindow(
   exclusive_access_context_ =
       std::make_unique<ExclusiveAccessContextImpl>(*this);
 
+  interactive_resize_in_progress_ = false;
+  last_widget_bounds_ = widget_->GetWindowBoundsInScreen();
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   window_controller_ =
       std::make_unique<extensions::DocumentPipWindowController>(
@@ -982,6 +984,8 @@ void DocumentPipHost::PrepareForWidgetDestruction() {
       this);
   widget_observation_.Reset();
   contents_view_observation_.Reset();
+  interactive_resize_in_progress_ = false;
+  last_widget_bounds_.reset();
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Unpublish while both the Widget and child WebContents are still alive.
   window_controller_.reset();
@@ -1260,15 +1264,26 @@ void DocumentPipHost::OnWidgetActivationChanged(views::Widget* widget,
 
 void DocumentPipHost::OnWidgetBoundsChanged(views::Widget* widget,
                                             const gfx::Rect& new_bounds) {
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (window_controller_) {
-    window_controller_->NotifyWindowBoundsChanged();
-  }
-#endif
+  TryNotifyWindowBoundsChanged(new_bounds);
   if (exclusive_access_context_) {
     exclusive_access_context_->RepositionBubble();
   }
   NotifyPositionRequiresUpdate();
+}
+
+void DocumentPipHost::OnWindowBeginUserBoundsChange() {
+  if (!widget_ || !widget_observation_.IsObserving()) {
+    return;
+  }
+  interactive_resize_in_progress_ = true;
+}
+
+void DocumentPipHost::OnWindowEndUserBoundsChange() {
+  interactive_resize_in_progress_ = false;
+  if (!widget_ || !widget_observation_.IsObserving()) {
+    return;
+  }
+  TryNotifyWindowBoundsChanged(widget_->GetWindowBoundsInScreen());
 }
 
 void DocumentPipHost::OnWidgetVisibilityChanged(views::Widget* widget,
@@ -1308,4 +1323,19 @@ void DocumentPipHost::FocusChildWebContents() {
 void DocumentPipHost::NotifyPositionRequiresUpdate() {
   modal_dialog_host_observer_list_.Notify(
       &web_modal::ModalDialogHostObserver::OnPositionRequiresUpdate);
+}
+
+void DocumentPipHost::TryNotifyWindowBoundsChanged(
+    const gfx::Rect& widget_bounds) {
+  if (interactive_resize_in_progress_ || last_widget_bounds_ == widget_bounds) {
+    return;
+  }
+
+  last_widget_bounds_ = widget_bounds;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (window_controller_) {
+    window_controller_->NotifyWindowBoundsChanged();
+  }
+#endif
 }

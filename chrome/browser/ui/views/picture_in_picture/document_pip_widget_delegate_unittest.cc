@@ -148,3 +148,11 @@ TEST_F(DocumentPipWidgetDelegateTest, UseDesktopWidgetOverrideIsTrue) {
 
   EXPECT_TRUE(delegate.use_desktop_widget_override());
 }
+
+TEST_F(DocumentPipWidgetDelegateTest,
+       UserBoundsChangeHooksSafeWithoutOpenWidget) {
+  DocumentPipWidgetDelegate delegate(host(), CreateChildWebContents());
+
+  delegate.OnWindowBeginUserBoundsChange();
+  delegate.OnWindowEndUserBoundsChange();
+}

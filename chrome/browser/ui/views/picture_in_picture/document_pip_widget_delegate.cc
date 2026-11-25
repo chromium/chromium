@@ -90,3 +90,11 @@ std::unique_ptr<views::FrameView> DocumentPipWidgetDelegate::CreateFrameView(
   return std::make_unique<DocumentPipFrameView>(&host_.get());
 #endif
 }
+
+void DocumentPipWidgetDelegate::OnWindowBeginUserBoundsChange() {
+  host_->OnWindowBeginUserBoundsChange();
+}
+
+void DocumentPipWidgetDelegate::OnWindowEndUserBoundsChange() {
+  host_->OnWindowEndUserBoundsChange();
+}

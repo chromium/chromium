@@ -51,6 +51,8 @@ class DocumentPipWidgetDelegate : public views::WidgetDelegate {
   std::u16string GetAccessibleWindowTitle() const override;
   std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
+  void OnWindowBeginUserBoundsChange() override;
+  void OnWindowEndUserBoundsChange() override;
 
   base::WeakPtr<DocumentPipWidgetDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

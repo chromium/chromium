@@ -27,6 +27,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -273,6 +274,11 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // Forwarded from DocumentPipWidgetDelegate when the user begins or ends an
+  // interactive window move or resize.
+  void OnWindowBeginUserBoundsChange();
+  void OnWindowEndUserBoundsChange();
+
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
@@ -317,6 +323,11 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
 
   // Gives keyboard focus to the child WebContents hosted by the PiP widget.
   void FocusChildWebContents();
+
+  // Notifies `window_controller_` of `widget_bounds` if an interactive user
+  // move/resize is not in progress and the bounds changed since the last
+  // notification. Mirrors BrowserView::TryNotifyWindowBoundsChanged().
+  void TryNotifyWindowBoundsChanged(const gfx::Rect& widget_bounds);
 
   // Owned by the current PiP window; null when no window is open. Only used
   // from within this class; tests reach it via
@@ -379,6 +390,8 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   std::unique_ptr<PictureInPictureTucker> tucker_;
   bool is_tucking_forced_ = false;
   bool restore_focus_on_activation_ = false;
+  bool interactive_resize_in_progress_ = false;
+  std::optional<gfx::Rect> last_widget_bounds_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
