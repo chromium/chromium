@@ -1688,14 +1688,17 @@ public class SideUiCoordinatorImplTest {
                         /* suppressAnimations= */ true,
                         UpdateReason.SIDE_UI_REQUEST);
         mCoordinator.updateUi(uiUpdateRequest);
-        View resizeHandleView = mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT);
+        SideUiResizeHandleView resizeHandleView =
+                (SideUiResizeHandleView)
+                        mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT);
         assertNotNull(resizeHandleView);
+        View stripView = resizeHandleView.getStripViewForTesting();
         assertEquals(View.VISIBLE, resizeHandleView.getVisibility());
         assertEquals(mResizeHandleContainer, resizeHandleView.getParent());
         assertEquals(
                 WINDOW_SIZE_PX.getWidth()
                         - mCoordinator.getCurrentSideUiSpecs().getRenderedWidth(AnchorSide.RIGHT),
-                resizeHandleView.getLeft());
+                Math.round(resizeHandleView.getX() + stripView.getX()));
         assertEquals(
                 ((MarginLayoutParams) mRightAnchorContainer.getLayoutParams()).topMargin,
                 resizeHandleView.getTop());
@@ -1709,7 +1712,7 @@ public class SideUiCoordinatorImplTest {
         assertEquals(
                 WINDOW_SIZE_PX.getWidth()
                         - mCoordinator.getCurrentSideUiSpecs().getRenderedWidth(AnchorSide.RIGHT),
-                resizeHandleView.getLeft());
+                Math.round(resizeHandleView.getX() + stripView.getX()));
 
         // A container that stops being resizable hides the handle, but keeps it laid out.
         sideUiContainer.mSupportsManualResize = false;

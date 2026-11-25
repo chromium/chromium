@@ -1166,7 +1166,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Each side has its own resize handle, so also match the side panel's content description.
         View handleView =
                 ViewFinder.waitForView(
-                                withId(R.id.side_ui_resize_handle),
+                                withId(R.id.side_ui_resize_handle_strip),
                                 withContentDescription(
                                         R.string.accessibility_side_panel_resize_handle))
                         .getView();

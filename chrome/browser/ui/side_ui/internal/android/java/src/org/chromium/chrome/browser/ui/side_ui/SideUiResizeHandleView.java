@@ -25,9 +25,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 
 /**
- * The resize handle {@link View} for one {@link AnchorSide}, hosted in the resize handle container
- * above the anchor containers and positioned on its anchor container's inner edge via {@link
- * #updatePosition}.
+ * The resize handle {@link View} for one {@link AnchorSide}, positioned on its anchor container's
+ * inner edge via {@link #updatePosition}. Acts as a non-interactive wrapper centered on the bar's
+ * horizontal position, holding a centered full-height drag strip and a larger bar touch target;
+ * touches and hovers outside the children fall through to the views below.
  */
 // The handle is a drag affordance with no click action; accessibility is provided through the
 // handle's content description and dedicated accessibility actions.
@@ -36,9 +37,19 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 public final class SideUiResizeHandleView extends FrameLayout {
 
     private @AnchorSide int mAnchorSide;
+    private View mStripView;
+    private View mBarView;
+    private float mBarCenterInsetPx;
 
     public SideUiResizeHandleView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mStripView = findViewById(R.id.side_ui_resize_handle_strip);
+        mBarView = findViewById(R.id.side_ui_resize_handle_bar);
     }
 
     /* package */ void initialize(
@@ -48,45 +59,39 @@ public final class SideUiResizeHandleView extends FrameLayout {
             @StringRes int contentDescriptionRes,
             View.OnTouchListener onTouchListener) {
         mAnchorSide = anchorSide;
+        Context context = getContext();
+        Resources res = context.getResources();
+        if (containerBarInsetPx != null) {
+            @Px int barWidthPx = res.getDimensionPixelSize(R.dimen.side_ui_resize_handle_bar_width);
+            mBarCenterInsetPx = containerBarInsetPx + barWidthPx / 2f;
+        } else if (containerHandleWidthPx != null) {
+            mBarCenterInsetPx = containerHandleWidthPx / 2f;
+        } else {
+            mBarCenterInsetPx = res.getDimensionPixelSize(R.dimen.side_ui_resize_handle_width) / 2f;
+        }
 
         boolean isLeft = anchorSide == AnchorSide.LEFT;
         // AnchorSide is physical, so use physical gravities to keep the handle on the inner edge in
         // RTL.
         var layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
         layoutParams.gravity = (isLeft ? Gravity.LEFT : Gravity.RIGHT) | Gravity.TOP;
-        if (containerHandleWidthPx != null) {
-            layoutParams.width = containerHandleWidthPx;
-        }
         setLayoutParams(layoutParams);
 
-        if (containerBarInsetPx != null) {
-            View barView = findViewById(R.id.side_ui_resize_handle_bar);
-            var barLayoutParams = (FrameLayout.LayoutParams) barView.getLayoutParams();
-            barLayoutParams.gravity =
-                    (isLeft ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL;
-            if (isLeft) {
-                barLayoutParams.rightMargin = containerBarInsetPx;
-            } else {
-                barLayoutParams.leftMargin = containerBarInsetPx;
-            }
-            barView.setLayoutParams(barLayoutParams);
-        }
-
-        Context context = getContext();
         if (contentDescriptionRes != Resources.ID_NULL) {
-            setContentDescription(context.getString(contentDescriptionRes));
+            mStripView.setContentDescription(context.getString(contentDescriptionRes));
         }
-        setPointerIcon(getResizePointerIcon(context));
-        setOnTouchListener(onTouchListener);
-        // Right-click sends a separate ACTION_BUTTON_PRESS generic motion event that would
-        // otherwise fall through to the views below.
-        setOnContextClickListener(v -> true);
+        configureInteractiveChild(context, mStripView, onTouchListener);
+        configureInteractiveChild(context, mBarView, onTouchListener);
     }
 
     /* package */ void updatePosition(
             @Px int containerRenderedWidthPx, @Px int containerTopMarginPx) {
         var layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
-        @Px int outerMarginPx = containerRenderedWidthPx - layoutParams.width;
+        // Center the wrapper on mBarCenterInsetPx inside the anchor container's inner edge, rounded
+        // to whole px so the bar isn't drawn on a half pixel.
+        @Px
+        int outerMarginPx =
+                containerRenderedWidthPx - Math.round(mBarCenterInsetPx + layoutParams.width / 2f);
         if (mAnchorSide == AnchorSide.LEFT) {
             layoutParams.leftMargin = outerMarginPx;
         } else {
@@ -103,7 +108,24 @@ public final class SideUiResizeHandleView extends FrameLayout {
                 .addTarget(this);
     }
 
+    /* package */ View getStripViewForTesting() {
+        return mStripView;
+    }
+
+    /* package */ View getBarViewForTesting() {
+        return mBarView;
+    }
+
     /* package */ static PointerIcon getResizePointerIcon(Context context) {
         return PointerIcon.getSystemIcon(context, PointerIcon.TYPE_HORIZONTAL_DOUBLE_ARROW);
+    }
+
+    private static void configureInteractiveChild(
+            Context context, View view, View.OnTouchListener onTouchListener) {
+        view.setPointerIcon(getResizePointerIcon(context));
+        view.setOnTouchListener(onTouchListener);
+        // Right-click sends a separate ACTION_BUTTON_PRESS generic motion event that would
+        // otherwise fall through to the views below.
+        view.setOnContextClickListener(v -> true);
     }
 }

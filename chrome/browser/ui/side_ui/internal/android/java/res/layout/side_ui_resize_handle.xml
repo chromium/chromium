@@ -5,19 +5,27 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- Width and gravity are set by SideUiResizeHandleView. Starts invisible so
-     transitions can capture its starting state before it is shown. -->
+<!-- Non-interactive wrapper centered on the bar's position; touches and hovers
+     outside its children fall through. Starts invisible for transitions. -->
 <org.chromium.chrome.browser.ui.side_ui.SideUiResizeHandleView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/side_ui_resize_handle"
-    android:layout_width="@dimen/side_ui_resize_handle_width"
+    android:layout_width="@dimen/side_ui_resize_handle_bar_target_width"
     android:layout_height="match_parent"
+    android:importantForAccessibility="no"
+    android:splitMotionEvents="false"
     android:visibility="invisible">
 
     <View
+        android:id="@+id/side_ui_resize_handle_strip"
+        android:layout_width="@dimen/side_ui_resize_handle_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal" />
+
+    <View
         android:id="@+id/side_ui_resize_handle_bar"
-        android:layout_width="@dimen/side_ui_resize_handle_bar_width"
-        android:layout_height="@dimen/side_ui_resize_handle_bar_height"
+        android:layout_width="@dimen/side_ui_resize_handle_bar_target_width"
+        android:layout_height="@dimen/side_ui_resize_handle_bar_target_height"
         android:layout_gravity="center"
         android:background="@drawable/side_ui_resize_handle_bar"
         android:importantForAccessibility="no" />

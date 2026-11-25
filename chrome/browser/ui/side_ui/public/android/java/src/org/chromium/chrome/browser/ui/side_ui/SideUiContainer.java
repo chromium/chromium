@@ -248,9 +248,12 @@ public interface SideUiContainer {
         return Resources.ID_NULL;
     }
 
+    // TODO(crbug.com/571238658): Rename to reflect that this now centers the handle on the
+    // container's inner gutter rather than sizing the strip.
     /**
-     * Returns the width of the resize handle in px, e.g. the container's inner edge padding so that
-     * the handle doesn't overlap the container's content, or null to use the Side UI default.
+     * Returns the container's inner gutter width in px, e.g. its inner edge padding, used to center
+     * the resize handle when {@link #getResizeHandleBarInsetPx()} is null, or null to use the Side
+     * UI default.
      *
      * <p>Only called while {@link #supportsManualResize()} returns true, when the handle is
      * created.
