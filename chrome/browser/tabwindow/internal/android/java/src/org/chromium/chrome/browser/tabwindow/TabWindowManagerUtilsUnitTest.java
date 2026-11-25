@@ -46,7 +46,7 @@ public class TabWindowManagerUtilsUnitTest {
 
         String title =
                 TabWindowManagerUtils.getTabGroupTitleInAnyWindow(
-                        mContext, mTabWindowManager, tabGroupId, false);
+                        mContext, mTabWindowManager, TabGroupId.fromRawToken(tabGroupId), false);
         assertEquals("Test Title", title);
     }
 
@@ -58,7 +58,7 @@ public class TabWindowManagerUtilsUnitTest {
 
         String title =
                 TabWindowManagerUtils.getTabGroupTitleInAnyWindow(
-                        mContext, mTabWindowManager, tabGroupId, false);
+                        mContext, mTabWindowManager, TabGroupId.fromRawToken(tabGroupId), false);
         assertNull(title);
     }
 
@@ -71,7 +71,7 @@ public class TabWindowManagerUtilsUnitTest {
 
         String title =
                 TabWindowManagerUtils.getTabGroupTitleInAnyWindow(
-                        mContext, mTabWindowManager, tabGroupId, false);
+                        mContext, mTabWindowManager, TabGroupId.fromRawToken(tabGroupId), false);
         assertNull(title);
     }
 
@@ -87,7 +87,7 @@ public class TabWindowManagerUtilsUnitTest {
 
         int color =
                 TabWindowManagerUtils.getTabGroupColorInAnyWindow(
-                        mTabWindowManager, tabGroupId, false);
+                        mTabWindowManager, TabGroupId.fromRawToken(tabGroupId), false);
         assertEquals(TabGroupColorId.BLUE, color);
     }
 
@@ -99,7 +99,7 @@ public class TabWindowManagerUtilsUnitTest {
 
         int color =
                 TabWindowManagerUtils.getTabGroupColorInAnyWindow(
-                        mTabWindowManager, tabGroupId, false);
+                        mTabWindowManager, TabGroupId.fromRawToken(tabGroupId), false);
         assertEquals(TabGroupColorId.GREY, color);
     }
 
@@ -112,7 +112,7 @@ public class TabWindowManagerUtilsUnitTest {
 
         int color =
                 TabWindowManagerUtils.getTabGroupColorInAnyWindow(
-                        mTabWindowManager, tabGroupId, false);
+                        mTabWindowManager, TabGroupId.fromRawToken(tabGroupId), false);
         assertEquals(TabGroupColorId.GREY, color);
     }
 }
