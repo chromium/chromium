@@ -95,6 +95,13 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   // `server_`.
   std::vector<std::vector<uint8_t>> GetStoredKeys(const GaiaId& gaia_id) const;
 
+  // Returns the number of pending FetchKeys() and
+  // GetIsRecoverabilityDegraded() requests that will be completed by
+  // CompleteAllPendingRequests().
+  int GetPendingRequestCount() const {
+    return static_cast<int>(pending_responses_.size());
+  }
+
   // Mimics the completion of all FetchKeys() and GetIsRecoverabilityDegraded()
   // requests.
   bool CompleteAllPendingRequests();

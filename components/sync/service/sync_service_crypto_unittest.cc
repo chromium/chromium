@@ -1164,6 +1164,7 @@ TEST_F(SyncServiceCryptoTest,
   ASSERT_TRUE(crypto_.IsTrustedVaultKeyRequiredStateKnown());
   ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
   ASSERT_FALSE(crypto_.IsPassphraseRequired());
+  ASSERT_THAT(trusted_vault_client_.GetPendingRequestCount(), Eq(1));
 
   // Reset all in-memory `crypto_` state, including engine pointer. Passphrase
   // type will remain kTrustedVaultPassphrase, because it is cached by delegate.
@@ -1174,6 +1175,31 @@ TEST_F(SyncServiceCryptoTest,
   // There is an ongoing GetIsRecoverabilityRequest(), mimic its completion.
   // Main expectation: no crashes.
   EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+}
+
+TEST_F(SyncServiceCryptoTest, ShouldIgnoreFetchKeysCompletionAfterReset) {
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  crypto_.OnTrustedVaultKeyRequired();
+  ASSERT_THAT(trusted_vault_client_.GetPendingRequestCount(), Eq(1));
+  ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
+
+  // Reset `crypto_` while `FetchKeys()` is in flight, and mimic a new engine
+  // starting initialization so `crypto_` re-enters `kFetchingTrustedVaultKeys`
+  // before `SetSyncEngine()` is called.
+  crypto_.Reset();
+  crypto_.OnTrustedVaultKeyRequired();
+  ASSERT_THAT(trusted_vault_client_.GetPendingRequestCount(), Eq(1));
+  ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
+  ASSERT_TRUE(VerifyAndClearExpectations());
+
+  // Completing the stale `FetchKeys()` request from before `Reset()` must be a
+  // no-op and must not notify `delegate_` or call `engine_`.
+  EXPECT_CALL(delegate_, CryptoStateChanged()).Times(0);
+  EXPECT_CALL(delegate_, CryptoRequiredUserActionChanged()).Times(0);
+  EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto()).Times(0);
+  EXPECT_CALL(engine_, AddTrustedVaultDecryptionKeys).Times(0);
+  EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  EXPECT_FALSE(crypto_.IsTrustedVaultKeyRequired());
 }
 
 TEST_F(SyncServiceCryptoTest,
