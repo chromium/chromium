@@ -7,7 +7,9 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
+#include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
@@ -58,6 +60,14 @@ void TestPaymentsNetworkInterface::UnmaskCard(
     base::OnceCallback<void(PaymentsRpcResult, const UnmaskResponseDetails&)>
         callback) {
   unmask_request_ = unmask_request;
+}
+
+void TestPaymentsNetworkInterface::OptChange(
+    const OptChangeRequestDetails request_details,
+    base::OnceCallback<void(PaymentsRpcResult, OptChangeResponseDetails&)>
+        callback) {
+  opt_change_request_.emplace(request_details);
+  opt_change_callback_ = std::move(callback);
 }
 
 void TestPaymentsNetworkInterface::GetCardUploadDetails(
@@ -187,6 +197,13 @@ void TestPaymentsNetworkInterface::SetFidoRequestOptionsInUnmaskDetails(
           .Set("timeout_millis", base::Value(kTestTimeoutSeconds))
           .Set("relying_party_id", base::Value(relying_party_id))
           .Set("key_info", base::ListValue().Append(std::move(key_info)));
+}
+
+void TestPaymentsNetworkInterface::RespondToOptChange(
+    PaymentsRpcResult result,
+    OptChangeResponseDetails response) {
+  CHECK(opt_change_callback_);
+  std::move(opt_change_callback_).Run(result, response);
 }
 
 void TestPaymentsNetworkInterface::SetUploadCardResponseDetailsForUploadCard(

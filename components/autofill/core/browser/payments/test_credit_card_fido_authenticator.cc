@@ -87,6 +87,30 @@ void TestCreditCardFidoAuthenticator::MakeCredential(
   }
 }
 
+// static
+void TestCreditCardFidoAuthenticator::GetAssertionWithUnrecoverableError(
+    CreditCardFidoAuthenticator* fido_authenticator) {
+  fido_authenticator->OnDidGetAssertion(
+      blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR, nullptr,
+      /*dom_exception_details=*/nullptr);
+}
+
+// static
+void TestCreditCardFidoAuthenticator::MakeCredentialWithUnrecoverableError(
+    CreditCardFidoAuthenticator* fido_authenticator) {
+  fido_authenticator->OnDidMakeCredential(
+      blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR, nullptr,
+      /*dom_exception_details=*/nullptr);
+}
+
+// static
+void TestCreditCardFidoAuthenticator::GetAssertionEndedByBrowser(
+    CreditCardFidoAuthenticator* fido_authenticator) {
+  fido_authenticator->OnDidGetAssertion(
+      blink::mojom::AuthenticatorStatus::NOT_FOCUSED, nullptr,
+      /*dom_exception_details=*/nullptr);
+}
+
 std::vector<uint8_t> TestCreditCardFidoAuthenticator::GetCredentialId() {
   DCHECK(!request_options_->allow_credentials.empty());
   return request_options_->allow_credentials.front().id;

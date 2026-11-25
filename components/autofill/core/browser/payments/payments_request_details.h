@@ -197,7 +197,13 @@ struct OptChangeRequestDetails {
     // The user is authorizing a new card for future FIDO authentication
     // unmasking.
     kAddCardForFidoAuth = 3,
-    kMaxValue = kAddCardForFidoAuth,
+    // The authenticator of this device can no longer be used for the FIDO
+    // authentication that the server mandates for card unmasking, so the
+    // server has to stop mandating it for this device. This also wipes all
+    // previous CVC verifications of cards on this device, so that the lowered
+    // security does not unintentionally allow risk-based unmasking.
+    kForceDisableMandatoryReauth = 4,
+    kMaxValue = kForceDisableMandatoryReauth,
   };
 
   // Reason for the request.

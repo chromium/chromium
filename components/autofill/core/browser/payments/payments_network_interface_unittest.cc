@@ -1117,6 +1117,23 @@ TEST_F(PaymentsNetworkInterfaceTest, OptOutSuccess) {
   EXPECT_FALSE(opt_change_response_.user_is_opted_in.value());
 }
 
+// Ensures the request that makes the server stop mandating FIDO authentication
+// for the device is sent with its own reason.
+TEST_F(PaymentsNetworkInterfaceTest, ForceDisableMandatoryReauthSuccess) {
+  StartOptChangeRequest(
+      OptChangeRequestDetails::Reason::kForceDisableMandatoryReauth);
+  IssueOAuthToken();
+  EXPECT_THAT(GetUploadData(),
+              HasSubstr(R"("reason":"FORCE_DISABLE_MANDATORY_REAUTH")"));
+
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                 "{ \"fido_authentication_info\": { \"user_status\": "
+                 "\"FIDO_AUTH_DISABLED\"}}");
+
+  EXPECT_EQ(result_, PaymentsRpcResult::kSuccess);
+  EXPECT_FALSE(opt_change_response_.user_is_opted_in.value());
+}
+
 TEST_F(PaymentsNetworkInterfaceTest, EnrollAttemptReturnsCreationOptions) {
   StartOptChangeRequest(OptChangeRequestDetails::Reason::kEnableFidoAuth);
 

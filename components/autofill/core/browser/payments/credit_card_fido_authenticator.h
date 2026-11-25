@@ -74,8 +74,10 @@ class CreditCardFidoAuthenticator
   struct FidoAuthenticationResponse {
     // The type of failure when FIDO authentication fails.
     enum class FailureType {
-      // Default value. Used when authentication succeeded, or when FIDO user
-      // verification failed or was cancelled before unmasking the card.
+      // Default value. Used when authentication succeeded, or when the FIDO
+      // authentication failed before unmasking the card for a reason that no
+      // other value covers, e.g. because the user cancelled the WebAuthn
+      // prompt or the browser ended it.
       kUnknown = 0,
       // The card could not be looked up due to card auth declined or failed.
       kVerificationDeclined = 1,
@@ -88,6 +90,10 @@ class CreditCardFidoAuthenticator
       // The request failed for technical reasons, such as a closing page or
       // lack of network connection.
       kGenericFailure = 4,
+      // The WebAuthn prompt failed because the authenticator of this device
+      // cannot handle the request, e.g. because user verification is not
+      // set up on the device. Trying again will not help.
+      kUnrecoverableAuthenticatorError = 5,
     };
 
     // Whether the authentication was successful.
@@ -157,6 +163,13 @@ class CreditCardFidoAuthenticator
 
   // Opts the user out.
   virtual void OptOut();
+
+  // Asks the Payments server to stop mandating FIDO authentication for this
+  // device, which also makes it forget the cards verified on this device. This
+  // is the fix path when FIDO authentication is mandated but failed in a way
+  // that the authenticator of this device may never get past. No user
+  // verification is involved.
+  void ForceDisableMandatoryReauth();
 
   // Invokes callback with true if user has a verifying platform authenticator.
   // e.g. Touch/Face ID, Windows Hello, Android fingerprint, etc., is available
@@ -251,6 +264,12 @@ class CreditCardFidoAuthenticator
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
       payments::OptChangeResponseDetails& response);
 
+  // Keeps the user preference in sync with the server after the request of
+  // ForceDisableMandatoryReauth().
+  void OnDidForceDisableMandatoryReauth(
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      payments::OptChangeResponseDetails& response);
+
   // payments::FullCardRequest::ResultDelegate:
   void OnFullCardRequestSucceeded(
       const payments::FullCardRequest& full_card_request,
@@ -291,7 +310,7 @@ class CreditCardFidoAuthenticator
   // Helper functions to handle the GetAssertion result.
   void HandleGetAssertionSuccess(
       blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response);
-  void HandleGetAssertionFailure();
+  void HandleGetAssertionFailure(blink::mojom::AuthenticatorStatus status);
 
   // Sends `fido_authenticator_response`, the WebAuthn response of the
   // enrollment during unmask flow, with the request that unmasks `card_`.

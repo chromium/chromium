@@ -52,6 +52,11 @@ class TestPaymentsNetworkInterface : public PaymentsNetworkInterface {
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const UnmaskResponseDetails&)> callback) override;
 
+  void OptChange(
+      const OptChangeRequestDetails request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                              OptChangeResponseDetails&)> callback) override;
+
   void GetCardUploadDetails(
       const std::vector<AutofillProfile>& addresses,
       const int detected_values,
@@ -107,6 +112,11 @@ class TestPaymentsNetworkInterface : public PaymentsNetworkInterface {
   void SetFidoRequestOptionsInUnmaskDetails(std::string_view credential_id,
                                             std::string_view relying_party_id);
 
+  // Responds to the last OptChange() call, which must not have been responded
+  // to yet.
+  void RespondToOptChange(PaymentsAutofillClient::PaymentsRpcResult result,
+                          OptChangeResponseDetails response);
+
   void SetUploadCardResponseDetailsForUploadCard(
       const UploadCardResponseDetails& upload_card_response_details);
 
@@ -137,6 +147,9 @@ class TestPaymentsNetworkInterface : public PaymentsNetworkInterface {
   }
   const std::optional<UnmaskRequestDetails>& unmask_request() const {
     return unmask_request_;
+  }
+  const std::optional<OptChangeRequestDetails>& opt_change_request() const {
+    return opt_change_request_;
   }
   const SelectChallengeOptionRequestDetails* select_challenge_option_request() {
     return &select_challenge_option_request_;
@@ -181,6 +194,10 @@ class TestPaymentsNetworkInterface : public PaymentsNetworkInterface {
   base::OnceClosure get_card_upload_details_callback_;
   UnmaskDetails unmask_details_;
   std::optional<UnmaskRequestDetails> unmask_request_;
+  std::optional<OptChangeRequestDetails> opt_change_request_;
+  base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                          OptChangeResponseDetails&)>
+      opt_change_callback_;
   SelectChallengeOptionRequestDetails select_challenge_option_request_;
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   std::vector<AutofillProfile> upload_details_addresses_;

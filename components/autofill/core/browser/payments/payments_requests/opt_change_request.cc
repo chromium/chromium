@@ -64,6 +64,9 @@ std::string OptChangeRequest::GetRequestContent() {
     case OptChangeRequestDetails::Reason::kAddCardForFidoAuth:
       reason = "ADD_CARD_FOR_FIDO_AUTH";
       break;
+    case OptChangeRequestDetails::Reason::kForceDisableMandatoryReauth:
+      reason = "FORCE_DISABLE_MANDATORY_REAUTH";
+      break;
     default:
       NOTREACHED();
   }

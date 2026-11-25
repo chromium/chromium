@@ -292,12 +292,23 @@ class CreditCardAccessManager
       override;
   void OnFidoAuthorizationComplete(bool did_succeed) override;
 
-  // Ends the unmasking of `card_` after the FIDO authentication mandated by
-  // `server_controlled_reauth_flow_` failed with `failure_type`. A mandated
-  // FIDO authentication has no fallback to another authentication.
+  // Handles the failure, of type `failure_type`, of the FIDO authentication
+  // mandated by `server_controlled_reauth_flow_`. A mandated FIDO
+  // authentication has no fallback to another authentication, so this ends the
+  // unmasking of `card_`. The exception is a failure that the authenticator of
+  // this device may never get past, as the user would then never be able to
+  // unmask a card again: see FallBackToCvcAfterMandatedFidoFailure().
   void OnMandatedFidoAuthenticationFailed(
       CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType
           failure_type);
+
+  // Lets CVC authentication, which the server always accepts, take over the
+  // unmasking of `card_` after the mandated FIDO authentication (verification
+  // or enrollment) failed in a way that the authenticator of this device may
+  // never get past. If this device is enrolled, i.e. for the verification, the
+  // server would keep mandating that FIDO authentication, so it is also asked
+  // to stop, unless the session is off the record.
+  void FallBackToCvcAfterMandatedFidoFailure();
 #endif
 
   bool is_authentication_in_progress() {

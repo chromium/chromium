@@ -69,6 +69,34 @@ std::vector<uint8_t> Base64ToBytes(std::string_view base64) {
 base::Value BytesToBase64(base::span<const uint8_t> bytes) {
   return base::Value(base::Base64Encode(bytes));
 }
+
+// Returns the failure to report to the requester of an authentication whose
+// WebAuthn prompt ended with the error `status`.
+CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType
+GetFailureTypeForWebauthnError(blink::mojom::AuthenticatorStatus status) {
+  using FailureType =
+      CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType;
+  switch (status) {
+    // Most often, the user cancelled the prompt or did not pass the user
+    // verification, so this is treated as a cancellation. WebAuthn reports an
+    // authenticator that no longer has the credential the same way, which then
+    // makes the authentication fail like a cancellation.
+    case blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR:
+    // The browser cancelled the request, the request competed with another
+    // one, or the page was not focused. None of these say anything about the
+    // authenticator.
+    case blink::mojom::AuthenticatorStatus::ABORT_ERROR:
+    case blink::mojom::AuthenticatorStatus::PENDING_REQUEST:
+    case blink::mojom::AuthenticatorStatus::NOT_FOCUSED:
+      return FailureType::kUnknown;
+    default:
+      // The other failure cases (more than 25) generally indicate that the
+      // authenticator is not able to handle the request, and are treated as
+      // unrecoverable.
+      return FailureType::kUnrecoverableAuthenticatorError;
+  }
+}
+
 }  // namespace
 
 CreditCardFidoAuthenticator::CreditCardFidoAuthenticator(AutofillDriver* driver,
@@ -191,6 +219,22 @@ void CreditCardFidoAuthenticator::OptOut() {
   current_flow_ = Flow::kOptOutFlow;
   card_authorization_token_ = std::string();
   OptChange();
+}
+
+void CreditCardFidoAuthenticator::ForceDisableMandatoryReauth() {
+  // This is neither one of the flows that `current_flow_` tracks nor does it
+  // depend on them: it is requested while the requester of a failed
+  // authentication is being notified, and its response may arrive after
+  // another flow has started.
+  payments::OptChangeRequestDetails request_details;
+  request_details.app_locale = payments_data_manager().app_locale();
+  request_details.reason =
+      payments::OptChangeRequestDetails::Reason::kForceDisableMandatoryReauth;
+  payments_network_interface_->OptChange(
+      request_details,
+      base::BindOnce(
+          &CreditCardFidoAuthenticator::OnDidForceDisableMandatoryReauth,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CreditCardFidoAuthenticator::IsUserVerifiable(
@@ -483,7 +527,7 @@ void CreditCardFidoAuthenticator::OnDidGetAssertion(
   if (status == blink::mojom::AuthenticatorStatus::SUCCESS) {
     HandleGetAssertionSuccess(std::move(assertion_response));
   } else {
-    HandleGetAssertionFailure();
+    HandleGetAssertionFailure(status);
   }
 }
 
@@ -514,8 +558,9 @@ void CreditCardFidoAuthenticator::OnDidMakeCredential(
         current_flow_ == Flow::kEnrollmentDuringUnmaskFlow;
     current_flow_ = Flow::kNoneFlow;
     if (should_notify_requester && requester_) {
-      requester_->OnFIDOAuthenticationComplete(
-          FidoAuthenticationResponse{.did_succeed = false});
+      requester_->OnFIDOAuthenticationComplete(FidoAuthenticationResponse{
+          .did_succeed = false,
+          .failure_type = GetFailureTypeForWebauthnError(status)});
     }
     return;
   }
@@ -574,6 +619,14 @@ void CreditCardFidoAuthenticator::OnDidGetOptChangeResult(
   } else {
     current_flow_ = Flow::kNoneFlow;
   }
+}
+
+void CreditCardFidoAuthenticator::OnDidForceDisableMandatoryReauth(
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
+    payments::OptChangeResponseDetails& response) {
+  // A failed request did not change anything on the server.
+  user_is_opted_in_ = response.user_is_opted_in.value_or(user_is_opted_in_);
+  UpdateUserPref();
 }
 
 void CreditCardFidoAuthenticator::OnFullCardRequestSucceeded(
@@ -897,14 +950,16 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
   OptChange(std::move(response));
 }
 
-void CreditCardFidoAuthenticator::HandleGetAssertionFailure() {
+void CreditCardFidoAuthenticator::HandleGetAssertionFailure(
+    blink::mojom::AuthenticatorStatus status) {
   switch (current_flow_) {
     case Flow::kAuthenticationFlow:
     case Flow::kEnrollmentDuringUnmaskFlow: {
       // End the flow if there was an authentication error.
       if (requester_) {
-        requester_->OnFIDOAuthenticationComplete(
-            FidoAuthenticationResponse{.did_succeed = false});
+        requester_->OnFIDOAuthenticationComplete(FidoAuthenticationResponse{
+            .did_succeed = false,
+            .failure_type = GetFailureTypeForWebauthnError(status)});
       }
       break;
     }

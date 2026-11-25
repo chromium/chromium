@@ -1079,8 +1079,10 @@ void CreditCardAccessManager::OnMandatedFidoAuthenticationFailed(
       CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType;
   switch (failure_type) {
     case FailureType::kUnknown:
-      // The user cancelled or did not pass the WebAuthn prompt, so they already
-      // know that the card was not unmasked.
+      // The user cancelled the WebAuthn prompt or did not pass it, or the
+      // browser ended it, e.g. because the page lost focus. WebAuthn reports an
+      // authenticator that no longer has the credential like a cancellation,
+      // so that also ends the unmasking.
       break;
     case FailureType::kVerificationDeclined:
     case FailureType::kGenericFailure:
@@ -1103,8 +1105,27 @@ void CreditCardAccessManager::OnMandatedFidoAuthenticationFailed(
       payments_autofill_client().ShowAutofillErrorDialog(error_dialog_context);
       break;
     }
+    case FailureType::kUnrecoverableAuthenticatorError:
+      // No attempt can succeed with the authenticator of this device.
+      FallBackToCvcAfterMandatedFidoFailure();
+      return;
   }
   Reset();
+}
+
+void CreditCardAccessManager::FallBackToCvcAfterMandatedFidoFailure() {
+  // Besides the FIDO verification of an enrolled device, the mandated FIDO
+  // enrollments also fall back here. A device that failed to enroll is not
+  // enrolled, so it has nothing to undo, and force-disabling would only wipe
+  // its CVC verifications. Like the other changes to the setting, the request
+  // is not made from an off-the-record session.
+  if (server_controlled_reauth_flow_ ==
+          ServerControlledReauthFlow::kFidoVerification &&
+      !autofill_client().IsOffTheRecord()) {
+    GetOrCreateFidoAuthenticator()->ForceDisableMandatoryReauth();
+  }
+  server_controlled_reauth_flow_ = ServerControlledReauthFlow::kNone;
+  Authenticate(UnmaskAuthFlowType::kCvcFallbackFromFido);
 }
 #endif
 

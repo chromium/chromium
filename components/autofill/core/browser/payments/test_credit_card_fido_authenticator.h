@@ -51,6 +51,22 @@ class TestCreditCardFidoAuthenticator : public CreditCardFidoAuthenticator {
   static void MakeCredential(CreditCardFidoAuthenticator* fido_authenticator,
                              bool did_succeed);
 
+  // Invoke fido_authenticator->OnDidGetAssertion() and
+  // fido_authenticator->OnDidMakeCredential(), respectively, with an error
+  // which tells that the authenticator could not handle the request. The error
+  // that the methods above use when `did_succeed` is false tells that the user
+  // cancelled or did not pass the WebAuthn prompt.
+  static void GetAssertionWithUnrecoverableError(
+      CreditCardFidoAuthenticator* fido_authenticator);
+  static void MakeCredentialWithUnrecoverableError(
+      CreditCardFidoAuthenticator* fido_authenticator);
+
+  // Invoke fido_authenticator->OnDidGetAssertion() with the error which tells
+  // that the browser ended the WebAuthn prompt, e.g. because the page lost
+  // focus.
+  static void GetAssertionEndedByBrowser(
+      CreditCardFidoAuthenticator* fido_authenticator);
+
   // Getter methods to query Request Options.
   std::vector<uint8_t> GetCredentialId();
   std::vector<uint8_t> GetChallenge();

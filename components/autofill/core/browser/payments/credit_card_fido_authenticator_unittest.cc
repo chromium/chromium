@@ -218,6 +218,16 @@ class CreditCardFidoAuthenticatorTest
     fido_authenticator().OnDidGetOptChangeResult(result, response);
   }
 
+  // Mock WebAuthn prompts that end with the error `status`.
+  void FailGetAssertion(blink::mojom::AuthenticatorStatus status) {
+    fido_authenticator().OnDidGetAssertion(status, nullptr,
+                                           /*dom_exception_details=*/nullptr);
+  }
+  void FailMakeCredential(blink::mojom::AuthenticatorStatus status) {
+    fido_authenticator().OnDidMakeCredential(status, nullptr,
+                                             /*dom_exception_details=*/nullptr);
+  }
+
   void SetUserOptInPreference(bool user_is_opted_in) {
     prefs::SetCreditCardFIDOAuthEnabled(autofill_client().GetPrefs(),
                                         user_is_opted_in);
@@ -231,6 +241,10 @@ class CreditCardFidoAuthenticatorTest
   }
   TestPersonalDataManager& personal_data_manager() {
     return autofill_client().GetPersonalDataManager();
+  }
+  payments::TestPaymentsNetworkInterface& payments_network_interface() {
+    return static_cast<payments::TestPaymentsNetworkInterface&>(
+        *payments_autofill_client().GetPaymentsNetworkInterface());
   }
   TestAuthenticationRequester& requester() { return requester_; }
 
@@ -665,6 +679,107 @@ TEST_F(CreditCardFidoAuthenticatorTest,
   EXPECT_TRUE(fido_authenticator().IsUserOptedIn());
 }
 
+using FidoFailureType =
+    CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType;
+
+// A WebAuthn error, and the failure that the requester of an authentication is
+// expected to be told when the WebAuthn prompt ends with that error.
+using WebauthnErrorTestCase =
+    std::tuple<blink::mojom::AuthenticatorStatus, FidoFailureType>;
+
+class CreditCardFidoAuthenticatorWebauthnErrorTest
+    : public CreditCardFidoAuthenticatorTest,
+      public testing::WithParamInterface<WebauthnErrorTestCase> {
+ protected:
+  blink::mojom::AuthenticatorStatus status() const {
+    return std::get<0>(GetParam());
+  }
+  FidoFailureType expected_failure_type() const {
+    return std::get<1>(GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CreditCardFidoAuthenticatorWebauthnErrorTest,
+    testing::Values(
+        // Treated as a cancellation: most often the user cancelled the prompt
+        // or did not pass the user verification, though the authenticator may
+        // also not have the credential.
+        WebauthnErrorTestCase(
+            blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR,
+            FidoFailureType::kUnknown),
+        // The browser did not let the authenticator handle the request.
+        WebauthnErrorTestCase(blink::mojom::AuthenticatorStatus::ABORT_ERROR,
+                              FidoFailureType::kUnknown),
+        WebauthnErrorTestCase(
+            blink::mojom::AuthenticatorStatus::PENDING_REQUEST,
+            FidoFailureType::kUnknown),
+        WebauthnErrorTestCase(blink::mojom::AuthenticatorStatus::NOT_FOCUSED,
+                              FidoFailureType::kUnknown),
+        // The authenticator could not handle the request.
+        WebauthnErrorTestCase(
+            blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR,
+            FidoFailureType::kUnrecoverableAuthenticatorError),
+        WebauthnErrorTestCase(
+            blink::mojom::AuthenticatorStatus::CREDENTIAL_EXCLUDED,
+            FidoFailureType::kUnrecoverableAuthenticatorError),
+        WebauthnErrorTestCase(
+            blink::mojom::AuthenticatorStatus::USER_VERIFICATION_UNSUPPORTED,
+            FidoFailureType::kUnrecoverableAuthenticatorError),
+        WebauthnErrorTestCase(
+            blink::mojom::AuthenticatorStatus::NOT_IMPLEMENTED,
+            FidoFailureType::kUnrecoverableAuthenticatorError)));
+
+// Ensures the requester of an authentication is told how its WebAuthn prompt
+// failed: like a cancellation, or in a way that trying again cannot fix.
+TEST_P(CreditCardFidoAuthenticatorWebauthnErrorTest, AuthenticateCard) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+  fido_authenticator().Authenticate(
+      card, requester().GetWeakPtr(),
+      GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
+                            kTestCredentialId));
+
+  FailGetAssertion(status());
+
+  ASSERT_TRUE(requester().did_succeed().has_value());
+  EXPECT_FALSE(*requester().did_succeed());
+  EXPECT_EQ(requester().failure_type(), expected_failure_type());
+}
+
+// Ensures the same holds for the WebAuthn prompt that creates the credential
+// of an enrollment during unmask.
+TEST_P(CreditCardFidoAuthenticatorWebauthnErrorTest,
+       EnrollAndAuthenticateWithCreationOptions) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+  fido_authenticator().EnrollAndAuthenticateWithCreationOptions(
+      card, requester().GetWeakPtr(),
+      GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId));
+
+  FailMakeCredential(status());
+
+  ASSERT_TRUE(requester().did_succeed().has_value());
+  EXPECT_FALSE(*requester().did_succeed());
+  EXPECT_EQ(requester().failure_type(), expected_failure_type());
+}
+
+// Ensures the same holds for the WebAuthn prompt of an enrollment during
+// unmask that signs with an existing credential.
+TEST_P(CreditCardFidoAuthenticatorWebauthnErrorTest,
+       EnrollAndAuthenticateWithRequestOptions) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+  fido_authenticator().EnrollAndAuthenticateWithRequestOptions(
+      card, requester().GetWeakPtr(),
+      GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
+                            kTestCredentialId));
+
+  FailGetAssertion(status());
+
+  ASSERT_TRUE(requester().did_succeed().has_value());
+  EXPECT_FALSE(*requester().did_succeed());
+  EXPECT_EQ(requester().failure_type(), expected_failure_type());
+}
+
 TEST_F(CreditCardFidoAuthenticatorTest, OptIn_PaymentsResponseError) {
   base::HistogramTester histogram_tester;
   std::string histogram_name =
@@ -883,6 +998,75 @@ TEST_F(CreditCardFidoAuthenticatorTest, OptOut_Success) {
   OptChange(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/false);
   EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
+}
+
+// Ensures the server is asked to stop mandating FIDO authentication for this
+// device with a request of its own, which carries no WebAuthn response.
+TEST_F(CreditCardFidoAuthenticatorTest,
+       ForceDisableMandatoryReauth_SendsRequest) {
+  fido_authenticator().ForceDisableMandatoryReauth();
+
+  const std::optional<payments::OptChangeRequestDetails>& request =
+      payments_network_interface().opt_change_request();
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(
+      request->reason,
+      payments::OptChangeRequestDetails::Reason::kForceDisableMandatoryReauth);
+  EXPECT_FALSE(request->fido_authenticator_response.has_value());
+  EXPECT_TRUE(request->card_authorization_token.empty());
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kNoneFlow);
+}
+
+// Ensures the user is no longer considered opted in once the server confirmed
+// that it stopped mandating FIDO authentication for this device.
+TEST_F(CreditCardFidoAuthenticatorTest, ForceDisableMandatoryReauth_Success) {
+  SetUserOptInPreference(true);
+  fido_authenticator().ForceDisableMandatoryReauth();
+
+  payments::OptChangeResponseDetails response;
+  response.user_is_opted_in = false;
+  payments_network_interface().RespondToOptChange(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response);
+
+  EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
+}
+
+// Ensures the user stays opted in if the request failed, as the server then
+// keeps mandating FIDO authentication for this device.
+TEST_F(CreditCardFidoAuthenticatorTest,
+       ForceDisableMandatoryReauth_PaymentsResponseError) {
+  SetUserOptInPreference(true);
+  fido_authenticator().ForceDisableMandatoryReauth();
+
+  payments_network_interface().RespondToOptChange(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kNetworkError,
+      payments::OptChangeResponseDetails());
+
+  EXPECT_TRUE(fido_authenticator().IsUserOptedIn());
+}
+
+// Ensures the response is handled when another flow has started by the time it
+// arrives, and that it leaves that flow alone.
+TEST_F(CreditCardFidoAuthenticatorTest,
+       ForceDisableMandatoryReauth_ResponseDuringAnotherFlow) {
+  SetUserOptInPreference(true);
+  fido_authenticator().ForceDisableMandatoryReauth();
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+  fido_authenticator().Authenticate(
+      card, requester().GetWeakPtr(),
+      GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
+                            kTestCredentialId));
+
+  payments::OptChangeResponseDetails response;
+  response.user_is_opted_in = false;
+  payments_network_interface().RespondToOptChange(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response);
+
+  EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
+  EXPECT_EQ(fido_authenticator().current_flow(),
+            CreditCardFidoAuthenticator::Flow::kAuthenticationFlow);
+  EXPECT_FALSE(requester().did_succeed().has_value());
 }
 
 }  // namespace autofill

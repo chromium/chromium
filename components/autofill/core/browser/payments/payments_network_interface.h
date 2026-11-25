@@ -97,7 +97,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
 
   // Opts-in or opts-out the user to use FIDO authentication for card unmasking
   // on this device.
-  void OptChange(
+  virtual void OptChange(
       const OptChangeRequestDetails request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               OptChangeResponseDetails&)> callback);

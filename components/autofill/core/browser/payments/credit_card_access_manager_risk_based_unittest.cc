@@ -1405,6 +1405,12 @@ class CreditCardAccessManagerServerControlledReauthTest
     return payments_network_interface().unmask_request();
   }
 
+  // The request that changes the FIDO authentication setting stored on the
+  // server, if it has been sent.
+  const std::optional<payments::OptChangeRequestDetails>& opt_change_request() {
+    return payments_network_interface().opt_change_request();
+  }
+
   bool risk_based_authentication_invoked() {
     return payments_autofill_client().risk_based_authentication_invoked();
   }
@@ -1485,20 +1491,22 @@ TEST_F(CreditCardAccessManagerServerControlledReauthTest,
   EXPECT_TRUE(fido_authenticator().authenticate_invoked());
 }
 
-// Ensures that nothing else is offered when the user cancels or fails the
-// mandated FIDO authentication.
+// Ensures that nothing else is offered when the browser ends the WebAuthn
+// prompt of the mandated FIDO authentication, e.g. because the page lost
+// focus, which says nothing about the authenticator.
 TEST_F(CreditCardAccessManagerServerControlledReauthTest,
-       Enabled_FidoPromptFails_AbortsWithoutFallback) {
+       Enabled_FidoPromptEndedByBrowser_AbortsWithoutFallback) {
   const CreditCard* masked_server_card =
       SetUpVerifiedCard(MandatoryReauthStatus::kEnabled);
   SetUpPreflightCallForEnrolledDevice();
   PrepareToFetchCreditCardAndWaitForCallbacks();
   FetchCreditCard(masked_server_card);
 
-  TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
-                                                /*did_succeed=*/false);
+  TestCreditCardFidoAuthenticator::GetAssertionEndedByBrowser(
+      GetFIDOAuthenticator());
 
   ExpectUnmaskingAbortedWithoutFallback();
+  EXPECT_FALSE(opt_change_request().has_value());
   EXPECT_FALSE(payments_autofill_client().autofill_error_dialog_shown());
 }
 
@@ -1732,6 +1740,7 @@ TEST_F(CreditCardAccessManagerServerControlledReauthTest,
                                                   /*did_succeed=*/false);
 
   ExpectUnmaskingAbortedWithoutFallback();
+  EXPECT_FALSE(opt_change_request().has_value());
   EXPECT_FALSE(payments_autofill_client().autofill_error_dialog_shown());
 }
 
@@ -1993,6 +2002,165 @@ TEST_F(CreditCardAccessManagerServerControlledReauthTest,
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
+}
+
+// Ensures the user is not locked out of their cards when the authenticator of
+// an enrolled device cannot be used: the server is asked to stop mandating
+// FIDO authentication for this device, and CVC authentication takes over right
+// away.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Enabled_UnrecoverableAuthenticatorError_ForceDisablesAndFallsBackToCvc) {
+  const CreditCard* masked_server_card =
+      SetUpVerifiedCard(MandatoryReauthStatus::kEnabled);
+  SetUpPreflightCallForEnrolledDevice();
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+  FetchCreditCard(masked_server_card);
+
+  TestCreditCardFidoAuthenticator::GetAssertionWithUnrecoverableError(
+      GetFIDOAuthenticator());
+
+  ASSERT_TRUE(opt_change_request().has_value());
+  EXPECT_EQ(
+      opt_change_request()->reason,
+      payments::OptChangeRequestDetails::Reason::kForceDisableMandatoryReauth);
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvcFallbackFromFido);
+  EXPECT_FALSE(payments_autofill_client().autofill_error_dialog_shown());
+
+  EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
+  ASSERT_TRUE(unmask_request().has_value());
+  EXPECT_TRUE(unmask_request()->context_token.empty());
+  EXPECT_EQ(accessor().number(), kTestNumber16);
+}
+
+// Ensures NOT_ALLOWED_ERROR is treated as a cancellation of the mandated FIDO
+// authentication, as that is what it most often is: nothing else is offered,
+// and the server is not asked to change anything. WebAuthn reports an
+// authenticator that no longer has the credential of this device the same way,
+// so the unmasking also just ends then.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Enabled_FidoPromptNotAllowed_AbortsWithoutFallback) {
+  const CreditCard* masked_server_card =
+      SetUpVerifiedCard(MandatoryReauthStatus::kEnabled);
+  SetUpPreflightCallForEnrolledDevice();
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+  FetchCreditCard(masked_server_card);
+
+  TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
+                                                /*did_succeed=*/false);
+
+  ExpectUnmaskingAbortedWithoutFallback();
+  EXPECT_FALSE(opt_change_request().has_value());
+  EXPECT_FALSE(payments_autofill_client().autofill_error_dialog_shown());
+}
+
+// Ensures the same for the mandated FIDO enrollment that signs with a
+// credential the platform enrolled on its own: it ends without a request
+// carrying a FIDO response, and nothing else is offered.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Unknown_EnrollmentWithExistingCredentialNotAllowed_Aborts) {
+  const CreditCard* masked_server_card =
+      SetUpVerifiedCard(MandatoryReauthStatus::kUnknown);
+  payments_network_interface().SetFidoRequestOptionsInUnmaskDetails(
+      kCredentialId, kGooglePaymentsRpid);
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+  FetchCreditCard(masked_server_card);
+  ASSERT_EQ(GetFIDOAuthenticator()->current_flow(),
+            CreditCardFidoAuthenticator::Flow::kEnrollmentDuringUnmaskFlow);
+
+  TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
+                                                /*did_succeed=*/false);
+
+  ExpectUnmaskingAbortedWithoutFallback();
+  EXPECT_FALSE(autofill_progress_dialog_shown());
+  EXPECT_FALSE(unmask_request().has_value());
+  EXPECT_FALSE(opt_change_request().has_value());
+}
+
+// Ensures that nothing else is offered when the browser ends the WebAuthn
+// prompt of the mandated FIDO enrollment that signs with a credential the
+// platform enrolled on its own, which says nothing about the credential.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Unknown_EnrollmentWithExistingCredentialEndedByBrowser_Aborts) {
+  const CreditCard* masked_server_card =
+      SetUpVerifiedCard(MandatoryReauthStatus::kUnknown);
+  payments_network_interface().SetFidoRequestOptionsInUnmaskDetails(
+      kCredentialId, kGooglePaymentsRpid);
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+  FetchCreditCard(masked_server_card);
+
+  TestCreditCardFidoAuthenticator::GetAssertionEndedByBrowser(
+      GetFIDOAuthenticator());
+
+  ExpectUnmaskingAbortedWithoutFallback();
+  EXPECT_FALSE(autofill_progress_dialog_shown());
+}
+
+// Ensures the setting stored on the server is not changed from an
+// off-the-record session: only CVC authentication takes over when the
+// authenticator of an enrolled device cannot be used.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Enabled_OffTheRecord_UnrecoverableAuthenticatorError_FallsBackToCvc) {
+  autofill_client().set_is_off_the_record(true);
+  const CreditCard* masked_server_card =
+      SetUpVerifiedCard(MandatoryReauthStatus::kEnabled);
+  SetUpPreflightCallForEnrolledDevice();
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+  FetchCreditCard(masked_server_card);
+
+  TestCreditCardFidoAuthenticator::GetAssertionWithUnrecoverableError(
+      GetFIDOAuthenticator());
+
+  EXPECT_FALSE(opt_change_request().has_value());
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvcFallbackFromFido);
+  EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
+  EXPECT_EQ(accessor().number(), kTestNumber16);
+}
+
+// Ensures CVC authentication takes over when a device cannot enroll into FIDO
+// authentication because its authenticator cannot be used. The server does not
+// mandate FIDO authentication for this device yet, so it is not asked to
+// change anything.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Unknown_UnrecoverableAuthenticatorErrorOnEnrollment_FallsBackToCvc) {
+  const CreditCard* masked_server_card =
+      SetUpVerifiedCard(MandatoryReauthStatus::kUnknown);
+  unmask_details().fido_creation_options = GetTestCreationOptions();
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+  FetchCreditCard(masked_server_card);
+
+  TestCreditCardFidoAuthenticator::MakeCredentialWithUnrecoverableError(
+      GetFIDOAuthenticator());
+
+  EXPECT_FALSE(opt_change_request().has_value());
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvcFallbackFromFido);
+  EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
+  EXPECT_EQ(accessor().number(), kTestNumber16);
+}
+
+// Ensures the server is not asked to change anything when FIDO authentication
+// was not mandated: a FIDO authentication that follows a risk-based
+// authentication falls back to CVC authentication for any failure.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       StatusNotReported_UnrecoverableAuthenticatorError_FallsBackToCvc) {
+  const CreditCard* masked_server_card = SetUpVerifiedCard(std::nullopt);
+  SetUpPreflightCallForEnrolledDevice();
+  SetCreditCardFIDOAuthEnabled(true);
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+  FetchCreditCard(masked_server_card);
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::
+                               kAuthenticationRequired)
+          .with_fido_request_options(GetTestRequestOptions())
+          .with_context_token("fake_context_token"));
+  ASSERT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kFido);
+
+  TestCreditCardFidoAuthenticator::GetAssertionWithUnrecoverableError(
+      GetFIDOAuthenticator());
+
+  EXPECT_FALSE(opt_change_request().has_value());
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvcFallbackFromFido);
 }
 
 // Ensures the way the setting required one card to be authenticated does not
