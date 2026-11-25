@@ -52,8 +52,6 @@
           <include name="IDR_PRODUCT_LOGO_128PX_SVG" file="${branding_path_component}/chrome_128px.svg" type="BINDATA" />
           <include name="IDR_GSHIELD_ICON_SVG" file="${branding_path_component}/gshield.svg" type="BINDATA" />
           <if expr="is_chromeos">
-            <include name="IDR_PRODUCT_LOGO_24PX_1X" file="${branding_path_component}/chromeos/chrome_24px_1x.svg" type="BINDATA" />
-            <include name="IDR_PRODUCT_LOGO_24PX_2X" file="${branding_path_component}/chromeos/chrome_24px_2x.svg" type="BINDATA" />
             <!-- Used by ChromeOS OOBE -->
             <include name="IDR_CROS_OOBE_PRODUCT_NAME" file="${branding_path_component}/chromeos/oobe/project_simon/product_name.txt" type="BINDATA" />
             <include name="IDR_CROS_OOBE_WELCOME_BACKDROP" file="${branding_path_component}/chromeos/oobe/project_simon/welcome_backdrop.svg" type="BINDATA" />

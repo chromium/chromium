@@ -199,8 +199,6 @@ constexpr char kOobeCustomVarsCssJs[] =
     "components/oobe_vars/oobe_custom_vars.css.js";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
-constexpr char kLogo24PX2XSvgPath[] = "logo_24px-2x.svg";
 constexpr char kSyncConsentIcons[] = "sync-consent-icons.html";
 constexpr char kSyncConsentIconsJs[] = "sync-consent-icons.m.js";
 constexpr char kWelcomeBackdrop[] = "internal_assets/welcome_backdrop.svg";
@@ -208,11 +206,6 @@ constexpr char kWelcomeBackdrop[] = "internal_assets/welcome_backdrop.svg";
 
 // Adds various product logo resources.
 void AddProductLogoResources(content::WebUIDataSource* source) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  source->AddResourcePath(kLogo24PX1XSvgPath, IDR_PRODUCT_LOGO_24PX_1X);
-  source->AddResourcePath(kLogo24PX2XSvgPath, IDR_PRODUCT_LOGO_24PX_2X);
-#endif
-
   // Required in encryption migration screen.
   source->AddResourcePath(kProductLogoPath, IDR_PRODUCT_LOGO_64);
 }
