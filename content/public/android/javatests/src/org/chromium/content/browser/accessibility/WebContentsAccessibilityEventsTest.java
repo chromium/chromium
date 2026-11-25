@@ -1106,6 +1106,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/589606941")
     public void test_constantRefresh() throws TimeoutException {
         // This test differs from the rest given we cannot send the readyForTestSignal because
         // of the constant refreshing of the webpage. Instead, another parameter could've been added
