@@ -17,6 +17,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
@@ -30,6 +34,7 @@
 #include "chromeos/components/sharesheet/constants.h"
 #include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,6 +90,64 @@ class TestNewWindowDelegate : public ash::TestNewWindowDelegate {
 
  private:
   std::optional<GURL> url_;
+};
+
+class FakeWindowOpeningAppPublisher : public apps::AppPublisher {
+ public:
+  explicit FakeWindowOpeningAppPublisher(apps::AppServiceProxy* proxy)
+      : apps::AppPublisher(proxy) {
+    RegisterPublisher(apps::AppType::kWeb);
+  }
+  FakeWindowOpeningAppPublisher(const FakeWindowOpeningAppPublisher&) = delete;
+  FakeWindowOpeningAppPublisher& operator=(
+      const FakeWindowOpeningAppPublisher&) = delete;
+  ~FakeWindowOpeningAppPublisher() override {
+    proxy()->UnregisterPublisher(apps::AppType::kWeb);
+  }
+
+  void PublishShareApp(const std::string& app_id, const std::string& name) {
+    apps::AppPtr app =
+        MakeApp(apps::AppType::kWeb, app_id, apps::Readiness::kReady, name,
+                apps::InstallReason::kUser, apps::InstallSource::kBrowser);
+    app->handles_intents = true;
+    app->window_mode = apps::WindowMode::kWindow;
+    app->intent_filters.emplace();
+    app->intent_filters->push_back(
+        apps_util::MakeIntentFilterForMimeType(::sharesheet::kMimeTypeText));
+    Publish(std::move(app));
+  }
+
+  void Launch(const std::string& app_id,
+              int32_t event_flags,
+              apps::LaunchSource launch_source,
+              apps::WindowInfoPtr window_info) override {}
+
+  void LaunchAppWithParams(apps::AppLaunchParams&& params,
+                           apps::LaunchCallback callback) override {
+    std::move(callback).Run(apps::LaunchResult::kSuccess);
+  }
+
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           apps::IntentPtr intent,
+                           apps::LaunchSource launch_source,
+                           apps::WindowInfoPtr window_info,
+                           apps::LaunchCallback callback) override {
+    launched_app_id_ = app_id;
+    // Synchronously activate a new window so the Sharesheet bubble closes on
+    // deactivation while LaunchApp() is still on the stack.
+    views::Widget* widget =
+        views::test::TestWidgetBuilder().BuildOwnedByNativeWidget();
+    ASSERT_TRUE(widget->IsActive());
+    std::move(callback).Run(apps::LaunchResult::kSuccess);
+  }
+
+  const std::optional<std::string>& launched_app_id() const {
+    return launched_app_id_;
+  }
+
+ private:
+  std::optional<std::string> launched_app_id_;
 };
 
 }  // namespace
@@ -220,6 +283,34 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase,
   }
 
   Profile* profile() { return profile_.get(); }
+
+  gfx::NativeWindow parent_window() { return parent_window_; }
+
+  void ShowRealBubbleAndVerify(apps::IntentPtr intent,
+                               ::sharesheet::LaunchSource source) {
+    auto* sharesheet_service = GetSharesheetService();
+    sharesheet_service->ShowBubble(
+        std::move(intent), source,
+        base::BindOnce(&SharesheetBubbleViewTest::parent_window,
+                       base::Unretained(this)),
+        /*delivered_callback=*/base::DoNothing(),
+        /*close_callback=*/
+        base::BindOnce(&SharesheetBubbleViewTest::OnClose,
+                       base::Unretained(this)));
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return sharesheet_service->GetSharesheetController(parent_window_) !=
+             nullptr;
+    }));
+    bubble_delegate_ = static_cast<SharesheetBubbleViewDelegate*>(
+        sharesheet_service->GetUiDelegateForTesting(parent_window_));
+    ASSERT_NE(bubble_delegate_, nullptr);
+    sharesheet_bubble_view_ = bubble_delegate_->GetBubbleViewForTesting();
+    ASSERT_NE(sharesheet_bubble_view_, nullptr);
+    sharesheet_bubble_view_->GetWidget()->AddObserver(this);
+    ASSERT_TRUE(bubble_delegate_->IsBubbleVisible());
+    sharesheet_widget_ = sharesheet_bubble_view_->GetWidget();
+    ASSERT_TRUE(IsSharesheetVisible());
+  }
 
  private:
   gfx::NativeWindow parent_window_;
@@ -667,6 +758,25 @@ TEST_F(SharesheetBubbleViewTest, ReshowHiddenBubble) {
       base::DoNothing(), base::DoNothing());
 
   EXPECT_TRUE(bubble_window->IsVisible());
+}
+
+TEST_F(SharesheetBubbleViewTest, LaunchAppClosingBubbleShouldNotCrash) {
+  constexpr char kTestAppId[] = "test_share_web_app";
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+  FakeWindowOpeningAppPublisher publisher(proxy);
+  publisher.PublishShareApp(kTestAppId, "Test Share App");
+
+  ShowRealBubbleAndVerify(::sharesheet::CreateValidTextIntent(),
+                          ::sharesheet::LaunchSource::kUnknown);
+
+  views::View* targets_view = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::TARGETS_DEFAULT_VIEW_ID);
+  ASSERT_EQ(targets_view->children().size(), 2u);
+
+  // Target 0 is Copy to clipboard; target 1 is the published web app.
+  Click(targets_view->children()[1]);
+  EXPECT_FALSE(sharesheet_bubble_view());
+  EXPECT_EQ(publisher.launched_app_id(), kTestAppId);
 }
 
 }  // namespace sharesheet

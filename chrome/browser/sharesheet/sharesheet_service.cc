@@ -186,6 +186,14 @@ void SharesheetService::OnTargetSelected(
     CHECK(intent);
     CHECK(app_name.has_value());
     LaunchApp(app_name.value(), std::move(intent));
+    // Launching the app may synchronously show/activate another window (for
+    // example, an app pause/block dialog or a new app window), which
+    // deactivates the sharesheet bubble and destroys `delegator` via
+    // OnBubbleClosed(). Re-fetch it instead of reusing the stale pointer.
+    delegator = GetDelegator(native_window);
+    if (!delegator) {
+      return;
+    }
     delegator->CloseBubble(SharesheetResult::kSuccess);
   }
 }
