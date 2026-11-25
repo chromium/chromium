@@ -143,6 +143,7 @@ public class NtpCustomizationUtilsUnitTest {
     @Mock private NtpCustomizationConfigManager mConfigManager;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private NtpCustomizationUtils.Natives mMockJni;
+    @Mock private NtpCustomizationPolicyManager mPolicyManager;
 
     private Context mContext;
     private Resources mResources;
@@ -239,6 +240,58 @@ public class NtpCustomizationUtilsUnitTest {
     @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
     public void testIsNTPCustomizationSyncEnabled_ThemeSyncDisabled() {
         assertFalse(NtpCustomizationUtils.isNTPCustomizationSyncEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testIsNTPCustomizationSyncEnabledWithWindowAndroid_ThemeSyncEnabled() {
+        NtpCustomizationPolicyManager.setInstanceForTesting(mPolicyManager);
+
+        when(mPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
+        assertFalse(
+                NtpCustomizationUtils.isNTPCustomizationSyncEnabled(
+                        mWindowAndroid, /* isLff= */ true));
+        assertFalse(
+                NtpCustomizationUtils.isNTPCustomizationSyncEnabled(
+                        mWindowAndroid, /* isLff= */ false));
+
+        when(mPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
+        assertTrue(
+                NtpCustomizationUtils.isNTPCustomizationSyncEnabled(
+                        mWindowAndroid, /* isLff= */ true));
+        assertTrue(
+                NtpCustomizationUtils.isNTPCustomizationSyncEnabled(
+                        mWindowAndroid, /* isLff= */ false));
+
+        // Disabling edge-to-edge only affects phones; LFF devices remain unaffected.
+        mEdgeToEdgeStateProvider.detach();
+        assertFalse(
+                NtpCustomizationUtils.isNTPCustomizationSyncEnabled(
+                        mWindowAndroid, /* isLff= */ false));
+        assertTrue(
+                NtpCustomizationUtils.isNTPCustomizationSyncEnabled(
+                        mWindowAndroid, /* isLff= */ true));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testIsNTPCustomizationSyncEnabledWithWindowAndroid_ThemeSyncDisabled() {
+        NtpCustomizationPolicyManager.setInstanceForTesting(mPolicyManager);
+        when(mPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
+
+        assertTrue(
+                NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
+                        mWindowAndroid, /* isLff= */ true));
+        assertTrue(
+                NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
+                        mWindowAndroid, /* isLff= */ false));
+
+        assertFalse(
+                NtpCustomizationUtils.isNTPCustomizationSyncEnabled(
+                        mWindowAndroid, /* isLff= */ true));
+        assertFalse(
+                NtpCustomizationUtils.isNTPCustomizationSyncEnabled(
+                        mWindowAndroid, /* isLff= */ false));
     }
 
     @Test

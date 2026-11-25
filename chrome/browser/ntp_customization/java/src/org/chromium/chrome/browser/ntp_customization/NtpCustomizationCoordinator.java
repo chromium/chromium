@@ -63,10 +63,10 @@ public class NtpCustomizationCoordinator {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final Supplier<@Nullable Profile> mProfileSupplier;
-    private final WindowAndroid mWindowAndroid;
     private final @Nullable ModuleRegistry mModuleRegistry;
     private final int mBottomSheetType;
     private final boolean mIsNtpCustomizationSyncEnabled;
+
     private NtpCustomizationMediator mMediator;
     private @Nullable MvtSettingsCoordinator mMvtSettingCoordinator;
     private @MonotonicNonNull NtpCardsCoordinator mNtpCardsCoordinator;
@@ -159,7 +159,6 @@ public class NtpCustomizationCoordinator {
         mBottomSheetController = bottomSheetController;
         mProfileSupplier = profileSupplier;
         mBottomSheetType = bottomSheetType;
-        mWindowAndroid = windowAndroid;
         mModuleRegistry = moduleRegistry;
 
         View contentView =
@@ -170,7 +169,9 @@ public class NtpCustomizationCoordinator {
         // This empty OnClickListener is added to the ViewFlipper to prevent TalkBack from
         // unexpectedly triggering the click listeners of its child list items.
         mViewFlipperView.setOnClickListener(ViewUtils.emptyClickListener());
-        mIsNtpCustomizationSyncEnabled = NtpCustomizationUtils.isNTPCustomizationSyncEnabled();
+        mIsNtpCustomizationSyncEnabled =
+                NtpCustomizationUtils.isNTPCustomizationSyncEnabled(
+                        windowAndroid, DeviceFormFactor.isNonMultiDisplayContextOnTablet(context));
 
         NtpCustomizationBottomSheetContent bottomSheetContent = initBottomSheetContent(contentView);
 
@@ -254,10 +255,7 @@ public class NtpCustomizationCoordinator {
     }
 
     private void showMainBottomSheet() {
-        if (mIsNtpCustomizationSyncEnabled
-                && NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
-                        mWindowAndroid,
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext))) {
+        if (mIsNtpCustomizationSyncEnabled) {
             if (mNtpThemeSyncHistoryCoordinator == null) {
                 mNtpThemeSyncHistoryCoordinator =
                         new NtpThemeSyncHistoryCoordinator(

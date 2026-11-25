@@ -2022,9 +2022,25 @@ public class NtpCustomizationUtils {
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS);
     }
 
-    /** Returns whether NTP theme customization sync is enabled. */
+    /**
+     * Returns whether the NTP theme customization sync feature flag is enabled. Callers that have a
+     * {@link WindowAndroid} should prefer {@link #isNTPCustomizationSyncEnabled(WindowAndroid,
+     * boolean)} so policy, form factor, and window eligibility are also checked.
+     */
     public static boolean isNTPCustomizationSyncEnabled() {
         return ChromeFeatureList.sNewTabPageCustomizationThemeSync.isEnabled();
+    }
+
+    /**
+     * Returns whether NTP theme customization sync is enabled for the given window and form factor.
+     *
+     * @param windowAndroid The instance of {@link WindowAndroid}.
+     * @param isLff Whether the current device is a large form factor (LFF) device.
+     */
+    public static boolean isNTPCustomizationSyncEnabled(
+            WindowAndroid windowAndroid, boolean isLff) {
+        return isNTPCustomizationSyncEnabled()
+                && isNtpThemeCustomizationEnabled(windowAndroid, isLff);
     }
 
     /**

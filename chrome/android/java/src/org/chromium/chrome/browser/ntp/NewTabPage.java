@@ -453,7 +453,8 @@ public class NewTabPage
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBottomSheetController = bottomSheetController;
         mIsInNightMode = isInNightMode;
-        mIsNtpCustomizationSyncEnabled = NtpCustomizationUtils.isNTPCustomizationSyncEnabled();
+        mIsNtpCustomizationSyncEnabled =
+                NtpCustomizationUtils.isNTPCustomizationSyncEnabled(windowAndroid, isLff);
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mTopInsetProvider = topInsetProvider;

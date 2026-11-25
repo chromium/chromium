@@ -393,7 +393,18 @@ public class NtpCustomizationCoordinatorUnitTest {
      */
     private void testShowBottomSheetDoesNotCreateThemeSyncHistoryImpl(boolean isDesktop) {
         DeviceInfo.setIsDesktopForTesting(isDesktop);
-        mNtpCustomizationCoordinator.showBottomSheet();
-        assertNull(mNtpCustomizationCoordinator.getNtpThemeSyncHistoryCoordinatorForTesting());
+        NtpCustomizationCoordinator coordinator =
+                new NtpCustomizationCoordinator(
+                        mContext,
+                        mBottomSheetController,
+                        mProfileSupplier,
+                        MAIN,
+                        mWindowAndroid,
+                        mModuleRegistry,
+                        mSnackbarManager);
+        coordinator.setViewFlipperForTesting(mViewFlipper);
+        coordinator.setMediatorForTesting(mMediator);
+        coordinator.showBottomSheet();
+        assertNull(coordinator.getNtpThemeSyncHistoryCoordinatorForTesting());
     }
 }
