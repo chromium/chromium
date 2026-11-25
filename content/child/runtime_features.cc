@@ -217,8 +217,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableWebIdentityDigitalCredentialsCreation,
            features::kWebIdentityDigitalCredentialsCreation, kDefault},
           {wf::EnableWebOTP, features::kWebOTP, kSetOnlyIfOverridden},
-          {wf::EnableWebOTPAssertionFeaturePolicy,
-           features::kWebOTPAssertionFeaturePolicy, kSetOnlyIfOverridden},
           {wf::EnableWebUSB, features::kWebUsb},
           {wf::EnableWebXR, features::kWebXr},
 #if BUILDFLAG(ENABLE_VR)

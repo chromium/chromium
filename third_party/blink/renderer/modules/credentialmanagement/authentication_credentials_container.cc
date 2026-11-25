@@ -1592,8 +1592,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   if (options->hasPublicKey()) {
     required_origin_type = RequiredOriginType::
         kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy;
-  } else if (options->hasOtp() &&
-             RuntimeEnabledFeatures::WebOTPAssertionFeaturePolicyEnabled()) {
+  } else if (options->hasOtp()) {
     required_origin_type = RequiredOriginType::
         kSecureAndPermittedByWebOTPAssertionPermissionsPolicy;
   } else if (options->hasIdentity() && options->identity()->hasProviders() &&

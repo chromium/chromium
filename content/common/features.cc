@@ -1006,10 +1006,6 @@ BASE_FEATURE(kWebUIOptimizeLocalResourceLoaderConfig,
 // `mojo::DataPipeProducer` on the `ThreadPool`.
 BASE_FEATURE(kWebUISyncDataPipeWrite, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables WebOTP calls in cross-origin iframes if allowed by Permissions
-// Policy.
-BASE_FEATURE(kWebOTPAssertionFeaturePolicy, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Please keep features in alphabetical order.
 
 bool IsEnforceSameDocumentOriginInvariantsEnabled() {

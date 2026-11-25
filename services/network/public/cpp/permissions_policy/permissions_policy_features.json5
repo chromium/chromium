@@ -458,7 +458,7 @@
     {
       name: "OTPCredentials",
       permissions_policy_name: "otp-credentials",
-      depends_on: ["WebOTPAssertionFeaturePolicy"],
+      depends_on: ["WebOTP"],
     },
     {
       name: "Payment",

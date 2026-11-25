@@ -8080,13 +8080,6 @@
       base_feature: "none",
     },
     {
-      name: "WebOTPAssertionFeaturePolicy",
-      depends_on: ["WebOTP"],
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       // https://wicg.github.io/web-preferences-api/
       name: "WebPreferences",
       status: "experimental",
