@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -258,14 +258,12 @@ void ReadYUV(ImageDecoder* decoder,
   size_t planes_data_size = row_bytes[0] * y_size.height() +
                             row_bytes[1] * u_size.height() +
                             row_bytes[2] * v_size.height();
-  auto planes_data = std::make_unique<char[]>(planes_data_size);
+  auto planes_data = base::HeapArray<char>::WithSize(planes_data_size);
 
   void* planes[3];
-  planes[0] = planes_data.get();
-  planes[1] = UNSAFE_TODO(static_cast<char*>(planes[0]) +
-                          row_bytes[0] * y_size.height());
-  planes[2] = UNSAFE_TODO(static_cast<char*>(planes[1]) +
-                          row_bytes[1] * u_size.height());
+  planes[0] = planes_data.data();
+  planes[1] = planes_data.subspan(row_bytes[0] * y_size.height()).data();
+  planes[2] = planes_data.last(row_bytes[2] * v_size.height()).data();
 
   decoder->SetImagePlanes(
       std::make_unique<ImagePlanes>(planes, row_bytes, kGray_8_SkColorType));
