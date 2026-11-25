@@ -676,6 +676,30 @@ class BookmarkBridge {
     }
 
     /**
+     * Copies the specified bookmark or folder to the clipboard.
+     *
+     * @param bookmarkId The ID of the bookmark or folder to copy.
+     * @param isOffTheRecord Whether the copy was initiated from an incognito profile.
+     */
+    public void copyToClipboard(BookmarkId bookmarkId, boolean isOffTheRecord) {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeBookmarkBridge == 0 || !mIsNativeBookmarkModelLoaded) return;
+        BookmarkBridgeJni.get().copyToClipboard(mNativeBookmarkBridge, bookmarkId, isOffTheRecord);
+    }
+
+    /**
+     * Copies the specified bookmark or folder to the clipboard and removes it from the model.
+     *
+     * @param bookmarkId The ID of the bookmark or folder to cut.
+     * @param isOffTheRecord Whether the cut was initiated from an incognito profile.
+     */
+    public void cutToClipboard(BookmarkId bookmarkId, boolean isOffTheRecord) {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeBookmarkBridge == 0 || !mIsNativeBookmarkModelLoaded) return;
+        BookmarkBridgeJni.get().cutToClipboard(mNativeBookmarkBridge, bookmarkId, isOffTheRecord);
+    }
+
+    /**
      * Removes all the non-permanent bookmark nodes that are editable by the user. Observers are
      * only notified when all nodes have been removed. There is no notification for individual node
      * removals.
@@ -1159,6 +1183,12 @@ class BookmarkBridge {
                 @JniType("std::u16string") String title);
 
         void deleteBookmark(long nativeBookmarkBridge, BookmarkId bookmarkId);
+
+        void copyToClipboard(
+                long nativeBookmarkBridge, BookmarkId bookmarkId, boolean isOffTheRecord);
+
+        void cutToClipboard(
+                long nativeBookmarkBridge, BookmarkId bookmarkId, boolean isOffTheRecord);
 
         void removeAllUserBookmarks(long nativeBookmarkBridge);
 

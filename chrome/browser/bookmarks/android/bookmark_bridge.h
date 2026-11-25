@@ -222,6 +222,20 @@ class BookmarkBridge : public ProfileObserver,
 
   void DeleteBookmarkImpl(const bookmarks::BookmarkNode* node, int type);
 
+  void CopyToClipboard(JNIEnv* env,
+                       const base::android::JavaRef<jobject>& j_bookmark_id_obj,
+                       bool is_off_the_record);
+
+  void CopyToClipboardImpl(const bookmarks::BookmarkNode* node,
+                           bool is_off_the_record);
+
+  void CutToClipboard(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& j_bookmark_id_obj,
+                      bool is_off_the_record);
+
+  void CutToClipboardImpl(const bookmarks::BookmarkNode* node,
+                          bool is_off_the_record);
+
   void RemoveAllUserBookmarks(JNIEnv* env);
 
   void MoveBookmark(JNIEnv* env,
@@ -291,6 +305,9 @@ class BookmarkBridge : public ProfileObserver,
   void EditBookmarksEnabledChanged();
   // Returns whether |node| can be modified by the user.
   bool IsEditable(const bookmarks::BookmarkNode* node) const;
+  // Returns whether |node| belongs to the normal bookmark tree (excluding
+  // partner bookmarks and reading list nodes).
+  bool IsNormalBookmarkNode(const bookmarks::BookmarkNode* node) const;
   // Returns whether |node| is a managed bookmark.
   bool IsManaged(const bookmarks::BookmarkNode* node) const;
   bool IsReachable(const bookmarks::BookmarkNode* node) const;

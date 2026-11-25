@@ -689,6 +689,21 @@ public class FakeBookmarkModel extends BookmarkModel {
         }
 
         @Override
+        public void copyToClipboard(
+                long nativeBookmarkBridge, BookmarkId bookmarkId, boolean isOffTheRecord) {}
+
+        @Override
+        public void cutToClipboard(
+                long nativeBookmarkBridge, BookmarkId bookmarkId, boolean isOffTheRecord) {
+            if (bookmarkId.getType() != BookmarkType.NORMAL) return;
+            BookmarkItem item = mBookmarkIdToItemMap.get(bookmarkId);
+            if (item == null || !item.isEditable() || item.isManaged()) {
+                return;
+            }
+            deleteBookmark(nativeBookmarkBridge, bookmarkId);
+        }
+
+        @Override
         public void removeAllUserBookmarks(long nativeBookmarkBridge) {
             mBookmarkIdToChildIdsMap.clear();
             mBookmarkIdToItemMap.clear();

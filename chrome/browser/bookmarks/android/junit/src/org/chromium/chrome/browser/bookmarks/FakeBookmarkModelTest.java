@@ -376,4 +376,42 @@ public class FakeBookmarkModelTest {
         mBookmarkModel.deleteBookmark(addedInAccount);
         assertFalse(mBookmarkModel.isAccountBookmark(addedInAccount));
     }
+
+    @Test
+    public void testCutToClipboard() {
+        BookmarkId parentId = mBookmarkModel.getDesktopFolderId();
+        BookmarkItem parent = mBookmarkModel.getBookmarkById(parentId);
+        BookmarkId userBookmarkId =
+                mBookmarkModel.addBookmark(
+                        parentId, /* index= */ 0, "User", new GURL("https://user.example/"));
+        BookmarkItem userBookmark = mBookmarkModel.getBookmarkById(userBookmarkId);
+        BookmarkId managedFolderId = mBookmarkModel.addManagedFolder(parentId, "Managed");
+        BookmarkId readingListParentId = mBookmarkModel.getLocalOrSyncableReadingListFolder();
+        BookmarkId readingListItemId =
+                mBookmarkModel.addToReadingList(
+                        readingListParentId, "Reading", new GURL("https://reading.example/"));
+        clearInvocations(mBookmarkModelObserver);
+
+        // Permanent folders, managed folders, and non-normal bookmarks cannot be cut.
+        mBookmarkModel.cutToClipboard(
+                mBookmarkModel.getRootFolderId(), /* isOffTheRecord= */ false);
+        mBookmarkModel.cutToClipboard(parentId, /* isOffTheRecord= */ false);
+        mBookmarkModel.cutToClipboard(
+                mBookmarkModel.getPartnerFolderId(), /* isOffTheRecord= */ false);
+        mBookmarkModel.cutToClipboard(managedFolderId, /* isOffTheRecord= */ false);
+        mBookmarkModel.cutToClipboard(readingListItemId, /* isOffTheRecord= */ false);
+        verifyNoInteractions(mBookmarkModelObserver);
+        assertNotNull(mBookmarkModel.getBookmarkById(managedFolderId));
+        assertNotNull(mBookmarkModel.getBookmarkById(readingListItemId));
+
+        // Cutting an editable normal bookmark removes it and notifies observers.
+        mBookmarkModel.cutToClipboard(userBookmarkId, /* isOffTheRecord= */ false);
+        verify(mBookmarkModelObserver)
+                .bookmarkNodeRemoved(
+                        parent,
+                        /* oldIndex= */ 0,
+                        userBookmark,
+                        /* isDoingExtensiveChanges= */ false);
+        assertEquals(List.of(managedFolderId), mBookmarkModel.getChildIds(parentId));
+    }
 }

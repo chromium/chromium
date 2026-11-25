@@ -46,6 +46,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/common/android/bookmark_type.h"
@@ -1128,6 +1129,59 @@ void BookmarkBridge::DeleteBookmarkImpl(const BookmarkNode* node, int type) {
   }
 }
 
+void BookmarkBridge::CopyToClipboard(JNIEnv* env,
+                                     const JavaRef<jobject>& j_bookmark_id_obj,
+                                     bool is_off_the_record) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(IsLoaded());
+  if (!bookmark_model_->loaded()) {
+    return;
+  }
+  int type = JavaBookmarkIdGetType(env, j_bookmark_id_obj);
+  if (type != BookmarkType::BOOKMARK_TYPE_NORMAL) {
+    return;
+  }
+  const BookmarkNode* node =
+      GetNodeByID(JavaBookmarkIdGetId(env, j_bookmark_id_obj), type);
+  CopyToClipboardImpl(node, is_off_the_record);
+}
+
+void BookmarkBridge::CopyToClipboardImpl(const BookmarkNode* node,
+                                         bool is_off_the_record) {
+  if (!IsNormalBookmarkNode(node) || bookmark_model_->is_permanent_node(node)) {
+    return;
+  }
+  bookmarks::BookmarkNodeData(node).WriteToClipboard(is_off_the_record);
+}
+
+void BookmarkBridge::CutToClipboard(JNIEnv* env,
+                                    const JavaRef<jobject>& j_bookmark_id_obj,
+                                    bool is_off_the_record) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(IsLoaded());
+  if (!bookmark_model_->loaded()) {
+    return;
+  }
+  int type = JavaBookmarkIdGetType(env, j_bookmark_id_obj);
+  if (type != BookmarkType::BOOKMARK_TYPE_NORMAL) {
+    return;
+  }
+  const BookmarkNode* node =
+      GetNodeByID(JavaBookmarkIdGetId(env, j_bookmark_id_obj), type);
+  CutToClipboardImpl(node, is_off_the_record);
+}
+
+void BookmarkBridge::CutToClipboardImpl(const BookmarkNode* node,
+                                        bool is_off_the_record) {
+  if (!IsNormalBookmarkNode(node) || !IsEditable(node)) {
+    return;
+  }
+  bookmarks::BookmarkNodeData(node).WriteToClipboard(is_off_the_record);
+  bookmarks::ScopedGroupBookmarkActions group_cut(bookmark_model_);
+  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
+                          FROM_HERE);
+}
+
 void BookmarkBridge::RemoveAllUserBookmarks(JNIEnv* env) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(IsLoaded(), base::NotFatalUntil::M161);
@@ -1484,6 +1538,10 @@ bool BookmarkBridge::IsEditable(const BookmarkNode* node) const {
   }
 
   return !managed_bookmark_service_->IsNodeManaged(node);
+}
+
+bool BookmarkBridge::IsNormalBookmarkNode(const BookmarkNode* node) const {
+  return bookmarks::IsDescendantOf(node, bookmark_model_->root_node());
 }
 
 bool BookmarkBridge::IsManaged(const BookmarkNode* node) const {

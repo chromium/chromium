@@ -13,7 +13,9 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_test_utils.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/partnerbookmarks/partner_bookmarks_reader.h"
 #include "chrome/browser/partnerbookmarks/partner_bookmarks_shim.h"
@@ -23,12 +25,15 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
 #include "components/bookmarks/common/android/bookmark_type.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/prefs/pref_service.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
@@ -41,12 +46,16 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 using bookmarks::ManagedBookmarkService;
+using bookmarks::android::JavaBookmarkIdCreateBookmarkId;
 using testing::ElementsAre;
 using testing::IsNull;
 using testing::NotNull;
@@ -85,6 +94,7 @@ class BookmarkBridgeTest : public testing::Test {
 
   void TearDown() override {
     bookmark_bridge_.reset();
+    bookmark_model_.reset();
     profile_manager_.reset();
     PartnerBookmarksShim::ClearPartnerModelForTesting();
   }
@@ -147,6 +157,7 @@ class BookmarkBridgeTest : public testing::Test {
   void CreateBookmarkBridge(bool enable_account_bookmarks,
                             bool load_reading_list_model = true) {
     bookmark_bridge_.reset();
+    bookmark_model_.reset();
 
     base::WeakPtr<FakeReadingListModelStorage>
         local_or_syncable_model_storage_ptr;
@@ -170,9 +181,8 @@ class BookmarkBridgeTest : public testing::Test {
             std::move(account_reading_list_model));
 
     std::unique_ptr<bookmarks::TestBookmarkClient> bookmark_client =
-        std::make_unique<bookmarks::TestBookmarkClient>();
-    BookmarkNode* managed_node = bookmark_client->EnableManagedNode();
-    managed_node->SetTitle(u"Managed bookmarks");
+        std::make_unique<TestBookmarkClientWithManagedService>(
+            managed_bookmark_service_);
     bookmark_model_ =
         std::make_unique<bookmarks::BookmarkModel>(std::move(bookmark_client));
     bookmark_model_->LoadEmptyForTest();
@@ -717,4 +727,222 @@ TEST_F(BookmarkBridgeTest, TestMoveReadingListToBookmark) {
   children = bookmark_bridge()->GetChildIdsImpl(
       local_or_syncable_reading_list_manager()->GetRoot());
   ASSERT_EQ(0u, children.size());
+}
+
+class BookmarkBridgeClipboardTest : public BookmarkBridgeTest {
+ public:
+  void SetUp() override {
+    ui::TestClipboard::CreateForCurrentThread();
+    BookmarkBridgeTest::SetUp();
+  }
+
+  void TearDown() override {
+    BookmarkBridgeTest::TearDown();
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+  }
+
+  std::unique_ptr<bookmarks::BookmarkNodeData> ReadBookmarkDataSync() {
+    base::test::TestFuture<std::unique_ptr<bookmarks::BookmarkNodeData>> future;
+    bookmarks::BookmarkNodeData::ReadFromClipboard(
+        ui::ClipboardBuffer::kCopyPaste, future.GetCallback());
+    return future.Take();
+  }
+};
+
+TEST_F(BookmarkBridgeClipboardTest, CopyBookmarkWritesDataAndPreservesMeta) {
+  const BookmarkNode* bar = bookmark_model()->bookmark_bar_node();
+  const GURL url("https://example.com/");
+  const BookmarkNode* node = AddURL(bar, /*index=*/0, u"Example", url);
+  bookmark_model()->SetNodeMetaInfo(node, "key", "value");
+
+  bookmark_bridge()->CopyToClipboardImpl(node, /*is_off_the_record=*/false);
+
+  EXPECT_EQ(1u, bar->children().size());
+  auto data = ReadBookmarkDataSync();
+  ASSERT_TRUE(data);
+  ASSERT_EQ(1u, data->size());
+  EXPECT_TRUE(data->elements[0].is_url);
+  EXPECT_EQ(url, data->elements[0].url);
+  EXPECT_EQ(u"Example", data->elements[0].title);
+  EXPECT_EQ("value", data->elements[0].meta_info_map["key"]);
+}
+
+TEST_F(BookmarkBridgeClipboardTest, CutFolderWritesSubtreeAndRemovesNode) {
+  const BookmarkNode* bar = bookmark_model()->bookmark_bar_node();
+  const BookmarkNode* folder =
+      bookmark_model()->AddFolder(bar, /*index=*/0, u"Source");
+  AddURL(folder, /*index=*/0, u"Child 1", GURL("https://one.example/"));
+  const BookmarkNode* nested =
+      bookmark_model()->AddFolder(folder, /*index=*/1, u"Nested");
+  AddURL(nested, /*index=*/0, u"Child 2", GURL("https://two.example/"));
+
+  bookmark_bridge()->CutToClipboardImpl(folder, /*is_off_the_record=*/false);
+
+  EXPECT_TRUE(bar->children().empty());
+  auto data = ReadBookmarkDataSync();
+  ASSERT_TRUE(data);
+  ASSERT_EQ(1u, data->size());
+  EXPECT_FALSE(data->elements[0].is_url);
+  EXPECT_EQ(u"Source", data->elements[0].title);
+  ASSERT_EQ(2u, data->elements[0].children.size());
+  EXPECT_EQ(u"Child 1", data->elements[0].children[0].title);
+  EXPECT_EQ(u"Nested", data->elements[0].children[1].title);
+  ASSERT_EQ(1u, data->elements[0].children[1].children.size());
+  EXPECT_EQ(u"Child 2", data->elements[0].children[1].children[0].title);
+}
+
+TEST_F(BookmarkBridgeClipboardTest, PermanentFoldersCannotBeCopiedOrCut) {
+  const BookmarkNode* bar = bookmark_model()->bookmark_bar_node();
+  const BookmarkNode* managed_node = managed_bookmark_service_->managed_node();
+  ASSERT_THAT(managed_node, NotNull());
+
+  bookmark_bridge()->CopyToClipboardImpl(bar, /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+  bookmark_bridge()->CopyToClipboardImpl(managed_node,
+                                         /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+  bookmark_bridge()->CutToClipboardImpl(bar, /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+  bookmark_bridge()->CutToClipboardImpl(managed_node,
+                                        /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+}
+
+TEST_F(BookmarkBridgeClipboardTest, ManagedBookmarkCanBeCopiedButNotCut) {
+  const BookmarkNode* managed_node = managed_bookmark_service_->managed_node();
+  ASSERT_THAT(managed_node, NotNull());
+  const BookmarkNode* managed_child = AddURL(
+      managed_node, /*index=*/0, u"Managed", GURL("https://managed.example/"));
+
+  bookmark_bridge()->CutToClipboardImpl(managed_child,
+                                        /*is_off_the_record=*/false);
+  EXPECT_EQ(1u, managed_node->children().size());
+  EXPECT_FALSE(ReadBookmarkDataSync());
+
+  bookmark_bridge()->CopyToClipboardImpl(managed_child,
+                                         /*is_off_the_record=*/false);
+  auto managed_data = ReadBookmarkDataSync();
+  ASSERT_TRUE(managed_data);
+  EXPECT_EQ(GURL("https://managed.example/"), managed_data->elements[0].url);
+}
+
+TEST_F(BookmarkBridgeClipboardTest, EditPolicyBlocksCutButAllowsCopy) {
+  const BookmarkNode* bar = bookmark_model()->bookmark_bar_node();
+  const BookmarkNode* user_node =
+      AddURL(bar, /*index=*/0, u"User", GURL("https://user.example/"));
+  profile_->GetPrefs()->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled,
+                                   /*value=*/false);
+
+  bookmark_bridge()->CutToClipboardImpl(user_node, /*is_off_the_record=*/false);
+  EXPECT_EQ(1u, bar->children().size());
+  EXPECT_FALSE(ReadBookmarkDataSync());
+
+  bookmark_bridge()->CopyToClipboardImpl(user_node,
+                                         /*is_off_the_record=*/false);
+  auto user_data = ReadBookmarkDataSync();
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(GURL("https://user.example/"), user_data->elements[0].url);
+}
+
+TEST_F(BookmarkBridgeClipboardTest, NonNormalAndNullNodesCannotBeCopiedOrCut) {
+  const BookmarkNode* reading_list_node =
+      local_or_syncable_reading_list_manager()->Add(
+          GURL("https://reading.example/"), "Reading");
+  ASSERT_THAT(reading_list_node, NotNull());
+  const BookmarkNode* partner_root =
+      partner_bookmarks_shim_->GetPartnerBookmarksRoot();
+  ASSERT_THAT(partner_root, NotNull());
+
+  bookmark_bridge()->CopyToClipboardImpl(/*node=*/nullptr,
+                                         /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+  bookmark_bridge()->CutToClipboardImpl(/*node=*/nullptr,
+                                        /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+
+  bookmark_bridge()->CopyToClipboardImpl(reading_list_node,
+                                         /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+  bookmark_bridge()->CutToClipboardImpl(reading_list_node,
+                                        /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+  EXPECT_EQ(1u, bookmark_bridge()
+                    ->GetChildIdsImpl(
+                        local_or_syncable_reading_list_manager()->GetRoot())
+                    .size());
+
+  bookmark_bridge()->CopyToClipboardImpl(partner_root,
+                                         /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+  bookmark_bridge()->CutToClipboardImpl(partner_root,
+                                        /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+}
+
+TEST_F(BookmarkBridgeClipboardTest, JniCopyAndCutEntriesFilterNonNormalTypes) {
+  JNIEnv* const env = AttachCurrentThread();
+  const BookmarkNode* bar = bookmark_model()->bookmark_bar_node();
+  const GURL copy_url("https://jni-copy.example/");
+  const GURL cut_url("https://jni-cut.example/");
+  const BookmarkNode* copy_node = AddURL(bar, /*index=*/0, u"Copy", copy_url);
+  const BookmarkNode* cut_node = AddURL(bar, /*index=*/1, u"Cut", cut_url);
+  const BookmarkNode* reading_list_node =
+      local_or_syncable_reading_list_manager()->Add(
+          GURL("https://reading-jni.example/"), "Reading");
+  ASSERT_THAT(reading_list_node, NotNull());
+  const BookmarkNode* partner_root =
+      partner_bookmarks_shim_->GetPartnerBookmarksRoot();
+  ASSERT_THAT(partner_root, NotNull());
+
+  // Non-normal bookmark types and missing normal IDs are ignored.
+  auto reading_list_id = JavaBookmarkIdCreateBookmarkId(
+      env, reading_list_node->id(), bookmarks::BOOKMARK_TYPE_READING_LIST);
+  bookmark_bridge()->CopyToClipboard(env, reading_list_id,
+                                     /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+  bookmark_bridge()->CutToClipboard(env, reading_list_id,
+                                    /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+  EXPECT_EQ(1u, bookmark_bridge()
+                    ->GetChildIdsImpl(
+                        local_or_syncable_reading_list_manager()->GetRoot())
+                    .size());
+
+  auto partner_id = JavaBookmarkIdCreateBookmarkId(
+      env, partner_root->id(), bookmarks::BOOKMARK_TYPE_PARTNER);
+  bookmark_bridge()->CopyToClipboard(env, partner_id,
+                                     /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+  bookmark_bridge()->CutToClipboard(env, partner_id,
+                                    /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+
+  auto missing_normal_id = JavaBookmarkIdCreateBookmarkId(
+      env, /*id=*/999999, bookmarks::BOOKMARK_TYPE_NORMAL);
+  bookmark_bridge()->CopyToClipboard(env, missing_normal_id,
+                                     /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+  bookmark_bridge()->CutToClipboard(env, missing_normal_id,
+                                    /*is_off_the_record=*/false);
+  EXPECT_FALSE(ReadBookmarkDataSync());
+
+  // Normal bookmark IDs resolve via GetNodeByID and copy/cut cleanly.
+  auto copy_id = JavaBookmarkIdCreateBookmarkId(
+      env, copy_node->id(), bookmarks::BOOKMARK_TYPE_NORMAL);
+  bookmark_bridge()->CopyToClipboard(env, copy_id, /*is_off_the_record=*/false);
+  EXPECT_EQ(2u, bar->children().size());
+  auto copied_data = ReadBookmarkDataSync();
+  ASSERT_TRUE(copied_data);
+  ASSERT_EQ(1u, copied_data->size());
+  EXPECT_EQ(copy_url, copied_data->elements[0].url);
+
+  auto cut_id = JavaBookmarkIdCreateBookmarkId(env, cut_node->id(),
+                                               bookmarks::BOOKMARK_TYPE_NORMAL);
+  bookmark_bridge()->CutToClipboard(env, cut_id, /*is_off_the_record=*/false);
+  ASSERT_EQ(1u, bar->children().size());
+  EXPECT_EQ(copy_node, bar->children()[0].get());
+  auto cut_data = ReadBookmarkDataSync();
+  ASSERT_TRUE(cut_data);
+  ASSERT_EQ(1u, cut_data->size());
+  EXPECT_EQ(cut_url, cut_data->elements[0].url);
 }

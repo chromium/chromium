@@ -201,6 +201,8 @@ source_set("unit_tests") {
       "//components/sync:test_support",
       "//components/sync/engine",
       "//components/sync/model",
+      "//ui/base/clipboard",
+      "//ui/base/clipboard:clipboard_test_support",
     ]
   }
 }
