@@ -2686,6 +2686,7 @@ chromium-metrics-reviews@google.com.
   <int value="1494" label="ManagedClientCertificateForBrowserConfig"/>
   <int value="1495" label="ManagedClientCertificateForUserConfig"/>
   <int value="1496" label="GeminiEnterpriseUrl"/>
+  <int value="1499" label="SearchFromDesktopEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

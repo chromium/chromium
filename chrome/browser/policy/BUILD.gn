@@ -1434,6 +1434,7 @@ source_set("impl") {
       "//chrome/browser/device_identity",
       "//chrome/browser/indigo",
       "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/ui/omnibox/omnibox_everywhere:prefs",
       "//chrome/browser/web_applications",
       "//components/headless/policy",
       "//components/live_caption",

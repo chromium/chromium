@@ -81,9 +81,8 @@ OmniboxEverywhereController::OmniboxEverywhereController(
   if (g_browser_process && g_browser_process->local_state()) {
     enabled_pref_member_.Init(
         prefs::kOmniboxEverywhereEnabled, g_browser_process->local_state(),
-        base::BindRepeating(
-            &OmniboxEverywhereController::UpdateHotkeyRegistration,
-            base::Unretained(this)));
+        base::BindRepeating(&OmniboxEverywhereController::OnEnabledPrefChanged,
+                            base::Unretained(this)));
     hotkey_pref_member_.Init(
         prefs::kHotkeyEnabled, g_browser_process->local_state(),
         base::BindRepeating(
@@ -94,6 +93,7 @@ OmniboxEverywhereController::OmniboxEverywhereController(
         base::BindRepeating(
             &OmniboxEverywhereController::UpdateHotkeyRegistration,
             base::Unretained(this)));
+    ClearUserDisabledBackgroundPrefsIfEnforced();
   }
   UpdateHotkeyRegistration();
 
@@ -253,6 +253,10 @@ bool OmniboxEverywhereController::InvokeForProfilePath(
 bool OmniboxEverywhereController::InvokeForStartup(InvocationSource source,
                                                    Profile* fallback_profile,
                                                    gfx::NativeWindow context) {
+  if (!IsEnabled()) {
+    return false;
+  }
+
   if (auto* target_profile = GetTargetProfile()) {
     OnInvoke(source, target_profile, context);
     return true;
@@ -303,6 +307,33 @@ void OmniboxEverywhereController::PersistTargetProfilePath(
 
 bool OmniboxEverywhereController::IsEnabled() const {
   return !enabled_pref_member_.prefs() || enabled_pref_member_.GetValue();
+}
+
+void OmniboxEverywhereController::OnEnabledPrefChanged() {
+  UpdateHotkeyRegistration();
+  if (!IsEnabled()) {
+    // `Close()` cancels open dialogs and hides the widget. `Shutdown()` then
+    // destroys the widget and WebContents, so a screen picker that is still
+    // open cannot reopen the widget when it closes. The next invocation after
+    // re-enabling creates a new widget.
+    Close();
+    ui_manager_->Shutdown();
+  }
+  ClearUserDisabledBackgroundPrefsIfEnforced();
+}
+
+void OmniboxEverywhereController::ClearUserDisabledBackgroundPrefsIfEnforced() {
+  if (!enabled_pref_member_.IsManaged() || !IsEnabled()) {
+    return;
+  }
+
+  PrefService* local_state = g_browser_process->local_state();
+  for (const char* pref_name : {prefs::kOmniboxEverywhereBackgroundMode,
+                                prefs::kOmniboxEverywhereLaunchOnStartup}) {
+    if (!local_state->GetBoolean(pref_name)) {
+      local_state->ClearPref(pref_name);
+    }
+  }
 }
 
 bool OmniboxEverywhereController::IsHotkeyEnabled() const {

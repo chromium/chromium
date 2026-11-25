@@ -72,8 +72,8 @@ class OmniboxEverywhereController
   // Launches Omnibox Everywhere triggered during startup.
   // Loads profile asynchronously if not yet loaded in memory and holds a
   // ScopedKeepAlive during initialization.
-  // Returns true if launch was initiated/handled, false if no eligible profile
-  // exists.
+  // Returns true if launch was initiated/handled, false if Omnibox Everywhere
+  // is disabled or no eligible profile exists.
   bool InvokeForStartup(InvocationSource source,
                         Profile* fallback_profile,
                         gfx::NativeWindow context = gfx::NativeWindow());
@@ -97,6 +97,12 @@ class OmniboxEverywhereController
 
   // Returns true if the Omnibox Everywhere widget is visible.
   bool IsVisible() const;
+
+  // Returns true if the `prefs::kOmniboxEverywhereEnabled` Local State pref
+  // (controlled by the user setting or the SearchFromDesktopEnabled policy)
+  // is on. Unlike `omnibox::IsOmniboxEverywhereEnabled()`, this does not check
+  // whether a specific profile is eligible.
+  bool IsEnabled() const;
 
   // Shows Chrome's native Profile Picker to switch profiles for Omnibox
   // Everywhere.
@@ -161,8 +167,16 @@ class OmniboxEverywhereController
   // Persists or clears the target profile path in Local State preferences.
   void PersistTargetProfilePath(const base::FilePath& path);
 
-  // Returns true if the Omnibox Everywhere master pref is enabled.
-  bool IsEnabled() const;
+  // Handles changes to `prefs::kOmniboxEverywhereEnabled`. Updates the hotkey
+  // registration, tears down the UI when disabled, and calls
+  // `ClearUserDisabledBackgroundPrefsIfEnforced()`.
+  void OnEnabledPrefChanged();
+
+  // When policy enforces `prefs::kOmniboxEverywhereEnabled` on, clears
+  // user-set `false` values of the background mode and launch on startup
+  // prefs. Turning the setting off in chrome://settings writes those values,
+  // and `OnInvoke()` only turns the prefs on while they hold their defaults.
+  void ClearUserDisabledBackgroundPrefsIfEnforced();
 
   // Returns true if the Omnibox Everywhere global hotkey pref is enabled.
   bool IsHotkeyEnabled() const;

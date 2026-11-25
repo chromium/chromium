@@ -214,6 +214,26 @@ bool CanOpenProfileOnStartup(StartupProfileInfo profile_info) {
 #endif
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Returns the `OmniboxEverywhereController` that should handle startup, or null
+// if `command_line` lacks --omnibox-everywhere or Omnibox Everywhere is
+// unavailable or disabled (e.g. by the SearchFromDesktopEnabled policy). When
+// null, startup ignores the switch, so existing Omnibox Everywhere shortcuts
+// open a browser window instead of exiting with no UI.
+omnibox_everywhere::OmniboxEverywhereController*
+GetOmniboxEverywhereControllerForStartup(
+    const base::CommandLine& command_line) {
+  if (!command_line.HasSwitch(switches::kOmniboxEverywhere) ||
+      !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere) ||
+      !g_browser_process || !g_browser_process->GetFeatures()) {
+    return nullptr;
+  }
+  omnibox_everywhere::OmniboxEverywhereController* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  return controller && controller->IsEnabled() ? controller : nullptr;
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 StartupProfileMode GetStartupProfileMode(
     ProfileManager* profile_manager,
@@ -247,11 +267,13 @@ StartupProfileMode GetStartupProfileMode(
     return StartupProfileMode::kBrowserWindow;
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Don't show the picker if Omnibox Everywhere is explicitly requested to
   // open. `OmniboxEverywhereController` will decide which profile to load.
-  if (command_line.HasSwitch(switches::kOmniboxEverywhere)) {
+  if (GetOmniboxEverywhereControllerForStartup(command_line)) {
     return StartupProfileMode::kBrowserWindow;
   }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
   // Don't show the picker if trying to uninstall an app. This URL param should
@@ -1369,16 +1391,11 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  const bool is_omnibox_everywhere_enabled =
-      command_line.HasSwitch(switches::kOmniboxEverywhere) &&
-      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere) &&
-      g_browser_process && g_browser_process->GetFeatures() &&
-      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
-  if (is_omnibox_everywhere_enabled) {
-    return g_browser_process->GetFeatures()
-        ->omnibox_everywhere_controller()
-        ->InvokeForStartup(omnibox_everywhere::InvocationSource::kCommandLine,
-                           /*fallback_profile=*/privacy_safe_profile);
+  if (auto* omnibox_everywhere_controller =
+          GetOmniboxEverywhereControllerForStartup(command_line)) {
+    return omnibox_everywhere_controller->InvokeForStartup(
+        omnibox_everywhere::InvocationSource::kCommandLine,
+        /*fallback_profile=*/privacy_safe_profile);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 

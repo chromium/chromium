@@ -194,6 +194,10 @@
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/side_search/side_search_prefs.h"
 #endif  // BUILDFLAG(TOOLKIT_VIEWS)
@@ -1993,6 +1997,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { key::kPrintPdfAsImageAvailability,
     prefs::kPrintPdfAsImageAvailability,
+    base::Value::Type::BOOLEAN },
+  { key::kSearchFromDesktopEnabled,
+    omnibox_everywhere::prefs::kOmniboxEverywhereEnabled,
     base::Value::Type::BOOLEAN },
   { key::kTotalMemoryLimitMb,
     prefs::kTotalMemoryLimitMb,

@@ -1495,6 +1495,9 @@ policies:
   1494: ManagedClientCertificateForBrowserConfig
   1495: ManagedClientCertificateForUserConfig
   1496: GeminiEnterpriseUrl
+  1497: ""
+  1498: ""
+  1499: SearchFromDesktopEnabled
 
 atomic_groups:
   1: Homepage
