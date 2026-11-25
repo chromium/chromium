@@ -60,6 +60,10 @@ ChipController* LocationBarStub::GetChipController() {
 
 void LocationBarStub::AnnounceAlert(const std::u16string& announcement) {}
 
+bool LocationBarStub::CanAnnounceAlert() const {
+  return false;
+}
+
 void LocationBarStub::OnChanged() {}
 
 void LocationBarStub::UpdateWithoutTabRestore() {}

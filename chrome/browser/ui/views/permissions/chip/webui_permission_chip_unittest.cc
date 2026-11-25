@@ -96,10 +96,16 @@ class WebUIPermissionChipTest : public testing::Test {
         .WillByDefault(testing::Return(&dummy_view_));
   }
 
-  // Makes `location_bar_` return `browser` from GetBrowser(), without running
-  // Init() which needs a valid Browser.
+  // Makes `location_bar` return `browser` from `GetBrowser()`, without running
+  // `Init()` (or `WebUILocationBar`'s non-null browser constructor path, which
+  // requires `BrowserActions` on `browser`).
+  static void SetBrowser(WebUILocationBar& location_bar,
+                         BrowserWindowInterface* browser) {
+    location_bar.browser_ = browser;
+  }
+
   void SetBrowser(BrowserWindowInterface* browser) {
-    location_bar_->browser_ = browser;
+    SetBrowser(*location_bar_, browser);
   }
 
   static void InvalidateStateToken(WebUIPermissionChip& chip) {
@@ -501,4 +507,32 @@ TEST_F(WebUIPermissionChipTest, DashboardChipsAnchorToTheirOwnElements) {
   // The dashboard's anchor is used for page info, which opens from the
   // indicator chip.
   EXPECT_EQ(dashboard.GetAnchor().GetIfElement(), &indicator_chip_element);
+}
+
+TEST_F(WebUIPermissionChipTest,
+       GetAnchorReturnsNullWhenWindowFallbackDisabled) {
+  class NoFallbackWebUILocationBar : public WebUILocationBar {
+   public:
+    using WebUILocationBar::WebUILocationBar;
+    bool ShouldFallbackToWindowContentsAnchor() const override { return false; }
+    ui::ElementContext GetElementContext() const override {
+      return kTestContext;
+    }
+    ui::TrackedElement* GetAnchorOrNull() override { return nullptr; }
+  };
+
+  NoFallbackWebUILocationBar no_fallback_location_bar(nullptr, delegate_.get());
+  SetBrowser(no_fallback_location_bar, &mock_browser_);
+  EXPECT_FALSE(no_fallback_location_bar.CanAnnounceAlert());
+  EXPECT_TRUE(location_bar_->CanAnnounceAlert());
+
+  WebUIPermissionChip chip(&no_fallback_location_bar,
+                           PermissionChipView::kIndicatorChipElementId);
+
+  EXPECT_TRUE(chip.GetAnchor().IsNull());
+
+  ui::test::TestElement indicator_chip_element(
+      PermissionChipView::kIndicatorChipElementId, kTestContext);
+  indicator_chip_element.Show();
+  EXPECT_EQ(chip.GetAnchor().GetIfElement(), &indicator_chip_element);
 }

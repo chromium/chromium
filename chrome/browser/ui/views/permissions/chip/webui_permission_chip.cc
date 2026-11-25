@@ -298,14 +298,23 @@ views::BubbleAnchor WebUIPermissionChip::GetAnchor() {
     return views::BubbleAnchor(element);
   }
 
-  // 3. Fallback to the main window contents view if the location bar is also
+  // 3. If this is a secondary surface (such as a side panel), return an empty
+  // bubble anchor so the permission fails and closes instead of anchoring to
+  // the main browser window.
+  if (!location_bar_->ShouldFallbackToWindowContentsAnchor()) {
+    return views::BubbleAnchor();
+  }
+
+  // 4. Fallback to the main window contents view if the location bar is also
   // not yet tracked.
-  ui::BaseWindow* window = location_bar_->GetBrowser()->GetWindow();
-  CHECK(window);
-  views::Widget* widget =
-      views::Widget::GetWidgetForNativeWindow(window->GetNativeWindow());
-  CHECK(widget);
-  return views::BubbleAnchor(widget->GetContentsView());
+  BrowserWindowInterface* browser = location_bar_->GetBrowser();
+  if (!browser || !browser->GetWindow()) {
+    return views::BubbleAnchor();
+  }
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+      browser->GetWindow()->GetNativeWindow());
+  return widget ? views::BubbleAnchor(widget->GetContentsView())
+                : views::BubbleAnchor();
 }
 
 void WebUIPermissionChip::WaitForAnchor(base::OnceClosure callback) {

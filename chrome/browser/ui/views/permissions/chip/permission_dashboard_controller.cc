@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
@@ -352,23 +353,36 @@ bool PermissionDashboardController::Update(
 
   UpdateIndicatorsVisibilityFlags(location_bar_);
 
-  // Set the tooltip regardless of the `ShouldNotifyAccessibility`. The tooltip
-  // can be changed independently of the A11Y announcements.
+  // Set the tooltip and accessible name regardless of
+  // `ShouldNotifyAccessibility()` so task or tab switches on shared WebUI chips
+  // always reflect the active `WebContents`'s indicator rather than retaining a
+  // previous page's label or falling back to a generic short title (e.g. "Not
+  // allowed").
   indicator_chip->SetTooltipText(indicator_model->get_tooltip());
-
-  if (indicator_model->ShouldNotifyAccessibility(
-          location_bar_->GetWebContents())) {
-    std::u16string name = l10n_util::GetStringUTF16(
-        indicator_model->AccessibilityAnnouncementStringId());
+  const std::u16string name =
+      indicator_model->AccessibilityAnnouncementStringId()
+          ? l10n_util::GetStringUTF16(
+                indicator_model->AccessibilityAnnouncementStringId())
+          : std::u16string();
+  if (!name.empty()) {
     indicator_chip->SetAccessibilityName(name);
+  }
 
-    indicator_chip->AnnounceAlert(l10n_util::GetStringFUTF16(
-        IDS_A11Y_INDICATORS_ANNOUNCEMENT, name,
-        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT)));
+  content::WebContents* web_contents = location_bar_->GetWebContents();
+  if (indicator_model->ShouldNotifyAccessibility(web_contents)) {
+    ContentSettingImageModelStates* states =
+        ContentSettingImageModelStates::Get(web_contents);
+    if (!states->IconShownRecorded(indicator_model->image_type())) {
+      RecordIndicators(indicator_model, content_settings, /*clicked=*/false);
+      states->SetIconShownRecorded(indicator_model->image_type(), true);
+    }
 
-    RecordIndicators(indicator_model, content_settings, /*clicked=*/false);
-
-    indicator_model->AccessibilityWasNotified(location_bar_->GetWebContents());
+    if (location_bar_->CanAnnounceAlert()) {
+      indicator_chip->AnnounceAlert(l10n_util::GetStringFUTF16(
+          IDS_A11Y_INDICATORS_ANNOUNCEMENT, name,
+          l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT)));
+      indicator_model->AccessibilityWasNotified(web_contents);
+    }
   }
 
   return true;
@@ -464,6 +478,8 @@ void PermissionDashboardController::HideIndicators() {
   permission_dashboard_->GetIndicatorChip()->ResetAnimation(
       PermissionChipInterface::AnimationState::kCollapsed);
   is_verbose_ = false;
+  permission_dashboard_->GetIndicatorChip()->SetAccessibilityName(
+      std::u16string());
   permission_dashboard_->GetIndicatorChip()->SetAccessibilityIgnored(true);
   permission_dashboard_->GetIndicatorChip()->SetVisible(false);
   content_setting_image_model_ = nullptr;
@@ -518,11 +534,14 @@ void PermissionDashboardController::ShowBubble() {
       HideIndicators();
       return;
     }
+    views::BubbleAnchor anchor =
+        permission_dashboard_->GetIndicatorChip()->GetAnchor();
+    if (anchor.IsNull()) {
+      return;
+    }
     ContentSettingBubbleContents* bubble_view_ =
-        new ContentSettingBubbleContents(
-            std::move(bubble_model), web_contents,
-            permission_dashboard_->GetIndicatorChip()->GetAnchor(),
-            views::BubbleBorder::TOP_LEFT);
+        new ContentSettingBubbleContents(std::move(bubble_model), web_contents,
+                                         anchor, views::BubbleBorder::TOP_LEFT);
     HighlightIndicatorChip(*bubble_view_, *location_bar_);
     views::Widget* bubble_widget =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
@@ -561,11 +580,17 @@ void PermissionDashboardController::ShowPageInfoDialog(
     return;
   }
 
+  views::BubbleAnchor anchor = permission_dashboard_->GetAnchor();
+  if (anchor.IsNull()) {
+    return;
+  }
+
   std::unique_ptr<PageInfoBubbleSpecification> specification =
-      PageInfoBubbleSpecification::Builder(permission_dashboard_->GetAnchor(),
+      PageInfoBubbleSpecification::Builder(anchor,
                                            contents->GetTopLevelNativeWindow(),
                                            contents, entry->GetVirtualURL())
           .Build();
+  location_bar_->ConfigurePageInfoBubbleSpecification(*specification);
 
   views::BubbleDialogDelegateView* const bubble =
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));

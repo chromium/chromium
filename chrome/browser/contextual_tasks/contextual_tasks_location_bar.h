@@ -19,6 +19,7 @@
 class BrowserWindowInterface;
 class ChipController;
 class ContentSettingBubbleModelDelegate;
+class PageInfoBubbleSpecification;
 class PermissionDashboardController;
 class WebUIPermissionDashboard;
 
@@ -71,6 +72,10 @@ class ContextualTasksLocationBar : public LocationBarStub,
   bool IsEditingOrEmpty() const override;
   ui::TrackedElement* GetAnchorOrNull() override;
   ui::ElementContext GetElementContext() const override;
+  bool CanAnnounceAlert() const override;
+  bool ShouldFallbackToWindowContentsAnchor() const override;
+  void ConfigurePageInfoBubbleSpecification(
+      PageInfoBubbleSpecification& specification) override;
   void InvalidateLayout() override;
   bool IsDrawn() const override;
   bool IsFullscreen() const override;

@@ -100,6 +100,7 @@ class WebUILocationBar : public LocationBar,
   content::WebContents* GetWebContents() override;
   void SetPermissionPromptShowing(bool showing) override;
   void AnnounceAlert(const std::u16string& announcement) override;
+  bool CanAnnounceAlert() const override;
 
   // LocationBarTesting:
   LocationBarModel* GetLocationBarModel() override;

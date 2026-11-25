@@ -2289,6 +2289,10 @@ void LocationBarView::AnnounceAlert(const std::u16string& announcement) {
   GetViewAccessibility().AnnounceAlert(announcement);
 }
 
+bool LocationBarView::CanAnnounceAlert() const {
+  return GetWidget() != nullptr;
+}
+
 const LocationBarModel* LocationBarView::GetLocationBarModel() const {
   return delegate_->GetLocationBarModel();
 }

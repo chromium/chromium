@@ -408,10 +408,10 @@ void ChipController::PromptDecided(permissions::PermissionAction action) {
 void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
   is_waiting_for_anchor_ = false;
   anchor_weak_factory_.InvalidateWeakPtrs();
+  disallowed_custom_cursors_scope_.RunAndReset();
 
   views::Widget* const bubble_widget = GetBubbleWidget();
   if (bubble_widget) {
-    disallowed_custom_cursors_scope_.RunAndReset();
     bubble_widget->RemoveObserver(this);
     bubble_widget->Close();
     permission_prompt_observers_.Notify(&Observer::OnPermissionPromptHidden);
@@ -494,11 +494,16 @@ void ChipController::ShowPageInfoDialog() {
     return;
   }
 
+  views::BubbleAnchor anchor = chip_->GetAnchor();
+  if (anchor.IsNull()) {
+    return;
+  }
+
   // Prevent chip from collapsing while prompt bubble is open.
   ResetTimers();
 
   std::unique_ptr<PageInfoBubbleSpecification> specification =
-      PageInfoBubbleSpecification::Builder(chip_->GetAnchor(),
+      PageInfoBubbleSpecification::Builder(anchor,
                                            contents->GetTopLevelNativeWindow(),
                                            contents, entry->GetVirtualURL())
           .AddInitializedCallback(
@@ -509,6 +514,7 @@ void ChipController::ShowPageInfoDialog() {
               base::BindOnce(&ChipController::OnPageInfoBubbleClosed,
                              weak_factory_.GetWeakPtr()))
           .Build();
+  GetLocationBar()->ConfigurePageInfoBubbleSpecification(*specification);
 
   views::BubbleDialogDelegateView* const bubble =
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
@@ -684,6 +690,9 @@ void ChipController::OnPromptBubbleAnchorReady() {
       permission_prompt_model_->GetDelegate()->Requests().empty() ||
       !location_bar_->GetWebContents() || !IsPermissionPromptChipVisible() ||
       is_bubble_suppressed_) {
+    if (!IsBubbleShowing() && IsPermissionPromptChipVisible()) {
+      StartCollapseOrDismissTimer();
+    }
     return;
   }
 
@@ -709,34 +718,39 @@ void ChipController::OnPromptBubbleAnchorReady() {
         content_settings_image_delegate_->GetContentSettingWebContents();
 
     if (web_contents) {
-      std::unique_ptr<ContentSettingQuietRequestBubbleModel>
-          content_setting_bubble_model =
-              std::make_unique<ContentSettingQuietRequestBubbleModel>(
-                  content_settings_image_delegate_
-                      ->GetContentSettingBubbleModelDelegate(),
-                  web_contents->GetPrimaryPage());
-      ui::TrackedElement* anchor = location_bar_->GetAnchorOrNull();
-      CHECK(anchor, base::NotFatalUntil::M162);  // We should get here only if
-                                                 // location bar is visible.
-      ContentSettingBubbleContents* quiet_request_bubble =
-          new ContentSettingBubbleContents(
-              std::move(content_setting_bubble_model), web_contents,
-              views::BubbleAnchor(anchor), views::BubbleBorder::TOP_LEFT);
-      quiet_request_bubble->set_close_on_deactivate(false);
-      views::Widget* bubble_widget =
-          views::BubbleDialogDelegateView::CreateBubble(quiet_request_bubble);
-      quiet_request_bubble->set_close_on_deactivate(false);
-      bubble_tracker_.SetView(quiet_request_bubble);
-      bubble_widget->Show();
+      if (ui::TrackedElement* anchor = location_bar_->GetAnchorOrNull()) {
+        std::unique_ptr<ContentSettingQuietRequestBubbleModel>
+            content_setting_bubble_model =
+                std::make_unique<ContentSettingQuietRequestBubbleModel>(
+                    content_settings_image_delegate_
+                        ->GetContentSettingBubbleModelDelegate(),
+                    web_contents->GetPrimaryPage());
+        ContentSettingBubbleContents* quiet_request_bubble =
+            new ContentSettingBubbleContents(
+                std::move(content_setting_bubble_model), web_contents,
+                views::BubbleAnchor(anchor), views::BubbleBorder::TOP_LEFT);
+        quiet_request_bubble->set_close_on_deactivate(false);
+        views::Widget* bubble_widget =
+            views::BubbleDialogDelegateView::CreateBubble(quiet_request_bubble);
+        quiet_request_bubble->set_close_on_deactivate(false);
+        bubble_tracker_.SetView(quiet_request_bubble);
+        bubble_widget->Show();
+      }
     }
   }
 
   // It is possible that a Chip got reset while the permission prompt bubble was
-  // displayed.
+  // displayed, or that no bubble could be shown (e.g. when the quiet-chip
+  // location bar anchor is not tracked).
   if (permission_prompt_model_ && IsBubbleShowing()) {
     ObservePromptBubble();
     permission_prompt_model_->GetDelegate()->SetPromptShown();
     permission_prompt_observers_.Notify(&Observer::OnPermissionPromptShown);
+  } else {
+    disallowed_custom_cursors_scope_.RunAndReset();
+    if (IsPermissionPromptChipVisible()) {
+      StartCollapseOrDismissTimer();
+    }
   }
 }
 
