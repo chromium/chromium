@@ -66,8 +66,12 @@ class FakeActiveTaskContextProvider
   }
   void SetContextualTasksPanelController(
       contextual_tasks::ContextualTasksPanelController*) override {}
-  void AddLocalTabUnderline(TabHandle tab_handle) override {}
-  void RemoveLocalTabUnderline(TabHandle tab_handle) override {}
+  void AddLocalTabUnderline(
+      TabHandle tab_handle,
+      content::WebContents* source_web_contents) override {}
+  void RemoveLocalTabUnderline(
+      TabHandle tab_handle,
+      content::WebContents* source_web_contents) override {}
   void ClearAllLocalTabUnderlines() override {}
   void RefreshContext() override {}
 

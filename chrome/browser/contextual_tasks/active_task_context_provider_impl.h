@@ -55,8 +55,11 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   void SetContextualTasksPanelController(
       ContextualTasksPanelController* contextual_tasks_panel_controller)
       override;
-  void AddLocalTabUnderline(tabs::TabHandle tab_handle) override;
-  void RemoveLocalTabUnderline(tabs::TabHandle tab_handle) override;
+  void AddLocalTabUnderline(tabs::TabHandle tab_handle,
+                            content::WebContents* source_web_contents) override;
+  void RemoveLocalTabUnderline(
+      tabs::TabHandle tab_handle,
+      content::WebContents* source_web_contents) override;
   void ClearAllLocalTabUnderlines() override;
   void AddObserver(ActiveTaskContextProvider::Observer* observer) override;
   void RemoveObserver(ActiveTaskContextProvider::Observer* observer) override;
@@ -75,6 +78,7 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   void PrimaryPageChanged(content::Page& page) override;
 
  private:
+  class PanelWebContentsObserver;
   class TabNavigationObserver;
 
   // TabListInterfaceObserver overrides:
@@ -93,6 +97,9 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   void OnTabListDestroyed(TabListInterface& tab_list) override;
 
   void ObserveTab(tabs::TabInterface* tab);
+  bool IsPanelWebContents(content::WebContents* web_contents) const;
+  void EraseTabFromPanelLocalUnderlines(tabs::TabHandle tab_handle);
+  void OnPanelWebContentsDestroyed(content::WebContents* panel_contents);
   void OnTabNavigated(tabs::TabInterface* tab, const GURL& previous_url);
   bool NotifyTabClosedOrNavigated(SessionID tab_session_id,
                                   std::optional<GURL> current_url,
@@ -115,11 +122,16 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   raw_ptr<ContextualTasksService> contextual_tasks_service_;
   raw_ptr<ContextualTasksPanelController> contextual_tasks_panel_controller_;
   std::map<tabs::TabHandle, std::set<tabs::TabHandle>> local_tab_underlines_;
+  std::map<raw_ptr<content::WebContents>, std::set<tabs::TabHandle>>
+      panel_local_tab_underlines_;
   std::set<tabs::TabHandle> backend_context_tabs_;
   base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
   std::map<raw_ptr<tabs::TabInterface>, std::unique_ptr<TabNavigationObserver>>
       tab_navigation_observers_;
+  std::map<raw_ptr<content::WebContents>,
+           std::unique_ptr<PanelWebContentsObserver>>
+      panel_web_contents_observers_;
 
   // The task associated with the currently active tab.
   std::optional<base::Uuid> active_task_id_;

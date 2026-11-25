@@ -43,6 +43,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -102,8 +103,12 @@ class FakeActiveTaskContextProvider
   }
   void SetContextualTasksPanelController(
       contextual_tasks::ContextualTasksPanelController* controller) override {}
-  void AddLocalTabUnderline(tabs::TabHandle tab_handle) override {}
-  void RemoveLocalTabUnderline(tabs::TabHandle tab_handle) override {}
+  void AddLocalTabUnderline(
+      tabs::TabHandle tab_handle,
+      content::WebContents* source_web_contents) override {}
+  void RemoveLocalTabUnderline(
+      tabs::TabHandle tab_handle,
+      content::WebContents* source_web_contents) override {}
   void ClearAllLocalTabUnderlines() override {}
   void RefreshContext() override {}
 

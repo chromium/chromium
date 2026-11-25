@@ -296,6 +296,23 @@ class ActiveTaskContextProviderImpl::TabNavigationObserver
   base::CallbackListSubscription eligibility_subscription_;
 };
 
+class ActiveTaskContextProviderImpl::PanelWebContentsObserver
+    : public content::WebContentsObserver {
+ public:
+  PanelWebContentsObserver(ActiveTaskContextProviderImpl& owner,
+                           content::WebContents* panel_contents)
+      : content::WebContentsObserver(panel_contents), owner_(owner) {}
+  ~PanelWebContentsObserver() override = default;
+
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override {
+    owner_->OnPanelWebContentsDestroyed(web_contents());
+  }
+
+ private:
+  const raw_ref<ActiveTaskContextProviderImpl> owner_;
+};
+
 ActiveTaskContextProviderImpl::ActiveTaskContextProviderImpl(
     BrowserWindowInterface* browser_window,
     ContextualTasksService* contextual_tasks_service)
@@ -327,11 +344,14 @@ void ActiveTaskContextProviderImpl::SetContextualTasksPanelController(
 }
 
 // Local tab underlines are manual tab strip underlines that are explicitly
-// requested by clients (e.g., NTP realbox or omnibox popup searchbox handlers)
-// before a backend task has been created or is active.
+// requested by clients (e.g., NTP realbox, omnibox popup, or Contextual Tasks
+// side panel) before a backend task has been created or is active.
 void ActiveTaskContextProviderImpl::AddLocalTabUnderline(
-    tabs::TabHandle tab_handle) {
-  auto* tab_list = TabListInterface::From(browser_window_);
+    tabs::TabHandle tab_handle,
+    content::WebContents* source_web_contents) {
+  if (!source_web_contents) {
+    return;
+  }
   if (tabs::TabInterface* tab = tab_handle.Get()) {
     ObserveTab(tab);
     if (auto it = tab_navigation_observers_.find(tab);
@@ -339,28 +359,55 @@ void ActiveTaskContextProviderImpl::AddLocalTabUnderline(
       it->second->UpdateLastCommittedUrl();
     }
   }
-  auto* active_tab = tab_list ? tab_list->GetActiveTab() : nullptr;
-  tabs::TabHandle owner_handle =
-      active_tab ? active_tab->GetHandle() : tabs::TabHandle::Null();
-  local_tab_underlines_[owner_handle].insert(tab_handle);
+  if (IsPanelWebContents(source_web_contents)) {
+    if (!panel_web_contents_observers_.contains(source_web_contents)) {
+      panel_web_contents_observers_.emplace(
+          source_web_contents, std::make_unique<PanelWebContentsObserver>(
+                                   *this, source_web_contents));
+    }
+    panel_local_tab_underlines_[source_web_contents].insert(tab_handle);
+  } else {
+    auto* tab_list = TabListInterface::From(browser_window_);
+    auto* active_tab = tab_list ? tab_list->GetActiveTab() : nullptr;
+    tabs::TabHandle owner_handle =
+        active_tab ? active_tab->GetHandle() : tabs::TabHandle::Null();
+    local_tab_underlines_[owner_handle].insert(tab_handle);
+  }
   NotifyObservers();
 }
 
 void ActiveTaskContextProviderImpl::RemoveLocalTabUnderline(
-    tabs::TabHandle tab_handle) {
-  for (auto& [owner_handle, underlines] : local_tab_underlines_) {
-    underlines.erase(tab_handle);
+    tabs::TabHandle tab_handle,
+    content::WebContents* source_web_contents) {
+  if (IsPanelWebContents(source_web_contents)) {
+    if (auto it = panel_local_tab_underlines_.find(source_web_contents);
+        it != panel_local_tab_underlines_.end()) {
+      it->second.erase(tab_handle);
+      if (it->second.empty()) {
+        panel_local_tab_underlines_.erase(it);
+        panel_web_contents_observers_.erase(source_web_contents);
+      }
+    }
+  } else {
+    // Only clear tab-owned local underlines so removing a tab chip from the
+    // NTP realbox or omnibox composebox does not drop side-panel underlines.
+    for (auto& [owner_handle, underlines] : local_tab_underlines_) {
+      underlines.erase(tab_handle);
+    }
   }
   NotifyObservers();
 }
 
 void ActiveTaskContextProviderImpl::ClearAllLocalTabUnderlines() {
   local_tab_underlines_.clear();
+  panel_local_tab_underlines_.clear();
+  panel_web_contents_observers_.clear();
   NotifyObservers();
 }
 
 ActiveTaskContextProviderImpl::~ActiveTaskContextProviderImpl() {
   tab_navigation_observers_.clear();
+  panel_web_contents_observers_.clear();
   for (auto& observer : observers_) {
     observer.OnActiveTaskContextProviderDestroyed();
   }
@@ -410,6 +457,7 @@ void ActiveTaskContextProviderImpl::OnTabRemoved(
   for (auto& [owner_handle, underlines] : local_tab_underlines_) {
     underlines.erase(handle);
   }
+  EraseTabFromPanelLocalUnderlines(handle);
 
   if (content::WebContents* contents = tab->GetContents()) {
     SessionID tab_session_id = sessions::SessionTabHelper::IdForTab(contents);
@@ -455,6 +503,48 @@ void ActiveTaskContextProviderImpl::ObserveTab(tabs::TabInterface* tab) {
   }
 }
 
+bool ActiveTaskContextProviderImpl::IsPanelWebContents(
+    content::WebContents* web_contents) const {
+  if (!web_contents || !contextual_tasks_panel_controller_) {
+    return false;
+  }
+  if (contextual_tasks_panel_controller_->GetActiveWebContents() ==
+      web_contents) {
+    return true;
+  }
+  return std::ranges::contains(
+      contextual_tasks_panel_controller_->GetPanelWebContentsList(),
+      web_contents);
+}
+
+void ActiveTaskContextProviderImpl::EraseTabFromPanelLocalUnderlines(
+    tabs::TabHandle tab_handle) {
+  for (auto it = panel_local_tab_underlines_.begin();
+       it != panel_local_tab_underlines_.end();) {
+    it->second.erase(tab_handle);
+    if (it->second.empty()) {
+      content::WebContents* panel_contents = it->first.get();
+      it = panel_local_tab_underlines_.erase(it);
+      panel_web_contents_observers_.erase(panel_contents);
+    } else {
+      ++it;
+    }
+  }
+}
+
+void ActiveTaskContextProviderImpl::OnPanelWebContentsDestroyed(
+    content::WebContents* panel_contents) {
+  if (!panel_contents) {
+    return;
+  }
+  const bool had_underlines =
+      panel_local_tab_underlines_.erase(panel_contents) > 0;
+  panel_web_contents_observers_.erase(panel_contents);
+  if (had_underlines) {
+    NotifyObservers();
+  }
+}
+
 void ActiveTaskContextProviderImpl::OnTabNavigated(tabs::TabInterface* tab,
                                                    const GURL& previous_url) {
   if (!tab || !tab->GetContents()) {
@@ -483,6 +573,7 @@ void ActiveTaskContextProviderImpl::OnTabNavigated(tabs::TabInterface* tab,
     for (auto& [owner_handle, underlines] : local_tab_underlines_) {
       underlines.erase(tab->GetHandle());
     }
+    EraseTabFromPanelLocalUnderlines(tab->GetHandle());
   }
 
   RefreshContext();
@@ -767,9 +858,19 @@ void ActiveTaskContextProviderImpl::NotifyObservers() {
     }
   }
 
-  // Add auto-suggested tab if chip is showing.
+  // Add side-panel local underlines and auto-suggested tab only while the
+  // Contextual Tasks side panel is open.
   if (contextual_tasks_panel_controller_ &&
       contextual_tasks_panel_controller_->IsPanelOpenForContextualTask()) {
+    if (content::WebContents* active_panel_contents =
+            contextual_tasks_panel_controller_->GetActiveWebContents()) {
+      if (auto panel_it =
+              panel_local_tab_underlines_.find(active_panel_contents);
+          panel_it != panel_local_tab_underlines_.end()) {
+        tabs_to_underline.insert(panel_it->second.begin(),
+                                 panel_it->second.end());
+      }
+    }
     auto maybe_handle =
         contextual_tasks_panel_controller_->GetAutoSuggestedTabHandle();
     if (maybe_handle) {

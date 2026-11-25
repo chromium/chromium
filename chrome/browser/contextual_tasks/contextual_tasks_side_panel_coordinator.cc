@@ -557,6 +557,9 @@ bool ContextualTasksPanelController::IsWebContentsInPanel(
   if (!controller) {
     return false;
   }
+  if (controller->GetActiveWebContents() == web_contents) {
+    return true;
+  }
   for (auto* wc : controller->GetPanelWebContentsList()) {
     if (wc == web_contents) {
       return true;
@@ -1314,6 +1317,10 @@ void ContextualTasksSidePanelCoordinator::UnshareTabs(
     }
   }
 
+  const bool is_rearchitecture_enabled =
+      IsContextualTasksRearchitectureEnabled() ||
+      IsContextualTasksSidePanelRearchitectureEnabled();
+
   // 3. For each unshared tab, remove its local underline and delete its tab
   // context from every collected thread WebContents.
   for (tabs::TabHandle tab_handle : tab_handles) {
@@ -1321,14 +1328,18 @@ void ContextualTasksSidePanelCoordinator::UnshareTabs(
       continue;
     }
     if (active_task_context_provider_) {
-      active_task_context_provider_->RemoveLocalTabUnderline(tab_handle);
+      active_task_context_provider_->RemoveLocalTabUnderline(
+          tab_handle, /*source_web_contents=*/nullptr);
     }
-    if (IsContextualTasksRearchitectureEnabled() ||
-        IsContextualTasksSidePanelRearchitectureEnabled()) {
-      for (content::WebContents* web_contents : target_web_contents) {
-        if (!web_contents) {
-          continue;
-        }
+    for (content::WebContents* web_contents : target_web_contents) {
+      if (!web_contents) {
+        continue;
+      }
+      if (active_task_context_provider_) {
+        active_task_context_provider_->RemoveLocalTabUnderline(tab_handle,
+                                                               web_contents);
+      }
+      if (is_rearchitecture_enabled) {
         ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
             web_contents)
             ->DeleteTabContext(tab_handle.raw_value());
@@ -3112,7 +3123,8 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
       base::UnguessableToken token =
           result.has_value() ? *result : session_handle->CreateContextToken();
       if (!result.has_value() && active_task_context_provider_) {
-        active_task_context_provider_->AddLocalTabUnderline(tab_handle);
+        active_task_context_provider_->AddLocalTabUnderline(tab_handle,
+                                                            panel_contents);
       }
       if (user_data) {
         user_data->RecordTabIdMapping(tab_handle_id, session_id.id());
@@ -3129,7 +3141,8 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
           token, session_id.id(), url,
           base::UTF16ToUTF8(tab_contents->GetTitle()));
     } else if (active_task_context_provider_) {
-      active_task_context_provider_->AddLocalTabUnderline(tab_handle);
+      active_task_context_provider_->AddLocalTabUnderline(tab_handle,
+                                                          panel_contents);
     }
   }
 

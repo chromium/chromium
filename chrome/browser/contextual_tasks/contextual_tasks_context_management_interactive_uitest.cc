@@ -14,6 +14,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_test_user_variation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -879,10 +881,63 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
 
       // Both Tab 0 and Tab 1 must still be reflected in the side panel context.
       VerifyPlusButtonCoins(kSidePanelWebContentsId, 2),
-      VerifyUnderlinedTabs({0, 1}), OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyUnderlinedTabs({0, 1}),
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
       VerifyMenuTriggerState(kSidePanelWebContentsId, 2),
       VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", true),
       VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", true));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksContextManagementInteractiveUiTest,
+    UnderlinesHideWhenReplacedByAnotherSidePanelAndRestoreOnReopen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAttachedTab);
+
+  const GURL kUrl0 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), NavigateWebContents(kPrimaryTab, kUrl0),
+      AddInstrumentedTab(kAttachedTab, kUrl1), SelectTab(kTabStripElementId, 0),
+      OpenSidePanelWithWebContents(),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1),
+      VerifyUnderlinedTabs({0}),
+
+      // Attach Tab 1 so both Tab 0 and Tab 1 are underlined by the side panel.
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title2"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 2),
+      VerifyUnderlinedTabs({0, 1}),
+
+      // Replace the Contextual Tasks side panel with another side panel entry
+      // (e.g. Reading List, mirroring Gemini replacing Contextual Tasks). Once
+      // the new entry swaps into the side panel, both side-panel underlines
+      // must disappear while Contextual Tasks is hidden.
+      Do([this]() {
+        SidePanelUI::From(browser())->Show(SidePanelEntryId::kReadingList);
+      }),
+      InAnyContext(WaitForHide(kContextualTasksSidePanelWebViewElementId)),
+      CheckResult(
+          [this]() {
+            return ContextualTasksPanelController::From(browser())
+                ->IsPanelOpenForContextualTask();
+          },
+          false,
+          "Contextual Tasks side panel should report closed when replaced"),
+      VerifyUnderlinedTabs({}),
+
+      // Re-opening the Contextual Tasks side panel restores the cached side
+      // panel WebContents and its tab strip underlines.
+      ShowSidePanel(),
+      InAnyContext(WaitForShow(kContextualTasksSidePanelWebViewElementId)),
+      CheckResult(
+          [this]() {
+            return ContextualTasksPanelController::From(browser())
+                ->IsPanelOpenForContextualTask();
+          },
+          true, "Contextual Tasks side panel should report open again"),
+      VerifyUnderlinedTabs({0, 1}));
 }
 
 // Context uploads never complete, reproducing real network timing where the

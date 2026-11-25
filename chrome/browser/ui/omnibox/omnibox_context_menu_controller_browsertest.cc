@@ -1414,7 +1414,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
 
   // Add tab 2 context directly to tab 1's local underlines (since tab 1 is
   // active).
-  active_task_context_provider->AddLocalTabUnderline(tab2->GetHandle());
+  active_task_context_provider->AddLocalTabUnderline(tab2->GetHandle(),
+                                                     tab1->GetContents());
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return observer.last_context_tabs().contains(tab2->GetHandle());
   }));
@@ -1428,7 +1429,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
 
   // Ensure tab 1 is active, then add tab 3 to tab 1's local underlines list.
   browser()->GetTabStripModel()->ActivateTabAt(0);
-  active_task_context_provider->AddLocalTabUnderline(tab3->GetHandle());
+  active_task_context_provider->AddLocalTabUnderline(tab3->GetHandle(),
+                                                     tab1->GetContents());
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return observer.last_context_tabs().contains(tab2->GetHandle()) &&
            observer.last_context_tabs().contains(tab3->GetHandle());

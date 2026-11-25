@@ -421,7 +421,8 @@ void RecordTabAddedMetric(
 
 #if !BUILDFLAG(IS_ANDROID)
 void RemoveTabUnderline(int32_t tab_id,
-                        BrowserWindowInterface* browser_window_interface) {
+                        BrowserWindowInterface* browser_window_interface,
+                        content::WebContents* source_web_contents) {
   if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) ||
       IsContextualTasksSidePanelRearchitectureEnabled()) {
     const tabs::TabHandle handle = tabs::TabHandle(tab_id);
@@ -432,7 +433,7 @@ void RemoveTabUnderline(int32_t tab_id,
             : (tab ? tab->GetBrowserWindowInterface() : nullptr);
     if (browser_window) {
       if (auto* provider = ActiveTaskContextProvider::From(browser_window)) {
-        provider->RemoveLocalTabUnderline(handle);
+        provider->RemoveLocalTabUnderline(handle, source_web_contents);
       }
     }
   }
@@ -486,7 +487,8 @@ CaptureAndUploadTabContext(
                                    ? browser_window_interface
                                    : tab->GetBrowserWindowInterface()) {
       if (auto* provider = ActiveTaskContextProvider::From(browser_window)) {
-        provider->AddLocalTabUnderline(handle);
+        provider->AddLocalTabUnderline(
+            handle, user_data ? &user_data->GetWebContents() : nullptr);
       }
     }
   }

@@ -391,7 +391,7 @@ void WebuiOmniboxHandler::AddTabContext(
     selected_tabs[context_token] = tab_id;
     if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
       active_task_context_provider->AddLocalTabUnderline(
-          tabs::TabHandle(tab_id));
+          tabs::TabHandle(tab_id), web_contents_);
     }
   }
 

@@ -214,22 +214,23 @@ tabs::TabInterface* ResolveActiveBrowserTab(
 
 void RemoveAttachedTabUnderline(
     std::optional<int32_t> session_tab_id,
-    const ContextualTasksWebContentsUserData& user_data,
+    ContextualTasksWebContentsUserData& user_data,
     BrowserWindowInterface* browser_window_interface) {
   if (!session_tab_id.has_value() || !browser_window_interface) {
     return;
   }
+  content::WebContents* source_web_contents = &user_data.GetWebContents();
   if (std::optional<int32_t> open_tab_handle_id =
           FindOpenTabHandleForSessionTabId(*session_tab_id,
                                            browser_window_interface)) {
-    contextual_tasks::RemoveTabUnderline(*open_tab_handle_id,
-                                         browser_window_interface);
+    contextual_tasks::RemoveTabUnderline(
+        *open_tab_handle_id, browser_window_interface, source_web_contents);
     return;
   }
   if (std::optional<int32_t> tab_handle_id =
           user_data.GetTabHandleForSessionTabId(*session_tab_id)) {
-    contextual_tasks::RemoveTabUnderline(*tab_handle_id,
-                                         browser_window_interface);
+    contextual_tasks::RemoveTabUnderline(
+        *tab_handle_id, browser_window_interface, source_web_contents);
   }
 }
 #endif
@@ -2376,7 +2377,8 @@ void ContextualTasksWebContentsUserData::DeleteTabContext(int32_t tab_id) {
     return;
   }
 #if !BUILDFLAG(IS_ANDROID)
-  contextual_tasks::RemoveTabUnderline(tab_id, GetBrowserWindowInterface());
+  contextual_tasks::RemoveTabUnderline(tab_id, GetBrowserWindowInterface(),
+                                       &GetWebContents());
   RemoveAttachedTabUnderline(*session_tab_id, *this,
                              GetBrowserWindowInterface());
 #endif

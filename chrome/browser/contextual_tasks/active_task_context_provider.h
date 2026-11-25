@@ -16,6 +16,10 @@
 
 class BrowserWindowInterface;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace contextual_search {
 class ContextualSearchSessionHandle;
 }  // namespace contextual_search
@@ -54,8 +58,18 @@ class ActiveTaskContextProvider {
   virtual void SetContextualTasksPanelController(
       ContextualTasksPanelController* contextual_tasks_panel_controller) = 0;
 
-  virtual void AddLocalTabUnderline(tabs::TabHandle tab_handle) = 0;
-  virtual void RemoveLocalTabUnderline(tabs::TabHandle tab_handle) = 0;
+  // Adds or removes a local tab underline requested from `source_web_contents`.
+  // When `source_web_contents` belongs to the Contextual Tasks side panel, the
+  // underline is scoped to that panel `WebContents` and only shown while the
+  // Contextual Tasks side panel is open; otherwise it is tracked as a tab-owned
+  // local underline (e.g. NTP realbox or omnibox popup). `AddLocalTabUnderline`
+  // is a no-op if `source_web_contents` is null.
+  virtual void AddLocalTabUnderline(
+      tabs::TabHandle tab_handle,
+      content::WebContents* source_web_contents) = 0;
+  virtual void RemoveLocalTabUnderline(
+      tabs::TabHandle tab_handle,
+      content::WebContents* source_web_contents) = 0;
   // Clears all local client side tab underlines, not tabs highlighted by
   // backend server state. If this is called, since this is the owner of all
   // local tab underlines, it will clear all local tab underlines across sources

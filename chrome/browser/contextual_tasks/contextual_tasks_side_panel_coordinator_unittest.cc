@@ -229,8 +229,14 @@ class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
               SetContextualTasksPanelController,
               (ContextualTasksPanelController*),
               (override));
-  MOCK_METHOD(void, AddLocalTabUnderline, (tabs::TabHandle), (override));
-  MOCK_METHOD(void, RemoveLocalTabUnderline, (tabs::TabHandle), (override));
+  MOCK_METHOD(void,
+              AddLocalTabUnderline,
+              (tabs::TabHandle, content::WebContents*),
+              (override));
+  MOCK_METHOD(void,
+              RemoveLocalTabUnderline,
+              (tabs::TabHandle, content::WebContents*),
+              (override));
   MOCK_METHOD(void, ClearAllLocalTabUnderlines, (), (override));
 };
 
@@ -3272,13 +3278,13 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
       .Times(1);
   EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(active_tab->GetHandle()))
+              AddLocalTabUnderline(active_tab->GetHandle(), testing::NotNull()))
       .Times(1);
   EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(valid_tab->GetHandle()))
+              AddLocalTabUnderline(valid_tab->GetHandle(), testing::NotNull()))
       .Times(1);
   EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(invalid_tab->GetHandle()))
+              AddLocalTabUnderline(invalid_tab->GetHandle(), _))
       .Times(0);
 
   coordinator_->ShareTabsWithNewThread(
@@ -3320,10 +3326,12 @@ TEST_F(
   EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
       .Times(0);
   EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(active_tab->GetHandle()))
+              AddLocalTabUnderline(active_tab->GetHandle(), _))
       .Times(0);
-  EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(valid_tab->GetHandle()))
+  EXPECT_CALL(
+      mock_active_task_context_provider_,
+      AddLocalTabUnderline(valid_tab->GetHandle(),
+                           GetWebContentsForTaskForTesting(existing_task_id)))
       .Times(1);
 
   coordinator_->ShareTabsWithNewThread({valid_tab->GetHandle()});
@@ -3382,10 +3390,10 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
       .Times(1);
   EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(active_tab->GetHandle()))
+              AddLocalTabUnderline(active_tab->GetHandle(), testing::NotNull()))
       .Times(1);
   EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(valid_tab->GetHandle()))
+              AddLocalTabUnderline(valid_tab->GetHandle(), testing::NotNull()))
       .Times(1);
 
   coordinator_->ShareTabsWithNewThread({valid_tab->GetHandle()});
@@ -3464,13 +3472,13 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
       .Times(1);
   EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(active_tab->GetHandle()))
+              AddLocalTabUnderline(active_tab->GetHandle(), testing::NotNull()))
       .Times(1);
   EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(valid_tab->GetHandle()))
+              AddLocalTabUnderline(valid_tab->GetHandle(), testing::NotNull()))
       .Times(1);
   EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(invalid_tab->GetHandle()))
+              AddLocalTabUnderline(invalid_tab->GetHandle(), _))
       .Times(0);
 
   coordinator_->ShareTabsWithExistingThread(
@@ -3529,11 +3537,15 @@ TEST_F(
   EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
       .Times(0);
   EXPECT_CALL(*mock_panel_host_, Show(_)).Times(1);
-  EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(active_tab->GetHandle()))
+  EXPECT_CALL(
+      mock_active_task_context_provider_,
+      AddLocalTabUnderline(active_tab->GetHandle(),
+                           GetWebContentsForTaskForTesting(existing_task_id)))
       .Times(1);
-  EXPECT_CALL(mock_active_task_context_provider_,
-              AddLocalTabUnderline(valid_tab->GetHandle()))
+  EXPECT_CALL(
+      mock_active_task_context_provider_,
+      AddLocalTabUnderline(valid_tab->GetHandle(),
+                           GetWebContentsForTaskForTesting(existing_task_id)))
       .Times(1);
 
   coordinator_->ShareTabsWithExistingThread(
@@ -4294,10 +4306,16 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 #endif
 
   EXPECT_CALL(mock_active_task_context_provider_,
-              RemoveLocalTabUnderline(tab1->GetHandle()))
+              RemoveLocalTabUnderline(tab1->GetHandle(), nullptr))
       .Times(1);
   EXPECT_CALL(mock_active_task_context_provider_,
-              RemoveLocalTabUnderline(tab2->GetHandle()))
+              RemoveLocalTabUnderline(tab1->GetHandle(), panel_wc))
+      .Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              RemoveLocalTabUnderline(tab2->GetHandle(), nullptr))
+      .Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              RemoveLocalTabUnderline(tab2->GetHandle(), panel_wc))
       .Times(1);
   EXPECT_CALL(mock_active_task_context_provider_, RefreshContext())
       .Times(testing::AtLeast(1));

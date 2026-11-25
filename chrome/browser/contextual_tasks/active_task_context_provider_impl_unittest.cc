@@ -514,17 +514,17 @@ TEST_F(ActiveTaskContextProviderImplTest, LocalTabUnderlines) {
   // Add a tab and expect `onContextTabsChanged` to be called once.
   std::set<tabs::TabHandle> expected_tabs = {tab1->GetHandle()};
   EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
-  provider_->AddLocalTabUnderline(tab1->GetHandle());
+  provider_->AddLocalTabUnderline(tab1->GetHandle(), tab1->GetContents());
 
   // Add another tab and expect `onContextTabsChanged` to be called again.
   expected_tabs = {tab1->GetHandle(), tab2->GetHandle()};
   EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
-  provider_->AddLocalTabUnderline(tab2->GetHandle());
+  provider_->AddLocalTabUnderline(tab2->GetHandle(), tab1->GetContents());
 
   // Remove one tab and expect `onContextTabsChanged` to be called again.
   expected_tabs = {tab2->GetHandle()};
   EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
-  provider_->RemoveLocalTabUnderline(tab1->GetHandle());
+  provider_->RemoveLocalTabUnderline(tab1->GetHandle(), tab1->GetContents());
 
   // Clear all local underlines and expect that `onContextTabsChanged` to be
   // called again.
@@ -551,7 +551,7 @@ TEST_F(ActiveTaskContextProviderImplTest,
   // Add local tab underline and expect `onContextTabsChanged` to be called.
   std::set<tabs::TabHandle> expected_tabs = {tab->GetHandle()};
   EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
-  provider_->AddLocalTabUnderline(tab->GetHandle());
+  provider_->AddLocalTabUnderline(tab->GetHandle(), tab->GetContents());
 
   // Simulate active tab change, which should trigger `onContextTabsChanged`.
   EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
@@ -588,7 +588,7 @@ TEST_F(ActiveTaskContextProviderImplTest,
   // Add `tab2` as local tab underline for active `tab1`.
   std::set<tabs::TabHandle> expected_tabs = {tab2->GetHandle()};
   EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
-  provider_->AddLocalTabUnderline(tab2->GetHandle());
+  provider_->AddLocalTabUnderline(tab2->GetHandle(), tab1->GetContents());
 
   // Simulate active tab switch to `tab2`. Should have no tab underlines.
   EXPECT_CALL(*tab_list_, GetActiveTab()).WillRepeatedly(Return(tab2));
@@ -630,7 +630,7 @@ TEST_F(ActiveTaskContextProviderImplTest,
   // Add local tab underline while `tab1` is active.
   std::set<tabs::TabHandle> expected_tabs = {tab2->GetHandle()};
   EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
-  provider_->AddLocalTabUnderline(tab2->GetHandle());
+  provider_->AddLocalTabUnderline(tab2->GetHandle(), tab1->GetContents());
 
   // Simulate active tab switch to `tab2`.
   EXPECT_CALL(*tab_list_, GetActiveTab()).WillRepeatedly(Return(tab2));
@@ -725,7 +725,7 @@ TEST_F(ActiveTaskContextProviderImplTest,
 
   // Add a local tab underline (as `CaptureAndUploadTabContext` does) and
   // refresh backend context.
-  provider_->AddLocalTabUnderline(tab1->GetHandle());
+  provider_->AddLocalTabUnderline(tab1->GetHandle(), tab1->GetContents());
   std::set<tabs::TabHandle> expected_tabs = {tab1->GetHandle()};
   EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs))
       .Times(testing::AtLeast(1));
@@ -786,7 +786,7 @@ TEST_F(ActiveTaskContextProviderImplTest,
   EXPECT_CALL(*tab_list_, GetTab(0)).WillRepeatedly(Return(tab1));
   EXPECT_CALL(*tab_list_, GetActiveTab()).WillRepeatedly(Return(tab1));
 
-  provider_->AddLocalTabUnderline(tab1->GetHandle());
+  provider_->AddLocalTabUnderline(tab1->GetHandle(), tab1->GetContents());
   std::set<tabs::TabHandle> expected_tabs = {tab1->GetHandle()};
   EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs))
       .Times(testing::AtLeast(1));
@@ -1149,6 +1149,195 @@ TEST_F(ActiveTaskContextProviderImplTest,
            extension_frame_updates == 2;
   }));
   EXPECT_THAT(aim_tab_picker_states, testing::ElementsAre(true, false));
+}
+
+// Verifies that side-panel-owned local tab underlines are only emitted while
+// the Contextual Tasks side panel is open (so replacing it with another side
+// panel such as Gemini hides them immediately) and are restored when the
+// Contextual Tasks side panel re-opens, without affecting tab-owned local
+// underlines (e.g. NTP realbox / omnibox popup).
+TEST_F(ActiveTaskContextProviderImplTest,
+       SidePanelLocalTabUnderlinesHideWhenPanelReplacedAndRestoreOnReopen) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  std::set<tabs::TabHandle> last_underlines;
+  ON_CALL(observer_, OnContextTabsChanged(_))
+      .WillByDefault([&](const std::set<tabs::TabHandle>& tabs) {
+        last_underlines = tabs;
+      });
+
+  tabs::TabInterface* tab1 = CreateMockTab();
+  tabs::TabInterface* tab2 = CreateMockTab();
+  tabs::TabInterface* tab3 = CreateMockTab();
+  content::WebContentsTester::For(tab1->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/1"));
+  content::WebContentsTester::For(tab2->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/2"));
+  content::WebContentsTester::For(tab3->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/3"));
+
+  std::unique_ptr<content::WebContents> panel_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+
+  ON_CALL(*tab_list_, GetTabCount()).WillByDefault(Return(3));
+  ON_CALL(*tab_list_, GetTab(0)).WillByDefault(Return(tab1));
+  ON_CALL(*tab_list_, GetTab(1)).WillByDefault(Return(tab2));
+  ON_CALL(*tab_list_, GetTab(2)).WillByDefault(Return(tab3));
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(tab1));
+
+  ON_CALL(*contextual_tasks_panel_controller_,
+          GetSessionHandleForActiveTabOrPanel())
+      .WillByDefault(Return(std::make_pair(std::nullopt, nullptr)));
+  ON_CALL(*contextual_tasks_panel_controller_, GetActiveWebContents())
+      .WillByDefault(Return(panel_contents.get()));
+  ON_CALL(*contextual_tasks_panel_controller_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+
+  for (auto& observer : tab_list_observers_) {
+    observer.OnActiveTabChanged(*tab_list_, tab1);
+  }
+
+  // Passing a null `source_web_contents` is a no-op.
+  provider_->AddLocalTabUnderline(tab1->GetHandle(),
+                                  /*source_web_contents=*/nullptr);
+  EXPECT_TRUE(last_underlines.empty());
+
+  // Attach `tab1` and `tab2` from the open Contextual Tasks side panel.
+  provider_->AddLocalTabUnderline(tab1->GetHandle(), panel_contents.get());
+  provider_->AddLocalTabUnderline(tab2->GetHandle(), panel_contents.get());
+  EXPECT_EQ(last_underlines,
+            (std::set<tabs::TabHandle>{tab1->GetHandle(), tab2->GetHandle()}));
+
+  // Removing a tab-owned underline (e.g. from NTP realbox or omnibox) must NOT
+  // drop the side panel's underline for `tab1`.
+  provider_->RemoveLocalTabUnderline(tab1->GetHandle(), tab3->GetContents());
+  EXPECT_EQ(last_underlines,
+            (std::set<tabs::TabHandle>{tab1->GetHandle(), tab2->GetHandle()}));
+
+  // Switching to an unattached tab (`tab3`) and navigating `tab3` to a non-AIM
+  // page must NOT erase the cached side-panel local underlines for `{tab1,
+  // tab2}`.
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(tab3));
+  for (auto& observer : tab_list_observers_) {
+    observer.OnActiveTabChanged(*tab_list_, tab3);
+  }
+  content::WebContentsTester::For(tab3->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/3-other"));
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(tab1));
+  for (auto& observer : tab_list_observers_) {
+    observer.OnActiveTabChanged(*tab_list_, tab1);
+  }
+  EXPECT_EQ(last_underlines,
+            (std::set<tabs::TabHandle>{tab1->GetHandle(), tab2->GetHandle()}));
+
+  // Simulate replacing the Contextual Tasks side panel with Gemini (the cached
+  // `panel_contents` remains alive, while `IsPanelOpenForContextualTask()`
+  // becomes `false`). Side-panel underlines must stop being emitted.
+  ON_CALL(*contextual_tasks_panel_controller_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  provider_->RefreshContext();
+  EXPECT_TRUE(last_underlines.empty());
+
+  // Tab-owned local underlines (e.g. NTP realbox / omnibox popup on `tab3`)
+  // still work while the side panel is closed.
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(tab3));
+  provider_->AddLocalTabUnderline(tab3->GetHandle(), tab3->GetContents());
+  EXPECT_EQ(last_underlines, (std::set<tabs::TabHandle>{tab3->GetHandle()}));
+  provider_->RemoveLocalTabUnderline(tab3->GetHandle(), tab3->GetContents());
+  EXPECT_TRUE(last_underlines.empty());
+
+  // Re-opening the Contextual Tasks side panel on `tab1` restores its cached
+  // side-panel local underlines `{tab1, tab2}`.
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(tab1));
+  ON_CALL(*contextual_tasks_panel_controller_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  provider_->RefreshContext();
+  EXPECT_EQ(last_underlines,
+            (std::set<tabs::TabHandle>{tab1->GetHandle(), tab2->GetHandle()}));
+
+  ON_CALL(*contextual_tasks_panel_controller_, GetActiveWebContents())
+      .WillByDefault(Return(nullptr));
+  panel_contents.reset();
+}
+
+// Verifies per-panel WebContents isolation and cleanup on explicit removal,
+// tab navigation/closure, and panel WebContents destruction.
+TEST_F(ActiveTaskContextProviderImplTest,
+       SidePanelLocalTabUnderlinesIsolatedPerPanelAndCleanedUp) {
+  std::set<tabs::TabHandle> last_underlines;
+  ON_CALL(observer_, OnContextTabsChanged(_))
+      .WillByDefault([&](const std::set<tabs::TabHandle>& tabs) {
+        last_underlines = tabs;
+      });
+
+  tabs::TabInterface* tab1 = CreateMockTab();
+  tabs::TabInterface* tab2 = CreateMockTab();
+  tabs::TabInterface* tab3 = CreateMockTab();
+  content::WebContentsTester::For(tab1->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/1"));
+  content::WebContentsTester::For(tab2->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/2"));
+  content::WebContentsTester::For(tab3->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/3"));
+
+  std::unique_ptr<content::WebContents> panel1 =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+  std::unique_ptr<content::WebContents> panel2 =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+
+  ON_CALL(*tab_list_, GetTabCount()).WillByDefault(Return(3));
+  ON_CALL(*tab_list_, GetTab(0)).WillByDefault(Return(tab1));
+  ON_CALL(*tab_list_, GetTab(1)).WillByDefault(Return(tab2));
+  ON_CALL(*tab_list_, GetTab(2)).WillByDefault(Return(tab3));
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(tab1));
+  ON_CALL(*contextual_tasks_panel_controller_,
+          GetSessionHandleForActiveTabOrPanel())
+      .WillByDefault(Return(std::make_pair(std::nullopt, nullptr)));
+  ON_CALL(*contextual_tasks_panel_controller_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  ON_CALL(*contextual_tasks_panel_controller_, GetPanelWebContentsList())
+      .WillByDefault(Return(
+          std::vector<content::WebContents*>{panel1.get(), panel2.get()}));
+  ON_CALL(*contextual_tasks_panel_controller_, GetActiveWebContents())
+      .WillByDefault(Return(panel1.get()));
+
+  provider_->AddLocalTabUnderline(tab1->GetHandle(), panel1.get());
+  provider_->AddLocalTabUnderline(tab2->GetHandle(), panel1.get());
+  provider_->AddLocalTabUnderline(tab3->GetHandle(), panel2.get());
+  EXPECT_EQ(last_underlines,
+            (std::set<tabs::TabHandle>{tab1->GetHandle(), tab2->GetHandle()}));
+
+  // Switching the active panel WebContents to `panel2` emits only `panel2`'s
+  // underlines.
+  ON_CALL(*contextual_tasks_panel_controller_, GetActiveWebContents())
+      .WillByDefault(Return(panel2.get()));
+  provider_->RefreshContext();
+  EXPECT_EQ(last_underlines, (std::set<tabs::TabHandle>{tab3->GetHandle()}));
+
+  // Navigating `tab2` away removes `tab2` from `panel1`'s underlines.
+  ON_CALL(*contextual_tasks_panel_controller_, GetActiveWebContents())
+      .WillByDefault(Return(panel1.get()));
+  content::WebContentsTester::For(tab2->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/2-navigated"));
+  EXPECT_EQ(last_underlines, (std::set<tabs::TabHandle>{tab1->GetHandle()}));
+
+  // Explicit removal from `panel2` does not remove `tab1` from `panel1`.
+  provider_->RemoveLocalTabUnderline(tab1->GetHandle(), panel2.get());
+  EXPECT_EQ(last_underlines, (std::set<tabs::TabHandle>{tab1->GetHandle()}));
+
+  // Destroying `panel1` cleans up its underlines and notifies observers.
+  ON_CALL(*contextual_tasks_panel_controller_, GetPanelWebContentsList())
+      .WillByDefault(Return(std::vector<content::WebContents*>{}));
+  ON_CALL(*contextual_tasks_panel_controller_, GetActiveWebContents())
+      .WillByDefault(Return(nullptr));
+  panel1.reset();
+  EXPECT_TRUE(last_underlines.empty());
+
+  panel2.reset();
 }
 
 }  // namespace contextual_tasks

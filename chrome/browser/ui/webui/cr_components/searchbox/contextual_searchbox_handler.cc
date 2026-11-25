@@ -791,7 +791,7 @@ ContextualSearchboxHandler::~ContextualSearchboxHandler() {
       // underlines shared browser-wide.
       for (const auto& [token, handle] : selected_tabs) {
         active_task_context_provider->RemoveLocalTabUnderline(
-            tabs::TabHandle(handle));
+            tabs::TabHandle(handle), web_contents_);
       }
     }
   }
@@ -894,7 +894,7 @@ void ContextualSearchboxHandler::DetachFromBrowserWindow() {
     if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
       for (const auto& [token, handle] : selected_tabs) {
         active_task_context_provider->RemoveLocalTabUnderline(
-            tabs::TabHandle(handle));
+            tabs::TabHandle(handle), web_contents_);
       }
     }
   }
@@ -1352,7 +1352,7 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
     // (without submission).
     if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
       active_task_context_provider->AddLocalTabUnderline(
-          tabs::TabHandle(tab_id));
+          tabs::TabHandle(tab_id), web_contents_);
     }
   }
 
@@ -1919,7 +1919,7 @@ void ContextualSearchboxHandler::DeleteContext(
     if (it != selected_tabs.end()) {
       if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
         active_task_context_provider->RemoveLocalTabUnderline(
-            tabs::TabHandle(it->second));
+            tabs::TabHandle(it->second), web_contents_);
       }
     }
   }
@@ -2060,7 +2060,7 @@ void ContextualSearchboxHandler::ClearFiles(
       if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
         for (int32_t handle : removed_handles) {
           active_task_context_provider->RemoveLocalTabUnderline(
-              tabs::TabHandle(handle));
+              tabs::TabHandle(handle), web_contents_);
         }
         // `RemoveLocalTabUnderline()` only removes from
         // `local_tab_underlines_`. Tabs attached on an AIM page are also cached
@@ -2524,7 +2524,8 @@ void ContextualSearchboxHandler::RemoveSelectedTabState(
       base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
     auto* provider = GetActiveTaskContextProvider();
     if (provider) {
-      provider->RemoveLocalTabUnderline(tabs::TabHandle(node.mapped()));
+      provider->RemoveLocalTabUnderline(tabs::TabHandle(node.mapped()),
+                                        web_contents_);
     }
   }
 }

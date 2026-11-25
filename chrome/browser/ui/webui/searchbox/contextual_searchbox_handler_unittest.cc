@@ -462,8 +462,14 @@ class MockActiveTaskContextProvider
               SetContextualTasksPanelController,
               (contextual_tasks::ContextualTasksPanelController*),
               (override));
-  MOCK_METHOD(void, AddLocalTabUnderline, (tabs::TabHandle), (override));
-  MOCK_METHOD(void, RemoveLocalTabUnderline, (tabs::TabHandle), (override));
+  MOCK_METHOD(void,
+              AddLocalTabUnderline,
+              (tabs::TabHandle, content::WebContents*),
+              (override));
+  MOCK_METHOD(void,
+              RemoveLocalTabUnderline,
+              (tabs::TabHandle, content::WebContents*),
+              (override));
   MOCK_METHOD(void, ClearAllLocalTabUnderlines, (), (override));
 };
 
@@ -3915,7 +3921,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   active_task_context_provider->AddObserver(&observer);
 
   handler().selected_tabs[context_token] = tab_id;
-  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id));
+  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id),
+                                                     web_contents());
 
   // Verify that the underline is initially added.
   EXPECT_FALSE(observer.context_tabs_.find(tabs::TabHandle(tab_id)) ==
@@ -3963,7 +3970,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   active_task_context_provider->AddObserver(&observer);
 
   handler().selected_tabs[context_token] = tab_id;
-  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id));
+  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id),
+                                                     web_contents());
 
   // Verify that the underline is initially added.
   EXPECT_FALSE(observer.context_tabs_.find(tabs::TabHandle(tab_id)) ==
@@ -4012,8 +4020,10 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   active_task_context_provider->AddObserver(&observer);
 
   handler().selected_tabs[context_token1] = tab_id1;
-  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id1));
-  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id2));
+  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id1),
+                                                     web_contents());
+  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id2),
+                                                     web_contents());
 
   // Verify both underlines are initially added.
   EXPECT_FALSE(observer.context_tabs_.find(tabs::TabHandle(tab_id1)) ==
@@ -4102,11 +4112,14 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   handler().selected_tabs[token2] = tab_id2;
 
   testing::Expectation remove_deselected = EXPECT_CALL(
-      provider, RemoveLocalTabUnderline(tabs::TabHandle(deselected_tab_id)));
-  testing::Expectation remove1 =
-      EXPECT_CALL(provider, RemoveLocalTabUnderline(tabs::TabHandle(tab_id1)));
-  testing::Expectation remove2 =
-      EXPECT_CALL(provider, RemoveLocalTabUnderline(tabs::TabHandle(tab_id2)));
+      provider, RemoveLocalTabUnderline(tabs::TabHandle(deselected_tab_id),
+                                        web_contents()));
+  testing::Expectation remove1 = EXPECT_CALL(
+      provider,
+      RemoveLocalTabUnderline(tabs::TabHandle(tab_id1), web_contents()));
+  testing::Expectation remove2 = EXPECT_CALL(
+      provider,
+      RemoveLocalTabUnderline(tabs::TabHandle(tab_id2), web_contents()));
   EXPECT_CALL(provider, RefreshContext())
       .After(remove_deselected, remove1, remove2)
       .WillOnce([&]() {

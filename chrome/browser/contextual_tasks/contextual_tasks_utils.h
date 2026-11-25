@@ -161,10 +161,12 @@ CaptureAndUploadTabContext(
     ContextualTasksWebContentsUserData* user_data = nullptr);
 
 // Removes the local tab underline for `tab_id` if context management is
-// enabled.
+// enabled. When `source_web_contents` belongs to the Contextual Tasks side
+// panel, only that panel's local underline for `tab_id` is removed.
 void RemoveTabUnderline(
     int32_t tab_id,
-    BrowserWindowInterface* browser_window_interface = nullptr);
+    BrowserWindowInterface* browser_window_interface = nullptr,
+    content::WebContents* source_web_contents = nullptr);
 #endif
 
 // Returns true if the given URL is valid to show as a suggested tab.
