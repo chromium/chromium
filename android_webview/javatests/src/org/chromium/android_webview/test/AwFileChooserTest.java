@@ -34,6 +34,8 @@ import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.concurrent.TimeoutException;
 
 /** Integration tests for the WebChromeClient.onShowFileChooser method. */
@@ -352,6 +354,138 @@ public class AwFileChooserTest extends AwParameterizedTest {
     @EnableFeatures({BlinkFeatures.FILE_SYSTEM_ACCESS_LOCAL, AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS})
     public void testFileSystemAccessDirectory() throws Throwable {
         fileSystemAccessOk("showDirectoryPicker()", FileChooserParamsImpl.Mode.OPEN_FOLDER);
+    }
+
+    /**
+     * A page given a single file must not be able to move() it onto a sibling that the app never
+     * returned from onShowFileChooser(). See https://crbug.com/580530777.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(BlinkFeatures.FILE_SYSTEM_ACCESS_LOCAL)
+    public void testFileSystemAccessMoveToSiblingDenied() throws Throwable {
+        File dir = createAppFilesTestDirectory("fsa_move_test");
+        try {
+            File picked = new File(dir, "picked.txt");
+            File sibling = new File(dir, "sibling.txt");
+            writeFile(picked, "PICKED");
+            writeFile(sibling, "SIBLING");
+
+            runFileSystemAccessScript(
+                    picked,
+                    "async function run() {"
+                            + "  const [handle] = await showOpenFilePicker();"
+                            + "  try {"
+                            + "    await handle.move('sibling.txt');"
+                            + "    window.moveResult = 'moved';"
+                            + "  } catch (e) {"
+                            + "    window.moveResult = e.name;"
+                            + "  }"
+                            + "  const writable = await handle.createWritable();"
+                            + "  await writable.write('WRITTEN');"
+                            + "  await writable.close();"
+                            + "}");
+
+            // The rename is refused and neither file is moved or overwritten.
+            Assert.assertEquals(
+                    "\"NotAllowedError\"", executeJavaScriptAndWaitForResult("window.moveResult"));
+            Assert.assertEquals("SIBLING", readFile(sibling));
+
+            // Writing to the picked file itself still works.
+            Assert.assertEquals("WRITTEN", readFile(picked));
+        } finally {
+            FileUtils.recursivelyDeleteFile(dir, FileUtils.DELETE_ALL);
+        }
+    }
+
+    /**
+     * Handles obtained through a picked directory reuse the directory's grants, so reading,
+     * creating, writing, listing and removing entries inside it keeps working even though
+     * programmatic permission requests are denied. See https://crbug.com/580530777.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures({BlinkFeatures.FILE_SYSTEM_ACCESS_LOCAL, AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS})
+    public void testFileSystemAccessDirectoryEntriesAccessible() throws Throwable {
+        File dir = createAppFilesTestDirectory("fsa_directory_test");
+        try {
+            writeFile(new File(dir, "existing.txt"), "EXISTING");
+            writeFile(new File(dir, "to_remove.txt"), "TO_REMOVE");
+
+            runFileSystemAccessScript(
+                    dir,
+                    "async function run() {"
+                            + "  const dir = await showDirectoryPicker({mode: 'readwrite'});"
+                            + "  const existing = await dir.getFileHandle('existing.txt');"
+                            + "  window.existingContents = await (await existing.getFile()).text();"
+                            + "  const created = await dir.getFileHandle('created.txt',"
+                            + "      {create: true});"
+                            + "  const writable = await created.createWritable();"
+                            + "  await writable.write('CREATED');"
+                            + "  await writable.close();"
+                            + "  await dir.getDirectoryHandle('subdir', {create: true});"
+                            + "  await dir.removeEntry('to_remove.txt');"
+                            + "  const names = [];"
+                            + "  for await (const name of dir.keys()) names.push(name);"
+                            + "  window.entryNames = names.sort().join(',');"
+                            + "}");
+
+            Assert.assertEquals(
+                    "\"EXISTING\"", executeJavaScriptAndWaitForResult("window.existingContents"));
+            Assert.assertEquals(
+                    "\"created.txt,existing.txt,subdir\"",
+                    executeJavaScriptAndWaitForResult("window.entryNames"));
+            Assert.assertEquals("CREATED", readFile(new File(dir, "created.txt")));
+            Assert.assertTrue(new File(dir, "subdir").isDirectory());
+            Assert.assertFalse(new File(dir, "to_remove.txt").exists());
+        } finally {
+            FileUtils.recursivelyDeleteFile(dir, FileUtils.DELETE_ALL);
+        }
+    }
+
+    /**
+     * Creates an empty directory under the app's files/ directory. mTestDirectory can't be used for
+     * File System Access tests because it is under WebView's own data directory, which File System
+     * Access blocks.
+     */
+    private File createAppFilesTestDirectory(String name) {
+        File dir = new File(mActivityTestRule.getActivity().getFilesDir(), name);
+        FileUtils.recursivelyDeleteFile(dir, FileUtils.DELETE_ALL);
+        Assert.assertTrue(dir.mkdirs());
+        return dir;
+    }
+
+    /**
+     * Loads a page defining `script` (which must declare an async `run()` function), has the file
+     * chooser return `chosen`, clicks to call `run()` with a user gesture, and waits for it to
+     * resolve successfully.
+     */
+    private void runFileSystemAccessScript(File chosen, String script) throws Throwable {
+        final String pageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        /* headers= */ "<script>" + script + "</script>",
+                        /* body= */ "<div id='"
+                                + FILE_CHOICE_BUTTON_ID
+                                + "' onclick='run().then(() => window.done = \"ok\","
+                                + " e => window.done = \"error: \" + e.name)'>Pick</div>");
+        final String url = mWebServer.setResponse(INDEX_HTML_ROUTE, pageHtml, null);
+
+        mShowFileChooserHelper.setChosenFilesToUpload(
+                new String[] {Uri.fromFile(chosen).toString()});
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+        clickSelectFileButton();
+        pollJavascriptResult("window.done !== undefined", "true");
+        Assert.assertEquals(1, mShowFileChooserHelper.getCallCount());
+        Assert.assertEquals("\"ok\"", executeJavaScriptAndWaitForResult("window.done"));
+    }
+
+    private static void writeFile(File file, String contents) throws Exception {
+        Files.write(file.toPath(), contents.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String readFile(File file) throws Exception {
+        return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
     }
 
     /** Simulates user clicking Choose File button. */

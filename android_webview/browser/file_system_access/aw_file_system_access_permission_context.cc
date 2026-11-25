@@ -90,6 +90,44 @@ bool ShouldBlockAccessToPath(const base::FilePath& path) {
   return false;
 }
 
+using AccessTrigger = content::FileSystemAccessPermissionContext::AccessTrigger;
+
+scoped_refptr<content::FileSystemAccessPermissionGrant>
+GetPermissionGrantForAccessTrigger(AccessTrigger access_trigger,
+                                   const content::PathInfo& path_info) {
+  switch (access_trigger) {
+    case AccessTrigger::kOpen:
+    case AccessTrigger::kLoadFromStorage:
+    case AccessTrigger::kSave:
+    case AccessTrigger::kDragAndDrop: {
+      return base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          content::FileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+          path_info);
+    }
+    // We do not support programmatic access grants (e.g. via move() or
+    // rename()) to files in WebView.
+    // Access is only granted if the app/user was involved in the access flow.
+    //
+    // Consider a site trying to programmatically move a file whose source was
+    // granted write access due to app consent but to a destination path the app
+    // hasn't consented to. We should deny write access to the destination path.
+    //
+    // TODO(crbug.com/589772073): It could be that the app/user had granted
+    // write access to the destination path and it would be reasonable to grant
+    // access (access was granted to the destination path earlier by the app,
+    // the parent directory is accessible, etc). This would require tracking
+    // additional state about which paths have been consented to. For now, be
+    // conservative and deny to avoid potential security issues. See
+    // https://crbug.com/580530777 for more details.
+    case AccessTrigger::kProgrammaticRead:
+    case AccessTrigger::kProgrammaticWrite: {
+      return base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          content::FileSystemAccessPermissionGrant::PermissionStatus::DENIED,
+          path_info);
+    }
+  }
+}
+
 }  //  namespace
 
 AwFileSystemAccessPermissionContext::AwFileSystemAccessPermissionContext() =
@@ -104,9 +142,7 @@ AwFileSystemAccessPermissionContext::GetReadPermissionGrant(
     const content::PathInfo& path_info,
     HandleType handle_type,
     AccessTrigger access_trigger) {
-  return base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
-      content::FileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
-      path_info);
+  return GetPermissionGrantForAccessTrigger(access_trigger, path_info);
 }
 
 scoped_refptr<content::FileSystemAccessPermissionGrant>
@@ -115,9 +151,7 @@ AwFileSystemAccessPermissionContext::GetWritePermissionGrant(
     const content::PathInfo& path_info,
     HandleType handle_type,
     AccessTrigger access_trigger) {
-  return base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
-      content::FileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
-      path_info);
+  return GetPermissionGrantForAccessTrigger(access_trigger, path_info);
 }
 
 void AwFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(

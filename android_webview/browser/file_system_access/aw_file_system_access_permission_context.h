@@ -15,8 +15,9 @@ namespace android_webview {
 // which files have read / write access.
 // All these methods must always be called on the UI thread.
 //
-// This implementation allows read and write to all files, with a blocklist for
-// files that are internal to the chromium engine.
+// There is a blocklist for files that are internal to the chromium engine.
+// Access to files that are requested programmatically via web APIs without
+// user/app involvement are denied.
 //
 // In WebView, all files are opened via WebChromeClient#onFileChooser() which
 // is where the hosting app can filter any files that they do not want to allow
