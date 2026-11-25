@@ -20,6 +20,7 @@
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/drag_and_release_tool.h"
 #include "chrome/renderer/actor/execute_js_tool.h"
+#include "chrome/renderer/actor/execute_js_v8_utils.h"
 #include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/mouse_move_tool.h"
 #include "chrome/renderer/actor/no_op_tool.h"
@@ -31,6 +32,7 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -39,6 +41,26 @@ using blink::WebLocalFrame;
 using content::RenderFrame;
 
 namespace actor {
+
+namespace {
+
+// Returns whether script that a `ScopedTimeoutWatchdog` watches is still on the
+// stack, e.g. an ExecuteJs script that spun a nested run loop, even if its tool
+// was cancelled. The script can be in any frame that shares `web_frame`'s
+// isolate, e.g. in another tab. Its termination can be pending, and would hit
+// the script that a tool runs or triggers instead.
+bool IsWatchedScriptRunning(WebLocalFrame& web_frame) {
+  return ScopedTimeoutWatchdog::HasActiveWatchdog(
+      web_frame.GetAgentGroupScheduler()->Isolate());
+}
+
+mojom::ActionResultPtr MakeWatchedScriptRunningResult() {
+  return MakeResult(mojom::ActionResultCode::kExecutorBusy,
+                    /*requires_page_stabilization=*/false,
+                    "A script from an earlier action is still running.");
+}
+
+}  // namespace
 
 ToolExecutor::ToolExecutor(RenderFrame* frame, Journal& journal)
     : frame_(*frame), journal_(journal) {
@@ -83,6 +105,11 @@ mojom::InitializeToolResultPtr ToolExecutor::InitializeToolImpl(
       !web_frame->LocalRoot()->FrameWidget()) {
     return mojom::InitializeToolResult::NewErrorResult(
         MakeResult(mojom::ActionResultCode::kFrameWentAway));
+  }
+
+  if (IsWatchedScriptRunning(*web_frame)) {
+    return mojom::InitializeToolResult::NewErrorResult(
+        MakeWatchedScriptRunningResult());
   }
 
   switch (invocation->action->which()) {
@@ -215,6 +242,13 @@ void ToolExecutor::ExecuteTool(const actor::TaskId& task_id,
   CHECK_EQ(tool_->task_id(), task_id);
   CHECK(!completion_callback_);
   completion_callback_ = std::move(callback);
+  // In split execution, watched script can also start after `InitializeTool()`,
+  // e.g. in another frame that shares the isolate, and spin the nested run loop
+  // in which this runs.
+  if (IsWatchedScriptRunning(*frame_->GetWebFrame())) {
+    ToolFinished(MakeWatchedScriptRunningResult());
+    return;
+  }
   if (is_split_execution_) {
     tool_->MarkAsRevalidation();
     ValidationResult revalidation = tool_->Validate();

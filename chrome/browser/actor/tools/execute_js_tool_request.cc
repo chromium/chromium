@@ -7,7 +7,6 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/execute_js_tool_host.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
-#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 
@@ -52,10 +51,9 @@ ToolRequest::CreateToolResult ExecuteJsToolRequest::CreateTool(
                        "The target surface is no longer present.")};
   }
 
-  auto action = mojom::ExecuteJsAction::New(script_code_, timeout_ms_);
   return {std::make_unique<ExecuteJsToolHost>(
               task_id, tool_delegate, actor_surface_handle, target_document_id_,
-              mojom::ToolAction::NewExecuteJs(std::move(action))),
+              script_code_, timeout_ms_),
           MakeOkResult()};
 }
 

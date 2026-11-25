@@ -17,10 +17,12 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
@@ -29,6 +31,9 @@
 #include "chrome/renderer/actor/execute_js_v8_utils.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_thread.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -55,6 +60,7 @@ namespace {
 struct PendingPromise {
   ExecuteJsTool::ToolFinishedCallback callback;
   base::TimeTicks deadline;
+  scoped_refptr<ScriptCanceller> canceller;
   std::unique_ptr<ConsoleCapture> console_capture;
 };
 
@@ -97,13 +103,16 @@ base::TimeDelta GetTimeout(uint32_t timeout_ms) {
 
 // Converts `value`, which a script produced, to text: JSON if it can be
 // serialized (after normalizing DOM/built-in objects), and its string
-// conversion otherwise. Both can run JavaScript (normalization, toJSON(),
-// toString()), so the conversion is bounded by `deadline`. Returns std::nullopt
-// if the deadline passes first.
-std::optional<ScriptValueText> ConvertResult(v8::Isolate* isolate,
-                                             v8::Local<v8::Context> context,
-                                             v8::Local<v8::Value> value,
-                                             base::TimeTicks deadline) {
+// conversion otherwise. Both can run JavaScript (normalization, `toJSON()`,
+// `toString()`), so the conversion is bounded by `deadline`, and `canceller`
+// can cancel it. Returns `std::nullopt` if the deadline passes or the
+// conversion is cancelled first.
+std::optional<ScriptValueText> ConvertResult(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> value,
+    base::TimeTicks deadline,
+    scoped_refptr<ScriptCanceller> canceller) {
   if (value->IsUndefined()) {
     return ScriptValueText();
   }
@@ -116,7 +125,7 @@ std::optional<ScriptValueText> ConvertResult(v8::Isolate* isolate,
       isolate, context->GetMicrotaskQueue(),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::TryCatch try_catch(isolate);
-  ScopedTimeoutWatchdog watchdog(isolate, remaining);
+  ScopedTimeoutWatchdog watchdog(isolate, remaining, std::move(canceller));
   v8::Local<v8::Value> normalized = value;
   if (value->IsBigInt() || (value->IsObject() && !value->IsFunction())) {
     if (!NormalizeResultValue(isolate, context, value).ToLocal(&normalized)) {
@@ -280,11 +289,12 @@ CompiledScript CompileScript(v8::Isolate* isolate,
 
 // Describes `error`, a thrown exception or a rejection reason, for the failure
 // message. Its string conversion can run page JavaScript, so it is bounded by
-// `deadline`.
+// `deadline`, and `canceller` can cancel it.
 std::string DescribeError(v8::Isolate* isolate,
                           v8::Local<v8::Context> context,
                           v8::Local<v8::Value> error,
-                          base::TimeTicks deadline) {
+                          base::TimeTicks deadline,
+                          scoped_refptr<ScriptCanceller> canceller) {
   static constexpr char kUnknownError[] = "The script failed.";
   const base::TimeDelta remaining = deadline - base::TimeTicks::Now();
   if (!remaining.is_positive()) {
@@ -292,7 +302,7 @@ std::string DescribeError(v8::Isolate* isolate,
   }
   v8::Context::Scope context_scope(context);
   v8::TryCatch try_catch(isolate);
-  ScopedTimeoutWatchdog watchdog(isolate, remaining);
+  ScopedTimeoutWatchdog watchdog(isolate, remaining, std::move(canceller));
   v8::Local<v8::String> text;
   if (!error->ToString(context).ToLocal(&text)) {
     return kUnknownError;
@@ -338,13 +348,16 @@ mojom::ActionResultPtr MakeJsErrorResult(std::string description,
 
 // Returns the result for a script whose promise was rejected with `error`. The
 // description of `error` is both the failure message and `js_error_message`.
-mojom::ActionResultPtr MakeJsErrorResult(v8::Isolate* isolate,
-                                         v8::Local<v8::Context> context,
-                                         v8::Local<v8::Value> error,
-                                         base::TimeTicks deadline,
-                                         std::string console_logs = {}) {
-  return MakeJsErrorResult(DescribeError(isolate, context, error, deadline),
-                           std::move(console_logs));
+mojom::ActionResultPtr MakeJsErrorResult(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> error,
+    base::TimeTicks deadline,
+    scoped_refptr<ScriptCanceller> canceller,
+    std::string console_logs = {}) {
+  return MakeJsErrorResult(
+      DescribeError(isolate, context, error, deadline, std::move(canceller)),
+      std::move(console_logs));
 }
 
 // Returns the result for a script that produced `value`.
@@ -352,9 +365,10 @@ mojom::ActionResultPtr MakeValueResult(v8::Isolate* isolate,
                                        v8::Local<v8::Context> context,
                                        v8::Local<v8::Value> value,
                                        base::TimeTicks deadline,
+                                       scoped_refptr<ScriptCanceller> canceller,
                                        std::string console_logs = {}) {
   std::optional<ScriptValueText> text =
-      ConvertResult(isolate, context, value, deadline);
+      ConvertResult(isolate, context, value, deadline, std::move(canceller));
   if (!text) {
     return MakeTimeoutResult("Timed out converting the script result.",
                              std::move(console_logs));
@@ -365,6 +379,20 @@ mojom::ActionResultPtr MakeValueResult(v8::Isolate* isolate,
       std::move(text->text), text->truncated,
       /*js_error_message=*/std::nullopt, std::move(console_logs));
   return result;
+}
+
+// Finishes the tool with `result`, unless `canceller` cancelled it. Then, its
+// script may have been terminated midway, so the tool reports that it was
+// cancelled instead.
+void FinishTool(scoped_refptr<ScriptCanceller> canceller,
+                ExecuteJsTool::ToolFinishedCallback callback,
+                mojom::ActionResultPtr result) {
+  if (canceller->IsCancelled()) {
+    result = MakeResult(mojom::ActionResultCode::kInvokeCanceled,
+                        /*requires_page_stabilization=*/false,
+                        "The script was cancelled.");
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 void OnPromiseSettled(const v8::FunctionCallbackInfo<v8::Value>& info,
@@ -382,11 +410,12 @@ void OnPromiseSettled(const v8::FunctionCallbackInfo<v8::Value>& info,
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   mojom::ActionResultPtr result =
       fulfilled
-          ? MakeValueResult(isolate, context, info[0],
-                            pending_promise->deadline, std::move(console_logs))
-          : MakeJsErrorResult(isolate, context, info[0],
-                              pending_promise->deadline,
-                              std::move(console_logs));
+          ? MakeValueResult(
+                isolate, context, info[0], pending_promise->deadline,
+                std::move(pending_promise->canceller), std::move(console_logs))
+          : MakeJsErrorResult(
+                isolate, context, info[0], pending_promise->deadline,
+                std::move(pending_promise->canceller), std::move(console_logs));
   std::move(pending_promise->callback).Run(std::move(result));
 }
 
@@ -396,6 +425,32 @@ void OnPromiseFulfilled(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 void OnPromiseRejected(const v8::FunctionCallbackInfo<v8::Value>& info) {
   OnPromiseSettled(info, /*fulfilled=*/false);
+}
+
+// Handles the browser's request to cancel the tool. Bound on the IO thread,
+// since the tool's script can block the main thread.
+class CancellerImpl : public mojom::ExecuteJsCanceller {
+ public:
+  explicit CancellerImpl(scoped_refptr<ScriptCanceller> canceller)
+      : canceller_(std::move(canceller)) {}
+
+  CancellerImpl(const CancellerImpl&) = delete;
+  CancellerImpl& operator=(const CancellerImpl&) = delete;
+
+  ~CancellerImpl() override = default;
+
+  // mojom::ExecuteJsCanceller:
+  void Cancel() override { canceller_->Cancel(); }
+
+ private:
+  const scoped_refptr<ScriptCanceller> canceller_;
+};
+
+void BindCanceller(mojo::PendingReceiver<mojom::ExecuteJsCanceller> receiver,
+                   scoped_refptr<ScriptCanceller> canceller) {
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<CancellerImpl>(std::move(canceller)),
+      std::move(receiver));
 }
 
 }  // namespace
@@ -411,7 +466,16 @@ ExecuteJsTool::ExecuteJsTool(content::RenderFrame& frame,
                journal,
                std::move(target),
                std::move(observed_target)),
-      action_(std::move(action)) {}
+      action_(std::move(action)),
+      canceller_(base::MakeRefCounted<ScriptCanceller>()) {
+  if (action_) {
+    // The script blocks the main thread while it runs, so receive the
+    // browser's cancellation on the IO thread instead.
+    content::RenderThread::Get()->GetIOTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&BindCanceller, std::move(action_->canceller),
+                                  canceller_));
+  }
+}
 
 ExecuteJsTool::~ExecuteJsTool() {
   Cancel();
@@ -427,13 +491,9 @@ ValidationResult ExecuteJsTool::Validate() {
 }
 
 void ExecuteJsTool::Execute(ToolFinishedCallback callback) {
+  callback = base::BindOnce(&FinishTool, canceller_, std::move(callback));
+
   blink::WebLocalFrame* web_frame = frame_->GetWebFrame();
-  if (!web_frame) {
-    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kFrameWentAway,
-                                       /*requires_page_stabilization=*/false,
-                                       "RenderFrame is no longer valid."));
-    return;
-  }
 
   // The script can spin a nested run loop (e.g. by calling window.print()) in
   // which this tool is cancelled and destroyed. Copy what is needed after the
@@ -441,6 +501,7 @@ void ExecuteJsTool::Execute(ToolFinishedCallback callback) {
   const base::TimeDelta timeout = GetTimeout(action_->timeout_ms);
   const base::TimeTicks deadline = base::TimeTicks::Now() + timeout;
   const std::string script_code = action_->script_code;
+  scoped_refptr<ScriptCanceller> canceller = canceller_;
   base::WeakPtr<ExecuteJsTool> weak_this = weak_ptr_factory_.GetWeakPtr();
 
   v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
@@ -466,12 +527,13 @@ void ExecuteJsTool::Execute(ToolFinishedCallback callback) {
     // Also bounds the microtasks the script queues, since they run before
     // script execution returns. Later continuations, e.g. after a timer or a
     // fetch, run as regular page tasks.
-    ScopedTimeoutWatchdog watchdog(isolate, timeout);
+    ScopedTimeoutWatchdog watchdog(isolate, timeout, canceller);
     CompiledScript compiled =
         CompileScript(isolate, context, script_code, &timed_out);
     line_offset = compiled.line_offset;
     if (!timed_out && !compiled.script.IsEmpty()) {
-      console_capture_ = ConsoleCapture::Install(isolate, context, deadline);
+      console_capture_ =
+          ConsoleCapture::Install(isolate, context, deadline, canceller);
       active_watchdog_guard.emplace(console_capture_.get());
       if (!try_catch.HasTerminated()) {
         v8::MicrotasksScope microtasks_scope(
@@ -494,6 +556,8 @@ void ExecuteJsTool::Execute(ToolFinishedCallback callback) {
   }
 
   if (timed_out) {
+    // If the script was terminated because the tool was cancelled, `callback`
+    // reports that instead.
     std::move(callback).Run(MakeTimeoutResult(
         "The script timed out.", TakeConsoleLogs(std::move(console_capture_))));
     return;
@@ -512,9 +576,9 @@ void ExecuteJsTool::Execute(ToolFinishedCallback callback) {
       std::move(callback).Run(
           MakeJsErrorResult(std::move(*description), std::move(console_logs)));
     } else {
-      std::move(callback).Run(MakeJsErrorResult(isolate, context,
-                                                try_catch.Exception(), deadline,
-                                                std::move(console_logs)));
+      std::move(callback).Run(
+          MakeJsErrorResult(isolate, context, try_catch.Exception(), deadline,
+                            std::move(canceller), std::move(console_logs)));
     }
     return;
   }
@@ -534,13 +598,14 @@ void ExecuteJsTool::Execute(ToolFinishedCallback callback) {
         break;
       case v8::Promise::kRejected:
         promise->MarkAsHandled();
-        std::move(callback).Run(
-            MakeJsErrorResult(isolate, context, promise->Result(), deadline,
-                              TakeConsoleLogs(std::move(console_capture_))));
+        std::move(callback).Run(MakeJsErrorResult(
+            isolate, context, promise->Result(), deadline, std::move(canceller),
+            TakeConsoleLogs(std::move(console_capture_))));
         return;
       case v8::Promise::kPending: {
-        const uint32_t id = AddPendingPromise(
-            {std::move(callback), deadline, std::move(console_capture_)});
+        const uint32_t id = AddPendingPromise({std::move(callback), deadline,
+                                               std::move(canceller),
+                                               std::move(console_capture_)});
         v8::Local<v8::Value> data = v8::Integer::NewFromUnsigned(isolate, id);
         v8::Local<v8::Function> on_fulfilled;
         v8::Local<v8::Function> on_rejected;
@@ -571,16 +636,23 @@ void ExecuteJsTool::Execute(ToolFinishedCallback callback) {
   }
 
   std::move(callback).Run(
-      MakeValueResult(isolate, context, value, deadline,
+      MakeValueResult(isolate, context, value, deadline, std::move(canceller),
                       TakeConsoleLogs(std::move(console_capture_))));
 }
 
 void ExecuteJsTool::Cancel() {
+  // Restore the console first, so that cancelling the script below can't
+  // interrupt the restoration.
   console_capture_.reset();
   if (pending_promise_id_) {
     std::ignore = TakePendingPromise(std::exchange(pending_promise_id_, 0));
   }
   promise_timeout_timer_.Stop();
+
+  // Terminates the script if it is still running, which it can only be here if
+  // it spun a nested run loop. While the script blocks the main thread, the
+  // browser cancels it off the main thread instead.
+  canceller_->Cancel();
 }
 
 std::string ExecuteJsTool::DebugString() const {

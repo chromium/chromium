@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -32,11 +33,16 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_commands.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace actor {
 
@@ -48,6 +54,12 @@ using ::testing::HasSubstr;
 using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::StartsWith;
+
+// The longest timeout a script can have. A script that blocks the renderer's
+// main thread for that long outlasts the test, so only cancelling it can
+// unblock the page in time.
+constexpr uint32_t kMaxTimeoutMs =
+    static_cast<uint32_t>(kExecuteJsMaxTimeout.InMilliseconds());
 
 // Returns the value the script produced, or nullopt if it failed.
 std::optional<std::string> GetResponse(const mojom::ActionResult& result) {
@@ -524,6 +536,26 @@ IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, ScriptNavigatesPage) {
   EXPECT_EQ(GetResponse(*follow_up_result), "4");
 }
 
+// The navigation can only commit once the renderer's main thread is free, so
+// the script that blocks it is terminated when the navigation starts.
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest,
+                       ScriptNavigatesPageThenBlocksMainThread) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  content::TestNavigationObserver navigation_observer(web_contents());
+  auto result = RunExecuteJsTool(
+      "location.href = '/title2.html'; while (true) {}", kMaxTimeoutMs);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kExecuteJsNavigated);
+
+  navigation_observer.Wait();
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(),
+            GetTestPageUrl("/title2.html"));
+  auto follow_up_result = RunExecuteJsTool("2 + 2");
+  ASSERT_TRUE(follow_up_result);
+  EXPECT_EQ(GetResponse(*follow_up_result), "4");
+}
+
 IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest,
                        StopTaskWhileWaitingForPromise) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
@@ -553,6 +585,222 @@ IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest,
                                   ISOLATED_WORLD_ID_ACTOR));
   EXPECT_EQ(2, content::EvalJs(web_contents(), "1 + 1"));
 }
+
+// When the user stops the task, a script that blocks the renderer's main thread
+// is terminated, so that the page responds again right away.
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, StopTaskWhileScriptRuns) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  // The title change reaches the browser even though the script then blocks
+  // the renderer's main thread.
+  content::TitleWatcher title_watcher(web_contents(), u"running");
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(MakeRequest("document.title = 'running'; while (true) {}",
+                                kMaxTimeoutMs)),
+      result.GetCallback());
+  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"running");
+
+  actor_keyed_service().StopTask(task_id_,
+                                 ActorTask::StoppedReason::kStoppedByUser);
+  ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);
+
+  EXPECT_EQ(2, content::EvalJs(web_contents(), "1 + 1"));
+}
+
+// When the user takes over the task, a script that blocks the renderer's main
+// thread is terminated, so that the user can use the page. Scripts run normally
+// once the task resumes.
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, PauseTaskWhileScriptRuns) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  content::TitleWatcher title_watcher(web_contents(), u"running");
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(MakeRequest("document.title = 'running'; while (true) {}",
+                                kMaxTimeoutMs)),
+      result.GetCallback());
+  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"running");
+
+  actor_task().Pause(/*from_actor=*/false);
+  ExpectErrorResult(result, mojom::ActionResultCode::kTaskPaused);
+  EXPECT_EQ(2, content::EvalJs(web_contents(), "1 + 1"));
+
+  actor_task().Resume();
+  auto follow_up_result = RunExecuteJsTool("2 + 2");
+  ASSERT_TRUE(follow_up_result);
+  EXPECT_EQ(GetResponse(*follow_up_result), "4");
+}
+
+// Converting the result runs page JavaScript, which stopping the task
+// terminates too.
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, StopTaskWhileConvertingResult) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  content::TitleWatcher title_watcher(web_contents(), u"converting");
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(MakeRequest(
+          "({toJSON() { document.title = 'converting'; while (true) {} }})",
+          kMaxTimeoutMs)),
+      result.GetCallback());
+  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"converting");
+
+  actor_keyed_service().StopTask(task_id_,
+                                 ActorTask::StoppedReason::kStoppedByUser);
+  ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);
+
+  EXPECT_EQ(2, content::EvalJs(web_contents(), "1 + 1"));
+}
+
+// So does converting the value of the promise that the script returned, once
+// the promise is fulfilled.
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest,
+                       StopTaskWhileConvertingPromiseResult) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  // The promise is fulfilled in a page task, while the tool waits for it.
+  content::TitleWatcher title_watcher(web_contents(), u"converting");
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(MakeRequest(
+          "new Promise(resolve => {"
+          "  const channel = new MessageChannel();"
+          "  channel.port1.onmessage = () => resolve({"
+          "    toJSON() { document.title = 'converting'; while (true) {} }"
+          "  });"
+          "  channel.port2.postMessage(null);"
+          "})",
+          kMaxTimeoutMs)),
+      result.GetCallback());
+  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"converting");
+
+  actor_keyed_service().StopTask(task_id_,
+                                 ActorTask::StoppedReason::kStoppedByUser);
+  ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);
+
+  EXPECT_EQ(2, content::EvalJs(web_contents(), "1 + 1"));
+}
+
+// And describing the reason that the promise is rejected with.
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest,
+                       StopTaskWhileDescribingPromiseRejection) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  // The promise is rejected in a page task, while the tool waits for it.
+  content::TitleWatcher title_watcher(web_contents(), u"describing");
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(MakeRequest(
+          "new Promise((resolve, reject) => {"
+          "  const channel = new MessageChannel();"
+          "  channel.port1.onmessage = () => reject({"
+          "    toString() { document.title = 'describing'; while (true) {} }"
+          "  });"
+          "  channel.port2.postMessage(null);"
+          "})",
+          kMaxTimeoutMs)),
+      result.GetCallback());
+  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"describing");
+
+  actor_keyed_service().StopTask(task_id_,
+                                 ActorTask::StoppedReason::kStoppedByUser);
+  ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);
+
+  EXPECT_EQ(2, content::EvalJs(web_contents(), "1 + 1"));
+}
+
+// Formatting the arguments of `console.*` calls in callbacks that the script
+// scheduled runs page JavaScript too, e.g. getters, which stopping the task
+// terminates.
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest,
+                       StopTaskWhileFormattingConsoleArgInCallback) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+  SaveActorConsoleMethods(web_contents());
+
+  // The callback runs as a page task while the tool waits for the promise.
+  content::TitleWatcher title_watcher(web_contents(), u"formatting");
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(MakeRequest(
+          "new Promise(() => {"
+          "  const channel = new MessageChannel();"
+          "  channel.port1.onmessage = () => console.log({"
+          "    get hang() { document.title = 'formatting'; while (true) {} }"
+          "  });"
+          "  channel.port2.postMessage(null);"
+          "})",
+          kMaxTimeoutMs)),
+      result.GetCallback());
+  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"formatting");
+
+  actor_keyed_service().StopTask(task_id_,
+                                 ActorTask::StoppedReason::kStoppedByUser);
+  ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);
+
+  EXPECT_EQ(2, content::EvalJs(web_contents(), "1 + 1"));
+  EXPECT_TRUE(AreActorConsoleMethodsRestored(web_contents()));
+}
+
+// These tests rely on how desktop windows open, move and close tabs.
+#if !BUILDFLAG(IS_ANDROID)
+// Moving the tab to another window fails the tool, and terminates its script,
+// which would otherwise keep blocking the page until the script times out.
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest,
+                       MoveTabToNewWindowWhileScriptRuns) {
+  // Open the page in a second tab, so that the window stays open once the tab
+  // moves out of it.
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(GetTestPageUrl()));
+  content::WebContents* contents = web_contents();
+
+  content::TitleWatcher title_watcher(contents, u"running");
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(MakeRequest("document.title = 'running'; while (true) {}",
+                                kMaxTimeoutMs)),
+      result.GetCallback());
+  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"running");
+
+  chrome::MoveActiveTabToNewWindow(active_tab()->GetBrowserWindowInterface());
+  ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
+
+  EXPECT_EQ(2, content::EvalJs(contents, "1 + 1"));
+}
+
+// Closing the tab terminates its script, which would otherwise keep blocking
+// the pages that share its renderer process until the script times out.
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, CloseTabWhileScriptRuns) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+  content::WebContents* opener = web_contents();
+
+  // A same-site page that the page opens shares its renderer process.
+  content::WebContents* popup = nullptr;
+  {
+    // Only observe the popup: acting on it creates the actor overlay's
+    // `WebContents` too.
+    content::WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(content::ExecJs(opener, "window.open('/title2.html')"));
+    popup = popup_observer.GetWebContents();
+  }
+  ASSERT_TRUE(content::WaitForLoadStop(popup));
+  ASSERT_EQ(web_contents(), popup);
+  ASSERT_EQ(popup->GetPrimaryMainFrame()->GetProcess(),
+            opener->GetPrimaryMainFrame()->GetProcess());
+
+  content::TitleWatcher title_watcher(popup, u"running");
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(MakeRequest("document.title = 'running'; while (true) {}",
+                                kMaxTimeoutMs)),
+      result.GetCallback());
+  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"running");
+
+  active_tab()->Close();
+  ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);
+
+  EXPECT_EQ(2, content::EvalJs(opener, "1 + 1"));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, SubframeDocumentRejected) {
   ASSERT_TRUE(

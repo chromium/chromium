@@ -72,8 +72,10 @@ struct ConsoleCaptureState : public base::RefCounted<ConsoleCaptureState> {
   ConsoleCaptureState(v8::Isolate* isolate,
                       v8::Local<v8::Context> local_context,
                       v8::Local<v8::Object> console_obj,
-                      base::TimeTicks deadline)
+                      base::TimeTicks deadline,
+                      scoped_refptr<ScriptCanceller> canceller)
       : deadline(deadline),
+        canceller(std::move(canceller)),
         context(isolate, local_context),
         console(isolate, console_obj) {}
 
@@ -180,6 +182,8 @@ struct ConsoleCaptureState : public base::RefCounted<ConsoleCaptureState> {
   std::string buffer;
   size_t line_count = 0;
   base::TimeTicks deadline;
+  // Cancels formatting outside the caller's watchdogs, along with the script.
+  scoped_refptr<ScriptCanceller> canceller;
   bool capped = false;
   bool in_capture = false;
   bool has_active_watchdog = false;
@@ -340,8 +344,9 @@ bool ClampLineBreaks(std::string& line,
 // Lazily arms an async formatting watchdog on the first argument whose
 // conversion can run user JS or unbounded formatting, avoiding a delayed
 // ThreadPool task for 0-arg or primitive-only calls and avoiding an overlapping
-// watchdog when another invocation already guards `isolate`. Returns false if
-// the capture deadline has already elapsed.
+// watchdog when another invocation already guards `isolate`. Like the tool's
+// own watchdogs, it also stops formatting when the tool is cancelled. Returns
+// false if the capture deadline has already elapsed.
 bool EnsureAsyncWatchdog(v8::Isolate* isolate,
                          const ConsoleCaptureState& state,
                          std::optional<v8::TryCatch>& async_try_catch,
@@ -355,7 +360,7 @@ bool EnsureAsyncWatchdog(v8::Isolate* isolate,
     return false;
   }
   async_try_catch.emplace(isolate);
-  async_watchdog.emplace(isolate, remaining);
+  async_watchdog.emplace(isolate, remaining, state.canceller);
   return true;
 }
 
@@ -589,7 +594,8 @@ ConsoleCapture::ScopedActiveWatchdog::~ScopedActiveWatchdog() {
 std::unique_ptr<ConsoleCapture> ConsoleCapture::Install(
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
-    base::TimeTicks deadline) {
+    base::TimeTicks deadline,
+    scoped_refptr<ScriptCanceller> canceller) {
   v8::MicrotasksScope microtasks_scope(
       isolate, context->GetMicrotaskQueue(),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -608,8 +614,8 @@ std::unique_ptr<ConsoleCapture> ConsoleCapture::Install(
   }
   v8::Local<v8::Object> console_obj = console_val.As<v8::Object>();
 
-  auto state = base::MakeRefCounted<ConsoleCaptureState>(isolate, context,
-                                                         console_obj, deadline);
+  auto state = base::MakeRefCounted<ConsoleCaptureState>(
+      isolate, context, console_obj, deadline, std::move(canceller));
   const uint32_t capture_id = AddActiveConsoleCapture(state);
   auto capture =
       base::WrapUnique(new ConsoleCapture(isolate, capture_id, state));

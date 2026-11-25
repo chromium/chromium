@@ -18,6 +18,7 @@
 namespace actor {
 
 struct ConsoleCaptureState;
+class ScriptCanceller;
 
 // Temporarily wraps `console.{log,info,warn,error}` inside the actor's
 // isolated world to capture script output (capped at
@@ -49,10 +50,15 @@ class ConsoleCapture {
   // Installs wrappers on `console.{log,info,warn,error}` in `context`. Caller
   // must hold a v8::HandleScope, v8::Context::Scope for `context`, and
   // v8::TryCatch (V8 termination is rethrown to it). The returned capture must
-  // be destroyed before `isolate` is torn down.
-  static std::unique_ptr<ConsoleCapture> Install(v8::Isolate* isolate,
-                                                 v8::Local<v8::Context> context,
-                                                 base::TimeTicks deadline);
+  // be destroyed before `isolate` is torn down. Formatting arguments can run
+  // page JavaScript, e.g. getters. When that happens outside the caller's
+  // watchdogs, e.g. in callbacks that the script scheduled, it is bounded by
+  // `deadline`, and `canceller`, if any, can cancel it.
+  static std::unique_ptr<ConsoleCapture> Install(
+      v8::Isolate* isolate,
+      v8::Local<v8::Context> context,
+      base::TimeTicks deadline,
+      scoped_refptr<ScriptCanceller> canceller);
 
   ConsoleCapture(const ConsoleCapture&) = delete;
   ConsoleCapture& operator=(const ConsoleCapture&) = delete;

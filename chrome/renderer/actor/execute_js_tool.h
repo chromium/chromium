@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/common/actor.mojom.h"
@@ -21,11 +22,14 @@ class RenderFrame;
 namespace actor {
 
 class ConsoleCapture;
+class ScriptCanceller;
 
 // A tool that executes a dynamic JavaScript code string in the target frame,
 // in the actor's isolated world.
 class ExecuteJsTool : public ToolBase {
  public:
+  // Binds `action`'s canceller, to receive the browser's request to cancel the
+  // tool while its script blocks the main thread.
   ExecuteJsTool(content::RenderFrame& frame,
                 TaskId task_id,
                 Journal& journal,
@@ -45,6 +49,10 @@ class ExecuteJsTool : public ToolBase {
   void OnPromiseTimeout();
 
   mojom::ExecuteJsActionPtr action_;
+
+  // Cancels the script this tool runs. Shared with the receiver of the
+  // browser's cancellation, which runs off the main thread.
+  const scoped_refptr<ScriptCanceller> canceller_;
 
   // Active console capture for the synchronous portion of Execute().
   // Transferred to PendingPromise if the script returns a pending promise, or

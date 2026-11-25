@@ -42,21 +42,32 @@ ExecuteJsToolHost::ExecuteJsToolHost(
     ToolDelegate& tool_delegate,
     ActorSurfaceHandle target_actor_surface_handle,
     const base::UnguessableToken& target_document_id,
-    mojom::ToolActionPtr action)
+    std::string script_code,
+    uint32_t timeout_ms)
     : Tool(task_id, tool_delegate),
       actor_surface_handle_(target_actor_surface_handle),
       target_document_id_(target_document_id),
-      action_(std::move(action)) {}
+      script_code_(std::move(script_code)),
+      timeout_ms_(timeout_ms) {}
 
 ExecuteJsToolHost::~ExecuteJsToolHost() {
   TearDown();
 }
 
 void ExecuteJsToolHost::TearDown() {
+  // Unless the renderer finished the tool, cancel it there, whatever ended it
+  // early, e.g. its tab moving to another window or closing. Otherwise, its
+  // script could keep blocking the renderer, which other pages can share,
+  // until the script times out.
+  if (lifecycle_ == Lifecycle::kInvokeSent) {
+    CancelInRenderer();
+  }
+  lifecycle_ = Lifecycle::kDone;
   timeout_timer_.Stop();
   Observe(nullptr);
   tab_will_detach_subscription_ = {};
   target_document_render_frame_.reset();
+  canceller_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -112,10 +123,10 @@ void ExecuteJsToolHost::Invoke(DeprecatedToolCallback callback) {
   AggregatedJournalRenderFrameBinder::EnsureBound(journal(), *frame);
   tool_done_callback_ = std::move(callback);
 
-  const auto& execute_js_action = action_->get_execute_js();
-
   auto invocation = actor::mojom::ToolInvocation::New();
-  invocation->action = action_->Clone();
+  invocation->action =
+      mojom::ToolAction::NewExecuteJs(mojom::ExecuteJsAction::New(
+          script_code_, timeout_ms_, canceller_.BindNewPipeAndPassReceiver()));
   invocation->task_id = task_id();
   invocation->target =
       actor::mojom::ToolTarget::NewDomNodeId(kRootElementDomNodeId);
@@ -139,9 +150,7 @@ void ExecuteJsToolHost::Invoke(DeprecatedToolCallback callback) {
 
   // Mirror the renderer's handling of the timeout.
   base::TimeDelta timeout =
-      execute_js_action->timeout_ms
-          ? base::Milliseconds(execute_js_action->timeout_ms)
-          : kExecuteJsDefaultTimeout;
+      timeout_ms_ ? base::Milliseconds(timeout_ms_) : kExecuteJsDefaultTimeout;
   timeout = std::min(timeout, kExecuteJsMaxTimeout);
   timeout_timer_.Start(FROM_HERE, timeout + kRendererTimeoutSlack,
                        base::BindOnce(&ExecuteJsToolHost::OnToolTimeout,
@@ -150,19 +159,15 @@ void ExecuteJsToolHost::Invoke(DeprecatedToolCallback callback) {
 
 void ExecuteJsToolHost::Cancel() {
   if (lifecycle_ == Lifecycle::kInvokeSent) {
-    if (target_document_render_frame_) {
-      target_document_render_frame_->CancelTool(task_id());
-    }
     PostErrorResult(std::move(tool_done_callback_),
                     mojom::ActionResultCode::kInvokeCanceled);
   }
 }
 
 std::string ExecuteJsToolHost::DebugString() const {
-  return absl::StrFormat(
-      "ExecuteJsToolHost: script_code:%s",
-      base::TruncateUTF8ToByteSize(action_->get_execute_js()->script_code,
-                                   kExecuteJsMaxLoggedScriptBytes));
+  return absl::StrFormat("ExecuteJsToolHost: script_code:%s",
+                         base::TruncateUTF8ToByteSize(
+                             script_code_, kExecuteJsMaxLoggedScriptBytes));
 }
 
 GURL ExecuteJsToolHost::JournalURL() const {
@@ -247,7 +252,6 @@ void ExecuteJsToolHost::OnToolInvoked(mojom::ActionResultPtr result) {
 void ExecuteJsToolHost::PostErrorResult(DeprecatedToolCallback tool_callback,
                                         mojom::ActionResultCode code,
                                         const std::string& message) {
-  lifecycle_ = Lifecycle::kDone;
   TearDown();
   if (tool_callback) {
     std::move(tool_callback)
@@ -256,12 +260,21 @@ void ExecuteJsToolHost::PostErrorResult(DeprecatedToolCallback tool_callback,
 }
 
 void ExecuteJsToolHost::OnToolTimeout() {
-  if (target_document_render_frame_) {
-    target_document_render_frame_->CancelTool(task_id());
-  }
   PostErrorResult(std::move(tool_done_callback_),
                   mojom::ActionResultCode::kExecuteJsTimeout,
                   "The renderer did not finish the script in time.");
+}
+
+void ExecuteJsToolHost::CancelInRenderer() {
+  // The renderer handles `CancelTool()` on its main thread, which the script
+  // blocks while it runs, so also cancel through `canceller_`, which the
+  // renderer handles off the main thread.
+  if (canceller_) {
+    canceller_->Cancel();
+  }
+  if (target_document_render_frame_) {
+    target_document_render_frame_->CancelTool(task_id());
+  }
 }
 
 void ExecuteJsToolHost::RenderFrameDeleted(content::RenderFrameHost* rfh) {
@@ -293,9 +306,6 @@ void ExecuteJsToolHost::DidStartNavigation(
       !navigation_handle->IsSameDocument()) {
     // The RenderFrame, and the tool in it, can outlive the document, so stop
     // the tool rather than let it wait for a promise until its timeout.
-    if (target_document_render_frame_) {
-      target_document_render_frame_->CancelTool(task_id());
-    }
     PostErrorResult(std::move(tool_done_callback_),
                     mojom::ActionResultCode::kExecuteJsNavigated,
                     "The target frame navigated while the script was running.");

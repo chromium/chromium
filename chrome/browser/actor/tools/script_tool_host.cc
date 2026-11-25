@@ -171,7 +171,7 @@ void ScriptToolHost::Invoke(DeprecatedToolCallback callback) {
   RecordScriptToolInputSizeBytes(script_tool->input_arguments.size());
 
   auto invocation = actor::mojom::ToolInvocation::New();
-  invocation->action = action_->Clone();
+  invocation->action = mojom::ToolAction::NewScriptTool(script_tool.Clone());
   invocation->task_id = task_id();
   invocation->execution_id = execution_id_;
   invocation->target =

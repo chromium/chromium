@@ -159,6 +159,18 @@ struct ScriptToolAction {
   blink.mojom.ScriptToolToken? tool_id;
 };
 
+// Cancels an ExecuteJs tool. The renderer runs the tool's script on its main
+// thread, so it can't handle `ChromeRenderFrame.CancelTool()` until the script
+// returns. It handles this interface off the main thread instead, so that the
+// browser can stop a script that doesn't return, e.g. when the user stops the
+// task.
+interface ExecuteJsCanceller {
+  // Terminates the tool's script if it is running. The tool then finishes with
+  // `kInvokeCanceled`, without running more script, e.g. to convert the result.
+  // Callbacks that the script scheduled, such as timers, can still run.
+  Cancel();
+};
+
 // Executes dynamic JavaScript code string in the document, in an isolated
 // world. If the script returns a promise, waits for it to settle.
 struct ExecuteJsAction {
@@ -167,6 +179,9 @@ struct ExecuteJsAction {
   // `actor::kExecuteJsDefaultTimeout`. Longer values are clamped to
   // `actor::kExecuteJsMaxTimeout`.
   uint32 timeout_ms;
+  // Lets the browser cancel the tool while its script blocks the renderer's
+  // main thread.
+  pending_receiver<ExecuteJsCanceller> canceller;
 };
 
 // Union of tool-specific actions.

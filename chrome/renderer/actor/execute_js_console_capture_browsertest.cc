@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
 #include "chrome/renderer/actor/execute_js_v8_utils.h"
@@ -81,7 +82,8 @@ TEST_F(ExecuteJsConsoleCaptureTest,
 
   v8::Local<v8::Value> orig_log = GetConsoleLog(isolate, context);
   std::unique_ptr<ConsoleCapture> capture = ConsoleCapture::Install(
-      isolate, context, base::TimeTicks::Now() + base::Seconds(30));
+      isolate, context, base::TimeTicks::Now() + base::Seconds(30),
+      /*canceller=*/nullptr);
   ASSERT_TRUE(capture);
   EXPECT_FALSE(GetConsoleLog(isolate, context)->StrictEquals(orig_log));
 
@@ -108,7 +110,8 @@ TEST_F(ExecuteJsConsoleCaptureTest,
   std::optional<ConsoleCapture::ScopedActiveWatchdog> active_watchdog_guard;
   {
     std::unique_ptr<ConsoleCapture> capture = ConsoleCapture::Install(
-        isolate, context, base::TimeTicks::Now() + base::Seconds(30));
+        isolate, context, base::TimeTicks::Now() + base::Seconds(30),
+        /*canceller=*/nullptr);
     ASSERT_TRUE(capture);
     active_watchdog_guard.emplace(capture.get());
     EXPECT_FALSE(GetConsoleLog(isolate, context)->StrictEquals(orig_log));
@@ -151,7 +154,8 @@ TEST_F(ExecuteJsConsoleCaptureTest,
       "console.log = (...args) => globalThis.__logged.push(args.join(' '));"));
   v8::Local<v8::Value> orig_log = GetConsoleLog(isolate, context);
   std::unique_ptr<ConsoleCapture> capture = ConsoleCapture::Install(
-      isolate, context, base::TimeTicks::Now() + base::Seconds(30));
+      isolate, context, base::TimeTicks::Now() + base::Seconds(30),
+      /*canceller=*/nullptr);
   ASSERT_TRUE(capture);
   std::optional<ConsoleCapture::ScopedActiveWatchdog> active_watchdog_guard(
       std::in_place, capture.get());
@@ -178,6 +182,36 @@ TEST_F(ExecuteJsConsoleCaptureTest,
                 "    globalThis.__logged[0] !== 'after_cancel') {"
                 "  throw new Error('spy did not receive forwarded call');"
                 "}"));
+}
+
+// `console.*` calls outside the caller's watchdogs, e.g. in callbacks that the
+// script scheduled, format their arguments under their own watchdog, which the
+// canceller also stops, e.g. while a getter that the formatting runs blocks the
+// main thread.
+TEST_F(ExecuteJsConsoleCaptureTest, CancellerStopsFormattingOutsideWatchdogs) {
+  v8::Isolate* isolate = GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context =
+      GetMainRenderFrame()->GetWebFrame()->MainWorldScriptContext();
+  v8::Context::Scope context_scope(context);
+  v8::TryCatch try_catch(isolate);
+
+  auto canceller = base::MakeRefCounted<ScriptCanceller>();
+  std::unique_ptr<ConsoleCapture> capture = ConsoleCapture::Install(
+      isolate, context, base::TimeTicks::Now() + base::Seconds(30), canceller);
+  ASSERT_TRUE(capture);
+
+  // Time is mocked, so the formatting watchdog's timeout can't fire while the
+  // getter runs: only cancelling stops it.
+  canceller->Cancel();
+  EXPECT_TRUE(RunScript(isolate, context,
+                        "console.log('before');"
+                        "console.log({ get hang() { while (true) {} } });"
+                        "console.log('after');"));
+  EXPECT_FALSE(try_catch.HasTerminated());
+  EXPECT_FALSE(isolate->IsExecutionTerminating());
+  // Capturing stops once formatting is stopped.
+  EXPECT_EQ(TakeConsoleLogs(std::move(capture)), "[log] before");
 }
 
 }  // namespace

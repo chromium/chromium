@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
 #include "chrome/test/base/chrome_render_view_test.h"
@@ -136,6 +137,87 @@ TEST_F(ExecuteJsV8UtilsTest,
   EXPECT_EQ(EvalOnePlusOne(&terminated), std::nullopt);
   EXPECT_TRUE(terminated);
   EXPECT_TRUE(outer_try_catch.HasTerminated());
+  EXPECT_TRUE(isolate->IsExecutionTerminating());
+
+  EXPECT_TRUE(outer.Stop());
+  EXPECT_FALSE(isolate->IsExecutionTerminating());
+  EXPECT_FALSE(outer_try_catch.HasTerminated());
+  EXPECT_EQ(EvalOnePlusOne(&terminated), 2);
+  EXPECT_FALSE(terminated);
+}
+
+TEST_F(ExecuteJsV8UtilsTest, CancellerTerminatesWatchedScript) {
+  v8::Isolate* isolate = GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::TryCatch outer_try_catch(isolate);
+  auto canceller = base::MakeRefCounted<ScriptCanceller>();
+
+  ScopedTimeoutWatchdog watchdog(isolate, base::Seconds(30), canceller);
+  canceller->Cancel();
+  EXPECT_TRUE(canceller->IsCancelled());
+  bool terminated = false;
+  EXPECT_EQ(EvalOnePlusOne(&terminated), std::nullopt);
+  EXPECT_TRUE(terminated);
+
+  EXPECT_TRUE(watchdog.Stop());
+  EXPECT_FALSE(isolate->IsExecutionTerminating());
+  EXPECT_FALSE(outer_try_catch.HasTerminated());
+  EXPECT_EQ(EvalOnePlusOne(&terminated), 2);
+  EXPECT_FALSE(terminated);
+}
+
+// A watchdog for a canceller that was already cancelled terminates script right
+// away.
+TEST_F(ExecuteJsV8UtilsTest, CancelledCancellerTerminatesScriptOnceWatched) {
+  v8::Isolate* isolate = GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::TryCatch outer_try_catch(isolate);
+  auto canceller = base::MakeRefCounted<ScriptCanceller>();
+  canceller->Cancel();
+
+  ScopedTimeoutWatchdog watchdog(isolate, base::Seconds(30), canceller);
+  bool terminated = false;
+  EXPECT_EQ(EvalOnePlusOne(&terminated), std::nullopt);
+  EXPECT_TRUE(terminated);
+
+  EXPECT_TRUE(watchdog.Stop());
+  EXPECT_EQ(EvalOnePlusOne(&terminated), 2);
+  EXPECT_FALSE(terminated);
+}
+
+// Once no watchdog watches script for the canceller, cancelling doesn't
+// terminate unrelated script.
+TEST_F(ExecuteJsV8UtilsTest, CancellerDoesNotTerminateUnwatchedScript) {
+  v8::Isolate* isolate = GetIsolate();
+  auto canceller = base::MakeRefCounted<ScriptCanceller>();
+  {
+    ScopedTimeoutWatchdog watchdog(isolate, base::Seconds(30), canceller);
+    EXPECT_FALSE(watchdog.Stop());
+  }
+
+  canceller->Cancel();
+  bool terminated = false;
+  EXPECT_EQ(EvalOnePlusOne(&terminated), 2);
+  EXPECT_FALSE(terminated);
+}
+
+// Cancelling terminates script as the watching watchdog, so an inner watchdog
+// that also terminated script doesn't cancel the termination when it stops.
+TEST_F(ExecuteJsV8UtilsTest, InnerWatchdogDoesNotCancelCancellation) {
+  v8::Isolate* isolate = GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::TryCatch outer_try_catch(isolate);
+  auto canceller = base::MakeRefCounted<ScriptCanceller>();
+
+  ScopedTimeoutWatchdog outer(isolate, base::Seconds(30), canceller);
+  ScopedTimeoutWatchdog inner(isolate, base::TimeDelta());
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  canceller->Cancel();
+
+  EXPECT_TRUE(inner.Stop());
+  bool terminated = false;
+  EXPECT_EQ(EvalOnePlusOne(&terminated), std::nullopt);
+  EXPECT_TRUE(terminated);
   EXPECT_TRUE(isolate->IsExecutionTerminating());
 
   EXPECT_TRUE(outer.Stop());

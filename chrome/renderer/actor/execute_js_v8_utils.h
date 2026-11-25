@@ -9,20 +9,28 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-local-handle.h"
 
 namespace actor {
 
-// Terminates JavaScript running on `isolate` once `timeout` elapses. Scope it
-// to the call that runs page JavaScript: stopping or destroying it stops the
-// timeout and clears any termination it requested, so the termination can't
-// hit unrelated script that runs later.
+class ScriptCanceller;
+
+// Terminates JavaScript running on `isolate` once `timeout` elapses, or when
+// `canceller`, if any, cancels it. Scope it to the call that runs page
+// JavaScript: stopping or destroying it stops the timeout and the cancellation,
+// and clears any termination they requested, so the termination can't hit
+// unrelated script that runs later.
 class ScopedTimeoutWatchdog {
  public:
-  ScopedTimeoutWatchdog(v8::Isolate* isolate, base::TimeDelta timeout);
+  ScopedTimeoutWatchdog(v8::Isolate* isolate,
+                        base::TimeDelta timeout,
+                        scoped_refptr<ScriptCanceller> canceller = nullptr);
 
   ScopedTimeoutWatchdog(const ScopedTimeoutWatchdog&) = delete;
   ScopedTimeoutWatchdog& operator=(const ScopedTimeoutWatchdog&) = delete;
@@ -32,16 +40,59 @@ class ScopedTimeoutWatchdog {
   // Returns whether any ScopedTimeoutWatchdog is currently active on `isolate`.
   static bool HasActiveWatchdog(v8::Isolate* isolate);
 
-  // Returns whether the watchdog terminated script.
+  // Returns whether the watchdog terminated script, because the timeout
+  // elapsed or the script was cancelled.
   bool Stop();
 
  private:
+  friend class ScriptCanceller;
   class WatchdogState;
 
   const raw_ptr<v8::Isolate> isolate_;
   const scoped_refptr<WatchdogState> state_;
+  const scoped_refptr<ScriptCanceller> canceller_;
   bool stopped_ = false;
   bool terminated_ = false;
+};
+
+// Cancels the script that `ScopedTimeoutWatchdog`s watch for it, e.g. the
+// script an `ExecuteJsTool` runs. Can be used on any thread, so that the
+// browser can cancel script that blocks the main thread. Only terminates script
+// while a `ScopedTimeoutWatchdog` watches it, and the lock makes terminating
+// and stopping watching mutually exclusive, so cancelling never terminates
+// unrelated script.
+class ScriptCanceller : public base::RefCountedThreadSafe<ScriptCanceller> {
+ public:
+  ScriptCanceller();
+
+  ScriptCanceller(const ScriptCanceller&) = delete;
+  ScriptCanceller& operator=(const ScriptCanceller&) = delete;
+
+  // Terminates the watched script, if any, and any script watched later.
+  void Cancel();
+
+  bool IsCancelled() const;
+
+ private:
+  friend class base::RefCountedThreadSafe<ScriptCanceller>;
+  friend class ScopedTimeoutWatchdog;
+
+  ~ScriptCanceller();
+
+  // Watches the script that `state`'s watchdog watches until `StopWatching()`.
+  // If already cancelled, terminates the script right away. Watchdogs that
+  // share a canceller must not overlap: it watches one at a time.
+  void StartWatching(scoped_refptr<ScopedTimeoutWatchdog::WatchdogState> state);
+
+  // Once this returns, `Cancel()` no longer terminates script.
+  void StopWatching();
+
+  mutable base::Lock lock_;
+  bool cancelled_ GUARDED_BY(lock_) = false;
+  // Only set while a watchdog watches script, so that cancelling terminates
+  // only that script.
+  scoped_refptr<ScopedTimeoutWatchdog::WatchdogState> watched_state_
+      GUARDED_BY(lock_);
 };
 
 struct ScriptValueText {

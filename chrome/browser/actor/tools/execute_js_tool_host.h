@@ -5,19 +5,21 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_EXECUTE_JS_TOOL_HOST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_EXECUTE_JS_TOOL_HOST_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
 #include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool.h"
-#include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace actor {
 
@@ -28,7 +30,8 @@ class ExecuteJsToolHost : public Tool, content::WebContentsObserver {
                     ToolDelegate& tool_delegate,
                     ActorSurfaceHandle target_actor_surface_handle,
                     const base::UnguessableToken& target_document_id,
-                    mojom::ToolActionPtr action);
+                    std::string script_code,
+                    uint32_t timeout_ms);
   ~ExecuteJsToolHost() override;
 
   // actor::Tool implementation.
@@ -67,16 +70,25 @@ class ExecuteJsToolHost : public Tool, content::WebContentsObserver {
                        mojom::ActionResultCode code,
                        const std::string& message = "");
   void OnToolTimeout();
+  // Cancels the tool in the renderer, terminating its script if it is running.
+  void CancelInRenderer();
+  // Stops waiting for the tool, and cancels it in the renderer unless it
+  // finished there.
   void TearDown();
 
   Lifecycle lifecycle_{Lifecycle::kInitial};
   ActorSurfaceHandle actor_surface_handle_;
   const base::UnguessableToken target_document_id_;
-  const mojom::ToolActionPtr action_;
+  const std::string script_code_;
+  // See `mojom::ExecuteJsAction::timeout_ms`.
+  const uint32_t timeout_ms_;
   DeprecatedToolCallback tool_done_callback_;
 
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
       target_document_render_frame_;
+  // Cancels the tool off the renderer's main thread, which its script can
+  // block.
+  mojo::Remote<mojom::ExecuteJsCanceller> canceller_;
   content::WeakDocumentPtr target_document_;
   content::FrameTreeNodeId target_frame_tree_node_id_;
 

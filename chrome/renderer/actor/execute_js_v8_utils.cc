@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -457,10 +458,12 @@ constexpr char kResultNormalizerScript[] = R"js(
 
 }  // namespace
 
-// State shared by a ScopedTimeoutWatchdog and its timeout task, which runs on
-// the thread pool. A shared lock serializes TerminateExecution() and
-// CancelTerminateExecution() across overlapping watchdogs on the same isolate
-// so an inner watchdog cannot cancel another still-active watchdog's timeout.
+// State shared by a `ScopedTimeoutWatchdog`, its timeout task, which runs on
+// the thread pool, and its `ScriptCanceller`, if any, which can run on any
+// thread. A shared lock serializes `TerminateExecution()` and
+// `CancelTerminateExecution()` across overlapping watchdogs on the same isolate
+// so an inner watchdog cannot cancel another still-active watchdog's
+// termination.
 class ScopedTimeoutWatchdog::WatchdogState
     : public base::RefCountedThreadSafe<WatchdogState> {
  public:
@@ -482,7 +485,9 @@ class ScopedTimeoutWatchdog::WatchdogState
     return it != active.end() && !it->second.empty();
   }
 
-  void OnTimeout() {
+  // Terminates script on the isolate, unless the watchdog stopped. Called when
+  // the timeout elapses, or when the watchdog's `ScriptCanceller` cancels.
+  void Terminate() {
     base::AutoLock lock(GetLock());
     if (cancelled_ || !isolate_) {
       return;
@@ -491,11 +496,11 @@ class ScopedTimeoutWatchdog::WatchdogState
     isolate_->TerminateExecution();
   }
 
-  // Unregisters this watchdog and prevents any future OnTimeout() from
+  // Unregisters this watchdog and prevents any future `Terminate()` from
   // terminating execution. If this watchdog terminated execution and no other
   // still-active watchdog on `isolate` has also terminated, cancels V8's
   // pending termination under the same lock so it cannot race with another
-  // watchdog's OnTimeout(). Returns whether this watchdog terminated script.
+  // watchdog's `Terminate()`. Returns whether this watchdog terminated script.
   bool CancelAndUnregister(v8::Isolate* isolate) {
     base::AutoLock lock(GetLock());
     cancelled_ = true;
@@ -546,13 +551,20 @@ class ScopedTimeoutWatchdog::WatchdogState
   bool terminated_ GUARDED_BY(GetLock()) = false;
 };
 
-ScopedTimeoutWatchdog::ScopedTimeoutWatchdog(v8::Isolate* isolate,
-                                             base::TimeDelta timeout)
-    : isolate_(isolate), state_(base::MakeRefCounted<WatchdogState>(isolate)) {
+ScopedTimeoutWatchdog::ScopedTimeoutWatchdog(
+    v8::Isolate* isolate,
+    base::TimeDelta timeout,
+    scoped_refptr<ScriptCanceller> canceller)
+    : isolate_(isolate),
+      state_(base::MakeRefCounted<WatchdogState>(isolate)),
+      canceller_(std::move(canceller)) {
   WatchdogState::Register(isolate, state_);
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&WatchdogState::OnTimeout, state_), timeout);
+      base::BindOnce(&WatchdogState::Terminate, state_), timeout);
+  if (canceller_) {
+    canceller_->StartWatching(state_);
+  }
 }
 
 ScopedTimeoutWatchdog::~ScopedTimeoutWatchdog() {
@@ -567,9 +579,46 @@ bool ScopedTimeoutWatchdog::HasActiveWatchdog(v8::Isolate* isolate) {
 bool ScopedTimeoutWatchdog::Stop() {
   if (!stopped_) {
     stopped_ = true;
+    // Stop the cancellation before clearing the termination, so that the
+    // canceller can't terminate script afterwards.
+    if (canceller_) {
+      canceller_->StopWatching();
+    }
     terminated_ = state_->CancelAndUnregister(isolate_);
   }
   return terminated_;
+}
+
+ScriptCanceller::ScriptCanceller() = default;
+
+ScriptCanceller::~ScriptCanceller() = default;
+
+void ScriptCanceller::Cancel() {
+  base::AutoLock lock(lock_);
+  cancelled_ = true;
+  if (watched_state_) {
+    watched_state_->Terminate();
+  }
+}
+
+bool ScriptCanceller::IsCancelled() const {
+  base::AutoLock lock(lock_);
+  return cancelled_;
+}
+
+void ScriptCanceller::StartWatching(
+    scoped_refptr<ScopedTimeoutWatchdog::WatchdogState> state) {
+  base::AutoLock lock(lock_);
+  CHECK(!watched_state_);
+  watched_state_ = std::move(state);
+  if (cancelled_) {
+    watched_state_->Terminate();
+  }
+}
+
+void ScriptCanceller::StopWatching() {
+  base::AutoLock lock(lock_);
+  watched_state_ = nullptr;
 }
 
 ScriptValueText ToUtf8(v8::Isolate* isolate,

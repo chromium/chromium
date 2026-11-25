@@ -69,13 +69,16 @@ if (!skip_android_unmigrated_actor_files) {
     sources = [
       "execute_js_console_capture_browsertest.cc",
       "execute_js_v8_utils_browsertest.cc",
+      "tool_executor_browsertest.cc",
       "tool_utils_browsertest.cc",
     ]
     deps = [
       ":actor",
       "//base/test:test_support",
+      "//chrome/common",
       "//chrome/test/base:chrome_render_view_test",
       "//content/test:test_support",
+      "//gin",
       "//testing/gtest",
       "//third_party/blink/public:blink",
     ]
