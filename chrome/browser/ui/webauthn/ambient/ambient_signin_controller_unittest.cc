@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -15,6 +16,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -116,6 +119,31 @@ class AmbientSigninControllerTest : public ChromeRenderViewHostTestHarness {
         run_loop.QuitClosure());
     model->OnRequestComplete();
     run_loop.Run();
+  }
+
+  void ShowAndIgnoreBubble(base::TimeDelta duration,
+                           bool expected_starts_open = true) {
+    auto model = CreatePasskeyModel(main_rfh());
+    controller()->Show(model.get());
+    prompt_factory_->WaitForPermissionBubble();
+    ASSERT_NE(current_ambient_request(), nullptr);
+    EXPECT_EQ(current_ambient_request()->ShouldBubbleStartOpen(),
+              expected_starts_open);
+    current_ambient_request()->OnBubbleShown();
+    task_environment()->FastForwardBy(duration);
+    CompleteRequestAndWait(model.get());
+  }
+
+  void ShowAndDismissBubble(bool expected_starts_open = true) {
+    auto model = CreatePasskeyModel(main_rfh());
+    controller()->Show(model.get());
+    prompt_factory_->WaitForPermissionBubble();
+    ASSERT_NE(current_ambient_request(), nullptr);
+    EXPECT_EQ(current_ambient_request()->ShouldBubbleStartOpen(),
+              expected_starts_open);
+    current_ambient_request()->OnBubbleShown();
+    current_ambient_request()->OnBubbleDismissed();
+    CompleteRequestAndWait(model.get());
   }
 
  protected:
@@ -548,6 +576,295 @@ TEST_F(AmbientSigninControllerTest, DismissalCountExpiresAfterThirtyDays) {
   ASSERT_NE(current_ambient_request(), nullptr);
   EXPECT_TRUE(current_ambient_request()->ShouldBubbleStartOpen());
   CompleteRequestAndWait(model2.get());
+}
+
+TEST_F(AmbientSigninControllerTest,
+       CooldownAfterFourIgnoresAndResetOnSelection) {
+  // 4 ignores of at least 5 seconds each activate cooldown.
+  for (int i = 0; i < 4; ++i) {
+    ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+  }
+
+  // 5th request starts chip-only due to cooldown. Selecting a credential resets
+  // the ignore counter.
+  base::MockRepeatingClosure passkey_callback;
+  auto model_in_cooldown =
+      CreatePasskeyModel(main_rfh(), passkey_callback.Get());
+  controller()->Show(model_in_cooldown.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_FALSE(current_ambient_request()->ShouldBubbleStartOpen());
+
+  base::RunLoop accept_loop;
+  permission_controller()->SetFinishedNotificationForTesting(
+      accept_loop.QuitClosure());
+  EXPECT_CALL(passkey_callback, Run()).WillOnce([&model_in_cooldown]() {
+    model_in_cooldown->OnRequestComplete();
+  });
+  permission_request_manager()->Accept(std::monostate());
+  accept_loop.Run();
+
+  // After reset, 3 more ignores still leave the bubble starting open.
+  for (int i = 0; i < 3; ++i) {
+    ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+  }
+  auto model_after_reset = CreatePasskeyModel(main_rfh());
+  controller()->Show(model_after_reset.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_TRUE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model_after_reset.get());
+}
+
+TEST_F(AmbientSigninControllerTest, BriefBubbleDisplayDoesNotCountAsIgnore) {
+  // Closing a bubble shown for less than 5 seconds must not count as an ignore.
+  for (int i = 0; i < 5; ++i) {
+    ShowAndIgnoreBubble(base::Seconds(5) - base::Milliseconds(1),
+                        /*expected_starts_open=*/true);
+  }
+
+  auto model = CreatePasskeyModel(main_rfh());
+  controller()->Show(model.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_TRUE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model.get());
+}
+
+TEST_F(AmbientSigninControllerTest, CooldownFromCombinedDismissalsAndIgnores) {
+  // 1 active dismissal + 2 ignores (total 3) does not activate cooldown.
+  ShowAndDismissBubble(/*expected_starts_open=*/true);
+  ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+  ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+
+  // A 3rd ignore brings dismissal + ignore count to 4 and activates cooldown.
+  ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+
+  base::MockRepeatingClosure passkey_callback;
+  auto model_in_cooldown =
+      CreatePasskeyModel(main_rfh(), passkey_callback.Get());
+  controller()->Show(model_in_cooldown.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_FALSE(current_ambient_request()->ShouldBubbleStartOpen());
+
+  // Selecting a credential resets both dismissal and ignore counts.
+  base::RunLoop accept_loop;
+  permission_controller()->SetFinishedNotificationForTesting(
+      accept_loop.QuitClosure());
+  EXPECT_CALL(passkey_callback, Run()).WillOnce([&model_in_cooldown]() {
+    model_in_cooldown->OnRequestComplete();
+  });
+  permission_request_manager()->Accept(std::monostate());
+  accept_loop.Run();
+
+  // Reverse order: 3 ignores + 1 dismissal (total 4) also activates cooldown.
+  for (int i = 0; i < 3; ++i) {
+    ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+  }
+  ShowAndDismissBubble(/*expected_starts_open=*/true);
+
+  auto model_after_reverse = CreatePasskeyModel(main_rfh());
+  controller()->Show(model_after_reverse.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_FALSE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model_after_reverse.get());
+}
+
+TEST_F(AmbientSigninControllerTest,
+       BackwardsCompatibleWithLegacyDismissalOnlyContentSetting) {
+  const GURL url("https://example.com");
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // Pre-populate a legacy setting with only `count` = 2 and `last_dismissed`.
+  {
+    base::DictValue legacy_dict;
+    legacy_dict.Set("count", 2);
+    legacy_dict.Set("last_dismissed", base::TimeToValue(base::Time::Now()));
+    content_settings::ContentSettingConstraints constraints;
+    constraints.set_lifetime(base::Days(30));
+    settings_map->SetWebsiteSettingDefaultScope(
+        url, url, ContentSettingsType::WEBAUTHN_AMBIENT_SIGNIN_DATA,
+        base::Value(std::move(legacy_dict)), constraints);
+  }
+
+  auto model_legacy_cooldown = CreatePasskeyModel(main_rfh());
+  controller()->Show(model_legacy_cooldown.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_FALSE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model_legacy_cooldown.get());
+
+  // Pre-populate a legacy setting with `count` = 1 and `last_dismissed`, then
+  // add 3 ignores to reach combined count 4.
+  {
+    base::DictValue legacy_dict;
+    legacy_dict.Set("count", 1);
+    legacy_dict.Set("last_dismissed", base::TimeToValue(base::Time::Now()));
+    content_settings::ContentSettingConstraints constraints;
+    constraints.set_lifetime(base::Days(30));
+    settings_map->SetWebsiteSettingDefaultScope(
+        url, url, ContentSettingsType::WEBAUTHN_AMBIENT_SIGNIN_DATA,
+        base::Value(std::move(legacy_dict)), constraints);
+  }
+
+  for (int i = 0; i < 3; ++i) {
+    ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+  }
+
+  auto model_after_ignores = CreatePasskeyModel(main_rfh());
+  controller()->Show(model_after_ignores.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_FALSE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model_after_ignores.get());
+}
+
+TEST_F(AmbientSigninControllerTest, IgnoreRecordedOnNavigationAndTabClose) {
+  // 1st ignore: same-site navigation away after >= 5 seconds.
+  auto model1 = CreatePasskeyModel(main_rfh());
+  controller()->Show(model1.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_TRUE(current_ambient_request()->ShouldBubbleStartOpen());
+  current_ambient_request()->OnBubbleShown();
+  task_environment()->FastForwardBy(base::Seconds(6));
+  NavigateAndCommit(GURL("https://example.com/next"));
+  AmbientSigninController::GetOrCreateForCurrentDocument(main_rfh());
+
+  // 2nd ignore: cross-site navigation away after >= 5 seconds.
+  auto model2 = CreatePasskeyModel(main_rfh());
+  controller()->Show(model2.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_TRUE(current_ambient_request()->ShouldBubbleStartOpen());
+  current_ambient_request()->OnBubbleShown();
+  task_environment()->FastForwardBy(base::Seconds(6));
+  NavigateAndCommit(GURL("https://other.test"));
+
+  // Navigate back to example.com for 3rd ignore (request completed).
+  NavigateAndCommit(GURL("https://example.com"));
+  AmbientSigninController::GetOrCreateForCurrentDocument(main_rfh());
+  ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+
+  // 4th ignore: tab closed (WebContents destroyed) while bubble is open.
+  auto model4 = CreatePasskeyModel(main_rfh());
+  controller()->Show(model4.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_TRUE(current_ambient_request()->ShouldBubbleStartOpen());
+  current_ambient_request()->OnBubbleShown();
+  task_environment()->FastForwardBy(base::Seconds(5));
+  prompt_factory_.reset();
+  DeleteContents();
+
+  // Open a new tab on example.com: cooldown is now active after the 4 ignores.
+  SetContents(CreateTestWebContents());
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
+  NavigateAndCommit(GURL("https://example.com"));
+  permissions::PermissionRequestManager::CreateForWebContents(web_contents());
+  AmbientLoginPermissionController::CreateForPage(
+      web_contents()->GetPrimaryPage());
+  prompt_factory_ = std::make_unique<permissions::MockPermissionPromptFactory>(
+      permission_request_manager());
+  AmbientSigninController::CreateForCurrentDocument(main_rfh());
+
+  auto model5 = CreatePasskeyModel(main_rfh());
+  controller()->Show(model5.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_FALSE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model5.get());
+}
+
+TEST_F(AmbientSigninControllerTest,
+       IgnoreCooldownExpiresAfterOneWeekAndCountsExpireAfterThirtyDays) {
+  for (int i = 0; i < 4; ++i) {
+    ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+  }
+
+  // After 6 days, cooldown is still active.
+  task_environment()->AdvanceClock(base::Days(6));
+  auto model_before_week = CreatePasskeyModel(main_rfh());
+  controller()->Show(model_before_week.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_FALSE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model_before_week.get());
+
+  // After 7 days total since last ignore, the bubble starts open again.
+  task_environment()->AdvanceClock(base::Days(1));
+  ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+
+  // Ignoring again immediately re-activates the 1-week cooldown.
+  auto model_recooled = CreatePasskeyModel(main_rfh());
+  controller()->Show(model_recooled.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_FALSE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model_recooled.get());
+
+  // After 31 days (> 30-day content setting expiration), ignore count has
+  // expired completely, so 3 new ignores do not trigger cooldown.
+  task_environment()->AdvanceClock(base::Days(31));
+  for (int i = 0; i < 3; ++i) {
+    ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+  }
+  auto model_after_expiration = CreatePasskeyModel(main_rfh());
+  controller()->Show(model_after_expiration.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_TRUE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model_after_expiration.get());
+}
+
+TEST_F(AmbientSigninControllerTest, ChipOnlyNotOpenedDoesNotCountAsIgnore) {
+  for (int i = 0; i < 4; ++i) {
+    auto model = CreatePasskeyModel(main_rfh());
+    model->ambient_chip_only = true;
+    controller()->Show(model.get());
+    prompt_factory_->WaitForPermissionBubble();
+    ASSERT_NE(current_ambient_request(), nullptr);
+    EXPECT_FALSE(current_ambient_request()->ShouldBubbleStartOpen());
+    task_environment()->FastForwardBy(base::Seconds(10));
+    CompleteRequestAndWait(model.get());
+  }
+
+  auto model = CreatePasskeyModel(main_rfh());
+  controller()->Show(model.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_TRUE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model.get());
+}
+
+TEST_F(AmbientSigninControllerTest, DismissedBubbleNotDoubleCountedAsIgnore) {
+  // Show for 6 seconds, then actively dismiss, then wait another 6 seconds
+  // before completing. This must only count as 1 dismissal (not 1 dismissal + 1
+  // ignore).
+  auto model1 = CreatePasskeyModel(main_rfh());
+  controller()->Show(model1.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  current_ambient_request()->OnBubbleShown();
+  task_environment()->FastForwardBy(base::Seconds(6));
+  current_ambient_request()->OnBubbleDismissed();
+  task_environment()->FastForwardBy(base::Seconds(6));
+  CompleteRequestAndWait(model1.get());
+
+  // Adding 2 ignores brings total to 3 (1 dismissal + 2 ignores), so the next
+  // bubble still starts open.
+  ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+  ShowAndIgnoreBubble(base::Seconds(5), /*expected_starts_open=*/true);
+
+  auto model_check = CreatePasskeyModel(main_rfh());
+  controller()->Show(model_check.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_TRUE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model_check.get());
 }
 
 TEST_F(AmbientSigninControllerTest, AmbientChipOnlySuppressesInitialBubble) {

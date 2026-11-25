@@ -56,10 +56,11 @@ class AmbientSigninController
       const permissions::PermissionRequestData& request_data);
   void FinalizeRequestMetrics();
   void Close();
+  void HandleBubbleEndedWithoutInteraction();
 
-  // Records how long the bubble has been shown, if it is being timed, and
-  // stops timing it.
-  void RecordBubbleShownDuration(
+  // Records how long the bubble has been shown, if it is being timed, stops
+  // timing it, and returns the elapsed duration (or std::nullopt if not timed).
+  std::optional<base::TimeDelta> RecordBubbleShownDuration(
       webauthn::metrics::AmbientBubbleCloseReason reason);
 
   // AuthenticatorRequestDialogModel::Observer

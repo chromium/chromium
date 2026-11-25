@@ -26,6 +26,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/page.h"
@@ -44,10 +45,15 @@ namespace ambient_signin {
 namespace {
 
 constexpr int kMaxDismissalsBeforeCooldown = 2;
+constexpr int kMaxDismissalsAndIgnoresBeforeCooldown = 4;
+constexpr base::TimeDelta kMinBubbleShownDurationForIgnore = base::Seconds(5);
 constexpr base::TimeDelta kCooldownDuration = base::Days(7);
 constexpr base::TimeDelta kPromptDataExpiration = base::Days(30);
 constexpr char kDismissalCountKey[] = "count";
+// Tracks the timestamp of the last dismissal or ignore. The key name is kept
+// as "last_dismissed" for backwards compatibility with existing settings.
 constexpr char kLastDismissedKey[] = "last_dismissed";
+constexpr char kIgnoreCountKey[] = "ignore_count";
 
 GURL GetTopLevelUrl(RenderFrameHost& rfh) {
   return rfh.GetOutermostMainFrame()->GetLastCommittedOrigin().GetURL();
@@ -80,6 +86,33 @@ void SetPromptData(
           top_level_url, top_level_url,
           ContentSettingsType::WEBAUTHN_AMBIENT_SIGNIN_DATA, std::move(value),
           constraints);
+}
+
+bool IsInCooldown(const base::DictValue& site_dict) {
+  const int dismissal_count = site_dict.FindInt(kDismissalCountKey).value_or(0);
+  const int ignore_count = site_dict.FindInt(kIgnoreCountKey).value_or(0);
+  if (dismissal_count < kMaxDismissalsBeforeCooldown &&
+      dismissal_count + ignore_count < kMaxDismissalsAndIgnoresBeforeCooldown) {
+    return false;
+  }
+
+  const std::optional<base::Time> last_dismissed =
+      base::ValueToTime(site_dict.Find(kLastDismissedKey));
+  return last_dismissed.has_value() &&
+         base::Time::Now() - *last_dismissed < kCooldownDuration;
+}
+
+void RecordCooldownEvent(const GURL& top_level_url,
+                         content::BrowserContext* browser_context,
+                         const char* count_key) {
+  base::DictValue site_dict = GetPromptData(top_level_url, browser_context);
+  const int current_count = site_dict.FindInt(count_key).value_or(0);
+  site_dict.Set(count_key, current_count + 1);
+  site_dict.Set(kLastDismissedKey, base::TimeToValue(base::Time::Now()));
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_lifetime(kPromptDataExpiration);
+  SetPromptData(top_level_url, browser_context,
+                base::Value(std::move(site_dict)), std::move(constraints));
 }
 
 }  // namespace
@@ -185,13 +218,7 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
   const GURL top_level_url = GetTopLevelUrl(render_frame_host());
   const base::DictValue site_dict =
       GetPromptData(top_level_url, render_frame_host().GetBrowserContext());
-  const int dismissal_count = site_dict.FindInt(kDismissalCountKey).value_or(0);
-  const std::optional<base::Time> last_dismissed =
-      base::ValueToTime(site_dict.Find(kLastDismissedKey));
-  const bool in_cooldown =
-      dismissal_count >= kMaxDismissalsBeforeCooldown &&
-      last_dismissed.has_value() &&
-      base::Time::Now() - *last_dismissed < kCooldownDuration;
+  const bool in_cooldown = IsInCooldown(site_dict);
   const bool bubble_starts_open = !model_->ambient_chip_only && !in_cooldown;
 
   if (record_metrics) {
@@ -216,6 +243,7 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
   bubble_dismissed_ = false;
   credential_selected_ = false;
   selected_from_expanded_list_ = false;
+  bubble_shown_time_.reset();
 
   auto request = std::make_unique<AmbientLoginPermissionRequest>(
       render_frame_host().GetLastCommittedOrigin().GetURL(),
@@ -260,7 +288,7 @@ void AmbientSigninController::OnMechanismSelected(size_t index,
   RecordBubbleShownDuration(
       webauthn::metrics::AmbientBubbleCloseReason::kCredentialSelected);
   FinalizeRequestMetrics();
-  // Reset any dismissal count and cooldown for the site.
+  // Reset any dismissal/ignore counts and cooldown for the site.
   SetPromptData(GetTopLevelUrl(render_frame_host()),
                 render_frame_host().GetBrowserContext(), base::Value());
   if (model_) {
@@ -285,23 +313,19 @@ void AmbientSigninController::OnBubbleDismissed() {
   bubble_dismissed_ = true;
   RecordBubbleShownDuration(
       webauthn::metrics::AmbientBubbleCloseReason::kDismissed);
-  const GURL top_level_url = GetTopLevelUrl(render_frame_host());
-  content::BrowserContext* browser_context =
-      render_frame_host().GetBrowserContext();
-  base::DictValue site_dict = GetPromptData(top_level_url, browser_context);
-  const int current_count = site_dict.FindInt(kDismissalCountKey).value_or(0);
-  site_dict.Set(kDismissalCountKey, current_count + 1);
-  site_dict.Set(kLastDismissedKey, base::TimeToValue(base::Time::Now()));
-  content_settings::ContentSettingConstraints constraints;
-  constraints.set_lifetime(kPromptDataExpiration);
-  SetPromptData(top_level_url, browser_context,
-                base::Value(std::move(site_dict)), std::move(constraints));
+  RecordCooldownEvent(GetTopLevelUrl(render_frame_host()),
+                      render_frame_host().GetBrowserContext(),
+                      kDismissalCountKey);
 }
 
 void AmbientSigninController::OnPermissionDecided(
     const permissions::PermissionPromptDecision& decision,
     const permissions::PermissionRequestData& request_data) {
+  if (!decision.is_final) {
+    return;
+  }
   FinalizeRequestMetrics();
+  HandleBubbleEndedWithoutInteraction();
 }
 
 void AmbientSigninController::FinalizeRequestMetrics() {
@@ -347,12 +371,7 @@ void AmbientSigninController::FinalizeRequestMetrics() {
 
 void AmbientSigninController::Close() {
   FinalizeRequestMetrics();
-  // If the bubble is still being timed, the request ended without the user
-  // selecting a credential or dismissing the bubble. For example, the page
-  // navigated away, its tab was closed, the page aborted the request, or the
-  // renderer crashed.
-  RecordBubbleShownDuration(
-      webauthn::metrics::AmbientBubbleCloseReason::kRequestEnded);
+  HandleBubbleEndedWithoutInteraction();
   if (auto* permission_controller =
           AmbientLoginPermissionController::GetForPage(
               render_frame_host().GetPage())) {
@@ -363,14 +382,31 @@ void AmbientSigninController::Close() {
   }
 }
 
-void AmbientSigninController::RecordBubbleShownDuration(
+void AmbientSigninController::HandleBubbleEndedWithoutInteraction() {
+  // If the bubble is still being timed, the request ended without the user
+  // selecting a credential or dismissing the bubble. For example, the page
+  // navigated away, its tab was closed, the page aborted the request, or the
+  // renderer crashed.
+  const std::optional<base::TimeDelta> shown_duration =
+      RecordBubbleShownDuration(
+          webauthn::metrics::AmbientBubbleCloseReason::kRequestEnded);
+  if (shown_duration && *shown_duration >= kMinBubbleShownDurationForIgnore) {
+    RecordCooldownEvent(GetTopLevelUrl(render_frame_host()),
+                        render_frame_host().GetBrowserContext(),
+                        kIgnoreCountKey);
+  }
+}
+
+std::optional<base::TimeDelta>
+AmbientSigninController::RecordBubbleShownDuration(
     webauthn::metrics::AmbientBubbleCloseReason reason) {
   if (!bubble_shown_time_) {
-    return;
+    return std::nullopt;
   }
-  webauthn::metrics::RecordAmbientBubbleShownDuration(
-      reason, base::TimeTicks::Now() -
-                  *std::exchange(bubble_shown_time_, std::nullopt));
+  const base::TimeDelta shown_duration =
+      base::TimeTicks::Now() - *std::exchange(bubble_shown_time_, std::nullopt);
+  webauthn::metrics::RecordAmbientBubbleShownDuration(reason, shown_duration);
+  return shown_duration;
 }
 
 void AmbientSigninController::OnStartOver() {
