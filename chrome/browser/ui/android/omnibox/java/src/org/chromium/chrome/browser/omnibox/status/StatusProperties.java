@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.status;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -93,13 +94,29 @@ public class StatusProperties {
 
         /** Returns a {@link Drawable} for this StatusIconResource. */
         public @Nullable Drawable getDrawable(Context context) {
+            return getDrawable(context, /* resourceProvider= */ null);
+        }
+
+        /**
+         * Returns a {@link Drawable} for this StatusIconResource, using {@code resourceProvider}
+         * when non-null to avoid repeated XML drawable inflation and color state list lookups.
+         */
+        public @Nullable Drawable getDrawable(
+                Context context, @Nullable OmniboxResourceProvider resourceProvider) {
             if (mBitmap != null) {
                 Drawable drawable = new BitmapDrawable(context.getResources(), mBitmap);
                 if (mTint != 0) {
-                    DrawableCompat.setTintList(drawable, context.getColorStateList(mTint));
+                    ColorStateList tint =
+                            resourceProvider != null
+                                    ? resourceProvider.getColorStateList(mTint)
+                                    : context.getColorStateList(mTint);
+                    DrawableCompat.setTintList(drawable, tint);
                 }
                 return drawable;
             } else if (mIconRes != null) {
+                if (resourceProvider != null) {
+                    return resourceProvider.getTintedDrawable(mIconRes, mTint);
+                }
                 if (mTint == 0) {
                     return AppCompatResources.getDrawable(context, mIconRes);
                 }
@@ -188,8 +205,9 @@ public class StatusProperties {
         }
 
         @Override
-        public @Nullable Drawable getDrawable(Context context) {
-            Drawable icon = super.getDrawable(context);
+        public @Nullable Drawable getDrawable(
+                Context context, @Nullable OmniboxResourceProvider resourceProvider) {
+            Drawable icon = super.getDrawable(context, resourceProvider);
             if (icon == null) {
                 return null;
             }

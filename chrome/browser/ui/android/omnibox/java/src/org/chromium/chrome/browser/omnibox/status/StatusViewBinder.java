@@ -54,7 +54,8 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
                 return;
             }
             view.setStatusIconResources(
-                    res.getDrawable(view.getContext()),
+                    res.getDrawable(
+                            view.getContext(), model.get(StatusProperties.RESOURCE_PROVIDER)),
                     res.getTransitionType(),
                     res.getAnimationFinishedCallback());
         } else if (propertyKey == StatusProperties.STATUS_VIEW_BACKGROUND) {

@@ -12,6 +12,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atMostOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
@@ -1425,6 +1427,22 @@ public final class StatusMediatorUnitTest {
         assertEquals(
                 R.dimen.omnibox_search_engine_logo_composed_half_size_desktop,
                 mModel.get(StatusProperties.STATUS_ICON_CORNER_RADIUS));
+    }
+
+    @Test
+    public void updateLocationBarIcon_queriesPageClassificationAndPendingEntryAtMostOnce() {
+        doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.TOOLBAR);
+        clearInvocations(mLocationBarDataProvider, mNavigationController);
+
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+        verify(mLocationBarDataProvider).getPageClassification(false);
+        verify(mNavigationController, atMostOnce()).getPendingEntry();
+
+        clearInvocations(mLocationBarDataProvider, mNavigationController);
+        mMediator.onUrlChanged();
+        verify(mLocationBarDataProvider, times(2)).getPageClassification(false);
+        verify(mNavigationController, atMostOnce()).getPendingEntry();
     }
 
     private void setDisplayState(@DisplayState int state) {

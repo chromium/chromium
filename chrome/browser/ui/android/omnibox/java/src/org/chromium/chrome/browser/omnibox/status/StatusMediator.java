@@ -550,7 +550,7 @@ public class StatusMediator
                         && OmniboxUrlUtils.isNtpUrl(mLocationBarDataProvider.getCurrentGurl()));
     }
 
-    private boolean shouldShowNtpPlusButton() {
+    private boolean shouldShowNtpPlusButton(boolean hasPendingNonNtpNavigation) {
         Profile profile = mProfileSupplier.get();
         TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
         boolean isStandbyNoFocus =
@@ -558,7 +558,7 @@ public class StatusMediator
                         && mInputSessionState.getAutocompleteInput().getAutocompleteState()
                                 == AutocompleteState.STANDBY_NO_FOCUS;
         return isNtpVisible()
-                && !hasPendingNonNtpNavigation()
+                && !hasPendingNonNtpNavigation
                 && (!isInInputSession() || isStandbyNoFocus)
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 && FuseboxFeatureUtils.shouldShowNtpPlusButton(
@@ -603,11 +603,12 @@ public class StatusMediator
         Bitmap bitmap = null;
         Drawable customDrawable = null;
 
-        @StatusIconType int iconType = resolveStatusIconType();
+        boolean isHubOrTabSearch = isHubOrTabSearch();
+        @StatusIconType int iconType = resolveStatusIconType(isHubOrTabSearch);
         switch (iconType) {
             case StatusIconType.HUB_OR_TAB_SEARCH -> {
                 mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
-                updateStatusViewVisibility();
+                updateStatusViewVisibility(isHubOrTabSearch);
                 boolean hasIconOverride = mStatusIconOverrideResId != Resources.ID_NULL;
                 iconRes =
                         hasIconOverride ? mStatusIconOverrideResId : R.drawable.ic_arrow_back_24dp;
@@ -616,7 +617,7 @@ public class StatusMediator
                         hasIconOverride
                                 ? Resources.ID_NULL
                                 : R.string.accessibility_toolbar_exit_hub_search;
-                applyBackgroundAndTooltipProperties();
+                applyBackgroundAndTooltipProperties(isHubOrTabSearch);
                 clickListener = hasIconOverride ? null : mOnStatusIconNavigateBackButtonPress;
             }
             case StatusIconType.PREVIEW_GLOBE -> {
@@ -643,7 +644,7 @@ public class StatusMediator
                 doubleTapDescriptionRes = Resources.ID_NULL;
             }
             case StatusIconType.SEARCH_ENGINE -> {
-                maybeUpdateStatusIconForSearchEngineIcon();
+                applySearchEngineIcon(isHubOrTabSearch);
                 mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
                 mStatusIconTypeSupplier.set(iconType);
                 // No need to proceed further if we've already updated it for the search engine
@@ -707,7 +708,7 @@ public class StatusMediator
         // TODO(https://crbug.com/503744512): Description res decision should be integrated into
         //  this method's if/else statements.
         if (descRes == Resources.ID_NULL) {
-            descRes = getAccessibilityDescriptionRes();
+            descRes = getAccessibilityDescriptionRes(isHubOrTabSearch);
         }
 
         mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, descRes);
@@ -716,9 +717,9 @@ public class StatusMediator
         mModel.set(
                 StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
                 doubleTapDescriptionRes);
-        setStatusClickListener(clickListener);
+        setStatusClickListener(clickListener, isHubOrTabSearch);
 
-        updateStatusViewVisibility();
+        updateStatusViewVisibility(isHubOrTabSearch);
         mStatusIconTypeSupplier.set(iconType);
     }
 
@@ -726,7 +727,11 @@ public class StatusMediator
         return mStatusIconTypeSupplier;
     }
 
-    private @StatusIconType int resolveStatusIconType() {
+    private @StatusIconType int resolveStatusIconType(boolean isHubOrTabSearch) {
+        if (isHubOrTabSearch) {
+            return StatusIconType.HUB_OR_TAB_SEARCH;
+        }
+
         boolean previewMatchFaviconsEnabled = OmniboxFeatures.sPreviewMatchFavicons.isEnabled();
         @AutocompleteRequestType int requestType = AutocompleteRequestType.SEARCH;
         @DisplayState int displayState = DisplayState.WEBSITE;
@@ -740,10 +745,7 @@ public class StatusMediator
                         || displayState == DisplayState.DRAFTING
                         || displayState == DisplayState.DRAFTING_NO_FOCUS;
 
-        if (PageClassificationUtils.isHubOrTabSearch(
-                mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))) {
-            return StatusIconType.HUB_OR_TAB_SEARCH;
-        } else if (shouldShowFavicon && previewMatchFaviconsEnabled && mShowPreviewMatchGlobe) {
+        if (shouldShowFavicon && previewMatchFaviconsEnabled && mShowPreviewMatchGlobe) {
             return StatusIconType.PREVIEW_GLOBE;
         } else if (shouldShowFavicon
                 && previewMatchFaviconsEnabled
@@ -753,11 +755,17 @@ public class StatusMediator
                 && isInInputSession()
                 && ToolModeUtils.isAimRequest(requestType)) {
             return StatusIconType.AIM_SPARK;
-        } else if (mFuseboxLayoutModeSupplier.get() == FuseboxLayoutMode.TOOLBAR
-                && (mFuseboxStateSupplier.get() == FuseboxState.COMPACT
-                        || shouldShowNtpPlusButton())) {
+        }
+
+        boolean isFuseboxToolbar = mFuseboxLayoutModeSupplier.get() == FuseboxLayoutMode.TOOLBAR;
+        if (isFuseboxToolbar && mFuseboxStateSupplier.get() == FuseboxState.COMPACT) {
             return StatusIconType.FUSEBOX_PLUS_BUTTON;
-        } else if (shouldDisplaySearchEngineIcon()) {
+        }
+
+        boolean hasPendingNonNtpNavigation = hasPendingNonNtpNavigation();
+        if (isFuseboxToolbar && shouldShowNtpPlusButton(hasPendingNonNtpNavigation)) {
+            return StatusIconType.FUSEBOX_PLUS_BUTTON;
+        } else if (shouldDisplaySearchEngineIcon(isHubOrTabSearch, hasPendingNonNtpNavigation)) {
             return StatusIconType.SEARCH_ENGINE;
         } else if (isInInputSession() && !isInStandbyOnWebpage()) {
             return StatusIconType.FOCUSED_NAVIGATION;
@@ -771,9 +779,14 @@ public class StatusMediator
 
     @VisibleForTesting
     void setStatusClickListener(@Nullable OnClickListener listener) {
+        setStatusClickListener(listener, isHubOrTabSearch());
+    }
+
+    private void setStatusClickListener(
+            @Nullable OnClickListener listener, boolean isHubOrTabSearch) {
         mModel.set(StatusProperties.STATUS_CLICK_LISTENER, listener);
         mModel.set(StatusProperties.STATUS_VIEW_HOVER_ENABLED, listener != null);
-        applyBackgroundAndTooltipProperties();
+        applyBackgroundAndTooltipProperties(isHubOrTabSearch);
     }
 
     private void onFuseboxStateChanged(@FuseboxState int state) {
@@ -802,14 +815,21 @@ public class StatusMediator
     /** Returns true if the security icon has been set for the search engine icon. */
     @VisibleForTesting
     boolean maybeUpdateStatusIconForSearchEngineIcon() {
+        boolean isHubOrTabSearch = isHubOrTabSearch();
         // Show the logo unfocused if we're on the NTP.
-        if (!shouldDisplaySearchEngineIcon()) return false;
+        if (!shouldDisplaySearchEngineIcon(isHubOrTabSearch, hasPendingNonNtpNavigation())) {
+            return false;
+        }
 
+        applySearchEngineIcon(isHubOrTabSearch);
+        return true;
+    }
+
+    private void applySearchEngineIcon(boolean isHubOrTabSearch) {
         mModel.set(
                 StatusProperties.STATUS_ICON_RESOURCE, getStatusIconResourceForSearchEngineIcon());
-        setStatusClickListener(null);
-        updateStatusViewVisibility();
-        return true;
+        setStatusClickListener(null, isHubOrTabSearch);
+        updateStatusViewVisibility(isHubOrTabSearch);
     }
 
     /**
@@ -817,13 +837,17 @@ public class StatusMediator
      * independent from alpha/visibility.
      */
     boolean shouldDisplaySearchEngineIcon() {
-        if (PageClassificationUtils.isHubOrTabSearch(
-                        mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))) {
+        return shouldDisplaySearchEngineIcon(isHubOrTabSearch(), hasPendingNonNtpNavigation());
+    }
+
+    private boolean shouldDisplaySearchEngineIcon(
+            boolean isHubOrTabSearch, boolean hasPendingNonNtpNavigation) {
+        if (isHubOrTabSearch) {
             return false;
         }
 
         // Immediately hide the search engine logo if we have started navigating away from the NTP.
-        if (hasPendingNonNtpNavigation()) {
+        if (hasPendingNonNtpNavigation) {
             return false;
         }
 
@@ -909,10 +933,8 @@ public class StatusMediator
     }
 
     /** Return the resource id for the accessibility description or 0 if none apply. */
-    private int getAccessibilityDescriptionRes() {
-        if (PageClassificationUtils.isHubOrTabSearch(
-                        mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))
-                && mStatusIconOverrideResId == Resources.ID_NULL) {
+    private int getAccessibilityDescriptionRes(boolean isHubOrTabSearch) {
+        if (isHubOrTabSearch && mStatusIconOverrideResId == Resources.ID_NULL) {
             return R.string.hub_search_status_view_back_button_icon_description;
         }
 
@@ -1066,10 +1088,16 @@ public class StatusMediator
         mOnStatusIconNavigateBackButtonPress = listener;
     }
 
+    private boolean isHubOrTabSearch() {
+        return PageClassificationUtils.isHubOrTabSearch(
+                mLocationBarDataProvider.getPageClassification(/* prefetch= */ false));
+    }
+
     private void applyBackgroundAndTooltipProperties() {
-        boolean isHubOrTabSearch =
-                PageClassificationUtils.isHubOrTabSearch(
-                        mLocationBarDataProvider.getPageClassification(/* prefetch= */ false));
+        applyBackgroundAndTooltipProperties(isHubOrTabSearch());
+    }
+
+    private void applyBackgroundAndTooltipProperties(boolean isHubOrTabSearch) {
         boolean hasClickListener = mModel.get(StatusProperties.STATUS_CLICK_LISTENER) != null;
 
         if (isHubOrTabSearch || !hasClickListener) {
@@ -1125,11 +1153,13 @@ public class StatusMediator
     }
 
     private void updateStatusViewVisibility() {
+        updateStatusViewVisibility(isHubOrTabSearch());
+    }
+
+    private void updateStatusViewVisibility(boolean isHubOrTabSearch) {
         setShowStatusView(
                 isInInputSession()
-                        || PageClassificationUtils.isHubOrTabSearch(
-                                mLocationBarDataProvider.getPageClassification(
-                                        /* prefetch= */ false))
+                        || isHubOrTabSearch
                         || mShowStatusIconForSecureOrigins
                         || mIsSecurityViewShown
                         || hasStatusIconResource()

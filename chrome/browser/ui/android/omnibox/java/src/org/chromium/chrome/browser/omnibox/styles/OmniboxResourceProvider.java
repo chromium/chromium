@@ -28,6 +28,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -223,6 +224,33 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     @SuppressWarnings("unchecked")
     public <T extends Drawable> T getDrawable(@DrawableRes int res) {
         return (T) mCache.getDrawable(res);
+    }
+
+    /**
+     * Resolves a {@link ColorStateList} resource using the instance context and cache.
+     *
+     * @param res Color resource ID to retrieve.
+     * @return Resolved {@link ColorStateList}.
+     */
+    public ColorStateList getColorStateList(@ColorRes int res) {
+        return mCache.getColorStateList(res);
+    }
+
+    /**
+     * Resolves a drawable resource and applies the specified tint using cached resources.
+     *
+     * @param res Drawable resource ID to retrieve.
+     * @param tintRes Color resource ID for the tint, or {@code 0} for no tint.
+     * @return Resolved (and optionally tinted) {@link Drawable}.
+     */
+    public Drawable getTintedDrawable(@DrawableRes int res, @ColorRes int tintRes) {
+        Drawable drawable = getDrawable(res);
+        if (tintRes == 0) {
+            return drawable;
+        }
+        drawable = DrawableCompat.wrap(drawable).mutate();
+        DrawableCompat.setTintList(drawable, getColorStateList(tintRes));
+        return drawable;
     }
 
     /** Resolves a string resource and expands positional arguments. */
@@ -1071,7 +1099,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return mCache;
     }
 
-    SparseArray<ConstantState> getDrawableCacheForTesting() {
+    public SparseArray<ConstantState> getDrawableCacheForTesting() {
         return mCache.getDrawableCacheForTesting();
     }
 }

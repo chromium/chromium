@@ -225,4 +225,15 @@ public class StatusViewUnitTest {
         performLayout();
         assertEquals(0, mStatusView.getStatusIconWidth());
     }
+
+    @Test
+    public void testStatusIconResource_usesResourceProviderCache() {
+        assertNull(mResourceProvider.getDrawableCacheForTesting().get(R.drawable.ic_search_24dp));
+        mStatusModel.set(
+                StatusProperties.STATUS_ICON_RESOURCE,
+                new StatusIconResource(
+                        R.drawable.ic_search_24dp, R.color.default_icon_color_tint_list));
+        assertNotNull(
+                mResourceProvider.getDrawableCacheForTesting().get(R.drawable.ic_search_24dp));
+    }
 }

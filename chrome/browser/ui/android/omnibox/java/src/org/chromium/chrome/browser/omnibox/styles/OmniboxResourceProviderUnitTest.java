@@ -592,6 +592,22 @@ public class OmniboxResourceProviderUnitTest {
     }
 
     @Test
+    public void getTintedDrawable_cachesDrawableConstantState() {
+        Drawable tinted1 =
+                mProvider.getTintedDrawable(
+                        R.drawable.btn_suggestion_refine_up, R.color.default_icon_color_tint_list);
+        assertNotNull(tinted1);
+        assertNotNull(
+                mProvider.getDrawableCacheForTesting().get(R.drawable.btn_suggestion_refine_up));
+
+        Drawable tinted2 =
+                mProvider.getTintedDrawable(
+                        R.drawable.btn_suggestion_refine_up, R.color.default_icon_color_tint_list);
+        assertNotNull(tinted2);
+        assertEquals(1, mProvider.getDrawableCacheForTesting().size());
+    }
+
+    @Test
     public void getString_convertGritPlaceholders() {
         doReturn("Hello, $1!").when(mContext).getString(1234);
         assertEquals("Hello, world!", mProvider.getString(1234, "world"));
