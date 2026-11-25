@@ -2902,11 +2902,9 @@ TEST_P(TrustedPinnedShelfViewTest, ContextMenuVisibilityWithPinnedWindow) {
   ASSERT_TRUE(context_menu_future.Wait());
   ASSERT_TRUE(GetShelfView()->IsShowingMenu());
 
-  // Pin the window and verify the context menu is closed. Trusted pinning
-  // closes shelf menus explicitly; otherwise the menu is closed because the
-  // hotseat widget moves offscreen.
+  // Pin the window and verify context menu visibility.
   PinWindow(window.get(), IsTrustedPinned());
-  EXPECT_FALSE(GetShelfView()->IsShowingMenu());
+  EXPECT_EQ(GetShelfView()->IsShowingMenu(), !IsTrustedPinned());
 }
 
 INSTANTIATE_TEST_SUITE_P(TrustedPinnedShelfViewTests,

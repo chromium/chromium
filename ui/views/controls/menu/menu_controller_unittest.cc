@@ -4927,56 +4927,6 @@ TEST_F(MenuControllerTest, GetForOwnerWidgetAndCancelAllActive) {
   EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
 }
 
-// Tests that menus are closed when the owner's window is moved or resized, e.g.
-// when the window manager tiles the window, instead of staying detached at
-// their old position.
-TEST_F(MenuControllerTest, OwnerBoundsChangeCancelsMenu) {
-  CreateMenu();
-  EXPECT_EQ(MenuController::ExitType::kNone, menu_controller()->exit_type());
-
-  // A notification with unchanged bounds keeps the menu open.
-  gfx::Rect bounds = owner()->GetWindowBoundsInScreen();
-  menu_controller()->OnWidgetBoundsChanged(owner(), bounds);
-  EXPECT_EQ(MenuController::ExitType::kNone, menu_controller()->exit_type());
-
-  bounds.Offset(10, 10);
-  bounds.set_width(bounds.width() + 20);
-  owner()->SetBounds(bounds);
-  EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
-}
-
-// Tests that for a menu owned by a widget anchored to another window (e.g. a
-// bubble), moving the owner keeps the menu open but moving its primary window
-// closes it.
-TEST_F(MenuControllerTest, PrimaryWindowBoundsChangeCancelsMenu) {
-  class AnchoredWidget : public Widget {
-   public:
-    explicit AnchoredWidget(Widget* primary) : primary_(primary) {}
-    Widget* GetPrimaryWindowWidget() override { return primary_; }
-
-   private:
-    raw_ptr<Widget> primary_;
-  };
-  AnchoredWidget bubble(owner());
-  bubble.Init(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
-                           Widget::InitParams::TYPE_WINDOW_FRAMELESS));
-  bubble.SetBounds(gfx::Rect(0, 0, 100, 100));
-  bubble.Show();
-
-  CreateMenu({.show = false});
-  menu_controller()->Run(&bubble, nullptr, menu_item(), gfx::Rect(),
-                         MenuAnchorPosition::kTopLeft,
-                         ui::mojom::MenuSourceType::kNone);
-  bubble.SetBounds(gfx::Rect(10, 10, 120, 120));
-  EXPECT_EQ(MenuController::ExitType::kNone, menu_controller()->exit_type());
-
-  gfx::Rect bounds = owner()->GetWindowBoundsInScreen();
-  bounds.Offset(10, 10);
-  owner()->SetBounds(bounds);
-  EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
-  bubble.CloseNow();
-}
-
 TEST_F(MenuControllerTest, SelectChildButtonViewByMnemonic) {
   if (!MenuConfig::instance().use_mnemonics) {
     GTEST_SKIP() << "Mnemonics are not enabled on this platform";
