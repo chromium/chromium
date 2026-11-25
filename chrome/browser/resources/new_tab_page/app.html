@@ -5,7 +5,7 @@ import {SubmitButtonIconType} from 'chrome://resources/cr_components/composebox/
   ${this.enableThreadsRail_ ? html`
     <cr-left-hand-side id="lhsWrapper"
         .isDark="${this.theme_?.isDark}"
-        @open-composebox="${this.onOpenComposebox_}">
+        @open-composebox="${this.onLhsOpenComposebox_}">
     </cr-left-hand-side>` : ''}
   <div id="rhsWrapper">
     <div id="backgroundImageContainer"

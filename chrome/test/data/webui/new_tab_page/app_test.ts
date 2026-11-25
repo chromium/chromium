@@ -4661,6 +4661,7 @@ suite('NewTabPageAppTest', () => {
           app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
       assertTrue(!!composebox);
       assertTrue(!!composebox.state);
+      assertEquals(true, composebox.state.enterAimMode);
 
       let focusCalled = false;
       composebox.focusInput = () => {
@@ -4671,6 +4672,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       assertTrue(focusCalled);
+      assertEquals(true, composebox.state.enterAimMode);
     });
 
     test(

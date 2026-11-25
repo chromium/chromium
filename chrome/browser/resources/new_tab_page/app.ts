@@ -1011,6 +1011,21 @@ export class AppElement extends AppElementBase {
     this.openComposebox_(e.detail);
   }
 
+  protected onLhsOpenComposebox_() {
+    // The LHS threads rail "New thread" / AI Mode entry point always requests
+    // AI Mode. Ignored when dynamic AIM fulfillment is disabled.
+    this.openComposebox_({
+      text: '',
+      files: [],
+      mode: ToolMode.kUnspecified,
+      model: ModelMode.kUnspecified,
+      enterAimMode: true,
+      // <if expr="not is_android">
+      smartTabSharingActive: false,
+      // </if>
+    });
+  }
+
   private async openComposeboxForActionChip_(detail: ActionChipClickDetail) {
     await this.ensureComposeboxOpen_();
     const composebox =
