@@ -1863,9 +1863,10 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
 
   // Case 2. Is the endpoint an ancestor of this object.
   if (IsDescendantOf(endpoint_object)) {
-    CHECK_LE(endpoint_offset,
-             static_cast<int>(endpoint_object->GetChildCount()),
-             base::NotFatalUntil::M163);
+    // TODO(crbug.com/588502573): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_LE(endpoint_offset,
+              static_cast<int>(endpoint_object->GetChildCount()));
 
     AXPlatformNodeBase* closest_ancestor = this;
     while (closest_ancestor) {
