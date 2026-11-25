@@ -36,4 +36,14 @@ found in the LICENSE file.
         android:key="ttc_captions"
         android:title="@string/ttc_settings_captions"
         android:summary="@string/ttc_settings_captions_summary" />
+
+    <org.chromium.chrome.browser.ttc.settings.TtcShortcutPreference
+        android:key="ttc_keyboard_shortcut"
+        android:title="@string/ttc_settings_keyboard_shortcut"
+        android:summary="@string/ttc_settings_keyboard_shortcut_summary" />
+
+    <org.chromium.chrome.browser.ttc.settings.TtcShortcutPreference
+        android:key="ttc_hold_to_speak_shortcut"
+        android:title="@string/ttc_settings_hold_to_speak_shortcut"
+        android:summary="@string/ttc_settings_hold_to_speak_shortcut_summary" />
 </PreferenceScreen>

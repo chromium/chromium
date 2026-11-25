@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/ttc_shortcut_keycaps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" />
+
+    <TextView
+        android:id="@+id/ttc_shortcut_not_set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ttc_settings_shortcut_not_set"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:visibility="gone" />
+
+    <!-- TtcShortcutPreference sets the content description, which names the row. -->
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/ttc_shortcut_clear"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/material_ic_close_24dp"
+        app:tint="@color/default_icon_color_tint_list"
+        tools:ignore="ContentDescription" />
+</LinearLayout>

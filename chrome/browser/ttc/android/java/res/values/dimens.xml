@@ -25,4 +25,9 @@ found in the LICENSE file.
     <dimen name="ttc_voice_plate_pause_width">56dp</dimen>
     <dimen name="ttc_voice_plate_pause_padding_horizontal">16dp</dimen>
     <dimen name="ttc_voice_plate_pause_corner_radius">20dp</dimen>
+
+    <!-- Keycaps showing a keyboard shortcut on the TTC settings page. -->
+    <dimen name="ttc_keycap_padding_horizontal">6dp</dimen>
+    <dimen name="ttc_keycap_padding_vertical">2dp</dimen>
+    <dimen name="ttc_keycap_spacing">4dp</dimen>
 </resources>

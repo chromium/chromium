@@ -8325,6 +8325,24 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TTC_SETTINGS_CAPTIONS_SUMMARY" desc="Summary of the captions switch on the TTC settings page." translateable="false">
         Show closed captions when using TTC
       </message>
+      <message name="IDS_TTC_SETTINGS_KEYBOARD_SHORTCUT" desc="Title of the row on the TTC settings page that shows and edits the keyboard shortcut that starts or ends TTC." translateable="false">
+        Keyboard shortcut
+      </message>
+      <message name="IDS_TTC_SETTINGS_KEYBOARD_SHORTCUT_SUMMARY" desc="Summary of the row on the TTC settings page that shows and edits the keyboard shortcut that starts or ends TTC." translateable="false">
+        Open TTC with a keyboard shortcut
+      </message>
+      <message name="IDS_TTC_SETTINGS_HOLD_TO_SPEAK_SHORTCUT" desc="Title of the row on the TTC settings page that shows and edits the keyboard shortcut that TTC listens to while it's held down." translateable="false">
+        Hold to speak shortcut
+      </message>
+      <message name="IDS_TTC_SETTINGS_HOLD_TO_SPEAK_SHORTCUT_SUMMARY" desc="Summary of the row on the TTC settings page that shows and edits the keyboard shortcut that TTC listens to while it's held down." translateable="false">
+        Use TTC while holding a keyboard shortcut
+      </message>
+      <message name="IDS_TTC_SETTINGS_SHORTCUT_NOT_SET" desc="Shown instead of a keyboard shortcut on the TTC settings page when the user cleared it." translateable="false">
+        Not set
+      </message>
+      <message name="IDS_TTC_SETTINGS_SHORTCUT_CLEAR" desc="Accessibility label of the button on the TTC settings page that clears a keyboard shortcut, named by the title of its row." translateable="false">
+        Clear <ph name="SHORTCUT_NAME">%1$s<ex>Keyboard shortcut</ex></ph>
+      </message>
 
       <!-- Immersive Playback Confirmation strings -->
       <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_MESSAGE" desc="Message in the snackbar asking the user if they want to view the video in immersive mode.">

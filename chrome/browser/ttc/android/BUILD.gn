@@ -65,9 +65,11 @@ android_library("entry_point_java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/ttc_keycap_background.xml",
     "java/res/drawable/ttc_session_pill_background.xml",
     "java/res/drawable/ttc_voice_plate_pause_background.xml",
     "java/res/layout/ttc_session_pill.xml",
+    "java/res/layout/ttc_shortcut_preference_widget.xml",
     "java/res/layout/ttc_voice_plate.xml",
     "java/res/values/dimens.xml",
     "java/res/xml/ttc_settings.xml",
@@ -87,12 +89,15 @@ android_library("settings_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ttc/settings/TtcSettings.java",
     "java/src/org/chromium/chrome/browser/ttc/settings/TtcSettingsUtils.java",
+    "java/src/org/chromium/chrome/browser/ttc/settings/TtcShortcutPreference.java",
+    "java/src/org/chromium/chrome/browser/ttc/settings/TtcShortcutUtils.java",
   ]
   deps = [
     ":java",
     ":java_resources",
     "//base:base_java",
     "//base:supplier_java",
+    "//base:ui_java",
     "//build/android:build_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
@@ -102,12 +107,16 @@ android_library("settings_java") {
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java_resources",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
+  srcjar_deps = [ ":settings_jni_headers" ]
   resources_package = "org.chromium.chrome.browser.ttc"
 }
 
@@ -168,18 +177,28 @@ generate_jni("jni_headers") {
   ]
 }
 
+generate_jni("settings_jni_headers") {
+  visibility = [ ":*" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ttc/settings/TtcShortcutUtils.java",
+  ]
+}
+
 source_set("android") {
   sources = [
     "session_view_android.cc",
     "session_view_android.h",
     "ttc_keyed_service_android.cc",
     "ttc_keyed_service_android.h",
+    "ttc_shortcut_utils_android.cc",
   ]
   deps = [
     ":jni_headers",
+    ":settings_jni_headers",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ttc/core",
     "//components/ttc/app/public",
+    "//ui/base",
   ]
 }

@@ -8,13 +8,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+import android.content.res.Configuration;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceViewHolder;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -24,7 +34,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -38,6 +50,7 @@ import org.chromium.chrome.browser.ttc.R;
 import org.chromium.chrome.browser.ttc.TtcKeyedService;
 import org.chromium.chrome.browser.ttc.TtcKeyedServiceFactory;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
@@ -61,6 +74,8 @@ public class TtcSettingsUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsJni;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private TtcKeyedService mService;
+    @Mock private SettingsIndexData mSettingsIndexData;
+    @Mock private TtcShortcutUtils.Natives mShortcutUtilsJni;
 
     private TestActivity mActivity;
 
@@ -68,6 +83,9 @@ public class TtcSettingsUnitTest {
     public void setUp() {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
+        TtcShortcutUtilsJni.setInstanceForTesting(mShortcutUtilsJni);
+        when(mShortcutUtilsJni.getKeyLabels(anyString())).thenReturn(new String[] {"Key"});
+        when(mPrefService.getString(anyString())).thenReturn("");
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mOffTheRecordProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
@@ -173,6 +191,193 @@ public class TtcSettingsUnitTest {
         assertEquals(
                 mActivity.getString(R.string.ttc_settings_pin_to_toolbar_summary),
                 pinToToolbar.getSummary().toString());
+    }
+
+    /** Binds {@code preference} to a new view, as the settings list does, and returns the view. */
+    private static View bindView(Preference preference) {
+        LayoutInflater inflater = LayoutInflater.from(preference.getContext());
+        View view = inflater.inflate(preference.getLayoutResource(), null);
+        inflater.inflate(
+                preference.getWidgetLayoutResource(), view.findViewById(android.R.id.widget_frame));
+        preference.onBindViewHolder(PreferenceViewHolder.createInstanceForTests(view));
+        return view;
+    }
+
+    private void setHardKeyboardConnected(boolean connected) {
+        int keyboard = connected ? Configuration.KEYBOARD_QWERTY : Configuration.KEYBOARD_NOKEYS;
+        mActivity.getResources().getConfiguration().keyboard = keyboard;
+        ContextUtils.getApplicationContext().getResources().getConfiguration().keyboard = keyboard;
+    }
+
+    @Test
+    public void testShortcutsHiddenWithoutKeyboard() {
+        setHardKeyboardConnected(false);
+        TtcSettings fragment = launchFragment(mProfile);
+
+        assertFalse(fragment.findPreference(TtcSettings.PREF_KEYBOARD_SHORTCUT).isVisible());
+        assertFalse(fragment.findPreference(TtcSettings.PREF_HOLD_TO_SPEAK_SHORTCUT).isVisible());
+    }
+
+    @Test
+    public void testShortcutsShowSavedShortcuts() {
+        setHardKeyboardConnected(true);
+        when(mPrefService.getString(Pref.TTC_KEYBOARD_SHORTCUT)).thenReturn("Alt+Shift+K");
+        when(mPrefService.getString(Pref.TTC_HOLD_TO_SPEAK_SHORTCUT)).thenReturn("");
+        TtcSettings fragment = launchFragment(mProfile);
+
+        TtcShortcutPreference keyboardShortcut =
+                fragment.findPreference(TtcSettings.PREF_KEYBOARD_SHORTCUT);
+        assertTrue(keyboardShortcut.isVisible());
+        assertEquals("Alt+Shift+K", keyboardShortcut.getShortcut());
+
+        // A cleared shortcut isn't set.
+        TtcShortcutPreference holdToSpeakShortcut =
+                fragment.findPreference(TtcSettings.PREF_HOLD_TO_SPEAK_SHORTCUT);
+        assertTrue(holdToSpeakShortcut.isVisible());
+        assertEquals("", holdToSpeakShortcut.getShortcut());
+    }
+
+    @Test
+    public void testClearShortcutSavesEmptyValue() {
+        setHardKeyboardConnected(true);
+        when(mPrefService.getString(Pref.TTC_KEYBOARD_SHORTCUT)).thenReturn("Alt+Shift+K");
+        TtcShortcutPreference keyboardShortcut =
+                launchFragment(mProfile).findPreference(TtcSettings.PREF_KEYBOARD_SHORTCUT);
+
+        when(mPrefService.getString(Pref.TTC_KEYBOARD_SHORTCUT)).thenReturn("");
+        keyboardShortcut.clear();
+
+        verify(mPrefService).setString(Pref.TTC_KEYBOARD_SHORTCUT, "");
+        assertEquals("", keyboardShortcut.getShortcut());
+    }
+
+    @Test
+    public void testShortcutRowShowsKeycaps() {
+        setHardKeyboardConnected(true);
+        when(mPrefService.getString(Pref.TTC_KEYBOARD_SHORTCUT)).thenReturn("Alt+Shift+K");
+        when(mShortcutUtilsJni.getKeyLabels("Alt+Shift+K"))
+                .thenReturn(new String[] {"Alt", "Shift", "K"});
+        TtcShortcutPreference keyboardShortcut =
+                launchFragment(mProfile).findPreference(TtcSettings.PREF_KEYBOARD_SHORTCUT);
+        assertFalse(keyboardShortcut.isSelectable());
+
+        View view = bindView(keyboardShortcut);
+        LinearLayout keycaps = view.findViewById(R.id.ttc_shortcut_keycaps);
+        assertEquals(View.VISIBLE, keycaps.getVisibility());
+        assertEquals(3, keycaps.getChildCount());
+        assertEquals("Alt", ((TextView) keycaps.getChildAt(0)).getText().toString());
+        assertEquals("Shift", ((TextView) keycaps.getChildAt(1)).getText().toString());
+        assertEquals("K", ((TextView) keycaps.getChildAt(2)).getText().toString());
+        assertEquals(View.GONE, view.findViewById(R.id.ttc_shortcut_not_set).getVisibility());
+
+        // The keycaps are spaced apart, with no space before the first or after the last.
+        MarginLayoutParams first = (MarginLayoutParams) keycaps.getChildAt(0).getLayoutParams();
+        MarginLayoutParams second = (MarginLayoutParams) keycaps.getChildAt(1).getLayoutParams();
+        MarginLayoutParams last = (MarginLayoutParams) keycaps.getChildAt(2).getLayoutParams();
+        assertEquals(0, first.getMarginStart());
+        assertTrue(second.getMarginStart() > 0);
+        assertEquals(0, last.getMarginEnd());
+
+        // The clear button names its row, and clears the shortcut.
+        View clear = view.findViewById(R.id.ttc_shortcut_clear);
+        assertEquals(View.VISIBLE, clear.getVisibility());
+        assertEquals(
+                mActivity.getString(
+                        R.string.ttc_settings_shortcut_clear,
+                        mActivity.getString(R.string.ttc_settings_keyboard_shortcut)),
+                clear.getContentDescription().toString());
+
+        when(mPrefService.getString(Pref.TTC_KEYBOARD_SHORTCUT)).thenReturn("");
+        clear.performClick();
+        verify(mPrefService).setString(Pref.TTC_KEYBOARD_SHORTCUT, "");
+        view = bindView(keyboardShortcut);
+        assertEquals(View.GONE, view.findViewById(R.id.ttc_shortcut_keycaps).getVisibility());
+        assertEquals(View.VISIBLE, view.findViewById(R.id.ttc_shortcut_not_set).getVisibility());
+        assertEquals(View.GONE, view.findViewById(R.id.ttc_shortcut_clear).getVisibility());
+    }
+
+    @Test
+    public void testShortcutRowWithoutKeysShowsNotSet() {
+        setHardKeyboardConnected(true);
+        // A value saved on another platform names no keys on Android.
+        when(mPrefService.getString(Pref.TTC_KEYBOARD_SHORTCUT)).thenReturn("Command+K");
+        when(mShortcutUtilsJni.getKeyLabels("Command+K")).thenReturn(new String[0]);
+        when(mPrefService.getString(Pref.TTC_HOLD_TO_SPEAK_SHORTCUT)).thenReturn("");
+        TtcSettings fragment = launchFragment(mProfile);
+
+        for (String key :
+                new String[] {
+                    TtcSettings.PREF_KEYBOARD_SHORTCUT, TtcSettings.PREF_HOLD_TO_SPEAK_SHORTCUT
+                }) {
+            View view = bindView(fragment.findPreference(key));
+            LinearLayout keycaps = view.findViewById(R.id.ttc_shortcut_keycaps);
+            assertEquals(key, View.GONE, keycaps.getVisibility());
+            assertEquals(key, 0, keycaps.getChildCount());
+            assertEquals(
+                    key,
+                    View.VISIBLE,
+                    view.findViewById(R.id.ttc_shortcut_not_set).getVisibility());
+            assertEquals(
+                    key, View.GONE, view.findViewById(R.id.ttc_shortcut_clear).getVisibility());
+        }
+    }
+
+    @Test
+    public void testShortcutsFollowKeyboardConnection() {
+        setHardKeyboardConnected(false);
+        when(mPrefService.getString(Pref.TTC_KEYBOARD_SHORTCUT)).thenReturn("Alt+Shift+K");
+        TtcSettings fragment = launchFragment(mProfile);
+        TtcShortcutPreference keyboardShortcut =
+                fragment.findPreference(TtcSettings.PREF_KEYBOARD_SHORTCUT);
+        TtcShortcutPreference holdToSpeakShortcut =
+                fragment.findPreference(TtcSettings.PREF_HOLD_TO_SPEAK_SHORTCUT);
+        assertFalse(keyboardShortcut.isVisible());
+        assertFalse(holdToSpeakShortcut.isVisible());
+
+        // Connecting a keyboard doesn't recreate the page.
+        setHardKeyboardConnected(true);
+        fragment.onConfigurationChanged(mActivity.getResources().getConfiguration());
+        assertTrue(keyboardShortcut.isVisible());
+        assertTrue(holdToSpeakShortcut.isVisible());
+        assertEquals("Alt+Shift+K", keyboardShortcut.getShortcut());
+
+        setHardKeyboardConnected(false);
+        fragment.onConfigurationChanged(mActivity.getResources().getConfiguration());
+        assertFalse(keyboardShortcut.isVisible());
+        assertFalse(holdToSpeakShortcut.isVisible());
+    }
+
+    @Test
+    public void testShortcutsFollowPrefsWithoutKeyboard() {
+        // The rows follow their prefs even while hidden, for when a keyboard is connected.
+        setHardKeyboardConnected(false);
+        when(mPrefChangeRegistrarJni.init(any(), eq(mPrefService))).thenReturn(1L);
+        launchFragment(mProfile);
+
+        verify(mPrefChangeRegistrarJni).add(1L, Pref.TTC_KEYBOARD_SHORTCUT);
+        verify(mPrefChangeRegistrarJni).add(1L, Pref.TTC_HOLD_TO_SPEAK_SHORTCUT);
+    }
+
+    @Test
+    public void testSearchIndexKeepsShortcutsWithKeyboard() {
+        setHardKeyboardConnected(true);
+        TtcSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                RuntimeEnvironment.getApplication(), mSettingsIndexData, mProfile);
+
+        verifyNoInteractions(mSettingsIndexData);
+    }
+
+    @Test
+    public void testSearchIndexOmitsShortcutsWithoutKeyboard() {
+        setHardKeyboardConnected(false);
+        TtcSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                RuntimeEnvironment.getApplication(), mSettingsIndexData, mProfile);
+
+        verify(mSettingsIndexData)
+                .removeEntryForKey(TtcSettings.class.getName(), TtcSettings.PREF_KEYBOARD_SHORTCUT);
+        verify(mSettingsIndexData)
+                .removeEntryForKey(
+                        TtcSettings.class.getName(), TtcSettings.PREF_HOLD_TO_SPEAK_SHORTCUT);
     }
 
     @Test

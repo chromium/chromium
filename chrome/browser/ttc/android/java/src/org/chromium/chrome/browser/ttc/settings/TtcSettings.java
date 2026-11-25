@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ttc.settings;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
@@ -13,9 +15,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -25,6 +29,7 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -39,6 +44,10 @@ public class TtcSettings extends ChromeBaseSettingsFragment {
     @VisibleForTesting static final String PREF_DESCRIPTION = "ttc_description";
     @VisibleForTesting static final String PREF_PIN_TO_TOOLBAR = "ttc_pin_to_toolbar";
     @VisibleForTesting static final String PREF_CAPTIONS = "ttc_captions";
+    @VisibleForTesting static final String PREF_KEYBOARD_SHORTCUT = "ttc_keyboard_shortcut";
+
+    @VisibleForTesting
+    static final String PREF_HOLD_TO_SPEAK_SHORTCUT = "ttc_hold_to_speak_shortcut";
 
     /** The key of the main settings row that opens this page. */
     private static final String MAIN_MENU_KEY = "ttc";
@@ -62,6 +71,20 @@ public class TtcSettings extends ChromeBaseSettingsFragment {
                 PREF_MICROPHONE_CHIME, Pref.TTC_MICROPHONE_CHIME_ENABLED, prefs, registrar);
         bindSwitchToProfilePref(PREF_CAPTIONS, Pref.TTC_CAPTIONS_ENABLED, prefs, registrar);
         updatePinToToolbarSummary();
+
+        bindShortcutPreference(
+                PREF_KEYBOARD_SHORTCUT, Pref.TTC_KEYBOARD_SHORTCUT, prefs, registrar);
+        bindShortcutPreference(
+                PREF_HOLD_TO_SPEAK_SHORTCUT, Pref.TTC_HOLD_TO_SPEAK_SHORTCUT, prefs, registrar);
+        updateShortcutVisibility();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // The activities that show settings handle keyboard configuration changes themselves, so
+        // connecting or disconnecting a physical keyboard doesn't recreate this page.
+        if (updateShortcutVisibility()) notifyPreferencesUpdated();
     }
 
     @Override
@@ -111,6 +134,36 @@ public class TtcSettings extends ChromeBaseSettingsFragment {
         registrar.addObserver(pref, () -> switchPreference.setChecked(prefs.getBoolean(pref)));
     }
 
+    /** Binds the shortcut row {@code key} to the string profile pref {@code pref}. */
+    private void bindShortcutPreference(
+            String key, String pref, PrefService prefs, PrefChangeRegistrar registrar) {
+        TtcShortcutPreference shortcutPreference = assertNonNull(findPreference(key));
+        Runnable update = () -> shortcutPreference.setShortcut(prefs.getString(pref));
+        update.run();
+        shortcutPreference.setOnClearListener(
+                () -> {
+                    prefs.setString(pref, "");
+                    update.run();
+                });
+        registrar.addObserver(pref, update::run);
+    }
+
+    /**
+     * Shows the shortcut rows only while a physical keyboard is connected. Returns whether that
+     * changed whether they show.
+     */
+    private boolean updateShortcutVisibility() {
+        boolean hasKeyboard = KeyboardUtils.isHardKeyboardConnected(requireContext());
+        boolean changed = false;
+        for (String key : new String[] {PREF_KEYBOARD_SHORTCUT, PREF_HOLD_TO_SPEAK_SHORTCUT}) {
+            TtcShortcutPreference shortcutPreference = assertNonNull(findPreference(key));
+            if (shortcutPreference.isVisible() == hasKeyboard) continue;
+            shortcutPreference.setVisible(hasKeyboard);
+            changed = true;
+        }
+        return changed;
+    }
+
     /**
      * Shows whether TTC is pinned to the toolbar, i.e. chosen as the toolbar shortcut, on the row
      * that opens the toolbar shortcut settings.
@@ -128,5 +181,16 @@ public class TtcSettings extends ChromeBaseSettingsFragment {
     }
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new ChromeBaseSearchIndexProvider(TtcSettings.class.getName(), R.xml.ttc_settings);
+            new ChromeBaseSearchIndexProvider(TtcSettings.class.getName(), R.xml.ttc_settings) {
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    // The shortcuts only show while a physical keyboard is connected.
+                    if (!KeyboardUtils.isHardKeyboardConnected(context)) {
+                        String fragment = TtcSettings.class.getName();
+                        indexData.removeEntryForKey(fragment, PREF_KEYBOARD_SHORTCUT);
+                        indexData.removeEntryForKey(fragment, PREF_HOLD_TO_SPEAK_SHORTCUT);
+                    }
+                }
+            };
 }
