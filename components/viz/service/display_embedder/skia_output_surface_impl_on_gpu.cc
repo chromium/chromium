@@ -1860,6 +1860,14 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     return;
   }
 
+  if (graphite_shared_context() && num_readbacks_pending_ > 0) {
+    // Submit pending readback recordings and flush the backend (e.g. Dawn D3D11
+    // with `d3d11_delay_flush_to_gpu`) immediately so readback polling in
+    // CheckReadbackCompletion() does not stall waiting for a root swap-chain
+    // Present() or GraphiteSharedContext::ForceSubmit().
+    graphite_shared_context()->submitAndFlushBackend();
+  }
+
   ScheduleCheckReadbackCompletion();
 }
 
