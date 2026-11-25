@@ -5,10 +5,12 @@
 
 """Tests for checkdeps."""
 
+import gc
 import os
 import subprocess
 import tempfile
 import unittest
+import weakref
 
 
 import builddeps
@@ -399,6 +401,90 @@ class CheckDepsTest(unittest.TestCase):
       ]
     )
     self.assertTrue(problems)
+
+  def testRequiresReviewCacheNotPoisoned(self):
+    # Non-canonical includes such as "dir/" or "dir/." resolve to the parent of
+    # "dir" after normpath() + dirname(), so they must not populate the
+    # per-directory review cache under "dir" and hide later violations.
+    usage_cc = 'buildtools/checkdeps/testdata/requires_review_users/usage.cc'
+    sub_dir = 'buildtools/checkdeps/testdata/requires_review/sub'
+    for bad_prefix, target in (
+      (f'{sub_dir}/', f'{sub_dir}/foo.h'),
+      (f'{sub_dir}/.', f'{sub_dir}/foo.h'),
+      (f'{sub_dir}//', f'{sub_dir}//foo.h'),
+    ):
+      checker = checkdeps.DepsChecker(
+        being_tested=True, base_directory=self.deps_checker.base_directory
+      )
+      problems = checker.CheckAddedCppIncludes(
+        [[usage_cc, [f'#include "{bad_prefix}"', f'#include "{target}"']]]
+      )
+      self.assertEqual(1, len(problems), msg=bad_prefix)
+      self.assertIn('requires_review/sub', problems[0][2])
+
+    self.assertEqual(
+      sub_dir,
+      self.deps_checker.FindFirstAncestorThatRequiresReview(
+        f'./{sub_dir}/foo.h'
+      ),
+    )
+
+  def testDepsBuilderIsGarbageCollected(self):
+    checker = checkdeps.DepsChecker(
+      being_tested=True, base_directory=self.deps_checker.base_directory
+    )
+    checker.CheckDirectory(
+      os.path.join(checker.base_directory, 'buildtools/checkdeps/testdata')
+    )
+    ref = weakref.ref(checker)
+    del checker
+    gc.collect()
+    self.assertIsNone(ref())
+
+  def testRulePrecedence(self):
+    # The most recently added rule wins: a directory's own rules beat the
+    # ones it inherits, whichever names the longer path.
+    with tempfile.TemporaryDirectory() as temp_dir:
+      subprocess.check_call(['git', 'init', '-q', temp_dir])
+      os.makedirs(os.path.join(temp_dir, 'child'))
+      _write(
+        os.path.join(temp_dir, 'DEPS'),
+        'include_rules = ["+foo/sub", "-bar", "-baz"]\n'
+        'specific_include_rules = {\n'
+        '  r".*_unittest\\.cc": ["+qux", "-quux"],\n'
+        '}\n',
+      )
+      _write(
+        os.path.join(temp_dir, 'child', 'DEPS'),
+        'include_rules = ["-foo", "+bar/sub", "+baz"]\n'
+        'specific_include_rules = {\n'
+        '  r".*_unittest\\.cc": ["-qux", "+quux"],\n'
+        '}\n',
+      )
+      checker = checkdeps.DepsChecker(base_directory=temp_dir)
+
+      def IsAllowed(file_path, include_path):
+        return not checker.CheckAddedCppIncludes(
+          [[file_path, [f'#include "{include_path}"']]]
+        )
+
+      # General rules. A shorter path in the child overrides a longer one in
+      # the parent, and the other way around.
+      self.assertTrue(IsAllowed('a.cc', 'foo/sub/x.h'))
+      self.assertFalse(IsAllowed('child/a.cc', 'foo/sub/x.h'))
+      self.assertFalse(IsAllowed('a.cc', 'bar/sub/x.h'))
+      self.assertTrue(IsAllowed('child/a.cc', 'bar/sub/x.h'))
+      self.assertFalse(IsAllowed('child/a.cc', 'bar/x.h'))
+      self.assertFalse(IsAllowed('a.cc', 'baz/x.h'))
+      self.assertTrue(IsAllowed('child/a.cc', 'baz/x.h'))
+
+      # Specific rules for the same regular expression in parent and child.
+      self.assertTrue(IsAllowed('a_unittest.cc', 'qux/x.h'))
+      self.assertFalse(IsAllowed('child/a_unittest.cc', 'qux/x.h'))
+      self.assertFalse(IsAllowed('a_unittest.cc', 'quux/x.h'))
+      self.assertTrue(IsAllowed('child/a_unittest.cc', 'quux/x.h'))
+      # They do not apply to other files.
+      self.assertFalse(IsAllowed('child/a.cc', 'quux/x.h'))
 
   def testSyntaxWarningIsError(self):
     import sys

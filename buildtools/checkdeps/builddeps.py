@@ -9,7 +9,6 @@ a dependency rule table to be used by subclasses.
 See README.md for the format of the deps file.
 """
 
-import copy
 import functools
 import os.path
 import posixpath
@@ -17,6 +16,9 @@ import subprocess
 import warnings
 
 import rules
+
+# Sentinel telling "not cached yet" apart from a cached None.
+_UNSET = object()
 
 
 # Variable name used in the DEPS file to add or subtract include files from
@@ -191,12 +193,7 @@ class DepsBuilder(object):
     self._ignore_temp_rules = ignore_temp_rules
     self._ignore_specific_rules = ignore_specific_rules
     self._git_source_directories = None
-
-    # Rules instances need a back reference in order to evaluate
-    # new_usages_require_review, but cannot hold a direct one because we
-    # deepcopy them.
-    self._instance_index = len(rules.deps_builders)
-    rules.deps_builders.append(self)
+    self._review_ancestor_cache = {}
 
     if os.getcwd().startswith('/google/cog/cloud'):
       self.is_git = False
@@ -212,7 +209,7 @@ class DepsBuilder(object):
     # Normalized is: absolute, lowercase, / for separator.
     self.directory_rules = {}
     self._ApplyDirectoryRulesAndSkipSubdirs(
-      rules.Rules(self._instance_index), self.base_directory
+      rules.Rules(self), self.base_directory
     )
 
   def _ApplyRules(
@@ -231,7 +228,7 @@ class DepsBuilder(object):
     Returns: A new set of rules combining the existing_rules with the other
              arguments.
     """
-    new_rules = copy.deepcopy(existing_rules)
+    new_rules = existing_rules.CreateChild()
 
     # First apply the implicit "allow" rule for the current directory.
     base_dir_norm = NormalizePath(self.base_directory)
@@ -321,7 +318,7 @@ class DepsBuilder(object):
     skip_subdirs = deps_dict.get(SKIP_SUBDIRS_VAR_NAME, [])
     noparent = deps_dict.get(NOPARENT_VAR_NAME, False)
     if noparent:
-      parent_rules = rules.Rules(self._instance_index)
+      parent_rules = rules.Rules(self)
     else:
       parent_rules = existing_rules
 
@@ -420,6 +417,33 @@ class DepsBuilder(object):
     return deps_dict.get('new_usages_require_review')
 
   def FindFirstAncestorThatRequiresReview(self, include_path):
+    # The result depends only on the directory containing |include_path|, so
+    # cache it per directory instead of reading the ancestors' DEPS files for
+    # every include. The text before the last '/' identifies that directory
+    # only for canonical relative paths such as 'base/strings/string_util.h';
+    # non-canonical or non-relative paths (trailing '/', '.' or '..' segments,
+    # '//', backslashes, leading '/' or drive prefixes) are resolved by
+    # _ComputeFirstAncestorThatRequiresReview() and are not cached.
+    slash = include_path.rfind('/')
+    if (
+      0 < slash < len(include_path) - 1
+      and not include_path.startswith(('/', './'))
+      and '/.' not in include_path
+      and '..' not in include_path
+      and '//' not in include_path
+      and '\\' not in include_path
+      and (os.name != 'nt' or not os.path.splitdrive(include_path)[0])
+    ):
+      rel_dir = include_path[:slash]
+      cached = self._review_ancestor_cache.get(rel_dir, _UNSET)
+      if cached is not _UNSET:
+        return cached
+      res = self._ComputeFirstAncestorThatRequiresReview(include_path)
+      self._review_ancestor_cache[rel_dir] = res
+      return res
+    return self._ComputeFirstAncestorThatRequiresReview(include_path)
+
+  def _ComputeFirstAncestorThatRequiresReview(self, include_path):
     if not os.path.isabs(include_path):
       include_path = os.path.join(self.base_directory, include_path)
     include_path = os.path.normpath(include_path)
