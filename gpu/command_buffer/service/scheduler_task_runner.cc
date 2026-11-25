@@ -5,12 +5,10 @@
 #include "gpu/command_buffer/service/scheduler_task_runner.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
 
 namespace gpu {
@@ -48,10 +46,9 @@ bool SchedulerTaskRunner::PostNonNestableDelayedTask(
   }
 
   CHECK(delay.is_zero());
-  scheduler_->ScheduleTask(Scheduler::Task(
+  scheduler_->ScheduleTask(
       sequence_id_,
-      base::BindOnce(&SchedulerTaskRunner::RunTask, this, std::move(task)),
-      std::vector<SyncToken>()));
+      base::BindOnce(&SchedulerTaskRunner::RunTask, this, std::move(task)));
   return true;
 }
 
