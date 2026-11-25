@@ -1,0 +1,78 @@
+Tests asynchronous call stacks for MutationObserver.
+Set timer for test function.
+Captured call stacks in no particular order:
+Call stack:
+    0) mutationCallback (async-callstack-mutation-observer.js:15)
+    [attributes]
+    0) doMutations1 (async-callstack-mutation-observer.js:42)
+    1) timeout1 (async-callstack-mutation-observer.js:37)
+    [setTimeout]
+    0) testFunction (async-callstack-mutation-observer.js:29)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:2)
+Call stack:
+    0) mutationCallback (async-callstack-mutation-observer.js:15)
+    [childList]
+    0) doMutations2 (async-callstack-mutation-observer.js:54)
+    1) timeout2 (async-callstack-mutation-observer.js:48)
+    [setTimeout]
+    0) timeout1 (async-callstack-mutation-observer.js:36)
+    [setTimeout]
+    0) testFunction (async-callstack-mutation-observer.js:29)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:2)
+Call stack:
+    0) nestedMutationCallback (async-callstack-mutation-observer.js:21)
+    [attributes]
+    0) doMutations1 (async-callstack-mutation-observer.js:42)
+    1) mutationCallback (async-callstack-mutation-observer.js:14)
+    [attributes]
+    0) doMutations1 (async-callstack-mutation-observer.js:42)
+    1) timeout1 (async-callstack-mutation-observer.js:37)
+    [setTimeout]
+    0) testFunction (async-callstack-mutation-observer.js:29)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:2)
+Call stack:
+    0) nestedMutationCallback (async-callstack-mutation-observer.js:21)
+    [childList]
+    0) doMutations2 (async-callstack-mutation-observer.js:54)
+    1) timeoutFromNestedMutation (async-callstack-mutation-observer.js:64)
+    [setTimeout]
+    0) nestedMutationCallback (async-callstack-mutation-observer.js:24)
+    [attributes]
+    0) doMutations1 (async-callstack-mutation-observer.js:42)
+    1) mutationCallback (async-callstack-mutation-observer.js:14)
+    [attributes]
+    0) doMutations1 (async-callstack-mutation-observer.js:42)
+    1) timeout1 (async-callstack-mutation-observer.js:37)
+    [setTimeout]
+    0) testFunction (async-callstack-mutation-observer.js:29)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:2)
+Call stack:
+    0) timeoutFromMutation (async-callstack-mutation-observer.js:59)
+    [setTimeout]
+    0) mutationCallback (async-callstack-mutation-observer.js:17)
+    [attributes]
+    0) doMutations1 (async-callstack-mutation-observer.js:42)
+    1) timeout1 (async-callstack-mutation-observer.js:37)
+    [setTimeout]
+    0) testFunction (async-callstack-mutation-observer.js:29)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:2)
+Call stack:
+    0) timeoutFromNestedMutation (async-callstack-mutation-observer.js:63)
+    [setTimeout]
+    0) nestedMutationCallback (async-callstack-mutation-observer.js:24)
+    [attributes]
+    0) doMutations1 (async-callstack-mutation-observer.js:42)
+    1) mutationCallback (async-callstack-mutation-observer.js:14)
+    [attributes]
+    0) doMutations1 (async-callstack-mutation-observer.js:42)
+    1) timeout1 (async-callstack-mutation-observer.js:37)
+    [setTimeout]
+    0) testFunction (async-callstack-mutation-observer.js:29)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:2)
+
