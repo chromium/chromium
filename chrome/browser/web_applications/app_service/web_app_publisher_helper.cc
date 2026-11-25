@@ -958,8 +958,10 @@ void WebAppPublisherHelper::UninstallWebApp(
   auto origin = url::Origin::Create(web_app->start_url());
 
   CHECK(provider_, base::NotFatalUntil::M162);
-  CHECK(provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id()),
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/589484897): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(
+      provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id()));
   webapps::WebappUninstallSource webapp_uninstall_source =
       ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
   provider_->scheduler().RemoveUserUninstallableManagements(
