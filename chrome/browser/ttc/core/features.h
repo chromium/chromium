@@ -114,6 +114,16 @@ inline constexpr base::FeatureParam<bool> kTtcGetPointerShowMark{
 // output volume so far; other platforms never warn.
 BASE_DECLARE_FEATURE(kTtcSpeakerVolumeWarning);
 
+// Enables a hold-to-speak shortcut during TTC sessions (see
+// prefs::kTtcHoldToSpeakShortcut): holding it turns the microphone on, and
+// releasing it turns the microphone off.
+BASE_DECLARE_FEATURE(kTtcHoldToSpeak);
+
+// Finch-configurable time the hold-to-speak shortcut must be held before the
+// microphone turns on, so that brief or accidental presses are ignored.
+inline constexpr base::FeatureParam<base::TimeDelta> kTtcHoldToSpeakThreshold{
+    &kTtcHoldToSpeak, "hold_threshold", base::Milliseconds(250)};
+
 }  // namespace ttc
 
 #endif  // CHROME_BROWSER_TTC_CORE_FEATURES_H_

@@ -1906,6 +1906,10 @@ inline constexpr char kTtcGetPointerName[] = "TTC Get Pointer";
 inline constexpr char kTtcGetPointerDescription[] =
     "Enables the get_pointer tool for TTC.";
 
+inline constexpr char kTtcHoldToSpeakName[] = "TTC Hold-to-Speak";
+inline constexpr char kTtcHoldToSpeakDescription[] =
+    "Enables a hold-to-speak shortcut during TTC sessions.";
+
 inline constexpr char kActorObserveScreenshotDefaultName[] =
     "Actor observe screenshot default";
 inline constexpr char kActorObserveScreenshotDefaultDescription[] =

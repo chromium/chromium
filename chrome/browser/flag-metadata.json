@@ -9698,6 +9698,11 @@
     "expiry_milestone": 166
   },
   {
+    "name": "ttc-hold-to-speak",
+    "owners": [ "amyasinghal@google.com", "//chrome/browser/ttc/OWNERS" ],
+    "expiry_milestone": 166
+  },
+  {
     "name": "ttc-live-recipe",
     "owners": [ "//chrome/browser/ttc/OWNERS" ],
     "expiry_milestone": 162

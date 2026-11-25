@@ -7855,6 +7855,7 @@ from previous Chrome versions.
   <int value="-2104240590" label="TimeOfDayDlc:disabled"/>
   <int value="-2104082369" label="GlicOptInDialogA11yFix:disabled"/>
   <int value="-2103692632" label="EnhancedNetworkVoices:disabled"/>
+  <int value="-2102616902" label="TtcHoldToSpeak:disabled"/>
   <int value="-2102286055" label="WebViewVulkanIntermediateBuffer:disabled"/>
   <int value="-2101760176" label="AccessibilityAndroidMath:enabled"/>
   <int value="-2101682955" label="EnableNotificationIndicator:enabled"/>
@@ -8135,6 +8136,7 @@ from previous Chrome versions.
   <int value="-2030590107" label="NoPauseMediaOnHeadphoneUnplug:disabled"/>
   <int value="-2030527780" label="CCTAdaptiveButtonTestSwitch:disabled"/>
   <int value="-2030255112" label="Bruschetta:disabled"/>
+  <int value="-2030252243" label="TtcHoldToSpeak:enabled"/>
   <int value="-2030217301" label="password-export:disabled"/>
   <int value="-2029912304" label="StaleWhileRevalidate2:enabled"/>
   <int value="-2029381098" label="CompressionDictionaryTTL:enabled"/>

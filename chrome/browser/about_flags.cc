@@ -13831,6 +13831,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTtcGetPointerDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(ttc::kTtcGetPointer)},
 
+    // TODO(b/590170353): Remove this flag once we have a settings page
+    // to toggle it.
+    {"ttc-hold-to-speak", flag_descriptions::kTtcHoldToSpeakName,
+     flag_descriptions::kTtcHoldToSpeakDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ttc::kTtcHoldToSpeak)},
+
     {"ttc-live-recipe", flag_descriptions::kTtcLiveRecipeName,
      flag_descriptions::kTtcLiveRecipeDescription, kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ttc::kTtcLiveRecipe,
