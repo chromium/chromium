@@ -206,7 +206,6 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, PasswordProtectionLoginURLs) {
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Test that when password protection change password URL is set by policy,
 // password protection service gets the correct value.
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -250,7 +249,6 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
       "accounts.google.com"));
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 class MockPasswordProtectionService
