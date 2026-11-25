@@ -3307,7 +3307,7 @@
 <translation id="3511528412952710609">短</translation>
 <translation id="3512465804715993309">自动调节选中内容</translation>
 <translation id="3513019849832307207">加入并打开</translation>
-<translation id="3513563267917474897">色调滑块从 <ph name="MIN_VALUE" /> 移动到 <ph name="MAX_VALUE" /></translation>
+<translation id="3513563267917474897">色相滑块从 <ph name="MIN_VALUE" /> 移动到 <ph name="MAX_VALUE" /></translation>
 <translation id="3514647716686280777">Chrome 正在为您提供标准安全保护。为了进一步防范危险的网站、下载内容和扩展程序，请在 Chrome 设置中开启“增强型安全浏览”功能。</translation>
 <translation id="3514681096978190000">此归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="3515783508789430906">新版本 (<ph name="VERSION" />) 已准备就绪。请重启该应用以应用更新。未保存的数据可能会丢失。</translation>
@@ -7330,7 +7330,7 @@
 <translation id="6613267708691765962">正在扫描以检测是否有恶意软件…</translation>
 <translation id="6614219106064338118">开始对话</translation>
 <translation id="6615455863669487791">演示一下</translation>
-<translation id="6616000047939888167">针对其他语言的网站和 PDF 提供谷歌翻译选项</translation>
+<translation id="6616000047939888167">针对其他语言的网站和 PDF 提供 Google 翻译选项</translation>
 <translation id="6618013221808317456">不允许网站使用 JavaScript 优化功能</translation>
 <translation id="6618154741503063152">无法上传，不允许添加附件。</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7689,7 +7689,7 @@
 <translation id="6871644448911473373">OCSP 响应程序：<ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">语言…</translation>
 <translation id="6873156759937047811">PIN 码：</translation>
-<translation id="6873499199714317035">开启此功能后，谷歌翻译会询问您是否要将网站和 PDF 翻译成您的首选语言。这项服务还能自动翻译网站。</translation>
+<translation id="6873499199714317035">开启此功能后，Google 翻译会询问您是否要将网站和 PDF 翻译成您的首选语言。这项服务还能自动翻译网站。</translation>
 <translation id="6873571253135628430">更改网站权限</translation>
 <translation id="6874986444867497677">无法完成安装。请重试或关闭此窗口。</translation>
 <translation id="6876155724392614295">自行车</translation>
