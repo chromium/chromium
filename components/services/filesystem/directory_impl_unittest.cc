@@ -7,9 +7,11 @@
 
 #include <array>
 #include <map>
+#include <ranges>
 #include <string>
+#include <string_view>
+#include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
 #include "components/services/filesystem/directory_test_helper.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
@@ -37,7 +39,7 @@ class DirectoryImplTest : public testing::Test {
   DirectoryTestHelper test_helper_;
 };
 
-constexpr char kData[] = "one two three";
+constexpr std::string_view kData = "one two three";
 
 TEST_F(DirectoryImplTest, Read) {
   mojo::Remote<mojom::Directory> directory = CreateTempDir();
@@ -199,7 +201,7 @@ TEST_F(DirectoryImplTest, Clone) {
     // deleted since it has clones.
   }
 
-  std::vector<uint8_t> data(kData, UNSAFE_TODO(kData + strlen(kData)));
+  const std::vector<uint8_t> data(std::from_range, kData);
   {
     bool handled = clone_one->WriteFile("data", data, &error);
     ASSERT_TRUE(handled);
@@ -220,7 +222,7 @@ TEST_F(DirectoryImplTest, WriteFileReadFile) {
   mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
-  std::vector<uint8_t> data(kData, UNSAFE_TODO(kData + strlen(kData)));
+  const std::vector<uint8_t> data(std::from_range, kData);
   {
     bool handled = directory->WriteFile("data", data, &error);
     ASSERT_TRUE(handled);
@@ -290,7 +292,7 @@ TEST_F(DirectoryImplTest, CantWriteFileOnADirectory) {
   }
 
   {
-    std::vector<uint8_t> data(kData, UNSAFE_TODO(kData + strlen(kData)));
+    const std::vector<uint8_t> data(std::from_range, kData);
     bool handled = directory->WriteFile("my_dir", data, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_ERROR_NOT_A_FILE, error);
