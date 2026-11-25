@@ -7,17 +7,13 @@ import 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {AiPageActions} from 'chrome://settings/lazy_load.js';
 import type {CrCollapseElement, CrShortcutInputElement} from 'chrome://settings/lazy_load.js';
-import {AiSettingsSection, GlicAssistantSelection, GlicBrowserProxyImpl, LifetimeBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefService, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
-import type {CrButtonElement, SettingsGlicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {AiSettingsSection, GlicAssistantSelection, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefService, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import type {SettingsGeicAssistantSwitcherElement, SettingsGlicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
-// <if expr="not is_chromeos">
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
-// </if>
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
-import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // Note - if adding tests related to the shortcut control, use
@@ -1469,13 +1465,6 @@ suite('GlicSubpage', function() {
   });
 
   suite('DevicePolicyToggle', () => {
-    let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
-
-    setup(function() {
-      lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
-      LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
-    });
-
     teardown(function() {
       loadTimeData.overrideValues({
         showGeicDevicePolicyToggle: false,
@@ -1483,154 +1472,21 @@ suite('GlicSubpage', function() {
     });
 
     test('DevicePolicyRowHiddenByDefault', () => {
-      assertFalse(!!$<HTMLElement>('devicePolicySection'));
-      assertFalse(!!$<HTMLElement>('devicePolicyRow'));
-      assertFalse(!!$<HTMLElement>('devicePolicyConsider'));
-      assertFalse(!!$<CrButtonElement>('devicePolicyButton'));
+      assertFalse(
+          !!$<SettingsGeicAssistantSwitcherElement>('assistantSwitcher'));
     });
 
-    test('DevicePolicyConsiderBulletsShown', async () => {
+    test('DevicePolicySwitcherConfigured', async () => {
       loadTimeData.overrideValues({
         showGeicDevicePolicyToggle: true,
       });
       await createGlicPage(/*initialShortcut=*/ '⌃A');
 
-      const label = $<HTMLElement>('devicePolicyLabel');
-      const sublabel = $<HTMLElement>('devicePolicySublabel');
-      const button = $<CrButtonElement>('devicePolicyButton');
-      assertTrue(!!label);
-      assertTrue(!!sublabel);
-      assertTrue(!!button);
-      assertEquals(
-          page.i18n('glicSwitchToGeicToggle'), label.textContent.trim());
-      assertEquals(
-          page.i18n('glicSwitchToGeicToggleSublabel'),
-          sublabel.textContent.trim());
-      assertEquals(
-          page.i18n('geicDevicePolicyButton'), button.textContent.trim());
-
-      const consider = $<HTMLElement>('devicePolicyConsider');
-      assertTrue(!!consider);
-      assertTrue(isVisible(consider));
-      assertEquals(
-          page.i18n('columnHeadingConsider'),
-          consider.querySelector('.description-header')?.textContent.trim());
-      const bullets = consider.querySelectorAll('ul.icon-bulleted-list > li');
-      assertEquals(3, bullets.length);
-      assertEquals(
-          'settings20:security',
-          bullets[0]!.querySelector('cr-icon')?.getAttribute('icon'));
-      assertEquals(
-          'settings20:shield-spark',
-          bullets[1]!.querySelector('cr-icon')?.getAttribute('icon'));
-      assertEquals(
-          'settings20:chat-spark',
-          bullets[2]!.querySelector('cr-icon')?.getAttribute('icon'));
-      assertEquals(
-          page.i18n('glicSwitchToGeicConsider1'),
-          bullets[0]!.querySelector('.secondary')?.textContent.trim());
-      assertEquals(
-          page.i18n('glicSwitchToGeicConsider2'),
-          bullets[1]!.querySelector('.secondary')?.textContent.trim());
-      assertEquals(
-          page.i18n('geicSwitchConsiderChatHistory'),
-          bullets[2]!.querySelector('.secondary')?.textContent.trim());
+      const switcher =
+          $<SettingsGeicAssistantSwitcherElement>('assistantSwitcher');
+      assertTrue(!!switcher);
+      assertTrue(isVisible(switcher));
+      assertEquals(GlicAssistantSelection.ENTERPRISE, switcher.targetSelection);
     });
-
-    test('DevicePolicyButtonEnablesGeicAndRestarts', async () => {
-      loadTimeData.overrideValues({
-        showGeicDevicePolicyToggle: true,
-      });
-      await createGlicPage(/*initialShortcut=*/ '⌃A');
-
-      const row = $<HTMLElement>('devicePolicyRow');
-      const button = $<CrButtonElement>('devicePolicyButton');
-      assertTrue(!!row);
-      assertTrue(!!button);
-      assertTrue(isVisible(row));
-      assertTrue(isVisible(button));
-      assertFalse(button.disabled);
-
-      // The selection is switched before the restart.
-      const calls: string[] = [];
-      const switched =
-          glicBrowserProxy.whenCalled('switchAssistantSelection')
-              .then(selection => {
-                calls.push('switchAssistantSelection');
-                return selection;
-              });
-      const restarted = lifetimeBrowserProxy.whenCalled('restart').then(
-          () => calls.push('restart'));
-
-      button.click();
-      await microtasksFinished();
-      assertTrue(button.disabled);
-      // <if expr="not is_chromeos">
-      await lifetimeBrowserProxy.whenCalled('shouldShowRelaunchDialog');
-      // </if>
-      const [selection] = await Promise.all([switched, restarted]);
-      assertDeepEquals(['switchAssistantSelection', 'restart'], calls);
-      assertEquals(0, lifetimeBrowserProxy.getCallCount('relaunch'));
-      assertEquals(GlicAssistantSelection.ENTERPRISE, selection);
-      assertTrue(button.disabled);
-    });
-
-    // <if expr="not is_chromeos">
-    test('DevicePolicyButtonConfirmDialogRestarts', async () => {
-      loadTimeData.overrideValues({
-        showGeicDevicePolicyToggle: true,
-      });
-      lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(true);
-      await createGlicPage(/*initialShortcut=*/ '⌃A');
-
-      const button = $<CrButtonElement>('devicePolicyButton');
-      assertTrue(!!button);
-      button.click();
-      await lifetimeBrowserProxy.whenCalled('shouldShowRelaunchDialog');
-      await microtasksFinished();
-
-      const dialog =
-          page.shadowRoot.querySelector('relaunch-confirmation-dialog');
-      assertTrue(!!dialog);
-      // Not switched until the restart is confirmed.
-      assertEquals(
-          0, glicBrowserProxy.getCallCount('switchAssistantSelection'));
-
-      dialog.$.confirm.click();
-      assertEquals(
-          GlicAssistantSelection.ENTERPRISE,
-          await glicBrowserProxy.whenCalled('switchAssistantSelection'));
-      await lifetimeBrowserProxy.whenCalled('restart');
-      assertEquals(0, lifetimeBrowserProxy.getCallCount('relaunch'));
-      await microtasksFinished();
-      assertTrue(button.disabled);
-    });
-
-    test('DevicePolicyButtonCancelDialogKeepsSelection', async () => {
-      loadTimeData.overrideValues({
-        showGeicDevicePolicyToggle: true,
-      });
-      lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(true);
-      await createGlicPage(/*initialShortcut=*/ '⌃A');
-
-      const button = $<CrButtonElement>('devicePolicyButton');
-      assertTrue(!!button);
-      button.click();
-      await lifetimeBrowserProxy.whenCalled('shouldShowRelaunchDialog');
-      await microtasksFinished();
-
-      const dialog =
-          page.shadowRoot.querySelector('relaunch-confirmation-dialog');
-      assertTrue(!!dialog);
-      dialog.$.cancel.click();
-      await eventToPromise('close', dialog);
-      await microtasksFinished();
-
-      assertEquals(
-          0, glicBrowserProxy.getCallCount('switchAssistantSelection'));
-      assertEquals(0, lifetimeBrowserProxy.getCallCount('restart'));
-      assertFalse(button.disabled);
-    });
-    // </if>
   });
 });

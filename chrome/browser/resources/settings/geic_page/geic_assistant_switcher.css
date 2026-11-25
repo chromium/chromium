@@ -1,0 +1,68 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=../settings_columned_section_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-shared-style-lit settings-columned-section-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+#label {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+#switchButton {
+  flex-shrink: 0;
+  margin-inline-end: var(--cr-section-padding);
+  margin-inline-start: var(--cr-section-padding);
+}
+
+#consider {
+  padding-bottom: 16px;
+  padding-top: 8px;
+}
+
+#consider .description-header {
+  font-weight: 500;
+}
+
+#consider .icon-bulleted-list {
+  padding-inline-start: var(--cr-section-padding);
+}
+
+#consider .icon-bulleted-list li {
+  align-items: flex-start;
+}
+
+:host-context([settings-refresh-2026]) {
+  #section {
+    border-radius: 4px;
+    border-top: none;
+    margin: 4px var(--cr-section-padding) 0;
+    overflow: hidden;
+  }
+
+  #row {
+    border-radius: 0;
+  }
+
+  #switchButton {
+    margin-inline-end: 0;
+  }
+
+  #consider {
+    padding: 0 var(--cr-section-padding) 20px;
+  }
+
+  #consider .icon-bulleted-list {
+    padding-inline-start: 0;
+  }
+}

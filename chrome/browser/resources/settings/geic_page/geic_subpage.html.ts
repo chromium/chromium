@@ -4,6 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {GlicAssistantSelection} from '../ai_page/constants.js';
+
 import type {SettingsGeicSubpageElement} from './geic_subpage.js';
 
 export function getHtml(this: SettingsGeicSubpageElement) {
@@ -102,55 +104,10 @@ export function getHtml(this: SettingsGeicSubpageElement) {
     </cr-collapse>
   </div>
   ${this.showDevicePolicyToggle_ ? html`
-    <div id="devicePolicySection" class="hr">
-      <div id="devicePolicyRow" class="cr-row first">
-        <div class="flex cr-padded-text">
-          <div id="devicePolicyLabel">$i18n{geicDevicePolicyToggle}</div>
-          <div id="devicePolicySublabel" class="secondary">
-            $i18n{geicDevicePolicyToggleSublabel}
-          </div>
-        </div>
-        <cr-button id="devicePolicyButton"
-            aria-describedby="devicePolicyLabel devicePolicySublabel"
-            ?disabled="${this.devicePolicyButtonDisabled_}"
-            @click="${this.onDevicePolicyButtonClick_}">
-          $i18n{geicDevicePolicyButton}
-        </cr-button>
-      </div>
-      <div id="devicePolicyConsider" class="settings-columned-section">
-        <div class="column">
-          <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
-          <ul class="icon-bulleted-list">
-            <li>
-              <cr-icon aria-hidden="true" icon="settings20:draft-spark">
-              </cr-icon>
-              <div class="secondary">
-                $i18n{geicDevicePolicyConsider1}
-              </div>
-            </li>
-            <li>
-              <cr-icon aria-hidden="true" icon="settings20:shield-spark">
-              </cr-icon>
-              <div class="secondary">
-                $i18n{geicDevicePolicyConsider2}
-              </div>
-            </li>
-            <li>
-              <cr-icon aria-hidden="true" icon="settings20:chat-spark">
-              </cr-icon>
-              <div class="secondary">$i18n{geicSwitchConsiderChatHistory}</div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <settings-geic-assistant-switcher id="assistantSwitcher"
+        .targetSelection="${GlicAssistantSelection.CONSUMER}">
+    </settings-geic-assistant-switcher>
   ` : ''}
-<if expr="not is_chromeos">
-  ${this.shouldShowRelaunchDialog ? html`
-    <relaunch-confirmation-dialog @close="${this.onRelaunchDialogClose}">
-    </relaunch-confirmation-dialog>
-  ` : ''}
-</if>
 </settings-subpage>
 <!--_html_template_end_-->`;
 }

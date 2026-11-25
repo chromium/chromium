@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
-// <if expr="not is_chromeos">
-import '../relaunch_confirmation_dialog.js';
-// </if>
 import '../settings_page/settings_subpage.js';
+import './geic_assistant_switcher.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 
@@ -22,16 +19,13 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {GlicAssistantSelection} from '../ai_page/constants.js';
-import {GlicBrowserProxyImpl} from '../glic_page/glic_browser_proxy.js';
-import {RelaunchMixinLit, RestartType} from '../relaunch_mixin_lit.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
 import {getCss} from './geic_subpage.css.js';
 import {getHtml} from './geic_subpage.html.js';
 
 const SettingsGeicSubpageElementBase =
-    SettingsViewMixinLit(RelaunchMixinLit(I18nMixinLit(CrLitElement)));
+    SettingsViewMixinLit(I18nMixinLit(CrLitElement));
 
 export class SettingsGeicSubpageElement extends SettingsGeicSubpageElementBase {
   static get is() {
@@ -49,30 +43,12 @@ export class SettingsGeicSubpageElement extends SettingsGeicSubpageElementBase {
   static override get properties() {
     return {
       defaultTabAccessToggleExpanded_: {type: Boolean},
-      devicePolicyButtonDisabled_: {type: Boolean},
     };
   }
 
   protected accessor defaultTabAccessToggleExpanded_: boolean = false;
-  protected accessor devicePolicyButtonDisabled_: boolean = false;
   protected readonly showDevicePolicyToggle_: boolean =
       loadTimeData.getBoolean('showGeicDevicePolicyToggle');
-
-  override onRelaunchDialogClose(event: Event) {
-    this.devicePolicyButtonDisabled_ = false;
-    super.onRelaunchDialogClose(event);
-  }
-
-  protected onDevicePolicyButtonClick_() {
-    this.devicePolicyButtonDisabled_ = true;
-    this.performRestart(
-        RestartType.RESTART, /*alwaysShowDialog=*/ false, () => {
-          // The restart is going ahead, so keep the button disabled.
-          this.devicePolicyButtonDisabled_ = true;
-          GlicBrowserProxyImpl.getInstance().switchAssistantSelection(
-              GlicAssistantSelection.CONSUMER);
-        });
-  }
 
   protected onDefaultTabAccessExpandClick_() {
     this.defaultTabAccessToggleExpanded_ =

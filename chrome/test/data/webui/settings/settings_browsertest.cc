@@ -607,6 +607,10 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubpageLearnMoreTest,
           "runMochaSuite('GlicSubpage LearnMoreEnabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, GeicAssistantSwitcher) {
+  RunTest("settings/geic_assistant_switcher_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, GeicSubpage) {
   RunTest("settings/geic_subpage_test.js",
           "runMochaSuite('GeicSubpage Default')");
