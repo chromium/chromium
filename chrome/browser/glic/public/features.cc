@@ -357,6 +357,8 @@ BASE_FEATURE_PARAM(std::string,
 
 BASE_FEATURE(kGlicWhatsNewQuizzes, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicBrowserCommandInvoke, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicForceFcmExperimentalTriggerFailure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

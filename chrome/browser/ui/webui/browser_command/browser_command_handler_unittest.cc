@@ -58,6 +58,7 @@ std::vector<Command> supported_commands = {
     Command::kOpenSafetyCheckFromWhatsNew,
     Command::kOpenPaymentsSettings,
     Command::kOpenGlic,
+    Command::kOpenGlicForQuizzes,
     Command::kOpenGlicSettings,
     Command::kOpenSplitView,
     Command::kEnableVerticalTabs,
@@ -226,6 +227,8 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, ShowCustomizeChromeToolbar, ());
 
   MOCK_METHOD(void, OpenGlic, ());
+
+  MOCK_METHOD(void, OpenGlicForQuizzes, ());
 
   MOCK_METHOD(void, OpenGlicSettings, ());
 
@@ -694,6 +697,26 @@ TEST_F(BrowserCommandHandlerTest, OpenGlicCommand) {
   // The OpenGlic command opens glic.
   EXPECT_CALL(*command_handler_, OpenGlic());
   EXPECT_TRUE(ExecuteCommand(Command::kOpenGlic, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenGlicForQuizzesCommand) {
+  EXPECT_TRUE(CanExecuteCommand(Command::kOpenGlicForQuizzes));
+  ClickInfoPtr info = ClickInfo::New();
+  EXPECT_CALL(*command_handler_, OpenGlicForQuizzes());
+  EXPECT_TRUE(ExecuteCommand(Command::kOpenGlicForQuizzes, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenGlicForQuizzesFallbackEnabledDefaultUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicBrowserCommandFallback);
+
+  MockNavigationCommandHandler handler(&profile_);
+  EXPECT_CALL(
+      handler,
+      NavigateToURL(GURL("https://support.google.com/chrome/answer/17140089"),
+                    ui::mojom::WindowOpenDisposition::kNewForegroundTab));
+  handler.ExecuteCommand(Command::kOpenGlicForQuizzes, ClickInfo::New(),
+                         base::DoNothing());
 }
 
 TEST_F(BrowserCommandHandlerTest, OpenGlicFallbackDisabled) {

@@ -6,8 +6,13 @@
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_PASSKEYS_H_
 
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/public/glic_whats_new_invoke.h"
+#endif
 
 namespace tabs {
 class TabInterface;
@@ -65,6 +70,12 @@ class InvokeWithAutoSubmitPasskeyProvider {
       tabs::TabInterface* tab,
       const std::u16string& selection_text,
       content::GlobalRenderFrameHostId rfh_id);
+#if !BUILDFLAG(IS_ANDROID)
+  friend void InvokeFromWhatsNewForQuizzes(
+      InvokeFromWhatsNewPasskey,
+      GlicKeyedService& glic_service,
+      BrowserWindowInterface* browser_window);
+#endif
   friend class extensions::GlicPrivateInvokeFunction;
   friend class extensions::PdfViewerPrivateGlicSummarizeFunction;
   friend class ::ContextHubPageHandler;

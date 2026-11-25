@@ -281,6 +281,11 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kGlicBrowserCommandFallbackUrl);
 
 BASE_DECLARE_FEATURE(kGlicWhatsNewQuizzes);
 
+// Enabled alongside a What's New module feature flag to invoke Glic via
+// `GlicKeyedService::Invoke` (or `InvokeWithAutoSubmit` for approved modules
+// such as `kGlicWhatsNewQuizzes`) when the module's CTA is clicked.
+BASE_DECLARE_FEATURE(kGlicBrowserCommandInvoke);
+
 // Test only. When enabled, Android drops incoming Glic experimental triggering
 // TriggerActuationRequest messages without replying or acking, as if the FCM
 // message never arrived.

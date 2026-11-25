@@ -41,6 +41,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/glic_enums.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -70,12 +71,14 @@ BrowserCommandHandler::BrowserCommandHandler(
     mojo::PendingReceiver<CommandHandler> pending_page_handler,
     Profile* profile,
     std::vector<browser_command::mojom::Command> supported_commands,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    std::optional<glic::InvokeFromWhatsNewPasskey> glic_passkey)
     : profile_(profile),
       supported_commands_(supported_commands),
       command_updater_(std::make_unique<CommandUpdaterImpl>(this)),
       page_handler_(this, std::move(pending_page_handler)),
-      web_contents_(web_contents) {
+      web_contents_(web_contents),
+      glic_passkey_(glic_passkey) {
   if (supported_commands_.empty()) {
     return;
   }
@@ -146,6 +149,7 @@ void BrowserCommandHandler::CanExecuteCommand(
       can_execute = true;
       break;
     case Command::kOpenGlic:
+    case Command::kOpenGlicForQuizzes:
       can_execute = true;
       break;
     case Command::kOpenGlicSettings:
@@ -243,6 +247,9 @@ void BrowserCommandHandler::HandleCommandWithDisposition(
       OpenGlic();
       break;
     }
+    case Command::kOpenGlicForQuizzes:
+      OpenGlicForQuizzes();
+      break;
     case Command::kOpenGlicSettings:
       OpenGlicSettings();
       break;
@@ -360,6 +367,14 @@ void BrowserCommandHandler::StartSavedTabGroupTutorial() {
 }
 
 void BrowserCommandHandler::OpenGlic() {
+  OpenGlicInternal(/*for_quizzes=*/false);
+}
+
+void BrowserCommandHandler::OpenGlicForQuizzes() {
+  OpenGlicInternal(/*for_quizzes=*/true);
+}
+
+void BrowserCommandHandler::OpenGlicInternal(bool for_quizzes) {
   glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(profile_);
 
   if (!glic_service || !glic::GlicEnabling::ShouldShowGlicButton(profile_)) {
@@ -370,10 +385,19 @@ void BrowserCommandHandler::OpenGlic() {
     return;
   }
 
-  auto* browser_window = webui::GetBrowserWindowInterface(web_contents_);
-
-  glic_service->ToggleUI(browser_window, /*prevent_close=*/false,
-                         glic::mojom::InvocationSource::kWhatsNew);
+  auto* browser_window =
+      web_contents_ ? webui::GetBrowserWindowInterface(web_contents_) : nullptr;
+  if (!glic_passkey_.has_value()) {
+    glic_service->ToggleUI(browser_window, /*prevent_close=*/false,
+                           glic::mojom::InvocationSource::kWhatsNew);
+    return;
+  }
+  if (for_quizzes) {
+    glic::InvokeFromWhatsNewForQuizzes(*glic_passkey_, *glic_service,
+                                       browser_window);
+  } else {
+    glic::InvokeFromWhatsNew(*glic_passkey_, *glic_service, browser_window);
+  }
 }
 
 void BrowserCommandHandler::OpenGlicSettings() {
