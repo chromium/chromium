@@ -6869,7 +6869,6 @@ crbug.com/374090995 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-transferToImageBi
 [ Mac14-arm64 ] fast/webgl/webgl-shadow-no-alpha.html [ Failure ]
 [ Mac14-arm64 ] fast/webgl/webgl-texture-binding-preserved.html [ Timeout ]
 [ Mac14-arm64 ] fast/webgl/webgl-viewport-parameters-preserved.html [ Timeout ]
-[ Mac14-arm64 ] http/tests/devtools/console/console-format-collections.js [ Failure Pass ]
 [ Mac14-arm64 ] http/tests/devtools/oopif/oopif-console-preserves-log-on-frame-navigation.js [ Failure ]
 [ Mac14-arm64 ] http/tests/inspector-protocol/webaudio/graph-event-lifecycle.js [ Crash ]
 [ Mac14-arm64 ] images/color-profile-background-image-cover.html [ Failure ]
