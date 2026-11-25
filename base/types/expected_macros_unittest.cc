@@ -160,6 +160,23 @@ TEST(ReturnIfError, NoArgsMoveOnlyErrorExpectedReturn) {
   EXPECT_THAT(func(), test::ErrorIs(::testing::Pointee(::testing::Eq(1))));
 }
 
+// The error is moved once, into the return value.
+TEST(ReturnIfError, NoArgsMovesErrorOnce) {
+  struct MoveCounter {
+    MoveCounter() = default;
+    MoveCounter(MoveCounter&& other) : moves(other.moves + 1) {}
+
+    int moves = 0;
+  };
+
+  const auto func = []() -> expected<void, MoveCounter> {
+    RETURN_IF_ERROR((expected<int, MoveCounter>(unexpect)));
+    return ok();
+  };
+
+  EXPECT_THAT(func(), test::ErrorIs(::testing::Field(&MoveCounter::moves, 1)));
+}
+
 // `RETURN_IF_ERROR()` with a handler that returns a value.
 
 TEST(ReturnIfError, HandlerExpected) {
@@ -253,29 +270,29 @@ TEST(ReturnIfError, HandlerMoveOnlyErrorExpectedReturn) {
   EXPECT_THAT(func(), test::ErrorIs(::testing::Pointee(::testing::Eq(2))));
 }
 
-TEST(ReturnIfError, HandlerReturnsImmovableType) {
-  struct Immovable {
-    explicit Immovable(int v) : value(v) {}
-    ~Immovable() = default;
-    Immovable(const Immovable&) = delete;
-    Immovable& operator=(const Immovable&) = delete;
+// A reference that a handler returns has to reach the return value as is. A
+// view of a copy made on the way would dangle.
+TEST(ReturnIfError, HandlerReturnsReference) {
+  const std::string error = "EXPECTED";
 
-    const int value;
+  const auto expected_func = [&]() -> expected<void, std::string_view> {
+    RETURN_IF_ERROR(
+        ReturnError("ERROR"),
+        [&](const std::string&) -> const std::string& { return error; });
+    return ok();
+  };
+  const auto optional_func = [&]() -> expected<void, std::string_view> {
+    RETURN_IF_ERROR(ReturnNullopt(),
+                    [&]() -> const std::string& { return error; });
+    return ok();
   };
 
-  const auto optional_func = []() -> std::optional<Immovable> {
-    RETURN_IF_ERROR(ReturnError("ERROR"), [](auto) -> std::optional<Immovable> {
-      return std::nullopt;
-    });
-    return std::optional<Immovable>(std::in_place, 1);
-  };
-  EXPECT_EQ(optional_func(), std::nullopt);
-
-  const auto direct_func = []() -> Immovable {
-    RETURN_IF_ERROR(ReturnNullopt(), [] { return Immovable(2); });
-    return Immovable(1);
-  };
-  EXPECT_EQ(direct_func().value, 2);
+  // Compares the addresses, not the characters.
+  const auto is_view_of_error = test::ErrorIs(::testing::ResultOf(
+      [](std::string_view view) -> const void* { return view.data(); },
+      error.data()));
+  EXPECT_THAT(expected_func(), is_view_of_error);
+  EXPECT_THAT(optional_func(), is_view_of_error);
 }
 
 // `RETURN_IF_ERROR()` with a handler that returns `void`.

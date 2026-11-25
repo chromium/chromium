@@ -10,7 +10,6 @@
 #include <functional>
 #include <optional>
 #include <string_view>
-#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -58,6 +57,11 @@
 // * Function pointers, member pointers and objects with a single, non-template
 //   call operator (e.g. lambdas that are not generic) are never treated as a
 //   value.
+// * A value that an invocable returns is moved into the function's return
+//   value, so it has to be of a movable type. In a function that returns a
+//   `base::expected`, a reference that an invocable returns initializes the
+//   error directly, so an error type that is a view refers to the original
+//   object.
 // * It is a compile error if the additional arguments are neither invocable
 //   nor a single value.
 //
@@ -311,24 +315,19 @@ concept IsHandler = std::is_member_pointer_v<T> ||
                     std::is_function_v<std::remove_pointer_t<T>> ||
                     requires { &T::operator(); };
 
-// The handler used when the macros get no additional arguments. This is a
-// constant rather than a `std::identity()` temporary at its uses because
-// `UnexpectedDeducer` only holds a reference to it and outlives
-// `ErrorReturn()`.
-inline constexpr std::identity kIdentity{};
-
 // Helper object to allow returning some `E` from a method either directly or in
-// the error of an `expected<T, E>`. Defers invoking `Fn` until conversion so
-// prvalues of immovable types still get guaranteed copy elision. Only holds
-// references to `fn` and `args`, so they have to outlive it.
-template <typename Fn, typename... Args>
-class UnexpectedDeducer {
-  using RawE = std::invoke_result_t<Fn&&, Args&&...>;
-  using E = std::remove_cvref_t<RawE>;
-
- public:
-  constexpr explicit UnexpectedDeducer(Fn&& fn, Args&&... args) noexcept
-      : call_(std::forward<Fn>(fn), std::forward<Args>(args)...) {}
+// the error of an `expected<T, E>`. `E` is a reference when `ErrorReturn()` has
+// a reference to the error:
+// * An rvalue reference to the error of the failed result. This saves a move.
+// * What a handler returned by reference. A copy of that object would be
+//   destroyed with this object, and an `expected<T, Err>` whose `Err` is a view
+//   would dangle.
+// Otherwise `E` is `std::nullopt_t` or the type of what a handler returned by
+// value. This is an aggregate so that `error` is then initialized directly from
+// the handler's result, without a move.
+template <typename E>
+struct UnexpectedDeducer {
+  using DecayedE = std::decay_t<E>;
 
   // Allow implicit conversion to types that can be converted from
   // `unexpected<E>`, e.g. `base::expected<T, Err>` with arbitrary `T` and
@@ -336,9 +335,9 @@ class UnexpectedDeducer {
   template <typename T, typename Err>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr operator expected<T, Err>() && noexcept
-    requires(std::convertible_to<RawE, Err>)
+    requires(std::convertible_to<E, Err>)
   {
-    return expected<T, Err>(unexpect, std::move(*this).Invoke());
+    return expected<T, Err>(unexpect, std::forward<E>(error));
   }
 
   // Allow implicit conversion from `std::nullopt` to compatible types, e.g.
@@ -346,9 +345,10 @@ class UnexpectedDeducer {
   template <typename T>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr operator T() && noexcept
-    requires(std::convertible_to<RawE, T> && std::same_as<E, std::nullopt_t>)
+    requires(std::convertible_to<E, T> &&
+             std::same_as<DecayedE, std::nullopt_t>)
   {
-    return std::move(*this).Invoke();
+    return std::forward<E>(error);
   }
 
   // Allow implicit conversion from `nullptr` to compatible types, e.g. `T*` or
@@ -356,13 +356,14 @@ class UnexpectedDeducer {
   template <typename T>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr operator T() && noexcept
-    requires(std::convertible_to<RawE, T> && std::same_as<E, std::nullptr_t>)
+    requires(std::convertible_to<E, T> &&
+             std::same_as<DecayedE, std::nullptr_t>)
   {
-    return std::move(*this).Invoke();
+    return std::forward<E>(error);
   }
 
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr operator E() && noexcept { return std::move(*this).Invoke(); }
+  constexpr operator DecayedE() && noexcept { return std::forward<E>(error); }
 
   // Disallow implicit conversion to `std::optional<T>`. Either `E` is already
   // a type that can convert to this and this is unnecessary due to the
@@ -376,24 +377,12 @@ class UnexpectedDeducer {
   template <typename T>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr operator std::optional<T>() && noexcept
-    requires(!std::same_as<E, std::optional<T>> &&
-             !std::convertible_to<RawE, std::optional<T>>)
+    requires(!std::same_as<DecayedE, std::optional<T>> &&
+             !std::convertible_to<E, std::optional<T>>)
   = delete;  // Use an adapter that returns this type.
 
- private:
-  constexpr RawE Invoke() && noexcept {
-    return std::apply(
-        [](Fn&& fn, Args&&... args) -> RawE {
-          return std::invoke(std::forward<Fn>(fn), std::forward<Args>(args)...);
-        },
-        std::move(call_));
-  }
-
-  std::tuple<Fn&&, Args&&...> call_;
+  E error;
 };
-
-template <typename Fn, typename... Args>
-UnexpectedDeducer(Fn&&, Args&&...) -> UnexpectedDeducer<Fn, Args...>;
 
 // Computes what the macros return for the failed `result`. The handler
 // overloads spell out `std::invocable` although `std::invoke_result_t` implies
@@ -401,13 +390,13 @@ UnexpectedDeducer(Fn&&, Args&&...) -> UnexpectedDeducer<Fn, Args...>;
 
 // No additional arguments: propagate the error or `std::nullopt`.
 template <typename T, typename E>
-constexpr auto ErrorReturn(expected<T, E>&& result) noexcept {
-  return UnexpectedDeducer{kIdentity, std::move(result).error()};
+constexpr auto ErrorReturn(expected<T, E>&& result LIFETIME_BOUND) noexcept {
+  return UnexpectedDeducer<E&&>{std::move(result).error()};
 }
 
 template <typename T>
 constexpr auto ErrorReturn(std::optional<T>&&) noexcept {
-  return UnexpectedDeducer{kIdentity, std::nullopt};
+  return UnexpectedDeducer<std::nullopt_t>{std::nullopt};
 }
 
 // `void`-returning handler: invoke it and return `void`.
@@ -430,16 +419,19 @@ constexpr void ErrorReturn(std::optional<T>&&,
   std::invoke(std::forward<Fn>(fn), std::forward<Args>(args)...);
 }
 
-// Value-returning handler: wrap the deferred call in `UnexpectedDeducer` for
-// implicit error conversion.
+// Value-returning handler: invoke it and wrap the result in
+// `UnexpectedDeducer` for implicit error conversion. A returned reference stays
+// a reference.
 template <typename T, typename E, typename Fn, typename... Args>
   requires std::invocable<Fn&&, Args&&..., E> &&
            (!std::is_void_v<std::invoke_result_t<Fn &&, Args && ..., E>>)
 constexpr auto ErrorReturn(expected<T, E>&& result,
                            Fn&& fn,
                            Args&&... args) noexcept {
-  return UnexpectedDeducer{std::forward<Fn>(fn), std::forward<Args>(args)...,
-                           std::move(result).error()};
+  return UnexpectedDeducer<
+      std::remove_cv_t<std::invoke_result_t<Fn&&, Args&&..., E>>>{
+      std::invoke(std::forward<Fn>(fn), std::forward<Args>(args)...,
+                  std::move(result).error())};
 }
 
 template <typename T, typename Fn, typename... Args>
@@ -448,7 +440,9 @@ template <typename T, typename Fn, typename... Args>
 constexpr auto ErrorReturn(std::optional<T>&&,
                            Fn&& fn,
                            Args&&... args) noexcept {
-  return UnexpectedDeducer{std::forward<Fn>(fn), std::forward<Args>(args)...};
+  return UnexpectedDeducer<
+      std::remove_cv_t<std::invoke_result_t<Fn&&, Args&&...>>>{
+      std::invoke(std::forward<Fn>(fn), std::forward<Args>(args)...)};
 }
 
 // Single non-handler value: forward it so it converts as `return v;` would.

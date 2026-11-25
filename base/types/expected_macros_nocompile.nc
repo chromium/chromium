@@ -60,6 +60,19 @@ const std::string& TemporaryValueInFunctionReturningReference(
   return s;
 }
 
+// The result of a handler is moved into the return value, so it has to be
+// movable.
+struct Immovable {
+  Immovable();
+  Immovable(Immovable&&) = delete;
+};
+
+Immovable HandlerReturnsImmovableType() {
+  std::optional<int> o = 1;
+  RETURN_IF_ERROR(o, [] { return Immovable(); });  // expected-error@*:* {{call to deleted constructor of}}
+  return Immovable();
+}
+
 // Only a single argument is treated as a value to return.
 int MultipleValues() {
   base::expected<int, int> e = base::ok(1);
