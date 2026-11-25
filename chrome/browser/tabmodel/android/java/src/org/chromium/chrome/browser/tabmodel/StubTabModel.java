@@ -266,4 +266,9 @@ public class StubTabModel extends EmptyTabModel {
     public @Nullable SplitTabId createSplit(List<Tab> tabs, SplitTabVisualData visualData) {
         throw error();
     }
+
+    @Override
+    public void unsplit(SplitTabId splitTabId) {
+        throw error();
+    }
 }

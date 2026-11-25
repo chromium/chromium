@@ -737,4 +737,44 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, CreateSplit_SplitViewDisabled) {
   EXPECT_TRUE(tab_list->ListSplits().empty());
 }
 
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, Unsplit) {
+  chrome::android::ScopedJavaDrivenFeatureForTesting enable_split_view(
+      chrome::android::kEnableAndroidSplitView, true);
+
+  // Arrange:
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  tabs::TabInterface* tab_a = tab_list->GetTab(/*index=*/0);
+  tabs::TabInterface* tab_b =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+  ASSERT_TRUE(tab_a);
+  ASSERT_TRUE(tab_b);
+
+  const split_tabs::SplitTabVisualData visual_data(
+      split_tabs::SplitTabLayout::kSideBySide, /*split_ratio=*/0.4);
+  std::optional<split_tabs::SplitTabId> split_id = tab_list->CreateSplit(
+      {tab_a->GetHandle(), tab_b->GetHandle()}, visual_data);
+  ASSERT_TRUE(split_id.has_value());
+  EXPECT_EQ(tab_a->GetSplit(), split_id);
+  EXPECT_EQ(tab_b->GetSplit(), split_id);
+  EXPECT_THAT(tab_list->ListSplits(), testing::ElementsAre(*split_id));
+  EXPECT_EQ(tab_list->GetSplitTabVisualData(*split_id), visual_data);
+  ASSERT_EQ(tab_list->GetTabCount(), 2);
+  EXPECT_EQ(tab_list->GetTab(/*index=*/0), tab_a);
+  EXPECT_EQ(tab_list->GetTab(/*index=*/1), tab_b);
+
+  // Act:
+  tab_list->Unsplit(*split_id);
+
+  // Assert:
+  EXPECT_FALSE(tab_a->GetSplit().has_value());
+  EXPECT_FALSE(tab_b->GetSplit().has_value());
+  EXPECT_TRUE(tab_list->ListSplits().empty());
+  EXPECT_EQ(tab_list->GetSplitTabVisualData(*split_id), std::nullopt);
+  ASSERT_EQ(tab_list->GetTabCount(), 2);
+  EXPECT_EQ(tab_list->GetTab(/*index=*/0), tab_a);
+  EXPECT_EQ(tab_list->GetTab(/*index=*/1), tab_b);
+}
+
 }  // namespace

@@ -496,6 +496,9 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
+    public void unsplit(SplitTabId splitTabId) {}
+
+    @Override
     public @Nullable SplitTabData getSplitTabData(SplitTabId splitTabId) {
         return null;
     }

@@ -146,6 +146,10 @@ class TabCollectionTabModelImpl {
                    const std::vector<TabInterface*>& tabs,
                    split_tabs::SplitTabVisualData visual_data);
 
+  // Separates the Split View with `split_id`, keeping its tabs in place. No-op
+  // if `split_id` does not exist in this TabModel.
+  void Unsplit(split_tabs::SplitTabId split_id);
+
   // Returns the Java SplitTabData for `split_id`, or nullptr if not found.
   jni_zero::ScopedJavaLocalRef<JSplitTabData> GetSplitTabData(
       JNIEnv* env,

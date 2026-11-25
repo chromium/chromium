@@ -394,6 +394,10 @@ void TabCollectionTabModelImpl::CreateSplit(
   tab_strip_collection_->CreateSplit(split_id, tabs, std::move(visual_data));
 }
 
+void TabCollectionTabModelImpl::Unsplit(split_tabs::SplitTabId split_id) {
+  tab_strip_collection_->Unsplit(split_id);
+}
+
 jni_zero::ScopedJavaLocalRef<JSplitTabData>
 TabCollectionTabModelImpl::GetSplitTabData(
     JNIEnv* env,

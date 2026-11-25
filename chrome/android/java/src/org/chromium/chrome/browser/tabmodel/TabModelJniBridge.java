@@ -840,6 +840,10 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                     @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
                     @JniType("split_tabs::SplitTabVisualData") SplitTabVisualData visualData);
 
+    @Override
+    @CalledByNative
+    public abstract void unsplit(@JniType("split_tabs::SplitTabId") SplitTabId splitTabId);
+
     @CalledByNative
     private @JniType("std::optional<split_tabs::SplitTabVisualData>") @Nullable SplitTabVisualData
             getSplitTabVisualData(@JniType("split_tabs::SplitTabId") SplitTabId splitTabId) {

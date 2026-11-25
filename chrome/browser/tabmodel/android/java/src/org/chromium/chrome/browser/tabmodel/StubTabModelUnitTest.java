@@ -217,6 +217,7 @@ public class StubTabModelUnitTest {
         var firstTab = mock(Tab.class);
         var secondTab = mock(Tab.class);
         var tabs = List.of(firstTab, secondTab);
+        var splitTabId = SplitTabId.generateNew();
         var splitTabVisualData =
                 new SplitTabVisualData(
                         SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
@@ -224,7 +225,8 @@ public class StubTabModelUnitTest {
         assertThrows(
                 UnsupportedOperationException.class,
                 () -> stubTabModel.createSplit(tabs, splitTabVisualData));
-        assertNull(stubTabModel.getSplitTabData(SplitTabId.generateNew()));
+        assertThrows(UnsupportedOperationException.class, () -> stubTabModel.unsplit(splitTabId));
+        assertNull(stubTabModel.getSplitTabData(splitTabId));
         assertTrue(stubTabModel.listSplits().isEmpty());
     }
 }

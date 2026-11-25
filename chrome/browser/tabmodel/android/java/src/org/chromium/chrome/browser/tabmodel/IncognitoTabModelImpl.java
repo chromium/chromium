@@ -736,6 +736,11 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
+    public void unsplit(SplitTabId splitTabId) {
+        mDelegateModel.unsplit(splitTabId);
+    }
+
+    @Override
     public @Nullable SplitTabData getSplitTabData(SplitTabId splitTabId) {
         return mDelegateModel.getSplitTabData(splitTabId);
     }

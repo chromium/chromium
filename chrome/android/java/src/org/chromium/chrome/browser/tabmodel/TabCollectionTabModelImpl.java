@@ -1692,6 +1692,23 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
+    public void unsplit(SplitTabId splitTabId) {
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == null) return;
+
+        try (ScopedStorageBatch ignored = mBatchFactory.get()) {
+            TabCollectionTabModelImplJni.get()
+                    .unsplit(mNativeTabCollectionTabModelImplPtr, splitTabId);
+
+            // Unsplitting moves the child tabs into the parent collection in place without adding,
+            // removing, or reordering tabs in the flat tab list. Because mTabsList only caches the
+            // flat ordered List<Tab> (and PendingTabClosureManager only tracks that flat list), we
+            // don't need to call invalidateCache(), commitPendingClosures(), or
+            // mPendingTabClosureManager.resetState().
+        }
+    }
+
+    @Override
     public @Nullable SplitTabData getSplitTabData(SplitTabId splitTabId) {
         assertOnUiThread();
         return mNativeTabCollectionTabModelImplPtr == null
@@ -3088,6 +3105,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 @JniType("split_tabs::SplitTabId") SplitTabId splitTabId,
                 @JniType("std::vector<tabs::TabInterface*>") List<Tab> tabs,
                 @JniType("split_tabs::SplitTabVisualData") SplitTabVisualData visualData);
+
+        void unsplit(
+                JniPtr<NativeTabCollectionTabModelImpl> self,
+                @JniType("split_tabs::SplitTabId") SplitTabId splitTabId);
 
         @Nullable SplitTabData getSplitTabData(
                 JniPtr<NativeTabCollectionTabModelImpl> self,

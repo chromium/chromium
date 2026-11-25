@@ -697,6 +697,12 @@ public interface TabModel extends TabList {
     @Nullable SplitTabId createSplit(List<Tab> tabs, SplitTabVisualData visualData);
 
     /**
+     * Separates the Split View identified by {@code splitTabId}, keeping its tabs open in place as
+     * individual tabs. No-op if {@code splitTabId} does not exist in this {@link TabModel}.
+     */
+    void unsplit(SplitTabId splitTabId);
+
+    /**
      * Returns the {@link SplitTabData} for {@code splitTabId}, or {@code null} if {@code
      * splitTabId} does not exist in this {@link TabModel}.
      */
