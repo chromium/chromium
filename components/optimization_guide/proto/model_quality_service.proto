@@ -39,6 +39,7 @@ import "components/optimization_guide/proto/features/proofreader_api.proto";
 import "components/optimization_guide/proto/features/quick_answers.proto";
 import "components/optimization_guide/proto/features/read_aloud_generate_text.proto";
 import "components/optimization_guide/proto/features/read_aloud_synthesize.proto";
+import "components/optimization_guide/proto/features/record_replay.proto";
 import "components/optimization_guide/proto/features/scam_detection.proto";
 import "components/optimization_guide/proto/features/skills.proto";
 import "components/optimization_guide/proto/features/smart_selection_suggestions.proto";
@@ -156,6 +157,8 @@ message LogAiDataRequest {
     QuickAnswersLoggingData quick_answers = 49;
 
     AgenticAutofillLoggingData agentic_autofill = 50;
+
+    RecordReplayLoggingData record_replay = 51;
 
     DefaultLoggingData default = 1000;
   }
