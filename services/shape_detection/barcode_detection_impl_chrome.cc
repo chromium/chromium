@@ -24,6 +24,10 @@ namespace shape_detection {
 
 namespace {
 
+// Minimum and maximum image dimensions supported for barcode detection.
+constexpr int kMinImageDimension = 4;
+constexpr int kMaxImageDimension = 2048;
+
 gfx::RectF CornerPointsToBoundingBox(
     base::span<const ChromePointF>& corner_points) {
   float xmin = std::numeric_limits<float>::infinity();
@@ -151,8 +155,15 @@ DISABLE_CFI_DLSYM
 void BarcodeDetectionImplChrome::Detect(
     const SkBitmap& bitmap,
     shape_detection::mojom::BarcodeDetection::DetectCallback callback) {
-  int width = bitmap.width();
-  int height = bitmap.height();
+  const int width = bitmap.width();
+  const int height = bitmap.height();
+  if (width < kMinImageDimension || height < kMinImageDimension ||
+      width > kMaxImageDimension || height > kMaxImageDimension) {
+    LOG(ERROR) << "Unsupported bitmap dimensions: " << width << "x" << height;
+    std::move(callback).Run({});
+    return;
+  }
+
   std::vector<uint8_t> luminances(
       (base::CheckedNumeric<size_t>(width) * height).ValueOrDie());
   for (int y = 0; y < height; y++) {
@@ -161,7 +172,7 @@ void BarcodeDetectionImplChrome::Detect(
       // Fast and approximate luminance calculation: (2*R + 5*G + B) / 8
       uint32_t luminance =
           2 * SkColorGetR(color) + 5 * SkColorGetG(color) + SkColorGetB(color);
-      luminances[y * width + x] = luminance / 8;
+      luminances[static_cast<size_t>(y) * width + x] = luminance / 8;
     }
   }
 

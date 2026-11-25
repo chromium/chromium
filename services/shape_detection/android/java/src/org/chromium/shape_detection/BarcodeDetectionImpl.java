@@ -8,6 +8,9 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.SparseArray;
 
+import androidx.annotation.VisibleForTesting;
+
+import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
@@ -28,7 +31,16 @@ import org.chromium.shape_detection.mojom.BarcodeFormat;
 public class BarcodeDetectionImpl implements BarcodeDetection {
     private static final String TAG = "BarcodeDetectionImpl";
 
-    private final BarcodeDetector mBarcodeDetector;
+    // Minimum and maximum image dimensions supported for barcode detection.
+    @VisibleForTesting static final int MIN_IMAGE_DIMENSION = 4;
+    @VisibleForTesting static final int MAX_IMAGE_DIMENSION = 2048;
+
+    private final Detector<Barcode> mBarcodeDetector;
+
+    @VisibleForTesting
+    BarcodeDetectionImpl(Detector<Barcode> barcodeDetector) {
+        mBarcodeDetector = barcodeDetector;
+    }
 
     public BarcodeDetectionImpl(BarcodeDetectorOptions options) {
         int formats = Barcode.ALL_FORMATS;
@@ -83,6 +95,17 @@ public class BarcodeDetectionImpl implements BarcodeDetection {
         // v.9.2, see https://developers.google.com/android/guides/releases.
         if (!mBarcodeDetector.isOperational()) {
             Log.e(TAG, "BarcodeDetector is not operational");
+            callback.call(new BarcodeDetectionResult[0]);
+            return;
+        }
+
+        int width = bitmapData.imageInfo.width;
+        int height = bitmapData.imageInfo.height;
+        if (width < MIN_IMAGE_DIMENSION
+                || height < MIN_IMAGE_DIMENSION
+                || width > MAX_IMAGE_DIMENSION
+                || height > MAX_IMAGE_DIMENSION) {
+            Log.e(TAG, "Unsupported bitmap dimensions: %dx%d", width, height);
             callback.call(new BarcodeDetectionResult[0]);
             return;
         }

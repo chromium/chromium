@@ -204,6 +204,7 @@ if (is_android) {
       "device/serial/android/javatests/src/org/chromium/device/serial/ChromeSerialManagerTest.java",
       "device/time_zone_monitor/android/junit/src/org/chromium/device/time_zone_monitor/TimeZoneMonitorTest.java",
       "device/wake_lock/power_save_blocker/android/junit/src/org/chromium/device/power_save_blocker/PowerSaveBlockerTest.java",
+      "shape_detection/android/junit/src/org/chromium/shape_detection/BarcodeDetectionImplTest.java",
       "shape_detection/android/junit/src/org/chromium/shape_detection/BitmapUtilsTest.java",
     ]
     deps = [
@@ -234,10 +235,12 @@ if (is_android) {
       "//services/device/time_zone_monitor:java",
       "//services/device/wake_lock/power_save_blocker:java",
       "//services/shape_detection:shape_detection_java",
+      "//services/shape_detection/public/mojom:mojom_java",
       "//skia/public/mojom:mojom_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/google-truth:google_truth_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/gfx/geometry/mojom:mojom_java",
     ]
 
     # Enable tests for MLKit-based implementations for AICore.

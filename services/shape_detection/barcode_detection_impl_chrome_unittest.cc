@@ -6,13 +6,16 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/shape_detection/barcode_detection_provider_chrome.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/codec/png_codec.h"
 
 namespace shape_detection {
@@ -115,16 +118,9 @@ TEST_P(BarcodeDetectionImplChromeTest, Scan) {
       ConnectToBarcodeDetector();
 
   SkBitmap image = LoadTestImage(GetParam().filename);
-
-  std::vector<mojom::BarcodeDetectionResultPtr> results;
-  base::RunLoop run_loop;
-  barcode_detector->Detect(
-      image, base::BindLambdaForTesting(
-                 [&](std::vector<mojom::BarcodeDetectionResultPtr> barcodes) {
-                   results = std::move(barcodes);
-                   run_loop.Quit();
-                 }));
-  run_loop.Run();
+  base::test::TestFuture<std::vector<mojom::BarcodeDetectionResultPtr>> future;
+  barcode_detector->Detect(image, future.GetCallback());
+  std::vector<mojom::BarcodeDetectionResultPtr> results = future.Take();
   EXPECT_EQ(GetParam().num_expected_values, results.size());
   ASSERT_LE(results.size(), kMaxNumExpectedValues);
   for (size_t i = 0; i < results.size(); ++i) {
@@ -141,5 +137,86 @@ TEST_P(BarcodeDetectionImplChromeTest, Scan) {
 INSTANTIATE_TEST_SUITE_P(,
                          BarcodeDetectionImplChromeTest,
                          testing::ValuesIn(kTestParams));
+
+TEST_F(BarcodeDetectionImplChromeTest, RejectsTooSmallDimensions) {
+  mojo::Remote<mojom::BarcodeDetection> barcode_detector =
+      ConnectToBarcodeDetector();
+
+  for (const gfx::Size& size :
+       {gfx::Size(1, 100), gfx::Size(100, 1), gfx::Size(3, 100),
+        gfx::Size(100, 3), gfx::Size(3, 3)}) {
+    SkBitmap image;
+    image.allocN32Pixels(size.width(), size.height());
+    image.eraseColor(SK_ColorWHITE);
+
+    base::test::TestFuture<std::vector<mojom::BarcodeDetectionResultPtr>>
+        future;
+    barcode_detector->Detect(image, future.GetCallback());
+    EXPECT_TRUE(future.Get().empty()) << size.ToString();
+  }
+}
+
+TEST_F(BarcodeDetectionImplChromeTest, RejectsOversizedDimensions) {
+  mojo::Remote<mojom::BarcodeDetection> barcode_detector =
+      ConnectToBarcodeDetector();
+
+  SkBitmap qr_image = LoadTestImage(FILE_PATH_LITERAL("qr_code.png"));
+  ASSERT_GT(qr_image.width(), 0);
+  ASSERT_GT(qr_image.height(), 0);
+
+  // Embed a valid QR code into oversized canvases to confirm that detection is
+  // rejected by the dimension guard rather than returning empty on blank data.
+  for (const gfx::Size& size :
+       {gfx::Size(2049, qr_image.height()), gfx::Size(qr_image.width(), 2049),
+        gfx::Size(2049, 2049)}) {
+    SkBitmap canvas_bitmap;
+    canvas_bitmap.allocN32Pixels(size.width(), size.height());
+    canvas_bitmap.eraseColor(SK_ColorWHITE);
+    SkCanvas canvas(canvas_bitmap);
+    canvas.drawImage(qr_image.asImage(), 0, 0);
+
+    base::test::TestFuture<std::vector<mojom::BarcodeDetectionResultPtr>>
+        future;
+    barcode_detector->Detect(canvas_bitmap, future.GetCallback());
+    EXPECT_TRUE(future.Get().empty()) << size.ToString();
+  }
+}
+
+TEST_F(BarcodeDetectionImplChromeTest, AcceptsBoundaryDimensions) {
+  mojo::Remote<mojom::BarcodeDetection> barcode_detector =
+      ConnectToBarcodeDetector();
+
+  // Lower boundary and extreme aspect ratios are accepted without crashing.
+  for (const gfx::Size& size :
+       {gfx::Size(4, 4), gfx::Size(2048, 4), gfx::Size(4, 2048)}) {
+    SkBitmap min_image;
+    min_image.allocN32Pixels(size.width(), size.height());
+    min_image.eraseColor(SK_ColorWHITE);
+
+    base::test::TestFuture<std::vector<mojom::BarcodeDetectionResultPtr>>
+        future;
+    barcode_detector->Detect(min_image, future.GetCallback());
+    EXPECT_TRUE(future.Get().empty()) << size.ToString();
+  }
+
+  // Upper boundary (2048px) still decodes an embedded QR code.
+  SkBitmap qr_image = LoadTestImage(FILE_PATH_LITERAL("qr_code.png"));
+  for (const gfx::Size& size :
+       {gfx::Size(2048, qr_image.height()), gfx::Size(qr_image.width(), 2048),
+        gfx::Size(2048, 2048)}) {
+    SkBitmap canvas_bitmap;
+    canvas_bitmap.allocN32Pixels(size.width(), size.height());
+    canvas_bitmap.eraseColor(SK_ColorWHITE);
+    SkCanvas canvas(canvas_bitmap);
+    canvas.drawImage(qr_image.asImage(), 0, 0);
+
+    base::test::TestFuture<std::vector<mojom::BarcodeDetectionResultPtr>>
+        future;
+    barcode_detector->Detect(canvas_bitmap, future.GetCallback());
+    std::vector<mojom::BarcodeDetectionResultPtr> results = future.Take();
+    ASSERT_EQ(1u, results.size()) << size.ToString();
+    EXPECT_EQ("https://chromium.org", results[0]->raw_value);
+  }
+}
 
 }  // namespace shape_detection
