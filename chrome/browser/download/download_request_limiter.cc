@@ -114,7 +114,9 @@ DownloadRequestLimiter::TabDownloadState::~TabDownloadState() {
   DCHECK(callbacks_.empty());
 
   // And we should have invalidated the back pointer.
-  CHECK(!factory_.HasWeakPtrs(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/588710569): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!factory_.HasWeakPtrs());
 }
 
 void DownloadRequestLimiter::TabDownloadState::SetDownloadStatusAndNotify(
