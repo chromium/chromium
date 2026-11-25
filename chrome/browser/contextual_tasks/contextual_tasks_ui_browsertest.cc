@@ -1821,3 +1821,62 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInternalsPostRearchitectureBrowserTest,
                                    "  .then(() => true, () => false)"));
   EXPECT_FALSE(web_contents->IsCrashed());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class ContextualTasksToolbarPostRearchitectureBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  ContextualTasksToolbarPostRearchitectureBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksForceEntryPointEligibility,
+         contextual_tasks::kContextualTasksSidePanelRearchitecture},
+        {contextual_tasks::kContextualTasksRearchitecture});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksToolbarPostRearchitectureBrowserTest,
+                       SidePanelToolbarLoadsUiColorSet) {
+  auto* service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  auto* tab = TabListInterface::From(browser())->GetActiveTab();
+  service->InitSidePanelWithGhostLoader(browser(), tab, nullptr);
+
+  auto* panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(panel_controller);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return panel_controller->IsPanelOpenForContextualTask(); }));
+
+  content::WebContents* toolbar_contents =
+      panel_controller->GetToolbarWebContents();
+  ASSERT_TRUE(toolbar_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(toolbar_contents));
+
+  // ColorChangeUpdater rewrites the colors.css query string via
+  // URLSearchParams, encoding `sets=ui,chrome` as `sets=ui%2Cchrome`. Parse the
+  // URL search params and verify `--color-sys-state-focus-ring` resolves.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(
+               toolbar_contents,
+               "(() => {"
+               "  const link = document.querySelector("
+               "      'link[href*=\"colors.css\"]');"
+               "  if (!link) {"
+               "    return false;"
+               "  }"
+               "  const sets = new URL(link.href, location.href)"
+               "      .searchParams.get('sets');"
+               "  const focusRing = getComputedStyle(document.documentElement)"
+               "      .getPropertyValue('--color-sys-state-focus-ring')"
+               "      .trim();"
+               "  return sets === 'ui,chrome' && focusRing.length > 0;"
+               "})()")
+        .ExtractBool();
+  }));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

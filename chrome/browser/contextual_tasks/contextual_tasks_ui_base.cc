@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -69,6 +70,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -797,6 +799,11 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
 
   dict.Set("isSmallDeviceFormFactor",
            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE);
+  // Suppress the default webpage right-click menu on the side panel toolbar
+  // for branded release channels while keeping it available on local
+  // developer builds (Channel::UNKNOWN) for DevTools inspection.
+  dict.Set("suppressContextMenu",
+           chrome::GetChannel() != version_info::Channel::UNKNOWN);
 #if BUILDFLAG(IS_ANDROID)
   dict.Set("isUserFeedbackAllowed",
            profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed));

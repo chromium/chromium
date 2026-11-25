@@ -110,4 +110,79 @@ suite('ToolbarAppTest', () => {
     newThreadButton.click();
     await toolbarProxy.handler.whenCalled('createNewThread');
   });
+
+  test(
+      'suppresses mouse and keyboard contextmenu events when enabled',
+      async () => {
+        const originalSuppressContextMenu =
+            loadTimeData.getBoolean('suppressContextMenu');
+        try {
+          loadTimeData.overrideValues({suppressContextMenu: true});
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          toolbarApp = document.createElement('contextual-tasks-toolbar-app');
+          document.body.appendChild(toolbarApp);
+          await toolbarApp.updateComplete;
+
+          const topToolbar =
+              toolbarApp.shadowRoot.querySelector('top-toolbar')!;
+
+          // Right-click (button 2) bubbling across shadow boundaries.
+          const mouseContextMenuEvent = new MouseEvent('contextmenu', {
+            bubbles: true,
+            button: 2,
+            cancelable: true,
+            composed: true,
+          });
+          assertFalse(topToolbar.dispatchEvent(mouseContextMenuEvent));
+          assertTrue(mouseContextMenuEvent.defaultPrevented);
+
+          // Keyboard ContextMenu / Shift+F10 (button 0).
+          const keyboardContextMenuEvent = new MouseEvent('contextmenu', {
+            bubbles: true,
+            button: 0,
+            cancelable: true,
+            composed: true,
+          });
+          assertFalse(topToolbar.dispatchEvent(keyboardContextMenuEvent));
+          assertTrue(keyboardContextMenuEvent.defaultPrevented);
+
+          toolbarApp.remove();
+          const disconnectedEvent = new MouseEvent('contextmenu', {
+            bubbles: true,
+            button: 0,
+            cancelable: true,
+            composed: true,
+          });
+          assertTrue(toolbarApp.dispatchEvent(disconnectedEvent));
+          assertFalse(disconnectedEvent.defaultPrevented);
+        } finally {
+          loadTimeData.overrideValues(
+              {suppressContextMenu: originalSuppressContextMenu});
+        }
+      });
+
+  test('allows contextmenu events when suppression is disabled', async () => {
+    const originalSuppressContextMenu =
+        loadTimeData.getBoolean('suppressContextMenu');
+    try {
+      loadTimeData.overrideValues({suppressContextMenu: false});
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      toolbarApp = document.createElement('contextual-tasks-toolbar-app');
+      document.body.appendChild(toolbarApp);
+      await toolbarApp.updateComplete;
+
+      const topToolbar = toolbarApp.shadowRoot.querySelector('top-toolbar')!;
+      const mouseContextMenuEvent = new MouseEvent('contextmenu', {
+        bubbles: true,
+        button: 2,
+        cancelable: true,
+        composed: true,
+      });
+      assertTrue(topToolbar.dispatchEvent(mouseContextMenuEvent));
+      assertFalse(mouseContextMenuEvent.defaultPrevented);
+    } finally {
+      loadTimeData.overrideValues(
+          {suppressContextMenu: originalSuppressContextMenu});
+    }
+  });
 });

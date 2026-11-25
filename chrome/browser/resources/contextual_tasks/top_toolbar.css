@@ -62,6 +62,10 @@ permission-dashboard {
   margin-inline-end: 8px;
 }
 
+:host([is-side-panel-rearchitecture-enabled]) permission-dashboard {
+  margin-inline-end: 12px;
+}
+
 permission-dashboard[hidden] {
   display: none;
 }

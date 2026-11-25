@@ -1136,6 +1136,17 @@ suite('TopToolbarTest', () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       toolbarUiService = toolbarProxy.toolbarUiService;
       topToolbar = document.createElement('top-toolbar');
+      // Provide layout constants normally loaded by toolbar_app's
+      // layout_constants.css when top-toolbar is mounted standalone in tests.
+      topToolbar.style.setProperty('--location-bar-height', '34px');
+      topToolbar.style.setProperty(
+          '--location-bar-page-info-icon-vertical-padding', '5px');
+      topToolbar.style.setProperty('--location-bar-chip-padding', '4px');
+      topToolbar.style.setProperty('--location-bar-chip-icon-size', '16px');
+      topToolbar.style.setProperty(
+          '--location-bar-child-corner-radius', '12px');
+      topToolbar.style.setProperty(
+          '--location-bar-child-internal-spacing', '4px');
       document.body.appendChild(topToolbar);
       await microtasksFinished();
     });
@@ -1348,6 +1359,51 @@ suite('TopToolbarTest', () => {
                   id === 'kContextualTasksSuperGButtonElementId');
           assertTrue(!!gButtonStatus);
           assertTrue(gButtonStatus[1]);
+        });
+
+    test(
+        'matches logo-to-title spacing when permission chip replaces logo',
+        async () => {
+          topToolbar.style.width = '360px';
+          topToolbar.title = 'Sample thread title';
+          topToolbar.isAimEligible = true;
+          await microtasksFinished();
+
+          const topRow =
+              topToolbar.shadowRoot.querySelector<HTMLElement>('#top-row')!;
+          const logoContainer =
+              topRow.querySelector<HTMLElement>('.top-toolbar-logo-container')!;
+          const titleEl =
+              topRow.querySelector<HTMLElement>('.top-toolbar-title')!;
+          const dashboard =
+              topRow.querySelector<HTMLElement>('permission-dashboard')!;
+
+          const logoToTitleGap = titleEl.getBoundingClientRect().left -
+              logoContainer.getBoundingClientRect().right;
+          assertEquals(12, Math.round(logoToTitleGap));
+
+          topToolbar.permissionDashboardState = {
+            indicatorChip: createFakeChip(),
+            requestChip: createFakeChip({
+              isVisible: true,
+              isFullyCollapsed: true,
+              iconName: 'webui-toolbar-shared:mic',
+            }),
+            isDividerVisible: false,
+          };
+          await microtasksFinished();
+
+          assertTrue(!!dashboard.shadowRoot);
+          const requestChip =
+              dashboard.shadowRoot.querySelector<HTMLElement>('#request-chip');
+          assertTrue(!!requestChip);
+          assertEquals(
+              24, Math.round(requestChip.getBoundingClientRect().width));
+          assertEquals(
+              24, Math.round(requestChip.getBoundingClientRect().height));
+          const chipToTitleGap = titleEl.getBoundingClientRect().left -
+              requestChip.getBoundingClientRect().right;
+          assertEquals(12, Math.round(chipToTitleGap));
         });
   });
   // </if>

@@ -58,9 +58,16 @@ export class ContextualTasksToolbarAppElement extends CrLitElement {
   private toolbarBrowserProxy_: ToolbarBrowserProxy =
       ToolbarBrowserProxyImpl.getInstance();
   private toolbarListenerIds_: number[] = [];
+  private onContextMenu_ = (e: Event) => {
+    e.preventDefault();
+  };
 
   override connectedCallback() {
     super.connectedCallback();
+
+    if (loadTimeData.getBoolean('suppressContextMenu')) {
+      this.addEventListener('contextmenu', this.onContextMenu_);
+    }
 
     // <if expr="not is_android">
     ColorChangeUpdater.forDocument().start();
@@ -81,6 +88,7 @@ export class ContextualTasksToolbarAppElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.removeEventListener('contextmenu', this.onContextMenu_);
     this.toolbarListenerIds_.forEach(
         id => this.toolbarBrowserProxy_.callbackRouter.removeListener(id));
     this.toolbarListenerIds_ = [];
