@@ -21,16 +21,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
@@ -106,6 +109,12 @@ public class AutoplayMutedNotificationTest {
 
     private MockAudioFocusChangeListener mAudioFocusChangeListener;
     private HistogramWatcher mMutedHistogramWatcher;
+    private AutoplayMutedPageFacility mAutoplayMutedFacility;
+
+    private static class AutoplayMutedPageFacility extends WebPageFacility {
+        public final HtmlElement playButton = declareHtmlElement("#" + PLAY_BUTTON_ID);
+        public final HtmlElement unmuteButton = declareHtmlElement("#" + UNMUTE_BUTTON_ID);
+    }
 
     @Before
     public void setUp() {
@@ -114,7 +123,10 @@ public class AutoplayMutedNotificationTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(AUDIO_FOCUS_REQUEST_RESULT_HISTOGRAM)
                         .build();
-        mActivityTestRule.startOnTestServerUrl(TEST_PATH);
+        mAutoplayMutedFacility = new AutoplayMutedPageFacility();
+        mActivityTestRule.startOnPage(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH),
+                WebPageStation.newBuilder().withFacility(mAutoplayMutedFacility));
     }
 
     @After
@@ -238,7 +250,7 @@ public class AutoplayMutedNotificationTest {
         DOMUtils.pauseMedia(tab.getWebContents(), VIDEO_ID);
 
         // Restart the video with a gesture: no longer "muted autoplay".
-        DOMUtils.clickNodeWithJavaScript(tab.getWebContents(), PLAY_BUTTON_ID);
+        mAutoplayMutedFacility.playButton.jsClickTo().executeTriggerWithoutTransition();
         DOMUtils.waitForMediaPlay(tab.getWebContents(), VIDEO_ID);
 
         // Audio focus notification is OS-driven.
@@ -276,23 +288,30 @@ public class AutoplayMutedNotificationTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         AUDIO_FOCUS_REQUEST_RESULT_HISTOGRAM, AUDIO_FOCUS_REQUEST_GRANTED);
 
-        // Restart the video with a gesture: no longer "muted autoplay".
-        DOMUtils.clickNodeWithJavaScript(tab.getWebContents(), UNMUTE_BUTTON_ID);
-        Assert.assertFalse(DOMUtils.isMediaPaused(tab.getWebContents(), VIDEO_ID));
-
-        // Audio focus was requested by Chrome and a notification is visible.
         // The pre-existing audio focus holder only loses focus if multi-audio focus is disabled.
-        unmutedHistogramWatcher.pollInstrumentationThreadUntilSatisfied();
         Matcher<Integer> expectedFocusStateMatcher =
                 isMultiAudioFocusEnabled()
                         ? Matchers.is(AudioManager.AUDIOFOCUS_GAIN)
                         : Matchers.not(AudioManager.AUDIOFOCUS_GAIN);
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    Criteria.checkThat(
-                            mAudioFocusChangeListener.getAudioFocusState(),
-                            expectedFocusStateMatcher);
-                    Criteria.checkThat(isMediaNotificationVisible(), Matchers.is(true));
-                });
+        // Unmute with a gesture: no longer "muted autoplay". Audio focus is requested by Chrome
+        // and a notification is visible.
+        mAutoplayMutedFacility
+                .unmuteButton
+                .jsClickTo()
+                .waitFor(
+                        SimpleConditions.uiThreadCondition(
+                                "Audio focus state matches expected",
+                                () -> {
+                                    int focusState = mAudioFocusChangeListener.getAudioFocusState();
+                                    return Condition.whether(
+                                            expectedFocusStateMatcher.matches(focusState),
+                                            "audioFocusState=%d",
+                                            focusState);
+                                }),
+                        SimpleConditions.uiThreadCondition(
+                                "Media notification is visible",
+                                () -> Condition.whether(isMediaNotificationVisible())));
+        Assert.assertFalse(DOMUtils.isMediaPaused(tab.getWebContents(), VIDEO_ID));
+        unmutedHistogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser.test.transit;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.graphics.Rect;
@@ -21,6 +22,7 @@ import org.chromium.content_public.browser.test.transit.HtmlConditions.Displayed
 import org.chromium.content_public.browser.test.transit.HtmlConditions.NotDisplayedCondition;
 import org.chromium.content_public.browser.test.transit.HtmlConditions.StringPropertyCondition;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
@@ -100,6 +102,21 @@ public class HtmlElement extends Element<Rect> {
     /** Returns a TripBuilder with clicking the HTML element as trigger. */
     public TripBuilder clickTo() {
         return new TripBuilder().withContext(this).withTrigger(getClickTrigger());
+    }
+
+    /**
+     * Returns a TripBuilder with clicking the HTML element via JavaScript ({@code node.click()}
+     * with a user gesture) as trigger.
+     */
+    public TripBuilder jsClickTo() {
+        return new TripBuilder()
+                .withContext(this)
+                .withTrigger(
+                        () ->
+                                WebContentsUtils.evaluateJavaScriptWithUserGesture(
+                                        assertNonNull(mWebContentsSupplier.get()),
+                                        "(" + mHtmlElementSpec.getSelectorJs() + ").click();",
+                                        /* callback= */ null));
     }
 
     /** Returns a TripBuilder with long pressing the HTML element as trigger. */

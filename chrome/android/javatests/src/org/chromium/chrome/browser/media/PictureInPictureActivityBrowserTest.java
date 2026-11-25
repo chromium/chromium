@@ -19,6 +19,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.ConditionWithResult;
+import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -31,13 +34,14 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaSwitches;
 import org.chromium.ui.test.util.DeviceRestriction;
 
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** End-to-end browser tests for PictureInPictureActivity. */
@@ -58,6 +62,7 @@ public class PictureInPictureActivityBrowserTest {
 
     private ChromeTabbedActivity mActivity;
     private WebPageStation mPage;
+    private PipVideoPageFacility mPipFacility;
 
     private static final String VIDEO_ID = "video";
     private static final String PIP_BUTTON_ID = "pip";
@@ -65,7 +70,10 @@ public class PictureInPictureActivityBrowserTest {
             "/chrome/test/data/media/picture-in-picture/autopip-video.html";
     private static final String VIDEO_CONFERENCING_PAGE =
             "/chrome/test/data/media/picture-in-picture/video-conferencing-usermedia.html";
-    private static final long PIP_TIMEOUT_MILLISECONDS = 5000L;
+
+    private static class PipVideoPageFacility extends WebPageFacility {
+        public final HtmlElement pipButton = declareHtmlElement("#" + PIP_BUTTON_ID);
+    }
 
     @Before
     public void setUp() {
@@ -89,7 +97,7 @@ public class PictureInPictureActivityBrowserTest {
         DOMUtils.playMedia(webContents, VIDEO_ID);
         DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
 
-        PictureInPictureActivity pipActivity = enterPip(webContents);
+        PictureInPictureActivity pipActivity = enterPip();
         closePip(pipActivity);
         // Video should be paused after closing pip.
         CriteriaHelper.pollInstrumentationThread(
@@ -104,7 +112,7 @@ public class PictureInPictureActivityBrowserTest {
         DOMUtils.playMedia(webContents, VIDEO_ID);
         DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
 
-        PictureInPictureActivity pipActivity = enterPip(webContents);
+        PictureInPictureActivity pipActivity = enterPip();
         closePip(pipActivity);
         // Conference video should still be playing after closing pip.
         assertFalse(
@@ -119,7 +127,7 @@ public class PictureInPictureActivityBrowserTest {
         DOMUtils.playMedia(webContents, VIDEO_ID);
         DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
 
-        PictureInPictureActivity pipActivity = enterPip(webContents);
+        PictureInPictureActivity pipActivity = enterPip();
         waitForRemoteActions(pipActivity);
 
         // The test video has a 'loop' attribute. Remove it so the video can actually end.
@@ -154,46 +162,55 @@ public class PictureInPictureActivityBrowserTest {
         closePip(pipActivity);
     }
 
-    private PictureInPictureActivity enterPip(WebContents webContents) {
-        DOMUtils.clickNodeWithJavaScript(webContents, PIP_BUTTON_ID);
-
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        // Check that the element in PiP is our video element.
-                        return JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                                        webContents,
-                                        "document.pictureInPictureElement && "
-                                                + "document.pictureInPictureElement.id == '"
-                                                + VIDEO_ID
-                                                + "'")
-                                .equals("true");
-                    } catch (TimeoutException e) {
-                        return false;
-                    }
-                },
-                "Video element did not enter Picture-in-Picture mode.");
-
-        return getPictureInPictureActivity();
-    }
-
-    private PictureInPictureActivity getPictureInPictureActivity() {
-        final PictureInPictureActivity[] activityHolder = new PictureInPictureActivity[1];
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    List<Activity> activities = ApplicationStatus.getRunningActivities();
-                    for (Activity activity : activities) {
-                        if (activity instanceof PictureInPictureActivity pipActivity) {
-                            activityHolder[0] = pipActivity;
-                            return pipActivity.isPipTransitionCompleteForTesting(mActivity);
-                        }
-                    }
-                    return false;
-                },
-                "Could not find PictureInPictureActivity in PiP mode.",
-                PIP_TIMEOUT_MILLISECONDS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        return activityHolder[0];
+    private PictureInPictureActivity enterPip() {
+        ConditionWithResult<PictureInPictureActivity> pipActivityCondition =
+                SimpleConditions.uiThreadConditionWithResult(
+                        "PictureInPictureActivity is in PiP mode",
+                        mPage.getActivityElement(),
+                        activity -> {
+                            for (Activity runningActivity :
+                                    ApplicationStatus.getRunningActivities()) {
+                                if (runningActivity
+                                        instanceof PictureInPictureActivity pipActivity) {
+                                    if (pipActivity.isPipTransitionCompleteForTesting(activity)) {
+                                        return Condition.fulfilled().withResult(pipActivity);
+                                    }
+                                    return Condition.notFulfilled(
+                                                    "PictureInPictureActivity transition"
+                                                            + " incomplete")
+                                            .withoutResult();
+                                }
+                            }
+                            return Condition.notFulfilled("PictureInPictureActivity not running")
+                                    .withoutResult();
+                        });
+        mPipFacility
+                .pipButton
+                .jsClickTo()
+                .waitFor(
+                        SimpleConditions.instrumentationThreadCondition(
+                                "Video element entered Picture-in-Picture mode",
+                                mPage.webContentsElement,
+                                webContents -> {
+                                    try {
+                                        // Check that the element in PiP is our video element.
+                                        String result =
+                                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                                        webContents,
+                                                        "document.pictureInPictureElement"
+                                                                + " ? document"
+                                                                + ".pictureInPictureElement.id"
+                                                                + " : null");
+                                        return Condition.whether(
+                                                ("\"" + VIDEO_ID + "\"").equals(result),
+                                                "pictureInPictureElement.id=%s",
+                                                result);
+                                    } catch (TimeoutException e) {
+                                        return Condition.error("JS timed out: %s", e.getMessage());
+                                    }
+                                }),
+                        pipActivityCondition);
+        return pipActivityCondition.get();
     }
 
     private void closePip(PictureInPictureActivity activity) {
@@ -208,9 +225,12 @@ public class PictureInPictureActivityBrowserTest {
 
     private WebContents loadUrlAndInitializeForTest(String pageUrl) {
         String url = mActivityTestRule.getTestServer().getURL(pageUrl);
-        mPage = mPage.loadWebPageProgrammatically(url);
+        mPipFacility = new PipVideoPageFacility();
+        mPage =
+                mPage.loadPageProgrammatically(
+                        url, WebPageStation.newBuilder().withFacility(mPipFacility));
 
-        return mActivityTestRule.getWebContents();
+        return mPage.webContentsElement.value();
     }
 
     private void waitForRemoteActions(PictureInPictureActivity pipActivity) {

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.media.ui;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.os.Build;
 
 import androidx.test.filters.MediumTest;
@@ -21,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -43,10 +46,13 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
@@ -96,11 +102,21 @@ public class FullscreenVideoPictureInPictureControllerTest {
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private ChromeTabbedActivity mActivity;
+    private WebPageStation mPage;
+    private BigBuckPlayerPageFacility mPlayerFacility;
+
+    private static class BigBuckPlayerPageFacility extends WebPageFacility {
+        public final HtmlElement fullscreenButton = declareHtmlElement("#fullscreen");
+    }
 
     @Before
     public void setUp() {
-        mActivityTestRule.startOnWebPage(mActivityTestRule.getTestServer().getURL(TEST_PATH));
-        mActivity = mActivityTestRule.getActivity();
+        mPlayerFacility = new BigBuckPlayerPageFacility();
+        mPage =
+                mActivityTestRule.startOnPage(
+                        mActivityTestRule.getTestServer().getURL(TEST_PATH),
+                        WebPageStation.newBuilder().withFacility(mPlayerFacility));
+        mActivity = mPage.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ScreenOrientationProvider.getInstance()
@@ -210,7 +226,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @DisabledTest(message = "b/354013006")
     public void testExitOnCloseTab() throws Throwable {
         // We want 2 Tabs so we can close the first without any special behaviour.
-        mActivityTestRule.loadUrlInNewTab(mActivityTestRule.getTestServer().getURL(TEST_PATH));
+        openTestPageInNewTab();
 
         testExitOn(() -> JavaScriptUtils.executeJavaScript(getWebContents(), "window.close()"));
     }
@@ -282,21 +298,19 @@ public class FullscreenVideoPictureInPictureControllerTest {
         mActivityTestRule.launchMainActivityFromLauncher();
 
         // Open a new tab and wait for it to load.
-        mActivityTestRule.loadUrlInNewTab(mActivityTestRule.getTestServer().getURL(TEST_PATH));
-
-        // Wait for the new tab to be active and ready.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Tab tab = mActivityTestRule.getActivityTab();
-                    return tab != null && tab.getWebContents() != null && !tab.isClosing();
-                },
-                "New tab should be active and ready",
-                PIP_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        openTestPageInNewTab();
 
         enterFullscreen(true);
         triggerAutoPiPAndWait();
         exitPipAndFullscreenAndWait();
+    }
+
+    private void openTestPageInNewTab() {
+        mPlayerFacility = new BigBuckPlayerPageFacility();
+        mPage =
+                mPage.openFakeLink(
+                        mActivityTestRule.getTestServer().getURL(TEST_PATH),
+                        WebPageStation.newBuilder().withFacility(mPlayerFacility));
     }
 
     private void exitPipAndFullscreenAndWait() throws Throwable {
@@ -364,28 +378,25 @@ public class FullscreenVideoPictureInPictureControllerTest {
         DOMUtils.waitForMediaPlay(getWebContents(), VIDEO_ID);
 
         // Trigger requestFullscreen() via a click on a button.
-        Assert.assertTrue(
-                DOMUtils.clickNode(
-                        getWebContents(),
-                        "fullscreen",
-                        /* goThroughRootAndroidView= */ true,
-                        /* shouldScrollIntoView= */ false));
-
-        // We use the web contents fullscreen heuristic.
-        CriteriaHelper.pollUiThread(
-                getWebContents()::hasActiveEffectivelyFullscreenVideo,
-                PIP_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-
-        // It can take a while for the fullscreen video to register.
-        final Tab tab = mActivityTestRule.getActivityTab();
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    Criteria.checkThat(
-                            tab.getWebContents().getFullscreenVideoSize(), Matchers.notNullValue());
-                },
-                PIP_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        mPlayerFacility
+                .fullscreenButton
+                .clickTo()
+                .withTimeout(PIP_TIMEOUT_MS)
+                .waitFor(
+                        SimpleConditions.uiThreadCondition(
+                                "WebContents has active effectively fullscreen video",
+                                mPage.webContentsElement,
+                                webContents ->
+                                        Condition.whether(
+                                                webContents.hasActiveEffectivelyFullscreenVideo())),
+                        // It can take a while for the fullscreen video to register.
+                        SimpleConditions.uiThreadCondition(
+                                "Fullscreen video size is non-null",
+                                mPage.webContentsElement,
+                                webContents -> {
+                                    Rect size = webContents.getFullscreenVideoSize();
+                                    return Condition.whether(size != null, "size=%s", size);
+                                }));
     }
 
     private void testExitOn(Runnable runnable) throws Throwable {
