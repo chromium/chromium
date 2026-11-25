@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_view.h"
 #include "chrome/browser/ui/autofill/email_verifier/mock_email_verification_popup_view.h"
@@ -142,10 +141,9 @@ TEST_F(EmailVerificationPopupControllerTest, HasFocusReflectsViewFocus) {
 }
 
 // Tests that calling Show with a `nullptr` WebContents resolves callback with
-// kOther and logs Blink.Evp.PermissionUi.Status.
+// kOther.
 TEST_F(EmailVerificationPopupControllerTest,
        ShowWithNullWebContentsResolvesCallbackWithOther) {
-  base::HistogramTester histogram_tester;
   auto controller = std::make_unique<EmailVerificationPopupController>(
       /*web_contents=*/nullptr);
 
@@ -155,16 +153,11 @@ TEST_F(EmailVerificationPopupControllerTest,
 
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kOther);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.PermissionUi.Status",
-      EmailVerificationPermissionUiStatus::kOther, 1);
 }
 
-// Tests that if view creation fails, Show resolves callback with kOther and
-// logs Blink.Evp.PermissionUi.Status.
+// Tests that if view creation fails, Show resolves callback with kOther.
 TEST_F(EmailVerificationPopupControllerTest,
        ShowEarlyReturnWhenViewFactoryFailsResolvesCallback) {
-  base::HistogramTester histogram_tester;
   controller().set_view_factory_for_testing(base::BindRepeating(
       [](base::WeakPtr<EmailVerificationPopupController>, views::Widget*,
          const url::Origin&, const gfx::Image&, const std::u16string&,
@@ -179,16 +172,12 @@ TEST_F(EmailVerificationPopupControllerTest,
 
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kOther);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.PermissionUi.Status",
-      EmailVerificationPermissionUiStatus::kOther, 1);
 }
 
 // Tests that confirming the prompt (clicking Verify) transitions the popup view
 // to loading, sets is_loading to true, and resolves the callback with kAllowed.
 TEST_F(EmailVerificationPopupControllerTest,
        ConfirmPromptTransitionsToLoadingAndResolvesAllowed) {
-  base::HistogramTester histogram_tester;
   auto mock_view = SetupMockViewFactory();
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
@@ -202,9 +191,6 @@ TEST_F(EmailVerificationPopupControllerTest,
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kAllowed);
   EXPECT_TRUE(controller().is_loading());
-  histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.PermissionUi.Status",
-      EmailVerificationPermissionUiStatus::kAllowed, 1);
 
   // Clean up the active loading view.
   testing::Mock::VerifyAndClearExpectations(mock_view.get());
@@ -217,7 +203,6 @@ TEST_F(EmailVerificationPopupControllerTest,
 // resets is_loading to false, and resolves callback with kDeclined.
 TEST_F(EmailVerificationPopupControllerTest,
        CancelPromptHidesViewAndResolvesDeclined) {
-  base::HistogramTester histogram_tester;
   auto mock_view = SetupMockViewFactory();
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
@@ -230,16 +215,12 @@ TEST_F(EmailVerificationPopupControllerTest,
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kDeclined);
   EXPECT_FALSE(controller().is_loading());
-  histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.PermissionUi.Status",
-      EmailVerificationPermissionUiStatus::kDeclined, 1);
 }
 
 // Tests that user interaction on the WebContents (clicking outside) while the
 // prompt is showing hides the view and resolves callback with kUserAborted.
 TEST_F(EmailVerificationPopupControllerTest,
        UserInteractionDismissesWhenNotLoading) {
-  base::HistogramTester histogram_tester;
   auto mock_view = SetupMockViewFactory();
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
@@ -253,9 +234,6 @@ TEST_F(EmailVerificationPopupControllerTest,
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kUserAborted);
   EXPECT_FALSE(controller().is_loading());
-  histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.PermissionUi.Status",
-      EmailVerificationPermissionUiStatus::kUserAborted, 1);
 }
 
 // Tests that user interaction on the WebContents while the prompt is loading
@@ -284,11 +262,9 @@ TEST_F(EmailVerificationPopupControllerTest,
 
 // Tests that user interaction when no view is open is a safe no-op.
 TEST_F(EmailVerificationPopupControllerTest, UserInteractionIgnoredWhenNoView) {
-  base::HistogramTester histogram_tester;
   blink::WebMouseEvent mouse_event;
   controller().DidGetUserInteraction(mouse_event);
   EXPECT_FALSE(controller().is_loading());
-  histogram_tester.ExpectTotalCount("Blink.Evp.PermissionUi.Status", 0);
 }
 
 // Tests mapping of SuggestionHidingReason to
@@ -325,7 +301,6 @@ TEST_F(EmailVerificationPopupControllerTest, HideReasonsMappingWhenNotLoading) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(testing::Message()
                  << "Reason: " << static_cast<int>(test_case.reason));
-    base::HistogramTester histogram_tester;
     auto mock_view = SetupMockViewFactory();
 
     TestFuture<EmailVerificationPermissionUiStatus> future;
@@ -337,8 +312,6 @@ TEST_F(EmailVerificationPopupControllerTest, HideReasonsMappingWhenNotLoading) {
 
     ASSERT_TRUE(future.IsReady());
     EXPECT_EQ(future.Get(), test_case.expected_status);
-    histogram_tester.ExpectUniqueSample("Blink.Evp.PermissionUi.Status",
-                                        test_case.expected_status, 1);
   }
 }
 
@@ -415,7 +388,6 @@ TEST_F(EmailVerificationPopupControllerTest,
 // Tests that calling Dismiss while a popup is showing resolves callback with
 // kOther and hides the view.
 TEST_F(EmailVerificationPopupControllerTest, DismissWhileShowingResolvesOther) {
-  base::HistogramTester histogram_tester;
   auto mock_view = SetupMockViewFactory();
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
@@ -428,9 +400,6 @@ TEST_F(EmailVerificationPopupControllerTest, DismissWhileShowingResolvesOther) {
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kOther);
   EXPECT_FALSE(controller().is_loading());
-  histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.PermissionUi.Status",
-      EmailVerificationPermissionUiStatus::kOther, 1);
 }
 
 // Tests that calling Dismiss while a popup is loading hides the view and resets
@@ -463,7 +432,6 @@ TEST_F(EmailVerificationPopupControllerTest, DismissWhenClosedIsNoOp) {
 // popup.
 TEST_F(EmailVerificationPopupControllerTest,
        OverlappingShowWhileShowingReplacesPopup) {
-  base::HistogramTester histogram_tester;
   auto first_view = SetupMockViewFactory();
 
   TestFuture<EmailVerificationPermissionUiStatus> first_future;
@@ -480,9 +448,6 @@ TEST_F(EmailVerificationPopupControllerTest,
 
   ASSERT_TRUE(first_future.IsReady());
   EXPECT_EQ(first_future.Get(), EmailVerificationPermissionUiStatus::kOther);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.PermissionUi.Status",
-      EmailVerificationPermissionUiStatus::kOther, 1);
   EXPECT_FALSE(second_future.IsReady());
 
   EXPECT_CALL(*second_view, Hide);
@@ -496,7 +461,6 @@ TEST_F(EmailVerificationPopupControllerTest,
 // active loading popup.
 TEST_F(EmailVerificationPopupControllerTest,
        OverlappingShowWhileLoadingRejected) {
-  base::HistogramTester histogram_tester;
   auto mock_view = SetupMockViewFactory();
 
   TestFuture<EmailVerificationPermissionUiStatus> first_future;
@@ -518,9 +482,6 @@ TEST_F(EmailVerificationPopupControllerTest,
             EmailVerificationPermissionUiStatus::kOverlappingPrompt);
   EXPECT_TRUE(controller().is_loading());
   EXPECT_EQ(controller().element_bounds(), kDefaultBounds);
-  histogram_tester.ExpectBucketCount(
-      "Blink.Evp.PermissionUi.Status",
-      EmailVerificationPermissionUiStatus::kOverlappingPrompt, 1);
 
   // Clean up first popup.
   testing::Mock::VerifyAndClearExpectations(mock_view.get());
@@ -532,7 +493,6 @@ TEST_F(EmailVerificationPopupControllerTest,
 // kViewDestroyedDirectly.
 TEST_F(EmailVerificationPopupControllerTest,
        ViewDestroyedDirectlyResolvesCallback) {
-  base::HistogramTester histogram_tester;
   auto mock_view = SetupMockViewFactory();
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
@@ -543,9 +503,6 @@ TEST_F(EmailVerificationPopupControllerTest,
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(),
             EmailVerificationPermissionUiStatus::kViewDestroyedDirectly);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.PermissionUi.Status",
-      EmailVerificationPermissionUiStatus::kViewDestroyedDirectly, 1);
 }
 
 // Tests that calling ViewDestroyed while a popup is loading resets is_loading
@@ -578,7 +535,6 @@ TEST_F(EmailVerificationPopupControllerTest,
 // and resolves callback with kOther.
 TEST_F(EmailVerificationPopupControllerTest,
        ControllerDestructionWhileShowingResolvesCallback) {
-  base::HistogramTester histogram_tester;
   auto mock_view = SetupMockViewFactory();
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
@@ -590,9 +546,6 @@ TEST_F(EmailVerificationPopupControllerTest,
 
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kOther);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.PermissionUi.Status",
-      EmailVerificationPermissionUiStatus::kOther, 1);
 }
 
 }  // namespace

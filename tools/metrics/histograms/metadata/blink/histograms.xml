@@ -1360,8 +1360,10 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the outcome and dismissal reasons of the Email Verification
-    Permission UI. Recorded once per permission UI showing when it is dismissed
-    or accepted.
+    Permission UI. Recorded on Desktop and Android once per ShowPopup() call,
+    including when the request is rejected without showing any UI. Before M160,
+    Android only recorded OverlappingPrompt. ViewDestroyedDirectly is only
+    recorded on Desktop.
   </summary>
 </histogram>
 

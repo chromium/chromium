@@ -34,9 +34,12 @@ EmailVerificationBottomSheetBridge::~EmailVerificationBottomSheetBridge() {
   }
   on_accepted_callback_.Reset();
   if (on_dismissed_callback_) {
+    // Report kOther rather than kViewDestroyedDirectly (which is Desktop-only
+    // for Views widgets destroyed without Hide()), matching Java's destroy().
+    // TODO(crbug.com/590141173): Align Android tab-close dismissal status with
+    // Desktop's kTabGone if feasible.
     std::move(on_dismissed_callback_)
-        .Run(AutofillClient::EmailVerificationPermissionUiStatus::
-                 kViewDestroyedDirectly);
+        .Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther);
   }
 }
 

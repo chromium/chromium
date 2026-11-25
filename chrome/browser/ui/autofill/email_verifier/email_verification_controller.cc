@@ -16,6 +16,15 @@
 
 namespace autofill {
 
+namespace {
+
+void LogPermissionUiStatus(
+    AutofillClient::EmailVerificationPermissionUiStatus status) {
+  base::UmaHistogramEnumeration("Blink.Evp.PermissionUi.Status", status);
+}
+
+}  // namespace
+
 EmailVerificationController::EmailVerificationController(
     content::WebContents* web_contents)
     : web_contents_(CHECK_DEREF(web_contents)) {}
@@ -32,12 +41,8 @@ void EmailVerificationController::ShowPopup(
         decision_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsFirstRunRequestInFlight()) {
-    // TODO(crbug.com/554034658): Consolidate metric reporting into a helper
-    // method.
-    base::UmaHistogramEnumeration(
-        "Blink.Evp.PermissionUi.Status",
-        AutofillClient::EmailVerificationPermissionUiStatus::
-            kOverlappingPrompt);
+    LogPermissionUiStatus(AutofillClient::EmailVerificationPermissionUiStatus::
+                              kOverlappingPrompt);
     std::move(decision_callback)
         .Run(AutofillClient::EmailVerificationPermissionUiStatus::
                  kOverlappingPrompt);
@@ -54,6 +59,10 @@ void EmailVerificationController::ShowPopup(
              base::OnceCallback<void(
                  AutofillClient::EmailVerificationPermissionUiStatus)> callback,
              AutofillClient::EmailVerificationPermissionUiStatus status) {
+            // Log unconditionally rather than inside `OnPromptDecision()` so
+            // dismissals triggered during controller destruction (after the
+            // subclass `WeakPtrFactory` is invalidated) are still recorded.
+            LogPermissionUiStatus(status);
             if (self) {
               DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
               self->OnPromptDecision(status);
@@ -68,8 +77,6 @@ void EmailVerificationController::ShowPopup(
 void EmailVerificationController::OnPromptDecision(
     AutofillClient::EmailVerificationPermissionUiStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/554034658): Record the Blink.Evp.PermissionUi.Status
-  // histogram here across Desktop and Android in a follow-up CL.
   if (status == AutofillClient::EmailVerificationPermissionUiStatus::kAllowed) {
     StartLoadingTimer();
   } else {

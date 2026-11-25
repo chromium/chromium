@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
@@ -18,10 +17,6 @@ namespace {
 
 using EmailVerificationPermissionUiStatus =
     AutofillClient::EmailVerificationPermissionUiStatus;
-
-void LogPermissionUiStatus(EmailVerificationPermissionUiStatus status) {
-  base::UmaHistogramEnumeration("Blink.Evp.PermissionUi.Status", status);
-}
 
 EmailVerificationPermissionUiStatus MapReasonToStatus(
     SuggestionHidingReason reason) {
@@ -80,14 +75,11 @@ void EmailVerificationPopupController::Show(
         void(AutofillClient::EmailVerificationPermissionUiStatus)> callback,
     base::OnceClosure on_dismissed) {
   if (!web_contents()) {
-    LogPermissionUiStatus(EmailVerificationPermissionUiStatus::kOther);
     std::move(callback).Run(EmailVerificationPermissionUiStatus::kOther);
     return;
   }
 
   if (is_loading_) {
-    LogPermissionUiStatus(
-        EmailVerificationPermissionUiStatus::kOverlappingPrompt);
     std::move(callback).Run(
         EmailVerificationPermissionUiStatus::kOverlappingPrompt);
     return;
@@ -264,7 +256,6 @@ void EmailVerificationPopupController::HideImpl(
   }
 
   if (callback) {
-    LogPermissionUiStatus(status);
     std::move(callback).Run(status);
   }
 
@@ -295,7 +286,6 @@ void EmailVerificationPopupController::OnConfirm() {
   // so it can initiate background token retrieval and track the loading
   // duration in parallel with the loading animation.
   if (callback_) {
-    LogPermissionUiStatus(EmailVerificationPermissionUiStatus::kAllowed);
     std::move(callback_).Run(EmailVerificationPermissionUiStatus::kAllowed);
   }
 }

@@ -70,11 +70,9 @@ TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiAccepted) {
   // Accepting the prompt does not dismiss it.
   testing::Mock::VerifyAndClearExpectations(&on_dismissed);
 
-  // When destroyed while still loading, on_dismissed is resolved with
-  // kViewDestroyedDirectly.
+  // When destroyed while still loading, on_dismissed is resolved with kOther.
   EXPECT_CALL(on_dismissed,
-              Run(AutofillClient::EmailVerificationPermissionUiStatus::
-                      kViewDestroyedDirectly));
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
   bridge_.reset();
 }
 
@@ -159,16 +157,14 @@ TEST_F(EmailVerificationBottomSheetBridgeTest, HideWithoutJavaBridgeIsSafe) {
   bridge_->Hide();
 }
 
-// Tests that destroying the bridge while showing resolves callback with
-// kViewDestroyedDirectly.
+// Tests that destroying the bridge while showing resolves callback with kOther.
 TEST_F(EmailVerificationBottomSheetBridgeTest,
        DestroyWhileShowingInvokesCallback) {
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
       on_dismissed;
   EXPECT_CALL(on_dismissed,
-              Run(AutofillClient::EmailVerificationPermissionUiStatus::
-                      kViewDestroyedDirectly));
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
 
   bridge_->RequestShowContent(u"google.com", u"user@example.com",
                               base::DoNothing(), on_dismissed.Get());
@@ -202,8 +198,7 @@ TEST_F(EmailVerificationBottomSheetBridgeTest,
 
   testing::Mock::VerifyAndClearExpectations(&on_dismissed1);
   EXPECT_CALL(on_dismissed1,
-              Run(AutofillClient::EmailVerificationPermissionUiStatus::
-                      kViewDestroyedDirectly));
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
   bridge_.reset();
 }
 
@@ -236,8 +231,7 @@ TEST_F(EmailVerificationBottomSheetBridgeTest,
 
   testing::Mock::VerifyAndClearExpectations(&on_dismissed1);
   EXPECT_CALL(on_dismissed1,
-              Run(AutofillClient::EmailVerificationPermissionUiStatus::
-                      kViewDestroyedDirectly));
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
   bridge_.reset();
 }
 

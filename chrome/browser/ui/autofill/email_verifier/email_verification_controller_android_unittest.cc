@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -87,14 +88,20 @@ class EmailVerificationControllerAndroidTest
   }
 
   void TearDown() override {
-    bridge_ = nullptr;
-    test_api(*evp_controller_).set_message_controller(nullptr);
-    evp_controller_.reset();
+    ResetController();
     window_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
  protected:
+  void ResetController() {
+    bridge_ = nullptr;
+    if (evp_controller_) {
+      test_api(*evp_controller_).set_message_controller(nullptr);
+      evp_controller_.reset();
+    }
+  }
+
   void ShowPopup(base::OnceCallback<
                      void(AutofillClient::EmailVerificationPermissionUiStatus)>
                      ui_callback = base::DoNothing()) {
@@ -114,6 +121,7 @@ class EmailVerificationControllerAndroidTest
 
 TEST_F(EmailVerificationControllerAndroidTest,
        BottomSheetMinimumLoadingDurationEnforced) {
+  base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
       ui_callback;
@@ -124,6 +132,9 @@ TEST_F(EmailVerificationControllerAndroidTest,
       Run(AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
   bridge_->OnUiAccepted(/*env=*/nullptr);
   EXPECT_TRUE(test_api(*evp_controller_).loading_start_time().has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      AutofillClient::EmailVerificationPermissionUiStatus::kAllowed, 1);
 
   // Calling HidePopup at 200ms (< 800ms) defers hiding.
   task_environment()->FastForwardBy(base::Milliseconds(200));
@@ -131,15 +142,18 @@ TEST_F(EmailVerificationControllerAndroidTest,
   evp_controller_->HidePopup();
   EXPECT_TRUE(test_api(*evp_controller_).is_hide_popup_timer_running());
 
-  // After the remaining 600ms, the bottom sheet is hidden.
+  // After the remaining 600ms, the bottom sheet is hidden without logging a
+  // second permission UI status sample.
   EXPECT_CALL(*bridge_, HideJavaBottomSheet);
   task_environment()->FastForwardBy(base::Milliseconds(600));
   EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
   EXPECT_FALSE(test_api(*evp_controller_).loading_start_time().has_value());
+  histogram_tester.ExpectTotalCount("Blink.Evp.PermissionUi.Status", 1);
 }
 
 TEST_F(EmailVerificationControllerAndroidTest,
        HidePopupWhileShowingDismissesImmediately) {
+  base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
       ui_callback;
@@ -153,10 +167,14 @@ TEST_F(EmailVerificationControllerAndroidTest,
   evp_controller_->HidePopup();
   EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
   EXPECT_FALSE(test_api(*evp_controller_).loading_start_time().has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      AutofillClient::EmailVerificationPermissionUiStatus::kOther, 1);
 }
 
 TEST_F(EmailVerificationControllerAndroidTest,
        ShowLoadingToastWhileShowingDismissesPrompt) {
+  base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
       ui_callback;
@@ -168,10 +186,14 @@ TEST_F(EmailVerificationControllerAndroidTest,
   EXPECT_CALL(ui_callback,
               Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
   evp_controller_->ShowLoadingToast(base::DoNothing());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      AutofillClient::EmailVerificationPermissionUiStatus::kOther, 1);
 }
 
 TEST_F(EmailVerificationControllerAndroidTest,
        DeclinedPromptDoesNotStartLoadingTimer) {
+  base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
       ui_callback;
@@ -185,6 +207,9 @@ TEST_F(EmailVerificationControllerAndroidTest,
       static_cast<int>(
           AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
   EXPECT_FALSE(test_api(*evp_controller_).loading_start_time().has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      AutofillClient::EmailVerificationPermissionUiStatus::kDeclined, 1);
 
   // Subsequent HidePopup is a no-op since the prompt is already closed.
   EXPECT_CALL(*bridge_, HideJavaBottomSheet).Times(0);
@@ -194,18 +219,23 @@ TEST_F(EmailVerificationControllerAndroidTest,
 
 TEST_F(EmailVerificationControllerAndroidTest,
        BottomSheetDismissedEarlyClearsLoadingTimer) {
+  base::HistogramTester histogram_tester;
   ShowPopup();
 
   bridge_->OnUiAccepted(/*env=*/nullptr);
   EXPECT_TRUE(test_api(*evp_controller_).loading_start_time().has_value());
 
-  // User swipes away the bottom sheet at 100ms while loading.
+  // User swipes away the bottom sheet at 100ms while loading. This must not
+  // record a second permission UI status sample.
   task_environment()->FastForwardBy(base::Milliseconds(100));
   bridge_->OnUiDismissed(
       /*env=*/nullptr,
       static_cast<int>(
           AutofillClient::EmailVerificationPermissionUiStatus::kUserAborted));
   EXPECT_FALSE(test_api(*evp_controller_).loading_start_time().has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      AutofillClient::EmailVerificationPermissionUiStatus::kAllowed, 1);
 
   // When the response arrives at 200ms, neither HidePopup() nor
   // HidePopup(CompletionStatus::kVerified) waits for the remaining 600ms, and
@@ -293,6 +323,7 @@ TEST_F(EmailVerificationControllerAndroidTest,
 
 TEST_F(EmailVerificationControllerAndroidTest,
        OverlappingShowPopupWhileInFlightPreservesLoadingTimer) {
+  base::HistogramTester histogram_tester;
   ShowPopup();
 
   bridge_->OnUiAccepted(/*env=*/nullptr);
@@ -313,6 +344,14 @@ TEST_F(EmailVerificationControllerAndroidTest,
   evp_controller_->ShowPopup(
       gfx::RectF(0, 0, 10, 10), url::Origin::Create(GURL("https://google.com")),
       gfx::Image(), u"other@example.com", second_callback.Get());
+  histogram_tester.ExpectBucketCount(
+      "Blink.Evp.PermissionUi.Status",
+      AutofillClient::EmailVerificationPermissionUiStatus::kAllowed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.Evp.PermissionUi.Status",
+      AutofillClient::EmailVerificationPermissionUiStatus::kOverlappingPrompt,
+      1);
+  histogram_tester.ExpectTotalCount("Blink.Evp.PermissionUi.Status", 2);
 
   // The active first sheet's loading timer must still be preserved.
   EXPECT_TRUE(test_api(*evp_controller_).loading_start_time().has_value());
@@ -320,6 +359,43 @@ TEST_F(EmailVerificationControllerAndroidTest,
   EXPECT_CALL(*bridge_, HideJavaBottomSheet).Times(0);
   evp_controller_->HidePopup();
   EXPECT_TRUE(test_api(*evp_controller_).is_hide_popup_timer_running());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       ControllerDestructionWhileShowingRecordsPermissionUiStatus) {
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      ui_callback;
+  ShowPopup(ui_callback.Get());
+
+  EXPECT_CALL(ui_callback,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
+  ResetController();
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      AutofillClient::EmailVerificationPermissionUiStatus::kOther, 1);
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       ControllerDestructionWhileLoadingDoesNotRecordDuplicateStatus) {
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      ui_callback;
+  ShowPopup(ui_callback.Get());
+
+  EXPECT_CALL(
+      ui_callback,
+      Run(AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+
+  // Destroying the controller while loading runs the bridge destructor's
+  // dismissal callback, which must not record a second status sample.
+  ResetController();
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      AutofillClient::EmailVerificationPermissionUiStatus::kAllowed, 1);
 }
 
 TEST_F(EmailVerificationControllerAndroidTest,
@@ -340,6 +416,7 @@ TEST_F(EmailVerificationControllerAndroidTest,
 
 TEST_F(EmailVerificationControllerAndroidTest,
        OverlappingShowPopupWhileShowingReplacesSheet) {
+  base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
       first_ui_callback;
@@ -356,6 +433,9 @@ TEST_F(EmailVerificationControllerAndroidTest,
   evp_controller_->ShowPopup(
       gfx::RectF(0, 0, 10, 10), url::Origin::Create(GURL("https://google.com")),
       gfx::Image(), u"other@example.com", base::DoNothing());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      AutofillClient::EmailVerificationPermissionUiStatus::kOther, 1);
 }
 
 TEST_F(EmailVerificationControllerAndroidTest,

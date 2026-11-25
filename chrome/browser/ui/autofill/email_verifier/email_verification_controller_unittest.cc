@@ -107,6 +107,7 @@ TEST_F(EmailVerificationControllerTest, InitialState) {
 // Tests that calling ShowPopup shows the popup view and that confirming the
 // prompt transitions to the loading state and records loading_start_time_.
 TEST_F(EmailVerificationControllerTest, ConfirmPromptTransitionsToLoading) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<MockEmailVerificationPopupView> mock_view;
   SetupMockViewFactory(mock_view);
 
@@ -122,12 +123,16 @@ TEST_F(EmailVerificationControllerTest, ConfirmPromptTransitionsToLoading) {
   EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kAllowed);
   EXPECT_TRUE(test_api(controller()).loading_start_time().has_value());
   EXPECT_FALSE(test_api(controller()).is_hide_popup_timer_running());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPermissionUiStatus::kAllowed, 1);
 }
 
 // Tests that declining the first-run prompt resolves with kDeclined and
 // does not record loading_start_time_.
 TEST_F(EmailVerificationControllerTest,
        DeclinePromptDoesNotSetLoadingStartTime) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<MockEmailVerificationPopupView> mock_view;
   SetupMockViewFactory(mock_view);
 
@@ -142,6 +147,9 @@ TEST_F(EmailVerificationControllerTest,
   EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kDeclined);
   EXPECT_FALSE(test_api(controller()).loading_start_time().has_value());
   EXPECT_FALSE(test_api(controller()).is_hide_popup_timer_running());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPermissionUiStatus::kDeclined, 1);
 }
 
 // Tests that HidePopup() enforces the minimum display duration (800ms) while
@@ -746,7 +754,11 @@ TEST_F(EmailVerificationControllerTest,
   EXPECT_EQ(popup_controller().element_bounds(), initial_element_bounds);
   histogram_tester.ExpectBucketCount(
       "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPermissionUiStatus::kAllowed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.Evp.PermissionUi.Status",
       EmailVerificationPermissionUiStatus::kOverlappingPrompt, 1);
+  histogram_tester.ExpectTotalCount("Blink.Evp.PermissionUi.Status", 2);
 
   testing::Mock::VerifyAndClearExpectations(mock_view.get());
   // Completing the first request still respects the original 800ms timer.
@@ -755,6 +767,50 @@ TEST_F(EmailVerificationControllerTest,
   EXPECT_CALL(*mock_view, Hide);
   task_environment()->FastForwardBy(
       EmailVerificationController::kMinimumLoadingDuration);
+  histogram_tester.ExpectTotalCount("Blink.Evp.PermissionUi.Status", 2);
+}
+
+// Tests that dismissing the Desktop popup via user interaction logs
+// Blink.Evp.PermissionUi.Status once.
+TEST_F(EmailVerificationControllerTest,
+       PermissionUiStatusRecordedOnUserInteraction) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+  SetupMockViewFactory(mock_view);
+
+  TestFuture<EmailVerificationPermissionUiStatus> future;
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
+  ASSERT_TRUE(mock_view);
+
+  EXPECT_CALL(*mock_view, Hide);
+  blink::WebMouseEvent mouse_event;
+  popup_controller().DidGetUserInteraction(mouse_event);
+  EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kUserAborted);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPermissionUiStatus::kUserAborted, 1);
+}
+
+// Tests that direct view destruction of the Desktop popup logs
+// Blink.Evp.PermissionUi.Status once.
+TEST_F(EmailVerificationControllerTest,
+       PermissionUiStatusRecordedOnViewDestroyed) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+  SetupMockViewFactory(mock_view);
+
+  TestFuture<EmailVerificationPermissionUiStatus> future;
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
+  ASSERT_TRUE(mock_view);
+
+  popup_controller().ViewDestroyed();
+  EXPECT_EQ(future.Get(),
+            EmailVerificationPermissionUiStatus::kViewDestroyedDirectly);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPermissionUiStatus::kViewDestroyedDirectly, 1);
 }
 
 // Tests that destroying EmailVerificationController while a popup is open
@@ -783,6 +839,7 @@ TEST_F(EmailVerificationControllerTest,
 // running cleans up cleanly without use-after-free or dangling timers.
 TEST_F(EmailVerificationControllerTest,
        ControllerDestructionWhileLoadingCleansUpCleanly) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<MockEmailVerificationPopupView> mock_view;
   SetupMockViewFactory(mock_view);
 
@@ -799,6 +856,9 @@ TEST_F(EmailVerificationControllerTest,
 
   EXPECT_CALL(*mock_view, Hide);
   ResetController();
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPermissionUiStatus::kAllowed, 1);
 }
 
 // A `WebContentsViewDelegate` that records calls to `WebContents::Focus()`. It
