@@ -11,9 +11,12 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/predictor_database.h"
 #include "chrome/test/base/testing_profile.h"
@@ -23,6 +26,7 @@
 #include "net/base/request_priority.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace predictors {
 
@@ -479,8 +483,29 @@ TEST_F(ResourcePrefetchPredictorTablesTest, DatabaseVersionIsSet) {
 }
 
 TEST_F(ResourcePrefetchPredictorTablesTest, DatabaseIsResetWhenIncompatible) {
+  base::test::ScopedFeatureList feature_list{
+      blink::features::kLCPPInitiatorOrigin};
+  ReopenDatabase();
+
   const int version = ResourcePrefetchPredictorTables::kDatabaseVersion;
   sql::Database* db = tables_->DB();
+
+  auto count_rows = [](sql::Database* db, const char* table_name) {
+    sql::Statement statement(db->GetUniqueStatement(
+        base::StringPrintf("SELECT count(*) FROM %s", table_name)));
+    EXPECT_TRUE(statement.Step());
+    return statement.ColumnInt(0);
+  };
+
+  for (const char* table_name : {LcppDataMap::kLcppTableName,
+                                 LcppDataMap::kLcppTableNameInitiatorOrigin}) {
+    ASSERT_TRUE(db->DoesTableExist(table_name)) << table_name;
+    ASSERT_TRUE(db->Execute(base::StringPrintf(
+        "INSERT INTO %s (key, proto) VALUES ('example.com', x'')", table_name)))
+        << table_name;
+    EXPECT_EQ(1, count_rows(db, table_name)) << table_name;
+  }
+
   ASSERT_TRUE(
       ResourcePrefetchPredictorTables::SetDatabaseVersion(db, version + 1));
   EXPECT_EQ(version + 1,
@@ -496,6 +521,12 @@ TEST_F(ResourcePrefetchPredictorTablesTest, DatabaseIsResetWhenIncompatible) {
   GetAllData(&host_redirect_data, &origin_data);
   EXPECT_TRUE(host_redirect_data.empty());
   EXPECT_TRUE(origin_data.empty());
+
+  for (const char* table_name : {LcppDataMap::kLcppTableName,
+                                 LcppDataMap::kLcppTableNameInitiatorOrigin}) {
+    EXPECT_TRUE(db->DoesTableExist(table_name)) << table_name;
+    EXPECT_EQ(0, count_rows(db, table_name)) << table_name;
+  }
 }
 
 TEST_F(ResourcePrefetchPredictorTablesTest, ReportUMA) {

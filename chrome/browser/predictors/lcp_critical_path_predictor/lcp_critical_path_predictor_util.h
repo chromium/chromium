@@ -247,6 +247,10 @@ class LcppDataMap {
   using OriginMap =
       sqlite_proto::KeyValueData<LcppOrigin, lcpp::LastVisitTimeCompare>;
 
+  static constexpr char kLcppTableName[] = "lcp_critical_path_predictor";
+  static constexpr char kLcppTableNameInitiatorOrigin[] =
+      "lcp_critical_path_predictor_initiator_origin";
+
   LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
               const LoadingPredictorConfig& config);
   ~LcppDataMap();

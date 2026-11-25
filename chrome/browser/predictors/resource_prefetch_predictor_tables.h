@@ -71,7 +71,7 @@ class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
 
   // Database version. Always increment it when any change is made to the data
   // schema (including the .proto).
-  static constexpr int kDatabaseVersion = 11;
+  static constexpr int kDatabaseVersion = 12;
 
   // sqlite_proto::TableManager:
   void CreateOrClearTablesIfNecessary() override;

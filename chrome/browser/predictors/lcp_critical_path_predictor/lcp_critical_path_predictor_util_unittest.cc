@@ -1247,6 +1247,28 @@ TEST(LcppKeyTest, InvalidURLs) {
   }
 }
 
+TEST(LcppKeyTest, PortIncludedInKeyLengthLimit) {
+  // Build a host whose length is `kMaxStringLength - 2`.
+  const std::string host =
+      std::string(ResourcePrefetchPredictorTables::kMaxStringLength - 7, 'a') +
+      ".test";
+  ASSERT_EQ(host.size(), ResourcePrefetchPredictorTables::kMaxStringLength - 2);
+
+  // Default port (443) is not appended, so the key fits within the limit.
+  EXPECT_TRUE(IsURLValidForLcpp(GURL("https://" + host + "/")));
+  EXPECT_TRUE(IsURLValidForLcpp(GURL("https://" + host + ":443/")));
+
+  // ":8" adds 2 bytes, reaching `kMaxStringLength` exactly.
+  EXPECT_TRUE(IsURLValidForLcpp(GURL("https://" + host + ":8/")));
+
+  // ":80" adds 3 bytes, exceeding `kMaxStringLength`.
+  EXPECT_FALSE(IsURLValidForLcpp(GURL("https://" + host + ":80/")));
+
+  // Localhost with a non-default port is still invalid.
+  EXPECT_FALSE(IsURLValidForLcpp(GURL("https://localhost:8443/")));
+  EXPECT_FALSE(IsURLValidForLcpp(GURL("https://127.0.0.1:8443/")));
+}
+
 size_t GetLCPPMultipleKeyMaxPathLength() {
   return blink::features::kLCPPMultipleKeyMaxPathLength.Get();
 }
@@ -1919,9 +1941,11 @@ TEST_P(LcppDataMapFeatures2, LcppLearnURL) {
   const std::vector<std::pair<std::string, std::string>> url_keys = {
       {"https://a.test", "a.test"},
       {"https://a.test/", "a.test"},
+      {"https://a.test:443/foo", "a.test/foo"},
       {"https://a.test/foo", "a.test/foo"},
       {"https://a.test/bar?q=c", "a.test/bar?q=c"},
-      {"https://user:pass@a.test:99/foo;bar?q=a#ref", "a.test/foo;bar?q=a#ref"},
+      {"https://user:pass@a.test:99/foo;bar?q=a#ref",
+       "a.test:99/foo;bar?q=a#ref"},
   };
 
   TestLearnLcppURL(url_keys);
@@ -1948,6 +1972,50 @@ TEST_P(LcppDataMapFeatures, DeleteUrls) {
   EXPECT_FALSE(GetLcppStat(url_a));
   EXPECT_FALSE(GetLcppStat(url_b));
   EXPECT_TRUE(GetLcppStat(url_c));
+}
+
+TEST_F(LcppDataMapTest, SingleKeyPortHandling) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(blink::features::kLCPPMultipleKey);
+
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  config.max_hosts_to_track_for_lcpp = 10u;
+  InitializeDB(config);
+
+  const GURL url_default("https://example.test/foo");
+  const GURL url_explicit_443("https://example.test:443/bar");
+  const GURL url_8443("https://example.test:8443/foo");
+  const GURL url_9443("https://example.test:9443/foo");
+  const GURL url_unvisited("https://example.test:7443/foo");
+
+  LearnElementLocator(url_default, "/#default");
+  LearnElementLocator(url_8443, "/#8443");
+  LearnElementLocator(url_9443, "/#9443");
+
+  // Default port uses the plain host name as the database key.
+  EXPECT_TRUE(GetDataMap().contains("example.test"));
+  EXPECT_FALSE(GetDataMap().contains("example.test:443"));
+  EXPECT_TRUE(GetDataMap().contains("example.test:8443"));
+  EXPECT_TRUE(GetDataMap().contains("example.test:9443"));
+
+  EXPECT_EQ(*GetLcppStat(url_default),
+            MakeLcppStatWithLCPElementLocator("/#default"));
+  EXPECT_EQ(*GetLcppStat(url_explicit_443),
+            MakeLcppStatWithLCPElementLocator("/#default"));
+  EXPECT_EQ(*GetLcppStat(url_8443),
+            MakeLcppStatWithLCPElementLocator("/#8443"));
+  EXPECT_EQ(*GetLcppStat(url_9443),
+            MakeLcppStatWithLCPElementLocator("/#9443"));
+  EXPECT_FALSE(GetLcppStat(url_unvisited));
+
+  // Deleting one port does not delete data for other ports on the same host.
+  lcpp_data_map_->DeleteUrls({url_8443});
+  EXPECT_FALSE(GetLcppStat(url_8443));
+  EXPECT_EQ(*GetLcppStat(url_default),
+            MakeLcppStatWithLCPElementLocator("/#default"));
+  EXPECT_EQ(*GetLcppStat(url_9443),
+            MakeLcppStatWithLCPElementLocator("/#9443"));
 }
 
 class LcppMultipleKeyTest
@@ -2009,7 +2077,7 @@ TEST_P(LcppMultipleKeyTest, LearnURL) {
       "/" + std::string(max_path_length + 1, 'c') + "/bar";
   const std::vector<std::pair<std::string, std::string>> url_keys = {
       {"https://a.test", "a.test"},
-      {"https://user:pass@a.test:99/foo;bar?q=a#ref", "a.test/foo;bar"},
+      {"https://user:pass@a.test:99/foo;bar?q=a#ref", "a.test:99/foo;bar"},
       {"https://a.test/", "a.test"},
       {"https://a.test/foo.html", "a.test"},
       {"https://a.test/foo", "a.test/foo"},
@@ -2070,6 +2138,105 @@ TEST_P(LcppMultipleKeyTest, DeleteUrls) {
   EXPECT_EQ(!!GetLcppStat(url_a_3), kIsDefault);
   EXPECT_FALSE(GetLcppStat(url_b));
   EXPECT_TRUE(GetLcppStat(url_c));
+}
+
+TEST_P(LcppMultipleKeyTest, NonDefaultPortSeparatedAndDefaultPortUnchanged) {
+  const bool kIsDefault = std::get<1>(GetParam()) ==
+                          blink::features::LcppMultipleKeyTypes::kDefault;
+
+  const GURL url_default("https://example.test/foo");
+  const GURL url_explicit_443("https://example.test:443/foo");
+  const GURL url_8443("https://example.test:8443/foo");
+  const GURL url_9443("https://example.test:9443/foo");
+  const GURL url_unvisited("https://example.test:7443/foo");
+
+  LearnElementLocator(url_default, "/#default");
+  LearnElementLocator(url_8443, "/#8443");
+  LearnElementLocator(url_9443, "/#9443");
+
+  if (kIsDefault) {
+    EXPECT_TRUE(GetDataMap().contains("example.test/foo"));
+    EXPECT_FALSE(GetDataMap().contains("example.test:443/foo"));
+    EXPECT_TRUE(GetDataMap().contains("example.test:8443/foo"));
+    EXPECT_TRUE(GetDataMap().contains("example.test:9443/foo"));
+  } else {
+    EXPECT_TRUE(GetDataMap().contains("example.test"));
+    EXPECT_FALSE(GetDataMap().contains("example.test:443"));
+    EXPECT_TRUE(GetDataMap().contains("example.test:8443"));
+    EXPECT_TRUE(GetDataMap().contains("example.test:9443"));
+  }
+
+  EXPECT_EQ(*GetLcppStat(url_default),
+            MakeLcppStatWithLCPElementLocator("/#default"));
+  EXPECT_EQ(*GetLcppStat(url_explicit_443),
+            MakeLcppStatWithLCPElementLocator("/#default"));
+  EXPECT_EQ(*GetLcppStat(url_8443),
+            MakeLcppStatWithLCPElementLocator("/#8443"));
+  EXPECT_EQ(*GetLcppStat(url_9443),
+            MakeLcppStatWithLCPElementLocator("/#9443"));
+  EXPECT_FALSE(GetLcppStat(url_unvisited));
+
+  // Verify that the multiple-key length check accounts for `:<port>` at the
+  // exact `kMaxStringLength` boundary.
+  // `near_limit_host` has length `kMaxStringLength - 8`, so:
+  // - `near_limit_host + "/abc"` fits (`kMaxStringLength - 4`),
+  // - `near_limit_host + ":8443/ab"` fits (`kMaxStringLength`),
+  // - `near_limit_host + ":8443/abc"` exceeds `kMaxStringLength`
+  //   (`kMaxStringLength + 1`) and falls back to `near_limit_host + ":8443"`.
+  const std::string near_limit_host =
+      std::string(ResourcePrefetchPredictorTables::kMaxStringLength - 13, 'a') +
+      ".test";
+  ASSERT_EQ(near_limit_host.size(),
+            ResourcePrefetchPredictorTables::kMaxStringLength - 8);
+
+  const GURL default_root("https://" + near_limit_host + "/");
+  const GURL default_subpath("https://" + near_limit_host + "/abc");
+  LearnElementLocator(default_root, "/#root_default");
+  LearnElementLocator(default_subpath, "/#subpath_default");
+  EXPECT_EQ(*GetLcppStat(default_root),
+            MakeLcppStatWithLCPElementLocator("/#root_default"));
+  EXPECT_EQ(*GetLcppStat(default_subpath),
+            MakeLcppStatWithLCPElementLocator("/#subpath_default"));
+
+  const GURL port_root("https://" + near_limit_host + ":8443/");
+  const GURL port_exact_limit("https://" + near_limit_host + ":8443/ab");
+  const GURL port_over_limit("https://" + near_limit_host + ":8443/abc");
+  LearnElementLocator(port_root, "/#root_port");
+  LearnElementLocator(port_exact_limit, "/#exact_limit");
+  EXPECT_EQ(*GetLcppStat(port_root),
+            MakeLcppStatWithLCPElementLocator("/#root_port", 1));
+  EXPECT_EQ(*GetLcppStat(port_exact_limit),
+            MakeLcppStatWithLCPElementLocator("/#exact_limit", 1));
+
+  LearnElementLocator(port_over_limit, "/#root_port");
+  EXPECT_EQ(*GetLcppStat(port_root),
+            MakeLcppStatWithLCPElementLocator("/#root_port", 2));
+  EXPECT_EQ(*GetLcppStat(port_over_limit),
+            MakeLcppStatWithLCPElementLocator("/#root_port", 2));
+  EXPECT_EQ(*GetLcppStat(port_exact_limit),
+            MakeLcppStatWithLCPElementLocator("/#exact_limit", 1));
+}
+
+TEST_P(LcppMultipleKeyTest, DeleteUrlsWithNonDefaultPort) {
+  const GURL url_default("https://a.test/foo");
+  const GURL url_8443("https://a.test:8443/foo");
+  const GURL url_9443("https://a.test:9443/foo");
+
+  LearnElementLocator(url_default, "/#default");
+  LearnElementLocator(url_8443, "/#8443");
+  LearnElementLocator(url_9443, "/#9443");
+
+  lcpp_data_map_->DeleteUrls({url_8443});
+  EXPECT_FALSE(GetLcppStat(url_8443));
+  EXPECT_EQ(*GetLcppStat(url_default),
+            MakeLcppStatWithLCPElementLocator("/#default"));
+  EXPECT_EQ(*GetLcppStat(url_9443),
+            MakeLcppStatWithLCPElementLocator("/#9443"));
+
+  lcpp_data_map_->DeleteUrls({url_default});
+  EXPECT_FALSE(GetLcppStat(url_default));
+  EXPECT_EQ(*GetLcppStat(url_9443),
+            MakeLcppStatWithLCPElementLocator("/#9443"));
 }
 
 class LcppMultipleKeyTestDefault : public LcppDataMapTest,
@@ -2726,6 +2893,224 @@ TEST_F(LcppInitiatorOriginTest, HttpInitiatorOriginIsNotLearned) {
   EXPECT_FALSE(LearnElementLocator(http_origin, url, "/#lcp"));
   EXPECT_FALSE(GetLcppStat(http_origin, url));
   EXPECT_FALSE(GetLcppStat(https_origin, url));
+}
+
+TEST_F(LcppInitiatorOriginTest,
+       NonDefaultPortSeparatedAndDefaultPortUnchanged) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  config.max_hosts_to_track_for_lcpp = 10u;
+  config.lcpp_initiator_origin_histogram_sliding_window_size = 10u;
+  config.lcpp_initiator_origin_max_histogram_buckets = 10u;
+  InitializeDB(config);
+
+  const GURL dest_default("https://dest.test/foo");
+  const GURL dest_8443("https://dest.test:8443/foo");
+
+  const url::Origin origin_default =
+      url::Origin::Create(GURL("https://origin.test"));
+  const url::Origin origin_explicit_443 =
+      url::Origin::Create(GURL("https://origin.test:443"));
+  const url::Origin origin_8443 =
+      url::Origin::Create(GURL("https://origin.test:8443"));
+  const url::Origin origin_9443 =
+      url::Origin::Create(GURL("https://origin.test:9443"));
+  const url::Origin origin_unvisited =
+      url::Origin::Create(GURL("https://origin.test:7443"));
+
+  EXPECT_TRUE(LearnElementLocator(origin_default, dest_default, "/#default"));
+  EXPECT_TRUE(LearnElementLocator(origin_8443, dest_default, "/#8443"));
+  EXPECT_TRUE(LearnElementLocator(origin_9443, dest_default, "/#9443"));
+  EXPECT_TRUE(LearnElementLocator(origin_8443, dest_8443, "/#dest_8443"));
+
+  // Default port uses the plain host name in `origin_data_map`.
+  ASSERT_TRUE(GetOriginMap().contains("dest.test"));
+  const auto& origin_data_map =
+      GetOriginMap().at("dest.test").origin_data_map();
+  EXPECT_TRUE(origin_data_map.contains("origin.test"));
+  EXPECT_FALSE(origin_data_map.contains("origin.test:443"));
+  EXPECT_TRUE(origin_data_map.contains("origin.test:8443"));
+  EXPECT_TRUE(origin_data_map.contains("origin.test:9443"));
+
+  EXPECT_EQ(*GetLcppStat(origin_default, dest_default),
+            MakeLcppStatWithLCPElementLocator("/#default"));
+  EXPECT_EQ(*GetLcppStat(origin_explicit_443, dest_default),
+            MakeLcppStatWithLCPElementLocator("/#default"));
+  EXPECT_EQ(*GetLcppStat(origin_8443, dest_default),
+            MakeLcppStatWithLCPElementLocator("/#8443"));
+  EXPECT_EQ(*GetLcppStat(origin_9443, dest_default),
+            MakeLcppStatWithLCPElementLocator("/#9443"));
+  EXPECT_FALSE(GetLcppStat(origin_unvisited, dest_default));
+
+  // Destination port is also separated when initiator origin is present.
+  EXPECT_EQ(*GetLcppStat(origin_8443, dest_8443),
+            MakeLcppStatWithLCPElementLocator("/#dest_8443"));
+  EXPECT_FALSE(GetLcppStat(origin_9443, dest_8443));
+
+  // Initiator origin length check includes `:<port>`.
+  const std::string near_limit_host =
+      std::string(ResourcePrefetchPredictorTables::kMaxStringLength - 7, 'c') +
+      ".test";
+  ASSERT_EQ(near_limit_host.size(),
+            ResourcePrefetchPredictorTables::kMaxStringLength - 2);
+  const url::Origin near_limit_default =
+      url::Origin::Create(GURL("https://" + near_limit_host));
+  const url::Origin near_limit_fits =
+      url::Origin::Create(GURL("https://" + near_limit_host + ":8"));
+  const url::Origin near_limit_too_long =
+      url::Origin::Create(GURL("https://" + near_limit_host + ":80"));
+
+  EXPECT_TRUE(
+      LearnElementLocator(near_limit_default, dest_default, "/#fits_default"));
+  EXPECT_TRUE(
+      LearnElementLocator(near_limit_fits, dest_default, "/#fits_port"));
+  EXPECT_FALSE(
+      LearnElementLocator(near_limit_too_long, dest_default, "/#too_long"));
+  EXPECT_FALSE(GetLcppStat(near_limit_too_long, dest_default));
+}
+
+TEST_F(LcppInitiatorOriginTest, DeleteUrlsWithNonDefaultPort) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  config.max_hosts_to_track_for_lcpp = 10u;
+  config.lcpp_initiator_origin_histogram_sliding_window_size = 10u;
+  config.lcpp_initiator_origin_max_histogram_buckets = 10u;
+  InitializeDB(config);
+
+  const GURL dest("https://dest.test");
+  const GURL url_default("https://b.test");
+  const GURL url_explicit_443("https://b.test:443");
+  const GURL url_8443("https://b.test:8443");
+  const GURL url_9443("https://b.test:9443");
+
+  const url::Origin origin_default = url::Origin::Create(url_default);
+  const url::Origin origin_explicit_443 = url::Origin::Create(url_explicit_443);
+  const url::Origin origin_8443 = url::Origin::Create(url_8443);
+  const url::Origin origin_9443 = url::Origin::Create(url_9443);
+
+  LearnElementLocator(origin_default, dest, "/#init_default");
+  LearnElementLocator(origin_8443, dest, "/#init_8443");
+  LearnElementLocator(origin_9443, dest, "/#init_9443");
+  LearnElementLocator(url_default, "/#dest_default");
+  LearnElementLocator(url_8443, "/#dest_8443");
+  LearnElementLocator(url_9443, "/#dest_9443");
+
+  // Deleting `https://b.test:8443` removes only port 8443 entries (both as
+  // destination and as initiator), leaving port 443 and port 9443 intact.
+  lcpp_data_map_->DeleteUrls({url_8443});
+  EXPECT_FALSE(GetLcppStat(origin_8443, dest));
+  EXPECT_FALSE(GetLcppStat(std::nullopt, url_8443));
+  EXPECT_EQ(*GetLcppStat(origin_default, dest),
+            MakeLcppStatWithLCPElementLocator("/#init_default"));
+  EXPECT_EQ(*GetLcppStat(origin_9443, dest),
+            MakeLcppStatWithLCPElementLocator("/#init_9443"));
+  EXPECT_EQ(*GetLcppStat(std::nullopt, url_default),
+            MakeLcppStatWithLCPElementLocator("/#dest_default"));
+  EXPECT_EQ(*GetLcppStat(std::nullopt, url_9443),
+            MakeLcppStatWithLCPElementLocator("/#dest_9443"));
+
+  // Deleting explicit `https://b.test:443` removes entries learned under
+  // implicit `https://b.test`, while leaving port 9443 intact.
+  lcpp_data_map_->DeleteUrls({url_explicit_443});
+  EXPECT_FALSE(GetLcppStat(origin_default, dest));
+  EXPECT_FALSE(GetLcppStat(origin_explicit_443, dest));
+  EXPECT_FALSE(GetLcppStat(std::nullopt, url_default));
+  EXPECT_FALSE(GetLcppStat(std::nullopt, url_explicit_443));
+  EXPECT_EQ(*GetLcppStat(origin_9443, dest),
+            MakeLcppStatWithLCPElementLocator("/#init_9443"));
+  EXPECT_EQ(*GetLcppStat(std::nullopt, url_9443),
+            MakeLcppStatWithLCPElementLocator("/#dest_9443"));
+
+  // Deleting implicit `https://b.test` removes entries learned under explicit
+  // `https://b.test:443`, while leaving port 9443 intact.
+  LearnElementLocator(origin_explicit_443, dest, "/#init_explicit_443");
+  LearnElementLocator(url_explicit_443, "/#dest_explicit_443");
+  EXPECT_EQ(*GetLcppStat(origin_explicit_443, dest),
+            MakeLcppStatWithLCPElementLocator("/#init_explicit_443"));
+  EXPECT_EQ(*GetLcppStat(std::nullopt, url_explicit_443),
+            MakeLcppStatWithLCPElementLocator("/#dest_explicit_443"));
+
+  lcpp_data_map_->DeleteUrls({url_default});
+  EXPECT_FALSE(GetLcppStat(origin_default, dest));
+  EXPECT_FALSE(GetLcppStat(origin_explicit_443, dest));
+  EXPECT_FALSE(GetLcppStat(std::nullopt, url_default));
+  EXPECT_FALSE(GetLcppStat(std::nullopt, url_explicit_443));
+  EXPECT_EQ(*GetLcppStat(origin_9443, dest),
+            MakeLcppStatWithLCPElementLocator("/#init_9443"));
+  EXPECT_EQ(*GetLcppStat(std::nullopt, url_9443),
+            MakeLcppStatWithLCPElementLocator("/#dest_9443"));
+}
+
+TEST_F(LcppInitiatorOriginTest, IPv6LiteralPortHandling) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  config.max_hosts_to_track_for_lcpp = 10u;
+  config.lcpp_initiator_origin_histogram_sliding_window_size = 10u;
+  config.lcpp_initiator_origin_max_histogram_buckets = 10u;
+  InitializeDB(config);
+
+  const GURL dest("https://dest.test/foo");
+
+  // IPv6 loopback is rejected both with default port and with non-default port.
+  const GURL ipv6_loopback_default("https://[::1]/");
+  const GURL ipv6_loopback_port("https://[::1]:8443/");
+  EXPECT_FALSE(IsURLValidForLcpp(ipv6_loopback_default));
+  EXPECT_FALSE(IsURLValidForLcpp(ipv6_loopback_port));
+
+  const url::Origin loopback_origin_default =
+      url::Origin::Create(ipv6_loopback_default);
+  const url::Origin loopback_origin_port =
+      url::Origin::Create(ipv6_loopback_port);
+  EXPECT_FALSE(LearnElementLocator(loopback_origin_default, dest, "/#loop1"));
+  EXPECT_FALSE(LearnElementLocator(loopback_origin_port, dest, "/#loop2"));
+  EXPECT_FALSE(GetLcppStat(loopback_origin_default, dest));
+  EXPECT_FALSE(GetLcppStat(loopback_origin_port, dest));
+
+  // `[2001:db8::1]:8443` must not collide with `[2001:db8::1:8443]` (on default
+  // port 443), both as destination URLs and as initiator origins.
+  const GURL ipv6_with_port("https://[2001:db8::1]:8443/foo");
+  const GURL ipv6_matching_hextet("https://[2001:db8::1:8443]/foo");
+  const GURL ipv6_matching_hextet_explicit_443(
+      "https://[2001:db8::1:8443]:443/foo");
+
+  LearnElementLocator(ipv6_with_port, "/#dest_ipv6_port");
+  LearnElementLocator(ipv6_matching_hextet, "/#dest_ipv6_hextet");
+
+  EXPECT_TRUE(GetDataMap().contains("[2001:db8::1]:8443"));
+  EXPECT_TRUE(GetDataMap().contains("[2001:db8::1:8443]"));
+  EXPECT_FALSE(GetDataMap().contains("[2001:db8::1:8443]:443"));
+
+  EXPECT_EQ(*GetLcppStat(ipv6_with_port),
+            MakeLcppStatWithLCPElementLocator("/#dest_ipv6_port"));
+  EXPECT_EQ(*GetLcppStat(ipv6_matching_hextet),
+            MakeLcppStatWithLCPElementLocator("/#dest_ipv6_hextet"));
+  EXPECT_EQ(*GetLcppStat(ipv6_matching_hextet_explicit_443),
+            MakeLcppStatWithLCPElementLocator("/#dest_ipv6_hextet"));
+
+  const url::Origin origin_ipv6_with_port = url::Origin::Create(ipv6_with_port);
+  const url::Origin origin_ipv6_matching_hextet =
+      url::Origin::Create(ipv6_matching_hextet);
+  const url::Origin origin_ipv6_matching_hextet_explicit_443 =
+      url::Origin::Create(ipv6_matching_hextet_explicit_443);
+
+  EXPECT_TRUE(
+      LearnElementLocator(origin_ipv6_with_port, dest, "/#init_ipv6_port"));
+  EXPECT_TRUE(LearnElementLocator(origin_ipv6_matching_hextet, dest,
+                                  "/#init_ipv6_hextet"));
+
+  ASSERT_TRUE(GetOriginMap().contains("dest.test"));
+  const auto& origin_data_map =
+      GetOriginMap().at("dest.test").origin_data_map();
+  EXPECT_TRUE(origin_data_map.contains("[2001:db8::1]:8443"));
+  EXPECT_TRUE(origin_data_map.contains("[2001:db8::1:8443]"));
+  EXPECT_FALSE(origin_data_map.contains("[2001:db8::1:8443]:443"));
+
+  EXPECT_EQ(*GetLcppStat(origin_ipv6_with_port, dest),
+            MakeLcppStatWithLCPElementLocator("/#init_ipv6_port"));
+  EXPECT_EQ(*GetLcppStat(origin_ipv6_matching_hextet, dest),
+            MakeLcppStatWithLCPElementLocator("/#init_ipv6_hextet"));
+  EXPECT_EQ(*GetLcppStat(origin_ipv6_matching_hextet_explicit_443, dest),
+            MakeLcppStatWithLCPElementLocator("/#init_ipv6_hextet"));
 }
 
 }  // namespace predictors

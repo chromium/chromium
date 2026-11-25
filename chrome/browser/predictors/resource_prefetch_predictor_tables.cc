@@ -148,7 +148,11 @@ bool ResourcePrefetchPredictorTables::DropTablesIfOutdated(sql::Database* db) {
     for (const char* table_name :
          {kMetadataTableName, kUrlResourceTableName, kHostResourceTableName,
           kUrlRedirectTableName, kHostRedirectTableName, kManifestTableName,
-          kUrlMetadataTableName, kHostMetadataTableName, kOriginTableName}) {
+          kUrlMetadataTableName, kHostMetadataTableName, kOriginTableName,
+          // LCPP tables. Old rows used host-only keys, so drop them when the
+          // version changes.
+          LcppDataMap::kLcppTableName,
+          LcppDataMap::kLcppTableNameInitiatorOrigin}) {
       success = success && db->Execute(base::StringPrintf(
                                "DROP TABLE IF EXISTS %s", table_name));
     }

@@ -21,15 +21,14 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace predictors {
 
 namespace {
 
-constexpr std::string_view kLcppTableName = "lcp_critical_path_predictor";
-constexpr std::string_view kLcppTableNameInitiatorOrigin =
-    "lcp_critical_path_predictor_initiator_origin";
 const char kCreateProtoTableStatementTemplate[] =
     "CREATE TABLE %s ( "
     "key TEXT, "
@@ -638,12 +637,23 @@ size_t GetLCPPMultipleKeyMaxPathLength() {
   return blink::features::kLCPPMultipleKeyMaxPathLength.Get();
 }
 
+// Returns `host`, or `host:<port>` when `port` is not the default port for
+// the scheme.
+std::string GetHostWithOptionalPort(const GURL& url) {
+  return net::GetHostAndOptionalPort(url);
+}
+
+std::string GetHostWithOptionalPort(const url::Origin& origin) {
+  CHECK(!origin.opaque());
+  return net::GetHostAndOptionalPort(origin.GetTupleOrPrecursorTupleIfOpaque());
+}
+
 bool IsKeyLengthValidForMultipleKey(std::string_view host,
                                     std::string_view first_level_path) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey));
   // The key must not be longer than `kMaxStringLength`.
-  // Note that we confirmed that url.host() is less than the limit in
-  // `IsURLValidForLcpp()`.
+  // Note that we confirmed that `host` (including any non-default port) is
+  // within the limit in `IsURLValidForLcpp()`.
   return host.length() + first_level_path.length() <=
          ResourcePrefetchPredictorTables::kMaxStringLength;
 }
@@ -656,17 +666,18 @@ bool IsLcppMultipleKeyKeyStatEnabled() {
 
 std::string GetLCPPDatabaseKey(const GURL& url) {
   CHECK(IsURLValidForLcpp(url));
+  const std::string host = GetHostWithOptionalPort(url);
 
   if (!base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey) ||
       IsLcppMultipleKeyKeyStatEnabled()) {
-    return std::string(url.host());
+    return host;
   }
 
   const std::string first_level_path = GetFirstLevelPath(url);
-  if (!IsKeyLengthValidForMultipleKey(url.host(), first_level_path)) {
-    return std::string(url.host());
+  if (!IsKeyLengthValidForMultipleKey(host, first_level_path)) {
+    return host;
   }
-  return base::StrCat({url.host(), first_level_path});
+  return base::StrCat({host, first_level_path});
 }
 
 // Returns LcppStat from `data` for LcppMultipleKeyKeyStat.
@@ -674,6 +685,7 @@ std::string GetLCPPDatabaseKey(const GURL& url) {
 // true on the case and the caller should update the stored data.
 // This can return nullptr based on the FrequencyStatData of `data`.
 LcppStat* TryToGetLcppStatForKeyStat(const LoadingPredictorConfig& config,
+                                     std::string_view key,
                                      const GURL& url,
                                      LcppData& data,
                                      bool& data_updated) {
@@ -681,7 +693,7 @@ LcppStat* TryToGetLcppStatForKeyStat(const LoadingPredictorConfig& config,
 
   const std::string first_level_path = GetFirstLevelPath(url);
   if (first_level_path.empty() ||
-      !IsKeyLengthValidForMultipleKey(url.host(), first_level_path)) {
+      !IsKeyLengthValidForMultipleKey(key, first_level_path)) {
     return data.mutable_lcpp_stat();
   }
 
@@ -1075,9 +1087,14 @@ bool IsValidLcppStat(const LcppStat& lcpp_stat) {
 }
 
 bool IsURLValidForLcpp(const GURL& url) {
-  return url.is_valid() && !url.host().empty() && !net::IsLocalhost(url) &&
-         url.SchemeIs(url::kHttpsScheme) &&
-         url.host().size() <= ResourcePrefetchPredictorTables::kMaxStringLength;
+  if (!url.is_valid() || url.host().empty() || net::IsLocalhost(url) ||
+      !url.SchemeIs(url::kHttpsScheme)) {
+    return false;
+  }
+  const size_t host_with_port_length =
+      url.host().size() + (url.has_port() ? 1 + url.port().size() : 0);
+  return host_with_port_length <=
+         ResourcePrefetchPredictorTables::kMaxStringLength;
 }
 
 bool IsValidInitiatorOrigin(const url::Origin& initiator_origin) {
@@ -1233,7 +1250,8 @@ bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
     lcpp_data = UpdateFrequencyStatAndTryGetEntry(
         config_.lcpp_initiator_origin_histogram_sliding_window_size,
         config_.lcpp_initiator_origin_max_histogram_buckets,
-        initiator_origin->host(), *lcpp_origin.mutable_key_frequency_stat(),
+        GetHostWithOptionalPort(*initiator_origin),
+        *lcpp_origin.mutable_key_frequency_stat(),
         *lcpp_origin.mutable_origin_data_map());
     if (!lcpp_data) {
       origin_map_->UpdateData(key, lcpp_origin);
@@ -1256,10 +1274,10 @@ bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
   }
 
   bool data_updated = false;
-  LcppStat* lcpp_stat =
-      IsLcppMultipleKeyKeyStatEnabled()
-          ? TryToGetLcppStatForKeyStat(config_, url, *lcpp_data, data_updated)
-          : lcpp_data->mutable_lcpp_stat();
+  LcppStat* lcpp_stat = IsLcppMultipleKeyKeyStatEnabled()
+                            ? TryToGetLcppStatForKeyStat(
+                                  config_, key, url, *lcpp_data, data_updated)
+                            : lcpp_data->mutable_lcpp_stat();
   if (lcpp_stat) {
     if (!IsValidLcppStat(*lcpp_stat)) {
       lcpp_stat->Clear();
@@ -1307,7 +1325,7 @@ std::optional<LcppStat> LcppDataMap::GetLcppStat(
       return std::nullopt;
     }
     const auto& origin_data_map = lcpp_origin.origin_data_map();
-    auto it = origin_data_map.find(initiator_origin->host());
+    auto it = origin_data_map.find(GetHostWithOptionalPort(*initiator_origin));
     if (it == origin_data_map.end()) {
       return std::nullopt;
     }
@@ -1323,7 +1341,7 @@ std::optional<LcppStat> LcppDataMap::GetLcppStat(
   if (IsLcppMultipleKeyKeyStatEnabled()) {
     const std::string first_level_path = GetFirstLevelPath(url);
     if (first_level_path.empty() ||
-        !IsKeyLengthValidForMultipleKey(url.host(), first_level_path)) {
+        !IsKeyLengthValidForMultipleKey(key, first_level_path)) {
       return lcpp_data->lcpp_stat();
     }
     const auto& lcpp_stat_map = lcpp_data->lcpp_key_stat().lcpp_stat_map();
@@ -1338,7 +1356,7 @@ std::optional<LcppStat> LcppDataMap::GetLcppStat(
 
 void LcppDataMap::DeleteUrls(const std::vector<GURL>& urls) {
   std::vector<std::string> keys_to_delete;
-  std::vector<std::string> hosts_to_delete;
+  std::vector<std::string> origin_keys_to_delete;
   for (const GURL& url : urls) {
     if (!IsURLValidForLcpp(url)) {
       continue;
@@ -1347,21 +1365,22 @@ void LcppDataMap::DeleteUrls(const std::vector<GURL>& urls) {
     const std::string key = GetLCPPDatabaseKey(url);
     keys_to_delete.emplace_back(key);
     if (IsInitiatorOriginEnabled()) {
-      hosts_to_delete.push_back(url::Origin::Create(url).host());
+      origin_keys_to_delete.push_back(GetHostWithOptionalPort(url));
     }
   }
   data_map_->DeleteData(keys_to_delete);
   if (IsInitiatorOriginEnabled()) {
     origin_map_->DeleteData(keys_to_delete);
-    // Delete LcppOrigin which `origin_data_map` has hosts in `host_to_delete`.
+    // Delete entries in `origin_data_map` matching `origin_keys_to_delete`.
     std::map<std::string, LcppOrigin> needs_update;
     for (auto& key_value : origin_map_->GetAllCached()) {
       LcppOrigin lcpp_origin = key_value.second;
       bool updated = false;
-      for (const auto& host : hosts_to_delete) {
+      for (const auto& origin_key : origin_keys_to_delete) {
         auto& origin_data_map = *lcpp_origin.mutable_origin_data_map();
         bool origin_found = false;
-        if (auto it = origin_data_map.find(host); it != origin_data_map.end()) {
+        if (auto it = origin_data_map.find(origin_key);
+            it != origin_data_map.end()) {
           origin_data_map.erase(it);
           updated = true;
           origin_found = true;
@@ -1369,7 +1388,7 @@ void LcppDataMap::DeleteUrls(const std::vector<GURL>& urls) {
         auto& main_buckets =
             *lcpp_origin.mutable_key_frequency_stat()->mutable_main_buckets();
         bool bucket_found = false;
-        if (auto it = main_buckets.find(host); it != main_buckets.end()) {
+        if (auto it = main_buckets.find(origin_key); it != main_buckets.end()) {
           main_buckets.erase(it);
           bucket_found = true;
         }
