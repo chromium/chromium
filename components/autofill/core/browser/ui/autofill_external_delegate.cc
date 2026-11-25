@@ -38,7 +38,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
 #endif
-#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -738,13 +737,6 @@ void AutofillExternalDelegate::OnSuggestionsShown(
         }
       }
     }
-
-    if (shown_suggestion_types.contains(
-            SuggestionType::kAtMemoryShortcutSettingsPromo)) {
-      if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
-        amm->RecordShortcutSettingsPromoImpression();
-      }
-    }
   }
 
   manager_->DidShowSuggestions(
@@ -754,10 +746,6 @@ void AutofillExternalDelegate::OnSuggestionsShown(
 
 void AutofillExternalDelegate::OnSuggestionsHidden(
     SuggestionHidingReason reason) {
-  if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
-    amm->OnPopupHidden(reason);
-  }
-
   MaybeTriggerOneTimePasswordDismissalHatsSurvey(manager_->client(), reason,
                                                  shown_suggestion_types_);
 
@@ -765,23 +753,14 @@ void AutofillExternalDelegate::OnSuggestionsHidden(
 }
 
 bool AutofillExternalDelegate::OnFilterChanged(const std::u16string& filter) {
-  if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
-    return amm->OnFilterChanged(filter);
-  }
   return false;
 }
 
 bool AutofillExternalDelegate::OnSearchSubmitted(const std::u16string& filter) {
-  if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
-    return amm->OnSearchSubmitted(filter);
-  }
   return false;
 }
 
 bool AutofillExternalDelegate::IsSearching() const {
-  if (const AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
-    return amm->IsSearching();
-  }
   return false;
 }
 
@@ -1240,26 +1219,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           effective_field_id,
           AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
       break;
-    case SuggestionType::kAtMemorySearchResult: {
-      const IsAsync is_async =
-          manager_->client().GetAtMemoryManager()->FillSearchResult(
-              *manager_, effective_form_id, effective_field_id, suggestion,
-              metadata);
-      if (is_async) {
-        manager_->client().UpdateAutofillSuggestions(
-            PrepareLoadingStateSuggestions(
-                base::ToVector(manager_->client().GetAutofillSuggestions()),
-                suggestion),
-            FillingProduct::kAtMemory, trigger_source_,
-            AutofillSuggestionsIgnoreFocusLoss(true));
-        // If the filled suggestion is sensitive and obfuscated,
-        // `AtMemoryManager` fetches the entity asynchronously from the server
-        // or reauthenticates. The popup has to remain open and show the loading
-        // UI.
-        return;
-      }
-      break;
-    }
     case SuggestionType::kAtMemoryOpenGemini:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       manager_->client().OpenGeminiInSidebar(
@@ -1274,12 +1233,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       manager_->DelegateAcceptToPasswordManager(suggestion, metadata,
                                                 effective_field_id);
       break;
-    case SuggestionType::kAtMemorySearchAffordance:
-      if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
-        amm->OnSearchSubmitted(suggestion.main_text.value);
-      }
-      // The popup remains open to show search results once the query completes.
-      return;
     case SuggestionType::kPersonalContextNotice:
       // Accepting the suggestion is a no-op - accepting the notice happens via
       // `RemoveSuggestion`.
@@ -1300,6 +1253,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kAtMemoryFetching:
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemoryShortcutSettingsPromo:
     case SuggestionType::kAtMemorySourceAttribution:
     case SuggestionType::kAutofillAiOtherOrders:
