@@ -13,30 +13,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/offline_pages/core/client_namespace_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace offline_pages {
-
-TEST(OfflinePageModelUtilsTest, ToNamespaceEnum) {
-  EXPECT_EQ(model_utils::ToNamespaceEnum(kDefaultNamespace),
-            OfflinePagesNamespaceEnumeration::DEFAULT);
-  EXPECT_EQ(model_utils::ToNamespaceEnum(kBookmarkNamespace),
-            OfflinePagesNamespaceEnumeration::BOOKMARK);
-  EXPECT_EQ(model_utils::ToNamespaceEnum(kLastNNamespace),
-            OfflinePagesNamespaceEnumeration::LAST_N);
-  EXPECT_EQ(model_utils::ToNamespaceEnum(kAsyncNamespace),
-            OfflinePagesNamespaceEnumeration::ASYNC_LOADING);
-  EXPECT_EQ(model_utils::ToNamespaceEnum(kCCTNamespace),
-            OfflinePagesNamespaceEnumeration::CUSTOM_TABS);
-  EXPECT_EQ(model_utils::ToNamespaceEnum(kDownloadNamespace),
-            OfflinePagesNamespaceEnumeration::DOWNLOAD);
-  EXPECT_EQ(model_utils::ToNamespaceEnum(kNTPSuggestionsNamespace),
-            OfflinePagesNamespaceEnumeration::NTP_SUGGESTION);
-  EXPECT_EQ(model_utils::ToNamespaceEnum(kBrowserActionsNamespace),
-            OfflinePagesNamespaceEnumeration::BROWSER_ACTIONS);
-}
 
 struct GenerateUniqueFilenameTestCase {
   const std::u16string page_title;

@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/model/model_task_test_base.h"
-#include "components/offline_pages/core/model/offline_page_model_utils.h"
 #include "components/offline_pages/core/offline_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,13 +23,7 @@ const int64_t kTestFileSize = 876543LL;
 
 }  // namespace
 
-class MarkPageAccessedTaskTest : public ModelTaskTestBase {
- public:
-  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
-
- private:
-  base::HistogramTester histogram_tester_;
-};
+using MarkPageAccessedTaskTest = ModelTaskTestBase;
 
 TEST_F(MarkPageAccessedTaskTest, MarkPageAccessed) {
   const GURL kTestUrl("http://example.com");
@@ -50,10 +42,6 @@ TEST_F(MarkPageAccessedTaskTest, MarkPageAccessed) {
   EXPECT_EQ(kTestFileSize, offline_page->file_size);
   EXPECT_EQ(1, offline_page->access_count);
   EXPECT_EQ(current_time, offline_page->last_access_time);
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.AccessPageCount",
-      static_cast<int>(model_utils::ToNamespaceEnum(kTestClientId.name_space)),
-      1);
 }
 
 TEST_F(MarkPageAccessedTaskTest, MarkPageAccessedTwice) {
@@ -74,10 +62,6 @@ TEST_F(MarkPageAccessedTaskTest, MarkPageAccessedTwice) {
   EXPECT_EQ(kTestFileSize, offline_page->file_size);
   EXPECT_EQ(1, offline_page->access_count);
   EXPECT_EQ(current_time, offline_page->last_access_time);
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.AccessPageCount",
-      static_cast<int>(model_utils::ToNamespaceEnum(kTestClientId.name_space)),
-      1);
 
   base::Time second_time = OfflineTimeNow();
   task = std::make_unique<MarkPageAccessedTask>(store(), kTestOfflineId,
@@ -88,10 +72,6 @@ TEST_F(MarkPageAccessedTaskTest, MarkPageAccessedTwice) {
   EXPECT_EQ(kTestOfflineId, offline_page->offline_id);
   EXPECT_EQ(2, offline_page->access_count);
   EXPECT_EQ(second_time, offline_page->last_access_time);
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.AccessPageCount",
-      static_cast<int>(model_utils::ToNamespaceEnum(kTestClientId.name_space)),
-      2);
 }
 
 }  // namespace offline_pages

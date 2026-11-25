@@ -16,12 +16,7 @@ class FilePath;
 
 namespace offline_pages {
 
-enum class OfflinePagesNamespaceEnumeration;
-
 namespace model_utils {
-
-// Return the enum value of the namespace represented by |name_space|.
-OfflinePagesNamespaceEnumeration ToNamespaceEnum(const std::string& name_space);
 
 // Metric collection related.
 std::string AddHistogramSuffix(const std::string& name_space,

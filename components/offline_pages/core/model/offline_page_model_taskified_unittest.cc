@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
@@ -23,7 +22,6 @@
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/model/clear_storage_task.h"
 #include "components/offline_pages/core/model/offline_page_item_generator.h"
-#include "components/offline_pages/core/model/offline_page_model_utils.h"
 #include "components/offline_pages/core/model/offline_page_test_utils.h"
 #include "components/offline_pages/core/model/persistent_page_consistency_check_task.h"
 #include "components/offline_pages/core/offline_page_item.h"
@@ -151,7 +149,6 @@ class OfflinePageModelTaskifiedTest : public testing::Test,
   ArchiveManager* archive_manager() { return archive_manager_; }
   OfflinePageItemGenerator* page_generator() { return &generator_; }
   TaskQueue* task_queue() { return &model_->task_queue_; }
-  base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
   const base::FilePath& temporary_dir_path() {
     return temporary_dir_.GetPath();
   }
@@ -181,7 +178,6 @@ class OfflinePageModelTaskifiedTest : public testing::Test,
   OfflinePageMetadataStoreTestUtil store_test_util_;
   raw_ptr<ArchiveManager> archive_manager_;
   OfflinePageItemGenerator generator_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
   raw_ptr<OfflinePageTestArchivePublisher> publisher_;
   base::ScopedTempDir temporary_dir_;
   base::ScopedTempDir private_archive_dir_;
@@ -209,7 +205,6 @@ void OfflinePageModelTaskifiedTest::SetUp() {
   BuildModel();
   PumpLoop();
   CheckTaskQueueIdle();
-  histogram_tester_ = std::make_unique<base::HistogramTester>();
 }
 
 void OfflinePageModelTaskifiedTest::TearDown() {
@@ -259,7 +254,6 @@ void OfflinePageModelTaskifiedTest::BuildModel() {
       store_test_util()->ReleaseStore(), std::move(archive_manager),
       std::move(publisher), base::SingleThreadTaskRunner::GetCurrentDefault());
   model_->AddObserver(this);
-  histogram_tester_ = std::make_unique<base::HistogramTester>();
   ResetResults();
 }
 
@@ -628,10 +622,6 @@ TEST_F(OfflinePageModelTaskifiedTest, MarkPageAccessed) {
       store_test_util()->GetPageByOfflineId(page.offline_id);
   ASSERT_TRUE(accessed_page_ptr);
   EXPECT_EQ(1LL, accessed_page_ptr->access_count);
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.AccessPageCount",
-      static_cast<int>(model_utils::ToNamespaceEnum(page.client_id.name_space)),
-      1);
 }
 
 TEST_F(OfflinePageModelTaskifiedTest, GetAllPagesWhenStoreEmpty) {

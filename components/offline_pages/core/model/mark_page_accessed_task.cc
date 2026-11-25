@@ -6,10 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "components/offline_pages/core/client_namespace_constants.h"
-#include "components/offline_pages/core/model/offline_page_model_utils.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -21,29 +17,12 @@ namespace {
 
 #define OFFLINE_PAGES_TABLE_NAME "offlinepages_v1"
 
-void ReportAccessHistogram(int64_t offline_id,
-                           base::Time access_time,
-                           sql::Database* db) {
-  static const char kSql[] =
-      "SELECT client_namespace, last_access_time FROM " OFFLINE_PAGES_TABLE_NAME
-      " WHERE offline_id = ?";
-  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, offline_id);
-  if (statement.Step()) {
-    std::string name_space = statement.ColumnString(0);
-    UMA_HISTOGRAM_ENUMERATION("OfflinePages.AccessPageCount",
-                              model_utils::ToNamespaceEnum(name_space));
-  }
-}
-
 bool MarkPageAccessedSync(const base::Time& access_time,
                           int64_t offline_id,
                           sql::Database* db) {
   sql::Transaction transaction(db);
   if (!transaction.Begin())
     return false;
-
-  ReportAccessHistogram(offline_id, access_time, db);
 
   static const char kSql[] =
       "UPDATE OR IGNORE " OFFLINE_PAGES_TABLE_NAME

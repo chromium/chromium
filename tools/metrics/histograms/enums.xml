@@ -23727,42 +23727,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Unknown"/>
 </enum>
 
-<enum name="OfflinePagesNamespaceEnumeration">
-  <int value="0" label="Default">Namespace used as default.</int>
-  <int value="1" label="Bookmark">
-    Namespace used when offline page is saved when bookmarking.
-  </int>
-  <int value="2" label="Last_N">
-    Namespace used when offline page is saved as last_n page.
-  </int>
-  <int value="3" label="Async_loading">
-    Namespace used when offline page is saved after the user clicks a button on
-    the dino page.
-  </int>
-  <int value="4" label="Custom_tabs">
-    Namespace used when offline page is saved from custom tabs.
-  </int>
-  <int value="5" label="Download">
-    Namespace used when offline page is saved as downloads.
-  </int>
-  <int value="6" label="NTP_suggestions">
-    Namespace used when offline page is saved as NTP suggestions.
-  </int>
-  <int value="7" label="Suggested_articles">
-    Namespace used when offline page is saved as suggested articles.
-  </int>
-  <int value="8" label="Browser_actions">
-    Namespace used when offline page is saved from browser actions.
-  </int>
-  <int value="9" label="Live_page_sharing">
-    Namespace used when offline page is saved for live page sharing.
-  </int>
-  <int value="10" label="Auto_async_loading">
-    Namespace used for temporary offline pages requested to be downloaded when
-    the user landed in a dino page.
-  </int>
-</enum>
-
 <!-- LINT.IfChange(OmniboxPageClassification) -->
 
 <enum name="OmniboxPageClassification">

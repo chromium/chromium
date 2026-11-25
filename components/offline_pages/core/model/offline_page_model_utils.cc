@@ -13,38 +13,11 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/filename_generation/filename_generation.h"
-#include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_page_item.h"
 
 namespace offline_pages {
 
 namespace model_utils {
-
-OfflinePagesNamespaceEnumeration ToNamespaceEnum(
-    const std::string& name_space) {
-  if (name_space == kDefaultNamespace)
-    return OfflinePagesNamespaceEnumeration::DEFAULT;
-  else if (name_space == kBookmarkNamespace)
-    return OfflinePagesNamespaceEnumeration::BOOKMARK;
-  else if (name_space == kLastNNamespace)
-    return OfflinePagesNamespaceEnumeration::LAST_N;
-  else if (name_space == kAsyncNamespace)
-    return OfflinePagesNamespaceEnumeration::ASYNC_LOADING;
-  else if (name_space == kCCTNamespace)
-    return OfflinePagesNamespaceEnumeration::CUSTOM_TABS;
-  else if (name_space == kDownloadNamespace)
-    return OfflinePagesNamespaceEnumeration::DOWNLOAD;
-  else if (name_space == kNTPSuggestionsNamespace)
-    return OfflinePagesNamespaceEnumeration::NTP_SUGGESTION;
-  else if (name_space == kBrowserActionsNamespace)
-    return OfflinePagesNamespaceEnumeration::BROWSER_ACTIONS;
-  else if (name_space == kLivePageSharingNamespace)
-    return OfflinePagesNamespaceEnumeration::LIVE_PAGE_SHARING;
-  else if (name_space == kAutoAsyncNamespace)
-    return OfflinePagesNamespaceEnumeration::ASYNC_AUTO_LOADING;
-
-  return OfflinePagesNamespaceEnumeration::DEFAULT;
-}
 
 std::string AddHistogramSuffix(const std::string& name_space,
                                const char* histogram_name) {
