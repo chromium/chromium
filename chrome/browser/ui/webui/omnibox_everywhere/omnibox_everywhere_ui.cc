@@ -324,11 +324,6 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   source->AddBoolean(
       "singleLineOnInlineAutocomplete",
       omnibox::kOmniboxEverywhereSingleLineOnInlineAutocompleteParam.Get());
-  // Empty inputs can only be draggable when clicks inside draggable regions
-  // still reach the page, which the PreHandleMouseEvent drag path provides.
-  source->AddBoolean("draggableEmptyInput",
-                     base::FeatureList::IsEnabled(
-                         omnibox::kOmniboxEverywherePreHandleMouseDrag));
 
   source->AddBoolean("reportMetrics", true);
   source->AddString("charTypedToPaintMetricName",

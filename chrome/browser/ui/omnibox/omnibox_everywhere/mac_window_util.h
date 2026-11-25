@@ -29,11 +29,6 @@ void ActivateBrowserWindowOnMac(BrowserWindowInterface* bwi);
 // (Emoji & Symbols) attaches to the popup without resigning key window status.
 void ActivatePopupForEmojiPanelOnMac(gfx::NativeWindow native_window);
 
-// Returns true when the active AppKit event is a non-control left mouse down so
-// WebUI elements inside `-webkit-app-region: drag` containers still receive
-// hover and non-drag events on macOS.
-bool ShouldTreatCurrentEventAsDraggableOnMac();
-
 // Returns false while a window move loop is running or a window holds mouse
 // capture.
 bool CanStartWindowMoveLoopOnMac();

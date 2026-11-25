@@ -138,10 +138,6 @@ BASE_FEATURE(kOmniboxEverywhere, DISABLED);
 // context menu during `Profile` initialization until browser startup is
 // complete.
 BASE_FEATURE(kOmniboxEverywhereDeferStatusIcon, DISABLED);
-// Kill switch. If enabled, Omnibox Everywhere drags its window from
-// WebContentsDelegate::PreHandleMouseEvent() on all platforms. If disabled,
-// it falls back to the legacy Aura pre-target handler and macOS HTCAPTION.
-BASE_FEATURE(kOmniboxEverywherePreHandleMouseDrag, ENABLED);
 // If enabled, shows the Send Feedback item in OmniboxEverywhere menus for
 // dogfooders/teamfooders (targeted via g/loomnibox-dogfood and
 // g/loomnibox-teamfood).

@@ -67,16 +67,6 @@ void ActivatePopupForEmojiPanelOnMac(gfx::NativeWindow native_window) {
   ActivateWindowImpl(native_window.GetNativeNSWindow());
 }
 
-bool ShouldTreatCurrentEventAsDraggableOnMac() {
-  // TODO(b/581982251): Move away from the HTCAPTION approach for dragging.
-  NSEvent* event = [NSApp currentEvent];
-  if (!event) {
-    return false;
-  }
-  return [event type] == NSEventTypeLeftMouseDown &&
-         ([event modifierFlags] & NSEventModifierFlagControl) == 0;
-}
-
 bool CanStartWindowMoveLoopOnMac() {
   return !remote_cocoa::CocoaWindowMoveLoop::IsActive() &&
          !remote_cocoa::CocoaMouseCapture::GetGlobalCaptureWindow();

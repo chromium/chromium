@@ -4,19 +4,11 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 
-#include "base/feature_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_icon.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/grit/branded_strings.h"
-#include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/omnibox/omnibox_everywhere/mac_window_util.h"
-#endif
 
 namespace omnibox_everywhere {
 
@@ -40,41 +32,12 @@ OmniboxEverywhereWidgetDelegate::OmniboxEverywhereWidgetDelegate(
 
 OmniboxEverywhereWidgetDelegate::~OmniboxEverywhereWidgetDelegate() = default;
 
-void OmniboxEverywhereWidgetDelegate::SetDraggableRegion(
-    std::optional<SkRegion> region) {
-  draggable_region_ = std::move(region);
-}
-
-bool OmniboxEverywhereWidgetDelegate::IsPointInDraggableRegion(
-    const gfx::Point& point) const {
-  return draggable_region_ && !draggable_region_->isEmpty() &&
-         draggable_region_->contains(point.x(), point.y());
-}
-
 void OmniboxEverywhereWidgetDelegate::UpdateWindowIconForSearchEngine(
     const TemplateURLService* template_url_service) {
   window_icon_ = GetWindowIconFor(template_url_service);
   if (views::Widget* widget = GetWidget()) {
     widget->UpdateWindowIcon();
   }
-}
-
-int OmniboxEverywhereWidgetDelegate::NonClientHitTest(
-    const gfx::Point& point) const {
-#if BUILDFLAG(IS_MAC)
-  // On MacOS, we rely on window dragging and therefore return HTCAPTION. We
-  // avoid doing this on Aura because it causes the native context menu to
-  // be shown when right-clicking, and we use custom event handling to implement
-  // the window dragging. Ignore hover events so WebUI still receives mouse-move
-  // events for `:hover` states inside draggable regions.
-  if (!base::FeatureList::IsEnabled(
-          omnibox::kOmniboxEverywherePreHandleMouseDrag) &&
-      IsPointInDraggableRegion(point) &&
-      ShouldTreatCurrentEventAsDraggableOnMac()) {
-    return HTCAPTION;
-  }
-#endif  // BUILDFLAG(IS_MAC)
-  return HTNOWHERE;
 }
 
 ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowIcon() {

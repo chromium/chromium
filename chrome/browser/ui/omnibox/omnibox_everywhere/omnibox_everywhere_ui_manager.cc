@@ -101,7 +101,6 @@
 #endif
 
 #if defined(USE_AURA)
-#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler_aura.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/wm/core/window_animations.h"
@@ -342,9 +341,6 @@ OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
           base::BindRepeating(&IsOnCurrentVirtualDesktop))
 #endif
 {
-#if defined(USE_AURA)
-  event_handler_ = std::make_unique<OmniboxEverywhereEventHandlerAura>(*this);
-#endif
   if (g_browser_process && g_browser_process->local_state()) {
     local_state_pref_change_registrar_.Init(g_browser_process->local_state());
     local_state_pref_change_registrar_.Add(
@@ -637,9 +633,6 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
 #endif  // BUILDFLAG(IS_WIN)
   widget_delegate_ = std::make_unique<OmniboxEverywhereWidgetDelegate>(
       TemplateURLServiceFactory::GetForProfile(profile_));
-  if (draggable_region_) {
-    widget_delegate_->SetDraggableRegion(draggable_region_);
-  }
   params.delegate = widget_delegate_.get();
   params.z_order = is_ephemeral ? ui::ZOrderLevel::kFloatingWindow
                                 : ui::ZOrderLevel::kNormal;
@@ -698,19 +691,10 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
       &OmniboxEverywhereUIManager::OnWidgetClosed, weak_factory_.GetWeakPtr()));
   widget_observation_.Observe(widget_.get());
 
-  CHECK(widget_->non_client_view() && widget_->non_client_view()->frame_view());
-  widget_->non_client_view()->frame_view()->set_non_client_hit_test_callback(
-      base::BindRepeating(&OmniboxEverywhereWidgetDelegate::NonClientHitTest,
-                          base::Unretained(widget_delegate_.get())));
-
 #if defined(USE_AURA)
   CHECK(widget_->GetNativeView());
   wm::SetWindowVisibilityAnimationTransition(widget_->GetNativeView(),
                                              wm::ANIMATE_NONE);
-  if (!base::FeatureList::IsEnabled(
-          omnibox::kOmniboxEverywherePreHandleMouseDrag)) {
-    widget_->GetNativeView()->AddPreTargetHandler(event_handler_.get());
-  }
 #endif
   UpdateModalInteractionState();
 }
@@ -875,11 +859,6 @@ void OmniboxEverywhereUIManager::Close() {
     // Hidden widgets stop receiving mouse events, so the release that ends a
     // pending drag hold would never arrive.
     window_drag_controller_.Reset();
-#if defined(USE_AURA)
-    // Aura does not deliver events to hidden windows, so the handler may never
-    // see the release or capture loss that ends a pending drag hold.
-    event_handler_->ResetDragState();
-#endif
     widget_->Hide();
   }
   EndFreSession();
@@ -948,14 +927,6 @@ void OmniboxEverywhereUIManager::DestroyWidgetAndWebContents() {
     static_cast<OmniboxEverywhereWidget*>(widget_.get())->ResetThemeObserver();
     widget_observation_.Reset();
     window_drag_controller_.Reset();
-#if defined(USE_AURA)
-    if (auto* native_view = widget_->GetNativeView()) {
-      native_view->RemovePreTargetHandler(event_handler_.get());
-    }
-    // The handler outlives the widget and, once detached, can no longer see
-    // the release or capture loss that ends a pending drag hold.
-    event_handler_->ResetDragState();
-#endif
     if (auto* contents_view = widget_delegate_->GetContentsView()) {
       if (auto* web_view = views::AsViewClass<views::WebView>(contents_view)) {
         web_view->SetWebContents(nullptr);
@@ -1587,9 +1558,6 @@ void OmniboxEverywhereUIManager::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions,
     content::WebContents* /*contents*/) {
   draggable_region_ = ComputeDraggableRegion(regions);
-  if (widget_delegate_) {
-    widget_delegate_->SetDraggableRegion(draggable_region_);
-  }
 }
 
 // Shows the native right-click context menu for editable controls, selected
@@ -1603,9 +1571,7 @@ bool OmniboxEverywhereUIManager::HandleContextMenu(
 
 bool OmniboxEverywhereUIManager::PreHandleMouseEvent(
     const blink::WebMouseEvent& event) {
-  return base::FeatureList::IsEnabled(
-             omnibox::kOmniboxEverywherePreHandleMouseDrag) &&
-         window_drag_controller_.PreHandleMouseEvent(event);
+  return window_drag_controller_.PreHandleMouseEvent(event);
 }
 
 views::Widget* OmniboxEverywhereUIManager::GetWindowDragWidget() {

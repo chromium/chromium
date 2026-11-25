@@ -79,7 +79,6 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       searchboxLayoutMode: 'TallBottomContext',
       searchboxMultiline: true,
       singleLineOnInlineAutocomplete: true,
-      draggableEmptyInput: true,
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -1943,21 +1942,6 @@ suite('OmniboxEverywhereOmniboxTest', () => {
             getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
       });
 
-  test('empty input is not draggable when the flag is disabled', async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({draggableEmptyInput: false});
-    const testOmnibox = document.createElement('omnibox-everywhere-omnibox');
-    document.body.appendChild(testOmnibox);
-    await microtasksFinished();
-
-    assertFalse(testOmnibox.hasAttribute('draggable-empty-input'));
-    const inputEl = testOmnibox.$.input.inputElement;
-    assertEquals('', inputEl.value);
-    assertEquals(
-        'no-drag',
-        getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
-  });
-
   test('uses text cursor only on the editable input', () => {
     assertEquals('auto', getComputedStyle(omnibox.$.input).cursor);
     assertEquals('auto', getComputedStyle(omnibox.$.input.$.icon).cursor);
@@ -1986,7 +1970,6 @@ suite('OmniboxEverywhereComposeboxTest', () => {
       searchboxLayoutMode: 'TallBottomContext',
       composeboxCancelButtonTitle: 'Close AI Mode',
       composeboxCancelButtonTitleInput: 'Clear text',
-      draggableEmptyInput: true,
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -2645,7 +2628,6 @@ suite('OmniboxEverywhereAppTest', () => {
       smallFont: false,
       isPersistentMode: true,
       omniboxEverywhereMostVisitedHideTitle: true,
-      draggableEmptyInput: true,
       initialFreStage: 0,
       hasDefaultSearchEngine: true,
       searchEnginePlaceholderText: 'Search Google or type a URL',

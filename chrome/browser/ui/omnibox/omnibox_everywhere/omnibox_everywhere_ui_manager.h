@@ -59,9 +59,6 @@ class UnhandledKeyboardEventHandler;
 
 namespace omnibox_everywhere {
 
-#if defined(USE_AURA)
-class OmniboxEverywhereEventHandlerAura;
-#endif
 class OmniboxEverywhereRegionSelectOverlay;
 class OmniboxEverywhereWidgetDelegate;
 
@@ -316,11 +313,6 @@ class OmniboxEverywhereUIManager
     return context_menu_controller_.get();
   }
   bool is_dragging_for_testing() const { return is_dragging_; }
-#if defined(USE_AURA)
-  OmniboxEverywhereEventHandlerAura* event_handler_for_testing() {
-    return event_handler_.get();
-  }
-#endif
   bool is_demoted() const { return is_demoted_; }
 
  private:
@@ -408,10 +400,6 @@ class OmniboxEverywhereUIManager
   void OnWindowDragStarted() override;
   void OnWindowDragEnded() override;
   void ForwardMouseEventToRenderer(const blink::WebMouseEvent& event) override;
-
-#if defined(USE_AURA)
-  std::unique_ptr<OmniboxEverywhereEventHandlerAura> event_handler_;
-#endif
 
   // The native window hosting the Omnibox Everywhere UI.
   raw_ptr<Profile> profile_ = nullptr;

@@ -477,8 +477,7 @@ cr-composebox-contextual-entrypoint-button,
 
 /* Allow dragging the window from the search input when empty while preserving
  * text selection once text or keyword mode is active. */
-:host([draggable-empty-input])
-    :not([in-keyword-mode])::part(searchbox-input):placeholder-shown {
+:not([in-keyword-mode])::part(searchbox-input):placeholder-shown {
   -webkit-app-region: drag;
   -webkit-user-drag: none;
 }

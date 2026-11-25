@@ -5,11 +5,7 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_WIDGET_DELEGATE_H_
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_WIDGET_DELEGATE_H_
 
-#include <optional>
-
-#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget_delegate.h"
 
 class TemplateURLService;
@@ -30,15 +26,10 @@ class OmniboxEverywhereWidgetDelegate : public views::WidgetDelegate {
       const OmniboxEverywhereWidgetDelegate&) = delete;
   ~OmniboxEverywhereWidgetDelegate() override;
 
-  void SetDraggableRegion(std::optional<SkRegion> region);
-  bool IsPointInDraggableRegion(const gfx::Point& point) const;
-
   // Recomputes the window icon for `template_url_service` (see
   // `GetOmniboxEverywhereIcon()`) and applies it to the widget, if any.
   void UpdateWindowIconForSearchEngine(
       const TemplateURLService* template_url_service);
-
-  int NonClientHitTest(const gfx::Point& point) const;
 
   // views::WidgetDelegate:
   ui::ImageModel GetWindowIcon() override;
@@ -47,7 +38,6 @@ class OmniboxEverywhereWidgetDelegate : public views::WidgetDelegate {
 
  private:
   ui::ImageModel window_icon_;
-  std::optional<SkRegion> draggable_region_;
 };
 
 }  // namespace omnibox_everywhere
