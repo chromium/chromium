@@ -208,6 +208,9 @@ x11::Window GetWindowForEvent(const x11::Event& xev) {
   if (auto* xievent = xev.As<x11::Input::DeviceEvent>()) {
     return xievent->event;
   }
+  if (auto* pinch = xev.As<x11::Input::GesturePinchEvent>()) {
+    return pinch->event;
+  }
   if (auto* crossing = xev.As<x11::CrossingEvent>()) {
     return crossing->event;
   }

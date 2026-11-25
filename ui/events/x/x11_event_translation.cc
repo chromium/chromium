@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -239,6 +241,41 @@ std::unique_ptr<ScrollEvent> CreateScrollEvent(EventType type,
              : nullptr;
 }
 
+std::unique_ptr<GestureEvent> CreatePinchEvent(
+    EventType type,
+    const x11::Event& xev,
+    const x11::Input::GesturePinchEvent& pinch) {
+  // The scale of each touchpad's session so far, as reported by its last
+  // update, keyed by source device so concurrent pinches don't interfere.
+  static base::NoDestructor<base::flat_map<uint16_t, double>> last_scales;
+  const auto source_id = static_cast<uint16_t>(pinch.sourceid);
+
+  GestureEventDetails details(type);
+  details.set_device_type(GestureDeviceType::DEVICE_TOUCHPAD);
+  if (type == EventType::kGesturePinchBegin) {
+    (*last_scales)[source_id] = 1.0;
+  } else if (type == EventType::kGesturePinchUpdate) {
+    // XInput reports the scale relative to the start of the session, but
+    // GesturePinchUpdate events carry the change since the previous update.
+    const double scale = static_cast<int32_t>(pinch.scale) / 65536.0;
+    auto it = last_scales->try_emplace(source_id, 1.0).first;
+    if (scale > 0 && it->second > 0) {
+      details.set_scale(scale / it->second);
+    }
+    it->second = scale;
+  } else {
+    last_scales->erase(source_id);
+  }
+
+  const gfx::Point location = EventLocationFromXEvent(xev);
+  auto event = std::make_unique<GestureEvent>(
+      location.x(), location.y(), EventFlagsFromXEvent(xev),
+      EventTimeFromXEvent(xev), details);
+  event->set_root_location(EventSystemLocationFromXEvent(xev));
+  event->set_source_device_id(source_id);
+  return event;
+}
+
 // Translates XI2 XEvent into a ui::Event.
 std::unique_ptr<ui::Event> TranslateFromXI2Event(const x11::Event& xev,
                                                  EventType event_type) {
@@ -295,6 +332,11 @@ std::unique_ptr<Event> TranslateFromXEvent(const x11::Event& xev) {
   }
   if (xev.As<x11::Input::DeviceEvent>())
     return TranslateFromXI2Event(xev, event_type);
+  if (auto* pinch = xev.As<x11::Input::GesturePinchEvent>()) {
+    return event_type == EventType::kUnknown
+               ? nullptr
+               : CreatePinchEvent(event_type, xev, *pinch);
+  }
   return nullptr;
 }
 

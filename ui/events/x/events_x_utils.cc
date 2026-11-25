@@ -358,6 +358,9 @@ base::TimeTicks TimeTicksFromXEvent(const x11::Event& xev) {
     }
     return TimeTicksFromXEventTime(device->time);
   }
+  if (auto* pinch = xev.As<x11::Input::GesturePinchEvent>()) {
+    return TimeTicksFromXEventTime(pinch->time);
+  }
   NOTREACHED();
 }
 
@@ -384,6 +387,16 @@ EventType EventTypeFromXEvent(const x11::Event& xev) {
   if (auto* key = xev.As<x11::KeyEvent>()) {
     return key->opcode == x11::KeyEvent::Press ? EventType::kKeyPressed
                                                : EventType::kKeyReleased;
+  }
+  if (auto* pinch = xev.As<x11::Input::GesturePinchEvent>()) {
+    switch (pinch->opcode) {
+      case x11::Input::GesturePinchEvent::Begin:
+        return EventType::kGesturePinchBegin;
+      case x11::Input::GesturePinchEvent::Update:
+        return EventType::kGesturePinchUpdate;
+      case x11::Input::GesturePinchEvent::End:
+        return EventType::kGesturePinchEnd;
+    }
   }
   TouchFactory* touch_factory = TouchFactory::GetInstance();
   auto* xievent = xev.As<x11::Input::DeviceEvent>();
@@ -576,6 +589,9 @@ int EventFlagsFromXEvent(const x11::Event& xev) {
       }
     }
   }
+  if (auto* pinch = xev.As<x11::Input::GesturePinchEvent>()) {
+    return GetEventFlagsFromXState(pinch->mods.effective);
+  }
   return 0;
 }
 
@@ -609,6 +625,10 @@ gfx::Point EventLocationFromXEvent(const x11::Event& xev) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
     return gfx::Point(static_cast<int>(x), static_cast<int>(y));
   }
+  if (auto* pinch = xev.As<x11::Input::GesturePinchEvent>()) {
+    return gfx::Point(Fp1616ToDouble(pinch->event_x),
+                      Fp1616ToDouble(pinch->event_y));
+  }
   return gfx::Point();
 }
 
@@ -626,6 +646,10 @@ gfx::Point EventSystemLocationFromXEvent(const x11::Event& xev) {
   if (auto* xievent = xev.As<x11::Input::DeviceEvent>()) {
     return gfx::Point(Fp1616ToDouble(xievent->root_x),
                       Fp1616ToDouble(xievent->root_y));
+  }
+  if (auto* pinch = xev.As<x11::Input::GesturePinchEvent>()) {
+    return gfx::Point(Fp1616ToDouble(pinch->root_x),
+                      Fp1616ToDouble(pinch->root_y));
   }
   return gfx::Point();
 }

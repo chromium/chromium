@@ -208,6 +208,67 @@ TEST_F(X11WindowOzoneTest, SendPlatformEventToCapturedWindow) {
   EXPECT_EQ(gfx::Point(-277, 215), event->AsLocatedEvent()->location());
 }
 
+// XInput 2.4 touchpad pinch events must be dispatched as touchpad pinch
+// gestures whose scale is relative to the previous update.
+TEST_F(X11WindowOzoneTest, TouchpadPinch) {
+  MockPlatformWindowDelegate delegate;
+  gfx::AcceleratedWidget widget;
+  auto window = CreatePlatformWindow(&delegate, gfx::Rect(30, 80, 800, 600),
+                                     &widget, nullptr);
+
+  std::vector<std::pair<EventType, float>> received;
+  EXPECT_CALL(delegate, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
+    ASSERT_TRUE(event->IsGestureEvent());
+    auto* gesture = event->AsGestureEvent();
+    EXPECT_EQ(GestureDeviceType::DEVICE_TOUCHPAD,
+              gesture->details().device_type());
+    EXPECT_EQ(gfx::PointF(100, 50), gesture->location_f());
+    received.emplace_back(gesture->type(),
+                          gesture->type() == EventType::kGesturePinchUpdate
+                              ? gesture->details().scale()
+                              : 0.0f);
+  });
+
+  // XInput 2 sends coordinates and the pinch scale as FP1616 (16.16 fixed
+  // point) values, as it does for all XI2 device and gesture events.
+  auto to_fp1616 = [](double value) {
+    return static_cast<x11::Input::Fp1616>(value * (1 << 16));
+  };
+  auto dispatch_pinch = [&](x11::Input::GesturePinchEvent::Opcode opcode,
+                            uint16_t source_id, double scale) {
+    x11::Input::GesturePinchEvent pinch{
+        .opcode = opcode,
+        .event = static_cast<x11::Window>(widget),
+        .event_x = to_fp1616(100),
+        .event_y = to_fp1616(50),
+        .scale = to_fp1616(scale),
+        .sourceid = static_cast<x11::Input::DeviceId>(source_id),
+    };
+    x11::Connection::Get()->DispatchEvent(x11::Event(false, std::move(pinch)));
+  };
+  // Pinches on two touchpads overlap and must be tracked separately.
+  dispatch_pinch(x11::Input::GesturePinchEvent::Begin, 2, 1.0);
+  dispatch_pinch(x11::Input::GesturePinchEvent::Update, 2, 2.0);
+  dispatch_pinch(x11::Input::GesturePinchEvent::Begin, 3, 1.0);
+  dispatch_pinch(x11::Input::GesturePinchEvent::Update, 3, 0.5);
+  dispatch_pinch(x11::Input::GesturePinchEvent::Update, 2, 3.0);
+  dispatch_pinch(x11::Input::GesturePinchEvent::End, 2, 3.0);
+  dispatch_pinch(x11::Input::GesturePinchEvent::End, 3, 0.5);
+
+  EXPECT_EQ((std::vector<std::pair<EventType, float>>{
+                {EventType::kGesturePinchBegin, 0.0f},
+                {EventType::kGesturePinchUpdate, 2.0f},
+                {EventType::kGesturePinchBegin, 0.0f},
+                {EventType::kGesturePinchUpdate, 0.5f},
+                {EventType::kGesturePinchUpdate, 1.5f},
+                {EventType::kGesturePinchEnd, 0.0f},
+                {EventType::kGesturePinchEnd, 0.0f},
+            }),
+            received);
+
+  EXPECT_CALL(delegate, OnClosed()).Times(1);
+}
+
 // This test case ensures window_manager properly provides X11Window instances
 // as they are created/destroyed.
 TEST_F(X11WindowOzoneTest, GetWindowFromAcceleratedWigets) {

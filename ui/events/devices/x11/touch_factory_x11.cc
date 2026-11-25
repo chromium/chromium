@@ -230,6 +230,14 @@ void TouchFactory::SetupXI2ForXWindow(x11::Window window) {
   SetXinputMask(mask_span, x11::Input::DeviceEvent::KeyPress);
   SetXinputMask(mask_span, x11::Input::DeviceEvent::KeyRelease);
 
+  // Touchpad gestures were added in XInput 2.4.  Older servers reject unknown
+  // event types in the mask.
+  if (connection->xinput_version() >= x11::Connection::ExtensionVersion{2, 4}) {
+    SetXinputMask(mask_span, x11::Input::GesturePinchEvent::Begin);
+    SetXinputMask(mask_span, x11::Input::GesturePinchEvent::Update);
+    SetXinputMask(mask_span, x11::Input::GesturePinchEvent::End);
+  }
+
   x11::Input::EventMask touch_mask{x11::Input::DeviceId::All};
   touch_mask.mask.push_back({});
   auto touch_mask_span = base::as_writable_byte_span(touch_mask.mask);
