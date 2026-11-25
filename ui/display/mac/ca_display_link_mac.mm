@@ -565,7 +565,6 @@ void WindowServerEventPumpThread::DisableDisplayLink(Result failure) {
     return;
   }
 
-  CHECK_NE(failure, Result::kSuccess, base::NotFatalUntil::M163);
   RecordWindowServerEventPumpResult(failure);
 
   shutdown_ = true;
