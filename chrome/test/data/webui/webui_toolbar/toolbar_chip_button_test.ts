@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
+import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import type {ToolbarChipButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
+import type {ToolbarChipButtonElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('ToolbarChipButtonTest', function() {
   let element: ToolbarChipButtonElement;

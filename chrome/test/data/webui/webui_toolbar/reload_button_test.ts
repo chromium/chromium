@@ -9,8 +9,7 @@ import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {AnimationTracker} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
-import {BrowserProxyImpl, ContextMenuType, PressHandler} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import {AnimationTracker, BrowserProxyImpl, ContextMenuType, PressHandler} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import type {BrowserProxy, ReloadButtonElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';

@@ -2,12 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Register every toolbar iconset before any control is defined. Icon names
+// come from icon_table.cc and can be handed to any <icon-from-table>, so a
+// consuming element cannot know in advance which iconset it needs.
+import './icons.js';
+// <if expr="_google_chrome">
+import './internal/icons.js';
+// </if>
+import '/shared/icon_from_table.js';
+import '/shared/icon_table.js';
+import './app_menu_button.js';
+import './avatar_button.js';
 import './back_forward_button.js';
+import './battery_saver_button.js';
+import './extensions.js';
+import './glic_actor_task_icon.js';
+import './glic_button.js';
+import './home_button.js';
+import './location_bar.js';
+import './media_button.js';
+import './overflow_button.js';
+import './performance_intervention_button.js';
+import './pinned_toolbar_actions.js';
 import './reload_button.js';
 import './split_tabs_button.js';
-import './home_button.js';
-import '/shared/icon_table.js';
-import './icons.js';
 import './tab_focus_disabler.js';
 
 import {assert} from '//resources/js/assert.js';
@@ -28,7 +46,6 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl, createDefaultLocationBarState, INVALID_FOCUS_REQUEST_HANDLE, INVALID_TOOLBAR_STATE_LISTENER_HANDLE, ToolbarStateKey} from './browser_proxy.js';
 import type {BoundProfileState, BrowserProxy, FocusRequestHandle, InitialStateReader, ToolbarStateListenerHandle} from './browser_proxy.js';
-import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 import type {ExtensionsElement} from './extensions.js';
 import type {LocationBarElement} from './location_bar.js';
 import type {OverflowButtonElement} from './overflow_button.js';
@@ -104,12 +121,6 @@ const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
   {selector: '#avatar', id: 'kToolbarAvatarButtonElementId'},
   {selector: '#app-menu', id: 'kToolbarAppMenuButtonElementId'},
 ];
-
-// Resolves once `el` is upgraded and has completed its initial render.
-async function whenUpgraded(el: CrLitElement): Promise<void> {
-  await customElements.whenDefined(el.localName);
-  await el.updateComplete;
-}
 
 const AppElementBase = HelpBubbleMixinLit(CrLitElement);
 
@@ -466,9 +477,6 @@ export class ToolbarAppElement extends AppElementBase {
     if (!controlsChanged) {
       return;
     }
-    if (this.hasNonNavigationControlsEnabled_() && this.isConnected) {
-      ensureLazyLoaded().then(() => this.scheduleLayoutResponsiveControls_());
-    }
     this.scheduleLayoutResponsiveControls_();
     if (this.hasStartedRegisteringTrackedElements_) {
       const sessionId = this.initializeSessionId_;
@@ -483,7 +491,7 @@ export class ToolbarAppElement extends AppElementBase {
     if (!avatar) {
       return;
     }
-    await whenUpgraded(avatar);
+    await avatar.updateComplete;
     requestAnimationFrame(() => {
       avatar.classList.remove('initial-load');
     });
@@ -499,23 +507,6 @@ export class ToolbarAppElement extends AppElementBase {
     if (this.webUIToolbarFullyEnabled_) {
       this.setAttribute('webui-toolbar-fully-enabled', '');
     }
-    // An unbound spare may enable the Glic or avatar button when a window
-    // adopts it, so it also preloads lazy_load.js for them.
-    const mayEnableBoundControls =
-        this.initialState_.getBoolean(ToolbarStateKey.IS_UNBOUND) &&
-        (loadTimeData.getBoolean('enableGlicButton') ||
-         loadTimeData.getBoolean('enableAvatarButton'));
-    if (this.hasNonNavigationControlsEnabled_() || mayEnableBoundControls) {
-      // Request loading of the lazy loaded module within an idle callback.
-      // Pass a timeout because untimed idle callbacks only run during Blink
-      // idle periods, which never start while the toolbar has a zero-width
-      // viewport (e.g. when only hidden controls are enabled).
-      requestIdleCallback(async () => {
-        await ensureLazyLoaded();
-        this.scheduleLayoutResponsiveControls_();
-      }, {timeout: 500});
-    }
-
     const sessionId = ++this.initializeSessionId_;
 
     this.setAttribute('role', 'toolbar');
@@ -575,7 +566,7 @@ export class ToolbarAppElement extends AppElementBase {
                     this.clearAvatarInitialLoad_(),
                     (async () => {
                       if (extensions) {
-                        await whenUpgraded(extensions);
+                        await extensions.updateComplete;
                         requestAnimationFrame(() => {
                           extensions.markInitialStateRendered();
                         });
@@ -653,35 +644,9 @@ export class ToolbarAppElement extends AppElementBase {
     }
   }
 
-  // Returns whether any control other than the navigation buttons (back,
-  // forward, reload, home and split tabs) is enabled. Only the navigation
-  // buttons are in the main webui_toolbar.js bundle; all other controls are
-  // defined by lazy_load.js, which is only loaded if this returns true.
-  private hasNonNavigationControlsEnabled_(): boolean {
-    return this.webUIToolbarFullyEnabled_ || this.isLocationBarEnabled_ ||
-        this.isExtensionsContainerEnabled_ ||
-        this.isPinnedToolbarActionsEnabled_ ||
-        this.isBatterySaverButtonEnabled_ ||
-        this.isPerformanceInterventionButtonEnabled_ ||
-        this.isGlicButtonEnabled_ || this.isAvatarButtonEnabled_ ||
-        // <if expr="is_win or is_macosx or is_linux">
-        this.isMediaButtonEnabled_ ||
-        // </if>
-        this.isAppMenuButtonEnabled_;
-  }
-
-  private async registerTrackedElements_(sessionId: number): Promise<boolean> {
+  private registerTrackedElements_(sessionId: number): void {
     if (sessionId !== this.initializeSessionId_ || !this.isConnected) {
-      return false;
-    }
-    const undefinedElements =
-        this.shadowRoot.querySelectorAll(':not(:defined)');
-    if (undefinedElements.length > 0) {
-      await Promise.all(Array.from(
-          undefinedElements, el => customElements.whenDefined(el.localName)));
-      if (sessionId !== this.initializeSessionId_ || !this.isConnected) {
-        return false;
-      }
+      return;
     }
 
     for (const {selector, id} of TRACKED_ELEMENTS) {
@@ -711,7 +676,6 @@ export class ToolbarAppElement extends AppElementBase {
         });
       }
     }
-    return true;
   }
 
   private async initializePage_(sessionId: number) {
@@ -721,10 +685,7 @@ export class ToolbarAppElement extends AppElementBase {
     }
 
     this.hasStartedRegisteringTrackedElements_ = true;
-    if (!await this.registerTrackedElements_(sessionId) ||
-        this.isPageInitialized_) {
-      return;
-    }
+    this.registerTrackedElements_(sessionId);
     this.isPageInitialized_ = true;
 
     const waitSelectors = [
@@ -1201,9 +1162,8 @@ export class ToolbarAppElement extends AppElementBase {
     }
 
     // Wait until the initial template has rendered (#location-bar and
-    // #overflow exist in shadowRoot) and lazy_load.js has upgraded the
-    // ResponsiveControl elements (so methods like shouldBeShown() exist).
-    if (!this.isInitialized_ || !customElements.get('overflow-button')) {
+    // #overflow exist in shadowRoot).
+    if (!this.isInitialized_) {
       return;
     }
 

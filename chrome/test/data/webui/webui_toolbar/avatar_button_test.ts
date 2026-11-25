@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
-import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import type {AvatarButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {AvatarToolbarButtonState, BrowserProxyImpl, ToolbarAppElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import type {AvatarButtonElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {TestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
 

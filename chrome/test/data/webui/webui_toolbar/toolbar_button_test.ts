@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
+import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {isMac} from 'chrome://resources/js/platform.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
@@ -10,9 +10,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import type {MediaButtonElement, OverflowButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {BrowserProxyImpl, ContextMenuType, getClickSourceType, getContextMenuSourceType, HighlightTracker, isMacContextClick, isPrimaryClick, PressHandler} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
-import type {SplitTabsButtonElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import type {MediaButtonElement, OverflowButtonElement, SplitTabsButtonElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {TestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
 

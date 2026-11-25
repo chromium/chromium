@@ -8,8 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {AnimationTracker} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
-import {BrowserProxyImpl} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import {AnimationTracker, BrowserProxyImpl} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import type {BackForwardButtonElement, BrowserProxy} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';

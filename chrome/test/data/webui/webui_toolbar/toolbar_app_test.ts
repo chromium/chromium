@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
-import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
 import {browserProxyFactory} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import type {HelpBubbleHandlerInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
@@ -12,9 +11,8 @@ import type {TrackedElementIdentifier} from 'chrome://resources/mojo/ui/webui/re
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import type {GlicActorTaskIconElement, GlicButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, BrowserProxyImpl, COLOR_PROVIDER_CHANGED, ColorChangeUpdater, ContentSettingImageType, createDefaultLocationBarState, INVALID_FOCUS_REQUEST_HANDLE, PageActionAnimationStyle, PageActionId, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
-import type {FocusRequestListener, ToolbarAppElement, ToolbarStateListener} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import type {FocusRequestListener, GlicActorTaskIconElement, GlicButtonElement, ToolbarAppElement, ToolbarStateListener} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {TestToolbarBrowserProxy as BaseTestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
 
