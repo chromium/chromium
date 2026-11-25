@@ -1049,7 +1049,7 @@ class DevToolsUIBindingsDispatchHttpRequestTest : public testing::Test {
     mock_handler_ptr_ = mock_handler.get();
     registry->AddForTesting(DevToolsHttpServiceRegistry::Service(
         "mockService", {{"/getFoo", "GET"}, {"/postBar", "POST"}},
-        std::move(mock_handler)));
+        std::move(mock_handler), {"User-Agent"}));
     bindings_->SetHttpServiceRegistryForTesting(std::move(registry));
   }
 
@@ -1163,7 +1163,46 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
                       }),
                       params);
   run_loop.Run();
-  EXPECT_EQ(*result.FindString("error"), "Disallowed path or method");
+  EXPECT_EQ(*result.FindString("error"), "Disallowed path, method, or header");
+}
+
+TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
+       DispatchHttpRequestDisallowedHeader) {
+  DevToolsDispatchHttpRequestParams params;
+  params.service = "mockService";
+  params.path = "/getFoo";
+  params.method = "GET";
+  params.headers["X-Foo"] = "bar";
+
+  {
+    base::DictValue result;
+    base::RunLoop run_loop;
+    DispatchHttpRequest(
+        base::BindLambdaForTesting([&](const base::Value* value) {
+          result = value->GetDict().Clone();
+          run_loop.Quit();
+        }),
+        params);
+    run_loop.Run();
+    EXPECT_EQ(*result.FindString("error"),
+              "Disallowed path, method, or header");
+  }
+
+  params.headers.clear();
+  params.headers["User-Agent"] = "bad\r\nvalue";
+  {
+    base::DictValue result;
+    base::RunLoop run_loop;
+    DispatchHttpRequest(
+        base::BindLambdaForTesting([&](const base::Value* value) {
+          result = value->GetDict().Clone();
+          run_loop.Quit();
+        }),
+        params);
+    run_loop.Run();
+    EXPECT_EQ(*result.FindString("error"),
+              "Disallowed path, method, or header");
+  }
 }
 
 TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
@@ -1444,7 +1483,7 @@ class DevToolsUIBindingsDispatchHttpRequestStreamingTest
     auto mock_handler = std::make_unique<MockServiceHandler>();
     mock_handler_ptr_ = mock_handler.get();
     registry->AddForTesting(DevToolsHttpServiceRegistry::Service(
-        "mockService", {{"/getFoo", "GET"}}, std::move(mock_handler)));
+        "mockService", {{"/getFoo", "GET"}}, std::move(mock_handler), {}));
     test_bindings_->SetHttpServiceRegistryForTesting(std::move(registry));
   }
 

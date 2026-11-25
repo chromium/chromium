@@ -14,6 +14,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -212,6 +213,41 @@ TEST_F(DevToolsHttpServiceHandlerTest, RequestStreamingHttpError) {
             DevToolsHttpServiceHandler::Result::Error::kHttpError);
   EXPECT_EQ(result->http_status, 500);
   EXPECT_THAT(result->response_body, testing::Optional(std::string("Error")));
+}
+
+TEST_F(DevToolsHttpServiceHandlerTest, RequestSetsHeadersFromParams) {
+  std::optional<std::string> captured_user_agent;
+  intercept_callback_ = base::BindLambdaForTesting(
+      [&captured_user_agent](
+          content::URLLoaderInterceptor::RequestParams* params) {
+        captured_user_agent = params->url_request.headers.GetHeader(
+            net::HttpRequestHeaders::kUserAgent);
+        content::URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\nContent-Type: text/plain\n\n", "OK",
+            params->client.get());
+        return true;
+      });
+
+  identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(
+      "test@google.com", signin::ConsentLevel::kSignin);
+
+  params_.headers["User-Agent"] =
+      "Chrome (aidev_client; datacollection_opt_in=false)";
+  base::test::TestFuture<std::unique_ptr<DevToolsHttpServiceHandler::Result>>
+      result_future;
+  mock_handler_->Request(profile_.get(), params_, std::nullopt,
+                         result_future.GetCallback());
+  identity_test_env_adaptor_->identity_test_env()
+      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+          "test_token", base::Time::Max());
+
+  std::unique_ptr<DevToolsHttpServiceHandler::Result> result =
+      result_future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->error, DevToolsHttpServiceHandler::Result::Error::kNone);
+  EXPECT_THAT(captured_user_agent,
+              testing::Optional(std::string(
+                  "Chrome (aidev_client; datacollection_opt_in=false)")));
 }
 
 }  // namespace

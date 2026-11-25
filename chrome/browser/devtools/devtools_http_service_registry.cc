@@ -6,9 +6,12 @@
 
 #include <ranges>
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/devtools/aida_service_handler.h"
 #include "chrome/browser/devtools/gca_service_handler.h"
 #include "chrome/browser/devtools/gdp_service_handler.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/http_util.h"
 
 namespace {
 
@@ -43,6 +46,20 @@ void DispatchRequest(
     return;
   }
 
+  // Headers allowed?
+  for (const auto& [name, value] : params.headers) {
+    if (!net::HttpUtil::IsValidHeaderValue(value) ||
+        std::ranges::none_of(
+            service_it->allowed_headers, [&](const std::string& allowed) {
+              return base::EqualsCaseInsensitiveASCII(allowed, name);
+            })) {
+      auto result = std::make_unique<DevToolsHttpServiceHandler::Result>();
+      result->error = DevToolsHttpServiceHandler::Result::Error::kAccessDenied;
+      std::move(callback).Run(std::move(result));
+      return;
+    }
+  }
+
   service_it->handler->Request(profile, params, std::move(stream_writer),
                                std::move(callback));
 }
@@ -52,10 +69,12 @@ void DispatchRequest(
 DevToolsHttpServiceRegistry::Service::Service(
     std::string service,
     std::vector<Endpoint> endpoints,
-    std::unique_ptr<DevToolsHttpServiceHandler> handler)
+    std::unique_ptr<DevToolsHttpServiceHandler> handler,
+    std::vector<std::string> allowed_headers)
     : service(std::move(service)),
       endpoints(std::move(endpoints)),
-      handler(std::move(handler)) {}
+      handler(std::move(handler)),
+      allowed_headers(std::move(allowed_headers)) {}
 DevToolsHttpServiceRegistry::Service::~Service() = default;
 DevToolsHttpServiceRegistry::Service::Service(Service&&) = default;
 
@@ -67,14 +86,16 @@ DevToolsHttpServiceRegistry::DevToolsHttpServiceRegistry() {
                                   {"/v1/aida:generateCode", "POST"},
                                   {"/v1/aida:doConversation", "POST"},
                               },
-                              std::make_unique<AidaServiceHandler>()));
+                              std::make_unique<AidaServiceHandler>(), {}));
+  // User-Agent is allowed so GCA requests can pass the data collection opt-out.
   services_.push_back(Service("gcaService",
                               {
                                   {"/v1beta:generateContent", "POST"},
                                   {"/v1beta:streamGenerateContent", "POST"},
                                   {"/v1beta:sendTelemetry", "POST"},
                               },
-                              std::make_unique<GcaServiceHandler>()));
+                              std::make_unique<GcaServiceHandler>(),
+                              {net::HttpRequestHeaders::kUserAgent}));
   services_.push_back(
       Service("gdpService",
               {
@@ -85,7 +106,7 @@ DevToolsHttpServiceRegistry::DevToolsHttpServiceRegistry() {
                   {"/v1beta1/profiles", "POST"},
                   {"/v1beta1/profiles/me/awards", "POST"},
               },
-              std::make_unique<GdpServiceHandler>()));
+              std::make_unique<GdpServiceHandler>(), {}));
 }
 DevToolsHttpServiceRegistry::~DevToolsHttpServiceRegistry() = default;
 
