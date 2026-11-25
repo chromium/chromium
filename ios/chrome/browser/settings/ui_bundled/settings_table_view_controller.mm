@@ -456,10 +456,12 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     _syncObserverBridge.reset(new SyncObserverBridge(self, syncService));
 
     PrefService* localState = GetApplicationContext()->GetLocalState();
-    _showMemoryDebugToolsEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:localState
-                   prefName:prefs::kShowMemoryDebuggingTools];
-    [_showMemoryDebugToolsEnabled setObserver:self];
+    if (experimental_flags::IsMemoryDebuggingEnabled()) {
+      _showMemoryDebugToolsEnabled = [[PrefBackedBoolean alloc]
+          initWithPrefService:localState
+                     prefName:prefs::kShowMemoryDebuggingTools];
+      [_showMemoryDebugToolsEnabled setObserver:self];
+    }
 
     _authService = AuthenticationServiceFactory::GetForProfile(_profile);
     _identity = _authService->GetPrimaryIdentity();
@@ -499,10 +501,12 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
                                                              self);
       }
     }
-    _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:localState
-                   prefName:omnibox::kIsOmniboxInBottomPosition];
-    [_bottomOmniboxEnabled setObserver:self];
+    if (IsBottomOmniboxAvailable()) {
+      _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
+          initWithPrefService:localState
+                     prefName:omnibox::kIsOmniboxInBottomPosition];
+      [_bottomOmniboxEnabled setObserver:self];
+    }
 
     _discoverFeedVisibilityBrowserAgent =
         DiscoverFeedVisibilityBrowserAgent::FromBrowser(browser);
@@ -2895,7 +2899,17 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  // If the model hasn't been created yet, no need to update anything.
+  if (!self.tableViewModel) {
+    return;
+  }
+
   if (observableBoolean == _showMemoryDebugToolsEnabled) {
+    // `_showMemoryDebugToolsItem` can be nil if `EnableMemoryDebugging` in
+    // `NSUserDefaults` changed between initialization and `-loadModel`.
+    if (!_showMemoryDebugToolsItem) {
+      return;
+    }
     // Update the Item.
     _showMemoryDebugToolsItem.on = [_showMemoryDebugToolsEnabled value];
     // Update the Cell.
@@ -2906,6 +2920,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     // allowed. Reload all sections in the model to account for the change.
     [self.tableView reloadData];
   } else if (observableBoolean == _bottomOmniboxEnabled) {
+    CHECK(_addressBarPreferenceItem);
     _addressBarPreferenceItem.detailText =
         [_bottomOmniboxEnabled value]
             ? l10n_util::GetNSString(IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION)

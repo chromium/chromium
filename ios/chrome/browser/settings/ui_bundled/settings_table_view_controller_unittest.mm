@@ -13,6 +13,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
@@ -50,7 +51,9 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -229,6 +232,19 @@ class SettingsTableViewControllerTest
       if ([item.accessibilityIdentifier
               isEqualToString:kSettingsPrivacyCellId]) {
         return base::apple::ObjCCast<TableViewDetailIconItem>(item);
+      }
+    }
+    return nil;
+  }
+
+  TableViewDetailIconItem* GetAddressBarDetailItem() {
+    NSArray<TableViewItem*>* default_items = [controller().tableViewModel
+        itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                         SettingsSectionIdentifierDefaults];
+    for (TableViewItem* item in default_items) {
+      if ([item.accessibilityIdentifier
+              isEqualToString:kSettingsAddressBarCellId]) {
+        return base::apple::ObjCCastStrict<TableViewDetailIconItem>(item);
       }
     }
     return nil;
@@ -923,4 +939,97 @@ TEST_F(SettingsTableViewControllerTest, TestPrivacyItemSilentModeNoErrorBadge) {
   // Simulate extension load error while in silent mode.
   fake_service->SetHasGPCLoadError(true);
   EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
+}
+
+// Tests that updating observed boolean preferences before the table view model
+// is loaded does not crash, and that loading the view afterwards succeeds.
+TEST_F(SettingsTableViewControllerTest,
+       TestBooleanPrefsChangedBeforeModelLoaded) {
+  CreateControllerWithoutView();
+  EXPECT_EQ(nil, controller().tableViewModel);
+
+  GetLocalState()->SetBoolean(omnibox::kIsOmniboxInBottomPosition, true);
+  GetLocalState()->SetBoolean(prefs::kShowMemoryDebuggingTools, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  CheckController();
+}
+
+// Tests that updating the bottom omnibox and memory debugging preferences after
+// the model is loaded updates the corresponding items when present (the address
+// bar item on iPhone, and the memory debugging item on unbranded builds where
+// `IOS_ENABLE_MEMORY_DEBUGGING` is enabled) and does not crash when omitted
+// (the address bar item on iPad, and the memory debugging item on branded
+// builds).
+TEST_F(SettingsTableViewControllerTest,
+       TestBottomOmniboxPrefChangedAfterModelLoaded) {
+  GetLocalState()->SetBoolean(omnibox::kIsOmniboxInBottomPosition, false);
+  GetLocalState()->SetBoolean(prefs::kShowMemoryDebuggingTools, false);
+
+  CreateController();
+  CheckController();
+
+  TableViewDetailIconItem* address_bar_item = GetAddressBarDetailItem();
+  if (IsBottomOmniboxAvailable()) {
+    ASSERT_NE(nil, address_bar_item);
+    EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOP_ADDRESS_BAR_OPTION),
+                address_bar_item.detailText);
+  } else {
+    EXPECT_EQ(nil, address_bar_item);
+  }
+
+  TableViewSwitchItem* memory_debug_item = nil;
+  if ([controller().tableViewModel
+          hasSectionForSectionIdentifier:SettingsSectionIdentifierDebug] &&
+      [controller().tableViewModel
+          hasItemForItemType:SettingsItemTypeMemoryDebugging
+           sectionIdentifier:SettingsSectionIdentifierDebug]) {
+    NSIndexPath* index_path = [controller().tableViewModel
+        indexPathForItemType:SettingsItemTypeMemoryDebugging
+           sectionIdentifier:SettingsSectionIdentifierDebug];
+    memory_debug_item = base::apple::ObjCCastStrict<TableViewSwitchItem>(
+        [controller().tableViewModel itemAtIndexPath:index_path]);
+    EXPECT_FALSE(memory_debug_item.on);
+  }
+
+  GetLocalState()->SetBoolean(omnibox::kIsOmniboxInBottomPosition, true);
+  GetLocalState()->SetBoolean(prefs::kShowMemoryDebuggingTools, true);
+
+  if (IsBottomOmniboxAvailable()) {
+    EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION),
+                address_bar_item.detailText);
+  }
+  if (memory_debug_item) {
+    EXPECT_TRUE(memory_debug_item.on);
+  }
+
+  GetLocalState()->SetBoolean(omnibox::kIsOmniboxInBottomPosition, false);
+  GetLocalState()->SetBoolean(prefs::kShowMemoryDebuggingTools, false);
+
+  if (IsBottomOmniboxAvailable()) {
+    EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOP_ADDRESS_BAR_OPTION),
+                address_bar_item.detailText);
+  }
+  if (memory_debug_item) {
+    EXPECT_FALSE(memory_debug_item.on);
+  }
+}
+
+// Tests that updating `kShowMemoryDebuggingTools` after the model loads does
+// not crash if `EnableMemoryDebugging` in `NSUserDefaults` was enabled during
+// initialization and cleared before `-loadModel` (leaving
+// `_showMemoryDebugToolsItem` nil on branded builds while
+// `_showMemoryDebugToolsEnabled` is observing).
+TEST_F(SettingsTableViewControllerTest,
+       TestMemoryDebuggingPrefChangedAfterUserDefaultsDisabled) {
+  GetLocalState()->SetBoolean(prefs::kShowMemoryDebuggingTools, false);
+  [[NSUserDefaults standardUserDefaults] setBool:YES
+                                          forKey:@"EnableMemoryDebugging"];
+  CreateControllerWithoutView();
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:@"EnableMemoryDebugging"];
+
+  CheckController();
+
+  GetLocalState()->SetBoolean(prefs::kShowMemoryDebuggingTools, true);
 }
