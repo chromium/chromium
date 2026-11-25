@@ -12,8 +12,6 @@ found in the LICENSE file.
 
 <variants name="ToastName">
   <variant name="AddedToReadingList" summary="add to reading list"/>
-  <variant name="AtMemorySpiiFetchErrorMessage"
-      summary="AtMemory SPII fetch error message"/>
   <variant name="AutofillAiFetchEntityErrorMessage"
       summary="Autofill AI fetch entity error message"/>
   <variant name="AutofillAiPreFetchErrorMessage"

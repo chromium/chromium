@@ -1748,19 +1748,6 @@ void ChromeAutofillClient::ShowAutofillAiFetchEntityFailureNotification() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void ChromeAutofillClient::ShowAtMemoryFetchFailureNotification(
-    std::optional<std::u16string> message_override) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/540713368): Implement support on Android.
-#else
-  if (ToastController* toast_controller = GetToastController()) {
-    ToastParams params(ToastId::kAtMemorySpiiFetchErrorMessage);
-    params.body_string_override = std::move(message_override);
-    toast_controller->MaybeShowToast(std::move(params));
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 void ChromeAutofillClient::ShowAutofillAiPreFetchFailureNotification() {
 #if BUILDFLAG(IS_ANDROID)
   GetAutofillMessageController()->Show(

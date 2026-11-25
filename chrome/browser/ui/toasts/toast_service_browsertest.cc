@@ -49,7 +49,8 @@ constexpr auto kDeprecatedToastIds =
     std::to_array<std::underlying_type_t<ToastId>>(
         {/*kLensOverlay=*/4, /*kAddedToComparisonTable=*/6,
          /*kPlusAddressOverride=*/8, /*kMultistepFilterSuggestion=*/31,
-         /*kMultistepFilterSuggestionRecent=*/32});
+         /*kMultistepFilterSuggestionRecent=*/32,
+         /*kAtMemorySpiiFetchErrorMessage=*/55});
 
 ToastIdEnumSet GetNonDeprecatedToastIds() {
   auto result = ToastIdEnumSet::All();
@@ -83,7 +84,6 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
          {features::kIndigo, {}},
          {autofill::features::kAutofillAmbientAutofill, {}},
          {autofill::features::kAutofillAmbientAutofillSuppression, {}},
-         {autofill::features::kAutofillAtMemory, {}},
          {dictation::kDictation, {}},
          {ttc::kTtc, {}}},
         /*disabled_features*/ {});

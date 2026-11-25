@@ -141,10 +141,6 @@ class MockAutofillClient : public TestAutofillClient {
               (),
               (override));
   MOCK_METHOD(void,
-              ShowAtMemoryFetchFailureNotification,
-              (std::optional<std::u16string>),
-              (override));
-  MOCK_METHOD(void,
               HideSuggestions,
               (SuggestionHidingReason, std::optional<FillingProduct>),
               (override));
