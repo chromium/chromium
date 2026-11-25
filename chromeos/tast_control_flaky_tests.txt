@@ -22,3 +22,7 @@ tast.camera.CCAUISmoke.fake_vcd
 # b/576091588
 tast.bruschetta.CopyPaste.x11_to_x11
 
+# b/590256719
+tast.oobe.Smoke.fieldtrial_testing_config_on
+tast.oobe.Smoke.fieldtrial_testing_config_off
+
