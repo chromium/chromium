@@ -133,6 +133,14 @@ class EslintTsTest(unittest.TestCase):
 
     _EXPECTED_STRING = "@webui-eslint/lit-property-accessor"
     self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _LOAD_TIME_DATA_BOOLEAN_ERROR = (
+      "Property '%(propName)s' in class 'SomeElement' is initialized from a "
+      "static loadTimeData boolean and should not be a reactive Lit property. "
+      "Remove it from 'properties()', remove 'accessor', and mark it as "
+      "'readonly' instead"
+    )
+
     errors = [
       "Missing 'accessor' keyword when declaring Lit reactive property 'prop2' in class 'SomeElement'",
       "Unnecessary 'accessor' keyword when declaring regular (non Lit reactive) property 'prop3' in class 'SomeElement'",
@@ -141,11 +149,31 @@ class EslintTsTest(unittest.TestCase):
       "Property type mismatch: propMismatchedString is declared as String reactive property but is typed as number",
       "Property type mismatch: propMismatchedNumber is declared as Number reactive property but is typed as string",
       "Missing class member declaration for Lit reactive property 'propMissingNumber'",
+      _LOAD_TIME_DATA_BOOLEAN_ERROR % {'propName': 'propLoadTimeBoolean_'},
+      _LOAD_TIME_DATA_BOOLEAN_ERROR
+      % {'propName': 'propNegatedLoadTimeBoolean_'},
+      _LOAD_TIME_DATA_BOOLEAN_ERROR
+      % {'propName': 'propCompoundLoadTimeBoolean_'},
     ]
     non_errors = [
       "Property type mismatch: propEnumString is declared as String reactive property",
       "Property type mismatch: propEnumNumber is declared as Number reactive property",
       "Property type mismatch: propObjectType is declared as Object reactive property",
+      _LOAD_TIME_DATA_BOOLEAN_ERROR
+      % {'propName': 'propReadonlyLoadTimeBoolean_'},
+      _LOAD_TIME_DATA_BOOLEAN_ERROR % {'propName': 'propPublicLoadTimeBoolean'},
+      _LOAD_TIME_DATA_BOOLEAN_ERROR
+      % {'propName': 'propReflectedLoadTimeBoolean_'},
+      _LOAD_TIME_DATA_BOOLEAN_ERROR
+      % {'propName': 'propNotifiedLoadTimeBoolean_'},
+      _LOAD_TIME_DATA_BOOLEAN_ERROR
+      % {'propName': 'propReassignedLoadTimeBoolean_'},
+      _LOAD_TIME_DATA_BOOLEAN_ERROR % {'propName': 'propLoadTimeString_'},
+      _LOAD_TIME_DATA_BOOLEAN_ERROR % {'propName': 'propLiteralBoolean_'},
+      _LOAD_TIME_DATA_BOOLEAN_ERROR
+      % {'propName': 'propOverriddenLoadTimeBoolean_'},
+      _LOAD_TIME_DATA_BOOLEAN_ERROR
+      % {'propName': 'propDynamicLoadTimeBoolean_'},
     ]
     for e in errors:
       self.assertTrue(e in str(context.exception))

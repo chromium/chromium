@@ -168,7 +168,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
       clientIds_: {type: Array},
       timePeriodOptions_: {type: Array},
       selectedTimePeriodOptionId_: {type: Number},
-      historyPageRefreshEnabled_: {type: Boolean},
     };
   }
 
@@ -250,7 +249,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor timePeriodOptions_: TimePeriodOption[] = [];
   protected accessor selectedTimePeriodOptionId_: TimePeriodOptionId =
       TimePeriodOptionId.kAllTime;
-  private accessor historyPageRefreshEnabled_: boolean =
+  private readonly historyPageRefreshEnabled_: boolean =
       loadTimeData.getBoolean('isHistoryPageRefreshEnabled');
 
   private callbackRouter_: PageCallbackRouter;

@@ -181,7 +181,6 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       //========================================================================
       tabSuggestions_: {type: Array},
       inputState_: {type: Object},
-      usePecApi_: {type: Boolean},
       recentTabId_: {type: Number},
       tabSuggestionsState_: {type: Number},
 
@@ -261,7 +260,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   accessor isListening: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor inputState_: InputState|null = null;
-  protected accessor usePecApi_: boolean =
+  protected readonly usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
   protected accessor tabSuggestionsState_: TabSuggestionsState =
       TabSuggestionsState.NOT_STARTED;
@@ -414,8 +413,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedProperties.has('ntpRealboxNextEnabled') ||
-        changedPrivateProperties.has('inputState_') ||
-        changedPrivateProperties.has('usePecApi_')) {
+        changedPrivateProperties.has('inputState_')) {
       this.updateContextualEntrypoint_();
     }
   }

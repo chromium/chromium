@@ -37,17 +37,15 @@ export class FilesystemPageElement extends FilesystemPageElementBase {
   static override get properties() {
     return {
       searchTerm_: {type: String},
-
-      /**
-       * Whether the File System Access Persistent Permissions UI should be
-       * displayed.
-       */
-      enablePersistentPermissions_: {type: Boolean},
     };
   }
 
   protected accessor searchTerm_: string = '';
-  protected accessor enablePersistentPermissions_: boolean =
+  /**
+   * Whether the File System Access Persistent Permissions UI should be
+   * displayed.
+   */
+  protected readonly enablePersistentPermissions_: boolean =
       loadTimeData.getBoolean('enablePersistentPermissions');
 
   protected onSearchTermChanged_(e: CustomEvent<{value: string}>) {
