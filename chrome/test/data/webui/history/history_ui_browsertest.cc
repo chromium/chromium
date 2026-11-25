@@ -319,6 +319,11 @@ IN_PROC_BROWSER_TEST_F(
   RunTestCase("ReviewGeminiActivityShownForNonActorVisitsWithCriticalActions");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryListTest,
+                       ReviewGeminiActivityHiddenWhenGlicDisabled) {
+  RunTestCase("ReviewGeminiActivityHiddenWhenGlicDisabled");
+}
+
 IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryAppTest) {
   RunTest("history/history_app_test.js", "runMochaSuite('HistoryAppTest')");
 }

@@ -681,6 +681,7 @@ suite('HistoryListTest', function() {
     loadTimeData.overrideValues({
       myActivityGeminiAppsUrl: 'https://myactivity.google.com/product/gemini',
       isCriticalActionsEnabled: true,
+      isGlicEnabled: true,
     });
     const historyEntry =
         createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
@@ -710,12 +711,14 @@ suite('HistoryListTest', function() {
   });
 
   test(
-      'ReviewGeminiActivityHiddenWhenCriticalActionsDisabled',
+      'ReviewGeminiActivityHiddenWhenGlicDisabled',
       async function() {
         loadTimeData.overrideValues({
           myActivityGeminiAppsUrl:
               'https://myactivity.google.com/product/gemini',
-          isCriticalActionsEnabled: false,
+          isCriticalActionsEnabled: true,
+          isCriticalActionsChatLinkoutsEnabled: false,
+          isGlicEnabled: false,
         });
         const historyEntry =
             createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
@@ -733,8 +736,37 @@ suite('HistoryListTest', function() {
         assertTrue(!!reviewButton);
         assertTrue(reviewButton.hidden);
 
-        const hr =
-            element.shadowRoot.querySelector<HTMLElement>('#sharedMenu .hr');
+        const hr = element.shadowRoot.querySelector<HTMLElement>('.hr');
+        assertTrue(!!hr);
+        assertTrue(hr.hidden);
+      });
+
+  test(
+      'ReviewGeminiActivityHiddenWhenCriticalActionsDisabled',
+      async function() {
+        loadTimeData.overrideValues({
+          myActivityGeminiAppsUrl:
+              'https://myactivity.google.com/product/gemini',
+          isCriticalActionsEnabled: false,
+          isGlicEnabled: true,
+        });
+        const historyEntry =
+            createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+        historyEntry.isActorVisit = true;
+        await finishSetup([historyEntry]);
+
+        const item = element.shadowRoot.querySelector('history-item');
+        assertTrue(!!item);
+        item.$.menuButton.click();
+        await microtasksFinished();
+
+        element.$.sharedMenu.get();
+        const reviewButton = element.shadowRoot.querySelector<HTMLElement>(
+            '#menuReviewGeminiActivityButton');
+        assertTrue(!!reviewButton);
+        assertTrue(reviewButton.hidden);
+
+        const hr = element.shadowRoot.querySelector<HTMLElement>('.hr');
         assertTrue(!!hr);
         assertTrue(hr.hidden);
       });
@@ -743,6 +775,7 @@ suite('HistoryListTest', function() {
     loadTimeData.overrideValues({
       myActivityGeminiAppsUrl: 'https://myactivity.google.com/product/gemini',
       isCriticalActionsEnabled: true,
+      isGlicEnabled: true,
     });
     const historyEntry =
         createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
@@ -773,6 +806,7 @@ suite('HistoryListTest', function() {
               'https://myactivity.google.com/product/gemini',
           isCriticalActionsEnabled: true,
           isCriticalActionsChatLinkoutsEnabled: false,
+          isGlicEnabled: true,
         });
         const historyEntry =
             createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
@@ -911,6 +945,7 @@ suite('HistoryListTest', function() {
     loadTimeData.overrideValues({
       isCriticalActionsEnabled: true,
       isCriticalActionsChatLinkoutsEnabled: false,
+      isGlicEnabled: true,
       myActivityGeminiAppsUrl: 'https://myactivity.google.com/product/gemini',
     });
     const historyEntry =

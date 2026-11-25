@@ -71,8 +71,11 @@ enum class GlicFeature {
   // The Smart Suggestions context menu item ("Ask about ..."), which opens the
   // selection overlay with server-provided suggestions.
   kSmartSuggestionContextMenu,
+  // Linking to consumer Gemini Apps Activity
+  // (myactivity.google.com/product/gemini).
+  kGeminiAppsActivity,
 
-  kMaxValue = kSmartSuggestionContextMenu,
+  kMaxValue = kGeminiAppsActivity,
 };
 
 }  // namespace glic

@@ -419,6 +419,7 @@ suite('Metrics', function() {
     loadTimeData.overrideValues({
       myActivityGeminiAppsUrl: 'https://myactivity.google.com/product/gemini',
       isCriticalActionsEnabled: true,
+      isGlicEnabled: true,
     });
     const historyEntry =
         createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');

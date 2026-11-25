@@ -306,6 +306,12 @@ TEST(GlicProviderSpecImplTest,
   }
 }
 
+TEST(GlicProviderSpecImplTest, OnlyGeminiSupportsGeminiAppsActivity) {
+  EXPECT_TRUE(GeminiSupportsFeature(GlicFeature::kGeminiAppsActivity));
+  EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                   ->SupportsFeature(GlicFeature::kGeminiAppsActivity));
+}
+
 TEST(GlicProviderSpecImplTest,
      GeminiSmartSuggestionContextMenuFollowsGlicSuggestionContextMenu) {
   ExpectGeminiFeatureFollowsFlag(GlicFeature::kSmartSuggestionContextMenu,

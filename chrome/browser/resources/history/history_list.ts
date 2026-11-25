@@ -582,6 +582,11 @@ export class HistoryListElement extends HistoryListElementBase {
     return loadTimeData.getBoolean('isBrowsingHistoryFilterByDomainEnabled');
   }
 
+  private isGlicEnabled_(): boolean {
+    return loadTimeData.valueExists('isGlicEnabled') &&
+        loadTimeData.getBoolean('isGlicEnabled');
+  }
+
   private isCriticalActionsEnabled_(): boolean {
     return loadTimeData.getBoolean('isCriticalActionsEnabled');
   }
@@ -615,7 +620,8 @@ export class HistoryListElement extends HistoryListElementBase {
   }
 
   protected canShowReviewGeminiActivity_(): boolean {
-    return this.isCriticalActionsEnabled_() && !this.isChatLinkoutsEnabled_() &&
+    return this.isGlicEnabled_() && this.isCriticalActionsEnabled_() &&
+        !this.isChatLinkoutsEnabled_() &&
         (!!this.actionMenuModel_?.item.isActorVisit ||
          (this.actionMenuModel_?.item.criticalActions?.length ?? 0) > 0);
   }

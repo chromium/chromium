@@ -249,6 +249,7 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kAutofill:
       case GlicFeature::kAiOverlay:
       case GlicFeature::kPersonalContext:
+      case GlicFeature::kGeminiAppsActivity:
         return true;
       case GlicFeature::kTextSelectionContextMenu:
         return base::FeatureList::IsEnabled(
@@ -442,6 +443,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec,
       case GlicFeature::kTextSelectionContextMenu:
       case GlicFeature::kDrivePicker:
       case GlicFeature::kSmartSuggestionContextMenu:
+      case GlicFeature::kGeminiAppsActivity:
         return false;
     }
     NOTREACHED();

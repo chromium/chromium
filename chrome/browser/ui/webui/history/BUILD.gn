@@ -148,6 +148,7 @@ source_set("unit_tests") {
     if (enable_dice_support) {
       sources += [ "history_cross_device_signin_promo_handler_unittest.cc" ]
     }
+    sources += [ "history_ui_platform_handlers_desktop_unittest.cc" ]
     deps += [
       "//chrome/browser/bookmarks",
       "//chrome/browser/critical_actions",
@@ -184,5 +185,8 @@ source_set("unit_tests") {
       "//net",
       "//ui/base",
     ]
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/ash/test:test_support" ]
+    }
   }
 }

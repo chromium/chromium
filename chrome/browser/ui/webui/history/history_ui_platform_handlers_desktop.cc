@@ -14,7 +14,9 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
@@ -53,10 +55,14 @@ namespace history {
 
 void PopulatePlatformDataSource(content::WebUIDataSource* source,
                                 Profile* profile) {
+  const glic::GlicProviderSpec& provider_spec =
+      glic::GetGlicProviderSpec(profile);
   const bool is_glic_enabled =
+      provider_spec.SupportsFeature(glic::GlicFeature::kGeminiAppsActivity) &&
       glic::GlicEnabling::ShouldShowSettingsPage(profile);
   auto* glic_service = glic::GlicKeyedService::Get(profile);
   const bool is_glic_web_actuation_available =
+      provider_spec.IsActuationSupported() &&
       glic::GlicEnabling::IsEnabledAndConsentForProfile(profile) &&
       glic_service && glic_service->enabling().GetUserEnabledActuationOnWeb();
 
