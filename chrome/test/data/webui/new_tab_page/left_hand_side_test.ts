@@ -6,7 +6,7 @@
 // loaded part of the NTP.
 import 'chrome://new-tab-page/lazy_load.js';
 
-import type {IframeElement, ThreadsRailElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {IframeElement} from 'chrome://new-tab-page/lazy_load.js';
 import {LhsClientAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {LeftHandSideElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater, NtpLhsMessageType, ThreadsRailExpandedAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
@@ -104,10 +104,7 @@ suite('NewTabPageLeftHandSideTest', () => {
   }
 
   async function expandLeftHandSide() {
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded');
-    assertTrue(!!folded);
-    folded.click();
+    leftHandSide.$.folded.click();
     await microtasksFinished();
   }
 
@@ -133,10 +130,7 @@ suite('NewTabPageLeftHandSideTest', () => {
   test('renders folded rail', async () => {
     await createLeftHandSide();
 
-    const folded =
-        leftHandSide.shadowRoot.querySelector<ThreadsRailElement>('#folded');
-    assertTrue(!!folded);
-    assertEquals('CR-THREADS-RAIL', folded.tagName);
+    assertEquals('CR-THREADS-RAIL', leftHandSide.$.folded.tagName);
   });
 
   test('renders expanded LHS iframe on expand', async () => {
@@ -256,8 +250,7 @@ suite('NewTabPageLeftHandSideTest', () => {
   test('handles NTP_LHS_CLOSE message', async () => {
     await createLeftHandSide();
 
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
     assertTrue(folded.offsetWidth > 0 && folded.offsetWidth < 261);
     const collapsedWidth = `${folded.offsetWidth}px`;
 
@@ -286,8 +279,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     await createLeftHandSide();
 
     assertFalse(!!getExpandedIframe());
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
     assertFalse(isGhostLoaderVisible());
     const collapsedWidth = `${folded.offsetWidth}px`;
 
@@ -331,12 +323,10 @@ suite('NewTabPageLeftHandSideTest', () => {
     await createLeftHandSide();
 
     assertFalse(!!getExpandedIframe());
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
     assertFalse(isGhostLoaderVisible());
 
-    folded.dispatchEvent(
-        new CustomEvent('expand-rail', {bubbles: true, composed: true}));
+    folded.fire('expand-rail');
     await microtasksFinished();
     assertEquals(1, windowProxy.getCallCount('ensureLazyLoaded'));
     const expanded = getExpandedIframe();
@@ -358,8 +348,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       await createLeftHandSide();
 
       assertFalse(!!getExpandedIframe());
-      const folded =
-          leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+      const folded = leftHandSide.$.folded;
       const collapsedWidth = `${folded.offsetWidth}px`;
 
       // Hovering or focusing the folded rail preloads the expanded iframe
@@ -406,8 +395,7 @@ suite('NewTabPageLeftHandSideTest', () => {
           windowProxy.setResultFor('setTimeout', 42);
           await createLeftHandSide();
 
-          const folded =
-              leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+          const folded = leftHandSide.$.folded;
 
           folded.dispatchEvent(new Event(eventName));
           await microtasksFinished();
@@ -436,8 +424,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       windowProxy.setResultFor('setTimeout', 42);
       await createLeftHandSide();
 
-      const folded =
-          leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+      const folded = leftHandSide.$.folded;
 
       folded.dispatchEvent(new Event(enterEvent));
       await microtasksFinished();
@@ -475,8 +462,7 @@ suite('NewTabPageLeftHandSideTest', () => {
           windowProxy.setResultFor('setTimeout', 42);
           await createLeftHandSide();
 
-          const folded =
-              leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+          const folded = leftHandSide.$.folded;
 
           folded.dispatchEvent(new Event(firstEnter));
           folded.dispatchEvent(new Event(secondEnter));
@@ -505,8 +491,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     windowProxy.setResultFor('setTimeout', 42);
     await createLeftHandSide();
 
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
     const child = document.createElement('button');
     folded.appendChild(child);
 
@@ -530,8 +515,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'keeps hover/focus interval when focus moves within the rail',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
         const child = document.createElement('button');
         folded.appendChild(child);
 
@@ -546,8 +530,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
         // Expand via keyboard at t=1000.
         windowProxy.setResultFor('now', 1000);
-        folded.dispatchEvent(
-            new CustomEvent('expand-rail', {bubbles: true, composed: true}));
+        folded.fire('expand-rail');
         await microtasksFinished();
 
         assertEquals(
@@ -566,8 +549,7 @@ suite('NewTabPageLeftHandSideTest', () => {
         windowProxy.setResultFor('setTimeout', 42);
         await createLeftHandSide();
 
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         folded.dispatchEvent(new Event('pointerenter'));
         await microtasksFinished();
@@ -591,8 +573,7 @@ suite('NewTabPageLeftHandSideTest', () => {
         windowProxy.setResultFor('setTimeout', 42);
         await createLeftHandSide();
 
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         folded.dispatchEvent(new Event('pointerenter'));
         await microtasksFinished();
@@ -611,8 +592,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     windowProxy.setResultFor('setTimeout', 42);
     await createLeftHandSide();
 
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
 
     folded.dispatchEvent(new Event('pointerenter'));
     await microtasksFinished();
@@ -630,8 +610,7 @@ suite('NewTabPageLeftHandSideTest', () => {
         windowProxy.setResultFor('ensureLazyLoaded', lazyLoadResolver.promise);
         await createLeftHandSide();
 
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
         folded.click();
         await microtasksFinished();
         assertEquals(1, windowProxy.getCallCount('ensureLazyLoaded'));
@@ -663,9 +642,7 @@ suite('NewTabPageLeftHandSideTest', () => {
         });
         await createLeftHandSide();
 
-        const folded =
-            leftHandSide.shadowRoot.querySelector<ThreadsRailElement>(
-                '#folded')!;
+        const folded = leftHandSide.$.folded;
 
         assertFalse(!!getExpandedIframe());
         assertFalse(isGhostLoaderVisible());
@@ -720,9 +697,7 @@ suite('NewTabPageLeftHandSideTest', () => {
         });
         await createLeftHandSide();
 
-        const folded =
-            leftHandSide.shadowRoot.querySelector<ThreadsRailElement>(
-                '#folded')!;
+        const folded = leftHandSide.$.folded;
         folded.dispatchEvent(new PointerEvent('pointerenter'));
         await microtasksFinished();
         postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
@@ -754,8 +729,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       async () => {
         await createLeftHandSide();
 
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
         assertTrue(folded.offsetWidth > 0 && folded.offsetWidth < 261);
         // The ghost loader is not in the DOM while the rail is folded.
         assertFalse(!!getGhostLoader());
@@ -804,8 +778,7 @@ suite('NewTabPageLeftHandSideTest', () => {
   test('toggles folded and expanded visibility on open and close', async () => {
     await createLeftHandSide();
 
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
     folded.dispatchEvent(new Event('pointerenter'));
     await microtasksFinished();
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 261});
@@ -1055,8 +1028,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
   test('records expanded iframe loaded and shown metrics', async () => {
     await createLeftHandSide();
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
 
     assertEquals(
         0, metrics.count('NewTabPage.ThreadsRail.ExpandedIframeLoaded'));
@@ -1098,8 +1070,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'records ExpandedShown once when clicked repeatedly before ready',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         folded.click();
         folded.click();
@@ -1164,8 +1135,7 @@ suite('NewTabPageLeftHandSideTest', () => {
   test(
       'records IframeLoadLatency once from iframe stamp to ready', async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         // Hover at t=100 stamps the expanded iframe (no debounce in tests).
         windowProxy.setResultFor('now', 100);
@@ -1190,8 +1160,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
   test('records GhostLoaderShownDuration until iframe is ready', async () => {
     await createLeftHandSide();
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
 
     // Click without prior hover at t=100 shows the ghost loader.
     windowProxy.setResultFor('now', 100);
@@ -1215,8 +1184,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
   test('records GhostLoaderShownDuration until collapsed', async () => {
     await createLeftHandSide();
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
 
     // Expand at t=100, collapse at t=300 before the iframe is ready.
     windowProxy.setResultFor('now', 100);
@@ -1247,8 +1215,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'does not record GhostLoaderShownDuration if iframe was ready',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         folded.dispatchEvent(new Event('pointerenter'));
         await microtasksFinished();
@@ -1267,8 +1234,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'records FirstExpandWasPreloaded false if iframe was not ready',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         // Hover stamps the expanded iframe, but it is not ready yet.
         folded.dispatchEvent(new Event('pointerenter'));
@@ -1293,8 +1259,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
   test('records FirstExpandWasPreloaded true if iframe was ready', async () => {
     await createLeftHandSide();
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
 
     folded.dispatchEvent(new Event('pointerenter'));
     await microtasksFinished();
@@ -1323,8 +1288,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'records longest completed hover in LongestFocusDurationBeforeExpand',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         // Hover for 300ms, leave, then hover for 150ms before expanding.
         windowProxy.setResultFor('now', 100);
@@ -1357,8 +1321,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
   test('records active hover in LongestFocusDurationBeforeExpand', async () => {
     await createLeftHandSide();
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
 
     // Hover for 100ms, leave, then hover for 500ms until expanding.
     windowProxy.setResultFor('now', 100);
@@ -1381,8 +1344,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'keeps hover/focus interval on focusout while still hovered',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         // Focus at t=100, then hover at t=200.
         windowProxy.setResultFor('now', 100);
@@ -1411,8 +1373,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'keeps hover/focus interval on pointerleave while still focused',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         // Hover at t=100, then focus at t=200.
         windowProxy.setResultFor('now', 100);
@@ -1428,8 +1389,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
         // Expand via keyboard at t=1000.
         windowProxy.setResultFor('now', 1000);
-        folded.dispatchEvent(
-            new CustomEvent('expand-rail', {bubbles: true, composed: true}));
+        folded.fire('expand-rail');
         await microtasksFinished();
 
         assertEquals(
@@ -1443,8 +1403,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'does not record LongestFocusDurationBeforeExpand without hover or focus',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         windowProxy.setResultFor('now', 100);
         folded.click();
@@ -1458,8 +1417,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
   test('ends hover/focus interval when document becomes hidden', async () => {
     await createLeftHandSide();
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
 
     // Hover at t=100, hide the page at t=400 and show it again at t=2000.
     windowProxy.setResultFor('now', 100);
@@ -1489,8 +1447,7 @@ suite('NewTabPageLeftHandSideTest', () => {
         windowProxy.setResultFor('setTimeout', 42);
         await createLeftHandSide();
 
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         folded.dispatchEvent(new Event('pointerenter'));
         await microtasksFinished();
@@ -1506,8 +1463,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'resets hover state when document becomes hidden without pointerleave',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         // Hover at t=100 and hide the page at t=200 without a pointerleave.
         windowProxy.setResultFor('now', 100);
@@ -1538,8 +1494,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
   test('records LongestFocusDurationWithoutExpand on pagehide', async () => {
     await createLeftHandSide();
-    const folded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded = leftHandSide.$.folded;
 
     // Hover for 50ms, then for 600ms, without ever expanding.
     windowProxy.setResultFor('now', 100);
@@ -1569,8 +1524,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'records active hover in LongestFocusDurationWithoutExpand on pagehide',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         // Still hovered when the page is hidden and then unloaded.
         windowProxy.setResultFor('now', 100);
@@ -1592,8 +1546,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'skips LongestFocusDurationWithoutExpand if expanded or never hovered',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         // Never hovered or focused.
         window.dispatchEvent(new Event('pagehide'));
@@ -1624,8 +1577,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'does not record latency metrics if document was hidden during interval',
       async () => {
         await createLeftHandSide();
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const folded = leftHandSide.$.folded;
 
         // Expand at t=50, which stamps the iframe and shows the ghost loader.
         windowProxy.setResultFor('now', 50);
