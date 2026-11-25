@@ -34,8 +34,8 @@ import java.util.List;
 /**
  * Custom passive view displaying a skeleton loader for the Tab Bottom Sheet during WebContents
  * resize. Comprises a static peek header at the top and a skeleton group at the bottom, managing
- * header icon configuration, element tinting, parent clipping restoration, per-element proximity
- * fade, and NTP-style staggered wave animation.
+ * header icon configuration, element tinting, per-element proximity fade, and NTP-style staggered
+ * wave animation.
  */
 @NullMarked
 public class TabBottomSheetSkeletonView extends FrameLayout {
@@ -146,22 +146,6 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
         if (mBar2 != null) mBar2.setBackgroundTintList(tintList);
         if (mBar3 != null) mBar3.setBackgroundTintList(tintList);
         if (mPill != null) mPill.setBackgroundTintList(tintList);
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (getParent() instanceof ViewGroup parent) {
-            parent.setClipChildren(false);
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (getParent() instanceof ViewGroup parent) {
-            parent.setClipChildren(true);
-        }
     }
 
     /**

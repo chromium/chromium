@@ -13,6 +13,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.TextUtils;
@@ -29,6 +30,7 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.context_sharing.R;
@@ -101,18 +103,28 @@ public class TabBottomSheetSkeletonViewUnitTest {
     }
 
     @Test
-    public void testParentClippingDisabledAndRestored() {
+    public void testAttachAndDetachDoesNotModifyParentClipChildren() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         FrameLayout parent = new FrameLayout(mContext);
         parent.setClipChildren(true);
-        parent.addView(mSkeletonView);
+        activity.setContentView(parent);
 
+        parent.addView(mSkeletonView);
+        assertTrue(mSkeletonView.isAttachedToWindow());
         assertTrue(parent.getClipChildren());
 
-        mSkeletonView.onAttachedToWindow();
+        parent.removeView(mSkeletonView);
+        assertFalse(mSkeletonView.isAttachedToWindow());
+        assertTrue(parent.getClipChildren());
+
+        parent.setClipChildren(false);
+        parent.addView(mSkeletonView);
+        assertTrue(mSkeletonView.isAttachedToWindow());
         assertFalse(parent.getClipChildren());
 
-        mSkeletonView.onDetachedFromWindow();
-        assertTrue(parent.getClipChildren());
+        parent.removeView(mSkeletonView);
+        assertFalse(mSkeletonView.isAttachedToWindow());
+        assertFalse(parent.getClipChildren());
     }
 
     @Test
