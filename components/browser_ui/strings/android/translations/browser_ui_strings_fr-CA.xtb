@@ -342,6 +342,7 @@
 <translation id="443552056913301231">Cette action supprimera toutes les données locales, y compris les témoins, et réinitialisera toutes les autorisations pour <ph name="ORIGIN" /></translation>
 <translation id="4441527683895888777">Zone de contenu dans le bas de l'écran concernant les couleurs de Chrome ouverte à pleine hauteur</translation>
 <translation id="4468959413250150279">Désactivez le son sur un site précis.</translation>
+<translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# témoin}one{# témoin}other{# témoins}}</translation>
 <translation id="4478158430052450698">Faciliter la personnalisation du zoom pour différents sites</translation>
 <translation id="4479647676395637221">Demander avant d'autoriser des sites à utiliser votre caméra (recommandé)</translation>

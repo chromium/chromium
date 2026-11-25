@@ -342,6 +342,7 @@
 <translation id="443552056913301231">Tämä toiminto poistaa kaiken paikallisen datan, myös evästeet, ja nollaa kaikki luvat: <ph name="ORIGIN" /></translation>
 <translation id="4441527683895888777">Chromen värien alapaneeli avattu koko näytön kokoisena</translation>
 <translation id="4468959413250150279">Mykistä tietyn sivuston äänet.</translation>
+<translation id="4472575034687746823">Aloita</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# eväste}other{# evästettä}}</translation>
 <translation id="4478158430052450698">Helpota zoomauksen muokkausta eri sivustoilla</translation>
 <translation id="4479647676395637221">Pyydä lupaa, kun sivustot yrittävät käyttää kameraasi (suositus).</translation>

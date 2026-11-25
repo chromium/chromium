@@ -342,6 +342,7 @@
 <translation id="443552056913301231">Это действие удалит все локальные данные сайта <ph name="ORIGIN" />, включая файлы cookie, и сбросит все его разрешения.</translation>
 <translation id="4441527683895888777">Полностью открытый нижний экран с цветами Chrome</translation>
 <translation id="4468959413250150279">Отключить звуки на определенном сайте</translation>
+<translation id="4472575034687746823">Начать</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# файл cookie}one{# файл cookie}few{# файла cookie}many{# файлов cookie}other{# файла cookie}}</translation>
 <translation id="4478158430052450698">Упростить настройку масштаба на сайтах</translation>
 <translation id="4479647676395637221">Запрашивать разрешение на доступ к камере (рекомендуется)</translation>

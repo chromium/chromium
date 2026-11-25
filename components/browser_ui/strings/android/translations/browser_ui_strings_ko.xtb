@@ -342,6 +342,7 @@
 <translation id="443552056913301231">이 작업을 실행하면 쿠키를 포함한 모든 로컬 데이터가 삭제되고, <ph name="ORIGIN" />에 대한 권한이 모두 재설정됩니다.</translation>
 <translation id="4441527683895888777">Chrome 색상 하단 시트가 전체 높이로 열림</translation>
 <translation id="4468959413250150279">특정 사이트를 음소거합니다.</translation>
+<translation id="4472575034687746823">시작하기</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{쿠키 #개}other{쿠키 #개}}</translation>
 <translation id="4478158430052450698">여러 사이트의 확대/축소 맞춤설정이 더 쉬워집니다.</translation>
 <translation id="4479647676395637221">사이트에서 카메라를 사용하도록 허용하기 전에 확인(권장)</translation>
