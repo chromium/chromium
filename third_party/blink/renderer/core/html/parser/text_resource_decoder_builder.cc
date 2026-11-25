@@ -51,11 +51,11 @@ static inline bool CanReferToParentFrameEncoding(
 namespace {
 
 struct LegacyEncoding {
-  const char* domain;
-  const char* encoding;
+  char domain[3];
+  char encoding[13];
 };
 
-static const auto kEncodings = std::to_array<LegacyEncoding>(
+static constexpr auto kEncodings = std::to_array<LegacyEncoding>(
     {{"au", "windows-1252"}, {"az", "ISO-8859-9"},   {"bd", "windows-1252"},
      {"bg", "windows-1251"}, {"br", "windows-1252"}, {"ca", "windows-1252"},
      {"ch", "windows-1252"}, {"cn", "GBK"},          {"cz", "windows-1250"},
