@@ -1,0 +1,49 @@
+<!doctype html>
+<title>Cut/copy a contenteditable=false element at the editable root boundary</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<!--
+  Regression test for http://crbug.com/40780668: a range selecting a
+  contenteditable=false element that is the first or last child of an
+  editable root used to canonicalize to a caret, disabling cut/copy.
+-->
+<div id="host" contenteditable></div>
+<script>
+function selectEntireNode(element) {
+  const range = document.createRange();
+  range.selectNode(element);
+  const selection = getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+function setup(inner) {
+  const host = document.getElementById('host');
+  host.innerHTML = inner;
+  let cutEventCount = 0;
+  host.addEventListener('cut', () => cutEventCount++);
+  return { host, cutEvents: () => cutEventCount };
+}
+
+for (const [name, inner, expected] of [
+  ['first child', '<div id="target" contenteditable="false">X</div>tail',
+   'tail'],
+  ['last child', 'head<div id="target" contenteditable="false">X</div>',
+   'head'],
+  ['middle child', 'a<div id="target" contenteditable="false">X</div>b',
+   'ab'],
+]) {
+  test(() => {
+    const { host, cutEvents } = setup(inner);
+    selectEntireNode(document.getElementById('target'));
+    assert_true(document.queryCommandEnabled('cut'),
+                'cut should be enabled for ' + name);
+    assert_true(document.queryCommandEnabled('copy'),
+                'copy should be enabled for ' + name);
+    document.execCommand('cut');
+    assert_equals(cutEvents(), 1, 'cut event should fire for ' + name);
+    assert_equals(host.innerHTML, expected,
+                  'selection should be deleted for ' + name);
+  }, `cut a contenteditable=false element as ${name} of an editable root`);
+}
+</script>

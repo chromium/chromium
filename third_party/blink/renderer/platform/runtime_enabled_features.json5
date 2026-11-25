@@ -5500,6 +5500,16 @@
       status: "stable",
     },
     {
+      // When enabled, a range selection whose endpoint has no visible position
+      // but is itself editable keeps its raw position during selection
+      // canonicalization instead of collapsing to a caret. This keeps
+      // cut/copy/delete working when a contenteditable=false element is the
+      // first or last child of an editable root.
+      // Kill switch for https://crbug.com/40780668
+      name: "PreserveSelectionAcrossNonEditableIsland",
+      status: "stable",
+    },
+    {
       // When enabled, a text control's cached selection is preserved while the
       // control is not focused or has a post-layout selection restore pending,
       // instead of being refreshed from the live DOM selection. Kill switch

@@ -35,7 +35,9 @@
 #include "third_party/blink/renderer/core/editing/selection_adjuster.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -235,6 +237,23 @@ EphemeralRangeInFlatTree NormalizeRange(const SelectionInFlatTree& selection) {
   return NormalizeRangeAlgorithm(selection);
 }
 
+static bool IsContentEditableFalseElement(const Node* node) {
+  const auto* html = DynamicTo<HTMLElement>(node);
+  return html && html->contentEditableNormalized() ==
+                     ContentEditableType::kNotContentEditable;
+}
+
+template <typename Strategy>
+static bool IsPositionAtContentEditableFalseBoundary(
+    const PositionTemplate<Strategy>& position) {
+  const Node* container = position.ComputeContainerNode();
+  if (!container || !IsRootEditableElement(*container)) {
+    return false;
+  }
+  return IsContentEditableFalseElement(position.ComputeNodeAfterPosition()) ||
+         IsContentEditableFalseElement(position.ComputeNodeBeforePosition());
+}
+
 template <typename Strategy>
 static SelectionTemplate<Strategy> CanonicalizeSelection(
     const SelectionTemplate<Strategy>& selection) {
@@ -258,6 +277,26 @@ static SelectionTemplate<Strategy> CanonicalizeSelection(
     return typename SelectionTemplate<Strategy>::Builder()
         .SetBaseAndExtent(anchor, focus)
         .Build();
+  }
+  // A Range endpoint positioned directly inside an editing host, adjacent to
+  // a contenteditable=false child at the edge of that host, canonicalizes to
+  // null because no visible position crosses the cE=false boundary. Keep the
+  // raw endpoint so cut/copy/delete can still act on the range when the other
+  // endpoint has a visible position.
+  if (RuntimeEnabledFeatures::
+          PreserveSelectionAcrossNonEditableIslandEnabled()) {
+    if (anchor.IsNull() && focus.IsNotNull() &&
+        IsPositionAtContentEditableFalseBoundary(selection.Anchor())) {
+      return typename SelectionTemplate<Strategy>::Builder()
+          .SetBaseAndExtent(selection.Anchor(), focus)
+          .Build();
+    }
+    if (focus.IsNull() && anchor.IsNotNull() &&
+        IsPositionAtContentEditableFalseBoundary(selection.Focus())) {
+      return typename SelectionTemplate<Strategy>::Builder()
+          .SetBaseAndExtent(anchor, selection.Focus())
+          .Build();
+    }
   }
   if (anchor.IsNotNull()) {
     return typename SelectionTemplate<Strategy>::Builder()
