@@ -145,8 +145,13 @@ const LayoutResult* CustomLayoutAlgorithm::Layout() {
         LayoutUnit::FromDoubleRound(fragment->inlineOffset());
     LayoutUnit block_offset =
         LayoutUnit::FromDoubleRound(fragment->blockOffset());
+
+    // TODO(layout-dev): Ideally margins should be overridden from script.
+    const BoxStrut margins =
+        ComputeMarginsFor(child.Style(), ChildAvailableSize().inline_size,
+                          GetConstraintSpace().GetWritingDirection());
     container_builder_.AddResult(fragment->GetLayoutResult(),
-                                 {inline_offset, block_offset});
+                                 {inline_offset, block_offset}, margins);
 
     child = child.NextSibling();
   }
