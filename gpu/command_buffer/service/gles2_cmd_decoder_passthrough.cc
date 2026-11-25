@@ -1751,6 +1751,15 @@ void GLES2DecoderPassthroughImpl::SetIgnoreCachedStateForTest(bool ignore) {}
 void GLES2DecoderPassthroughImpl::SetForceShaderNameHashingForTest(bool force) {
 }
 
+void GLES2DecoderPassthroughImpl::ForceReinitializeFeatureInfoForTesting() {
+  feature_info_->ForceReinitialize();
+  if (feature_info_->gl_version_info().IsAtLeastGLES(3, 0) ||
+      feature_info_->feature_flags().ext_pixel_buffer_object) {
+    bound_buffers_.try_emplace(GL_PIXEL_PACK_BUFFER, 0);
+    bound_buffers_.try_emplace(GL_PIXEL_UNPACK_BUFFER, 0);
+  }
+}
+
 gpu::QueryManager* GLES2DecoderPassthroughImpl::GetQueryManager() {
   return nullptr;
 }

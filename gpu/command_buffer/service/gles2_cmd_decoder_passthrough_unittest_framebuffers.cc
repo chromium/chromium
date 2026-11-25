@@ -4,7 +4,10 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/compiler_specific.h"
+#include "base/no_destructor.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 
@@ -471,6 +474,457 @@ TEST_F(GLES2DecoderPassthroughTest,
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_EQ(kClientTextureId, static_cast<GLuint>(*result_value));
+}
+
+class GLES2WebGLDecoderPassthroughSubimageTest
+    : public GLES2WebGLDecoderPassthroughTest {
+ public:
+  void SetUp() override {
+    GLES2WebGLDecoderPassthroughTest::SetUp();
+    pack_row_length_ = 0;
+    pack_skip_pixels_ = 0;
+    pack_skip_rows_ = 0;
+    read_pixels_observed_row_length_ = -1;
+    read_pixels_observed_skip_pixels_ = -1;
+    read_pixels_observed_skip_rows_ = -1;
+    read_pixels_called_ = false;
+    unpack_row_length_ = 0;
+    unpack_skip_pixels_ = 0;
+    unpack_skip_rows_ = 0;
+    tex_image_observed_row_length_ = -1;
+    tex_image_observed_skip_pixels_ = -1;
+    tex_image_observed_skip_rows_ = -1;
+    tex_image_called_ = false;
+
+    gl::g_current_gl_context->glRequestExtensionANGLEFn(
+        "GL_NV_pixel_buffer_object");
+    gl::g_current_gl_context->glRequestExtensionANGLEFn(
+        "GL_EXT_map_buffer_range");
+    gl::g_current_gl_context->glRequestExtensionANGLEFn("GL_OES_mapbuffer");
+    gl::GLContext::GetCurrent()->ReinitializeDynamicBindings();
+
+    prev_get_string_fn_ = gl::g_current_gl_driver->fn.glGetStringFn;
+    gl::g_current_gl_driver->fn.glGetStringFn =
+        &GLES2WebGLDecoderPassthroughSubimageTest::OnGetString;
+    prev_get_integerv_fn_ = gl::g_current_gl_driver->fn.glGetIntegervFn;
+    gl::g_current_gl_driver->fn.glGetIntegervFn =
+        &GLES2WebGLDecoderPassthroughSubimageTest::OnGetIntegerv;
+    prev_pixel_storei_fn_ = gl::g_current_gl_driver->fn.glPixelStoreiFn;
+    gl::g_current_gl_driver->fn.glPixelStoreiFn =
+        &GLES2WebGLDecoderPassthroughSubimageTest::OnPixelStorei;
+    prev_read_pixels_robust_angle_fn_ =
+        gl::g_current_gl_driver->fn.glReadPixelsRobustANGLEFn;
+    gl::g_current_gl_driver->fn.glReadPixelsRobustANGLEFn =
+        &GLES2WebGLDecoderPassthroughSubimageTest::OnReadPixelsRobustANGLE;
+    prev_read_pixels_fn_ = gl::g_current_gl_driver->fn.glReadPixelsFn;
+    gl::g_current_gl_driver->fn.glReadPixelsFn =
+        &GLES2WebGLDecoderPassthroughSubimageTest::OnReadPixels;
+    prev_tex_image_2d_robust_angle_fn_ =
+        gl::g_current_gl_driver->fn.glTexImage2DRobustANGLEFn;
+    gl::g_current_gl_driver->fn.glTexImage2DRobustANGLEFn =
+        &GLES2WebGLDecoderPassthroughSubimageTest::OnTexImage2DRobustANGLE;
+    prev_tex_sub_image_2d_robust_angle_fn_ =
+        gl::g_current_gl_driver->fn.glTexSubImage2DRobustANGLEFn;
+    gl::g_current_gl_driver->fn.glTexSubImage2DRobustANGLEFn =
+        &GLES2WebGLDecoderPassthroughSubimageTest::OnTexSubImage2DRobustANGLE;
+
+    GetDecoder()->ForceReinitializeFeatureInfoForTesting();
+    feature_info()->ForceReinitialize();
+  }
+
+  void TearDown() override {
+    gl::g_current_gl_driver->fn.glGetStringFn = prev_get_string_fn_;
+    gl::g_current_gl_driver->fn.glGetIntegervFn = prev_get_integerv_fn_;
+    gl::g_current_gl_driver->fn.glPixelStoreiFn = prev_pixel_storei_fn_;
+    gl::g_current_gl_driver->fn.glReadPixelsRobustANGLEFn =
+        prev_read_pixels_robust_angle_fn_;
+    gl::g_current_gl_driver->fn.glReadPixelsFn = prev_read_pixels_fn_;
+    gl::g_current_gl_driver->fn.glTexImage2DRobustANGLEFn =
+        prev_tex_image_2d_robust_angle_fn_;
+    gl::g_current_gl_driver->fn.glTexSubImage2DRobustANGLEFn =
+        prev_tex_sub_image_2d_robust_angle_fn_;
+    prev_get_string_fn_ = nullptr;
+    prev_get_integerv_fn_ = nullptr;
+    prev_pixel_storei_fn_ = nullptr;
+    prev_read_pixels_robust_angle_fn_ = nullptr;
+    prev_read_pixels_fn_ = nullptr;
+    prev_tex_image_2d_robust_angle_fn_ = nullptr;
+    prev_tex_sub_image_2d_robust_angle_fn_ = nullptr;
+    GLES2WebGLDecoderPassthroughTest::TearDown();
+  }
+
+ protected:
+  static const GLubyte* GL_BINDING_CALL OnGetString(GLenum name) {
+    const GLubyte* str = prev_get_string_fn_(name);
+    if (name == GL_EXTENSIONS) {
+      static base::NoDestructor<std::string> extensions;
+      *extensions = str ? reinterpret_cast<const char*>(str) : "";
+      *extensions += " GL_NV_pack_subimage GL_EXT_unpack_subimage";
+      return reinterpret_cast<const GLubyte*>(extensions->c_str());
+    }
+    return str;
+  }
+
+  static void GL_BINDING_CALL OnGetIntegerv(GLenum pname, GLint* params) {
+    switch (pname) {
+      case GL_PACK_ROW_LENGTH:
+        *params = pack_row_length_;
+        return;
+      case GL_PACK_SKIP_PIXELS:
+        *params = pack_skip_pixels_;
+        return;
+      case GL_PACK_SKIP_ROWS:
+        *params = pack_skip_rows_;
+        return;
+      case GL_UNPACK_ROW_LENGTH:
+        *params = unpack_row_length_;
+        return;
+      case GL_UNPACK_SKIP_PIXELS:
+        *params = unpack_skip_pixels_;
+        return;
+      case GL_UNPACK_SKIP_ROWS:
+        *params = unpack_skip_rows_;
+        return;
+      default:
+        prev_get_integerv_fn_(pname, params);
+        return;
+    }
+  }
+
+  static void GL_BINDING_CALL OnPixelStorei(GLenum pname, GLint param) {
+    switch (pname) {
+      case GL_PACK_ROW_LENGTH:
+        pack_row_length_ = param;
+        return;
+      case GL_PACK_SKIP_PIXELS:
+        pack_skip_pixels_ = param;
+        return;
+      case GL_PACK_SKIP_ROWS:
+        pack_skip_rows_ = param;
+        return;
+      case GL_UNPACK_ROW_LENGTH:
+        unpack_row_length_ = param;
+        return;
+      case GL_UNPACK_SKIP_PIXELS:
+        unpack_skip_pixels_ = param;
+        return;
+      case GL_UNPACK_SKIP_ROWS:
+        unpack_skip_rows_ = param;
+        return;
+      default:
+        prev_pixel_storei_fn_(pname, param);
+        return;
+    }
+  }
+
+  static void GL_BINDING_CALL OnReadPixelsRobustANGLE(GLint x,
+                                                      GLint y,
+                                                      GLsizei width,
+                                                      GLsizei height,
+                                                      GLenum format,
+                                                      GLenum type,
+                                                      GLsizei buf_size,
+                                                      GLsizei* length,
+                                                      GLsizei* columns,
+                                                      GLsizei* rows,
+                                                      void* pixels) {
+    read_pixels_called_ = true;
+    read_pixels_observed_row_length_ = pack_row_length_;
+    read_pixels_observed_skip_pixels_ = pack_skip_pixels_;
+    read_pixels_observed_skip_rows_ = pack_skip_rows_;
+    prev_read_pixels_robust_angle_fn_(x, y, width, height, format, type,
+                                      buf_size, length, columns, rows, pixels);
+  }
+
+  static void GL_BINDING_CALL OnReadPixels(GLint x,
+                                           GLint y,
+                                           GLsizei width,
+                                           GLsizei height,
+                                           GLenum format,
+                                           GLenum type,
+                                           void* pixels) {
+    read_pixels_called_ = true;
+    read_pixels_observed_row_length_ = pack_row_length_;
+    read_pixels_observed_skip_pixels_ = pack_skip_pixels_;
+    read_pixels_observed_skip_rows_ = pack_skip_rows_;
+    prev_read_pixels_fn_(x, y, width, height, format, type, pixels);
+  }
+
+  static void GL_BINDING_CALL OnTexImage2DRobustANGLE(GLenum target,
+                                                      GLint level,
+                                                      GLint internalformat,
+                                                      GLsizei width,
+                                                      GLsizei height,
+                                                      GLint border,
+                                                      GLenum format,
+                                                      GLenum type,
+                                                      GLsizei buf_size,
+                                                      const void* pixels) {
+    tex_image_called_ = true;
+    tex_image_observed_row_length_ = unpack_row_length_;
+    tex_image_observed_skip_pixels_ = unpack_skip_pixels_;
+    tex_image_observed_skip_rows_ = unpack_skip_rows_;
+    prev_tex_image_2d_robust_angle_fn_(target, level, internalformat, width,
+                                       height, border, format, type, buf_size,
+                                       pixels);
+  }
+
+  static void GL_BINDING_CALL OnTexSubImage2DRobustANGLE(GLenum target,
+                                                         GLint level,
+                                                         GLint xoffset,
+                                                         GLint yoffset,
+                                                         GLsizei width,
+                                                         GLsizei height,
+                                                         GLenum format,
+                                                         GLenum type,
+                                                         GLsizei buf_size,
+                                                         const void* pixels) {
+    tex_image_called_ = true;
+    tex_image_observed_row_length_ = unpack_row_length_;
+    tex_image_observed_skip_pixels_ = unpack_skip_pixels_;
+    tex_image_observed_skip_rows_ = unpack_skip_rows_;
+    prev_tex_sub_image_2d_robust_angle_fn_(target, level, xoffset, yoffset,
+                                           width, height, format, type,
+                                           buf_size, pixels);
+  }
+
+  inline static gl::glGetStringProc prev_get_string_fn_ = nullptr;
+  inline static gl::glGetIntegervProc prev_get_integerv_fn_ = nullptr;
+  inline static gl::glPixelStoreiProc prev_pixel_storei_fn_ = nullptr;
+  inline static gl::glReadPixelsRobustANGLEProc
+      prev_read_pixels_robust_angle_fn_ = nullptr;
+  inline static gl::glReadPixelsProc prev_read_pixels_fn_ = nullptr;
+  inline static gl::glTexImage2DRobustANGLEProc
+      prev_tex_image_2d_robust_angle_fn_ = nullptr;
+  inline static gl::glTexSubImage2DRobustANGLEProc
+      prev_tex_sub_image_2d_robust_angle_fn_ = nullptr;
+  inline static GLint pack_row_length_ = 0;
+  inline static GLint pack_skip_pixels_ = 0;
+  inline static GLint pack_skip_rows_ = 0;
+  inline static GLint read_pixels_observed_row_length_ = -1;
+  inline static GLint read_pixels_observed_skip_pixels_ = -1;
+  inline static GLint read_pixels_observed_skip_rows_ = -1;
+  inline static bool read_pixels_called_ = false;
+  inline static GLint unpack_row_length_ = 0;
+  inline static GLint unpack_skip_pixels_ = 0;
+  inline static GLint unpack_skip_rows_ = 0;
+  inline static GLint tex_image_observed_row_length_ = -1;
+  inline static GLint tex_image_observed_skip_pixels_ = -1;
+  inline static GLint tex_image_observed_skip_rows_ = -1;
+  inline static bool tex_image_called_ = false;
+};
+
+TEST_F(GLES2WebGLDecoderPassthroughSubimageTest,
+       ReadPixelsResetsPackSubimageState) {
+  ASSERT_FALSE(GetDecoder()->GetFeatureInfo()->gl_version_info().is_es3);
+  ASSERT_TRUE(GetDecoder()->GetFeatureInfo()->feature_flags().nv_pack_subimage);
+
+  constexpr GLsizei kWidth = 4;
+  constexpr GLsizei kHeight = 2;
+  constexpr GLint kLargeRowLength = 0x7FFFFFC;
+  constexpr GLint kSkipPixels = 4;
+  constexpr GLint kSkipRows = 2;
+  constexpr GLint kBytesPerPixel = 4;
+
+  cmds::PixelStorei pixel_store_cmd;
+  pixel_store_cmd.Init(GL_PACK_ROW_LENGTH, kLargeRowLength);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(pixel_store_cmd));
+  pixel_store_cmd.Init(GL_PACK_SKIP_PIXELS, kSkipPixels);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(pixel_store_cmd));
+  pixel_store_cmd.Init(GL_PACK_SKIP_ROWS, kSkipRows);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(pixel_store_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_EQ(kLargeRowLength, pack_row_length_);
+  EXPECT_EQ(kSkipPixels, pack_skip_pixels_);
+  EXPECT_EQ(kSkipRows, pack_skip_rows_);
+
+  auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
+  uint32_t result_shm_id = shared_memory_id_;
+  uint32_t result_shm_offset = kSharedMemoryOffset;
+  uint32_t pixels_shm_id = shared_memory_id_;
+  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
+
+  cmds::ReadPixels cmd;
+  cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels_shm_id,
+           pixels_shm_offset, result_shm_id, result_shm_offset, false);
+  result->success = 0;
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_TRUE(result->success);
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_TRUE(read_pixels_called_);
+  EXPECT_EQ(0, read_pixels_observed_row_length_);
+  EXPECT_EQ(0, read_pixels_observed_skip_pixels_);
+  EXPECT_EQ(0, read_pixels_observed_skip_rows_);
+  EXPECT_EQ(kLargeRowLength, pack_row_length_);
+  EXPECT_EQ(kSkipPixels, pack_skip_pixels_);
+  EXPECT_EQ(kSkipRows, pack_skip_rows_);
+
+  // When a pixel pack buffer is bound, client pack subimage state must be
+  // preserved during ReadPixels rather than reset to 0.
+  constexpr GLint kPboRowLength = 16;
+  pixel_store_cmd.Init(GL_PACK_ROW_LENGTH, kPboRowLength);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(pixel_store_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  read_pixels_called_ = false;
+  read_pixels_observed_row_length_ = -1;
+  read_pixels_observed_skip_pixels_ = -1;
+  read_pixels_observed_skip_rows_ = -1;
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
+  DoBindBuffer(GL_PIXEL_PACK_BUFFER, kClientBufferId);
+  DoBufferData(GL_PIXEL_PACK_BUFFER,
+               kPboRowLength * (kHeight + kSkipRows) * kBytesPerPixel, nullptr,
+               GL_STATIC_DRAW);
+
+  cmds::ReadPixels pbo_cmd;
+  pbo_cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE, 0, 0, 0, 0,
+               false);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(pbo_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_TRUE(read_pixels_called_);
+  EXPECT_EQ(kPboRowLength, read_pixels_observed_row_length_);
+  EXPECT_EQ(kSkipPixels, read_pixels_observed_skip_pixels_);
+  EXPECT_EQ(kSkipRows, read_pixels_observed_skip_rows_);
+  EXPECT_EQ(kPboRowLength, pack_row_length_);
+  EXPECT_EQ(kSkipPixels, pack_skip_pixels_);
+  EXPECT_EQ(kSkipRows, pack_skip_rows_);
+}
+
+TEST_F(GLES2WebGLDecoderPassthroughSubimageTest,
+       ReadPixelsAsyncResetsPackSubimageState) {
+  ASSERT_FALSE(GetDecoder()->GetFeatureInfo()->gl_version_info().is_es3);
+  ASSERT_TRUE(GetDecoder()->GetFeatureInfo()->feature_flags().nv_pack_subimage);
+
+  constexpr GLint kLargeRowLength = 0x7FFFFFC;
+  constexpr GLint kSkipPixels = 4;
+  constexpr GLint kSkipRows = 2;
+
+  cmds::PixelStorei pixel_store_cmd;
+  pixel_store_cmd.Init(GL_PACK_ROW_LENGTH, kLargeRowLength);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(pixel_store_cmd));
+  pixel_store_cmd.Init(GL_PACK_SKIP_PIXELS, kSkipPixels);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(pixel_store_cmd));
+  pixel_store_cmd.Init(GL_PACK_SKIP_ROWS, kSkipRows);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(pixel_store_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_EQ(kLargeRowLength, pack_row_length_);
+  EXPECT_EQ(kSkipPixels, pack_skip_pixels_);
+  EXPECT_EQ(kSkipRows, pack_skip_rows_);
+
+  auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
+  uint32_t result_shm_id = shared_memory_id_;
+  uint32_t result_shm_offset = kSharedMemoryOffset;
+  uint32_t pixels_shm_id = shared_memory_id_;
+  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
+
+  cmds::ReadPixels read_pixels_cmd;
+  read_pixels_cmd.Init(0, 0, 4, 2, GL_RGBA, GL_UNSIGNED_BYTE, pixels_shm_id,
+                       pixels_shm_offset, result_shm_id, result_shm_offset,
+                       true);
+  result->success = 0;
+  EXPECT_EQ(error::kNoError, ExecuteCmd(read_pixels_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_TRUE(GetDecoder()->HasMoreIdleWork());
+  EXPECT_TRUE(read_pixels_called_);
+  EXPECT_EQ(0, read_pixels_observed_row_length_);
+  EXPECT_EQ(0, read_pixels_observed_skip_pixels_);
+  EXPECT_EQ(0, read_pixels_observed_skip_rows_);
+  EXPECT_EQ(kLargeRowLength, pack_row_length_);
+  EXPECT_EQ(kSkipPixels, pack_skip_pixels_);
+  EXPECT_EQ(kSkipRows, pack_skip_rows_);
+
+  result->success = 0;
+  cmds::Finish finish_cmd;
+  finish_cmd.Init();
+  EXPECT_EQ(error::kNoError, ExecuteCmd(finish_cmd));
+  EXPECT_TRUE(result->success);
+  EXPECT_FALSE(GetDecoder()->HasMoreIdleWork());
+  EXPECT_TRUE(GetPendingReadPixels().empty());
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  // When pixels_shm_offset == kSharedBufferSize, GetSharedMemoryAndSizeAs
+  // returns a non-null end-of-buffer pointer with bufsize == 0. Async
+  // ReadPixels into the internal staging PBO must still reset pack subimage
+  // state to (0, 0, 0) and restore client state afterward.
+  read_pixels_called_ = false;
+  read_pixels_observed_row_length_ = -1;
+  read_pixels_observed_skip_pixels_ = -1;
+  read_pixels_observed_skip_rows_ = -1;
+  result->success = 0;
+  read_pixels_cmd.Init(0, 0, 4, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels_shm_id,
+                       static_cast<uint32_t>(kSharedBufferSize), result_shm_id,
+                       result_shm_offset, true);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(read_pixels_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_TRUE(GetDecoder()->HasMoreIdleWork());
+  EXPECT_TRUE(read_pixels_called_);
+  EXPECT_EQ(0, read_pixels_observed_row_length_);
+  EXPECT_EQ(0, read_pixels_observed_skip_pixels_);
+  EXPECT_EQ(0, read_pixels_observed_skip_rows_);
+  EXPECT_EQ(kLargeRowLength, pack_row_length_);
+  EXPECT_EQ(kSkipPixels, pack_skip_pixels_);
+  EXPECT_EQ(kSkipRows, pack_skip_rows_);
+
+  EXPECT_EQ(error::kNoError, ExecuteCmd(finish_cmd));
+  EXPECT_EQ(0u, result->success);
+  EXPECT_FALSE(GetDecoder()->HasMoreIdleWork());
+  EXPECT_TRUE(GetPendingReadPixels().empty());
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
+TEST_F(GLES2WebGLDecoderPassthroughSubimageTest,
+       TexImage2DAndSubImage2DResetUnpackSubimage) {
+  ASSERT_FALSE(GetDecoder()->GetFeatureInfo()->gl_version_info().is_es3);
+  ASSERT_TRUE(
+      GetDecoder()->GetFeatureInfo()->feature_flags().ext_unpack_subimage);
+
+  constexpr GLsizei kWidth = 2;
+  constexpr GLsizei kHeight = 2;
+  constexpr GLint kUnpackRowLength = 8;
+  constexpr GLint kUnpackSkipPixels = 2;
+  constexpr GLint kUnpackSkipRows = 1;
+
+  GenHelper<cmds::GenTexturesImmediate>(kClientTextureId);
+  DoBindTexture(GL_TEXTURE_2D, kClientTextureId);
+
+  cmds::PixelStorei pixel_store_cmd;
+  pixel_store_cmd.Init(GL_UNPACK_ROW_LENGTH, kUnpackRowLength);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(pixel_store_cmd));
+  pixel_store_cmd.Init(GL_UNPACK_SKIP_PIXELS, kUnpackSkipPixels);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(pixel_store_cmd));
+  pixel_store_cmd.Init(GL_UNPACK_SKIP_ROWS, kUnpackSkipRows);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(pixel_store_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, kWidth, kHeight, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, shared_memory_id_, kSharedMemoryOffset);
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_TRUE(tex_image_called_);
+  EXPECT_EQ(0, tex_image_observed_row_length_);
+  EXPECT_EQ(0, tex_image_observed_skip_pixels_);
+  EXPECT_EQ(0, tex_image_observed_skip_rows_);
+  EXPECT_EQ(kUnpackRowLength, unpack_row_length_);
+  EXPECT_EQ(kUnpackSkipPixels, unpack_skip_pixels_);
+  EXPECT_EQ(kUnpackSkipRows, unpack_skip_rows_);
+
+  tex_image_called_ = false;
+  tex_image_observed_row_length_ = -1;
+  tex_image_observed_skip_pixels_ = -1;
+  tex_image_observed_skip_rows_ = -1;
+
+  cmds::TexSubImage2D sub_image_cmd;
+  sub_image_cmd.Init(GL_TEXTURE_2D, 0, 0, 0, kWidth, kHeight, GL_RGBA,
+                     GL_UNSIGNED_BYTE, shared_memory_id_, kSharedMemoryOffset,
+                     GL_FALSE);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(sub_image_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_TRUE(tex_image_called_);
+  EXPECT_EQ(0, tex_image_observed_row_length_);
+  EXPECT_EQ(0, tex_image_observed_skip_pixels_);
+  EXPECT_EQ(0, tex_image_observed_skip_rows_);
+  EXPECT_EQ(kUnpackRowLength, unpack_row_length_);
+  EXPECT_EQ(kUnpackSkipPixels, unpack_skip_pixels_);
+  EXPECT_EQ(kUnpackSkipRows, unpack_skip_rows_);
 }
 
 }  // namespace gles2

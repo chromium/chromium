@@ -164,6 +164,8 @@ TEST_P(FeatureInfoTest, Basic) {
   EXPECT_FALSE(info_->feature_flags().nv_draw_buffers);
   EXPECT_FALSE(info_->feature_flags().ext_discard_framebuffer);
   EXPECT_FALSE(info_->feature_flags().angle_depth_texture);
+  EXPECT_FALSE(info_->feature_flags().nv_pack_subimage);
+  EXPECT_FALSE(info_->feature_flags().ext_unpack_subimage);
 
 #define GPU_OP(type, name) EXPECT_FALSE(info_->workarounds().name);
   GPU_DRIVER_BUG_WORKAROUNDS(GPU_OP)
@@ -293,6 +295,8 @@ TEST_P(FeatureInfoTest, InitializeNoExtensions) {
   EXPECT_FALSE(info_->validators()->equation.IsValid(GL_MIN_EXT));
   EXPECT_FALSE(info_->validators()->equation.IsValid(GL_MAX_EXT));
   EXPECT_FALSE(info_->feature_flags().chromium_sync_query);
+  EXPECT_FALSE(info_->feature_flags().nv_pack_subimage);
+  EXPECT_FALSE(info_->feature_flags().ext_unpack_subimage);
 }
 
 TEST_P(FeatureInfoTest, InitializeWithANGLE) {
@@ -1451,6 +1455,19 @@ TEST_P(FeatureInfoTest, InitializeMESAFramebufferFlipYExtensionTrue) {
 TEST_P(FeatureInfoTest, InitializeANGLETrimMemory) {
   SetupInitExpectations("GL_ANGLE_trim_memory");
   EXPECT_TRUE(info_->feature_flags().angle_trim_memory);
+}
+
+TEST_P(FeatureInfoTest, InitializeNVPackSubimage) {
+  SetupInitExpectationsWithGLVersion("GL_NV_pack_subimage", "",
+                                     "OpenGL ES 2.0");
+  EXPECT_TRUE(info_->feature_flags().nv_pack_subimage);
+  EXPECT_FALSE(gfx::HasExtension(info_->extensions(), "GL_NV_pack_subimage"));
+}
+
+TEST_P(FeatureInfoTest, InitializeEXTUnpackSubimage) {
+  SetupInitExpectationsWithGLVersion("GL_EXT_unpack_subimage", "",
+                                     "OpenGL ES 2.0");
+  EXPECT_TRUE(info_->feature_flags().ext_unpack_subimage);
 }
 
 class WebGLDrawBuffersTest : public GpuServiceTest {

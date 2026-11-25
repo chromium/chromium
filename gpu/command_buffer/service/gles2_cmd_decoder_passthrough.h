@@ -270,9 +270,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
 
   void SetIgnoreCachedStateForTest(bool ignore) override;
   void SetForceShaderNameHashingForTest(bool force) override;
-  void ForceReinitializeFeatureInfoForTesting() {
-    feature_info_->ForceReinitialize();
-  }
+  void ForceReinitializeFeatureInfoForTesting();
 
   // Gets the QueryManager for this context.
   QueryManager* GetQueryManager() override;

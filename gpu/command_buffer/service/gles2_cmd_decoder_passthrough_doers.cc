@@ -269,18 +269,28 @@ class ScopedUnpackStateButAlignmentReset {
   GLint image_height_ = 0;
 };
 
-class ScopedPackStateRowLengthReset {
+class ScopedPackStateButAlignmentReset {
  public:
-  ScopedPackStateRowLengthReset(gl::GLApi* api, bool enable) : api_(api) {
+  ScopedPackStateButAlignmentReset(gl::GLApi* api, bool enable) : api_(api) {
     if (!enable) {
       return;
     }
 
+    api_->glGetIntegervFn(GL_PACK_SKIP_PIXELS, &skip_pixels_);
+    api_->glPixelStoreiFn(GL_PACK_SKIP_PIXELS, 0);
+    api_->glGetIntegervFn(GL_PACK_SKIP_ROWS, &skip_rows_);
+    api_->glPixelStoreiFn(GL_PACK_SKIP_ROWS, 0);
     api_->glGetIntegervFn(GL_PACK_ROW_LENGTH, &row_length_);
     api_->glPixelStoreiFn(GL_PACK_ROW_LENGTH, 0);
   }
 
-  ~ScopedPackStateRowLengthReset() {
+  ~ScopedPackStateButAlignmentReset() {
+    if (skip_pixels_ != 0) {
+      api_->glPixelStoreiFn(GL_PACK_SKIP_PIXELS, skip_pixels_);
+    }
+    if (skip_rows_ != 0) {
+      api_->glPixelStoreiFn(GL_PACK_SKIP_ROWS, skip_rows_);
+    }
     if (row_length_ != 0) {
       api_->glPixelStoreiFn(GL_PACK_ROW_LENGTH, row_length_);
     }
@@ -288,6 +298,8 @@ class ScopedPackStateRowLengthReset {
 
  private:
   raw_ptr<gl::GLApi> api_;
+  GLint skip_pixels_ = 0;
+  GLint skip_rows_ = 0;
   GLint row_length_ = 0;
 };
 
@@ -2618,8 +2630,17 @@ error::Error GLES2DecoderPassthroughImpl::DoReadbackARGBImagePixelsINTERNAL(
     return error::kNoError;
   }
 
+  // See RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL: a pitch of
+  // >= kMaxReadbackRowBytes is never sent by legitimate clients and triggers a
+  // signed 32-bit bit-stride overflow in GLES drivers when forwarded as
+  // GL_PACK_ROW_LENGTH.
+  if (row_bytes >= CopySharedImageHelper::kMaxReadbackRowBytes) {
+    InsertError(GL_INVALID_VALUE, "row_bytes is too large");
+    return error::kNoError;
+  }
+
   size_t byte_size = dst_info.computeByteSize(row_bytes);
-  if (byte_size > UINT32_MAX) {
+  if (SkImageInfo::ByteSizeOverflowed(byte_size) || byte_size > UINT32_MAX) {
     InsertError(GL_INVALID_VALUE,
                 "Cannot request a memory chunk larger than UINT32_MAX bytes");
     return error::kNoError;
@@ -2707,9 +2728,10 @@ error::Error GLES2DecoderPassthroughImpl::DoReadPixels(GLint x,
   }
 
   CheckErrorCallbackState();
-  ScopedPackStateRowLengthReset reset_row_length(
+  ScopedPackStateButAlignmentReset reset_pack(
       api(), bound_buffers_[GL_PIXEL_PACK_BUFFER] == 0 &&
-                 feature_info_->gl_version_info().is_es3);
+                 (feature_info_->gl_version_info().is_es3 ||
+                  feature_info_->feature_flags().nv_pack_subimage));
   api()->glReadPixelsRobustANGLEFn(x, y, width, height, format, type, bufsize,
                                    length, columns, rows, pixels);
   bool had_error = CheckErrorCallbackState();
@@ -2765,8 +2787,10 @@ error::Error GLES2DecoderPassthroughImpl::DoReadPixelsAsync(
   }
 
   CheckErrorCallbackState();
-  ScopedPackStateRowLengthReset reset_row_length(
-      api(), bufsize != 0 && feature_info_->gl_version_info().is_es3);
+  ScopedPackStateButAlignmentReset reset_pack(
+      api(), bound_buffers_[GL_PIXEL_PACK_BUFFER] == 0 &&
+                 (feature_info_->gl_version_info().is_es3 ||
+                  feature_info_->feature_flags().nv_pack_subimage));
 
   PendingReadPixels pending_read_pixels;
   pending_read_pixels.pixels_shm_id = pixels_shm_id;
@@ -2803,9 +2827,8 @@ error::Error GLES2DecoderPassthroughImpl::DoReadPixelsAsync(
   api()->glBufferDataFn(GL_PIXEL_PACK_BUFFER, pending_read_pixels.pixels_size,
                         nullptr, usage_hint);
 
-  // No need to worry about ES3 pixel pack parameters, because no
-  // PIXEL_PACK_BUFFER is bound, and all these settings haven't been
-  // sent to GL.
+  // Subimage pack state is reset above by `ScopedPackStateButAlignmentReset`
+  // so the staging PBO receives packed rows without client subimage offsets.
   api()->glReadPixelsFn(x, y, width, height, format, type, nullptr);
 
   api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER, 0);
@@ -2986,7 +3009,11 @@ error::Error GLES2DecoderPassthroughImpl::DoTexImage2D(GLenum target,
   }
 
   ScopedUnpackStateButAlignmentReset reset_unpack(
-      api(), image_size != 0 && feature_info_->gl_version_info().is_es3, false);
+      api(),
+      bound_buffers_[GL_PIXEL_UNPACK_BUFFER] == 0 && pixels != nullptr &&
+          (feature_info_->gl_version_info().is_es3 ||
+           feature_info_->feature_flags().ext_unpack_subimage),
+      false);
 
   CheckErrorCallbackState();
   api()->glTexImage2DRobustANGLEFn(target, level, internalformat, width, height,
@@ -3020,7 +3047,10 @@ error::Error GLES2DecoderPassthroughImpl::DoTexImage3D(GLenum target,
   }
 
   ScopedUnpackStateButAlignmentReset reset_unpack(
-      api(), image_size != 0 && feature_info_->gl_version_info().is_es3, true);
+      api(),
+      bound_buffers_[GL_PIXEL_UNPACK_BUFFER] == 0 && pixels != nullptr &&
+          feature_info_->gl_version_info().is_es3,
+      true);
 
   CheckErrorCallbackState();
   api()->glTexImage3DRobustANGLEFn(target, level, internalformat, width, height,
@@ -3130,7 +3160,11 @@ error::Error GLES2DecoderPassthroughImpl::DoTexSubImage2D(GLenum target,
                                                           GLsizei image_size,
                                                           const void* pixels) {
   ScopedUnpackStateButAlignmentReset reset_unpack(
-      api(), image_size != 0 && feature_info_->gl_version_info().is_es3, false);
+      api(),
+      bound_buffers_[GL_PIXEL_UNPACK_BUFFER] == 0 && pixels != nullptr &&
+          (feature_info_->gl_version_info().is_es3 ||
+           feature_info_->feature_flags().ext_unpack_subimage),
+      false);
   api()->glTexSubImage2DRobustANGLEFn(target, level, xoffset, yoffset, width,
                                       height, format, type, image_size, pixels);
 
@@ -3154,7 +3188,10 @@ error::Error GLES2DecoderPassthroughImpl::DoTexSubImage3D(GLenum target,
                                                           GLsizei image_size,
                                                           const void* pixels) {
   ScopedUnpackStateButAlignmentReset reset_unpack(
-      api(), image_size != 0 && feature_info_->gl_version_info().is_es3, true);
+      api(),
+      bound_buffers_[GL_PIXEL_UNPACK_BUFFER] == 0 && pixels != nullptr &&
+          feature_info_->gl_version_info().is_es3,
+      true);
   api()->glTexSubImage3DRobustANGLEFn(target, level, xoffset, yoffset, zoffset,
                                       width, height, depth, format, type,
                                       image_size, pixels);

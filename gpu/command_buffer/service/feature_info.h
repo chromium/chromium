@@ -97,6 +97,8 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool angle_request_extension = false;
     bool ext_debug_marker = false;
     bool ext_pixel_buffer_object = false;
+    bool nv_pack_subimage = false;
+    bool ext_unpack_subimage = false;
     bool ext_window_rectangles = false;
     bool chromium_gpu_fence = false;
     bool separate_stencil_ref_mask_writemask = false;

@@ -52,6 +52,8 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
     virtual ~ReadbackDelegate() = default;
   };
 
+  static constexpr GLuint kMaxReadbackRowBytes = 0x10000000u;
+
   CopySharedImageHelper(
       SharedImageRepresentationFactory* representation_factory,
       SharedContextState* shared_context_state);

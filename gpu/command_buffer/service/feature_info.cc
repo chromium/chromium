@@ -1520,6 +1520,10 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
       gfx::HasExtension(extensions, "GL_ANGLE_request_extension");
   feature_flags_.ext_pixel_buffer_object =
       gfx::HasExtension(extensions, "GL_NV_pixel_buffer_object");
+  feature_flags_.nv_pack_subimage =
+      gfx::HasExtension(extensions, "GL_NV_pack_subimage");
+  feature_flags_.ext_unpack_subimage =
+      gfx::HasExtension(extensions, "GL_EXT_unpack_subimage");
 
   if (gfx::HasExtension(extensions, "GL_EXT_debug_marker")) {
     feature_flags_.ext_debug_marker = true;

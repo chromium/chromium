@@ -950,6 +950,68 @@ TEST_F(GLES2DecoderPassthroughReadbackResetCheckTest,
   shared_image.reset();
 }
 
+TEST_F(GLES2DecoderPassthroughTest,
+       ReadbackARGBImagePixelsRejectsLargeRowBytesAndOverflow) {
+  MemoryTypeTracker memory_tracker(nullptr);
+  Mailbox mailbox = Mailbox::Generate();
+  auto backing = AllocateTextureAndCreateSharedImage(
+      mailbox, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(4, 17),
+      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, SHARED_IMAGE_USAGE_GLES2_READ);
+  backing->SetCleared();
+  auto shared_image =
+      GetSharedImageManager()->Register(std::move(backing), &memory_tracker);
+
+  using Cmd = cmds::ReadbackARGBImagePixelsINTERNAL;
+  // Offset past kSharedMemoryOffset so GetGLError() does not overwrite *result.
+  constexpr uint32_t kReadbackOffsetFromShmBase = 16;
+  constexpr uint32_t kReadbackShmOffset =
+      kSharedMemoryOffset + kReadbackOffsetFromShmBase;
+  constexpr uint32_t kMailboxOffset = 16;
+  constexpr uint32_t kPixelsOffset = 48;
+  constexpr GLuint kDstWidth = 4;
+
+  // SAFETY: shared memory extends past kReadbackOffsetFromShmBase +
+  // kMailboxOffset by a full mailbox.
+  uint8_t* readback_shm = UNSAFE_BUFFERS(GetSharedMemoryAs<uint8_t*>() +
+                                         kReadbackOffsetFromShmBase);
+  auto* result = reinterpret_cast<Cmd::Result*>(readback_shm);
+  UNSAFE_BUFFERS(
+      base::span(readback_shm + kMailboxOffset, sizeof(mailbox.name)))
+      .copy_from(base::as_byte_span(mailbox.name));
+
+  struct Case {
+    GLuint dst_height;
+    GLuint row_bytes;
+  };
+  constexpr Case kCases[] = {
+      {.dst_height = 2, .row_bytes = 0x10000000u},
+      {.dst_height = 1, .row_bytes = 0x10000000u},
+      {.dst_height = 2, .row_bytes = 0x1FFFFFF0u},
+      // Sub-threshold row_bytes where SkImageInfo::computeByteSize overflows
+      // SK_MaxS32 / 32-bit size_t and returns SIZE_MAX.
+      {.dst_height = 10, .row_bytes = 0x0FFFFFFCu},
+      {.dst_height = 17, .row_bytes = 0x0FFFFFFCu},
+  };
+
+  for (const auto& test_case : kCases) {
+    *result = 0;
+    Cmd cmd;
+    cmd.Init(/*src_x=*/0, /*src_y=*/0, /*plane_index=*/0, kDstWidth,
+             test_case.dst_height, test_case.row_bytes, kRGBA_8888_SkColorType,
+             kPremul_SkAlphaType, shared_memory_id_, kReadbackShmOffset,
+             /*color_space_offset=*/kMailboxOffset, kPixelsOffset,
+             kMailboxOffset);
+
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+    EXPECT_EQ(0u, *result);
+    EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+    EXPECT_FALSE(GetDecoder()->WasContextLost());
+  }
+
+  shared_image.reset();
+}
+
 namespace {
 
 // A pbuffer surface whose OnMakeCurrent() can be made to fail, causing

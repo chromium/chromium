@@ -2418,8 +2418,20 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     return;
   }
 
+  // Legitimate clients (RasterImplementation) always send
+  // SkImageInfo::minRowBytes(). A pitch of >= kMaxReadbackRowBytes is forwarded
+  // by Skia Ganesh-GL as GL_PACK_ROW_LENGTH for a client-memory glReadPixels,
+  // causing known GLES drivers (ARM Mali, Imagination) to overflow signed
+  // 32-bit bit-stride math or crash. Reject it here so both ANGLE and
+  // non-ANGLE configurations are protected.
+  if (row_bytes >= CopySharedImageHelper::kMaxReadbackRowBytes) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
+                       "row_bytes is too large");
+    return;
+  }
+
   size_t byte_size = dst_info.computeByteSize(row_bytes);
-  if (byte_size > UINT32_MAX) {
+  if (SkImageInfo::ByteSizeOverflowed(byte_size) || byte_size > UINT32_MAX) {
     LOCAL_SET_GL_ERROR(
         GL_INVALID_VALUE, "glReadbackImagePixels",
         "Cannot request a memory chunk larger than UINT32_MAX bytes");

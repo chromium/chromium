@@ -720,6 +720,11 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
     SkImageInfo dst_info,
     void* pixel_address,
     std::unique_ptr<SkiaImageRepresentation> source_shared_image) {
+  if (row_bytes >= kMaxReadbackRowBytes) {
+    return base::unexpected(
+        GLError(GL_INVALID_VALUE, "ReadPixels", "row_bytes is too large"));
+  }
+
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
   std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
@@ -772,10 +777,17 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
                                     "Trying to read outside source image."));
   }
 
+  // For a single-row readback, inter-row pitch is unused; normalize to tight
+  // row bytes so large `row_bytes` values cannot overflow 32-bit signed stride
+  // parameters in downstream conversion or copy helpers.
+  const size_t effective_row_bytes = dst_info.height() <= 1
+                                         ? dst_info.minRowBytes()
+                                         : static_cast<size_t>(row_bytes);
+
   bool success = false;
   if (gr_context) {
     success = sk_image->readPixels(gr_context, dst_info, pixel_address,
-                                   row_bytes, src_x, src_y);
+                                   effective_row_bytes, src_x, src_y);
     source_scoped_access->ApplyBackendSurfaceEndState();
     shared_context_state_->SubmitIfNecessary(
         std::move(end_semaphores),
@@ -783,9 +795,9 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   } else {
     auto* graphite_shared_context =
         shared_context_state_->graphite_shared_context();
-    success = GraphiteImageReadPixels(graphite_shared_context,
-                                      std::move(sk_image), src_x, src_y,
-                                      dst_info, pixel_address, row_bytes);
+    success = GraphiteImageReadPixels(
+        graphite_shared_context, std::move(sk_image), src_x, src_y, dst_info,
+        pixel_address, effective_row_bytes);
   }
   if (!success) {
     return base::unexpected(GLError(GL_INVALID_OPERATION, "ReadPixels",
@@ -858,15 +870,25 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixelsYUV(
     read_planes = false;
   }
 #endif  // BUILDFLAG(IS_WIN)
+  // For a single-row plane readback, inter-row stride is unused; normalize to
+  // tight width so large strides cannot overflow signed stride parameters in
+  // downstream libyuv helpers.
+  const GLuint uv_width = (dst_width + 1) / 2;
+  const GLuint uv_height = (dst_height + 1) / 2;
+  const GLuint effective_y_stride = dst_height <= 1 ? dst_width : y_stride;
+  const GLuint effective_u_stride = uv_height <= 1 ? uv_width : u_stride;
+  const GLuint effective_v_stride = uv_height <= 1 ? uv_width : v_stride;
+
   if (read_planes) {
     return ReadPixelsYUVInternalNV12(
         delegate, source_scoped_access.get(), std::move(end_semaphores),
-        src_rect, dst_size, y_out, y_stride, u_out, u_stride, v_out, v_stride);
+        src_rect, dst_size, y_out, effective_y_stride, u_out,
+        effective_u_stride, v_out, effective_v_stride);
   }
   return ReadPixelsYUVInternalRGB(
       delegate, *source_shared_image, source_scoped_access.get(),
-      std::move(end_semaphores), src_rect, dst_size, y_out, y_stride, u_out,
-      u_stride, v_out, v_stride);
+      std::move(end_semaphores), src_rect, dst_size, y_out, effective_y_stride,
+      u_out, effective_u_stride, v_out, effective_v_stride);
 }
 
 base::unexpected<GLError> CopySharedImageHelper::EndReadAccessWithError(

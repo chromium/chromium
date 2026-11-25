@@ -62,6 +62,7 @@
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "ui/gl/gl_context_stub.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/init/gl_factory.h"
@@ -296,7 +297,7 @@ class RasterDecoderOOPTest : public testing::Test, public DecoderClient {
     auto decoder = RasterDecoder::Create(
         this, command_buffer_service_.get(), &outputter_, gpu_feature_info_,
         GpuPreferences(), /*memory_tracker=*/nullptr, &shared_image_manager_,
-        context_state_, /*is_privileged=*/true);
+        context_state_, /*is_priviliged=*/true);
     CHECK_EQ(decoder->Initialize(), ContextResult::kSuccess);
     return decoder;
   }
@@ -1097,6 +1098,40 @@ TEST_P(RasterDecoderOOPReadbackOrderTest, YUV) {
   ExpectProducedOnlyIfValid();
 }
 
+TEST_F(RasterDecoderOOPTest,
+       ReadbackARGBLargeRowBytesRejectedBeforeProduceSkia) {
+  Mailbox source_mailbox = Mailbox::Generate();
+  SharedImageInfo si_info(viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(4, 4),
+                          gfx::ColorSpace::CreateSRGB(),
+                          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                          SHARED_IMAGE_USAGE_RASTER_READ, "TestLabel");
+  auto backing = std::make_unique<CountingProduceSkiaTestImageBacking>(
+      source_mailbox, si_info);
+  CountingProduceSkiaTestImageBacking* backing_ptr = backing.get();
+  auto source_ref =
+      shared_image_manager()->Register(std::move(backing), &memory_tracker_);
+
+  using Result = cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result;
+  constexpr GLuint kPixelsOffset = sizeof(Result);
+  auto* result = GetSharedMemoryAs<Result*>();
+
+  for (GLuint large_row_bytes : {0x10000000u, 0x1FFFFFF0u}) {
+    *result = 0;
+    auto& cmd =
+        *GetImmediateAs<cmds::ReadbackARGBImagePixelsINTERNALImmediate>();
+    cmd.Init(/*src_x=*/0, /*src_y=*/0, /*plane_index=*/0, /*dst_width=*/2,
+             /*dst_height=*/2, large_row_bytes, kRGBA_8888_SkColorType,
+             kPremul_SkAlphaType, shared_memory_id_, shared_memory_offset_,
+             /*color_space_offset=*/kPixelsOffset, kPixelsOffset,
+             source_mailbox.name);
+    EXPECT_EQ(error::kNoError,
+              ExecuteImmediateCmd(cmd, sizeof(source_mailbox.name)));
+    EXPECT_EQ(0u, *result);
+    EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+    EXPECT_EQ(0, backing_ptr->produce_skia_count());
+  }
+}
+
 TEST_F(RasterDecoderOOPTest, CopySharedImageOddSizeMultiplanar) {
   gpu::Mailbox source_mailbox = gpu::Mailbox::Generate();
   SharedImageInfo source_si_info(
@@ -1400,6 +1435,440 @@ TEST_F(RasterDecoderOOPTest, MAYBE_DeserializesFontsWhenBeginRasterFails) {
       CreateMailbox(viz::SinglePlaneFormat::kRGBA_8888, 32, 32, false);
   run_tile(valid_mailbox, GL_NO_ERROR, raster_size2, font_size2, GL_NO_ERROR);
   EXPECT_FALSE(handle.IsLockedForTesting());
+}
+
+// Exercises RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL ->
+// CopySharedImageHelper::ReadPixels -> Skia Ganesh GrGLGpu::onReadPixels over a
+// mock GLES 3.0 interface to verify GL_PACK_ROW_LENGTH, pitch validation, and
+// single-row stride normalization.
+class RasterDecoderGaneshGLReadbackTest : public testing::Test,
+                                          public DecoderClient {
+ public:
+  RasterDecoderGaneshGLReadbackTest() = default;
+
+  void SetUp() override {
+    gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
+    display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+    ASSERT_NE(display_, nullptr);
+
+    gl_ = std::make_unique<testing::NiceMock<gl::MockGLInterface>>();
+    gl::MockGLInterface::SetGLInterface(gl_.get());
+
+    ON_CALL(*gl_, GetString(GL_VERSION))
+        .WillByDefault(Return(reinterpret_cast<const GLubyte*>(kGLVersion)));
+    ON_CALL(*gl_, GetString(GL_SHADING_LANGUAGE_VERSION))
+        .WillByDefault(Return(reinterpret_cast<const GLubyte*>(kGLSLVersion)));
+    ON_CALL(*gl_, GetString(GL_VENDOR))
+        .WillByDefault(Return(reinterpret_cast<const GLubyte*>("TestVendor")));
+    ON_CALL(*gl_, GetString(GL_RENDERER))
+        .WillByDefault(
+            Return(reinterpret_cast<const GLubyte*>("TestRenderer")));
+    ON_CALL(*gl_, GetString(GL_EXTENSIONS))
+        .WillByDefault(Return(reinterpret_cast<const GLubyte*>(kGLExtensions)));
+    ON_CALL(*gl_, GetIntegerv(GL_NUM_EXTENSIONS, _))
+        .WillByDefault(SetArgPointee<1>(1));
+    ON_CALL(*gl_, GetStringi(GL_EXTENSIONS, 0))
+        .WillByDefault(Return(reinterpret_cast<const GLubyte*>(kGLExtensions)));
+    ON_CALL(*gl_, GetIntegerv(GL_MAX_TEXTURE_SIZE, _))
+        .WillByDefault(SetArgPointee<1>(8192));
+    ON_CALL(*gl_, GetIntegerv(GL_MAX_RENDERBUFFER_SIZE, _))
+        .WillByDefault(SetArgPointee<1>(8192));
+    ON_CALL(*gl_, GetIntegerv(GL_MAX_VERTEX_ATTRIBS, _))
+        .WillByDefault(SetArgPointee<1>(16));
+    ON_CALL(*gl_, GetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, _))
+        .WillByDefault(SetArgPointee<1>(16));
+    ON_CALL(*gl_, GetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, _))
+        .WillByDefault(SetArgPointee<1>(16));
+    ON_CALL(*gl_,
+            GetInternalformativ(GL_RENDERBUFFER, _, GL_NUM_SAMPLE_COUNTS, 1, _))
+        .WillByDefault(SetArgPointee<4>(1));
+    ON_CALL(*gl_, GetInternalformativ(GL_RENDERBUFFER, _, GL_SAMPLES, 1, _))
+        .WillByDefault(SetArgPointee<4>(1));
+    ON_CALL(*gl_, CheckFramebufferStatusEXT(_))
+        .WillByDefault(Return(GL_FRAMEBUFFER_COMPLETE));
+    ON_CALL(*gl_, GenFramebuffersEXT(1, _))
+        .WillByDefault([this](GLsizei, GLuint* ids) { *ids = next_gl_id_++; });
+    ON_CALL(*gl_, GenTextures(1, _))
+        .WillByDefault([this](GLsizei, GLuint* ids) { *ids = next_gl_id_++; });
+    ON_CALL(*gl_, GetError()).WillByDefault(Return(GL_NO_ERROR));
+
+    share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
+    surface_ = base::MakeRefCounted<gl::GLSurfaceStub>();
+    context_ = base::MakeRefCounted<gl::GLContextStub>(share_group_.get());
+    context_->SetGLVersionString(kGLVersion);
+    context_->SetExtensionsString(kGLExtensions);
+    ASSERT_TRUE(context_->Initialize(surface_.get(), {}));
+    ASSERT_TRUE(context_->MakeCurrent(surface_.get()));
+
+    GpuPreferences gpu_preferences;
+    gpu_preferences.gr_context_type = GrContextType::kGL;
+    GpuDriverBugWorkarounds workarounds;
+    GpuFeatureInfo gpu_feature_info;
+
+    context_state_ = base::MakeRefCounted<SharedContextState>(
+        share_group_, surface_, context_,
+        /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
+        GrContextType::kGL);
+    ASSERT_TRUE(context_state_->InitializeGL(gpu_preferences, workarounds,
+                                             gpu_feature_info));
+    ASSERT_TRUE(context_state_->InitializeSkia(gpu_preferences, workarounds));
+    ASSERT_NE(context_state_->gr_context(), nullptr);
+    ASSERT_TRUE(context_state_->GrContextIsGL());
+
+    backing_factory_ = std::make_unique<GLTextureImageBackingFactory>(
+        gpu_preferences, workarounds, context_state_->feature_info(),
+        /*progress_reporter=*/nullptr, /*supports_cpu_upload=*/true);
+
+    command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
+    decoder_ = RasterDecoder::Create(
+        this, command_buffer_service_.get(), &outputter_, gpu_feature_info,
+        gpu_preferences, /*memory_tracker=*/nullptr, &shared_image_manager_,
+        context_state_, /*is_priviliged=*/true);
+    ASSERT_EQ(decoder_->Initialize(), ContextResult::kSuccess);
+    ASSERT_TRUE(decoder_->MakeCurrent());
+    decoder_->BeginDecoding();
+    decoding_started_ = true;
+
+    small_buffer_ = command_buffer_service_->CreateTransferBufferHelper(
+        kSmallBufferSize, &shared_memory_id_);
+    ASSERT_NE(small_buffer_, nullptr);
+  }
+
+  void TearDown() override {
+    bool has_context =
+        context_ && surface_ && context_->MakeCurrent(surface_.get());
+    if (context_ && surface_) {
+      EXPECT_TRUE(has_context);
+    }
+    shared_image_ref_.reset();
+    backing_factory_.reset();
+
+    if (decoder_) {
+      if (decoding_started_ && small_buffer_) {
+        EXPECT_EQ(GL_NO_ERROR, GetGLError());
+      }
+      if (decoding_started_) {
+        decoder_->EndDecoding();
+        decoding_started_ = false;
+      }
+      decoder_->Destroy(
+          /*have_context=*/has_context && !decoder_->WasContextLost());
+      decoder_.reset();
+    }
+    command_buffer_service_.reset();
+    small_buffer_.reset();
+
+    if (context_state_) {
+      has_context =
+          context_ && surface_ && context_->MakeCurrent(surface_.get());
+      if (!has_context && !context_state_->context_lost()) {
+        context_state_->MarkContextLost();
+      }
+      context_state_.reset();
+    }
+    if (context_ && surface_ && has_context) {
+      context_->ReleaseCurrent(surface_.get());
+    }
+    context_.reset();
+    surface_.reset();
+    share_group_.reset();
+
+    gl::MockGLInterface::SetGLInterface(nullptr);
+    gl_.reset();
+    if (display_) {
+      gl::GLSurfaceTestSupport::ShutdownGL(display_);
+      display_ = nullptr;
+    }
+  }
+
+  // DecoderClient implementation.
+  void OnConsoleMessage(int32_t id, const std::string& message) override {}
+  void CacheBlob(gpu::GpuDiskCacheType type,
+                 const std::string& key,
+                 const std::string& blob) override {}
+  void OnFenceSyncRelease(uint64_t release) override {}
+  void OnDescheduleUntilFinished() override {}
+  void OnRescheduleAfterFinished() override {}
+  void ScheduleGrContextCleanup() override {}
+  void HandleReturnData(base::span<const uint8_t> data) override {}
+
+ protected:
+  static constexpr char kGLVersion[] = "OpenGL ES 3.0";
+  static constexpr char kGLSLVersion[] = "OpenGL ES GLSL ES 3.00";
+  static constexpr char kGLExtensions[] = "GL_EXT_texture_storage";
+  static constexpr uint32_t kSmallBufferSize = 2048;
+  static constexpr uint32_t kSharedMemoryOffset = 128;
+
+  Mailbox CreateClearedGLSharedImage(const gfx::Size& size) {
+    Mailbox mailbox = Mailbox::Generate();
+    SharedImageInfo si_info(
+        viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE,
+        "ReadbackTest");
+    std::unique_ptr<SharedImageBacking> backing =
+        backing_factory_->CreateSharedImage(mailbox, si_info,
+                                            kNullSurfaceHandle,
+                                            /*is_thread_safe=*/false);
+    EXPECT_NE(backing, nullptr);
+    if (!backing) {
+      return Mailbox();
+    }
+    backing->SetCleared();
+    shared_image_ref_ =
+        shared_image_manager_.Register(std::move(backing), &memory_tracker_);
+    return mailbox;
+  }
+
+  error::Error ExecuteReadbackCmd(GLuint dst_width,
+                                  GLuint dst_height,
+                                  GLuint row_bytes,
+                                  SkColorType dst_color_type,
+                                  GLint shm_id,
+                                  uint32_t shm_offset,
+                                  uint32_t pixels_offset,
+                                  const Mailbox& mailbox) {
+    static_assert(sizeof(immediate_buffer_) >=
+                  sizeof(cmds::ReadbackARGBImagePixelsINTERNALImmediate) +
+                      sizeof(Mailbox::Name));
+    auto& cmd =
+        *reinterpret_cast<cmds::ReadbackARGBImagePixelsINTERNALImmediate*>(
+            immediate_buffer_);
+    cmd.Init(/*src_x=*/0, /*src_y=*/0, /*plane_index=*/0, dst_width, dst_height,
+             row_bytes, dst_color_type, kPremul_SkAlphaType, shm_id, shm_offset,
+             /*color_space_offset=*/pixels_offset, pixels_offset, mailbox.name);
+    int entries_processed = 0;
+    return decoder_->DoCommands(
+        1, &cmd, ComputeNumEntries(sizeof(cmd) + sizeof(mailbox.name)),
+        &entries_processed);
+  }
+
+  GLint GetGLError() {
+    cmds::GetError cmd;
+    cmd.Init(shared_memory_id_, kSharedMemoryOffset);
+    int entries_processed = 0;
+    EXPECT_EQ(error::kNoError,
+              decoder_->DoCommands(1, &cmd, ComputeNumEntries(sizeof(cmd)),
+                                   &entries_processed));
+    auto* error_ptr = static_cast<GLenum*>(
+        small_buffer_->GetDataAddress(kSharedMemoryOffset, sizeof(GLenum)));
+    EXPECT_NE(error_ptr, nullptr);
+    return error_ptr ? static_cast<GLint>(*error_ptr) : GL_INVALID_OPERATION;
+  }
+
+  std::unique_ptr<testing::NiceMock<gl::MockGLInterface>> gl_;
+  GLuint next_gl_id_ = 100;
+  scoped_refptr<gl::GLShareGroup> share_group_;
+  scoped_refptr<gl::GLSurfaceStub> surface_;
+  scoped_refptr<gl::GLContextStub> context_;
+  scoped_refptr<SharedContextState> context_state_;
+  SharedImageManager shared_image_manager_;
+  MemoryTypeTracker memory_tracker_{nullptr};
+  std::unique_ptr<GLTextureImageBackingFactory> backing_factory_;
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image_ref_;
+  std::unique_ptr<FakeCommandBufferServiceBase> command_buffer_service_;
+  gles2::TraceOutputter outputter_;
+  std::unique_ptr<RasterDecoder> decoder_;
+  scoped_refptr<gpu::Buffer> small_buffer_;
+  int32_t shared_memory_id_ = 0;
+  bool decoding_started_ = false;
+  uint32_t immediate_buffer_[64] = {};
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
+};
+
+// Verifies that sub-threshold non-tight row_bytes (< 0x10000000) programs
+// GL_PACK_ROW_LENGTH in pixels and issues a single multi-row glReadPixels.
+TEST_F(RasterDecoderGaneshGLReadbackTest,
+       ReadbackARGBSubThresholdRowBytesUsesPackRowLength) {
+  constexpr GLuint kDstWidth = 4;
+  constexpr GLuint kDstHeight = 2;
+  constexpr GLuint kRowPixelBytes = kDstWidth * 4;
+  constexpr GLuint kRowBytes = 32;  // 8 pixels (< 0x10000000)
+  constexpr uint32_t kPixelsOffset = 32;
+
+  Mailbox mailbox =
+      CreateClearedGLSharedImage(gfx::Size(kDstWidth, kDstHeight));
+  ASSERT_FALSE(mailbox.IsZero());
+
+  using Result = cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result;
+  auto* result =
+      static_cast<Result*>(small_buffer_->GetDataAddress(0, sizeof(Result)));
+  ASSERT_NE(result, nullptr);
+  *result = 0;
+
+  base::span<uint8_t> shm_span = small_buffer_->as_byte_span();
+  base::span<uint8_t> dst_span =
+      shm_span.subspan(kPixelsOffset, kRowBytes + kRowPixelBytes);
+  std::ranges::fill(dst_span, 0xAAu);
+
+  const std::array<uint8_t, kRowPixelBytes> kRow0Bytes = {
+      0x10, 0x20, 0x30, 0xFF, 0x11, 0x21, 0x31, 0xFF,
+      0x12, 0x22, 0x32, 0xFF, 0x13, 0x23, 0x33, 0xFF};
+  const std::array<uint8_t, kRowPixelBytes> kRow1Bytes = {
+      0x40, 0x50, 0x60, 0xFF, 0x41, 0x51, 0x61, 0xFF,
+      0x42, 0x52, 0x62, 0xFF, 0x43, 0x53, 0x63, 0xFF};
+
+  EXPECT_CALL(*gl_, PixelStorei(testing::Ne(GL_PACK_ROW_LENGTH), _))
+      .Times(testing::AnyNumber());
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(*gl_, PixelStorei(GL_PACK_ROW_LENGTH, 0))
+        .Times(testing::AnyNumber());
+    EXPECT_CALL(*gl_, PixelStorei(GL_PACK_ROW_LENGTH, 8));
+    EXPECT_CALL(*gl_, ReadPixels(0, 0, kDstWidth, kDstHeight, GL_RGBA,
+                                 GL_UNSIGNED_BYTE, dst_span.data()))
+        .WillOnce([&](GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void*) {
+          dst_span.first(kRowPixelBytes).copy_from(kRow0Bytes);
+          dst_span.subspan(kRowBytes, kRowPixelBytes).copy_from(kRow1Bytes);
+        });
+    EXPECT_CALL(*gl_, PixelStorei(GL_PACK_ROW_LENGTH, 0));
+  }
+
+  EXPECT_EQ(error::kNoError,
+            ExecuteReadbackCmd(kDstWidth, kDstHeight, kRowBytes,
+                               kRGBA_8888_SkColorType, shared_memory_id_,
+                               /*shm_offset=*/0, kPixelsOffset, mailbox));
+  EXPECT_EQ(1u, *result);
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_EQ(dst_span.first(kRowPixelBytes), base::span(kRow0Bytes));
+  for (uint8_t pad_byte :
+       dst_span.subspan(kRowPixelBytes, kRowBytes - kRowPixelBytes)) {
+    EXPECT_EQ(0xAAu, pad_byte);
+  }
+  EXPECT_EQ(dst_span.subspan(kRowBytes, kRowPixelBytes),
+            base::span(kRow1Bytes));
+}
+
+// Verifies that row_bytes >= 0x10000000 and SkImageInfo::computeByteSize
+// overflows (including > SK_MaxS32 and 32-bit size_t wraparound) are rejected
+// with GL_INVALID_VALUE without calling glReadPixels.
+TEST_F(RasterDecoderGaneshGLReadbackTest,
+       ReadbackARGBRejectsLargeRowBytesAndByteSizeOverflow) {
+  constexpr GLuint kDstWidth = 4;
+  constexpr uint32_t kPixelsOffset = 32;
+
+  Mailbox mailbox = CreateClearedGLSharedImage(gfx::Size(kDstWidth, 17));
+  ASSERT_FALSE(mailbox.IsZero());
+
+  using Result = cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result;
+  auto* result =
+      static_cast<Result*>(small_buffer_->GetDataAddress(0, sizeof(Result)));
+  ASSERT_NE(result, nullptr);
+
+  struct Case {
+    GLuint dst_height;
+    GLuint row_bytes;
+  };
+  constexpr std::array<Case, 7> kCases = {{
+      {.dst_height = 2, .row_bytes = 0x10000000u},
+      {.dst_height = 1, .row_bytes = 0x10000000u},
+      {.dst_height = 2, .row_bytes = 0x1FFFFFF0u},
+      {.dst_height = 1, .row_bytes = 0x80000000u},
+      {.dst_height = 2, .row_bytes = 0x80000000u},
+      // Sub-threshold row_bytes where computeByteSize exceeds SK_MaxS32
+      // (returns SIZE_MAX, caught via SkImageInfo::ByteSizeOverflowed).
+      {.dst_height = 10, .row_bytes = 0x0FFFFFFCu},
+      {.dst_height = 17, .row_bytes = 0x0FFFFFFCu},
+  }};
+
+  EXPECT_CALL(*gl_, ReadPixels(_, _, _, _, _, _, _)).Times(0);
+
+  for (const auto& test_case : kCases) {
+    *result = 0;
+    EXPECT_EQ(
+        error::kNoError,
+        ExecuteReadbackCmd(kDstWidth, test_case.dst_height, test_case.row_bytes,
+                           kRGBA_8888_SkColorType, shared_memory_id_,
+                           /*shm_offset=*/0, kPixelsOffset, mailbox));
+    EXPECT_EQ(0u, *result);
+    EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+  }
+}
+
+// Verifies that single-row readbacks with a sub-threshold large row_bytes
+// (0x0FFFFFFCu) normalize the unused inter-row pitch to minRowBytes(), never
+// setting a non-zero GL_PACK_ROW_LENGTH for either direct or format-converted
+// readbacks.
+TEST_F(RasterDecoderGaneshGLReadbackTest,
+       ReadbackARGBSingleRowNormalizesSubThresholdPitch) {
+  constexpr GLuint kDstWidth = 4;
+  constexpr GLuint kSubThresholdLargeRowBytes = 0x0FFFFFFCu;
+  constexpr uint32_t kPixelsOffset = 32;
+
+  Mailbox mailbox = CreateClearedGLSharedImage(gfx::Size(kDstWidth, 2));
+  ASSERT_FALSE(mailbox.IsZero());
+
+  using Result = cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result;
+  auto* result =
+      static_cast<Result*>(small_buffer_->GetDataAddress(0, sizeof(Result)));
+  ASSERT_NE(result, nullptr);
+
+  // 1. Direct single-row RGBA8 readback with row_bytes = 0x0FFFFFFCu.
+  {
+    constexpr GLuint kRowPixelBytes = kDstWidth * 4;
+    *result = 0;
+    base::span<uint8_t> row0_span =
+        small_buffer_->as_byte_span().subspan(kPixelsOffset, kRowPixelBytes);
+    std::ranges::fill(row0_span, 0u);
+
+    const std::array<uint8_t, kRowPixelBytes> kRow0Bytes = {
+        0xAA, 0xBB, 0xCC, 0xED, 0xDD, 0xEE, 0x11, 0xEC,
+        0x22, 0x33, 0x44, 0xEB, 0x55, 0x66, 0x77, 0xEA};
+
+    EXPECT_CALL(*gl_, PixelStorei(_, _)).Times(testing::AnyNumber());
+    EXPECT_CALL(*gl_, PixelStorei(GL_PACK_ROW_LENGTH, testing::Ne(0))).Times(0);
+    EXPECT_CALL(*gl_, ReadPixels(0, 0, kDstWidth, 1, GL_RGBA, GL_UNSIGNED_BYTE,
+                                 row0_span.data()))
+        .WillOnce([&](GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void*) {
+          row0_span.copy_from(kRow0Bytes);
+        });
+
+    EXPECT_EQ(error::kNoError,
+              ExecuteReadbackCmd(kDstWidth, /*dst_height=*/1,
+                                 kSubThresholdLargeRowBytes,
+                                 kRGBA_8888_SkColorType, shared_memory_id_,
+                                 /*shm_offset=*/0, kPixelsOffset, mailbox));
+    EXPECT_EQ(1u, *result);
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+    EXPECT_EQ(row0_span, base::span(kRow0Bytes));
+    testing::Mock::VerifyAndClearExpectations(gl_.get());
+  }
+
+  // 2. Converted single-row Alpha8 readback with row_bytes = 0x0FFFFFFCu.
+  {
+    constexpr GLuint kSrcRowBytes = kDstWidth * 4;
+    *result = 0;
+    base::span<uint8_t> alpha_span =
+        small_buffer_->as_byte_span().subspan(kPixelsOffset, kDstWidth);
+    std::ranges::fill(alpha_span, 0u);
+
+    const std::array<uint8_t, kSrcRowBytes> kSrcRgbaRow = {
+        0x10, 0x20, 0x30, 0xA1, 0x10, 0x20, 0x30, 0xB2,
+        0x10, 0x20, 0x30, 0xC3, 0x10, 0x20, 0x30, 0xD4};
+
+    EXPECT_CALL(*gl_, PixelStorei(_, _)).Times(testing::AnyNumber());
+    EXPECT_CALL(*gl_, PixelStorei(GL_PACK_ROW_LENGTH, testing::Ne(0))).Times(0);
+    EXPECT_CALL(*gl_,
+                ReadPixels(0, 0, kDstWidth, 1, GL_RGBA, GL_UNSIGNED_BYTE, _))
+        .WillOnce([&](GLint, GLint, GLsizei, GLsizei, GLenum, GLenum,
+                      void* dst) {
+          // SAFETY: Skia allocates a `kDstWidth * 4`-byte staging buffer.
+          UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(dst), kSrcRowBytes))
+              .copy_from(kSrcRgbaRow);
+        });
+
+    EXPECT_EQ(error::kNoError,
+              ExecuteReadbackCmd(kDstWidth, /*dst_height=*/1,
+                                 kSubThresholdLargeRowBytes,
+                                 kAlpha_8_SkColorType, shared_memory_id_,
+                                 /*shm_offset=*/0, kPixelsOffset, mailbox));
+    EXPECT_EQ(1u, *result);
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+    const std::array<uint8_t, kDstWidth> kExpectedAlpha = {0xA1, 0xB2, 0xC3,
+                                                           0xD4};
+    EXPECT_EQ(alpha_span, base::span(kExpectedAlpha));
+    testing::Mock::VerifyAndClearExpectations(gl_.get());
+  }
 }
 
 }  // namespace raster
