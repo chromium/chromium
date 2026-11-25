@@ -438,6 +438,7 @@ public class TabListMediatorUnitTest {
     @Mock SimpleRecyclerViewAdapter.ViewHolder mViewHolder2;
     @Mock TabUnderlineManager mTabUnderlineManager;
     @Mock TabListDataProvider mTabListDataProvider;
+    @Mock TabListMediator.RecyclerViewItemAnimationToggle mItemAnimationToggle;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -1469,6 +1470,34 @@ public class TabListMediatorUnitTest {
                         eq(params),
                         /* allowDialog= */ eq(true),
                         mTabModelActionListenerCaptor.capture());
+    }
+
+    @Test
+    public void swipeToClose_LastTabCard_DisablesItemAnimationsUntilRemoved() {
+        mMediator.setRecyclerViewItemAnimationToggle(mItemAnimationToggle);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+
+        getItemTouchHelperCallback().onSwiped(mViewHolder1, ItemTouchHelper.START);
+
+        verify(mItemAnimationToggle).setDisableItemAnimations(true);
+        verify(mItemAnimationToggle, never()).setDisableItemAnimations(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mItemAnimationToggle).setDisableItemAnimations(false);
+    }
+
+    @Test
+    public void swipeToClose_NotLastTabCard_KeepsItemAnimations() {
+        mMediator.setRecyclerViewItemAnimationToggle(mItemAnimationToggle);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        // The current TabModel holds one tab, like when another TabModel adds the second card.
+        when(mTabModel.getCount()).thenReturn(1);
+
+        getItemTouchHelperCallback().onSwiped(mViewHolder1, ItemTouchHelper.START);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mItemAnimationToggle, never()).setDisableItemAnimations(anyBoolean());
     }
 
     @Test

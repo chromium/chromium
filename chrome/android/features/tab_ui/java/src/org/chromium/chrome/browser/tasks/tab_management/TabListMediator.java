@@ -884,13 +884,9 @@ public class TabListMediator implements TabListNotificationHandler {
                         // swipe animation when closing the last tab. Avoid this issue by disabling
                         // the default item animation for the duration of the removal of the last
                         // tab. This is a framework issue. For more details see crbug.com/40223318.
-                        // TODO(crbug.com/587126481): With several TabModels, check whether this
-                        // is the last card in the list instead of counting one TabModel's tabs,
-                        // e.g. mModelList.getTabCardCountsBefore(mModelList.size()) <= 1.
-                        TabModel tabModel = mCurrentTabModelSupplier.get();
-
+                        // Counts the list's tab cards, so it works for any number of TabModels.
                         boolean shouldDisableItemAnimations =
-                                tabModel != null && tabModel.getCount() <= 1;
+                                mModelList.getTabCardCountsBefore(mModelList.size()) <= 1;
                         if (shouldDisableItemAnimations) {
                             mRecyclerViewItemAnimationToggle.setDisableItemAnimations(true);
                         }
