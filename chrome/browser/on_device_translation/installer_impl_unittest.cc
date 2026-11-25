@@ -493,6 +493,7 @@ TEST_F(OnDeviceTranslationInstallerTest,
 // doesn't start progress tracking, because nothing would stop it.
 TEST_F(OnDeviceTranslationInstallerTest,
        InstallLanguagePackDoesNotTrackInstalledComponent) {
+  base::HistogramTester histogram_tester;
   CreateFakeInstallation(install_dir_.GetPath());
   EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
       .WillOnce(base::test::RunOnceCallback<2>(update_client::Error::NONE));
@@ -525,6 +526,8 @@ TEST_F(OnDeviceTranslationInstallerTest,
   OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
       LanguagePackKey::kEn_Ja);
   task_environment_.RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall", 0);
 }
 
 // Tests that the library install fails right away when the device is offline,
@@ -568,6 +571,8 @@ TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagePackFailsWhenOffline) {
                   .empty());
   histogram_tester.ExpectTotalCount(
       "Translate.OnDeviceTranslation.Download.LanguagePair", 0);
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall", 0);
   OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
 }
 
@@ -677,6 +682,7 @@ TEST_F(OnDeviceTranslationInstallerTest,
 // an on-demand update.
 TEST_F(OnDeviceTranslationInstallerTest,
        InstallLanguagePackFailsWhenDataSaverEnabled) {
+  base::HistogramTester histogram_tester;
   data_saver::OverrideIsDataSaverEnabledForTesting(true);
   EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate).Times(0);
   testing::NiceMock<MockObserver> observer;
@@ -690,6 +696,8 @@ TEST_F(OnDeviceTranslationInstallerTest,
   OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
       LanguagePackKey::kEn_Ja);
   run_loop.Run();
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall", 0);
   OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
 }
 
@@ -726,6 +734,7 @@ TEST_F(OnDeviceTranslationInstallerTest,
       ->SetConnectionCost(net::NetworkChangeNotifier::CONNECTION_COST_METERED);
 
   {
+    base::HistogramTester histogram_tester;
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         kTranslationAPIBlockDownloadsOnMeteredNetwork);
@@ -745,6 +754,8 @@ TEST_F(OnDeviceTranslationInstallerTest,
     EXPECT_TRUE(OnDeviceTranslationInstaller::GetInstance()
                     ->RegisteredLanguagePacks()
                     .empty());
+    histogram_tester.ExpectTotalCount(
+        "Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall", 0);
     OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
   }
 
@@ -923,6 +934,7 @@ TEST_F(OnDeviceTranslationInstallerTest, InstalledLanguagesWithCli) {
 }
 
 TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagesWithCli) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedCommandLine scoped_command_line;
   // Format: language, language, path
   // Testing En-Es and Fr-De packs however fr_de is not a supported language
@@ -947,9 +959,12 @@ TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagesWithCli) {
                   ->GetLanguagePackPath(LanguagePackKey::kEn_Es)
                   .MaybeAsASCII(),
               "/path/to/en_es");
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall", 0);
 }
 
 TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagePack) {
+  base::HistogramTester histogram_tester;
   CreateFakeInstallation(install_dir_.GetPath());
   CreateFakeLanguagePackInstallation(install_dir_.GetPath(),
                                      {LanguagePackKey::kEn_Ja});
@@ -969,6 +984,8 @@ TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagePack) {
   OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
       LanguagePackKey::kEn_Ja);
   observer.WaitForNotification();
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall", 1);
 
   EXPECT_THAT(
       OnDeviceTranslationInstaller::GetInstance()->RegisteredLanguagePacks(),
@@ -1229,9 +1246,10 @@ TEST_F(OnDeviceTranslationInstallerTest, ProgressReporting) {
 }
 
 // Tests that a language pack download doesn't start when the disk is almost
-// full.
+// full, and still records FreeDiskSpaceAtInstall.
 TEST_F(OnDeviceTranslationInstallerTest,
        InstallLanguagePackFailsWithoutFreeDiskSpace) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   // More free space than any test machine has.
   feature_list.InitAndEnableFeatureWithParameters(
@@ -1249,6 +1267,55 @@ TEST_F(OnDeviceTranslationInstallerTest,
   OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
       LanguagePackKey::kEn_Ja);
   run_loop.Run();
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall", 1);
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+}
+
+// Tests that setting the minimum free-space threshold to 0 starts the download
+// without waiting on the disk-space query and still records the histogram.
+TEST_F(OnDeviceTranslationInstallerTest,
+       InstallLanguagePackRecordsFreeDiskSpaceWhenFloorDisabled) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kTranslationAPI,
+      {{"TranslationAPILanguagePackMinFreeDiskSpaceMB", "0"}});
+  CreateFakeInstallation(install_dir_.GetPath());
+  CreateFakeLanguagePackInstallation(install_dir_.GetPath(),
+                                     {LanguagePackKey::kEn_Ja});
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(update_client::Error::NONE))
+      .WillOnce(base::test::RunOnceCallback<2>(update_client::Error::NONE));
+  {
+    base::RunLoop run_loop;
+    OnDeviceTranslationInstaller::GetInstance()->Init(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  FakeObserver observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+  auto* mock_cus = static_cast<
+      testing::NiceMock<component_updater::MockComponentUpdateService>*>(
+      TestingBrowserProcess::GetGlobal()->component_updater());
+  bool checked_during_download_start = false;
+  EXPECT_CALL(*mock_cus, GetComponentIDs())
+      .WillOnce([&histogram_tester, &checked_during_download_start]() {
+        // `DownloadLanguagePack()` runs synchronously in
+        // `OnLanguagePackOnlineChecked()` while the async disk-space reply
+        // cannot execute on this sequence yet.
+        histogram_tester.ExpectTotalCount(
+            "Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall", 0);
+        checked_during_download_start = true;
+        return std::vector<std::string>{};
+      })
+      .WillRepeatedly(Return(std::vector<std::string>{}));
+  OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+      LanguagePackKey::kEn_Ja);
+  observer.WaitForNotification();
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(checked_during_download_start);
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall", 1);
   OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
 }
 

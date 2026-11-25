@@ -20,6 +20,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -122,6 +124,15 @@ std::optional<InstallError> CheckSyncLanguagePackDownloadBlockers() {
     return InstallError::kMeteredConnectionBlocked;
   }
   return std::nullopt;
+}
+
+void RecordFreeDiskSpaceAtInstall(std::optional<base::ByteSize> available) {
+  if (!available.has_value()) {
+    return;
+  }
+  base::UmaHistogramCustomCounts(
+      "Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall",
+      base::saturated_cast<int>(available->InMiB()), 1, 10'000'000, 100);
 }
 
 std::optional<LanguagePackKey> FindLanguagePackKey(
@@ -532,10 +543,23 @@ void OnDeviceTranslationInstallerImpl::OnLanguagePackOnlineChecked(
     }
     return;
   }
+  if (InstalledLanguagePacks().contains(language_pack)) {
+    language_pack_checks_in_progress_.erase(language_pack);
+    DownloadLanguagePack(language_pack);
+    return;
+  }
   const size_t min_free_disk_space_mb =
       kTranslationAPILanguagePackMinFreeDiskSpaceMB.Get();
   if (min_free_disk_space_mb == 0) {
+    // Keep 0 as a true kill switch off the download critical path while still
+    // recording `FreeDiskSpaceAtInstall` asynchronously for threshold tuning.
     language_pack_checks_in_progress_.erase(language_pack);
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&GetAvailableDiskSpace),
+        base::BindOnce(&RecordFreeDiskSpaceAtInstall));
     DownloadLanguagePack(language_pack);
     return;
   }
@@ -555,6 +579,11 @@ void OnDeviceTranslationInstallerImpl::OnLanguagePackDiskSpaceChecked(
     size_t min_free_disk_space_mb,
     std::optional<base::ByteSize> available) {
   language_pack_checks_in_progress_.erase(language_pack);
+  if (InstalledLanguagePacks().contains(language_pack)) {
+    DownloadLanguagePack(language_pack);
+    return;
+  }
+  RecordFreeDiskSpaceAtInstall(available);
   // Don't block the download if the free space is unknown.
   if (available.has_value() && available->InMiB() < min_free_disk_space_mb) {
     notifier_->NotifyLanguagePackInstallFailed(

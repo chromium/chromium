@@ -328,6 +328,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall"
+    units="MiB" expires_after="2027-04-30">
+  <owner>jaeone@google.com</owner>
+  <owner>chrome-builtin-ai@google.com</owner>
+  <summary>
+    Records the free disk space in MiB on the component updater volume when
+    Chrome checks disk space before downloading a missing on-device translation
+    language pack. Emitted per missing language pack in InstallLanguagePack() on
+    desktop and Android after offline, Data Saver, and metered-connection checks
+    pass and the volume query succeeds, before comparing against
+    TranslationAPILanguagePackMinFreeDiskSpaceMB (configured in MiB despite the
+    MB suffix; setting it to 0 records asynchronously without blocking the
+    download). An indirect language pair pivoting through English emits two
+    samples per create() request, and retries emit again after failures
+    (including kNotEnoughDiskSpace). Triggered by the Web Translator API, Live
+    Translate, and chrome://on-device-translation-internals; not emitted for
+    --translate-kit-packages, auto-download
+    (kAutoDownloadTranslateLanguagePacks), or startup resume of registered
+    packs. Samples at or above 10,000,000 MiB (~9.5 TiB, including unlimited
+    Linux/ChromeOS tmpfs or ramfs volumes) land in the overflow bucket. Used to
+    tune TranslationAPILanguagePackMinFreeDiskSpaceMB.
+  </summary>
+</histogram>
+
 <histogram name="Translate.OnDeviceTranslation.InstalledLanguagePackCount"
     units="packs" expires_after="2027-04-30">
   <owner>jaeone@google.com</owner>
