@@ -143,7 +143,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
             labelView.setTypeface(null, Typeface.NORMAL);
         }
 
-        labelView.setTextColor(mContext.getColor(item.getLabelFontColorResId()));
+        labelView.setTextColor(mContext.getColorStateList(item.getLabelFontColorResId()));
         labelView.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) mFontSize);
 
         // Layout of the sublabel view, which has a smaller font and usually sits below the main

@@ -6,11 +6,13 @@ package org.chromium.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -178,6 +180,36 @@ public class DropdownAdapterUnitTest {
                 baseHeight + dividerHeight);
         assertDividerState(
                 adapter.getView(0, secondItemView, mParent), Color.TRANSPARENT, baseHeight);
+    }
+
+    @Test
+    public void getView_dimsDisabledItemLabelColor() {
+        DropdownAdapter adapter =
+                createAdapter(
+                        groupHeader("Group"), enabledOption("Enabled"), disabledOption("Disabled"));
+
+        ColorStateList colorStateList =
+                adapter.getContext().getColorStateList(R.color.default_text_color_list_baseline);
+        int expectedEnabledColor =
+                colorStateList.getColorForState(
+                        new int[] {android.R.attr.state_enabled}, colorStateList.getDefaultColor());
+        int expectedDisabledColor =
+                colorStateList.getColorForState(
+                        new int[] {-android.R.attr.state_enabled},
+                        colorStateList.getDefaultColor());
+        assertNotEquals(expectedEnabledColor, expectedDisabledColor);
+
+        View groupView = adapter.getView(0, /* convertView= */ null, mParent);
+        TextView groupLabel = groupView.findViewById(R.id.dropdown_label);
+        assertEquals(expectedEnabledColor, groupLabel.getCurrentTextColor());
+
+        View enabledView = adapter.getView(1, /* convertView= */ null, mParent);
+        TextView enabledLabel = enabledView.findViewById(R.id.dropdown_label);
+        assertEquals(expectedEnabledColor, enabledLabel.getCurrentTextColor());
+
+        View disabledView = adapter.getView(2, /* convertView= */ null, mParent);
+        TextView disabledLabel = disabledView.findViewById(R.id.dropdown_label);
+        assertEquals(expectedDisabledColor, disabledLabel.getCurrentTextColor());
     }
 
     private static int expectedBaseHeight(DropdownAdapter adapter) {
