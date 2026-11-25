@@ -176,9 +176,9 @@ void RunPdfDistillableHeuristic(
 }
 #endif
 
-pdf::PDFDocumentHelper* GetPdf(content::WebContents& contents) {
+pdf::PDFDocumentHelper* GetFullPagePdf(content::WebContents& contents) {
 #if BUILDFLAG(ENABLE_PDF)
-  return pdf::PDFDocumentHelper::MaybeGetForWebContents(contents);
+  return pdf::PDFDocumentHelper::MaybeGetForFullPagePdf(contents);
 #else
   return nullptr;
 #endif
@@ -214,7 +214,7 @@ void OnOptimizationGuideDecision(
 
   // This check is already done in CheckIfShouldSuggestReadingMode but it's
   // possible that the page was not detected as a PDF yet so check again.
-  if (auto* pdf_helper = GetPdf(*contents)) {
+  if (auto* pdf_helper = GetFullPagePdf(*contents)) {
     RunPdfDistillableHeuristic(pdf_helper, std::move(result_callback));
     return;
   }
@@ -523,7 +523,7 @@ void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
     return;
   }
   content::WebContents* contents = tab->GetContents();
-  if (auto* pdf_helper = GetPdf(*contents)) {
+  if (auto* pdf_helper = GetFullPagePdf(*contents)) {
     RunPdfDistillableHeuristic(pdf_helper, std::move(result_callback));
     return;
   }

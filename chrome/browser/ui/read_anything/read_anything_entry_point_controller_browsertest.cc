@@ -38,6 +38,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -749,6 +750,31 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.OmniboxChipDecision",
       ReadAnythingOmniboxChipDecision::kHideLowAlphabeticPdf, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingEntryPointControllerOmniboxBrowserTest,
+    CheckIfShouldSuggestReadingMode_HtmlWithIframePdfIsNotTreatedAsPdf) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
+  content::RenderFrameHost* iframe =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(iframe);
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(iframe));
+  base::test::TestFuture<bool> future;
+
+  base::HistogramTester histogram_tester;
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.OmniboxChipDecision",
+      ReadAnythingOmniboxChipDecision::kHideOptimizationGuide, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
