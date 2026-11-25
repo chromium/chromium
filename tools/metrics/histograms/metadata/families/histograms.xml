@@ -823,7 +823,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="SupervisedUsers.AskParentDialog"
-    enum="SupervisedUserAskParentDialog" expires_after="2026-11-01">
+    enum="SupervisedUserAskParentDialog" expires_after="2027-11-01">
   <owner>richui@google.com</owner>
   <owner>agawronska@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
