@@ -564,15 +564,26 @@ TEST_P(RealTimeUrlLookupServiceStartFillingRequestProtoTest,
                        SafeBrowsingState::ENHANCED_PROTECTION);
   GURL url("http://example.com/");
 
+  bool include_entry_url = true;
+  bool url_removed_by_policy = false;
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(_, _, _))
-      .WillRepeatedly([](const GURL& event_url, int user_gesture_count_limit,
-                         ReferrerChain* out_referrer_chain) {
-        out_referrer_chain->Add();
+      .WillRepeatedly([&](const GURL& event_url, int user_gesture_count_limit,
+                          ReferrerChain* out_referrer_chain) {
+        ReferrerChainEntry* entry = out_referrer_chain->Add();
+        if (include_entry_url) {
+          entry->set_url(event_url.spec());
+        }
+        if (url_removed_by_policy) {
+          entry->set_is_url_removed_by_policy(true);
+        }
         return ReferrerChainProvider::SUCCESS;
       });
 
   for (size_t i = 0; i < 2; i++) {
+    // Also verify DNS still runs when only a non-url field (e.g. referrer_url)
+    // was allowlisted.
+    url_removed_by_policy = (i == 1);
     mock_network_context_.ResetRecordedCalls();
     auto result =
         StartFillingRequestProto(url, /*is_sampled_report=*/i % 2 == 0);
@@ -616,12 +627,26 @@ TEST_P(RealTimeUrlLookupServiceStartFillingRequestProtoTest,
   }
 
   // Non-HTTP(S) URLs (such as chrome:// in enterprise lookups) should skip DNS.
+  url_removed_by_policy = false;
   mock_network_context_.ResetRecordedCalls();
   ASSERT_TRUE(StartFillingRequestProto(GURL("chrome://settings"),
                                        /*is_sampled_report=*/false));
   EXPECT_EQ(mock_network_context_.resolve_host_called_count(), 0);
 
+  // Entry url cleared by policy should skip DNS.
+  include_entry_url = false;
+  url_removed_by_policy = true;
+  mock_network_context_.ResetRecordedCalls();
+  auto stripped_result =
+      StartFillingRequestProto(url, /*is_sampled_report=*/false);
+  ASSERT_TRUE(stripped_result);
+  EXPECT_EQ(mock_network_context_.resolve_host_called_count(), 0);
+  ASSERT_EQ(stripped_result->referrer_chain_size(), 1);
+  EXPECT_EQ(stripped_result->referrer_chain(0).ip_addresses_size(), 0);
+
   // MBB-only users should not resolve DNS even when the feature is enabled.
+  include_entry_url = true;
+  url_removed_by_policy = false;
   SetSafeBrowsingState(&test_pref_service_,
                        SafeBrowsingState::STANDARD_PROTECTION);
   EnableMbb();
@@ -647,7 +672,7 @@ TEST_F(RealTimeUrlLookupServiceTest, DnsResolutionFails) {
               IdentifyReferrerChainByPendingEventURL(_, _, _))
       .WillRepeatedly([](const GURL& event_url, int user_gesture_count_limit,
                          ReferrerChain* out_referrer_chain) {
-        out_referrer_chain->Add();
+        out_referrer_chain->Add()->set_url(event_url.spec());
         return ReferrerChainProvider::SUCCESS;
       });
 
@@ -677,7 +702,7 @@ TEST_F(RealTimeUrlLookupServiceTest, DnsResolutionTimesOut) {
               IdentifyReferrerChainByPendingEventURL(_, _, _))
       .WillRepeatedly([](const GURL& event_url, int user_gesture_count_limit,
                          ReferrerChain* out_referrer_chain) {
-        out_referrer_chain->Add();
+        out_referrer_chain->Add()->set_url(event_url.spec());
         return ReferrerChainProvider::SUCCESS;
       });
 
@@ -707,7 +732,7 @@ TEST_F(RealTimeUrlLookupServiceTest, DnsResolutionSkipped) {
               IdentifyReferrerChainByPendingEventURL(_, _, _))
       .WillRepeatedly([](const GURL& event_url, int user_gesture_count_limit,
                          ReferrerChain* out_referrer_chain) {
-        out_referrer_chain->Add();
+        out_referrer_chain->Add()->set_url(event_url.spec());
         return ReferrerChainProvider::SUCCESS;
       });
 
@@ -784,7 +809,7 @@ TEST_F(RealTimeUrlLookupServiceTest, LocalIpAndDnsResolutionCompletes) {
               IdentifyReferrerChainByPendingEventURL(_, _, _))
       .WillRepeatedly([](const GURL& event_url, int user_gesture_count_limit,
                          ReferrerChain* out_referrer_chain) {
-        out_referrer_chain->Add();
+        out_referrer_chain->Add()->set_url(event_url.spec());
         return ReferrerChainProvider::SUCCESS;
       });
 

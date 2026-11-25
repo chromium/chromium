@@ -109,6 +109,11 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
     navigation_observer_manager_->RecordHostToIpMapping(host, ip);
   }
 
+  void RemoveSafeBrowsingAllowlistDomains(ReferrerChain* out_referrer_chain) {
+    navigation_observer_manager_->RemoveSafeBrowsingAllowlistDomains(
+        out_referrer_chain);
+  }
+
   std::unique_ptr<NavigationEvent> CreateNavigationEventUniquePtr(
       const GURL& destination_url,
       const base::Time& timestamp) {
@@ -1366,6 +1371,56 @@ TEST_F(SBNavigationObserverTest, PendingNavigationEventNewTabIsRetargeting) {
             referrer_chain.Get(0).server_redirect_chain(0).url());
   EXPECT_EQ("http://foo/redirected",
             referrer_chain.Get(0).server_redirect_chain(1).url());
+}
+
+TEST_F(SBNavigationObserverTest, RemoveSafeBrowsingAllowlistDomains) {
+  base::ListValue allowlist;
+  allowlist.Append("allowlisted.test");
+  pref_service_.SetList(prefs::kSafeBrowsingAllowlistDomains,
+                        std::move(allowlist));
+
+  ReferrerChain referrer_chain;
+  ReferrerChainEntry* allowlisted_entry = referrer_chain.Add();
+  allowlisted_entry->set_url("https://allowlisted.test/a");
+  allowlisted_entry->add_ip_addresses("10.0.0.1");
+
+  ReferrerChainEntry* allowlisted_referrer_entry = referrer_chain.Add();
+  allowlisted_referrer_entry->set_url("https://external.test/b");
+  allowlisted_referrer_entry->set_main_frame_url("https://allowlisted.test/m");
+  allowlisted_referrer_entry->set_referrer_url("https://allowlisted.test/a");
+  allowlisted_referrer_entry->add_server_redirect_chain()->set_url(
+      "https://allowlisted.test/r");
+  allowlisted_referrer_entry->add_ip_addresses("1.2.3.4");
+
+  ReferrerChainEntry* unrelated_entry = referrer_chain.Add();
+  unrelated_entry->set_url("https://other.test/c");
+  unrelated_entry->add_ip_addresses("5.6.7.8");
+
+  RemoveSafeBrowsingAllowlistDomains(&referrer_chain);
+
+  EXPECT_FALSE(referrer_chain.Get(0).has_url());
+  EXPECT_THAT(referrer_chain.Get(0).ip_addresses(), testing::IsEmpty());
+  EXPECT_TRUE(referrer_chain.Get(0).is_url_removed_by_policy());
+
+  EXPECT_EQ("https://external.test/b", referrer_chain.Get(1).url());
+  EXPECT_FALSE(referrer_chain.Get(1).has_main_frame_url());
+  EXPECT_FALSE(referrer_chain.Get(1).has_referrer_url());
+  EXPECT_FALSE(referrer_chain.Get(1).server_redirect_chain(0).has_url());
+  EXPECT_THAT(referrer_chain.Get(1).ip_addresses(),
+              testing::ElementsAre("1.2.3.4"));
+  EXPECT_TRUE(referrer_chain.Get(1).is_url_removed_by_policy());
+
+  EXPECT_EQ("https://other.test/c", referrer_chain.Get(2).url());
+  EXPECT_THAT(referrer_chain.Get(2).ip_addresses(),
+              testing::ElementsAre("5.6.7.8"));
+  EXPECT_TRUE(referrer_chain.Get(2).has_is_url_removed_by_policy());
+  EXPECT_FALSE(referrer_chain.Get(2).is_url_removed_by_policy());
+
+  // Re-running (as AppendRecentNavigations does) preserves prior flags.
+  RemoveSafeBrowsingAllowlistDomains(&referrer_chain);
+  EXPECT_TRUE(referrer_chain.Get(0).is_url_removed_by_policy());
+  EXPECT_TRUE(referrer_chain.Get(1).is_url_removed_by_policy());
+  EXPECT_FALSE(referrer_chain.Get(2).is_url_removed_by_policy());
 }
 
 }  // namespace safe_browsing

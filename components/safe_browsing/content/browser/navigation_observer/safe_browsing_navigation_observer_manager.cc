@@ -1069,15 +1069,18 @@ void SafeBrowsingNavigationObserverManager::
 
 void SafeBrowsingNavigationObserverManager::RemoveSafeBrowsingAllowlistDomains(
     ReferrerChain* out_referrer_chain) {
-  bool is_url_removed_by_policy = false;
   for (ReferrerChainEntry& entry : *out_referrer_chain) {
     // entry can be empty if it is removed in
     // MaybeRemoveNonUserGestureReferrerEntries.
     if (!entry.has_url()) {
       continue;
     }
+    // Preserve true across re-runs (e.g., AppendRecentNavigations) where
+    // non-`url` fields were already cleared on the first pass.
+    bool is_url_removed_by_policy = entry.is_url_removed_by_policy();
     if (IsURLAllowlistedByPolicy(GURL(entry.url()), *pref_service_)) {
       entry.clear_url();
+      entry.clear_ip_addresses();
       is_url_removed_by_policy = true;
     }
     if (IsURLAllowlistedByPolicy(GURL(entry.main_frame_url()),

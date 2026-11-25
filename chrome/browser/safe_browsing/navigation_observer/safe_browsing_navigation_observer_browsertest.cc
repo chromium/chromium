@@ -3124,7 +3124,6 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   GURL iframe_retargeting_url =
       embedded_test_server()->GetURL(kIframeRetargetingURL);
   GURL download_url = embedded_test_server()->GetURL(kDownloadItemURL);
-  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
 
   // Add URLs to the Safe Browsing allowlist.
   base::ListValue allowlist;
@@ -3139,12 +3138,12 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ReferrerChain referrer_chain;
   IdentifyReferrerChainForDownload(GetDownload(), &referrer_chain);
   ASSERT_EQ(4, referrer_chain.size());
-  // All URL fields should be empty because they all match the allowlist.
+  // All URL and IP fields should be empty because they all match the allowlist.
   VerifyReferrerChainEntry(
       GURL(),                         // url
       GURL(),                         // main_frame_url
       ReferrerChainEntry::EVENT_URL,  // type
-      test_server_ip,                 // ip_address
+      "",                             // ip_address
       GURL(),                         // referrer_url
       GURL(),                         // referrer_main_frame_url
       false,                          // is_retargeting
@@ -3156,7 +3155,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
       GURL(),                            // url
       GURL(),                            // main_frame_url
       ReferrerChainEntry::LANDING_PAGE,  // type
-      test_server_ip,                    // ip_address
+      "",                                // ip_address
       GURL(),                            // referrer_url
       GURL(),                            // referrer_main_frame_url
       false,                             // is_retargeting
@@ -3168,7 +3167,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
       GURL(),                               // url
       GURL(),                               // main_frame_url
       ReferrerChainEntry::CLIENT_REDIRECT,  // type
-      test_server_ip,                       // ip_address
+      "",                                   // ip_address
       GURL(),                               // referrer_url
       GURL(),                               // referrer_main_frame_url
       false,                                // is_retargeting
@@ -3179,7 +3178,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   VerifyReferrerChainEntry(GURL(),  // url
                            GURL(),  // main_frame_url
                            ReferrerChainEntry::LANDING_REFERRER,  // type
-                           test_server_ip,                        // ip_address
+                           "",                                    // ip_address
                            GURL(),               // referrer_url
                            GURL(),               // referrer_main_frame_url
                            false,                // is_retargeting
@@ -3198,7 +3197,6 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   GURL request_url =
       embedded_test_server()->GetURL("/server-redirect?" + download_url.spec());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), request_url));
-  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
 
   // Add URLs to the Safe Browsing allowlist.
   base::ListValue allowlist;
@@ -3212,11 +3210,11 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   IdentifyReferrerChainForDownload(GetDownload(), &referrer_chain);
   ASSERT_EQ(1, referrer_chain.size());
   EXPECT_TRUE(referrer_chain.Get(0).is_url_removed_by_policy());
-  // All URL fields should be empty because they all match the allowlist.
+  // All URL and IP fields should be empty because they all match the allowlist.
   VerifyReferrerChainEntry(GURL(),                         // url
                            GURL(),                         // main_frame_url
                            ReferrerChainEntry::EVENT_URL,  // type
-                           test_server_ip,                 // ip_address
+                           "",                             // ip_address
                            GURL(),                         // referrer_url
                            GURL(),            // referrer_main_frame_url
                            false,             // is_retargeting
@@ -3232,7 +3230,6 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
   ClickTestLink("direct_download", 1, initial_url);
   GURL download_url = embedded_test_server()->GetURL(kDownloadItemURL);
-  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
 
   // Add URLs to the Safe Browsing allowlist.
   base::ListValue allowlist;
@@ -3244,12 +3241,12 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ReferrerChain referrer_chain;
   AppendRecentNavigations(/*recent_navigation_count=*/2, &referrer_chain);
   EXPECT_EQ(2, referrer_chain.size());
-  // All URL fields should be empty because they all match the allowlist.
+  // All URL and IP fields should be empty because they all match the allowlist.
   VerifyReferrerChainEntry(
       GURL(),                                 // url
       GURL(),                                 // main_frame_url
       ReferrerChainEntry::RECENT_NAVIGATION,  // type
-      test_server_ip,                         // ip_address
+      "",                                     // ip_address
       GURL(),                                 // referrer_url
       GURL(),                                 // referrer_main_frame_url
       false,                                  // is_retargeting
@@ -3260,7 +3257,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   VerifyReferrerChainEntry(GURL(),  // url
                            GURL(),  // main_frame_url
                            ReferrerChainEntry::RECENT_NAVIGATION,  // type
-                           test_server_ip,                         // ip_address
+                           "",                                     // ip_address
                            GURL(),               // referrer_url
                            GURL(),               // referrer_main_frame_url
                            false,                // is_retargeting

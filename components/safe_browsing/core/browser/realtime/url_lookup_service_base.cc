@@ -814,6 +814,7 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
   bool should_resolve_dns =
       can_include_ip_addresses && network_context && url.is_valid() &&
       url.SchemeIsHTTPOrHTTPS() && request->referrer_chain_size() > 0 &&
+      !request->referrer_chain(0).url().empty() &&  // Scrubbed by policy.
       request->referrer_chain(0).ip_addresses_size() == 0 &&
       base::FeatureList::IsEnabled(kSafeBrowsingWaitForDnsForRealTimeLookup);
 

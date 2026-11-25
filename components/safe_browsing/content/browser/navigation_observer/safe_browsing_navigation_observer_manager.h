@@ -446,7 +446,7 @@ class SafeBrowsingNavigationObserverManager
       AttributionResult* out_result);
 
   // Removes URLs in |out_referrer_chain| that match the Safe Browsing allowlist
-  // domains.
+  // domains, along with associated IPs.
   void RemoveSafeBrowsingAllowlistDomains(ReferrerChain* out_referrer_chain);
 
   // navigation_event_list_ keeps track of all the observed navigations. Since
