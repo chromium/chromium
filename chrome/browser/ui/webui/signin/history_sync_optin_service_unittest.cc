@@ -66,10 +66,6 @@ class MockHistorySyncOptinHelperDelegate
               (signin::SigninChoiceCallback),
               (override));
   MOCK_METHOD(void, FinishFlowWithoutHistorySyncOptin, (), (override));
-  MOCK_METHOD(void,
-              ShowSignInCelebration,
-              (base::OnceClosure celebration_finished),
-              (override));
 };
 
 class MockHistorySyncOptinService : public HistorySyncOptinService {
@@ -838,3 +834,15 @@ INSTANTIATE_TEST_SUITE_P(
                 syncer::UserSelectableType::kSavedTabGroups,
                 signin_metrics::AccessPoint::kCollaborationShareTabGroup)),
         testing::Bool()));
+
+// Regression test for crbug.com/576705851: a first run sign-in that leaves
+// Gaia (e.g. SAML) continues in a browser tab with this delegate, which has no
+// celebration screen. It must run the callback immediately to continue the
+// flow.
+TEST(HistorySyncOptinServiceDefaultDelegateTest, DoesNotShowSignInCelebration) {
+  HistorySyncOptinServiceDefaultDelegate delegate;
+  base::MockOnceClosure celebration_finished;
+  EXPECT_CALL(celebration_finished, Run);
+
+  delegate.MaybeShowSignInCelebration(celebration_finished.Get());
+}

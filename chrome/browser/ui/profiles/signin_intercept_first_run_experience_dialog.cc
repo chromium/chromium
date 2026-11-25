@@ -65,8 +65,6 @@ class SigninInterceptFirstRunExperienceDialog::
       signin::SigninChoiceCallback on_account_management_screen_closed)
       override;
   void FinishFlowWithoutHistorySyncOptin() override;
-  void ShowSignInCelebration(
-      base::OnceClosure celebration_finished) override;
 
   HistorySyncOptinHelper::FlowCompletedCallback
   MoveHistorySyncOptinCompletionCallback();
@@ -106,14 +104,6 @@ void SigninInterceptFirstRunExperienceDialog::
         signin::SigninChoiceCallback on_account_management_screen_closed) {
   // This flow marks the management as approved and does not invoke this
   // method.
-  NOTREACHED();
-}
-
-void SigninInterceptFirstRunExperienceDialog::
-    InterceptHistorySyncOptinHelperDelegate::ShowSignInCelebration(
-        base::OnceClosure celebration_finished) {
-  // The celebration screen is not available for the sign-in intercept access
-  // point.
   NOTREACHED();
 }
 

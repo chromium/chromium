@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
-#include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -230,25 +229,6 @@ AccountInfo ProfilePickerPostSignInAdapter::GetAccountInfo() const {
     return extended_info;
   }
   return AccountInfo::Builder(account_info_).Build();
-}
-
-void ProfilePickerPostSignInAdapter::ShowSignInCelebration(
-    base::OnceClosure celebration_finished) {
-  host_->ShowScreen(
-      contents(),
-      GURL(chrome::kChromeUIIntroURL)
-          .Resolve(chrome::kChromeUIIntroSignInCelebrationSubPage),
-      base::BindOnce(
-          &ProfilePickerPostSignInAdapter::SwitchToSignInCelebrationFinished,
-          base::Unretained(this), std::move(celebration_finished)));
-}
-
-void ProfilePickerPostSignInAdapter::SwitchToSignInCelebrationFinished(
-    base::OnceClosure celebration_finished) {
-  IntroUI* intro_ui = contents()->GetWebUI()->GetController()->GetAs<IntroUI>();
-  CHECK(intro_ui);
-  intro_ui->SetSignInCelebrationFinishedCallback(
-      std::move(celebration_finished));
 }
 
 std::optional<SkColor> ProfilePickerPostSignInAdapter::GetProfileColor() const {

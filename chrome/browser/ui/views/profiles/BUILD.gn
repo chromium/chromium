@@ -1161,7 +1161,6 @@ if (enable_dice_support) {
       "//chrome/browser/themes",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/profiles",
-      "//chrome/browser/ui/webui/intro",
       "//chrome/common:constants",
       "//ui/base:types",
     ]

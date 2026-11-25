@@ -581,9 +581,20 @@ class FirstRunPostSignInAdapter : public ProfilePickerPostSignInAdapter {
     std::move(step_completed_callback_).Run(std::move(combined_callback));
   }
 
-  void ShowSignInCelebration(base::OnceClosure celebration_finished) override {
-    ProfilePickerPostSignInAdapter::ShowSignInCelebration(
-        std::move(celebration_finished));
+  void MaybeShowSignInCelebration(
+      base::OnceClosure celebration_finished) override {
+    if (!switches::IsFirstRunDesktopRevampEnabled(
+            IsProfileInSearchEngineChoiceRegion(profile()))) {
+      std::move(celebration_finished).Run();
+      return;
+    }
+    host()->ShowScreen(
+        contents(),
+        GURL(chrome::kChromeUIIntroURL)
+            .Resolve(chrome::kChromeUIIntroSignInCelebrationSubPage),
+        base::BindOnce(
+            &FirstRunPostSignInAdapter::SwitchToSignInCelebrationFinished,
+            weak_ptr_factory_.GetWeakPtr(), std::move(celebration_finished)));
     if (play_celebration_sound_callback_) {
       std::move(play_celebration_sound_callback_).Run();
     }
@@ -600,8 +611,19 @@ class FirstRunPostSignInAdapter : public ProfilePickerPostSignInAdapter {
   }
 
  private:
+  void SwitchToSignInCelebrationFinished(
+      base::OnceClosure celebration_finished) {
+    IntroUI* intro_ui =
+        contents()->GetWebUI()->GetController()->GetAs<IntroUI>();
+    CHECK(intro_ui);
+    intro_ui->SetSignInCelebrationFinishedCallback(
+        std::move(celebration_finished));
+  }
+
   IdentityStepsCompletedCallback step_completed_callback_;
   base::OnceClosure play_celebration_sound_callback_;
+
+  base::WeakPtrFactory<FirstRunPostSignInAdapter> weak_ptr_factory_{this};
 };
 
 class WelcomeStepController : public IntroBasedStepController {

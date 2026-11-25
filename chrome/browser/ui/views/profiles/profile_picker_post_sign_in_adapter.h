@@ -70,8 +70,6 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
       signin::SigninChoiceCallback on_account_management_screen_closed)
       override;
   void FinishFlowWithoutHistorySyncOptin() override;
-  void ShowSignInCelebration(
-      base::OnceClosure celebration_finished) override;
 
   base::WeakPtr<ProfilePickerPostSignInAdapter> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -118,9 +116,9 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
       ManagedUserProfileNoticeUI::ScreenType type,
       signin::SigninChoiceCallback proceed_callback);
 
-  // Callbacks that finalize initialization of WebUI pages.
+  // Callback that finalizes initialization of the history sync optin WebUI
+  // page.
   void SwitchToHistorySyncOptinFinished();
-  void SwitchToSignInCelebrationFinished(base::OnceClosure celebration_finished);
 
   // Returns whether the flow is initialized (i.e. whether `Init()` has been
   // called).

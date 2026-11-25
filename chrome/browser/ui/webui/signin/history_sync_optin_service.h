@@ -32,8 +32,6 @@ class HistorySyncOptinServiceDefaultDelegate
       signin::SigninChoiceCallback on_account_management_screen_closed)
       override;
   void FinishFlowWithoutHistorySyncOptin() override;
-  void ShowSignInCelebration(
-      base::OnceClosure celebration_finished) override;
 };
 
 // Service responsible for managing the History Sync Opt-in flow.

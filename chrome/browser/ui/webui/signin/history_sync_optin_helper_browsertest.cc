@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
@@ -35,7 +35,6 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_state_fetcher.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -49,7 +48,9 @@
 
 namespace {
 
+using ::base::test::TestFuture;
 using ::testing::_;
+using ::testing::Mock;
 
 class MockHistorySyncOptinHelperDelegate
     : public HistorySyncOptinHelper::Delegate {
@@ -65,8 +66,13 @@ class MockHistorySyncOptinHelperDelegate
               (signin::SigninChoiceCallback),
               (override));
   MOCK_METHOD(void, FinishFlowWithoutHistorySyncOptin, (), (override));
+};
+
+class MockHistorySyncOptinHelperDelegateWithCelebration
+    : public MockHistorySyncOptinHelperDelegate {
+ public:
   MOCK_METHOD(void,
-              ShowSignInCelebration,
+              MaybeShowSignInCelebration,
               (base::OnceClosure celebration_finished),
               (override));
 };
@@ -100,8 +106,7 @@ std::unique_ptr<KeyedService> BuildMockProfileManagementDisclaimerService(
 class HistorySyncOptinHelperTestObserver
     : public HistorySyncOptinHelper::Observer {
  public:
-  explicit HistorySyncOptinHelperTestObserver(
-      base::test::TestFuture<void>& future)
+  explicit HistorySyncOptinHelperTestObserver(TestFuture<void>& future)
       : future_(future) {}
 
   // HistorySyncOptinHelper::Observer implementation:
@@ -110,7 +115,7 @@ class HistorySyncOptinHelperTestObserver
   ~HistorySyncOptinHelperTestObserver() override = default;
 
  private:
-  base::raw_ref<base::test::TestFuture<void>> future_;
+  base::raw_ref<TestFuture<void>> future_;
 };
 
 class HistorySyncOptinHelperBrowserTest : public SigninBrowserTestBase {
@@ -182,8 +187,6 @@ class HistorySyncOptinHelperBrowserTest : public SigninBrowserTestBase {
         context,
         base::BindRepeating(&BuildMockProfileManagementDisclaimerService));
   }
-
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 class HistorySyncOptinHelperLaunchContextParamBrowserTest
@@ -198,17 +201,29 @@ IN_PROC_BROWSER_TEST_P(
       /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
   AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
-  MockHistorySyncOptinHelperDelegate delegate;
+  MockHistorySyncOptinHelperDelegateWithCelebration delegate;
 
-  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), _)).Times(1);
+  base::OnceClosure celebration_finished_callback;
+  EXPECT_CALL(delegate, MaybeShowSignInCelebration)
+      .WillOnce([&](base::OnceClosure celebration_finished) {
+        celebration_finished_callback = std::move(celebration_finished);
+      });
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
       &delegate, GetParam(), signin_metrics::AccessPoint::kSettings);
   history_sync_optin_helper->StartHistorySyncOptinFlow();
   // This triggers the flow that reaches the delegate's
-  // `ShowHistorySyncOptinScreen`.
+  // `MaybeShowSignInCelebration`.
   UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
+  ASSERT_TRUE(celebration_finished_callback);
+  Mock::VerifyAndClearExpectations(&delegate);
+
+  // Completing the celebration advances to `ShowHistorySyncOptinScreen`.
+  EXPECT_CALL(delegate, MaybeShowSignInCelebration).Times(0);
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), _)).Times(1);
+  std::move(celebration_finished_callback).Run();
 
   // Subsequent updates should have no impact.
   UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
@@ -249,9 +264,10 @@ IN_PROC_BROWSER_TEST_P(
       /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
   AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
-  MockHistorySyncOptinHelperDelegate delegate;
+  MockHistorySyncOptinHelperDelegateWithCelebration delegate;
+  EXPECT_CALL(delegate, MaybeShowSignInCelebration).Times(0);
 
-  base::test::TestFuture<Profile*> future;
+  TestFuture<Profile*> future;
 
   auto* service = GetProfileManagementDisclaimerService();
   // Mock accepting the user management screen.
@@ -307,7 +323,7 @@ IN_PROC_BROWSER_TEST_P(
   AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
   MockHistorySyncOptinHelperDelegate delegate;
 
-  base::test::TestFuture<void> future;
+  TestFuture<void> future;
 
   // Mock cancelling the user management screen.
   auto* service = GetProfileManagementDisclaimerService();
@@ -385,16 +401,18 @@ IN_PROC_BROWSER_TEST_P(
 
   AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
 
-  MockHistorySyncOptinHelperDelegate delegate;
+  MockHistorySyncOptinHelperDelegateWithCelebration delegate;
 
+  EXPECT_CALL(delegate, MaybeShowSignInCelebration).Times(0);
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
       &delegate, GetParam(), signin_metrics::AccessPoint::kSettings);
   history_sync_optin_helper->StartHistorySyncOptinFlow();
-  testing::Mock::VerifyAndClearExpectations(&delegate);
+  Mock::VerifyAndClearExpectations(&delegate);
 
+  EXPECT_CALL(delegate, MaybeShowSignInCelebration).Times(0);
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), _)).Times(1);
   history_sync_optin_helper->GetAccountStateFetcherForTesting()
       ->EnforceTimeoutReachedForTesting();
@@ -430,7 +448,7 @@ IN_PROC_BROWSER_TEST_P(
   // to show the history sync optin screen.
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
   history_sync_optin_helper->StartHistorySyncOptinFlow();
-  testing::Mock::VerifyAndClearExpectations(&delegate);
+  Mock::VerifyAndClearExpectations(&delegate);
   EXPECT_TRUE(history_sync_optin_helper
                   ->GetSyncServiceStartupStateObserverForTesting());
 
@@ -504,7 +522,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
   EXPECT_CALL(delegate, FinishFlowWithoutHistorySyncOptin).Times(0);
   history_sync_optin_helper->StartHistorySyncOptinFlow();
-  testing::Mock::VerifyAndClearExpectations(&delegate);
+  Mock::VerifyAndClearExpectations(&delegate);
 
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
   EXPECT_CALL(delegate, FinishFlowWithoutHistorySyncOptin).Times(1);
@@ -553,7 +571,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
   EXPECT_CALL(delegate, FinishFlowWithoutHistorySyncOptin).Times(0);
   history_sync_optin_helper->StartHistorySyncOptinFlow();
-  testing::Mock::VerifyAndClearExpectations(&delegate);
+  Mock::VerifyAndClearExpectations(&delegate);
 
   // At sync startup observer's timeout the flow is resumed and shows the
   // history sync screen.
@@ -679,118 +697,4 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperBrowserTest,
       /*sample=*/
       signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup,
       /*expected_count=*/1);
-}
-
-class HistorySyncOptinHelperFreBrowserTest
-    : public HistorySyncOptinHelperBrowserTest {
- public:
-  HistorySyncOptinHelperFreBrowserTest() {
-    scoped_features_.InitWithFeatures(
-        /*enabled_features=*/{switches::kFirstRunDesktopRefresh,
-                              switches::kFirstRunDesktopRevamp},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
-
-IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperFreBrowserTest,
-                       TriggersSignInCelebrationForConsumerAccount) {
-  AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
-  MockHistorySyncOptinHelperDelegate delegate;
-
-  base::test::TestFuture<void> celebration_shown_future;
-  EXPECT_CALL(delegate, ShowSignInCelebration)
-      .WillOnce([&](base::OnceClosure celebration_finished) {
-        celebration_shown_future.SetValue();
-        std::move(celebration_finished).Run();
-      });
-
-  base::test::TestFuture<void> flow_finished_future;
-  HistorySyncOptinHelperTestObserver observer(flow_finished_future);
-
-  auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
-      identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate, HistorySyncOptinHelper::LaunchContext::kInProfilePicker,
-      signin_metrics::AccessPoint::kForYouFre);
-  history_sync_optin_helper->AddObserver(&observer);
-  history_sync_optin_helper->StartHistorySyncOptinFlow();
-
-  UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
-
-  EXPECT_TRUE(celebration_shown_future.Wait());
-  EXPECT_TRUE(flow_finished_future.Wait());
-}
-
-IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperFreBrowserTest,
-                       BypassesSignInCelebrationForManagedAccount) {
-  AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
-  MockHistorySyncOptinHelperDelegate delegate;
-
-  // Mock accepting the user management screen (Profile Picker version only).
-  EXPECT_CALL(delegate, ShowAccountManagementScreen)
-      .WillOnce([&](signin::SigninChoiceCallback callback) {
-        std::move(callback).Run(signin::SIGNIN_CHOICE_NEW_PROFILE);
-      });
-
-  EXPECT_CALL(delegate, ShowSignInCelebration).Times(0);
-
-  base::test::TestFuture<void> flow_finished_future;
-  HistorySyncOptinHelperTestObserver observer(flow_finished_future);
-
-  auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
-      identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate, HistorySyncOptinHelper::LaunchContext::kInProfilePicker,
-      signin_metrics::AccessPoint::kForYouFre);
-  history_sync_optin_helper->AddObserver(&observer);
-  history_sync_optin_helper->StartHistorySyncOptinFlow();
-
-  UpdateAccountManagementInfo(account_info, /*is_managed=*/true);
-  EXPECT_TRUE(flow_finished_future.Wait());
-}
-
-IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperFreBrowserTest,
-                       DoesNotTriggerSignInCelebrationOutsideFirstRun) {
-  AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
-  MockHistorySyncOptinHelperDelegate delegate;
-
-  EXPECT_CALL(delegate, ShowSignInCelebration).Times(0);
-
-  base::test::TestFuture<void> flow_finished_future;
-  HistorySyncOptinHelperTestObserver observer(flow_finished_future);
-
-  auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
-      identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate, HistorySyncOptinHelper::LaunchContext::kInProfilePicker,
-      signin_metrics::AccessPoint::kSettings);
-  history_sync_optin_helper->AddObserver(&observer);
-  history_sync_optin_helper->StartHistorySyncOptinFlow();
-
-  UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
-
-  EXPECT_TRUE(flow_finished_future.Wait());
-}
-
-// Regression test for https://crbug.com/576705851. A sign-in started in the
-// first run experience continues in a browser, if the sign-in page leaves Gaia
-// (e.g. SAML). The sign-in celebration is a profile picker screen: in a
-// browser, the flow goes straight to the history sync screen.
-IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperFreBrowserTest,
-                       DoesNotTriggerSignInCelebrationInBrowser) {
-  GetTestSyncService()->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
-
-  MockHistorySyncOptinHelperDelegate delegate;
-  EXPECT_CALL(delegate, ShowSignInCelebration).Times(0);
-  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), _));
-
-  AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
-  auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
-      identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate, HistorySyncOptinHelper::LaunchContext::kInBrowser,
-      signin_metrics::AccessPoint::kForYouFre);
-  history_sync_optin_helper->StartHistorySyncOptinFlow();
-
-  UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
 }

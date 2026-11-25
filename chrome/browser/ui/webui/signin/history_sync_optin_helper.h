@@ -177,9 +177,13 @@ class HistorySyncOptinHelper {
     // after the history sync optin screen (e.g. opening of the browser in the
     // profile picker flow).
     virtual void FinishFlowWithoutHistorySyncOptin() = 0;
-    // Displays the sign in celebration screen.
-    virtual void ShowSignInCelebration(
-        base::OnceClosure celebration_finished) = 0;
+    // Called only once the account is known to be unmanaged. Displays the sign
+    // in celebration screen if this flow has one, and runs
+    // `celebration_finished` once complete (or immediately if no celebration is
+    // shown). The default implementation shows nothing and runs
+    // `celebration_finished` immediately.
+    virtual void MaybeShowSignInCelebration(
+        base::OnceClosure celebration_finished);
   };
 
   static std::unique_ptr<HistorySyncOptinHelper> Create(
@@ -239,11 +243,6 @@ class HistorySyncOptinHelper {
   // Virtual methods for context-specific logic.
   virtual void DetermineManagementStatusAndShowManagementScreens() = 0;
   virtual base::TimeDelta GetSyncStartupDelay() = 0;
-  // Shows the sign-in celebration if the context has one for this flow. In all
-  // cases, the flow then continues with
-  // `AwaitSyncStartupAndShowHistorySyncScreen()`.
-  virtual void MaybeShowSignInCelebration(
-      signin::Tribool maybe_managed_account) = 0;
 
   void ShowHistorySyncOptinScreen();
 
@@ -305,8 +304,6 @@ class HistorySyncOptinHelperInBrowser : public HistorySyncOptinHelper {
   // HistorySyncOptinHelper implementation:
   void DetermineManagementStatusAndShowManagementScreens() override;
   base::TimeDelta GetSyncStartupDelay() override;
-  void MaybeShowSignInCelebration(
-      signin::Tribool maybe_managed_account) override;
 
   void OnManagementAccepted(Profile* chosen_profile,
                             bool management_required_by_policy);
@@ -336,8 +333,6 @@ class HistorySyncOptinHelperInProfilePicker : public HistorySyncOptinHelper {
   // HistorySyncOptinHelper implementation:
   void DetermineManagementStatusAndShowManagementScreens() override;
   base::TimeDelta GetSyncStartupDelay() override;
-  void MaybeShowSignInCelebration(
-      signin::Tribool maybe_managed_account) override;
 
   void MaybeShowAccountManagementScreen(bool is_managed_account);
   void ShowAccountManagementScreen();
