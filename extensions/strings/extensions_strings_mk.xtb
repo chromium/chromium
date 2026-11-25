@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Додај „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2159915644201199628">Не може да се декодира сликата: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2193567467390483943">Родителот не ја одобри екстензијава</translation>
+<translation id="2207866393056347613">Доделува траен пристап до вашите податоци на сите сајтови</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“ побара дополнителни дозволи.</translation>
 <translation id="2327492829706409234">Вклучи апликација</translation>
 <translation id="2350172092385603347">Употребена е локализација, но default_locale не е наведен во манифестот.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Овозможи повторно</translation>
 <translation id="2743583586211388067">Пристапот до екстензијава е блокиран според правилата за ризици за екстензии на вашата организација.</translation>
 <translation id="2766161002040448006">Прашај родител</translation>
+<translation id="2775557057525247505">Прикажи ги сите сајтови</translation>
 <translation id="2785530881066938471">Не може да се вчита датотеката „<ph name="RELATIVE_PATH" />“ за скрипта на содржина. Не е кодирана со UTF-8.</translation>
 <translation id="2850541429955027218">Додај тема</translation>
 <translation id="2883143988769190738">Екстензијава ги бара следниве дозволи:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> од продавачот <ph name="VENDOR_ID" /> (сериски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Влезната вредност за приватен клуч мора да биде важечка патека.</translation>
+<translation id="3769470010314114481">Доделува привремен пристап до вашите податоци на сајтот</translation>
 <translation id="3788401245189148511">Може да:</translation>
 <translation id="3834775135533257713">Не може да се додаде апликацијата „<ph name="TO_INSTALL_APP_NAME" />“, бидејќи противречи на „<ph name="INSTALLED_APP_NAME" />“.</translation>
 <translation id="388442998277590542">Не може да се вчита страницата со опции „<ph name="OPTIONS_PAGE" />“.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Овозможи наставка</translation>
 <translation id="3927932062596804919">Одбиј</translation>
 <translation id="3984413272403535372">Грешка при потпишување наставка.</translation>
+<translation id="3990894032742690314">Секогаш на наведените сајтови</translation>
 <translation id="4014432863917027322">Поправи „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4061696872429826774">Друга програма на компјутерот додаде екстензија што може да го промени начинот на функционирање на Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Не може да се вчита страницата „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="424963718355121712">Апликациите мора да се послужат од хостот на кој влијаат</translation>
 <translation id="4306119971288449206">Апликациите мора да се послужат со типот содржина „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4307774243840254737">Доделува траен пристап до вашите податоци на сајтовите наведени подолу</translation>
 <translation id="4349181963619779233">Екстензиите и апликациите не може да се додадат од овој вебсајт</translation>
 <translation id="4625078469366263107">Овозможи апликација</translation>
 <translation id="4633003931260532286">Екстензијата бара „<ph name="IMPORT_NAME" />" со минимална верзија „<ph name="IMPORT_VERSION" />", но инсталирана е само верзијата „<ph name="INSTALLED_VERSION" />"</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Најновата верзија на „<ph name="EXTENSION_NAME" />“ е оневозможена бидејќи бара повеќе дозволи.</translation>
 <translation id="5242724311594467048">Да се овозможи „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5356315618422219272">Преглед на апликација: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Само кога ќе ја кликнете екстензијата</translation>
 <translation id="5405650547142096840">Отстрани од Chromium</translation>
 <translation id="5456409301717116725">Оваа наставка ја вклучува датотеката со клуч „<ph name="KEY_PATH" />“. Веројатно не сакате да го направите ова.</translation>
 <translation id="5485102783864353244">Додај апликација</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Ракувач со MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Наставката повторно се вчитуваше премногу често.</translation>
 <translation id="7003844668372540529">Непознат производ <ph name="PRODUCT_ID" /> од <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Наведени сајтови</translation>
 <translation id="7068383018033524534">Датотеката на манифестот е неважечка</translation>
 <translation id="7217838517480956708">Администраторот на машината бара да се инсталира <ph name="EXTENSION_NAME" />. Не може да се отстрани или да се измени.</translation>
 <translation id="7287143125007575591">Пристапот е одбиен.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Предна камера</translation>
 <translation id="8047248493720652249">Наставката не успеа да го именува преземањето „<ph name="ATTEMPTED_FILENAME" />“ бидејќи друга наставка (<ph name="EXTENSION_NAME" />) одреди поинакво име на датотека „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8049705080247101012">Google ја означи „<ph name="EXTENSION_NAME" />“ како злонамерна и инсталацијата беше спречена</translation>
+<translation id="823691536304079791">да ги чита и да ги променува вашите податоци</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> од <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Тоа може:</translation>
 <translation id="8517576857589387417">Датотеката на манифест недостасува или не може да се прочита</translation>

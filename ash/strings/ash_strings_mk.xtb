@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">Податоци во состојба на неактивност</translation>
 <translation id="2058456167109518507">Откриен е уред</translation>
 <translation id="2064048859448024834">Вклучен е преглед на камерата</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 линк}one{# линк}other{# линка}}</translation>
 <translation id="2067220651560163985">Прикажувај ја температурата во Целзиусови степени</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> заврши со печатење на <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Вклучи/исклучи <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> е <ph name="CAPTURE_STATE" /></translation>

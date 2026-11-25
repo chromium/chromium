@@ -447,6 +447,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2053312383184521053">Datos do estado inactivo</translation>
 <translation id="2058456167109518507">Detectouse un dispositivo</translation>
 <translation id="2064048859448024834">A vista previa da cámara está activada</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 ligazón}other{# ligazóns}}</translation>
 <translation id="2067220651560163985">Mostrar temperatura en Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> rematou de imprimir con: <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Activar ou desactivar <ph name="CAPTURE_MEDIUM" />. A función <ph name="CAPTURE_MEDIUM" /> está <ph name="CAPTURE_STATE" /></translation>

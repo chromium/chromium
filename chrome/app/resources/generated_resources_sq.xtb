@@ -308,6 +308,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1308105352527684175">Mund të mos jesh në gjendje të qasesh në përmbajtje të caktuara</translation>
 <translation id="1311092170520822848">Ky sajt po kontrollon lexuesit e kartave inteligjente të lidhur me pajisjen tënde dhe me gjasë kartat inteligjente që disponohen për lexuesit</translation>
 <translation id="131112695174432497">Të dhënat që ndikojnë në personalizimin e reklamave do të fshihen</translation>
+<translation id="13115907161008983">Kopjo lidhjet</translation>
 <translation id="131188242279372879">Zbulo mbrojtjen e përmirësuar për të marrë nivelin më të lartë të sigurisë të Chrome për shkarkimet</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Rregullo skedën që ngadalëson shfletuesin}other{Rregullo skedat që ngadalësojnë shfletuesin}}</translation>
 <translation id="1312721752506309252">Mbrojtja e përmirësuar është aktive</translation>
@@ -443,6 +444,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1482626744466814421">Shtoje këtë skedë te faqeshënuesit...</translation>
 <translation id="1482772681918035149">të modifikojë fjalëkalimet</translation>
 <translation id="1483137792530497944">Lumë</translation>
+<translation id="1483148302144576204">Kopjo lidhjet</translation>
 <translation id="1483151333977672176">U dërgua!</translation>
 <translation id="1483431819520123112">Emri prezantues u kopjua te kujtesa e fragmenteve</translation>
 <translation id="1483493594462132177">Dërgo</translation>
@@ -1057,6 +1059,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="2168036794078614559">Raporti u dërgua</translation>
 <translation id="2168735174585029637">Jepu skedave të tua një pamje të re transparente</translation>
 <translation id="217120844667431680">Bëj më shumë me "Modalitetin e IA-së"</translation>
+<translation id="2172046302886074612">"<ph name="MODEL_CATEGORY" />" u hoq</translation>
 <translation id="2173302385160625112">Kontrollo lidhjen e internetit</translation>
 <translation id="2175384018164129879">&amp;Menaxho motorët e kërkimit dhe kërkimin në sajte</translation>
 <translation id="2175773164573457310">Zgjidh një tekst ose imazh çfarëdo për të pyetur Gemini</translation>
@@ -2082,6 +2085,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3270965368676314374">Lexo, ndrysho dhe fshi fotografi, muzikë dhe media të tjera nga kompjuteri yt</translation>
 <translation id="3275464924531706548">Palos: <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Hape si dritare</translation>
+<translation id="3277325180914877290">Bëje tekstin më të madh</translation>
 <translation id="3280237271814976245">Ruaje &amp;si...</translation>
 <translation id="3280243678470289153">Qëndro në Chrome</translation>
 <translation id="3282210178675490297">Po ndan një skedë në <ph name="APP_NAME" /></translation>
@@ -2590,6 +2594,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3786890785076278600">Vijë statike</translation>
 <translation id="3787434344076711519">Në pritje për përkthimin</translation>
 <translation id="3789432704615470433">Skedarët e SharePoint dhe OneDrive</translation>
+<translation id="3789493399245366422">ekrani i plotë, maksimizo, përfshirës, fshih shiritin e veglave, prezantimi, F11</translation>
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="3790417903123637354">Ndodhi një gabim. Provo përsëri më vonë</translation>
 <translation id="379082410132524484">Karta jote ka skaduar</translation>
@@ -3360,6 +3365,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4665035764476941598">Kliko këtu për të kthyer përsëri skedat e tjera</translation>
 <translation id="4665446389743427678">Të gjitha të dhënat e ruajtura nga <ph name="SITE" /> do të fshihen.</translation>
 <translation id="4666483368282673356">Menaxho historikun tënd të Gemini</translation>
+<translation id="4667646546186544608">zvogëlo, tkurr, më i vogël, redukto, ul, redukto shkallën, zvogëlo faqen</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Urime! <ph name="APP_NAME" /> është instaluar me sukses në pajisjen tënde</translation>
 <translation id="4672759829555593783">Hap <ph name="FILE_NAME" /> tani</translation>
@@ -4761,6 +4767,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6255253900817321392">Kërko më shpejt nga kudo në Mac pa hapur një skedë të re</translation>
 <translation id="6257602895346497974">Aktivizo sinkronizimin...</translation>
 <translation id="6258818697161346451">Përdor çelësat e kalimit në këtë pajisje</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopjo lidhjen}other{Kopjo lidhjet}}</translation>
 <translation id="6261688934280090835">Evidencat e aplikacionit "kioskë" të ChromeOS</translation>
 <translation id="6263082573641595914">Versioni i autoritetit të certifikimit të Microsoft</translation>
 <translation id="6264060420924719834">Ky aplikacion përfshin përmbajtje uebi nga sajte të tjera</translation>
@@ -4889,6 +4896,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Skedarët e imazheve</translation>
 <translation id="6410390304316730527">"Shfletimi i sigurt" të mbron kundër sulmuesve që mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve keqdashës ose të zbulosh informacion personal si fjalëkalime, numra telefoni ose karta krediti. Nëse e çaktivizon, ki kujdes kur shfleton sajte të panjohura ose pa reputacion.</translation>
+<translation id="6411490324917773403">Bëje tekstin më të vogël</translation>
 <translation id="6416743254476733475">Lejoje ose bllokoje në kompjuterin tënd.</translation>
 <translation id="6416856063840710198">Për të përmirësuar vizitën tënde, sajtet shpesh e ruajnë aktivitetin tënd - zakonisht në pajisjen tënde. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Sjellja e parazgjedhur</translation>
@@ -6378,6 +6386,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8041093619605951337">E lumtur</translation>
 <translation id="8042142357103597104">Transparenca e tekstit</translation>
 <translation id="8042331986490021244">Fjalëkalimet enkriptohen në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google"</translation>
+<translation id="8042441076562098746">zmadho, bëj më të madh, më i madh, rrit, rrit shkallën, zmadho faqen</translation>
 <translation id="8045253504249021590">Sinkronizimi është ndaluar nëpërmjet "Panelit të Google".</translation>
 <translation id="8045752459073395242">Mëso më shumë rreth përdorimit të IA-së gjeneruese në punë</translation>
 <translation id="8045923671629973368">Fut ID-në e aplikacionit ose URL-në e dyqanit të uebit</translation>
@@ -6732,6 +6741,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="844059392176531372">Ndaj grupin e skedave "<ph name="GROUP_NAME" />"</translation>
 <translation id="844063558976952706">Gjithmonë në këtë sajt</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Është hapur një "Dritare e izoluar" ose "E fshehtë". Ajo nuk do të rihapet.}other{Janë hapur # "Dritare të izoluara" dhe "Të fshehta" nëpër profile. Ato nuk do të rihapen.}}</translation>
+<translation id="84426883520448311">tema, ngjyra, sfondi, imazhi i sfondit, i ndriçuar, i errët, modaliteti, modaliteti i ndriçuar, modaliteti i errët, personal, stili, estetika</translation>
 <translation id="8443986842926457191">URL-ja është më shumë se 2048 karaktere</translation>
 <translation id="8445281870900174108">Kjo skedë po përdor kamerën tënde</translation>
 <translation id="8446884382197647889">Mëso më shumë</translation>
@@ -7322,6 +7332,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9076821103818989526">Paneli anësor</translation>
 <translation id="907779190626433918">Përdor një fjalëkalim unik për çdo sajt ose aplikacion. Nëse dikush zbulon një fjalëkalim të ripërdorur, ai mund të përdoret për të marrë qasje te llogaritë e tua të tjera.</translation>
 <translation id="9078546160009814724">Emri i përdoruesit: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopjo lidhjen}other{Kopjo lidhjet}}</translation>
 <translation id="907972398081911688">Ndrysho automatikisht fjalëkalimin tënd të nxjerrë në mënyrë të paautorizuar</translation>
 <translation id="9081543426177426948">Sajtet që viziton nuk ruhen në modalitetin "e fshehtë"</translation>
 <translation id="9082750838489080452">Aplikacioni: <ph name="APP_NAME" /></translation>

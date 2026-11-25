@@ -447,6 +447,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2053312383184521053">Të dhënat e gjendjes së qetë</translation>
 <translation id="2058456167109518507">U diktua pajisje</translation>
 <translation id="2064048859448024834">Pamja paraprake e kamerës aktive</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 lidhje}other{# lidhje}}</translation>
 <translation id="2067220651560163985">Shfaq temperaturën në celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ka përfunduar printimin te <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Aktivizo/çaktivizo <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> është <ph name="CAPTURE_STATE" /></translation>
