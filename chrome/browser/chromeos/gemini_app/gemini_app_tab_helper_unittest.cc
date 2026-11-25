@@ -4,12 +4,15 @@
 
 #include "chrome/browser/chromeos/gemini_app/gemini_app_tab_helper.h"
 
-#include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/enum_set.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -89,16 +92,18 @@ TEST_P(GeminiAppTabHelperTest, RecordsPageVisitHistograms) {
   const auto pages = base::EnumSet<Page>::All();
 
   // Create multiple URLs for each page.
-  std::map<GURL, Page> page_urls;
+  std::vector<std::pair<GURL, Page>> page_urls;
   for (const Page page : pages) {
     const std::string page_str = base::NumberToString(static_cast<int>(page));
-    page_urls.emplace(GURL(base::StrCat({kBaseUrl, page_str, "/1/"})), page);
-    page_urls.emplace(GURL(base::StrCat({kBaseUrl, page_str, "/2/"})), page);
+    page_urls.emplace_back(GURL(base::StrCat({kBaseUrl, page_str, "/1/"})),
+                           page);
+    page_urls.emplace_back(GURL(base::StrCat({kBaseUrl, page_str, "/2/"})),
+                           page);
   }
 
   // Replace URL for each page.
-  base::AutoReset<std::map<uint64_t, Page>> page_urls_reset =
-      GeminiAppTabHelper::SetPageUrlsForTesting(page_urls);
+  base::AutoReset<std::optional<base::span<const std::pair<GURL, Page>>>>
+      page_urls_reset = GeminiAppTabHelper::SetPageUrlsForTesting(page_urls);
 
   base::HistogramTester histogram_tester;
   std::vector<Bucket> histogram_buckets;

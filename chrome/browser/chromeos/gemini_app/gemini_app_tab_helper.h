@@ -5,11 +5,16 @@
 #ifndef CHROME_BROWSER_CHROMEOS_GEMINI_APP_GEMINI_APP_TAB_HELPER_H_
 #define CHROME_BROWSER_CHROMEOS_GEMINI_APP_GEMINI_APP_TAB_HELPER_H_
 
-#include <map>
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "content/public/browser/web_contents_observer.h"
+
+class GURL;
 
 // Helper which is attached to every browser tab in order to record visits to
 // Gemini app related pages.
@@ -38,9 +43,12 @@ class GeminiAppTabHelper : public content::WebContentsObserver {
       content::WebContents* web_contents);
 
   // Temporarily replaces the URLs of pages for which visits should be recorded
-  // until the returned `base::AutoReset` is destroyed.
-  [[nodiscard]] static base::AutoReset<std::map<uint64_t, Page>>
-  SetPageUrlsForTesting(std::map<GURL, Page> page_urls);
+  // until the returned `base::AutoReset` is destroyed. `page_urls` must outlive
+  // the returned `base::AutoReset`.
+  [[nodiscard]] static base::AutoReset<
+      std::optional<base::span<const std::pair<GURL, Page>>>>
+  SetPageUrlsForTesting(
+      base::span<const std::pair<GURL, Page>> page_urls LIFETIME_BOUND);
 
  private:
   explicit GeminiAppTabHelper(content::WebContents* web_contents);
