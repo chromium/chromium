@@ -1201,8 +1201,9 @@ bool DownloadItemNotification::AllowedToOpenWhileScanning() const {
 
 BrowserWindowInterface* DownloadItemNotification::GetBrowser() const {
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile());
-  CHECK(browser_displayer.browser_window_interface(),
-        base::NotFatalUntil::M161);
+  // TODO(crbug.com/589891258): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(browser_displayer.browser_window_interface());
   return browser_displayer.browser_window_interface();
 }
 
