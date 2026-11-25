@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "build/buildflag.h"
 #include "cc/paint/paint_op.h"
 #include "cc/test/paint_op_matchers.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/core/dom/focused_element_change_observer.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_draw_listener.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/recording_test_utils.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -33,6 +36,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -1940,6 +1944,75 @@ TEST_P(HTMLCanvasElementTest,
   canvas->PostFinalizeFrame(FlushReason::kCanvasPushFrame);
   EXPECT_FALSE(
       GetChromeClient().layer_tree_host()->TakeHasOutOfBandFrameForTesting());
+}
+
+namespace {
+
+class TestCanvasDrawListener : public GarbageCollected<TestCanvasDrawListener>,
+                               public CanvasDrawListener {
+ public:
+  explicit TestCanvasDrawListener(base::RepeatingClosure on_notify)
+      : on_notify_(std::move(on_notify)) {}
+
+  NewFrameCallback GetNewFrameCallback() override {
+    on_notify_.Run();
+    return base::DoNothing();
+  }
+
+  bool CanDiscardAlpha() const override { return false; }
+  bool NeedsNewFrame() const override { return true; }
+  void RequestFrame() override {}
+
+ private:
+  base::RepeatingClosure on_notify_;
+};
+
+}  // namespace
+
+TEST_P(HTMLCanvasElementTest, LowLatencyCanvasNotifiesListenersBeforeDispatch) {
+  scoped_refptr<viz::TestContextProvider> raster_context_provider =
+      viz::TestContextProvider::CreateRaster();
+  InitializeSharedGpuContext(raster_context_provider.get());
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> accelerated_platform;
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
+  SetBodyInnerHTML(R"HTML(
+    <canvas id='low_latency' width='10' height='10'></canvas>
+  )HTML");
+  auto* canvas = To<HTMLCanvasElement>(GetElementById("low_latency"));
+
+  AppendScript(R"JS(
+    var lowLatencyCanvas = document.getElementById('low_latency');
+    var lowLatencyCtx =
+        lowLatencyCanvas.getContext('2d', {desynchronized: true});
+  )JS");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      GetChromeClient().layer_tree_host()->TakeHasOutOfBandFrameForTesting());
+
+  int notify_count = 0;
+  bool dispatched_before_notify = false;
+  auto* listener = MakeGarbageCollected<TestCanvasDrawListener>(
+      base::BindLambdaForTesting([&]() {
+        ++notify_count;
+        dispatched_before_notify = GetChromeClient()
+                                       .layer_tree_host()
+                                       ->TakeHasOutOfBandFrameForTesting();
+      }));
+  canvas->AddListener(listener);
+
+  // Listeners must be notified before the low-latency frame is dispatched so
+  // they capture the frame prior to compositing (which may discard/clear the
+  // drawing buffer, e.g. WebGL with preserveDrawingBuffer=false).
+  AppendScript("lowLatencyCtx.fillRect(0, 0, 5, 5);");
+  canvas->RenderingContext()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  canvas->PostFinalizeFrame(FlushReason::kCanvasPushFrame);
+
+  EXPECT_EQ(notify_count, 1);
+  EXPECT_FALSE(dispatched_before_notify);
+  EXPECT_TRUE(
+      GetChromeClient().layer_tree_host()->TakeHasOutOfBandFrameForTesting());
+  canvas->RemoveListener(listener);
 }
 #endif  // !BUILDFLAG(IS_MAC)
 

@@ -727,6 +727,19 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
     context_->ClearMarkedCanvasDirty();
   }
 
+  // If the canvas is visible and not low-latency, notifying listeners is taken
+  // care of in DoDeferredPaintInvalidation(), which allows the frame to be
+  // grabbed prior to compositing, which is critically important because
+  // compositing may clear the canvas's image (e.g. WebGL context with
+  // preserveDrawingBuffer=false). If the canvas is not visible or is
+  // low-latency, DoDeferredPaintInvalidation() will not notify listeners, so
+  // we need to take care of business here before dispatching a low-latency
+  // frame below.
+  if (!did_notify_listeners_for_current_frame_) {
+    NotifyListenersCanvasChanged();
+  }
+  did_notify_listeners_for_current_frame_ = false;
+
   // Note: LowLatencyEnabled() could be true for any context type as it just
   // checks whether the `desynchronized` attribute is set on the context, but
   // only WebGL and Canvas2D have specific flows for low latency (for other
@@ -743,16 +756,6 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
       dirty_rect_ = gfx::Rect();
     }
   }
-
-  // If the canvas is visible, notifying listeners is taken care of in
-  // DoDeferredPaintInvalidation(), which allows the frame to be grabbed prior
-  // to compositing, which is critically important because compositing may clear
-  // the canvas's image. (e.g. WebGL context with preserveDrawingBuffer=false).
-  // If the canvas is not visible, DoDeferredPaintInvalidation will not get
-  // called, so we need to take care of business here.
-  if (!did_notify_listeners_for_current_frame_)
-    NotifyListenersCanvasChanged();
-  did_notify_listeners_for_current_frame_ = false;
 
   if (accessibility_manager_ &&
       accessibility_manager_->ShouldCaptureRenderedText()) {
