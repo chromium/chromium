@@ -6,12 +6,13 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -405,10 +406,9 @@ bool GetDeletionPreferenceFromDataType(BrowsingDataType data_type,
 }
 
 std::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(
-    const std::string& pref_name) {
-  using DataTypeMap = base::flat_map<std::string, BrowsingDataType>;
-  static base::NoDestructor<DataTypeMap> preference_to_datatype(
-      std::initializer_list<DataTypeMap::value_type>{
+    std::string_view pref_name) {
+  static constexpr auto kPreferenceToDataType =
+      base::MakeFixedFlatMap<std::string_view, BrowsingDataType>({
           {prefs::kDeleteBrowsingHistory, BrowsingDataType::HISTORY},
           {prefs::kDeleteCache, BrowsingDataType::CACHE},
           {prefs::kDeleteCookies, BrowsingDataType::SITE_DATA},
@@ -420,9 +420,9 @@ std::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(
           {prefs::kDeleteSkills, BrowsingDataType::SKILLS},
       });
 
-  auto iter = preference_to_datatype->find(pref_name);
-  if (iter != preference_to_datatype->end()) {
-    return iter->second;
+  if (auto it = kPreferenceToDataType.find(pref_name);
+      it != kPreferenceToDataType.end()) {
+    return it->second;
   }
   return std::nullopt;
 }

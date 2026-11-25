@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -164,7 +165,7 @@ bool GetDeletionPreferenceFromDataType(
 
 // Returns a BrowsingDataType if a type matching |pref_name| is found.
 std::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(
-    const std::string& pref_name);
+    std::string_view pref_name);
 
 bool IsHttpsCookieSourceScheme(net::CookieSourceScheme cookie_source_scheme);
 
