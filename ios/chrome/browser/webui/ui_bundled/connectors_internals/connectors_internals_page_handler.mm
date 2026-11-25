@@ -43,7 +43,7 @@
 ConnectorsInternalsPageHandler::ConnectorsInternalsPageHandler(
     mojo::PendingReceiver<connectors_internals::mojom::PageHandler> receiver,
     ProfileIOS* profile)
-    : receiver_(this, std::move(receiver)), profile_(profile) {}
+    : profile_(profile), receiver_(this, std::move(receiver)) {}
 
 ConnectorsInternalsPageHandler::~ConnectorsInternalsPageHandler() = default;
 

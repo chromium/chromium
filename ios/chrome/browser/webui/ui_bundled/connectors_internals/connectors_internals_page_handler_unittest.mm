@@ -18,6 +18,7 @@
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/device_signals/core/browser/pref_names.h"
+#import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/browser/reporting/reporting_features.h"
 #import "components/enterprise/connectors/connectors_internals.mojom.h"
@@ -215,6 +216,7 @@ class ConnectorsInternalsPageHandlerTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestProfileIOS> profile_;
   mojo::Remote<connectors_internals::mojom::PageHandler> page_handler_;
@@ -750,6 +752,68 @@ TEST_F(ConnectorsInternalsPageHandlerTest, RefreshProvisioningDomainConfigs) {
   ASSERT_TRUE(
       base::Time::FromString("Thu, 22 Oct 2026 07:28:00 GMT", &expected_time));
   EXPECT_EQ(state->pvd_configs[0]->expiration_time.value(), expected_time);
+}
+
+// Regression test: destroying the handler while a Mojo reply callback is still
+// pending (and the remote end is still bound) must not trip Mojo's "callback
+// was never run" DCHECK. This guards the member ordering in
+// `ConnectorsInternalsPageHandler`, which requires `receiver_` to be destroyed
+// before any member that owns pending reply callbacks.
+TEST_F(ConnectorsInternalsPageHandlerTest,
+       DestroyHandlerWithPendingRefreshProvisioningDomainConfigs) {
+  auto* proxy_service =
+      EnterpriseProxyServiceFactoryIOS::GetForProfile(profile_.get());
+  ASSERT_TRUE(proxy_service);
+  TestEnterpriseProxyServiceObserver observer(proxy_service);
+
+  static constexpr char kInitialPvdResponse[] = R"({
+    "identifier": "domain1.example.com",
+    "expires": "Wed, 21 Oct 2026 07:28:00 GMT",
+    "proxies": [
+      {
+        "protocol": "https-connect",
+        "identity": "proxy1",
+        "proxy": "proxy1.example.com:443"
+      }
+    ],
+    "proxy-match": [
+      {
+        "proxies": ["proxy1"],
+        "domains": ["*.example.com"]
+      }
+    ]
+  })";
+  test_url_loader_factory_.AddResponse(
+      "https://domain1.example.com/.well-known/pvd", kInitialPvdResponse);
+
+  base::ListValue policy_domains;
+  policy_domains.Append(CreatePvdPolicy("domain1.example.com"));
+  profile_->GetPrefs()->SetList(enterprise_net::kProxyProvisioningDomains,
+                                std::move(policy_domains));
+
+  ASSERT_TRUE(observer.WaitForRefreshCompleted());
+  observer.Reset();
+
+  // Clear canned responses so the manual refresh request stays pending and the
+  // handler keeps holding the Mojo reply callback.
+  test_url_loader_factory_.ClearResponses();
+
+  base::test::TestFuture<
+      connectors_internals::mojom::ProvisioningDomainStatePtr>
+      future;
+  page_handler_->RefreshProvisioningDomainConfigs(future.GetCallback());
+
+  ASSERT_TRUE(observer.WaitForRefreshStarted());
+  EXPECT_FALSE(future.IsReady());
+
+  // Destroy the handler while the reply callback is pending and the remote is
+  // still bound, then let Mojo process the resulting disconnection.
+  handler_.reset();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(page_handler_.is_connected());
+  EXPECT_FALSE(future.IsReady());
+  page_handler_.reset();
 }
 
 }  // namespace

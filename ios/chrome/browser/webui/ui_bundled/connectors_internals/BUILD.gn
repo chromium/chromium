@@ -50,6 +50,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/device_signals/core/browser",
     "//components/enterprise",
+    "//components/enterprise:test_support",
     "//components/enterprise/connectors:mojom",
     "//components/enterprise/device_trust/core",
     "//components/enterprise/device_trust/core:device_trust_connector_service",

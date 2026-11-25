@@ -56,11 +56,15 @@ class ConnectorsInternalsPageHandler
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;
   raw_ptr<ProfileIOS> profile_;
   enterprise_connectors::ProvisioningDomainRefreshHelper pvd_refresh_helper_;
   std::unique_ptr<enterprise_reporting::ChromeProfileRequestGenerator>
       request_generator_;
+  // Must be declared after any member that may own pending Mojo reply
+  // callbacks (e.g. `request_generator_`), so that the receiver is destroyed
+  // first. Otherwise, dropping those callbacks while the pipe is still
+  // connected triggers a "callback was never run" DCHECK.
+  mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;
   base::WeakPtrFactory<ConnectorsInternalsPageHandler> weak_ptr_factory_{this};
 };
 
