@@ -222,8 +222,9 @@ void UsageScenarioDataStoreImpl::OnSleepEvent() {
 void UsageScenarioDataStoreImpl::OnVideoStartsInVisibleTab() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++visible_tabs_playing_video_;
-  CHECK_GE(current_visible_window_count_, visible_tabs_playing_video_,
-           base::NotFatalUntil::M161);
+  // TODO(crbug.com/586403286): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GE(current_visible_window_count_, visible_tabs_playing_video_);
   if (visible_tabs_playing_video_ == 1)
     playing_video_in_active_tab_since_ = tick_clock_->NowTicks();
 }
