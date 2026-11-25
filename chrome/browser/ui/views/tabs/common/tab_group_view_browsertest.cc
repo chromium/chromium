@@ -55,9 +55,11 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
@@ -67,6 +69,7 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -982,9 +985,23 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest,
             model->group_model()->GetTabGroup(group_id)->visual_data()->color(),
             unfocus_button->GetWidget()->ShouldPaintAsActive()));
   };
+  // On shared browser_tests runners, the OS cursor may rest over the unfocus
+  // button, causing TabGroupUnfocusButton::GetBackgroundColor() to composite
+  // kColorSysStateHoverOnSubtle over the base color.
+  const auto hovered_color = [&](SkColor base_color) {
+    return color_utils::GetResultingPaintColor(
+        unfocus_button->GetColorProvider()->GetColor(
+            ui::kColorSysStateHoverOnSubtle),
+        base_color);
+  };
+  const auto button_matches = [&](SkColor base_color) {
+    const SkColor actual = button_color();
+    return actual == base_color || actual == hovered_color(base_color);
+  };
 
   // Ephemeral groups use neutral colors and do not theme the browser.
-  EXPECT_EQ(button_color(), ephemeral_color());
+  EXPECT_THAT(button_color(), testing::AnyOf(ephemeral_color(),
+                                             hovered_color(ephemeral_color())));
   EXPECT_EQ(browser_widget->user_color_override(), std::nullopt);
 
   model->PromoteEphemeralTabGroup(group_id);
@@ -996,7 +1013,7 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest,
   // The theme change that refreshes the button can be delivered in a later
   // task.
   EXPECT_TRUE(
-      base::test::RunUntil([&]() { return button_color() == group_color(); }));
+      base::test::RunUntil([&]() { return button_matches(group_color()); }));
 
   // A later color change is applied to the now-regular group.
   const tab_groups::TabGroupColorId new_color =
@@ -1007,7 +1024,8 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest,
   model->ChangeTabGroupVisuals(
       group_id, tab_groups::TabGroupVisualData(u"Promoted", new_color));
   RunScheduledLayouts();
-  EXPECT_EQ(button_color(), group_color());
+  EXPECT_THAT(button_color(),
+              testing::AnyOf(group_color(), hovered_color(group_color())));
   EXPECT_NE(browser_widget->user_color_override(), std::nullopt);
 }
 
