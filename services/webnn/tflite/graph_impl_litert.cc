@@ -506,6 +506,10 @@ class GraphImplLiteRt::ComputeResources {
       gpu_options->SetPrecision(graph_requires_fp32_precision
                                     ? ::litert::GpuOptions::Precision::kFp32
                                     : ::litert::GpuOptions::Precision::kFp16);
+      // Explicitly disable constant tensor sharing because WebNN only builds
+      // single-subgraph models so it's not necessary. This avoids some
+      // shared-weight path bugs in ML Drift.
+      gpu_options->EnableConstantTensorSharing(false);
     }
 #if BUILDFLAG(BUILD_LITERT_WITH_XNNPACK)
     accelerators |= ::litert::HwAccelerators::kCpu;
