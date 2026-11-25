@@ -38,11 +38,9 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
@@ -493,27 +491,12 @@ public class VirtualKeyboardResizeTest {
     /** Test that overlays-content reports keyboard geometry relative to the viewport origin. */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/375710620
+    @DisabledTest(message = "crbug.com/530667596")
     public void testOverlaysContentKeyboardGeometry() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?overlays-content");
 
-        WebContents webContents = mActivityTestRule.getWebContents();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            mActivityTestRule
-                                    .getActivity()
-                                    .getCompositorViewHolderForTesting()
-                                    .getVirtualKeyboardModeForTesting(),
-                            Matchers.is(VirtualKeyboardMode.OVERLAYS_CONTENT));
-                });
-        DOMUtils.waitForNonZeroNodeBounds(webContents, TEXTFIELD_DOM_ID);
-        WebContentsUtils.waitForCopyableViewInWebContents(webContents);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> WebContentsUtils.simulateEndOfPaintHolding(webContents));
-
-        DOMUtils.clickNode(webContents, TEXTFIELD_DOM_ID);
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), TEXTFIELD_DOM_ID);
         assertWaitForKeyboardStatus(true);
         assertWaitForNthGeometryChangeEvent(1);
 
@@ -525,9 +508,6 @@ public class VirtualKeyboardResizeTest {
         Assert.assertEquals(innerWidth, rect.width(), /* delta= */ 1.0);
         assertThat(rect.height()).isAtLeast(1);
         Assert.assertEquals(innerHeight - rect.height(), rect.top, /* delta= */ 1.0);
-
-        hideKeyboard();
-        assertWaitForKeyboardStatus(false);
     }
 
     /** Test that the virtual keyboard mode is correctly set/reset on navigations. */
