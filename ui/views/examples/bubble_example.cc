@@ -144,7 +144,7 @@ void BubbleExample::ShowBubble(raw_ptr<Button>* button,
   // |bubble| will be destroyed by its widget when the widget is destroyed.
   auto bubble = std::make_unique<ExampleBubble>(*button, arrow);
   bubble->SetBackgroundColor(colors[(color_index++) % std::size(colors)]);
-  bubble->set_shadow(shadow);
+  bubble->set_shadow_config({.shadow_type = shadow});
   if (persistent) {
     bubble->set_close_on_deactivate(false);
   }

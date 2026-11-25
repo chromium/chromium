@@ -74,7 +74,7 @@ TouchSelectionMenuViews::TouchSelectionMenuViews(
   CHECK(client_, base::NotFatalUntil::M163);
 
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  set_shadow(BubbleBorder::STANDARD_SHADOW);
+  set_shadow_config({.shadow_type = BubbleBorder::STANDARD_SHADOW});
   set_parent_window(context);
   set_margins(gfx::Insets());
   set_corner_radius(kMenuCornerRadius);

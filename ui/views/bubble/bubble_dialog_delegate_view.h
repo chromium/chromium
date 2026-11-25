@@ -403,12 +403,6 @@ class VIEWS_EXPORT BubbleDialogDelegate
   void set_shadow_config(const ShadowConfiguration& shadow_config) {
     shadow_config_ = shadow_config;
   }
-  // DEPRECATED: Use set_shadow_config() instead. Existing callers will be
-  // migrated and this method removed. Only updates the shadow type; other
-  // ShadowConfiguration fields are left unchanged.
-  void set_shadow(BubbleBorder::Shadow shadow) {
-    shadow_config_.shadow_type = shadow;
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   // Border style:
