@@ -283,6 +283,10 @@ DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
   auto table = std::make_unique<views::TableView>(
       model_.get(), std::vector<ui::TableColumn>(1),
       views::TableType::kIconAndText, true);
+  // If the selected tab is removed from the list, clear the selection instead
+  // of selecting whichever tab takes its row, so the user has to pick again.
+  // This matches the window and screen lists.
+  table->SetSelectOnRemove(false);
   table->set_observer(view_observer_.get());
   table->GetViewAccessibility().SetName(accessible_name,
                                         ax::mojom::NameFrom::kAttribute);

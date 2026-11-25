@@ -206,6 +206,45 @@ TEST_F(DesktopMediaTabListTest, LongPageTitle) {
   EXPECT_EQ(preview_label_->GetText(), short_title);
 }
 
+TEST_F(DesktopMediaTabListTest, RemoveSelectedSourceClearsSelectionAndPreview) {
+  test_api_.PressMouseOnSourceAtIndex(0);
+  ASSERT_EQ(tab_list_->GetSelection(), kDesktopMediaID0);
+  ASSERT_TRUE(preview_->GetVisible());
+  ASSERT_FALSE(empty_preview_label_->GetVisible());
+  ASSERT_EQ(preview_label_->GetText(), kSourceName0);
+  ASSERT_TRUE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
+
+  media_list_->RemoveSource(0);
+
+  EXPECT_EQ(tab_list_->GetSelection(), std::nullopt);
+  EXPECT_FALSE(preview_->GetVisible());
+  EXPECT_TRUE(empty_preview_label_->GetVisible());
+  EXPECT_TRUE(preview_label_->GetText().empty());
+  EXPECT_FALSE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
+}
+
+TEST_F(DesktopMediaTabListTest,
+       RemoveUnselectedSourcePreservesSelectionAndPreview) {
+  test_api_.PressMouseOnSourceAtIndex(1);
+  ASSERT_EQ(tab_list_->GetSelection(), kDesktopMediaID1);
+  ASSERT_TRUE(preview_->GetVisible());
+  ASSERT_TRUE(preview_->GetImage().BackedBySameObjectAs(preview_1_));
+  ASSERT_EQ(preview_label_->GetText(), kSourceName1);
+  ASSERT_TRUE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
+
+  media_list_->RemoveSource(0);
+
+  EXPECT_EQ(tab_list_->GetSelection(), kDesktopMediaID1);
+  EXPECT_TRUE(preview_->GetVisible());
+  EXPECT_TRUE(preview_->GetImage().BackedBySameObjectAs(preview_1_));
+  EXPECT_EQ(preview_label_->GetText(), kSourceName1);
+  EXPECT_TRUE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
+}
+
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 class DesktopMediaTabListProtectionTest : public DesktopMediaTabListTest {
  public:
