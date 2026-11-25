@@ -6,10 +6,6 @@ package org.chromium.chrome.browser.touch_to_fill.no_passkeys;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Typeface;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -26,6 +22,7 @@ import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** Implements the content for the no passkeys bottom sheet. */
+// TODO(crbug.com/581058945): Delete this class once AndroidAdaptiveUiTransitions launches.
 @NullMarked
 class NoPasskeysBottomSheetContent implements BottomSheetContent {
     private static final BottomSheetType BOTTOM_SHEET_TYPE =
@@ -35,7 +32,7 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
 
     private final Delegate mDelegate;
     private final Context mContext;
-    private final String mOrigin;
+    private final CharSequence mSubtitle;
     private @Nullable View mContentView;
 
     /** User actions delegated by this bottom sheet. */
@@ -57,13 +54,13 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
      * Creates the BottomSheetContent and inflates the view given a delegate responding to actions.
      *
      * @param context The activity context of the window.
-     * @param origin A formatted {@link String} of the origin to display.
+     * @param subtitle The subtitle to display, with the origin emphasized.
      * @param delegate A {@link Delegate} handling interaction with the sheet.
      */
-    NoPasskeysBottomSheetContent(Context context, String origin, Delegate delegate) {
+    NoPasskeysBottomSheetContent(Context context, CharSequence subtitle, Delegate delegate) {
         mDelegate = delegate;
         mContext = context;
-        mOrigin = origin;
+        mSubtitle = subtitle;
     }
 
     private View createContentView() {
@@ -84,18 +81,8 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
                 .findViewById(R.id.no_passkeys_use_another_device_button)
                 .setOnClickListener(v -> mDelegate.onClickUseAnotherDevice());
 
-        String subtitleString = mContext.getString(R.string.no_passkeys_sheet_subtitle, mOrigin);
-
-        SpannableString spannable = new SpannableString(subtitleString);
-        int startIndex = subtitleString.indexOf(mOrigin);
-        spannable.setSpan(
-                new StyleSpan(Typeface.BOLD),
-                startIndex,
-                startIndex + mOrigin.length(),
-                Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-
         TextView subtitle = contentView.findViewById(R.id.no_passkeys_sheet_subtitle);
-        subtitle.setText(spannable);
+        subtitle.setText(mSubtitle);
         return contentView;
     }
 

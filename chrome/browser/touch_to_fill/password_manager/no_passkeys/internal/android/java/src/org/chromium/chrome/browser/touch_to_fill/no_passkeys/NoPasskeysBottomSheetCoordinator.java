@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.lang.ref.WeakReference;
@@ -35,15 +36,19 @@ public class NoPasskeysBottomSheetCoordinator {
      *
      * @param context The {@link Context} for this component.
      * @param bottomSheetController The {@link BottomSheetController} showing this bottom sheet.
+     * @param adaptiveUiController The {@link AdaptiveUiController} showing the entry when enabled.
      * @param nativeDelegate A {@link NoPasskeysBottomSheetCoordinator.NativeDelegate} to interact
      *     with the native side.
      */
     public NoPasskeysBottomSheetCoordinator(
             WeakReference<Context> context,
             WeakReference<@Nullable BottomSheetController> bottomSheetController,
+            WeakReference<@Nullable AdaptiveUiController> adaptiveUiController,
             NoPasskeysBottomSheetCoordinator.NativeDelegate nativeDelegate) {
         mContext = context;
-        mMediator = new NoPasskeysBottomSheetMediator(bottomSheetController, nativeDelegate);
+        mMediator =
+                new NoPasskeysBottomSheetMediator(
+                        bottomSheetController, adaptiveUiController, nativeDelegate);
     }
 
     /**
@@ -54,9 +59,8 @@ public class NoPasskeysBottomSheetCoordinator {
      * @param origin The formatted origin to render in the bottom sheet.
      */
     public void show(String origin) {
-        if (mContext.get() == null
-                || !mMediator.show(
-                        new NoPasskeysBottomSheetContent(mContext.get(), origin, mMediator))) {
+        Context context = mContext.get();
+        if (context == null || !mMediator.show(context, origin)) {
             destroy();
         }
     }

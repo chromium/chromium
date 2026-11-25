@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.touch_to_fill.no_passkeys;
 
+import static org.junit.Assert.assertNotNull;
+
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
+import android.app.Dialog;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
@@ -23,6 +27,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -34,13 +39,17 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiController;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiControllerImpl;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ImmutableWeakReference;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -85,19 +94,25 @@ public class NoPasskeysBottomSheetRenderTest {
 
     @Mock NoPasskeysBottomSheetCoordinator.NativeDelegate mNativeDelegate;
 
+    private final boolean mNightModeEnabled;
+    private final boolean mUseRtlLayout;
     private InsetObserver mInsetObserver;
     private BottomSheetController mBottomSheetController;
+    private WindowAndroid mWindowAndroid;
+    private AdaptiveUiControllerImpl mAdaptiveUiController;
     private NoPasskeysBottomSheetCoordinator mCoordinator;
 
     public NoPasskeysBottomSheetRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
-        setRtlForTesting(useRtlLayout);
-        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+        mNightModeEnabled = nightModeEnabled;
+        mUseRtlLayout = useRtlLayout;
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
         mRenderTestRule.setVariantPrefix(useRtlLayout ? "RTL" : "LTR");
     }
 
     @Before
     public void setUp() throws InterruptedException {
+        setRtlForTesting(mUseRtlLayout);
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(mNightModeEnabled);
         mActivityRule.launchActivity(null);
         ApplicationTestUtils.waitForActivityState(mActivityRule.getActivity(), Stage.RESUMED);
         runOnUiThreadBlocking(
@@ -112,17 +127,35 @@ public class NoPasskeysBottomSheetRenderTest {
                                     /* enableExtraEdgeToEdgeLogging= */ false);
 
                     mBottomSheetController = createBottomSheetController();
+                    mWindowAndroid =
+                            new WindowAndroid(getActivity(), /* occlusionTrackingAllowed= */ false);
+                    mAdaptiveUiController =
+                            new AdaptiveUiControllerImpl(
+                                    mWindowAndroid,
+                                    getActivity().getModalDialogManager(),
+                                    mBottomSheetController);
                     mCoordinator =
                             new NoPasskeysBottomSheetCoordinator(
                                     new WeakReference<>(getActivity()),
                                     new WeakReference<>(mBottomSheetController),
+                                    new WeakReference<>(null),
                                     mNativeDelegate);
                 });
     }
 
     @After
     public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
         setRtlForTesting(false);
+        runOnUiThreadBlocking(
+                () -> {
+                    if (mAdaptiveUiController != null) {
+                        mAdaptiveUiController.destroy();
+                    }
+                    if (mWindowAndroid != null) {
+                        mWindowAndroid.destroy();
+                    }
+                });
         try { // Because activity may already be closed (e.g. during to last test's tear down).
             finishActivity(getActivity());
         } catch (Exception e) {
@@ -139,6 +172,58 @@ public class NoPasskeysBottomSheetRenderTest {
 
         mRenderTestRule.render(
                 getActivity().findViewById(R.id.bottom_sheet), "touch_to_fill_no_passkeys_sheet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRendersAdaptiveUiSheet() throws IOException {
+        DeviceInfo.setIsDesktopForTesting(false);
+        NoPasskeysBottomSheetCoordinator coordinator =
+                createAdaptiveUiCoordinator(mAdaptiveUiController);
+        runOnUiThreadBlocking(() -> coordinator.show(TEST_ORIGIN));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View sheetView = getActivity().findViewById(R.id.bottom_sheet);
+        if (mUseRtlLayout) {
+            runOnUiThreadBlocking(() -> sheetView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL));
+        }
+        mRenderTestRule.render(sheetView, "touch_to_fill_no_passkeys_adaptive_sheet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRendersAdaptiveUiDialog() throws IOException {
+        DeviceInfo.setIsDesktopForTesting(true);
+        NoPasskeysBottomSheetCoordinator coordinator =
+                createAdaptiveUiCoordinator(mAdaptiveUiController);
+        runOnUiThreadBlocking(() -> coordinator.show(TEST_ORIGIN));
+
+        Dialog dialog =
+                runOnUiThreadBlocking(
+                        () ->
+                                ((AppModalPresenter)
+                                                getActivity()
+                                                        .getModalDialogManager()
+                                                        .getCurrentPresenterForTest())
+                                        .getDialogForTesting());
+        assertNotNull(dialog);
+        assertNotNull(dialog.getWindow());
+        View dialogView = dialog.getWindow().getDecorView();
+        if (mUseRtlLayout) {
+            runOnUiThreadBlocking(() -> dialogView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL));
+        }
+        mRenderTestRule.render(dialogView, "touch_to_fill_no_passkeys_adaptive_dialog");
+    }
+
+    private NoPasskeysBottomSheetCoordinator createAdaptiveUiCoordinator(
+            AdaptiveUiController adaptiveUiController) {
+        return new NoPasskeysBottomSheetCoordinator(
+                new WeakReference<>(getActivity()),
+                new WeakReference<>(mBottomSheetController),
+                new WeakReference<>(adaptiveUiController),
+                mNativeDelegate);
     }
 
     private BlankUiTestActivity getActivity() {

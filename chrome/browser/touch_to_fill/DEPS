@@ -1,6 +1,7 @@
 include_rules = [
   "+chrome/android",
   "+chrome/browser/ui/android/favicon/java",
+  "+components/browser_ui/adaptive_ui/android",
   "+components/browser_ui/bottomsheet/android",
   "+components/favicon/android",
   "+components/device_reauth/device_auth_availability_checker.h",
