@@ -67,6 +67,7 @@ public class CustomTabIncognitoManagerUnitTest {
         mProfileProviderSupplier.set(mProfileProvider);
         doReturn(mOtrProfile).when(mProfileProvider).getOffTheRecordProfile();
         doReturn(mOtrProfile).when(mProfileProvider).getOffTheRecordProfile(any(Boolean.class));
+        doReturn(true).when(mOtrProfile).isOffTheRecord();
         // Derive usesPrimaryOtrProfile() from the stubbed profile type, UI type and opener.
         doCallRealMethod().when(mIntentDataProvider).usesPrimaryOtrProfile();
 
@@ -110,7 +111,7 @@ public class CustomTabIncognitoManagerUnitTest {
         doReturn(true).when(mOtrProfile).isPrimaryOtrProfile();
 
         IncognitoTabHost otherHost = mock(IncognitoTabHost.class);
-        doReturn(true).when(otherHost).hasIncognitoTabs();
+        doReturn(true).when(otherHost).hasIncognitoTabs(mOtrProfile);
         IncognitoTabHostRegistry.getInstance().register(otherHost);
 
         mActivity.finish();
@@ -124,8 +125,8 @@ public class CustomTabIncognitoManagerUnitTest {
         doReturn(true).when(mOtrProfile).isPrimaryOtrProfile();
 
         IncognitoTabHost otherHost = mock(IncognitoTabHost.class);
-        doReturn(false).when(otherHost).hasIncognitoTabs();
-        doReturn(true).when(otherHost).isActiveModel();
+        doReturn(false).when(otherHost).hasIncognitoTabs(mOtrProfile);
+        doReturn(true).when(otherHost).isActiveModel(mOtrProfile);
         IncognitoTabHostRegistry.getInstance().register(otherHost);
 
         mActivity.finish();
@@ -154,8 +155,9 @@ public class CustomTabIncognitoManagerUnitTest {
         // Registered without onFinishNativeInitialization() having run.
         assertEquals(1, IncognitoTabHostRegistry.getInstance().getHosts().size());
         IncognitoTabHost host = IncognitoTabHostRegistry.getInstance().getHosts().get(0);
-        assertTrue(host.hasIncognitoTabs());
-        assertTrue(host.isActiveModel());
+        assertTrue(host.hasIncognitoTabs(/* otrProfile= */ null));
+        assertTrue(host.hasIncognitoTabs(mOtrProfile));
+        assertTrue(host.isActiveModel(mOtrProfile));
 
         mActivity.finish();
         manager.onDestroy();
@@ -194,8 +196,9 @@ public class CustomTabIncognitoManagerUnitTest {
         // A finishing popup has no tabs but keeps the incognito model active until destroyed.
         mActivity.finish();
         assertTrue(mActivity.isFinishing());
-        assertFalse(host.hasIncognitoTabs());
-        assertTrue(host.isActiveModel());
+        assertFalse(host.hasIncognitoTabs(/* otrProfile= */ null));
+        assertFalse(host.hasIncognitoTabs(mOtrProfile));
+        assertTrue(host.isActiveModel(mOtrProfile));
 
         manager.onDestroy();
         assertEquals(0, IncognitoTabHostRegistry.getInstance().getHosts().size());
@@ -223,5 +226,60 @@ public class CustomTabIncognitoManagerUnitTest {
         mIncognitoManager.onDestroy();
 
         verify(mProfileManagerJni, never()).destroyWhenAppropriate(any());
+    }
+
+    @Test
+    public void testOnDestroy_shutdownStarted_doesNotDestroyProfile() {
+        doReturn(false).when(mOtrProfile).isPrimaryOtrProfile();
+        doReturn(true).when(mOtrProfile).shutdownStarted();
+
+        mActivity.finish();
+        mIncognitoManager.onDestroy();
+
+        verify(mProfileManagerJni, never()).destroyWhenAppropriate(any());
+    }
+
+    @Test
+    public void testMultiProfileIsolation() {
+        stubIncognitoPopupOpenedByChrome();
+        Profile otherOtrProfile = mock(Profile.class);
+        doReturn(true).when(otherOtrProfile).isOffTheRecord();
+        doReturn(true).when(otherOtrProfile).isPrimaryOtrProfile();
+        Profile nonPrimaryOtr = mock(Profile.class);
+        doReturn(true).when(nonPrimaryOtr).isOffTheRecord();
+
+        CustomTabIncognitoManager manager = createIncognitoManager();
+        IncognitoTabHost host = IncognitoTabHostRegistry.getInstance().getHosts().get(0);
+        assertTrue(host.hasIncognitoTabs(mOtrProfile));
+        assertTrue(host.isActiveModel(mOtrProfile));
+        assertFalse(host.hasIncognitoTabs(otherOtrProfile));
+        assertFalse(host.isActiveModel(otherOtrProfile));
+
+        // Fail closed for primary OTR queries while ProfileProvider is still pending.
+        OneshotSupplierImpl<ProfileProvider> delayedSupplier = new OneshotSupplierImpl<>();
+        CustomTabIncognitoManager delayedManager =
+                new CustomTabIncognitoManager(
+                        mActivity,
+                        mNavigationController,
+                        mIntentDataProvider,
+                        delayedSupplier,
+                        mLifecycleDispatcher);
+        IncognitoTabHost delayedHost = IncognitoTabHostRegistry.getInstance().getHosts().get(1);
+        assertTrue(delayedHost.hasIncognitoTabs(mOtrProfile));
+        assertTrue(delayedHost.isActiveModel(mOtrProfile));
+        assertFalse(delayedHost.hasIncognitoTabs(nonPrimaryOtr));
+        assertFalse(delayedHost.isActiveModel(nonPrimaryOtr));
+        delayedManager.onDestroy();
+
+        // onDestroy destroys mOtrProfile even when another host is active for a different profile.
+        IncognitoTabHost otherHost = mock(IncognitoTabHost.class);
+        doReturn(true).when(otherHost).hasIncognitoTabs(/* otrProfile= */ null);
+        doReturn(true).when(otherHost).hasIncognitoTabs(otherOtrProfile);
+        doReturn(true).when(otherHost).isActiveModel(otherOtrProfile);
+        IncognitoTabHostRegistry.getInstance().register(otherHost);
+
+        mActivity.finish();
+        manager.onDestroy();
+        verify(mProfileManagerJni).destroyWhenAppropriate(mOtrProfile);
     }
 }

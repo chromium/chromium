@@ -1751,6 +1751,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/gesturenav/TabOnBackGestureHandlerUnitTest.java",
       "src/org/chromium/chrome/browser/gsa/GSAUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/incognito/IncognitoNotificationServiceUnitTest.java",
+      "src/org/chromium/chrome/browser/incognito/IncognitoProfileDestroyerUnitTest.java",
       "src/org/chromium/chrome/browser/incognito/IncognitoWindowNightModeStateProviderUnitTest.java",
       "src/org/chromium/chrome/browser/init/ActivityProfileProviderTest.java",
       "src/org/chromium/chrome/browser/init/AsyncInitTaskRunnerTest.java",

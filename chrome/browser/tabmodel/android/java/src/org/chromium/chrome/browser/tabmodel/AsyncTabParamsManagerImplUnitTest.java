@@ -14,6 +14,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,6 +26,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 
@@ -283,6 +287,62 @@ public class AsyncTabParamsManagerImplUnitTest {
         assertNull(mManager.remove(/* tabId= */ 30));
         assertNotNull(mManager.remove(/* tabId= */ 40));
         assertNull(mManager.remove(/* tabId= */ 50));
+    }
+
+    @Test
+    public void testMultiProfileIncognitoTabScoping() {
+        Profile.Natives profileNatives = mock(Profile.Natives.class);
+        ProfileJni.setInstanceForTesting(profileNatives);
+
+        Profile profileAOtr = mock(Profile.class);
+        when(profileAOtr.isOffTheRecord()).thenReturn(true);
+        Profile profileANonPrimaryOtr = mock(Profile.class);
+        when(profileANonPrimaryOtr.isOffTheRecord()).thenReturn(true);
+        Profile profileBOtr = mock(Profile.class);
+        when(profileBOtr.isOffTheRecord()).thenReturn(true);
+        Profile otherOtr = mock(Profile.class);
+        when(otherOtr.isOffTheRecord()).thenReturn(true);
+
+        AsyncTabParams profileAOtrTabParams =
+                createMockAsyncTabParamsForProfile(/* isIncognito= */ true, profileAOtr);
+        AsyncTabParams profileAOtrWebContentsParams =
+                createMockAsyncTabParamsWithWebContents(/* isIncognito= */ true);
+        when(profileNatives.fromWebContents(profileAOtrWebContentsParams.getWebContents()))
+                .thenReturn(profileAOtr);
+        AsyncTabParams profileBOtrTabParams =
+                createMockAsyncTabParamsForProfile(/* isIncognito= */ true, profileBOtr);
+        AsyncTabParams profileANonPrimaryOtrTabParams =
+                createMockAsyncTabParamsForProfile(/* isIncognito= */ true, profileANonPrimaryOtr);
+
+        mManager.add(/* tabId= */ 1, profileAOtrTabParams);
+        mManager.add(/* tabId= */ 2, mRegularParams);
+        mManager.add(/* tabId= */ 3, profileAOtrWebContentsParams);
+        mManager.add(/* tabId= */ 4, profileBOtrTabParams);
+        mManager.add(/* tabId= */ 5, profileANonPrimaryOtrTabParams);
+
+        assertTrue(IncognitoTabHostUtils.doIncognitoTabsExistForProfile(profileAOtr));
+        assertTrue(IncognitoTabHostUtils.doIncognitoTabsExistForProfile(profileANonPrimaryOtr));
+        assertTrue(IncognitoTabHostUtils.doIncognitoTabsExistForProfile(profileBOtr));
+        assertFalse(IncognitoTabHostUtils.doIncognitoTabsExistForProfile(otherOtr));
+        assertFalse(IncognitoTabHostUtils.isIncognitoTabModelActive(profileAOtr));
+
+        // Removing the Tab-backed entry leaves the WebContents-backed entry matching profileAOtr;
+        // removing it then clears profileAOtr while keeping other OTR profiles true.
+        mManager.remove(/* tabId= */ 1);
+        assertTrue(IncognitoTabHostUtils.doIncognitoTabsExistForProfile(profileAOtr));
+        mManager.remove(/* tabId= */ 3);
+        assertFalse(IncognitoTabHostUtils.doIncognitoTabsExistForProfile(profileAOtr));
+        assertTrue(IncognitoTabHostUtils.doIncognitoTabsExistForProfile(profileANonPrimaryOtr));
+        assertTrue(IncognitoTabHostUtils.doIncognitoTabsExistForProfile(profileBOtr));
+    }
+
+    private AsyncTabParams createMockAsyncTabParamsForProfile(
+            boolean isIncognito, Profile profile) {
+        AsyncTabParams params =
+                createMockAsyncTabParams(
+                        /* isIncognitoBranded= */ isIncognito, /* isOffTheRecord= */ isIncognito);
+        when(assertNonNull(params.getTabToReparent()).getProfile()).thenReturn(profile);
+        return params;
     }
 
     private AsyncTabParams createMockAsyncTabParams(

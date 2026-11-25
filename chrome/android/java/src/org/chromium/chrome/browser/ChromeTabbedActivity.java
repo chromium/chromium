@@ -582,14 +582,19 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private final IncognitoTabHost mIncognitoTabHost =
             new IncognitoTabHost() {
                 @Override
-                public boolean hasIncognitoTabs() {
+                public boolean hasIncognitoTabs(@Nullable Profile otrProfile) {
                     if (!areTabModelsInitialized() || mTabModelSelector == null) {
                         return false;
                     }
                     // Do not check isActivityFinishingOrDestroyed() here: the host must continue
                     // reporting tabs until destroyTabModels() destroys them, preventing premature
                     // profile cleanup by IncognitoProfileDestroyer.
-                    return mTabModelSelector.getModel(/* incognito= */ true).getCount() > 0;
+                    if (mTabModelSelector.getModel(/* incognito= */ true).getCount() == 0) {
+                        return false;
+                    }
+                    return otrProfile == null
+                            || IncognitoTabHostUtils.matchesProfile(
+                                    getProfileProviderSupplier().get(), otrProfile);
                 }
 
                 @Override
@@ -642,11 +647,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 }
 
                 @Override
-                public boolean isActiveModel() {
+                public boolean isActiveModel(Profile otrProfile) {
                     if (!areTabModelsInitialized() || mTabModelSelector == null) {
                         return false;
                     }
-                    return mTabModelSelector.getModel(/* incognito= */ true).isActiveModel();
+                    if (!mTabModelSelector.getModel(/* incognito= */ true).isActiveModel()) {
+                        return false;
+                    }
+                    return IncognitoTabHostUtils.matchesProfile(
+                            getProfileProviderSupplier().get(), otrProfile);
                 }
             };
 
@@ -5865,8 +5874,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 profileProvider != null ? profileProvider.getOffTheRecordProfile() : null;
         if (otrProfile != null
                 && !otrProfile.shutdownStarted()
-                && !IncognitoTabHostUtils.doIncognitoTabsExist()
-                && !IncognitoTabHostUtils.isIncognitoTabModelActive()) {
+                && !IncognitoTabHostUtils.doIncognitoTabsExistForProfile(otrProfile)
+                && !IncognitoTabHostUtils.isIncognitoTabModelActive(otrProfile)) {
             ProfileManager.destroyWhenAppropriate(otrProfile);
         }
     }

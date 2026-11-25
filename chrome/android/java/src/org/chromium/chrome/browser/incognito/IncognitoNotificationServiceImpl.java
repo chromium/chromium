@@ -79,12 +79,14 @@ public class IncognitoNotificationServiceImpl extends SplitCompatIntentService.I
                     }
                     IncognitoNotificationManager.dismissIncognitoNotification();
 
-                    if (BrowserStartupController.getInstance().isFullBrowserStarted()
-                            && !IncognitoTabHostUtils.isIncognitoTabModelActive()) {
+                    if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
                         for (Profile profile : ProfileManager.getLoadedProfiles()) {
                             Profile otrProfile =
                                     profile.getPrimaryOtrProfile(/* createIfNeeded= */ false);
-                            if (otrProfile != null && !otrProfile.shutdownStarted()) {
+                            if (otrProfile != null
+                                    && !otrProfile.shutdownStarted()
+                                    && !IncognitoTabHostUtils.isIncognitoTabModelActive(
+                                            otrProfile)) {
                                 ProfileManager.destroyWhenAppropriate(otrProfile);
                             }
                         }

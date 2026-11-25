@@ -213,7 +213,7 @@ public class InAppUpdateRestartTaskTest {
     public void testOnStartTask_incognitoTabsOpen_finishesWithoutInstall() {
         InAppUpdatePolicy.setUpdateDownloaded(true);
         IncognitoTabHost host = mock(IncognitoTabHost.class);
-        when(host.hasIncognitoTabs()).thenReturn(true);
+        when(host.hasIncognitoTabs(/* otrProfile= */ null)).thenReturn(true);
         IncognitoTabHostRegistry.getInstance().register(host);
 
         var watcher = expectEvents(InAppUpdateBackgroundRestartEvent.SKIPPED_INCOGNITO);

@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.tabmodel
 
 import android.util.SparseArray
+import org.chromium.chrome.browser.profiles.Profile
 import org.chromium.chrome.browser.tab.Tab
 
 /**
@@ -65,11 +66,11 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
   ) : IncognitoTabHost {
 
     @SuppressWarnings("UseKtx")
-    override fun hasIncognitoTabs(): Boolean {
+    override fun hasIncognitoTabs(otrProfile: Profile?): Boolean {
       val params = mAsyncTabParamsManager.mAsyncTabParams
       for (i in 0 until params.size()) {
         val param = params.valueAt(i)
-        if (param.isIncognito) {
+        if (param.isIncognito && param.matchesProfile(otrProfile)) {
           return true
         }
       }
@@ -79,7 +80,8 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
     @SuppressWarnings("UseKtx")
     override fun closeAllIncognitoTabs() {
       val params = mAsyncTabParamsManager.mAsyncTabParams
-      // Iterate in reverse to avoid SparseArray index shifting / gc() compaction hazards when removing elements.
+      // Iterate in reverse to avoid SparseArray index shifting / gc() compaction hazards when
+      // removing elements.
       for (i in params.size() - 1 downTo 0) {
         val param = params.valueAt(i)
         if (param.isIncognito) {
@@ -93,8 +95,15 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
       closeAllIncognitoTabs()
     }
 
-    override fun isActiveModel() = false
+    override fun isActiveModel(otrProfile: Profile) = false
   }
+}
+
+private fun AsyncTabParams.matchesProfile(targetOtrProfile: Profile?): Boolean {
+  if (targetOtrProfile == null) return true
+  val entryProfile: Profile? =
+    tabToReparent?.profile ?: webContents?.let { Profile.fromWebContents(it) }
+  return entryProfile == targetOtrProfile
 }
 
 private val AsyncTabParams.isIncognito: Boolean

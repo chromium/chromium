@@ -29,10 +29,9 @@ public class CustomTabIncognitoManager implements DestroyObserver {
     private final Activity mActivity;
     private final CustomTabActivityNavigationController mNavigationController;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
+    private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
     private @Nullable IncognitoCustomTabHost mIncognitoTabHost;
-
-    private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
     public CustomTabIncognitoManager(
             Activity activity,
@@ -71,9 +70,10 @@ public class CustomTabIncognitoManager implements DestroyObserver {
         if (profileProvider == null) return;
         Profile otrProfile = profileProvider.getOffTheRecordProfile();
         if (otrProfile != null
+                && !otrProfile.shutdownStarted()
                 && (!otrProfile.isPrimaryOtrProfile()
-                        || (!IncognitoTabHostUtils.doIncognitoTabsExist()
-                                && !IncognitoTabHostUtils.isIncognitoTabModelActive()))) {
+                        || (!IncognitoTabHostUtils.doIncognitoTabsExistForProfile(otrProfile)
+                                && !IncognitoTabHostUtils.isIncognitoTabModelActive(otrProfile)))) {
             ProfileManager.destroyWhenAppropriate(otrProfile);
         }
     }
@@ -85,8 +85,11 @@ public class CustomTabIncognitoManager implements DestroyObserver {
      */
     private class IncognitoCustomTabHost implements IncognitoTabHost {
         @Override
-        public boolean hasIncognitoTabs() {
-            return !mActivity.isFinishing();
+        public boolean hasIncognitoTabs(@Nullable Profile otrProfile) {
+            if (mActivity.isFinishing()) {
+                return false;
+            }
+            return otrProfile == null || isActiveModel(otrProfile);
         }
 
         @Override
@@ -100,8 +103,14 @@ public class CustomTabIncognitoManager implements DestroyObserver {
         }
 
         @Override
-        public boolean isActiveModel() {
-            return true;
+        public boolean isActiveModel(Profile otrProfile) {
+            ProfileProvider profileProvider = mProfileProviderSupplier.get();
+            if (profileProvider == null) {
+                // Fail closed while ProfileProvider is pending so the shared primary OTR profile
+                // is held from creation rather than from native init.
+                return otrProfile.isPrimaryOtrProfile();
+            }
+            return IncognitoTabHostUtils.matchesProfile(profileProvider, otrProfile);
         }
     }
 }

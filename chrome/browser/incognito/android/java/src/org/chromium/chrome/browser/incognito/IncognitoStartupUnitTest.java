@@ -88,6 +88,7 @@ public class IncognitoStartupUnitTest {
         IncognitoTabHostRegistry.getInstance().clearForTesting();
 
         doReturn(mOtrProfile).when(mProfileProvider).getOffTheRecordProfile();
+        doReturn(true).when(mOtrProfile).isOffTheRecord();
         doReturn(mCurrentTabModel).when(mTabModelSelector).getCurrentModel();
         doReturn(false).when(mCurrentTabModel).isIncognito();
         mTabModelSelectorSupplier = ObservableSuppliers.createMonotonic();
@@ -142,10 +143,12 @@ public class IncognitoStartupUnitTest {
         mRunningActivities.add(activity);
     }
 
-    private static void registerHost(boolean hasIncognitoTabs, boolean isActiveModel) {
+    private static void registerHost(
+            Profile profile, boolean hasIncognitoTabs, boolean isActiveModel) {
         IncognitoTabHost host = mock(IncognitoTabHost.class);
-        doReturn(hasIncognitoTabs).when(host).hasIncognitoTabs();
-        doReturn(isActiveModel).when(host).isActiveModel();
+        doReturn(hasIncognitoTabs).when(host).hasIncognitoTabs(/* otrProfile= */ null);
+        doReturn(hasIncognitoTabs).when(host).hasIncognitoTabs(profile);
+        doReturn(isActiveModel).when(host).isActiveModel(profile);
         IncognitoTabHostRegistry.getInstance().register(host);
     }
 
@@ -169,7 +172,7 @@ public class IncognitoStartupUnitTest {
     @Test
     public void testNoTabbedTasksInRecents_noIncognitoHosts_destroysProfile() {
         setRecentTabbedTasks();
-        registerHost(/* hasIncognitoTabs= */ false, /* isActiveModel= */ false);
+        registerHost(mOtrProfile, /* hasIncognitoTabs= */ false, /* isActiveModel= */ false);
 
         onResumeWithNative();
 
@@ -182,7 +185,7 @@ public class IncognitoStartupUnitTest {
         // E.g. an Incognito window removed its task via finishAndRemoveTask() when its last tab
         // closed, and is still finishing onStop()/onDestroy() when another Activity resumes.
         setRecentTabbedTasks();
-        registerHost(/* hasIncognitoTabs= */ false, /* isActiveModel= */ true);
+        registerHost(mOtrProfile, /* hasIncognitoTabs= */ false, /* isActiveModel= */ true);
 
         onResumeWithNative();
 
@@ -204,7 +207,7 @@ public class IncognitoStartupUnitTest {
     @Test
     public void testAllTabbedTasksAlive_noIncognitoTabs_destroysProfile() {
         setUpAllTabbedTasksAliveWithoutIncognito();
-        registerHost(/* hasIncognitoTabs= */ false, /* isActiveModel= */ false);
+        registerHost(mOtrProfile, /* hasIncognitoTabs= */ false, /* isActiveModel= */ false);
 
         onResumeWithNative();
 
@@ -215,7 +218,7 @@ public class IncognitoStartupUnitTest {
     @Test
     public void testAllTabbedTasksAlive_hostHasIncognitoTabs_doesNotDestroyProfile() {
         setUpAllTabbedTasksAliveWithoutIncognito();
-        registerHost(/* hasIncognitoTabs= */ true, /* isActiveModel= */ false);
+        registerHost(mOtrProfile, /* hasIncognitoTabs= */ true, /* isActiveModel= */ false);
 
         onResumeWithNative();
 
@@ -227,7 +230,7 @@ public class IncognitoStartupUnitTest {
     public void testAllTabbedTasksAlive_hostIsActiveModelWithoutTabs_doesNotDestroyProfile() {
         setUpAllTabbedTasksAliveWithoutIncognito();
         // E.g. a popup Custom Tab that is finishing but not yet destroyed.
-        registerHost(/* hasIncognitoTabs= */ false, /* isActiveModel= */ true);
+        registerHost(mOtrProfile, /* hasIncognitoTabs= */ false, /* isActiveModel= */ true);
 
         onResumeWithNative();
 
@@ -244,5 +247,17 @@ public class IncognitoStartupUnitTest {
 
         verify(mProfileManagerJni, never()).destroyWhenAppropriate(any());
         verify(mCookiesFetcher).restoreCookies(any());
+    }
+
+    @Test
+    public void testAllTabbedTasksAlive_otherProfileHasIncognito_destroysProfile() {
+        setUpAllTabbedTasksAliveWithoutIncognito();
+        Profile otherOtrProfile = mock(Profile.class);
+        registerHost(otherOtrProfile, /* hasIncognitoTabs= */ true, /* isActiveModel= */ true);
+
+        onResumeWithNative();
+
+        verify(mProfileManagerJni).destroyWhenAppropriate(mOtrProfile);
+        verify(mCookiesFetcher, never()).restoreCookies(any());
     }
 }

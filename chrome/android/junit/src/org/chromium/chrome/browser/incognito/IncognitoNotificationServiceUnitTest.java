@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.incognito;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -221,7 +220,7 @@ public class IncognitoNotificationServiceUnitTest {
         mRegisteredHost =
                 new IncognitoTabHost() {
                     @Override
-                    public boolean hasIncognitoTabs() {
+                    public boolean hasIncognitoTabs(@Nullable Profile otrProfile) {
                         return false;
                     }
 
@@ -235,7 +234,7 @@ public class IncognitoNotificationServiceUnitTest {
                     public void closeAllIncognitoTabsOnInit() {}
 
                     @Override
-                    public boolean isActiveModel() {
+                    public boolean isActiveModel(Profile otrProfile) {
                         return false;
                     }
                 };
@@ -261,11 +260,13 @@ public class IncognitoNotificationServiceUnitTest {
 
         Profile profileWithActiveOtrA = mock(Profile.class);
         Profile activeOtrA = mock(Profile.class);
+        when(activeOtrA.isOffTheRecord()).thenReturn(true);
         when(profileWithActiveOtrA.getPrimaryOtrProfile(/* createIfNeeded= */ false))
                 .thenReturn(activeOtrA);
 
         Profile profileWithActiveOtrB = mock(Profile.class);
         Profile activeOtrB = mock(Profile.class);
+        when(activeOtrB.isOffTheRecord()).thenReturn(true);
         when(profileWithActiveOtrB.getPrimaryOtrProfile(/* createIfNeeded= */ false))
                 .thenReturn(activeOtrB);
 
@@ -302,13 +303,26 @@ public class IncognitoNotificationServiceUnitTest {
     @Test
     public void testCloseAllIncognitoNotification_skipsDestroyWhenIncognitoModelActive() {
         when(mBrowserStartupController.isFullBrowserStarted()).thenReturn(true);
+
+        Profile profileA = mock(Profile.class);
+        Profile activeOtrA = mock(Profile.class);
+        when(activeOtrA.isOffTheRecord()).thenReturn(true);
+        when(profileA.getPrimaryOtrProfile(/* createIfNeeded= */ false)).thenReturn(activeOtrA);
+
+        Profile profileB = mock(Profile.class);
+        Profile activeOtrB = mock(Profile.class);
+        when(activeOtrB.isOffTheRecord()).thenReturn(true);
+        when(profileB.getPrimaryOtrProfile(/* createIfNeeded= */ false)).thenReturn(activeOtrB);
+
+        when(mProfileManagerJni.getLoadedProfiles()).thenReturn(List.of(profileA, profileB));
+
         // The incognito model can remain active while closing after its tabs are closed.
         mRegisteredHost =
                 new IncognitoTabHost() {
                     private boolean mHasIncognitoTabs = true;
 
                     @Override
-                    public boolean hasIncognitoTabs() {
+                    public boolean hasIncognitoTabs(@Nullable Profile otrProfile) {
                         return mHasIncognitoTabs;
                     }
 
@@ -321,8 +335,8 @@ public class IncognitoNotificationServiceUnitTest {
                     public void closeAllIncognitoTabsOnInit() {}
 
                     @Override
-                    public boolean isActiveModel() {
-                        return true;
+                    public boolean isActiveModel(Profile otrProfile) {
+                        return otrProfile.equals(activeOtrA);
                     }
                 };
         IncognitoTabHostRegistry.getInstance().register(mRegisteredHost);
@@ -330,8 +344,8 @@ public class IncognitoNotificationServiceUnitTest {
         IncognitoNotificationServiceImpl service = new IncognitoNotificationServiceImpl();
         service.onHandleIntent(null);
 
-        verify(mProfileManagerJni, never()).getLoadedProfiles();
-        verify(mProfileManagerJni, never()).destroyWhenAppropriate(any());
+        verify(mProfileManagerJni, never()).destroyWhenAppropriate(activeOtrA);
+        verify(mProfileManagerJni).destroyWhenAppropriate(activeOtrB);
     }
 
     private static AppTask createTabbedTask(Map<AppTask, RecentTaskInfo> taskInfos, int taskId) {

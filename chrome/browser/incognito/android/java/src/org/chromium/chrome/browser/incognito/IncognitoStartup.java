@@ -39,6 +39,7 @@ public class IncognitoStartup {
         Profile otrProfile = profileProvider.getOffTheRecordProfile();
         if (otrProfile != null
                 && shouldDestroyIncognitoProfileOnStartup(
+                        otrProfile,
                         assumeNonNull(tabModelSelectorSupplier.get())
                                 .getCurrentModel()
                                 .isIncognito(),
@@ -57,7 +58,7 @@ public class IncognitoStartup {
      */
     @SuppressLint("NewApi")
     private static boolean shouldDestroyIncognitoProfileOnStartup(
-            boolean selectedTabModelIsIncognito, Set<String> componentNames) {
+            Profile otrProfile, boolean selectedTabModelIsIncognito, Set<String> componentNames) {
         Set<Pair<AppTask, RecentTaskInfo>> tabbedModeTasks =
                 AndroidTaskUtils.getRecentAppTasksMatchingComponentNames(
                         ContextUtils.getApplicationContext(), componentNames);
@@ -72,12 +73,12 @@ public class IncognitoStartup {
         }
 
         // If all tabbed mode tasks listed in Android recents are alive, check to see if
-        // any incognito tabs exist, any incognito tab model is active or the current tab model is
-        // incognito. If not, we should destroy the incognito profile; otherwise it's not safe to
-        // do so yet.
+        // any incognito tabs exist or any incognito tab model is active for {@code otrProfile}, or
+        // the current tab model is incognito. If not, we should destroy the incognito profile;
+        // otherwise it's not safe to do so yet.
         if (tabbedModeTaskIds.isEmpty()) {
-            return !(IncognitoTabHostUtils.doIncognitoTabsExist()
-                    || IncognitoTabHostUtils.isIncognitoTabModelActive()
+            return !(IncognitoTabHostUtils.doIncognitoTabsExistForProfile(otrProfile)
+                    || IncognitoTabHostUtils.isIncognitoTabModelActive(otrProfile)
                     || selectedTabModelIsIncognito);
         }
 

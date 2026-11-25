@@ -302,14 +302,22 @@ public class ChromeTabbedActivityUnitTest {
     public void testIncognitoTabHost_uninitializedTabModels() {
         IncognitoTabHost host = mActivity.getIncognitoTabHostForTesting();
         assertFalse(mActivity.areTabModelsInitialized());
-        assertFalse(host.hasIncognitoTabs());
-        assertFalse(host.isActiveModel());
+        assertFalse(host.hasIncognitoTabs(/* otrProfile= */ null));
+        assertFalse(host.isActiveModel(mock(Profile.class)));
     }
 
     @Test
     public void testIncognitoTabHost_initializedTabModels() {
         TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
         activity.setAreTabModelsInitialized(true);
+        Profile otrProfile = mock(Profile.class);
+        when(otrProfile.isOffTheRecord()).thenReturn(true);
+        ProfileProvider profileProvider = mock(ProfileProvider.class);
+        when(profileProvider.getOffTheRecordProfile()).thenReturn(otrProfile);
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(profileProvider);
+        activity.setProfileProviderSupplierForTesting(profileProviderSupplier);
+
         TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
         TabModel incognitoTabModel = mock(TabModel.class);
         when(tabModelSelector.getModel(/* incognito= */ true)).thenReturn(incognitoTabModel);
@@ -318,18 +326,21 @@ public class ChromeTabbedActivityUnitTest {
         activity.setTabModelSelectorForTesting(tabModelSelector);
 
         IncognitoTabHost host = activity.getIncognitoTabHostForTesting();
-        assertTrue(host.hasIncognitoTabs());
-        assertTrue(host.isActiveModel());
+        assertTrue(host.hasIncognitoTabs(/* otrProfile= */ null));
+        assertTrue(host.hasIncognitoTabs(otrProfile));
+        assertTrue(host.isActiveModel(otrProfile));
 
         // An activity that is finishing must still report living incognito tabs until tab models
         // are actually destroyed.
         activity.setIsActivityFinishingOrDestroyed(true);
-        assertTrue(host.hasIncognitoTabs());
+        assertTrue(host.hasIncognitoTabs(/* otrProfile= */ null));
+        assertTrue(host.hasIncognitoTabs(otrProfile));
 
         when(incognitoTabModel.getCount()).thenReturn(0);
         when(incognitoTabModel.isActiveModel()).thenReturn(false);
-        assertFalse(host.hasIncognitoTabs());
-        assertFalse(host.isActiveModel());
+        assertFalse(host.hasIncognitoTabs(/* otrProfile= */ null));
+        assertFalse(host.hasIncognitoTabs(otrProfile));
+        assertFalse(host.isActiveModel(otrProfile));
     }
 
     @Test
@@ -452,6 +463,7 @@ public class ChromeTabbedActivityUnitTest {
         activity.setDidFinishNativeInitialization(true);
 
         Profile otrProfile = mock(Profile.class);
+        when(otrProfile.isOffTheRecord()).thenReturn(true);
         when(otrProfile.shutdownStarted()).thenReturn(false);
         ProfileProvider profileProvider = mock(ProfileProvider.class);
         when(profileProvider.getOffTheRecordProfile()).thenReturn(otrProfile);
@@ -478,6 +490,7 @@ public class ChromeTabbedActivityUnitTest {
         activity.setDidFinishNativeInitialization(true);
 
         Profile otrProfile = mock(Profile.class);
+        when(otrProfile.isOffTheRecord()).thenReturn(true);
         when(otrProfile.shutdownStarted()).thenReturn(false);
         ProfileProvider profileProvider = mock(ProfileProvider.class);
         when(profileProvider.getOffTheRecordProfile()).thenReturn(otrProfile);
@@ -486,7 +499,7 @@ public class ChromeTabbedActivityUnitTest {
         activity.setProfileProviderSupplierForTesting(profileProviderSupplier);
 
         IncognitoTabHost otherHost = mock(IncognitoTabHost.class);
-        when(otherHost.isActiveModel()).thenReturn(true);
+        when(otherHost.isActiveModel(otrProfile)).thenReturn(true);
         IncognitoTabHostRegistry.getInstance().register(otherHost);
 
         activity.maybeRegisterIncognitoTabHost();
@@ -494,6 +507,57 @@ public class ChromeTabbedActivityUnitTest {
         activity.onPostDestroy();
 
         verify(profileManagerJni, never()).destroyWhenAppropriate(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
+    public void testIncognitoTabHost_multiProfileIsolation() {
+        ProfileManager.Natives profileManagerJni = mock(ProfileManager.Natives.class);
+        ProfileManagerJni.setInstanceForTesting(profileManagerJni);
+
+        Profile otrProfileA = mock(Profile.class);
+        when(otrProfileA.isOffTheRecord()).thenReturn(true);
+        Profile otrProfileB = mock(Profile.class);
+        when(otrProfileB.isOffTheRecord()).thenReturn(true);
+
+        ProfileProvider profileProviderA = mock(ProfileProvider.class);
+        when(profileProviderA.getOffTheRecordProfile()).thenReturn(otrProfileA);
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(profileProviderA);
+
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        TabModel incognitoTabModel = mock(TabModel.class);
+        when(tabModelSelector.getModel(/* incognito= */ true)).thenReturn(incognitoTabModel);
+        when(incognitoTabModel.getCount()).thenReturn(1);
+        when(incognitoTabModel.isActiveModel()).thenReturn(true);
+
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        activity.setSupportedProfileTypeForTesting(SupportedProfileType.OFF_THE_RECORD);
+        activity.setDidFinishNativeInitialization(true);
+        activity.setAreTabModelsInitialized(true);
+        activity.setProfileProviderSupplierForTesting(profileProviderSupplier);
+        activity.setTabModelSelectorForTesting(tabModelSelector);
+
+        IncognitoTabHost host = activity.getIncognitoTabHostForTesting();
+
+        assertTrue(host.hasIncognitoTabs(otrProfileA));
+        assertFalse(host.hasIncognitoTabs(otrProfileB));
+
+        assertTrue(host.isActiveModel(otrProfileA));
+        assertFalse(host.isActiveModel(otrProfileB));
+
+        IncognitoTabHost otherHost = mock(IncognitoTabHost.class);
+        when(otherHost.hasIncognitoTabs(/* otrProfile= */ null)).thenReturn(true);
+        when(otherHost.hasIncognitoTabs(otrProfileB)).thenReturn(true);
+        when(otherHost.isActiveModel(otrProfileB)).thenReturn(true);
+        IncognitoTabHostRegistry.getInstance().register(otherHost);
+
+        activity.setIsFinishing(true);
+        activity.maybeRegisterIncognitoTabHost();
+        activity.destroyTabModels();
+        activity.onPostDestroy();
+
+        verify(profileManagerJni).destroyWhenAppropriate(otrProfileA);
     }
 
     @Test

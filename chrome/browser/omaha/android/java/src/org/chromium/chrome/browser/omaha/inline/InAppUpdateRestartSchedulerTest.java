@@ -299,7 +299,7 @@ public class InAppUpdateRestartSchedulerTest {
     @Test
     public void testSkip_whenIncognitoTabsOpen() {
         IncognitoTabHost host = mock(IncognitoTabHost.class);
-        when(host.hasIncognitoTabs()).thenReturn(true);
+        when(host.hasIncognitoTabs(/* otrProfile= */ null)).thenReturn(true);
         IncognitoTabHostRegistry.getInstance().register(host);
         var watcher = expectEvents(InAppUpdateBackgroundRestartEvent.SKIPPED_INCOGNITO);
 
@@ -468,7 +468,7 @@ public class InAppUpdateRestartSchedulerTest {
         InAppUpdatePolicy.setUpdateDownloaded(true);
 
         IncognitoTabHost host = mock(IncognitoTabHost.class);
-        when(host.hasIncognitoTabs()).thenReturn(true);
+        when(host.hasIncognitoTabs(/* otrProfile= */ null)).thenReturn(true);
         IncognitoTabHostRegistry.getInstance().register(host);
         InAppUpdateRestartScheduler.scheduleForegroundServiceRetry(0);
         assertNothingScheduled();
