@@ -4,6 +4,7 @@
 
 #include "components/browser_actuator/internal/browser_actuator_task_client_impl.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -16,20 +17,42 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "components/browser_actuator/internal/proto/task_ingress.pb.h"
 #include "components/browser_actuator/internal/task_ingress_transport_handler_factory.h"
 #include "components/browser_actuator/public/browser_actuator_task_client.h"
+#include "components/browser_actuator/public/features.h"
 #include "components/stream_transport/public/common.h"
 #include "components/stream_transport/public/payload_type_mapping.h"
+#include "components/stream_transport/public/transport_channel.h"
 #include "components/stream_transport/public/transport_service.h"
 #include "components/stream_transport/public/transport_session.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace browser_actuator {
 
+BASE_FEATURE_PARAM(int,
+                   kTaskIngressMaxStartRetries,
+                   &kBrowserActuatorTaskIngress,
+                   2);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTaskIngressStartRetryDelay,
+                   &kBrowserActuatorTaskIngress,
+                   base::Seconds(1));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTaskIngressIdleTimeout,
+                   &kBrowserActuatorTaskIngress,
+                   base::Minutes(5));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTaskIngressPostCompletionCloseDelay,
+                   &kBrowserActuatorTaskIngress,
+                   base::Seconds(5));
+
 namespace {
+
+constexpr int kMaxBackoffShift = 6;
 
 TaskUseCase ToProtoTaskUseCase(BrowserActuatorTaskClient::UseCase use_case) {
   switch (use_case) {
@@ -86,6 +109,23 @@ BrowserActuatorTaskClient::CompletionStatus ToClientStatus(
   }
 }
 
+std::string DescribeStartSessionError(
+    stream_transport::StartClientSessionError error) {
+  switch (error) {
+    case stream_transport::StartClientSessionError::kChannelUnavailable:
+      return "Transport channel is unavailable";
+    case stream_transport::StartClientSessionError::kSessionLimitReached:
+      return "Active transport session limit reached";
+    case stream_transport::StartClientSessionError::kSessionIdConflict:
+      return "Transport session ID conflict";
+    case stream_transport::StartClientSessionError::kTransientError:
+      return "Transient transport session start error";
+    case stream_transport::StartClientSessionError::kPermanentError:
+      return "Permanent transport session start error";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 BrowserActuatorTaskClientImpl::BrowserActuatorTaskClientImpl(
@@ -99,11 +139,18 @@ BrowserActuatorTaskClientImpl::BrowserActuatorTaskClientImpl(
   CHECK(device_id_provider_);
   if (handler_factory_) {
     handler_factory_->TrackClient(weak_ptr_factory_.GetWeakPtr());
+    if (stream_transport::TransportChannel* channel =
+            transport_service_->GetChannel();
+        channel && channel->GetSessionRegistry()) {
+      session_registry_observation_.Observe(channel->GetSessionRegistry());
+    }
   }
 }
 
 BrowserActuatorTaskClientImpl::~BrowserActuatorTaskClientImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  session_registry_observation_.Reset();
+  StopAllTimers();
   if (state_ != State::kDone) {
     UnregisterSession();
   }
@@ -127,37 +174,38 @@ void BrowserActuatorTaskClientImpl::StartTask(
     return;
   }
   CHECK_EQ(state_, State::kIdle);
-  std::string client_id = device_id_provider_.Run();
-  if (client_id.empty()) {
+  client_id_ = device_id_provider_.Run();
+  if (client_id_.empty()) {
     state_ = State::kDone;
     NotifyTaskCompleted(
         {CompletionStatus::kFailed, "Sync device ID is unavailable"});
     return;
   }
-  auto [type_url, serialized_payload] = PackFeaturePayload(use_case, payload);
-  SendStartRequest(use_case, std::move(type_url), std::move(serialized_payload),
-                   std::move(client_id));
+  use_case_ = use_case;
+  PackedPayload packed = PackFeaturePayload(use_case, payload);
+  type_url_ = std::move(packed.type_url);
+  payload_ = std::move(packed.value);
+  start_retries_remaining_ = std::max(0, kTaskIngressMaxStartRetries.Get());
+  transient_retry_count_ = 0;
+  current_session_had_transient_error_ = false;
+  session_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  SendStartRequest();
 }
 
-void BrowserActuatorTaskClientImpl::SendStartRequest(
-    UseCase use_case,
-    std::string type_url,
-    std::string serialized_payload,
-    std::string client_id) {
+void BrowserActuatorTaskClientImpl::SendStartRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(transport_service_);
   state_ = State::kStarting;
-  session_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
   if (handler_factory_) {
     handler_factory_->RegisterSessionClient(session_id_,
                                             weak_ptr_factory_.GetWeakPtr());
   }
   TaskIngressUpstreamPayload payload;
   StartTaskCommand* cmd = payload.mutable_start_task();
-  cmd->set_use_case(ToProtoTaskUseCase(use_case));
-  cmd->mutable_feature_payload()->set_type_url(std::move(type_url));
-  cmd->mutable_feature_payload()->set_value(std::move(serialized_payload));
-  cmd->set_client_id(std::move(client_id));
+  cmd->set_use_case(ToProtoTaskUseCase(use_case_));
+  cmd->mutable_feature_payload()->set_type_url(type_url_);
+  cmd->mutable_feature_payload()->set_value(payload_);
+  cmd->set_client_id(client_id_);
   pending_session_ = transport_service_->StartClientSession(
       session_id_, stream_transport::PayloadType::kTaskIngress, payload,
       base::BindOnce(&BrowserActuatorTaskClientImpl::OnSessionStarted,
@@ -178,14 +226,50 @@ void BrowserActuatorTaskClientImpl::OnSessionStarted(
   }
   if (res.has_value()) {
     CHECK(res.value());
+    ClearStartupBuffers();
     has_active_session_ = true;
     state_ = State::kAccepted;
-  } else {
-    state_ = State::kDone;
-    UnregisterSession();
-    NotifyTaskCompleted(
-        {CompletionStatus::kFailed, "Failed to start transport session"});
+    ResetIdleTimer();
+    return;
   }
+  if (start_retries_remaining_ > 0) {
+    switch (res.error()) {
+      case stream_transport::StartClientSessionError::kTransientError: {
+        --start_retries_remaining_;
+        current_session_had_transient_error_ = true;
+        int shift = std::min(transient_retry_count_++, kMaxBackoffShift);
+        base::TimeDelta base_delay =
+            std::max(base::TimeDelta(), kTaskIngressStartRetryDelay.Get());
+        start_retry_timer_.Start(
+            FROM_HERE, base_delay * (1 << shift),
+            base::BindOnce(&BrowserActuatorTaskClientImpl::SendStartRequest,
+                           weak_ptr_factory_.GetWeakPtr()));
+        return;
+      }
+      case stream_transport::StartClientSessionError::kSessionIdConflict:
+        // If this `session_id_` already experienced a `kTransientError`, the
+        // earlier attempt may have succeeded on the server with a lost 200 OK.
+        // Rotating to a new UUID would spawn a duplicate Agency session.
+        if (current_session_had_transient_error_) {
+          break;
+        }
+        --start_retries_remaining_;
+        UnregisterSession();
+        session_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
+        SendStartRequest();
+        return;
+      case stream_transport::StartClientSessionError::kChannelUnavailable:
+      case stream_transport::StartClientSessionError::kSessionLimitReached:
+      case stream_transport::StartClientSessionError::kPermanentError:
+        break;
+    }
+  }
+  state_ = State::kDone;
+  session_registry_observation_.Reset();
+  ClearStartupBuffers();
+  UnregisterSession();
+  NotifyTaskCompleted(
+      {CompletionStatus::kFailed, DescribeStartSessionError(res.error())});
 }
 
 void BrowserActuatorTaskClientImpl::Cancel() {
@@ -194,6 +278,9 @@ void BrowserActuatorTaskClientImpl::Cancel() {
     return;
   }
   state_ = State::kDone;
+  session_registry_observation_.Reset();
+  StopAllTimers();
+  ClearStartupBuffers();
   UnregisterSession();
   ClosePendingSession();
   CloseActiveSession();
@@ -204,6 +291,7 @@ void BrowserActuatorTaskClientImpl::OnTaskStartedEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == State::kAccepted) {
     state_ = State::kRunning;
+    ResetIdleTimer();
     if (observer_) {
       observer_->OnTaskStarted();
     }
@@ -214,6 +302,7 @@ void BrowserActuatorTaskClientImpl::OnWorklogUpdateEvent(
     std::string_view step_description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == State::kRunning && observer_) {
+    ResetIdleTimer();
     observer_->OnWorklogUpdate(step_description);
   }
 }
@@ -226,12 +315,28 @@ void BrowserActuatorTaskClientImpl::OnTaskCompletedEvent(
     return;
   }
   state_ = State::kDone;
+  idle_timer_.Stop();
   UnregisterSession();
-  CloseActiveSession();
+  if (base::TimeDelta delay = kTaskIngressPostCompletionCloseDelay.Get();
+      delay.is_positive()) {
+    post_completion_close_timer_.Start(
+        FROM_HERE, delay,
+        base::BindOnce(
+            &BrowserActuatorTaskClientImpl::OnPostCompletionCloseTimeout,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OnPostCompletionCloseTimeout();
+  }
   if (BrowserActuatorTaskClient::Observer* obs =
           std::exchange(observer_, nullptr)) {
     obs->OnTaskCompleted({ToClientStatus(status), std::string(error_message)});
   }
+}
+
+void BrowserActuatorTaskClientImpl::OnPostCompletionCloseTimeout() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  session_registry_observation_.Reset();
+  CloseActiveSession();
 }
 
 void BrowserActuatorTaskClientImpl::DetachForShutdown() {
@@ -239,10 +344,32 @@ void BrowserActuatorTaskClientImpl::DetachForShutdown() {
   state_ = State::kDone;
   observer_ = nullptr;
   weak_ptr_factory_.InvalidateWeakPtrs();
+  session_registry_observation_.Reset();
+  StopAllTimers();
+  ClearStartupBuffers();
   UnregisterSession();
   ClosePendingSession();
   CloseActiveSession();
   transport_service_ = nullptr;
+}
+
+void BrowserActuatorTaskClientImpl::OnSessionRemoved(
+    std::string_view session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (session_id != session_id_) {
+    return;
+  }
+  pending_session_ = nullptr;
+  has_active_session_ = false;
+  post_completion_close_timer_.Stop();
+  session_registry_observation_.Reset();
+  if (state_ == State::kAccepted || state_ == State::kRunning) {
+    state_ = State::kDone;
+    idle_timer_.Stop();
+    UnregisterSession();
+    NotifyTaskCompleted(
+        {CompletionStatus::kFailed, "Transport session was dropped"});
+  }
 }
 
 BrowserActuatorTaskClientImpl::State BrowserActuatorTaskClientImpl::state()
@@ -254,6 +381,20 @@ BrowserActuatorTaskClientImpl::State BrowserActuatorTaskClientImpl::state()
 const std::string& BrowserActuatorTaskClientImpl::session_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return session_id_;
+}
+
+void BrowserActuatorTaskClientImpl::ClearStartupBuffers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  type_url_ = {};
+  payload_ = {};
+  client_id_ = {};
+}
+
+void BrowserActuatorTaskClientImpl::StopAllTimers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  start_retry_timer_.Stop();
+  idle_timer_.Stop();
+  post_completion_close_timer_.Stop();
 }
 
 void BrowserActuatorTaskClientImpl::UnregisterSession() {
@@ -301,6 +442,33 @@ void BrowserActuatorTaskClientImpl::DispatchTaskCompleted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(observer);
   observer->OnTaskCompleted(result);
+}
+
+void BrowserActuatorTaskClientImpl::ResetIdleTimer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (base::TimeDelta timeout = kTaskIngressIdleTimeout.Get();
+      timeout.is_positive()) {
+    idle_timer_.Start(
+        FROM_HERE, timeout,
+        base::BindOnce(&BrowserActuatorTaskClientImpl::OnIdleTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void BrowserActuatorTaskClientImpl::OnIdleTimeout() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == State::kDone) {
+    return;
+  }
+  state_ = State::kDone;
+  session_registry_observation_.Reset();
+  UnregisterSession();
+  CloseActiveSession();
+  if (BrowserActuatorTaskClient::Observer* obs =
+          std::exchange(observer_, nullptr)) {
+    obs->OnTaskCompleted(
+        {CompletionStatus::kFailed, "Task timed out waiting for progress"});
+  }
 }
 
 }  // namespace browser_actuator

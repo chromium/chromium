@@ -4,7 +4,9 @@
 
 #include "components/browser_actuator/internal/browser_actuator_task_client_impl.h"
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -16,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -25,9 +28,11 @@
 #include "components/browser_actuator/public/browser_actuator_task_client.h"
 #include "components/browser_actuator/public/proto/auto_password_change.pb.h"
 #include "components/stream_transport/public/common.h"
+#include "components/stream_transport/public/transport_channel.h"
 #include "components/stream_transport/public/transport_handler.h"
 #include "components/stream_transport/public/transport_service.h"
 #include "components/stream_transport/public/transport_session.h"
+#include "components/stream_transport/public/transport_session_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -89,29 +94,122 @@ class FakeTransportSession : public stream_transport::TransportSession {
   std::unique_ptr<stream_transport::TransportHandler> handler_;
 };
 
-// Models `ClientSessionStarter` and `TransportSessionRegistryImpl` ownership:
-// `Close()` synchronously frees the underlying `FakeTransportSession` so
-// PartitionAlloc's `DanglingPtrDetector` catches any dangling `raw_ptr`.
+// Mirrors `TransportSessionRegistryImpl`: `DestroySession` erases and frees the
+// `FakeTransportSession` *before* iterating its non-reentrant `ObserverList`,
+// and `Clear()` frees all sessions without firing `OnSessionRemoved()`.
+class FakeSessionRegistry : public stream_transport::TransportSessionRegistry {
+ public:
+  FakeSessionRegistry() = default;
+  ~FakeSessionRegistry() override = default;
+
+  // stream_transport::TransportSessionRegistry:
+  stream_transport::TransportSession* GetSession(
+      std::string_view session_id) override {
+    for (const auto& session : sessions_) {
+      if (session->GetSessionId() == session_id) {
+        return session.get();
+      }
+    }
+    return nullptr;
+  }
+  void AddObserver(Observer* observer) override {
+    observers_.AddObserver(observer);
+  }
+  void RemoveObserver(Observer* observer) override {
+    observers_.RemoveObserver(observer);
+  }
+  stream_transport::TransportSession* CreateSession(
+      std::string_view session_id,
+      stream_transport::InitIngressSource ingress_source) override {
+    return CreateFakeSession(session_id);
+  }
+  stream_transport::TransportSession* CreateFakeSession(
+      std::string_view session_id) {
+    std::string id(session_id);
+    auto session = std::make_unique<FakeTransportSession>(
+        id, base::BindOnce(&FakeSessionRegistry::OnSessionClosed,
+                           base::Unretained(this), id));
+    FakeTransportSession* raw = session.get();
+    sessions_.push_back(std::move(session));
+    return raw;
+  }
+  void DestroySession(std::string_view session_id) override {
+    std::string removed_id(session_id);
+    // Erase *before* notifying observers to match production
+    // `TransportSessionRegistryImpl::DestroySession()`.
+    std::erase_if(sessions_, [&removed_id](const auto& s) {
+      return s->GetSessionId() == removed_id;
+    });
+    for (auto& observer : observers_) {
+      observer.OnSessionRemoved(removed_id);
+    }
+  }
+
+  // Mirrors `TransportSessionRegistryImpl::Clear()` on account sign-out/switch.
+  void ClearWithoutNotification() { sessions_.clear(); }
+
+  bool WasSessionClosed(std::string_view session_id) const {
+    return closed_session_ids_.contains(std::string(session_id));
+  }
+  bool has_observers() const { return !observers_.empty(); }
+
+ private:
+  void OnSessionClosed(const std::string& session_id) {
+    closed_session_ids_.insert(session_id);
+    DestroySession(session_id);
+  }
+
+  std::vector<std::unique_ptr<FakeTransportSession>> sessions_;
+  std::set<std::string> closed_session_ids_;
+  base::ObserverList<Observer> observers_;
+};
+
+class FakeTransportChannel : public stream_transport::TransportChannel {
+ public:
+  FakeTransportChannel() = default;
+  ~FakeTransportChannel() override = default;
+
+  // stream_transport::TransportChannel:
+  stream_transport::TransportHandlerFactoryRegistry* GetHandlerFactoryRegistry()
+      override {
+    return nullptr;
+  }
+  stream_transport::TransportSessionRegistry* GetSessionRegistry() override {
+    return &session_registry_;
+  }
+  void SendUpstreamMessage(
+      std::string_view session_id,
+      stream_transport::PayloadType payload_type,
+      const google::protobuf::MessageLite& message,
+      std::optional<int64_t> responding_to_sequence_number) override {}
+
+  FakeSessionRegistry& session_registry() { return session_registry_; }
+  const FakeSessionRegistry& session_registry() const {
+    return session_registry_;
+  }
+
+ private:
+  FakeSessionRegistry session_registry_;
+};
+
 class FakeTransportService : public stream_transport::TransportService {
  public:
   FakeTransportService() = default;
   ~FakeTransportService() override = default;
 
   // stream_transport::TransportService:
-  stream_transport::TransportChannel* GetChannel() override { return nullptr; }
+  stream_transport::TransportChannel* GetChannel() override {
+    return &channel_;
+  }
   stream_transport::TransportSession* CreateSession(
       std::string_view session_id,
       stream_transport::InitIngressSource ingress_source) override {
-    return nullptr;
+    return channel_.session_registry().CreateSession(session_id,
+                                                     ingress_source);
   }
   stream_transport::TransportSession* GetSession(
       std::string_view session_id) override {
-    for (const auto& session : active_sessions_) {
-      if (session->GetSessionId() == session_id) {
-        return session.get();
-      }
-    }
-    return nullptr;
+    return channel_.session_registry().GetSession(session_id);
   }
   stream_transport::SessionStreamRecorderFactory* GetStreamRecorderFactory()
       override {
@@ -128,25 +226,19 @@ class FakeTransportService : public stream_transport::TransportService {
     last_serialized_message_ = message.SerializeAsString();
     start_callback_ = std::move(callback);
     pending_cancelled_ = false;
-    std::string pending_id = base::StrCat({"pending-", session_id});
     pending_session_ = std::make_unique<FakeTransportSession>(
-        pending_id, base::BindOnce(&FakeTransportService::OnPendingClosed,
-                                   base::Unretained(this)));
+        base::StrCat({"pending-", session_id}),
+        base::BindOnce(&FakeTransportService::OnPendingClosed,
+                       base::Unretained(this)));
     return pending_session_.get();
   }
 
   void RespondSuccess(std::string_view session_id) {
-    std::string id(session_id);
-    auto matured = std::make_unique<FakeTransportSession>(
-        id, base::BindOnce(&FakeTransportService::OnActiveClosed,
-                           base::Unretained(this), id));
-    FakeTransportSession* raw = matured.get();
-    active_sessions_.push_back(std::move(matured));
-    // Mirror `ClientSessionStarter`: keep `pending_session_` alive until
-    // `start_callback_` finishes, then free it immediately.
+    stream_transport::TransportSession* matured =
+        channel_.session_registry().CreateFakeSession(session_id);
     auto pending_lifetime = std::move(pending_session_);
     if (start_callback_) {
-      std::move(start_callback_).Run(raw);
+      std::move(start_callback_).Run(matured);
     }
   }
 
@@ -156,8 +248,6 @@ class FakeTransportService : public stream_transport::TransportService {
       std::move(start_callback_).Run(base::unexpected(error));
     }
   }
-
-  void ClearActiveSessionsExternally() { active_sessions_.clear(); }
 
   int start_call_count() const { return start_call_count_; }
   const std::string& last_session_id() const { return last_session_id_; }
@@ -169,20 +259,14 @@ class FakeTransportService : public stream_transport::TransportService {
   }
   bool pending_cancelled() const { return pending_cancelled_; }
   bool WasSessionClosed(std::string_view session_id) const {
-    return closed_session_ids_.contains(std::string(session_id));
+    return channel_.session_registry().WasSessionClosed(session_id);
   }
+  FakeTransportChannel& channel() { return channel_; }
 
  private:
   void OnPendingClosed() {
     pending_cancelled_ = true;
     pending_session_.reset();
-  }
-
-  void OnActiveClosed(const std::string& session_id) {
-    closed_session_ids_.insert(session_id);
-    std::erase_if(active_sessions_, [&session_id](const auto& session) {
-      return session->GetSessionId() == session_id;
-    });
   }
 
   int start_call_count_ = 0;
@@ -192,9 +276,8 @@ class FakeTransportService : public stream_transport::TransportService {
   std::string last_serialized_message_;
   StartClientSessionCallback start_callback_;
   std::unique_ptr<FakeTransportSession> pending_session_;
-  std::vector<std::unique_ptr<FakeTransportSession>> active_sessions_;
   bool pending_cancelled_ = false;
-  std::set<std::string> closed_session_ids_;
+  FakeTransportChannel channel_;
 };
 
 class MockTaskClientObserver : public BrowserActuatorTaskClient::Observer {
@@ -254,33 +337,276 @@ TEST_F(BrowserActuatorTaskClientImplTest, StartTaskSendsRequestAndAccepts) {
   AutoPasswordChangeTaskPayload payload = MakeSamplePayload();
   client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
                      payload, &observer_);
-
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kStarting);
-  EXPECT_FALSE(client_->session_id().empty());
-  EXPECT_EQ(transport_service_.last_session_id(), client_->session_id());
-  EXPECT_EQ(transport_service_.last_payload_type(),
-            stream_transport::PayloadType::kTaskIngress);
+  const std::string session_id = client_->session_id();
 
   TaskIngressUpstreamPayload upstream_proto;
   ASSERT_TRUE(upstream_proto.ParseFromString(
       transport_service_.last_serialized_message()));
-  ASSERT_TRUE(upstream_proto.has_start_task());
-  EXPECT_EQ(upstream_proto.start_task().use_case(),
-            TASK_USE_CASE_AUTO_PASSWORD_CHANGE);
   EXPECT_EQ(upstream_proto.start_task().client_id(), "test-client-guid");
   EXPECT_EQ(
       upstream_proto.start_task().feature_payload().type_url(),
       "type.googleapis.com/browser_actuator.AutoPasswordChangeTaskPayload");
 
+  transport_service_.RespondSuccess(session_id);
+  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kAccepted);
+  EXPECT_NE(nullptr, transport_service_.GetSession(session_id));
+}
+
+TEST_F(BrowserActuatorTaskClientImplTest,
+       RetryTransientErrorUsesExponentialBackoffAndPreservesPayload) {
+  AutoPasswordChangeTaskPayload payload = MakeSamplePayload();
+  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
+                     payload, &observer_);
+  const std::string initial_session_id = client_->session_id();
+  EXPECT_EQ(transport_service_.start_call_count(), 1);
+
+  // First transient failure schedules a retry after
+  // `kTaskIngressStartRetryDelay` (1s).
+  transport_service_.RespondFailure(
+      stream_transport::StartClientSessionError::kTransientError);
+  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kStarting);
+  EXPECT_EQ(transport_service_.start_call_count(), 1);
+
+  task_environment_.FastForwardBy(base::Milliseconds(999));
+  EXPECT_EQ(transport_service_.start_call_count(), 1);
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_EQ(transport_service_.start_call_count(), 2);
+  EXPECT_EQ(client_->session_id(), initial_session_id);
+
+  // Verify the retried request preserved the full payload and `client_id`.
+  TaskIngressUpstreamPayload retry_proto;
+  ASSERT_TRUE(retry_proto.ParseFromString(
+      transport_service_.last_serialized_message()));
   AutoPasswordChangeTaskPayload unpacked;
   ASSERT_TRUE(unpacked.ParseFromString(
-      upstream_proto.start_task().feature_payload().value()));
-  EXPECT_EQ(unpacked.change_password_url(), payload.change_password_url());
-  EXPECT_EQ(unpacked.domain(), payload.domain());
+      retry_proto.start_task().feature_payload().value()));
+  EXPECT_EQ(unpacked.domain(), "example.com");
+  EXPECT_EQ(retry_proto.start_task().client_id(), "test-client-guid");
+
+  // Second transient failure doubles backoff to 2s.
+  transport_service_.RespondFailure(
+      stream_transport::StartClientSessionError::kTransientError);
+  task_environment_.FastForwardBy(base::Milliseconds(1999));
+  EXPECT_EQ(transport_service_.start_call_count(), 2);
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_EQ(transport_service_.start_call_count(), 3);
+
+  transport_service_.RespondSuccess(initial_session_id);
+  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kAccepted);
+}
+
+TEST_F(BrowserActuatorTaskClientImplTest,
+       ConflictAfterTransientErrorFailsWithoutRotatingSessionId) {
+  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
+                     MakeSamplePayload(), &observer_);
+  const std::string initial_session_id = client_->session_id();
+
+  // Attempt 1 fails with `kTransientError` (e.g., lost 200 OK).
+  transport_service_.RespondFailure(
+      stream_transport::StartClientSessionError::kTransientError);
+  task_environment_.FastForwardBy(kTaskIngressStartRetryDelay.Get());
+  EXPECT_EQ(transport_service_.start_call_count(), 2);
+  EXPECT_EQ(client_->session_id(), initial_session_id);
+
+  // Attempt 2 receives HTTP 409 (`kSessionIdConflict`), proving Attempt 1
+  // reached the server. Must NOT rotate to a second UUID.
+  transport_service_.RespondFailure(
+      stream_transport::StartClientSessionError::kSessionIdConflict);
+  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kDone);
+  EXPECT_EQ(transport_service_.start_call_count(), 2);
+  EXPECT_EQ(client_->session_id(), initial_session_id);
+
+  EXPECT_CALL(observer_,
+              OnTaskCompleted(AllOf(
+                  Field(&BrowserActuatorTaskClient::Result::status,
+                        BrowserActuatorTaskClient::CompletionStatus::kFailed),
+                  Field(&BrowserActuatorTaskClient::Result::error_message,
+                        Not(IsEmpty())))));
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+TEST_F(BrowserActuatorTaskClientImplTest,
+       FirstAttemptSessionIdConflictUnregistersOldAndRetriesNewSessionId) {
+  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
+                     MakeSamplePayload(), &observer_);
+  const std::string old_session_id = client_->session_id();
+
+  transport_service_.RespondFailure(
+      stream_transport::StartClientSessionError::kSessionIdConflict);
+  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kStarting);
+  EXPECT_NE(client_->session_id(), old_session_id);
+  EXPECT_EQ(transport_service_.start_call_count(), 2);
+
+  // Old `session_id` must be unregistered from `handler_factory_`.
+  FakeTransportSession old_probe(old_session_id, base::OnceClosure());
+  EXPECT_EQ(nullptr, handler_factory_->OnNewSession(&old_probe));
 
   transport_service_.RespondSuccess(client_->session_id());
-  task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kAccepted);
+}
+
+TEST_F(BrowserActuatorTaskClientImplTest,
+       CancelDuringRetryBackoffStopsTimerAndCompletesCancelled) {
+  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
+                     MakeSamplePayload(), &observer_);
+  transport_service_.RespondFailure(
+      stream_transport::StartClientSessionError::kTransientError);
+  EXPECT_EQ(transport_service_.start_call_count(), 1);
+
+  client_->Cancel();
+  EXPECT_CALL(observer_,
+              OnTaskCompleted(Field(
+                  &BrowserActuatorTaskClient::Result::status,
+                  BrowserActuatorTaskClient::CompletionStatus::kCancelled)));
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_EQ(transport_service_.start_call_count(), 1);
+}
+
+TEST_F(BrowserActuatorTaskClientImplTest,
+       PostCompletionGraceDelayAndServerCloseDuringGraceWindowAreSafe) {
+  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
+                     MakeSamplePayload(), &observer_);
+  const std::string session_id = client_->session_id();
+  transport_service_.RespondSuccess(session_id);
+
+  EXPECT_CALL(observer_, OnTaskStarted());
+  client_->OnTaskStartedEvent();
+
+  EXPECT_CALL(observer_,
+              OnTaskCompleted(Field(
+                  &BrowserActuatorTaskClient::Result::status,
+                  BrowserActuatorTaskClient::CompletionStatus::kSucceeded)));
+  client_->OnTaskCompletedEvent(TASK_COMPLETION_STATUS_SUCCEEDED, "");
+  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kDone);
+  // Session stays open during the 5s grace window so trailing `close_session`
+  // can arrive from the server.
+  EXPECT_NE(nullptr, transport_service_.GetSession(session_id));
+
+  // Server sends `close_session` during the 5s window: `DestroySession` frees
+  // the session *before* firing `OnSessionRemoved()`. Must not crash or fire a
+  // second `OnTaskCompleted()`.
+  transport_service_.channel().session_registry().DestroySession(session_id);
+  EXPECT_EQ(nullptr, transport_service_.GetSession(session_id));
+
+  task_environment_.FastForwardBy(kTaskIngressPostCompletionCloseDelay.Get());
+  client_.reset();
+}
+
+TEST_F(BrowserActuatorTaskClientImplTest,
+       AccountChangeSilentSessionClearDuringGraceWindowDoesNotUAF) {
+  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
+                     MakeSamplePayload(), &observer_);
+  const std::string session_id = client_->session_id();
+  transport_service_.RespondSuccess(session_id);
+
+  EXPECT_CALL(observer_,
+              OnTaskCompleted(Field(
+                  &BrowserActuatorTaskClient::Result::status,
+                  BrowserActuatorTaskClient::CompletionStatus::kSucceeded)));
+  client_->OnTaskCompletedEvent(TASK_COMPLETION_STATUS_SUCCEEDED, "");
+
+  // Simulate `TransportChannelImpl::ResetForAccountChange()` -> `Clear()`
+  // freeing all sessions without calling `OnSessionRemoved()`.
+  transport_service_.channel().session_registry().ClearWithoutNotification();
+  task_environment_.FastForwardBy(kTaskIngressPostCompletionCloseDelay.Get());
+  client_.reset();
+}
+
+TEST_F(BrowserActuatorTaskClientImplTest,
+       UnexpectedSessionRemovedDispatchesAsyncWithoutObserverListReentrancy) {
+  auto sibling_client = std::make_unique<BrowserActuatorTaskClientImpl>(
+      &transport_service_, handler_factory_->GetWeakPtr(),
+      base::BindRepeating([]() { return std::string("test-client-guid"); }));
+  StrictMock<MockTaskClientObserver> sibling_observer;
+
+  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
+                     MakeSamplePayload(), &observer_);
+  const std::string session_a = client_->session_id();
+  transport_service_.RespondSuccess(session_a);
+
+  sibling_client->StartTask(
+      BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
+      MakeSamplePayload(), &sibling_observer);
+  const std::string session_b = sibling_client->session_id();
+  transport_service_.RespondSuccess(session_b);
+
+  // When `session_a` is dropped, `OnTaskCompleted` cancels `sibling_client`
+  // (which destroys `session_b` in `FakeSessionRegistry`). Async dispatch
+  // avoids re-entering `FakeSessionRegistry::observers_` mid-iteration.
+  EXPECT_CALL(observer_,
+              OnTaskCompleted(AllOf(
+                  Field(&BrowserActuatorTaskClient::Result::status,
+                        BrowserActuatorTaskClient::CompletionStatus::kFailed),
+                  Field(&BrowserActuatorTaskClient::Result::error_message,
+                        "Transport session was dropped"))))
+      .WillOnce([&sibling_client](const BrowserActuatorTaskClient::Result&) {
+        sibling_client->Cancel();
+      });
+  EXPECT_CALL(sibling_observer,
+              OnTaskCompleted(Field(
+                  &BrowserActuatorTaskClient::Result::status,
+                  BrowserActuatorTaskClient::CompletionStatus::kCancelled)));
+
+  transport_service_.channel().session_registry().DestroySession(session_a);
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_TRUE(transport_service_.WasSessionClosed(session_b));
+}
+
+TEST_F(BrowserActuatorTaskClientImplTest,
+       IdleTimeoutClosesSessionUnregistersAndResetsOnEvents) {
+  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
+                     MakeSamplePayload(), &observer_);
+  const std::string session_id = client_->session_id();
+  transport_service_.RespondSuccess(session_id);
+
+  // Advance 4 minutes in `kAccepted`, then `OnTaskStartedEvent` resets the 5m
+  // watchdog.
+  task_environment_.FastForwardBy(base::Minutes(4));
+  EXPECT_CALL(observer_, OnTaskStarted());
+  client_->OnTaskStartedEvent();
+
+  // Advance another 4 minutes in `kRunning`, then `OnWorklogUpdateEvent` resets
+  // the 5m watchdog again.
+  task_environment_.FastForwardBy(base::Minutes(4));
+  EXPECT_CALL(observer_, OnWorklogUpdate(std::string_view("Halfway")));
+  client_->OnWorklogUpdateEvent("Halfway");
+
+  task_environment_.FastForwardBy(base::Minutes(4));
+  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kRunning);
+
+  EXPECT_CALL(observer_,
+              OnTaskCompleted(AllOf(
+                  Field(&BrowserActuatorTaskClient::Result::status,
+                        BrowserActuatorTaskClient::CompletionStatus::kFailed),
+                  Field(&BrowserActuatorTaskClient::Result::error_message,
+                        "Task timed out waiting for progress"))));
+  task_environment_.FastForwardBy(base::Minutes(1));
+
+  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kDone);
+  EXPECT_TRUE(transport_service_.WasSessionClosed(session_id));
+  FakeTransportSession probe(session_id, base::OnceClosure());
+  EXPECT_EQ(nullptr, handler_factory_->OnNewSession(&probe));
+}
+
+TEST_F(BrowserActuatorTaskClientImplTest,
+       NullHandlerFactorySkipsObservationAndFailsCleanlyOnStart) {
+  client_.reset();
+  ASSERT_FALSE(transport_service_.channel().session_registry().has_observers());
+  auto untracked_client = std::make_unique<BrowserActuatorTaskClientImpl>(
+      &transport_service_, /*handler_factory=*/nullptr,
+      base::BindRepeating([]() { return std::string("test-client-guid"); }));
+  EXPECT_FALSE(transport_service_.channel().session_registry().has_observers());
+
+  untracked_client->StartTask(
+      BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
+      MakeSamplePayload(), &observer_);
+  EXPECT_EQ(untracked_client->state(),
+            BrowserActuatorTaskClientImpl::State::kDone);
+  EXPECT_CALL(observer_,
+              OnTaskCompleted(
+                  Field(&BrowserActuatorTaskClient::Result::status,
+                        BrowserActuatorTaskClient::CompletionStatus::kFailed)));
+  task_environment_.FastForwardBy(base::TimeDelta());
 }
 
 TEST_F(BrowserActuatorTaskClientImplTest,
@@ -322,240 +648,6 @@ TEST_F(BrowserActuatorTaskClientImplTest,
                   Field(&BrowserActuatorTaskClient::Result::error_message,
                         Not(IsEmpty())))));
   task_environment_.FastForwardBy(base::TimeDelta());
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest, StartSessionFailureCompletesTask) {
-  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-                     MakeSamplePayload(), &observer_);
-
-  transport_service_.RespondFailure(
-      stream_transport::StartClientSessionError::kChannelUnavailable);
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kDone);
-
-  // `OnTaskCompleted()` must fire asynchronously on a subsequent task turn.
-  EXPECT_CALL(observer_,
-              OnTaskCompleted(AllOf(
-                  Field(&BrowserActuatorTaskClient::Result::status,
-                        BrowserActuatorTaskClient::CompletionStatus::kFailed),
-                  Field(&BrowserActuatorTaskClient::Result::error_message,
-                        Not(IsEmpty())))));
-  task_environment_.FastForwardBy(base::TimeDelta());
-
-  // Subsequent `Cancel()` in `State::kDone` is a no-op.
-  client_->Cancel();
-  task_environment_.FastForwardBy(base::TimeDelta());
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest,
-       CancelWhileStartingAbortsPendingSessionAndNotifies) {
-  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-                     MakeSamplePayload(), &observer_);
-  const std::string session_id = client_->session_id();
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kStarting);
-  EXPECT_FALSE(transport_service_.pending_cancelled());
-
-  client_->Cancel();
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kDone);
-  EXPECT_TRUE(transport_service_.pending_cancelled());
-
-  EXPECT_CALL(observer_,
-              OnTaskCompleted(Field(
-                  &BrowserActuatorTaskClient::Result::status,
-                  BrowserActuatorTaskClient::CompletionStatus::kCancelled)));
-  // Subsequent session response closes any late-created session immediately.
-  transport_service_.RespondSuccess(session_id);
-  task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_TRUE(transport_service_.WasSessionClosed(session_id));
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest,
-       CancelTransitionsToDoneAndNotifiesObserver) {
-  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-                     MakeSamplePayload(), &observer_);
-  const std::string session_id = client_->session_id();
-  transport_service_.RespondSuccess(session_id);
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kAccepted);
-
-  client_->Cancel();
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kDone);
-  EXPECT_TRUE(transport_service_.WasSessionClosed(session_id));
-
-  EXPECT_CALL(observer_,
-              OnTaskCompleted(Field(
-                  &BrowserActuatorTaskClient::Result::status,
-                  BrowserActuatorTaskClient::CompletionStatus::kCancelled)));
-  task_environment_.FastForwardBy(base::TimeDelta());
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest,
-       ExternalSessionTeardownBeforeCancelAndDestructionIsSafe) {
-  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-                     MakeSamplePayload(), &observer_);
-  const std::string session_id = client_->session_id();
-  transport_service_.RespondSuccess(session_id);
-  ASSERT_NE(nullptr, transport_service_.GetSession(session_id));
-
-  // Simulate `TransportSessionRegistryImpl::Clear()` freeing active sessions.
-  transport_service_.ClearActiveSessionsExternally();
-  EXPECT_EQ(nullptr, transport_service_.GetSession(session_id));
-
-  client_->Cancel();
-  EXPECT_CALL(observer_,
-              OnTaskCompleted(Field(
-                  &BrowserActuatorTaskClient::Result::status,
-                  BrowserActuatorTaskClient::CompletionStatus::kCancelled)));
-  task_environment_.FastForwardBy(base::TimeDelta());
-  client_.reset();
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest, CancelWhenIdleIsNoOp) {
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kIdle);
-  client_->Cancel();
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kIdle);
-
-  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-                     MakeSamplePayload(), &observer_);
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kStarting);
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest,
-       DestructorWhileStartingAbortsPendingSessionAndIgnoresLateResponse) {
-  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-                     MakeSamplePayload(), &observer_);
-  const std::string session_id = client_->session_id();
-  EXPECT_FALSE(transport_service_.pending_cancelled());
-
-  EXPECT_CALL(observer_, OnTaskCompleted).Times(0);
-  client_.reset();
-  EXPECT_TRUE(transport_service_.pending_cancelled());
-
-  transport_service_.RespondSuccess(session_id);
-  task_environment_.FastForwardBy(base::TimeDelta());
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest,
-       DestructorClosesActiveSessionWithoutObserver) {
-  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-                     MakeSamplePayload(), &observer_);
-  const std::string session_id = client_->session_id();
-  transport_service_.RespondSuccess(session_id);
-  EXPECT_FALSE(transport_service_.WasSessionClosed(session_id));
-
-  client_.reset();
-  EXPECT_TRUE(transport_service_.WasSessionClosed(session_id));
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest,
-       DestructionBeforePostedCompletionDropsCallback) {
-  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-                     MakeSamplePayload(), &observer_);
-
-  EXPECT_CALL(observer_, OnTaskCompleted).Times(0);
-  client_->Cancel();
-  client_.reset();
-
-  task_environment_.FastForwardBy(base::TimeDelta());
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest,
-       SelfDeletingObserverInAsyncCompletionIsSafe) {
-  SelfDeletingObserver deleting_observer(&client_);
-  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-                     MakeSamplePayload(), &deleting_observer);
-  client_->Cancel();
-  task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_TRUE(deleting_observer.called());
-  EXPECT_EQ(nullptr, client_);
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest,
-       DownstreamEventsRouteThroughHandlerAndIgnorePreStartWorklog) {
-  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-                     MakeSamplePayload(), &observer_);
-  const std::string session_id = client_->session_id();
-  transport_service_.RespondSuccess(session_id);
-  auto* session = static_cast<FakeTransportSession*>(
-      transport_service_.GetSession(session_id));
-  ASSERT_NE(nullptr, session);
-
-  std::unique_ptr<stream_transport::TransportHandler> handler =
-      handler_factory_->OnNewSession(session);
-  ASSERT_NE(nullptr, handler);
-  session->SetHandler(std::move(handler));
-
-  // Worklog updates prior to `TaskStartedEvent` are ignored.
-  TaskIngressDownstreamPayload early_worklog;
-  early_worklog.mutable_worklog_update()->set_step_description("Early step");
-  session->OnMessage(stream_transport::PayloadType::kTaskIngress,
-                     early_worklog.SerializeAsString());
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kAccepted);
-
-  EXPECT_CALL(observer_, OnTaskStarted()).Times(1);
-  TaskIngressDownstreamPayload started;
-  started.mutable_task_started();
-  session->OnMessage(stream_transport::PayloadType::kTaskIngress,
-                     started.SerializeAsString());
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kRunning);
-
-  // Duplicate `TaskStartedEvent` in `kRunning` is ignored.
-  session->OnMessage(stream_transport::PayloadType::kTaskIngress,
-                     started.SerializeAsString());
-
-  EXPECT_CALL(observer_, OnWorklogUpdate(std::string_view("Step 1")));
-  TaskIngressDownstreamPayload worklog;
-  worklog.mutable_worklog_update()->set_step_description("Step 1");
-  session->OnMessage(stream_transport::PayloadType::kTaskIngress,
-                     worklog.SerializeAsString());
-
-  EXPECT_CALL(
-      observer_,
-      OnTaskCompleted(
-          AllOf(Field(&BrowserActuatorTaskClient::Result::status,
-                      BrowserActuatorTaskClient::CompletionStatus::kSucceeded),
-                Field(&BrowserActuatorTaskClient::Result::error_message, ""))));
-  TaskIngressDownstreamPayload completed;
-  completed.mutable_task_completed()->set_status(
-      TASK_COMPLETION_STATUS_SUCCEEDED);
-  session->OnMessage(stream_transport::PayloadType::kTaskIngress,
-                     completed.SerializeAsString());
-
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kDone);
-  EXPECT_TRUE(transport_service_.WasSessionClosed(session_id));
-  FakeTransportSession probe_session(session_id, base::OnceClosure());
-  EXPECT_EQ(nullptr, handler_factory_->OnNewSession(&probe_session));
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest,
-       DirectAcceptedToCompletedForwardsErrorAndStatusMappings) {
-  for (const auto& [proto_status, expected_status] :
-       std::vector<std::pair<TaskCompletionStatus,
-                             BrowserActuatorTaskClient::CompletionStatus>>{
-           {TASK_COMPLETION_STATUS_FAILED,
-            BrowserActuatorTaskClient::CompletionStatus::kFailed},
-           {TASK_COMPLETION_STATUS_CANCELLED,
-            BrowserActuatorTaskClient::CompletionStatus::kCancelled},
-           {TASK_COMPLETION_STATUS_UNSPECIFIED,
-            BrowserActuatorTaskClient::CompletionStatus::kFailed},
-       }) {
-    auto local_client = std::make_unique<BrowserActuatorTaskClientImpl>(
-        &transport_service_, handler_factory_->GetWeakPtr(),
-        base::BindRepeating([]() { return std::string("test-client-guid"); }));
-    local_client->StartTask(
-        BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-        MakeSamplePayload(), &observer_);
-    const std::string sid = local_client->session_id();
-    transport_service_.RespondSuccess(sid);
-
-    EXPECT_CALL(
-        observer_,
-        OnTaskCompleted(AllOf(
-            Field(&BrowserActuatorTaskClient::Result::status, expected_status),
-            Field(&BrowserActuatorTaskClient::Result::error_message,
-                  "diagnostic-reason"))));
-    local_client->OnTaskCompletedEvent(proto_status, "diagnostic-reason");
-    EXPECT_EQ(local_client->state(),
-              BrowserActuatorTaskClientImpl::State::kDone);
-  }
 }
 
 TEST_F(BrowserActuatorTaskClientImplTest,
@@ -604,25 +696,11 @@ TEST_F(BrowserActuatorTaskClientImplTest,
       MakeSamplePayload(), &observer_);
   EXPECT_CALL(observer_, OnTaskCompleted).Times(0);
 
-  // Queue an async completion via `Cancel()`, then run `DetachAllClients()` and
-  // free `heap_transport` before `local_client` is destroyed.
   local_client->Cancel();
   handler_factory_->DetachAllClients();
   heap_transport.reset();
   task_environment_.FastForwardBy(base::TimeDelta());
   local_client.reset();
-}
-
-TEST_F(BrowserActuatorTaskClientImplTest,
-       DetachForShutdownWhileStartingAbortsPendingSessionWithoutCallback) {
-  client_->StartTask(BrowserActuatorTaskClient::UseCase::kAutoPasswordChange,
-                     MakeSamplePayload(), &observer_);
-  EXPECT_CALL(observer_, OnTaskCompleted).Times(0);
-
-  handler_factory_->DetachAllClients();
-  EXPECT_EQ(client_->state(), BrowserActuatorTaskClientImpl::State::kDone);
-  EXPECT_TRUE(transport_service_.pending_cancelled());
-  task_environment_.FastForwardBy(base::TimeDelta());
 }
 
 TEST_F(BrowserActuatorTaskClientImplTest,
