@@ -275,7 +275,9 @@ void PrewarmHttpDiskCacheManager::OnDataReceived(std::string_view string_piece,
 }
 
 void PrewarmHttpDiskCacheManager::OnComplete(bool success) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  // TODO(crbug.com/587365479): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TRACE_EVENT("loading", "PrewarmHttpDiskCacheManager::OnComplete",
               perfetto::Flow::FromPointer(this), "success", success);
   CHECK(!use_read_and_discard_body_option_);
