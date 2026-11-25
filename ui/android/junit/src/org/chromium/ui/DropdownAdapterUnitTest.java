@@ -18,6 +18,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.LayerDrawable;
+import android.view.InputDevice;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -210,6 +212,75 @@ public class DropdownAdapterUnitTest {
         View disabledView = adapter.getView(2, /* convertView= */ null, mParent);
         TextView disabledLabel = disabledView.findViewById(R.id.dropdown_label);
         assertEquals(expectedDisabledColor, disabledLabel.getCurrentTextColor());
+    }
+
+    @Test
+    public void areAllItemsEnabled_reflectsSelectableItems() {
+        assertTrue(createAdapter(enabledOption("One"), enabledOption("Two")).areAllItemsEnabled());
+        assertFalse(
+                createAdapter(enabledOption("Enabled"), disabledOption("Disabled"))
+                        .areAllItemsEnabled());
+        assertFalse(
+                createAdapter(groupHeader("Group"), enabledOption("Enabled")).areAllItemsEnabled());
+        assertFalse(
+                createAdapter(groupHeader("Group"), disabledOption("Disabled"))
+                        .areAllItemsEnabled());
+    }
+
+    @Test
+    public void getView_nonSelectableItemsIgnoreHover() {
+        DropdownAdapter adapter =
+                createAdapter(
+                        groupHeader("Group"), enabledOption("Enabled"), disabledOption("Disabled"));
+
+        View groupView = adapter.getView(0, /* convertView= */ null, mParent);
+        sendHoverEvent(groupView, MotionEvent.ACTION_HOVER_ENTER);
+        assertFalse(groupView.isHovered());
+
+        View disabledView = adapter.getView(2, /* convertView= */ null, mParent);
+        sendHoverEvent(disabledView, MotionEvent.ACTION_HOVER_ENTER);
+        assertFalse(disabledView.isHovered());
+
+        View enabledView = adapter.getView(1, /* convertView= */ null, mParent);
+        sendHoverEvent(enabledView, MotionEvent.ACTION_HOVER_ENTER);
+        assertTrue(enabledView.isHovered());
+    }
+
+    @Test
+    public void getView_recycledViewResetsHoverState() {
+        DropdownAdapter adapter =
+                createAdapter(
+                        groupHeader("Group"),
+                        enabledOption("Enabled 1"),
+                        enabledOption("Enabled 2"));
+
+        View enabledView = adapter.getView(1, /* convertView= */ null, mParent);
+        sendHoverEvent(enabledView, MotionEvent.ACTION_HOVER_ENTER);
+        assertTrue(enabledView.isHovered());
+
+        View recycledSelectable = adapter.getView(2, enabledView, mParent);
+        assertFalse(recycledSelectable.isHovered());
+        sendHoverEvent(recycledSelectable, MotionEvent.ACTION_HOVER_ENTER);
+        assertTrue(recycledSelectable.isHovered());
+
+        View recycledGroup = adapter.getView(0, recycledSelectable, mParent);
+        assertFalse(recycledGroup.isHovered());
+        sendHoverEvent(recycledGroup, MotionEvent.ACTION_HOVER_ENTER);
+        assertFalse(recycledGroup.isHovered());
+
+        View recycledEnabled = adapter.getView(1, recycledGroup, mParent);
+        sendHoverEvent(recycledEnabled, MotionEvent.ACTION_HOVER_ENTER);
+        assertTrue(recycledEnabled.isHovered());
+        sendHoverEvent(recycledEnabled, MotionEvent.ACTION_HOVER_EXIT);
+        assertFalse(recycledEnabled.isHovered());
+    }
+
+    private static void sendHoverEvent(View view, int action) {
+        MotionEvent event =
+                MotionEvent.obtain(0L, 0L, action, /* x= */ 1f, /* y= */ 1f, /* metaState= */ 0);
+        event.setSource(InputDevice.SOURCE_MOUSE);
+        view.dispatchGenericMotionEvent(event);
+        event.recycle();
     }
 
     private static int expectedBaseHeight(DropdownAdapter adapter) {

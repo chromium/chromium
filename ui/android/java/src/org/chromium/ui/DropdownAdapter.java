@@ -65,8 +65,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
 
     private boolean checkAreAllItemsEnabled() {
         for (int i = 0; i < getCount(); i++) {
-            DropdownItem item = assumeNonNull(getItem(i));
-            if (item.isEnabled() && !item.isGroupHeader()) {
+            if (!isEnabled(i)) {
                 return false;
             }
         }
@@ -85,7 +84,6 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
             LayoutInflater inflater =
                     (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             layout = inflater.inflate(R.layout.dropdown_item, null);
-            layout.setOnHoverListener(mHoverListener);
 
             // DropdownDividerDrawable to draw the divider, listChoiceBackgroundIndicator to draw
             // ripple, hover, and focus effects.
@@ -102,6 +100,12 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
             }
             layout.setBackground(background);
         }
+
+        // Views are recycled across rows, so reset hover handling and clear any stale hover state
+        // on every bind; group headers and disabled items must never show hover.
+        layout.setOnHoverListener(isEnabled(position) ? mHoverListener : null);
+        layout.setHovered(false);
+
         LayerDrawable layers = (LayerDrawable) layout.getBackground();
         DropdownDividerDrawable divider = (DropdownDividerDrawable) layers.getDrawable(0);
         int height =
