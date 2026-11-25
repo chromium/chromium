@@ -528,6 +528,7 @@ blink_core_sources_css = [
   "hash_tools.h",
   "if_condition.cc",
   "if_condition.h",
+  "ift_custom_font_data.cc",
   "ift_custom_font_data.h",
   "inline_css_style_declaration.cc",
   "inline_css_style_declaration.h",

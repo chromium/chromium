@@ -408,7 +408,6 @@ component("core") {
     ":core_generated_cc_only",
     ":font_resource",
     ":generate_eventhandler_names",
-    ":ift_custom_font_data",
     ":make_deprecation_info",
     ":xml_ffi",
     "//base",
@@ -465,7 +464,6 @@ component("core") {
     ":core_generated",
     ":core_generated_cc_only",
     ":core_hot",
-    ":ift_custom_font_data",
     "//third_party/blink/renderer/core/animation",
     "//third_party/blink/renderer/core/exported",
     "//third_party/blink/renderer/core/probe",
@@ -483,8 +481,8 @@ component("core") {
   }
 }
 
-# Isolate loader/resource/font_resource.{h,cc} from component("core") because
-# font_resource.cc is the only non-test file in core that includes
+# Isolate loader/resource/{font_resource,ift_font}.{h,cc} from component("core")
+# because those .cc files are the only non-test files in core that include
 # //third_party/blink/renderer/platform:font_rust_headers. Keeping
 # :font_rust_headers on a headerless target (":font_resource") prevents
 # Crubit-generated font bindings from being added to core's harddeps and
@@ -493,31 +491,21 @@ component("core") {
 # These use blink_core_sources (like ":core_hot") so that they inherit the
 # common configs and deps of core from core.gni.
 blink_core_sources("font_resource_header") {
-  sources = [ "loader/resource/font_resource.h" ]
+  sources = [
+    "loader/resource/font_resource.h",
+    "loader/resource/ift_font.h",
+  ]
 }
 
 blink_core_sources("font_resource") {
   public = []
-  sources = [ "loader/resource/font_resource.cc" ]
+  sources = [
+    "loader/resource/font_resource.cc",
+    "loader/resource/ift_font.cc",
+  ]
 
   deps = [
     ":buildflags",
-    ":font_resource_header",
-    "//third_party/blink/public/common",
-    "//third_party/blink/renderer/platform:font_rust_headers",
-  ]
-}
-
-# Like ":font_resource", css/ift_custom_font_data.cc includes
-# //third_party/blink/renderer/platform:font_rust_headers, so it is kept on a
-# headerless target. Its header (in core's sources) only forward declares the
-# Crubit-backed types. It includes core headers, so ":core" lists it in
-# allow_circular_includes_from.
-blink_core_sources("ift_custom_font_data") {
-  public = []
-  sources = [ "css/ift_custom_font_data.cc" ]
-
-  deps = [
     ":font_resource_header",
     "//services/network/public/cpp",
     "//third_party/blink/public/common",

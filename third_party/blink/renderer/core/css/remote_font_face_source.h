@@ -8,9 +8,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
-#include "third_party/blink/renderer/core/css/ift_custom_font_data.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
+#include "third_party/blink/renderer/core/loader/resource/ift_font.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {

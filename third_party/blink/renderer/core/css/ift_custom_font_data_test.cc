@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/loader/resource/ift_font.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
