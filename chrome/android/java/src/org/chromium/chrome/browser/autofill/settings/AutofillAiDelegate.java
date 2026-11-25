@@ -190,6 +190,15 @@ public class AutofillAiDelegate {
                         GoogleWalletLauncher.openGoogleWallet(context, context.getPackageManager());
                     }
                 }
+
+                @Override
+                public void onOpenPrivacyPolicy() {
+                    Context context = mFragment.getContext();
+                    if (context == null) {
+                        return;
+                    }
+                    GoogleWalletLauncher.openGooglePrivacyPolicyPage(context);
+                }
             };
 
     /**

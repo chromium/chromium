@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
@@ -988,8 +989,10 @@ public class AutofillIdentityDocsFragmentTest {
         onView(withText(expectedNoticeText)).check(matches(isDisplayed()));
     }
 
+    // Tests that adding a Wallet-eligible passport shows the correct private pass notice.
     @Test
     @MediumTest
+    @DisableFeatures(AutofillFeatures.AUTOFILL_REGIONALIZED_PRIVATE_PASSES_UX_REFINE)
     public void testAutofillAiEntities_opensEditorOnAddClick_eligibleForWalletTrue()
             throws Exception {
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
@@ -1029,6 +1032,58 @@ public class AutofillIdentityDocsFragmentTest {
                         .replace("<link>", "")
                         .replace("</link>", "");
         onView(withText(expectedNoticeText)).check(matches(isDisplayed()));
+    }
+
+    // Tests that adding a Wallet-eligible passport shows the correct private pass notice if
+    // `kAutofillRegionalizedPrivatePassesUxRefine`.
+    @Test
+    @MediumTest
+    @EnableFeatures(AutofillFeatures.AUTOFILL_REGIONALIZED_PRIVATE_PASSES_UX_REFINE)
+    public void testAutofillAiEntities_opensEditorOnAddClick_updatedPrivatePassNoticeEnabled()
+            throws Exception {
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
+        when(mIdentityManagerMock.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
+        EntityType passportType =
+                TestUtils.getPassportEntityType(
+                        /* isReadOnly= */ false,
+                        /* isEnabled= */ true,
+                        /* isEligibleForWalletStorage= */ true);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(passportType, Collections.emptyList());
+
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+
+        mSettingsTestRule.startSettingsActivity();
+        setIdentityTogglePreference(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PreferenceCategory category =
+                            mSettingsTestRule.getFragment().findPreference("Passport");
+                    Preference addPassport = category.findPreference("Passport" + " Add");
+                    assertNotNull(addPassport);
+                    addPassport.performClick();
+                });
+
+        onView(withText("Add passport")).inRoot(isDialog()).check(matches(isDisplayed()));
+
+        Context context = mSettingsTestRule.getFragment().getContext();
+        String walletTitle = context.getString(R.string.autofill_google_wallet_title);
+        String expectedNoticeText =
+                TestUtils.getPrivatePassSaveWalletSourceNotice(
+                                walletTitle, TestAccounts.ACCOUNT1.getEmail())
+                        .replace("<link>", "")
+                        .replace("</link>", "")
+                        .replace("<privacy_link>", "")
+                        .replace("</privacy_link>", "");
+        onView(withText(expectedNoticeText))
+                .inRoot(isDialog())
+                .perform(scrollTo())
+                .check(matches(isDisplayed()));
     }
 
     @Test

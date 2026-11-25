@@ -98,6 +98,7 @@ import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.autofill.autofill_ai.RecordType;
+import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.base.AccountInfo;
@@ -691,6 +692,48 @@ public class EntityEditorModuleTest {
         verify(mDelegate).onOpenGoogleWallet(true);
     }
 
+    // Tests that a Wallet notice with `<privacy_link>` renders both links and routes clicks.
+    @Test
+    public void testWalletEntitySourceNotice_WithPrivacyPolicyLink() {
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
+        String walletTitle = mActivity.getString(R.string.autofill_google_wallet_title);
+        String rawNotice = TestUtils.getPrivatePassSaveWalletSourceNotice(walletTitle, USER_EMAIL);
+        when(mEntityDataManagerJni.getWalletSaveEntityNotice(EntityTypeName.PASSPORT, USER_EMAIL))
+                .thenReturn(new WalletSourceNotice(rawNotice, WALLET_SOURCE_NOTICE_STRING_IDS));
+        showEditorDialog(PRIVATE_WALLET_PASSPORT);
+
+        ListModel<EditorItem> editorFields =
+                mCoordinator.getEditorModelForTest().get(EntityEditorProperties.EDITOR_FIELDS);
+        verifySourceNotice(
+                editorFields,
+                rawNotice
+                        .replace("<link>", "")
+                        .replace("</link>", "")
+                        .replace("<privacy_link>", "")
+                        .replace("</privacy_link>", ""));
+
+        Spanned noticeText = (Spanned) getSourceNoticeText(editorFields);
+        ClickableSpan[] spans = noticeText.getSpans(0, noticeText.length(), ClickableSpan.class);
+        assertEquals(2, spans.length);
+        assertEquals(
+                "how this info is used across Google",
+                noticeText
+                        .subSequence(
+                                noticeText.getSpanStart(spans[0]), noticeText.getSpanEnd(spans[0]))
+                        .toString());
+        assertEquals(
+                "Privacy Policy",
+                noticeText
+                        .subSequence(
+                                noticeText.getSpanStart(spans[1]), noticeText.getSpanEnd(spans[1]))
+                        .toString());
+
+        spans[0].onClick(null);
+        verify(mDelegate).onOpenGoogleWallet(true);
+        spans[1].onClick(null);
+        verify(mDelegate).onOpenPrivacyPolicy();
+    }
+
     @Test
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR)
     public void testCommitChanges() {
@@ -1270,17 +1313,18 @@ public class EntityEditorModuleTest {
         spans[0].onClick(null);
     }
 
-    private void clickSourceNoticeLink() {
-        PropertyModel model = mCoordinator.getEditorModelForTest();
-        ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
-
+    private CharSequence getSourceNoticeText(ListModel<EditorItem> editorFields) {
         for (EditorItem item : editorFields) {
             if (item.type == NOTICE && item.model.get(SHOW_BACKGROUND)) {
-                CharSequence noticeText = item.model.get(NOTICE_TEXT);
-                clickClickableSpan(noticeText);
-                return;
+                return item.model.get(NOTICE_TEXT);
             }
         }
         fail("Source notice not found");
+        return "";
+    }
+
+    private void clickSourceNoticeLink() {
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        clickClickableSpan(getSourceNoticeText(model.get(EntityEditorProperties.EDITOR_FIELDS)));
     }
 }

@@ -58,6 +58,9 @@ public class EntityEditorCoordinator {
          * (when the entity is a private pass).
          */
         default void onOpenGoogleWallet(boolean isPrivateEntity) {}
+
+        /** The user clicked the "Privacy Policy" link in the source notice. */
+        default void onOpenPrivacyPolicy() {}
     }
 
     /**

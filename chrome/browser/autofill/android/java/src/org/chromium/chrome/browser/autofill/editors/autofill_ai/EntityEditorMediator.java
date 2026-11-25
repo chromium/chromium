@@ -77,8 +77,6 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.ChromeClickableSpan;
-import org.chromium.ui.text.SpanApplier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -546,16 +544,11 @@ class EntityEditorMediator {
                         EntityDataManager.getWalletSaveEntityNotice(
                                 mEntityInstance.getEntityType().getTypeName(), email);
                 CharSequence formattedText =
-                        SpanApplier.applySpans(
+                        AutofillUiUtils.applyWalletSourceNoticeSpans(
+                                mContext,
                                 sourceNotice.text,
-                                new SpanApplier.SpanInfo(
-                                        "<link>",
-                                        "</link>",
-                                        new ChromeClickableSpan(
-                                                mContext,
-                                                view ->
-                                                        mDelegate.onOpenGoogleWallet(
-                                                                isPrivateEntity))));
+                                () -> mDelegate.onOpenGoogleWallet(isPrivateEntity),
+                                mDelegate::onOpenPrivacyPolicy);
                 return new Pair<>(formattedText, sourceNotice.stringIds);
         }
         assert false : "Invalid entity record type: " + recordType;
