@@ -1119,6 +1119,8 @@ source_set("interactive_ui_tests") {
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/extensions",
       "//chrome/browser/infobars",
+      "//chrome/browser/signin",
+      "//chrome/browser/signin:test_support",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/tabs:tab_menu",
 
@@ -1157,6 +1159,7 @@ source_set("interactive_ui_tests") {
       "//components/sessions",
       "//components/strings:components_strings",
       "//extensions/common",
+      "//services/network:test_support",
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//ui/base/interaction:test_support",
       "//ui/views",

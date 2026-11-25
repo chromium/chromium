@@ -53,7 +53,10 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -90,6 +93,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -139,6 +143,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/aim_query.pb.h"
@@ -6331,6 +6336,169 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          UserVariation::kSignedOut,
                                          UserVariation::kIncognito),
                          &UserVariationToString);
+
+// Signs the signed-out user in to Google on the web, without signing in to
+// Chrome, so the rearchitecture side panel toolbar shows the profile indicator
+// for the web account.
+class ContextualTasksSidePanelRearchToolbarProfileIndicatorInteractiveUiTest
+    : public ContextualTasksSidePanelRearchToolbarInteractiveUiTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    ContextualTasksSidePanelRearchToolbarInteractiveUiTest::
+        SetUpBrowserContextKeyedServices(context);
+    if (GetUserVariation() == UserVariation::kSignedOut) {
+      ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
+          context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                       &test_url_loader_factory_));
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    ContextualTasksSidePanelRearchToolbarInteractiveUiTest::SetUpOnMainThread();
+    if (GetUserVariation() != UserVariation::kSignedOut) {
+      return;
+    }
+    // The base fixture only creates the identity adaptor for `kSignedIn`, and
+    // resets it in `TearDownOnMainThread()`.
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->GetProfile());
+    identity_test_env()->SetTestURLLoaderFactory(&test_url_loader_factory_);
+    identity_test_env()->SetCookieAccounts(
+        {{.email = kWebAccountEmail,
+          .gaia_id = signin::GetTestGaiaIdForEmail(kWebAccountEmail)}});
+  }
+
+ protected:
+  static constexpr char kWebAccountEmail[] = "web-user@gmail.com";
+
+ private:
+  network::TestURLLoaderFactory test_url_loader_factory_;
+};
+
+// This tests the following CUJ:
+//  (1) User opens Lens Overlay from the 3-dot App Menu on a web page.
+//  (2) User types a query into the Lens Overlay Contextual Searchbox and
+//      presses Enter to submit.
+//  (3) The Contextual Tasks side panel opens on an AI Mode page, and its
+//      toolbar shows the Google Account profile indicator.
+//  (4) User hovers over the profile indicator.
+//  (5) The profile tooltip opens and shows the account email.
+//  (6) User clicks the profile indicator.
+//  (7) The tooltip closes and the account menu opens with the account email.
+//  (8) User clicks the Manage Google Account item in the account menu.
+//  (9) The Google Account page opens in a new foreground tab, which does not
+//      show the side panel.
+// (10) User switches back to the original tab, and the side panel shows
+//      again.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSidePanelRearchToolbarProfileIndicatorInteractiveUiTest,
+    ToolbarProfileIndicatorTooltipAndAccountMenu) {
+  SkipIfSignedIn(
+      "The profile indicator only shows when the user is signed in to Google "
+      "on the web but not to Chrome.");
+  SkipIfIncognito(
+      "The Incognito profile indicator reads Gaia cookies from the "
+      "off-the-record network context and needs a separate fake "
+      "ListAccounts setup, which this test does not cover.");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelToolbarWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kManageAccountTab);
+
+  const DeepQuery kProfileIndicator{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "#profileIndicator",
+  };
+  const DeepQuery kProfileTooltip{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "#profileTooltip",
+  };
+  const DeepQuery kAccountMenu{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "contextual-tasks-account-menu",
+  };
+  const DeepQuery kManageAccountButton{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "contextual-tasks-account-menu",
+      "#manageAccountButton",
+  };
+  const GURL kAimUrl("https://www.google.com/search?q=hello+world&udm=50");
+  const GURL kManageAccountUrl(chrome::kGoogleAccountURL);
+
+  RunTestSequence(
+      // Steps 1-3: Open the Contextual Tasks side panel on an AI page from a
+      // Contextual Searchbox query, then wait for the profile indicator in the
+      // rearchitecture toolbar.
+      SubmitContextualSearchboxQueryToOpenSidePanel(kOverlayId, "hello world",
+                                                    kAimUrl),
+      InstrumentSidePanelToolbar(kSidePanelToolbarWebContentsId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  1),
+      WaitForElementVisible(kSidePanelToolbarWebContentsId, kProfileIndicator),
+
+      // Steps 4-5: Hover over the profile indicator and wait for the tooltip
+      // to open with the web account email.
+      ExecuteJsAt(kSidePanelToolbarWebContentsId, kProfileIndicator,
+                  "el => el.dispatchEvent(new PointerEvent('pointerenter'))"),
+      WaitForJsResultAt(
+          kSidePanelToolbarWebContentsId, kProfileTooltip,
+          content::JsReplace("el => el.isOpen && el.shadowRoot.querySelector("
+                             "'#tooltip').textContent.includes($1)",
+                             kWebAccountEmail),
+          true),
+
+      // Steps 6-7: Click the profile indicator. The tooltip closes and the
+      // account menu opens with the web account email.
+      ClickButton(kSidePanelToolbarWebContentsId, kProfileIndicator),
+      WaitForJsResultAt(kSidePanelToolbarWebContentsId, kProfileTooltip,
+                        "el => !el.isOpen", true),
+      WaitForElementExists(kSidePanelToolbarWebContentsId, kAccountMenu),
+      WaitForJsResultAt(
+          kSidePanelToolbarWebContentsId, kAccountMenu,
+          content::JsReplace(
+              "el => Boolean(el.shadowRoot.querySelector('#menu')?.open && "
+              "el.shadowRoot.querySelector('#accountInfo')?.textContent"
+              ".trim() === $1 && "
+              "el.shadowRoot.querySelector('#manageAccountButton'))",
+              kWebAccountEmail),
+          true),
+
+      // Step 8: Click the Manage Google Account item. Instrument the next tab
+      // first so the new tab is tracked as soon as it is added. The click is
+      // fire-and-forget because the new foreground tab hides the side panel
+      // toolbar before the script result returns.
+      InstrumentNextTab(kManageAccountTab),
+      ExecuteJsAt(kSidePanelToolbarWebContentsId, kManageAccountButton,
+                  "el => el.click()", ExecuteJsMode::kFireAndForget),
+
+      // Step 9: The Google Account page opens in a new foreground tab, which
+      // does not show the side panel.
+      WaitForWebContentsNavigation(kManageAccountTab, kManageAccountUrl),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); }, 1),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId),
+
+      // Step 10: Switch back to the original tab, where the side panel shows
+      // again.
+      SelectTab(kTabStripElementId, 0),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksSidePanelRearchToolbarProfileIndicatorInteractiveUiTest,
+    testing::Values(UserVariation::kSignedIn,
+                    UserVariation::kSignedOut,
+                    UserVariation::kIncognito),
+    &UserVariationToString);
 
 // Enables the Pin / Unpin item in the rearchitecture side panel toolbar's
 // overflow menu, as the `ContextualTasks_EphemeralPinning_Desktop` field trial
