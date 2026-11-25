@@ -25,16 +25,6 @@
         "benchmarks": {}
     },
     "2": {
-        "crossbench": {
-            "web_tests_cuj": {
-                "crossbench_name": "speedometer_3.1",
-                "arguments": [
-                    "--web-tests-cuj",
-                    "--debug",
-                    "--enable-field-trials=benchmarking"
-                ]
-            }
-        },
         "benchmarks": {}
     },
     "3": {
@@ -53,14 +43,14 @@
         "benchmarks": {}
     },
     "extra_infos": {
-        "num_stories": 3,
+        "num_stories": 2,
         "predicted_min_shard_time": 0,
         "predicted_min_shard_index": 3,
         "predicted_max_shard_time": 360,
         "predicted_max_shard_index": 0,
         "shard #0": 360,
         "shard #1": 60,
-        "shard #2": 10,
+        "shard #2": 0,
         "shard #3": 0,
         "shard #4": 0,
         "shard #5": 0,
