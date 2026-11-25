@@ -509,7 +509,7 @@ export class ActionDispatcher {
             tiltX,
             tiltY,
             twist,
-            force: pressure,
+            force: pressure ?? 0.5,
           },
         );
         break;
@@ -573,6 +573,7 @@ export class ActionDispatcher {
             buttons: source.buttons,
             clickCount: source.getClickCount(button),
             pointerType,
+            force: source.pressed.size === 0 ? 0 : 0.5,
           },
         );
       case Input.PointerType.Touch:
@@ -674,7 +675,7 @@ export class ActionDispatcher {
                     tiltX,
                     tiltY,
                     twist,
-                    force: pressure,
+                    force: pressure ?? 0,
                   },
                 ),
               );
@@ -699,7 +700,7 @@ export class ActionDispatcher {
                   tiltX,
                   tiltY,
                   twist,
-                  force: pressure,
+                  force: pressure ?? (source.pressed.size === 0 ? 0 : 0.5),
                 },
               );
             }

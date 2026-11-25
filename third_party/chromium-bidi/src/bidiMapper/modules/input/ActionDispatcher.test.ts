@@ -1051,4 +1051,69 @@ describe('ActionDispatcher', () => {
       },
     ]);
   });
+
+  it('defaults mouse force to 0.5 when pressed and 0 when unpressed', async () => {
+    await dispatcher.dispatchActions([
+      [{id: 'mouse', action: {type: 'pointerMove', x: 10, y: 10}}],
+      [{id: 'mouse', action: {type: 'pointerDown', button: 0}}],
+      [{id: 'mouse', action: {type: 'pointerMove', x: 20, y: 20}}],
+      [{id: 'mouse', action: {type: 'pointerDown', button: 2}}],
+      [{id: 'mouse', action: {type: 'pointerUp', button: 2}}],
+      [{id: 'mouse', action: {type: 'pointerUp', button: 0}}],
+      [{id: 'mouse', action: {type: 'pointerMove', x: 30, y: 30}}],
+    ]);
+
+    const dispatched = sendCommand.args
+      .filter(([method]) => method === 'Input.dispatchMouseEvent')
+      .map(([, params]) => {
+        const event = params as {type: string; force?: number};
+        return [event.type, event.force];
+      });
+
+    assert.deepEqual(dispatched, [
+      ['mouseMoved', 0],
+      ['mousePressed', 0.5],
+      ['mouseMoved', 0.5],
+      ['mousePressed', 0.5],
+      ['mouseReleased', 0.5],
+      ['mouseReleased', 0],
+      ['mouseMoved', 0],
+    ]);
+  });
+
+  it('preserves explicit pressure on pointer actions', async () => {
+    await dispatcher.dispatchActions([
+      [
+        {
+          id: 'mouse',
+          action: {type: 'pointerMove', x: 10, y: 10, pressure: 0.25},
+        },
+      ],
+      [
+        {
+          id: 'mouse',
+          action: {type: 'pointerDown', button: 0, pressure: 0.75},
+        },
+      ],
+      [
+        {
+          id: 'mouse',
+          action: {type: 'pointerMove', x: 20, y: 20, pressure: 0.35},
+        },
+      ],
+    ]);
+
+    const dispatched = sendCommand.args
+      .filter(([method]) => method === 'Input.dispatchMouseEvent')
+      .map(([, params]) => {
+        const event = params as {type: string; force?: number};
+        return [event.type, event.force];
+      });
+
+    assert.deepEqual(dispatched, [
+      ['mouseMoved', 0.25],
+      ['mousePressed', 0.75],
+      ['mouseMoved', 0.35],
+    ]);
+  });
 });

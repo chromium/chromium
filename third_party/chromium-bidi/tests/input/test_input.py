@@ -1100,3 +1100,73 @@ async def test_input_keyDown_closes_browsing_context(websocket, context_id, html
         "message": ANY_STR,
         "type": "error",
     }
+
+
+@pytest.mark.asyncio
+async def test_input_performActions_mouse_pointer_pressure(websocket, context_id, html):
+    await goto_url(
+        websocket,
+        context_id,
+        html(
+            """
+            <script>
+              window.recorded = [];
+              for (const type of ['pointerdown', 'pointermove', 'pointerup']) {
+                window.addEventListener(type, (e) => {
+                  window.recorded.push([e.type, e.pressure]);
+                });
+              }
+            </script>
+            """
+        ),
+    )
+
+    await execute_command(
+        websocket,
+        {
+            "method": "input.performActions",
+            "params": {
+                "context": context_id,
+                "actions": [
+                    {
+                        "type": "pointer",
+                        "id": "mouse",
+                        "parameters": {"pointerType": "mouse"},
+                        "actions": [
+                            {"type": "pointerMove", "x": 50, "y": 50},
+                            {"type": "pointerDown", "button": 0},
+                            {"type": "pointerMove", "x": 60, "y": 60},
+                            {"type": "pointerUp", "button": 0},
+                            {"type": "pointerMove", "x": 70, "y": 70},
+                        ],
+                    }
+                ],
+            },
+        },
+    )
+
+    result = await execute_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.recorded",
+                "awaitPromise": False,
+                "target": {"context": context_id},
+            },
+        },
+    )
+
+    recorded = [
+        [item["value"][0]["value"], item["value"][1]["value"]]
+        for item in result["result"]["value"]
+    ]
+    downs = [entry for entry in recorded if entry[0] == "pointerdown"]
+    moves = [entry for entry in recorded if entry[0] == "pointermove"]
+    ups = [entry for entry in recorded if entry[0] == "pointerup"]
+
+    assert downs[0][1] == 0.5
+    assert ups[0][1] == 0
+    assert moves[0][1] == 0
+    assert moves[1][1] == 0.5
+    assert moves[-1][1] == 0
