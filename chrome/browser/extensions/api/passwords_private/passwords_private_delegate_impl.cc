@@ -747,8 +747,10 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
     std::move(results_callback).Run(results);
     return;
   }
-  CHECK_NE(api::passwords_private::PasswordStoreSet::kDeviceAndAccount,
-           to_store, base::NotFatalUntil::M161);
+  // TODO(crbug.com/586523128): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_NE(api::passwords_private::PasswordStoreSet::kDeviceAndAccount,
+            to_store);
   password_manager::PasswordForm::Store store_to_use =
       *ConvertToPasswordFormStores(to_store).begin();
   password_import_controller_->Import(
