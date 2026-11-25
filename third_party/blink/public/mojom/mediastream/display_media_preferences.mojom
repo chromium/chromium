@@ -1,0 +1,28 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// These enums are kept separate from media_stream.mojom so that they can be
+// listed in the "android_mojo_bindings" target (which generates the Java
+// bindings used by the Android media capture picker) without pulling
+// media_stream.mojom and its //media dependencies into that target.
+
+// Type of preferred display surface to indicate which display surface type
+// (screen, windows, or tabs) should be most prominently offered to the user.
+enum PreferredDisplaySurface {
+  NO_PREFERENCE,
+  MONITOR,
+  WINDOW,
+  BROWSER,
+};
+
+// What kind of audio the caller of the Captured Surface Control prefer to be
+// used when sharing a window surface.
+// https://www.w3.org/TR/screen-capture/#dom-displaymediastreamoptions-windowaudio
+enum WindowAudioPreference {
+  kSystem,
+  kWindow,
+  kExclude,
+};

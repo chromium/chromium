@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/display_media_preferences.mojom-forward.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 
 namespace mojo {

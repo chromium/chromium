@@ -9,6 +9,7 @@ import "media/mojo/mojom/audio_parameters.mojom";
 import "media/mojo/mojom/display_media_information.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "third_party/blink/public/mojom/mediastream/display_media_preferences.mojom";
 import "third_party/blink/public/mojom/mediastream/media_devices.mojom";
 
 // Types of media streams. When updating this list, make sure to update the
@@ -143,15 +144,6 @@ enum MediaStreamStateChange {
   PAUSE,
 };
 
-// Type of preferred display surface to indicate which display surface type
-// (screen, windows, or tabs) should be most prominently offered to the user.
-enum PreferredDisplaySurface {
-  NO_PREFERENCE,
-  MONITOR,
-  WINDOW,
-  BROWSER,
-};
-
 // This empty struct is used as a union option. Its presence will trigger
 // searching only by device ID. There is no other information needed.
 struct SearchOnlyByDeviceId {};
@@ -252,15 +244,6 @@ enum ZoomLevelAction {
   kIncrease,
   kDecrease,
   kReset,
-};
-
-// What kind of audio the caller of the Captured Surface Control prefer to be
-// used when sharing a window surface.
-// https://www.w3.org/TR/screen-capture/#dom-displaymediastreamoptions-windowaudio
-enum WindowAudioPreference {
-  kSystem,
-  kWindow,
-  kExclude,
 };
 
 // Per-frame renderer-side interface that receives device stopped/change

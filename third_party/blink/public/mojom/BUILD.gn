@@ -179,10 +179,13 @@ mojom("mojom_platform") {
     "manifest/manifest_manager.mojom",
     "manifest/manifest_migration_behavior.mojom",
     "manifest/manifest_observer.mojom",
+    "media/capture_handle_config.mojom",
     "media/fullscreen_video_element.mojom",
     "media/renderer_audio_input_stream_factory.mojom",
     "media/renderer_audio_output_stream_factory.mojom",
     "mediastream/aec_dump.mojom",
+    "mediastream/media_devices.mojom",
+    "mediastream/media_stream.mojom",
     "mime/mime_registry.mojom",
     "navigation/navigation_api_history_entry_arrays.mojom",
     "navigation/navigation_policy.mojom",
@@ -431,6 +434,32 @@ mojom("mojom_platform") {
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/navigation/navigation_policy_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.MediaDeviceInfo"
+          cpp = "::blink::WebMediaDeviceInfo"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/mediastream/media_devices_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.MediaStreamDevice"
+          cpp = "::blink::MediaStreamDevice"
+        },
+        {
+          mojom = "blink.mojom.StreamControls"
+          cpp = "::blink::StreamControls"
+        },
+        {
+          mojom = "blink.mojom.TrackControls"
+          cpp = "::blink::TrackControls"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/mediastream/media_stream_mojom_traits.h" ]
     },
     {
       types = [
@@ -993,10 +1022,8 @@ mojom("android_mojo_bindings") {
     "installedapp/related_application.mojom",
     "link_to_text/link_to_text.mojom",
     "manifest/display_mode.mojom",
-    "media/capture_handle_config.mojom",
     "mediasession/media_session.mojom",
-    "mediastream/media_devices.mojom",
-    "mediastream/media_stream.mojom",
+    "mediastream/display_media_preferences.mojom",
     "page/display_cutout.mojom",
     "payments/payment_app_events.mojom",
     "payments/payment_handler_host.mojom",
@@ -1024,15 +1051,6 @@ mojom("android_mojo_bindings") {
     "//url/mojom:url_mojom_origin",
     "//url/mojom:url_mojom_scheme_host_port",
   ]
-
-  # Chromium without blink doesn't use and must not depend on //media
-  if (use_blink) {
-    public_deps += [
-      "//media/capture/mojom:video_capture_types",
-      "//media/mojo/mojom",
-      "//media/mojo/mojom:media_types",
-    ]
-  }
 
   if (use_blink_extensions_webview) {
     sources += [ "webview/webview_media_integrity.mojom" ]
@@ -1081,32 +1099,6 @@ mojom("android_mojo_bindings") {
       ]
       traits_headers = [ "//third_party/blink/public/common/link_to_text/link_to_text_mojom_traits.h" ]
       traits_public_deps = [ "//components/shared_highlighting/core/common" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.MediaDeviceInfo"
-          cpp = "::blink::WebMediaDeviceInfo"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/mediastream/media_devices_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.MediaStreamDevice"
-          cpp = "::blink::MediaStreamDevice"
-        },
-        {
-          mojom = "blink.mojom.StreamControls"
-          cpp = "::blink::StreamControls"
-        },
-        {
-          mojom = "blink.mojom.TrackControls"
-          cpp = "::blink::TrackControls"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/mediastream/media_stream_mojom_traits.h" ]
     },
   ]
   cpp_typemaps = [
