@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -117,6 +118,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
 
     /**
      * Checks if this feature (a.k.a. "Preview page/image") is supported.
+     *
      * @return {@code true} if the feature is enabled.
      */
     public static boolean isSupported() {
@@ -418,7 +420,9 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         mCurrentMaxViewHeight = maxViewHeight;
     }
 
-    /** @return The maximum base view height for sheet content view. */
+    /**
+     * @return The maximum base view height for sheet content view.
+     */
     private int getMaxViewHeight() {
         Tab tab = mTabProvider.get();
         if (tab == null || tab.getView() == null) return 0;
@@ -431,13 +435,16 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      */
     static class FaviconLoader {
         private final Context mContext;
-        private final FaviconHelper mFaviconHelper;
         private final int mFaviconSize;
+        private @Nullable FaviconHelper mFaviconHelper;
 
         /** Constructor. */
         public FaviconLoader(Context context) {
             mContext = context;
-            mFaviconHelper = new FaviconHelper();
+            mFaviconHelper =
+                    ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()
+                            ? null
+                            : new FaviconHelper();
             int sizeResId = R.dimen.ephemeral_tab_favicon_size;
             mFaviconSize = mContext.getResources().getDimensionPixelSize(sizeResId);
         }
@@ -445,12 +452,14 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         /**
          * Generates a favicon for a given URL. If no favicon was could be found or generated from
          * the URL, a default favicon will be shown.
+         *
          * @param url The URL for which favicon is to be generated.
          * @param callback The callback to be invoked to display the final image.
          * @param profile The profile for which favicon service is used.
          */
         public void loadFavicon(final GURL url, Callback<Drawable> callback, Profile profile) {
             assert profile != null;
+            if (mFaviconHelper == null) mFaviconHelper = new FaviconHelper();
             FaviconHelper.FaviconImageCallback imageCallback =
                     (bitmap, iconUrl) -> {
                         Drawable drawable;

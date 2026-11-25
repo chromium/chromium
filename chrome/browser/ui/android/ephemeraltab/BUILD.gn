@@ -19,6 +19,7 @@ android_library("java") {
     "//chrome/browser/actor/android:java",
     "//chrome/browser/android/content:java",
     "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/share:java",
     "//chrome/browser/tab:java",
