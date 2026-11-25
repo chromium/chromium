@@ -4,10 +4,8 @@
 
 #include "chrome/browser/default_browser/default_browser_time_after_setter_failure_tracker.h"
 
-#include <string>
-
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_util.h"
+#include "chrome/browser/default_browser/default_browser_metrics.h"
 
 namespace default_browser {
 
@@ -31,22 +29,16 @@ void TimeAfterSetterFailureTracker::RecordDefaultSet(bool default_set) {
 
   recorded_ = true;
 
-  std::string entrypoint_str = UiEntrypointTypeToString(entrypoint_);
-  std::string setter_str = SetterTypeToString(setter_);
-
-  std::string default_set_histogram_name =
-      base::JoinString({"DefaultBrowser", entrypoint_str, setter_str,
-                        "DefaultSetAfterSetterFailure"},
-                       ".");
-  base::UmaHistogramBoolean(default_set_histogram_name, default_set);
+  base::UmaHistogramBoolean(
+      GetEntrypointHistogramName(entrypoint_, setter_,
+                                 "DefaultSetAfterSetterFailure"),
+      default_set);
 
   if (default_set) {
-    std::string duration_histogram_name =
-        base::JoinString({"DefaultBrowser", entrypoint_str, setter_str,
-                          "TimeAfterSetterFailure"},
-                         ".");
-    base::UmaHistogramLongTimes(duration_histogram_name,
-                                base::TimeTicks::Now() - start_time_);
+    base::UmaHistogramLongTimes(
+        GetEntrypointHistogramName(entrypoint_, setter_,
+                                   "TimeAfterSetterFailure"),
+        base::TimeTicks::Now() - start_time_);
   }
 }
 

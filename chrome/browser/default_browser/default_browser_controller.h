@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DEFAULT_BROWSER_DEFAULT_BROWSER_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -63,9 +62,6 @@ enum class DefaultBrowserInteractionType {
 // the `RetryCount` histogram.
 inline constexpr int kMaxRecordedRetryCount = 3;
 
-std::string UiEntrypointTypeToString(
-    DefaultBrowserEntrypointType ui_entrypoint);
-std::string SetterTypeToString(DefaultBrowserSetterType setter_type);
 
 // DefaultBrowserController acts a bridge between UI and the setter, is
 // responsible for managing the setter based on user input, and recording
@@ -100,7 +96,6 @@ class DefaultBrowserController {
 
   void IncrementShownMetric();
   void RecordInteractionMetric(DefaultBrowserInteractionType interaction);
-  void RecordResultMetric(bool success);
 
   std::unique_ptr<DefaultBrowserSetter> setter_;
 

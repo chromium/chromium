@@ -11,11 +11,13 @@
 
 namespace default_browser {
 
-FakeDefaultBrowserSetter::FakeDefaultBrowserSetter(DefaultBrowserState state)
-    : state_(state) {}
+FakeDefaultBrowserSetter::FakeDefaultBrowserSetter(
+    DefaultBrowserState state,
+    DefaultBrowserSetterType type)
+    : state_(state), type_(type) {}
 
 DefaultBrowserSetterType FakeDefaultBrowserSetter::GetType() const {
-  return DefaultBrowserSetterType::kShellIntegration;
+  return type_;
 }
 
 void FakeDefaultBrowserSetter::Execute(

@@ -16,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
+#include "chrome/browser/default_browser/default_browser_metrics.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
 #include "chrome/browser/default_browser/test_support/fake_default_browser_monitor.h"
 #include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"

@@ -25,6 +25,8 @@ source_set("default_browser") {
     "default_browser_controller.cc",
     "default_browser_features.cc",
     "default_browser_manager.cc",
+    "default_browser_metrics.cc",
+    "default_browser_metrics.h",
     "default_browser_monitor.cc",
     "default_browser_monitor.h",
     "default_browser_notification_observer.cc",

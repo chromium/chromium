@@ -12,7 +12,9 @@ namespace default_browser {
 class FakeDefaultBrowserSetter : public DefaultBrowserSetter {
  public:
   explicit FakeDefaultBrowserSetter(
-      DefaultBrowserState state = DefaultBrowserState::IS_DEFAULT);
+      DefaultBrowserState state = DefaultBrowserState::IS_DEFAULT,
+      DefaultBrowserSetterType type =
+          DefaultBrowserSetterType::kShellIntegration);
 
   DefaultBrowserSetterType GetType() const override;
   void Execute(DefaultBrowserSetterCompletionCallback on_complete,
@@ -20,6 +22,7 @@ class FakeDefaultBrowserSetter : public DefaultBrowserSetter {
 
  private:
   const DefaultBrowserState state_;
+  const DefaultBrowserSetterType type_;
 };
 
 }  // namespace default_browser

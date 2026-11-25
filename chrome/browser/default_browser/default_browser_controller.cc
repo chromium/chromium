@@ -11,10 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_manager.h"
+#include "chrome/browser/default_browser/default_browser_metrics.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -27,63 +27,6 @@
 #include "content/public/common/url_constants.h"
 
 namespace default_browser {
-
-namespace {
-
-std::string GetEntrypointHistogramName(
-    DefaultBrowserEntrypointType entrypoint_type,
-    DefaultBrowserSetterType setter_type,
-    const std::string& metric_type) {
-  return base::JoinString(
-      {"DefaultBrowser", UiEntrypointTypeToString(entrypoint_type),
-       SetterTypeToString(setter_type), metric_type},
-      ".");
-}
-
-std::string GetSetterHistogramName(DefaultBrowserSetterType setter_type,
-                                   const std::string& metric_type) {
-  return base::JoinString(
-      {"DefaultBrowser", SetterTypeToString(setter_type), metric_type}, ".");
-}
-
-}  // namespace
-
-std::string SetterTypeToString(DefaultBrowserSetterType setter_type) {
-  switch (setter_type) {
-    case DefaultBrowserSetterType::kShellIntegration:
-      return "ShellIntegration";
-    case DefaultBrowserSetterType::kVisualGuide:
-      return "VisualGuide";
-    case DefaultBrowserSetterType::kAnnotatedShellIntegration:
-      return "AnnotatedShellIntegration";
-  }
-  NOTREACHED();
-}
-
-std::string UiEntrypointTypeToString(
-    DefaultBrowserEntrypointType ui_entrypoint) {
-  switch (ui_entrypoint) {
-    case DefaultBrowserEntrypointType::kSettingsPage:
-      return "SettingsPage";
-    case DefaultBrowserEntrypointType::kStartupInfobar:
-      return "InfoBar";
-    case DefaultBrowserEntrypointType::kChangeDetectedNotification:
-      return "ChangeDetectedNotification";
-    case DefaultBrowserEntrypointType::kBubbleDialog:
-      return "BubbleDialog";
-    case DefaultBrowserEntrypointType::kModalDialogWithSettingsIllustration:
-      return "ModalDialogWithSettingsIllustration";
-    case DefaultBrowserEntrypointType::kModalDialogWithoutSettingsIllustration:
-      return "ModalDialogWithoutSettingsIllustration";
-    case DefaultBrowserEntrypointType::
-        kStickyModalDialogWithSettingsIllustration:
-      return "StickyModalDialogWithSettingsIllustration";
-    case DefaultBrowserEntrypointType::
-        kStickyModalDialogWithoutSettingsIllustration:
-      return "StickyModalDialogWithoutSettingsIllustration";
-  }
-  NOTREACHED();
-}
 
 DefaultBrowserController::DefaultBrowserController(
     std::unique_ptr<DefaultBrowserSetter> setter,
@@ -137,15 +80,10 @@ void DefaultBrowserController::OnSetterExecutionComplete(
     base::TimeTicks setter_execution_start_time,
     DefaultBrowserState default_browser_state) {
   bool success = default_browser_state == DefaultBrowserState::IS_DEFAULT;
-  RecordResultMetric(success);
+  RecordSetterResult(ui_entrypoint_, GetSetterType(), success,
+                     base::TimeTicks::Now() - setter_execution_start_time);
 
   if (success) {
-    std::string duration_histogram_name =
-        GetSetterHistogramName(GetSetterType(), "SuccessDuration");
-    base::UmaHistogramLongTimes(
-        duration_histogram_name,
-        base::TimeTicks::Now() - setter_execution_start_time);
-
     BrowserWindowInterface* browser =
         GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
     if (browser) {
@@ -175,14 +113,6 @@ void DefaultBrowserController::RecordInteractionMetric(
       GetEntrypointHistogramName(ui_entrypoint_, GetSetterType(),
                                  "Interaction"),
       interaction);
-}
-
-void DefaultBrowserController::RecordResultMetric(bool success) {
-  base::UmaHistogramBoolean(GetSetterHistogramName(GetSetterType(), "Result"),
-                            success);
-  base::UmaHistogramBoolean(
-      GetEntrypointHistogramName(ui_entrypoint_, GetSetterType(), "OutcomeV2"),
-      success);
 }
 
 }  // namespace default_browser

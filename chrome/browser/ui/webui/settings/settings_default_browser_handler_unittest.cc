@@ -4,15 +4,21 @@
 #include "chrome/browser/ui/webui/settings/settings_default_browser_handler.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
+#include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_manager.h"
+#include "chrome/browser/default_browser/default_browser_setter.h"
+#include "chrome/browser/default_browser/test_support/fake_default_browser_monitor.h"
 #include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
 #include "chrome/browser/default_browser/test_support/fake_shell_delegate.h"
 #include "chrome/browser/global_features.h"
@@ -43,22 +49,17 @@ class TestingDefaultBrowserHandler : public DefaultBrowserHandler {
       delete;
   TestingDefaultBrowserHandler(const TestingDefaultBrowserHandler&) = delete;
 
-  void OnJavascriptAllowed() override {
-    DefaultBrowserHandler::OnJavascriptAllowed();
-    // Override the controller with a mock.
-    default_browser_controller_ =
-        std::make_unique<default_browser::DefaultBrowserController>(
-            std::make_unique<default_browser::FakeDefaultBrowserSetter>(),
-            default_browser::DefaultBrowserEntrypointType::kSettingsPage);
-  }
-
  private:
   friend class DefaultBrowserHandlerTest;
 };
 
 class DefaultBrowserHandlerTest : public testing::Test {
  public:
-  DefaultBrowserHandlerTest() = default;
+  DefaultBrowserHandlerTest() {
+    // The histogram names below assume the shell integration setter.
+    feature_list_.InitAndDisableFeature(
+        default_browser::kDefaultBrowserSetterSelection);
+  }
 
   void SetUp() override {
     scoped_override_ =
@@ -68,7 +69,18 @@ class DefaultBrowserHandlerTest : public testing::Test {
                   &browser_process,
                   std::make_unique<default_browser::FakeShellDelegate>(),
                   base::BindLambdaForTesting(
-                      [&]() { return static_cast<Profile*>(profile_.get()); }));
+                      [&]() { return static_cast<Profile*>(profile_.get()); }),
+                  std::make_unique<
+                      default_browser::FakeDefaultBrowserMonitor>(),
+                  base::BindRepeating(
+                      [](default_browser::DefaultBrowserSetterType type)
+                          -> std::unique_ptr<
+                              default_browser::DefaultBrowserSetter> {
+                        return std::make_unique<
+                            default_browser::FakeDefaultBrowserSetter>(
+                            default_browser::DefaultBrowserState::IS_DEFAULT,
+                            type);
+                      }));
             }));
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
         /*profile_manager=*/false);
@@ -169,6 +181,7 @@ class DefaultBrowserHandlerTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;

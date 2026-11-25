@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
+#include "chrome/browser/default_browser/default_browser_metrics.h"
 #include "chrome/browser/default_browser/default_browser_monitor.h"
 #include "chrome/browser/default_browser/default_browser_notification_observer.h"
 #include "chrome/browser/default_browser/setters/default_browser_annotated_shell_integration_setter.h"
