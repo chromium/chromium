@@ -41,3 +41,6 @@
 
 # Flaky (6/45 builds) since crrev.com/c/8796148: https://crbug.com/585474787
 -ActionAppMenuWithOtherDeviceTabsBrowserTest.OtherDeviceTabsSubmenuUpdatesWhenDevicesChange
+
+# TODO(crbug.com/589603614): Chronically flaky RunLoop timeout on Ozone Wayland.
+-MultiContentsViewWebContentsReLayoutBrowserTest.EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes
