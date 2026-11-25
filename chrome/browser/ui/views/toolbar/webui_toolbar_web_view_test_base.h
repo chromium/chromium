@@ -128,7 +128,13 @@ class WebUIToolbarWebViewTestBase : public InProcessBrowserTest {
   // failure with the last observed state, and returns false.
   [[nodiscard]] bool WaitForExtensionsState(const std::string& expected);
 
-  // Enables battery saver mode and waits until the button is visible.
+  // Returns whether the battery saver button is supported by the WebUI toolbar.
+  // On ChromeOS, battery saver is managed by the OS by default, so the toolbar
+  // button is not shown.
+  bool IsBatterySaverButtonSupported() const;
+
+  // Enables battery saver mode and waits until the button is visible. The
+  // battery saver button must be supported on the current platform.
   void EnableBatterySaverButton(
       content::WebContents* webui_web_contents = nullptr);
 

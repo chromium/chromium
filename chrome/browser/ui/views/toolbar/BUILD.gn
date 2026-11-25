@@ -513,6 +513,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser:flags",
       "//chrome/browser/glic",
+      "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/signin",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_command_controller",
@@ -694,6 +695,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/glic/browser_ui/activity_list_bubble:controller",
       "//chrome/browser/glic/browser_ui/activity_list_bubble:ui",
       "//chrome/browser/history",
+      "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/preloading",
       "//chrome/browser/profiles:misc",
       "//chrome/browser/profiles:profile",
@@ -883,8 +885,11 @@ if (toolkit_views) {
         "//ash/constants",
         "//chrome/browser/ash/ownership",
         "//chrome/browser/ash/settings",
+        "//chrome/browser/performance_manager:test_support",
         "//chromeos/ash/components/cryptohome",
         "//chromeos/ash/components/dbus/session_manager",
+        "//components/performance_manager",
+        "//components/prefs:test_support",
         "//components/user_manager",
       ]
     }

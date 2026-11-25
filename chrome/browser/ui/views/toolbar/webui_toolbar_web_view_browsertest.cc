@@ -106,6 +106,7 @@
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/webui_battery_saver_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_home_control_test_base.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
@@ -235,6 +236,7 @@
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -245,9 +247,9 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "chromeos/dbus/power/power_manager_client.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -406,9 +408,6 @@ class WebUIToolbarWebViewPixelBrowserTest : public WebUIToolbarWebViewTestBase {
              features::kWebUILocationBar, features::kWebUIExtensionsContainer,
              features::kSkipIPCChannelPausingForNonGuests,
              features::kWebUIInProcessResourceLoadingV2,
-#if BUILDFLAG(IS_CHROMEOS)
-             ash::features::kBatterySaver,
-#endif
              features::kWebUIBatterySaverButton},
             /*disabled=*/{}) {
   }
@@ -1221,6 +1220,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                        CheckBatterySaverButtonShowHide) {
+  if (!IsBatterySaverButtonSupported()) {
+    GTEST_SKIP()
+        << "The battery saver button is not supported on this platform.";
+  }
+
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
@@ -1286,21 +1290,84 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   destroyed_waiter.Wait();
 
   // 6. Disable Battery Saver and verify it becomes hidden again.
-#if BUILDFLAG(IS_CHROMEOS)
-  g_browser_process->local_state()->SetBoolean(ash::prefs::kPowerBatterySaver,
-                                               false);
-#else
   g_browser_process->local_state()->SetInteger(
       performance_manager::user_tuning::prefs::kBatterySaverModeState,
       static_cast<int>(performance_manager::user_tuning::prefs::
                            BatterySaverModeState::kDisabled));
-#endif
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return !webui_toolbar_view->battery_saver_control_.IsVisible();
   }));
   EXPECT_TRUE(WaitForButtonHidden(webui_web_contents, kBatterySaverSelector));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       BatterySaverButtonHiddenWhenManagedByOS) {
+  ASSERT_TRUE(
+      performance_manager::user_tuning::IsBatterySaverModeManagedByOS());
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+
+  // Enable OS-managed battery saver and wait for `BatterySaverModeManager` to
+  // observe it.
+  g_browser_process->local_state()->SetBoolean(ash::prefs::kPowerBatterySaver,
+                                               /*value=*/true);
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    return performance_manager::user_tuning::BatterySaverModeManager::
+        GetInstance()
+            ->IsBatterySaverActive();
+  }));
+
+  // Neither Views nor WebUI should show a toolbar battery saver button when
+  // battery saver is managed by the OS.
+  EXPECT_EQ(nullptr, GetToolbarView()->battery_saver_button());
+  WebUIBatterySaverControl& battery_saver_control =
+      webui_toolbar_view->battery_saver_control_for_testing();
+  EXPECT_FALSE(battery_saver_control.IsVisible());
+  EXPECT_FALSE(battery_saver_control.CreateState()->should_be_shown);
+  EXPECT_EQ(nullptr, BrowserElements::From(browser())->GetElement(
+                         kToolbarBatterySaverButtonElementId));
+  EXPECT_EQ(false,
+            content::EvalJs(
+                web_view->GetWebContents(),
+                content::JsReplace(
+                    "!!document.querySelector('toolbar-app')?.shadowRoot?."
+                    "querySelector($1)",
+                    kBatterySaverSelector)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       BatterySaverShowBubbleDoesNothingWhenManagedByOS) {
+  ASSERT_TRUE(
+      performance_manager::user_tuning::IsBatterySaverModeManagedByOS());
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+
+  // Attach `kToolbarBatterySaverButtonElementId` to a visible view so
+  // `ShowBubble()` would reach `BatterySaverBubbleView::CreateBubble()` if the
+  // OS-managed guard were missing.
+  web_view->SetProperty(views::kElementIdentifierKey,
+                        kToolbarBatterySaverButtonElementId);
+  ASSERT_NE(nullptr, BrowserElements::From(browser())->GetElement(
+                         kToolbarBatterySaverButtonElementId));
+
+  WebUIBatterySaverControl& battery_saver_control =
+      webui_toolbar_view->battery_saver_control_for_testing();
+  battery_saver_control.ShowBubble();
+  EXPECT_EQ(nullptr, battery_saver_control.bubble_for_testing());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {
  public:
@@ -6914,9 +6981,6 @@ class WebUIToolbarFullyEnabledBrowserTest
                 features::kSkipIPCChannelPausingForNonGuests,
                 features::kWebUIInProcessResourceLoadingV2,
                 features::kOmniboxResizingPrioritization,
-#if BUILDFLAG(IS_CHROMEOS)
-                ash::features::kBatterySaver,
-#endif
             },
             {}) {
   }
@@ -7722,25 +7786,32 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
 // the home button). Incrementally increases the size of a spacer element,
 // checking overflow order as available space on the toolbar decreases.
 //
-// The media button isn't supported on all platforms, so it's only included in
-// the expectations when it's actually available.
+// The battery saver and media buttons aren't supported on all platforms, so
+// they are only included in the expectations when actually available.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
                        BatterySaverAndMediaButtonShrinkToolbar) {
-  // Check whether the media button is supported at runtime, rather than
-  // hardcoding the list of supported platforms, so that this test will
-  // automatically start covering the media button if it's enabled elsewhere.
+  // Check whether the battery saver and media buttons are supported at runtime,
+  // rather than hardcoding the list of supported platforms, so that this test
+  // will automatically start covering them if enabled elsewhere.
+  const bool has_battery_saver_button = IsBatterySaverButtonSupported();
   const bool has_media_button = IsMediaButtonSupported();
 
-  // Enable the battery saver, home, and, if supported, media buttons.
-  EnableBatterySaverButton();
+  // Enable the home button and, if supported, the battery saver and media
+  // buttons.
+  if (has_battery_saver_button) {
+    EnableBatterySaverButton();
+  }
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
   if (has_media_button) {
     ShowMediaButton();
   }
 
-  // Wait for the forward, home, battery saver, and media buttons to be visible.
-  std::vector<std::string_view> expected_selectors = {
-      kForwardSelector, kHomeSelector, kBatterySaverSelector};
+  // Wait for the forward, home, and supported optional buttons to be visible.
+  std::vector<std::string_view> expected_selectors = {kForwardSelector,
+                                                      kHomeSelector};
+  if (has_battery_saver_button) {
+    expected_selectors.push_back(kBatterySaverSelector);
+  }
   if (has_media_button) {
     expected_selectors.push_back(kMediaSelector);
   }
@@ -7748,8 +7819,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
 
   // The buttons that are expected to overflow once the toolbar is shrunk.
   std::vector<ui::ElementIdentifier> overflowable_elements = {
-      kToolbarForwardButtonElementId, kToolbarHomeButtonElementId,
-      kToolbarBatterySaverButtonElementId};
+      kToolbarForwardButtonElementId, kToolbarHomeButtonElementId};
+  if (has_battery_saver_button) {
+    overflowable_elements.push_back(kToolbarBatterySaverButtonElementId);
+  }
   if (has_media_button) {
     overflowable_elements.push_back(kToolbarMediaButtonElementId);
   }
@@ -7768,8 +7841,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
                                              // avatar button.
                                              "avatar",
 #endif
-                                             "forward", "home",
-                                             "battery-saver"};
+                                             "forward", "home"};
+  if (has_battery_saver_button) {
+    expected_order.push_back("battery-saver");
+  }
   if (has_media_button) {
     // The media button has a lower priority than the battery saver button, so
     // appears last, if expected to appear.

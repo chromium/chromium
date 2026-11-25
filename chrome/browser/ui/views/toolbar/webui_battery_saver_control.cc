@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
@@ -26,12 +27,14 @@
 WebUIBatterySaverControl::WebUIBatterySaverControl(
     WebUIToolbarControlDelegate* delegate)
     : delegate_(delegate),
-      is_showing_(features::IsWebUIBatterySaverButtonEnabled() &&
-                  performance_manager::user_tuning::BatterySaverModeManager::
-                      HasInstance() &&
-                  performance_manager::user_tuning::BatterySaverModeManager::
-                      GetInstance()
-                          ->IsBatterySaverActive()) {}
+      is_showing_(
+          features::IsWebUIBatterySaverButtonEnabled() &&
+          !performance_manager::user_tuning::IsBatterySaverModeManagedByOS() &&
+          performance_manager::user_tuning::BatterySaverModeManager::
+              HasInstance() &&
+          performance_manager::user_tuning::BatterySaverModeManager::
+              GetInstance()
+                  ->IsBatterySaverActive()) {}
 
 WebUIBatterySaverControl::~WebUIBatterySaverControl() {
   if (bubble_) {
@@ -40,11 +43,17 @@ WebUIBatterySaverControl::~WebUIBatterySaverControl() {
 }
 
 void WebUIBatterySaverControl::Init() {
+  if (performance_manager::user_tuning::IsBatterySaverModeManagedByOS()) {
+    return;
+  }
   controller_.Init(this);
 }
 
 void WebUIBatterySaverControl::ShowBubble(
     std::optional<gfx::Rect> anchor_rect) {
+  if (performance_manager::user_tuning::IsBatterySaverModeManagedByOS()) {
+    return;
+  }
   // Consider this call to fulfill any pending attempt to show the bubble,
   // though if the button still isn't visible, it will subscribe again below.
   //
@@ -103,6 +112,9 @@ void WebUIBatterySaverControl::ShowBubble(
 }
 
 void WebUIBatterySaverControl::Show() {
+  if (performance_manager::user_tuning::IsBatterySaverModeManagedByOS()) {
+    return;
+  }
   if (is_showing_) {
     return;
   }

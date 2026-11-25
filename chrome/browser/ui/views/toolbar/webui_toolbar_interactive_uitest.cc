@@ -4551,6 +4551,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
                        OverflowMenuClickBatterySaverButton) {
+  if (!IsBatterySaverButtonSupported()) {
+    GTEST_SKIP()
+        << "The battery saver button is not supported on this platform.";
+  }
+
   // Enable the battery saver button.
   EnableBatterySaverButton();
 

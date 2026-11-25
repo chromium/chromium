@@ -34,6 +34,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -666,7 +667,10 @@ void WebUIToolbarWebView::AddedToWidget() {
     if (features::IsWebUIHomeButtonEnabled()) {
       home_control_.Init();
     }
-    if (features::IsWebUIBatterySaverButtonEnabled()) {
+    // Only show the Battery Saver button when it is not controlled by the OS.
+    // On ChromeOS the battery icon in the shelf shows the same information.
+    if (features::IsWebUIBatterySaverButtonEnabled() &&
+        !performance_manager::user_tuning::IsBatterySaverModeManagedByOS()) {
       battery_saver_control_.Init();
     }
     if (features::IsWebUIPerformanceInterventionButtonEnabled()) {

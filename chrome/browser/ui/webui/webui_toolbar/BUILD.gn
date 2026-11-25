@@ -84,6 +84,7 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/resources:grit_grit",
+    "//chrome/browser/performance_manager/public/user_tuning",
     "//chrome/browser/resources/webui_toolbar:resources_grit",
     "//chrome/browser/resources/webui_toolbar_shared:resources_grit",
     "//chrome/browser/ui:browser_element_identifiers",

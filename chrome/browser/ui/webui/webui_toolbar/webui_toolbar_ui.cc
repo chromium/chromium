@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -304,8 +305,10 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   source->AddBoolean("enableReloadButton",
                      features::IsWebUIReloadButtonEnabled());
   source->AddBoolean("enableHomeButton", features::IsWebUIHomeButtonEnabled());
-  source->AddBoolean("enableBatterySaverButton",
-                     features::IsWebUIBatterySaverButtonEnabled());
+  source->AddBoolean(
+      "enableBatterySaverButton",
+      features::IsWebUIBatterySaverButtonEnabled() &&
+          !performance_manager::user_tuning::IsBatterySaverModeManagedByOS());
   source->AddBoolean("enableLocationBar",
                      features::IsWebUILocationBarEnabled());
   source->AddBoolean("enableBackForwardButtons",

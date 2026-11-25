@@ -12,9 +12,9 @@
 #include "base/functional/function_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
-#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -39,13 +39,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_pref_names.h"
-#endif
 
 WebUIToolbarWebViewTestBase::WebUIToolbarWebViewTestBase()
     : WebUIToolbarWebViewTestBase(
@@ -229,20 +226,20 @@ bool WebUIToolbarWebViewTestBase::WaitForExtensionsState(
   return false;
 }
 
+bool WebUIToolbarWebViewTestBase::IsBatterySaverButtonSupported() const {
+  return !performance_manager::user_tuning::IsBatterySaverModeManagedByOS();
+}
+
 void WebUIToolbarWebViewTestBase::EnableBatterySaverButton(
     content::WebContents* webui_web_contents) {
+  ASSERT_TRUE(IsBatterySaverButtonSupported());
   if (!webui_web_contents) {
     webui_web_contents = GetWebUIWebContents();
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  g_browser_process->local_state()->SetBoolean(ash::prefs::kPowerBatterySaver,
-                                               true);
-#else
   g_browser_process->local_state()->SetInteger(
       performance_manager::user_tuning::prefs::kBatterySaverModeState,
       static_cast<int>(performance_manager::user_tuning::prefs::
                            BatterySaverModeState::kEnabled));
-#endif
 
   // Verify the button element becomes visible.
   EXPECT_TRUE(WaitForButtonVisible(webui_web_contents, "#battery-saver"));
