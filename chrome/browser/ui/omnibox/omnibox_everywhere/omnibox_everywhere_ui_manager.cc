@@ -1022,6 +1022,18 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     if (!HasOpenModalDialog() && !context_menu_controller_->IsOpen() &&
         web_contents()) {
       web_contents()->Focus();
+#if BUILDFLAG(IS_WIN)
+      // Taskbar and Alt+Tab activation should focus the input like an
+      // invocation, but a click shouldn't expand the window under the cursor.
+      // Views doesn't say which it was, so a cursor outside the window means it
+      // wasn't a click.
+      if (!widget->GetWindowBoundsInScreen().Contains(
+              display::Screen::Get()->GetCursorScreenPoint())) {
+        if (auto* ui = GetOmniboxEverywhereUI()) {
+          ui->FocusInput();
+        }
+      }
+#endif  // BUILDFLAG(IS_WIN)
     }
     if (was_demoted) {
       MaybeShowLensPromo();
