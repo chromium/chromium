@@ -47,6 +47,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
@@ -55,9 +56,11 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
@@ -121,6 +124,7 @@
 #include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
@@ -315,6 +319,65 @@ bool CanLockEphemeralGroupOnExit(
     case TabGroupFocusExitReason::kHeaderUnfocusButton:
     case TabGroupFocusExitReason::kTabOutsideGroupActivated:
       return true;
+  }
+}
+
+ui::CustomElementEventType GetFocusCujEntryEvent(
+    TabGroupFocusEntryPoint entry_point) {
+  switch (entry_point) {
+    case TabGroupFocusEntryPoint::kEditorBubble:
+      return kFocusModeEnteredGroupViaEditorBubbleEventId;
+    case TabGroupFocusEntryPoint::kTabContextMenu:
+      return kFocusModeEnteredGroupViaTabContextMenuEventId;
+    case TabGroupFocusEntryPoint::kBookmarksBarContextMenu:
+    case TabGroupFocusEntryPoint::kAppMenu:
+    case TabGroupFocusEntryPoint::kOrganizerPanel:
+      return kFocusModeEnteredGroupViaSavedGroupMenuEventId;
+    case TabGroupFocusEntryPoint::kTabContextMenuSingleTab:
+      return kFocusModeEnteredSingleTabEventId;
+    case TabGroupFocusEntryPoint::kTabContextMenuMultiTab:
+      return kFocusModeEnteredMultiTabEventId;
+  }
+}
+
+ui::CustomElementEventType GetFocusCujExitEvent(
+    std::optional<TabGroupFocusExitReason> reason,
+    base::TimeDelta duration) {
+  if (!reason.has_value()) {
+    return kFocusModeExitedInvoluntarilyEventId;
+  }
+  switch (*reason) {
+    case TabGroupFocusExitReason::kHeaderUnfocusButton:
+    case TabGroupFocusExitReason::kEditorBubble:
+    case TabGroupFocusExitReason::kTabContextMenu:
+    case TabGroupFocusExitReason::kBookmarksBarContextMenu:
+    case TabGroupFocusExitReason::kAppMenu:
+    case TabGroupFocusExitReason::kOrganizerPanel:
+      return duration < metrics::kFocusModeMinCompletionDwell.Get()
+                 ? kFocusModeExitedEarlyEventId
+                 : kFocusModeCompletedEventId;
+    case TabGroupFocusExitReason::kLastTabClosed:
+    case TabGroupFocusExitReason::kGroupClosed:
+      return kFocusModeCompletedEventId;
+    case TabGroupFocusExitReason::kTabOutsideGroupActivated:
+    case TabGroupFocusExitReason::kUnpinActiveTab:
+    case TabGroupFocusExitReason::kGroupUngrouped:
+    case TabGroupFocusExitReason::kActiveTabGroupOperation:
+    case TabGroupFocusExitReason::kGroupHeaderDraggedIn:
+    case TabGroupFocusExitReason::kGroupCreated:
+    case TabGroupFocusExitReason::kTabOutsideGroupClosed:
+      return kFocusModeExitedInvoluntarilyEventId;
+  }
+}
+
+void NotifyFocusCujEvent(BrowserWindowInterface* browser,
+                         ui::CustomElementEventType event_type) {
+  if (!base::FeatureList::IsEnabled(metrics::kFocusModeJourney)) {
+    return;
+  }
+  if (auto* const elements =
+          browser ? BrowserElements::From(browser) : nullptr) {
+    elements->NotifyEvent(kBrowserViewElementId, event_type);
   }
 }
 
@@ -2681,7 +2744,7 @@ void TabStripModel::ExitFocusModeImpl(
   }
 
   MaybeRemoveEphemeralGroup(old_focused_group);
-  FinishFocusCujSession();
+  FinishFocusCujSession(reason);
 }
 
 base::ScopedClosureRunner TabStripModel::TakeEphemeralGroupRemovalLock(
@@ -2870,12 +2933,12 @@ void TabStripModel::StartOrContinueFocusCujSession(
       // Switching directly from an unpromoted ephemeral selection into a
       // persistent group destroys the ephemeral selection; finalize the
       // Non-Group session before starting a new session for `entry_point`.
-      FinishFocusCujSession();
+      FinishFocusCujSession(TabGroupFocusExitReason::kActiveTabGroupOperation);
     } else if (entry_point.has_value() &&
                !IsGroupFocusEntryPoint(*entry_point)) {
       // Never absorb an ephemeral entry into an active persistent-group
       // session; finalize the persistent session first.
-      FinishFocusCujSession();
+      FinishFocusCujSession(TabGroupFocusExitReason::kActiveTabGroupOperation);
     } else {
       ++focus_cuj_session_->group_switches;
       return;
@@ -2888,10 +2951,14 @@ void TabStripModel::StartOrContinueFocusCujSession(
 
   focus_cuj_session_ = FocusCujSession{
       .is_group_session = IsGroupFocusEntryPoint(*entry_point),
+      .start_time = base::TimeTicks::Now(),
   };
+  NotifyFocusCujEvent(delegate_->GetBrowserWindowInterface(),
+                      GetFocusCujEntryEvent(*entry_point));
 }
 
-void TabStripModel::FinishFocusCujSession() {
+void TabStripModel::FinishFocusCujSession(
+    std::optional<TabGroupFocusExitReason> reason) {
   if (!focus_cuj_session_.has_value()) {
     return;
   }
@@ -2906,6 +2973,11 @@ void TabStripModel::FinishFocusCujSession() {
   if (!session.is_group_session) {
     base::UmaHistogramBoolean("TabGroups.Focus.NonGroupPromotedInSession",
                               session.promoted);
+  }
+  if (!closing_all_ && !empty()) {
+    NotifyFocusCujEvent(delegate_->GetBrowserWindowInterface(),
+                        GetFocusCujExitEvent(reason, base::TimeTicks::Now() -
+                                                         session.start_time));
   }
 }
 

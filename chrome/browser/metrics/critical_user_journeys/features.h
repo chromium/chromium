@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_METRICS_CRITICAL_USER_JOURNEYS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace metrics {
 
@@ -27,6 +29,8 @@ BASE_DECLARE_FEATURE(kCustomizeChromeJourney);
 BASE_DECLARE_FEATURE(kReadAnythingJourney);
 BASE_DECLARE_FEATURE(kSplitViewJourney);
 BASE_DECLARE_FEATURE(kTabSearchJourney);
+BASE_DECLARE_FEATURE(kFocusModeJourney);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFocusModeMinCompletionDwell);
 
 // HaTS Survey feature flags.
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForDownloadJourney);

@@ -1050,7 +1050,7 @@ class TabStripModel {
   // and ephemeral promotions.
   void StartOrContinueFocusCujSession(
       std::optional<TabGroupFocusEntryPoint> entry_point);
-  void FinishFocusCujSession();
+  void FinishFocusCujSession(std::optional<TabGroupFocusExitReason> reason);
   void AbortFocusCujSession();
   void OnFocusCujGroupPromoted(const tab_groups::TabGroupId& group_id);
 
@@ -1649,6 +1649,7 @@ class TabStripModel {
   // `focus_mode_session_start_time_`, which resets per focus slice).
   struct FocusCujSession {
     bool is_group_session = false;
+    base::TimeTicks start_time;
     int group_switches = 0;
     bool promoted = false;
 

@@ -30,6 +30,11 @@ BASE_FEATURE(kCustomizeChromeJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kReadAnythingJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSplitViewJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabSearchJourney, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFocusModeJourney, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFocusModeMinCompletionDwell,
+                   &kFocusModeJourney,
+                   base::Seconds(30));
 
 // HaTS.
 BASE_FEATURE(kHappinessTrackingSurveysForDownloadJourney,
