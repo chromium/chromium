@@ -35,6 +35,33 @@ promise_test(t => {
     'getDisplayMedia should have returned an already-rejected promise.');
 }, `getDisplayMedia() must require user activation`);
 
+promise_test(async t => {
+  await test_driver.bless('getDisplayMedia()');
+  assert_true(navigator.userActivation.isActive, 'precondition');
+  const p1 = navigator.mediaDevices.getDisplayMedia({video: true});
+  t.add_cleanup(async () => {
+    try { stopTracks(await p1) } catch {}
+  });
+  assert_false(navigator.userActivation.isActive,
+               'getDisplayMedia() must consume user activation');
+  const p2 = navigator.mediaDevices.getDisplayMedia({video: true});
+  t.add_cleanup(async () => {
+    try { stopTracks(await p2) } catch {}
+  });
+  await promise_rejects_dom(t, 'InvalidStateError', p2);
+  await p1;
+  assert_true(navigator.userActivation.isActive,
+              'getDisplayMedia() success must restore transient activation');
+}, `getDisplayMedia() consumes user activation and restores it on success`);
+
+promise_test(async t => {
+  await test_driver.bless('getDisplayMedia()');
+  await promise_rejects_js(
+    t, TypeError, navigator.mediaDevices.getDisplayMedia({video: false}));
+  assert_true(navigator.userActivation.isActive,
+              'early TypeError must not consume user activation');
+}, `getDisplayMedia() rejecting early doesn't consume user activation`);
+
 [
  {video: true},
  {video: true, audio: false},

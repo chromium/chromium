@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#grid-item-sizing">
+<link rel="help" href="https://drafts.csswg.org/css-images-3/#content-property">
+<link rel="match" href="grid-item-replaced-content-url-004-ref.html">
+<meta name="assert" content="The ::before and ::after boxes are grid items whose content is an image, so they size to the image's natural 60x60 size and the auto column is 60px wide.">
+<style>
+.grid { display: grid; grid-template-columns: auto auto; width: 120px; }
+.grid::before { content: url(../../support/60x60-green.png); }
+.grid::after { content: url(../../support/60x60-green.png); }
+</style>
+<div class="grid"></div>

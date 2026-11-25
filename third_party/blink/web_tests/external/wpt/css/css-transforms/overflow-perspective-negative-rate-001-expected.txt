@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Block axis: overhang is reachable by scrolling when the rate is negative
+  assert_greater_than: expected a number greater than 0 but got 0
+[FAIL] Inline axis: overhang is reachable by scrolling when the rate is negative
+  assert_greater_than: expected a number greater than 0 but got 0
+Harness: the test ran to completion.
+

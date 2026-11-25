@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>pushState should be converted to a replace on the initial empty document</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<body>
+<script>
+test(t => {
+  const initialLength = history.length;
+  const frame = insertIframeWith204Src(t).contentWindow;
+  const initialDocument = frame.document;
+  assert_equals(frame.location.href, "about:blank");
+
+  frame.history.pushState(1, "", "about:blank#first");
+  assert_equals(frame.history.state, 1, "The first pushState updates state");
+  assert_equals(history.length, initialLength, "The first pushState replaces");
+
+  frame.history.pushState(2, "", "about:blank#second");
+  assert_equals(frame.document, initialDocument, "The initial document is still active");
+  assert_equals(frame.history.state, 2, "The second pushState updates state");
+  assert_equals(history.length, initialLength, "The second pushState replaces");
+});
+</script>

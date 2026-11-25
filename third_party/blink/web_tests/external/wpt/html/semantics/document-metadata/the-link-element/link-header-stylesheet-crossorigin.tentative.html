@@ -1,0 +1,71 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Stylesheets from Link headers respect the crossorigin attribute</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<body>
+<script>
+const HANDLER = "/html/semantics/document-metadata/the-link-element/resources/link-header-stylesheet-crossorigin.py";
+
+async function loadFrame(t, { cors, crossorigin }) {
+  const css = new URL(HANDLER, get_host_info().HTTP_REMOTE_ORIGIN);
+  css.searchParams.set("css", "");
+  css.searchParams.set("token", token());
+  if (cors) {
+    css.searchParams.set("cors", "");
+  }
+  const doc = new URL(HANDLER, location.href);
+  doc.searchParams.set("href", css.href);
+  if (crossorigin !== undefined) {
+    doc.searchParams.set("crossorigin", crossorigin);
+  }
+  const iframe = document.createElement("iframe");
+  iframe.src = doc.href;
+  t.add_cleanup(() => iframe.remove());
+  await new Promise(resolve => {
+    iframe.onload = resolve;
+    document.body.appendChild(iframe);
+  });
+  return iframe;
+}
+
+function rulesAccessible(sheet) {
+  try {
+    sheet.cssRules;
+    return true;
+  } catch (e) {
+    assert_equals(e.name, "SecurityError");
+    return false;
+  }
+}
+
+for (const { cors, crossorigin, applies, readable, desc } of [
+  { cors: true, applies: true, readable: false,
+    desc: "No crossorigin attribute" },
+  { cors: true, crossorigin: "anonymous", applies: true, readable: true,
+    desc: "crossorigin=anonymous with CORS headers" },
+  { cors: true, crossorigin: "", applies: true, readable: true,
+    desc: "Empty crossorigin attribute with CORS headers" },
+  { cors: false, crossorigin: "anonymous", applies: false,
+    desc: "crossorigin=anonymous without CORS headers" },
+  { cors: true, crossorigin: "use-credentials", applies: false,
+    desc: "crossorigin=use-credentials with wildcard CORS headers" },
+]) {
+  promise_test(async t => {
+    const iframe = await loadFrame(t, { cors, crossorigin });
+    const doc = iframe.contentDocument;
+    assert_equals(
+      doc.defaultView.getComputedStyle(doc.documentElement).color,
+      applies ? "rgb(0, 128, 0)" : "rgb(0, 0, 0)",
+      "Whether the stylesheet applies"
+    );
+    if (applies) {
+      assert_equals(doc.styleSheets.length, 1, "Number of stylesheets");
+      assert_equals(rulesAccessible(doc.styleSheets[0]), readable,
+                    "Whether cssRules are accessible");
+    }
+  }, desc);
+}
+</script>

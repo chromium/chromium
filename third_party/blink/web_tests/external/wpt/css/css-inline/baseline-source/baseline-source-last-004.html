@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>baseline-source: last on a scroll container clamps the baseline to the border edge</title>
+<link rel="author" title="Christian Biesinger" href="mailto:cbiesinger@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#baseline-source">
+<link rel="help" href="https://drafts.csswg.org/css-align-3/#baseline-export">
+<link rel="match" href="baseline-source-last-004-ref.html">
+<meta name="assert" content="If the position of a scroll container's last baseline is outside its border edge, it is clamped to the border edge.">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+.container {
+  font: 20px/20px Ahem;
+}
+.square {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: green;
+}
+.scroller {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  overflow: hidden;
+  background: blue;
+  color: transparent;
+  baseline-source: last;
+}
+</style>
+<p>Test passes if the green square is aligned with the bottom of the blue square.</p>
+<!-- The last line's baseline is below the border edge of the scroller, which is 20px tall. -->
+<div class="container"><span class="square"></span><div class="scroller">X<br>X<br>X</div></div>

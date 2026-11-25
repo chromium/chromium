@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] SVGLength.convertToSpecifiedUnits with CSS variables
+  Failed to execute 'convertToSpecifiedUnits' on 'SVGLength': Could not resolve relative length.
+[FAIL] Setting valueAsString to a CSS variable on a standalone SVGLength throws
+  assert_throws_dom: function "function() { new_length.valueAsString = 'var(--length-100px)'; }" did not throw
+Harness: the test ran to completion.
+

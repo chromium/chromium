@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: ::first-line font-size applies to a block containing a single character</title>
+<link rel="help" href="https://drafts.csswg.org/css-pseudo/#first-line-styling">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<meta name="assert" content="The ::first-line font-size is used to measure the line's content when the block contains a single character, so that the character is positioned correctly by text-align.">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<style>
+div {
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  font: 10px/100px Ahem;
+  text-align: right;
+  color: green;
+  background-color: red;
+}
+div::first-line {
+  font-size: 100px;
+}
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div>X</div>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>The first summary child of a rendered closed details element is its summary after the children change</title>
+<link rel="author" title="Antti Koivisto" href="mailto:antti@apple.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#the-details-and-summary-elements">
+<link rel="match" href="details-summary-change-after-rendering-ref.html">
+<style>
+summary { display: block; }
+</style>
+
+<details id="details1"><summary>First</summary><summary>Second</summary>Content</details>
+<details id="details2"><summary>Second</summary>Content</details>
+<details id="details3"><summary>First</summary><summary>Second</summary>Content</details>
+<details id="details4"><summary>First</summary>Content</details>
+
+<script>
+document.body.offsetTop;
+
+details1.firstElementChild.remove();
+
+const summary = document.createElement("summary");
+summary.textContent = "First";
+details2.prepend(summary);
+document.body.offsetTop;
+summary.remove();
+
+details3.append(details3.firstElementChild);
+
+details4.firstElementChild.remove();
+</script>

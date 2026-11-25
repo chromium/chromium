@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>CSS alignment-baseline: atomic inlines without baselines of their own</title>
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#alignment-baseline-property">
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#baseline-synthesis-box">
+<link rel="match" href="alignment-baseline-atomic-inline-001-ref.html">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<meta name="assert" content="An atomic inline without a baseline set has its alphabetic and text-under baselines at its line-under margin edge, its x-middle baseline halfway, and its text-over baseline at its line-over margin edge.">
+<style>
+  div {
+    font: 100px/1 Ahem;
+    color: green;
+  }
+  .box {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background-color: blue;
+  }
+</style>
+<!-- Ahem's ascent, descent and x-height are 0.8em, 0.2em and 0.8em, so e.g. the parent's x-middle baseline is 40px above its
+     alphabetic baseline and the 40px box's is 20px above its bottom margin edge, which raises the box by 20px. -->
+<div>X<span class="box" style="alignment-baseline: alphabetic"></span></div>
+<div>X<span class="box" style="alignment-baseline: middle"></span><span class="box" style="alignment-baseline: middle"><div></div></span></div>
+<div>X<span class="box" style="alignment-baseline: text-top"></span><span class="box" style="display: inline-flex; alignment-baseline: text-top"></span></div>
+<div>X<span class="box" style="alignment-baseline: text-bottom"></span></div>
+<div>X<span class="box" style="margin-bottom: 10px; alignment-baseline: middle"></span></div>
+<div>X<img src="/css/support/60x60-green.png" style="alignment-baseline: text-top"></div>

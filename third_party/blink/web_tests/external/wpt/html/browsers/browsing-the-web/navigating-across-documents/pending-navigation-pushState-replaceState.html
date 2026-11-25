@@ -1,0 +1,44 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Test that pushState/replaceState work correctly immediately after assigning/replacing location</title>
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=2093284">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="initial-empty-document/resources/helpers.js"></script>
+<body>
+<script>
+"use strict";
+
+for (let historyMethod of ["pushState", "replaceState"]) {
+  for (let locationMethod of ["assign", "replace"]) {
+    promise_test(async t => {
+      const iframe = document.createElement("iframe");
+      const loaded = () => new Promise(resolve => {
+        iframe.addEventListener("load", resolve, { once: true });
+      });
+      iframe.src = "/common/blank.html?initial";
+      t.add_cleanup(() => iframe.remove());
+      document.body.append(iframe);
+      await loaded();
+
+      const win = iframe.contentWindow;
+      const initialLength = history.length;
+      // Get user activation so that location.assign isn't converted to replace.
+      await new Promise(r => {
+        onclick = r;
+        test_driver.click(document.body);
+      });
+      win.location[locationMethod]("/common/blank.html?new");
+      win.history[historyMethod]("state", "", "#newState");
+      assert_equals(win.history.state, "state", `${historyMethod} ran in the outgoing document`);
+      await loaded();
+      assert_equals(win.location.search, "?new", "The new document loaded");
+      const expectedChange = (historyMethod === "pushState") + (locationMethod === "assign");
+      assert_equals(history.length, initialLength + expectedChange,
+        `History length should increase by ${expectedChange}`);
+    }, `Test calling history.${historyMethod} immediately after location.${locationMethod}`);
+  }
+}
+</script>

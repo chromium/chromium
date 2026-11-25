@@ -1,5 +1,11 @@
 This is a testharness.js-based test.
 [FAIL] ResolveExport on invalid re-export from WebAssembly
   promise_rejects_js: function "function() { throw e; }" threw object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/resolve-export.js" ("TypeError") expected instance of function "function SyntaxError() { [native code] }" ("SyntaxError")
+[FAIL] WebAssembly import of an export missing from a JavaScript module fails to link
+  promise_rejects_js: function "function() { throw e; }" threw object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/resolve-import-missing-js.wasm" ("TypeError") expected instance of function "function SyntaxError() { [native code] }" ("SyntaxError")
+[FAIL] WebAssembly import of an export missing from a WebAssembly module fails to link
+  promise_rejects_js: function "function() { throw e; }" threw object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/resolve-import-missing-wasm.wasm" ("TypeError") expected instance of function "function SyntaxError() { [native code] }" ("SyntaxError")
+[FAIL] WebAssembly import of an ambiguous star export fails to link
+  promise_rejects_js: function "function() { throw e; }" threw object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/resolve-import-ambiguous.wasm" ("TypeError") expected instance of function "function SyntaxError() { [native code] }" ("SyntaxError")
 Harness: the test ran to completion.
 

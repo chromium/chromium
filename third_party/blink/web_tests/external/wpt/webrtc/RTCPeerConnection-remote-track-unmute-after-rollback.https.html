@@ -1,0 +1,57 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<title>RTCPeerConnection remote tracks unmute after implicit rollback of an initial offer</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+function waitForUnmute(t, track) {
+  if (!track.muted)
+    return Promise.resolve();
+  return new Promise(resolve => {
+    track.addEventListener('unmute', resolve, {once: true});
+  });
+}
+
+promise_test(async t => {
+  const polite = createPeerConnectionWithCleanup(t);
+  const impolite = createPeerConnectionWithCleanup(t);
+  exchangeIceCandidates(polite, impolite);
+
+  const politeTracks = [];
+  const impoliteTracks = [];
+  polite.ontrack = e => politeTracks.push(e.track);
+  impolite.ontrack = e => impoliteTracks.push(e.track);
+
+  for (const pc of [polite, impolite]) {
+    for (const kind of ['audio', 'video']) {
+      const [track, stream] = await createTrackAndStreamWithCleanup(t, kind);
+      pc.addTrack(track, stream);
+    }
+  }
+
+  // Glare: both peers generate an initial offer.
+  await Promise.all([polite.setLocalDescription(), impolite.setLocalDescription()]);
+  assert_equals(polite.signalingState, 'have-local-offer');
+  assert_equals(impolite.signalingState, 'have-local-offer');
+
+  // The polite peer accepts the colliding offer, which implicitly rolls back its own initial offer, and answers.
+  await polite.setRemoteDescription(impolite.localDescription);
+  assert_equals(polite.signalingState, 'have-remote-offer');
+  await polite.setLocalDescription();
+  assert_equals(polite.signalingState, 'stable');
+
+  // The impolite peer ignores the polite offer and gets the answer.
+  await impolite.setRemoteDescription(polite.localDescription);
+  assert_equals(impolite.signalingState, 'stable');
+
+  assert_equals(politeTracks.length, 2, 'polite peer received tracks');
+  assert_equals(impoliteTracks.length, 2, 'impolite peer received tracks');
+
+  // Remote tracks must unmute once media flows.
+  await Promise.all([...politeTracks, ...impoliteTracks].map(track => waitForUnmute(t, track)));
+}, 'Remote tracks unmute on the polite peer after implicit rollback of the initial offer');
+</script>

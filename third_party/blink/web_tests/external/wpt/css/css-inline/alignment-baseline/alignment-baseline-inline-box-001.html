@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>CSS alignment-baseline: baselines that come from the font's metrics</title>
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#alignment-baseline-property">
+<link rel="match" href="alignment-baseline-inline-box-001-ref.html">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<meta name="assert" content="alignment-baseline lines up the inline box's alphabetic, text-over or text-under baseline with the same baseline of its parent.">
+<style>
+  div {
+    font: 100px/1 Ahem;
+    color: green;
+  }
+  span {
+    font-size: 50px;
+    color: blue;
+  }
+</style>
+<!-- Ahem's ascent and descent are 0.8em and 0.2em, so e.g. the 50px box's text-over baseline is 40px above its
+     alphabetic baseline and its parent's is 80px above, which raises the box by 40px. -->
+<div>X<span style="alignment-baseline: alphabetic">X</span></div>
+<div>X<span style="alignment-baseline: text-top">X</span></div>
+<div>X<span style="alignment-baseline: text-bottom">X</span></div>

@@ -54,6 +54,7 @@
     <path d="m 200,140   0, 40"   style="stroke:none;marker-start:url(#Mid)"/>
     <path d="m 240,180  40,  0"   style="stroke:none;marker-start:url(#Mid)"/>
     <path d="m 280,140   0,-40"   style="stroke:none;marker-start:url(#Mid)"/>
+    <path d="m 240,100 -40,  0"   style="stroke:none;marker-start:url(#Mid)"/>
     <path d="m 360,100 -40,  0"   style="stroke:none;marker-start:url(#End)"/>
 
     <path d="m  60,200 -40,  0"   style="stroke:none;marker-start:url(#Start)"/>
@@ -62,10 +63,12 @@
     <path d="m 200,280  40,  0"   style="stroke:none;marker-start:url(#Mid)"/>
     <path d="m 240,240   0,-40"   style="stroke:none;marker-start:url(#Mid)"/>
     <path d="m 200,200 -40,  0"   style="stroke:none;marker-start:url(#Mid)"/>
+    <path d="m 200,200 -40,  0"   style="stroke:none;marker-start:url(#Mid)"/>
 
     <path d="m 220,300   0, 40"   style="stroke:none;marker-start:url(#Mid)"/>
     <path d="m 260,340  40,  0"   style="stroke:none;marker-start:url(#Mid)"/>
     <path d="m 300,300   0,-40"   style="stroke:none;marker-start:url(#Mid)"/>
+    <path d="m 260,260 -40,  0"   style="stroke:none;marker-start:url(#Mid)"/>
     <path d="m 260,260 -40,  0"   style="stroke:none;marker-start:url(#Mid)"/>
 
     <path d="m 400,260 -40,  0"   style="stroke:none;marker-start:url(#End)"/>

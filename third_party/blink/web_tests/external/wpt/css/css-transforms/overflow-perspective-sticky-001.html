@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>CSS Test: Scrolling with perspective, a sticky element and a transformed child does not extend the scrollable overflow</title>
+<link rel="help" href="https://drafts.csswg.org/css-transforms-2/#perspective-property">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=2072377">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+#scroller {
+  position: relative;
+  width: 700px;
+  height: 600px;
+  overflow: auto;
+  box-sizing: border-box;
+  perspective: 1px;
+  perspective-origin: left top;
+}
+
+#sticky {
+  position: sticky;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  background: purple;
+}
+
+#content {
+  height: 1500px;
+}
+
+#thumb {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 5px;
+  height: 5px;
+  transform-origin: left top;
+  background: grey;
+  transform: matrix3d(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,-1) translateZ(-2px);
+}
+</style>
+<div id="scroller">
+  <div id="sticky"></div>
+  <div id="content"></div>
+  <div id="thumb"></div>
+</div>
+<script>
+const raf = () =>
+  new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+promise_test(async () => {
+  const scroller = document.getElementById("scroller");
+  await raf();
+
+  const initialScrollHeight = scroller.scrollHeight;
+  scroller.scrollTop = scroller.scrollHeight;
+  await raf();
+  const maxScrollTop = scroller.scrollTop;
+
+  for (let i = 0; i < 5; i++) {
+    scroller.scrollTop = scroller.scrollHeight;
+    await raf();
+    assert_equals(scroller.scrollHeight, initialScrollHeight,
+                  `scrollHeight after scrolling to the bottom ${i + 2} times`);
+    assert_equals(scroller.scrollTop, maxScrollTop,
+                  `scrollTop after scrolling to the bottom ${i + 2} times`);
+  }
+}, "Repeatedly scrolling to the bottom reaches a fixed end of the scrollable overflow");
+</script>

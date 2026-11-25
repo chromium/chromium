@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Shape Test: float left, half-border-box with border-radius (002) (reference)</title>
+<style>
+    .container {
+        width: 500px;
+    }
+
+    .shape {
+        float: left;
+        box-sizing: content-box;
+        background-color: orange;
+        border-style: solid;
+        border-color: lightgreen;
+        width: 200px;
+        height: 200px;
+        padding: 10px;
+        border-width: 10px 30px 20px 40px;
+        border-radius: 50px 5px 100px 0;
+        shape-outside: inset(5px 15px 10px 20px round 30px 0 85px 0 / 45px 0 90px 0) border-box;
+    }
+
+    .line {
+        line-height: 0;
+        height: 5px;
+    }
+
+    .box {
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        background-color: blue;
+    }
+</style>
+</head>
+<body>
+<p>Text should wrap around a float whose half-border-box radii are the border-radius minus half of each adjacent border width, clamped to zero. Expected shape: inset(5px 15px 10px 20px round 30px 0 85px 0 / 45px 0 90px 0).</p>
+<main class="container">
+    <div class="shape"></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+    <div class="line"><div class="box"></div></div>
+</main>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Request URL Modifiers: integrity() negative test for an @font-face src already loaded without integrity()</title>
+<link rel="author" title="Sam Weinig" href="mailto:sam@webkit.org">
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#typedef-request-url-modifier-integrity-modifier">
+<link rel="help" href="https://fetch.spec.whatwg.org/#main-fetch">
+<link rel="match" href="../support/font-integrity-fallback-ref.html">
+<meta name="assert" content="A font already loaded without integrity metadata should not load for a later @font-face src url with a non-matching integrity() modifier.">
+<style>
+body {
+  margin: 0;
+}
+iframe {
+  display: block;
+  width: 300px;
+  height: 40px;
+  border: none;
+}
+</style>
+<body>
+<script>
+new FontFace("Plain", "url(/fonts/Ahem.ttf)").load().then(() => {
+  const iframe = document.createElement("iframe");
+  iframe.onload = () => {
+    iframe.contentDocument.fonts.ready.then(() => document.documentElement.classList.remove("reftest-wait"));
+  };
+  iframe.src = "../support/font-integrity-mismatch-frame.html";
+  document.body.appendChild(iframe);
+});
+</script>
+</body>
+</html>

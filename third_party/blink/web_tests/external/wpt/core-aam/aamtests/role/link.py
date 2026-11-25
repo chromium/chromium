@@ -15,7 +15,7 @@ def test_atspi(atspi, session, inline, test_html):
     node = atspi.find_node("test", session.url)
 
     assert atspi.Accessible.get_role(node) == atspi.Role.LINK
-    assert atspi.Accessible.get_hypertext_iface(node) is not None
+    assert atspi.Accessible.get_hyperlink(node) is not None
 
 @pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
 def test_axapi(axapi, session, inline, test_html):

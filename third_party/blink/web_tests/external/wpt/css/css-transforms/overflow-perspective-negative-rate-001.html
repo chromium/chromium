@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>CSS Test: Scrollable overflow for a perspective child that moves in the opposite direction to scrolling</title>
+<link rel="help" href="https://drafts.csswg.org/css-transforms-2/#perspective-property">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=2072377">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+.scroller {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  overflow: auto;
+  perspective: 1px;
+  perspective-origin: left top;
+}
+
+/* Projected to the opposite side of the scroll origin, and moving in the
+   opposite direction to the content when scrolling. */
+.thumb {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  transform-origin: left top;
+  background: grey;
+  transform: matrix3d(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,-1) translateZ(-2px);
+}
+
+#v .thumb { left: 10px; top: 102px; }
+#h .thumb { left: 102px; top: 10px; }
+</style>
+<div id="v" class="scroller"><div class="thumb"></div></div>
+<div id="h" class="scroller"><div class="thumb"></div></div>
+<script>
+const raf = () =>
+  new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+function thumbOffset(scroller) {
+  const thumb = scroller.querySelector(".thumb").getBoundingClientRect();
+  const box = scroller.getBoundingClientRect();
+  return { x: thumb.left - box.left, y: thumb.top - box.top };
+}
+
+promise_test(async () => {
+  const scroller = document.getElementById("v");
+  await raf();
+  assert_approx_equals(thumbOffset(scroller).y, -102, 1, "initial position");
+  scroller.scrollTop = scroller.scrollHeight;
+  await raf();
+  assert_greater_than(scroller.scrollTop, 0);
+  assert_approx_equals(thumbOffset(scroller).y, 0, 1,
+                       "thumb can be scrolled into view");
+}, "Block axis: overhang is reachable by scrolling when the rate is negative");
+
+promise_test(async () => {
+  const scroller = document.getElementById("h");
+  await raf();
+  assert_approx_equals(thumbOffset(scroller).x, -102, 1, "initial position");
+  scroller.scrollLeft = scroller.scrollWidth;
+  await raf();
+  assert_greater_than(scroller.scrollLeft, 0);
+  assert_approx_equals(thumbOffset(scroller).x, 0, 1,
+                       "thumb can be scrolled into view");
+}, "Inline axis: overhang is reachable by scrolling when the rate is negative");
+</script>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Shadow DOM: Slot fallback content is rendered when a rendered slot becomes empty</title>
+<link rel="author" title="Antti Koivisto" href="mailto:antti@apple.com">
+<link rel="help" href="https://dom.spec.whatwg.org/#shadow-tree-slots">
+<link rel="match" href="slot-fallback-content-009-ref.html">
+
+<p>Test passes if there are five lines of text "A", "B", "C", "D", "E" below.</p>
+
+<div id="host1"><template shadowrootmode="open"><slot style="display: block">A</slot></template><div>FAIL</div></div>
+<div id="host2"><template shadowrootmode="open"><slot><span style="display: contents"><div>B</div></span></slot></template><div>FAIL</div></div>
+<div id="host3"><template shadowrootmode="open"><slot style="display: block">C</slot></template></div>
+<div id="host4"><template shadowrootmode="open"><slot style="display: block">D</slot></template>FAIL</div>
+<div id="host5"><template shadowrootmode="open"><slot name="slot5" style="display: block">E</slot></template><div slot="slot5">FAIL</div></div>
+
+<script>
+document.body.offsetTop;
+
+// Removing the only assigned node shows the fallback content.
+host1.firstElementChild.remove();
+host2.firstElementChild.remove();
+
+// Inserting and removing a node, with rendering in between.
+const div = document.createElement("div");
+div.textContent = "FAIL";
+host3.appendChild(div);
+document.body.offsetTop;
+div.remove();
+
+// Removing an assigned text node.
+host4.firstChild.remove();
+
+// Assigning the only assigned node to another slot.
+host5.firstElementChild.slot = "unknown";
+</script>

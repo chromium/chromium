@@ -93,6 +93,42 @@ async def test_params_element_invalid_shared_reference_value(
         )
 
 
+async def test_params_element_invalid_shared_reference_value_before_files(
+    bidi_session,
+    top_context,
+    load_static_test_page,
+):
+    await load_static_test_page(page="files.html")
+
+    with pytest.raises(NoSuchNodeException):
+        await bidi_session.input.set_files(
+            context=top_context["context"],
+            element={"sharedId": "invalid"},
+            files=[""],
+        )
+
+
+async def test_params_element_from_other_context(
+    bidi_session,
+    top_context,
+    new_tab,
+    load_static_test_page,
+    get_element,
+    create_files,
+):
+    await load_static_test_page(page="files.html", context=new_tab)
+    element = await get_element("#input", context=new_tab)
+
+    await load_static_test_page(page="files.html")
+
+    with pytest.raises(NoSuchNodeException):
+        await bidi_session.input.set_files(
+            context=top_context["context"],
+            element=element,
+            files=create_files(["path/to/noop.txt"]),
+        )
+
+
 @pytest.mark.parametrize(
     "expression",
     [
@@ -155,6 +191,29 @@ async def test_params_element_disabled(
     await load_static_test_page(page="files.html")
 
     element = await get_element("#input-disabled")
+
+    with pytest.raises(UnableToSetFileInputException):
+        await bidi_session.input.set_files(
+            context=top_context["context"],
+            element=element,
+            files=create_files(["path/to/noop.txt"]),
+        )
+
+
+async def test_params_element_disabled_by_fieldset(
+    bidi_session,
+    top_context,
+    inline,
+    get_element,
+    create_files,
+):
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=inline("<fieldset disabled><input id='input' type='file'></fieldset>"),
+        wait="complete",
+    )
+
+    element = await get_element("#input")
 
     with pytest.raises(UnableToSetFileInputException):
         await bidi_session.input.set_files(

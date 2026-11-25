@@ -85,10 +85,12 @@ test(() => {
 
   assert_equals(width.valueAsString, 'var(--length-100px)');
 
-  assert_throws_dom("NotSupportedError", function() { width.convertToSpecifiedUnits(SVGLength.SVG_LENGTHTYPE_CM); });
+  // convertToSpecifiedUnits only throws for an unknown target unit. The
+  // value of a var() length is 0, so it converts to 0cm.
+  width.convertToSpecifiedUnits(SVGLength.SVG_LENGTHTYPE_CM);
 
-  assert_equals(width.valueAsString, 'var(--length-100px)');
-  assert_equals(width.unitType, SVGLength.SVG_LENGTHTYPE_UNKNOWN);
+  assert_equals(width.unitType, SVGLength.SVG_LENGTHTYPE_CM);
+  assert_equals(width.valueInSpecifiedUnits, 0);
   assert_equals(width.value, 0);
 
 }, 'SVGLength.convertToSpecifiedUnits with CSS variables');
@@ -122,10 +124,11 @@ test(() => {
   const svg = document.getElementById('svg');
   const new_length = svg.createSVGLength();
 
-  new_length.valueAsString = 'var(--length-100px)';
+  // valueAsString only accepts <number>, <length> or <percentage>.
+  assert_throws_dom("SyntaxError", function() { new_length.valueAsString = 'var(--length-100px)'; });
 
   assert_equals(new_length.value, 0);
-  assert_equals(new_length.unitType, SVGLength.SVG_LENGTHTYPE_UNKNOWN);
+  assert_equals(new_length.unitType, SVGLength.SVG_LENGTHTYPE_NUMBER);
 
-}, 'SVGLength should handle standalone lengths gracefully for CSS variables');
+}, 'Setting valueAsString to a CSS variable on a standalone SVGLength throws');
 </script>

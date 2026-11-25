@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#grid-item-sizing">
+<link rel="help" href="https://drafts.csswg.org/css-images-3/#content-property">
+<link rel="match" href="grid-item-replaced-content-url-003-ref.html">
+<meta name="assert" content="The auto column contains an item with content:url(), so the track is 60px wide (the 100px grid leaves no free space to stretch it) from the image's natural width, and the second column starts at x=60px. An implementation that treats the image as zero sized puts the second item at x=0.">
+<style>
+.grid { display: grid; grid-template-columns: auto auto; width: 100px; }
+.item { content: url(../../support/60x60-green.png); }
+.other { width: 40px; height: 20px; background: lime; }
+</style>
+<div class="grid"><div class="item"></div><div class="other"></div></div>

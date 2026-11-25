@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#grid-item-sizing">
+<link rel="help" href="https://drafts.csswg.org/css-images-3/#content-property">
+<link rel="match" href="grid-item-replaced-content-url-002-ref.html">
+<meta name="assert" content="A div with content:url() and width 100px has an automatic height that comes from the natural 1:1 ratio, giving 100x100 rather than 100x0 or the 200px row height.">
+<style>
+.grid { display: grid; grid-template-columns: 150px; grid-template-rows: 200px; }
+.item { content: url(../../support/60x60-green.png); width: 100px; }
+</style>
+<div class="grid"><div class="item"></div></div>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Grid Layout Test: Expand flexible tracks with a fractional size, with explicit columns</title>
+<link rel="help" href="https://drafts.csswg.org/css-grid-2/#layout-algorithm">
+<link rel="help" href="https://drafts.csswg.org/css-grid-2/#algo-flex-tracks">
+<link rel="help" href="https://drafts.csswg.org/css-grid-2/#algo-find-fr-size">
+<link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
+<meta name="assert" content="Once the grid container's indefinite height is resolved, the grid sizing algorithm runs again against it, so flexible rows whose flex factors sum to less than 1 resolve against the grid container's height.">
+
+<style>
+.grid {
+  display: grid;
+  grid-template-columns: 100px;
+  width: 100px;
+  background: red;
+}
+.item {
+  grid-row: 2 / span 1;
+  background: green;
+  width: 100px;
+  height: 100px;
+  position: relative;
+  top: -32px; /* To move this item up to cover the first row */
+}
+</style>
+
+<!--
+  Same as flex-sizing-rows-indefinite-height-002.html, with an explicit column.
+
+  Finding the size of the grid container: the item's max-content height of
+  100px makes each 0.4fr row 40px, so the grid container is 80px tall.
+
+  Sizing the grid against that 80px height: the fr size is
+  80px / max(0.4 * 2, 1) = 80px, so each row is 32px.
+-->
+
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div class="grid" style="grid-template-rows: repeat(2, minmax(0,0.4fr))">
+  <span class="item"></span>
+</div>

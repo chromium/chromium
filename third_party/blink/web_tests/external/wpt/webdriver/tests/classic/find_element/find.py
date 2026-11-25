@@ -146,3 +146,13 @@ def test_implicit_wait_timeout(session, inline):
     # Element never created
     response = find_element(session, "css selector", "#nonexistent")
     assert_error(response, "no such element")
+
+
+def test_implicit_wait_timeout_after_null(session, inline):
+    session.url = inline("")
+    session.timeouts.implicit = None
+    session.timeouts.implicit = 0.5
+
+    # Element never created
+    response = find_element(session, "css selector", "#nonexistent")
+    assert_error(response, "no such element")

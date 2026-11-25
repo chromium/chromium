@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<meta name="assert" content="position-visibility: anchor-visible take anchors' transform into account.">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#position-visibility">
+<style>
+.anchor {
+  width: 50px;
+  height: 50px;
+}
+
+.positioned {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  position-area: bottom center;
+}
+
+.filler {
+  width: 50px;
+  height: 300px;
+  background: red;
+  display: inline-block;
+}
+
+.scroller {
+  overflow: hidden;
+  width: 100px;
+  height: 100px;
+  display: flex;
+}
+
+.anchor.left {
+  anchor-name: --a1;
+  transform: translateY(100px);
+  background: green;
+}
+
+.positioned.left {
+  position-anchor: --a1;
+  background: green;
+}
+
+.filler.right {
+  background: green;
+}
+
+.anchor.right {
+  anchor-name: --a2;
+  background: red;
+  transform: translateY(-100px);
+}
+
+.positioned.right {
+  position-anchor: --a2;
+  background: red;
+}
+
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div id=s class=scroller>
+  <div class="filler left">
+    <div class="anchor left"></div>
+  </div>
+  <div class="filler right">
+    <div style="width: 1px; height: 100px;"></div>
+    <div class="anchor right"></div>
+  </div>
+</div>
+<div class="positioned left"></div>
+<div class="positioned right"></div>
+<script>
+// .anchor.left is visible with transformation, .anchor.right is not.
+s.scrollTop = 100;
+</script>

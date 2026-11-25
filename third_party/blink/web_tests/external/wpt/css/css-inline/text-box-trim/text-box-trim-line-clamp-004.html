@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>text-box-trim does not apply to the last line before the clamp point through intervening padding or borders</title>
+<link rel="author" title="Christian Biesinger" href="mailto:cbiesinger@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#text-box-trim">
+<link rel="help" href="https://drafts.csswg.org/css-overflow-4/#line-clamp">
+<link rel="match" href="text-box-trim-line-clamp-004-ref.html">
+<meta name="assert" content="The block-end padding or border of a block between the line-clamp container with trim-end and the last line before the clamp point is intervening, so that line is not trimmed.">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
+<style>
+.spacer {
+  background: lightgray;
+  block-size: 50px;
+}
+.target {
+  font: 20px/2 Ahem;
+  text-box-trim: trim-end;
+  text-box-edge: text;
+  line-clamp: 3;
+}
+.padding {
+  padding-bottom: 10px;
+}
+.border {
+  border-bottom: 10px solid green;
+}
+</style>
+<div class="spacer"></div>
+<div class="target">
+  <div class="padding">
+    A<br>
+    B<br>
+    C<br>
+    D
+  </div>
+</div>
+<div class="spacer"></div>
+<div class="target">
+  <div class="border">
+    <div>
+      A<br>
+      B<br>
+      C<br>
+      D
+    </div>
+  </div>
+</div>
+<div class="spacer"></div>

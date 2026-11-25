@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-grid-2/#algo-grid-sizing">
+<link rel="match" href="../../reference/ref-filled-green-100px-square-only.html">
+<meta name="assert" content="This test verifies that when resolving the row sizes, grid container's max-block-size is ignored, with an explicit column and no percentage or flexible rows.">
+
+<style>
+.grid {
+  display: grid;
+  grid-template-columns: 100px;
+  inline-size: 100px;
+  block-size: auto;
+  max-block-size: 10px;
+}
+
+.item {
+  background: green;
+  min-height: 0;
+  line-height: 0;
+}
+</style>
+
+<!-- Same as grid-track-ignores-max-size-002.html, with an explicit column. -->
+
+<p>Test passes if there is a filled green square.</p>
+<div class="grid">
+  <div class="item"><canvas width="100" height="100"></canvas></div>
+</div>

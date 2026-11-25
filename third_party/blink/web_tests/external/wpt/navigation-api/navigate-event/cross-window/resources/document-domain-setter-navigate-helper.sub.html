@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script>
+document.domain = "{{host}}";
+navigation.onnavigate = e => {
+  e.preventDefault();
+  top.postMessage({
+    hashChange: e.hashChange,
+    sourceElement: e.sourceElement ? e.sourceElement.localName : null
+  }, "*");
+};
+</script>

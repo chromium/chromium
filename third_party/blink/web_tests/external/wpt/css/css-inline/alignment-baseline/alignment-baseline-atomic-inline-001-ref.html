@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="/fonts/ahem.css">
+<style>
+  div {
+    font: 100px/1 Ahem;
+    color: green;
+  }
+  .box {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background-color: blue;
+  }
+</style>
+<div>X<span class="box"></span></div>
+<div>X<span class="box" style="vertical-align: 20px"></span><span class="box" style="vertical-align: 20px"><div></div></span></div>
+<div>X<span class="box" style="vertical-align: 40px"></span><span class="box" style="display: inline-flex; vertical-align: 40px"></span></div>
+<div>X<span class="box" style="vertical-align: -20px"></span></div>
+<div>X<span class="box" style="margin-bottom: 10px; vertical-align: 15px"></span></div>
+<div>X<img src="/css/support/60x60-green.png" style="vertical-align: 20px"></div>

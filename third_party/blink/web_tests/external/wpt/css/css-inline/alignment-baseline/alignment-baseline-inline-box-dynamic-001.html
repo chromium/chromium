@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>CSS alignment-baseline: changing the value after layout</title>
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#alignment-baseline-property">
+<link rel="match" href="alignment-baseline-inline-box-dynamic-001-ref.html">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<meta name="assert" content="Changing alignment-baseline moves an inline box that has already been laid out.">
+<style>
+  div {
+    font: 100px/1 Ahem;
+    color: green;
+  }
+  span {
+    font-size: 50px;
+    color: blue;
+  }
+</style>
+<div>X<span id="target">X</span></div>
+<script>
+  document.body.offsetHeight;
+  document.getElementById("target").style.alignmentBaseline = "text-top";
+</script>

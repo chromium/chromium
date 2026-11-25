@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>The button of a rendered base appearance select changes when its first child changes</title>
+<style>
+select, ::picker(select) { appearance: base-select; }
+</style>
+
+<select><option>Zero</option><button>Button</button><option selected>One</option></select>
+<select><button>Button</button><option selected>Two</option></select>

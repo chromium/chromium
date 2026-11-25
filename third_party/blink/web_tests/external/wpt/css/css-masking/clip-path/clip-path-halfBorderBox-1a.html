@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CSS Masking: clip-path: inset() half-border-box</title>
+    <link rel="help" href="https://drafts.fxtf.org/css-masking-1/#the-clip-path">
+    <link rel="help" href="https://drafts.csswg.org/css-shapes-1/#valdef-shape-box-half-border-box">
+    <link rel="match" href="clip-path-halfBorderBox-1a-ref.html">
+    <meta name="assert" content="clip-path with the half-border-box reference box uses the box midway between the padding-box and the border-box. The border box is 240x240 with 20px borders, so the reference box is the 220x220 box inset 10px from the border box.">
+    <style>
+      div {
+        position: absolute;
+        left: 50px;
+        top: 50px;
+        background-color: blue;
+        width: 200px;
+        height: 200px;
+        border: solid blue 20px;
+        clip-path: inset(0) half-border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div></div>
+  </body>
+</html>

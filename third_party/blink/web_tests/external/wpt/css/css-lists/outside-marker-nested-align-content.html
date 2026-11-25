@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Lists: nested list items' outside markers follow their shared line when align-content moves it</title>
+<link rel="help" href="https://drafts.csswg.org/css-lists-3/#list-style-position-property">
+<link rel="help" href="https://drafts.csswg.org/css-align-3/#align-justify-content">
+<link rel="match" href="outside-marker-nested-align-content-ref.html">
+<style>
+body { font: 20px/20px monospace; }
+ul { margin: 0; padding-left: 60px; }
+li::marker { color: green; }
+.inner { height: 100px; align-content: center; }
+</style>
+<ul><li><ul><li class="inner">text</li></ul></li></ul>

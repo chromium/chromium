@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<head>
+<title>Request URL Modifiers: integrity() negative test for an SVG filter already loaded without integrity()</title>
+<link rel="author" title="Sam Weinig" href="mailto:sam@webkit.org">
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#typedef-request-url-modifier-integrity-modifier">
+<link rel="help" href="https://fetch.spec.whatwg.org/#main-fetch">
+<link rel="match" href="/css/reference/ref-filled-green-100px-square.xht">
+<meta name="assert" content="An SVG filter document already loaded without integrity metadata should not apply for a later url with a non-matching integrity() modifier.">
+<style>
+#container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+#container > div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+}
+.without-integrity {
+  background-color: rgb(71.79%, 28.82%, 0%);
+  filter: url("http://{{hosts[][]}}:{{ports[http][1]}}/css/filter-effects/support/hueRotate.svg?pipe=header(Access-Control-Allow-Origin,*)#MyFilter" cross-origin(anonymous));
+}
+.with-integrity {
+  background-color: green;
+  filter: url("http://{{hosts[][]}}:{{ports[http][1]}}/css/filter-effects/support/hueRotate.svg?pipe=header(Access-Control-Allow-Origin,*)#MyFilter" cross-origin(anonymous) integrity("sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="));
+}
+</style>
+</head>
+<body>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div id="container">
+  <div class="without-integrity"></div>
+  <div class="with-integrity"></div>
+</div>
+<script>
+window.addEventListener("load", () => {
+  document.documentElement.classList.remove("reftest-wait");
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>HTMLOptGroupElement accessible name</title>
+<link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/multipage/form-elements.html#concept-optgroup-label"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/wai-aria/scripts/aria-utils.js"></script>
+
+<select size="8">
+  <optgroup
+    label="attribute"
+    class="ex"
+    data-testname="label attribute"
+    data-expectedlabel="attribute"
+  >
+    <option>a</option>
+  </optgroup>
+  <optgroup
+    class="ex"
+    data-testname="first element child legend"
+    data-expectedlabel="legend"
+  >
+    <legend>legend</legend>
+    <option>b</option>
+  </optgroup>
+  <optgroup
+    label="attribute"
+    class="ex"
+    data-testname="first element child legend takes precedence over the label attribute"
+    data-expectedlabel="legend"
+  >
+    <legend>legend</legend>
+    <option>c</option>
+  </optgroup>
+  <optgroup
+    label="attribute"
+    class="ex"
+    data-testname="legend that is not the first element child is ignored"
+    data-expectedlabel="attribute"
+  >
+    <option>d</option>
+    <legend>legend</legend>
+  </optgroup>
+</select>
+
+<script>
+  AriaUtils.verifyLabelsBySelector(".ex");
+</script>

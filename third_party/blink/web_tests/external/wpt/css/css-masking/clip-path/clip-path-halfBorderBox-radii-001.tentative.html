@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Masking: clip-path: half-border-box with border-radius</title>
+<link rel="help" href="https://drafts.fxtf.org/css-masking-1/#the-clip-path">
+<link rel="help" href="https://drafts.csswg.org/css-shapes-1/#valdef-shape-box-half-border-box">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/14794">
+<link rel="match" href="clip-path-halfBorderBox-radii-001.tentative-ref.html">
+<meta name="assert" content="Clipped to the half-border-box: border-radius minus half of each adjacent border width, clamped to zero. The spec does not define the radii yet: https://github.com/w3c/csswg-drafts/issues/14794">
+<meta name="fuzzy" content="maxDifference=0-118; totalPixels=0-254">
+<style>
+    div {
+        position: absolute;
+        left: 50px;
+        top: 50px;
+        box-sizing: content-box;
+        width: 200px;
+        height: 200px;
+        padding: 10px;
+        border: solid green;
+        border-width: 10px 30px 20px 40px;
+        border-radius: 50px 5px 100px 0;
+        background-color: blue;
+        clip-path: half-border-box;
+    }
+</style>
+</head>
+<body>
+<p>Clipped to the half-border-box: border-radius minus half of each adjacent border width, clamped to zero.</p>
+<div></div>
+</body>
+</html>

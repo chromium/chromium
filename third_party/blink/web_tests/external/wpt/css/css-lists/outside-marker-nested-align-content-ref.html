@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Lists reference: nested list items' outside markers on a line moved down by padding</title>
+<style>
+body { font: 20px/20px monospace; }
+ul { margin: 0; padding-left: 60px; }
+li::marker { color: green; }
+.inner { height: 60px; padding-top: 40px; }
+</style>
+<ul><li><ul><li class="inner">text</li></ul></li></ul>

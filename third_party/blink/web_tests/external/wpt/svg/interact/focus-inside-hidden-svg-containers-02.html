@@ -9,15 +9,17 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <svg xmlns="http://www.w3.org/2000/svg">
-  <a href="#void" id="start">
+  <!-- tabindex="0" keeps the links in the sequential focus order on
+       platforms where Tab skips links by default, which SVG 2 allows. -->
+  <a href="#void" id="start" tabindex="0">
     <text tabindex='-1' x="10" y="10">start</text>
   </a>
   <g x="30" y="10" style="display: none;">
-    <a href="#void" id="middle">
+    <a href="#void" id="middle" tabindex="0">
       <text tabindex='-1' x="30" y="10">middle</text>
     </a>
   </g>
-  <a href="#void" id="end">
+  <a href="#void" id="end" tabindex="0">
     <text tabindex='-1' x="50" y="10">end</text>
   </a>
 </svg>

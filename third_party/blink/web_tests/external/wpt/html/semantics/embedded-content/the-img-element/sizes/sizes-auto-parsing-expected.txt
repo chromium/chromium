@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Changing <img sizes> updates the size used for <source> without sizes
+  assert_true: Changing <img sizes> should update the size used for <source> without sizes (got: http://web-platform.test:8001/images/green-256x256.png?large-change-img-sizes) expected true got false
+[FAIL] Unrendered img with sizes='auto, 300px' and omitted <source sizes> falls back to 300px
+  assert_true: Omitted <source sizes> must use the img's sizes and fall back to 300px when unrendered (got: http://web-platform.test:8001/images/green-256x256.png?large-unrendered-omitted-source-sizes) expected true got false
+[FAIL] Omitted <source sizes> uses <img sizes='300px'> when img does not allow auto-sizes
+  assert_true: Omitted <source sizes> must use the img's sizes='300px' (got: http://web-platform.test:8001/images/green-256x256.png?large-omitted-source-sizes-non-auto) expected true got false
+Harness: the test ran to completion.
+

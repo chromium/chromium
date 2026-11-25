@@ -1,0 +1,31 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>
+  OPTION in SELECT - image descendants are skipped when rendering the label
+</title>
+<link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/multipage/rendering.html#the-select-element-2"
+/>
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/multipage/form-elements.html#get-html-aware-text-content"
+/>
+<link rel="match" href="option-image-descendants-ref.html" />
+<meta
+  name="assert"
+  content="The descendants of an img element in an option do not contribute to the option's label."
+/>
+
+<body>
+  <script>
+    const option = document.createElement("option");
+    const image = document.createElement("img");
+    image.append("image text");
+    option.append("FR", image);
+    document.body
+      .appendChild(document.createElement("select"))
+      .appendChild(option);
+  </script>
+</body>

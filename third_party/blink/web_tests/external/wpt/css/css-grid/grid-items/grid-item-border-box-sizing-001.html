@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Grid Layout Test: Grid item box-sizing: border-box in intrinsically sized tracks</title>
+<link rel="author" title="Yulun Wu" href="mailto:yulun_wu@apple.com">
+<link rel="help" href="https://drafts.csswg.org/css-sizing-3/#box-sizing">
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#algo-single-span-items">
+<meta name="assert" content="Checks that a grid item's fixed preferred, minimum and maximum sizes are applied to its border box when it has box-sizing: border-box, including when its border and padding exceed the specified size, both for the item's used size and for the contribution that sizes an intrinsic track.">
+<link rel="stylesheet" href="/css/support/grid.css">
+<style>
+.columnGrid {
+  width: 0;
+  grid-template-columns: auto;
+  grid-template-rows: 20px 20px;
+}
+.rowGrid {
+  height: 0;
+  grid-template-columns: 20px 20px;
+  grid-template-rows: auto;
+}
+.probe {
+  background-color: magenta;
+}
+.item {
+  box-sizing: border-box;
+  background-color: cyan;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+
+<body onload="checkLayout('.grid')">
+
+<div id="log"></div>
+
+<!-- Item width: 60px; padding-left: 10px; border-left: 5px solid; in an auto column. -->
+<div class="grid columnGrid">
+  <div class="item" style="width: 60px; padding-left: 10px; border-left: 5px solid;" data-expected-width="60"></div>
+  <div class="probe" data-expected-width="60"></div>
+</div>
+
+<!-- Item min-width: 60px; padding-left: 10px; in an auto column. -->
+<div class="grid columnGrid">
+  <div class="item" style="min-width: 60px; padding-left: 10px;" data-expected-width="60"></div>
+  <div class="probe" data-expected-width="60"></div>
+</div>
+
+<!-- Item width: 100px; max-width: 60px; padding-left: 10px; in an auto column. -->
+<div class="grid columnGrid">
+  <div class="item" style="width: 100px; max-width: 60px; padding-left: 10px;" data-expected-width="60"></div>
+  <div class="probe" data-expected-width="60"></div>
+</div>
+
+<!-- Item width: 10px; padding-left: 20px; in an auto column. -->
+<div class="grid columnGrid">
+  <div class="item" style="width: 10px; padding-left: 20px;" data-expected-width="20"></div>
+  <div class="probe" data-expected-width="20"></div>
+</div>
+
+<!-- Item height: 60px; padding-top: 10px; border-top: 5px solid; in an auto row. -->
+<div class="grid rowGrid">
+  <div class="item" style="height: 60px; padding-top: 10px; border-top: 5px solid;" data-expected-height="60"></div>
+  <div class="probe" data-expected-height="60"></div>
+</div>
+
+<!-- Item min-height: 60px; padding-top: 10px; in an auto row. -->
+<div class="grid rowGrid">
+  <div class="item" style="min-height: 60px; padding-top: 10px;" data-expected-height="60"></div>
+  <div class="probe" data-expected-height="60"></div>
+</div>
+
+<!-- Item height: 100px; max-height: 60px; padding-top: 10px; in an auto row. -->
+<div class="grid rowGrid">
+  <div class="item" style="height: 100px; max-height: 60px; padding-top: 10px;" data-expected-height="60"></div>
+  <div class="probe" data-expected-height="60"></div>
+</div>
+
+<!-- Item height: 10px; padding-top: 20px; in an auto row. -->
+<div class="grid rowGrid">
+  <div class="item" style="height: 10px; padding-top: 20px;" data-expected-height="20"></div>
+  <div class="probe" data-expected-height="20"></div>
+</div>
+
+</body>

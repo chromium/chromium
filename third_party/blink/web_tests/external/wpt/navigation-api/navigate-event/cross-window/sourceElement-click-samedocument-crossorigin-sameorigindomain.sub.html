@@ -1,0 +1,31 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+
+<script>
+document.domain = "{{host}}";
+async_test(t => {
+  const url = new URL("resources/document-domain-setter.sub.html", location.href);
+  url.hostname = "{{domains[www1]}}";
+  const iframe = document.createElement("iframe");
+  iframe.name = "windowname";
+  iframe.src = url;
+  document.body.append(iframe);
+
+  url.hash = "#foo";
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = iframe.name;
+  document.body.append(link);
+
+  navigation.onnavigate = t.unreached_func("onnavigate must not fire in the source window");
+  window.onload = t.step_func(() => {
+    iframe.contentWindow.navigation.onnavigate = t.step_func_done(e => {
+      assert_equals(e.sourceElement, link, "sourceElement");
+    });
+
+    link.click();
+  });
+}, "sourceElement when clicking on an <a> element that navigates same-document targeting a same-origin-domain (but cross-origin) window");
+</script>

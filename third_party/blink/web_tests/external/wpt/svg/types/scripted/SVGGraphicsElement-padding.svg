@@ -78,7 +78,10 @@
         let pt = DOMPoint.fromPoint({x: 50, y: 50});
         let transformedPoint = pt.matrixTransform(ctm.inverse());
         svg.removeAttribute("style");
-        assert_equals(transformedPoint.x, pt.x - 3);
+        // The border box is 112px wide, so the transform origin is 56px from
+        // its left edge. User x maps to 56 + 2 * (12 + x - 56) = 2x - 32,
+        // which is 50 for x = 41.
+        assert_equals(transformedPoint.x, pt.x - 9);
         assert_equals(transformedPoint.y, pt.y);
     }, 'getScreenCTM with padding-left, scale');
 

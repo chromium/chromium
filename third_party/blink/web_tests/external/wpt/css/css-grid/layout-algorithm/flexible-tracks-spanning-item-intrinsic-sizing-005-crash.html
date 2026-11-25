@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Sammy Gill" href="mailto:sammy.gill@apple.com">
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#algo-spanning-flex-items">
+<meta name="assert" content="A grid item of an auto-sized grid column can provide its min-content contribution when its own 11px item spans three 1fr columns, without crashing.">
+<style>
+  #outer-grid {
+    display: grid;
+    grid-template-areas: "a";
+    grid-template-columns: auto;
+    width: 200px;
+  }
+  #grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  #item {
+    grid-column: span 3;
+    width: 11px;
+    height: 10px;
+  }
+</style>
+<div id="outer-grid">
+  <div id="grid"><div id="item"></div></div>
+</div>

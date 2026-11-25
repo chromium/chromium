@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>CSS alignment-baseline: nested inline boxes</title>
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#alignment-baseline-property">
+<link rel="match" href="alignment-baseline-inline-box-002-ref.html">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<meta name="assert" content="An inline box lines up its alignment baseline with the same baseline of its parent inline box, not of the root inline box.">
+<style>
+  div {
+    font: 100px/1 Ahem;
+    color: green;
+  }
+  span {
+    color: blue;
+  }
+</style>
+<div>X<span style="font-size: 50px; alignment-baseline: text-top">X<span style="font-size: 25px; alignment-baseline: text-top">X</span></span></div>

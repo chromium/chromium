@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CSS Masking: clip-path: half-border-box with different border widths on each side</title>
+    <link rel="help" href="https://drafts.fxtf.org/css-masking-1/#the-clip-path">
+    <link rel="help" href="https://drafts.csswg.org/css-shapes-1/#valdef-shape-box-half-border-box">
+    <link rel="match" href="clip-path-halfBorderBox-2a-ref.html">
+    <meta name="assert" content="The half-border-box is inset from the border box by half of each side's own border width, and is unaffected by padding. The border box is 290x250, with borders of 10px 30px 20px 40px, so the reference box is inset 5px from the top, 15px from the right, 10px from the bottom and 20px from the left.">
+    <style>
+      div {
+        position: absolute;
+        left: 50px;
+        top: 50px;
+        box-sizing: content-box;
+        width: 200px;
+        height: 200px;
+        padding: 10px;
+        border: solid green;
+        border-width: 10px 30px 20px 40px;
+        background-color: blue;
+        clip-path: inset(0) half-border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div></div>
+  </body>
+</html>

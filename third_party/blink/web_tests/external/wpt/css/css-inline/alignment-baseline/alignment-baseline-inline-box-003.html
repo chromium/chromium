@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>CSS alignment-baseline: combined with vertical-align</title>
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#alignment-baseline-property">
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#transverse-alignment">
+<link rel="match" href="alignment-baseline-inline-box-003-ref.html">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<meta name="assert" content="A length baseline-shift moves the box from its alignment-baseline position, and a later vertical-align resets alignment-baseline.">
+<style>
+  div {
+    font: 100px/1 Ahem;
+    color: green;
+  }
+  span {
+    font-size: 50px;
+    color: blue;
+  }
+</style>
+<div>X<span style="vertical-align: 10px; alignment-baseline: text-top">X</span></div>
+<div>X<span style="alignment-baseline: text-top; vertical-align: middle">X</span></div>
+<div>X<span style="alignment-baseline: text-top; vertical-align: text-bottom">X</span></div>
+<div>X<span style="alignment-baseline: text-top; vertical-align: bottom">X</span></div>

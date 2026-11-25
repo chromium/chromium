@@ -31,10 +31,10 @@ promise_test(async t => {
   // So, call .request(), and make sure it rejects appropriately.
   await promise_rejects_dom(
     t,
-    "NotAllowedError",
+    "InvalidStateError",
     frameDOMException1,
     wakeLock1.request('screen'),
-    "Inactive document, so must throw NotAllowedError"
+    "Inactive document, so must throw InvalidStateError"
   );
   // We are done, so clean up.
   iframe.remove();
@@ -52,10 +52,10 @@ promise_test(async t => {
   iframe.remove();
   await promise_rejects_dom(
     t,
-    "NotAllowedError",
+    "InvalidStateError",
     frameDOMException,
     wakeLock.request('screen'),
-    "Inactive document, so must throw NotAllowedError"
+    "Inactive document, so must throw InvalidStateError"
   );
 }, "navigator.wakeLock.request() aborts if the document is not fully active.");
 
@@ -96,10 +96,10 @@ promise_test(async t => {
   // So, call request.show() and make sure it rejects appropriately.
   await promise_rejects_dom(
     t,
-    "NotAllowedError",
+    "InvalidStateError",
     innerIframeDOMException,
     wakeLock.request('screen'),
-    "Active, but not fully active, so must throw NotAllowedError"
+    "Active, but not fully active, so must throw InvalidStateError"
   );
   // We are done, so clean up.
   outerIframe.remove();

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Request URL Modifiers: integrity() for a same-origin @font-face src</title>
+<link rel="author" title="Sam Weinig" href="mailto:sam@webkit.org">
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#typedef-request-url-modifier-integrity-modifier">
+<link rel="help" href="https://drafts.csswg.org/css-fonts-4/#font-fetching-requirements">
+<link rel="match" href="/css/reference/ref-filled-green-100px-square.xht">
+<meta name="assert" content="A same-origin @font-face src url with a matching integrity() modifier should load the font.">
+<style>
+@font-face {
+  font-family: "TestFont";
+  src: url("/fonts/Ahem.ttf" integrity("sha384-w4xf1vlV5+NPiDF/7K8XA+JCeRlbDvxUHAu37KJUCXLG4A7uii/uYUSslO877bNW"));
+}
+.test {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  color: green;
+  font: 100px/1 "TestFont";
+}
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div class="test">X</div>

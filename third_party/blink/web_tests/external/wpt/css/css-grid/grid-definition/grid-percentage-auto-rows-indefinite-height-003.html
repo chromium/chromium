@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>CSS Grid Layout Test: Percentage implicit rows indefinite height with min-height, max-height and calc()</title>
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#track-sizing">
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#algo-overview">
+<meta name="assert" content="This test checks that percentage implicit rows (grid-auto-rows) on grid containers with indefinite height resolve against the intrinsic height once it has been clamped by min-height and max-height, and that calc() rows mixing percentages and lengths resolve the same way.">
+<meta name="flags" content="ahem">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
+<style>
+.grid {
+  display: grid;
+  grid-template-columns: 100px;
+  position: relative;
+  font: 25px/1 Ahem;
+  margin: 50px 0;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<script type="text/javascript">
+  setup({ explicit_done: true });
+</script>
+<body onload="document.fonts.ready.then(() => { checkLayout('.grid'); })">
+<div id="log"></div>
+
+<p>min-height: 100px; grid-auto-rows: 50%;</p>
+<div class="grid" style="min-height: 100px; grid-auto-rows: 50%;" data-expected-height="100">
+  <div style="grid-row: 1; grid-column: 1;" data-expected-height="50" data-offset-y="0">X</div>
+</div>
+
+<p>min-height: 100px; grid-auto-rows: 20% auto;</p>
+<div class="grid" style="min-height: 100px; grid-auto-rows: 20% auto;" data-expected-height="100">
+  <div style="grid-row: 1; grid-column: 1;" data-expected-height="20" data-offset-y="0">X</div>
+  <div style="grid-row: 2; grid-column: 1;" data-expected-height="80" data-offset-y="20">X</div>
+</div>
+
+<p>max-height: 50px; grid-auto-rows: 50%;</p>
+<div class="grid" style="max-height: 50px; grid-auto-rows: 50%;" data-expected-height="50">
+  <div style="grid-row: 1; grid-column: 1;" data-expected-height="25" data-offset-y="0">X<br>X<br>X<br>X</div>
+</div>
+
+<p>grid-auto-rows: calc(50% + 10px);</p>
+<div class="grid" style="grid-auto-rows: calc(50% + 10px);" data-expected-height="50">
+  <div style="grid-row: 1; grid-column: 1;" data-expected-height="35" data-offset-y="0">X<br>X</div>
+</div>
+
+</body>
+</html>

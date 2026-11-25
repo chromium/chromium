@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<title>CSS Grid Layout Test: percentage offset on a relatively positioned grandchild contributes to scrollable overflow</title>
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#grid-item-sizing">
+<link rel="help" href="https://drafts.csswg.org/css-position-3/#relpos-insets">
+<link rel="help" href="https://drafts.csswg.org/css-overflow-3/#scrollable">
+<meta name="assert" content="A stretched grid item has a definite height, so a percentage top/bottom on a relatively positioned child resolves against it, and the shifted child extends the scrollable overflow of a scroll container around the grid.">
+<style>
+.scroller {
+  overflow: auto;
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
+}
+.grid {
+  display: grid;
+  width: 100px;
+  height: 100px;
+}
+.explicit {
+  grid-template-columns: 100px;
+  grid-template-rows: 100px;
+}
+.spanning {
+  grid-template-columns: 100px;
+  grid-template-rows: 50px 50px;
+  row-gap: 20px;
+  height: 120px;
+}
+.spanning > div {
+  grid-row: span 2;
+}
+.relative {
+  position: relative;
+  height: 100px;
+  background: green;
+}
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<body onload="checkLayout('.scroller')">
+<p>Each scroll container's scrollable overflow must include the relatively positioned grandchild at its offset position.</p>
+
+<div class="scroller" title="top: 100%, explicit tracks" data-expected-scroll-height="200">
+  <div class="grid explicit">
+    <div>
+      <div class="relative" style="top: 100%;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="scroller" title="bottom: -100%, explicit tracks" data-expected-scroll-height="200">
+  <div class="grid explicit">
+    <div>
+      <div class="relative" style="bottom: -100%;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="scroller" title="top: 100%, implicit tracks" data-expected-scroll-height="200">
+  <div class="grid">
+    <div>
+      <div class="relative" style="top: 100%;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="scroller" style="height: 120px;" title="top: 100%, item spanning two rows and a gap" data-expected-scroll-height="220">
+  <div class="grid spanning">
+    <div>
+      <div class="relative" style="top: 100%;"></div>
+    </div>
+  </div>
+</div>
+</body>

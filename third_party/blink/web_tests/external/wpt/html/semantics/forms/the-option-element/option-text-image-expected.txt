@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] option.text excludes image alternative text and skips image descendants
+  assert_equals: expected "beforeafter" but got "beforeimage textafter"
+[FAIL] option.text skips nested image descendants
+  assert_equals: expected "before after" but got "beimage textfore after"
+[FAIL] option.label excludes image alternative text and skips image descendants
+  assert_equals: expected "beforeafter" but got "beforeimage textafter"
+[FAIL] option.label skips nested image descendants
+  assert_equals: expected "before after" but got "beimage textfore after"
+[FAIL] option.value excludes image alternative text and skips image descendants
+  assert_equals: expected "beforeafter" but got "beforeimage textafter"
+[FAIL] option.value skips nested image descendants
+  assert_equals: expected "before after" but got "beimage textfore after"
+Harness: the test ran to completion.
+

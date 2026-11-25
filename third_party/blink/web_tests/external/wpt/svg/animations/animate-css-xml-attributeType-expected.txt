@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] attributeType is ignored, so switching it between XML and CSS changes nothing
+  assert_approx_equals: expected 300 +/- 1 but got 100
+Harness: the test ran to completion.
+

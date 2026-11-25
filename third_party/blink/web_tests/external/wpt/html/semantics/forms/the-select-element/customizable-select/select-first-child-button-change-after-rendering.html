@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>The button of a rendered base appearance select changes when its first child changes</title>
+<link rel="author" title="Antti Koivisto" href="mailto:antti@apple.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#the-select-element-2">
+<link rel="match" href="select-first-child-button-change-after-rendering-ref.html">
+<style>
+select, ::picker(select) { appearance: base-select; }
+</style>
+
+<select id="select1"><button>Button</button><option>One</option></select>
+<select id="select2"><option>One</option><button>Button</button><option selected>Two</option></select>
+
+<script>
+document.body.offsetTop;
+
+const option = document.createElement("option");
+option.textContent = "Zero";
+select1.prepend(option);
+
+select2.firstElementChild.remove();
+</script>

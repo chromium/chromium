@@ -1,0 +1,32 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+
+<script>
+async_test(t => {
+  const url = new URL("resources/document-domain-setter-navigate-helper.sub.html", location.href);
+  const iframe = document.createElement("iframe");
+  iframe.name = "windowname";
+  iframe.src = url;
+  document.body.append(iframe);
+
+  url.hash = "#foo";
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = iframe.name;
+  document.body.append(link);
+
+  window.onmessage = t.step_func_done(e => {
+    assert_true(e.data.hashChange, "hashChange");
+    assert_equals(e.data.sourceElement, null, "sourceElement");
+  });
+
+  navigation.onnavigate = t.unreached_func("onnavigate must not fire in the source window");
+  window.onload = t.step_func(() => {
+    assert_equals(iframe.contentDocument, null,
+                  "the target is not same origin-domain after setting document.domain");
+    link.click();
+  });
+}, "sourceElement when clicking on an <a> element that navigates same-document targeting a same-origin but not same-origin-domain window");
+</script>

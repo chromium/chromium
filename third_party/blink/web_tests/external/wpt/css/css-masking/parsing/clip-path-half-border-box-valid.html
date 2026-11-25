@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Masking: parsing clip-path with half-border-box</title>
+<link rel="help" href="https://drafts.fxtf.org/css-masking-1/#the-clip-path">
+<link rel="help" href="https://drafts.csswg.org/css-shapes-1/#valdef-shape-box-half-border-box">
+<meta name="assert" content="clip-path accepts half-border-box as a <geometry-box>.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("clip-path", "half-border-box");
+test_valid_value("clip-path", "circle(7% at 8% 9%) half-border-box");
+test_valid_value("clip-path", "half-border-box circle(7% at 8% 9%)", "circle(7% at 8% 9%) half-border-box");
+test_valid_value("clip-path", "inset(0px) half-border-box");
+</script>
+</body>
+</html>

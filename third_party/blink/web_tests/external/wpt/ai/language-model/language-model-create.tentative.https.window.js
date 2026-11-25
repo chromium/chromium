@@ -29,6 +29,16 @@ promise_test(async t => {
 }, 'LanguageModel.create() returns a valid object with default options');
 
 promise_test(async t => {
+  const session = await createLanguageModel();
+  assert_equals(session.oncontextoverflow, null);
+  const handler = () => {};
+  session.oncontextoverflow = handler;
+  assert_equals(session.oncontextoverflow, handler);
+  session.oncontextoverflow = null;
+  assert_equals(session.oncontextoverflow, null);
+}, 'The `oncontextoverflow` event handler attribute can be set and cleared');
+
+promise_test(async t => {
   await testMonitor(createLanguageModel);
 }, 'LanguageModel.create() notifies its monitor on downloadprogress');
 

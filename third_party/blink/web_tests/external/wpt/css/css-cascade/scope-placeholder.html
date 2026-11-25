@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>@scope - ::placeholder</title>
+<link rel="author" title="Emilio Cobos Álvarez" href="mailto:emilio@crisal.io">
+<link rel="help" href="https://drafts.csswg.org/css-cascade-6/#scoped-styles">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=2063991">
+<link rel="match" href="scope-placeholder-ref.html">
+<style>
+::placeholder {
+  color: red;
+}
+
+@scope (.foo) {
+  ::placeholder {
+    color: green;
+  }
+}
+</style>
+<div class="foo">
+  <input placeholder="static">
+</div>
+<div id="dynamic">
+  <input placeholder="dynamic">
+</div>
+<script src="/common/reftest-wait.js"></script>
+<script>
+  document.documentElement.offsetTop;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.getElementById("dynamic").classList.add("foo");
+    takeScreenshot();
+  }));
+</script>
+</html>

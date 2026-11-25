@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] link attribute on body sets the value of the system color on non-link elements
+  assert_equals: expected "rgb(1, 2, 3)" but got "rgb(0, 0, 238)"
+[FAIL] vlink attribute on body sets the value of the system color on non-link elements
+  assert_equals: expected "rgb(4, 5, 6)" but got "rgb(85, 26, 139)"
+[FAIL] alink attribute on body sets the value of the system color on non-link elements
+  assert_equals: expected "rgb(7, 8, 9)" but got "rgb(255, 0, 0)"
+[FAIL] Dynamic changes to the link attribute on body are reflected in the system color
+  assert_equals: Should use the new color expected "rgb(0, 255, 0)" but got "rgb(0, 0, 238)"
+[FAIL] Dynamic changes to the vlink attribute on body are reflected in the system color
+  assert_equals: Should use the new color expected "rgb(0, 255, 0)" but got "rgb(85, 26, 139)"
+[FAIL] Dynamic changes to the alink attribute on body are reflected in the system color
+  assert_equals: Should use the new color expected "rgb(0, 255, 0)" but got "rgb(255, 0, 0)"
+Harness: the test ran to completion.
+

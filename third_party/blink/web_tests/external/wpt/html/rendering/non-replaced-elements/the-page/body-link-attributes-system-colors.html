@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>body link, vlink and alink attributes set the LinkText, VisitedText and ActiveText system colors</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#the-page">
+<link rel="help" href="https://drafts.csswg.org/css-color/#css-system-colors">
+<link rel="help" href="https://github.com/whatwg/html/issues/13252">
+<link rel="author" title="Emilio Cobos Álvarez" href="mailto:emilio@crisal.io">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body link="#010203" vlink="#040506" alink="#070809">
+<div id="link" style="color: LinkText"></div>
+<div id="visited" style="color: VisitedText"></div>
+<div id="active" style="color: ActiveText"></div>
+<a id="anchor" href="/unvisited-link-for-body-link-attributes-test">Link</a>
+<script>
+const ATTRIBUTES = [
+  { attr: "link", id: "link", initial: "rgb(1, 2, 3)" },
+  { attr: "vlink", id: "visited", initial: "rgb(4, 5, 6)" },
+  { attr: "alink", id: "active", initial: "rgb(7, 8, 9)" },
+];
+
+function colorOf(id) {
+  return getComputedStyle(document.getElementById(id)).color;
+}
+
+for (const { attr, id, initial } of ATTRIBUTES) {
+  test(() => {
+    assert_equals(colorOf(id), initial);
+  }, `${attr} attribute on body sets the value of the system color on non-link elements`);
+}
+
+test(() => {
+  assert_equals(colorOf("anchor"), "rgb(1, 2, 3)");
+}, "link attribute on body affects the color of links via the UA style sheet");
+
+for (const { attr, id } of ATTRIBUTES) {
+  test(t => {
+    const oldValue = document.body.getAttribute(attr);
+    t.add_cleanup(() => document.body.setAttribute(attr, oldValue));
+    document.body.setAttribute(attr, "lime");
+    assert_equals(colorOf(id), "rgb(0, 255, 0)", "Should use the new color");
+    // These are not valid CSS colors, but parse with the rules for parsing a
+    // legacy color value.
+    document.body.setAttribute(attr, "00f");
+    assert_equals(colorOf(id), "rgb(0, 0, 15)", "Should use the legacy color parsing rules (00f)");
+    document.body.setAttribute(attr, "chucknorris");
+    assert_equals(colorOf(id), "rgb(192, 0, 0)", "Should use the legacy color parsing rules (chucknorris)");
+  }, `Dynamic changes to the ${attr} attribute on body are reflected in the system color`);
+}
+</script>

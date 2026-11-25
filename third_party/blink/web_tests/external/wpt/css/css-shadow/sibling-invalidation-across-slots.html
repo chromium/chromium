@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Sibling invalidation between elements assigned to different slots</title>
+<link rel="help" href="https://drafts.csswg.org/css-shadow/#flattening">
+<link rel="help" href="https://drafts.csswg.org/selectors/#adjacent-sibling-combinators">
+<link rel="help" href="https://drafts.csswg.org/selectors/#relational">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  .t1.trigger1 + .p .inj { color: green }
+  .t2.trigger2 + .p { color: green }
+  .t3.trigger3 + .p .inj { color: green }
+  .t4.trigger4 ~ .p .inj { color: green }
+  .t5:has(.trigger5) + .p .inj { color: green }
+  .t6:has(.trigger6) + .p { color: green }
+  .t7.trigger7 + .p .inj { color: green }
+  .t8.trigger8 + .p .inj { color: green }
+  .t9:has(.x9) + .p { color: green }
+  .t10:has(~ .trigger10) + .p { color: green }
+  .t11.trigger11 + .p { color: green }
+</style>
+
+<div id="host1">
+  <template shadowrootmode="open"><slot name="a"></slot><slot name="b"></slot></template>
+  <div slot="a" class="t1" id="e1"></div>
+  <div slot="b" class="p"><div class="inj" id="target1"></div></div>
+</div>
+
+<div id="host2">
+  <template shadowrootmode="open"><slot name="a"></slot><slot name="b"></slot></template>
+  <div slot="a" class="t2" id="e2"></div>
+  <div slot="b" class="p" id="target2"></div>
+</div>
+
+<div id="host3">
+  <template shadowrootmode="open"><slot name="a"></slot><div><div><slot name="b"></slot></div></div></template>
+  <div slot="a" class="t3" id="e3"></div>
+  <div slot="b" class="p"><div class="inj" id="target3"></div></div>
+</div>
+
+<div id="host4">
+  <template shadowrootmode="open"><slot name="a"></slot><slot name="c"></slot><slot name="b"></slot></template>
+  <div slot="a" class="t4" id="e4"></div>
+  <div slot="c"></div>
+  <div slot="b" class="p"><div class="inj" id="target4"></div></div>
+</div>
+
+<div id="host5">
+  <template shadowrootmode="open"><slot name="a"></slot><slot name="b"></slot></template>
+  <div slot="a" class="t5"><span id="e5"></span></div>
+  <div slot="b" class="p"><div class="inj" id="target5"></div></div>
+</div>
+
+<div id="host6">
+  <template shadowrootmode="open"><slot name="a"></slot><slot name="b"></slot></template>
+  <div slot="a" class="t6"><span id="e6"></span></div>
+  <div slot="b" class="p" id="target6"></div>
+</div>
+
+<div id="unrelated"></div>
+<div id="host7">
+  <template shadowrootmode="open"><slot name="a"></slot><slot name="b"></slot></template>
+  <div slot="a" class="t7" id="e7"></div>
+  <div slot="b" class="p"><div class="inj" id="target7"></div></div>
+</div>
+
+<div id="host8">
+  <template shadowrootmode="open"><slot name="a"></slot><slot name="b"></slot></template>
+  <div slot="a" class="t8" id="e8"></div>
+  <div slot="b" class="p"><div class="inj" id="target8"></div></div>
+  <div slot="a" id="other8"></div>
+</div>
+
+<div id="host9">
+  <template shadowrootmode="open"><slot name="a"></slot><slot name="b"></slot></template>
+  <div slot="a" class="t9"><span class="x9" id="e9"></span></div>
+  <div slot="a" class="p" id="target9"></div>
+</div>
+
+<div id="host10">
+  <template shadowrootmode="open"><slot name="a"></slot><slot name="b"></slot></template>
+  <div slot="a" class="t10"></div>
+  <div slot="a" class="p" id="target10"></div>
+  <div slot="b" id="e10"></div>
+</div>
+
+<div id="host11">
+  <template shadowrootmode="open"><slot name="a"></slot><slot name="b"></slot></template>
+  <div slot="a" class="t11" id="e11"></div>
+  <div slot="b" class="p" id="target11"></div>
+</div>
+
+<script>
+setup({ explicit_done: true });
+
+const GREEN = "rgb(0, 128, 0)";
+
+function check(n, { extraMutation, flush = true } = {}) {
+  const trigger = document.getElementById("e" + n);
+  const target = document.getElementById("target" + n);
+  assert_not_equals(getComputedStyle(target).color, GREEN, "Not green initially");
+  target.getBoundingClientRect();
+  trigger.classList.add("trigger" + n);
+  if (extraMutation) {
+    extraMutation();
+  }
+  if (flush) {
+    target.getBoundingClientRect();
+  }
+  assert_equals(getComputedStyle(target).color, GREEN, "Green after invalidation");
+}
+
+// Wait for the document to settle, so that there are no unrelated pending style changes.
+window.addEventListener("load", () => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    test(() => check(1), "Descendant of next sibling in a different slot");
+    test(() => check(2), "Next sibling in a different slot");
+    test(() => check(3), "Descendant of next sibling in a slot deeper in the shadow tree");
+    test(() => check(4), "Descendant of subsequent sibling, with an element in a third slot in between");
+    test(() => check(5), "Descendant of next sibling in a different slot, via :has()");
+    test(() => check(6), "Next sibling in a different slot, via :has()");
+    test(() => check(7, { extraMutation: () => {
+      document.getElementById("unrelated").style.backgroundColor = "blue";
+    }}), "Descendant of next sibling in a different slot, with other pending style changes outside the host");
+    test(() => check(8, { extraMutation: () => {
+      document.getElementById("other8").className = "changed";
+    }}), "Descendant of next sibling in a different slot, with other pending style changes in the same slot");
+    test(() => {
+      const target = document.getElementById("target9");
+      assert_equals(getComputedStyle(target).color, GREEN, "Green initially");
+      document.getElementById("e9").classList.remove("x9");
+      document.body.offsetTop;
+      assert_not_equals(getComputedStyle(target).color, GREEN, "Not green after invalidation");
+    }, "Next sibling in the same slot, via :has(), removing the :has() subject");
+    test(() => check(10), "Next sibling in the same slot, via :has() with a sibling in a different slot");
+    test(() => check(11, { flush: false }), "Next sibling in a different slot, without a layout flush");
+    done();
+  }));
+});
+</script>

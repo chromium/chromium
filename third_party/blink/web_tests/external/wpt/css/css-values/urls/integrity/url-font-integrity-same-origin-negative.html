@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<title>Request URL Modifiers: integrity() negative test for a same-origin @font-face src</title>
+<link rel="author" title="Sam Weinig" href="mailto:sam@webkit.org">
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#typedef-request-url-modifier-integrity-modifier">
+<link rel="help" href="https://drafts.csswg.org/css-fonts-4/#font-fetching-requirements">
+<link rel="match" href="../support/font-integrity-fallback-ref.html">
+<meta name="assert" content="A same-origin @font-face src url with a non-matching integrity() modifier should not load the font.">
+<style>
+@font-face {
+  font-family: "TestFont";
+  src: url("/fonts/Ahem.ttf" integrity("sha384-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
+}
+body {
+  margin: 0;
+}
+div {
+  font: 20px/1 "TestFont", serif;
+}
+</style>
+<div>Fallback text</div>

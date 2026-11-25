@@ -1,0 +1,21 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>HTMLOptGroupElement label with a legend child</title>
+<link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/multipage/#dom-optgroup-label"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+  test(() => {
+    const group = document.createElement("optgroup");
+    group.appendChild(document.createElement("legend")).append("legend text");
+    assert_equals(group.label, "");
+    group.label = "attribute";
+    assert_equals(group.label, "attribute");
+    assert_equals(group.getAttribute("label"), "attribute");
+  }, "optgroup.label reflects the label attribute even when the first element child is a legend");
+</script>

@@ -1,0 +1,76 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>HTMLOptionElement text, label and value with image descendants</title>
+<link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/multipage/#get-html-aware-text-content"
+/>
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/multipage/#dom-option-text"
+/>
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/multipage/#dom-option-label"
+/>
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/multipage/#dom-option-value"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+  function image(alt, text) {
+    const img = document.createElement("img");
+    if (alt !== null) {
+      img.alt = alt;
+    }
+    if (text !== null) {
+      img.append(text);
+    }
+    return img;
+  }
+
+  for (const property of ["text", "label", "value"]) {
+    test(() => {
+      const option = document.createElement("option");
+      option.append("before", image("ALT", "image text"), "after");
+      assert_equals(option[property], "beforeafter");
+    }, `option.${property} excludes image alternative text and skips image descendants`);
+
+    test(() => {
+      const option = document.createElement("option");
+      const span = option.appendChild(document.createElement("span"));
+      span.append("be", image("ALT", "image text"), "fore");
+      option.append(" after");
+      assert_equals(option[property], "before after");
+    }, `option.${property} skips nested image descendants`);
+
+    test(() => {
+      const option = document.createElement("option");
+      option.append(" before ", image(" ALT ", null), " after ");
+      assert_equals(option[property], "before after");
+    }, `option.${property} collapses whitespace around an image`);
+
+    test(() => {
+      const option = document.createElement("option");
+      const svgImage = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "img",
+      );
+      svgImage.append(" svg ");
+      option.append("before", svgImage, "after");
+      assert_equals(option[property], "before svg after");
+    }, `option.${property} recurses into non-HTML img elements`);
+  }
+
+  test(() => {
+    const option = document.createElement("option");
+    option.append("before", image("ALT", null), "after");
+    option.label = "";
+    assert_equals(option.label, "");
+    assert_equals(option.text, "beforeafter");
+  }, "option.label returns an empty label attribute rather than text content");
+</script>

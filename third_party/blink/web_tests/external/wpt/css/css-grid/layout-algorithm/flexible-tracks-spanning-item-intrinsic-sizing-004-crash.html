@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Sammy Gill" href="mailto:sammy.gill@apple.com">
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#algo-spanning-flex-items">
+<meta name="assert" content="A grid under a min-content constraint can distribute the size contribution of a 31px item spanning three 1fr columns separated by 10px gaps, without crashing.">
+<style>
+  #container { width: min-content; }
+  #grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 10px;
+  }
+  #item {
+    grid-column: span 3;
+    width: 31px;
+    height: 10px;
+  }
+</style>
+<div id="container">
+  <div id="grid"><div id="item"></div></div>
+</div>

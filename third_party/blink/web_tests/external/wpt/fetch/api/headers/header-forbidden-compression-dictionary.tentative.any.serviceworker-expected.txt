@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Available-Dictionary is a forbidden request header name
+  assert_false: Request constructor must drop Available-Dictionary expected false got true
+[FAIL] Dictionary-ID is a forbidden request header name
+  assert_false: Request constructor must drop Dictionary-ID expected false got true
+Harness: the test ran to completion.
+

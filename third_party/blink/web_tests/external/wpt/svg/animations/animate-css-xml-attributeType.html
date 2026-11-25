@@ -1,7 +1,8 @@
 <!doctype html>
 <html>
 <meta charset="utf-8">
-<title>Tests that XML and CSS attributeTypes can be switched between.</title>
+<title>attributeType is ignored, so switching it between XML and CSS changes nothing</title>
+<link rel="help" href="https://w3c.github.io/svgwg/specs/animations/#AttributeNameAttribute">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/SVGAnimationTestCase-testharness.js"></script>
@@ -37,13 +38,14 @@ function sample1() {
 
 function sample2() {
     assert_approx_equals(polygon.animatedPoints.getItem(0).x, 300, epsilon);
-    // change the animationType to CSS which is invalid.
+    // attributeType is not supported by SVG: changing it to CSS, which
+    // would not match the points attribute, must not stop the animation.
     set.setAttribute("attributeType", "CSS");
 }
 
 function sample3() {
-    // verify that the animation resets.
-    assert_approx_equals(polygon.animatedPoints.getItem(0).x, 100, epsilon);
+    // verify that the animation still applies.
+    assert_approx_equals(polygon.animatedPoints.getItem(0).x, 300, epsilon);
     // change the animation to a CSS animatable value.
     set.setAttribute("attributeName", "opacity");
     set.setAttribute("to", "0.8");
@@ -51,16 +53,17 @@ function sample3() {
 
 function sample4() {
     assert_approx_equals(parseFloat(getComputedStyle(polygon).opacity), 0.8, epsilon);
-    // change the animation to a non-CSS animatable value.
+    // change the animation back to the points attribute, attributeType
+    // still being CSS.
     set.setAttribute("attributeName", "points");
     set.setAttribute("to", "200 0 300 0 300 100 200 100");
 }
 
 function sample5() {
-    // verify that the animation does not run.
-    assert_approx_equals(polygon.animatedPoints.getItem(0).x, 100, epsilon);
+    // verify that the animation runs.
+    assert_approx_equals(polygon.animatedPoints.getItem(0).x, 200, epsilon);
     assert_approx_equals(parseFloat(getComputedStyle(polygon).opacity), 1.0, epsilon);
-    // change the animationType to XML which is valid.
+    // change the attributeType back to XML, which changes nothing either.
     set.setAttribute("attributeType", "XML");
 }
 

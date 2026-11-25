@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>A single-axis scroll container establishes an independent formatting context</title>
+<link rel="help" href="https://drafts.csswg.org/css-overflow-3/#scroll-container">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/12289">
+<link rel="match" href="single-axis-scroll-container-independent-formatting-context-ref.html">
+<meta name="assert" content="A box that is scrollable in only one axis, with overflow: clip in the other, is a scroll container, so it establishes an independent formatting context: it contains its floats and does not overlap preceding floats.">
+<style>
+.row { width: 100px; height: 100px; background: red; }
+.float { float: left; width: 50px; height: 100px; background: green; }
+.auto-clip { overflow: auto clip; }
+.clip-auto { overflow: clip auto; }
+</style>
+<p>Test passes if there is a filled green rectangle and <strong>no red</strong>.</p>
+<div class="row">
+  <div class="float"></div>
+  <div class="auto-clip">
+    <div class="float"></div>
+  </div>
+</div>
+<div class="row">
+  <div class="float"></div>
+  <div class="clip-auto">
+    <div class="float"></div>
+  </div>
+</div>

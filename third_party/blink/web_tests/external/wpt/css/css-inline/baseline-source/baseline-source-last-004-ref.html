@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Test Reference</title>
+<link rel="author" title="Christian Biesinger" href="mailto:cbiesinger@igalia.com">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+.container {
+  font: 20px/20px Ahem;
+}
+.square {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: green;
+}
+.scroller {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: blue;
+}
+</style>
+<p>Test passes if the green square is aligned with the bottom of the blue square.</p>
+<!-- Without line boxes, the baseline of the inline-block is its bottom margin edge. -->
+<div class="container"><span class="square"></span><div class="scroller"></div></div>

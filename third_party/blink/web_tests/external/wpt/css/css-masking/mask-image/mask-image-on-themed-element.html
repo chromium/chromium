@@ -1,0 +1,26 @@
+<!doctype html>
+<link rel="help" href="https://drafts.fxtf.org/css-masking/#the-mask-image">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1831868">
+<link rel="author" href="https://mozilla.org" title="Mozilla">
+<link rel="match" href="/css/reference/blank.html">
+<title>Mask layers apply to natively-themed form controls</title>
+<!-- A mixed SVG + image mask intersected with a fully transparent image layer
+     should mask out the whole element, including its native appearance. -->
+<style>
+  button, input {
+    display: block;
+    width: 200px;
+    height: 50px;
+    margin: 10px;
+    mask: url(#m), linear-gradient(transparent, transparent);
+    mask-composite: intersect;
+  }
+</style>
+<svg width="0" height="0" style="position: absolute">
+  <mask id="m" maskContentUnits="objectBoundingBox">
+    <rect width="1" height="1" fill="white"/>
+  </mask>
+</svg>
+<button>button</button>
+<input type="checkbox">
+<input type="text" value="text">

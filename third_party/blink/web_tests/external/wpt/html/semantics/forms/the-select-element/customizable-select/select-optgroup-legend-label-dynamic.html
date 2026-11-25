@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel=author href="mailto:wpt@keithcirkel.co.uk">
+<link rel=help href="https://html.spec.whatwg.org/multipage/form-elements.html#concept-optgroup-label">
+<link rel=help href="https://html.spec.whatwg.org/multipage/rendering.html#the-select-element-2">
+<link rel=match href="select-optgroup-legend-label-dynamic-ref.html">
+<meta name=assert content="An optgroup's rendered label follows its first element child legend and label attribute as they change.">
+<select size="24">
+  <optgroup id="prepend" label="prepend attribute">
+    <option>one</option>
+  </optgroup>
+  <optgroup id="insertBefore" label="insert before attribute">
+    <legend>insert before legend</legend>
+    <option>three</option>
+  </optgroup>
+  <optgroup id="remove" label="remove attribute">
+    <option id="removed">removed</option>
+    <legend>remove legend</legend>
+    <option>four</option>
+  </optgroup>
+  <optgroup id="relabel" label="old attribute">
+    <option>five</option>
+  </optgroup>
+  <optgroup id="replaceLegend" label="replace attribute">
+    <legend>old legend</legend>
+    <option>six</option>
+  </optgroup>
+  <optgroup id="moveLegend" label="move attribute">
+    <legend>moved legend</legend>
+    <option>seven</option>
+  </optgroup>
+  <optgroup id="receiveLegend" label="receive attribute">
+    <option>eight</option>
+  </optgroup>
+  <optgroup id="removeLegend" label="remove legend attribute">
+    <legend>removed legend</legend>
+    <legend>second legend</legend>
+    <option>nine</option>
+  </optgroup>
+</select>
+<script>
+  document.querySelector("select").offsetTop;
+  const legend = document.createElement("legend");
+  legend.textContent = "prepend legend";
+  document.getElementById("prepend").prepend(legend);
+  const two = document.createElement("option");
+  two.textContent = "two";
+  document.getElementById("insertBefore").prepend(two);
+  document.getElementById("removed").remove();
+  document.getElementById("relabel").label = "new attribute";
+  const replacement = document.createElement("legend");
+  replacement.textContent = "replacement legend";
+  document.getElementById("replaceLegend").firstElementChild.replaceWith(replacement);
+  document.getElementById("receiveLegend").prepend(
+    document.getElementById("moveLegend").firstElementChild);
+  document.getElementById("removeLegend").firstElementChild.remove();
+
+  const select = document.querySelector("select");
+  const detached = document.createElement("optgroup");
+  detached.label = "detached attribute";
+  detached.append(new Option("ten"));
+  select.append(detached);
+  detached.remove();
+  detached.label = "rebound attribute";
+  select.append(detached);
+  select.append(detached.cloneNode(true));
+</script>

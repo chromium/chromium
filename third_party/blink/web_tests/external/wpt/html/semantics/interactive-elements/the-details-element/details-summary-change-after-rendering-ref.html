@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>The first summary child of a rendered closed details element is its summary after the children change</title>
+<style>
+summary { display: block; }
+</style>
+
+<details><summary>Second</summary>Content</details>
+<details><summary>Second</summary>Content</details>
+<details><summary>Second</summary>Content<summary>First</summary></details>
+<details>Content</details>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Shadow DOM: An element with a pending style change is rendered after it is assigned to another slot</title>
+<link rel="author" title="Antti Koivisto" href="mailto:antti@apple.com">
+<link rel="help" href="https://dom.spec.whatwg.org/#shadow-tree-slots">
+<link rel="match" href="slot-reassignment-with-pending-style-change-ref.html">
+<style>
+.changed { color: green; }
+</style>
+
+<p>Test passes if there are two lines of text "A" and "B" below and "B" is green.</p>
+
+<div id="host"><template shadowrootmode="open"><slot name="first"></slot><div>A</div><slot name="second"></slot></template><div id="target" slot="first">B</div></div>
+
+<script>
+document.body.offsetTop;
+target.className = "changed";
+target.slot = "second";
+</script>

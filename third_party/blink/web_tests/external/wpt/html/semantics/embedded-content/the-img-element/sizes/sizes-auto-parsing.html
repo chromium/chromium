@@ -1,0 +1,309 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>parse a sizes attribute: sizes=auto grammar, media conditions, and omitted source sizes</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#parse-a-sizes-attribute">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#valid-source-size-list">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#updating-the-source-set">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  img { height: 10px; }
+</style>
+<body>
+<script>
+"use strict";
+
+const dpr = window.devicePixelRatio || 1;
+const smallW = Math.max(1, Math.ceil(20 * dpr));
+const mediumW = Math.max(2, Math.ceil(320 * dpr));
+const largeW = Math.max(3, Math.ceil(1200 * dpr));
+
+function makeSrcset(token) {
+  return `/images/green-1x1.png?small-${token} ${smallW}w, ` +
+         `/images/green-16x16.png?medium-${token} ${mediumW}w, ` +
+         `/images/green-256x256.png?large-${token} ${largeW}w`;
+}
+
+function nextLoad(img) {
+  return new Promise((resolve, reject) => {
+    img.addEventListener("load", resolve, {once: true});
+    img.addEventListener("error", () => reject(new Error("Image failed to load")), {once: true});
+  });
+}
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.sizes = "(min-width: 0px) auto";
+  source.srcset = makeSrcset("mc-auto-source");
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "auto";
+  img.width = 10;
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+
+  const loaded = nextLoad(img);
+  document.body.append(picture);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("large-mc-auto-source"),
+              `<media-condition> auto must be rejected and fall back to 100vw (got: ${img.currentSrc})`);
+}, "<source sizes='(min-width: 0px) auto'> is invalid even when img allows auto-sizes");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.sizes = "(min-width: 0px) auto, 10px";
+  source.srcset = makeSrcset("mc-auto-fallback");
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "auto";
+  img.width = 300;
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+
+  const loaded = nextLoad(img);
+  document.body.append(picture);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("small-mc-auto-fallback"),
+              `<media-condition> auto must not mask subsequent fallback entry (got: ${img.currentSrc})`);
+}, "<source sizes='(min-width: 0px) auto, 10px'> ignores invalid entry and uses 10px fallback");
+
+promise_test(async t => {
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "(min-width: 0px) auto, 10px";
+  img.width = 300;
+  img.srcset = makeSrcset("img-mc-auto-fallback");
+  t.add_cleanup(() => img.remove());
+
+  const loaded = nextLoad(img);
+  document.body.append(img);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("small-img-mc-auto-fallback"),
+              `<media-condition> auto on img must ignore invalid entry and use 10px fallback (got: ${img.currentSrc})`);
+}, "<img sizes='(min-width: 0px) auto, 10px'> ignores invalid entry and uses 10px fallback");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.sizes = " \t\nauto\t\n ";
+  source.srcset = makeSrcset("ws-auto-source");
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "auto";
+  img.width = 10;
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+
+  const loaded = nextLoad(img);
+  document.body.append(picture);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("small-ws-auto-source"),
+              `Leading and trailing whitespace around auto on <source> should resolve auto (got: ${img.currentSrc})`);
+}, "<source sizes> with leading and trailing whitespace around auto resolves auto");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.sizes = "300px";
+  source.srcset = makeSrcset("remove-source-sizes-initial");
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "auto";
+  img.width = 10;
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+
+  let loaded = nextLoad(img);
+  document.body.append(picture);
+  await loaded;
+  assert_true(img.currentSrc.includes("medium-remove-source-sizes-initial"),
+              `Initial explicit <source sizes='300px'> should select medium candidate (got: ${img.currentSrc})`);
+
+  loaded = nextLoad(img);
+  source.removeAttribute("sizes");
+  source.srcset = makeSrcset("remove-source-sizes-omitted");
+  await loaded;
+  assert_true(img.currentSrc.includes("small-remove-source-sizes-omitted"),
+              `Removing <source sizes> should use the img's sizes='auto' (got: ${img.currentSrc})`);
+}, "Removing sizes from <source> uses the img's sizes='auto'");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.srcset = makeSrcset("change-img-sizes");
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "auto";
+  img.width = 10;
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+
+  let loaded = nextLoad(img);
+  document.body.append(picture);
+  await loaded;
+  assert_true(img.currentSrc.includes("small-change-img-sizes"),
+              `Omitted <source sizes> should initially use the img's sizes='auto' (got: ${img.currentSrc})`);
+
+  loaded = nextLoad(img);
+  img.sizes = "300px";
+  await loaded;
+  assert_true(img.currentSrc.includes("medium-change-img-sizes"),
+              `Changing <img sizes> should update the size used for <source> without sizes (got: ${img.currentSrc})`);
+}, "Changing <img sizes> updates the size used for <source> without sizes");
+
+promise_test(async t => {
+  const container = document.createElement("div");
+  container.style.display = "none";
+  document.body.append(container);
+  t.add_cleanup(() => container.remove());
+
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "auto, 300px";
+  img.width = 10;
+  picture.append(source, img);
+  container.append(picture);
+  img.getBoundingClientRect();
+
+  const loaded = nextLoad(img);
+  source.srcset = makeSrcset("unrendered-omitted-source-sizes");
+  await new Promise(resolve => step_timeout(resolve, 0));
+  img.loading = "eager";
+  await loaded;
+
+  assert_true(img.currentSrc.includes("medium-unrendered-omitted-source-sizes"),
+              `Omitted <source sizes> must use the img's sizes and fall back to 300px when unrendered (got: ${img.currentSrc})`);
+}, "Unrendered img with sizes='auto, 300px' and omitted <source sizes> falls back to 300px");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.srcset = makeSrcset("omitted-source-sizes-non-auto");
+  const img = document.createElement("img");
+  img.sizes = "300px";
+  const loaded = nextLoad(img);
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+  document.body.append(picture);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("medium-omitted-source-sizes-non-auto"),
+              `Omitted <source sizes> must use the img's sizes='300px' (got: ${img.currentSrc})`);
+}, "Omitted <source sizes> uses <img sizes='300px'> when img does not allow auto-sizes");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.srcset = makeSrcset("omitted-source-and-img-sizes");
+  const img = document.createElement("img");
+  const loaded = nextLoad(img);
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+  document.body.append(picture);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("large-omitted-source-and-img-sizes"),
+              `Omitted <source sizes> and <img sizes> must fall back to 100vw (got: ${img.currentSrc})`);
+}, "Omitted <source sizes> and omitted <img sizes> fall back to 100vw");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.sizes = "(max-width: 0px) 10px, auto, 300px";
+  source.srcset = makeSrcset("non-first-auto-source");
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "auto";
+  img.width = 10;
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+
+  const loaded = nextLoad(img);
+  document.body.append(picture);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("small-non-first-auto-source"),
+              `Non-first bare auto on <source> when img allows auto-sizes should recover and use concrete object size (got: ${img.currentSrc})`);
+}, "<source sizes='(max-width: 0px) 10px, auto, 300px'> recovers non-first bare auto when img allows auto-sizes");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.setAttribute("sizes", "");
+  source.srcset = makeSrcset("empty-source-sizes");
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "auto";
+  img.width = 10;
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+
+  const loaded = nextLoad(img);
+  document.body.append(picture);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("large-empty-source-sizes"),
+              `Explicit empty <source sizes=''> must fall back to 100vw rather than using the img's sizes (got: ${img.currentSrc})`);
+}, "Explicit empty <source sizes=''> falls back to 100vw even when img allows auto-sizes");
+
+promise_test(async t => {
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "/*comment*/auto/*comment*/";
+  img.width = 10;
+  img.srcset = makeSrcset("img-comment-auto");
+  t.add_cleanup(() => img.remove());
+
+  const loaded = nextLoad(img);
+  document.body.append(img);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("large-img-comment-auto"),
+              `CSS comments on <img sizes> do not satisfy allows auto-sizes and must fall back to 100vw (got: ${img.currentSrc})`);
+}, "<img loading='lazy' sizes='/*comment*/auto/*comment*/'> does not allow auto-sizes and falls back to 100vw");
+
+promise_test(async t => {
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "/*comment*/auto, 300px";
+  img.width = 10;
+  img.srcset = makeSrcset("img-comment-auto-list");
+  t.add_cleanup(() => img.remove());
+
+  const loaded = nextLoad(img);
+  document.body.append(img);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("medium-img-comment-auto-list"),
+              `CSS comment before auto in <img sizes='/*comment*/auto, 300px'> does not satisfy allows auto-sizes and must fall back to 300px (got: ${img.currentSrc})`);
+}, "<img loading='lazy' sizes='/*comment*/auto, 300px'> does not allow auto-sizes and falls back to 300px");
+
+promise_test(async t => {
+  const picture = document.createElement("picture");
+  const source = document.createElement("source");
+  source.sizes = "/*comment*/auto/*comment*/";
+  source.srcset = makeSrcset("source-comment-auto");
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.sizes = "auto";
+  img.width = 10;
+  picture.append(source, img);
+  t.add_cleanup(() => picture.remove());
+
+  const loaded = nextLoad(img);
+  document.body.append(picture);
+  await loaded;
+
+  assert_true(img.currentSrc.includes("small-source-comment-auto"),
+              `CSS comments around auto on <source sizes> should resolve auto (got: ${img.currentSrc})`);
+}, "<source sizes='/*comment*/auto/*comment*/'> resolves auto when img allows auto-sizes");
+</script>
+</body>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Overflow: line-clamp: auto clamps inside a box whose height behaves as auto</title>
+<link rel="author" title="Christian Biesinger" href="mailto:cbiesinger@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-overflow-4/#line-clamp">
+<link rel="help" href="https://drafts.csswg.org/css-sizing-3/#behave-as-auto">
+<link rel="match" href="reference/line-clamp-auto-070-ref.html">
+<meta name="assert" content="A percentage height that cannot be resolved, or an intrinsic size keyword, behaves as auto, so the content of the box is clamped like that of a box with an auto height.">
+<style>
+.clamp {
+  line-clamp: auto;
+  max-height: 2.5lh;
+  font: 16px / 32px serif;
+  white-space: pre;
+  margin-bottom: 4px;
+  background-color: yellow;
+}
+p {
+  margin: 0;
+}
+</style>
+<div class="clamp"><div style="height: 50%">Line 1
+Line 2
+Line 3
+Line 4</div><p>Line 5</p></div>
+<div class="clamp"><div style="height: fit-content">Line 1
+Line 2
+Line 3
+Line 4</div><p>Line 5</p></div>
+<div class="clamp"><div style="height: min-content">Line 1
+Line 2
+Line 3
+Line 4</div><p>Line 5</p></div>
