@@ -2094,8 +2094,10 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
 // dedicated cancellation TypeError message instead of generic "Failed to fetch"
 // when a `race-network-and-fetch-handler` request fails with `net::ERR_ABORTED`
 // before receiving response headers.
+// TODO(crbug.com/584629540): Remove this temporary custom error message once
+// standardized cancellation reporting is defined and implemented.
 BASE_FEATURE(kServiceWorkerRaceNetworkRequestAbortedErrorMessage,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables fallback to network request when the RaceNetworkRequest Mojo pipe is
 // disconnected.
