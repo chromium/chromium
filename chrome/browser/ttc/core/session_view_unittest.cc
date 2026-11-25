@@ -8,45 +8,13 @@
 
 #include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ttc/core/states.h"
+#include "chrome/browser/ttc/core/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ttc {
 
 namespace {
-
-class FakeSessionViewDelegate : public SessionViewDelegate {
- public:
-  void set_session_lifecycle(SessionLifecycle lifecycle) {
-    session_lifecycle_ = lifecycle;
-  }
-  void set_app_mic_muted(bool muted) { app_mic_muted_ = muted; }
-
-  // SessionViewDelegate:
-  Profile* GetProfile() override { return nullptr; }
-  BrowserWindowInterface* GetBrowserWindowInterface() override {
-    return nullptr;
-  }
-  void EndSessionAsync() override {}
-  SessionLifecycle GetSessionLifecycle() const override {
-    return session_lifecycle_;
-  }
-  bool SetMicMuted(bool muted) override {
-    if (app_mic_muted_ == muted) {
-      return false;
-    }
-    app_mic_muted_ = muted;
-    return true;
-  }
-  bool IsMicMuted() const override { return app_mic_muted_; }
-  Speaker GetSpeaker() const override { return Speaker::kIdle; }
-  bool CanSaveDebugTrace() const override { return false; }
-  void SaveDebugTrace() override {}
-
- private:
-  SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
-  bool app_mic_muted_ = false;
-};
 
 class FakeSessionView : public SessionView {
  public:

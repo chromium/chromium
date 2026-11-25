@@ -14,6 +14,46 @@ MockConversation::MockConversation() = default;
 
 MockConversation::~MockConversation() = default;
 
+FakeSessionViewDelegate::FakeSessionViewDelegate() = default;
+
+FakeSessionViewDelegate::~FakeSessionViewDelegate() = default;
+
+Profile* FakeSessionViewDelegate::GetProfile() {
+  return profile_;
+}
+
+BrowserWindowInterface* FakeSessionViewDelegate::GetBrowserWindowInterface() {
+  return nullptr;
+}
+
+void FakeSessionViewDelegate::EndSessionAsync() {}
+
+SessionLifecycle FakeSessionViewDelegate::GetSessionLifecycle() const {
+  return session_lifecycle_;
+}
+
+bool FakeSessionViewDelegate::SetMicMuted(bool muted) {
+  if (app_mic_muted_ == muted) {
+    return false;
+  }
+  app_mic_muted_ = muted;
+  return true;
+}
+
+bool FakeSessionViewDelegate::IsMicMuted() const {
+  return app_mic_muted_;
+}
+
+Speaker FakeSessionViewDelegate::GetSpeaker() const {
+  return Speaker::kIdle;
+}
+
+bool FakeSessionViewDelegate::CanSaveDebugTrace() const {
+  return false;
+}
+
+void FakeSessionViewDelegate::SaveDebugTrace() {}
+
 void TinyWait() {
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

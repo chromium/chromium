@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ttc/core/session_view_delegate.h"
+#include "chrome/browser/ttc/core/states.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ttc/app/public/conversation.h"
 #include "components/ttc/app/public/page_context_types.h"
@@ -29,6 +32,35 @@ class MockConversation : public Conversation {
   MOCK_METHOD(void, SetMicMuted, (bool), (override));
   MOCK_METHOD(void, SetHotlAudioSink, (HotlAudioSinkCallback), (override));
   MOCK_METHOD(SessionJournal&, GetJournal, (), (override));
+};
+
+// A SessionViewDelegate whose state tests set directly.
+class FakeSessionViewDelegate : public SessionViewDelegate {
+ public:
+  FakeSessionViewDelegate();
+  ~FakeSessionViewDelegate() override;
+
+  void set_profile(Profile* profile) { profile_ = profile; }
+  void set_session_lifecycle(SessionLifecycle lifecycle) {
+    session_lifecycle_ = lifecycle;
+  }
+  void set_app_mic_muted(bool muted) { app_mic_muted_ = muted; }
+
+  // SessionViewDelegate:
+  Profile* GetProfile() override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
+  void EndSessionAsync() override;
+  SessionLifecycle GetSessionLifecycle() const override;
+  bool SetMicMuted(bool muted) override;
+  bool IsMicMuted() const override;
+  Speaker GetSpeaker() const override;
+  bool CanSaveDebugTrace() const override;
+  void SaveDebugTrace() override;
+
+ private:
+  raw_ptr<Profile> profile_ = nullptr;
+  SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
+  bool app_mic_muted_ = false;
 };
 
 // Runs the message loop for a short amount of time. Useful to check something
