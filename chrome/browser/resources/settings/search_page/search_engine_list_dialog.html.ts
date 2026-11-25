@@ -47,7 +47,9 @@ export function getHtml(this: SettingsSearchEngineListDialogElement) {
         $i18n{saveGuestChoiceText}
       </cr-checkbox>
     ` : ''}
-    <cr-button id="cancelButton" @click="${this.onCancelClick_}">
+    <cr-button id="cancelButton"
+        class="${this.settingsRefresh2026Enabled_ ? 'tonal-button' : ''}"
+        @click="${this.onCancelClick_}">
       $i18n{searchEnginesCancelButton}
     </cr-button>
     <cr-button id="setAsDefaultButton" class="action-button"

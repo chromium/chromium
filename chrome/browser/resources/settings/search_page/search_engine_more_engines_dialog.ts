@@ -89,6 +89,8 @@ export class SettingsSearchEngineMoreEnginesDialogElement extends
 
       /** `engines_` matching `query_`. */
       filteredEngines_: {type: Array},
+
+      settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
 
@@ -97,6 +99,8 @@ export class SettingsSearchEngineMoreEnginesDialogElement extends
   private accessor query_: string = '';
   protected accessor selectedId_: string = '';
   protected accessor filteredEngines_: SearchEngine[] = [];
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();

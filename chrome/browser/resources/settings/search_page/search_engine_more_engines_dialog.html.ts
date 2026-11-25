@@ -39,7 +39,9 @@ export function getHtml(this: SettingsSearchEngineMoreEnginesDialogElement) {
         $i18n{saveGuestChoiceText}
       </cr-checkbox>
     ` : ''}
-    <cr-button id="backButton" @click="${this.onBackClick_}">
+    <cr-button id="backButton"
+        class="${this.settingsRefresh2026Enabled_ ? 'tonal-button' : ''}"
+        @click="${this.onBackClick_}">
       $i18n{searchEnginesBackButton}
     </cr-button>
     <cr-button id="setAsDefaultButton" class="action-button"

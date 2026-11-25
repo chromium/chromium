@@ -86,6 +86,8 @@ export class SettingsSearchEngineListDialogElement extends
         type: Boolean,
         notify: true,
       },
+
+      settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
 
@@ -97,6 +99,8 @@ export class SettingsSearchEngineListDialogElement extends
    */
   protected readonly pickerWithMoreEnginesEnabled_: boolean =
       loadTimeData.getBoolean('pickerWithMoreEngines');
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();

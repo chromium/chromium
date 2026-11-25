@@ -79,3 +79,17 @@ cr-radio-button {
 #saveGuestChoiceCheckbox {
   margin-inline-end: auto;
 }
+
+:host-context([settings-refresh-2026]) {
+  .title {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  cr-radio-button {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+}

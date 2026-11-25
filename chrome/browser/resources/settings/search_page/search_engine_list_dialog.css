@@ -44,3 +44,20 @@
   margin-inline-start: auto;
   margin-inline-end: 8px;
 }
+
+:host-context([settings-refresh-2026]) {
+  [slot='header'] {
+    padding-bottom: 24px;
+  }
+
+  .title {
+    margin-bottom: 24px;
+  }
+
+  .subtitle {
+    color: var(--cr-secondary-text-color);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+  }
+}
