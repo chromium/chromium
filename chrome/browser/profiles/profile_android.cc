@@ -47,13 +47,16 @@ void Profile::DestroyJavaObject() {
 }
 
 ScopedJavaLocalRef<jobject> Profile::GetJavaObject() const {
-  // TopChromeWebUIProfile has no ProfileKey and is shared across windows of
-  // all profiles: Java must not hold a Profile object for it and should use
-  // the hosting window's user profile instead.
-  CHECK(!IsTopChromeWebUIProfile());
   JNIEnv* env = AttachCurrentThread();
   if (!j_obj_) {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    // TopChromeWebUIProfile has no ProfileKey and is shared across windows of
+    // all profiles: Java must not hold a Profile object for it and should use
+    // the hosting window's user profile instead. Checked here (on the UI
+    // thread) because IsTopChromeWebUIProfile() reads sequence-affine
+    // SupportsUserData, and `j_obj_` can never be created for it once blocked
+    // here.
+    CHECK(!IsTopChromeWebUIProfile());
     // Java side assumes |this| can also be used as a BrowserContext*.
     extern ProfileImpl kUnusedProfile;
     static_assert(
