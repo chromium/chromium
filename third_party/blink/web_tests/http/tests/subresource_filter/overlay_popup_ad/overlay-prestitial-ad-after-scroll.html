@@ -47,9 +47,8 @@ promise_test(async function(t) {
   await waitForFirstContentfulPaint();
   await forceLayoutUpdate();
 
-  // Scroll the main frame programmatically before the overlay ad appears. This
-  // moves the scroll position without any user input, like a fragment
-  // navigation or scroll restoration would.
+  // Scroll the main frame before the overlay ad appears. Scrolling doesn't
+  // count as a user interaction for the prestitial classification.
   window.scrollTo(0, 100);
   await forceLayoutUpdate();
 
@@ -71,10 +70,10 @@ promise_test(async function(t) {
   // Expect the kOverlayPopupAd UseCounter.
   assert_true(internals.isUseCounted(document, kOverlayPopupAd));
 
-  // Expect the kOverlayPrestitialAd UseCounter as well: the scroll position
-  // was changed without the user having scrolled.
+  // Expect the kOverlayPrestitialAd UseCounter as well: the scroll before the
+  // overlay ad appeared doesn't disqualify it from being a prestitial.
   assert_true(internals.isUseCounted(document, kOverlayPrestitialAd));
-}, "Test overlay-prestitial-ad when the main frame was scrolled programmatically before the overlay ad appeared. In this case we expect use counters for both kOverlayPopupAd and kOverlayPrestitialAd.");
+}, "Test overlay-prestitial-ad when the main frame was scrolled before the overlay ad appeared. In this case we expect use counters for both kOverlayPopupAd and kOverlayPrestitialAd.");
 
 </script>
 </body>

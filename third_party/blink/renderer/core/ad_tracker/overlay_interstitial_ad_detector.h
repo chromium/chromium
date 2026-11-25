@@ -44,8 +44,8 @@ class LocalFrame;
 // 2) The page hadn't been hidden since navigation. Rendering is throttled
 //    while a page is hidden, so its paint timings would no longer reflect what
 //    the user saw.
-// 3) The user hadn't interacted with the page: the main frame had no sticky
-//    user activation and the user hadn't scrolled.
+// 3) The user hadn't interacted with the page: the main frame had no
+//    sticky user activation.
 //
 // Besides, we explicitly prevent mid-roll ads (during a video play) from being
 // categorized as pop-ups.

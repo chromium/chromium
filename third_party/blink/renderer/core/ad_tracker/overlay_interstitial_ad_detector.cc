@@ -68,8 +68,7 @@ bool IsOverlayCandidate(Element* element) {
 // Returns whether an overlay ad appearing now qualifies as a prestitial ad:
 // it's within `kPrestitialWindow` of the first contentful paint, the page
 // hasn't been hidden since navigation, and the user hasn't interacted with the
-// page yet, i.e. there's no sticky user activation and the user hasn't
-// scrolled.
+// page yet, i.e. there's no sticky user activation.
 bool IsPrestitialAd(LocalFrame* outermost_main_frame) {
   Document* document = outermost_main_frame->GetDocument();
 
@@ -83,18 +82,12 @@ bool IsPrestitialAd(LocalFrame* outermost_main_frame) {
 
   // Rendering is throttled while the page is hidden, so the paint timings of a
   // page that has been hidden no longer reflect what the user saw.
-  InteractiveDetector* interactive_detector =
-      InteractiveDetector::From(*document);
-  if (interactive_detector->PageWasBackgroundedSinceEvent(
+  if (InteractiveDetector::From(*document)->PageWasBackgroundedSinceEvent(
           document->Loader()->GetTiming().NavigationStart())) {
     return false;
   }
 
-  if (outermost_main_frame->HasStickyUserActivation()) {
-    return false;
-  }
-
-  return !interactive_detector->GetFirstScrollTimestamp().has_value();
+  return !outermost_main_frame->HasStickyUserActivation();
 }
 
 }  // namespace

@@ -97,13 +97,6 @@ class OverlayInterstitialAdDetectorTest : public RenderingTest {
                                      base::TimeTicks::Now());
   }
 
-  // Scrolls the main frame without any user input, e.g. as scrollTo() would.
-  void ScrollMainFrameProgrammaticallyTo(int y) {
-    GetDocument().View()->LayoutViewport()->SetScrollOffset(
-        ScrollOffset(0, y), mojom::blink::ScrollType::kProgrammatic,
-        cc::ScrollSourceType::kNone);
-  }
-
   void SetPageVisibility(mojom::blink::PageVisibilityState state) {
     GetPage().SetVisibilityState(state, /*is_initial_state=*/false);
   }
@@ -235,9 +228,10 @@ TEST_F(OverlayInterstitialAdDetectorTest,
   EXPECT_FALSE(IsUseCounted(WebFeature::kOverlayPrestitialAd));
 }
 
-// A pop-up ad appearing after the user has scrolled the main frame is not a
-// prestitial.
-TEST_F(OverlayInterstitialAdDetectorTest, NoPrestitialAdAfterUserScroll) {
+// Scrolling doesn't count as a user interaction for the prestitial
+// classification, so a pop-up ad appearing after the user has scrolled the main
+// frame is still a prestitial.
+TEST_F(OverlayInterstitialAdDetectorTest, PrestitialAdAfterUserScroll) {
   Element* ad = SetUpPageWithOverlayAd(/*scrollable=*/true, /*ad_hidden=*/true);
   SimulateFirstContentfulPaint();
   UpdateAllLifecyclePhasesForTest();
@@ -252,26 +246,9 @@ TEST_F(OverlayInterstitialAdDetectorTest, NoPrestitialAdAfterUserScroll) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(IsUseCounted(WebFeature::kOverlayPopupAd));
-  EXPECT_FALSE(IsUseCounted(WebFeature::kOverlayPrestitialAd));
-}
-
-// A scroll position away from the top doesn't by itself mean that the user has
-// scrolled: fragment navigation, scroll restoration or scrollTo() move it
-// without any user input, so a pop-up ad appearing then is still a prestitial.
-TEST_F(OverlayInterstitialAdDetectorTest, PrestitialAdAfterProgrammaticScroll) {
-  Element* ad = SetUpPageWithOverlayAd(/*scrollable=*/true, /*ad_hidden=*/true);
-  SimulateFirstContentfulPaint();
-  UpdateAllLifecyclePhasesForTest();
-
-  ScrollMainFrameProgrammaticallyTo(100);
-  SetAdDisplayed(ad, true);
-  UpdateAllLifecyclePhasesForTest();
-
-  SetAdDisplayed(ad, false);
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_TRUE(IsUseCounted(WebFeature::kOverlayPopupAd));
   EXPECT_TRUE(IsUseCounted(WebFeature::kOverlayPrestitialAd));
+  EXPECT_TRUE(ad->IsOverlayPopupAd());
+  EXPECT_TRUE(ad->IsPrestitialAd());
 }
 
 // A page that was hidden before the pop-up ad appeared is excluded from the
