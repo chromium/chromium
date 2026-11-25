@@ -72,11 +72,10 @@
   }
 
   :host([base-layout='text']) .container:hover #textContainer,
-  :host([base-layout='text']) .container:hover #primaryText,
-  :host([base-layout='text']) .container:hover #secondaryText,
+  :host([base-layout='text']) .container:hover #textContainer span,
   :host([base-layout='text']:is(:focus-visible, [selected])) #textContainer,
-  :host([base-layout='text']:is(:focus-visible, [selected])) #primaryText,
-  :host([base-layout='text']:is(:focus-visible, [selected])) #secondaryText {
+  :host([base-layout='text']:is(:focus-visible, [selected]))
+      #textContainer span {
     color: HighlightText;
   }
 
@@ -272,6 +271,30 @@
       var(--color-sys-on-surface-subtle));
   font-size: 13px;
   line-height: 20px;
+}
+
+/* Styles from the match's FormattedString. Suggest query text has no rule, so
+ * it keeps the color of its line. Image cards keep their own text style. */
+:host([base-layout='text']) .bolded {
+  font-weight: var(--cr-searchbox-match-font-weight, 600);
+}
+
+:host([base-layout='text']) .suggest-hint-text {
+  color: var(--color-searchbox-results-foreground-dimmed);
+}
+
+:host([base-layout='text']:is(:focus-visible, [selected]))
+    .suggest-hint-text {
+  color: var(--color-searchbox-results-dim-selected);
+}
+
+:host([base-layout='text']) .suggest-action-high {
+  color: var(--color-searchbox-results-url);
+}
+
+:host([base-layout='text']:is(:focus-visible, [selected]))
+    .suggest-action-high {
+  color: var(--color-searchbox-results-url-selected);
 }
 
 :host([base-layout='text']:not([override-clamp-line-num='-1']))

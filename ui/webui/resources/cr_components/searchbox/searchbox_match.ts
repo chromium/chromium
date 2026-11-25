@@ -7,15 +7,14 @@ import './searchbox_action.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {createAutocompleteMatch} from '//resources/cr_components/search/autocomplete_match_utils.js';
+import {formattedStringToHtml} from '//resources/cr_components/search/formatted_string.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {KeywordActivationMethod, KeywordType, SelectionLineState, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {FormattedString, FormattedStringFragment} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
-import {ActionIconType, ColorType, SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {ActionIconType, SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
@@ -385,29 +384,12 @@ export class SearchboxMatchElement extends CrLitElement {
     return this.match.a11yLabel;
   }
 
-  /**
-   * Sanitizes .innerHTML from `renderFormattedString_()` through
-   * `sanitizeInnerHtml` to ensure it only contains allowed tags.
-   * @param innerHtml The .innerHTML from `renderFormattedString_()`
-   * @return Sanitized TrustedHTML safe for rendering
-   */
-  private sanitizeInnerHtml_(innerHtml: string): TrustedHTML {
-    try {
-      return sanitizeInnerHtml(innerHtml, {attrs: ['class']});
-    } catch (e) {
-      // If sanitization fails return empty HTML.
-      return window.trustedTypes!.emptyHTML;
-    }
-  }
-
   private computePrimaryTextHtml_(): TrustedHTML {
     if (!this.match) {
       return window.trustedTypes!.emptyHTML;
     }
     // See //components/omnibox/browser/suggest_template_info_mojo_utils.cc
-    return this.sanitizeInnerHtml_(
-        this.renderFormattedString_(this.match.suggestTemplate.primaryText)
-            .innerHTML);
+    return formattedStringToHtml(this.match.suggestTemplate.primaryText);
   }
 
   private computeSecondaryTextHtml_(): TrustedHTML {
@@ -415,8 +397,7 @@ export class SearchboxMatchElement extends CrLitElement {
     if (!secondaryText) {
       return window.trustedTypes!.emptyHTML;
     }
-    return this.sanitizeInnerHtml_(
-        this.renderFormattedString_(secondaryText).innerHTML);
+    return formattedStringToHtml(secondaryText);
   }
 
   private computeHasAction_() {
@@ -480,77 +461,6 @@ export class SearchboxMatchElement extends CrLitElement {
       return false;
     }
     return this.showThumbnail;
-  }
-
-  /**
-   * Maps the color and weight of a FormattedString fragment to CSS classes.
-   * Each suggest color gets a class named after its color type.
-   * Other colors get no class and keep the default color.
-   */
-  private getFragmentCssClasses_(fragment: FormattedStringFragment): string[] {
-    const classes = [];
-    switch (fragment.color) {
-      case ColorType.kSuggestQueryText:
-        classes.push('suggest-query-text');
-        break;
-      case ColorType.kSuggestHintText:
-        classes.push('suggest-hint-text');
-        break;
-      case ColorType.kSuggestActionHigh:
-        classes.push('suggest-action-high');
-        break;
-      default:
-        break;
-    }
-    if (fragment.isBolded) {
-      classes.push('bolded');
-    }
-    return classes;
-  }
-
-  private createSpanWithClasses_(text: string, classes: string[]): Element {
-    const span = document.createElement('span');
-    if (classes.length) {
-      span.classList.add(...classes);
-    }
-    span.textContent = text;
-    return span;
-  }
-
-  /**
-   * Renders the text of `formattedString` based on its fragments. Each
-   * fragment styles the text from its `startIndex` up to the next fragment's
-   * `startIndex`, or to the end of the text for the last one.
-   * @return A <span> with <span> children for each styled substring.
-   */
-  private renderFormattedString_(formattedString: FormattedString): Element {
-    const {text, fragments} = formattedString;
-    const container = document.createElement('span');
-
-    // If no fragments are provided, render the entire text unstyled.
-    if (fragments.length === 0) {
-      container.appendChild(this.createSpanWithClasses_(text, []));
-      return container;
-    }
-
-    // If the first fragment doesn't start at 0, render the prefix text
-    // unstyled.
-    const firstFragment = fragments[0]!;
-    if (firstFragment.startIndex > 0) {
-      const prefix = text.substring(0, firstFragment.startIndex);
-      container.appendChild(this.createSpanWithClasses_(prefix, []));
-    }
-
-    fragments.forEach((fragment, index) => {
-      const nextStartIndex = index + 1 < fragments.length ?
-          fragments[index + 1]!.startIndex :
-          text.length;
-      const subString = text.substring(fragment.startIndex, nextStartIndex);
-      const classes = this.getFragmentCssClasses_(fragment);
-      container.appendChild(this.createSpanWithClasses_(subString, classes));
-    });
-
-    return container;
   }
 
   private getMatchSecondaryText_(): string {

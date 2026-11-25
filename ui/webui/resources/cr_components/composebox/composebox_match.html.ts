@@ -22,12 +22,12 @@ export function getHtml(this: ComposeboxMatchElement) {
     ` : ''}
   </div>
   <div id="textContainer" part="match-text-container">
-    <span id="primaryText" part="match-primary-text">
-      ${this.match.suggestTemplate.primaryText.text}
+    <span id="primaryText" part="match-primary-text"
+        .innerHTML="${this.primaryTextHtml_}">
     </span>
     ${this.secondaryTextPlacement === 'below-primary-text' ? html`
-      <span id="secondaryText" part="match-secondary-text">
-        ${this.match.suggestTemplate.secondaryText?.text ?? ''}
+      <span id="secondaryText" part="match-secondary-text"
+          .innerHTML="${this.secondaryTextHtml_}">
       </span>
     ` : ''}
   </div>

@@ -27,6 +27,7 @@ build_webui("build") {
     "constants.ts",
     "drag_drop_handler.ts",
     "drag_drop_host.ts",
+    "formatted_string.ts",
     "mojo_plural_string_proxy.ts",
     "recording_wave.html.ts",
     "recording_wave.ts",

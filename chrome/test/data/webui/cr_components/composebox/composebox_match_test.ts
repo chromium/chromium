@@ -9,11 +9,11 @@ import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/com
 import {BaseLayout} from 'chrome://resources/cr_components/composebox/composebox_match.js';
 import type {ComposeboxMatchElement} from 'chrome://resources/cr_components/composebox/composebox_match.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {createAutocompleteMatch} from 'chrome://resources/cr_components/search/autocomplete_match_utils.js';
+import {createAutocompleteMatch, createFormattedString} from 'chrome://resources/cr_components/search/autocomplete_match_utils.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {ActionIconType, BadgeType, SecondaryTextPlacement, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {ActionIconType, BadgeType, ColorType, SecondaryTextPlacement, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {createFormattedStringFragment, createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -58,6 +58,11 @@ suite('ComposeboxMatch', () => {
 
     const contents = matchElement.$.textContainer;
     assertEquals('test contents', contents.textContent.trim());
+
+    // Text without fragments gets one span without a class attribute.
+    const span = matchElement.shadowRoot.querySelector('#primaryText span');
+    assertTrue(!!span);
+    assertFalse(span.hasAttribute('class'));
   });
 
   test('renders the secondary text below the primary text', async () => {
@@ -109,6 +114,84 @@ suite('ComposeboxMatch', () => {
     assertEquals('', getTextContent(matchElement, '#secondaryText'));
   });
 
+  test('styles the match text from its fragments', async () => {
+    matchElement.match = createAutocompleteMatch({
+      suggestTemplate: createSuggestTemplateInfo({
+        primaryText: createFormattedString(
+            'hello world',
+            [
+              createFormattedStringFragment({isBolded: true}),
+              createFormattedStringFragment(
+                  {startIndex: 5, color: ColorType.kSuggestActionHigh}),
+            ]),
+        secondaryText: createFormattedString(
+            'subtitle',
+            [
+              createFormattedStringFragment(
+                  {color: ColorType.kSuggestHintText}),
+            ]),
+        secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
+      }),
+    });
+    await microtasksFinished();
+
+    // Each fragment becomes a span with the classes for its color and weight.
+    const primarySpans =
+        matchElement.shadowRoot.querySelectorAll('#primaryText span');
+    assertEquals(2, primarySpans.length);
+    assertEquals('hello', primarySpans[0]!.textContent);
+    assertEquals('bolded', primarySpans[0]!.className);
+    assertStyle(primarySpans[0]!, 'font-weight', '600');
+    assertEquals(' world', primarySpans[1]!.textContent);
+    assertEquals('suggest-action-high', primarySpans[1]!.className);
+    // No whitespace is rendered between the fragments.
+    const primaryText = matchElement.shadowRoot.querySelector('#primaryText');
+    assertTrue(!!primaryText);
+    assertEquals('hello world', primaryText.textContent);
+
+    const secondarySpans =
+        matchElement.shadowRoot.querySelectorAll('#secondaryText span');
+    assertEquals(1, secondarySpans.length);
+    assertEquals('subtitle', secondarySpans[0]!.textContent);
+    assertEquals('suggest-hint-text', secondarySpans[0]!.className);
+  });
+
+  test('colors hint and action high text', async () => {
+    matchElement.style.setProperty(
+        '--color-searchbox-results-foreground-dimmed', 'rgb(0, 128, 0)');
+    matchElement.style.setProperty(
+        '--color-searchbox-results-dim-selected', 'rgb(0, 64, 0)');
+    matchElement.style.setProperty(
+        '--color-searchbox-results-url', 'rgb(0, 0, 255)');
+    matchElement.style.setProperty(
+        '--color-searchbox-results-url-selected', 'rgb(0, 0, 128)');
+    // Check hint text in the primary text, since the secondary text is dimmed
+    // even without it.
+    matchElement.match = createAutocompleteMatch({
+      suggestTemplate: createSuggestTemplateInfo({
+        primaryText: createFormattedString(
+            'hint action',
+            [
+              createFormattedStringFragment(
+                  {color: ColorType.kSuggestHintText}),
+              createFormattedStringFragment(
+                  {startIndex: 5, color: ColorType.kSuggestActionHigh}),
+            ]),
+      }),
+    });
+    await microtasksFinished();
+
+    const spans = matchElement.shadowRoot.querySelectorAll('#primaryText span');
+    assertEquals(2, spans.length);
+    assertStyle(spans[0]!, 'color', 'rgb(0, 128, 0)');
+    assertStyle(spans[1]!, 'color', 'rgb(0, 0, 255)');
+
+    matchElement.toggleAttribute('selected', true);
+    await microtasksFinished();
+    assertStyle(spans[0]!, 'color', 'rgb(0, 64, 0)');
+    assertStyle(spans[1]!, 'color', 'rgb(0, 0, 128)');
+  });
+
   test('does not apply two-row styling to rich image matches', async () => {
     // SearchboxHandler places the secondary text below the primary text for
     // every match that has an image, which is also what makes a match
@@ -138,6 +221,47 @@ suite('ComposeboxMatch', () => {
         matchElement.shadowRoot.querySelector('#secondaryText');
     assertTrue(!!secondaryText);
     assertStyle(secondaryText, 'display', 'none');
+  });
+
+  test('does not apply fragment styles to rich image matches', async () => {
+    matchElement.style.setProperty(
+        '--cr-composebox-image-card-text-color', 'rgb(1, 2, 3)');
+    // Colors that the fragments would give the text in a text row.
+    matchElement.style.setProperty(
+        '--color-searchbox-results-foreground-dimmed', 'rgb(0, 128, 0)');
+    matchElement.style.setProperty(
+        '--color-searchbox-results-url', 'rgb(0, 0, 255)');
+    matchElement.richImageSuggestionsEnabled = true;
+    matchElement.match = createAutocompleteMatch({
+      suggestTemplate: createSuggestTemplateInfo({
+        primaryText: createFormattedString(
+            'bold hint action',
+            [
+              createFormattedStringFragment({isBolded: true}),
+              createFormattedStringFragment(
+                  {startIndex: 5, color: ColorType.kSuggestHintText}),
+              createFormattedStringFragment(
+                  {startIndex: 10, color: ColorType.kSuggestActionHigh}),
+            ]),
+        image: {url: 'https://example.com/image.png', dominantColor: ''},
+        style: SuggestStyle.kRichImage,
+      }),
+    });
+    await microtasksFinished();
+    assertEquals('image', matchElement.getAttribute('base-layout'));
+
+    // The text keeps the weight and color of the image card, also when
+    // selected.
+    const spans = matchElement.shadowRoot.querySelectorAll('#primaryText span');
+    assertEquals(3, spans.length);
+    for (const selected of [false, true]) {
+      matchElement.toggleAttribute('selected', selected);
+      await microtasksFinished();
+      for (const span of spans) {
+        assertStyle(span, 'font-weight', '400');
+        assertStyle(span, 'color', 'rgb(1, 2, 3)');
+      }
+    }
   });
 
   test('clamps the primary text of two-row matches', async () => {

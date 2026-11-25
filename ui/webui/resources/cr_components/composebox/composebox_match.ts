@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {createAutocompleteMatch} from '//resources/cr_components/search/autocomplete_match_utils.js';
+import {formattedStringToHtml} from '//resources/cr_components/search/formatted_string.js';
 import {getUrlForCss, resolveSchemeRelativeUrl} from '//resources/js/icon.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -72,6 +73,13 @@ export class ComposeboxMatchElement extends CrLitElement {
       },
 
       removeButtonTitle_: {type: String},
+
+      /** Rendered primary text based on autocomplete provided styling. */
+      primaryTextHtml_: {type: String},
+
+      /** Rendered secondary text based on autocomplete provided styling. */
+      secondaryTextHtml_: {type: String},
+
       richImageSuggestionsEnabled: {type: Boolean},
       suggestStyle: {
         type: String,
@@ -110,6 +118,10 @@ export class ComposeboxMatchElement extends CrLitElement {
   private searchboxHandler_: SearchboxPageHandlerRemote;
   protected accessor removeButtonTitle_: string =
       loadTimeData.getString('removeSuggestion');
+  protected accessor primaryTextHtml_: TrustedHTML =
+      window.trustedTypes!.emptyHTML;
+  protected accessor secondaryTextHtml_: TrustedHTML =
+      window.trustedTypes!.emptyHTML;
 
   get isRichImage(): boolean {
     return this.suggestStyle === 'rich-image';
@@ -181,6 +193,14 @@ export class ComposeboxMatchElement extends CrLitElement {
       this.suggestStyle = this.computeSuggestStyle_();
       this.baseLayout = this.computeBaseLayout_();
       this.secondaryTextPlacement = this.computeSecondaryTextPlacement_();
+    }
+    if (changedProperties.has('match')) {
+      this.primaryTextHtml_ =
+          formattedStringToHtml(this.match.suggestTemplate.primaryText);
+      const secondaryText = this.match.suggestTemplate.secondaryText;
+      this.secondaryTextHtml_ = secondaryText ?
+          formattedStringToHtml(secondaryText) :
+          window.trustedTypes!.emptyHTML;
     }
   }
 
