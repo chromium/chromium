@@ -11,28 +11,12 @@
 
 namespace enterprise_isolated_mode {
 
-class IsolatedModeSettingsService;
-
 // Scoped test helper to override
-// `IsolatedModeSettingsService::ReplacesIncognito()`.
-//
-// Two modes are supported:
-// 1. Default override (for services created while this object is in scope):
-//      ScopedIsolatedModeOverrideForTesting scoped_isolated_mode;
-// 2. Per-instance override (mutates a specific `IsolatedModeSettingsService`
-//    instance and restores its previous value when going out of scope;
-//    `service` must outlive this object):
-//      ScopedIsolatedModeOverrideForTesting scoped_isolated_mode(&service);
+// `IsolatedModeSettingsService::ReplacesIncognito()` for services created while
+// this object is in scope. Restores the previous override on destruction.
 class [[maybe_unused, nodiscard]] ScopedIsolatedModeOverrideForTesting {
  public:
   explicit ScopedIsolatedModeOverrideForTesting(bool replaces_incognito = true);
-  explicit ScopedIsolatedModeOverrideForTesting(
-      IsolatedModeSettingsService* service,
-      bool replaces_incognito = true);
-
-  // Prevent other pointer types from implicitly converting to `bool`.
-  template <typename T>
-  explicit ScopedIsolatedModeOverrideForTesting(T*) = delete;
 
   ScopedIsolatedModeOverrideForTesting(
       const ScopedIsolatedModeOverrideForTesting&) = delete;
@@ -41,8 +25,7 @@ class [[maybe_unused, nodiscard]] ScopedIsolatedModeOverrideForTesting {
   ~ScopedIsolatedModeOverrideForTesting();
 
  private:
-  std::optional<base::AutoReset<std::optional<bool>>> default_override_;
-  std::optional<base::AutoReset<bool>> service_override_;
+  base::AutoReset<std::optional<bool>> default_override_;
 };
 
 }  // namespace enterprise_isolated_mode

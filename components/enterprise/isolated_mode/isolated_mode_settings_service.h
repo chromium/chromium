@@ -40,7 +40,7 @@ class IsolatedModeSettingsService : public KeyedService {
   static base::AutoReset<std::optional<bool>>
   SetDefaultReplacesIncognitoForTesting(bool replaces_incognito);
 
-  bool replaces_incognito_;
+  const bool replaces_incognito_;
   const bool milestone2_enabled_;
 };
 

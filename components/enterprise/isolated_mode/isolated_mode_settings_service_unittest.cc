@@ -111,8 +111,7 @@ TEST_F(IsolatedModeSettingsServiceTest, Milestone2EnabledIgnoresPrefService) {
   EXPECT_TRUE(service.Milestone2Enabled());
 }
 
-TEST_F(IsolatedModeSettingsServiceTest,
-       ScopedIsolatedModeOverrideForTestingPreCreation) {
+TEST_F(IsolatedModeSettingsServiceTest, ScopedIsolatedModeOverride) {
   feature_list_.InitAndDisableFeature(kEnableEnterpriseIsolatedMode);
   {
     // Default override enables Isolated Mode for newly created services even
@@ -146,32 +145,6 @@ TEST_F(IsolatedModeSettingsServiceTest,
   IsolatedModeSettingsService service_after_reset(
       &pref_service_, version_info::Channel::STABLE);
   EXPECT_FALSE(service_after_reset.ReplacesIncognito());
-}
-
-TEST_F(IsolatedModeSettingsServiceTest,
-       ScopedIsolatedModeOverrideForTestingServiceOverride) {
-  IsolatedModeSettingsService service(&pref_service_,
-                                      version_info::Channel::STABLE);
-  ASSERT_FALSE(service.ReplacesIncognito());
-
-  {
-    // Overrides `ReplacesIncognito()` on the existing service instance.
-    ScopedIsolatedModeOverrideForTesting scoped_enable(&service);
-    EXPECT_TRUE(service.ReplacesIncognito());
-
-    {
-      // Nested per-instance override temporarily flips the state back to false.
-      ScopedIsolatedModeOverrideForTesting scoped_disable(&service,
-        /*replaces_incognito=*/false);
-      EXPECT_FALSE(service.ReplacesIncognito());
-    }
-
-    // Exiting the inner scope restores the outer override on `service`.
-    EXPECT_TRUE(service.ReplacesIncognito());
-  }
-
-  // Exiting the outer scope restores `service`'s original cached value.
-  EXPECT_FALSE(service.ReplacesIncognito());
 }
 
 }  // namespace enterprise_isolated_mode
