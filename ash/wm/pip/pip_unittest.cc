@@ -19,6 +19,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/pip/pip_test_utils.h"
@@ -29,6 +30,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -116,6 +118,54 @@ TEST_F(PipTest, ActivatablePipWindow) {
   ASSERT_FALSE(widget->IsActive());
   widget->Activate();
   EXPECT_TRUE(widget->IsActive());
+}
+
+// Tests that an activatable PiP window (e.g. Document PiP) is in the window
+// cycle list but not in the MRU window list nor overview, and that a non
+// activatable PiP window (e.g. video PiP) is in none of them.
+TEST_F(PipTest, ActivatablePipWindowInWindowCycleList) {
+  auto widget = CreateWidget(Shell::GetPrimaryRootWindow());
+  widget->Show();
+
+  const WMEvent pip_event(WM_EVENT_PIP);
+  auto video_pip_widget = CreateWidget(Shell::GetPrimaryRootWindow());
+  aura::Window* video_pip_window = video_pip_widget->GetNativeWindow();
+  // PiP windows are always on top, which places them in the PiP container.
+  video_pip_window->SetProperty(aura::client::kZOrderingKey,
+                                ui::ZOrderLevel::kFloatingWindow);
+  WindowState::Get(video_pip_window)->OnWMEvent(&pip_event);
+  video_pip_widget->Show();
+  ASSERT_EQ(kShellWindowId_PipContainer, video_pip_window->parent()->GetId());
+
+  auto pip_widget = CreateWidget(Shell::GetPrimaryRootWindow());
+  aura::Window* pip_window = pip_widget->GetNativeWindow();
+  pip_window->SetProperty(kPipParamsKey, PipParams{.activatable = true});
+  pip_window->SetProperty(aura::client::kZOrderingKey,
+                          ui::ZOrderLevel::kFloatingWindow);
+  WindowState::Get(pip_window)->OnWMEvent(&pip_event);
+  pip_widget->ShowInactive();
+  ASSERT_EQ(kShellWindowId_PipContainer, pip_window->parent()->GetId());
+  ASSERT_FALSE(pip_widget->IsActive());
+
+  // The PiP window is in the list even if it has never been activated.
+  auto* mru_window_tracker = Shell::Get()->mru_window_tracker();
+  for (DesksMruType desks_mru_type : {kActiveDesk, kAllDesks}) {
+    EXPECT_THAT(
+        mru_window_tracker->BuildWindowForCycleWithPipList(desks_mru_type),
+        testing::ElementsAre(widget->GetNativeWindow(), pip_window));
+  }
+
+  pip_widget->Activate();
+  ASSERT_TRUE(pip_widget->IsActive());
+  for (DesksMruType desks_mru_type : {kActiveDesk, kAllDesks}) {
+    EXPECT_THAT(
+        mru_window_tracker->BuildWindowForCycleWithPipList(desks_mru_type),
+        testing::ElementsAre(pip_window, widget->GetNativeWindow()));
+    EXPECT_THAT(mru_window_tracker->BuildMruWindowList(desks_mru_type),
+                testing::ElementsAre(widget->GetNativeWindow()));
+  }
+  EXPECT_TRUE(window_util::ShouldExcludeForOverview(pip_window));
+  EXPECT_TRUE(window_util::ShouldExcludeForOverview(video_pip_window));
 }
 
 // Like other windows, the PiP window receives events just outside of its

@@ -109,10 +109,12 @@ bool CanIncludeWindowInCycleList(aura::Window* window) {
 // of single-activity PIP, the PIP window is the same as the original window.)
 // For multi-activity PIP, the non-PIP activity is included in the list.
 // See the comment for |kPipOriginalWindowKey| for more detail.
+// An activatable PIP window (e.g. Document PIP) is also included in the list.
 bool CanIncludeWindowInCycleWithPipList(aura::Window* window) {
   return CanIncludeWindowInCycleList(window) ||
          (window_util::IsArcPipWindow(window) &&
-          window->GetProperty(ash::kPipOriginalWindowKey));
+          window->GetProperty(ash::kPipOriginalWindowKey)) ||
+         (WindowState::Get(window)->IsPip() && wm::CanActivateWindow(window));
 }
 
 // Returns a list of windows ordered by their usage recency such that the most
@@ -280,7 +282,8 @@ WindowList MruWindowTracker::BuildWindowForCycleList(
 WindowList MruWindowTracker::BuildWindowForCycleWithPipList(
     DesksMruType desks_mru_type) const {
   return BuildWindowListInternal(&mru_windows_, desks_mru_type,
-                                 CanIncludeWindowInCycleWithPipList);
+                                 CanIncludeWindowInCycleWithPipList,
+                                 /*can_include_excluded_windows=*/true);
 }
 
 void MruWindowTracker::SetIgnoreActivations(bool ignore) {

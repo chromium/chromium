@@ -13,6 +13,7 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_event.h"
 #include "chromeos/ui/base/app_types.h"
 #include "components/app_restore/window_properties.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -82,6 +83,36 @@ TEST_F(MruWindowTrackerTest, ExcludedWindowInAppWindowList) {
               testing::ElementsAre(w2.get()));
   EXPECT_THAT(mru_window_tracker()->BuildAppWindowList(kAllDesks),
               testing::ElementsAre(w1.get(), w2.get()));
+}
+
+// Tests that a single-activity ARC PIP window, which is excluded from the MRU
+// list, stays in the window cycle list at its MRU position.
+TEST_F(MruWindowTrackerTest, ArcPipWindowInCycleWithPipList) {
+  std::unique_ptr<aura::Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w2 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> arc =
+      CreateWindowWithAppType(chromeos::AppType::ARC_APP);
+  arc->SetProperty(kPipOriginalWindowKey, true);
+  arc->SetProperty(aura::client::kZOrderingKey,
+                   ui::ZOrderLevel::kFloatingWindow);
+  wm::ActivateWindow(w1.get());
+  wm::ActivateWindow(w2.get());
+  wm::ActivateWindow(arc.get());
+
+  // Entering PIP deactivates the window and activates `w2`.
+  const WMEvent enter_pip(WM_EVENT_PIP);
+  WindowState::Get(arc.get())->OnWMEvent(&enter_pip);
+  ASSERT_TRUE(WindowState::Get(arc.get())->IsPip());
+  ASSERT_TRUE(arc->GetProperty(kExcludeInMruKey));
+  ASSERT_EQ(kShellWindowId_PipContainer, arc->parent()->GetId());
+  ASSERT_TRUE(wm::IsActiveWindow(w2.get()));
+
+  EXPECT_THAT(mru_window_tracker()->BuildWindowForCycleWithPipList(kAllDesks),
+              testing::ElementsAre(w2.get(), arc.get(), w1.get()));
+  EXPECT_THAT(mru_window_tracker()->BuildWindowForCycleWithPipList(kActiveDesk),
+              testing::ElementsAre(w2.get(), arc.get(), w1.get()));
+  EXPECT_THAT(mru_window_tracker()->BuildWindowForCycleList(kActiveDesk),
+              testing::ElementsAre(w2.get(), w1.get()));
 }
 
 // Tests that windows being dragged are only in the WindowList once.

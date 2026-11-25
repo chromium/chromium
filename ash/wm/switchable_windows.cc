@@ -43,6 +43,8 @@ std::vector<aura::Window*> GetSwitchableContainersForRoot(
     containers.push_back(desks_util::GetActiveDeskContainerForRoot(root));
     containers.push_back(
         root->GetChildById(kShellWindowId_AlwaysOnTopContainer));
+    // PIP windows do not belong to a desk.
+    containers.push_back(root->GetChildById(kShellWindowId_PipContainer));
     return containers;
   }
 
