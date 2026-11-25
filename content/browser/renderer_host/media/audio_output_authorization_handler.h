@@ -6,9 +6,11 @@
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_AUDIO_OUTPUT_AUTHORIZATION_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +28,13 @@ class AudioSystem;
 }
 
 namespace content {
+
+// Kill switch for disallowing non-default/session-matched audio output device
+// authorization and audio output stream acquisition during prerendering, by
+// canceling prerendering. When disabled, such device authorization requests are
+// still rejected (without canceling prerendering), and output streams are
+// created as before.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDisallowAudioOutputDuringPrerendering);
 
 // This class, which lives on the IO thread, handles the logic of an IPC device
 // request from the renderer. It checks which device to use (in case of using
@@ -87,15 +96,18 @@ class CONTENT_EXPORT AudioOutputAuthorizationHandler {
   // Helper class for recording traces.
   class TraceScope;
 
-  void HashDeviceId(std::unique_ptr<TraceScope> trace_scope,
-                    AuthorizationCompletedCallback cb,
-                    const std::string& raw_device_id,
-                    const MediaDeviceSaltAndOrigin& salt_and_origin) const;
+  void HashDeviceId(
+      std::unique_ptr<TraceScope> trace_scope,
+      AuthorizationCompletedCallback cb,
+      const std::string& raw_device_id,
+      std::optional<MediaDeviceSaltAndOrigin> salt_and_origin) const;
 
+  // `salt_and_origin` is std::nullopt if the frame no longer exists or is
+  // prerendering, in which case output devices can't be authorized.
   void AccessChecked(std::unique_ptr<TraceScope> trace_scope,
                      AuthorizationCompletedCallback cb,
                      const std::string& device_id,
-                     MediaDeviceSaltAndOrigin salt_and_origin,
+                     std::optional<MediaDeviceSaltAndOrigin> salt_and_origin,
                      bool has_access) const;
 
   void TranslateDeviceID(std::unique_ptr<TraceScope> trace_scope,

@@ -185,8 +185,11 @@ enum class PrerenderFinalStatus {
   kPrefetchFailedCrossOriginSubframe = 91,
   // Cancelled when an overlapping or unexpected main-frame navigation occurs.
   kUnexpectedMainFrameNavigation = 92,
+  // Non-default audio output device authorization or audio output stream
+  // creation was requested while prerendering.
+  kAudioOutput = 93,
 
-  kMaxValue = kUnexpectedMainFrameNavigation,
+  kMaxValue = kAudioOutput,
 };
 // LINT.ThenChange(
 //     //third_party/blink/public/devtools_protocol/domains/Preload.pdl,

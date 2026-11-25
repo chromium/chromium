@@ -58,6 +58,11 @@ class CONTENT_EXPORT RenderFrameAudioOutputStreamFactory final {
   void SetAuthorizedDeviceIdForGlobalMediaControls(
       std::string hashed_device_id);
 
+  // Called when the prerendering frame is about to be activated, lifting the
+  // prerendering restriction on output stream creation and creating any
+  // stream requests that were deferred while prerendering.
+  void ReleaseRestriction();
+
   size_t CurrentNumberOfProvidersForTesting();
 
  private:

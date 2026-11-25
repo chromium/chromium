@@ -1302,62 +1302,6 @@ TEST_F(MediaStreamManagerTest, VideoDeviceIdToSessionId) {
           .is_empty());
 }
 
-TEST_F(MediaStreamManagerTest, AudioOutputAuthorizationUsesBoundFrame) {
-  media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating([]() {
-    return std::make_unique<FakeMediaStreamUIProxy>(
-        /*tests_use_fake_render_frame_hosts=*/true);
-  }));
-
-  const blink::MediaStreamDevice audio_device = CreateOrSearchAudioDeviceStream(
-      blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({}));
-  ASSERT_TRUE(audio_device.session_id());
-
-  const GlobalRenderFrameHostId other_frame(
-      kRenderFrameHostId.child_id, kRenderFrameHostId.frame_routing_id + 1);
-  const GlobalRenderFrameHostId other_process(
-      ChildProcessId(kRenderFrameHostId.child_id.value() + 1),
-      kRenderFrameHostId.frame_routing_id);
-
-  {
-    AudioOutputAuthorizationHandler handler(
-        audio_system_.get(), media_stream_manager_.get(), kRenderFrameHostId);
-    base::test::TestFuture<media::OutputDeviceStatus,
-                           const media::AudioParameters&, const std::string&,
-                           const std::string&>
-        authorization;
-    handler.RequestDeviceAuthorization(audio_device.session_id(), std::string(),
-                                       authorization.GetCallback());
-    // The selected device may be either the default device or an output device
-    // matched to the audio input. Only authorization is relevant here.
-    EXPECT_EQ(authorization.Get<0>(), media::OUTPUT_DEVICE_STATUS_OK);
-  }
-
-  const auto expect_not_authorized =
-      [&](GlobalRenderFrameHostId render_frame_host_id) {
-        SCOPED_TRACE(testing::Message()
-                     << "child_id=" << render_frame_host_id.child_id.value()
-                     << ", frame_routing_id="
-                     << render_frame_host_id.frame_routing_id);
-        AudioOutputAuthorizationHandler handler(audio_system_.get(),
-                                                media_stream_manager_.get(),
-                                                render_frame_host_id);
-        base::test::TestFuture<media::OutputDeviceStatus,
-                               const media::AudioParameters&,
-                               const std::string&, const std::string&>
-            authorization;
-        handler.RequestDeviceAuthorization(audio_device.session_id(),
-                                           std::string(),
-                                           authorization.GetCallback());
-        EXPECT_EQ(authorization.Get<0>(),
-                  media::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED);
-        EXPECT_EQ(authorization.Get<2>(), std::string());
-        EXPECT_EQ(authorization.Get<3>(), std::string());
-      };
-
-  expect_not_authorized(other_frame);
-  expect_not_authorized(other_process);
-}
-
 TEST_F(MediaStreamManagerTest, GenerateAndReuseStreamForAudioDevice) {
   media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating([]() {
     return std::make_unique<FakeMediaStreamUIProxy>(
@@ -2146,6 +2090,65 @@ class MediaStreamManagerTestWithWebContents : public MediaStreamManagerTest {
   raw_ptr<RenderFrameHost> render_frame_host_;
   GlobalRenderFrameHostId render_frame_host_id_;
 };
+
+TEST_F(MediaStreamManagerTestWithWebContents,
+       AudioOutputAuthorizationUsesBoundFrame) {
+  // The audio session is bound to a frame that exists. Whether the opened
+  // audio input has a matched output device depends on the audio hardware of
+  // the machine running the test. If it does, authorization looks up the frame
+  // to hash the output device ID, and is rejected if the frame does not exist.
+  const blink::MediaStreamDevice audio_device = CreateOrSearchAudioDeviceStream(
+      blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
+      render_frame_host_id_);
+  ASSERT_TRUE(audio_device.session_id());
+
+  const GlobalRenderFrameHostId other_frame(
+      render_frame_host_id_.child_id,
+      render_frame_host_id_.frame_routing_id + 1);
+  const GlobalRenderFrameHostId other_process(
+      ChildProcessId(render_frame_host_id_.child_id.value() + 1),
+      render_frame_host_id_.frame_routing_id);
+
+  {
+    AudioOutputAuthorizationHandler handler(audio_system_.get(),
+                                            media_stream_manager_.get(),
+                                            render_frame_host_id_);
+    base::test::TestFuture<media::OutputDeviceStatus,
+                           const media::AudioParameters&, const std::string&,
+                           const std::string&>
+        authorization;
+    handler.RequestDeviceAuthorization(audio_device.session_id(), std::string(),
+                                       authorization.GetCallback());
+    // The selected device may be either the default device or an output device
+    // matched to the audio input. Only authorization is relevant here.
+    EXPECT_EQ(authorization.Get<0>(), media::OUTPUT_DEVICE_STATUS_OK);
+  }
+
+  const auto expect_not_authorized =
+      [&](GlobalRenderFrameHostId render_frame_host_id) {
+        SCOPED_TRACE(testing::Message()
+                     << "child_id=" << render_frame_host_id.child_id.value()
+                     << ", frame_routing_id="
+                     << render_frame_host_id.frame_routing_id);
+        AudioOutputAuthorizationHandler handler(audio_system_.get(),
+                                                media_stream_manager_.get(),
+                                                render_frame_host_id);
+        base::test::TestFuture<media::OutputDeviceStatus,
+                               const media::AudioParameters&,
+                               const std::string&, const std::string&>
+            authorization;
+        handler.RequestDeviceAuthorization(audio_device.session_id(),
+                                           std::string(),
+                                           authorization.GetCallback());
+        EXPECT_EQ(authorization.Get<0>(),
+                  media::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED);
+        EXPECT_EQ(authorization.Get<2>(), std::string());
+        EXPECT_EQ(authorization.Get<3>(), std::string());
+      };
+
+  expect_not_authorized(other_frame);
+  expect_not_authorized(other_process);
+}
 
 TEST_F(MediaStreamManagerTestWithWebContents,
        GetRawDeviceIdsOpenedForFrame_AudioCapture) {
