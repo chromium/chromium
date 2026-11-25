@@ -4,8 +4,14 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 
+#include <algorithm>
+#include <string>
+#include <string_view>
+
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "ui/base/l10n/l10n_util.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(base::Uuid*)
@@ -21,19 +27,17 @@ TabGroupMenuAction::TabGroupMenuAction(const TabGroupMenuAction& action) =
     default;
 TabGroupMenuAction::~TabGroupMenuAction() = default;
 
-std::u16string TabGroupMenuUtils::GetMenuTextForGroup(
-    const tab_groups::SavedTabGroup& group) {
-  return group.title().empty()
-             ? l10n_util::GetPluralStringFUTF16(
-                   IDS_SAVED_TAB_GROUP_TABS_COUNT,
-                   static_cast<int>(group.saved_tabs().size()))
-             : group.title();
+std::u16string TabGroupMenuUtils::GetMenuTextForGroup(std::u16string_view title,
+                                                      size_t tab_count) {
+  return title.empty()
+             ? l10n_util::GetPluralStringFUTF16(IDS_SAVED_TAB_GROUP_TABS_COUNT,
+                                                static_cast<int>(tab_count))
+             : std::u16string(title);
 }
 
-std::u16string TabGroupMenuUtils::GetMenuTextForTab(
-    const tab_groups::SavedTabGroupTab& tab) {
-  return tab.title().empty() ? base::UTF8ToUTF16(tab.url().spec())
-                             : tab.title();
+std::u16string TabGroupMenuUtils::GetMenuTextForTab(std::u16string_view title,
+                                                    const GURL& url) {
+  return title.empty() ? base::UTF8ToUTF16(url.spec()) : std::u16string(title);
 }
 
 std::vector<base::Uuid>

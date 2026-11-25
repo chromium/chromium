@@ -173,7 +173,8 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel(
         features::IsRoundedIconsEnabled() ? kCircleFilledIcon
                                           : kTabGroupOldIcon,
         color_provider->GetColor(color_id), gfx::kFaviconSize);
-    auto title = tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(*tab_group);
+    auto title = tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(
+        tab_group->title(), tab_group->saved_tabs().size());
     // For saved tab group items, use the indice in `sorted_tab_groups_` as the
     // command ids.
     const int command_id = GenerateTabGroupCommandID(i);

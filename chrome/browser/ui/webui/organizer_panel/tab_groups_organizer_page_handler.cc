@@ -108,8 +108,9 @@ organizer_panel::mojom::TabGroupPtr CreateMojoTabGroup(
     const tab_groups::SavedTabGroup& group) {
   auto tab_group = organizer_panel::mojom::TabGroup::New();
   tab_group->id = group.saved_guid().AsLowercaseString();
-  tab_group->title = base::UTF16ToUTF8(
-      tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(group));
+  tab_group->title =
+      base::UTF16ToUTF8(tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(
+          group.title(), group.saved_tabs().size()));
   tab_group->color = group.color();
   tab_group->is_open = group.local_group_id().has_value();
   tab_group->last_active_elapsed_text =
@@ -122,8 +123,7 @@ organizer_panel::mojom::TabGroupPtr CreateMojoTabGroup(const TabGroup* group) {
   tab_group->id = tab_groups::LocalTabGroupIDToString(group->id());
   tab_group->title =
       base::UTF16ToUTF8(tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(
-          tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-              group->id())));
+          group->visual_data()->title(), group->tab_count()));
   tab_group->color = group->visual_data()->color();
   tab_group->is_open = true;
   tab_group->last_active_elapsed_text =

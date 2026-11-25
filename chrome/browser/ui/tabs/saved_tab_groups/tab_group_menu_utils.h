@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_TAB_GROUP_MENU_UTILS_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_TAB_GROUP_MENU_UTILS_H_
 
+#include <cstddef>
+#include <string>
+#include <string_view>
 #include <variant>
+#include <vector>
 
 #include "base/uuid.h"
-#include "components/saved_tab_groups/public/saved_tab_group.h"
-#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "ui/base/class_property.h"
 #include "url/gurl.h"
@@ -60,11 +62,11 @@ enum class TabGroupMenuContext {
 
 class TabGroupMenuUtils {
  public:
-  static std::u16string GetMenuTextForGroup(
-      const tab_groups::SavedTabGroup& group);
+  static std::u16string GetMenuTextForGroup(std::u16string_view title,
+                                            size_t tab_count);
 
-  static std::u16string GetMenuTextForTab(
-      const tab_groups::SavedTabGroupTab& tab);
+  static std::u16string GetMenuTextForTab(std::u16string_view title,
+                                          const GURL& url);
 
   // Returns sorted saved tab groups with the most recently created as the
   // first, filtering out empty groups.

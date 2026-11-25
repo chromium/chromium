@@ -29,30 +29,17 @@ class TabGroupMenuUtilsTest : public testing::Test {
 };
 
 TEST_F(TabGroupMenuUtilsTest, GetMenuTextForGroup) {
-  SavedTabGroup group_with_title(kGroupTitle1,
-                                 tab_groups::TabGroupColorId::kGrey, {});
-  EXPECT_EQ(kGroupTitle1,
-            TabGroupMenuUtils::GetMenuTextForGroup(group_with_title));
-
-  SavedTabGroup group_without_title(std::u16string(),
-                                    tab_groups::TabGroupColorId::kGrey, {});
-  SavedTabGroupTab tab(kTabUrl1, kTabTitle1, group_without_title.saved_guid(),
-                       /*position=*/0);
-  group_without_title.AddTabLocally(tab);
-  EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
-                IDS_SAVED_TAB_GROUP_TABS_COUNT,
-                static_cast<int>(group_without_title.saved_tabs().size())),
-            TabGroupMenuUtils::GetMenuTextForGroup(group_without_title));
+  EXPECT_EQ(kGroupTitle1, TabGroupMenuUtils::GetMenuTextForGroup(
+                              kGroupTitle1, /*tab_count=*/1));
+  EXPECT_EQ(l10n_util::GetPluralStringFUTF16(IDS_SAVED_TAB_GROUP_TABS_COUNT, 2),
+            TabGroupMenuUtils::GetMenuTextForGroup(u"", /*tab_count=*/2));
 }
 
 TEST_F(TabGroupMenuUtilsTest, GetMenuTextForTab) {
-  SavedTabGroupTab tab_with_title(kTabUrl1, kTabTitle1, {}, /*position=*/0);
-  EXPECT_EQ(kTabTitle1, TabGroupMenuUtils::GetMenuTextForTab(tab_with_title));
-
-  SavedTabGroupTab tab_without_title(kTabUrl1, std::u16string(), {},
-                                     /*position=*/0);
+  EXPECT_EQ(kTabTitle1,
+            TabGroupMenuUtils::GetMenuTextForTab(kTabTitle1, kTabUrl1));
   EXPECT_EQ(base::UTF8ToUTF16(kTabUrl1.spec()),
-            TabGroupMenuUtils::GetMenuTextForTab(tab_without_title));
+            TabGroupMenuUtils::GetMenuTextForTab(u"", kTabUrl1));
 }
 
 TEST_F(TabGroupMenuUtilsTest, GetGroupsForDisplaySortedByCreationTime) {

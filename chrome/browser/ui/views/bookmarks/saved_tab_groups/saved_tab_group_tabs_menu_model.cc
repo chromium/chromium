@@ -212,7 +212,8 @@ void STGTabsMenuModel::Build(
   for (size_t i = 0; i < tabs.size(); ++i) {
     const auto& tab = tabs.at(i);
     const std::u16string title =
-        tab_groups::TabGroupMenuUtils::GetMenuTextForTab(tab);
+        tab_groups::TabGroupMenuUtils::GetMenuTextForTab(tab.title(),
+                                                         tab.url());
     latest_command_id = get_next_command_id.Run();
     const ui::ImageModel image = favicon::GetDefaultFaviconModel(
         GetTabGroupBookmarkColorId(saved_group.color()));

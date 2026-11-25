@@ -82,7 +82,8 @@ void TabGroupDynamicMenu::BuildTabGroupsAction(
         tab_group_service->GetGroup(uuid);
 
     std::u16string group_title =
-        tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(*group);
+        tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(
+            group->title(), group->saved_tabs().size());
     ui::ImageModel group_icon = ui::ImageModel::FromVectorIcon(
         features::IsRoundedIconsEnabled() ? kCircleFilledIcon
                                           : kTabGroupOldIcon,
@@ -358,8 +359,8 @@ void TabGroupDynamicMenu::BuildTabGroupData(
   const auto& saved_tabs = group->saved_tabs();
   for (size_t i = 0; i < saved_tabs.size(); ++i) {
     const tab_groups::SavedTabGroupTab& tab = saved_tabs[i];
-    std::u16string tab_title =
-        tab_groups::TabGroupMenuUtils::GetMenuTextForTab(tab);
+    std::u16string tab_title = tab_groups::TabGroupMenuUtils::GetMenuTextForTab(
+        tab.title(), tab.url());
     ui::ImageModel tab_icon = favicon::GetDefaultFaviconModel(
         GetTabGroupBookmarkColorId(group->color()));
     GURL tab_url = tab.url();
