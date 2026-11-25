@@ -203,13 +203,14 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private LocationBarDataProvider.@Nullable AppInstalledDelegate mAppInstalledDelegate;
     private final Runnable mAppInstallationObserver = this::notifyAppInstallationStateChanged;
 
-    // notifyUrlChanged and notifySecurityStateChanged are usually called 3 times across a same
-    // document navigation. The first call is usually necessary, which updates the UrlBar to reflect
-    // the new url. All subsequent calls are spurious and can be avoided. This experiment involves
-    // using the flags below to short circuit all calls after the UrlBar has already been updated.
+    // notifyUrlChanged and notifySecurityStateChanged are usually called multiple times across a
+    // same-document navigation. The flags below short-circuit redundant subsequent calls once the
+    // UrlBar has already been updated, while still propagating notifySecurityStateChanged when the
+    // effective ConnectionSecurityLevel changes.
     private boolean mIsInSameDocNav;
     private boolean mAlreadyUpdatedUrlBarForSameDocNav;
     private boolean mAlreadyChangedSecurityStateForSameDocNav;
+    private @ConnectionSecurityLevel int mLastNotifiedSecurityLevel = ConnectionSecurityLevel.NONE;
 
     // Whether the URL returned in getUrlOfVisibleNavigationEntry() should match the trusted CDN
     // publisher URL, if any exists.
@@ -912,11 +913,13 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     public void notifySecurityStateChanged() {
-        if (mIsInSameDocNav && mAlreadyChangedSecurityStateForSameDocNav) {
+        @ConnectionSecurityLevel int securityLevel = getSecurityLevel();
+        if (mIsInSameDocNav
+                && mAlreadyChangedSecurityStateForSameDocNav
+                && securityLevel == mLastNotifiedSecurityLevel) {
             return;
         }
 
-        @ConnectionSecurityLevel int securityLevel = getSecurityLevel();
         if (securityLevel == ConnectionSecurityLevel.DANGEROUS) {
             recalculateFormattedUrls();
         }
@@ -925,6 +928,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             observer.onSecurityStateChanged();
         }
 
+        mLastNotifiedSecurityLevel = securityLevel;
         mAlreadyChangedSecurityStateForSameDocNav = mIsInSameDocNav;
     }
 
