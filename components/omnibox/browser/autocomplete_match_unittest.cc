@@ -41,8 +41,17 @@
 #include "third_party/omnibox_proto/suggest_inventory.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
+#endif
 
 using ScoringSignals = ::metrics::OmniboxScoringSignals;
 
@@ -1307,56 +1316,108 @@ TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
 }
 
 #if !BUILDFLAG(IS_IOS)
-TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
-  AutocompleteMatch match;
+namespace {
 
-  // Irrespective of match type, bookmark suggestions should have a non-empty
-  // icon.
-  EXPECT_FALSE(match.GetVectorIcon(/*is_bookmark=*/true).is_empty());
-
-  for (int type = 0;
-       type <= static_cast<int>(omnibox::AutocompleteMatchType::kMaxValue);
-       type++) {
-    match.type = static_cast<omnibox::AutocompleteMatchType>(type);
-
-    if (match.type == omnibox::AutocompleteMatchType::kStarterPack) {
-      // All STARTER_PACK suggestions should have non-empty vector icons.
-      for (int starter_pack_id = static_cast<int>(
-               template_url_starter_pack_data::StarterPackId::kBookmarks);
-           starter_pack_id !=
-           static_cast<int>(template_url_starter_pack_data::StarterPackId::
-                                kMaxStarterPackId);
-           starter_pack_id++) {
-        TemplateURLData turl_data;
-        turl_data.starter_pack_id = starter_pack_id;
-        TemplateURL turl(turl_data);
-        EXPECT_FALSE(
-            match.GetVectorIcon(/*is_bookmark=*/false, &turl).is_empty());
+bool HasVisiblePixels(const gfx::VectorIcon& icon) {
+  constexpr int kIconSizeDip = 24;
+  gfx::Canvas canvas(gfx::Size(kIconSizeDip, kIconSizeDip),
+                     /*image_scale=*/1.0f, /*is_opaque=*/false);
+  gfx::PaintVectorIcon(&canvas, icon, kIconSizeDip, SK_ColorBLACK);
+  const SkBitmap bitmap = canvas.GetBitmap();
+  for (int y = 0; y < bitmap.height(); ++y) {
+    for (int x = 0; x < bitmap.width(); ++x) {
+      if (SkColorGetA(bitmap.getColor(x, y)) != 0) {
+        return true;
       }
-    } else if (match.type ==
-                   omnibox::AutocompleteMatchType::kSearchSuggestTail ||
-               match.type ==
-                   omnibox::AutocompleteMatchType::kHistoryEmbeddingsAnswer ||
-               (match.type ==
-                    omnibox::AutocompleteMatchType::kNullResultMessage &&
-                !match.IsIphSuggestion())) {
-      // SEARCH_SUGGEST_TAIL and non-IPH NULL_RESULT_MESSAGE suggestions use an
-      // empty vector icon.
-      EXPECT_TRUE(match.GetVectorIcon(/*is_bookmark=*/false).is_empty());
-    } else {
-      // All other suggestion types should result in non-empty vector icons.
-      EXPECT_FALSE(match.GetVectorIcon(/*is_bookmark=*/false).is_empty());
     }
   }
+  return false;
+}
 
-  // When the match has a SuggestTemplateInfo, its icon should be set.
-  // This checks the full range to ensure any new additions get mapped.
-  match.suggest_template = omnibox::SuggestTemplateInfo();
-  for (int i = omnibox::SuggestTemplateInfo::IconType_MIN;
-       i <= omnibox::SuggestTemplateInfo::IconType_MAX; i++) {
-    match.suggest_template->set_type_icon(
-        static_cast<omnibox::SuggestTemplateInfo::IconType>(i));
-    EXPECT_FALSE(match.GetVectorIcon(false).is_empty());
+void ExpectVisibleVectorIcon(const gfx::VectorIcon& icon) {
+  ASSERT_FALSE(icon.is_empty());
+  EXPECT_TRUE(HasVisiblePixels(icon))
+      << (icon.name ? icon.name : "<unnamed vector icon>");
+}
+
+}  // namespace
+
+TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
+  for (bool rounded_icons : {false, true}) {
+    SCOPED_TRACE(rounded_icons ? "rounded icons enabled"
+                               : "rounded icons disabled");
+    base::test::ScopedFeatureList scoped_feature_list;
+    if (rounded_icons) {
+      scoped_feature_list.InitAndEnableFeature(features::kRoundedIcons);
+    } else {
+      scoped_feature_list.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kRoundedIcons,
+                                 features::kDesktopGlowUp});
+    }
+    EXPECT_EQ(features::IsRoundedIconsEnabled(), rounded_icons);
+
+    AutocompleteMatch match;
+
+    // Irrespective of match type, bookmark suggestions should have a non-empty
+    // icon.
+    {
+      SCOPED_TRACE("bookmark");
+      ExpectVisibleVectorIcon(match.GetVectorIcon(/*is_bookmark=*/true));
+    }
+
+    for (int type = 0;
+         type <= static_cast<int>(omnibox::AutocompleteMatchType::kMaxValue);
+         type++) {
+      match.type = static_cast<omnibox::AutocompleteMatchType>(type);
+
+      if (match.type == omnibox::AutocompleteMatchType::kStarterPack) {
+        // All STARTER_PACK suggestions should have non-empty vector icons.
+        for (int starter_pack_id = static_cast<int>(
+                 template_url_starter_pack_data::StarterPackId::kBookmarks);
+             starter_pack_id !=
+             static_cast<int>(template_url_starter_pack_data::StarterPackId::
+                                  kMaxStarterPackId);
+             starter_pack_id++) {
+          SCOPED_TRACE(testing::Message()
+                       << "starter_pack_id=" << starter_pack_id);
+          TemplateURLData turl_data;
+          turl_data.starter_pack_id = starter_pack_id;
+          TemplateURL turl(turl_data);
+          ExpectVisibleVectorIcon(
+              match.GetVectorIcon(/*is_bookmark=*/false, &turl));
+        }
+      } else if (match.type ==
+                     omnibox::AutocompleteMatchType::kSearchSuggestTail ||
+                 match.type ==
+                     omnibox::AutocompleteMatchType::kHistoryEmbeddingsAnswer ||
+                 (match.type ==
+                      omnibox::AutocompleteMatchType::kNullResultMessage &&
+                  !match.IsIphSuggestion())) {
+        // SEARCH_SUGGEST_TAIL and non-IPH NULL_RESULT_MESSAGE suggestions use
+        // an empty vector icon.
+        EXPECT_TRUE(match.GetVectorIcon(/*is_bookmark=*/false).is_empty())
+            << "match.type=" << type;
+      } else {
+        // All other suggestion types should result in non-empty vector icons.
+        SCOPED_TRACE(testing::Message() << "match.type=" << type);
+        ExpectVisibleVectorIcon(match.GetVectorIcon(/*is_bookmark=*/false));
+      }
+    }
+
+    // When the match has a SuggestTemplateInfo, its icon should be set and draw
+    // visible pixels inside its viewport bounds. This checks the full range to
+    // ensure any new additions get mapped and rasterize properly.
+    AutocompleteMatch template_match;
+    template_match.suggest_template = omnibox::SuggestTemplateInfo();
+    for (int i = omnibox::SuggestTemplateInfo::IconType_MIN;
+         i <= omnibox::SuggestTemplateInfo::IconType_MAX; i++) {
+      SCOPED_TRACE(testing::Message() << "IconType=" << i);
+      template_match.suggest_template->set_type_icon(
+          static_cast<omnibox::SuggestTemplateInfo::IconType>(i));
+      ExpectVisibleVectorIcon(
+          template_match.GetVectorIcon(/*is_bookmark=*/false));
+    }
   }
 }
 #endif
