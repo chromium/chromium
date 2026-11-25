@@ -9,8 +9,7 @@ import android.content.Context;
 import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 
@@ -76,33 +75,14 @@ public class ChromePopupWindow extends PopupWindow {
     public void showAtLocation(View parent, int gravity, int x, int y) {
         super.showAtLocation(parent, gravity, x, y);
         trackShowingPopup();
-        if (mAllowOverlapCaptionBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            View contentView = getContentView();
-            if (contentView != null) {
-                ViewParent decorView = contentView.getParent();
-                if (decorView instanceof View view) {
-                    ViewGroup.LayoutParams lp = view.getLayoutParams();
-                    if (lp instanceof WindowManager.LayoutParams wp) {
-                        // Passing 0 (empty bitmask) tells the WindowManager not to fit any system
-                        // insets for this window, allowing it to overlap the caption bar area.
-                        wp.setFitInsetsTypes(0);
-                        WindowManager wm =
-                                (WindowManager)
-                                        parent.getContext()
-                                                .getSystemService(Context.WINDOW_SERVICE);
-                        if (wm != null) {
-                            wm.updateViewLayout((View) decorView, wp);
-                        }
-                    }
-                }
-            }
-        }
+        maybeAllowOverlapCaptionBar(parent.getContext());
     }
 
     @Override
     public void showAsDropDown(View anchor, int xoff, int yoff, int gravity) {
         super.showAsDropDown(anchor, xoff, yoff, gravity);
         trackShowingPopup();
+        maybeAllowOverlapCaptionBar(anchor.getContext());
     }
 
     @Override
@@ -155,6 +135,29 @@ public class ChromePopupWindow extends PopupWindow {
         if (sShowingPopupsForTesting != null) {
             sShowingPopupsForTesting.removeIf(ref -> ref.get() == null || ref.get() == this);
             sShowingPopupsForTesting.add(new WeakReference<>(this));
+        }
+    }
+
+    private void maybeAllowOverlapCaptionBar(Context context) {
+        if (!mAllowOverlapCaptionBar
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+                || !isShowing()) {
+            return;
+        }
+        View contentView = getContentView();
+        if (contentView == null) return;
+        // PopupWindow wraps contentView in PopupBackgroundView when a background drawable is set,
+        // so walk to the root PopupDecorView that holds WindowManager.LayoutParams.
+        View decorView = contentView.getRootView();
+        if (decorView.getParent() != null
+                && decorView.getLayoutParams() instanceof WindowManager.LayoutParams wp) {
+            // Clear only captionBar() so the popup can overlap the desktop caption bar while still
+            // clamping against status bars, navigation bars / taskbar, and system overlays.
+            wp.setFitInsetsTypes(wp.getFitInsetsTypes() & ~WindowInsets.Type.captionBar());
+            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            if (wm != null) {
+                wm.updateViewLayout(decorView, wp);
+            }
         }
     }
 

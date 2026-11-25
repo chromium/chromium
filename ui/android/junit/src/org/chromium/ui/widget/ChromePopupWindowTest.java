@@ -6,12 +6,18 @@ package org.chromium.ui.widget;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import org.junit.After;
@@ -19,12 +25,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 import org.robolectric.util.ReflectionHelpers;
 import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.UiAndroidFeatures;
 
 /** Unit tests for {@link ChromePopupWindow}. */
@@ -127,6 +135,87 @@ public final class ChromePopupWindowTest {
         assertFalse(locationPopup.isShowing());
         assertFalse(dropdownPopup.isShowing());
         assertFalse(alreadyDismissedPopup.isShowing());
+    }
+
+    @Test
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
+    public void testAllowOverlapCaptionBar_withBackgroundDrawable_clearsOnlyCaptionBarInset() {
+        ChromePopupWindow popup = createPopup(new ColorDrawable(Color.WHITE));
+        popup.setAllowOverlapCaptionBar(true);
+        popup.showAtLocation(mAnchorView, Gravity.TOP | Gravity.START, /* x= */ 0, /* y= */ 0);
+
+        View contentView = popup.getContentView();
+        // Verify PopupWindow wrapped contentView in PopupBackgroundView.
+        assertNotEquals(contentView.getParent(), contentView.getRootView());
+        WindowManager.LayoutParams lp =
+                (WindowManager.LayoutParams) contentView.getRootView().getLayoutParams();
+        assertEquals(
+                WindowInsets.Type.systemBars() & ~WindowInsets.Type.captionBar(),
+                lp.getFitInsetsTypes());
+        popup.dismiss();
+    }
+
+    @Test
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
+    public void testAllowOverlapCaptionBar_withoutBackgroundDrawable_clearsOnlyCaptionBarInset() {
+        ChromePopupWindow popup = createPopup(/* background= */ null);
+        popup.setAllowOverlapCaptionBar(true);
+        popup.showAtLocation(mAnchorView, Gravity.TOP | Gravity.START, /* x= */ 0, /* y= */ 0);
+
+        WindowManager.LayoutParams lp =
+                (WindowManager.LayoutParams) popup.getContentView().getRootView().getLayoutParams();
+        assertEquals(
+                WindowInsets.Type.systemBars() & ~WindowInsets.Type.captionBar(),
+                lp.getFitInsetsTypes());
+        popup.dismiss();
+    }
+
+    @Test
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
+    public void testAllowOverlapCaptionBar_showAsDropDown_clearsOnlyCaptionBarInset() {
+        ChromePopupWindow popup = createPopup(new ColorDrawable(Color.WHITE));
+        popup.setAllowOverlapCaptionBar(/* allow= */ true);
+        popup.showAsDropDown(mAnchorView);
+
+        WindowManager.LayoutParams lp =
+                (WindowManager.LayoutParams) popup.getContentView().getRootView().getLayoutParams();
+        assertEquals(
+                WindowInsets.Type.systemBars() & ~WindowInsets.Type.captionBar(),
+                lp.getFitInsetsTypes());
+        popup.dismiss();
+    }
+
+    @Test
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
+    public void testAllowOverlapCaptionBar_false_preservesSystemBarsInsets() {
+        ChromePopupWindow popup = createPopup(new ColorDrawable(Color.WHITE));
+        popup.setAllowOverlapCaptionBar(false);
+        popup.showAtLocation(mAnchorView, Gravity.TOP | Gravity.START, /* x= */ 0, /* y= */ 0);
+
+        WindowManager.LayoutParams lp =
+                (WindowManager.LayoutParams) popup.getContentView().getRootView().getLayoutParams();
+        assertEquals(WindowInsets.Type.systemBars(), lp.getFitInsetsTypes());
+        popup.dismiss();
+    }
+
+    @Test
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
+    public void testAllowOverlapCaptionBar_preR_showsWithoutCrash() {
+        ChromePopupWindow popup = createPopup(new ColorDrawable(Color.WHITE));
+        popup.setAllowOverlapCaptionBar(true);
+        popup.showAtLocation(mAnchorView, Gravity.TOP | Gravity.START, /* x= */ 0, /* y= */ 0);
+
+        assertTrue(popup.isShowing());
+        popup.dismiss();
+    }
+
+    private ChromePopupWindow createPopup(@Nullable Drawable background) {
+        ChromePopupWindow popup = new ChromePopupWindow(mActivity);
+        popup.setContentView(new View(mActivity));
+        popup.setWidth(100);
+        popup.setHeight(100);
+        popup.setBackgroundDrawable(background);
+        return popup;
     }
 
     private static boolean dispatchUnhandledKey(View view, KeyEvent event) {
