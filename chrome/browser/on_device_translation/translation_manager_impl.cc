@@ -454,7 +454,8 @@ void TranslationManagerImpl::CreateTranslatorImpl(
                        IsTranslatorAllowed(browser_context.get());
               },
               browser_context_),
-          source_language, target_language, std::move(result.value())),
+          source_language, target_language, std::move(result.value()),
+          GetServiceManager().GetInputBudget(origin_)),
       blink_remote.InitWithNewPipeAndPassReceiver());
   const int max_input_size = kTranslationAPIMaxInputSizeBytes.Get();
   const std::optional<uint64_t> input_quota =

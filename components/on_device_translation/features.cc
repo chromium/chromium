@@ -102,6 +102,28 @@ const base::FeatureParam<int> kTranslationAPIMaxInstalledLanguagePacks{
 BASE_FEATURE(kTranslationAPIBlockDownloadsOnMeteredNetwork,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<int> kTranslationAPIMaxPendingInputBytesPerOrigin{
+    &blink::features::kTranslationAPI,
+    "TranslationAPIMaxPendingInputBytesPerOrigin",
+#if BUILDFLAG(IS_ANDROID)
+    // Four inputs of the largest size that one call accepts.
+    4 * 256 * 1024
+#else
+    0
+#endif  // BUILDFLAG(IS_ANDROID)
+};
+
+const base::FeatureParam<int> kTranslationAPIMaxQueuedInputBytesPerOrigin{
+    &blink::features::kTranslationAPI,
+    "TranslationAPIMaxQueuedInputBytesPerOrigin",
+#if BUILDFLAG(IS_ANDROID)
+    // A page that translates all of its text at once doesn't fail.
+    16 * 1024 * 1024
+#else
+    0
+#endif  // BUILDFLAG(IS_ANDROID)
+};
+
 BASE_FEATURE(kAutoDownloadTranslateLanguagePacks,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

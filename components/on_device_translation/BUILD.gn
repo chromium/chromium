@@ -44,6 +44,8 @@ source_set("on_device_translation") {
   sources = [
     "component_manager.cc",
     "component_manager.h",
+    "input_budget.cc",
+    "input_budget.h",
     "service_controller.cc",
     "service_controller.h",
     "service_controller_manager.cc",
@@ -94,6 +96,7 @@ source_set("unit_tests") {
   sources = [
     "component_manager_unittest.cc",
     "features_unittest.cc",
+    "input_budget_unittest.cc",
     "metrics_unittest.cc",
     "public/language_pack_unittest.cc",
     "service_controller_unittest.cc",

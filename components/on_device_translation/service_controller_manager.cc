@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "components/on_device_translation/features.h"
+#include "components/on_device_translation/input_budget.h"
 #include "components/on_device_translation/service/service_launcher.h"
 #include "components/on_device_translation/service_controller.h"
 
@@ -122,6 +123,30 @@ void ServiceControllerManager::SetServiceIdleTimeoutForTesting(
     static_cast<OnDeviceTranslationServiceController*>(controller)
         ->SetServiceIdleTimeoutForTesting(service_idle_timeout);  // IN-TEST
   }
+}
+
+scoped_refptr<InputBudget> ServiceControllerManager::GetInputBudget(
+    const url::Origin& origin) {
+  const int max_bytes = kTranslationAPIMaxPendingInputBytesPerOrigin.Get();
+  if (max_bytes <= 0) {
+    return nullptr;
+  }
+  // Forget the budgets that no translator holds anymore.
+  std::erase_if(input_budgets_,
+                [](const auto& entry) { return !entry.second; });
+  base::WeakPtr<InputBudget>& budget = input_budgets_[origin];
+  if (budget) {
+    return base::WrapRefCounted(budget.get());
+  }
+  const int max_queued_bytes =
+      kTranslationAPIMaxQueuedInputBytesPerOrigin.Get();
+  constexpr size_t kMinChargeBytes = 1024;
+  const size_t max_bytes_size = static_cast<size_t>(max_bytes);
+  auto new_budget = base::MakeRefCounted<InputBudget>(
+      max_bytes_size, static_cast<size_t>(std::max(max_queued_bytes, 0)),
+      std::min(kMinChargeBytes, max_bytes_size));
+  budget = new_budget->GetWeakPtr();
+  return new_budget;
 }
 
 void ServiceControllerManager::SetInstallerForTesting(  // IN-TEST

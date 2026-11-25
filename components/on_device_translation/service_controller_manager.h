@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/on_device_translation/service_controller.h"
 #include "url/origin.h"
@@ -25,6 +26,7 @@ class PrefService;
 
 namespace on_device_translation {
 
+class InputBudget;
 class OnDeviceTranslationController;
 class OnDeviceTranslationServiceLauncher;
 
@@ -61,6 +63,11 @@ class ServiceControllerManager : public KeyedService {
 
   bool IsServiceRunning(const url::Origin& origin) const;
 
+  // Returns the input budget that the translators of `origin` share, or null
+  // if `kTranslationAPIMaxPendingInputBytesPerOrigin` turns it off. The budget
+  // lives while a translator holds it.
+  scoped_refptr<InputBudget> GetInputBudget(const url::Origin& origin);
+
   // Sets the service idle timeout for testing. This must be called before the
   // service is started.
   void SetServiceIdleTimeoutForTesting(const url::Origin& origin,
@@ -87,6 +94,8 @@ class ServiceControllerManager : public KeyedService {
   // Safe because BrowserProcess::local_state() outlives the Profile.
   raw_ptr<PrefService> local_state_;
   raw_ptr<OnDeviceTranslationInstaller> installer_for_test_ = nullptr;
+  // The input budget of each origin that has a translator.
+  std::map<url::Origin, base::WeakPtr<InputBudget>> input_budgets_;
   base::WeakPtrFactory<ServiceControllerManager> weak_ptr_factory_{this};
 };
 

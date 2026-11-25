@@ -67,6 +67,21 @@ extern const base::FeatureParam<int> kTranslationAPIMaxInstalledLanguagePacks;
 // metered network connections when enabled.
 BASE_DECLARE_FEATURE(kTranslationAPIBlockDownloadsOnMeteredNetwork);
 
+// The most UTF-8 bytes of `translate()` and `translateStreaming()` input that
+// the translators of one origin may have sent to the translation service
+// without a result yet. A call that would go over it waits in the browser
+// until earlier calls return. This bounds the input that waits in the service
+// process, which `kTranslationAPIMaxInputSizeBytes` doesn't. 0 or less turns
+// the limit off.
+extern const base::FeatureParam<int>
+    kTranslationAPIMaxPendingInputBytesPerOrigin;
+
+// The most UTF-8 bytes of translation input of one origin that may wait in the
+// browser for `kTranslationAPIMaxPendingInputBytesPerOrigin`. A call that
+// would go over it fails. 0 or less makes calls that don't fit fail at once.
+extern const base::FeatureParam<int>
+    kTranslationAPIMaxQueuedInputBytesPerOrigin;
+
 // Enables automatic download of language packs for on-device translation.
 BASE_DECLARE_FEATURE(kAutoDownloadTranslateLanguagePacks);
 

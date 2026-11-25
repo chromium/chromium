@@ -47,16 +47,37 @@ bool ContainsTranslatableContent(std::string_view input) {
 
 }  // namespace
 
+struct Translator::InFlightCall : base::RefCounted<InFlightCall> {
+  InFlightCall(scoped_refptr<ServiceRemote> service,
+               InputBudget::Reservation reservation);
+
+  const scoped_refptr<ServiceRemote> service;
+  const InputBudget::Reservation reservation;
+
+ private:
+  friend class base::RefCounted<InFlightCall>;
+  ~InFlightCall();
+};
+
+Translator::InFlightCall::InFlightCall(scoped_refptr<ServiceRemote> service,
+                                       InputBudget::Reservation reservation)
+    : service(std::move(service)), reservation(std::move(reservation)) {}
+
+Translator::InFlightCall::~InFlightCall() = default;
+
 Translator::Translator(
     const base::RepeatingCallback<bool()>& can_translate_callback,
     const std::string& source_lang,
     const std::string& target_lang,
     mojo::PendingRemote<on_device_translation::mojom::OnDeviceTranslator>
-        remote)
+        remote,
+    scoped_refptr<InputBudget> input_budget)
     : can_translate_callback_(can_translate_callback),
       source_lang_(source_lang),
       target_lang_(target_lang),
-      translator_remote_(std::move(remote)) {}
+      service_(base::MakeRefCounted<ServiceRemote>(std::in_place,
+                                                   std::move(remote))),
+      input_budget_(std::move(input_budget)) {}
 
 Translator::~Translator() = default;
 
@@ -101,6 +122,92 @@ bool Translator::VerifyPrerequisites(
   return true;
 }
 
+void Translator::ReserveInputAndSend(
+    const std::string& input,
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder,
+    bool streaming) {
+  if (!input_budget_) {
+    SendToService(input, std::move(responder), streaming, std::nullopt);
+    return;
+  }
+  // The call waits here, in the browser, while earlier calls of the origin
+  // use the budget.
+  input_budget_->Reserve(input.size(),
+                         base::BindOnce(&Translator::OnInputReserved,
+                                        weak_ptr_factory_.GetWeakPtr(), input,
+                                        std::move(responder), streaming));
+}
+
+void Translator::OnInputReserved(
+    const std::string& input,
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder,
+    bool streaming,
+    std::optional<InputBudget::Reservation> reservation) {
+  if (!reservation) {
+    // The origin's queued translation input is full. Use kErrorGenericFailure
+    // because kErrorInputTooLarge requires a per-call QuotaErrorInfo (which
+    // this input did not exceed) and kErrorRequestThrottled triggers
+    // DumpWithoutCrashing in Blink.
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
+        /*quota_error_info=*/nullptr);
+    return;
+  }
+  if (!responder.is_connected()) {
+    // The page stopped waiting while the call waited for the budget.
+    return;
+  }
+  SendToService(input, std::move(responder), streaming, std::move(reservation));
+}
+
+void Translator::SendToService(
+    const std::string& input,
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder,
+    bool streaming,
+    std::optional<InputBudget::Reservation> reservation) {
+  if (!service_->data.is_connected()) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
+        /*quota_error_info=*/nullptr);
+    return;
+  }
+  scoped_refptr<InFlightCall> call;
+  if (reservation) {
+    call =
+        base::MakeRefCounted<InFlightCall>(service_, std::move(*reservation));
+  }
+  if (streaming) {
+    service_->data->SplitSentences(
+        input, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                   base::BindOnce(&Translator::SplitSentencesCallback,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(responder), std::move(call)),
+                   std::vector<std::string>()));
+    return;
+  }
+  // When a budget reservation is held, `call` keeps the service pipe open and
+  // holds the reservation until the service replies or drops the call.
+  service_->data->Translate(
+      input,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(
+              [](mojo::Remote<blink::mojom::ModelStreamingResponder> responder,
+                 scoped_refptr<InFlightCall> /*call*/,
+                 const std::optional<std::string>& output) {
+                if (!output) {
+                  responder->OnError(
+                      blink::mojom::ModelStreamingResponseStatus::
+                          kErrorGenericFailure,
+                      /*quota_error_info=*/nullptr);
+                  return;
+                }
+                responder->OnStreaming(output.value());
+                responder->OnCompletion(/*context_info=*/nullptr);
+              },
+              std::move(responder), std::move(call)),
+          std::nullopt));
+}
+
 void Translator::Translate(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
@@ -111,35 +218,12 @@ void Translator::Translate(
   if (!VerifyPrerequisites(input, responder)) {
     return;
   }
-
-  if (translator_remote_.is_connected()) {
-    translator_remote_->Translate(
-        input, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                   base::BindOnce(
-                       [](mojo::Remote<blink::mojom::ModelStreamingResponder>
-                              responder,
-                          const std::optional<std::string>& output) {
-                         if (!output) {
-                           responder->OnError(
-                               blink::mojom::ModelStreamingResponseStatus::
-                                   kErrorGenericFailure,
-                               /*quota_error_info=*/nullptr);
-                           return;
-                         }
-                         responder->OnStreaming(output.value());
-                         responder->OnCompletion(/*context_info=*/nullptr);
-                       },
-                       std::move(responder)),
-                   std::nullopt));
-  } else {
-    responder->OnError(
-        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
-        /*quota_error_info=*/nullptr);
-  }
+  ReserveInputAndSend(input, std::move(responder), /*streaming=*/false);
 }
 
 void Translator::SplitSentencesCallback(
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder,
+    scoped_refptr<InFlightCall> call,
     const std::vector<std::string>& sentences) {
   if (sentences.empty()) {
     responder->OnError(
@@ -152,18 +236,21 @@ void Translator::SplitSentencesCallback(
 
   pending_translations_[responder_id] = sentences.size();
   const int total_translations = sentences.size();
+  // Every sentence callback owns a reference to `call`, so the reservation
+  // stays held until the last sentence replies or the service disconnects.
   for (const auto& sentence : sentences) {
     // Run the reply callback with nullopt if the service disconnects before
     // answering, so the stream rejects right away.
-    translator_remote_->Translate(
+    service_->data->Translate(
         sentence, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                       base::BindOnce(&Translator::TranslateStreamingCallback,
-                                     weak_ptr_factory_.GetWeakPtr(),
+                                     weak_ptr_factory_.GetWeakPtr(), call,
                                      responder_id, total_translations),
                       std::nullopt));
   }
 }
 void Translator::TranslateStreamingCallback(
+    scoped_refptr<InFlightCall> /*call*/,
     mojo::RemoteSetElementId responder_id,
     int total_translations,
     const std::optional<std::string>& output) {
@@ -220,20 +307,7 @@ void Translator::TranslateStreaming(
   if (!VerifyPrerequisites(input, responder)) {
     return;
   }
-
-  if (!translator_remote_.is_connected()) {
-    responder->OnError(
-        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
-        /*quota_error_info=*/nullptr);
-    return;
-  }
-
-  translator_remote_->SplitSentences(
-      input,
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&Translator::SplitSentencesCallback,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(responder)),
-          std::vector<std::string>()));
+  ReserveInputAndSend(input, std::move(responder), /*streaming=*/true);
 }
 
 }  // namespace on_device_translation
