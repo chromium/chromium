@@ -248,6 +248,12 @@ NSHTTPURLResponse* Make407Response() {
       }];
 }
 
+// Returns whether `error` cancels the challenge without failing the navigation.
+bool IsCancellationError(NSError* error) {
+  return [error.domain isEqualToString:NSURLErrorDomain] &&
+         error.code == NSURLErrorCancelled;
+}
+
 class ProxyServiceControllerTest : public PlatformTest {
  public:
   ProxyServiceControllerTest() {
@@ -779,8 +785,9 @@ TEST_F(ProxyServiceControllerTest, NotApplicableChallengeIsNotHandled) {
   EXPECT_FALSE(credentials_future_.IsReady());
 }
 
-// Test that the decisions which resolve the challenge without ever fetching
-// credentials all cancel authentication.
+// Tests that the decisions which resolve an unattributed challenge without ever
+// fetching credentials all cancel authentication without rejecting the
+// protection space, which would show the system proxy authentication prompt.
 TEST_F(ProxyServiceControllerTest, TerminalDecisionsCancelAuthentication) {
   const struct {
     Decision decision;
@@ -798,12 +805,13 @@ TEST_F(ProxyServiceControllerTest, TerminalDecisionsCancelAuthentication) {
     ASSERT_TRUE(credentials_future_.IsReady());
     EXPECT_NSEQ(nil, credentials_future_.Get<0>());
     EXPECT_NSEQ(nil, credentials_future_.Get<1>());
-    EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+    EXPECT_TRUE(IsCancellationError(credentials_future_.Get<2>()));
     credentials_future_.Clear();
   }
 }
 
-// Test that every unsuccessful credential fetch cancels authentication.
+// Tests that every unsuccessful credential fetch for an unattributed challenge
+// cancels authentication without rejecting the protection space.
 TEST_F(ProxyServiceControllerTest, FailedCredentialFetchCancelsAuthentication) {
   const struct {
     CredentialFetchOutcome outcome;
@@ -823,7 +831,7 @@ TEST_F(ProxyServiceControllerTest, FailedCredentialFetchCancelsAuthentication) {
     ASSERT_TRUE(credentials_future_.IsReady());
     EXPECT_NSEQ(nil, credentials_future_.Get<0>());
     EXPECT_NSEQ(nil, credentials_future_.Get<1>());
-    EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+    EXPECT_TRUE(IsCancellationError(credentials_future_.Get<2>()));
     credentials_future_.Clear();
   }
 }
@@ -921,9 +929,10 @@ TEST_F(ProxyServiceControllerTest, PendingNavigationChallengeFailsNavigation) {
                   .has_value());
 }
 
-// Test that with enterprise proxy error handling disabled, a challenge for the
-// pending navigation's URL that gets no credentials doesn't fail the
-// navigation, but still records the error for it.
+// Tests that with enterprise proxy error handling disabled, a challenge for the
+// pending navigation's URL that gets no credentials is cancelled instead of
+// failing the navigation with the enterprise proxy error, but still records the
+// error for it.
 TEST_F(ProxyServiceControllerTest, ErrorHandlingDisabledDoesNotFailNavigation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
@@ -934,7 +943,7 @@ TEST_F(ProxyServiceControllerTest, ErrorHandlingDisabledDoesNotFailNavigation) {
 
   EXPECT_TRUE(HandleDefaultChallenge());
   ASSERT_TRUE(credentials_future_.IsReady());
-  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_TRUE(IsCancellationError(credentials_future_.Get<2>()));
   EXPECT_TRUE(error_service_->TakeDisguisedError(context->GetNavigationId())
                   .has_value());
 }
@@ -981,7 +990,7 @@ TEST_F(ProxyServiceControllerTest, OtherURLChallengeIsNotAttributed) {
 
   EXPECT_TRUE(HandleDefaultChallenge());
   ASSERT_TRUE(credentials_future_.IsReady());
-  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_TRUE(IsCancellationError(credentials_future_.Get<2>()));
   EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
                    .has_value());
 }
@@ -997,7 +1006,7 @@ TEST_F(ProxyServiceControllerTest, ChallengeAfterCommitIsNotAttributed) {
 
   EXPECT_TRUE(HandleDefaultChallenge());
   ASSERT_TRUE(credentials_future_.IsReady());
-  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_TRUE(IsCancellationError(credentials_future_.Get<2>()));
   EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
                    .has_value());
 }
@@ -1011,6 +1020,7 @@ TEST_F(ProxyServiceControllerTest, ChallengeWithoutURLIsNotAttributed) {
   EXPECT_TRUE(HandleChallenge(MakeProxyProtectionSpace(),
                               /*failure_response=*/nil));
   ASSERT_TRUE(credentials_future_.IsReady());
+  EXPECT_TRUE(IsCancellationError(credentials_future_.Get<2>()));
   EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
                    .has_value());
 }
@@ -1029,7 +1039,7 @@ TEST_F(ProxyServiceControllerTest, ResolvedAfterNavigationFinishedDropsError) {
   proxy_service_->RunDeferredReply();
 
   ASSERT_TRUE(credentials_future_.IsReady());
-  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_TRUE(IsCancellationError(credentials_future_.Get<2>()));
   EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
                    .has_value());
 }
@@ -1049,7 +1059,7 @@ TEST_F(ProxyServiceControllerTest, ResolvedAfterNavigationReplacedDropsError) {
   proxy_service_->RunDeferredReply();
 
   ASSERT_TRUE(credentials_future_.IsReady());
-  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_TRUE(IsCancellationError(credentials_future_.Get<2>()));
   EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
                    .has_value());
   EXPECT_FALSE(
@@ -1079,7 +1089,7 @@ TEST_F(ProxyServiceControllerTest, ResolvedAfterWebStateDestroyedDropsError) {
   proxy_service_->RunDeferredReply();
 
   ASSERT_TRUE(credentials_future_.IsReady());
-  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_TRUE(IsCancellationError(credentials_future_.Get<2>()));
   EXPECT_FALSE(error_service_->TakeDisguisedError(context.GetNavigationId())
                    .has_value());
 }

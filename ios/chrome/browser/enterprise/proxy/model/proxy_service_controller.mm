@@ -69,6 +69,18 @@ bool IsPendingNavigation(web::WebState* web_state, int64_t navigation_id) {
   return tab_helper && tab_helper->pending_navigation_id() == navigation_id;
 }
 
+// Cancels the challenge answered by `callback` without failing the pending
+// navigation. Answering without credentials or error would instead reject the
+// protection space, which makes CFNetwork fall back to the system "Proxy
+// Authentication Required" prompt for the Secure Gateway proxy.
+void CancelProxyAuthChallenge(
+    web::WebStateDelegate::ProxyAuthCallback callback) {
+  std::move(callback).Run(/*username=*/nil, /*password=*/nil,
+                          [NSError errorWithDomain:NSURLErrorDomain
+                                              code:NSURLErrorCancelled
+                                          userInfo:nil]);
+}
+
 // Returns the ID of the pending main-frame navigation of `web_state` if the
 // challenge for `destination_url` belongs to it, or `kUnknownNavigationId`.
 //
@@ -98,7 +110,8 @@ int64_t GetNavigationIdForChallenge(web::WebState* web_state,
 // navigation `navigation_id` of `web_state` is failed with the enterprise proxy
 // error if it is still pending and enterprise proxy error handling is enabled.
 // If that navigation is no longer pending, the disguised error recorded for it
-// is dropped instead.
+// is dropped instead. Challenges that are not attributed to a pending
+// navigation, e.g. for subresources, are cancelled.
 void RunProxyAuthCallback(
     enterprise_net::EnterpriseProxyErrorService* enterprise_proxy_error_service,
     base::WeakPtr<web::WebState> web_state,
@@ -113,7 +126,7 @@ void RunProxyAuthCallback(
   }
 
   if (navigation_id == kUnknownNavigationId) {
-    std::move(callback).Run(/*username=*/nil, /*password=*/nil, /*error=*/nil);
+    CancelProxyAuthChallenge(std::move(callback));
     return;
   }
 
@@ -123,7 +136,7 @@ void RunProxyAuthCallback(
   // dropped instead, along with the disguised error just recorded for it.
   if (!IsPendingNavigation(web_state.get(), navigation_id)) {
     enterprise_proxy_error_service->RemoveDisguisedError(navigation_id);
-    std::move(callback).Run(/*username=*/nil, /*password=*/nil, /*error=*/nil);
+    CancelProxyAuthChallenge(std::move(callback));
     return;
   }
 
@@ -131,7 +144,7 @@ void RunProxyAuthCallback(
   // credentials, and `EnterpriseProxyTabHelper` drops the disguised error when
   // the navigation finishes.
   if (!enterprise_net::IsEnterpriseProxyErrorHandlingEnabled()) {
-    std::move(callback).Run(/*username=*/nil, /*password=*/nil, /*error=*/nil);
+    CancelProxyAuthChallenge(std::move(callback));
     return;
   }
 
