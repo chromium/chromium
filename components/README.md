@@ -78,6 +78,7 @@ Components **cannot** depend on the higher layers of the Chromium codebase:
   * `//chromecast`
   * `//headless`
   * `//ios/chrome`
+  * `//ios/web_view`
   * `//content/shell`
 
 Components **can** depend on the lower layers of the Chromium codebase:
@@ -93,34 +94,75 @@ Components **can** depend on each other. This must be made explicit in the
 `DEPS` file of the component.
 
 Components **can** depend on `//content/public`, `//ipc`, and
-`//third_party/blink/public`. This must be made explicit in the `DEPS` file of
-the component. If such a component is used by Chrome for iOS (which does not
-use content or IPC), the component will have to be in the form of a [layered
-component](https://www.chromium.org/developers/design-documents/layered-components-design).
-In particular, code that is shared with iOS *cannot* depend on any of the
-above modules; those dependencies must be injected into the shared code (either via
-a layered component structure or directly from the embedder for simple dependencies
-such as booleans that can be passed as constructor parameters). It is not
-an acceptable solution to conditionally depend on the above modules in code shared
-with iOS.
+`//third_party/blink/public` (or `//ios/web/public` on iOS). This must be made
+explicit in the `DEPS` file of the component.
+
+However, code that is shared with iOS (which does not use `//content`, `//ipc`,
+or Blink) *cannot* depend on `//content/public`, `//ipc`, or
+`//third_party/blink/public` (nor can shared cross-platform code depend on
+`//ios/web/public`). It is not an acceptable solution to conditionally depend on
+these modules in code shared with iOS; any platform-specific dependencies must
+instead be injected into the shared code.
+
+The most straightforward way to achieve this is to keep the component free of
+`//content`, `//ipc`, `//third_party/blink`, and `//ios/web` dependencies and
+inject platform-specific dependencies directly from the embedders (via
+constructor parameters, callbacks, or narrow delegate/client interfaces).
+Embedder-specific wiring and leaves (e.g., `KeyedService` factories, tab-scoped
+feature/helper registration, Android JNI bridges, and platform-specific UI or
+web-layer interactions) live in the embedder (`//chrome`, `//ios/chrome`, etc.).
+
+The above is recommended as the default approach (for example, for components
+shared only between `//chrome` and `//ios/chrome`). However, there are cases
+where that approach results in an undesirable amount of code duplication in
+embedders (e.g., when multiple `//content` embedders or multiple `//ios/web`
+embedders embed the component). In those cases, a [layered
+component](https://www.chromium.org/developers/design-documents/layered-components-design)
+is an alternative option. Because layered components introduce significant
+complexity, they should be used only when sharing platform-layer glue is a
+clear net win:
+
+  * A `content/` layer (separating `//content`, `//ipc`, or Blink dependencies
+    from platform-agnostic `core/` code) should be used **only** if the
+    component is shared (either directly or transitively) **both** with iOS
+    **and** with at least one `//content` embedder beyond `//chrome` (e.g.,
+    `//android_webview`), **and** there are sufficient interactions with
+    `//content` (or `//ipc`/`//third_party/blink`) to justify sharing that glue
+    rather than duplicating it across those embedders.
+  * Symmetrically, an `ios/` layer for the purpose of depending on `//ios/web`
+    should be used **only** if the component is shared (either directly or
+    transitively) across platforms **and** with multiple `//ios/web` embedders
+    (e.g., `//ios/chrome` and `//ios/web_view`), **and** there are sufficient
+    interactions with `//ios/web` to justify sharing that glue rather than
+    duplicating it across those embedders. (Code shared only among `//ios/web`
+    embedders belongs in `//ios/components/` instead.)
+  * Having one of these layers does not require having the other: for example, a
+    component with an `ios/` layer shared by `//ios/chrome` and `//ios/web_view`
+    still does not need a `content/` layer if `//chrome` is its only `//content`
+    embedder (and vice versa).
 
 `//chrome`, `//ios/chrome`, `//content` and `//ios/web` **can** depend on
 individual components. The dependency might have to be made explicit in the
 `DEPS` file of the higher layer (e.g. in `//content/browser/DEPS`). Circular
 dependencies are not allowed: if `//content` depends on a component, then that
-component cannot depend on  `//content/public`, directly or indirectly.
+component cannot depend on `//content/public`, directly or indirectly (and
+similarly for `//ios/web` and `//ios/web/public`).
 
 ## Structure of a component
 
-As mentioned above, components that depend on `//content/public`, `//ipc`, or
-`third_party/blink/public` might have to be in the form of a [layered
-component](http://www.chromium.org/developers/design-documents/layered-components-design).
+Only [layered
+components](https://www.chromium.org/developers/design-documents/layered-components-design)
+(when justified by the criteria above) need to separate platform-agnostic code
+into a `core/` subdirectory alongside a `content/` and/or `ios/` subdirectory.
+A component that is not layered (including the common case of a component shared
+only between `//chrome` and `//ios/chrome`) does **not** need a `core/`
+subdirectory; its code can live directly under `components/foo/` (with process
+subdirectories underneath if needed).
 
 Components that have bits of code that need to live in different processes (e.g.
 some code in the browser process, some in the renderer process, etc.) should
-separate the code into different subdirectories. Hence for a component named
-'foo' you might end up with a structure like the following (assuming that foo is
-not used by iOS and thus does not need to be a layered component):
+separate the code into different subdirectories. Hence for a non-layered
+component named 'foo' you might end up with a structure like the following:
 
   * `components/foo`          - `BUILD.gn`, `DEPS`, `DIR_METADATA`, `OWNERS`, `README.md`
   * `components/foo/browser`  - code that needs the browser process
@@ -128,10 +170,13 @@ not used by iOS and thus does not need to be a layered component):
   * `components/foo/renderer` - code that needs renderer process
 
 These subdirectories should have `DEPS` files with the relevant restrictions in
-place, i.e. only `components/foo/browser` should be allowed to #include from
-`content/public/browser`. Note that `third_party/blink/public` is a
-renderer process directory except for `third_party/blink/public/common` which
-can be used by all processes.
+place; e.g., assuming that `foo` is not shared with iOS, only
+`components/foo/browser` should be allowed to `#include` from
+`content/public/browser` (if such a component **is** additionally shared with
+iOS, it would be in the form of a layered component and place
+`content/public/browser` dependencies in `components/foo/content/browser`). Note
+that `third_party/blink/public` is a renderer process directory except for
+`third_party/blink/public/common` which can be used by all processes.
 
 Note that there may also be an `android` subdir, with a Java source code
 structure underneath it where the package name is org.chromium.components.foo,
