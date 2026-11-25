@@ -14,8 +14,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "components/tabs/public/mock_tab_interface.h"
-#include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -48,15 +46,6 @@ class HotkeyHoldWatcherTest : public views::ViewsTestBase {
             [this](BrowserWindowInterface::DidBecomeInactiveCallback callback) {
               return browser_inactive_callbacks_.Add(std::move(callback));
             });
-    ON_CALL(tab_, RegisterWillDeactivate(_))
-        .WillByDefault(
-            [this](tabs::TabInterface::WillDeactivateCallback callback) {
-              return tab_deactivate_callbacks_.Add(std::move(callback));
-            });
-    ON_CALL(tab_, RegisterWillDetach(_))
-        .WillByDefault([this](tabs::TabInterface::WillDetach callback) {
-          return tab_detach_callbacks_.Add(std::move(callback));
-        });
   }
 
   void TearDown() override {
@@ -69,7 +58,7 @@ class HotkeyHoldWatcherTest : public views::ViewsTestBase {
   void StartWatching() {
     // Unretained is safe: `this` owns `watcher_`.
     watcher_ = std::make_unique<HotkeyHoldWatcher>(
-        browser_, tab_, *widget_, hotkey_, kHoldThreshold,
+        browser_, *widget_, hotkey_, kHoldThreshold,
         base::BindOnce(&HotkeyHoldWatcherTest::OnHoldThresholdReached,
                        base::Unretained(this)),
         base::BindOnce(&HotkeyHoldWatcherTest::OnFinished,
@@ -102,14 +91,8 @@ class HotkeyHoldWatcherTest : public views::ViewsTestBase {
   const ui::Accelerator hotkey_{ui::VKEY_D,
                                 ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN};
   testing::NiceMock<MockBrowserWindowInterface> browser_;
-  tabs::MockTabInterface tab_;
   base::RepeatingCallbackList<void(BrowserWindowInterface*)>
       browser_inactive_callbacks_;
-  base::RepeatingCallbackList<void(tabs::TabInterface*)>
-      tab_deactivate_callbacks_;
-  base::RepeatingCallbackList<void(tabs::TabInterface*,
-                                   tabs::TabInterface::DetachReason)>
-      tab_detach_callbacks_;
   std::unique_ptr<views::Widget> widget_;
   // Declared after the callback lists, which its subscriptions refer to.
   std::unique_ptr<HotkeyHoldWatcher> watcher_;
@@ -219,21 +202,6 @@ TEST_F(HotkeyHoldWatcherTest, BrowserInactiveAfterThresholdIsAborted) {
   StartWatching();
   ReachHoldThreshold();
   browser_inactive_callbacks_.Notify(&browser_);
-  EXPECT_EQ(result_, Result::kAborted);
-}
-
-TEST_F(HotkeyHoldWatcherTest, TabDeactivationAfterThresholdIsAborted) {
-  StartWatching();
-  ReachHoldThreshold();
-  tab_deactivate_callbacks_.Notify(&tab_);
-  EXPECT_EQ(result_, Result::kAborted);
-}
-
-TEST_F(HotkeyHoldWatcherTest, TabDetachAfterThresholdIsAborted) {
-  StartWatching();
-  ReachHoldThreshold();
-  tab_detach_callbacks_.Notify(&tab_,
-                               tabs::TabInterface::DetachReason::kDelete);
   EXPECT_EQ(result_, Result::kAborted);
 }
 

@@ -21,7 +21,6 @@ source_set("hotkeys") {
   ]
   public_deps = [
     "//base",
-    "//components/tabs:public",
     "//ui/base",
     "//ui/events",
     "//ui/views",
@@ -58,8 +57,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window/test:test_support",
-    "//components/tabs:public",
-    "//components/tabs:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",

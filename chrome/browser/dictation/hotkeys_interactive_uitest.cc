@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -352,6 +353,86 @@ IN_PROC_BROWSER_TEST_F(DictationHotkeysInteractiveUiTest,
 
     Do([this] {
       auto* service = DictationKeyedService::Get(profile());
+      EXPECT_EQ(hold_watcher(), nullptr);
+      EXPECT_EQ(service->session_controller()->attached_stream_provider(),
+                nullptr);
+    })
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationHotkeysInteractiveUiTest,
+                       TabSwitchBeforeThresholdCancelsWatchWithoutStarting) {
+  HotkeySimulator hotkeys(
+      *this,
+      /*toggle=*/ui::Accelerator(ui::VKEY_D, ui::EF_ALT_DOWN),
+      /*hold=*/
+      ui::Accelerator(ui::VKEY_D, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN));
+  NavigateAndConfigureHotkeys(
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html"),
+      hotkeys.toggle_string(), hotkeys.hold_string());
+
+  // clang-format off
+  RunTestSequence(
+    ActivateSurface(kBrowserViewElementId),
+    Do([this] { FocusTextarea(); }),
+
+    hotkeys.StartHold(),
+    Do([this] {
+      ASSERT_NE(hold_watcher(), nullptr);
+      ASSERT_TRUE(
+          AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+      EXPECT_EQ(hold_watcher(), nullptr);
+    }),
+
+    // Pending tasks must not start Dictation after the watch is cancelled.
+    Do([this] {
+      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, run_loop.QuitClosure());
+      run_loop.Run();
+      auto* service = DictationKeyedService::Get(profile());
+      EXPECT_EQ(hold_watcher(), nullptr);
+      EXPECT_EQ(
+          service->session_controller()
+              ? service->session_controller()->attached_stream_provider()
+              : nullptr,
+          nullptr);
+    })
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationHotkeysInteractiveUiTest,
+                       TabSwitchAfterThresholdAbortsHoldAndEndsStream) {
+  HotkeySimulator hotkeys(
+      *this,
+      /*toggle=*/ui::Accelerator(ui::VKEY_D, ui::EF_ALT_DOWN),
+      /*hold=*/
+      ui::Accelerator(ui::VKEY_D, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN));
+  NavigateAndConfigureHotkeys(
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html"),
+      hotkeys.toggle_string(), hotkeys.hold_string());
+
+  // clang-format off
+  RunTestSequence(
+    ActivateSurface(kBrowserViewElementId),
+    Do([this] { FocusTextarea(); }),
+
+    hotkeys.StartHold(),
+    Do([this] {
+      ASSERT_NE(hold_watcher(), nullptr);
+      hold_watcher()->TriggerHoldThresholdForTesting();
+
+      auto* service = DictationKeyedService::Get(profile());
+      ASSERT_NE(service->session_controller(), nullptr);
+      ASSERT_NE(service->session_controller()->attached_stream_provider(),
+                nullptr);
+      ASSERT_NE(hold_watcher(), nullptr);
+      EXPECT_TRUE(hold_watcher()->is_press_and_hold_mode());
+
+      ASSERT_TRUE(
+          AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
       EXPECT_EQ(hold_watcher(), nullptr);
       EXPECT_EQ(service->session_controller()->attached_stream_provider(),
                 nullptr);

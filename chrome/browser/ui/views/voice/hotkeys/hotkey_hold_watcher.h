@@ -12,7 +12,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/tabs/public/tab_interface.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -31,7 +30,7 @@ namespace voice {
 // a press-and-hold capable hotkey. Releasing the primary key or any modifier
 // key within `hold_threshold` of the press reports `Result::kTapped`. Once
 // held for at least `hold_threshold`, releasing it reports `Result::kReleased`,
-// and losing track of the hold (blur, tab switch, secondary key press) reports
+// and losing track of the hold (blur, secondary key press) reports
 // `Result::kAborted`.
 class HotkeyHoldWatcher : public ui::EventObserver,
                           public views::WidgetObserver {
@@ -51,7 +50,6 @@ class HotkeyHoldWatcher : public ui::EventObserver,
   // `on_hold_threshold_reached`, if set, runs once the hotkey has been held for
   // `hold_threshold`. Both callbacks run at most once, and may destroy `this`.
   HotkeyHoldWatcher(BrowserWindowInterface& browser,
-                    tabs::TabInterface& tab,
                     views::Widget& browser_widget,
                     const ui::Accelerator& hotkey,
                     base::TimeDelta hold_threshold,
@@ -70,6 +68,7 @@ class HotkeyHoldWatcher : public ui::EventObserver,
   base::TimeDelta hold_threshold_for_testing() const {
     return hold_threshold_timer_.GetCurrentDelay();
   }
+  void TriggerHoldThresholdForTesting() { hold_threshold_timer_.FireNow(); }
 
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override;
@@ -80,9 +79,6 @@ class HotkeyHoldWatcher : public ui::EventObserver,
 
   void OnHoldThresholdReached();
   void OnBrowserDidBecomeInactive(BrowserWindowInterface* browser);
-  void OnTabWillDeactivate(tabs::TabInterface* tab);
-  void OnTabWillDetach(tabs::TabInterface* tab,
-                       tabs::TabInterface::DetachReason reason);
   void AbortAndDestroyThis();
   void FinishAndDestroyThis(Result result);
 
@@ -95,8 +91,6 @@ class HotkeyHoldWatcher : public ui::EventObserver,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
   base::CallbackListSubscription browser_inactive_subscription_;
-  base::CallbackListSubscription tab_deactivate_subscription_;
-  base::CallbackListSubscription tab_detach_subscription_;
 
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };

@@ -49,7 +49,6 @@ bool HotkeyHoldWatcher::IsChordKey(const ui::Accelerator& hotkey,
 
 HotkeyHoldWatcher::HotkeyHoldWatcher(
     BrowserWindowInterface& browser,
-    tabs::TabInterface& tab,
     views::Widget& browser_widget,
     const ui::Accelerator& hotkey,
     base::TimeDelta hold_threshold,
@@ -69,10 +68,6 @@ HotkeyHoldWatcher::HotkeyHoldWatcher(
   browser_inactive_subscription_ = browser.RegisterDidBecomeInactive(
       base::BindRepeating(&HotkeyHoldWatcher::OnBrowserDidBecomeInactive,
                           base::Unretained(this)));
-  tab_deactivate_subscription_ = tab.RegisterWillDeactivate(base::BindRepeating(
-      &HotkeyHoldWatcher::OnTabWillDeactivate, base::Unretained(this)));
-  tab_detach_subscription_ = tab.RegisterWillDetach(base::BindRepeating(
-      &HotkeyHoldWatcher::OnTabWillDetach, base::Unretained(this)));
 
   event_monitor_ = views::EventMonitor::CreateApplicationMonitor(
       this, browser_widget.GetNativeWindow(),
@@ -134,16 +129,6 @@ void HotkeyHoldWatcher::OnWidgetDestroying(views::Widget* widget) {
 
 void HotkeyHoldWatcher::OnBrowserDidBecomeInactive(
     BrowserWindowInterface* browser) {
-  AbortAndDestroyThis();
-}
-
-void HotkeyHoldWatcher::OnTabWillDeactivate(tabs::TabInterface* tab) {
-  AbortAndDestroyThis();
-}
-
-void HotkeyHoldWatcher::OnTabWillDetach(
-    tabs::TabInterface* tab,
-    tabs::TabInterface::DetachReason reason) {
   AbortAndDestroyThis();
 }
 

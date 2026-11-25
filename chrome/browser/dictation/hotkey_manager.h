@@ -8,12 +8,14 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/ui/views/voice/hotkeys/hotkey_hold_watcher.h"
 #include "chrome/browser/ui/views/voice/hotkeys/hotkey_registration_delegate.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/accelerators/accelerator.h"
 
 class Profile;
@@ -99,12 +101,18 @@ class HotkeyManager : public ui::AcceleratorTarget {
   // `listening_`, `hold_watcher_`, and the hotkey pref.
   void UpdateGlobalRegistration();
   void OnGlobalHotkeyPressed();
-  // Starts watching the active browser window and tab for release of the
-  // press-and-hold hotkey. While active, defers OS-wide global hotkey
-  // registration so local key-release events are not intercepted.
+  // Starts watching the active browser window for release of the
+  // press-and-hold hotkey, and the active tab for deactivation/detachment.
+  // While active, defers OS-wide global hotkey registration so local
+  // key-release events are not intercepted.
   void StartHoldWatcher();
   void OnHoldThresholdReached();
   void OnHotkeyHoldEnded(voice::HotkeyHoldWatcher::Result result);
+  void OnWatchedTabWillDeactivate(tabs::TabInterface* tab);
+  void OnWatchedTabWillDetach(tabs::TabInterface* tab,
+                              tabs::TabInterface::DetachReason reason);
+  void AbortHoldWatcher();
+  void ResetHoldWatcher();
 
   // Returns the service for `profile_`. Looked up on use rather than in the
   // constructor, since the service may create this during its own
@@ -122,6 +130,8 @@ class HotkeyManager : public ui::AcceleratorTarget {
 
   bool listening_ = false;
   std::unique_ptr<voice::HotkeyHoldWatcher> hold_watcher_;
+  base::CallbackListSubscription watched_tab_deactivate_subscription_;
+  base::CallbackListSubscription watched_tab_detach_subscription_;
   std::unique_ptr<ScopedGlobalHotkey> global_hotkey_;
 };
 

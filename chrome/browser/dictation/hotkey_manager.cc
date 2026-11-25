@@ -112,9 +112,10 @@ HotkeyManager::SetGlobalAcceleratorListenerForTesting(
 void HotkeyManager::OnSessionStateChanged(SessionState state) {
   listening_ = IsListeningState(state);
   if (!listening_) {
-    hold_watcher_.reset();
+    ResetHoldWatcher();
+  } else {
+    UpdateGlobalRegistration();
   }
-  UpdateGlobalRegistration();
 }
 
 void HotkeyManager::StartHoldWatcher() {
@@ -142,9 +143,16 @@ void HotkeyManager::StartHoldWatcher() {
       is_shared_hotkey ? kDictationSharedHotkeyPressAndHoldThreshold.Get()
                        : kDictationPressAndHoldThreshold.Get();
 
-  // `base::Unretained(this)` is safe because `this` owns `hold_watcher_`.
+  // `base::Unretained(this)` is safe because `this` owns `hold_watcher_` and
+  // the tab subscriptions.
+  watched_tab_deactivate_subscription_ =
+      tab->RegisterWillDeactivate(base::BindRepeating(
+          &HotkeyManager::OnWatchedTabWillDeactivate, base::Unretained(this)));
+  watched_tab_detach_subscription_ =
+      tab->RegisterWillDetach(base::BindRepeating(
+          &HotkeyManager::OnWatchedTabWillDetach, base::Unretained(this)));
   hold_watcher_ = std::make_unique<voice::HotkeyHoldWatcher>(
-      *browser, *tab, *widget, hold_accelerator, hold_threshold,
+      *browser, *widget, hold_accelerator, hold_threshold,
       base::BindOnce(&HotkeyManager::OnHoldThresholdReached,
                      base::Unretained(this)),
       base::BindOnce(&HotkeyManager::OnHotkeyHoldEnded,
@@ -153,14 +161,12 @@ void HotkeyManager::StartHoldWatcher() {
 
 void HotkeyManager::OnHoldThresholdReached() {
   if (!service().PressAndHoldHotkeyHandler() || !listening_) {
-    hold_watcher_.reset();
-    UpdateGlobalRegistration();
+    ResetHoldWatcher();
   }
 }
 
 void HotkeyManager::OnHotkeyHoldEnded(voice::HotkeyHoldWatcher::Result result) {
-  hold_watcher_.reset();
-  UpdateGlobalRegistration();
+  ResetHoldWatcher();
 
   if (result == voice::HotkeyHoldWatcher::Result::kTapped) {
     // TODO(b/540484578): Revisit taps behaviour when press-and-hold and toggle
@@ -178,6 +184,36 @@ void HotkeyManager::OnHotkeyHoldEnded(voice::HotkeyHoldWatcher::Result result) {
       controller && controller->attached_stream_provider()) {
     controller->EndDictationStream(*trigger);
   }
+}
+
+void HotkeyManager::OnWatchedTabWillDeactivate(tabs::TabInterface* tab) {
+  AbortHoldWatcher();
+}
+
+void HotkeyManager::OnWatchedTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  AbortHoldWatcher();
+}
+
+void HotkeyManager::AbortHoldWatcher() {
+  if (!hold_watcher_) {
+    return;
+  }
+  if (!hold_watcher_->is_press_and_hold_mode()) {
+    // Switched or detached before the hold threshold: cancel without starting
+    // Dictation on the new tab.
+    ResetHoldWatcher();
+    return;
+  }
+  OnHotkeyHoldEnded(voice::HotkeyHoldWatcher::Result::kAborted);
+}
+
+void HotkeyManager::ResetHoldWatcher() {
+  hold_watcher_.reset();
+  watched_tab_deactivate_subscription_ = {};
+  watched_tab_detach_subscription_ = {};
+  UpdateGlobalRegistration();
 }
 
 DictationKeyedService& HotkeyManager::service() {
