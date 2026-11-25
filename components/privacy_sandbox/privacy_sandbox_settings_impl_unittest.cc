@@ -23,8 +23,6 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -56,12 +54,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
  public:
   PrivacySandboxSettingsTest()
       : browser_task_environment_(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_attestations_(PrivacySandboxAttestations::CreateForTesting()) {
-    // Mark all Privacy Sandbox APIs as attested since the test cases are
-    // testing behaviors not related to attestations.
-    PrivacySandboxAttestations::GetInstance()
-        ->SetAllPrivacySandboxAttestedForTesting(true);
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     content_settings::CookieSettings::RegisterProfilePrefs(prefs()->registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
     RegisterProfilePrefs(prefs()->registry());
@@ -116,7 +109,6 @@ class PrivacySandboxSettingsTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  ScopedPrivacySandboxAttestations scoped_attestations_;
 
   std::unique_ptr<PrivacySandboxSettingsImpl> privacy_sandbox_settings_;
 };

@@ -11,8 +11,6 @@
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/privacy_sandbox/mock_privacy_sandbox_settings.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,9 +34,7 @@ class PrivacySandboxTestUtilTest {
  public:
   PrivacySandboxTestUtilTest()
       : browser_task_environment_(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_attestations_(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     content_settings::CookieSettings::RegisterProfilePrefs(prefs()->registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
@@ -119,7 +115,6 @@ class PrivacySandboxTestUtilTest {
   MockPrivacySandboxSettings mock_privacy_sandbox_settings_;
   raw_ptr<content_settings::MockProvider> user_provider_;
   raw_ptr<content_settings::MockProvider> managed_provider_;
-  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
 };
 
 class PrivacySandboxTestUtilBoolTest : public PrivacySandboxTestUtilTest,

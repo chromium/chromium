@@ -12,9 +12,9 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
@@ -65,7 +65,6 @@ enum class StateKey {
   kM1TopicsDisabledByPolicy = 21,
   kM1FledgeDisabledByPolicy = 22,
   kM1AdMesaurementDisabledByPolicy = 23,
-  kAttestationsMap = 26,
   kBlockFledgeJoiningForEtldplus1 = 27,
 };
 
@@ -115,21 +114,19 @@ using SiteDataExceptions = std::vector<SiteDataException>;
 // key types, the set of value types associated with those keys is shared, and
 // represented by this variant. When accessing keys, the test util will expect
 // a particular value type, and will error otherwise.
-using TestCaseItemValue =
-    std::variant<bool,
-                 bool*,
-                 std::string,
-                 std::string*,
-                 url::Origin,
-                 GURL,
-                 content_settings::CookieControlsMode,
-                 SiteDataExceptions,
-                 ContentSetting,
-                 int,
-                 base::Time,
-                 base::TimeDelta,
-                 std::vector<int>,
-                 std::optional<privacy_sandbox::PrivacySandboxAttestationsMap>>;
+using TestCaseItemValue = std::variant<bool,
+                                       bool*,
+                                       std::string,
+                                       std::string*,
+                                       url::Origin,
+                                       GURL,
+                                       content_settings::CookieControlsMode,
+                                       SiteDataExceptions,
+                                       ContentSetting,
+                                       int,
+                                       base::Time,
+                                       base::TimeDelta,
+                                       std::vector<int>>;
 
 using TestState = std::map<TestKey<StateKey>, TestCaseItemValue>;
 using TestInput = std::map<TestKey<InputKey>, TestCaseItemValue>;

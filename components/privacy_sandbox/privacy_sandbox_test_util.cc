@@ -18,7 +18,6 @@
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/metrics/dwa/dwa_recorder.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -171,14 +170,6 @@ void ApplyTestState(
           prefs::kPrivacySandboxM1AdMeasurementEnabled, base::Value(false));
       EXPECT_TRUE(testing_pref_service->IsManagedPreference(
           prefs::kPrivacySandboxM1AdMeasurementEnabled));
-      return;
-    }
-    case (StateKey::kAttestationsMap): {
-      SCOPED_TRACE("State Setup: Attestations Map");
-      privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-          ->SetAttestationsForTesting(
-              GetItemValue<std::optional<
-                  privacy_sandbox::PrivacySandboxAttestationsMap>>(value));
       return;
     }
     default:
