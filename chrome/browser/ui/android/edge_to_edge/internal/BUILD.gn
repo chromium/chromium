@@ -70,6 +70,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeTopScalpViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/SimpleEdgeToEdgeControllerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/SimpleEdgeToEdgePadAdjusterUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/TopPageColorObserverUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/TransitiveTopInsetProviderUnitTest.java",
   ]
 
