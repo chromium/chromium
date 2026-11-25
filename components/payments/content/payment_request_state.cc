@@ -90,7 +90,7 @@ PaymentRequestState::PaymentRequestState(
       csp_checker_(csp_checker),
       personal_data_manager_(personal_data_manager),
       payment_request_delegate_(payment_request_delegate),
-      profile_comparator_(std::string(app_locale.tag_string()), *spec) {
+      profile_comparator_(app_locale, *spec) {
   PopulateProfileCache();
 
   number_of_payment_app_factories_ =

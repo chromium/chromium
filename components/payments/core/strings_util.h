@@ -16,12 +16,16 @@ namespace autofill {
 class AutofillProfile;
 }
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace payments {
 
 // Helper function to create a shipping address label from an autofill profile.
 std::u16string GetShippingAddressLabelFromAutofillProfile(
     const autofill::AutofillProfile& profile,
-    const std::string& locale);
+    const base::i18n::LanguageTag& locale);
 
 // Gets the informational message to be displayed in the shipping address
 // selector view when there are no valid shipping options.

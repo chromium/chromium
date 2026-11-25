@@ -643,8 +643,7 @@ PaymentSheetViewController::CreateShippingSectionContent(
   }
 
   return GetShippingAddressLabelWithMissingInfo(
-      AddressStyleType::SUMMARY,
-      std::string(state()->GetApplicationLocale().tag_string()), *profile,
+      AddressStyleType::SUMMARY, state()->GetApplicationLocale(), *profile,
       *(state()->profile_comparator()), accessible_content);
 }
 
@@ -689,8 +688,7 @@ PaymentSheetViewController::CreateShippingRow() {
                                     /*button_enabled=*/true);
   }
   const std::u16string label = GetShippingAddressLabelFromAutofillProfile(
-      *state()->shipping_profiles()[0],
-      std::string(state()->GetApplicationLocale().tag_string()));
+      *state()->shipping_profiles()[0], state()->GetApplicationLocale());
   if (state()->shipping_profiles().size() == 1) {
     return builder.CreateWithButton(label,
                                     l10n_util::GetStringUTF16(IDS_CHOOSE),
@@ -763,8 +761,7 @@ PaymentSheetViewController::CreateContactInfoSectionContent(
   *accessible_content = std::u16string();
   return profile && spec()
              ? payments::GetContactInfoLabel(
-                   AddressStyleType::SUMMARY,
-                   std::string(state()->GetApplicationLocale().tag_string()),
+                   AddressStyleType::SUMMARY, state()->GetApplicationLocale(),
                    *profile, spec()->request_payer_name(),
                    spec()->request_payer_email(), spec()->request_payer_phone(),
                    *(state()->profile_comparator()), accessible_content)

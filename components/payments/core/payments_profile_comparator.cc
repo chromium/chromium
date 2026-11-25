@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,9 +28,10 @@
 namespace payments {
 
 PaymentsProfileComparator::PaymentsProfileComparator(
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const PaymentOptionsProvider& options)
-    : autofill::AutofillProfileComparator(app_locale), options_(options) {}
+    : autofill::AutofillProfileComparator(app_locale.tag_string()),
+      options_(options) {}
 
 PaymentsProfileComparator::~PaymentsProfileComparator() = default;
 

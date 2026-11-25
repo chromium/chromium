@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -127,7 +128,8 @@ TEST(PaymentRequestProfileUtilTest, FilterProfilesForContact) {
 
   MockPaymentOptionsProvider provider(kRequestPayerName | kRequestPayerEmail |
                                       kRequestPayerPhone);
-  PaymentsProfileComparator comp("en-US", provider);
+  PaymentsProfileComparator comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                 provider);
 
   std::vector<raw_ptr<AutofillProfile>> filtered =
       comp.FilterProfilesForContact(profiles);
@@ -141,7 +143,8 @@ TEST(PaymentRequestProfileUtilTest, FilterProfilesForContact) {
   // Under these rules, since all profiles have the same (or no) phone number,
   // we should only see the first profile with a phone number, |exclude_1|.
   MockPaymentOptionsProvider phone_only_provider(kRequestPayerPhone);
-  PaymentsProfileComparator phone_only_comp("en-US", phone_only_provider);
+  PaymentsProfileComparator phone_only_comp(
+      base::i18n::GetKnownLanguageTag("en-US"), phone_only_provider);
   std::vector<raw_ptr<AutofillProfile>> filtered_phones =
       phone_only_comp.FilterProfilesForContact(profiles);
   ASSERT_EQ(1u, filtered_phones.size());
@@ -151,7 +154,8 @@ TEST(PaymentRequestProfileUtilTest, FilterProfilesForContact) {
 TEST(PaymentRequestProfileUtilTest, IsContactEqualOrSuperset) {
   MockPaymentOptionsProvider provider(kRequestPayerName | kRequestPayerEmail |
                                       kRequestPayerPhone);
-  PaymentsProfileComparator comp("en-US", provider);
+  PaymentsProfileComparator comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                 provider);
 
   AutofillProfile p1 =
       CreateProfileWithContactInfo("Homer", "homer@simpson.net", "6515553226");
@@ -185,7 +189,8 @@ TEST(PaymentRequestProfileUtilTest, IsContactEqualOrSuperset) {
 TEST(PaymentRequestProfileUtilTest, IsContactEqualOrSuperset_WithFieldIgnored) {
   // Discrepancies in email should be ignored throughout this test.
   MockPaymentOptionsProvider provider(kRequestPayerName | kRequestPayerPhone);
-  PaymentsProfileComparator comp("en-US", provider);
+  PaymentsProfileComparator comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                 provider);
 
   AutofillProfile p1 =
       CreateProfileWithContactInfo("Homer", "homer@simpson.net", "6515553226");
@@ -210,7 +215,8 @@ TEST(PaymentRequestProfileUtilTest, IsContactEqualOrSuperset_WithFieldIgnored) {
 
 TEST(PaymentRequestProfileUtilTest, GetContactCompletenessScore) {
   MockPaymentOptionsProvider provider(kRequestPayerName | kRequestPayerPhone);
-  PaymentsProfileComparator comp("en-US", provider);
+  PaymentsProfileComparator comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                 provider);
 
   // Two completeness points: One each for name and phone number, but not email
   // as it was not requested.
@@ -235,7 +241,8 @@ TEST(PaymentRequestProfileUtilTest, GetContactCompletenessScore) {
 
 TEST(PaymentRequestProfileUtilTest, IsContactInfoComplete) {
   MockPaymentOptionsProvider provider(kRequestPayerName | kRequestPayerEmail);
-  PaymentsProfileComparator comp("en-US", provider);
+  PaymentsProfileComparator comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                 provider);
 
   // If name and email are present, return true regardless of the (ignored)
   // phone value.
@@ -259,7 +266,8 @@ TEST(PaymentRequestProfileUtilTest, IsContactInfoComplete) {
 
   // If no fields are requested, any profile (even empty or null) is complete.
   MockPaymentOptionsProvider empty_provider(0);
-  PaymentsProfileComparator empty_comp("en-US", empty_provider);
+  PaymentsProfileComparator empty_comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                       empty_provider);
 
   AutofillProfile p5 = CreateProfileWithContactInfo("", "", "");
 
@@ -270,7 +278,8 @@ TEST(PaymentRequestProfileUtilTest, IsContactInfoComplete) {
 
 TEST(PaymentRequestProfileUtilTest, FilterProfilesForShipping) {
   MockPaymentOptionsProvider provider(kRequestShipping);
-  PaymentsProfileComparator comp("en-US", provider);
+  PaymentsProfileComparator comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                 provider);
 
   AutofillProfile address_only = CreateProfileWithCompleteAddress("", "");
 
@@ -332,7 +341,8 @@ TEST(PaymentRequestProfileUtilTest, FilterProfilesForShipping) {
 
 TEST(PaymentRequestProfileUtilTest, GetShippingCompletenessScore) {
   MockPaymentOptionsProvider provider(kRequestShipping);
-  PaymentsProfileComparator comp("en-US", provider);
+  PaymentsProfileComparator comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                 provider);
 
   // 12 points for a complete profile: 10 for address, 1 each for name/phone.
   AutofillProfile p1 = CreateProfileWithCompleteAddress("Homer", "6515553226");
@@ -367,7 +377,8 @@ TEST(PaymentRequestProfileUtilTest, GetShippingCompletenessScore) {
 
 TEST(PaymentRequestProfileUtilTest, IsShippingComplete) {
   MockPaymentOptionsProvider provider(kRequestShipping);
-  PaymentsProfileComparator comp("en-US", provider);
+  PaymentsProfileComparator comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                 provider);
 
   // True if name, phone, and address are all populated.
   AutofillProfile p1 = CreateProfileWithCompleteAddress("Homer", "6515553226");
@@ -391,7 +402,8 @@ TEST(PaymentRequestProfileUtilTest, IsShippingComplete) {
   EXPECT_FALSE(comp.IsShippingComplete(&p5));
 
   MockPaymentOptionsProvider provider_no_shipping(0);
-  PaymentsProfileComparator comp_no_shipping("en-US", provider_no_shipping);
+  PaymentsProfileComparator comp_no_shipping(
+      base::i18n::GetKnownLanguageTag("en-US"), provider_no_shipping);
   // nullptr is handled correctly: false if shipping requested, true if not.
   EXPECT_FALSE(comp.IsShippingComplete(nullptr));
   EXPECT_TRUE(comp_no_shipping.IsShippingComplete(nullptr));
@@ -400,7 +412,8 @@ TEST(PaymentRequestProfileUtilTest, IsShippingComplete) {
 TEST(PaymentRequestProfileUtilTest, GetStringForMissingContactFields) {
   MockPaymentOptionsProvider provider(kRequestPayerName | kRequestPayerPhone |
                                       kRequestPayerEmail | kRequestShipping);
-  PaymentsProfileComparator comp("en-US", provider);
+  PaymentsProfileComparator comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                 provider);
 
   // No error message for complete profile.
   AutofillProfile p1 =
@@ -409,7 +422,8 @@ TEST(PaymentRequestProfileUtilTest, GetStringForMissingContactFields) {
 
   MockPaymentOptionsProvider provider_no_email(
       kRequestPayerName | kRequestPayerPhone | kRequestShipping);
-  PaymentsProfileComparator comp_no_email("en-US", provider_no_email);
+  PaymentsProfileComparator comp_no_email(
+      base::i18n::GetKnownLanguageTag("en-US"), provider_no_email);
 
   // No error message if missing field wasn't required.
   AutofillProfile p2 = CreateProfileWithContactInfo("Homer", "", "6515553226");
@@ -441,7 +455,8 @@ TEST(PaymentRequestProfileUtilTest, GetStringForMissingContactFields) {
 TEST(PaymentRequestProfileUtilTest, GetTitleForMissingContactFields) {
   MockPaymentOptionsProvider provider(kRequestPayerName | kRequestPayerPhone |
                                       kRequestPayerEmail | kRequestShipping);
-  PaymentsProfileComparator comp("en-US", provider);
+  PaymentsProfileComparator comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                 provider);
 
   // Error message for email address if email address is missing and required.
   AutofillProfile p1 = CreateProfileWithContactInfo("Homer", "", "6515553226");
@@ -470,7 +485,8 @@ TEST(PaymentRequestProfileUtilTest, GetTitleForMissingContactFields) {
 TEST(PaymentRequestProfileUtilTest, GetStringForMissingShippingFields) {
   MockPaymentOptionsProvider provider(kRequestPayerName | kRequestPayerPhone |
                                       kRequestPayerEmail | kRequestShipping);
-  PaymentsProfileComparator comp("en-US", provider);
+  PaymentsProfileComparator comp(base::i18n::GetKnownLanguageTag("en-US"),
+                                 provider);
 
   // No error message for complete profile.
   AutofillProfile p1 = CreateProfileWithCompleteAddress("Homer", "6515553226");
@@ -505,7 +521,8 @@ TEST(PaymentRequestProfileUtilTest, GetStringForMissingShippingFields) {
 
   MockPaymentOptionsProvider provider_no_shipping(
       kRequestPayerName | kRequestPayerPhone | kRequestPayerEmail);
-  PaymentsProfileComparator comp_no_shipping("en-US", provider_no_shipping);
+  PaymentsProfileComparator comp_no_shipping(
+      base::i18n::GetKnownLanguageTag("en-US"), provider_no_shipping);
 
   // No error message if everything is missing but shipping wasn't requested.
   EXPECT_TRUE(comp_no_shipping.GetStringForMissingShippingFields(p6).empty());

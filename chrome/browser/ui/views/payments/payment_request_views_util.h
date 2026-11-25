@@ -18,6 +18,10 @@ namespace autofill {
 class AutofillProfile;
 }
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace views {
 class Border;
 class ImageView;
@@ -89,7 +93,7 @@ enum class AddressStyleType { SUMMARY, DETAILED };
 // screen reader string representing this section.
 std::unique_ptr<views::View> GetShippingAddressLabelWithMissingInfo(
     AddressStyleType type,
-    const std::string& locale,
+    const base::i18n::LanguageTag& locale,
     const autofill::AutofillProfile& profile,
     const PaymentsProfileComparator& comp,
     std::u16string* accessible_content,
@@ -102,7 +106,7 @@ std::unique_ptr<views::View> GetShippingAddressLabelWithMissingInfo(
 // representing this section.
 std::unique_ptr<views::View> GetContactInfoLabel(
     AddressStyleType type,
-    const std::string& locale,
+    const base::i18n::LanguageTag& locale,
     const autofill::AutofillProfile& profile,
     bool request_payer_name,
     bool request_payer_email,

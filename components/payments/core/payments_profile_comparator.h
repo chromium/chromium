@@ -20,6 +20,10 @@ namespace autofill {
 class AutofillProfile;
 }  // namespace autofill
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace payments {
 
 class PaymentOptionsProvider;
@@ -43,7 +47,7 @@ class PaymentsProfileComparator : public autofill::AutofillProfileComparator {
   const static ProfileFields kEmail = 1 << 2;
   const static ProfileFields kAddress = 1 << 3;
 
-  PaymentsProfileComparator(const std::string& app_locale,
+  PaymentsProfileComparator(const base::i18n::LanguageTag& app_locale,
                             const PaymentOptionsProvider& options);
   virtual ~PaymentsProfileComparator();
 

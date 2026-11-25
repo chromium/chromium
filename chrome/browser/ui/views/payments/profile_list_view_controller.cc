@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/payments/profile_list_view_controller.h"
 
-#include <string>
-
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
@@ -135,8 +133,7 @@ class ShippingProfileViewController : public ProfileListViewController,
       autofill::AutofillProfile* profile,
       std::u16string* accessible_content) override {
     return GetShippingAddressLabelWithMissingInfo(
-        AddressStyleType::DETAILED,
-        std::string(state()->GetApplicationLocale().tag_string()), *profile,
+        AddressStyleType::DETAILED, state()->GetApplicationLocale(), *profile,
         *(state()->profile_comparator()), accessible_content,
         /*enabled=*/IsEnabled(profile));
   }
@@ -261,8 +258,7 @@ class ContactProfileViewController : public ProfileListViewController {
       std::u16string* accessible_content) override {
     CHECK(profile, base::NotFatalUntil::M162);
     return GetContactInfoLabel(
-        AddressStyleType::DETAILED,
-        std::string(state()->GetApplicationLocale().tag_string()), *profile,
+        AddressStyleType::DETAILED, state()->GetApplicationLocale(), *profile,
         /*request_payer_name=*/spec() && spec()->request_payer_name(),
         /*request_payer_email=*/spec() && spec()->request_payer_email(),
         /*request_payer_phone=*/spec() && spec()->request_payer_phone(),
