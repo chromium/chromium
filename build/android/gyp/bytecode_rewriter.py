@@ -7,21 +7,37 @@
 import argparse
 import contextlib
 import logging
+import os
 import sys
 import tempfile
 
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
-_MAIN_CLASS = 'org.chromium.bytecode.BytecodeRewriterMain'
+_BYTECODE_REWRITER_DIR = os.path.join(
+    build_utils.DIR_SOURCE_ROOT, 'build', 'android', 'bytecode', 'cipd'
+)
+_BYTECODE_REWRITER_BINARY = os.path.join(
+    _BYTECODE_REWRITER_DIR, 'bytecode_rewriter'
+)
+_BYTECODE_REWRITER_JAR = os.path.join(
+    _BYTECODE_REWRITER_DIR, 'bytecode_rewriter.jar'
+)
 
 # The real OS limit is generally >100 KiB (Linux MAX_ARG_STRLEN is 128 KiB),
 # so 10 KiB is a conservative threshold to switch to an @args response file.
 _MAX_CMDLINE = 10000
 
 
-def RunRewriter(jar_path, tool, tool_args):
-    cmd = build_utils.JavaCmd() + ['-cp', jar_path, _MAIN_CLASS, tool]
+def RunRewriter(tool, tool_args):
+    if build_utils.IS_LINUX_X64:
+        cmd = [
+            _BYTECODE_REWRITER_BINARY,
+            f'-Djava.home={build_utils.JAVA_HOME}',
+            tool,
+        ]
+    else:
+        cmd = build_utils.JavaCmd() + ['-jar', _BYTECODE_REWRITER_JAR, tool]
 
     with contextlib.ExitStack() as stack:
         if sum(len(x) for x in tool_args) <= _MAX_CMDLINE:
@@ -44,11 +60,6 @@ def main(argv):
     argv = build_utils.ExpandFileArgs(argv[1:])
     parser = argparse.ArgumentParser()
     action_helpers.add_depfile_arg(parser)
-    parser.add_argument(
-        '--jar-path',
-        required=True,
-        help='Path to the bytecode_rewriter fat jar.',
-    )
     parser.add_argument(
         '--tool',
         required=True,
@@ -74,7 +85,7 @@ def main(argv):
         args.input_jar,
         args.output_jar,
     ] + args.args
-    RunRewriter(args.jar_path, args.tool, tool_args)
+    RunRewriter(args.tool, tool_args)
 
 
 if __name__ == '__main__':

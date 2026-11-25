@@ -649,6 +649,16 @@ deps = {
       }
     ]
   },
+  'src/build/android/bytecode/cipd': {
+      'packages': [
+          {
+              'package': 'chromium/build/android/bytecode',
+              'version': 'WrBBJuYNugDktLx1-4IGhm6832Gy_ldRj7wgEYzcqjAC',
+          },
+      ],
+      'condition': 'checkout_android and non_git_source',
+      'dep_type': 'cipd',
+  },
   'src/build/linux/debian_bullseye_amd64-sysroot': {
     'bucket': 'chrome-linux-sysroot',
     'condition': 'checkout_linux and checkout_x64 and non_git_source',

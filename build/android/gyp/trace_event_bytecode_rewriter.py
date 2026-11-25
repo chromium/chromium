@@ -18,11 +18,6 @@ def main(argv):
     argv = build_utils.ExpandFileArgs(argv[1:])
     parser = argparse.ArgumentParser()
     action_helpers.add_depfile_arg(parser)
-    parser.add_argument(
-        '--jar-path',
-        required=True,
-        help='Path to the bytecode_rewriter fat jar.',
-    )
     parser.add_argument('--stamp', help='Path to stamp to mark when finished.')
     parser.add_argument('--classpath', action='append', nargs='+')
     parser.add_argument('--input-jars', action='append', nargs='+')
@@ -44,7 +39,7 @@ def main(argv):
         ':'.join(args.input_jars),
         ':'.join(args.output_jars),
     ]
-    bytecode_rewriter.RunRewriter(args.jar_path, 'trace_event_adder', tool_args)
+    bytecode_rewriter.RunRewriter('trace_event_adder', tool_args)
 
     build_utils.Touch(args.stamp)
 

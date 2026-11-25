@@ -4,8 +4,9 @@
 
 import("//build/config/android/rules.gni")
 
+# Prebuilt GraalVM binary + fat jar in cipd/ (built by 3pp/) are used by the
+# build. This target stays buildable for local compilation / Error Prone checks.
 java_library("bytecode_rewriter_java") {
-  visibility = [ ":*" ]
   jacoco_never_instrument = true
   sources = [
     "java/org/chromium/build/location_rewriter/LocationClass.java",
@@ -30,10 +31,4 @@ java_library("bytecode_rewriter_java") {
     "//build/android:stored_zip_writer_java",
     "//third_party/android_deps:org_ow2_asm_asm_java",
   ]
-}
-
-dist_jar("bytecode_rewriter") {
-  output = "$target_out_dir/bytecode_rewriter.jar"
-  supports_android = false
-  deps = [ ":bytecode_rewriter_java" ]
 }

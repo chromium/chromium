@@ -392,6 +392,7 @@ group("gn_all") {
       deps += [
         "//base:base_junit_tests",
         "//base/android/linker:chromium_android_linker",
+        "//build/android/bytecode:bytecode_rewriter_java",
         "//build/android/gyp/test:hello_world",
         "//build/android/stacktrace:java_deobfuscate",
         "//build/config/android/test/proto:test_build_protos",

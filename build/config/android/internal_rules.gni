@@ -147,16 +147,16 @@ _manifest_merger_jar_path =
 # the error message about why non-existent dependencies are there.
 build_config_target_suffix = "__build_config_crbug_908819"
 
-# Unified fat jar bundling location_rewriter, trace_event_adder, and
-# system_load_library_remover.
-_bytecode_rewriter_target =
-    "//build/android/bytecode:bytecode_rewriter($default_toolchain)"
-bytecode_rewriter_jar_path =
-    get_label_info(_bytecode_rewriter_target, "target_out_dir") +
-    "/bytecode_rewriter.jar"
-bytecode_rewriter_inputs =
-    java_paths_for_inputs + [ bytecode_rewriter_jar_path ]
-bytecode_rewriter_deps = [ _bytecode_rewriter_target ]
+# GraalVM native-image bundling location_rewriter, trace_event_adder, and
+# system_load_library_remover. Used on linux-x64 (including remote actions),
+# falling back to bytecode_rewriter.jar on the JVM elsewhere.
+bytecode_rewriter_inputs = native_image_java_paths_for_inputs +
+                           [ "//build/android/bytecode/cipd/bytecode_rewriter" ]
+if (!use_native_image_inputs) {
+  bytecode_rewriter_inputs +=
+      java_paths_for_inputs +
+      [ "//build/android/bytecode/cipd/bytecode_rewriter.jar" ]
+}
 
 # Write the target's .build_config.json file. This is a json file that contains
 # a dictionary of information about how to build this target (things that
@@ -4620,8 +4620,6 @@ if (enable_java_templates) {
         args = [
           "--depfile",
           rebase_path(depfile, root_build_dir),
-          "--jar-path",
-          rebase_path(bytecode_rewriter_jar_path, root_build_dir),
           "--tool",
           invoker.bytecode_rewriter,
           "--classpath",
@@ -4636,8 +4634,7 @@ if (enable_java_templates) {
         if (defined(invoker.bytecode_rewriter_args)) {
           args += invoker.bytecode_rewriter_args
         }
-        deps = _unprocessed_jar_deps + _javac_classpath_deps +
-               bytecode_rewriter_deps
+        deps = _unprocessed_jar_deps + _javac_classpath_deps
       }
 
       _unprocessed_jar_deps += [ ":$_rewritten_jar_target_name" ]
