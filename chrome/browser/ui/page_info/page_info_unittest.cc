@@ -197,9 +197,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     ASSERT_TRUE(page_info_ || incognito_page_info_)
         << "No PageInfo instance created.";
-    incognito_web_contents_.reset();
     page_info_.reset();
     incognito_page_info_.reset();
+    incognito_web_contents_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 

@@ -123,7 +123,8 @@ void PageInfoBubbleViewBase::OnWidgetDestroying(views::Widget* widget) {
 
 void PageInfoBubbleViewBase::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host->IsInPrimaryMainFrame()) {
+  if (render_frame_host->IsInPrimaryMainFrame() &&
+      !web_contents()->IsBeingDestroyed()) {
     GetWidget()->Close();
   }
 }
@@ -140,7 +141,13 @@ void PageInfoBubbleViewBase::PrimaryPageChanged(content::Page& page) {
 }
 
 void PageInfoBubbleViewBase::WebContentsDestroyed() {
-  GetWidget()->Close();
+  if (PageInfoBubbleTracker::GetBubble(web_contents()) == this) {
+    PageInfoBubbleTracker::FromWebContents(web_contents())->SetBubble(nullptr);
+  }
+  Observe(nullptr);
+  if (views::Widget* widget = GetWidget()) {
+    widget->CloseNow();
+  }
 }
 
 BEGIN_METADATA(PageInfoBubbleViewBase)

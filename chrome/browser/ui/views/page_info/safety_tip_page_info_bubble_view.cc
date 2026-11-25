@@ -186,9 +186,11 @@ void SafetyTipPageInfoBubbleView::RenderFrameDeleted(
     action_taken_ = SafetyTipInteraction::kCloseTab;
   }
 
-  // There's no great ClosedReason for this, so we use kUnspecified to signal
-  // that a more specific action_taken_ may have already been set.
-  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  if (!web_contents()->IsBeingDestroyed()) {
+    // There's no great ClosedReason for this, so we use kUnspecified to signal
+    // that a more specific action_taken_ may have already been set.
+    GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  }
 }
 
 void SafetyTipPageInfoBubbleView::OnVisibilityChanged(
