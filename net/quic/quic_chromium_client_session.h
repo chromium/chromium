@@ -26,6 +26,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
@@ -941,6 +942,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   // Creates a callback that returns whether this session is still alive.
   base::RepeatingCallback<bool()> CreateSessionAliveCallback();
+
+  // Returns a WeakPtr to this session.
+  base::WeakPtr<QuicChromiumClientSession> GetWeakPtr();
 
   // Called when NetworkChangeNotifier notifies observers of a newly
   // connected network. Migrates this session to the newly connected

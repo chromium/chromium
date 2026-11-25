@@ -22478,4 +22478,134 @@ TEST_P(
   socket_data2.ExpectAllWriteDataConsumed();
 }
 
+TEST_P(QuicSessionPoolTest, OnNetworkConnectedIgnoresClosingSession) {
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
+  quic_params_->migrate_sessions_on_network_change_v2 = true;
+  quic_params_->migrate_sessions_early_v2 = true;
+  quic_params_->migrate_idle_sessions = true;
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  if (VersionIsIetfQuic(version_.transport_version)) {
+    socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  }
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+
+  mock_ncn->SetConnectedNetworksList({});
+  mock_ncn->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+  ASSERT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+
+  RecordingNetLogObserver net_log_observer;
+
+  session->CloseSessionOnErrorLater(
+      ERR_NETWORK_CHANGED, quic::QUIC_NETWORK_IDLE_TIMEOUT,
+      quic::ConnectionCloseBehavior::SILENT_CLOSE);
+  ASSERT_EQ(1u, QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()));
+  ASSERT_FALSE(session->connection()->connected());
+
+  mock_ncn->SetConnectedNetworksList({kNewNetworkForTests});
+  pool_->OnNetworkConnected(kNewNetworkForTests);
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()) == 0u;
+  }));
+  EXPECT_EQ(1u,
+            net_log_observer
+                .GetEntriesWithType(
+                    NetLogEventType::QUIC_SESSION_POOL_PLATFORM_NOTIFICATION)
+                .size());
+  EXPECT_TRUE(
+      net_log_observer
+          .GetEntriesWithType(NetLogEventType::QUIC_SESSION_NETWORK_CONNECTED)
+          .empty());
+  EXPECT_TRUE(
+      net_log_observer
+          .GetEntriesWithType(
+              NetLogEventType::QUIC_CONNECTION_MIGRATION_ON_NETWORK_CONNECTED)
+          .empty());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, OnNetworkMadeDefaultIgnoresClosingSession) {
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  quic_params_->migrate_sessions_on_network_change_v2 = true;
+  quic_params_->migrate_sessions_early_v2 = true;
+  quic_params_->migrate_idle_sessions = true;
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  if (VersionIsIetfQuic(version_.transport_version)) {
+    socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  }
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+
+  RecordingNetLogObserver net_log_observer;
+
+  // Queue `OnNetworkMadeDefault` before `CloseSessionOnErrorLater` so the
+  // notification is processed before the deferred session cleanup task runs.
+  mock_ncn->QueueNetworkMadeDefault(kNewNetworkForTests);
+  session->CloseSessionOnErrorLater(
+      ERR_NETWORK_CHANGED, quic::QUIC_NETWORK_IDLE_TIMEOUT,
+      quic::ConnectionCloseBehavior::SILENT_CLOSE);
+  ASSERT_EQ(1u, QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()));
+  ASSERT_FALSE(session->connection()->connected());
+
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()) == 0u;
+  }));
+  EXPECT_EQ(1u,
+            net_log_observer
+                .GetEntriesWithType(
+                    NetLogEventType::QUIC_SESSION_POOL_PLATFORM_NOTIFICATION)
+                .size());
+  EXPECT_TRUE(net_log_observer
+                  .GetEntriesWithType(
+                      NetLogEventType::QUIC_SESSION_NETWORK_MADE_DEFAULT)
+                  .empty());
+  EXPECT_TRUE(net_log_observer
+                  .GetEntriesWithType(
+                      NetLogEventType::
+                          QUIC_CONNECTION_MIGRATION_ON_NETWORK_MADE_DEFAULT)
+                  .empty());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
 }  // namespace net::test

@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
@@ -4551,6 +4552,11 @@ QuicChromiumClientSession::CreateSessionAliveCallback() {
         return static_cast<bool>(session);
       },
       weak_factory_.GetWeakPtr());
+}
+
+base::WeakPtr<QuicChromiumClientSession>
+QuicChromiumClientSession::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void QuicChromiumClientSession::PopulateNetErrorDetails(

@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/metrics/field_trial.h"
@@ -1530,6 +1531,15 @@ void QuicSessionPool::OnIPAddressChanged(
   }
 }
 
+QuicSessionPool::WeakSessionList QuicSessionPool::GetCurrentSessions() const {
+  WeakSessionList current_sessions;
+  current_sessions.reserve(all_sessions_.size());
+  for (const auto& session : all_sessions_) {
+    current_sessions.push_back(session->GetWeakPtr());
+  }
+  return current_sessions;
+}
+
 void QuicSessionPool::OnNetworkConnected(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_CONNECTED, network);
   if (params_.migrate_sessions_on_network_change_v2) {
@@ -1543,12 +1553,12 @@ void QuicSessionPool::OnNetworkConnected(handles::NetworkHandle network) {
   }
   // Broadcast network connected to all sessions.
   // If migration is not turned on, session will not migrate but collect data.
-  auto it = all_sessions_.begin();
-  // Sessions may be deleted while iterating through the set.
-  while (it != all_sessions_.end()) {
-    QuicChromiumClientSession* session = it->get();
-    ++it;
-    session->OnNetworkConnected(network);
+  WeakSessionList current_sessions = GetCurrentSessions();
+  for (const base::WeakPtr<QuicChromiumClientSession>& session :
+       current_sessions) {
+    if (session && session->connection()->connected()) {
+      session->OnNetworkConnected(network);
+    }
   }
   NotifyOnNetworkEvent(net::NetworkChangeEvent::kConnected);
 }
@@ -1566,12 +1576,12 @@ void QuicSessionPool::OnNetworkDisconnected(handles::NetworkHandle network) {
   }
   // Broadcast network disconnected to all sessions.
   // If migration is not turned on, session will not migrate but collect data.
-  auto it = all_sessions_.begin();
-  // Sessions may be deleted while iterating through the set.
-  while (it != all_sessions_.end()) {
-    QuicChromiumClientSession* session = it->get();
-    ++it;
-    session->OnNetworkDisconnectedV2(/*disconnected_network*/ network);
+  WeakSessionList current_sessions = GetCurrentSessions();
+  for (const base::WeakPtr<QuicChromiumClientSession>& session :
+       current_sessions) {
+    if (session && session->connection()->connected()) {
+      session->OnNetworkDisconnectedV2(/*disconnected_network*/ network);
+    }
   }
   NotifyOnNetworkEvent(net::NetworkChangeEvent::kDisconnected);
 }
@@ -1609,12 +1619,12 @@ void QuicSessionPool::OnNetworkMadeDefault(handles::NetworkHandle network) {
                       });
   }
 
-  auto it = all_sessions_.begin();
-  // Sessions may be deleted while iterating through the set.
-  while (it != all_sessions_.end()) {
-    QuicChromiumClientSession* session = it->get();
-    ++it;
-    session->OnNetworkMadeDefault(network);
+  WeakSessionList current_sessions = GetCurrentSessions();
+  for (const base::WeakPtr<QuicChromiumClientSession>& session :
+       current_sessions) {
+    if (session && session->connection()->connected()) {
+      session->OnNetworkMadeDefault(network);
+    }
   }
   if (params_.migrate_sessions_on_network_change_v2) {
     set_has_quic_ever_worked_on_current_network(false);

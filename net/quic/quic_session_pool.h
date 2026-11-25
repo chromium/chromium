@@ -635,6 +635,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                raw_ptr<QuicChromiumClientSession, CtnExperimental>>;
   using SessionIdSet = std::set<std::unique_ptr<QuicChromiumClientSession>,
                                 base::UniquePtrComparator>;
+  using WeakSessionList = std::vector<base::WeakPtr<QuicChromiumClientSession>>;
   using AliasSet = std::set<QuicSessionAliasKey>;
   using SessionAliasMap = std::map<QuicChromiumClientSession*, AliasSet>;
   using SessionSet =
@@ -897,6 +898,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   void CollectDataOnPlatformNotification(
       enum QuicPlatformNotification notification,
       handles::NetworkHandle affected_network) const;
+
+  // Returns a copy of the current sessions as a list of WeakPtrs.
+  WeakSessionList GetCurrentSessions() const;
 
   // Completes the QuicCryptoClientConfigKey by removing the
   // NetworkAnonymizationKey if not applicable, and filling in the current
