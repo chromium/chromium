@@ -651,6 +651,44 @@ TEST_F(SelectionControllerTest, MAYBE_MiddleClickPasteToggle) {
   EXPECT_FALSE(Controller().HandlePasteGlobalSelection(mouse_event_down));
 }
 
+// https://crbug.com/40887639
+TEST_F(SelectionControllerTest, PenBarrelReleaseWhileDrawingDoesNotPaste) {
+  SetBodyContent("<div id=target style='width: 100px; height: 100px;'></div>");
+  GetFrame().GetSettings()->SetEditingBehaviorType(
+      mojom::EditingBehavior::kEditingUnixBehavior);
+  GetFrame().GetSettings()->SetMiddleClickPasteAllowed(true);
+  GetPage().GetFocusController().SetActive(true);
+  GetPage().GetFocusController().SetFocused(true);
+  UpdateAllLifecyclePhasesForTest();
+
+  const gfx::PointF point(25, 25);
+
+  // Releasing the pen's barrel button (mapped to kMiddle on Linux) while the
+  // tip is still touching (kLeftButtonDown) must not paste global selection.
+  WebMouseEvent barrel_up_while_drawing(
+      WebInputEvent::Type::kMouseUp, point, point,
+      WebMouseEvent::Button::kMiddle, 1,
+      WebInputEvent::Modifiers::kLeftButtonDown,
+      WebInputEvent::GetStaticTimeStampForTests());
+  barrel_up_while_drawing.pointer_type =
+      WebPointerProperties::PointerType::kPen;
+  barrel_up_while_drawing.SetFrameScale(1);
+  EXPECT_EQ(WebInputEventResult::kNotHandled,
+            GetFrame().GetEventHandler().HandleMouseReleaseEvent(
+                barrel_up_while_drawing));
+
+  // Releasing the barrel button while hovering (tip not touching) still pastes.
+  WebMouseEvent barrel_up_hovering(WebInputEvent::Type::kMouseUp, point, point,
+                                   WebMouseEvent::Button::kMiddle, 1,
+                                   WebInputEvent::Modifiers::kNoModifiers,
+                                   WebInputEvent::GetStaticTimeStampForTests());
+  barrel_up_hovering.pointer_type = WebPointerProperties::PointerType::kPen;
+  barrel_up_hovering.SetFrameScale(1);
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSystem,
+      GetFrame().GetEventHandler().HandleMouseReleaseEvent(barrel_up_hovering));
+}
+
 // http://crbug.com/362901608
 TEST_F(SelectionControllerTest, ClickOnPseudoElementLockedByItsOwnFocus) {
   InsertStyleElement(

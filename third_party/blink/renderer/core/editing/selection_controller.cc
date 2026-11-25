@@ -1352,11 +1352,17 @@ bool SelectionController::HandleMouseReleaseEvent(
 
   Selection().SelectFrameElementInParentIfFullySelected();
 
-  if (event.Event().button == WebPointerProperties::Button::kMiddle &&
-      !event.IsOverLink()) {
+  // Releasing a pen barrel button (mapped to the middle button on Linux) while
+  // the tip is in contact should not paste the global selection.
+  const WebMouseEvent& mouse_event = event.Event();
+  const bool is_pen_barrel_while_drawing =
+      mouse_event.pointer_type == WebPointerProperties::PointerType::kPen &&
+      (mouse_event.GetModifiers() & WebInputEvent::Modifiers::kLeftButtonDown);
+  if (mouse_event.button == WebPointerProperties::Button::kMiddle &&
+      !is_pen_barrel_while_drawing && !event.IsOverLink()) {
     // Ignore handled, since we want to paste to where the caret was placed
     // anyway.
-    handled = HandlePasteGlobalSelection(event.Event()) || handled;
+    handled = HandlePasteGlobalSelection(mouse_event) || handled;
   }
 
   return handled;
