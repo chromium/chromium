@@ -86,6 +86,13 @@ class RedactionTool {
   // and is used for metrics.
   std::string RedactAndKeepSelected(
       const std::string& input,
+      PIITypeSet pii_types_to_keep,
+      const base::Location& location = base::Location::Current());
+
+  // Same as above, but takes the PII types to keep as a std::set.
+  // TODO(crbug.com/433462519): Remove once all callers pass a PIITypeSet.
+  std::string RedactAndKeepSelected(
+      const std::string& input,
       const std::set<PIIType>& pii_types_to_keep,
       const base::Location& location = base::Location::Current());
 
@@ -136,9 +143,8 @@ class RedactionTool {
   // Redacts PII sensitive data that matches |pattern| from |input| and returns
   // the redacted string. Keeps the PII data that belongs to PII type in
   // |pii_types_to_keep| in the returned string.
-  std::string RedactAndKeepSelectedCustomPatterns(
-      std::string input,
-      const std::set<PIIType>& pii_types_to_keep);
+  std::string RedactAndKeepSelectedCustomPatterns(std::string input,
+                                                  PIITypeSet pii_types_to_keep);
 
   // Gets the caller of the Redaction tool by looking at the |location|.
   RedactionToolCaller GetCaller(const base::Location& location);

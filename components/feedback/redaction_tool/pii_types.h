@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEEDBACK_REDACTION_TOOL_PII_TYPES_H_
 #define COMPONENTS_FEEDBACK_REDACTION_TOOL_PII_TYPES_H_
 
+#include "base/containers/enum_set.h"
+
 namespace redaction {
 
 // PII (Personally Identifiable Information) types that can be detected in the
@@ -15,6 +17,7 @@ namespace redaction {
 enum class PIIType {
   // Indicates no PII. Mainly for testing.
   kNone = 0,
+  kMinValue = kNone,
   // Android App Storage paths. The path starts with either
   // /home/root/<hash>/data/data/<package_name>/ or
   // /home/root/<hash>/data/user_de/<number>/<package_name>/, the path
@@ -80,6 +83,9 @@ enum class PIIType {
   kBluetoothHidDevice = 19,
   kMaxValue = kBluetoothHidDevice,
 };
+
+// A set of PII types, stored inline as a bitset.
+using PIITypeSet = base::EnumSet<PIIType>;
 
 }  // namespace redaction
 

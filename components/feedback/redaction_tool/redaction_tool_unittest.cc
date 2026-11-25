@@ -828,7 +828,7 @@ TEST_F(RedactionToolTest, RedactAndKeepSelected) {
   }
   // Test RedactAndKeepSelected() with no PII type to keep.
   EXPECT_EQ(redaction_output,
-            redactor_.RedactAndKeepSelected(redaction_input, {}));
+            redactor_.RedactAndKeepSelected(redaction_input, PIITypeSet()));
   // Test RedactAndKeepSelected() by only keeping IP addresses in the redacted
   // output.
   std::string redaction_output_ip;
@@ -839,8 +839,15 @@ TEST_F(RedactionToolTest, RedactAndKeepSelected) {
       redaction_output_ip.append(s.post_redaction).append("\n");
     }
   }
-  EXPECT_EQ(redaction_output_ip, redactor_.RedactAndKeepSelected(
-                                     redaction_input, {PIIType::kIPAddress}));
+  EXPECT_EQ(redaction_output_ip,
+            redactor_.RedactAndKeepSelected(redaction_input,
+                                            PIITypeSet{PIIType::kIPAddress}));
+  // The std::set overload should behave the same way, and should ignore
+  // values outside the PIIType range instead of crashing.
+  EXPECT_EQ(redaction_output_ip,
+            redactor_.RedactAndKeepSelected(
+                redaction_input, std::set<PIIType>{PIIType::kIPAddress,
+                                                   static_cast<PIIType>(100)}));
   // Test RedactAndKeepSelected() by keeping MAC addresses and hashes in the
   // redacted output. The hashes that URLs and Android storage paths contain
   // will be redacted with the URL or Android storage path that they're part of.
@@ -853,20 +860,22 @@ TEST_F(RedactionToolTest, RedactAndKeepSelected) {
       redaction_output_mac_and_hashes.append(s.post_redaction).append("\n");
     }
   }
-  EXPECT_EQ(
-      redaction_output_mac_and_hashes,
-      redactor_.RedactAndKeepSelected(
-          redaction_input, {PIIType::kMACAddress, PIIType::kStableIdentifier}));
+  EXPECT_EQ(redaction_output_mac_and_hashes,
+            redactor_.RedactAndKeepSelected(
+                redaction_input,
+                PIITypeSet{PIIType::kMACAddress, PIIType::kStableIdentifier}));
 }
 
 TEST_F(RedactionToolTest, RedactUid) {
-  EXPECT_EQ("UID: (UID: 1)",
-            redactor_.RedactAndKeepSelected(
-                "UID: B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", {}));
+  EXPECT_EQ(
+      "UID: (UID: 1)",
+      redactor_.RedactAndKeepSelected(
+          "UID: B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", PIITypeSet()));
   // base64-encoded 33 bytes should not be treated as UID.
-  EXPECT_EQ("MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyCg==",
-            redactor_.RedactAndKeepSelected(
-                "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyCg==", {}));
+  EXPECT_EQ(
+      "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyCg==",
+      redactor_.RedactAndKeepSelected(
+          "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyCg==", PIITypeSet()));
 }
 
 TEST_F(RedactionToolTest, RedactAndKeepSelectedHashes) {
@@ -905,10 +914,10 @@ TEST_F(RedactionToolTest, RedactAndKeepSelectedHashes) {
     redaction_input.append(s.first).append("\n");
     redaction_output.append(s.second).append("\n");
   }
-  EXPECT_EQ(
-      redaction_output,
-      redactor_.RedactAndKeepSelected(
-          redaction_input, {PIIType::kAndroidAppStoragePath, PIIType::kURL}));
+  EXPECT_EQ(redaction_output,
+            redactor_.RedactAndKeepSelected(
+                redaction_input,
+                PIITypeSet{PIIType::kAndroidAppStoragePath, PIIType::kURL}));
 }
 
 TEST_F(RedactionToolTest, DetectPII) {

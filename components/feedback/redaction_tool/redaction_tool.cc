@@ -614,12 +614,28 @@ std::map<PIIType, std::set<std::string>> RedactionTool::Detect(
 std::string RedactionTool::Redact(const std::string& input,
                                   const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return RedactAndKeepSelected(input, /*pii_types_to_keep=*/{}, location);
+  return RedactAndKeepSelected(input, PIITypeSet(), location);
 }
 
 std::string RedactionTool::RedactAndKeepSelected(
     const std::string& input,
     const std::set<PIIType>& pii_types_to_keep,
+    const base::Location& location) {
+  PIITypeSet pii_type_set;
+  for (PIIType pii_type : pii_types_to_keep) {
+    // PIITypeSet::Put() CHECK-fails on values outside the enum range, while
+    // the std::set lookups this replaces ignored them. Skip such values so
+    // callers keep the old behavior instead of crashing.
+    if (pii_type >= PIIType::kMinValue && pii_type <= PIIType::kMaxValue) {
+      pii_type_set.Put(pii_type);
+    }
+  }
+  return RedactAndKeepSelected(input, pii_type_set, location);
+}
+
+std::string RedactionTool::RedactAndKeepSelected(
+    const std::string& input,
+    PIITypeSet pii_types_to_keep,
     const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AssertLongCPUWorkAllowed();
@@ -635,14 +651,13 @@ std::string RedactionTool::RedactAndKeepSelected(
   // well and the length could also match a MAC address. Since the credit card
   // check does additional validation against issuer length and Luhns checksum
   // the number of false positives should be lower when ordered like this.
-  if (pii_types_to_keep.find(PIIType::kCreditCard) == pii_types_to_keep.end()) {
+  if (!pii_types_to_keep.Has(PIIType::kCreditCard)) {
     redacted = RedactCreditCardNumbers(std::move(redacted), nullptr);
   }
-  if (pii_types_to_keep.find(PIIType::kMACAddress) == pii_types_to_keep.end()) {
+  if (!pii_types_to_keep.Has(PIIType::kMACAddress)) {
     redacted = RedactMACAddresses(std::move(redacted), nullptr);
   }
-  if (pii_types_to_keep.find(PIIType::kAndroidAppStoragePath) ==
-      pii_types_to_keep.end()) {
+  if (!pii_types_to_keep.Has(PIIType::kAndroidAppStoragePath)) {
     redacted = RedactAndroidAppStoragePaths(std::move(redacted), nullptr);
   }
 
@@ -651,14 +666,13 @@ std::string RedactionTool::RedactAndKeepSelected(
 
   // Do hashes last since they may appear in URLs and they also prevent us
   // from properly recognizing the Android storage paths.
-  if (pii_types_to_keep.find(PIIType::kStableIdentifier) ==
-      pii_types_to_keep.end()) {
+  if (!pii_types_to_keep.Has(PIIType::kStableIdentifier)) {
     // URLs and Android storage paths will be partially redacted (only hashes)
     // if |pii_types_to_keep| contains PIIType::kURL or
     // PIIType::kAndroidAppStoragePath and not PIIType::kStableIdentifier.
     redacted = RedactHashes(std::move(redacted), nullptr);
   }
-  if (pii_types_to_keep.find(PIIType::kIBAN) == pii_types_to_keep.end()) {
+  if (!pii_types_to_keep.Has(PIIType::kIBAN)) {
     redacted = RedactIbans(std::move(redacted), nullptr);
   }
 
@@ -1076,14 +1090,14 @@ std::string RedactionTool::RedactIbans(
 
 std::string RedactionTool::RedactAndKeepSelectedCustomPatterns(
     std::string input,
-    const std::set<PIIType>& pii_types_to_keep) {
+    PIITypeSet pii_types_to_keep) {
   for (const auto& pattern : kCustomPatternsWithContext) {
-    if (pii_types_to_keep.find(pattern.pii_type) == pii_types_to_keep.end()) {
+    if (!pii_types_to_keep.Has(pattern.pii_type)) {
       input = RedactCustomPatternWithContext(input, pattern, nullptr);
     }
   }
   for (const auto& pattern : kCustomPatternsWithoutContext) {
-    if (pii_types_to_keep.find(pattern.pii_type) == pii_types_to_keep.end()) {
+    if (!pii_types_to_keep.Has(pattern.pii_type)) {
       input = RedactCustomPatternWithoutContext(input, pattern, nullptr);
     }
   }
