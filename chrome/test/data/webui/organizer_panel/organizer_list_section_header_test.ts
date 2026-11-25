@@ -292,6 +292,40 @@ suite('OrganizerListSectionHeaderTest', () => {
         assertFalse(header.expanded);
       });
 
+  test('ignores arrow keys when modifier keys are held', async () => {
+    header.expanded = true;
+    await microtasksFinished();
+
+    const collapseEvent = new KeyboardEvent('keydown', {
+      key: 'ArrowLeft',
+      altKey: true,
+      metaKey: true,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    header.$.expandButton.dispatchEvent(collapseEvent);
+    await microtasksFinished();
+    assertFalse(collapseEvent.defaultPrevented);
+    assertTrue(header.expanded);
+
+    header.expanded = false;
+    await microtasksFinished();
+
+    const expandEvent = new KeyboardEvent('keydown', {
+      key: 'ArrowRight',
+      altKey: true,
+      metaKey: true,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    header.$.expandButton.dispatchEvent(expandEvent);
+    await microtasksFinished();
+    assertFalse(expandEvent.defaultPrevented);
+    assertFalse(header.expanded);
+  });
+
   test('tab navigation on expand button', async () => {
     header.expanded = true;
     await microtasksFinished();

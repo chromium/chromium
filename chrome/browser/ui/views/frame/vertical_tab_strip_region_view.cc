@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/hover_tab_selector.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -73,6 +75,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/focus/focus_search.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
@@ -117,6 +120,80 @@ constexpr base::TimeDelta kVerticalTabsExpandOnHoverVelocityHeuristicEdgeDelay =
     base::Milliseconds(200);
 
 }  // namespace
+
+// Focus traversable used while the organizer panel is embedded so Tab /
+// Shift+Tab cycles within `VerticalTabStripRegionView` (excluding
+// `content_area_view_` during the open animation) without relying on
+// `AccessiblePaneView`'s pane-navigation-only `pane_has_focus_` state.
+class VerticalTabStripRegionView::OrganizerPanelFocusTraversable
+    : public views::FocusTraversable,
+      public views::FocusSearch {
+ public:
+  explicit OrganizerPanelFocusTraversable(
+      VerticalTabStripRegionView& region_view)
+      : views::FocusSearch(&region_view,
+                           /*cycle=*/true,
+                           /*accessibility_mode=*/false),
+        region_view_(region_view) {}
+  OrganizerPanelFocusTraversable(const OrganizerPanelFocusTraversable&) =
+      delete;
+  OrganizerPanelFocusTraversable& operator=(
+      const OrganizerPanelFocusTraversable&) = delete;
+  ~OrganizerPanelFocusTraversable() override = default;
+
+  // views::FocusTraversable:
+  views::FocusSearch* GetFocusSearch() override { return this; }
+  views::FocusTraversable* GetFocusTraversableParent() override {
+    return nullptr;
+  }
+  views::View* GetFocusTraversableParentView() override { return nullptr; }
+
+  // views::FocusSearch:
+  views::View* FindNextFocusableView(
+      views::View* starting_view,
+      SearchDirection search_direction,
+      TraversalDirection traversal_direction,
+      StartingViewPolicy check_starting_view,
+      AnchoredDialogPolicy can_go_into_anchored_dialog,
+      views::FocusTraversable** focus_traversable,
+      views::View** focus_traversable_view) override {
+    auto is_in_content_area = [&](views::View* view) {
+      views::View* candidate = view ? view : *focus_traversable_view;
+      return candidate && region_view_->content_area_view_ &&
+             region_view_->content_area_view_->Contains(candidate);
+    };
+
+    views::View* next = views::FocusSearch::FindNextFocusableView(
+        starting_view, search_direction, traversal_direction,
+        check_starting_view, can_go_into_anchored_dialog, focus_traversable,
+        focus_traversable_view);
+    if (!is_in_content_area(next)) {
+      return next;
+    }
+
+    // Skip `content_area_view_` (and any dialog/`FocusTraversable` anchored
+    // inside it) in one step by resuming from its adjacent focus sibling.
+    *focus_traversable = nullptr;
+    *focus_traversable_view = nullptr;
+    views::View* sibling =
+        search_direction == SearchDirection::kForwards
+            ? region_view_->content_area_view_->GetNextFocusableView()
+            : region_view_->content_area_view_->GetPreviousFocusableView();
+    next = views::FocusSearch::FindNextFocusableView(
+        sibling, search_direction, TraversalDirection::kDown,
+        StartingViewPolicy::kCheckStartingView, can_go_into_anchored_dialog,
+        focus_traversable, focus_traversable_view);
+    if (is_in_content_area(next)) {
+      *focus_traversable = nullptr;
+      *focus_traversable_view = nullptr;
+      return nullptr;
+    }
+    return next;
+  }
+
+ private:
+  const raw_ref<VerticalTabStripRegionView> region_view_;
+};
 
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(VerticalTabStripRegionView,
                                        kAnimationCompletedEvent);
@@ -602,6 +679,36 @@ void VerticalTabStripRegionView::OnMouseExited(const ui::MouseEvent& event) {
   HandleMouseExited();
 }
 
+views::FocusTraversable* VerticalTabStripRegionView::GetPaneFocusTraversable() {
+  if (ShouldTrapFocusForOrganizerPanel()) {
+    if (!organizer_focus_traversable_) {
+      organizer_focus_traversable_ =
+          std::make_unique<OrganizerPanelFocusTraversable>(*this);
+    }
+    return organizer_focus_traversable_.get();
+  }
+  return BaseTabStripRegionView::GetPaneFocusTraversable();
+}
+
+bool VerticalTabStripRegionView::AcceleratorPressed(
+    const ui::Accelerator& accelerator) {
+  // `AccessiblePaneView` registers Escape and arrow/Home/End accelerators on
+  // pane entry. Ignore them while trapping focus for the organizer panel so
+  // `OrganizerPanelView` handles Escape and focus cannot escape or enter
+  // `content_area_view_`.
+  if (ShouldTrapFocusForOrganizerPanel()) {
+    return false;
+  }
+  return BaseTabStripRegionView::AcceleratorPressed(accelerator);
+}
+
+views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {
+  if (ShouldTrapFocusForOrganizerPanel()) {
+    return organizer_panel_view_;
+  }
+  return BaseTabStripRegionView::GetDefaultFocusableChild();
+}
+
 void VerticalTabStripRegionView::SetOrganizerPanelView(
     std::unique_ptr<views::View> panel_view) {
   CHECK(!organizer_panel_view_);
@@ -622,6 +729,15 @@ VerticalTabStripRegionView::TakeOrganizerPanelView() {
 
 bool VerticalTabStripRegionView::HasOrganizerPanelView() const {
   return organizer_panel_view_ != nullptr;
+}
+
+bool VerticalTabStripRegionView::ShouldTrapFocusForOrganizerPanel() const {
+  if (!organizer_panel_view_ || !organizer_panel_view_->GetVisible()) {
+    return false;
+  }
+  auto* const controller =
+      OrganizerPanelController::From(browser_view()->browser());
+  return controller && controller->IsOrganizerPanelEmbeddedInVerticalTabStrip();
 }
 
 void VerticalTabStripRegionView::HandleMouseExited() {

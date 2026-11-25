@@ -12,7 +12,7 @@ import './organizer_list_section_item_title.js';
 import type {CrUrlListItemElement, CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {MouseHoverableMixinLit} from '//resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
-import {isRTL} from '//resources/js/util.js';
+import {hasKeyModifiers, isRTL} from '//resources/js/util.js';
 import type {PropertyValues, TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Range} from '/tab_group_shared/search.js';
@@ -217,7 +217,7 @@ export class OrganizerListSectionItemElement extends
     }
 
     const forwardKey = isRTL() ? 'ArrowLeft' : 'ArrowRight';
-    if (e.key === forwardKey && actionButton) {
+    if (!hasKeyModifiers(e) && e.key === forwardKey && actionButton) {
       actionButton.focus();
       e.preventDefault();
       e.stopPropagation();
@@ -226,7 +226,8 @@ export class OrganizerListSectionItemElement extends
 
   protected onActionButtonKeydown_(e: KeyboardEvent) {
     const backwardKey = isRTL() ? 'ArrowRight' : 'ArrowLeft';
-    if ((e.key === 'Tab' && e.shiftKey) || e.key === backwardKey) {
+    if ((e.key === 'Tab' && e.shiftKey) ||
+        (!hasKeyModifiers(e) && e.key === backwardKey)) {
       this.focus();
       e.preventDefault();
       e.stopPropagation();

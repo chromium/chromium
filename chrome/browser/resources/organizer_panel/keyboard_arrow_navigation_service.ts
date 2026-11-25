@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {hasKeyModifiers} from '//resources/js/util.js';
+
 /**
  * Navigates focus through focusable elements using ArrowUp and ArrowDown keys.
  */
@@ -94,6 +96,10 @@ export class KeyArrowNavigationService {
   }
 
   private handleKeyArrowEvent_(event: KeyboardEvent) {
+    if (hasKeyModifiers(event)) {
+      return;
+    }
+
     const {key} = event;
     if (key !== 'ArrowUp' && key !== 'ArrowDown') {
       return;

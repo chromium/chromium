@@ -4,7 +4,7 @@
 
 import {KeyArrowNavigationService} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 suite('KeyArrowNavigationServiceTest', () => {
   let service: KeyArrowNavigationService;
@@ -42,13 +42,18 @@ suite('KeyArrowNavigationServiceTest', () => {
     return {root, items: [item1, item2, item3]};
   }
 
-  function dispatchArrowEvent(element: HTMLElement, key: string) {
-    element.dispatchEvent(new KeyboardEvent('keydown', {
+  function dispatchArrowEvent(
+      element: HTMLElement, key: string,
+      modifiers: KeyboardEventInit = {}): KeyboardEvent {
+    const event = new KeyboardEvent('keydown', {
       key,
       bubbles: true,
       composed: true,
       cancelable: true,
-    }));
+      ...modifiers,
+    });
+    element.dispatchEvent(event);
+    return event;
   }
 
   setup(() => {
@@ -153,4 +158,25 @@ suite('KeyArrowNavigationServiceTest', () => {
         assertEquals(1, service.getElementsForTesting().length);
         assertEquals(items[0], service.getElementAtFocusIndexForTesting());
       });
+
+  test('Ignores arrow keys with modifier keys', () => {
+    items[0]!.focus();
+    assertEquals('item1', getDeepActiveElement()!.id);
+
+    for (const modifiers
+             of [{altKey: true},
+                 {ctrlKey: true},
+                 {metaKey: true},
+                 {shiftKey: true},
+                 {altKey: true, metaKey: true},
+    ]) {
+      assertFalse(dispatchArrowEvent(items[0]!, 'ArrowDown', modifiers)
+                      .defaultPrevented);
+      assertEquals('item1', getDeepActiveElement()!.id);
+
+      assertFalse(
+          dispatchArrowEvent(items[0]!, 'ArrowUp', modifiers).defaultPrevented);
+      assertEquals('item1', getDeepActiveElement()!.id);
+    }
+  });
 });

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
@@ -61,7 +63,11 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/interactive_views_test.h"
+#include "ui/views/interaction/view_focus_observer.h"
 #include "ui/views/view_decoration.h"
 #include "ui/views/view_tracker.h"
 
@@ -806,6 +812,60 @@ IN_PROC_BROWSER_TEST_F(
       CheckPanelVisuals(tabs::kVerticalTabStripDefaultUncollapsedWidth, false));
 }
 
+IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, EmbeddedPanelPaneFocusRotation) {
+  const DeepQuery kAppQuery{"organizer-panel-app"};
+  ui::Accelerator next_pane;
+  ui::Accelerator prev_pane;
+  ASSERT_TRUE(browser_view()->GetAccelerator(IDC_FOCUS_NEXT_PANE, &next_pane));
+  ASSERT_TRUE(
+      browser_view()->GetAccelerator(IDC_FOCUS_PREVIOUS_PANE, &prev_pane));
+
+  RunTestSequence(
+      ObserveState(views::test::kCurrentFocusedViewId,
+                   browser_view()->GetWidget()),
+      SetVerticalTabsEnabled(true), OpenOrganizerPanel(), WaitForPanelLoad(),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   OrganizerPanelView::kWebViewElementId),
+      WaitForJsResultAt(kWebContentsId, kAppQuery,
+                        "el => el.$.searchField.isSearchFocused()", true),
+      // Rotating to the next pane from `collapse_button_` exits
+      // `VerticalTabStripRegionView` to the web contents, and rotating back to
+      // the previous pane returns to #searchField.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB, ui::EF_SHIFT_DOWN),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   kTabSearchButtonElementId),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB, ui::EF_SHIFT_DOWN),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   kVerticalTabStripCollapseButtonElementId),
+      SendAccelerator(kBrowserViewElementId, next_pane),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   ContentsWebView::kContentsWebViewElementId),
+      SendAccelerator(kBrowserViewElementId, prev_pane),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   OrganizerPanelView::kWebViewElementId),
+      WaitForJsResultAt(kWebContentsId, kAppQuery,
+                        "el => el.$.searchField.isSearchFocused()", true),
+      // Even if #list held focus before rotating panes, returning to the
+      // vertical tab strip pane resets WebUI focus back to #searchField.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB),
+      WaitForJsResultAt(kWebContentsId, kAppQuery,
+                        "el => el.shadowRoot.activeElement === el.$.list && "
+                        "!el.$.searchField.isSearchFocused()",
+                        true),
+      SendAccelerator(kBrowserViewElementId, next_pane),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   ContentsWebView::kContentsWebViewElementId),
+      SendAccelerator(kBrowserViewElementId, prev_pane),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   OrganizerPanelView::kWebViewElementId),
+      WaitForJsResultAt(kWebContentsId, kAppQuery,
+                        "el => el.$.searchField.isSearchFocused()", true),
+      // Escape still closes the panel after entering via pane rotation.
+      SendAccelerator(kBrowserViewElementId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
+      WaitForPanelClose());
+}
+
 class OrganizerPanelAnimationUiTest : public OrganizerPanelUiTest {
  public:
   OrganizerPanelAnimationUiTest() = default;
@@ -814,20 +874,35 @@ class OrganizerPanelAnimationUiTest : public OrganizerPanelUiTest {
   void SetUpOnMainThread() override {
     OrganizerPanelUiTest::SetUpOnMainThread();
 
-    auto container = base::MakeRefCounted<gfx::AnimationContainer>();
+    container_ = base::MakeRefCounted<gfx::AnimationContainer>();
     BrowserAnimationController::From(browser())
         ->SetAnimationContainerForTesting(
-            OrganizerPanelAnimations::kOrganizerPanel, container.get());
+            OrganizerPanelAnimations::kOrganizerPanel, container_.get());
     animation_test_api_ =
-        std::make_unique<gfx::AnimationContainerTestApi>(container.get());
+        std::make_unique<gfx::AnimationContainerTestApi>(container_.get());
   }
 
   void TearDownOnMainThread() override {
     animation_test_api_.reset();
+    container_.reset();
     OrganizerPanelUiTest::TearDownOnMainThread();
   }
 
+  auto AdvanceAnimationByFraction(double fraction) {
+    return Do([this, fraction]() {
+      // Recreate the test API after an animation starts because
+      // `AnimationContainer::Start()` restarts the wall-clock runner timer.
+      animation_test_api_ =
+          std::make_unique<gfx::AnimationContainerTestApi>(container_.get());
+      const base::TimeDelta duration =
+          BrowserAnimationController::From(browser())->GetMotionDuration(
+              OrganizerPanelAnimations::kOrganizerPanel);
+      animation_test_api_->IncrementTime(duration * fraction);
+    });
+  }
+
  protected:
+  scoped_refptr<gfx::AnimationContainer> container_;
   std::unique_ptr<gfx::AnimationContainerTestApi> animation_test_api_;
 };
 
@@ -878,6 +953,118 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelAnimationUiTest,
             "Tab strip and region have same width."),
       Check([&]() { return organizer_panel_bounds.x() < region_bounds.x(); },
             "Organizer panel is clipped on the left."));
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelAnimationUiTest,
+                       EmbeddedPanelFocusTrappingAndAnimation) {
+  const DeepQuery kAppQuery{"organizer-panel-app"};
+  ui::Accelerator prev_pane;
+  ASSERT_TRUE(
+      browser_view()->GetAccelerator(IDC_FOCUS_PREVIOUS_PANE, &prev_pane));
+  std::unique_ptr<views::BubbleDialogDelegate> anchored_bubble;
+  std::unique_ptr<views::Widget> anchored_bubble_widget;
+
+  RunTestSequence(
+      ObserveState(views::test::kCurrentFocusedViewId,
+                   browser_view()->GetWidget()),
+      SetVerticalTabsEnabled(true), PressButton(kTabSearchButtonElementId),
+      AdvanceAnimationByFraction(0.5), WaitForShow(kOrganizerPanelElementId),
+      WaitForPanelLoad(),
+      // During the open animation (0 < show_percent < 1), `content_area_view_`
+      // and `NewTabButton` remain visible, and even an anchored dialog inside
+      // `content_area_view_` is skipped by Tab / Shift+Tab focus traversal.
+      EnsurePresent(kNewTabButtonElementId),
+      WithView(kNewTabButtonElementId,
+               [&anchored_bubble,
+                &anchored_bubble_widget](views::View* new_tab_button) {
+                 anchored_bubble =
+                     std::make_unique<views::BubbleDialogDelegate>(
+                         new_tab_button, views::BubbleBorder::LEFT_CENTER);
+                 anchored_bubble->set_close_on_deactivate(false);
+                 anchored_bubble->SetContentsView(
+                     std::make_unique<views::LabelButton>(
+                         views::Button::PressedCallback(), u"Test"));
+                 anchored_bubble_widget =
+                     views::BubbleDialogDelegate::CreateBubble(
+                         anchored_bubble.get());
+                 anchored_bubble_widget->ShowInactive();
+               }),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   OrganizerPanelView::kWebViewElementId),
+      WaitForJsResultAt(kWebContentsId, kAppQuery,
+                        "el => el.$.searchField.isSearchFocused()", true),
+      // Shift+Tab from #searchField visits close button -> collapse button ->
+      // wraps to the last #list control without entering the anchored dialog
+      // or overwriting focus back to #searchField.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB, ui::EF_SHIFT_DOWN),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   kTabSearchButtonElementId),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB, ui::EF_SHIFT_DOWN),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   kVerticalTabStripCollapseButtonElementId),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB, ui::EF_SHIFT_DOWN),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   OrganizerPanelView::kWebViewElementId),
+      WaitForJsResultAt(kWebContentsId, kAppQuery,
+                        "el => el.shadowRoot.activeElement === el.$.list && "
+                        "!el.$.searchField.isSearchFocused()",
+                        true),
+      // Forward Tab from that last #list control wraps back through collapse
+      // button -> close button -> #searchField, also skipping
+      // `content_area_view_` and the anchored dialog.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   kVerticalTabStripCollapseButtonElementId),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   kTabSearchButtonElementId),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   OrganizerPanelView::kWebViewElementId),
+      WaitForJsResultAt(kWebContentsId, kAppQuery,
+                        "el => el.$.searchField.isSearchFocused()", true),
+      Do([&anchored_bubble_widget, &anchored_bubble]() {
+        if (anchored_bubble_widget) {
+          anchored_bubble_widget->CloseNow();
+          anchored_bubble_widget.reset();
+        }
+        anchored_bubble.reset();
+      }),
+      // Finish opening, then start closing so the panel is mid-hide animation.
+      AdvanceAnimationByFraction(0.5), WaitForPanelOpen(),
+      PressButton(kTabSearchButtonElementId), AdvanceAnimationByFraction(0.5),
+      EnsurePresent(kOrganizerPanelElementId),
+      // Focus stops being trapped as soon as `SetOrganizerVisible(false)`
+      // starts closing, even while the panel view is still visible
+      // mid-animation.
+      FocusElement(kVerticalTabStripCollapseButtonElementId),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   kVerticalTabStripCollapseButtonElementId),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB, ui::EF_SHIFT_DOWN),
+      PollUntil(
+          [this]() {
+            auto* const focused_view =
+                browser_view()->GetFocusManager()->GetFocusedView();
+            return focused_view &&
+                   !browser_view()
+                        ->vertical_tab_strip_region_view_for_testing()
+                        ->Contains(focused_view);
+          },
+          "Focus escapes vertical tab strip once panel starts closing."),
+      // Finish the hide animation and verify normal vertical tab strip focus
+      // behavior returns (rotating into the pane focuses the active tab).
+      AdvanceAnimationByFraction(1.0), WaitForPanelClose(),
+      FocusElement(ContentsWebView::kContentsWebViewElementId),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   ContentsWebView::kContentsWebViewElementId),
+      SendAccelerator(kBrowserViewElementId, prev_pane),
+      PollUntil(
+          [this]() {
+            return browser_view()
+                       ->vertical_tab_strip_region_view_for_testing()
+                       ->GetFocusedTabIndex() == 0;
+          },
+          "Rotating into the pane focuses active tab after panel closes."));
 }
 
 class OrganizerPanelPixelTest : public OrganizerPanelUiTest {

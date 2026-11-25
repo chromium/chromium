@@ -16,7 +16,7 @@ import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/c
 import {MouseHoverableMixinLit} from '//resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {isRTL} from '//resources/js/util.js';
+import {hasKeyModifiers, isRTL} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -154,26 +154,28 @@ export class OrganizerListSectionHeaderElement extends
   }
 
   protected onExpandButtonKeydown_(e: KeyboardEvent) {
-    const isRtl = isRTL();
-    const forwardKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
-    const backwardKey = isRtl ? 'ArrowRight' : 'ArrowLeft';
+    if (!hasKeyModifiers(e)) {
+      const isRtl = isRTL();
+      const forwardKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
+      const backwardKey = isRtl ? 'ArrowRight' : 'ArrowLeft';
 
-    if (e.key === forwardKey) {
-      if (!this.disabled && !this.expanded) {
-        this.setExpandedFromUser_(true);
-        e.preventDefault();
-        e.stopPropagation();
+      if (e.key === forwardKey) {
+        if (!this.disabled && !this.expanded) {
+          this.setExpandedFromUser_(true);
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        return;
       }
-      return;
-    }
 
-    if (e.key === backwardKey) {
-      if (!this.disabled && this.expanded) {
-        this.setExpandedFromUser_(false);
-        e.preventDefault();
-        e.stopPropagation();
+      if (e.key === backwardKey) {
+        if (!this.disabled && this.expanded) {
+          this.setExpandedFromUser_(false);
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        return;
       }
-      return;
     }
 
     if (e.key === 'Tab') {

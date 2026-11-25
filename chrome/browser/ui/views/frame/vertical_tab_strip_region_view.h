@@ -109,6 +109,11 @@ class VerticalTabStripRegionView final
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  views::FocusTraversable* GetPaneFocusTraversable() override;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+
+  // views::AccessiblePaneView:
+  views::View* GetDefaultFocusableChild() override;
 
   std::unique_ptr<ExpandOnHoverLock> GetExpandOnHoverLock(
       ExpandOnHoverLockType lock_type) override;
@@ -172,6 +177,8 @@ class VerticalTabStripRegionView final
     raw_ptr<VerticalTabStripRegionView> region_view_;
   };
 
+  class OrganizerPanelFocusTraversable;
+
   // Used to create and destroy locks for the expand on hover state.
   friend class VerticalTabStripExpandOnHoverLock;
 
@@ -179,6 +186,7 @@ class VerticalTabStripRegionView final
   void SetOrganizerPanelView(std::unique_ptr<views::View> panel_view) override;
   std::unique_ptr<views::View> TakeOrganizerPanelView() override;
   bool HasOrganizerPanelView() const override;
+  bool ShouldTrapFocusForOrganizerPanel() const;
 
   void HandleMouseExited();
 
@@ -283,6 +291,7 @@ class VerticalTabStripRegionView final
       hover_card_animation_lock_;
 
   RegionViewFocusListener focus_listener_{this};
+  std::unique_ptr<OrganizerPanelFocusTraversable> organizer_focus_traversable_;
   std::unique_ptr<VerticalTabStripFocusSwipeController> focus_swipe_controller_;
 
   // Allows the swipe controller to inspect tab dragging state and rotate

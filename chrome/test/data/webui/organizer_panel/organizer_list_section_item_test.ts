@@ -723,12 +723,15 @@ suite('OrganizerListSectionItemTest', () => {
     assertFalse(currentSectionFired);
   });
 
-  function dispatchKeydown(element: HTMLElement, key: string): KeyboardEvent {
+  function dispatchKeydown(
+      element: HTMLElement, key: string,
+      modifiers: KeyboardEventInit = {}): KeyboardEvent {
     const event = new KeyboardEvent('keydown', {
       key,
       bubbles: true,
       composed: true,
       cancelable: true,
+      ...modifiers,
     });
     element.dispatchEvent(event);
     return event;
@@ -805,5 +808,23 @@ suite('OrganizerListSectionItemTest', () => {
     } finally {
       document.documentElement.dir = previousDir;
     }
+  });
+
+  test('ignores arrow keys with modifier keys on item', async () => {
+    const {itemFocusable, actionButton} = await setupItemWithActionButton();
+
+    assertFalse(dispatchKeydown(listItem.$.crUrlListItem, 'ArrowRight', {
+                  altKey: true,
+                  metaKey: true,
+                }).defaultPrevented);
+    assertEquals(itemFocusable, getDeepActiveElement());
+
+    actionButton.focus();
+    assertEquals(actionButton, getDeepActiveElement());
+    assertFalse(dispatchKeydown(actionButton, 'ArrowLeft', {
+                  altKey: true,
+                  metaKey: true,
+                }).defaultPrevented);
+    assertEquals(actionButton, getDeepActiveElement());
   });
 });
