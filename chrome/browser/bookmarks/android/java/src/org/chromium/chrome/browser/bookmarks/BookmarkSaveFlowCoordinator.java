@@ -228,7 +228,7 @@ public class BookmarkSaveFlowCoordinator implements ActivityStateListener {
 
     private class BookmarkSaveFlowBottomSheetContent implements BottomSheetContent {
         private static final BottomSheetType BOTTOM_SHEET_TYPE =
-                new BottomSheetType.Builder().setUserInitiated(true).build();
+                new BottomSheetType.Builder().setUserInitiated(true).setModal(false).build();
 
         private final View mContentView;
 

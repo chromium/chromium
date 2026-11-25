@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -38,6 +39,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
@@ -54,6 +56,7 @@ import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetFeatureMap;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -362,6 +365,29 @@ public class BookmarkSaveFlowTest {
         mRenderTestRule.render(
                 mBookmarkSaveFlowCoordinator.getViewForTesting(),
                 "bookmark_save_flow_shopping_list_item_from_heuristic_save_failed");
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_TYPES)
+    public void testBookmarkSaveFlow_DoesNotShowScrim() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+                    mBookmarkSaveFlowCoordinator.show(id);
+                    return null;
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // The scrim is shown in onSheetOpened() for modal sheets, so it would be visible by now.
+        boolean isShowingScrim =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mBottomSheetController
+                                        .getScrimManager()
+                                        .getScrimVisibilitySupplier()
+                                        .get());
+        assertFalse("The save flow should not dim the page behind it.", isShowingScrim);
     }
 
     @Test
