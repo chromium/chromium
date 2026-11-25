@@ -361,8 +361,6 @@ suite('OmniboxPopupSearchboxTest', function() {
 
   test('EnterKeySubmitsVerbatimMatchWhenNoMatchSelected', async () => {
     for (const virtualFocus of [false, true]) {
-      loadTimeData.overrideValues(
-          {realboxVirtualFocusNavigation: virtualFocus});
       searchbox.virtualFocusEnabled = virtualFocus;
       testProxy.handler.resetResolver('openAutocompleteMatch');
 
@@ -428,8 +426,6 @@ suite('OmniboxPopupSearchboxTest', function() {
       'CtrlEnterInKeywordModeSubmitsVerbatimMatchWhenNoMatchSelected',
       async () => {
         for (const virtualFocus of [false, true]) {
-          loadTimeData.overrideValues(
-              {realboxVirtualFocusNavigation: virtualFocus});
           searchbox.virtualFocusEnabled = virtualFocus;
           testProxy.handler.resetResolver('openAutocompleteMatch');
 
@@ -5714,9 +5710,6 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test('TabKeyWithVirtualFocusNavigatesToKeywordChip', async () => {
-   loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
-   searchbox.virtualFocusEnabled = true;
-
    const match = createSearchMatch({
      allowedToBeDefaultMatch: true,
      fillIntoEdit: 'youtube.com',
@@ -5773,9 +5766,6 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test('EnterKeyWithVirtualFocusOnRemoveSuggestionDeletesMatch', async () => {
-   loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
-   searchbox.virtualFocusEnabled = true;
-
    const match = createSearchMatch({
      destinationUrl: 'https://example.com/delete',
      supportsDeletion: true,
@@ -5858,8 +5848,6 @@ suite('OmniboxPopupSearchboxTest', function() {
  test(
      'EnterOrSpaceKeyWithVirtualFocusOnContextualEntrypointOpensContextMenu',
      async () => {
-       loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
-       searchbox.virtualFocusEnabled = true;
        searchbox.dropdownIsVisible = true;
        testProxy.initVisibilityPrefs();
        testProxy.page.updateAimPopupEligibility(true);
@@ -5889,7 +5877,6 @@ suite('OmniboxPopupSearchboxTest', function() {
  test('EnterKeyWithVirtualFocusOnLensSearchIconOpensLensSearch', async () => {
    document.body.innerHTML = window.trustedTypes!.emptyHTML;
    loadTimeData.overrideValues({
-     realboxVirtualFocusNavigation: true,
      hideClassicContextButton: false,
      contextualMenuUsePecApi: false,
      searchboxLayoutMode: 'TallBottomContext',
@@ -5898,7 +5885,6 @@ suite('OmniboxPopupSearchboxTest', function() {
    });
    const localSearchbox = document.createElement('omnibox-popup-searchbox');
    localSearchbox.dropdownIsVisible = true;
-   localSearchbox.virtualFocusEnabled = true;
    document.body.appendChild(localSearchbox);
    await microtasksFinished();
 
@@ -5926,7 +5912,6 @@ suite('OmniboxPopupSearchboxTest', function() {
  test('EnterKeyWithVirtualFocusOnLensSearchChipOpensLensSearch', async () => {
    document.body.innerHTML = window.trustedTypes!.emptyHTML;
    loadTimeData.overrideValues({
-     realboxVirtualFocusNavigation: true,
      hideClassicContextButton: false,
      contextualMenuUsePecApi: false,
      searchboxLayoutMode: 'TallBottomContext',
@@ -5935,7 +5920,6 @@ suite('OmniboxPopupSearchboxTest', function() {
    });
    const localSearchbox = document.createElement('omnibox-popup-searchbox');
    localSearchbox.dropdownIsVisible = true;
-   localSearchbox.virtualFocusEnabled = true;
    document.body.appendChild(localSearchbox);
    await microtasksFinished();
 
@@ -5963,7 +5947,6 @@ suite('OmniboxPopupSearchboxTest', function() {
  test('EnterKeyWithVirtualFocusOnCurrentTabChipAddsTabContext', async () => {
    document.body.innerHTML = window.trustedTypes!.emptyHTML;
    loadTimeData.overrideValues({
-     realboxVirtualFocusNavigation: true,
      hideClassicContextButton: false,
      contextualMenuUsePecApi: false,
      searchboxLayoutMode: 'TallBottomContext',
@@ -5984,7 +5967,6 @@ suite('OmniboxPopupSearchboxTest', function() {
 
    const localSearchbox = document.createElement('omnibox-popup-searchbox');
    localSearchbox.dropdownIsVisible = true;
-   localSearchbox.virtualFocusEnabled = true;
    document.body.appendChild(localSearchbox);
    await microtasksFinished();
 
@@ -6046,14 +6028,12 @@ suite('OmniboxPopupSearchboxTest', function() {
      async () => {
        document.body.innerHTML = window.trustedTypes!.emptyHTML;
        loadTimeData.overrideValues({
-         realboxVirtualFocusNavigation: true,
          hideClassicContextButton: false,
          contextualMenuUsePecApi: false,
          searchboxLayoutMode: 'TallBottomContext',
        });
        const localSearchbox = document.createElement('omnibox-popup-searchbox');
        localSearchbox.dropdownIsVisible = true;
-       localSearchbox.virtualFocusEnabled = true;
        document.body.appendChild(localSearchbox);
        await microtasksFinished();
 
@@ -6189,7 +6169,6 @@ suite('OmniboxPopupSearchboxTest', function() {
  test('ShiftTabAndTabWithVirtualFocusCyclesThroughLensSearchIcon', async () => {
    document.body.innerHTML = window.trustedTypes!.emptyHTML;
    loadTimeData.overrideValues({
-     realboxVirtualFocusNavigation: true,
      hideClassicContextButton: false,
      contextualMenuUsePecApi: false,
      searchboxLayoutMode: 'TallBottomContext',
@@ -6198,7 +6177,6 @@ suite('OmniboxPopupSearchboxTest', function() {
    });
    const localSearchbox = document.createElement('omnibox-popup-searchbox');
    localSearchbox.dropdownIsVisible = true;
-   localSearchbox.virtualFocusEnabled = true;
    document.body.appendChild(localSearchbox);
    await microtasksFinished();
 
@@ -6272,7 +6250,6 @@ suite('OmniboxPopupSearchboxTest', function() {
  test('ShiftTabAndTabWithVirtualFocusCyclesThroughLensSearchChip', async () => {
    document.body.innerHTML = window.trustedTypes!.emptyHTML;
    loadTimeData.overrideValues({
-     realboxVirtualFocusNavigation: true,
      hideClassicContextButton: false,
      contextualMenuUsePecApi: false,
      searchboxLayoutMode: 'TallBottomContext',
@@ -6281,7 +6258,6 @@ suite('OmniboxPopupSearchboxTest', function() {
    });
    const localSearchbox = document.createElement('omnibox-popup-searchbox');
    localSearchbox.dropdownIsVisible = true;
-   localSearchbox.virtualFocusEnabled = true;
    document.body.appendChild(localSearchbox);
    await microtasksFinished();
 
@@ -6358,7 +6334,6 @@ suite('OmniboxPopupSearchboxTest', function() {
      async () => {
        document.body.innerHTML = window.trustedTypes!.emptyHTML;
        loadTimeData.overrideValues({
-         realboxVirtualFocusNavigation: true,
          hideClassicContextButton: false,
          contextualMenuUsePecApi: false,
          searchboxLayoutMode: 'TallBottomContext',
@@ -6379,7 +6354,6 @@ suite('OmniboxPopupSearchboxTest', function() {
 
        const localSearchbox = document.createElement('omnibox-popup-searchbox');
        localSearchbox.dropdownIsVisible = true;
-       localSearchbox.virtualFocusEnabled = true;
        document.body.appendChild(localSearchbox);
        await microtasksFinished();
 
@@ -6600,8 +6574,6 @@ suite('OmniboxPopupSearchboxTest', function() {
  test(
      'TabKeyWithDropdownVisibleDelegatesToSuperWhenVirtualFocusEnabled',
      async () => {
-       loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
-       searchbox.virtualFocusEnabled = true;
        searchbox.dropdownIsVisible = true;
 
        const match = createSearchMatch({
