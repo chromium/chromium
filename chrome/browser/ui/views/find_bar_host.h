@@ -7,12 +7,14 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/views/find_bar_owner.h"
 #include "chrome/browser/ui/views/find_bar_view.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -229,6 +231,9 @@ class FindBarHost : public FindBar,
   // or any of its children. Used to restore focus once the FindBarHost's view
   // is closed.
   std::unique_ptr<views::ExternalFocusTracker> focus_tracker_;
+
+  // Keys whose presses were forwarded to the renderer and not yet released.
+  base::flat_set<ui::KeyboardCode> forwarded_key_presses_;
 
   // Observation over the host's FocusManager.
   base::ScopedObservation<views::FocusManager, views::FocusChangeListener>

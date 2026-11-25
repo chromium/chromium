@@ -205,6 +205,13 @@ FindBarHost::~FindBarHost() {
 }
 
 bool FindBarHost::MaybeForwardKeyEventToWebpage(const ui::KeyEvent& key_event) {
+  // Forward a release only if its press was forwarded. When an IME consumes
+  // the press, claiming the release ends the composition.
+  const bool is_release = key_event.type() == ui::EventType::kKeyReleased;
+  if (is_release && !forwarded_key_presses_.contains(key_event.key_code())) {
+    return false;
+  }
+
   switch (key_event.key_code()) {
     case ui::VKEY_DOWN:
     case ui::VKEY_UP:
@@ -223,6 +230,12 @@ bool FindBarHost::MaybeForwardKeyEventToWebpage(const ui::KeyEvent& key_event) {
 
   if (!web_contents()) {
     return false;
+  }
+
+  if (is_release) {
+    forwarded_key_presses_.erase(key_event.key_code());
+  } else {
+    forwarded_key_presses_.insert(key_event.key_code());
   }
 
   // Make sure we don't have a text field element interfering with keyboard

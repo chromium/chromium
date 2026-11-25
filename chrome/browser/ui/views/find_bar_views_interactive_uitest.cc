@@ -468,6 +468,26 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, TextFieldAccessibleRole) {
           ax::mojom::Role::kSearchBox));
 }
 
+// Arrow key presses and their releases are forwarded to the page, but a
+// release whose press was not forwarded (e.g. because an IME consumed it) must
+// not be claimed: that ends the IME's composition (crbug.com/589972494).
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest,
+                       ForwardsKeyReleaseOnlyAfterForwardedPress) {
+  RunTestSequence(
+      Init(embedded_test_server()->GetURL("/a.html")), ShowFindBar(),
+      CheckView(FindBarView::kTextField, [this](views::Textfield* textfield) {
+        auto* const find_bar_view =
+            GetFindBarHost()->GetFindBarViewForTesting();
+        auto handle = [&](ui::EventType type) {
+          return find_bar_view->HandleKeyEvent(
+              textfield, ui::KeyEvent(type, ui::VKEY_DOWN, ui::EF_NONE));
+        };
+        return !handle(ui::EventType::kKeyReleased) &&
+               handle(ui::EventType::kKeyPressed) &&
+               handle(ui::EventType::kKeyReleased);
+      }));
+}
+
 IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, AccessibleName) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Make sure Chrome is in the foreground, otherwise sending input
