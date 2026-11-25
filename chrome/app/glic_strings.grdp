@@ -102,6 +102,12 @@
   <message name="IDS_GLIC_SIGN_IN_NOTICE_ACTION_BUTTON" desc="This is the button label text for a button that opens the sign-in page.">
     Verify it's you
   </message>
+  <message name="IDS_GEIC_SIGN_IN_NOTICE_HEADER" desc="Headline on the Gemini Enterprise sign-in card shown in the side panel when the user needs to sign in with their enterprise account. ASSISTANT_NAME is the untranslated assistant brand name (for example, 'Gemini Enterprise' or 'Gemini').">
+    Sign in to use <ph name="ASSISTANT_NAME">$1<ex>Gemini Enterprise</ex></ph>
+  </message>
+  <message name="IDS_GEIC_SIGN_IN_NOTICE_ACTION_BUTTON" desc="Button label on the Gemini Enterprise sign-in card that opens a browser tab to sign in.">
+    Sign in
+  </message>
   <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_HEADER" desc="This is the headline on the Gemini ineligible profile notice.">
     This account can't use Gemini
   </message>

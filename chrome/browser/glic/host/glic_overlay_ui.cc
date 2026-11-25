@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/resources/glic_resources.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
@@ -82,6 +84,7 @@ GlicOverlayUI::GlicOverlayUI(content::WebUI* web_ui)
       {"signInNotice", IDS_GLIC_SIGN_IN_NOTICE},
       {"signInNoticeActionButton", IDS_GLIC_SIGN_IN_NOTICE_ACTION_BUTTON},
       {"signInNoticeHeader", IDS_GLIC_SIGN_IN_NOTICE_HEADER},
+      {"geicSignInNoticeActionButton", IDS_GEIC_SIGN_IN_NOTICE_ACTION_BUTTON},
       {"unresponsiveMessage", IDS_GLIC_UNRESPONSIVE_MESSAGE},
       {"locationMismatchNoticeHeader",
        IDS_GLIC_LOCATION_MISMATCH_NOTICE_HEADER},
@@ -139,6 +142,19 @@ GlicOverlayUI::GlicOverlayUI(content::WebUI* web_ui)
 
   source->AddBoolean("isAndroidMobile", false);
   source->AddBoolean("showErrorAllowed", IsShowErrorAllowed(profile));
+  source->AddBoolean("usesGeicSignIn",
+                     GetGlicProviderSpec(profile).UsesGeicSignIn());
+
+  std::string geic_product_name;
+  base::TrimWhitespaceASCII(features::kGeicProductName.Get(), base::TRIM_ALL,
+                            &geic_product_name);
+  if (geic_product_name.empty()) {
+    geic_product_name = features::kGeicProductName.default_value;
+  }
+  source->AddString(
+      "geicSignInNoticeHeader",
+      l10n_util::GetStringFUTF16(IDS_GEIC_SIGN_IN_NOTICE_HEADER,
+                                 base::UTF8ToUTF16(geic_product_name)));
 
   source->AddString("disabledByAdminNoticeWithLink",
                     l10n_util::GetStringFUTF16(

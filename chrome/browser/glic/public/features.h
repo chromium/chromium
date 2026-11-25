@@ -167,6 +167,9 @@ BASE_DECLARE_FEATURE(kGeic);
 // Allows the GEiC surface to be turned off from within the kGeic study without
 // having to disable the study itself.
 extern const base::FeatureParam<bool> kGeicEnabledParam;
+// Product brand name interpolated into GEiC-specific overlay strings (e.g.
+// "Gemini Enterprise", or "Gemini" under brand unification).
+extern const base::FeatureParam<std::string> kGeicProductName;
 // The Gemini Enterprise guest URL. Intentionally empty by default: running in
 // GEiC mode without an explicit GEiC URL is a misconfiguration, so callers
 // error rather than fall back to the consumer Gemini URL.

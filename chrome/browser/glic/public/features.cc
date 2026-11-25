@@ -265,6 +265,9 @@ BASE_FEATURE(kGeic,
 
 const base::FeatureParam<bool> kGeicEnabledParam{&kGeic, "enabled", true};
 
+const base::FeatureParam<std::string> kGeicProductName{
+    &kGeic, "geic-product-name", "Gemini Enterprise"};
+
 BASE_FEATURE(kGeicActuation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGeicSsr, base::FEATURE_DISABLED_BY_DEFAULT);

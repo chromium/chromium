@@ -173,6 +173,31 @@
           </div>
         </div>
       </section>
+      <section hidden class="dialog panel luminous-panel" id="geicSignInPanel"
+          role="dialog" aria-modal="true"
+          aria-labelledby="geicSignInHeadline" tabindex="-1">
+        <div class="container">
+          <div class="header">
+            <img class="logo" src="glic_logo.svg" alt="" aria-hidden="true">
+            <cr-icon-button class="close-button"
+              iron-icon="cr:close"
+              aria-label="$i18n{closeButtonLabel}">
+            </cr-icon-button>
+          </div>
+          <div class="notice">
+            <div class="relaunch-card">
+              <img class="spark-icon" src="geic_spark.png" alt=""
+                  aria-hidden="true">
+              <p class="headline" id="geicSignInHeadline">
+                $i18n{geicSignInNoticeHeader}
+              </p>
+              <cr-button class="tonal-button"
+                id="geicSignInButton"
+                role="button">$i18n{geicSignInNoticeActionButton}</cr-button>
+            </div>
+          </div>
+        </div>
+      </section>
       <section hidden class="dialog panel" id="locationMismatchPanel">
         <div class="container">
           <div class="header">
@@ -192,7 +217,8 @@
           </div>
         </div>
       </section>
-      <section hidden class="dialog panel" id="providerChangePanel"
+      <section hidden class="dialog panel luminous-panel"
+          id="providerChangePanel"
           role="dialog" aria-modal="true"
           aria-labelledby="providerChangeHeadline"
           aria-describedby="providerChangeBody" tabindex="-1">

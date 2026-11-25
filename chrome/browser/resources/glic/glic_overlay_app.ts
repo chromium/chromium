@@ -84,6 +84,7 @@ interface PageElementTypes {
   ineligibleAccountPanel: HTMLElement;
   disabledByAdminPanel: HTMLElement;
   signInPanel: HTMLElement;
+  geicSignInPanel: HTMLElement;
   locationMismatchPanel: HTMLElement;
   providerChangePanel: HTMLElement;
   providerChangeHeadline: HTMLElement;
@@ -94,6 +95,7 @@ interface PageElementTypes {
   reload: HTMLElement;
   showError: HTMLElement;
   signInButton: HTMLElement;
+  geicSignInButton: HTMLElement;
   profilePickerButton: HTMLElement;
   ineligibleAccountHelpButton: HTMLElement;
   locationMismatchHelpButton: HTMLElement;
@@ -177,6 +179,17 @@ export class GlicOverlayElement extends HTMLElement {
     }
   }
 
+  private showSignInPanel(): void {
+    if (loadTimeData.getBoolean('usesGeicSignIn')) {
+      this.showPanel($.geicSignInPanel);
+      if (!$.geicSignInPanel.contains(document.activeElement)) {
+        $.geicSignInPanel.focus();
+      }
+      return;
+    }
+    this.showPanel($.signInPanel);
+  }
+
   private showError(errorType: ErrorPanelType): void {
     switch (errorType) {
       case ErrorPanelType.kOffline:
@@ -202,7 +215,7 @@ export class GlicOverlayElement extends HTMLElement {
         this.showPanel($.disabledByAdminPanel);
         break;
       case ErrorPanelType.kSignIn:
-        this.showPanel($.signInPanel);
+        this.showSignInPanel();
         break;
       case ErrorPanelType.kLocationMismatch:
         this.showPanel($.locationMismatchPanel);
@@ -255,6 +268,10 @@ export class GlicOverlayElement extends HTMLElement {
     }
 
     $.signInButton.addEventListener('click', () => {
+      this.browserProxy.handler.onSignInClicked();
+    });
+
+    $.geicSignInButton.addEventListener('click', () => {
       this.browserProxy.handler.onSignInClicked();
     });
 

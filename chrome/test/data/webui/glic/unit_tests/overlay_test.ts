@@ -222,6 +222,7 @@ suite('GlicOverlayTest', () => {
           {id: 'retry', method: 'onRetryClicked'},
           {id: 'reload', method: 'onRetryClicked'},
           {id: 'signInButton', method: 'onSignInClicked'},
+          {id: 'geicSignInButton', method: 'onSignInClicked'},
           {id: 'relaunchButton', method: 'onRelaunchClicked'},
           {
             id: 'continueButton',
@@ -321,5 +322,48 @@ suite('GlicOverlayTest', () => {
         {error: ErrorPanelType.kPendingProviderChangeGeicToOtherGeic});
     await remote.$.flushForTesting();
     assertEquals(relaunchButton, document.activeElement);
+  });
+
+  test('ShowSignInPanelConsumerAndGeicVariants', async () => {
+    const originalUsesGeicSignIn = loadTimeData.getBoolean('usesGeicSignIn');
+    try {
+      loadTimeData.overrideValues({usesGeicSignIn: false});
+      remote.setOverlayState({error: ErrorPanelType.kSignIn});
+      await remote.$.flushForTesting();
+
+      const consumerPanel = getElement('signInPanel');
+      const geicPanel = getElement('geicSignInPanel');
+      assertFalse(consumerPanel.hidden);
+      assertTrue(geicPanel.hidden);
+
+      loadTimeData.overrideValues({usesGeicSignIn: true});
+      remote.setOverlayState({error: ErrorPanelType.kSignIn});
+      await remote.$.flushForTesting();
+
+      assertTrue(consumerPanel.hidden);
+      assertFalse(geicPanel.hidden);
+      assertEquals('dialog', geicPanel.getAttribute('role'));
+      assertEquals('true', geicPanel.getAttribute('aria-modal'));
+      assertEquals(
+          'geicSignInHeadline', geicPanel.getAttribute('aria-labelledby'));
+      assertEquals(geicPanel, document.activeElement);
+      assertEquals(
+          loadTimeData.getString('geicSignInNoticeHeader'),
+          getElement('geicSignInHeadline').textContent?.trim());
+      assertEquals(
+          loadTimeData.getString('geicSignInNoticeActionButton'),
+          getElement('geicSignInButton').textContent?.trim());
+
+      // Incidental state refreshes while focus is inside the dialog must not
+      // steal focus from the active control.
+      const geicSignInButton = getElement('geicSignInButton');
+      geicSignInButton.focus();
+      assertEquals(geicSignInButton, document.activeElement);
+      remote.setOverlayState({error: ErrorPanelType.kSignIn});
+      await remote.$.flushForTesting();
+      assertEquals(geicSignInButton, document.activeElement);
+    } finally {
+      loadTimeData.overrideValues({usesGeicSignIn: originalUsesGeicSignIn});
+    }
   });
 });

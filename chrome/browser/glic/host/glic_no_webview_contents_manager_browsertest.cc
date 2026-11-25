@@ -37,6 +37,7 @@
 #include "chrome/browser/glic/test_support/glic_test_tab_added_waiter.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/metrics/structured/buildflags/buildflags.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/test/test_structured_metrics_recorder.h"
@@ -58,6 +59,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace glic {
@@ -114,13 +116,18 @@ void SetDisabledByAdmin(Profile* profile, bool disabled) {
                     kEnabled));
 }
 
-void ClickOverlayElement(content::WebContents* overlay_contents,
-                         std::string_view query_selector) {
-  ASSERT_TRUE(overlay_contents);
-  ASSERT_TRUE(content::WaitForLoadStop(overlay_contents));
-  ASSERT_EQ(true, content::EvalJs(overlay_contents,
-                                  base::StringPrintf(
-                                      R"js(
+testing::AssertionResult WaitForOverlayElementVisible(
+    content::WebContents* overlay_contents,
+    std::string_view query_selector) {
+  if (!overlay_contents) {
+    return testing::AssertionFailure() << "overlay_contents is null";
+  }
+  if (!content::WaitForLoadStop(overlay_contents)) {
+    return testing::AssertionFailure() << "WaitForLoadStop failed";
+  }
+  const content::EvalJsResult result = content::EvalJs(
+      overlay_contents, base::StringPrintf(
+                            R"js(
         (async () => {
           const start = Date.now();
           while (Date.now() - start <= 10000) {
@@ -133,7 +140,21 @@ void ClickOverlayElement(content::WebContents* overlay_contents,
           return false;
         })()
       )js",
-                                      std::string(query_selector).c_str())));
+                            std::string(query_selector).c_str()));
+  if (!result.is_ok()) {
+    return testing::AssertionFailure() << result.ExtractError();
+  }
+  if (!result.ExtractBool()) {
+    return testing::AssertionFailure()
+           << "Timed out waiting for visible overlay element "
+           << query_selector;
+  }
+  return testing::AssertionSuccess();
+}
+
+void ClickOverlayElement(content::WebContents* overlay_contents,
+                         std::string_view query_selector) {
+  ASSERT_TRUE(WaitForOverlayElementVisible(overlay_contents, query_selector));
   content::ExecuteScriptAsync(
       overlay_contents,
       base::StringPrintf("document.querySelector('%s').click();",
@@ -1137,8 +1158,18 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   ASSERT_TRUE(manager);
   ASSERT_TRUE(manager->overlay_contents());
 
-  // Manager must display the kSignIn error panel.
-  EXPECT_EQ(manager->error_type(), mojom::ErrorPanelType::kSignIn);
+  // Manager must display the consumer kSignIn error panel.
+  ASSERT_OK(WaitForOverlayErrorPanel(mojom::ErrorPanelType::kSignIn, instance));
+  ASSERT_TRUE(WaitForOverlayElementVisible(manager->overlay_contents(),
+                                           "#signInPanel"));
+  EXPECT_EQ(true, content::EvalJs(
+                      manager->overlay_contents(),
+                      "document.getElementById('geicSignInPanel').hidden"));
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_GLIC_SIGN_IN_NOTICE_HEADER),
+            content::EvalJs(
+                manager->overlay_contents(),
+                "document.querySelector('#signInPanel .headline').textContent."
+                "trim()"));
 
   // Clicking the "Verify it's you" button triggers the sign-in flow. Flush the
   // overlay page handler pipe so `OnSignInClicked` runs before the test exits
@@ -2591,13 +2622,18 @@ INSTANTIATE_TEST_SUITE_P(
 
 class GlicNoWebviewGeicSignInOverlayBrowserTest : public GlicBrowserTest {
  public:
-  GlicNoWebviewGeicSignInOverlayBrowserTest() {
+  explicit GlicNoWebviewGeicSignInOverlayBrowserTest(
+      std::optional<std::string> product_name = std::nullopt) {
+    base::FieldTrialParams geic_params = {
+        {features::kGeicGuestURL.name,
+         "https://auth.cloud.google/signin/locations/global/workforcePools/"
+         "pool-1/providers/idp-1?continueUrl=https%3A%2F%2F"
+         "vertexaisearch.cloud.google%2Fhome%2Fcid%2Fcfg-1"}};
+    if (product_name.has_value()) {
+      geic_params[features::kGeicProductName.name] = *product_name;
+    }
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGeic,
-          {{features::kGeicGuestURL.name,
-            "https://auth.cloud.google/signin/locations/global/workforcePools/"
-            "pool-1/providers/idp-1?continueUrl=https%3A%2F%2F"
-            "vertexaisearch.cloud.google%2Fhome%2Fcid%2Fcfg-1"}}},
+        {{features::kGeic, std::move(geic_params)},
          {features::kGlicDisconnectedWebview, {}},
          {features::kGlicNoWebview, {}}},
         {});
@@ -2679,15 +2715,31 @@ IN_PROC_BROWSER_TEST_F(
   // Opening Glic navigates to `/side-panel`, which redirects to
   // `auth.cloud.google/select-session` (returning `200 OK`), and
   // `GlicGuestNavigationThrottle::WillProcessResponse` cancels the response and
-  // shows the native Sign-In overlay.
+  // shows the GEiC-styled native Sign-In overlay.
   ASSERT_OK(WaitForOverlayErrorPanel(mojom::ErrorPanelType::kSignIn, instance));
+  ASSERT_TRUE(WaitForOverlayElementVisible(manager->overlay_contents(),
+                                           "#geicSignInPanel"));
+  EXPECT_EQ(true,
+            content::EvalJs(manager->overlay_contents(),
+                            "document.getElementById('signInPanel').hidden"));
+  EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_GEIC_SIGN_IN_NOTICE_HEADER,
+                                      u"Gemini Enterprise"),
+            content::EvalJs(
+                manager->overlay_contents(),
+                "document.getElementById('geicSignInHeadline').textContent."
+                "trim()"));
+  EXPECT_EQ(
+      l10n_util::GetStringUTF8(IDS_GEIC_SIGN_IN_NOTICE_ACTION_BUTTON),
+      content::EvalJs(manager->overlay_contents(),
+                      "document.getElementById('geicSignInButton').textContent."
+                      "trim()"));
 
   // Click Sign-In on the overlay: opens a foreground sign-in tab with
   // `auth_popout=1` and `provider_name` attached.
   tabs::TabInterface* signin_tab = nullptr;
   {
     GlicTestTabAddedWaiter waiter(GetProfile());
-    ClickOverlayElement(manager->overlay_contents(), "#signInButton");
+    ClickOverlayElement(manager->overlay_contents(), "#geicSignInButton");
     signin_tab = waiter.Wait();
   }
   ASSERT_TRUE(signin_tab);
@@ -2791,5 +2843,30 @@ IN_PROC_BROWSER_TEST_F(
       awakened_manager->guest_contents()->GetLastCommittedURL().query().find(
           "csesidx=9"),
       std::string::npos);
+}
+
+class GlicNoWebviewGeicCustomProductNameSignInOverlayBrowserTest
+    : public GlicNoWebviewGeicSignInOverlayBrowserTest {
+ public:
+  GlicNoWebviewGeicCustomProductNameSignInOverlayBrowserTest()
+      : GlicNoWebviewGeicSignInOverlayBrowserTest("Gemini") {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicNoWebviewGeicCustomProductNameSignInOverlayBrowserTest,
+    InterpolatesConfiguredGeicProductNameInSignInOverlay) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+
+  ASSERT_OK(WaitForOverlayErrorPanel(mojom::ErrorPanelType::kSignIn, instance));
+  ASSERT_TRUE(WaitForOverlayElementVisible(manager->overlay_contents(),
+                                           "#geicSignInPanel"));
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF8(IDS_GEIC_SIGN_IN_NOTICE_HEADER, u"Gemini"),
+      content::EvalJs(
+          manager->overlay_contents(),
+          "document.getElementById('geicSignInHeadline').textContent."
+          "trim()"));
 }
 }  // namespace glic

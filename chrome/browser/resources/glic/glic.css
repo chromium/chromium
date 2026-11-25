@@ -236,8 +236,8 @@ webview {
   display: none;
 }
 
-/* GEiC relaunch prompt. */
-#providerChangePanel {
+/* GEiC Luminous card panels (provider-change notice and GEiC sign-in). */
+.dialog.luminous-panel {
   /* Google Sans Flex only applies where the OS has it installed; Glic doesn't
    * load web fonts. */
   --relaunch-font: 'Google Sans Flex', Roboto, sans-serif;
@@ -253,7 +253,7 @@ webview {
 }
 
 @media (prefers-color-scheme: dark) {
-  #providerChangePanel {
+  .dialog.luminous-panel {
     --relaunch-accent: #1f3b9b;
     --relaunch-glow-inner: color-mix(in srgb, var(--relaunch-accent) 75%,
         transparent);
@@ -267,17 +267,17 @@ webview {
 
 /* Suppress the browser focus ring on the full-panel dialog container itself;
  * interactive controls inside keep their focus rings. */
-#providerChangePanel:focus-visible {
+.dialog.luminous-panel:focus-visible {
   outline: none;
 }
 
-#providerChangePanel .container {
+.dialog.luminous-panel .container {
   isolation: isolate;
   position: relative;
 }
 
 /* Soft blue glow along the bottom of the panel, behind the card. */
-#providerChangePanel .container::before {
+.dialog.luminous-panel .container::before {
   background: radial-gradient(ellipse 110% 45% at 50% 100%,
       var(--relaunch-glow-inner), var(--relaunch-glow-outer) 50%,
       transparent 100%);
@@ -290,12 +290,12 @@ webview {
 
 /* The 16px side padding plus the 352px max card width make up the mock's
  * 384px side panel. */
-#providerChangePanel .notice {
+.dialog.luminous-panel .notice {
   background-color: transparent;
   padding: 0 16px;
 }
 
-#providerChangePanel .relaunch-card {
+.dialog.luminous-panel .relaunch-card {
   align-items: center;
   background-color: var(--relaunch-card-background);
   border: 1px solid var(--relaunch-card-border);
@@ -309,13 +309,13 @@ webview {
   width: 100%;
 }
 
-#providerChangePanel .spark-icon {
+.dialog.luminous-panel .spark-icon {
   height: 32px;
   margin-bottom: 16px;
   width: 32px;
 }
 
-#providerChangePanel .headline {
+.dialog.luminous-panel .headline {
   font-family: var(--relaunch-font);
   font-size: 20px;
   font-weight: 420;
@@ -323,21 +323,24 @@ webview {
   margin: 0 0 12px;
 }
 
-#providerChangePanel .relaunch-body {
+#geicSignInPanel .headline {
+  margin-bottom: 16px;
+}
+
+.dialog.luminous-panel .relaunch-body {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 16px;
 }
 
-#providerChangePanel .notice-message {
+.dialog.luminous-panel .notice-message {
   font-family: var(--relaunch-font);
   line-height: 17px;
   margin: 0;
 }
 
-#providerChangePanel #relaunchButton,
-#providerChangePanel #continueButton {
+.dialog.luminous-panel .tonal-button {
   background-color: var(--relaunch-accent);
   border: none;
   color: var(--relaunch-button-text);
