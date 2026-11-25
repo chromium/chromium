@@ -128,23 +128,6 @@ gfx::NativeWindow FindParentWindowForWebContents(
 }
 #endif
 
-bool IsMediaTypeAllowed(AllowedScreenCaptureLevel allowed_capture_level,
-                        content::DesktopMediaID::Type media_type) {
-  switch (media_type) {
-    case content::DesktopMediaID::TYPE_NONE:
-      NOTREACHED();
-    case content::DesktopMediaID::TYPE_SCREEN:
-      return allowed_capture_level >= AllowedScreenCaptureLevel::kDesktop;
-    case content::DesktopMediaID::TYPE_WINDOW:
-      return allowed_capture_level >= AllowedScreenCaptureLevel::kWindow;
-    case content::DesktopMediaID::TYPE_WEB_CONTENTS:
-      // SameOrigin is more restrictive than just tabs; so as long as at least
-      // SameOrigin is allowed, then TYPE_WEB_CONTENTS can be included, and the
-      // origins will be filtered for the SameOrigin requirement later.
-      return allowed_capture_level >= AllowedScreenCaptureLevel::kSameOrigin;
-  }
-}
-
 // Checks whether audio should be captured for the given |media_id| and
 // |request|.
 bool ShouldCaptureAudio(const content::DesktopMediaID& media_id,
@@ -469,10 +452,13 @@ void DesktopCaptureAccessHandler::HandleRequest(
     return;
   }
 
-  if (!IsMediaTypeAllowed(allowed_capture_level, media_id.type)) {
+  const MediaStreamRequestResult policy_result =
+      capture_policy::ValidateSelectedMediaId(
+          media_id, url::Origin::Create(request.security_origin),
+          allowed_capture_level);
+  if (policy_result != MediaStreamRequestResult::OK) {
     std::move(pending_request->callback)
-        .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
+        .Run(blink::mojom::StreamDevicesSet(), policy_result,
              /*ui=*/nullptr);
     return;
   }
@@ -487,18 +473,6 @@ void DesktopCaptureAccessHandler::HandleRequest(
     return;
   }
 #endif
-
-  if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
-      !content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(
-              media_id.web_contents_id.render_process_id,
-              media_id.web_contents_id.main_render_frame_id))) {
-    std::move(pending_request->callback)
-        .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::CAPTURED_TAB_DESTROYED,
-             /*ui=*/nullptr);
-    return;
-  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   const std::u16string application_title = pending_request->application_title;
@@ -611,18 +585,22 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
     CHECK(!pending_request.request.requested_video_device_ids.empty(),
           base::NotFatalUntil::M161);
     content::WebContentsMediaCaptureId web_contents_id;
-    if (content::WebContentsMediaCaptureId::Parse(
+    if (!content::WebContentsMediaCaptureId::Parse(
             pending_request.request.requested_video_device_ids.front(),
             &web_contents_id)) {
-      content::DesktopMediaID media_id(
-          content::DesktopMediaID::TYPE_WEB_CONTENTS,
-          content::DesktopMediaID::kNullId, web_contents_id);
-      media_id.audio_share = pending_request.request.audio_type !=
-                             blink::mojom::MediaStreamType::NO_SERVICE;
-      OnPickerDialogResults(web_contents->GetWeakPtr(),
-                            pending_request.application_title, media_id);
+      RejectRequest(
+          web_contents,
+          blink::mojom::MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID);
       return;
     }
+    content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                                     content::DesktopMediaID::kNullId,
+                                     web_contents_id);
+    media_id.audio_share = pending_request.request.audio_type !=
+                           blink::mojom::MediaStreamType::NO_SERVICE;
+    OnPickerDialogResults(web_contents->GetWeakPtr(),
+                          pending_request.application_title, media_id);
+    return;
   }
 
   const GURL& request_origin = pending_request.request.security_origin;
@@ -753,20 +731,36 @@ void DesktopCaptureAccessHandler::OnPickerDialogResults(
   } else {
     const content::DesktopMediaID media_id = result.value();
     CHECK(!media_id.is_null());
+
+    const GURL& request_origin = pending_request->request.security_origin;
+    AllowedScreenCaptureLevel capture_level =
+        capture_policy::GetAllowedCaptureLevel(request_origin,
+                                               web_contents.get());
+    const MediaStreamRequestResult policy_result =
+        capture_policy::ValidateSelectedMediaId(
+            media_id, url::Origin::Create(request_origin), capture_level);
+    if (policy_result != MediaStreamRequestResult::OK) {
+      if (pending_request->callback) {
+        std::move(pending_request->callback)
+            .Run(blink::mojom::StreamDevicesSet(), policy_result,
+                 /*ui=*/nullptr);
+      }
+    } else {
 #if BUILDFLAG(IS_CHROMEOS)
-    // base::Unretained(this) is safe because DesktopCaptureAccessHandler is
-    // owned by MediaCaptureDevicesDispatcher, which is a lazy singleton which
-    // is destroyed when the browser process terminates.
-    policy::DlpContentManager::Get()->CheckScreenShareRestriction(
-        media_id, application_title,
-        base::BindOnce(&DesktopCaptureAccessHandler::OnDlpRestrictionChecked,
-                       base::Unretained(this), web_contents,
-                       std::move(pending_request), media_id,
-                       media_id.audio_share));
+      // base::Unretained(this) is safe because DesktopCaptureAccessHandler is
+      // owned by MediaCaptureDevicesDispatcher, which is a lazy singleton which
+      // is destroyed when the browser process terminates.
+      policy::DlpContentManager::Get()->CheckScreenShareRestriction(
+          media_id, application_title,
+          base::BindOnce(&DesktopCaptureAccessHandler::OnDlpRestrictionChecked,
+                         base::Unretained(this), web_contents,
+                         std::move(pending_request), media_id,
+                         media_id.audio_share));
 #else   // BUILDFLAG(IS_CHROMEOS)
-    AcceptRequest(web_contents.get(), std::move(pending_request), media_id,
-                  media_id.audio_share);
+      AcceptRequest(web_contents.get(), std::move(pending_request), media_id,
+                    media_id.audio_share);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+    }
   }
 
   if (!queue.empty()) {

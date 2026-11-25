@@ -93,16 +93,30 @@ const extensions::Extension* GetExtension(WebContents* web_contents) {
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+// Returns an observer that tracks whether the captured tab is same-origin with
+// the capturer, or nullptr if the capturer is not restricted to same-origin tab
+// capture by policy.
+//
+// `request_origin` is the origin on whose behalf the capture was requested. It
+// is the origin that the access handlers evaluate capture policy against, and
+// it differs from the origin of `capturer_web_contents`'s main frame when the
+// request comes from a cross-origin subframe. It must be provided for the
+// capture of a tab.
 std::unique_ptr<SameOriginObserver> MaybeCreateSameOriginObserverForTabCapture(
     content::WebContents* capturer_web_contents,
     const std::optional<content::DesktopMediaID>& media_id,
+    const std::optional<url::Origin>& request_origin,
     base::RepeatingCallback<void(content::WebContents*)> stop_callback) {
   if (!media_id ||
       media_id->type != content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
     return nullptr;
   }
 
-  if (!capture_policy::CapturerRestrictedToSameOrigin(capturer_web_contents)) {
+  // Falling back to another origin, such as that of the capturer's main frame,
+  // would enforce the policy of an origin that did not request the capture.
+  CHECK(request_origin.has_value());
+  if (!capture_policy::CapturerRestrictedToSameOrigin(*request_origin,
+                                                      capturer_web_contents)) {
     return nullptr;
   }
 
@@ -114,10 +128,8 @@ std::unique_ptr<SameOriginObserver> MaybeCreateSameOriginObserverForTabCapture(
     return nullptr;
   }
 
-  const url::Origin capturer_origin =
-      capturer_web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   return std::make_unique<SameOriginObserver>(
-      captured_contents, capturer_origin, std::move(stop_callback));
+      captured_contents, *request_origin, std::move(stop_callback));
 }
 
 std::u16string GetTitle(WebContents* web_contents) {
@@ -227,7 +239,8 @@ class MediaStreamCaptureIndicator::WebContentsDeviceUsage
       const blink::mojom::StreamDevices& devices,
       std::unique_ptr<MediaStreamUI> ui,
       const std::u16string application_title,
-      const std::optional<content::DesktopMediaID>& media_id);
+      const std::optional<content::DesktopMediaID>& media_id,
+      const std::optional<url::Origin>& request_origin);
 
   // Increment ref-counts up based on the type of each device provided.
   void AddDevices(const blink::mojom::StreamDevices& devices,
@@ -281,7 +294,8 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
              const blink::mojom::StreamDevices& devices,
              std::unique_ptr<::MediaStreamUI> ui,
              const std::u16string application_title,
-             std::optional<content::DesktopMediaID> media_id)
+             std::optional<content::DesktopMediaID> media_id,
+             const std::optional<url::Origin>& request_origin)
       : device_usage_(device_usage),
         devices_(devices),
         ui_(std::move(ui)),
@@ -298,7 +312,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
     // base::Unretained is safe here because `same_origin_observer_` is owned by
     // `this`, so the callback will not be invoked after `this` is destroyed.
     same_origin_observer_ = MaybeCreateSameOriginObserverForTabCapture(
-        web_contents, media_id,
+        web_contents, media_id, request_origin,
         base::BindRepeating(&UIDelegate::StopCaptureDueToPolicy,
                             base::Unretained(this)));
   }
@@ -326,10 +340,18 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
       return 0;
     }
     started_ = true;
+    stop_callback_ = stop_callback;
 
     if (device_usage_) {
       // |device_usage_| handles |stop_callback| when |ui_| is unspecified.
       device_usage_->AddDevices(devices_, stop_callback, stop_callback_id_);
+    }
+
+    // The captured tab may have stopped being same-origin with the capturer
+    // between the approval of the capture and its start.
+    if (same_origin_observer_ && !same_origin_observer_->is_same_origin()) {
+      StopCaptureDueToPolicy(same_origin_observer_->web_contents());
+      return 0;
     }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -396,11 +418,20 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   }
 #endif
 
+  // Stops this stream, and only this stream, because the tab that it captures
+  // is no longer same-origin with the capturer. Other streams of the capturer
+  // that capture a tab have an observer of their own.
   void StopCaptureDueToPolicy(content::WebContents* contents) {
-    if (device_usage_) {
-      device_usage_->StopMediaCapturing(MediaType::kUserMedia |
-                                        MediaType::kDisplayMedia);
+    // The stream can only be stopped while it is running. If the captured tab
+    // stops being same-origin before the stream has started, OnStarted() stops
+    // it. Once the stream has been stopped, there is nothing left to do:
+    // `same_origin_observer_` reports every change of the same-origin state,
+    // and the tab may change it again before this object is destroyed.
+    if (!stop_callback_) {
+      return;
     }
+    // Running the callback may destroy `this`.
+    std::move(stop_callback_).Run();
     capture_policy::ShowCaptureTerminatedDialog(contents);
   }
 
@@ -458,6 +489,9 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   const std::u16string application_title_;
   bool started_ = false;
   const int stop_callback_id_;
+  // Stops this stream. Set when the stream starts, and consumed when the stream
+  // is stopped because of capture policy.
+  base::OnceClosure stop_callback_;
   std::unique_ptr<SameOriginObserver> same_origin_observer_;
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   content::MediaStreamUI::StateChangeCallback state_change_callback_;
@@ -491,12 +525,13 @@ MediaStreamCaptureIndicator::WebContentsDeviceUsage::RegisterMediaStream(
     const blink::mojom::StreamDevices& devices,
     std::unique_ptr<MediaStreamUI> ui,
     const std::u16string application_title,
-    const std::optional<content::DesktopMediaID>& media_id) {
+    const std::optional<content::DesktopMediaID>& media_id,
+    const std::optional<url::Origin>& request_origin) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   return std::make_unique<UIDelegate>(
       web_contents(), weak_factory_.GetWeakPtr(), devices, std::move(ui),
-      std::move(application_title), media_id);
+      std::move(application_title), media_id, request_origin);
 }
 
 void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevices(
@@ -698,7 +733,8 @@ MediaStreamCaptureIndicator::RegisterMediaStream(
     const blink::mojom::StreamDevices& devices,
     std::unique_ptr<MediaStreamUI> ui,
     const std::u16string application_title,
-    std::optional<content::DesktopMediaID> media_id) {
+    std::optional<content::DesktopMediaID> media_id,
+    std::optional<url::Origin> request_origin) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(web_contents, base::NotFatalUntil::M161);
 
@@ -707,7 +743,8 @@ MediaStreamCaptureIndicator::RegisterMediaStream(
     usage = std::make_unique<WebContentsDeviceUsage>(this, web_contents);
 
   return usage->RegisterMediaStream(devices, std::move(ui),
-                                    std::move(application_title), media_id);
+                                    std::move(application_title), media_id,
+                                    request_origin);
 }
 
 void MediaStreamCaptureIndicator::ExecuteCommand(int command_id,

@@ -31,6 +31,8 @@ class SameOriginObserver : public content::WebContentsObserver {
   // WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
 
+  bool is_same_origin() const { return is_same_origin_; }
+
  private:
   const url::Origin reference_origin_;
   base::RepeatingCallback<void(content::WebContents*)>

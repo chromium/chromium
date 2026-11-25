@@ -22,6 +22,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -29,11 +30,15 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "media/audio/audio_features.h"
+#include "net/base/net_errors.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -297,6 +302,94 @@ class DisplayMediaAccessHandlerTest : public WebAppTest {
   }
 
   std::vector<FakeDesktopMediaPickerFactory::TestFlags> test_flags_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  void SetSameOriginPolicy(const std::string& origin_pattern) {
+    base::ListValue matchlist;
+    matchlist.Append(origin_pattern);
+    profile()->GetPrefs()->SetList(prefs::kSameOriginTabCaptureAllowedByOrigins,
+                                   std::move(matchlist));
+  }
+
+  std::unique_ptr<content::WebContents> CreateTabAndGetCaptureId(
+      const GURL& url,
+      content::WebContentsMediaCaptureId* out_capture_id) {
+    std::unique_ptr<content::WebContents> tab =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    content::NavigationSimulator::CreateBrowserInitiated(url, tab.get())
+        ->Commit();
+    *out_capture_id = content::WebContentsMediaCaptureId(
+        tab->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+        tab->GetPrimaryMainFrame()->GetRoutingID());
+    return tab;
+  }
+
+  void RunSameOriginChangeSource(
+      const content::WebContentsMediaCaptureId& target_id,
+      blink::mojom::MediaStreamRequestResult* result,
+      blink::mojom::StreamDevices& devices) {
+    content::MediaStreamRequest request = MakeRequest(/*request_audio=*/false);
+    request.request_type = blink::MEDIA_DEVICE_UPDATE;
+    request.requested_video_device_ids = {target_id.ToString()};
+
+    base::RunLoop wait_loop;
+    HandleRequest(request, &wait_loop, result, devices);
+    wait_loop.Run();
+  }
+
+  void RunSameOriginPickerSelection(
+      const content::DesktopMediaID& picker_result,
+      blink::mojom::MediaStreamRequestResult* result,
+      blink::mojom::StreamDevices& devices) {
+    RunSameOriginPickerSelection(MakeRequest(/*request_audio=*/false),
+                                 picker_result, result, devices);
+  }
+
+  void RunSameOriginPickerSelection(
+      const content::MediaStreamRequest& request,
+      const content::DesktopMediaID& picker_result,
+      blink::mojom::MediaStreamRequestResult* result,
+      blink::mojom::StreamDevices& devices) {
+    SetTestFlags(
+        {{.expect_screens = false,
+          .expect_windows = false,
+          .expect_tabs = true,
+          .expect_current_tab = false,
+          .expect_audio = false,
+          .picker_result = picker_result }});
+    base::RunLoop wait_loop;
+    HandleRequest(request, &wait_loop, result, devices);
+    wait_loop.Run();
+  }
+
+  // Adds a subframe to the capturing tab that has committed `url` and is
+  // allowed to capture the display, and returns a getDisplayMedia() request
+  // from it.
+  content::MediaStreamRequest MakeRequestFromNewSubframe(const GURL& url) {
+    network::ParsedPermissionsPolicy allow;
+    allow.emplace_back(
+        network::mojom::PermissionsPolicyFeature::kDisplayCapture,
+        std::vector{*network::OriginWithPossibleWildcards::FromOrigin(
+            url::Origin::Create(url))},
+        /*self_if_matches=*/std::nullopt, /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false);
+    content::RenderFrameHost* subframe =
+        content::RenderFrameHostTester::For(
+            web_contents()->GetPrimaryMainFrame())
+            ->AppendChildWithPolicy("subframe", allow);
+    content::RenderFrameHostTester::For(subframe)
+        ->InitializeRenderFrameIfNeeded();
+    subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+        url, subframe);
+
+    content::MediaStreamRequest request = MakeRequest(/*request_audio=*/false);
+    request.render_process_id = subframe->GetProcess()->GetDeprecatedID();
+    request.render_frame_id = subframe->GetRoutingID();
+    request.url_origin = subframe->GetLastCommittedOrigin();
+    request.security_origin = request.url_origin.GetURL();
+    return request;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  protected:
   // `access_handler` owns `picker_factory` and must outlive it.
@@ -1377,6 +1470,258 @@ TEST_F(DisplayMediaAccessHandlerTest,
       blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
       results[1]);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(DisplayMediaAccessHandlerTest, ChangeSourceSameOriginPolicyAllowed) {
+  SetSameOriginPolicy("http://origin/");
+  content::WebContentsMediaCaptureId target_capture_id;
+  std::unique_ptr<content::WebContents> target_web_contents =
+      CreateTabAndGetCaptureId(GURL("http://origin/page2"), &target_capture_id);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  RunSameOriginChangeSource(target_capture_id, &result, devices);
+
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
+  EXPECT_EQ(1u, blink::CountDevices(devices));
+  EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+            devices.video_device.value().type);
+}
+
+TEST_F(DisplayMediaAccessHandlerTest,
+       ChangeSourceSameOriginPolicyRejectedForCrossOriginTab) {
+  SetSameOriginPolicy("http://origin/");
+  content::WebContentsMediaCaptureId cross_origin_capture_id;
+  std::unique_ptr<content::WebContents> cross_origin_web_contents =
+      CreateTabAndGetCaptureId(GURL("https://different-origin/"),
+                               &cross_origin_capture_id);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  RunSameOriginChangeSource(cross_origin_capture_id, &result, devices);
+
+  EXPECT_EQ(
+      blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
+      result);
+  EXPECT_EQ(0u, blink::CountDevices(devices));
+}
+
+TEST_F(DisplayMediaAccessHandlerTest,
+       ChangeSourceSameOriginPolicyRejectedIfTabNavigatedCrossOrigin) {
+  SetSameOriginPolicy("http://origin/");
+  content::WebContentsMediaCaptureId target_capture_id;
+  std::unique_ptr<content::WebContents> target_web_contents =
+      CreateTabAndGetCaptureId(GURL("http://origin/page2"), &target_capture_id);
+
+  // The tab navigates cross-origin after it was selected as the new source,
+  // but before the request is processed.
+  content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://different-origin/"), target_web_contents.get())
+      ->Commit();
+
+  // The navigation may or may not have replaced the frame that the capture ID
+  // refers to. If the ID still resolves to the tab, e.g. because the previous
+  // document is kept in the back/forward cache, the tab is rejected because it
+  // is now cross-origin. Otherwise, the ID does not resolve to a tab anymore.
+  const bool capture_id_resolves_to_tab =
+      content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(
+              target_capture_id.render_process_id,
+              target_capture_id.main_render_frame_id)) ==
+      target_web_contents.get();
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  RunSameOriginChangeSource(target_capture_id, &result, devices);
+
+  EXPECT_EQ(
+      capture_id_resolves_to_tab
+          ? blink::mojom::MediaStreamRequestResult::
+                CAPTURE_NOT_ALLOWED_BY_POLICY
+          : blink::mojom::MediaStreamRequestResult::CAPTURED_TAB_DESTROYED,
+      result);
+  EXPECT_EQ(0u, blink::CountDevices(devices));
+}
+
+// The same-origin policy applies to the origin that the document in the tab
+// committed, which is not necessarily the origin of the tab's URL.
+TEST_F(DisplayMediaAccessHandlerTest,
+       ChangeSourceSameOriginPolicyRejectedForTabWithOpaqueOrigin) {
+  SetSameOriginPolicy("http://origin/");
+  content::WebContentsMediaCaptureId target_capture_id;
+  std::unique_ptr<content::WebContents> target_web_contents =
+      CreateTabAndGetCaptureId(GURL("http://origin/page2"), &target_capture_id);
+
+  // An error page has an opaque origin, and thus is cross-origin with the
+  // capturer, although the URL of the tab is same-origin with it.
+  const GURL url("http://origin/page3");
+  content::RenderFrameHost* const error_page_frame =
+      content::NavigationSimulator::NavigateAndFailFromBrowser(
+          target_web_contents.get(), url, net::ERR_TIMED_OUT);
+  ASSERT_TRUE(error_page_frame);
+  ASSERT_EQ(url, target_web_contents->GetLastCommittedURL());
+  ASSERT_TRUE(error_page_frame->GetLastCommittedOrigin().opaque());
+  const content::WebContentsMediaCaptureId current_capture_id(
+      error_page_frame->GetProcess()->GetDeprecatedID(),
+      error_page_frame->GetRoutingID());
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  RunSameOriginChangeSource(current_capture_id, &result, devices);
+
+  EXPECT_EQ(
+      blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
+      result);
+  EXPECT_EQ(0u, blink::CountDevices(devices));
+}
+
+TEST_F(DisplayMediaAccessHandlerTest,
+       OnDisplaySurfaceSelectedSameOriginPolicyAllowedForSameOriginTab) {
+  SetSameOriginPolicy("http://origin/");
+  content::WebContentsMediaCaptureId target_capture_id;
+  std::unique_ptr<content::WebContents> target_web_contents =
+      CreateTabAndGetCaptureId(GURL("http://origin/page2"), &target_capture_id);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  RunSameOriginPickerSelection(
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                              content::DesktopMediaID::kNullId,
+                              target_capture_id),
+      &result, devices);
+
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
+  EXPECT_EQ(1u, blink::CountDevices(devices));
+  EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+            devices.video_device.value().type);
+}
+
+TEST_F(DisplayMediaAccessHandlerTest,
+       OnDisplaySurfaceSelectedSameOriginPolicyRejectedForCrossOriginTab) {
+  SetSameOriginPolicy("http://origin/");
+  content::WebContentsMediaCaptureId cross_origin_capture_id;
+  std::unique_ptr<content::WebContents> cross_origin_web_contents =
+      CreateTabAndGetCaptureId(GURL("https://different-origin/"),
+                               &cross_origin_capture_id);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  RunSameOriginPickerSelection(
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                              content::DesktopMediaID::kNullId,
+                              cross_origin_capture_id),
+      &result, devices);
+
+  EXPECT_EQ(
+      blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
+      result);
+  EXPECT_EQ(0u, blink::CountDevices(devices));
+}
+
+TEST_F(DisplayMediaAccessHandlerTest,
+       OnDisplaySurfaceSelectedPolicyRejectedForDisallowedMediaType) {
+  SetSameOriginPolicy("http://origin/");
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  RunSameOriginPickerSelection(
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                              content::DesktopMediaID::kFakeId),
+      &result, devices);
+
+  EXPECT_EQ(
+      blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
+      result);
+  EXPECT_EQ(0u, blink::CountDevices(devices));
+}
+
+// Capture policy applies to the origin of the frame that requests the capture.
+// A subframe that is restricted to same-origin tabs can capture a tab that is
+// same-origin with the subframe, even if that tab is cross-origin with the
+// main frame of the capturing tab.
+TEST_F(DisplayMediaAccessHandlerTest,
+       SameOriginPolicyAllowsSubframeToCaptureTabOfItsOwnOrigin) {
+  SetSameOriginPolicy("http://subframe/");
+  const content::MediaStreamRequest request =
+      MakeRequestFromNewSubframe(GURL("http://subframe/"));
+  content::WebContentsMediaCaptureId target_capture_id;
+  std::unique_ptr<content::WebContents> target_web_contents =
+      CreateTabAndGetCaptureId(GURL("http://subframe/page"),
+                               &target_capture_id);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  RunSameOriginPickerSelection(
+      request,
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                              content::DesktopMediaID::kNullId,
+                              target_capture_id),
+      &result, devices);
+
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
+  EXPECT_EQ(1u, blink::CountDevices(devices));
+}
+
+// A subframe that is restricted to same-origin tabs cannot capture the tab that
+// embeds it if the main frame of that tab is cross-origin with the subframe.
+// This is the tab that {preferCurrentTab: true} offers.
+TEST_F(DisplayMediaAccessHandlerTest,
+       SameOriginPolicyPreventsSubframeFromCapturingCrossOriginEmbedder) {
+  SetSameOriginPolicy("http://subframe/");
+  const content::MediaStreamRequest request =
+      MakeRequestFromNewSubframe(GURL("http://subframe/"));
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  RunSameOriginPickerSelection(
+      request,
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                              content::DesktopMediaID::kNullId,
+                              GetWebContentsMediaCaptureId()),
+      &result, devices);
+
+  EXPECT_EQ(
+      blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
+      result);
+  EXPECT_EQ(0u, blink::CountDevices(devices));
+}
+
+// The picker can select a tab that is never listed as a capture source, such as
+// the document picture-in-picture window of the capturer, which is what
+// {preferCurrentTab: true} offers while that window is active. Capture policy
+// does not forbid capturing it.
+TEST_F(DisplayMediaAccessHandlerTest,
+       PickerResultOfPictureInPictureWindowIsAccepted) {
+  content::WebContentsMediaCaptureId pip_capture_id;
+  std::unique_ptr<content::WebContents> pip_web_contents =
+      CreateTabAndGetCaptureId(GURL("http://origin/pip"), &pip_capture_id);
+  PictureInPictureWindowManager* const pip_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+  pip_window_manager->EnterDocumentPictureInPicture(web_contents(),
+                                                    pip_web_contents.get());
+  ASSERT_TRUE(PictureInPictureWindowManager::IsChildWebContents(
+      pip_web_contents.get()));
+
+  FakeDesktopMediaPickerFactory::TestFlags test_flags =
+      MakePickerTestFlags(/*request_audio=*/false);
+  test_flags.picker_result =
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                              content::DesktopMediaID::kNullId, pip_capture_id);
+  SetTestFlags({test_flags});
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  base::RunLoop wait_loop;
+  HandleRequest(MakeRequest(/*request_audio=*/false), &wait_loop, &result,
+                devices);
+  wait_loop.Run();
+
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
+  EXPECT_EQ(1u, blink::CountDevices(devices));
+
+  pip_window_manager->ExitPictureInPicture();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DisplayMediaAccessHandlerTest,
        MalformedChangeSourceBetweenPickerRequests) {

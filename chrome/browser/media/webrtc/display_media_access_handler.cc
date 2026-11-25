@@ -770,13 +770,21 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
   const DesktopMediaID media_id = result.value();
   CHECK(!media_id.is_null());
 
-  // If the media id is tied to a tab, check that it hasn't been destroyed.
-  if (media_id.type == DesktopMediaID::TYPE_WEB_CONTENTS &&
-      !WebContents::FromRenderFrameHost(content::RenderFrameHost::FromID(
-          media_id.web_contents_id.render_process_id,
-          media_id.web_contents_id.main_render_frame_id))) {
-    RejectRequest(web_contents.get(),
-                  MediaStreamRequestResult::CAPTURED_TAB_DESTROYED);
+  auto it = pending_requests_.find(web_contents.get());
+  if (it == pending_requests_.end() || it->second.empty()) {
+    return;
+  }
+  const PendingAccessRequest& pending_request = *it->second.front();
+  const GURL& request_origin = pending_request.request.security_origin;
+  AllowedScreenCaptureLevel capture_level =
+      capture_policy::GetAllowedCaptureLevel(request_origin,
+                                             web_contents.get());
+
+  const MediaStreamRequestResult policy_result =
+      capture_policy::ValidateSelectedMediaId(
+          media_id, url::Origin::Create(request_origin), capture_level);
+  if (policy_result != MediaStreamRequestResult::OK) {
+    RejectRequest(web_contents.get(), policy_result);
     return;
   }
 

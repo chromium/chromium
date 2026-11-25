@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -23,6 +24,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -166,30 +168,91 @@ bool IsTransientActivationRequiredForGetDisplayMedia(
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
+bool IsTabCaptureAllowed(const url::Origin& request_origin,
+                         AllowedScreenCaptureLevel capture_level,
+                         content::WebContents* web_contents) {
+  if (!web_contents ||
+      !IsMediaTypeAllowed(capture_level,
+                          content::DesktopMediaID::TYPE_WEB_CONTENTS)) {
+    return false;
+  }
+  if (capture_level != AllowedScreenCaptureLevel::kSameOrigin) {
+    return true;
+  }
+  // Compare against the origin that the tab's document committed, not the
+  // origin of its URL. The two differ for e.g. about:blank, which inherits
+  // the origin of its creator, and for sandboxed documents and error pages,
+  // which have an opaque origin.
+  content::RenderFrameHost* const main_frame =
+      web_contents->GetPrimaryMainFrame();
+  return main_frame &&
+         request_origin.IsSameOriginWith(main_frame->GetLastCommittedOrigin());
+}
+
 DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
     const GURL& request_origin,
     AllowedScreenCaptureLevel capture_level) {
-  switch (capture_level) {
-    case AllowedScreenCaptureLevel::kDisallowed:
-      return base::BindRepeating(
-          [](content::WebContents* wc) { return false; });
-    case AllowedScreenCaptureLevel::kSameOrigin:
-      return base::BindRepeating(
-          [](const GURL& request_origin, content::WebContents* web_contents) {
-            CHECK(web_contents, base::NotFatalUntil::M161);
-            return !PictureInPictureWindowManager::IsChildWebContents(
-                       web_contents) &&
-                   url::IsSameOriginWith(request_origin,
-                                         web_contents->GetLastCommittedURL()
-                                             .DeprecatedGetOriginAsURL());
-          },
-          request_origin);
-    default:
-      return base::BindRepeating([](content::WebContents* web_contents) {
-        CHECK(web_contents, base::NotFatalUntil::M161);
-        return !PictureInPictureWindowManager::IsChildWebContents(web_contents);
-      });
+  return base::BindRepeating(
+      [](const url::Origin& request_origin,
+         AllowedScreenCaptureLevel capture_level,
+         content::WebContents* web_contents) {
+        // Document picture-in-picture windows are never offered as a capture
+        // source. This is not a restriction of capture policy, which is why
+        // it is not part of IsTabCaptureAllowed().
+        return IsTabCaptureAllowed(request_origin, capture_level,
+                                   web_contents) &&
+               !PictureInPictureWindowManager::IsChildWebContents(web_contents);
+      },
+      url::Origin::Create(request_origin), capture_level);
+}
+
+bool IsMediaTypeAllowed(AllowedScreenCaptureLevel capture_level,
+                        content::DesktopMediaID::Type media_type) {
+  switch (media_type) {
+    case content::DesktopMediaID::TYPE_NONE:
+      return false;
+    case content::DesktopMediaID::TYPE_SCREEN:
+      return capture_level >= AllowedScreenCaptureLevel::kDesktop;
+    case content::DesktopMediaID::TYPE_WINDOW:
+      return capture_level >= AllowedScreenCaptureLevel::kWindow;
+    case content::DesktopMediaID::TYPE_WEB_CONTENTS:
+      // SameOrigin is more restrictive than just tabs; so as long as at least
+      // SameOrigin is allowed, then TYPE_WEB_CONTENTS can be included, and the
+      // origins will be filtered for the SameOrigin requirement later.
+      return capture_level >= AllowedScreenCaptureLevel::kSameOrigin;
   }
+  return false;
+}
+
+blink::mojom::MediaStreamRequestResult ValidateSelectedMediaId(
+    const content::DesktopMediaID& media_id,
+    const url::Origin& request_origin,
+    AllowedScreenCaptureLevel capture_level) {
+  if (!IsMediaTypeAllowed(capture_level, media_id.type)) {
+    return blink::mojom::MediaStreamRequestResult::
+        CAPTURE_NOT_ALLOWED_BY_POLICY;
+  }
+
+  if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
+    content::WebContents* const target_web_contents =
+        content::WebContents::FromRenderFrameHost(
+            content::RenderFrameHost::FromID(
+                media_id.web_contents_id.render_process_id,
+                media_id.web_contents_id.main_render_frame_id));
+    if (!target_web_contents) {
+      return blink::mojom::MediaStreamRequestResult::CAPTURED_TAB_DESTROYED;
+    }
+    // Only capture policy is checked here. Which tabs are offered to the user
+    // is up to the picker, and e.g. {preferCurrentTab: true} can select a tab
+    // that GetIncludableWebContentsFilter() excludes.
+    if (!IsTabCaptureAllowed(request_origin, capture_level,
+                             target_web_contents)) {
+      return blink::mojom::MediaStreamRequestResult::
+          CAPTURE_NOT_ALLOWED_BY_POLICY;
+    }
+  }
+
+  return blink::mojom::MediaStreamRequestResult::OK;
 }
 
 void FilterMediaList(std::vector<DesktopMediaList::Type>& media_types,
@@ -236,18 +299,21 @@ class CaptureTerminatedDialogDelegate : public TabModalConfirmDialogDelegate {
 
 void ShowCaptureTerminatedDialog(content::WebContents* contents) {
 #if !BUILDFLAG(IS_ANDROID)
+  if (!contents) {
+    return;
+  }
   TabModalConfirmDialog::Create(
       std::make_unique<CaptureTerminatedDialogDelegate>(contents), contents);
 #endif
 }
 
-bool CapturerRestrictedToSameOrigin(content::WebContents* capturer) {
+bool CapturerRestrictedToSameOrigin(const url::Origin& request_origin,
+                                    content::WebContents* capturer) {
   if (!capturer) {
     return false;
   }
-  return GetAllowedCaptureLevel(
-             capturer->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL(),
-             capturer) == AllowedScreenCaptureLevel::kSameOrigin;
+  return GetAllowedCaptureLevel(request_origin.GetURL(), capturer) ==
+         AllowedScreenCaptureLevel::kSameOrigin;
 }
 
 }  // namespace capture_policy
