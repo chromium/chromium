@@ -1649,6 +1649,7 @@ class TabStripModel {
   // `focus_mode_session_start_time_`, which resets per focus slice).
   struct FocusCujSession {
     bool is_group_session = false;
+    int group_switches = 0;
     bool promoted = false;
 
     bool is_persistent_group_session() const {

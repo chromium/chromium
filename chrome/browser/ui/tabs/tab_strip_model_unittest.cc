@@ -9956,6 +9956,8 @@ class TabStripModelFocusCujTest : public TabStripModelTest {
   using EntryPoint = TabGroupFocusEntryPoint;
   using ExitReason = TabGroupFocusExitReason;
 
+  static constexpr char kSwitchesHistogram[] =
+      "TabGroups.Focus.GroupSwitchesPerContinuousSession";
   static constexpr char kPromotedHistogram[] =
       "TabGroups.Focus.NonGroupPromotedInSession";
 
@@ -9986,16 +9988,22 @@ TEST_F(TabStripModelFocusCujTest, ProgrammaticAndOtrEntriesDoNotRecord) {
   tabstrip()->PromoteEphemeralTabGroup(ephemeral);
   tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
 
-  // Off-the-record profiles do not record NonGroupPromotedInSession.
+  // Off-the-record profiles do not record Focus CUJ histograms.
   Profile* const otr_profile = profile()->GetPrimaryOTRProfile(true);
   TabStripModel otr_model(delegate(), otr_profile);
-  otr_model.AppendWebContents(
-      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr),
-      true);
-  otr_model.EnterFocusMode({0}, EntryPoint::kTabContextMenuSingleTab);
+  for (int i = 0; i < 2; ++i) {
+    otr_model.AppendWebContents(
+        content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr),
+        true);
+  }
+  otr_model.EnterFocusMode(otr_model.AddToNewGroup({0}),
+                           EntryPoint::kTabContextMenu);
+  otr_model.ExitFocusMode(ExitReason::kHeaderUnfocusButton);
+  otr_model.EnterFocusMode({1}, EntryPoint::kTabContextMenuSingleTab);
   otr_model.ExitFocusMode(ExitReason::kHeaderUnfocusButton);
   otr_model.CloseAllTabs();
 
+  histograms.ExpectTotalCount(kSwitchesHistogram, 0);
   histograms.ExpectTotalCount(kPromotedHistogram, 0);
 }
 
@@ -10009,6 +10017,7 @@ TEST_F(TabStripModelFocusCujTest, UnpromotedNonGroupFocusRecordsFalseOnExit) {
     ToggleFocusFromContextMenu(tabstrip(), 0);
     tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
     histograms.ExpectUniqueSample(kPromotedHistogram, false, 1);
+    histograms.ExpectTotalCount(kSwitchesHistogram, 0);
   }
 
   // Multi-tab unpromoted Non-Group session records false on exit.
@@ -10019,6 +10028,7 @@ TEST_F(TabStripModelFocusCujTest, UnpromotedNonGroupFocusRecordsFalseOnExit) {
     ToggleFocusFromContextMenu(tabstrip(), 0);
     tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
     histograms.ExpectUniqueSample(kPromotedHistogram, false, 1);
+    histograms.ExpectTotalCount(kSwitchesHistogram, 0);
   }
 }
 
@@ -10040,6 +10050,7 @@ TEST_F(TabStripModelFocusCujTest,
 
   tabstrip()->ExitFocusMode(ExitReason::kEditorBubble);
   histograms.ExpectUniqueSample(kPromotedHistogram, true, 1);
+  histograms.ExpectUniqueSample(kSwitchesHistogram, 1, 1);
 }
 
 TEST_F(TabStripModelFocusCujTest,
@@ -10051,11 +10062,13 @@ TEST_F(TabStripModelFocusCujTest,
 
   tabstrip()->ActivateTabAt(1);
   ToggleFocusFromContextMenu(tabstrip(), 1);
-  tabstrip()->EnterFocusMode(persistent_group, EntryPoint::kTabContextMenu);
+  tabstrip()->EnterFocusMode(persistent_group,
+                             EntryPoint::kBookmarksBarContextMenu);
   histograms.ExpectUniqueSample(kPromotedHistogram, false, 1);
 
   tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
   histograms.ExpectUniqueSample(kPromotedHistogram, false, 1);
+  histograms.ExpectUniqueSample(kSwitchesHistogram, 0, 1);
 }
 
 TEST_F(TabStripModelFocusCujTest, SoleGroupCloseWithFallbackTabRecordsSession) {
@@ -10073,6 +10086,7 @@ TEST_F(TabStripModelFocusCujTest, SoleGroupCloseWithFallbackTabRecordsSession) {
 
   EXPECT_EQ(fallback_model.count(), 1);
   histograms.ExpectUniqueSample(kPromotedHistogram, true, 1);
+  histograms.ExpectUniqueSample(kSwitchesHistogram, 0, 1);
   fallback_model.CloseAllTabs();
 }
 
@@ -10094,7 +10108,48 @@ TEST_F(TabStripModelFocusCujTest, WindowEmptyingCloseRecordsSession) {
   sole_tab_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
   EXPECT_TRUE(sole_tab_model->empty());
 
+  histograms.ExpectUniqueSample(kSwitchesHistogram, 0, 1);
   histograms.ExpectBucketCount(kPromotedHistogram, false, 1);
   histograms.ExpectBucketCount(kPromotedHistogram, true, 1);
   histograms.ExpectTotalCount(kPromotedHistogram, 2);
+}
+
+TEST_F(TabStripModelFocusCujTest,
+       GroupSwitchesContinueAcrossRotationAndDirectSwitch) {
+  base::HistogramTester histograms;
+  PrepareTabs(tabstrip(), 4);
+  const tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0});
+  tabstrip()->AddToNewGroup({1});
+  const tab_groups::TabGroupId group_c = tabstrip()->AddToNewGroup({2});
+
+  tabstrip()->EnterFocusMode(group_a, EntryPoint::kTabContextMenu);
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  tabstrip()->EnterFocusMode(group_c, EntryPoint::kBookmarksBarContextMenu);
+  // Re-entering the already-focused group is a no-op and does not increment.
+  tabstrip()->EnterFocusMode(group_c, EntryPoint::kEditorBubble);
+  histograms.ExpectTotalCount(kSwitchesHistogram, 0);
+
+  tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
+  histograms.ExpectUniqueSample(kSwitchesHistogram, 2, 1);
+  histograms.ExpectTotalCount(kPromotedHistogram, 0);
+}
+
+TEST_F(TabStripModelFocusCujTest,
+       ProgrammaticFocusTransitionToUserEntryStartsZeroSwitchSession) {
+  base::HistogramTester histograms;
+  PrepareTabs(tabstrip(), 3);
+  const tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0});
+  const tab_groups::TabGroupId group_b = tabstrip()->AddToNewGroup({1});
+
+  // Programmatic rotation does not start a session.
+  tabstrip()->EnterFocusMode(group_a);
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
+  histograms.ExpectTotalCount(kSwitchesHistogram, 0);
+
+  // User entry while programmatically focused starts a fresh 0-switch session.
+  tabstrip()->EnterFocusMode(group_a);
+  tabstrip()->EnterFocusMode(group_b, EntryPoint::kEditorBubble);
+  tabstrip()->ExitFocusMode(ExitReason::kHeaderUnfocusButton);
+  histograms.ExpectUniqueSample(kSwitchesHistogram, 0, 1);
 }

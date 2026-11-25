@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -970,9 +969,8 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
         tab_strip_model->ExitFocusMode(GetTabGroupFocusExitReason(context));
       } else {
         RecordFocusToggleUserAction(context, /*is_unfocus=*/false);
-        base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint",
-                                      GetTabGroupFocusEntryPoint(context));
-        tab_strip_model->EnterFocusMode(local_group_id.value());
+        tab_strip_model->EnterFocusMode(local_group_id.value(),
+                                        GetTabGroupFocusEntryPoint(context));
       }
       break;
     }

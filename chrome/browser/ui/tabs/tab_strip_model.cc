@@ -2877,6 +2877,7 @@ void TabStripModel::StartOrContinueFocusCujSession(
       // session; finalize the persistent session first.
       FinishFocusCujSession();
     } else {
+      ++focus_cuj_session_->group_switches;
       return;
     }
   }
@@ -2897,6 +2898,11 @@ void TabStripModel::FinishFocusCujSession() {
 
   const FocusCujSession session =
       *std::exchange(focus_cuj_session_, std::nullopt);
+  if (session.is_persistent_group_session()) {
+    base::UmaHistogramCounts100(
+        "TabGroups.Focus.GroupSwitchesPerContinuousSession",
+        session.group_switches);
+  }
   if (!session.is_group_session) {
     base::UmaHistogramBoolean("TabGroups.Focus.NonGroupPromotedInSession",
                               session.promoted);

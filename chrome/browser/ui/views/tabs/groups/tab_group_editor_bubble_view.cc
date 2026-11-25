@@ -1150,10 +1150,8 @@ void TabGroupEditorBubbleView::FocusGroupPressed() {
   shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
       shared_tab_group_metrics::TabGroupEditorBubbleAction::
           kFocusOrUnfocusGroup);
-  base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint",
-                                TabGroupFocusEntryPoint::kEditorBubble);
   TabStripModel* const model = browser_->GetTabStripModel();
-  model->EnterFocusMode(group_);
+  model->EnterFocusMode(group_, TabGroupFocusEntryPoint::kEditorBubble);
   GetWidget()->Close();
 }
 
