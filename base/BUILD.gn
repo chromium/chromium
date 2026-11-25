@@ -6601,6 +6601,7 @@ if (is_android) {
       ":base_shared_preferences_java",
       ":content_uri_utils_java",
       ":features_java",
+      ":file_error_java",
       ":flagged_apis_java",
       ":jni_callbacks_junit_tests_java",
       ":location_junit_tests",

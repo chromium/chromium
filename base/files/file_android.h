@@ -79,12 +79,17 @@ struct OpenAndroidFileResult {
   int fd;
   // The corresponding Java ParcelFileDescriptor object.
   base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor;
-  // Set to true if the file was created or truncated.
+  // Set to true for `File::FLAG_CREATE_ALWAYS`, matching the POSIX convention
+  // of reporting creation also when an existing file was truncated.
   bool created;
 };
 
-// Open an android file (i.e. content URI or a virtual document path) with given
-// File::Flag.
+// Opens a content URI or SAF virtual document path for `base::File`. Supports
+// only `FLAG_OPEN | FLAG_READ`, `FLAG_CREATE_ALWAYS | FLAG_WRITE` and
+// `FLAG_CREATE_ALWAYS | FLAG_READ | FLAG_WRITE`; other dispositions fail with
+// `FILE_ERROR_INVALID_OPERATION` before any provider call. `FLAG_CREATE_ALWAYS`
+// on a missing SAF path creates the document once through
+// `CreateAndroidDocument()`.
 base::expected<OpenAndroidFileResult, base::File::Error> OpenAndroidFile(
     const base::FilePath& path,
     uint32_t flags);

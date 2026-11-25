@@ -125,7 +125,13 @@ int LocalFileStreamWriter::InitiateOpen(base::OnceClosure main_operation) {
     case OPEN_EXISTING_FILE:
       open_flags = kOpenFlagsForWrite;
 #if BUILDFLAG(IS_ANDROID)
-      if (file_path_.IsContentUri() || file_path_.IsVirtualDocumentPath()) {
+      // Android documents have no open-existing-for-write mode that works
+      // across providers. From offset 0 the copy/move path has already
+      // truncated the destination, so a truncating open is equivalent. At a
+      // later offset truncation would destroy the bytes before it, so the
+      // plain flags are left for `base::File` to reject.
+      if ((file_path_.IsContentUri() || file_path_.IsVirtualDocumentPath()) &&
+          initial_offset_ == 0) {
         open_flags = kOpenFlagsForWriteContentUri;
       }
 #endif

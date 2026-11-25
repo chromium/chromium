@@ -341,4 +341,12 @@ public class ContentUriUtilsUnitTest {
                 ContentUriUtils.resolveContentUriOwner(
                         Uri.parse("content://10@exported@unexported/path")));
     }
+
+    @Test
+    public void testOpenContentUriWithStatus_DisallowsModeW() {
+        ContentUriUtils.OpenResult result =
+                ContentUriUtils.openContentUriWithStatus("content://tmp/test/file.txt", "w");
+        assertEquals(FileError.FILE_ERROR_INVALID_OPERATION, result.getStatus());
+        assertNull(result.getParcelFileDescriptor());
+    }
 }

@@ -107,25 +107,6 @@ VirtualDocumentPath::CreateDocument(std::string_view mime_type) const {
   return uri;
 }
 
-std::optional<std::pair<std::string, bool>> VirtualDocumentPath::CreateOrOpen(
-    std::string_view mime_type) const {
-  auto resolved = ResolveDocument();
-  if (resolved.has_value()) {
-    if (resolved->is_directory) {
-      return std::nullopt;
-    }
-    return std::make_pair(std::move(resolved->content_uri), false);
-  }
-  if (resolved.error() != base::File::FILE_ERROR_NOT_FOUND) {
-    return std::nullopt;
-  }
-  auto created = CreateDocument(mime_type);
-  if (!created.has_value()) {
-    return std::nullopt;
-  }
-  return std::make_pair(std::move(*created), true);
-}
-
 }  // namespace base::files_internal
 
 DEFINE_JNI(VirtualDocumentPath)

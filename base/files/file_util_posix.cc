@@ -709,6 +709,54 @@ bool IsVisibleToUser(const FilePath& path) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+int ReadAndroidFileStream(void* cookie, char* buf, int size) {
+  if (size < 0) {
+    errno = EINVAL;
+    return -1;
+  }
+  auto* file = static_cast<File*>(cookie);
+  ssize_t bytes_read;
+  int saved_errno = 0;
+  {
+    ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+    bytes_read = HANDLE_EINTR(
+        read(file->GetPlatformFile(), buf, checked_cast<size_t>(size)));
+    if (bytes_read < 0) {
+      saved_errno = errno;
+    }
+  }
+  if (bytes_read < 0) {
+    errno = saved_errno;
+    return -1;
+  }
+  return checked_cast<int>(bytes_read);
+}
+
+fpos64_t SeekAndroidFileStream(void* cookie, fpos64_t offset, int whence) {
+  auto* file = static_cast<File*>(cookie);
+  fpos64_t pos;
+  int saved_errno = 0;
+  {
+    ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+    pos = lseek64(file->GetPlatformFile(), offset, whence);
+    if (pos == static_cast<fpos64_t>(-1)) {
+      saved_errno = errno;
+    }
+  }
+  if (pos == static_cast<fpos64_t>(-1)) {
+    errno = saved_errno;
+  }
+  return pos;
+}
+
+int CloseAndroidFileStream(void* cookie) {
+  std::unique_ptr<File> file(static_cast<File*>(cookie));
+  file->Close();
+  return 0;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {
@@ -1356,17 +1404,27 @@ FILE* OpenFile(const FilePath& filename, base::cstring_view mode) {
   FILE* result = nullptr;
 #if BUILDFLAG(IS_ANDROID)
   if (filename.IsContentUri() || filename.IsVirtualDocumentPath()) {
-    std::optional<FilePath> content_uri = base::ResolveToContentUri(filename);
-    if (!content_uri) {
+    // TODO(crbug.com/428129200): Support modes other than read-only.
+    if (mode != "r" && mode != "rb") {
       return nullptr;
     }
-    // TODO(crbug.com/428129200): use mode.
-    int fd = internal::ContentUriGetFd(internal::OpenContentUri(
-        *content_uri, File::FLAG_OPEN | File::FLAG_READ));
-    if (fd < 0) {
+    auto file =
+        std::make_unique<File>(filename, File::FLAG_OPEN | File::FLAG_READ);
+    if (!file->IsValid()) {
       return nullptr;
     }
-    return fdopen(fd, mode.c_str());
+    // Wrap `File` with `funopen64()` so `java_parcel_file_descriptor_` stays
+    // open until `fclose()` runs; closing it early drops the provider
+    // connection and fires `OnCloseListener` while reads are still in flight.
+    // `writefn` is null because only read-only modes are accepted above.
+    FILE* stream =
+        funopen64(file.get(), &ReadAndroidFileStream, /*writefn=*/nullptr,
+                  &SeekAndroidFileStream, &CloseAndroidFileStream);
+    if (!stream) {
+      return nullptr;
+    }
+    file.release();
+    return stream;
   }
 #endif
 #if BUILDFLAG(IS_APPLE)

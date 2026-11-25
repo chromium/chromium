@@ -24,20 +24,39 @@ namespace internal {
 // Check whether a content URI exists.
 BASE_EXPORT bool ContentUriExists(const FilePath& content_uri);
 
-// Translates File::FLAG_* `open_flags` bitset to Java mode from
-// ParcelFileDescriptor#parseMode(): ("r", "w", "wt", "wa", "rw" or "rwt").
-// Disallows "w" which has been the source of android security issues.
-// Returns nullopt if `open_flags` are not supported.
-BASE_EXPORT std::optional<std::string> TranslateOpenFlagsToJavaMode(
-    uint32_t open_flags);
+// `base::File` flags that select the disposition and access mode.
+inline constexpr uint32_t kCoreAndroidFileFlags =
+    File::FLAG_OPEN | File::FLAG_CREATE | File::FLAG_OPEN_ALWAYS |
+    File::FLAG_CREATE_ALWAYS | File::FLAG_OPEN_TRUNCATED | File::FLAG_READ |
+    File::FLAG_WRITE | File::FLAG_APPEND;
 
-// Opens a content URI and returns the Java ParcelFileDescriptor to the caller
-// which will own the object.  Callers should call ContentUriGetFd() to get the
-// platform file descriptor, and call ContentUriClose() when the file is closed.
-// `open_flags` is a bitmap of File::FLAG_* values.
-// Returns null if the URI is invalid.
-base::android::ScopedJavaLocalRef<jobject> OpenContentUri(
-    const FilePath& content_uri,
+// Flags whose guarantees a provider descriptor cannot give. They are rejected
+// rather than dropped so that, for example, a `FLAG_NO_FOLLOW` caller does not
+// get a handle without the protection it asked for.
+inline constexpr uint32_t kUnhandledAndroidFileModifiers =
+    File::FLAG_NO_FOLLOW | File::FLAG_DELETE_ON_CLOSE |
+    File::FLAG_WRITE_ATTRIBUTES | File::FLAG_TERMINAL_DEVICE;
+
+// Flags with no meaning on Android that are accepted and ignored.
+inline constexpr uint32_t kIgnoredAndroidFileFlags =
+    File::FLAG_WIN_SHARE_DELETE | File::FLAG_WIN_EXCLUSIVE_WRITE |
+    File::FLAG_WIN_TEMPORARY | File::FLAG_WIN_HIDDEN |
+    File::FLAG_WIN_EXCLUSIVE_READ | File::FLAG_WIN_BACKUP_SEMANTICS |
+    File::FLAG_WIN_EXECUTE | File::FLAG_WIN_SEQUENTIAL_SCAN |
+    File::FLAG_WIN_NO_EXECUTE | File::FLAG_CAN_DELETE_ON_CLOSE |
+    File::FLAG_ASYNC;
+
+inline constexpr uint32_t kKnownAndroidFileFlags =
+    kCoreAndroidFileFlags | kUnhandledAndroidFileModifiers |
+    kIgnoredAndroidFileFlags;
+
+// Translates `File::FLAG_*` `open_flags` to a `ParcelFileDescriptor` mode.
+// Only `FLAG_OPEN | FLAG_READ` ("r"), `FLAG_CREATE_ALWAYS | FLAG_WRITE` ("wt")
+// and `FLAG_CREATE_ALWAYS | FLAG_READ | FLAG_WRITE` ("rwt") are supported.
+// Other dispositions promise creation or non-creation semantics that a provider
+// open cannot guarantee, so they return `std::nullopt`, as do unhandled
+// modifiers and unknown bits.
+BASE_EXPORT std::optional<std::string> TranslateOpenFlagsToJavaMode(
     uint32_t open_flags);
 
 // Opens `content_uri` with a ParcelFileDescriptor mode ("r", "rw", "wt", "rwt"

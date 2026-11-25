@@ -20,6 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -33,6 +34,7 @@
 
 #if BUILDFLAG(IS_POSIX)
 #include <errno.h>
+#include <fcntl.h>
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_WIN)
@@ -159,11 +161,31 @@ TEST(FileTest, CreateAndroid) {
   }
 
   {
-    // Open or create a file.
-    File file(file_path, File::FLAG_OPEN_ALWAYS | File::FLAG_READ);
-    EXPECT_TRUE(file.IsValid());
+    // Unsupported dispositions fail before any provider call.
+    for (uint32_t rejected_flags :
+         {File::FLAG_OPEN_ALWAYS | File::FLAG_READ,
+          File::FLAG_OPEN_ALWAYS | File::FLAG_WRITE,
+          File::FLAG_CREATE | File::FLAG_READ,
+          File::FLAG_CREATE | File::FLAG_WRITE,
+          File::FLAG_OPEN_TRUNCATED | File::FLAG_WRITE,
+          File::FLAG_OPEN | File::FLAG_WRITE}) {
+      File file(file_path, rejected_flags);
+      EXPECT_FALSE(file.IsValid())
+          << StringPrintf("flags=0x%x", rejected_flags);
+      EXPECT_EQ(File::FILE_ERROR_INVALID_OPERATION, file.error_details())
+          << StringPrintf("flags=0x%x", rejected_flags);
+      EXPECT_FALSE(PathExists(file_path));
+    }
+  }
+
+  {
+    // Create a file.
+    File file(file_path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
+    ASSERT_TRUE(file.IsValid());
     EXPECT_TRUE(file.created());
     EXPECT_EQ(File::FILE_OK, file.error_details());
+    ASSERT_TRUE(file.WriteAtCurrentPosAndCheck(
+        as_byte_span(std::string_view("initial_long"))));
   }
 
   {
@@ -192,22 +214,109 @@ TEST(FileTest, CreateAndroid) {
   }
 
   {
-    // Create a file that exists.
-    File file(file_path, File::FLAG_CREATE | File::FLAG_READ);
-    EXPECT_FALSE(file.IsValid());
-    EXPECT_FALSE(file.created());
-    EXPECT_EQ(File::FILE_ERROR_EXISTS, file.error_details());
+    // Overwrite a file; shorter data leaves no old tail.
+    File file(file_path,
+              File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE);
+    ASSERT_TRUE(file.IsValid());
+    EXPECT_TRUE(file.created());
+    EXPECT_EQ(File::FILE_OK, file.error_details());
+    ASSERT_TRUE(file.WriteAtCurrentPosAndCheck(
+        as_byte_span(std::string_view("short"))));
+  }
+  {
+    std::string contents;
+    ASSERT_TRUE(ReadFileToString(file_path, &contents));
+    EXPECT_EQ("short", contents);
   }
 
   {
-    // Create or overwrite a file.
-    File file(file_path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
+    // Rejected flags on an existing document neither truncate nor delete it.
+    for (uint32_t rejected_flags :
+         {File::FLAG_CREATE | File::FLAG_READ,
+          File::FLAG_OPEN_ALWAYS | File::FLAG_WRITE,
+          File::FLAG_OPEN_TRUNCATED | File::FLAG_WRITE,
+          File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE,
+          File::FLAG_OPEN | File::FLAG_APPEND,
+          File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE | File::FLAG_APPEND,
+          File::FLAG_OPEN | File::FLAG_READ | File::FLAG_NO_FOLLOW,
+          File::FLAG_OPEN | File::FLAG_READ | File::FLAG_DELETE_ON_CLOSE,
+          File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE_ATTRIBUTES,
+          File::FLAG_OPEN | File::FLAG_READ | File::FLAG_TERMINAL_DEVICE}) {
+      File file(file_path, rejected_flags);
+      EXPECT_FALSE(file.IsValid())
+          << StringPrintf("flags=0x%x", rejected_flags);
+      EXPECT_EQ(File::FILE_ERROR_INVALID_OPERATION, file.error_details())
+          << StringPrintf("flags=0x%x", rejected_flags);
+      std::string contents;
+      ASSERT_TRUE(ReadFileToString(file_path, &contents));
+      EXPECT_EQ("short", contents);
+    }
+  }
+
+  {
+    // Windows-only flags and FLAG_ASYNC are ignored.
+    File file(file_path, File::FLAG_OPEN | File::FLAG_READ |
+                             File::FLAG_WIN_SHARE_DELETE |
+                             File::FLAG_CAN_DELETE_ON_CLOSE | File::FLAG_ASYNC);
     EXPECT_TRUE(file.IsValid());
-    EXPECT_TRUE(file.created());
-    EXPECT_EQ(File::FILE_OK, file.error_details());
+    EXPECT_TRUE(file.async());
+  }
+
+  {
+    // Opening a directory as a file fails.
+    File file(temp_dir, File::FLAG_OPEN | File::FLAG_READ);
+    EXPECT_FALSE(file.IsValid());
+    EXPECT_EQ(File::FILE_ERROR_NOT_A_FILE, file.error_details());
   }
 
   EXPECT_TRUE(PathExists(file_path));
+}
+
+TEST(FileTest, AndroidContentUriRejectsUnsupportedFlags) {
+  ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  FilePath file_path = scoped_temp_dir.GetPath().AppendASCII("doc.txt");
+  ASSERT_TRUE(WriteFile(file_path, "content"));
+  FilePath content_uri =
+      *test::android::GetContentUriFromCacheDirFilePath(file_path);
+
+  for (uint32_t rejected_flags :
+       {File::FLAG_CREATE | File::FLAG_READ,
+        File::FLAG_OPEN_ALWAYS | File::FLAG_WRITE,
+        File::FLAG_OPEN_TRUNCATED | File::FLAG_WRITE,
+        File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE,
+        File::FLAG_OPEN | File::FLAG_APPEND,
+        File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE | File::FLAG_APPEND,
+        File::FLAG_OPEN | File::FLAG_READ | File::FLAG_NO_FOLLOW,
+        File::FLAG_OPEN | File::FLAG_READ | File::FLAG_DELETE_ON_CLOSE}) {
+    File file(content_uri, rejected_flags);
+    EXPECT_FALSE(file.IsValid()) << StringPrintf("flags=0x%x", rejected_flags);
+    EXPECT_EQ(File::FILE_ERROR_INVALID_OPERATION, file.error_details())
+        << StringPrintf("flags=0x%x", rejected_flags);
+    std::string contents;
+    ASSERT_TRUE(ReadFileToString(file_path, &contents));
+    EXPECT_EQ("content", contents);
+  }
+
+  File read_file(content_uri, File::FLAG_OPEN | File::FLAG_READ);
+  ASSERT_TRUE(read_file.IsValid());
+  EXPECT_NE(0, fcntl(read_file.GetPlatformFile(), F_GETFD) & FD_CLOEXEC);
+  read_file.Close();
+
+  EXPECT_EQ(nullptr, OpenFile(content_uri, "w"));
+  EXPECT_EQ(nullptr, OpenFile(content_uri, "r+"));
+  FILE* read_stream = OpenFile(content_uri, "rb");
+  ASSERT_NE(nullptr, read_stream);
+  std::string stream_contents;
+  ASSERT_TRUE(ReadStreamToString(read_stream, &stream_contents));
+  EXPECT_EQ("content", stream_contents);
+  ASSERT_EQ(0, fseek(read_stream, 3, SEEK_SET));
+  EXPECT_EQ('t', fgetc(read_stream));
+  EXPECT_EQ('e', fgetc(read_stream));
+  EXPECT_EQ('n', fgetc(read_stream));
+  EXPECT_EQ('t', fgetc(read_stream));
+  EXPECT_EQ(EOF, fgetc(read_stream));
+  EXPECT_TRUE(CloseFile(read_stream));
 }
 
 TEST(FileTest, ResolveAndCreateAndroidDocument) {

@@ -4,6 +4,7 @@
 
 #include "base/android/content_uri_utils.h"
 
+#include <fcntl.h>
 #include <sys/stat.h>
 
 #include "base/android/jni_android.h"
@@ -11,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/files/file.h"
 #include "base/logging.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/time/time.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -33,49 +35,23 @@ std::optional<std::string> TranslateOpenFlagsToJavaMode(uint32_t open_flags) {
   // The allowable modes from ParcelFileDescriptor#parseMode() are
   // ("r", "w", "wt", "wa", "rw", "rwt"), we disallow "w" which has been the
   // source of android security issues.
+  if (open_flags & ~kKnownAndroidFileFlags) {
+    return std::nullopt;
+  }
+  if (open_flags & kUnhandledAndroidFileModifiers) {
+    return std::nullopt;
+  }
 
-  // Filter out unsupported or irrelevant flags, not explicitly supported by
-  // Content UI in the switch statement below.
-  open_flags &= (File::FLAG_OPEN | File::FLAG_CREATE | File::FLAG_OPEN_ALWAYS |
-                 File::FLAG_CREATE_ALWAYS | File::FLAG_OPEN_TRUNCATED |
-                 File::FLAG_READ | File::FLAG_WRITE | File::FLAG_APPEND);
-
-  switch (open_flags) {
+  switch (open_flags & kCoreAndroidFileFlags) {
     case File::FLAG_OPEN | File::FLAG_READ:
-    case File::FLAG_OPEN_ALWAYS | File::FLAG_READ:
-    case File::FLAG_CREATE | File::FLAG_READ:
       return "r";
-    case File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE:
-    case File::FLAG_OPEN_ALWAYS | File::FLAG_READ | File::FLAG_WRITE:
-    case File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE:
-      return "rw";
-    case File::FLAG_OPEN | File::FLAG_APPEND:
-    case File::FLAG_OPEN | File::FLAG_APPEND | File::FLAG_WRITE:
-    case File::FLAG_OPEN_ALWAYS | File::FLAG_APPEND:
-    case File::FLAG_OPEN_ALWAYS | File::FLAG_APPEND | File::FLAG_WRITE:
-      return "wa";
-    case File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE:
-    case File::FLAG_OPEN_TRUNCATED | File::FLAG_READ | File::FLAG_WRITE:
-      return "rwt";
     case File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE:
-    case File::FLAG_CREATE_ALWAYS | File::FLAG_APPEND:
-    case File::FLAG_CREATE_ALWAYS | File::FLAG_APPEND | File::FLAG_WRITE:
-    case File::FLAG_OPEN_TRUNCATED | File::FLAG_WRITE:
       return "wt";
+    case File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE:
+      return "rwt";
     default:
       return std::nullopt;
   }
-}
-
-ScopedJavaLocalRef<jobject> OpenContentUri(const FilePath& content_uri,
-                                           uint32_t open_flags) {
-  JNIEnv* env = android::AttachCurrentThread();
-  auto mode = TranslateOpenFlagsToJavaMode(open_flags);
-  if (!mode.has_value()) {
-    DLOG(ERROR) << "Unsupported flags=0x" << std::hex << open_flags;
-    return nullptr;
-  }
-  return Java_ContentUriUtils_openContentUri(env, content_uri.value(), *mode);
 }
 
 base::expected<ScopedJavaLocalRef<jobject>, File::Error>
@@ -110,7 +86,10 @@ int ContentUriGetFd(const JavaRef<jobject>& java_parcel_file_descriptor) {
   }
   JNIEnv* env = android::AttachCurrentThread();
   int fd = Java_ContentUriUtils_getFd(env, java_parcel_file_descriptor);
-  return dup(fd);
+  if (fd < 0) {
+    return -1;
+  }
+  return HANDLE_EINTR(fcntl(fd, F_DUPFD_CLOEXEC, 0));
 }
 
 void ContentUriClose(const JavaRef<jobject>& java_parcel_file_descriptor) {

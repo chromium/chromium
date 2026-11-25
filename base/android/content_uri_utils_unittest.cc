@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/android/content_uri_test_utils.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
@@ -61,39 +62,65 @@ TEST(ContentUriUtilsTest, GetContentUriMimeTypeOfUnreadableDocument) {
 TEST(ContentUriUtilsTest, TranslateOpenFlagsToJavaMode) {
   constexpr auto kTranslations = MakeFixedFlatMap<uint32_t, std::string>({
       {File::FLAG_OPEN | File::FLAG_READ, "r"},
-      {File::FLAG_OPEN_ALWAYS | File::FLAG_READ, "r"},
-      {File::FLAG_CREATE | File::FLAG_READ, "r"},
-      {File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE, "rw"},
-      {File::FLAG_OPEN_ALWAYS | File::FLAG_READ | File::FLAG_WRITE, "rw"},
-      {File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE, "rw"},
-      {File::FLAG_OPEN | File::FLAG_APPEND, "wa"},
-      {File::FLAG_OPEN | File::FLAG_APPEND | File::FLAG_WRITE, "wa"},
-      {File::FLAG_OPEN_ALWAYS | File::FLAG_APPEND, "wa"},
-      {File::FLAG_OPEN_ALWAYS | File::FLAG_APPEND | File::FLAG_WRITE, "wa"},
-      {File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE, "rwt"},
-      {File::FLAG_OPEN_TRUNCATED | File::FLAG_READ | File::FLAG_WRITE, "rwt"},
       {File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE, "wt"},
-      {File::FLAG_CREATE_ALWAYS | File::FLAG_APPEND, "wt"},
-      {File::FLAG_CREATE_ALWAYS | File::FLAG_APPEND | File::FLAG_WRITE, "wt"},
-      {File::FLAG_OPEN_TRUNCATED | File::FLAG_WRITE, "wt"},
+      {File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE, "rwt"},
   });
 
   for (const auto open_or_create : std::vector<uint32_t>(
            {0u, File::FLAG_OPEN, File::FLAG_CREATE, File::FLAG_OPEN_ALWAYS,
-            File::FLAG_CREATE_ALWAYS, File::FLAG_OPEN_TRUNCATED})) {
+            File::FLAG_CREATE_ALWAYS, File::FLAG_OPEN_TRUNCATED,
+            File::FLAG_OPEN | File::FLAG_CREATE_ALWAYS})) {
     for (const auto read_write_append : std::vector<uint32_t>(
              {0u, File::FLAG_READ, File::FLAG_WRITE, File::FLAG_APPEND,
               File::FLAG_READ | File::FLAG_WRITE,
-              File::FLAG_APPEND | File::FLAG_WRITE})) {
-      for (const auto other : std::vector<uint32_t>(
-               {0u, File::FLAG_DELETE_ON_CLOSE, File::FLAG_TERMINAL_DEVICE})) {
-        uint32_t open_flags = open_or_create | read_write_append | other;
-        auto mode = internal::TranslateOpenFlagsToJavaMode(open_flags);
-        auto it = kTranslations.find(open_or_create | read_write_append);
-        if (it != kTranslations.end()) {
-          EXPECT_TRUE(mode.has_value()) << "flag=0x" << std::hex << open_flags;
-          EXPECT_EQ(mode.value(), it->second)
-              << "flag=0x" << std::hex << open_flags;
+              File::FLAG_READ | File::FLAG_APPEND,
+              File::FLAG_APPEND | File::FLAG_WRITE,
+              File::FLAG_READ | File::FLAG_WRITE | File::FLAG_APPEND})) {
+      uint32_t core_flags = open_or_create | read_write_append;
+      auto mode = internal::TranslateOpenFlagsToJavaMode(core_flags);
+      auto it = kTranslations.find(core_flags);
+      if (it != kTranslations.end()) {
+        EXPECT_TRUE(mode.has_value()) << StringPrintf("flag=0x%x", core_flags);
+        EXPECT_EQ(mode.value(), it->second)
+            << StringPrintf("flag=0x%x", core_flags);
+      } else {
+        EXPECT_FALSE(mode.has_value()) << StringPrintf("flag=0x%x", core_flags);
+      }
+
+      static_assert(
+          (File::FLAG_DELETE_ON_CLOSE | File::FLAG_TERMINAL_DEVICE |
+           File::FLAG_NO_FOLLOW | File::FLAG_WRITE_ATTRIBUTES) ==
+              internal::kUnhandledAndroidFileModifiers,
+          "Keep this list in sync with kUnhandledAndroidFileModifiers.");
+      for (const auto modifier : std::vector<uint32_t>(
+               {File::FLAG_DELETE_ON_CLOSE, File::FLAG_TERMINAL_DEVICE,
+                File::FLAG_NO_FOLLOW, File::FLAG_WRITE_ATTRIBUTES})) {
+        EXPECT_FALSE(
+            internal::TranslateOpenFlagsToJavaMode(core_flags | modifier))
+            << StringPrintf("flag=0x%x", core_flags | modifier);
+      }
+
+      for (const auto unknown_bit :
+           std::vector<uint32_t>({1u << 25, 1u << 30, 1u << 31})) {
+        EXPECT_FALSE(
+            internal::TranslateOpenFlagsToJavaMode(core_flags | unknown_bit))
+            << StringPrintf("flag=0x%x", core_flags | unknown_bit);
+      }
+
+      if (it != kTranslations.end()) {
+        for (const auto ignored_flag : std::vector<uint32_t>(
+                 {File::FLAG_WIN_SHARE_DELETE, File::FLAG_WIN_EXCLUSIVE_WRITE,
+                  File::FLAG_WIN_TEMPORARY, File::FLAG_WIN_HIDDEN,
+                  File::FLAG_WIN_EXCLUSIVE_READ,
+                  File::FLAG_WIN_BACKUP_SEMANTICS, File::FLAG_WIN_EXECUTE,
+                  File::FLAG_WIN_SEQUENTIAL_SCAN, File::FLAG_WIN_NO_EXECUTE,
+                  File::FLAG_CAN_DELETE_ON_CLOSE, File::FLAG_ASYNC})) {
+          auto ignored_mode =
+              internal::TranslateOpenFlagsToJavaMode(core_flags | ignored_flag);
+          EXPECT_TRUE(ignored_mode.has_value())
+              << StringPrintf("flag=0x%x", core_flags | ignored_flag);
+          EXPECT_EQ(ignored_mode.value(), it->second)
+              << StringPrintf("flag=0x%x", core_flags | ignored_flag);
         }
       }
     }

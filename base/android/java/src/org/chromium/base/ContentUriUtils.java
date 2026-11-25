@@ -77,26 +77,17 @@ public abstract class ContentUriUtils {
     private ContentUriUtils() {}
 
     /**
-     * Opens the content URI for the specified mode, and returns the file descriptor to the caller.
-     * The caller is responsible for closing the file descriptor.
+     * Opens the content URI with {@code mode}. The caller is responsible for closing the returned
+     * {@link ParcelFileDescriptor}.
      *
      * @param uriString the content URI to open
      * @param mode the mode to open. Allows all values from ParcelFileDescriptor#parseMode(): ("r",
      *     "w", "wt", "wa", "rw" or "rwt"), but disallows "w" which has been the source of android
      *     security issues.
-     * @return file descriptor upon success, or -1 otherwise.
-     */
-    @CalledByNative
-    public static @Nullable ParcelFileDescriptor openContentUri(
-            @JniType("std::string") String uriString, @JniType("std::string") String mode) {
-        AssetFileDescriptor afd = getAssetFileDescriptor(uriString, mode);
-        return afd != null ? afd.getParcelFileDescriptor() : null;
-    }
-
-    /**
-     * Same as {@link #openContentUri} but reports why the open failed. Modes other than "r" on
-     * MIME-converted virtual documents fail with FILE_ERROR_INVALID_OPERATION rather than silently
-     * returning a read-only descriptor.
+     * @return an {@link OpenResult} containing the opened {@link ParcelFileDescriptor} on success
+     *     or the error code explaining why the open failed (for example, {@code
+     *     FILE_ERROR_INVALID_OPERATION} when {@code mode} is "w" or is not "r" on a MIME-converted
+     *     virtual document)
      */
     @CalledByNative
     static OpenResult openContentUriWithStatus(
@@ -138,7 +129,7 @@ public abstract class ContentUriUtils {
     public static boolean contentUriExists(@JniType("std::string") String uriString) {
         AssetFileDescriptor asf = null;
         try {
-            asf = getAssetFileDescriptor(uriString, "r");
+            asf = getAssetFileDescriptor(uriString);
             if (asf != null) {
                 return true;
             }
@@ -211,7 +202,7 @@ public abstract class ContentUriUtils {
                 queryUri = uri;
             } else {
                 // If URI is not a documents URI, then try to get size from AFD.
-                AssetFileDescriptor afd = getAssetFileDescriptor(uriString, "r");
+                AssetFileDescriptor afd = getAssetFileDescriptor(uriString);
                 if (afd != null) {
                     ContentUriUtilsJni.get()
                             .addFileInfoToVector(
@@ -325,22 +316,14 @@ public abstract class ContentUriUtils {
     }
 
     /**
-     * Helper method to open a content URI and returns the ParcelFileDescriptor.
+     * Opens a content URI for reading and returns its {@link AssetFileDescriptor}.
      *
      * @param uriString the content URI to open.
-     * @param mode the mode to open. Allows all values from ParcelFileDescriptor#parseMode(): ("r",
-     *     "w", "wt", "wa", "rw" or "rwt"), but disallows "w" which has been the source of android
-     *     security issues.
-     * @return AssetFileDescriptor of the content URI, or NULL if the file does not exist.
+     * @return AssetFileDescriptor of the content URI, or null if the file cannot be opened.
      */
-    private static @Nullable AssetFileDescriptor getAssetFileDescriptor(
-            String uriString, String mode) {
-        if ("w".equals(mode)) {
-            Log.e(TAG, "Cannot open files with mode 'w'");
-            return null;
-        }
+    private static @Nullable AssetFileDescriptor getAssetFileDescriptor(String uriString) {
         try {
-            return openAssetFileDescriptor(Uri.parse(uriString), mode);
+            return openAssetFileDescriptor(Uri.parse(uriString), "r");
         } catch (Exception e) {
             Log.w(TAG, "Cannot open content uri: %s", uriString, e);
         }
@@ -353,6 +336,10 @@ public abstract class ContentUriUtils {
      */
     private static @Nullable AssetFileDescriptor openAssetFileDescriptor(Uri uri, String mode)
             throws FileNotFoundException {
+        if ("w".equals(mode)) {
+            Log.e(TAG, "Cannot open files with mode 'w'");
+            throw new IllegalArgumentException("Cannot open files with mode 'w'");
+        }
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         AssetFileDescriptor afd = null;
         if (isVirtualDocument(uri)) {

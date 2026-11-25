@@ -136,14 +136,6 @@ class VirtualDocumentPath {
   base::expected<std::string, base::File::Error> CreateDocument(
       std::string_view mime_type) const;
 
-  // Creates an empty file of type `mime_type` if it does not exist and its
-  // parent directory exists.
-  // If the file exists or created, it returns a pair of two values where the
-  // first value is the content URI, and the second is a bool which is true if
-  // the file has been created and false if the file already existed.
-  std::optional<std::pair<std::string, bool>> CreateOrOpen(
-      std::string_view mime_type) const;
-
  private:
   explicit VirtualDocumentPath(const base::android::JavaRef<jobject>& obj);
 

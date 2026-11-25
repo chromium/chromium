@@ -565,13 +565,31 @@ File::Error File::OSErrorToFileError(int saved_errno) {
 void File::DoInitialize(const FilePath& path, uint32_t flags) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(!IsValid());
+  created_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
+    auto result = files_internal::OpenAndroidFile(path, flags);
+    if (!result.has_value()) {
+      error_details_ = result.error();
+      return;
+    }
+
+    // Save path for any call to GetInfo().
+    path_ = result->content_uri;
+    file_.reset(result->fd);
+    java_parcel_file_descriptor_ = result->java_parcel_file_descriptor;
+    created_ = result->created;
+    async_ = (flags & FLAG_ASYNC);
+    error_details_ = FILE_OK;
+    return;
+  }
+#endif
 
   int open_flags = 0;
   if (flags & FLAG_CREATE) {
     open_flags = O_CREAT | O_EXCL;
   }
-
-  created_ = false;
 
   if (flags & FLAG_CREATE_ALWAYS) {
     DCHECK(!open_flags);
@@ -620,25 +638,6 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   mode_t mode = S_IRUSR | S_IWUSR;
 #if BUILDFLAG(IS_CHROMEOS)
   mode |= S_IRGRP | S_IROTH;
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
-    auto result = files_internal::OpenAndroidFile(path, flags);
-    if (!result.has_value()) {
-      error_details_ = result.error();
-      return;
-    }
-
-    // Save path for any call to GetInfo().
-    path_ = result->content_uri;
-    file_.reset(result->fd);
-    java_parcel_file_descriptor_ = result->java_parcel_file_descriptor;
-    created_ = result->created;
-    async_ = (flags & FLAG_ASYNC);
-    error_details_ = FILE_OK;
-    return;
-  }
 #endif
 
   int descriptor = HANDLE_EINTR(open(path.value().c_str(), open_flags, mode));

@@ -122,6 +122,47 @@ TEST_F(ContentUriLocalFileStreamWriterTest,
   ASSERT_TRUE(base::ReadFileToString(file_path, &content));
   EXPECT_EQ("foo", content);
 }
+
+TEST_F(ContentUriLocalFileStreamWriterTest,
+       OpenExistingAtOffsetRejectedWithoutTruncating) {
+  EXPECT_TRUE(
+      this->CreateFileWithContent(std::string(this->kTestFileName), "foobar"));
+  base::FilePath content_uri =
+      *base::test::android::GetContentUriFromCacheDirFilePath(
+          Path(std::string(this->kTestFileName)));
+
+  auto writer = FileStreamWriter::CreateForLocalFile(
+      file_task_runner(), content_uri, 3, FileStreamWriter::OPEN_EXISTING_FILE);
+
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT,
+            WriteStringToWriter(writer.get(), "xyz"));
+  EXPECT_EQ("foobar", this->GetFileContent(std::string(this->kTestFileName)));
+}
+
+TEST_F(ContentUriLocalFileStreamWriterTest, VirtualDocumentPathCreateModes) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath dir_vp =
+      *base::test::android::GetVirtualDocumentPathFromCacheDirDirectory(
+          temp_dir.GetPath());
+
+  // Exclusive creation has no SAF equivalent.
+  auto create_new_writer = FileStreamWriter::CreateForLocalFile(
+      file_task_runner(), dir_vp.Append("exclusive"), 0,
+      FileStreamWriter::CREATE_NEW_FILE);
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT,
+            WriteStringToWriter(create_new_writer.get(), "hello"));
+  EXPECT_FALSE(base::PathExists(temp_dir.GetPath().AppendASCII("exclusive")));
+
+  auto create_always_writer = FileStreamWriter::CreateForLocalFile(
+      file_task_runner(), dir_vp.Append("created"), 0,
+      FileStreamWriter::CREATE_NEW_FILE_ALWAYS);
+  EXPECT_EQ(net::OK, WriteStringToWriter(create_always_writer.get(), "hello"));
+  std::string content;
+  ASSERT_TRUE(base::ReadFileToString(temp_dir.GetPath().AppendASCII("created"),
+                                     &content));
+  EXPECT_EQ("hello", content);
+}
 #endif
 
 }  // namespace storage
