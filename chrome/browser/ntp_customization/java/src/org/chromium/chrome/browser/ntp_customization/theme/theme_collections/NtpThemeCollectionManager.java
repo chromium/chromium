@@ -41,7 +41,6 @@ public class NtpThemeCollectionManager {
     private final Callback<Bitmap> mOnThemeImageSelectedCallback;
     private final @Nullable ImageFetcher mImageFetcher;
     private boolean mHasActiveSelection;
-    private @Nullable Runnable mFetchNextImageRunnable;
     // Cancels the callback of the in-flight download when a newer selection starts, or when the
     // current selection is canceled or destroyed, so that any stale result is dropped when it
     // arrives.
@@ -134,7 +133,6 @@ public class NtpThemeCollectionManager {
     /** Cancels any in-flight theme collection selection or download. */
     public void cancelPendingSelection() {
         mHasActiveSelection = false;
-        mFetchNextImageRunnable = null;
         resetDownloadCallbackController();
     }
 
@@ -172,10 +170,7 @@ public class NtpThemeCollectionManager {
      */
     private void handleFetchedThemeCollectionImage(
             CustomBackgroundInfo info, @Nullable Bitmap bitmap) {
-        if (bitmap == null) {
-            mFetchNextImageRunnable = null;
-            return;
-        }
+        if (bitmap == null) return;
 
         BackgroundImageInfo backgroundImageInfo =
                 NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
@@ -194,11 +189,6 @@ public class NtpThemeCollectionManager {
                         fileId);
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
         mOnThemeImageSelectedCallback.onResult(bitmap);
-
-        if (mFetchNextImageRunnable != null) {
-            mFetchNextImageRunnable.run();
-            mFetchNextImageRunnable = null;
-        }
     }
 
     /**
@@ -209,7 +199,6 @@ public class NtpThemeCollectionManager {
     public void setThemeCollectionDailyRefreshed(String themeCollectionId) {
         cancelPendingSelection();
         mHasActiveSelection = true;
-        mFetchNextImageRunnable = mNtpThemeCollectionBridge::fetchNextThemeCollectionImage;
         mNtpThemeCollectionBridge.setThemeCollectionDailyRefreshed(themeCollectionId);
     }
 

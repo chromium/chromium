@@ -199,14 +199,6 @@ public class NtpThemeCollectionBridge {
                         assumeNonNull(mNativeNtpThemeCollectionBridge), themeCollectionId);
     }
 
-    /** Fetches the next image for a theme collection with daily refresh enabled. */
-    public void fetchNextThemeCollectionImage() {
-        if (mNativeNtpThemeCollectionBridge == null) return;
-
-        NtpThemeCollectionBridgeJni.get()
-                .fetchNextThemeCollectionImage(assumeNonNull(mNativeNtpThemeCollectionBridge));
-    }
-
     /**
      * Callback from native code, triggered when the custom background image has been successfully
      * updated. This can occur after a new theme is selected.
@@ -281,8 +273,6 @@ public class NtpThemeCollectionBridge {
         void setThemeCollectionDailyRefreshed(
                 JniPtr<NativeNtpThemeCollectionBridge> self,
                 @JniType("std::string") String collectionId);
-
-        void fetchNextThemeCollectionImage(JniPtr<NativeNtpThemeCollectionBridge> self);
 
         @Nullable CustomBackgroundInfo getCustomBackgroundInfo(
                 JniPtr<NativeNtpThemeCollectionBridge> self);

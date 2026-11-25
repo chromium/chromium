@@ -225,12 +225,6 @@ public class NtpThemeCollectionBridgeUnitTest {
     }
 
     @Test
-    public void testFetchNextThemeCollectionImage() {
-        mNtpThemeCollectionBridge.fetchNextThemeCollectionImage();
-        verify(mNatives).fetchNextThemeCollectionImage(mNativeNtpThemeCollectionBridge);
-    }
-
-    @Test
     public void testCreateCustomBackgroundInfo() {
         testCreateCustomBackgroundInfoImpl("Attribution 1", "Attribution 2", JUnitTestGURLs.URL_2);
     }

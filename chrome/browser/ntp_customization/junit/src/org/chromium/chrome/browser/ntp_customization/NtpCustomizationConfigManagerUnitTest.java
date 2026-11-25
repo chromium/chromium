@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -51,6 +52,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -767,8 +769,11 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         assertFalse(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
+        verify(mNtpSyncedThemeManager, never())
+                .fetchNextThemeCollectionImageAfterDailyRefreshApplied();
 
         // Test case for daily refresh enabled.
+        clearInvocations(mNtpSyncedThemeManager);
         customBackgroundInfo =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.NTP_URL,
@@ -786,6 +791,11 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
         assertTrue(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
         assertNotEquals(0, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
+        // Native reads the collection from prefs, so commit must happen before pre-fetching.
+        InOrder inOrder = inOrder(mNtpSyncedThemeManager);
+        inOrder.verify(mNtpSyncedThemeManager).onThemeCommitted(backgroundData);
+        inOrder.verify(mNtpSyncedThemeManager)
+                .fetchNextThemeCollectionImageAfterDailyRefreshApplied();
     }
 
     @Test
@@ -1141,20 +1151,14 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
     public void testMaybeApplyBackgroundUpdateFromDeviceSync_withThemeMismatch() {
-        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
-        CustomBackgroundInfo info = createTestCustomBackgroundInfo();
-        NtpBackgroundDataThemeCollection themeCollectionData = createTestThemeCollectionData(info);
+        testMaybeApplyBackgroundUpdateFromDeviceSyncImpl(/* isDailyRefreshEnabled= */ false);
+    }
 
-        manager.onSyncedThemeCollectionImageChanged(mContext, themeCollectionData);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
-        manager.maybeApplyBackgroundUpdateFromDeviceSync(mContext);
-
-        verify(mNtpThemeStateProvider).notifyApplyThemeChanges();
-        verify(mNtpBackgroundDataManager)
-                .saveUserSelectedBackgroundTypeToSharedPreference(themeCollectionData);
-        verify(mNtpSyncedThemeManager).fetchNextThemeCollectionImageAfterDailyRefreshApplied();
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void
+            testMaybeApplyBackgroundUpdateFromDeviceSync_dailyRefreshThemeCollection_fetchesNextImage() {
+        testMaybeApplyBackgroundUpdateFromDeviceSyncImpl(/* isDailyRefreshEnabled= */ true);
     }
 
     @Test
@@ -2078,5 +2082,38 @@ public class NtpCustomizationConfigManagerUnitTest {
         verify(mNtpBackgroundDataManager)
                 .maybeDeleteUnusedImageFiles(
                         argThat(list -> list.size() == 1 && list.get(0) == imageData));
+    }
+
+    /**
+     * Verifies applying a staged synced theme collection, and that the next image is pre-fetched
+     * only when daily refresh is enabled.
+     */
+    private void testMaybeApplyBackgroundUpdateFromDeviceSyncImpl(boolean isDailyRefreshEnabled) {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        isDailyRefreshEnabled);
+        NtpBackgroundDataThemeCollection themeCollectionData = createTestThemeCollectionData(info);
+
+        manager.onSyncedThemeCollectionImageChanged(mContext, themeCollectionData);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
+        verify(mNtpSyncedThemeManager, never())
+                .fetchNextThemeCollectionImageAfterDailyRefreshApplied();
+
+        manager.maybeApplyBackgroundUpdateFromDeviceSync(mContext);
+
+        verify(mNtpThemeStateProvider).notifyApplyThemeChanges();
+        verify(mNtpBackgroundDataManager)
+                .saveUserSelectedBackgroundTypeToSharedPreference(themeCollectionData);
+        if (isDailyRefreshEnabled) {
+            verify(mNtpSyncedThemeManager).fetchNextThemeCollectionImageAfterDailyRefreshApplied();
+        } else {
+            verify(mNtpSyncedThemeManager, never())
+                    .fetchNextThemeCollectionImageAfterDailyRefreshApplied();
+        }
     }
 }

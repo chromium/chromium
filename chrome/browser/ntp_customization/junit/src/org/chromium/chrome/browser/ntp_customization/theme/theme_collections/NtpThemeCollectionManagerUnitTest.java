@@ -216,7 +216,7 @@ public class NtpThemeCollectionManagerUnitTest {
         mNtpThemeCollectionManager =
                 new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
 
-        // 1. User enables daily refresh. This sets the runnable.
+        // 1. User enables daily refresh.
         mNtpThemeCollectionManager.setThemeCollectionDailyRefreshed(COLLECTION_ID);
         verify(mNatives)
                 .setThemeCollectionDailyRefreshed(
@@ -248,9 +248,6 @@ public class NtpThemeCollectionManagerUnitTest {
         assertEquals(info, captor.getValue().getCustomBackgroundInfo());
         assertNotNull(captor.getValue().getBackgroundImageInfo());
         assertTrue(NtpCustomizationUtils.createBackgroundImageFile().exists());
-
-        // 4. Verify the runnable was executed to fetch the next image for tomorrow.
-        verify(mNatives).fetchNextThemeCollectionImage(eq(mNativeNtpThemeCollectionBridge));
     }
 
     @Test
@@ -332,7 +329,6 @@ public class NtpThemeCollectionManagerUnitTest {
         mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(newerInfo);
 
         verifyOnlySecondDownloadApplied(newerInfo);
-        verify(mNatives).fetchNextThemeCollectionImage(eq(mNativeNtpThemeCollectionBridge));
     }
 
     @Test
@@ -349,7 +345,6 @@ public class NtpThemeCollectionManagerUnitTest {
         mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(newerInfo);
 
         verifyOnlySecondDownloadApplied(newerInfo);
-        verify(mNatives).fetchNextThemeCollectionImage(eq(mNativeNtpThemeCollectionBridge));
     }
 
     /**
@@ -365,7 +360,6 @@ public class NtpThemeCollectionManagerUnitTest {
         completeDownload(firstCallback);
         verify(mOnThemeImageSelectedCallback, never()).onResult(any());
         verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
-        verify(mNatives, never()).fetchNextThemeCollectionImage(any());
 
         completeDownload(secondCallback);
         ArgumentCaptor<NtpBackgroundDataThemeCollection> dataCaptor =

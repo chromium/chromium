@@ -206,12 +206,4 @@ void NtpThemeCollectionBridge::SetThemeCollectionDailyRefreshed(
       collection_id);
 }
 
-void NtpThemeCollectionBridge::FetchNextThemeCollectionImage(JNIEnv* env) {
-  if (!ntp_custom_background_service_) {
-    return;
-  }
-  ntp_custom_background_service_->RefreshBackgroundIfNeeded();
-}
-
-
 DEFINE_JNI(NtpThemeCollectionBridge)

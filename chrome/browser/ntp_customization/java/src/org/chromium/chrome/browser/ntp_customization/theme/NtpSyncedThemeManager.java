@@ -163,8 +163,8 @@ public class NtpSyncedThemeManager
     }
 
     /**
-     * Called after a daily refresh for a theme collection is applied. This triggers fetching the
-     * image for the next day's refresh if one hasn't been fetched already.
+     * Pre-fetches the next image for a daily refresh theme collection if one hasn't been fetched
+     * yet. Called when the collection is applied or rotated.
      */
     public void fetchNextThemeCollectionImageAfterDailyRefreshApplied() {
         if (NtpCustomizationUtils.getNtpBackgroundType() != THEME_COLLECTION) {

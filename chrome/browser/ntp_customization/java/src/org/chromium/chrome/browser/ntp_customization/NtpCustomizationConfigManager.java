@@ -429,6 +429,14 @@ public class NtpCustomizationConfigManager {
         if (shouldNotifySyncedThemeManager) {
             NtpSyncedThemeManager.getInstance().onThemeCommitted(backgroundData);
         }
+
+        if (backgroundData instanceof NtpBackgroundDataThemeCollection themeCollectionData
+                && themeCollectionData.getCustomBackgroundInfo().isDailyRefreshEnabled) {
+            // Pre-fetch the next image for a daily refresh collection. This must run after
+            // onThemeCommitted() because native reads the collection from prefs.
+            NtpSyncedThemeManager.getInstance()
+                    .fetchNextThemeCollectionImageAfterDailyRefreshApplied();
+        }
     }
 
     /**
@@ -984,10 +992,6 @@ public class NtpCustomizationConfigManager {
             onBackgroundDataChanged(
                     context, mSyncedNtpBackgroundData, /* shouldNotifySyncedThemeManager= */ false);
             maybeSaveUserSelectedBackgroundTypeToSharedPreference(context);
-            // With daily refresh, only the first image is synced, so fetch the next one now. This
-            // does nothing for other backgrounds.
-            NtpSyncedThemeManager.getInstance()
-                    .fetchNextThemeCollectionImageAfterDailyRefreshApplied();
             // Recreate the Activity to safely apply the new image AND the new OS-level dynamic
             // theme colors together.
             if (mNtpThemeStateProvider != null) {
