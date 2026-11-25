@@ -26,7 +26,11 @@ std::vector<BrokerFilePermission> GetSodaFilePermissions() {
       BrokerFilePermission::ReadOnly("/dev/urandom"),
       // Read by the memory allocator bundled with libsoda.so when it is loaded
       // after the sandbox has been engaged. Without it the allocator aborts.
-      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible")};
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible"),
+      // Read by cpuinfo when XNNPACK initializes for the SodaXnnpackDelegate
+      // feature. Without /proc/cpuinfo, XNNPACK fails to initialize and SODA
+      // runs the built-in TFLite kernels.
+      BrokerFilePermission::ReadOnly("/proc/cpuinfo")};
 
   // This may happen if a user doesn't have a SODA installation.
   if (!soda_dir.empty()) {
