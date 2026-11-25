@@ -22,9 +22,11 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
@@ -56,10 +58,15 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.transit.RootSpec;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -92,7 +99,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.account_picker.PostSigninOperationResult;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -112,14 +119,36 @@ import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/** Integration tests for the sign-in and history sync opt-in flow. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+/**
+ * Integration tests for the sign-in and history sync opt-in flow.
+ *
+ * <p>TODO(crbug.com/493130564): Revert to regular runner after
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2 launch.
+ */
+@RunWith(ParameterizedRunner.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
+@EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
 @Restriction(DeviceFormFactor.PHONE)
 public class BottomSheetSigninAndHistorySyncIntegrationTest {
+    @ClassParameter
+    private static final List<ParameterSet> sClassParameters =
+            Arrays.asList(
+                    new ParameterSet().value(false).name("withAccountManagerFacadeSource"),
+                    new ParameterSet().value(true).name("withIdentityManagerSource"));
+
+    private final boolean mIsIdentityManagerSourceOfAccounts;
+
+    public BottomSheetSigninAndHistorySyncIntegrationTest(
+            boolean isIdentityManagerSourceOfAccounts) {
+        mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
+    }
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule(order = 0)
@@ -158,6 +187,9 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Before
     public void setUp() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2,
+                mIsIdentityManagerSourceOfAccounts);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // TODO(crbug.com/41493758): Handle the case where the UI is shown before
@@ -777,12 +809,26 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithNoAccount_bottomSheetSignin_requiredHistorySync() {
+        HistogramWatcher signinHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Signin.SignIn.Started", mSigninAccessPoint)
+                        .expectIntRecords(
+                                "Signin.AddAccountState",
+                                State.REQUESTED,
+                                State.STARTED,
+                                State.SUCCEEDED,
+                                State.ACTIVITY_SURVIVED)
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.ManagementStatusLoaded")
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.SigninCompleted")
+                        .build();
+
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistorySyncConfig.OptInMode.REQUIRED);
 
         verifyNoAccountBottomSheetAndSignin();
+        signinHistogramWatcher.assertExpected();
         acceptHistorySyncAndVerifyFlowCompletion(/* hasSignedIn= */ true);
     }
 
@@ -1117,6 +1163,94 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         assertNotNull(mSigninTestRule.getPrimaryAccount());
     }
 
+    @Test
+    @MediumTest
+    @SigninTestRule.BlockGetAccounts
+    @RequiresRestart("RefreshTokensLoadingState is terminal per process")
+    public void testStartSigninFlow_accountsLoading_waitsForAccountsToLoad() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        BottomSheetSigninAndHistorySyncConfig config =
+                createConfig(
+                        NoAccountSigninMode.NO_SIGNIN,
+                        WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                        HistorySyncConfig.OptInMode.NONE,
+                        null);
+
+        mBaseActivityTestRule.startOnBlankPage();
+        createSigninCoordinator();
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.startSigninFlow(config));
+
+        verify(mDelegate, never()).onFlowComplete(any());
+        onView(withId(R.id.account_picker_state_collapsed)).check(doesNotExist());
+
+        ThreadUtils.runOnUiThreadBlocking(mSigninTestRule::unblockGetAccounts);
+
+        waitForView(
+                allOf(
+                        withText(TestAccounts.ACCOUNT1.getFullName()),
+                        isDescendantOfA(withId(R.id.account_picker_state_collapsed))));
+    }
+
+    @Test
+    @MediumTest
+    @SigninTestRule.BlockGetAccounts
+    @RequiresRestart("RefreshTokensLoadingState is terminal per process")
+    public void testWithAccountFetchFailed_noSignIn() {
+        BottomSheetSigninAndHistorySyncConfig config =
+                createConfig(
+                        NoAccountSigninMode.NO_SIGNIN,
+                        WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                        HistorySyncConfig.OptInMode.NONE,
+                        null);
+
+        mBaseActivityTestRule.startOnBlankPage();
+        createSigninCoordinator();
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.startSigninFlow(config));
+        verify(mDelegate, never()).onFlowComplete(any());
+
+        mSigninTestRule.setAccountFetchFailed();
+        ThreadUtils.runOnUiThreadBlocking(mSigninTestRule::unblockGetAccounts);
+
+        verify(mDelegate, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onFlowComplete(eq(Result.aborted()));
+        assertNull(mSigninTestRule.getPrimaryAccount());
+
+        clearInvocations(mDelegate);
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.startSigninFlow(config));
+        verify(mDelegate, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onFlowComplete(eq(Result.aborted()));
+    }
+
+    @Test
+    @MediumTest
+    @SigninTestRule.BlockGetAccounts
+    @RequiresRestart("RefreshTokensLoadingState is terminal per process")
+    public void testStartSigninFlow_calledTwiceThenDestroyWhileLoading_doesNotShowBottomSheet() {
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        BottomSheetSigninAndHistorySyncConfig config =
+                createConfig(
+                        NoAccountSigninMode.NO_SIGNIN,
+                        WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                        HistorySyncConfig.OptInMode.NONE,
+                        null);
+
+        mBaseActivityTestRule.startOnBlankPage();
+        createSigninCoordinator();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.startSigninFlow(config);
+                    mCoordinator.startSigninFlow(config);
+                    mCoordinator.destroy();
+                    mCoordinator = null;
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(mSigninTestRule::unblockGetAccounts);
+
+        verify(mDelegate, never()).onFlowComplete(any());
+        onView(withId(R.id.account_picker_state_collapsed)).check(doesNotExist());
+    }
+
     private void launchSeamlessSigninAndVerifySignedIn(
             @HistorySyncConfig.OptInMode int historyOptInMode, CoreAccountInfo accountInfo) {
         HistogramWatcher signinHistogramWatcher =
@@ -1225,19 +1359,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     }
 
     private void verifyNoAccountBottomSheetAndSignin() {
-        HistogramWatcher signinHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Signin.SignIn.Started", mSigninAccessPoint)
-                        .expectIntRecords(
-                                "Signin.AddAccountState",
-                                State.REQUESTED,
-                                State.STARTED,
-                                State.SUCCEEDED,
-                                State.ACTIVITY_SURVIVED)
-                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.ManagementStatusLoaded")
-                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.SigninCompleted")
-                        .build();
-
         // Start sign-in from the 0-account sign-in bottom-sheet shown.
         onView(
                         allOf(
@@ -1247,8 +1368,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 .perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
         waitForView(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).click();
-
-        signinHistogramWatcher.assertExpected();
 
         mSigninTestRule.waitForSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         if (DeviceInfo.isAutomotive()) {

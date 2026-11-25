@@ -22,6 +22,7 @@ import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -47,9 +48,12 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -94,7 +98,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
 
     // Properties being set once for the coordinator's lifetime.
     private boolean mFlowInitialized;
-    private @Nullable Profile mProfile;
+    private @MonotonicNonNull Profile mProfile;
+    private @MonotonicNonNull IdentityManager mIdentityManager;
+    private @MonotonicNonNull SigninManager mSigninManager;
 
     // TODO(https://crbug.com/469772349): Remove @Nullable once the legacy flow will be removed.
     // Each access point use a different key as a same activity can host different instances of this
@@ -103,6 +109,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
 
     // Properties related to a started sign-in flow, that should be cleared after finishing the flow
     // finishes.
+    private @Nullable AccountsLoadedObserver mAccountsLoadedObserver;
     private @Nullable SigninBottomSheetCoordinator mSigninBottomSheetCoordinator;
     private @Nullable HistorySyncCoordinator mHistorySyncCoordinator;
     private @Nullable PropertyModel mDialogModel;
@@ -382,6 +389,12 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
      */
     @Override
     public void destroy() {
+        if (mAccountsLoadedObserver != null) {
+            assert mIdentityManager != null;
+            mIdentityManager.removeObserver(mAccountsLoadedObserver);
+            mAccountsLoadedObserver = null;
+        }
+
         if (mSigninBottomSheetCoordinator != null) {
             mSigninBottomSheetCoordinator.destroy();
             mSigninBottomSheetCoordinator = null;
@@ -583,7 +596,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                         profile -> {
                             onProfileAvailable(
                                     profile,
-                                    (accounts) -> {
+                                    accounts -> {
                                         onAddAccountResult(
                                                 result.getResultCode(), result.getData());
                                     });
@@ -600,13 +613,42 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             Profile profile, Callback<List<AccountInfo>> onAccountAvailable) {
         validateProfile(profile);
         mProfile = profile;
-        AccountManagerFacadeProvider.getInstance()
-                .getAccounts()
-                .then(
-                        accounts -> {
-                            mFlowInitialized = true;
-                            onAccountAvailable.onResult(accounts);
-                        });
+        mSigninManager = assertNonNull(IdentityServicesProvider.get().getSigninManager(profile));
+        mIdentityManager = mSigninManager.getIdentityManager();
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            @RefreshTokensLoadingState
+            int loadingState = mIdentityManager.getRefreshTokensLoadingState();
+            if (loadingState != RefreshTokensLoadingState.IN_PROGRESS) {
+                notifyAccountsLoaded(onAccountAvailable, loadingState);
+            } else {
+                if (mAccountsLoadedObserver != null) {
+                    mIdentityManager.removeObserver(mAccountsLoadedObserver);
+                }
+                mAccountsLoadedObserver = new AccountsLoadedObserver(onAccountAvailable);
+                mIdentityManager.addObserver(mAccountsLoadedObserver);
+            }
+        } else {
+            AccountManagerFacadeProvider.getInstance()
+                    .getAccounts()
+                    .then(
+                            accounts -> {
+                                mFlowInitialized = true;
+                                onAccountAvailable.onResult(accounts);
+                            });
+        }
+    }
+
+    private void notifyAccountsLoaded(
+            Callback<List<AccountInfo>> onAccountAvailable, @RefreshTokensLoadingState int state) {
+        assert mIdentityManager != null;
+        assert state == RefreshTokensLoadingState.SUCCEEDED
+                || state == RefreshTokensLoadingState.FAILED;
+        mFlowInitialized = true;
+        onAccountAvailable.onResult(
+                state == RefreshTokensLoadingState.SUCCEEDED
+                        ? mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken()
+                        : List.of());
     }
 
     private void validateProfile(Profile profile) {
@@ -617,20 +659,17 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     }
 
     private void finishLoadingAndSelectSigninFlow(List<AccountInfo> accounts) {
-        // The history opt-in screen should be shown after the coreAccountInfos
-        // become available to avoid showing additional loading UI after history
-        // opt-in screen is shown.
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(assertNonNull(mProfile));
-        assumeNonNull(identityManager);
-        if (identityManager.hasPrimaryAccount()) {
+        // The history opt-in screen should be shown after the accounts are loaded to avoid showing
+        // additional loading UI after history opt-in screen is shown.
+        assumeNonNull(mIdentityManager);
+        if (mIdentityManager.hasPrimaryAccount()) {
             maybeShowHistoryOptInDialog();
             return;
         }
 
         if (mConfig.withAccountSigninMode == WithAccountSigninMode.SEAMLESS_SIGNIN) {
             CoreAccountId accountId = assertNonNull(mConfig.selectedCoreAccountId);
-            if (identityManager.findExtendedAccountInfoByAccountId(accountId) == null) {
+            if (mIdentityManager.findExtendedAccountInfoByAccountId(accountId) == null) {
                 // Account disappeared between the trigger of the sign-in promo and the start of the
                 // sign-in bottom sheet.
                 onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
@@ -661,9 +700,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     }
 
     private void showSigninBottomSheet() {
-        Profile profile = assertNonNull(mProfile);
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-        assumeNonNull(signinManager);
+        assertNonNull(mProfile);
+        assertNonNull(mSigninManager);
         @AccountPickerLaunchMode int accountPickerMode = AccountPickerLaunchMode.DEFAULT;
         switch (mConfig.withAccountSigninMode) {
             case WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET:
@@ -675,7 +713,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         }
 
         AccountPreviewDataService accountPreviewDataService =
-                IdentityServicesProvider.get().getAccountPreviewDataService(profile);
+                IdentityServicesProvider.get().getAccountPreviewDataService(mProfile);
 
         mSigninBottomSheetCoordinator =
                 new SigninBottomSheetCoordinator(this, mDelegate.getSigninFlowVariant());
@@ -687,7 +725,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                 mModalDialogManagerSupplier.get(),
                 mBottomSheetControllerSupplier.get(),
                 mDeviceLockActivityLauncher,
-                signinManager,
+                mSigninManager,
                 accountPreviewDataService,
                 mConfig.bottomSheetStrings,
                 accountPickerMode,
@@ -852,8 +890,28 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         mPendingAddedAccountEmail = null;
         mDidShowSigninStep = false;
 
+        assert mAccountsLoadedObserver == null;
         assert mDialogModel == null;
         assert mSigninBottomSheetCoordinator == null;
         assert mHistorySyncCoordinator == null;
+    }
+
+    private class AccountsLoadedObserver implements IdentityManager.Observer {
+        private final Callback<List<AccountInfo>> mOnRefreshTokensLoaded;
+
+        AccountsLoadedObserver(Callback<List<AccountInfo>> onRefreshTokensLoaded) {
+            mOnRefreshTokensLoaded = onRefreshTokensLoaded;
+        }
+
+        /** Implements {@link IdentityManager.Observer}. */
+        @Override
+        public void onRefreshTokensLoaded(@RefreshTokensLoadingState int state) {
+            assert SigninFeatureMap.isEnabled(
+                    SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2);
+            assert mIdentityManager != null;
+            mIdentityManager.removeObserver(this);
+            mAccountsLoadedObserver = null;
+            notifyAccountsLoaded(mOnRefreshTokensLoaded, state);
+        }
     }
 }
