@@ -542,7 +542,7 @@ void AshMessagePopupCollection::OnDisplayMetricsChanged(
 ///////////////////////////////////////////////////////////////////////////////
 // views::WidgetObserver:
 
-void AshMessagePopupCollection::OnWidgetClosing(views::Widget* widget) {
+void AshMessagePopupCollection::OnWidgetDestroyed(views::Widget* widget) {
   Shell::Get()->focus_cycler()->RemoveWidget(widget);
   widget->RemoveObserver(this);
   tracked_widgets_.erase(widget);

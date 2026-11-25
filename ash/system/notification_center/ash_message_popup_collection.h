@@ -211,7 +211,7 @@ class ASH_EXPORT AshMessagePopupCollection
                                uint32_t metrics) override;
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   std::unique_ptr<NotifierCollisionHandler> notifier_collision_handler_;

@@ -1511,6 +1511,20 @@ TEST_F(AshMessagePopupCollectionTest,
                   .IsIdentity());
 }
 
+TEST_F(AshMessagePopupCollectionTest,
+       PopupWidgetDestructionUntracksPopupNotification) {
+  AddNotification();
+  auto* popup = GetLastPopUpAdded();
+  ASSERT_TRUE(popup);
+  views::Widget* widget = popup->GetWidget();
+  ASSERT_TRUE(widget);
+  auto* popup_collection = GetPrimaryPopupCollection();
+  EXPECT_TRUE(popup_collection->IsWidgetAPopupNotification(widget));
+
+  widget->CloseNow();
+  EXPECT_FALSE(popup_collection->IsWidgetAPopupNotification(widget));
+}
+
 class AshMessagePopupCollectionMockTimeTest : public ash::AshTestBase {
  public:
   AshMessagePopupCollectionMockTimeTest()
