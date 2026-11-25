@@ -32,11 +32,15 @@ import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule.RerunWithUpdatedContainerView;
 
+import java.util.concurrent.TimeoutException;
+
 /** Tests that we can scroll and fling a ContentView running inside ContentShell. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ContentViewScrollingTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
+
+    private static final long WAIT_TIMEOUT_MS = 15000L;
 
     private static final String LARGE_PAGE =
             UrlUtils.encodeHtmlDataUri(
@@ -112,16 +116,15 @@ public class ContentViewScrollingTest {
                                 Matchers.greaterThan(maxThreshold));
                     }
                 },
-                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL_LONG,
+                WAIT_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void waitForScrollToPosition(final int x, final int y) {
-        CriteriaHelper.pollInstrumentationThread(
+        CriteriaHelper.pollUiThread(
                 () -> {
                     // Scrolling and flinging don't result in exact coordinates.
                     final int threshold = 5;
-
                     Criteria.checkThat(
                             mCoordinates.getScrollXPixInt(),
                             Matchers.allOf(
@@ -132,17 +135,30 @@ public class ContentViewScrollingTest {
                             Matchers.allOf(
                                     Matchers.lessThan(y + threshold),
                                     Matchers.greaterThan(y - threshold)));
-                });
+                },
+                WAIT_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
-    private void waitForViewportInitialization(WebContents webContents) {
+    private void waitForViewportInitialization(WebContents webContents) throws TimeoutException {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
+                            mCoordinates.frameInfoUpdatedForTesting(), Matchers.is(true));
+                    Criteria.checkThat(
                             mCoordinates.getLastFrameViewportWidthPixInt(), Matchers.not(0));
-                });
-        // End browser paint-holding so InputRouterImpl is active before tests dispatch input;
-        // mLastFrameViewportWidthPix is updated pre-activation, before MakeActive() runs.
+                    Criteria.checkThat(
+                            mCoordinates.getLastFrameViewportHeightPixInt(), Matchers.not(0));
+                    Criteria.checkThat(
+                            mCoordinates.getMaxHorizontalScrollPixInt(), Matchers.greaterThan(100));
+                    Criteria.checkThat(
+                            mCoordinates.getMaxVerticalScrollPixInt(), Matchers.greaterThan(100));
+                },
+                WAIT_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        // Wait for Viz to activate a copyable compositor frame and end browser paint-holding so
+        // InputRouterImpl is active and compositor layers are ready before dispatching input.
+        WebContentsUtils.waitForCopyableViewInWebContents(webContents);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> WebContentsUtils.simulateEndOfPaintHolding(webContents));
     }
@@ -220,7 +236,7 @@ public class ContentViewScrollingTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws TimeoutException {
         mActivityTestRule.launchContentShellWithUrl(LARGE_PAGE);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mCoordinates = mActivityTestRule.getRenderCoordinates();
@@ -446,6 +462,9 @@ public class ContentViewScrollingTest {
                         });
         scrollTo(scrollToX, scrollToY);
         waitForScroll(false, false);
-        CriteriaHelper.pollInstrumentationThread(accessDelegate::isScrollChanged);
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(accessDelegate.isScrollChanged(), Matchers.is(true)),
+                WAIT_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }
