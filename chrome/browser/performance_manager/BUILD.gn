@@ -203,6 +203,7 @@ source_set("impl") {
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/webui:webui_url_utils",
     ]
     if (enable_guest_view && !enable_extensions_core) {
       deps += [ "//components/guest_view/browser/slim_web_view" ]
@@ -422,6 +423,7 @@ source_set("unit_tests") {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/ui/android/tab_model:test_support",
+      "//chrome/common",
     ]
     if (enable_guest_view && !enable_extensions_core) {
       deps += [

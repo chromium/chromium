@@ -4,7 +4,9 @@
 
 #include "chrome/browser/performance_manager/policies/process_rank_policy_android.h"
 
+#include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/android/android_info.h"
 #include "base/android/device_info.h"
@@ -17,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -25,14 +28,18 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "content/public/browser/android/child_process_importance.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-#include "chrome/common/webui_url_constants.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -53,6 +60,20 @@ struct MockPageGraph {
   TestNodeWrapper<ProcessNodeImpl> process;
   TestNodeWrapper<PageNodeImpl> page;
   TestNodeWrapper<FrameNodeImpl> frame;
+};
+
+class TestTopChromeWebUIConfig : public content::WebUIConfig {
+ public:
+  explicit TestTopChromeWebUIConfig(std::string_view host)
+      : WebUIConfig(content::kChromeUIScheme,
+                    host,
+                    chrome::kChromeUITopChromeDomain) {}
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override {
+    return nullptr;
+  }
 };
 
 }  // namespace
@@ -85,12 +106,12 @@ class ProcessRankPolicyAndroidTest : public ChromeRenderViewHostTestHarness {
     scoped_feature_list_.Reset();
   }
 
-  MockPageGraph CreateDefaultPage() {
+  MockPageGraph CreateDefaultPage(PageType type = PageType::kTab) {
     auto process = TestNodeWrapper<ProcessNodeImpl>::Create(graph_.get());
     auto page = TestNodeWrapper<PageNodeImpl>::Create(
         graph_.get(), web_contents()->GetWeakPtr(),
         GetBrowserContext()->UniqueToken());
-    page->SetType(PageType::kTab);
+    page->SetType(type);
     auto frame = graph_->CreateFrameNodeAutoId(
         process.get(), page.get(),
         /*parent_frame_node=*/nullptr,
@@ -162,6 +183,67 @@ TEST_F(ProcessRankPolicyAndroidTest,
 
   page_graph.page.get()->SetIsFocused(false);
   page_graph.page.get()->SetIsVisible(true);
+
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrameImportanceForTesting(),
+            content::ChildProcessImportance::MODERATE);
+}
+
+TEST_F(ProcessRankPolicyAndroidTest, TopChromeWebUiPage) {
+  scoped_feature_list_.InitAndEnableFeature(
+      chrome::android::kChangeUnfocusedPriority);
+  content::ScopedWebUIConfigRegistration registration(
+      std::make_unique<TestTopChromeWebUIConfig>("foo.top-chrome"));
+  const GURL top_chrome_url("chrome://foo.top-chrome/");
+
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>());
+
+  std::unique_ptr<content::WebContents> top_chrome_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          GetBrowserContext(), content::SiteInstance::CreateForURL(
+                                   GetBrowserContext(), top_chrome_url));
+  auto process = TestNodeWrapper<ProcessNodeImpl>::Create(graph_.get());
+  auto page = TestNodeWrapper<PageNodeImpl>::Create(
+      graph_.get(), top_chrome_contents->GetWeakPtr(),
+      GetBrowserContext()->UniqueToken());
+  page->SetType(PageType::kNonTabWebUI);
+  auto frame = graph_->CreateFrameNodeAutoId(
+      process.get(), page.get(),
+      /*parent_frame_node=*/nullptr,
+      content::BrowsingInstanceId::FromUnsafeValue(1));
+
+  // Before navigation commits (empty main frame URL), the SiteInstance URL
+  // identifies it as a top-chrome WebUI.
+  page->SetIsFocused(false);
+  page->SetIsVisible(true);
+  EXPECT_EQ(top_chrome_contents->GetPrimaryMainFrameImportanceForTesting(),
+            content::ChildProcessImportance::IMPORTANT);
+
+  // After navigation commits, it remains IMPORTANT.
+  page->OnMainFrameNavigationCommitted(
+      false, base::TimeTicks::Now(), 123, top_chrome_url, "text/html",
+      /*notification_permission_status=*/std::nullopt);
+  EXPECT_EQ(top_chrome_contents->GetPrimaryMainFrameImportanceForTesting(),
+            content::ChildProcessImportance::IMPORTANT);
+
+  // When hidden, it is no longer IMPORTANT.
+  page->SetIsVisible(false);
+  EXPECT_EQ(top_chrome_contents->GetPrimaryMainFrameImportanceForTesting(),
+            content::IsNotPerceptibleImportanceSupported()
+                ? content::ChildProcessImportance::NOT_PERCEPTIBLE
+                : content::ChildProcessImportance::NORMAL);
+}
+
+TEST_F(ProcessRankPolicyAndroidTest, NonTopChromeWebUiPage) {
+  scoped_feature_list_.InitAndEnableFeature(
+      chrome::android::kChangeUnfocusedPriority);
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>());
+  MockPageGraph page_graph = CreateDefaultPage(PageType::kNonTabWebUI);
+  page_graph.page->OnMainFrameNavigationCommitted(
+      false, base::TimeTicks::Now(), 123, GURL("chrome://other/"), "text/html",
+      /*notification_permission_status=*/std::nullopt);
+
+  page_graph.page->SetIsFocused(false);
+  page_graph.page->SetIsVisible(true);
 
   EXPECT_EQ(web_contents()->GetPrimaryMainFrameImportanceForTesting(),
             content::ChildProcessImportance::MODERATE);

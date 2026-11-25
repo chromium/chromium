@@ -13,18 +13,23 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
+#include "chrome/browser/ui/webui/webui_url_utils.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "content/public/browser/android/child_process_importance.h"
+#include "content/public/browser/security_principal.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/performance_manager/public/graph/frame_node.h"
-#include "content/public/common/url_constants.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"  // nogncheck
@@ -41,9 +46,6 @@ namespace performance_manager::policies {
 namespace {
 bool IsWebViewInWebUI(const PageNode* page_node) {
   const auto web_contents = page_node->GetWebContents();
-  if (!web_contents) {
-    return false;
-  }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   const FrameNode* embedder_frame = page_node->GetEmbedderFrameNode();
   if (!embedder_frame ||
@@ -138,6 +140,27 @@ bool IsProtectRecentlyVisibleTabEnabled() {
   return base::android::device_info::is_desktop() ||
          base::FeatureList::IsEnabled(
              chrome::android::kProtectRecentlyVisibleTab);
+}
+
+bool IsTopChromeWebUI(const PageNode* page_node) {
+  if (page_node->GetType() != PageType::kNonTabWebUI) {
+    return false;
+  }
+  const GURL& main_frame_url = page_node->GetMainFrameUrl();
+  if (!main_frame_url.is_empty()) {
+    return IsTopChromeWebUIURL(main_frame_url);
+  }
+  // Before the first navigation commits, `GetMainFrameUrl()` is empty, but
+  // top-chrome WebContents are created with a `SiteInstance` for their target
+  // URL.
+  const content::SecurityPrincipal& principal =
+      page_node->GetWebContents()->GetSiteInstance()->GetSecurityPrincipal();
+  if (!principal.SchemeIs(content::kChromeUIScheme)) {
+    return false;
+  }
+  return IsTopChromeWebUIURL(
+      GURL(base::StrCat({content::kChromeUIScheme,
+                         url::kStandardSchemeSeparator, principal.GetHost()})));
 }
 
 }  // namespace
@@ -360,11 +383,10 @@ void ProcessRankPolicyAndroid::UpdateProcessRankAndClearTimer(
 }
 
 void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
-  content::ChildProcessImportance importance = CalculateRank(page_node);
-
   const base::WeakPtr<content::WebContents> web_contents =
       page_node->GetWebContents();
   CHECK(web_contents);
+  content::ChildProcessImportance importance = CalculateRank(page_node);
   content::ChildProcessImportance subframe_importance =
       content::ChildProcessImportance::NORMAL;
   if (importance >= content::ChildProcessImportance::NOT_PERCEPTIBLE) {
@@ -377,6 +399,10 @@ void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
 
 content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
     const PageNode* page_node) {
+  if (IsTopChromeWebUI(page_node) && page_node->IsVisible()) {
+    return content::ChildProcessImportance::IMPORTANT;
+  }
+
   const PageNode* node_to_check_visibility_and_focus = page_node;
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   // In all scenarios where a webview is used in a WebUI, the webview is central
