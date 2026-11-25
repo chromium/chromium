@@ -30,8 +30,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include <optional>
+#include <string>
+
+#include "base/test/test_future.h"
+#include "components/variations/metrics.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/seed_response.h"
+#include "components/variations/variations_seed_store.h"
 #include "content/public/test/browser_task_environment.h"
 #endif
 
@@ -103,8 +110,8 @@ TEST_F(ChromeMetricsServicesManagerClientTest, PopulateStartupVisibility) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeMetricsServicesManagerClientTest,
        CreateVariationsServiceForwardsInitialSeed) {
-  content::BrowserTaskEnvironment task_environment;
   base::ScopedPathOverride user_data_dir_override(chrome::DIR_USER_DATA);
+  content::BrowserTaskEnvironment task_environment;
   local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
 
   {
@@ -131,10 +138,14 @@ TEST_F(ChromeMetricsServicesManagerClientTest,
     }
   }
 
+  std::optional<std::string> compressed_existing_seed =
+      variations::VariationsSeedStore::SeedBytesToCompressedBase64Seed(
+          "existing-seed");
+  ASSERT_TRUE(compressed_existing_seed.has_value());
   local_state()->SetTime(variations::prefs::kVariationsSeedDate,
                          base::Time::Now());
   local_state()->SetString(variations::prefs::kVariationsCompressedSeed,
-                           "existing-seed");
+                           *compressed_existing_seed);
   auto unconsumed_seed = std::make_unique<variations::SeedResponse>();
   unconsumed_seed->data = "unconsumed-seed-data";
   unconsumed_seed->date = base::Time::Now();
@@ -146,11 +157,20 @@ TEST_F(ChromeMetricsServicesManagerClientTest,
     base::HistogramTester histogram_tester;
     std::unique_ptr<variations::VariationsService> variations_service =
         client_with_existing_seed.CreateVariationsService();
-    EXPECT_NE(variations_service, nullptr);
+    ASSERT_NE(variations_service, nullptr);
     histogram_tester.ExpectTotalCount("Variations.FirstRunResult", 0);
-    EXPECT_EQ(
-        local_state()->GetString(variations::prefs::kVariationsCompressedSeed),
-        "existing-seed");
+    variations::SeedReaderWriter* seed_reader_writer =
+        variations_service->GetSeedStoreForTesting()
+            ->GetSeedReaderWriterForTesting();
+    base::test::TestFuture<void> write_complete;
+    seed_reader_writer->RunOrScheduleOnSuccessfulWrite(
+        write_complete.GetCallback());
+    ASSERT_TRUE(write_complete.Wait());
+    base::test::TestFuture<variations::SeedReaderWriter::ReadSeedDataResult>
+        seed_result;
+    seed_reader_writer->ReadSeedData(seed_result.GetCallback());
+    EXPECT_EQ(seed_result.Get().result, variations::LoadSeedResult::kSuccess);
+    EXPECT_EQ(seed_result.Get().seed_data, "existing-seed");
   }
   local_state()->ClearPref(variations::prefs::kVariationsSeedDate);
   {
