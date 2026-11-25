@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/integrators/personal_context/personal_context_autofill_util.h"
 
-#include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
@@ -44,7 +43,7 @@ bool ShouldShowPersonalContextAutofillSetting(
     return false;
   }
 
-  const bool ambient_autofill_enabled = MayPerformAutofillAiAction(
+  return MayPerformAutofillAiAction(
 #if !BUILDFLAG(IS_FUCHSIA)
       google_groups_manager,
 #endif
@@ -52,18 +51,6 @@ bool ShouldShowPersonalContextAutofillSetting(
       is_wallet_public_pass_storage_enabled, is_off_the_record, country_code,
       eligibility_service->GetEligibilityState(),
       AutofillAiAction::kShowAmbientAutofillInSettings);
-
-  const bool at_memory_enabled = MayPerformAtMemoryActionBase(
-      AtMemoryAction::kShowAtMemoryInSettings, eligibility_service,
-      subscription_service, prefs,
-#if !BUILDFLAG(IS_FUCHSIA)
-      google_groups_manager,
-#else
-      /*google_groups_manager=*/nullptr,
-#endif
-      /*decider=*/nullptr, is_off_the_record);
-
-  return ambient_autofill_enabled || at_memory_enabled;
 }
 
 }  // namespace autofill

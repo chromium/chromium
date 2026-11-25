@@ -103,16 +103,13 @@ TEST_F(PersonalContextAutofillUtilTest,
 }
 
 TEST_F(PersonalContextAutofillUtilTest,
-       ShouldShowPersonalContextAutofillSetting_BothDisabled) {
+       ShouldShowPersonalContextAutofillSetting_AmbientAutofillDisabled) {
   NiceMock<MockPersonalContextEligibilityService> service;
   ON_CALL(service, GetEligibilityState())
       .WillByDefault(Return(PersonalContextEligibilityState::kEligible));
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAutofillAmbientAutofill,
-                             features::kAutofillAtMemory});
+  feature_list.InitAndDisableFeature(features::kAutofillAmbientAutofill);
   EXPECT_FALSE(ShouldShowPersonalContextAutofillSetting(client_, &service));
 }
 
@@ -122,19 +119,6 @@ TEST_F(PersonalContextAutofillUtilTest,
   ON_CALL(service, GetEligibilityState())
       .WillByDefault(Return(PersonalContextEligibilityState::kEligible));
 
-  EXPECT_TRUE(ShouldShowPersonalContextAutofillSetting(client_, &service));
-}
-
-TEST_F(PersonalContextAutofillUtilTest,
-       ShouldShowPersonalContextAutofillSetting_AtMemoryEnabled) {
-  NiceMock<MockPersonalContextEligibilityService> service;
-  ON_CALL(service, GetEligibilityState())
-      .WillByDefault(Return(PersonalContextEligibilityState::kEligible));
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillAtMemory},
-      /*disabled_features=*/{features::kAutofillAmbientAutofill});
   EXPECT_TRUE(ShouldShowPersonalContextAutofillSetting(client_, &service));
 }
 
