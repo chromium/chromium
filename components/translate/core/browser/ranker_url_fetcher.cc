@@ -68,6 +68,7 @@ bool RankerURLFetcher::Request(
           data:
             "Path to a model. No user data is included."
           destination: GOOGLE_OWNED_SERVICE
+          static_content: true
         }
         policy {
           cookies_allowed: NO
