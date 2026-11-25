@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <optional>
-#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -487,8 +486,6 @@ class FetchManager::Loader final
 
   void Dispose() override;
 
-  void LogIfKeepalive(std::string_view request_state) const;
-
   // ThreadableLoaderClient implementation.
   bool WillFollowRedirect(uint64_t,
                           const KURL&,
@@ -653,7 +650,6 @@ class FetchManager::Loader final
   Member<IntegrityVerifier> integrity_verifier_;
   Vector<KURL> url_list_;
   Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
-  base::TimeTicks request_started_time_;
 };
 
 FetchManager::Loader::Loader(ExecutionContext* execution_context,
@@ -671,8 +667,7 @@ FetchManager::Loader::Loader(ExecutionContext* execution_context,
       failed_(false),
       finished_(false),
       response_http_status_code_(0),
-      integrity_verifier_(nullptr),
-      request_started_time_(base::TimeTicks::Now()) {
+      integrity_verifier_(nullptr) {
   DCHECK(World());
   url_list_.push_back(fetch_request_data->Url());
 }
@@ -769,8 +764,6 @@ void FetchManager::Loader::DidReceiveResponse(
     Dispose();
     return;
   }
-
-  LogIfKeepalive("Succeeded");
 
   ScriptState::Scope scope(GetScriptState());
 
@@ -1378,7 +1371,6 @@ void FetchManager::Loader::Failed(
     } else {
       response_resolver_->RejectBecauseFailed(devtools_request_id, issue_id,
                                               issue_summary);
-      LogIfKeepalive("Failed");
     }
     response_resolver_.Clear();
   }
@@ -1470,21 +1462,6 @@ void FetchManager::Loader::RecordFetchCompletion(int net_error) {
 
 bool FetchManager::Loader::IsDeferred() const {
   return false;
-}
-
-void FetchManager::Loader::LogIfKeepalive(
-    std::string_view request_state) const {
-  return;
-  CHECK(request_state == "Succeeded" || request_state == "Failed");
-  if (!GetFetchRequestData()->Keepalive()) {
-    return;
-  }
-
-  base::TimeDelta duration = base::TimeTicks::Now() - request_started_time_;
-  base::UmaHistogramMediumTimes("FetchKeepAlive.RequestDuration", duration);
-  base::UmaHistogramMediumTimes(
-      base::StrCat({"FetchKeepAlive.RequestDuration.", request_state}),
-      duration);
 }
 
 // A subtype of FetchLoader to handle the deferred fetching algorithm [1].

@@ -2016,34 +2016,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FetchKeepAlive.RequestDuration{RequestState}" units="ms"
-    expires_after="2025-05-12">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded the duration of a fetch keepalive request between when such request
-    is constructed by a blink::FetchManager and when the blink::FetchManager
-    {RequestState}
-
-    This does not log for non-fetch types of keepalive request, meaning that
-    beacons or pings are all excluded. Note that as this is from the view of a
-    renderer, it contains only partial metrics when fetch keepalive in-browser
-    is enabled.
-  </summary>
-  <token key="RequestState">
-    <variant name=""
-        summary="receives a response (succeeded) or fails to load/receive a
-                 response. If multiple errors happen, the duration logging
-                 ends at the first error. Refer to
-                 FetchManager::Loader::Failed() for details."/>
-    <variant name=".Failed"
-        summary="fails to load/receive a response. If multiple errors happen,
-                 the duration logging ends with the first error. Refer to
-                 FetchManager::Loader::Failed() for details."/>
-    <variant name=".Succeeded" summary="receives a response (succeeded)."/>
-  </token>
-</histogram>
-
 <histogram name="FetchKeepAlive.RequestOutliveDuration" units="ms"
     expires_after="2026-08-30">
   <owner>mych@chromium.org</owner>
