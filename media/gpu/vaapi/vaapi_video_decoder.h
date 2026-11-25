@@ -199,6 +199,11 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       bool needs_detiling,
       base::TimeDelta timestamp);
 
+  // Clears |surface| on the GPU using a VA-API VPP blit from a zero-initialized
+  // 16x16 source surface.
+  bool ClearVASurfaceWithVpp(const ScopedVASurface& surface);
+  void DestroyVppVaapiWrapper();
+
   bool IsConfiguredForTesting() const {
     // Mock instances of |vaapi_wrapper_| and |decoder_| are created and
     // injected to VaapiVideoDecoder for testing purposes.
@@ -281,6 +286,10 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   std::unique_ptr<AcceleratedVideoDecoder> decoder_
       GUARDED_BY_CONTEXT(sequence_checker_);
   scoped_refptr<VaapiWrapper> vaapi_wrapper_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<ScopedVASurface> vpp_clear_surface_
       GUARDED_BY_CONTEXT(sequence_checker_);
   // TODO(crbug.com/1022246): Instead of having the raw pointer here, getting
   // the pointer from AcceleratedVideoDecoder.

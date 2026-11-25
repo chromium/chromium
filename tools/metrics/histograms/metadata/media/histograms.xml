@@ -9718,6 +9718,7 @@ chromium-metrics-reviews@google.com.
     <variant name="VaapiVideoDecodeAccelerator" summary=""/>
     <variant name="VaapiVideoDecodeAccelerator.Vpp" summary=""/>
     <variant name="VaapiVideoDecoder" summary=""/>
+    <variant name="VaapiVideoDecoder.Vpp" summary=""/>
     <variant name="VaapiVideoEncodeAccelerator" summary=""/>
     <variant name="VaapiVideoEncodeAccelerator.Vpp" summary=""/>
   </token>

@@ -163,6 +163,7 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
   // of course by this class. To clear |allocated_va_surfaces_| we have to first
   // DestroyContext().
   decoder_ = nullptr;
+  DestroyVppVaapiWrapper();
   if (vaapi_wrapper_) {
     vaapi_wrapper_->DestroyContext();
     allocated_va_surfaces_.clear();
@@ -203,6 +204,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     decoder_delegate_ = nullptr;
 
     decoder_ = nullptr;
+    DestroyVppVaapiWrapper();
     DCHECK(vaapi_wrapper_);
     // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
     vaapi_wrapper_->DestroyContext();
@@ -456,6 +458,7 @@ void VaapiVideoDecoder::HandleDecodeTask() {
           // destroyed.
           CHECK(!!vaapi_wrapper_);
           CHECK(!vaapi_wrapper_->HasContext());
+          DestroyVppVaapiWrapper();
           allocated_va_surfaces_.clear();
           const gfx::Size decoder_pic_size = decoder_->GetPicSize();
           if (decoder_pic_size.IsEmpty()) {
@@ -514,12 +517,17 @@ std::unique_ptr<VASurfaceHandle> VaapiVideoDecoder::CreateSurface() {
 
   auto iter = allocated_va_surfaces_.find(tracking_token);
   if (iter == allocated_va_surfaces_.end()) {
+    const bool is_protected = cdm_context_ref_ || transcryption_;
     std::unique_ptr<ScopedVASurface> va_surface =
-        vaapi_wrapper_->CreateVASurfaceForFrameResource(
-            *frame, cdm_context_ref_ || transcryption_);
+        vaapi_wrapper_->CreateVASurfaceForFrameResource(*frame, is_protected);
     if (!va_surface || va_surface->id() == VA_INVALID_ID) {
       SetState({DecoderStatus::Codes::kFailed,
                 "Failed to create VASurface from FrameResource"});
+      return nullptr;
+    }
+    if (!is_protected && !ClearVASurfaceWithVpp(*va_surface)) {
+      SetState({DecoderStatus::Codes::kFailed,
+                "Failed to clear VASurface with VPP"});
       return nullptr;
     }
     const auto result = allocated_va_surfaces_.insert_or_assign(
@@ -691,6 +699,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
   // All pending decode operations will be completed before triggering a
   // resolution change, so we can safely DestroyContext() here; that, in turn,
   // allows for clearing the |allocated_va_surfaces_|.
+  DestroyVppVaapiWrapper();
   vaapi_wrapper_->DestroyContext();
   allocated_va_surfaces_.clear();
 
@@ -904,19 +913,22 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
     case PIXEL_FORMAT_NV12: {
       surface = vaapi_wrapper_->CreateVASurfaceWithUsageHints(
           VA_RT_FORMAT_YUV420, coded_size,
-          {VaapiWrapper::SurfaceUsageHint::kVideoDecoder});
+          {VaapiWrapper::SurfaceUsageHint::kVideoDecoder,
+           VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite});
       break;
     }
     case PIXEL_FORMAT_P010LE: {
       surface = vaapi_wrapper_->CreateVASurfaceWithUsageHints(
           VA_RT_FORMAT_YUV420_10, coded_size,
-          {VaapiWrapper::SurfaceUsageHint::kVideoDecoder});
+          {VaapiWrapper::SurfaceUsageHint::kVideoDecoder,
+           VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite});
       break;
     }
     case PIXEL_FORMAT_ARGB: {
       surface = vaapi_wrapper_->CreateVASurfaceWithUsageHints(
           VA_RT_FORMAT_RGB32, coded_size,
-          {VaapiWrapper::SurfaceUsageHint::kGeneric});
+          {VaapiWrapper::SurfaceUsageHint::kGeneric,
+           VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite});
       break;
     }
     default: {
@@ -924,8 +936,9 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
     }
   }
 
-  if (!surface)
+  if (!surface) {
     return base::unexpected(CroStatus::Codes::kFailedToCreateVideoFrame);
+  }
   auto maybe_pixmap_and_info =
       vaapi_wrapper_->ExportVASurfaceAsNativePixmapDmaBuf(*surface.get());
   if (!maybe_pixmap_and_info.has_value()) {
@@ -942,10 +955,90 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
     return base::unexpected(CroStatus::Codes::kFailedToCreateVideoFrame);
   }
 
-  allocated_va_surfaces_.insert_or_assign(frame->tracking_token(),
-                                          std::move(surface));
+  if (!ClearVASurfaceWithVpp(*surface)) {
+    return base::unexpected(CroStatus::Codes::kFailedToCreateVideoFrame);
+  }
+
+  const auto result = allocated_va_surfaces_.insert_or_assign(
+      frame->tracking_token(), std::move(surface));
+  CHECK(result.second);
 
   return frame;
+}
+
+bool VaapiVideoDecoder::ClearVASurfaceWithVpp(const ScopedVASurface& surface) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(surface.IsValid());
+  if (VaapiWrapper::GetImplementationType() ==
+      VAImplementation::kChromiumFakeDriver) {
+    // The fake libva driver used in VM testing does not maintain a userspace
+    // buffer cache or implement VPP blitting and VA-allocated surfaces.
+    return true;
+  }
+  if (!vpp_vaapi_wrapper_) {
+    vpp_vaapi_wrapper_ =
+        VaapiWrapper::Create(
+            VaapiWrapper::kVideoProcess, VAProfileNone,
+            EncryptionScheme::kUnencrypted,
+            base::BindRepeating(&ReportVaapiErrorToUMA,
+                                "Media.VaapiVideoDecoder.Vpp.VAAPIError"))
+            .value_or(nullptr);
+    if (!vpp_vaapi_wrapper_ ||
+        !vpp_vaapi_wrapper_->CreateContext(gfx::Size())) {
+      vpp_vaapi_wrapper_ = nullptr;
+      return false;
+    }
+  }
+
+  if (!vpp_clear_surface_) {
+    constexpr gfx::Size kClearSurfaceSize(16, 16);
+    vpp_clear_surface_ = vpp_vaapi_wrapper_->CreateVASurfaceWithUsageHints(
+        VA_RT_FORMAT_YUV420, kClearSurfaceSize,
+        {VaapiWrapper::SurfaceUsageHint::kVideoProcessRead});
+    if (!vpp_clear_surface_) {
+      return false;
+    }
+    scoped_refptr<VideoFrame> zero_frame =
+        VideoFrame::CreateZeroInitializedFrame(
+            PIXEL_FORMAT_I420, kClearSurfaceSize, gfx::Rect(kClearSurfaceSize),
+            kClearSurfaceSize, base::TimeDelta());
+    if (!zero_frame || !vpp_vaapi_wrapper_->UploadVideoFrameToSurface(
+                           *zero_frame, vpp_clear_surface_->id(),
+                           vpp_clear_surface_->size())) {
+      vpp_clear_surface_.reset();
+      return false;
+    }
+    if (!vpp_vaapi_wrapper_->SyncSurface(vpp_clear_surface_->id())) {
+      vpp_clear_surface_.reset();
+      return false;
+    }
+  }
+
+  const bool blit_success = vpp_vaapi_wrapper_->BlitSurface(
+      vpp_clear_surface_->id(), vpp_clear_surface_->size(), surface.id(),
+      surface.size(), gfx::Rect(vpp_clear_surface_->size()),
+      gfx::Rect(surface.size()));
+  if (!blit_success || !vpp_vaapi_wrapper_->SyncSurface(surface.id())) {
+    // Destroy the VPP context before returning. That way, the caller is free to
+    // destroy |surface| later while still abiding by [1].
+    //
+    // [1]
+    // https://github.com/intel/libva/blob/f052e984e0c8bf10784198cc311b23c567b1367f/va/va.h#L1909-L1910
+    DestroyVppVaapiWrapper();
+    return false;
+  }
+
+  return true;
+}
+
+void VaapiVideoDecoder::DestroyVppVaapiWrapper() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (vpp_vaapi_wrapper_) {
+    vpp_vaapi_wrapper_->DestroyContext();
+    vpp_clear_surface_.reset();
+    CHECK(vpp_vaapi_wrapper_->HasOneRef());
+    vpp_vaapi_wrapper_ = nullptr;
+  }
 }
 
 bool VaapiVideoDecoder::NeedsBitstreamConversion() const {
