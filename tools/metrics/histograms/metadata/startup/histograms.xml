@@ -120,15 +120,6 @@ chromium-metrics-reviews@google.com.
       summary="when web extensions were loaded at startup"/>
 </variants>
 
-<histogram name="Startup.AfterStartupTaskCount" units="units"
-    expires_after="2025-10-26">
-  <owner>michaeln@chromium.org</owner>
-  <summary>
-    The number of after-startup tasks that were queued prior to startup
-    completion and deferred until that time.
-  </summary>
-</histogram>
-
 <histogram name="Startup.AfterStartupTaskDelayedUntilTime" units="ms"
     expires_after="2027-05-23">
   <owner>michaeln@chromium.org</owner>

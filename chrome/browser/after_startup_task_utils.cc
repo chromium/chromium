@@ -139,8 +139,6 @@ void SetBrowserStartupIsComplete(StartupIsCompleteReason reason) {
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
-  UMA_HISTOGRAM_COUNTS_10000("Startup.AfterStartupTaskCount",
-                             GetAfterStartupTasks().size());
   for (AfterStartupTask* queued_task : GetAfterStartupTasks()) {
     ScheduleTask(base::WrapUnique(queued_task));
   }
