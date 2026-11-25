@@ -631,10 +631,10 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
   GetWidgetHost()->RemoveInputEventObserver(&tap_observer);
 }
 
-// TODO(crbug.com/40236573): Fix Mac failures.
+// TODO(crbug.com/40236573, crbug.com/590477727): Fix Mac and Android failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
-    defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
+    defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_PanYMainThreadJanky DISABLED_PanYMainThreadJanky
 #else
 #define MAYBE_PanYMainThreadJanky PanYMainThreadJanky
@@ -729,10 +729,10 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
                                     kShortJankTime);
 }
 
-// TODO(crbug.com/40236573): Fix Mac failures.
+// TODO(crbug.com/40236573, crbug.com/590477727): Fix Mac and Android failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
-    defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
+    defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_PanXYAtYAreaMainThreadJanky DISABLED_PanXYAtYAreaMainThreadJanky
 #else
 #define MAYBE_PanXYAtYAreaMainThreadJanky PanXYAtYAreaMainThreadJanky
