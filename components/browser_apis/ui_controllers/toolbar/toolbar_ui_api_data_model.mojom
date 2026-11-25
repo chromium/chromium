@@ -862,6 +862,10 @@ struct PinnedToolbarActionState {
   // `chrome::kActionItemIconSizeDeltaKey` and
   // PinnedActionToolbarButton::GetIconSize().
   int32 icon_size_delta = 0;
+
+  // Whether this action's context menu is currently visible. Used to suppress
+  // immediately reopening the context menu when a right-click dismisses it.
+  bool is_context_menu_visible;
 };
 
 struct LocationBarState {

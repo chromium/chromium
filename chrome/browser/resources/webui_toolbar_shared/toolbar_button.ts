@@ -98,6 +98,13 @@ export function setHasHelpBubble(el: Element, value: boolean) {
  *   handler.
  * - Call shouldSkipClick() from the element's click handler, and ignore the
  *   click if it returns true.
+ *
+ * A tracker constructed with `BUTTON_RIGHT` can similarly be used to avoid
+ * reopening a context menu when the right-click that dismissed it is delivered
+ * to the element (as happens on Windows, where the dismissing press is reposted
+ * and the `contextmenu` event fires on mouse up). In that case, feed it the
+ * context menu's visibility via onHighlightChanged() and call
+ * shouldSkipClick() from the `contextmenu` handler.
  */
 export class HighlightTracker {
   // How long after an element is unhighlighted a pointerdown on it is still
@@ -126,6 +133,13 @@ export class HighlightTracker {
 
   private skipNextClick_: boolean = false;
 
+  /**
+   * @param button_ The mouse button whose presses may dismiss the bubble or
+   *     menu, e.g. `BUTTON_LEFT` for bubbles opened by clicking the element,
+   *     or `BUTTON_RIGHT` for context menus.
+   */
+  constructor(private readonly button_: number = BUTTON_LEFT) {}
+
   onHighlightChanged = (highlighted: boolean) => {
     if (this.highlighted && !highlighted) {
       this.lastUnhighlightedTime = performance.now();
@@ -140,9 +154,18 @@ export class HighlightTracker {
    * listener.
    */
   onPointerdown = (e: PointerEvent) => {
-    // Ignore non-primary clicks or clicks not coming from a pointer (i.e.
-    // keyboard).
-    if (!isPrimaryClick(e) || e.pointerType === '') {
+    // Ignore presses of other buttons or presses not coming from a pointer
+    // (i.e. keyboard). Mac Ctrl+LeftClick is treated as a secondary (right)
+    // click rather than a primary (left) click.
+    let isTrackedButton: boolean;
+    if (this.button_ === BUTTON_LEFT) {
+      isTrackedButton = isPrimaryClick(e);
+    } else if (this.button_ === BUTTON_RIGHT) {
+      isTrackedButton = e.button === BUTTON_RIGHT || isMacContextClick(e);
+    } else {
+      isTrackedButton = e.button === this.button_;
+    }
+    if (!isTrackedButton || e.pointerType === '') {
       this.skipNextClick_ = false;
       return;
     }
@@ -152,9 +175,9 @@ export class HighlightTracker {
   };
 
   /**
-   * Returns true if click `e` should be ignored, because the pointerdown that
-   * started it dismissed a bubble anchored to the element. Keyboard clicks are
-   * never skipped.
+   * Returns true if click (or contextmenu) event `e` should be ignored, because
+   * the pointerdown that started it dismissed a bubble or menu anchored to the
+   * element. Keyboard-initiated events are never skipped.
    */
   shouldSkipClick(e: PointerEvent): boolean {
     if (this.skipNextClick_ && e.pointerType !== '') {

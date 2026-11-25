@@ -20,8 +20,7 @@ export function getHtml(this: PinnedToolbarActionElement) {
         this.state.highlighted || this.trackedHighlighted ? 'true' : 'false'}"
     draggable="${this.isDraggable()}" @dragstart="${this.onDragstart}"
     @dragend="${this.onDragend}" @keydown="${this.onKeydown}"
-    @click="${this.onActionClick_}"
-    @pointerdown="${this.highlightTracker.onPointerdown}"
+    @click="${this.onActionClick_}" @pointerdown="${this.onPointerdown_}"
     @contextmenu="${this.onContextmenu_}">
   <icon-from-table slot="prefix-icon" .iconHandle="${this.state.icon}"
       style="${this.getIconStyle_() ?? nothing}">

@@ -417,6 +417,66 @@ suite('PinnedToolbarAction', function() {
     assertEquals(2, invokeCalls);
   });
 
+  test(
+      'Skips reopening context menu when right-click dismissed it',
+      async () => {
+        let showContextMenuCalls = 0;
+        const mockHandler = {
+          showContextMenu: () => {
+            showContextMenuCalls++;
+          },
+        };
+        BrowserProxyImpl.setInstance({toolbarUIHandler: mockHandler} as any);
+
+        const button = action.shadowRoot!.querySelector('toolbar-chip-button')!;
+        const rightClick = () => {
+          button.dispatchEvent(new PointerEvent(
+              'pointerdown', {button: 2, pointerType: 'mouse', bubbles: true}));
+          button.dispatchEvent(new PointerEvent('contextmenu', {
+            button: 2,
+            pointerType: 'mouse',
+            bubbles: true,
+            cancelable: true,
+          }));
+        };
+
+        // When the context menu isn't showing, a right-click opens it.
+        rightClick();
+        assertEquals(1, showContextMenuCalls);
+
+        // A right-click while the context menu is showing doesn't reopen it.
+        action.state = {...action.state, isContextMenuVisible: true};
+        await microtasksFinished();
+        rightClick();
+        assertEquals(1, showContextMenuCalls);
+
+        // Nor does a right-click arriving just after the menu closed, as the
+        // closing state may arrive before the dismissing right-click.
+        action.state = {...action.state, isContextMenuVisible: false};
+        await microtasksFinished();
+        rightClick();
+        assertEquals(1, showContextMenuCalls);
+
+        // A right-click well after the menu closed opens it again.
+        action.contextMenuTracker.lastUnhighlightedTime =
+            performance.now() - 200;
+        rightClick();
+        assertEquals(2, showContextMenuCalls);
+
+        // Keyboard-initiated context menus are never skipped, even after a
+        // right press while the menu is showing.
+        action.state = {...action.state, isContextMenuVisible: true};
+        await microtasksFinished();
+        button.dispatchEvent(new PointerEvent(
+            'pointerdown', {button: 2, pointerType: 'mouse', bubbles: true}));
+        button.dispatchEvent(new PointerEvent('contextmenu', {
+          pointerType: '',
+          bubbles: true,
+          cancelable: true,
+        }));
+        assertEquals(3, showContextMenuCalls);
+      });
+
   test('Disabled action ignores pointer events', async () => {
     const button = action.shadowRoot!.querySelector('toolbar-chip-button')!;
     assertFalse(getComputedStyle(button).pointerEvents === 'none');

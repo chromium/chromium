@@ -15,28 +15,35 @@ import type {MediaButtonElement, OverflowButtonElement, SplitTabsButtonElement} 
 
 import {TestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
 
+const BUTTON_LEFT = 0;
+const BUTTON_MIDDLE = 1;
+const BUTTON_RIGHT = 2;
+
 suite('ToolbarButtonTest', function() {
   test('IsMacContextClick', function() {
-    assertFalse(
-        isMacContextClick(new PointerEvent('pointerdown', {button: 0})));
     assertFalse(isMacContextClick(
-        new PointerEvent('pointerdown', {button: 1, ctrlKey: true})));
-    assertFalse(isMacContextClick(
-        new PointerEvent('pointerdown', {button: 2, ctrlKey: true})));
+        new PointerEvent('pointerdown', {button: BUTTON_LEFT})));
+    assertFalse(isMacContextClick(new PointerEvent(
+        'pointerdown', {button: BUTTON_MIDDLE, ctrlKey: true})));
+    assertFalse(isMacContextClick(new PointerEvent(
+        'pointerdown', {button: BUTTON_RIGHT, ctrlKey: true})));
     assertEquals(
         isMac,
-        isMacContextClick(
-            new PointerEvent('pointerdown', {button: 0, ctrlKey: true})));
+        isMacContextClick(new PointerEvent(
+            'pointerdown', {button: BUTTON_LEFT, ctrlKey: true})));
   });
 
   test('IsPrimaryClick', function() {
-    assertTrue(isPrimaryClick(new PointerEvent('pointerdown', {button: 0})));
-    assertFalse(isPrimaryClick(new PointerEvent('pointerdown', {button: 1})));
-    assertFalse(isPrimaryClick(new PointerEvent('pointerdown', {button: 2})));
+    assertTrue(
+        isPrimaryClick(new PointerEvent('pointerdown', {button: BUTTON_LEFT})));
+    assertFalse(isPrimaryClick(
+        new PointerEvent('pointerdown', {button: BUTTON_MIDDLE})));
+    assertFalse(isPrimaryClick(
+        new PointerEvent('pointerdown', {button: BUTTON_RIGHT})));
     assertEquals(
         !isMac,
-        isPrimaryClick(
-            new PointerEvent('pointerdown', {button: 0, ctrlKey: true})));
+        isPrimaryClick(new PointerEvent(
+            'pointerdown', {button: BUTTON_LEFT, ctrlKey: true})));
   });
 
   test('GetClickSourceType', function() {
@@ -108,14 +115,15 @@ suite('ToolbarButtonTest', function() {
     assertEquals(
         MenuSourceType.kMouse,
         getContextMenuSourceType(new PointerEvent(
-            'contextmenu', {pointerType: 'mouse', button: 2, detail: 0})));
+            'contextmenu',
+            {pointerType: 'mouse', button: BUTTON_RIGHT, detail: 0})));
 
     // PointerEvent Mac Ctrl+LeftClick -> kMouse
     assertEquals(
         MenuSourceType.kMouse,
         getContextMenuSourceType(new PointerEvent('contextmenu', {
           pointerType: 'mouse',
-          button: 0,
+          button: BUTTON_LEFT,
           ctrlKey: true,
           detail: 0,
         })));
@@ -131,24 +139,25 @@ suite('ToolbarButtonTest', function() {
     assertEquals(
         MenuSourceType.kKeyboard,
         getContextMenuSourceType(
-            new MouseEvent('contextmenu', {button: 0, detail: 0})));
+            new MouseEvent('contextmenu', {button: BUTTON_LEFT, detail: 0})));
 
     // MouseEvent left button, detail > 0, not ctrl -> kKeyboard
     assertEquals(
         MenuSourceType.kKeyboard,
         getContextMenuSourceType(
-            new MouseEvent('contextmenu', {button: 0, detail: 1})));
+            new MouseEvent('contextmenu', {button: BUTTON_LEFT, detail: 1})));
 
     // MouseEvent left button, detail > 0, ctrl -> kMouse (Mac Ctrl+Click)
     assertEquals(
         MenuSourceType.kMouse,
         getContextMenuSourceType(new MouseEvent(
-            'contextmenu', {button: 0, detail: 1, ctrlKey: true})));
+            'contextmenu', {button: BUTTON_LEFT, detail: 1, ctrlKey: true})));
 
     // MouseEvent right button -> kMouse
     assertEquals(
         MenuSourceType.kMouse,
-        getContextMenuSourceType(new MouseEvent('contextmenu', {button: 2})));
+        getContextMenuSourceType(
+            new MouseEvent('contextmenu', {button: BUTTON_RIGHT})));
 
     // KeyboardEvent -> kKeyboard
     assertEquals(
@@ -158,8 +167,8 @@ suite('ToolbarButtonTest', function() {
   });
 
   suite('HighlightTracker', function() {
-    const leftMouseDown =
-        new PointerEvent('pointerdown', {button: 0, pointerType: 'mouse'});
+    const leftMouseDown = new PointerEvent(
+        'pointerdown', {button: BUTTON_LEFT, pointerType: 'mouse'});
     const mouseClick = new PointerEvent('click', {pointerType: 'mouse'});
 
     // Returns a tracker whose bubble is open.
@@ -181,24 +190,27 @@ suite('ToolbarButtonTest', function() {
     test('NonPrimaryButtonNotSkipped', function() {
       assertFalse(clickSkipped(
           createHighlightedTracker(),
-          new PointerEvent('pointerdown', {button: 1, pointerType: 'mouse'})));
+          new PointerEvent(
+              'pointerdown', {button: BUTTON_MIDDLE, pointerType: 'mouse'})));
       assertFalse(clickSkipped(
           createHighlightedTracker(),
-          new PointerEvent('pointerdown', {button: 2, pointerType: 'mouse'})));
+          new PointerEvent(
+              'pointerdown', {button: BUTTON_RIGHT, pointerType: 'mouse'})));
       assertEquals(
           !isMac,
           clickSkipped(
               createHighlightedTracker(),
               new PointerEvent(
                   'pointerdown',
-                  {button: 0, ctrlKey: true, pointerType: 'mouse'})));
+                  {button: BUTTON_LEFT, ctrlKey: true, pointerType: 'mouse'})));
     });
 
     test('KeyboardNotSkipped', function() {
       // Empty pointerType on pointerdown (e.g. keyboard).
       assertFalse(clickSkipped(
           createHighlightedTracker(),
-          new PointerEvent('pointerdown', {button: 0, pointerType: ''})));
+          new PointerEvent(
+              'pointerdown', {button: BUTTON_LEFT, pointerType: ''})));
       // Keyboard click, even after a pointerdown that dismissed the bubble.
       assertFalse(clickSkipped(
           createHighlightedTracker(), leftMouseDown,
@@ -227,6 +239,42 @@ suite('ToolbarButtonTest', function() {
       const tracker = createHighlightedTracker();
       tracker.onHighlightChanged(false);
       assertTrue(clickSkipped(tracker, leftMouseDown));
+    });
+
+    test('RightButtonTracker', function() {
+      const rightMouseDown = new PointerEvent(
+          'pointerdown', {button: BUTTON_RIGHT, pointerType: 'mouse'});
+      const mouseContextmenu = new PointerEvent(
+          'contextmenu', {button: BUTTON_RIGHT, pointerType: 'mouse'});
+
+      function createHighlightedRightTracker(): HighlightTracker {
+        const tracker = new HighlightTracker(BUTTON_RIGHT);
+        tracker.onHighlightChanged(true);
+        return tracker;
+      }
+
+      // Right presses while the menu is open or just closed are skipped.
+      assertTrue(clickSkipped(
+          createHighlightedRightTracker(), rightMouseDown, mouseContextmenu));
+      const recentlyClosed = createHighlightedRightTracker();
+      recentlyClosed.onHighlightChanged(false);
+      assertTrue(
+          clickSkipped(recentlyClosed, rightMouseDown, mouseContextmenu));
+
+      // Left presses are ignored by a right button tracker.
+      assertFalse(clickSkipped(
+          createHighlightedRightTracker(), leftMouseDown, mouseContextmenu));
+
+      // Not skipped when the menu closed long ago.
+      const closedLongAgo = new HighlightTracker(BUTTON_RIGHT);
+      closedLongAgo.lastUnhighlightedTime = performance.now() - 200;
+      assertFalse(
+          clickSkipped(closedLongAgo, rightMouseDown, mouseContextmenu));
+
+      // Keyboard-initiated context menus are never skipped.
+      assertFalse(clickSkipped(
+          createHighlightedRightTracker(), rightMouseDown,
+          new PointerEvent('contextmenu', {pointerType: ''})));
     });
   });
 
@@ -268,7 +316,7 @@ suite('ToolbarButtonTest', function() {
       cancelable: true,
       pointerId,
       pointerType,
-      button: 0,
+      button: BUTTON_LEFT,
       ctrlKey,
       clientX: TARGET_MIDDLE,
       clientY,
@@ -378,7 +426,7 @@ suite('ToolbarButtonTest', function() {
     const contextMenuEvent = new PointerEvent('contextmenu', {
       bubbles: true,
       cancelable: true,
-      button: 0,
+      button: BUTTON_LEFT,
       ctrlKey: true,
       clientX: TARGET_MIDDLE,
       clientY: TARGET_MIDDLE,
@@ -656,7 +704,7 @@ suite('ToolbarButtonTest', function() {
       const contextMenuEvent = new PointerEvent('contextmenu', {
         bubbles: true,
         cancelable: true,
-        button: 2,
+        button: BUTTON_RIGHT,
         clientX: TARGET_MIDDLE,
         clientY: TARGET_MIDDLE,
       });
@@ -670,7 +718,7 @@ suite('ToolbarButtonTest', function() {
       const contextMenuEvent = new PointerEvent('contextmenu', {
         bubbles: true,
         cancelable: true,
-        button: 2,
+        button: BUTTON_RIGHT,
         clientX: TARGET_MIDDLE,
         clientY: TARGET_MIDDLE,
       });
@@ -844,7 +892,7 @@ suite('SplitTabsButton', function() {
   test('CtrlLeftClickUnsplit', () => {
     const button = splitTabsButton.shadowRoot.querySelector('cr-icon-button')!;
     button.dispatchEvent(new PointerEvent('pointerdown', {
-      button: 0,
+      button: BUTTON_LEFT,
       ctrlKey: true,
       pointerType: 'mouse',
       detail: 1,
@@ -853,7 +901,7 @@ suite('SplitTabsButton', function() {
     if (isMac) {
       assertEquals(0, browserControlsHandler.getCallCount('splitActiveTab'));
       button.dispatchEvent(new PointerEvent('contextmenu', {
-        button: 0,
+        button: BUTTON_LEFT,
         ctrlKey: true,
         pointerType: 'mouse',
         detail: 1,
@@ -878,7 +926,7 @@ suite('SplitTabsButton', function() {
 
     const button = splitTabsButton.shadowRoot.querySelector('cr-icon-button')!;
     button.dispatchEvent(new PointerEvent('pointerdown', {
-      button: 0,
+      button: BUTTON_LEFT,
       ctrlKey: true,
       pointerType: 'mouse',
       detail: 1,
@@ -888,7 +936,7 @@ suite('SplitTabsButton', function() {
       assertEquals(
           0, browserProxy.toolbarUIHandler.getCallCount('showContextMenu'));
       button.dispatchEvent(new PointerEvent('contextmenu', {
-        button: 0,
+        button: BUTTON_LEFT,
         ctrlKey: true,
         pointerType: 'mouse',
         detail: 1,
@@ -925,7 +973,7 @@ suite('OverflowButton', function() {
   test('CtrlLeftClickOnDown', () => {
     const button = overflowButton.shadowRoot.querySelector('cr-icon-button')!;
     button.dispatchEvent(new PointerEvent('pointerdown', {
-      button: 0,
+      button: BUTTON_LEFT,
       ctrlKey: true,
       pointerType: 'mouse',
       detail: 1,

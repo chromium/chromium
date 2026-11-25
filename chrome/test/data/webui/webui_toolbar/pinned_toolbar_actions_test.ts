@@ -99,6 +99,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
       {
         action: 2,  // kShowPasswordsBubbleOrPage
@@ -114,6 +115,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -129,6 +131,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
     ];
     await microtasksFinished();
@@ -150,6 +153,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -165,6 +169,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
       {
         action: 3,
@@ -180,6 +185,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
     ];
     await microtasksFinished();
@@ -309,6 +315,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
       {
         action: 2,
@@ -324,6 +331,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
     ];
     await microtasksFinished();
@@ -386,6 +394,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -401,6 +410,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
       {
         action: 3,
@@ -416,6 +426,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
     ];
     await microtasksFinished();
@@ -504,6 +515,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
       {
         action: 1,
@@ -519,6 +531,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -534,6 +547,7 @@ suite('PinnedToolbarActions', function() {
         engagedIndicatorStyle:
             PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
+        isContextMenuVisible: false,
       },
     ];
     await microtasksFinished();

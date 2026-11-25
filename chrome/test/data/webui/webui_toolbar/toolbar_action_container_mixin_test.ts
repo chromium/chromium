@@ -717,6 +717,7 @@ suite('ToolbarActionContainerMixinTest', function() {
           progressRing: null,
           badgeNumber: null,
           iconSizeDelta: 0,
+          isContextMenuVisible: false,
         },
       ];
       await microtasksFinished();
@@ -736,6 +737,7 @@ suite('ToolbarActionContainerMixinTest', function() {
           progressRing: null,
           badgeNumber: null,
           iconSizeDelta: 0,
+          isContextMenuVisible: false,
         },
       ];
       await microtasksFinished();

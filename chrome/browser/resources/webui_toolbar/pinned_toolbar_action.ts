@@ -9,7 +9,7 @@ import {assertNotReachedCase} from '//resources/js/assert.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {getContextMenuPosition, getContextMenuSourceType} from '/shared/toolbar_button.js';
+import {BUTTON_RIGHT, getContextMenuPosition, getContextMenuSourceType, HighlightTracker} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {ContextMenuType, DownloadProgressRingStatus, PinnedToolbarAction, PinnedToolbarActionEngagedIndicatorStyle} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {PinnedToolbarActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -35,6 +35,7 @@ const initialState: PinnedToolbarActionState = {
   progressRing: null,
   badgeNumber: null,
   iconSizeDelta: 0,
+  isContextMenuVisible: false,
 };
 
 const PinnedToolbarActionElementBase = OverflowableToolbarActionMixin(
@@ -76,11 +77,16 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
 
   accessor poppedOut: boolean = false;
 
+  // Tracks whether this action's context menu is showing.
+  contextMenuTracker: HighlightTracker = new HighlightTracker(BUTTON_RIGHT);
+
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('state') ||
         changedProperties.has('trackedHighlighted')) {
+      this.contextMenuTracker.onHighlightChanged(
+          this.state.isContextMenuVisible);
       // Highlighted actions, which for pinned toolbar actions, generally means
       // ones with an open side panel, may not be hidden due to overflow.
       this.preventOverflow = this.state.highlighted || this.trackedHighlighted;
@@ -93,6 +99,11 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
 
   override getElementId(state: PinnedToolbarActionState): string|undefined {
     return state.elementId ?? undefined;
+  }
+
+  protected onPointerdown_(e: PointerEvent) {
+    this.highlightTracker.onPointerdown(e);
+    this.contextMenuTracker.onPointerdown(e);
   }
 
   protected onActionClick_(e: PointerEvent) {
@@ -284,8 +295,11 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
         this.state.action, delta);
   }
 
-  protected onContextmenu_(e: Event) {
+  protected onContextmenu_(e: PointerEvent) {
     e.preventDefault();
+    if (this.contextMenuTracker.shouldSkipClick(e)) {
+      return;
+    }
     const type = this.getContextMenuType_();
     if (type !== ContextMenuType.kUnspecified) {
       this.browserProxy_.toolbarUIHandler.showContextMenu(

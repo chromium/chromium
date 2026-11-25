@@ -246,9 +246,11 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     CHECK(mojo_id) << "Unsupported pinned action type " << id;
     auto state = toolbar_ui_api::mojom::PinnedToolbarActionState::New();
     state->action = *mojo_id;
+    state->is_context_menu_visible = menu_runner_ &&
+                                     menu_runner_->IsRunning() &&
+                                     active_context_menu_action_ == id;
     state->highlighted =
-        IsActionHighlighted(id) || (menu_runner_ && menu_runner_->IsRunning() &&
-                                    active_context_menu_action_ == id);
+        IsActionHighlighted(id) || state->is_context_menu_visible;
     state->enabled = item->GetEnabled();
     state->activated = item->GetProperty(kActionItemUnderlineIndicatorKey);
     switch (item->GetProperty(kActionItemEngagedIndicatorStyleKey)) {
