@@ -451,6 +451,11 @@ std::unique_ptr<sql::Transaction> HistoryDatabase::CreateTransaction() {
 }
 
 bool HistoryDatabase::RecreateAllTablesButURL() {
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
   if (!DropVisitTable())
     return false;
   if (!InitVisitTable())
@@ -485,7 +490,7 @@ bool HistoryDatabase::RecreateAllTablesButURL() {
     return false;
   }
 
-  return true;
+  return transaction.Commit();
 }
 
 void HistoryDatabase::Vacuum() {

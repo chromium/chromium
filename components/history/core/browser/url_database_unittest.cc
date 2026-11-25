@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -19,6 +20,7 @@
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "sql/database.h"
 #include "sql/test/test_helpers.h"
+#include "sql/transaction.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -87,7 +89,13 @@ class URLDatabaseTest : public testing::Test,
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::FilePath db_file = temp_dir_.GetPath().AppendASCII("URLTest.db");
 
-    EXPECT_TRUE(db_.Open(db_file));
+    ASSERT_TRUE(db_.Open(db_file));
+
+    // `HistoryBackend` keeps a singleton transaction open in production; match
+    // that here so DDL and bulk URL writes don't trigger per-statement
+    // autocommit disk flushes.
+    transaction_.emplace(&db_);
+    ASSERT_TRUE(transaction_->Begin());
 
     // Initialize the tables for this test.
     CreateURLTable(false);
@@ -95,10 +103,17 @@ class URLDatabaseTest : public testing::Test,
     InitKeywordSearchTermsTable();
     CreateKeywordSearchTermsIndices();
   }
-  void TearDown() override { db_.Close(); }
+  void TearDown() override {
+    if (transaction_) {
+      EXPECT_TRUE(transaction_->Commit());
+      transaction_.reset();
+    }
+    db_.Close();
+  }
 
   base::ScopedTempDir temp_dir_;
   sql::Database db_{sql::test::kTestTag};
+  std::optional<sql::Transaction> transaction_;
 };
 
 // Test add, update, upsert, and query for the URL table in the HistoryDatabase.
