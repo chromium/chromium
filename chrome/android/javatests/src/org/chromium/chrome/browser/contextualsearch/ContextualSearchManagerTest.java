@@ -45,6 +45,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -109,6 +110,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
 @Batch(Batch.PER_CLASS)
+@DisableLeakChecks("crbug.com/590143333")
 public class ContextualSearchManagerTest extends ContextualSearchInstrumentationBase {
     @Mock private EdgeToEdgeController mMockEdgeToEdgeController;
     @Mock private ForcedSigninStatusProvider mMockForcedSigninStatusProvider;
