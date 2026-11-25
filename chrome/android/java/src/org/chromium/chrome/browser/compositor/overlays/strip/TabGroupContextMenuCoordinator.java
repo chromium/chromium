@@ -323,7 +323,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 TabGroupUtils.openUrlInGroup(
                         tabModel,
                         resolver.getNtpUrl(),
-                        tabGroupId,
+                        TabGroupId.fromOptionalToken(tabGroupId),
                         TabLaunchType.FROM_TAB_GROUP_UI);
                 TabStripMenuMetricsUtils.recordGroupMenuUserAction(
                         GroupMenuAction.NEW_TAB_IN_GROUP, tabStripLayout);

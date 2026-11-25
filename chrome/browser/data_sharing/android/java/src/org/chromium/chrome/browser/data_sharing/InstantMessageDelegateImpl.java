@@ -371,7 +371,10 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
         }
         TabGroupUtils.openUrlInGroup(
-                tabModel, loadUrlParams, tabGroupId, TabLaunchType.FROM_TAB_GROUP_UI);
+                tabModel,
+                loadUrlParams,
+                TabGroupId.fromOptionalToken(tabGroupId),
+                TabLaunchType.FROM_TAB_GROUP_UI);
     }
 
     private void showTabChange(

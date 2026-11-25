@@ -2458,7 +2458,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         assert destinationTab != null || targetTabGroupId != null;
         Token destinationTabGroupId =
                 destinationTab != null ? destinationTab.getTabGroupId() : targetTabGroupId;
-        if (areAnyTabsPartOfSharedGroup(this, tabs, destinationTabGroupId)) return;
+        if (areAnyTabsPartOfSharedGroup(
+                this, tabs, TabGroupId.fromOptionalToken(destinationTabGroupId))) return;
 
         List<Token> candidateTabGroupIds = getCandidateTabGroupIdsForMerge(tabs);
         boolean willCreateNewGroup =

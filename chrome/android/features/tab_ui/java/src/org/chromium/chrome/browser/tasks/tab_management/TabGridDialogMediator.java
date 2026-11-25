@@ -1101,7 +1101,7 @@ public class TabGridDialogMediator
             TabGroupUtils.openUrlInGroup(
                     tabModel,
                     urlConstantResolver.getNtpUrl(),
-                    tabGroupId,
+                    TabGroupId.fromOptionalToken(tabGroupId),
                     TabLaunchType.FROM_TAB_GROUP_UI);
             RecordUserAction.record(
                     "MobileNewTabOpened."

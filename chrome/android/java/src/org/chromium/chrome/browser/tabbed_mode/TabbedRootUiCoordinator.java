@@ -2410,7 +2410,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 }
 
                 if (TabSwitcherUtils.isGridTabSwitcherDisabled()) {
-                    Tab tab = TabGroupUtils.getSelectedOrFirstTabInGroup(tabModel, tabGroupId);
+                    Tab tab =
+                            TabGroupUtils.getSelectedOrFirstTabInGroup(
+                                    tabModel, TabGroupId.fromOptionalToken(tabGroupId));
                     if (tab != null) {
                         tabModel.setIndex(tabModel.indexOf(tab), TabSelectionType.FROM_USER);
                     }

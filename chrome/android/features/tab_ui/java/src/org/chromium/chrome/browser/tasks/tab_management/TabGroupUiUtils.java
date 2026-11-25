@@ -744,7 +744,8 @@ public class TabGroupUiUtils {
         if (selector != null) {
             @TabId
             int destTabId =
-                    TabGroupUtils.getFirstTabIdInGroup(selector.getModel(isIncognito), localId);
+                    TabGroupUtils.getFirstTabIdInGroup(
+                            selector.getModel(isIncognito), TabGroupId.fromOptionalToken(localId));
             if (destTabId != Tab.INVALID_TAB_ID) {
                 return destTabId;
             }
@@ -879,7 +880,9 @@ public class TabGroupUiUtils {
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return false;
         }
-        Tab selectedTab = TabGroupUtils.getSelectedOrFirstTabInGroup(targetModel, groupId);
+        Tab selectedTab =
+                TabGroupUtils.getSelectedOrFirstTabInGroup(
+                        targetModel, TabGroupId.fromOptionalToken(groupId));
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
                         targetModel,

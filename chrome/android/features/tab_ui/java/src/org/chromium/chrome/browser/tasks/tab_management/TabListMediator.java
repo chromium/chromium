@@ -2642,7 +2642,9 @@ public class TabListMediator implements TabListNotificationHandler {
         if (!TabUiFeatureUtilities.isAndroidTabUiRefactorEnabled()) {
             TabModel tabModel = mCurrentTabModelSupplier.get();
             if (tabModel == null) return TabModel.INVALID_TAB_INDEX;
-            int tabId = TabGroupUtils.getFirstTabIdInGroup(tabModel, tabGroupId);
+            int tabId =
+                    TabGroupUtils.getFirstTabIdInGroup(
+                            tabModel, TabGroupId.fromOptionalToken(tabGroupId));
             if (tabId == Tab.INVALID_TAB_ID) return TabModel.INVALID_TAB_INDEX;
             return getIndexForTabIdWithRelatedTabs(tabId);
         }
@@ -3296,7 +3298,8 @@ public class TabListMediator implements TabListNotificationHandler {
         if (menuId == R.id.close_tab_group || menuId == R.id.delete_tab_group) {
             int tabId =
                     TabUiFeatureUtilities.isAndroidTabUiRefactorEnabled()
-                            ? TabGroupUtils.getFirstTabIdInGroup(tabModel, tabGroupId)
+                            ? TabGroupUtils.getFirstTabIdInGroup(
+                                    tabModel, TabGroupId.fromOptionalToken(tabGroupId))
                             : tabModel.getGroupLastShownTabId(
                                     TabGroupId.fromOptionalToken(tabGroupId));
             if (tabId == Tab.INVALID_TAB_ID) return;

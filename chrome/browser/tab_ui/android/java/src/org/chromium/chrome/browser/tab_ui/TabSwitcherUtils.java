@@ -37,7 +37,8 @@ public class TabSwitcherUtils {
      * <p>In test environments, this defaults to false unless explicitly overridden via
      * {@code @EnableFeatures} or {@link FeatureOverrides}.
      *
-     * TODO(crbug.com/545634112): This may also be considered for tablets behind a different flag.
+     * <p>TODO(crbug.com/545634112): This may also be considered for tablets behind a different
+     * flag.
      */
     public static boolean isGridTabSwitcherDisabled() {
         if (!DeviceInfo.isDesktop()) {
@@ -126,7 +127,9 @@ public class TabSwitcherUtils {
         Token tabGroupId = syncGroup.localId.tabGroupId;
         if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) return;
         if (isGridTabSwitcherDisabled()) {
-            Tab tab = TabGroupUtils.getSelectedOrFirstTabInGroup(tabModel, tabGroupId);
+            Tab tab =
+                    TabGroupUtils.getSelectedOrFirstTabInGroup(
+                            tabModel, TabGroupId.fromOptionalToken(tabGroupId));
             if (tab != null) {
                 tabModel.setIndex(tabModel.indexOf(tab), TabSelectionType.FROM_USER);
             }

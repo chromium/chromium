@@ -18,6 +18,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -81,7 +82,7 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
         TabGroupUtils.openUrlInGroup(
                 tabModel,
                 loadUrlParams,
-                savedTabGroup.localId.tabGroupId,
+                TabGroupId.fromOptionalToken(savedTabGroup.localId.tabGroupId),
                 TabLaunchType.FROM_TAB_GROUP_UI);
     }
 

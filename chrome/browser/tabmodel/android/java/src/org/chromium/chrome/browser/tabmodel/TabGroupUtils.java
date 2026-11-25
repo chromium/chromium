@@ -71,7 +71,7 @@ public class TabGroupUtils {
      */
     @Deprecated
     public static Tab getSelectedTabInGroupForTab(TabModel tabModel, Tab tab) {
-        Token tabGroupId = tab.getTabGroupId();
+        TabGroupId tabGroupId = TabGroupId.fromOptionalToken(tab.getTabGroupId());
         if (tabGroupId == null) return tab;
         Tab selectedTab = getSelectedOrFirstTabInGroup(tabModel, tabGroupId);
         return selectedTab != null ? selectedTab : tab;
@@ -85,9 +85,10 @@ public class TabGroupUtils {
      * @param tabGroupId The {@link Token} of the tab group.
      * @return The ID of the first {@link Tab} in the group, or {@link Tab#INVALID_TAB_ID}.
      */
-    public static @TabId int getFirstTabIdInGroup(TabModel tabModel, @Nullable Token tabGroupId) {
+    public static @TabId int getFirstTabIdInGroup(
+            TabModel tabModel, @Nullable TabGroupId tabGroupId) {
         if (tabGroupId == null) return Tab.INVALID_TAB_ID;
-        List<Tab> tabsInGroup = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
+        List<Tab> tabsInGroup = tabModel.getTabsInGroup(tabGroupId);
         return tabsInGroup.isEmpty() ? Tab.INVALID_TAB_ID : tabsInGroup.get(0).getId();
     }
 
@@ -126,7 +127,10 @@ public class TabGroupUtils {
      * @param type The launch type of the new tab.
      */
     public static void openUrlInGroup(
-            TabModel tabModel, String url, @Nullable Token tabGroupId, @TabLaunchType int type) {
+            TabModel tabModel,
+            String url,
+            @Nullable TabGroupId tabGroupId,
+            @TabLaunchType int type) {
         openUrlInGroup(tabModel, new LoadUrlParams(url), tabGroupId, type);
     }
 
@@ -141,9 +145,9 @@ public class TabGroupUtils {
     public static void openUrlInGroup(
             TabModel tabModel,
             LoadUrlParams loadUrlParams,
-            @Nullable Token tabGroupId,
+            @Nullable TabGroupId tabGroupId,
             @TabLaunchType int type) {
-        List<Tab> tabsInGroup = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
+        List<Tab> tabsInGroup = tabModel.getTabsInGroup(tabGroupId);
         if (tabsInGroup.isEmpty()) return;
 
         Tab lastTab = tabsInGroup.get(tabsInGroup.size() - 1);
@@ -203,7 +207,7 @@ public class TabGroupUtils {
      *     group will be allowed.
      */
     public static boolean areAnyTabsPartOfSharedGroup(
-            TabModel tabModel, List<Tab> tabs, @Nullable Token destGroupId) {
+            TabModel tabModel, List<Tab> tabs, @Nullable TabGroupId destGroupId) {
         Profile profile = tabModel.getProfile();
         if (profile == null
                 || profile.isOffTheRecord()
@@ -217,7 +221,7 @@ public class TabGroupUtils {
         for (Tab tab : tabs) {
             Token groupId = tab.getTabGroupId();
             if (groupId == null
-                    || Objects.equals(groupId, destGroupId)
+                    || Objects.equals(groupId, TabGroupId.toOptionalToken(destGroupId))
                     || visitedGroups.contains(groupId)) {
                 continue;
             }
@@ -424,14 +428,14 @@ public class TabGroupUtils {
      * @return The selected {@link Tab} or first {@link Tab} in the group, or {@code null}.
      */
     public static @Nullable Tab getSelectedOrFirstTabInGroup(
-            TabModel tabModel, @Nullable Token tabGroupId) {
+            TabModel tabModel, @Nullable TabGroupId tabGroupId) {
         if (tabGroupId == null) return null;
         NullableObservableSupplier<Tab> currentTabSupplier = tabModel.getCurrentTabSupplier();
         Tab currentTab = currentTabSupplier != null ? currentTabSupplier.get() : null;
-        if (currentTab != null && tabGroupId.equals(currentTab.getTabGroupId())) {
+        if (currentTab != null && tabGroupId.getToken().equals(currentTab.getTabGroupId())) {
             return currentTab;
         }
-        List<Tab> tabsInGroup = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
+        List<Tab> tabsInGroup = tabModel.getTabsInGroup(tabGroupId);
         return tabsInGroup.isEmpty() ? null : tabsInGroup.get(0);
     }
 }

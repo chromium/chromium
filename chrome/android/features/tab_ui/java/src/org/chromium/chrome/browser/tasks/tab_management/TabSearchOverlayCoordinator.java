@@ -95,6 +95,7 @@ import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassificati
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.base.WindowAndroid;
@@ -755,7 +756,9 @@ public class TabSearchOverlayCoordinator
         // Find the currently selected tab inside this local group (or the first tab if none is
         // selected).
         TabModel model = selector.getModel(mSearchBoxDataProvider.isIncognito());
-        Tab tab = TabGroupUtils.getSelectedOrFirstTabInGroup(model, syncGroup.localId.tabGroupId);
+        Tab tab =
+                TabGroupUtils.getSelectedOrFirstTabInGroup(
+                        model, TabGroupId.fromOptionalToken(syncGroup.localId.tabGroupId));
         if (tab == null) return;
 
         // Select the active tab inside the local TabModel to focus on the group.
