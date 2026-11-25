@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SIGNIN_ACCOUNT_SWITCHING_MANAGER_H_
 #define CHROME_BROWSER_SIGNIN_ACCOUNT_SWITCHING_MANAGER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
@@ -67,26 +69,33 @@ class AccountSwitchingManager : public KeyedService {
   // Returns true and runs `on_switch_finished` (if non-null) once switching
   // completes or aborts, or drops `on_switch_finished` without running it if
   // `AccountSwitchingManager` is shut down or destroyed first (e.g. on profile
-  // shutdown). Returns false without running `on_switch_finished` if switching
-  // is disabled by feature flags, accounts are invalid, a switch is already in
-  // progress, or a switch-back window is active; promo-display throttling does
-  // not block `StartSwitching()`.
+  // shutdown). When switching completes successfully, records bi-directional
+  // per-pair suppression for `{primary_gaia_id, target_gaia_id}` in
+  // `SigninPrefs`. Returns false without running `on_switch_finished` if
+  // switching is disabled by feature flags, accounts are invalid, a switch is
+  // already in progress, or a switch-back window is active; promo-display
+  // throttling does not block `StartSwitching()`.
   bool StartSwitching(
       const GaiaId& primary_gaia_id,
       const GaiaId& target_gaia_id,
       base::OnceClosure on_switch_finished = base::NullCallback());
 
-  void CompleteSwitchForTesting();
+  void CompleteSwitchForTesting(bool success);
 
  private:
+  struct ActiveSwitch {
+    GaiaId primary_gaia_id;
+    GaiaId target_gaia_id;
+    base::OnceClosure on_finished_callback;
+  };
+
   bool CanStartSwitching(const GaiaId& primary_gaia_id,
                          const GaiaId& target_gaia_id) const;
   bool IsSwitchBackWindowActive() const;
-  void OnSwitchFinished();
+  void OnSwitchFinished(bool success);
 
   const raw_ref<PrefService> prefs_;
-  bool switching_in_progress_ = false;
-  base::OnceClosure on_switch_finished_callback_;
+  std::optional<ActiveSwitch> active_switch_;
 };
 
 }  // namespace signin

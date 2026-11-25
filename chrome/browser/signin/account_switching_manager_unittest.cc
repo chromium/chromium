@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/json/values_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/signin/account_switching_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/signin_prefs.h"
@@ -225,18 +227,145 @@ TEST_F(AccountSwitchingManagerTest,
 
   testing::Mock::VerifyAndClearExpectations(&first_callback);
   EXPECT_CALL(first_callback, Run()).Times(1);
-  manager_->CompleteSwitchForTesting();
+  manager_->CompleteSwitchForTesting(/*success=*/true);
 
-  // Once finished, eligibility and switching are restored (also works without a
-  // caller-provided callback).
+  // Once finished, `{A, B}` is suppressed by the completed switch, while
+  // eligibility for other pairs and switching are restored (also works without
+  // a caller-provided callback).
+  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
+  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
+  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
+  EXPECT_TRUE(manager_->StartSwitching(account_a_, account_c_));
+  manager_->CompleteSwitchForTesting(/*success=*/true);
+  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_c_));
+  EXPECT_TRUE(manager_->CanShowPromo(account_b_, account_c_));
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       SuccessfulSwitchSuppressesPairBidirectionally) {
+  const SigninPrefs signin_prefs(*profile_->GetPrefs());
+  ASSERT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      account_a_, account_b_));
+  ASSERT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
+  ASSERT_TRUE(manager_->CanShowPromo(account_b_, account_a_));
+  ASSERT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
+
+  base::MockOnceClosure switch_callback;
+  EXPECT_CALL(switch_callback, Run()).Times(0);
+  ASSERT_TRUE(
+      manager_->StartSwitching(account_a_, account_b_, switch_callback.Get()));
+
+  // Suppression is not recorded until the switch actually finishes
+  // successfully.
+  EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      account_a_, account_b_));
+
+  testing::Mock::VerifyAndClearExpectations(&switch_callback);
+  EXPECT_CALL(switch_callback, Run()).Times(1);
+  manager_->CompleteSwitchForTesting(/*success=*/true);
+
+  EXPECT_TRUE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      account_a_, account_b_));
+  EXPECT_TRUE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      account_b_, account_a_));
+  EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      account_a_, account_c_));
+
+  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
+  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
+  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
+
+  // Suppression persists indefinitely across the 28-day window and beyond.
+  task_environment_.FastForwardBy(base::Days(365));
+  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
+  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
+}
+
+TEST_F(AccountSwitchingManagerTest, AbortedSwitchDoesNotSuppressPair) {
+  const SigninPrefs signin_prefs(*profile_->GetPrefs());
+  ASSERT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
+
+  base::MockOnceClosure switch_callback;
+  EXPECT_CALL(switch_callback, Run()).Times(1);
+  ASSERT_TRUE(
+      manager_->StartSwitching(account_a_, account_b_, switch_callback.Get()));
+
+  manager_->CompleteSwitchForTesting(/*success=*/false);
+
+  EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      account_a_, account_b_));
   EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_TRUE(manager_->StartSwitching(account_a_, account_b_));
-  manager_->CompleteSwitchForTesting();
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
+  EXPECT_TRUE(manager_->CanShowPromo(account_b_, account_a_));
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       PrefObserverStartingNextSwitchPreservesCallbacks) {
+  base::MockOnceClosure first_callback;
+  base::MockOnceClosure second_callback;
+  EXPECT_CALL(first_callback, Run()).Times(0);
+  EXPECT_CALL(second_callback, Run()).Times(0);
+
+  bool started_second_switch = false;
+  PrefChangeRegistrar registrar;
+  registrar.Init(profile_->GetPrefs());
+  SigninPrefs::ObserveSigninPrefsChanges(
+      registrar, base::BindLambdaForTesting([&]() {
+        if (!started_second_switch) {
+          started_second_switch = true;
+          EXPECT_TRUE(manager_->StartSwitching(account_a_, account_c_,
+                                               second_callback.Get()));
+        }
+      }));
+
+  ASSERT_TRUE(
+      manager_->StartSwitching(account_a_, account_b_, first_callback.Get()));
+
+  // Completing the first switch notifies the pref observer synchronously when
+  // recording pair suppression. Starting a follow-up switch in that observer
+  // must not overwrite or prematurely run either callback.
+  testing::Mock::VerifyAndClearExpectations(&first_callback);
+  EXPECT_CALL(first_callback, Run()).Times(1);
+  manager_->CompleteSwitchForTesting(/*success=*/true);
+  EXPECT_TRUE(started_second_switch);
+
+  testing::Mock::VerifyAndClearExpectations(&first_callback);
+  testing::Mock::VerifyAndClearExpectations(&second_callback);
+  EXPECT_CALL(second_callback, Run()).Times(1);
+  manager_->CompleteSwitchForTesting(/*success=*/true);
 }
 
 TEST_F(AccountSwitchingManagerTest,
        StartSwitchingSafeAcrossProfileDestruction) {
+  // Verify `Shutdown()` cancels an in-progress switch without running the
+  // callback or suppressing the pair.
+  {
+    auto standalone_manager =
+        std::make_unique<AccountSwitchingManager>(profile_->GetPrefs());
+    base::MockOnceClosure shutdown_callback;
+    EXPECT_CALL(shutdown_callback, Run()).Times(0);
+    ASSERT_TRUE(standalone_manager->StartSwitching(account_a_, account_b_,
+                                                   shutdown_callback.Get()));
+    standalone_manager->Shutdown();
+    EXPECT_FALSE(
+        SigninPrefs(*profile_->GetPrefs())
+            .IsAccountSwitchingPromoSuppressedBySwitch(account_a_, account_b_));
+  }
+
+  // Verify destroying the manager directly while a switch is active also drops
+  // the callback without suppressing the pair.
+  {
+    auto standalone_manager =
+        std::make_unique<AccountSwitchingManager>(profile_->GetPrefs());
+    base::MockOnceClosure destroy_callback;
+    EXPECT_CALL(destroy_callback, Run()).Times(0);
+    ASSERT_TRUE(standalone_manager->StartSwitching(account_a_, account_b_,
+                                                   destroy_callback.Get()));
+    standalone_manager.reset();
+    EXPECT_FALSE(
+        SigninPrefs(*profile_->GetPrefs())
+            .IsAccountSwitchingPromoSuppressedBySwitch(account_a_, account_b_));
+  }
+
   base::MockOnceClosure callback;
   EXPECT_CALL(callback, Run()).Times(0);
   ASSERT_TRUE(manager_->StartSwitching(account_a_, account_b_, callback.Get()));
@@ -257,7 +386,16 @@ TEST_F(AccountSwitchingManagerTest,
   EXPECT_CALL(switch_callback, Run()).Times(1);
   EXPECT_TRUE(
       manager_->StartSwitching(account_a_, account_b_, switch_callback.Get()));
-  manager_->CompleteSwitchForTesting();
+  manager_->CompleteSwitchForTesting(/*success=*/true);
+
+  // Pair suppression blocks `CanShowPromo()` without blocking explicit manual
+  // switching via `StartSwitching()`, even in the reverse direction.
+  ASSERT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
+  base::MockOnceClosure reverse_switch_callback;
+  EXPECT_CALL(reverse_switch_callback, Run()).Times(1);
+  EXPECT_TRUE(manager_->StartSwitching(account_b_, account_a_,
+                                       reverse_switch_callback.Get()));
+  manager_->CompleteSwitchForTesting(/*success=*/true);
 
   // Structural guards (invalid accounts) still reject `StartSwitching()`.
   base::MockOnceClosure rejected_callback;
@@ -363,7 +501,7 @@ TEST_F(AccountSwitchingManagerTest,
   EXPECT_TRUE(manager_->StartSwitching(account_d_, account_b_));
   EXPECT_FALSE(manager_->CanShowPromo(account_d_, account_b_));
   EXPECT_FALSE(manager_->StartSwitching(account_d_, account_b_));
-  manager_->CompleteSwitchForTesting();
+  manager_->CompleteSwitchForTesting(/*success=*/true);
   EXPECT_TRUE(manager_->CanShowPromo(account_d_, account_b_));
 }
 

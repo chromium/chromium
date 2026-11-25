@@ -75,8 +75,7 @@ AccountSwitchingManager::AccountSwitchingManager(PrefService* prefs)
 AccountSwitchingManager::~AccountSwitchingManager() = default;
 
 void AccountSwitchingManager::Shutdown() {
-  switching_in_progress_ = false;
-  on_switch_finished_callback_.Reset();
+  active_switch_.reset();
 }
 
 bool AccountSwitchingManager::CanShowPromo(const GaiaId& primary_gaia_id,
@@ -169,22 +168,22 @@ bool AccountSwitchingManager::StartSwitching(
     return false;
   }
 
-  switching_in_progress_ = true;
-  on_switch_finished_callback_ = std::move(on_switch_finished);
+  active_switch_ = ActiveSwitch{primary_gaia_id, target_gaia_id,
+                                std::move(on_switch_finished)};
 
   // TODO(crbug.com/585132231): Persist profile-level post-acceptance
   // suppression or post-new-profile-creation cooldown once product confirms
   // re-prompting rules.
   // TODO(crbug.com/585131182, crbug.com/585132335): Execute the in-profile
-  // primary-account switch (which also starts a fresh 28-day grace period,
-  // bi-directionally suppresses the pair via `SigninPrefs`, and activates the
-  // 7-day switch-back window) or async new-profile creation here, calling
-  // `OnSwitchFinished()` when the switch completes or aborts.
+  // primary-account switch (which also starts a fresh 28-day grace period and
+  // activates the 7-day switch-back window) or async new-profile creation
+  // here, calling `OnSwitchFinished(success)` when the switch completes or
+  // aborts.
   return true;
 }
 
-void AccountSwitchingManager::CompleteSwitchForTesting() {
-  OnSwitchFinished();
+void AccountSwitchingManager::CompleteSwitchForTesting(bool success) {
+  OnSwitchFinished(success);
 }
 
 bool AccountSwitchingManager::CanStartSwitching(
@@ -200,7 +199,7 @@ bool AccountSwitchingManager::CanStartSwitching(
   // In-progress switch and active 7-day switch-back grace window guards prevent
   // overlapping switches or inconsistent switch-back state and are never
   // bypassed by `SkipCooldown`.
-  return !switching_in_progress_ && !IsSwitchBackWindowActive();
+  return !active_switch_.has_value() && !IsSwitchBackWindowActive();
 }
 
 bool AccountSwitchingManager::IsSwitchBackWindowActive() const {
@@ -209,11 +208,21 @@ bool AccountSwitchingManager::IsSwitchBackWindowActive() const {
   return false;
 }
 
-void AccountSwitchingManager::OnSwitchFinished() {
-  CHECK(switching_in_progress_);
-  switching_in_progress_ = false;
-  if (base::OnceClosure callback = std::move(on_switch_finished_callback_)) {
-    std::move(callback).Run();
+void AccountSwitchingManager::OnSwitchFinished(bool success) {
+  CHECK(active_switch_.has_value());
+  ActiveSwitch completed_switch = std::move(*active_switch_);
+  active_switch_.reset();
+
+  if (success) {
+    // Record switch-based pair suppression bi-directionally in `SigninPrefs`
+    // so accepting a switch for `A -> B` prevents promoting either direction
+    // while both accounts remain in the profile.
+    SigninPrefs(*prefs_).SetAccountSwitchingPromoSuppressedBySwitch(
+        completed_switch.primary_gaia_id, completed_switch.target_gaia_id);
+  }
+
+  if (completed_switch.on_finished_callback) {
+    std::move(completed_switch.on_finished_callback).Run();
   }
 }
 
