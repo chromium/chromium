@@ -14,6 +14,7 @@ source_set("browser") {
     "last_replaced_clipboard_data.h",
   ]
   deps = [
+    "//base",
     "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/data_controls/core/browser:features",
     "//components/prefs",

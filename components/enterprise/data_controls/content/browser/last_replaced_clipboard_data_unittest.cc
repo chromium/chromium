@@ -22,7 +22,13 @@ constexpr char16_t kHtml[] = u"html";
 
 class LastReplacedClipboardDataTest : public testing::Test {
  public:
-  void SetUp() override { ui::TestClipboard::CreateForCurrentThread(); }
+  void SetUp() override {
+    ui::TestClipboard::CreateForCurrentThread();
+    // The observer is a process-wide singleton. Flush whatever an earlier test
+    // in this process left staged so that every test starts unregistered.
+    ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+    GetLastReplacedClipboardData() = {};
+  }
 
   void TearDown() override { GetLastReplacedClipboardData() = {}; }
 };
@@ -137,6 +143,54 @@ TEST_F(LastReplacedClipboardDataTest, RestrictionLevelOverridePrecedence) {
             u"<svg></svg>");
   EXPECT_EQ(GetLastReplacedClipboardData().clipboard_paste_data.png,
             std::vector<uint8_t>({1, 2, 3}));
+}
+
+TEST_F(LastReplacedClipboardDataTest, RepeatedEmptyPendingData) {
+  auto* observer = LastReplacedClipboardDataObserver::GetInstance();
+  ASSERT_TRUE(observer);
+
+  observer->AddDataToNextSeqno(content::ClipboardPasteData(),
+                               CopyRestrictionLevel::kOngoingScan);
+  observer->AddDataToNextSeqno(content::ClipboardPasteData(),
+                               CopyRestrictionLevel::kBlocked);
+  EXPECT_EQ(observer->pending_restriction_level(),
+            CopyRestrictionLevel::kBlocked);
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  EXPECT_EQ(observer->pending_restriction_level(), CopyRestrictionLevel::kNone);
+  EXPECT_EQ(GetLastReplacedClipboardData().seqno,
+            ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+                ui::ClipboardBuffer::kCopyPaste));
+  EXPECT_TRUE(GetLastReplacedClipboardData().clipboard_paste_data.empty());
+  EXPECT_TRUE(GetLastReplacedClipboardData().GetAvailableTypes().empty());
+  EXPECT_EQ(GetLastReplacedClipboardData().restriction_level,
+            CopyRestrictionLevel::kBlocked);
+}
+
+TEST_F(LastReplacedClipboardDataTest, EmptyThenNonEmptyPendingData) {
+  auto* observer = LastReplacedClipboardDataObserver::GetInstance();
+  ASSERT_TRUE(observer);
+
+  observer->AddDataToNextSeqno(content::ClipboardPasteData(),
+                               CopyRestrictionLevel::kKeptInManagedChrome);
+  content::ClipboardPasteData text;
+  text.text = kText;
+  observer->AddDataToNextSeqno(std::move(text),
+                               CopyRestrictionLevel::kKeptInManagedChrome);
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  EXPECT_EQ(GetLastReplacedClipboardData().clipboard_paste_data.text, kText);
+  EXPECT_EQ(GetLastReplacedClipboardData().restriction_level,
+            CopyRestrictionLevel::kKeptInManagedChrome);
+
+  observer->AddDataToNextSeqno(content::ClipboardPasteData(),
+                               CopyRestrictionLevel::kKeptInManagedChrome);
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  EXPECT_TRUE(GetLastReplacedClipboardData().clipboard_paste_data.empty());
+  EXPECT_EQ(GetLastReplacedClipboardData().restriction_level,
+            CopyRestrictionLevel::kKeptInManagedChrome);
+  EXPECT_EQ(observer->pending_restriction_level(), CopyRestrictionLevel::kNone);
 }
 
 }  // namespace data_controls

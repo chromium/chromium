@@ -55,6 +55,11 @@ LastReplacedClipboardData& GetLastReplacedClipboardData() {
   return *data.get();
 }
 
+LastReplacedClipboardDataObserver::LastReplacedClipboardDataObserver() =
+    default;
+LastReplacedClipboardDataObserver::~LastReplacedClipboardDataObserver() =
+    default;
+
 // static
 LastReplacedClipboardDataObserver*
 LastReplacedClipboardDataObserver::GetInstance() {
@@ -73,8 +78,8 @@ void LastReplacedClipboardDataObserver::AddDataToNextSeqno(
     data.bitmap = SkBitmap();
   }
 
-  if (pending_seqno_data_.empty()) {
-    ui::ClipboardMonitor::GetInstance()->AddObserver(this);
+  if (!clipboard_monitor_observation_.IsObserving()) {
+    clipboard_monitor_observation_.Observe(ui::ClipboardMonitor::GetInstance());
   }
   pending_seqno_data_.Merge(std::move(data));
   // Only override the pending restriction level if the new restriction is more
@@ -101,7 +106,7 @@ void LastReplacedClipboardDataObserver::OnClipboardDataChanged() {
   pending_seqno_data_ = content::ClipboardPasteData();
   pending_restriction_level_ = CopyRestrictionLevel::kNone;
 
-  ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+  clipboard_monitor_observation_.Reset();
 }
 
 }  // namespace data_controls

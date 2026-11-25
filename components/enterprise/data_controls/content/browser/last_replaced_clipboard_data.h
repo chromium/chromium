@@ -5,9 +5,14 @@
 #ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONTENT_BROWSER_LAST_REPLACED_CLIPBOARD_DATA_H_
 #define COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONTENT_BROWSER_LAST_REPLACED_CLIPBOARD_DATA_H_
 
+#include "base/scoped_observation.h"
 #include "content/public/browser/clipboard_types.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
+
+namespace ui {
+class ClipboardMonitor;
+}  // namespace ui
 
 namespace data_controls {
 
@@ -51,6 +56,9 @@ class LastReplacedClipboardDataObserver : public ui::ClipboardObserver {
  public:
   static LastReplacedClipboardDataObserver* GetInstance();
 
+  LastReplacedClipboardDataObserver();
+  ~LastReplacedClipboardDataObserver() override;
+
   // Adds `data` to `pending_seqno_data_` so that it can be associated to the
   // next sequence number change. Note that because this can be called multiple
   // times with different data types (text, html, png, etc.) before
@@ -75,6 +83,11 @@ class LastReplacedClipboardDataObserver : public ui::ClipboardObserver {
   // Data recently copied from Chrome, waiting to be tied to a sequence number.
   content::ClipboardPasteData pending_seqno_data_;
   CopyRestrictionLevel pending_restriction_level_ = CopyRestrictionLevel::kNone;
+
+  // Observes clipboard changes from the first `AddDataToNextSeqno()` call
+  // until the next `OnClipboardDataChanged()`.
+  base::ScopedObservation<ui::ClipboardMonitor, ui::ClipboardObserver>
+      clipboard_monitor_observation_{this};
 };
 
 }  // namespace data_controls
