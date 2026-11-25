@@ -2461,6 +2461,7 @@ Unknown properties are collapsed to zero. -->
   <int value="0" label="Allowed"/>
   <int value="1" label="Failed: Not from observed tree"/>
   <int value="2" label="Failed: Disallowed on page type"/>
+  <int value="3" label="Failed: Disallowed on node"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h:ReadAnythingRendererRequestResult) -->

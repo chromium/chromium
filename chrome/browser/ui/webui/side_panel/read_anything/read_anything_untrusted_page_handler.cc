@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -79,7 +80,10 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
@@ -379,6 +383,15 @@ bool IsWhatsNewEmbeddedContentFrame(content::RenderFrameHost* rfh,
 #endif
 }
 
+// Returns whether `node` is a link that Reading Mode may click. Requiring an
+// HTTP(S) URL excludes non-anchor ARIA links (e.g. <div role="link">) and
+// javascript: URLs, matching ReadAnythingAppController::GetUrl().
+bool IsClickableLinkNode(const ui::AXNode& node) {
+  return ui::IsLink(node.GetRole()) &&
+         GURL(node.GetStringAttribute(ax::mojom::StringAttribute::kUrl))
+             .SchemeIsHTTPOrHTTPS();
+}
+
 }  // namespace
 
 ReadAnythingWebContentsObserver::ReadAnythingWebContentsObserver(
@@ -667,6 +680,7 @@ void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
     return;
   }
   forwarded_tree_ids_.insert(details.ax_tree_id);
+  UpdateObservedTree(details);
   page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
                                     details.events);
 }
@@ -679,6 +693,7 @@ void ReadAnythingUntrustedPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
   // The registry reports removals for every tree in the browser; only tell the
   // renderer about trees it was sent.
   if (forwarded_tree_ids_.erase(ax_tree_id)) {
+    observed_trees_.erase(ax_tree_id);
     page_->OnAXTreeDestroyed(ax_tree_id);
   }
 }
@@ -1006,7 +1021,8 @@ bool ReadAnythingUntrustedPageHandler::AreActionsAllowedInTree(
 bool ReadAnythingUntrustedPageHandler::CheckAndRecordRendererRequestAllowed(
     const ui::AXTreeID& tree_id,
     std::string_view histogram_name,
-    std::string_view request_name) const {
+    std::string_view request_name,
+    std::optional<ui::AXNodeID> link_node_id) const {
   if (!IsObservingTree(tree_id)) {
     base::UmaHistogramEnumeration(
         histogram_name, ReadAnythingRendererRequestResult::kNotObservedTree);
@@ -1024,9 +1040,46 @@ bool ReadAnythingUntrustedPageHandler::CheckAndRecordRendererRequestAllowed(
     return false;
   }
 
+  if (link_node_id.has_value() &&
+      !IsAllowedLinkNode(tree_id, link_node_id.value())) {
+    base::UmaHistogramEnumeration(
+        histogram_name,
+        ReadAnythingRendererRequestResult::kDisallowedActionOnNode);
+    VLOG(1) << "Ignoring " << request_name << " request on disallowed node";
+    return false;
+  }
+
   base::UmaHistogramEnumeration(histogram_name,
                                 ReadAnythingRendererRequestResult::kAllowed);
   return true;
+}
+
+void ReadAnythingUntrustedPageHandler::UpdateObservedTree(
+    const ui::AXUpdatesAndEvents& details) {
+  std::unique_ptr<ui::AXTree>& tree = observed_trees_[details.ax_tree_id];
+  if (!tree) {
+    tree = std::make_unique<ui::AXTree>();
+  }
+  for (const ui::AXTreeUpdate& update : details.updates) {
+    if (!tree->Unserialize(update)) {
+      // Link clicks in this tree are rejected until it is sent again in full.
+      VLOG(1) << "Failed to apply accessibility update: " << tree->error();
+      observed_trees_.erase(details.ax_tree_id);
+      return;
+    }
+  }
+}
+
+bool ReadAnythingUntrustedPageHandler::IsAllowedLinkNode(
+    const ui::AXTreeID& tree_id,
+    ui::AXNodeID node_id) const {
+  const std::unique_ptr<ui::AXTree>* tree =
+      base::FindOrNull(observed_trees_, tree_id);
+  if (!tree) {
+    return false;
+  }
+  const ui::AXNode* node = (*tree)->GetFromId(node_id);
+  return node && IsClickableLinkNode(*node);
 }
 
 void ReadAnythingUntrustedPageHandler::OnLineSpaceChange(
@@ -1269,8 +1322,9 @@ void ReadAnythingUntrustedPageHandler::OnLinkClicked(
     return;
   }
 
-  if (!CheckAndRecordRendererRequestAllowed(
-          target_tree_id, kRendererLinkRequestHistogram, "link click")) {
+  if (!CheckAndRecordRendererRequestAllowed(target_tree_id,
+                                            kRendererLinkRequestHistogram,
+                                            "link click", target_node_id)) {
     return;
   }
 
