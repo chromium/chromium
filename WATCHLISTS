@@ -2083,6 +2083,9 @@
       'filepath': 'third_party/blink/renderer/core/permissions_policy/|' \
                   'third_party/blink/public/(common|mojom)/permissions_policy/'
     },
+    'pgo_generate_profile': {
+      'filepath': '^tools/pgo/generate_profile\\.py$'
+    },
     'phonehub': {
       'filepath': 'ash/system/phonehub/'\
                   '|chrome/browser/ash/phonehub/'\
@@ -3442,6 +3445,7 @@
     'permissions_policy': ['loonybear@chromium.org',
                            'iclelland+watch@chromium.org',
                            'jmedley+watch@chromium.org'],
+    'pgo_generate_profile': ['victorvianna+watchlists@google.com'],
     'phonehub': ['ajayramamurthy+watch-phonehub@google.com',
                  'crisrael+watch-phonehub@google.com',
                  'hansberry+watch-phonehub@chromium.org',
