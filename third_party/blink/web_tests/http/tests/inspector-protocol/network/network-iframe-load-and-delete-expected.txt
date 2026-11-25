@@ -1,0 +1,22 @@
+Tests that if an iframe is loaded and then deleted, inspector can still return its response body, including when iframe.src is changed to a javascript: URL after loading.
+Case 1 URL: http://127.0.0.1:8000/inspector-protocol/network/resources/hello-world.html
+resource.type: Document
+response.status: 200
+base64Encoded: false
+resource.content after requesting content:
+<!DOCTYPE html>
+<body>
+  <h1>hello world</h1>
+</body>
+
+Case 2 URL: http://127.0.0.1:8000/inspector-protocol/network/resources/hello-world.html
+resource.type: Document
+response.status: 200
+base64Encoded: false
+resource.content after requesting content:
+<!DOCTYPE html>
+<body>
+  <h1>hello world</h1>
+</body>
+
+
