@@ -15839,6 +15839,24 @@
             ]
         }
     ],
+    "PasswordSaveInContextPassphraseErrorResolution": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordSaveInContextPassphraseErrorResolution"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordSaveUpdateDropdownMenu": [
         {
             "platforms": [
