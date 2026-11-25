@@ -102,6 +102,7 @@ void BaseProvider::RequestInternal(
 
   std::string serialized_request;
   request.SerializeToString(&serialized_request);
+  LogMantaRequestSizeBytes(metric_type, serialized_request.size());
 
   base::Time start_time = base::Time::Now();
 

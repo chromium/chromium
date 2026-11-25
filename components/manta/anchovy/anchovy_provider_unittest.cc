@@ -395,9 +395,10 @@ TEST_F(AnchovyProviderTest, GetImageDescriptionsBatchSuccess) {
                                         .AsStringView());
       }));
 
+  const std::string serialized_response = response.SerializeAsString();
   SetEndpointMockResponse(GURL{kMockEndpoint},
-                          /*response_data=*/response.SerializeAsString(),
-                          net::HTTP_OK, net::OK);
+                          /*response_data=*/serialized_response, net::HTTP_OK,
+                          net::OK);
 
   const std::vector<uint8_t> kCatBytes = {1, 2, 3};
   const std::vector<uint8_t> kDogBytes = {4, 5, 6, 7};
@@ -434,6 +435,12 @@ TEST_F(AnchovyProviderTest, GetImageDescriptionsBatchSuccess) {
 
   histogram_tester.ExpectTotalCount("Ash.MantaService.AnchovyProvider.TimeCost",
                                     1);
+  histogram_tester.ExpectUniqueSample(
+      "Ash.MantaService.AnchovyProvider.RequestSizeBytes", uploaded_body.size(),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Ash.MantaService.AnchovyProvider.ResponseSizeBytes",
+      serialized_response.size(), 1);
 }
 
 TEST_F(AnchovyProviderTest,
@@ -473,6 +480,10 @@ TEST_F(AnchovyProviderTest,
                                     0);
   histogram_tester.ExpectTotalCount(
       "Ash.MantaService.AnchovyProvider.StatusCode", 0);
+  histogram_tester.ExpectTotalCount(
+      "Ash.MantaService.AnchovyProvider.RequestSizeBytes", 0);
+  histogram_tester.ExpectTotalCount(
+      "Ash.MantaService.AnchovyProvider.ResponseSizeBytes", 0);
 
   // Boundary check: exactly `kMaxBatchSize` (`100`) valid images is accepted
   // and issues a single HTTP request.
@@ -516,6 +527,12 @@ TEST_F(AnchovyProviderTest, GetImageDescriptionsBackendFailure) {
   histogram_tester.ExpectUniqueSample(
       "Ash.MantaService.AnchovyProvider.StatusCode",
       MantaStatusCode::kBackendFailure, 1);
+  histogram_tester.ExpectTotalCount(
+      "Ash.MantaService.AnchovyProvider.RequestSizeBytes", 1);
+  // HTTP error responses must not record synthetic error strings as server
+  // response sizes.
+  histogram_tester.ExpectTotalCount(
+      "Ash.MantaService.AnchovyProvider.ResponseSizeBytes", 0);
 }
 
 TEST_F(AnchovyProviderTest, GetImageDescriptionsMalformedResponse) {
@@ -540,6 +557,65 @@ TEST_F(AnchovyProviderTest, GetImageDescriptionsMalformedResponse) {
   histogram_tester.ExpectUniqueSample(
       "Ash.MantaService.AnchovyProvider.StatusCode",
       MantaStatusCode::kMalformedResponse, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ash.MantaService.AnchovyProvider.ResponseSizeBytes", 4, 1);
+}
+
+// Exercises BaseProvider::RequestInternal directly in API-key mode (matching
+// production AnchovyProvider construction) to verify that serialized request
+// payload size includes ClientInfo metadata added during serialization.
+TEST_F(AnchovyProviderTest, GetImageDescriptionsApiKeyModeLogsPayloadSizes) {
+  base::HistogramTester histogram_tester;
+  const ProviderParams provider_params = {/*use_api_key=*/true, "160.0.0.0",
+                                          version_info::Channel::STABLE,
+                                          "en-US"};
+  AnchovyProvider anchovy_provider(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_),
+      /*identity_manager=*/nullptr, provider_params);
+
+  proto::Response response;
+  AddAnchovyOutputData(&response,
+                       proto::AnchovyDescription_Type_PRIMARY_CAPTION,
+                       "A lighthouse by the sea", 0.91f, "0");
+  const std::string serialized_response = response.SerializeAsString();
+  std::string uploaded_body;
+  // API-key mode appends `?key=...` to the endpoint URL, so register the mock
+  // response for the exact intercepted request URL on arrival.
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        SetEndpointMockResponse(req.url, serialized_response, net::HTTP_OK,
+                                net::OK);
+        EXPECT_NE(req.request_body, nullptr);
+        if (req.request_body && req.request_body->elements()->size() == 1u) {
+          uploaded_body = std::string(req.request_body->elements()
+                                          ->at(0)
+                                          .As<network::DataElementBytes>()
+                                          .AsStringView());
+        } else if (req.request_body) {
+          EXPECT_EQ(req.request_body->elements()->size(), 1u);
+        }
+      }));
+
+  const std::vector<uint8_t> kImgBytes = {10, 20, 30, 40};
+  anchovy::ImageDescriptionBatchRequest batch("en");
+  batch.images.emplace_back("0", kImgBytes);
+
+  base::test::TestFuture<base::DictValue, MantaStatus> future;
+  anchovy_provider.GetImageDescriptions(batch, TRAFFIC_ANNOTATION_FOR_TESTS,
+                                        future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get<1>().status_code, MantaStatusCode::kOk);
+
+  proto::Request uploaded_request;
+  ASSERT_TRUE(uploaded_request.ParseFromString(uploaded_body));
+  EXPECT_TRUE(uploaded_request.has_client_info());
+  histogram_tester.ExpectUniqueSample(
+      "Ash.MantaService.AnchovyProvider.RequestSizeBytes", uploaded_body.size(),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Ash.MantaService.AnchovyProvider.ResponseSizeBytes",
+      serialized_response.size(), 1);
 }
 
 }  // namespace manta

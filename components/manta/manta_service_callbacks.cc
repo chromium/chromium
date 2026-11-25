@@ -12,6 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/manta_status.h"
@@ -62,82 +64,59 @@ std::optional<MantaStatusCode> MapServerStatusCodeToMantaStatusCode(
                                 : std::nullopt;
 }
 
-void LogTimeCost(const MantaMetricType request_type,
-                 base::TimeDelta time_cost) {
+std::string_view GetMantaMetricTypeName(const MantaMetricType request_type) {
   switch (request_type) {
     case MantaMetricType::kOrca:
-      base::UmaHistogramTimes("Ash.MantaService.OrcaProvider.TimeCost",
-                              time_cost);
-      break;
+      return "OrcaProvider";
     case MantaMetricType::kScanner:
-      base::UmaHistogramTimes("Ash.MantaService.ScannerProvider.TimeCost",
-                              time_cost);
-      break;
+      return "ScannerProvider";
     case MantaMetricType::kSnapper:
-      base::UmaHistogramTimes("Ash.MantaService.SnapperProvider.TimeCost",
-                              time_cost);
-      break;
+      return "SnapperProvider";
     case MantaMetricType::kMahiSummary:
-      base::UmaHistogramTimes("Ash.MantaService.MahiProvider.Summary.TimeCost",
-                              time_cost);
-      break;
+      return "MahiProvider.Summary";
     case MantaMetricType::kMahiElucidation:
-      base::UmaHistogramTimes(
-          "Ash.MantaService.MahiProvider.Elucidation.TimeCost", time_cost);
-      break;
+      return "MahiProvider.Elucidation";
     case MantaMetricType::kMahiQA:
-      base::UmaHistogramTimes("Ash.MantaService.MahiProvider.QA.TimeCost",
-                              time_cost);
-      break;
+      return "MahiProvider.QA";
     case MantaMetricType::kAnchovy:
-      base::UmaHistogramTimes("Ash.MantaService.AnchovyProvider.TimeCost",
-                              time_cost);
-      break;
+      return "AnchovyProvider";
     case MantaMetricType::kWalrus:
-      base::UmaHistogramTimes("Ash.MantaService.WalrusProvider.TimeCost",
-                              time_cost);
-      break;
+      return "WalrusProvider";
   }
+}
+
+void LogTimeCost(const MantaMetricType request_type,
+                 base::TimeDelta time_cost) {
+  base::UmaHistogramTimes(
+      base::StrCat({"Ash.MantaService.", GetMantaMetricTypeName(request_type),
+                    ".TimeCost"}),
+      time_cost);
 }
 
 void LogMantaStatusCode(const MantaMetricType request_type,
                         const MantaStatusCode status_code) {
-  switch (request_type) {
-    case MantaMetricType::kOrca:
-      base::UmaHistogramEnumeration("Ash.MantaService.OrcaProvider.StatusCode",
-                                    status_code);
-      break;
-    case MantaMetricType::kScanner:
-      base::UmaHistogramEnumeration(
-          "Ash.MantaService.ScannerProvider.StatusCode", status_code);
-      break;
-    case MantaMetricType::kSnapper:
-      base::UmaHistogramEnumeration(
-          "Ash.MantaService.SnapperProvider.StatusCode", status_code);
-      break;
-    case MantaMetricType::kMahiSummary:
-      base::UmaHistogramEnumeration(
-          "Ash.MantaService.MahiProvider.Summary.StatusCode", status_code);
-      break;
-    case MantaMetricType::kMahiElucidation:
-      base::UmaHistogramEnumeration(
-          "Ash.MantaService.MahiProvider.Elucidation.StatusCode", status_code);
-      break;
-    case MantaMetricType::kMahiQA:
-      base::UmaHistogramEnumeration(
-          "Ash.MantaService.MahiProvider.QA.StatusCode", status_code);
-      break;
-    case MantaMetricType::kAnchovy:
-      base::UmaHistogramEnumeration(
-          "Ash.MantaService.AnchovyProvider.StatusCode", status_code);
-      break;
-    case MantaMetricType::kWalrus:
-      base::UmaHistogramEnumeration(
-          "Ash.MantaService.WalrusProvider.StatusCode", status_code);
-      break;
-  }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Ash.MantaService.", GetMantaMetricTypeName(request_type),
+                    ".StatusCode"}),
+      status_code);
+}
+
+void LogMantaResponseSizeBytes(const MantaMetricType request_type,
+                               const size_t size_bytes) {
+  base::UmaHistogramCounts10M(
+      base::StrCat({"Ash.MantaService.", GetMantaMetricTypeName(request_type),
+                    ".ResponseSizeBytes"}),
+      base::saturated_cast<int>(size_bytes));
 }
 }  // namespace
+
+void LogMantaRequestSizeBytes(const MantaMetricType request_type,
+                              const size_t size_bytes) {
+  base::UmaHistogramCounts10M(
+      base::StrCat({"Ash.MantaService.", GetMantaMetricTypeName(request_type),
+                    ".RequestSizeBytes"}),
+      base::saturated_cast<int>(size_bytes));
+}
 
 void OnEndpointFetcherComplete(
     MantaProtoResponseCallback callback,
@@ -215,6 +194,11 @@ void OnEndpointFetcherComplete(
 
     return;
   }
+
+  // Record decoded response payload size only on HTTP 200 responses so
+  // synthetic error strings generated locally by EndpointFetcher on network or
+  // auth failures are never counted as server response payloads.
+  LogMantaResponseSizeBytes(request_type, responses->response.size());
 
   auto manta_response = std::make_unique<proto::Response>();
   if (!manta_response->ParseFromString(responses->response)) {

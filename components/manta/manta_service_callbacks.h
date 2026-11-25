@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MANTA_MANTA_SERVICE_CALLBACKS_H_
 #define COMPONENTS_MANTA_MANTA_SERVICE_CALLBACKS_H_
 
+#include <cstddef>
 #include <memory>
 
 #include "base/component_export.h"
@@ -45,6 +46,10 @@ using MantaProtoResponseCallback =
 // to the caller.
 using MantaGenericCallback =
     base::OnceCallback<void(base::DictValue, MantaStatus)>;
+
+// Records the serialized request payload size in bytes for a Manta request.
+COMPONENT_EXPORT(MANTA)
+void LogMantaRequestSizeBytes(MantaMetricType request_type, size_t size_bytes);
 
 COMPONENT_EXPORT(MANTA)
 void OnEndpointFetcherComplete(

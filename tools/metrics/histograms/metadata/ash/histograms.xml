@@ -299,7 +299,12 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="MantaMetricType">
-  <variant name="AnchovyProvider" summary="Request from Anchovy provider"/>
+  <variant name="AnchovyProvider" summary="Request from Anchovy provider">
+    <owner>rhalavati@chromium.org</owner>
+    <owner>amoylan@chromium.org</owner>
+    <owner>chrome-a11y-core@google.com</owner>
+    <owner>cros-manta-team@google.com</owner>
+  </variant>
   <variant name="MahiProvider.Elucidation"
       summary="Request from Mahi provider for elucidation"/>
   <variant name="MahiProvider.Outline"
@@ -4979,8 +4984,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.MantaService.{MantaMetricType}.RequestSizeBytes"
+    units="bytes" expires_after="2027-11-23">
+  <owner>amoylan@chromium.org</owner>
+  <owner>cros-manta-team@google.com</owner>
+  <summary>
+    Records the serialized request payload size in bytes for {MantaMetricType}
+    requests, logged once per dispatched request before authentication.
+  </summary>
+  <token key="MantaMetricType" variants="MantaMetricType"/>
+</histogram>
+
+<histogram name="Ash.MantaService.{MantaMetricType}.ResponseSizeBytes"
+    units="bytes" expires_after="2027-11-23">
+  <owner>amoylan@chromium.org</owner>
+  <owner>cros-manta-team@google.com</owner>
+  <summary>
+    Records the decoded response payload size in bytes for HTTP 200
+    {MantaMetricType} responses.
+  </summary>
+  <token key="MantaMetricType" variants="MantaMetricType"/>
+</histogram>
+
 <histogram name="Ash.MantaService.{MantaMetricType}.StatusCode"
-    enum="MantaStatusCode" expires_after="2027-05-01">
+    enum="MantaStatusCode" expires_after="2027-11-23">
   <owner>amoylan@chromium.org</owner>
   <owner>cros-manta-team@google.com</owner>
   <summary>Record the status code of {MantaMetricType} requests.</summary>
@@ -4988,7 +5015,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.MantaService.{MantaMetricType}.TimeCost" units="ms"
-    expires_after="2027-02-01">
+    expires_after="2027-11-23">
   <owner>amoylan@chromium.org</owner>
   <owner>cros-manta-team@google.com</owner>
   <summary>

@@ -45,6 +45,8 @@ void FakeBaseProvider::RequestInternal(
         .Run(nullptr, {MantaStatusCode::kNoIdentityManager});
     return;
   }
+  const std::string serialized_request = request.SerializeAsString();
+  LogMantaRequestSizeBytes(metric_type, serialized_request.size());
   auto fetcher = std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory_,
       identity_manager_observation_.GetSource(),
@@ -54,7 +56,7 @@ void FakeBaseProvider::RequestInternal(
           .SetTimeout(kMockTimeout)
           .SetUrl(GURL{kMockEndpoint})
           .SetOAuthConsumerId(signin::OAuthConsumerId::kManta)
-          .SetPostData(request.SerializeAsString())
+          .SetPostData(serialized_request)
           .Build());
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
