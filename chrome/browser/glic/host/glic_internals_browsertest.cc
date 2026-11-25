@@ -177,6 +177,10 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsGeicBrowserTest, ReportsGeicProvider) {
   EXPECT_EQ(data->provider, mojom::GlicProviderType::kGeminiEnterprise);
   // Gemini Enterprise skips the Gemini account eligibility checks.
   EXPECT_FALSE(data->enablement->gemini_account_eligibility_checked);
+  EXPECT_EQ(data->enablement->actuation_eligibility,
+            mojom::ActuationEligibility::kProviderUnsupported);
+  EXPECT_EQ(data->enablement->glic_api_actuation_eligibility,
+            mojom::ActuationEligibility::kProviderUnsupported);
 
   // `fre_is_consented` reads the GEiC FRE.
   EXPECT_FALSE(data->enablement->fre_is_consented);

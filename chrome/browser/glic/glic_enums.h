@@ -108,7 +108,10 @@ enum class CannotActReason {
   // the policy. Actuation is disabled because the policy pref default value
   // is disabled.
   kEnterpriseWithoutManagement = 4,
-  kMaxValue = kEnterpriseWithoutManagement,
+  // The profile's Glic provider doesn't support actuation (see
+  // `GlicProviderSpec::IsActuationSupported()`).
+  kProviderUnsupported = 5,
+  kMaxValue = kProviderUnsupported,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorTaskCreateFailedReason)
 

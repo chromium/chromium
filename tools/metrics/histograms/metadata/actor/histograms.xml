@@ -1111,10 +1111,11 @@ chromium-metrics-reviews@google.com.
     Tracks the reason why the Browser Agent might be blocked from performing an
     actuation on a web page. This is recorded every time a new task is initiated
     via GlicActorTaskManager::CreateTask. The logged value comes from the
-    GlicActorPolicyChecker::CannotActReason enum, detailing the specific policy
-    or capability issue (e.g., kDisabledByPolicy, kAccountCapabilityIneligible).
-    Note that if a domain is exempted from a block via a URL allowlist, the
-    actuation succeeds and logs kNone.
+    GlicActorPolicyChecker::CannotActReason enum, detailing the specific policy,
+    capability or provider issue (e.g., kDisabledByPolicy,
+    kAccountCapabilityIneligible, kProviderUnsupported). Note that if a domain
+    is exempted from a block via a URL allowlist, the actuation succeeds and
+    logs kNone.
   </summary>
 </histogram>
 

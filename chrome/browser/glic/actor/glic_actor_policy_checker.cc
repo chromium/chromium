@@ -102,6 +102,8 @@ std::ostream& operator<<(std::ostream& os, CannotActReason value) {
       return os << "kDisabledByPolicy";
     case CannotActReason::kEnterpriseWithoutManagement:
       return os << "kEnterpriseWithoutManagement";
+    case CannotActReason::kProviderUnsupported:
+      return os << "kProviderUnsupported";
   }
   return os << "kUnknown(" << static_cast<int>(value) << ")";
 }
@@ -359,7 +361,7 @@ bool GlicActorPolicyChecker::CanActOnWeb() const {
 
 CannotActReason GlicActorPolicyChecker::CannotActOnWebReason() const {
   if (!GetGlicProviderSpec(profile_).IsActuationSupported()) {
-    return CannotActReason::kDisabledByPolicy;
+    return CannotActReason::kProviderUnsupported;
   }
   return cannot_act_on_web_reason_;
 }
@@ -373,7 +375,7 @@ bool GlicActorPolicyChecker::GlicApiCanActOnWeb() const {
 
 CannotActReason GlicActorPolicyChecker::GlicApiCannotActOnWebReason() const {
   if (!GetGlicProviderSpec(profile_).IsActuationSupported()) {
-    return CannotActReason::kDisabledByPolicy;
+    return CannotActReason::kProviderUnsupported;
   }
   return glic_api_cannot_act_on_web_reason_;
 }

@@ -151,6 +151,10 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
           result->actuation_eligibility =
               mojom::ActuationEligibility::kEnterpriseWithoutManagement;
           break;
+        case CannotActReason::kProviderUnsupported:
+          result->actuation_eligibility =
+              mojom::ActuationEligibility::kProviderUnsupported;
+          break;
         case CannotActReason::kNone:
           NOTREACHED();
       }
@@ -177,10 +181,21 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
           result->glic_api_actuation_eligibility =
               mojom::ActuationEligibility::kEnterpriseWithoutManagement;
           break;
+        case CannotActReason::kProviderUnsupported:
+          result->glic_api_actuation_eligibility =
+              mojom::ActuationEligibility::kProviderUnsupported;
+          break;
         case CannotActReason::kNone:
           NOTREACHED();
       }
     }
+  } else if (!GetGlicProviderSpec(profile).IsActuationSupported()) {
+    // Without a policy checker (e.g. Glic isn't enabled for the profile), the
+    // provider can still rule out actuation.
+    result->actuation_eligibility =
+        mojom::ActuationEligibility::kProviderUnsupported;
+    result->glic_api_actuation_eligibility =
+        mojom::ActuationEligibility::kProviderUnsupported;
   } else {
     // If there is no GlicKeyedService (e.g., due to country filter),
     // default to missing capability or disabled by policy.

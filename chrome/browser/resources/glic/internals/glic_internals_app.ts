@@ -642,6 +642,8 @@ export class GlicInternalsAppElement extends CrLitElement {
         return 'Platform unsupported';
       case ActuationEligibility.kEnterpriseWithoutManagement:
         return 'Enterprise account without management. Default pref disabled.';
+      case ActuationEligibility.kProviderUnsupported:
+        return 'Provider unsupported';
       default:
         return 'unknown';
     }

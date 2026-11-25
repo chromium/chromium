@@ -3378,6 +3378,10 @@ TEST_F(GlicEnablingWebActuationToggleGeicTest,
   EXPECT_FALSE(glic_service->provider_spec().IsActuationSupported());
   EXPECT_FALSE(glic_service->actor_policy_checker().CanActOnWeb());
   EXPECT_FALSE(glic_service->actor_policy_checker().GlicApiCanActOnWeb());
+  EXPECT_EQ(glic_service->actor_policy_checker().CannotActOnWebReason(),
+            GlicActorPolicyChecker::CannotActReason::kProviderUnsupported);
+  EXPECT_EQ(glic_service->actor_policy_checker().GlicApiCannotActOnWebReason(),
+            GlicActorPolicyChecker::CannotActReason::kProviderUnsupported);
   EXPECT_FALSE(glic_service->enabling().ShouldShowWebActuationToggle());
 }
 
