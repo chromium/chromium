@@ -707,6 +707,7 @@ if (is_android) {
       "//chrome/test/android:chrome_java_integration_test_support",
       "//chrome/test/android:chrome_java_transit",
       "//chrome/test/android:pagecontroller_utils_java",
+      "//components/browser_ui/adaptive_ui/android:java",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/bottomsheet/android:manager_java",
       "//components/browser_ui/bottomsheet/android/test:java",

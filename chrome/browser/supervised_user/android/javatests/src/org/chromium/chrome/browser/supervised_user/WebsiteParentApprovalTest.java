@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.supervised_user;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.timeout;
@@ -26,18 +27,25 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.supervised_user.android.AndroidLocalWebApprovalFlowOutcome;
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.WebContents;
@@ -46,6 +54,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -55,13 +65,20 @@ import java.util.concurrent.TimeoutException;
  * methods is captured in {@link
  * org.chromium.chrome.browser.supervised_user.WebsiteParentApprovalNativesTest}.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @DoNotBatch(
         reason =
                 "Running tests in parallel can interfere with each tests setup."
                         + "The code under tests involes setting static methods and features, "
                         + "which must remain unchanged for the duration of the test.")
 public class WebsiteParentApprovalTest {
+    @ClassParameter
+    private static final List<ParameterSet> sClassParameters =
+            Arrays.asList(
+                    new ParameterSet().value(true).name("AdaptiveUiOn"),
+                    new ParameterSet().value(false).name("AdaptiveUiOff"));
+
     public FreshCtaTransitTestRule mTabbedActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
     public SigninTestRule mSigninTestRule = new SigninTestRule();
@@ -77,6 +94,8 @@ public class WebsiteParentApprovalTest {
 
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
 
+    private final boolean mIsAdaptiveUiEnabled;
+
     private EmbeddedTestServer mTestServer;
     private String mBlockedUrl;
     private WebContents mWebContents;
@@ -87,14 +106,26 @@ public class WebsiteParentApprovalTest {
     @Mock private ParentAuthDelegate mParentAuthDelegateMock;
     private WebPageStation mPage;
 
+    public WebsiteParentApprovalTest(boolean isAdaptiveUiEnabled) {
+        mIsAdaptiveUiEnabled = isAdaptiveUiEnabled;
+    }
+
     @Before
     public void setUp() throws TimeoutException {
+        // RootUiCoordinator reads sAndroidAdaptiveUiTransitions during activity startup to attach
+        // AdaptiveUiController.
+        FeatureOverrides.overrideFlag(
+                ChromeFeatureList.ANDROID_ADAPTIVE_UI_TRANSITIONS, mIsAdaptiveUiEnabled);
         mTestServer = mTabbedActivityTestRule.getTestServer();
         mBlockedUrl = mTestServer.getURL(TEST_PAGE);
         mPage = mTabbedActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeTabbedActivity activity = mTabbedActivityTestRule.getActivity();
+                    assertEquals(
+                            "Adaptive UI controller must match the flag parameter",
+                            mIsAdaptiveUiEnabled,
+                            AdaptiveUiController.from(activity.getWindowAndroid()) != null);
                     mBottomSheetController =
                             activity.getRootUiCoordinatorForTesting().getBottomSheetController();
                     mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
