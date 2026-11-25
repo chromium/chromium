@@ -42,6 +42,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_name_util.h"
+#include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -76,9 +77,31 @@ enum QuerySourceStatus {
 };
 
 bool CanRetry(QuerySourceStatus status) {
-  // TODO(skym): Should we be retrying on FAILURE?
+  // `FAILURE` and `TIMED_OUT` may have more results. With
+  // `kBrowsingHistoryRetryWebHistory`, a page that makes no progress because of
+  // them is retried by the service itself (see `ShouldRetryWebHistory()`).
   return status == UNINITIALIZED || status == MORE_RESULTS ||
          status == FAILURE || status == TIMED_OUT;
+}
+
+bool RemoteFailedOrTimedOut(QuerySourceStatus status) {
+  return status == FAILURE || status == TIMED_OUT;
+}
+
+net::BackoffEntry::Policy CreateWebHistoryRetryPolicy() {
+  return {
+      .num_errors_to_ignore = 0,
+      .initial_delay_ms =
+          kBrowsingHistoryRetryWebHistoryInitialDelay.Get().InMilliseconds(),
+      .multiply_factor = 2.0,
+      // Shortens each delay by a random amount of up to 20%, so clients that
+      // fail at the same time don't retry in sync.
+      .jitter_factor = 0.2,
+      .maximum_backoff_ms =
+          kBrowsingHistoryRetryWebHistoryMaxDelay.Get().InMilliseconds(),
+      .entry_lifetime_ms = -1,
+      .always_use_initial_delay = false,
+  };
 }
 
 // Returns whether remote (Web History) results can ever be part of a query
@@ -155,6 +178,13 @@ struct BrowsingHistoryService::QueryHistoryState
   // Should always be sorted in reverse chronological order.
   std::vector<HistoryEntry> remote_results;
   base::Time remote_end_time_for_continuation;
+
+  // Whether the current page is a continuation (not the first page).
+  bool is_continuation = false;
+  // End times at the start of the current continuation. If neither moved by
+  // the time the page completes, the continuation made no progress.
+  base::Time local_end_time_at_page_start;
+  base::Time remote_end_time_at_page_start;
 
  private:
   friend class base::RefCounted<BrowsingHistoryService::QueryHistoryState>;
@@ -281,6 +311,8 @@ void BrowsingHistoryService::WebHistoryTimeout(
 
 void BrowsingHistoryService::QueryHistory(const std::u16string& search_text,
                                           const QueryOptions& options) {
+  CancelWebHistoryRetry();
+
   scoped_refptr<QueryHistoryState> state =
       base::MakeRefCounted<QueryHistoryState>();
   state->search_text = search_text;
@@ -288,6 +320,57 @@ void BrowsingHistoryService::QueryHistory(const std::u16string& search_text,
   state->local_end_time_for_continuation = options.end_time;
   state->remote_end_time_for_continuation = options.end_time;
   QueryHistoryInternal(std::move(state));
+}
+
+void BrowsingHistoryService::ContinueQuery(
+    scoped_refptr<QueryHistoryState> state) {
+  state->is_continuation = true;
+  state->local_end_time_at_page_start = state->local_end_time_for_continuation;
+  state->remote_end_time_at_page_start =
+      state->remote_end_time_for_continuation;
+  QueryHistoryInternal(std::move(state));
+}
+
+// static
+bool BrowsingHistoryService::ShouldRetryWebHistory(
+    const QueryHistoryState& state,
+    const std::vector<HistoryEntry>& results) {
+  if (!base::FeatureList::IsEnabled(kBrowsingHistoryRetryWebHistory)) {
+    return false;
+  }
+  if (!state.is_continuation || !results.empty() ||
+      !RemoteFailedOrTimedOut(state.remote_status)) {
+    return false;
+  }
+  // Look at the end times, not just whether the page is empty: an empty page
+  // that still moved an end time is progress and is returned as before.
+  return state.local_end_time_for_continuation ==
+             state.local_end_time_at_page_start &&
+         state.remote_end_time_for_continuation ==
+             state.remote_end_time_at_page_start;
+}
+
+void BrowsingHistoryService::ScheduleWebHistoryRetry(
+    scoped_refptr<QueryHistoryState> state) {
+  if (!retry_backoff_) {
+    retry_policy_ = CreateWebHistoryRetryPolicy();
+    retry_backoff_ = std::make_unique<net::BackoffEntry>(&retry_policy_);
+  }
+  retry_backoff_->InformOfRequest(/*succeeded=*/false);
+  // Local history is already used up for this query, so this only re-queries
+  // Web History. Calls `QueryHistoryInternal()` (not `ContinueQuery()`) to keep
+  // the end times recorded at the start of the page.
+  retry_timer_.Start(
+      FROM_HERE, retry_backoff_->GetTimeUntilRelease(),
+      base::BindOnce(&BrowsingHistoryService::QueryHistoryInternal,
+                     weak_factory_.GetWeakPtr(), std::move(state)));
+}
+
+void BrowsingHistoryService::CancelWebHistoryRetry() {
+  retry_timer_.Stop();
+  if (retry_backoff_) {
+    retry_backoff_->Reset();
+  }
 }
 
 void BrowsingHistoryService::QueryHistoryInternal(
@@ -350,8 +433,11 @@ void BrowsingHistoryService::QueryHistoryInternal(
               trigger:
                 "Synced history is downloaded when user opens the history "
                 "page, searches on the history page, or scrolls down the "
-                "history page to see more results. This is only the case if "
-                "the user is signed in and history sync is enabled."
+                "history page to see more results. If a request fails or "
+                "times out, it is retried with exponential backoff (up to "
+                "every 4 hours) while the history page is open. This is only "
+                "the case if the user is signed in and history sync is "
+                "enabled."
               data:
                 "The history query text (or empty strings if all results are "
                 "to be fetched), the begin and end timestamps, and the maximum "
@@ -565,6 +651,7 @@ void BrowsingHistoryService::Shutdown() {
   delete_task_tracker_.TryCancelAll();
   web_history_request_.reset();
   web_history_timer_.reset();
+  CancelWebHistoryRetry();
   critical_actions_weak_factory_.InvalidateWeakPtrs();
 
   history_service_observation_.Reset();
@@ -941,6 +1028,17 @@ void BrowsingHistoryService::AssembleAndReturnResults(
     MergeDuplicateResults(state.get(), &results);
   }
 
+  // A page that made no progress would only make the driver ask for the same
+  // thing again. Hold it back and retry Web History with backoff. Checked
+  // after grouping/merging, since those move the end times.
+  if (ShouldRetryWebHistory(*state, results)) {
+    ScheduleWebHistoryRetry(std::move(state));
+    return;
+  }
+  if (retry_backoff_) {
+    retry_backoff_->Reset();
+  }
+
   RecordResultsMetrics(results, clock_->Now());
 
   // Recorded here so that it only covers the main history query, not the
@@ -1027,7 +1125,7 @@ void BrowsingHistoryService::ReturnResultsToDriver(
   info.sync_timed_out = state->remote_status == TIMED_OUT;
   info.queried_critical_actions = queried_critical_actions;
   base::OnceClosure continuation =
-      base::BindOnce(&BrowsingHistoryService::QueryHistoryInternal,
+      base::BindOnce(&BrowsingHistoryService::ContinueQuery,
                      weak_factory_.GetWeakPtr(), std::move(state));
   driver_->OnQueryComplete(results, info, std::move(continuation));
   driver_->HasOtherFormsOfBrowsingHistory(has_other_forms_of_browsing_history_,

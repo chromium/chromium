@@ -34,6 +34,7 @@
 #include "components/critical_actions/core/browser/features.h"
 #include "components/history/core/browser/browsing_history_driver.h"
 #include "components/history/core/browser/features.h"
+#include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/fake_web_history_service.h"
@@ -313,7 +314,13 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   // before Time::UnixEpoch() that cannot be represented. By adding 1 day we
   // ensure all test data is after Time::UnixEpoch().
   BrowsingHistoryServiceTest()
-      : baseline_time_(Time::UnixEpoch().LocalMidnight() + base::Days(1)) {
+      : BrowsingHistoryServiceTest(
+            base::test::TaskEnvironment::TimeSource::DEFAULT) {}
+
+  explicit BrowsingHistoryServiceTest(
+      base::test::TaskEnvironment::TimeSource time_source)
+      : baseline_time_(Time::UnixEpoch().LocalMidnight() + base::Days(1)),
+        task_environment_(time_source) {
     EXPECT_TRUE(history_dir_.CreateUniqueTempDir());
     local_history_ = CreateHistoryService(history_dir_.GetPath(), true);
     ResetService(driver(), local_history(), web_history(), sync(),
@@ -419,6 +426,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   TestBrowsingHistoryService* service() {
     return browsing_history_service_.get();
   }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  protected:
   // Duplicates on the same day in the local timezone are removed, so set a
@@ -911,7 +919,194 @@ TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailureEmpty) {
                                                   std::vector<TestResult>{}));
 }
 
-TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailurePagingRemote) {
+// Uses mock time, so that tests can fast-forward through Web History retry
+// delays.
+class BrowsingHistoryServiceRetryTest : public BrowsingHistoryServiceTest {
+ protected:
+  BrowsingHistoryServiceRetryTest()
+      : BrowsingHistoryServiceTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // Mock `base::Time::Now()` starts at the Unix epoch plus the system uptime,
+    // which can be less than `HistoryBackend::kExpireDaysThreshold` after
+    // `baseline_time_`. Web History is only queried for visits older than that
+    // threshold, so the test visits would never be returned. Move the clock
+    // past it, as tests with real time are.
+    const base::Time min_now =
+        baseline_time_ + base::Days(HistoryBackend::kExpireDaysThreshold + 1);
+    if (base::Time::Now() < min_now) {
+      task_environment().AdvanceClock(min_now - base::Time::Now());
+    }
+  }
+
+  // Runs the continuation and expects the service to hold the page back, i.e.
+  // not to send new results to the driver.
+  void ContinueQueryExpectingNoResult() {
+    size_t previous_results_count = driver()->GetQueryResults().size();
+    driver()->RunContinuation();
+    BlockUntilHistoryProcessesPendingRequests();
+    EXPECT_EQ(previous_results_count, driver()->GetQueryResults().size());
+  }
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment().FastForwardBy(delta);
+    BlockUntilHistoryProcessesPendingRequests();
+  }
+};
+
+// A continuation that makes no progress because Web History failed isn't
+// returned to the driver. The service retries it by itself instead.
+TEST_F(BrowsingHistoryServiceRetryTest, RetryOnRemoteFailurePagingRemote) {
+  AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
+  EXPECT_THAT(QueryHistory(2), MatchesQueryResult(baseline_time_,
+                                                  /*reached_beginning*/ false,
+                                                  std::vector<TestResult>{
+                                                      {kUrl3, 3, kRemote},
+                                                      {kUrl2, 2, kRemote},
+                                                  }));
+
+  web_history()->SetupFakeResponse(false, 0);
+  ContinueQueryExpectingNoResult();
+
+  web_history()->SetupFakeResponse(true, net::HTTP_OK);
+  FastForwardBy(base::Seconds(2));
+  ASSERT_EQ(2U, driver()->GetQueryResults().size());
+  EXPECT_THAT(driver()->GetQueryResults().back(),
+              MatchesQueryResult(baseline_time_,
+                                 /*reached_beginning*/ true,
+                                 std::vector<TestResult>{
+                                     {kUrl1, 1, kRemote},
+                                 }));
+}
+
+// Retry delays start at 2s and double each time, each shortened by up to 20%.
+TEST_F(BrowsingHistoryServiceRetryTest, RetryBacksOffWhileWebHistoryFails) {
+  AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
+  QueryHistory(2);
+  web_history()->SetupFakeResponse(false, 0);
+  ContinueQueryExpectingNoResult();
+
+  // The first retry runs within 1.6s-2s and fails again.
+  FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(1U, driver()->GetQueryResults().size());
+
+  // The second retry runs 3.2s-4s after the first one, i.e. between 4.8s and
+  // 6s after the failed continuation.
+  web_history()->SetupFakeResponse(true, net::HTTP_OK);
+  FastForwardBy(base::Milliseconds(2700));
+  EXPECT_EQ(1U, driver()->GetQueryResults().size());
+  FastForwardBy(base::Milliseconds(1300));
+  ASSERT_EQ(2U, driver()->GetQueryResults().size());
+  EXPECT_TRUE(driver()->GetQueryResults().back().second.reached_beginning);
+}
+
+// While Web History keeps failing, the service keeps retrying and never
+// reports the failure to the driver, in particular not as `reached_beginning`.
+TEST_F(BrowsingHistoryServiceRetryTest, RetryNeverEndsPagingOnFailure) {
+  AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
+  QueryHistory(2);
+  web_history()->SetupFakeResponse(false, 0);
+  ContinueQueryExpectingNoResult();
+
+  FastForwardBy(base::Hours(10));
+  EXPECT_EQ(1U, driver()->GetQueryResults().size());
+
+  // Once Web History recovers, the next retry (at most 4h later) succeeds.
+  web_history()->SetupFakeResponse(true, net::HTTP_OK);
+  FastForwardBy(base::Hours(4));
+  ASSERT_EQ(2U, driver()->GetQueryResults().size());
+  EXPECT_TRUE(driver()->GetQueryResults().back().second.reached_beginning);
+}
+
+// After a retry makes progress, the backoff starts over at the initial delay.
+TEST_F(BrowsingHistoryServiceRetryTest, RetryBackoffResetsAfterProgress) {
+  AddHistory({{kUrl1, 1, kRemote},
+              {kUrl2, 2, kRemote},
+              {kUrl3, 3, kRemote},
+              {kUrl4, 4, kRemote},
+              {kUrl5, 5, kRemote}});
+  QueryHistory(2);
+  web_history()->SetupFakeResponse(false, 0);
+  ContinueQueryExpectingNoResult();
+  // Two failed retries, so the next delay would be 6.4s-8s without a reset.
+  FastForwardBy(base::Seconds(6));
+  EXPECT_EQ(1U, driver()->GetQueryResults().size());
+
+  // The third retry returns the next page (`kUrl3`, `kUrl2`); `kUrl1` is left.
+  web_history()->SetupFakeResponse(true, net::HTTP_OK);
+  FastForwardBy(base::Seconds(8));
+  ASSERT_EQ(2U, driver()->GetQueryResults().size());
+  EXPECT_FALSE(driver()->GetQueryResults().back().second.reached_beginning);
+
+  // The next failed continuation is retried after the initial delay again.
+  web_history()->SetupFakeResponse(false, 0);
+  ContinueQueryExpectingNoResult();
+  web_history()->SetupFakeResponse(true, net::HTTP_OK);
+  FastForwardBy(base::Seconds(2));
+  ASSERT_EQ(3U, driver()->GetQueryResults().size());
+  EXPECT_TRUE(driver()->GetQueryResults().back().second.reached_beginning);
+}
+
+// A continuation whose Web History request times out without making progress
+// is also retried.
+TEST_F(BrowsingHistoryServiceRetryTest, RetryOnRemoteTimeout) {
+  TimeoutWebHistoryService timeout;
+  ResetService(driver(), local_history(), /*web_history=*/&timeout, sync(),
+               device_info_tracker(), /*critical_action_provider=*/nullptr);
+  AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
+
+  // First page: local results only.
+  QueryHistory(2);
+  // Second page: the last local result; Web History times out.
+  driver()->RunContinuation();
+  BlockUntilHistoryProcessesPendingRequests();
+  ASSERT_TRUE(timer()->IsRunning());
+  timer()->Fire();
+  ASSERT_EQ(2U, driver()->GetQueryResults().size());
+  EXPECT_TRUE(driver()->GetQueryResults().back().second.sync_timed_out);
+
+  // Third page: no local results left, and Web History times out again. No
+  // end time moves, so the page is held back.
+  driver()->RunContinuation();
+  BlockUntilHistoryProcessesPendingRequests();
+  ASSERT_TRUE(timer()->IsRunning());
+  timer()->Fire();
+  EXPECT_EQ(2U, driver()->GetQueryResults().size());
+
+  // Web History is queried again after the initial delay.
+  EXPECT_FALSE(timer()->IsRunning());
+  FastForwardBy(base::Seconds(2));
+  EXPECT_TRUE(timer()->IsRunning());
+  EXPECT_EQ(2U, driver()->GetQueryResults().size());
+
+  // `WebHistoryService` will DCHECK if we destroy it before the observer in
+  // `BrowsingHistoryService` is removed, so reset our `BrowsingHistoryService`
+  // before `timeout` goes out of scope.
+  ResetService(driver(), /*local_history=*/nullptr, /*web_history=*/nullptr,
+               /*sync_service=*/nullptr, device_info_tracker(),
+               /*critical_action_provider=*/nullptr);
+}
+
+// A new query cancels a pending retry of the previous query.
+TEST_F(BrowsingHistoryServiceRetryTest, NewQueryCancelsPendingRetry) {
+  AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
+  QueryHistory(2);
+  web_history()->SetupFakeResponse(false, 0);
+  ContinueQueryExpectingNoResult();
+
+  web_history()->SetupFakeResponse(true, net::HTTP_OK);
+  QueryHistory(2);
+  ASSERT_EQ(2U, driver()->GetQueryResults().size());
+
+  FastForwardBy(base::Hours(5));
+  EXPECT_EQ(2U, driver()->GetQueryResults().size());
+}
+
+// With the kill switch off, a failed continuation returns an empty, unfinished
+// page, and the consumer has to retry.
+TEST_F(BrowsingHistoryServiceTest,
+       RetryOnRemoteFailurePagingRemoteFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kBrowsingHistoryRetryWebHistory);
   AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
   EXPECT_THAT(QueryHistory(2), MatchesQueryResult(baseline_time_,
                                                   /*reached_beginning*/ false,

@@ -4,6 +4,7 @@
 
 #include "components/history/core/browser/features.h"
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/top_sites_constants.h"
 
@@ -159,5 +160,15 @@ BASE_FEATURE(kHistoryReportClusterDatabaseMetrics,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHistoryQueryBatchedLookups, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBrowsingHistoryRetryWebHistory, base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta>
+    kBrowsingHistoryRetryWebHistoryInitialDelay{
+        &kBrowsingHistoryRetryWebHistory, "initial_delay", base::Seconds(2)};
+
+const base::FeatureParam<base::TimeDelta>
+    kBrowsingHistoryRetryWebHistoryMaxDelay{&kBrowsingHistoryRetryWebHistory,
+                                            "max_delay", base::Hours(4)};
 
 }  // namespace history

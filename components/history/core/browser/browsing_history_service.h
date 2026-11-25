@@ -33,6 +33,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
@@ -283,6 +284,22 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // Core implementation of history querying.
   void QueryHistoryInternal(scoped_refptr<QueryHistoryState> state);
 
+  // Entry point for a continuation requested by the driver. Records the end
+  // times at the start of the page, so that a continuation that made no
+  // progress can be detected, then calls `QueryHistoryInternal()`.
+  void ContinueQuery(scoped_refptr<QueryHistoryState> state);
+
+  // Returns whether the page in `state` should be held back and Web History
+  // retried instead of returning `results` to the driver.
+  static bool ShouldRetryWebHistory(const QueryHistoryState& state,
+                                    const std::vector<HistoryEntry>& results);
+
+  // Schedules a retry of the Web History request for `state` with backoff.
+  void ScheduleWebHistoryRetry(scoped_refptr<QueryHistoryState> state);
+
+  // Cancels a pending Web History retry, if any, and resets the backoff.
+  void CancelWebHistoryRetry();
+
   // Callback from the history system when a history query has completed.
   void QueryComplete(scoped_refptr<QueryHistoryState> state,
                      QueryResults results);
@@ -375,6 +392,14 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
   // Timer used to implement a timeout on a Web History response.
   std::unique_ptr<base::OneShotTimer> web_history_timer_;
+
+  // Backoff policy and state for retrying failed Web History requests.
+  // Created on first use. `retry_policy_` must outlive `retry_backoff_`.
+  net::BackoffEntry::Policy retry_policy_;
+  std::unique_ptr<net::BackoffEntry> retry_backoff_;
+
+  // Runs the pending Web History retry, if any. Owns the bound query state.
+  base::OneShotTimer retry_timer_;
 
   // HistoryService (local history) observer.
   base::ScopedObservation<HistoryService, HistoryServiceObserver>

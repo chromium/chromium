@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace history {
@@ -106,6 +107,23 @@ BASE_DECLARE_FEATURE(kHistoryReportClusterDatabaseMetrics);
 // HistoryBackend::QueryHistoryBasic with a two-phase batched fetch strategy.
 COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kHistoryQueryBatchedLookups);
+
+// Enabled by default; this is a kill switch. When enabled,
+// `BrowsingHistoryService` retries a Web History request that failed or timed
+// out, with exponential backoff, instead of returning a page that made no
+// progress to the driver. The delays are set by the FeatureParams below.
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kBrowsingHistoryRetryWebHistory);
+
+// Delay before the first Web History retry. Doubles after each failed retry.
+COMPONENT_EXPORT(HISTORY_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kBrowsingHistoryRetryWebHistoryInitialDelay;
+
+// Upper bound for the Web History retry delay.
+COMPONENT_EXPORT(HISTORY_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kBrowsingHistoryRetryWebHistoryMaxDelay;
 
 }  // namespace history
 
