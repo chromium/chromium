@@ -1267,39 +1267,21 @@ StyleCascade::MakeFunctionContextFromMixinAndResolveSubstitutions(
     return &value;
   }
 
-  const CSSParserContext* context;
-  if (const auto* v = DynamicTo<CSSUnparsedDeclarationValue>(value)) {
-    context = GetParserContext(*v);
-  } else {
-    // The caller will never send us down this path unless we have
-    // either a CSSUnparsedDeclarationValue or a CSSPendingSubstitutionValue.
-    context = GetParserContext(
-        *To<cssvalue::CSSPendingSubstitutionValue>(value).ShorthandValue());
-  }
-
   HeapHashMap<String, Member<CSSVariableData>> function_arguments;
-  HeapHashMap<String, Member<CSSVariableData>> unresolved_defaults;
   HashMap<String, const CSSSyntaxDefinition*> local_types;
 
   const MixinParameterBindings* mixin_parameter_bindings =
       binding_chain[binding_index];
-  {
-    HeapAutoReset<const CSSPrivateBindings> argument_scope(
-        &current_css_private_bindings_,
-        mixin_parameter_bindings->GetArgumentPrivateScope());
-    for (const auto& binding : mixin_parameter_bindings->GetBindings()) {
-      local_types.insert(binding.key, &binding.value.syntax);
-      ResolveFunctionParameter(
-          binding.key, binding.value.value, binding.value.default_value,
-          binding.value.syntax, tree_scope, resolver, *context,
-          function_context, function_arguments, unresolved_defaults);
-    }
-
-    if (!ResolveUnresolvedFunctionDefaults(
-            unresolved_defaults, local_types, /*function=*/nullptr,
-            /*tree_scope=*/nullptr, function_context, resolver, context,
-            function_arguments)) {
-      return nullptr;
+  // Record only the parameter types. When the mixin uses a parameter,
+  // read its value from the private property on the element being styled.
+  const auto& bindings = mixin_parameter_bindings->GetBindings();
+  auto parameter_to_initialize = bindings.end();
+  for (auto it = bindings.begin(); it != bindings.end(); ++it) {
+    local_types.insert(it->key, &it->value.syntax);
+    if (value.IsMixinParameterValue() &&
+        To<CustomProperty>(property).GetPropertyNameAtomicString() ==
+            it->value.private_name) {
+      parameter_to_initialize = it;
     }
   }
 
@@ -1309,10 +1291,62 @@ StyleCascade::MakeFunctionContextFromMixinAndResolveSubstitutions(
       .unresolved_locals = {},
       .local_types = local_types,
       .parent = function_context,
+      .mixin_parameters = mixin_parameter_bindings,
   };
+  // The private name identifies this @apply's parameter even if an outer mixin
+  // declares one with the same name. Resolve the argument in the caller's
+  // scope or the default value in the mixin that declared the parameter.
+  if (parameter_to_initialize != bindings.end()) {
+    const auto& [name, binding] = *parameter_to_initialize;
+    CascadeResolver::AutoLock lock(property, resolver);
+    HeapAutoReset<const CSSPrivateBindings> argument_scope(
+        &current_css_private_bindings_,
+        mixin_parameter_bindings->GetArgumentPrivateScope());
+    ctx.initializing_parameter = &name;
+    HeapHashMap<String, Member<CSSVariableData>> unresolved_defaults;
+    ResolveFunctionParameter(
+        name, binding.value, binding.default_value, binding.syntax, tree_scope,
+        resolver, mixin_parameter_bindings->ArgumentContext(), function_context,
+        function_arguments, unresolved_defaults);
+    // @apply and @mixin can be in different stylesheets. Relative URLs use
+    // the stylesheet where the argument or default was written.
+    const CSSParserContext& context =
+        unresolved_defaults.empty()
+            ? mixin_parameter_bindings->ArgumentContext()
+            : mixin_parameter_bindings->DefaultValueContext();
+    if (!ResolveUnresolvedFunctionDefaults(
+            unresolved_defaults, local_types, /*function=*/nullptr,
+            /*tree_scope=*/nullptr, &ctx, resolver, &context,
+            function_arguments) ||
+        resolver.InCycle()) {
+      return CSSCyclicVariableValue::Create();
+    }
+    CSSVariableData* data = function_arguments.at(name);
+    if (!data) {
+      return CSSInvalidVariableValue::Create();
+    }
+    if (const CSSValue* keyword = ParseAsCSSWideKeyword(*data, context)) {
+      return keyword;
+    }
+    return MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
+  }
+
   return MakeFunctionContextFromMixinAndResolveSubstitutions(
       property, value, tree_scope, binding_chain, binding_index + 1, &ctx,
       resolver);
+}
+
+CSSVariableData* StyleCascade::LookupAndApplyMixinParameter(
+    const AtomicString& name,
+    CascadeResolver& resolver) {
+  CustomProperty property(&name, state_.GetDocument());
+  if (resolver.DetectCycle(property)) {
+    return nullptr;
+  }
+  LookupAndApply(property, resolver);
+  CSSVariableData* data =
+      resolver.InCycle() ? nullptr : GetVariableData(property);
+  return resolver.AllowSubstitution(data) ? data : nullptr;
 }
 
 const CSSValue* StyleCascade::ResolveSubstitutions(
@@ -1326,10 +1360,7 @@ const CSSValue* StyleCascade::ResolveSubstitutions(
     // Even though we are within a mixin, it's not given that we
     // actually need the mixin bindings to compute a value;
     // there's no need to use CPU cycles to set up the entire stack
-    // just to resolve “color: red”. Furthermore, without
-    // a CSSUnparsedDeclarationValue, we don't have a parser context
-    // to resolve all of these values against. So in these cases,
-    // we just ignore the entire mixin context.
+    // just to resolve “color: red”.
     if (const auto* v1 = DynamicTo<CSSUnparsedDeclarationValue>(value)) {
       if (!v1->VariableDataValue()->NeedsVariableResolution()) {
         mixin_parameter_bindings = nullptr;
@@ -1338,7 +1369,7 @@ const CSSValue* StyleCascade::ResolveSubstitutions(
                    DynamicTo<cssvalue::CSSPendingSubstitutionValue>(value)) {
       DCHECK(
           v2->ShorthandValue()->VariableDataValue()->NeedsVariableResolution());
-    } else {
+    } else if (!value.IsMixinParameterValue()) {
       mixin_parameter_bindings = nullptr;
     }
   }
@@ -1782,6 +1813,20 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
               FindOrNullopt(frame->arguments, var_name)) {
         return AppendDataWithFallback(argument.value(), stream, tree_scope,
                                       resolver, context, function_context, out);
+      }
+      if (frame->mixin_parameters &&
+          (!frame->initializing_parameter ||
+           var_name != *frame->initializing_parameter)) {
+        const auto& bindings = frame->mixin_parameters->GetBindings();
+        if (auto it = bindings.find(var_name); it != bindings.end()) {
+          CSSVariableData* data =
+              LookupAndApplyMixinParameter(it->value.private_name, resolver);
+          if (resolver.InCycle()) {
+            return false;
+          }
+          return AppendDataWithFallback(data, stream, tree_scope, resolver,
+                                        context, function_context, out);
+        }
       }
     }
   }
@@ -2264,9 +2309,16 @@ CSSVariableData* StyleCascade::ResolveLocalVariable(
     CascadeResolver& resolver,
     const CSSParserContext& context,
     FunctionContext& function_context) {
+  AtomicString cycle_name = name;
+  if (!function_context.function && function_context.parent &&
+      function_context.parent->initializing_parameter) {
+    cycle_name = function_context.parent->mixin_parameters->GetBindings()
+                     .at(name)
+                     .private_name;
+  }
   CascadeResolver::CycleNode cycle_node = {
       .type = CascadeResolver::CycleNode::Type::kLocalVariable,
-      .name = name,
+      .name = cycle_name,
       .function = function_context.function};
   if (resolver.DetectCycle(cycle_node)) {
     return nullptr;

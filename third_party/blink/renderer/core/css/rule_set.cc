@@ -39,10 +39,12 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
+#include "third_party/blink/renderer/core/css/css_mixin_parameter_value.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_private_bindings.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/mixin_map.h"
 #include "third_party/blink/renderer/core/css/navigation_query.h"
@@ -1047,6 +1049,14 @@ const CSSPrivateBindings* RuleSet::PrivateScopeForMixinRules(
 
 namespace {
 
+// Private declarations cascade alongside the enclosing rule's declarations.
+StyleRule* CreatePrivateStyleRule(const StyleRule& parent,
+                                  CSSPropertyValueSet* properties,
+                                  const MixinParameterBindings* bindings) {
+  auto selectors = CSSSelectorList::Copy(parent.FirstSelector());
+  return StyleRule::Create(selectors, properties, bindings);
+}
+
 CSSPropertyValueSet* RenamePrivateDeclarations(
     const CSSPropertyValueSet& declarations,
     const PrivateNameMap& mixin_to_local_hygienic_names) {
@@ -1114,12 +1124,8 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
             parameter_bindings = applying_mixin->mixin_parameter_bindings;
           }
           if (declarations_properties) {
-            // Add the @private declarations as a rule with the parent's
-            // selectors, so they cascade with the parent's other declarations.
-            auto selectors =
-                CSSSelectorList::Copy(parent_rule->FirstSelector());
-            StyleRule* declarations = StyleRule::Create(
-                selectors, declarations_properties, parameter_bindings);
+            StyleRule* declarations = CreatePrivateStyleRule(
+                *parent_rule, declarations_properties, parameter_bindings);
             AddStyleRule(declarations, parent_rule, medium, mixins,
                          add_rule_flags, apply_mixins_stack, container_queries,
                          cascade_layer, style_scope);
@@ -1319,6 +1325,7 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
     }
 
     HeapHashMap<String, MixinParameterBindings::Binding> bindings;
+    HeapVector<CSSPropertyValue> parameter_properties;
     for (unsigned i = 0; i < mixin_rule->GetParameters().size(); ++i) {
       const StyleRuleFunction::Parameter& parameter =
           mixin_rule->GetParameters()[i];
@@ -1331,16 +1338,19 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
       if (i < apply_mixin_rule->GetArguments().size()) {
         argument_data = apply_mixin_rule->GetArguments()[i];
       }
-      if (!argument_data && !parameter.default_value) {
-        // No parameter given, and no default. This isn't spec-ed yet;
-        // see https://github.com/w3c/csswg-drafts/issues/12796.
-        // For now, we just don't add a binding (effectively option 2).
-        continue;
-      }
-      bindings.insert(
-          parameter.name,
-          MixinParameterBindings::Binding{
-              argument_data, parameter.default_value, parameter.type});
+      // The binding pairs the argument from @apply with the parameter's type
+      // and default value from @mixin. All parameters share the same value
+      // placeholder, so the cascade uses the private property's name to find
+      // the binding. Descendants inherit the value computed on the element
+      // where the mixin is applied.
+      AtomicString private_name =
+          PropertyRegistry::AllocatePrivatePropertyName();
+      bindings.insert(parameter.name,
+                      MixinParameterBindings::Binding{
+                          private_name, argument_data, parameter.default_value,
+                          parameter.type});
+      parameter_properties.emplace_back(CSSPropertyName(private_name),
+                                        *CSSMixinParameterValue::Create());
     }
 
     MixinParameterBindings* mixin_parameter_bindings =
@@ -1349,7 +1359,19 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
             apply_mixins_stack.empty()
                 ? nullptr
                 : apply_mixins_stack.back().mixin_parameter_bindings,
-            private_scope_);
+            private_scope_, apply_mixin_rule->ParserContext(),
+            mixin_rule->ParserContext());
+
+    if (!parameter_properties.empty()) {
+      StyleRule* parameter_rule = CreatePrivateStyleRule(
+          *parent_rule,
+          ImmutableCSSPropertyValueSet::Create(
+              parameter_properties, parent_rule->Properties().CssParserMode()),
+          mixin_parameter_bindings);
+      AddStyleRule(parameter_rule, parent_rule, medium, mixins, add_rule_flags,
+                   apply_mixins_stack, container_queries, cascade_layer,
+                   style_scope);
+    }
 
     const CSSPrivateBindings* outer_private_scope = private_scope_;
 

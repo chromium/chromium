@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/css/css_layout_function_value.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_mixin_parameter_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/core/css/css_palette_mix_value.h"
@@ -409,6 +410,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<cssvalue::CSSRelativeColorValue>(*this, other);
       case kRepeatClass:
         return CompareCSSValues<cssvalue::CSSRepeatValue>(*this, other);
+      case kMixinParameterValueClass:
+        return CompareCSSValues<CSSMixinParameterValue>(*this, other);
     }
     NOTREACHED();
   }
@@ -594,6 +597,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSRepeatValue>(this)->CustomCSSText();
     case kTriggerAttachmentClass:
       return To<cssvalue::CSSTriggerAttachmentValue>(this)->CustomCSSText();
+    case kMixinParameterValueClass:
+      return To<CSSMixinParameterValue>(this)->CustomCSSText();
   }
   NOTREACHED();
 }
@@ -643,6 +648,7 @@ uint32_t CSSValue::Hash() const {
     case kRevertClass:
     case kRevertLayerClass:
     case kRevertRuleClass:
+    case kMixinParameterValueClass:
       return HashInt(GetClassType());
     case kMathFunctionClass:
     case kScopedKeywordClass:
@@ -1024,6 +1030,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       To<cssvalue::CSSTriggerAttachmentValue>(this)->TraceAfterDispatch(
           visitor);
       return;
+    case kMixinParameterValueClass:
+      To<CSSMixinParameterValue>(this)->TraceAfterDispatch(visitor);
+      return;
   }
   NOTREACHED();
 }
@@ -1207,6 +1216,8 @@ String CSSValue::ClassTypeToString() const {
       return "kRepeatStyleClass";
     case kTriggerAttachmentClass:
       return "kTriggerAttachmentClass";
+    case kMixinParameterValueClass:
+      return "MixinParameterValueClass";
   }
   NOTREACHED();
 }
@@ -1390,6 +1401,7 @@ bool CSSValue::HasRandomFunctions() const {
     case kCyclicVariableValueClass:
     case kFlipRevertClass:
     case kKeyframeShorthandClass:
+    case kMixinParameterValueClass:
     case kInitialColorValueClass:
     case kImageSetTypeClass:
     case kGridAutoRepeatClass:

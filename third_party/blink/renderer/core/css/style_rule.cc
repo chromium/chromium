@@ -1194,11 +1194,13 @@ void StyleRuleFunction::TraceAfterDispatch(blink::Visitor* visitor) const {
 
 StyleRuleMixin::StyleRuleMixin(
     AtomicString name,
+    const CSSParserContext* parser_context,
     HeapVector<StyleRuleFunction::Parameter> parameters,
     PrivateNameMap authored_private_names,
     HeapVector<Member<StyleRuleBase>> child_rules)
     : StyleRuleGroup(kMixin, child_rules),
       name_(std::move(name)),
+      parser_context_(parser_context),
       parameters_(std::move(parameters)),
       authored_private_names_(std::move(authored_private_names)) {}
 
@@ -1206,11 +1208,13 @@ StyleRuleMixin::StyleRuleMixin(const StyleRuleMixin& other,
                                HeapVector<Member<StyleRuleBase>> child_rules)
     : StyleRuleGroup(kMixin, child_rules),
       name_(other.name_),
+      parser_context_(other.parser_context_),
       parameters_(other.parameters_),
       authored_private_names_(other.authored_private_names_) {}
 
 void StyleRuleMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
+  visitor->Trace(parser_context_);
   visitor->Trace(parameters_);
 }
 
@@ -1219,11 +1223,13 @@ StyleRuleApplyMixin::StyleRuleApplyMixin(
     HeapVector<Member<StyleRuleBase>> child_rules)
     : StyleRuleGroup(kApplyMixin, child_rules),
       name_(other.name_),
+      parser_context_(other.parser_context_),
       arguments_(other.arguments_),
       has_contents_block_(other.has_contents_block_) {}
 
 void StyleRuleApplyMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
+  visitor->Trace(parser_context_);
   visitor->Trace(arguments_);
 }
 
@@ -1259,6 +1265,15 @@ void MixinParameterBindings::Trace(Visitor* visitor) const {
   visitor->Trace(parent_mixin_);
   visitor->Trace(bindings_);
   visitor->Trace(argument_private_scope_);
+  visitor->Trace(argument_context_);
+  visitor->Trace(default_value_context_);
+}
+
+uint32_t MixinParameterBindings::Binding::GetHash(uint32_t hash,
+                                                  const String& key) const {
+  hash = HashInts(
+      hash, HashInts(key.Impl()->GetHash(), value ? value->Hash() : 5678));
+  return HashInts(hash, private_name.Impl()->GetHash());
 }
 
 uint32_t MixinParameterBindings::ComputeHash() const {
@@ -1266,9 +1281,8 @@ uint32_t MixinParameterBindings::ComputeHash() const {
   hash = HashInts(hash, argument_private_scope_
                             ? HashPointer(argument_private_scope_.Get())
                             : 0);
-  for (const auto& [key, value] : bindings_) {
-    hash = HashInts(hash, HashInts(key.Impl()->GetHash(),
-                                   value.value ? value.value->Hash() : 5678));
+  for (const auto& [key, binding] : bindings_) {
+    hash = binding.GetHash(hash, key);
   }
   return hash;
 }

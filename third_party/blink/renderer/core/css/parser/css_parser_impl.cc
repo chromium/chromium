@@ -2586,7 +2586,7 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
     style_sheet_->SetHasMixinRules();
   }
   return MakeGarbageCollected<StyleRuleMixin>(
-      name, std::move(*parameters), std::move(authored_private_names),
+      name, context_, std::move(*parameters), std::move(authored_private_names),
       HeapVector{std::move(*fake_parent_rule->ChildRules())});
 }
 
@@ -2807,7 +2807,7 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
       observer_->StartRuleBody(stream.Offset());
       observer_->EndRuleBody(stream.Offset());
     }
-    return MakeGarbageCollected<StyleRuleApplyMixin>(name,
+    return MakeGarbageCollected<StyleRuleApplyMixin>(name, context_,
                                                      std::move(arguments));
   }
 
@@ -2820,7 +2820,7 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
   StyleRule* fake_parent_rule = ConsumeDeclarationListForMixins(stream);
   fake_parent_rule->EnsureChildRules();
   return MakeGarbageCollected<StyleRuleApplyMixin>(
-      name, std::move(arguments),
+      name, context_, std::move(arguments),
       HeapVector{std::move(*fake_parent_rule->ChildRules())});
 }
 

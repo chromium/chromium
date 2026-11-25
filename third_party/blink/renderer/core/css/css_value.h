@@ -224,6 +224,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsCyclicVariableValue() const {
     return class_type_ == kCyclicVariableValueClass;
   }
+  bool IsMixinParameterValue() const {
+    return class_type_ == kMixinParameterValueClass;
+  }
   bool IsFlipRevertValue() const { return class_type_ == kFlipRevertClass; }
   bool IsAlternateValue() const { return class_type_ == kAlternateClass; }
   bool IsAxisValue() const { return class_type_ == kAxisClass; }
@@ -384,6 +387,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kPendingSystemFontValueClass,
     kInvalidVariableValueClass,
     kCyclicVariableValueClass,
+    kMixinParameterValueClass,
     kFlipRevertClass,
     kLayoutFunctionClass,
 

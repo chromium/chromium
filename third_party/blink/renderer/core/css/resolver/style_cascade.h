@@ -430,6 +430,9 @@ class CORE_EXPORT StyleCascade {
       FunctionContext* function_context,
       CascadeResolver& resolver);
 
+  CSSVariableData* LookupAndApplyMixinParameter(const AtomicString&,
+                                                CascadeResolver&);
+
   const CSSValue* ResolveSubstitutions(const CSSProperty&,
                                        const CSSValue&,
                                        const TreeScope*,
@@ -544,6 +547,10 @@ class CORE_EXPORT StyleCascade {
 
     // Parent stack frame (for dynamic scoping).
     FunctionContext* parent = nullptr;
+
+    // Mixin frames read inherited parameter properties on demand.
+    const MixinParameterBindings* mixin_parameters = nullptr;
+    const String* initializing_parameter = nullptr;
 
     // CSS random() might differ between custom functions invocations, we
     // use this counter to keep track of different invocations.

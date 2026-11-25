@@ -1,0 +1,4 @@
+@mixin --url-default(--image <url>: url(../../../support/1x1-green.png)) {
+  background-image: var(--image);
+}
+#url-argument { @apply --url-argument(url(../../../support/1x1-green.png)); }

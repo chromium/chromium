@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Mixins: the result is not scoped to the applying element</title>
+  <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/13727">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <style>
+    @mixin --sibling() {
+        & + .next {
+          color: green;
+        }
+        & ~ .later {
+          background-color: green;
+      }
+    }
+
+    @mixin --ancestor() {
+        .ancestor:has(&) {
+          color: green;
+        }
+        .previous:has(+ &) {
+          background-color: green;
+      }
+    }
+
+    @mixin --nested() {
+        & > .child {
+          & + .child-next {
+            color: green;
+        }
+      }
+    }
+
+    @mixin --parent-selector() {
+        .wrapper > & {
+          color: green;
+      }
+    }
+
+    #sibling-host {
+      @apply --sibling;
+    }
+
+    #ancestor-host {
+      @apply --ancestor;
+    }
+
+    #previous-host {
+      @apply --ancestor;
+    }
+
+    #nested-host {
+      @apply --nested;
+    }
+
+    #parent-selector-host, #parent-selector-no-wrapper {
+      @apply --parent-selector;
+    }
+
+    @mixin --parameter(--value: red, --index: 3) {
+      color: var(--value);
+      & > .parameter-child { color: var(--value); }
+      & + .parameter-sibling {
+        background-color: green;
+        color: var(--value, green);
+        z-index: var(--index);
+      }
+      .parameter-ancestor:has(&) {
+        background-color: var(--value, green);
+      }
+    }
+    #parameter-host { @apply --parameter(red); }
+    #default-host { @apply --parameter; }
+    .parameter-sibling { --value: red; }
+
+    @mixin --movable(--value: green) {
+      :is(:root, &) .movable { color: var(--value, blue); }
+    }
+    #move-host { @apply --movable; }
+
+    @mixin --repeat(--value) {
+      & > .repeat-child { color: var(--value, green); }
+      & + .repeat-sibling { color: var(--value, green); }
+    }
+    #repeat-host { @apply --repeat(green); }
+    #repeat-child { @apply --repeat(red); }
+
+    @mixin --wrapper {
+      @apply --parameter;
+    }
+    #wrapper-host { @apply --wrapper; }
+
+    @mixin --scope {
+      :scope:has(&) { background-color: green; }
+      & + .scope-sibling { color: green; }
+    }
+    #scope-host { @apply --scope; }
+    @scope (#explicit-scope) {
+      #explicit-host { @apply --scope; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sibling-host"></div>
+  <div id="next" class="next"></div>
+  <div id="skipped"></div>
+  <div id="later" class="later"></div>
+  <div id="no-sibling" class="next"></div>
+
+  <div id="ancestor" class="ancestor">
+    <div id="ancestor-host"></div>
+  </div>
+  <div id="other-ancestor" class="ancestor"></div>
+
+  <div id="previous" class="previous"></div>
+  <div id="previous-host"></div>
+
+  <div id="nested-host">
+    <div class="child"></div>
+    <div id="child-next" class="child-next"></div>
+  </div>
+
+  <div class="wrapper"><div id="parent-selector-host"></div></div>
+  <div id="no-wrapper"><div id="parent-selector-no-wrapper"></div></div>
+  <div id="parameter-ancestor" class="parameter-ancestor">
+    <div id="parameter-host">
+      <div id="parameter-child" class="parameter-child"></div>
+    </div>
+    <div id="parameter-sibling" class="parameter-sibling"></div>
+  </div>
+  <div id="default-host"></div>
+  <div id="default-sibling" class="parameter-sibling"></div>
+  <div id="move-host"><div id="movable" class="movable"></div></div>
+  <div id="repeat-host">
+    <div id="repeat-child" class="repeat-child"></div>
+    <div id="repeat-sibling" class="repeat-sibling"></div>
+  </div>
+  <div id="wrapper-host"></div>
+  <div id="wrapper-sibling" class="parameter-sibling"></div>
+  <div id="scope-host"></div>
+  <div id="explicit-scope" class="scope-sibling">
+    <div id="explicit-host"></div>
+    <div id="explicit-sibling" class="scope-sibling"></div>
+  </div>
+  <div id="outside-scope" class="scope-sibling"></div>
+  <script>
+    function style(id) {
+      return getComputedStyle(document.getElementById(id));
+    }
+
+    const green = 'rgb(0, 128, 0)';
+    const transparent = 'rgba(0, 0, 0, 0)';
+
+    test(() => {
+      assert_equals(style('next').color, green);
+    }, 'The result can style a following sibling of the applying element');
+
+    test(() => {
+      assert_equals(style('later').backgroundColor, green);
+      assert_equals(style('skipped').backgroundColor, transparent);
+    }, 'The result can style a general following sibling');
+
+    test(() => {
+      assert_not_equals(style('no-sibling').color, green);
+    }, 'A sibling selector in the result does not match unrelated elements');
+
+    test(() => {
+      assert_equals(style('ancestor').color, green);
+      assert_not_equals(style('other-ancestor').color, green);
+    }, 'The result can style an ancestor of the applying element with :has()');
+
+    test(() => {
+      assert_equals(style('previous').backgroundColor, green);
+    }, 'The result can style a preceding sibling of the applying element ' +
+       'with :has()');
+
+    test(() => {
+      assert_equals(style('child-next').color, green);
+    }, 'A nested rule in the result can style a sibling of a descendant');
+
+    test(() => {
+      assert_equals(style('parent-selector-host').color, green);
+      assert_not_equals(style('parent-selector-no-wrapper').color, green);
+    }, 'The result can use & after a combinator to match context outside ' +
+       'the applying element');
+
+    test(() => {
+      assert_equals(style('parameter-host').color, 'rgb(255, 0, 0)');
+      assert_equals(style('parameter-child').color, 'rgb(255, 0, 0)');
+      assert_equals(style('parameter-sibling').color, green);
+      assert_equals(style('parameter-ancestor').backgroundColor, green);
+      assert_equals(style('parameter-sibling').backgroundColor, green);
+      assert_equals(style('parameter-sibling').zIndex, 'auto');
+    }, 'Out-of-subtree parameters are invalid without suppressing literal styles');
+
+    test(() => {
+      assert_equals(style('default-sibling').color, green);
+      assert_equals(style('wrapper-sibling').color, green);
+    }, 'Defaulted and nested mixin parameters are invalid outside the subtree');
+
+    test(() => {
+      assert_equals(style('repeat-child').color, green);
+      assert_equals(style('repeat-sibling').color, green);
+    }, 'Parameters are isolated per application');
+
+    test(t => {
+      const movable = document.getElementById('movable');
+      const host = document.getElementById('move-host');
+      t.add_cleanup(() => {
+        host.append(movable);
+      });
+      assert_equals(style('movable').color, green);
+      document.body.append(movable);
+      assert_equals(style('movable').color, 'rgb(0, 0, 255)');
+      host.append(movable);
+      assert_equals(style('movable').color, green);
+    }, 'Parameter visibility updates when an element moves across the subtree');
+
+    test(() => {
+      assert_equals(getComputedStyle(document.documentElement).backgroundColor,
+                    green);
+      assert_equals(style('scope-host').backgroundColor, transparent);
+      assert_equals(style('explicit-scope').backgroundColor, green);
+      assert_equals(style('explicit-host').backgroundColor, transparent);
+      assert_equals(style('explicit-sibling').color, green);
+      assert_not_equals(style('outside-scope').color, green);
+    }, 'Mixins do not introduce implicit scope and respect explicit scope');
+  </script>
+</body>
+</html>

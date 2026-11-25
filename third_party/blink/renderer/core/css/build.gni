@@ -232,6 +232,8 @@ blink_core_sources_css = [
   "css_math_operator.h",
   "css_media_rule.cc",
   "css_media_rule.h",
+  "css_mixin_parameter_value.cc",
+  "css_mixin_parameter_value.h",
   "css_mixin_rule.cc",
   "css_mixin_rule.h",
   "css_namespace_rule.cc",

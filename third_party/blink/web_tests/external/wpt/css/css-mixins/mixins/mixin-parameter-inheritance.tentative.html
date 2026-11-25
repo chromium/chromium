@@ -1,0 +1,252 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Mixin parameters are inherited private properties</title>
+<link rel="help" href="https://drafts.csswg.org/css-mixins-1/#mixin-args">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/12927">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/13727">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="stylesheet" href="support/mixin-parameter-urls.css">
+
+<style>
+  @mixin --typed-size(--size <length>) {
+    &, & > .child { width: var(--size); }
+  }
+  #typed-host { font-size: 10px; @apply --typed-size(2em); }
+  #typed-child { font-size: 30px; }
+</style>
+<div id="typed-host"><div id="typed-child" class="child"></div></div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('typed-host')).width, '20px');
+  assert_equals(getComputedStyle(document.getElementById('typed-child')).width, '20px');
+}, 'Typed lengths use the font size where the mixin is applied');
+</script>
+
+<style>
+  @mixin --untyped-size(--size) {
+    &, & > .child { width: var(--size); }
+  }
+  #untyped-host { font-size: 10px; @apply --untyped-size(2em); }
+  #untyped-child { font-size: 30px; }
+</style>
+<div id="untyped-host"><div id="untyped-child" class="child"></div></div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('untyped-host')).width, '20px');
+  assert_equals(getComputedStyle(document.getElementById('untyped-child')).width, '60px');
+}, 'Untyped lengths use the font size of each element');
+</script>
+
+<style>
+  @mixin --variable-size(--size) {
+    & > .child { width: var(--size); }
+  }
+  #variable-host { --input: 17px; @apply --variable-size(var(--input)); }
+  #variable-child { --input: 31px; }
+</style>
+<div id="variable-host"><div id="variable-child" class="child"></div></div>
+<script>
+test(() => {
+  const host = document.getElementById('variable-host');
+  const child = document.getElementById('variable-child');
+  assert_equals(getComputedStyle(child).width, '17px');
+  host.style.setProperty('--input', '29px');
+  assert_equals(getComputedStyle(child).width, '29px');
+  assert_equals(getComputedStyle(child).getPropertyValue('--size'), '');
+  assert_false(Array.from(getComputedStyle(child)).some(
+      name => name.startsWith('-ua-private-')));
+}, 'var() arguments use the applying element and update descendants without exposing parameters');
+</script>
+
+<style>
+  @mixin --attribute-size(--size) {
+    & > .child { width: var(--size); }
+  }
+  #attribute-host { @apply --attribute-size(attr(data-size type(<length>))); }
+</style>
+<div id="attribute-host" data-size="17px">
+  <div id="attribute-child" class="child" data-size="31px"></div>
+</div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('attribute-child')).width, '17px');
+}, 'attr() arguments use the attribute where the mixin is applied');
+</script>
+
+<style>
+  @mixin --dependent-defaults(--first <length>: 2em, --second: var(--first)) {
+    & > .child { width: var(--second); }
+  }
+  #defaults-host { font-size: 10px; @apply --dependent-defaults; }
+  #defaults-child { font-size: 30px; }
+</style>
+<div id="defaults-host"><div id="defaults-child" class="child"></div></div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('defaults-child')).width, '20px');
+}, 'Defaults use other parameter values from the applying element');
+</script>
+
+<style>
+  @mixin --invalid-size(--size <length>: 19px) {
+    & > .child { width: var(--size); }
+    & + .sibling { width: var(--size, 23px); }
+  }
+  #invalid-host { @apply --invalid-size(red); }
+</style>
+<div id="invalid-host"><div id="invalid-child" class="child"></div></div>
+<div id="invalid-sibling" class="sibling"></div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('invalid-child')).width, '19px');
+  assert_equals(getComputedStyle(document.getElementById('invalid-sibling')).width, '23px');
+}, 'Invalid arguments use the default, but siblings use the var() fallback');
+</script>
+
+<style>
+  @mixin --forward-inner(--size) {
+    & > .child { width: var(--size); }
+  }
+  @mixin --forward-outer(--size <length>) {
+    @apply --forward-inner(var(--size));
+  }
+  #forward-host { font-size: 10px; @apply --forward-outer(2em); }
+  #forward-child { font-size: 30px; }
+</style>
+<div id="forward-host"><div id="forward-child" class="child"></div></div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('forward-child')).width, '20px');
+}, 'Nested mixins keep the outer parameter value');
+</script>
+
+<style>
+  @mixin --missing-size(--size) { width: var(--size, 23px); }
+  #missing-host { --size: 17px; @apply --missing-size; }
+</style>
+<div id="missing-host"></div>
+<script>
+test(() => {
+  const host = document.getElementById('missing-host');
+  assert_equals(getComputedStyle(host).width, '23px');
+  assert_equals(getComputedStyle(host).getPropertyValue('--size'), '17px');
+}, 'Missing arguments do not use public properties with the same name');
+</script>
+
+<style>
+  @mixin --cyclic-defaults(--first: var(--second), --second: var(--first)) {
+    & > .child { width: var(--first, 23px); }
+  }
+  #cycle-host { --first: 17px; @apply --cyclic-defaults; }
+</style>
+<div id="cycle-host"><div id="cycle-child" class="child"></div></div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('cycle-child')).width, '23px');
+}, 'Defaults that refer to each other use the var() fallback');
+</script>
+
+<style>
+  @mixin --inherit-default(--size: inherit) {
+    & > .child { width: var(--size); }
+  }
+  #inherit-host { --size: 17px; @apply --inherit-default; }
+  #inherit-child { --size: 31px; }
+</style>
+<div id="inherit-host"><div id="inherit-child" class="child"></div></div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('inherit-child')).width, '17px');
+}, 'An inherit default uses the value where the mixin is applied');
+</script>
+
+<style>
+  @mixin --same-name-inner(--size: inherit) { font-size: var(--size); }
+  @mixin --same-name-outer(--size: 17px) { @apply --same-name-inner; }
+  #same-name-host { @apply --same-name-outer; }
+</style>
+<div id="same-name-host"></div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('same-name-host')).fontSize, '17px');
+}, 'Nested mixins can use inherit with the same parameter name');
+</script>
+
+<style>
+  @mixin --evaluation-order(--size <length>, --font) {
+    font-size: var(--font);
+    width: var(--size);
+  }
+  #evaluation-host { @apply --evaluation-order(2em, 10px); }
+</style>
+<div id="evaluation-host"></div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('evaluation-host')).width, '20px');
+}, 'A font-size parameter is applied before another parameter uses em');
+</script>
+
+<style>
+  @mixin --escaped-name(--size\)) {
+    & > .child { width: var(--size\)); }
+  }
+  #escaped-host { @apply --escaped-name(17px); }
+</style>
+<div id="escaped-host"><div id="escaped-child" class="child"></div></div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('escaped-child')).width, '17px');
+}, 'Parameters with escaped names work on descendants');
+</script>
+
+<style>
+  @keyframes set-duration {
+    from, to { --duration: 7s; }
+  }
+  @mixin --duration(--time) {
+    & > div {
+      --observed: var(--time);
+      animation-duration: var(--time, 3s);
+    }
+  }
+  #duration-host {
+    animation: set-duration 1s paused both;
+    @apply --duration(var(--duration));
+  }
+</style>
+<div id="duration-host"><div id="duration-child"></div></div>
+<script>
+test(() => {
+  const style = getComputedStyle(document.getElementById('duration-child'));
+  assert_equals(style.getPropertyValue('--observed').trim(), '7s');
+  assert_equals(style.animationDuration, '3s');
+}, 'An inherited animation-tainted parameter is invalid in animation properties');
+</script>
+
+<style>
+  @mixin --url-argument(--image <url>) { background-image: var(--image); }
+  #url-default { @apply --url-default(not-a-url); }
+</style>
+<div id="url-argument"></div>
+<div id="url-default"></div>
+<script>
+for (const id of ['url-argument', 'url-default']) {
+  test(() => {
+    const url = new URL('../../support/1x1-green.png', document.baseURI);
+    assert_equals(getComputedStyle(document.getElementById(id)).backgroundImage,
+                  `url("${url}")`);
+  }, `Typed ${id} resolves relative to the stylesheet where it was written`);
+}
+</script>
+
+<style>
+  @mixin --wide-keyword(--size) { width: var(--size, 23px); }
+  #keyword-host { @apply --wide-keyword(var(--missing, initial)); }
+</style>
+<div id="keyword-host"></div>
+<script>
+test(() => {
+  assert_equals(getComputedStyle(document.getElementById('keyword-host')).width, '23px');
+}, 'A substituted initial keyword makes the parameter guaranteed-invalid');
+</script>

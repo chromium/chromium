@@ -55,6 +55,7 @@ CSSValuePool::CSSValuePool()
           MakeGarbageCollected<CSSCyclicVariableValue>(PassKey())),
       initial_color_value_(
           MakeGarbageCollected<CSSInitialColorValue>(PassKey())),
+      mixin_parameter_value_(MakeGarbageCollected<CSSMixinParameterValue>()),
       color_transparent_(
           MakeGarbageCollected<cssvalue::CSSColor>(Color::kTransparent)),
       color_white_(MakeGarbageCollected<cssvalue::CSSColor>(Color::kWhite)),
@@ -75,6 +76,7 @@ void CSSValuePool::Trace(Visitor* visitor) const {
   visitor->Trace(invalid_variable_value_);
   visitor->Trace(cyclic_variable_value_);
   visitor->Trace(initial_color_value_);
+  visitor->Trace(mixin_parameter_value_);
   visitor->Trace(color_transparent_);
   visitor->Trace(color_white_);
   visitor->Trace(color_black_);

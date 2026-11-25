@@ -701,6 +701,7 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleGroup {
 class CORE_EXPORT StyleRuleMixin : public StyleRuleGroup {
  public:
   StyleRuleMixin(AtomicString name,
+                 const CSSParserContext* parser_context,
                  HeapVector<StyleRuleFunction::Parameter> parameters,
                  PrivateNameMap authored_private_names,
                  HeapVector<Member<StyleRuleBase>> child_rules);
@@ -708,6 +709,9 @@ class CORE_EXPORT StyleRuleMixin : public StyleRuleGroup {
   StyleRuleMixin(const StyleRuleMixin&,
                  HeapVector<Member<StyleRuleBase>> child_rules);
 
+  const CSSParserContext* ParserContext() const {
+    return parser_context_.Get();
+  }
   const AtomicString& GetName() const { return name_; }
   const HeapVector<StyleRuleFunction::Parameter>& GetParameters() const {
     return parameters_;
@@ -722,6 +726,7 @@ class CORE_EXPORT StyleRuleMixin : public StyleRuleGroup {
 
  private:
   AtomicString name_;
+  Member<const CSSParserContext> parser_context_;
   HeapVector<StyleRuleFunction::Parameter> parameters_;
   PrivateNameMap authored_private_names_;
 };
@@ -732,24 +737,31 @@ class CORE_EXPORT StyleRuleApplyMixin : public StyleRuleGroup {
  public:
   // @apply with a declaration block (possibly empty).
   StyleRuleApplyMixin(AtomicString name,
+                      const CSSParserContext* parser_context,
                       HeapVector<Member<CSSVariableData>> arguments,
                       HeapVector<Member<StyleRuleBase>> child_rules)
       : StyleRuleGroup(kApplyMixin, std::move(child_rules)),
         name_(std::move(name)),
+        parser_context_(parser_context),
         arguments_(std::move(arguments)),
         has_contents_block_(true) {}
 
   // @apply without a declaration block.
   StyleRuleApplyMixin(AtomicString name,
+                      const CSSParserContext* parser_context,
                       HeapVector<Member<CSSVariableData>> arguments)
       : StyleRuleGroup(kApplyMixin, HeapVector<Member<StyleRuleBase>>{}),
         name_(std::move(name)),
+        parser_context_(parser_context),
         arguments_(std::move(arguments)),
         has_contents_block_(false) {}
   StyleRuleApplyMixin(const StyleRuleApplyMixin&) = delete;
   StyleRuleApplyMixin(const StyleRuleApplyMixin&,
                       HeapVector<Member<StyleRuleBase>> child_rules);
 
+  const CSSParserContext* ParserContext() const {
+    return parser_context_.Get();
+  }
   const AtomicString& GetName() const { return name_; }
   const HeapVector<Member<CSSVariableData>>& GetArguments() const {
     return arguments_;
@@ -765,6 +777,7 @@ class CORE_EXPORT StyleRuleApplyMixin : public StyleRuleGroup {
 
  private:
   AtomicString name_;
+  Member<const CSSParserContext> parser_context_;
   HeapVector<Member<CSSVariableData>> arguments_;
   bool has_contents_block_;
 };

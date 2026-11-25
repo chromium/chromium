@@ -10,9 +10,11 @@
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
+class CSSParserContext;
 class CSSPrivateBindings;
 
 // A set of custom mixin bindings at some given point in the stylesheet,
@@ -29,15 +31,19 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
   struct Binding {
     DISALLOW_NEW();
 
+    AtomicString private_name;
     Member<CSSVariableData> value;
     Member<CSSVariableData> default_value;
     CSSSyntaxDefinition syntax;
 
     bool operator==(const Binding& other) const {
-      return base::ValuesEquivalent(value, other.value) &&
+      return private_name == other.private_name &&
+             base::ValuesEquivalent(value, other.value) &&
              base::ValuesEquivalent(default_value, other.default_value) &&
              syntax == other.syntax;
     }
+
+    uint32_t GetHash(uint32_t hash, const String& key) const;
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(value);
@@ -47,10 +53,14 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
 
   MixinParameterBindings(HeapHashMap<String, Binding> bindings,
                          const MixinParameterBindings* previous_in_env_chain,
-                         const CSSPrivateBindings* argument_private_scope)
+                         const CSSPrivateBindings* argument_private_scope,
+                         const CSSParserContext* argument_context,
+                         const CSSParserContext* default_value_context)
       : bindings_(std::move(bindings)),
         parent_mixin_(previous_in_env_chain),
         argument_private_scope_(argument_private_scope),
+        argument_context_(argument_context),
+        default_value_context_(default_value_context),
         hash_(ComputeHash()) {}
 
   CORE_EXPORT void Trace(Visitor* visitor) const;
@@ -69,6 +79,10 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
   const CSSPrivateBindings* GetArgumentPrivateScope() const {
     return argument_private_scope_.Get();
   }
+  const CSSParserContext& ArgumentContext() const { return *argument_context_; }
+  const CSSParserContext& DefaultValueContext() const {
+    return *default_value_context_;
+  }
 
   // Returns a hash of all the bindings, mixed with the parents' hash.
   // (We don't hash the CSSSyntaxDefinition, so there may be false positives
@@ -82,6 +96,10 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
 
   Member<const MixinParameterBindings> parent_mixin_;
   Member<const CSSPrivateBindings> argument_private_scope_;
+  // @apply and @mixin can be in different stylesheets. Relative URLs use
+  // the stylesheet where the argument or default value was written.
+  Member<const CSSParserContext> argument_context_;
+  Member<const CSSParserContext> default_value_context_;
   uint32_t hash_;
 };
 
