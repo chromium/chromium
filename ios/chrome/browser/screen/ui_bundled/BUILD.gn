@@ -19,3 +19,14 @@ source_set("screen_provider_protected") {
 source_set("screen_type") {
   sources = [ "screen_type.h" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "screen_provider_unittest.mm" ]
+  deps = [
+    ":screen_provider",
+    ":screen_provider_protected",
+    ":screen_type",
+    "//testing/gtest",
+  ]
+}

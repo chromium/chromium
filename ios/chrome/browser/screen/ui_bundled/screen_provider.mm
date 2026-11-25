@@ -13,11 +13,42 @@
   std::vector<ScreenType> _screens;
 }
 
+#pragma mark - Properties
+
+- (std::vector<ScreenType>)userFacingScreens {
+  std::vector<ScreenType> userFacingScreens;
+  for (ScreenType screen : _screens) {
+    if (screen == ScreenType::kStepsCompleted) {
+      break;
+    }
+    userFacingScreens.push_back(screen);
+  }
+  return userFacingScreens;
+}
+
+#pragma mark - Public
+
 - (ScreenType)nextScreenType {
   if (_index >= _screens.size()) {
     return ScreenType::kStepsCompleted;
   }
   return _screens[_index++];
+}
+
+- (BOOL)setNextScreenType:(ScreenType)screenType {
+  if (screenType == ScreenType::kStepsCompleted) {
+    return NO;
+  }
+  for (size_t i = _index; i < _screens.size(); ++i) {
+    if (_screens[i] == ScreenType::kStepsCompleted) {
+      break;
+    }
+    if (_screens[i] == screenType) {
+      _index = i;
+      return YES;
+    }
+  }
+  return NO;
 }
 
 #pragma mark - Private
