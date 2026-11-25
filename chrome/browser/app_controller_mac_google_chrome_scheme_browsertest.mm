@@ -5,6 +5,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/scoped_objc_class_swizzler.h"
+#include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/shell_integration.h"
@@ -34,6 +35,11 @@ using AppControllerGoogleChromeSchemeBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(AppControllerGoogleChromeSchemeBrowserTest,
                        OpenSchemeUrl) {
+  // TODO(crbug.com/584808918): this times out on Mac14.
+  if (base::mac::MacOSMajorVersion() == 14) {
+    GTEST_SKIP() << "Disabled on macOS 14.";
+  }
+
   std::string scheme = shell_integration::GetDirectLaunchUrlScheme();
   if (scheme.empty()) {
     // Scheme not supported for this channel (e.g. Beta/Dev/Canary).
@@ -56,6 +62,11 @@ IN_PROC_BROWSER_TEST_F(AppControllerGoogleChromeSchemeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppControllerGoogleChromeSchemeBrowserTest,
                        OpenSchemeUrlSetsOpaqueInitiator) {
+  // TODO(crbug.com/584808918): this times out on Mac14.
+  if (base::mac::MacOSMajorVersion() == 14) {
+    GTEST_SKIP() << "Disabled on macOS 14.";
+  }
+
   std::string scheme = shell_integration::GetDirectLaunchUrlScheme();
   if (scheme.empty()) {
     // Scheme not supported for this channel (e.g. Beta/Dev/Canary).
