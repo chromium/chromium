@@ -203,6 +203,26 @@ class CreditCardAccessManager
  private:
   friend class CreditCardAccessManagerTestApi;
 
+  // The ways the mandatory re-authentication setting stored on the Payments
+  // server can decide how a masked server card is authenticated.
+  enum class ServerControlledReauthFlow {
+    // The setting does not decide how the card is authenticated.
+    kNone,
+    // FIDO authentication is mandated and this device is enrolled: the user
+    // verifies with the enrolled credential.
+    kFidoVerification,
+    // FIDO authentication is mandated and this device is not enrolled yet: a
+    // new credential is created and enrolled by the request that unmasks the
+    // card.
+    kFidoEnrollmentWithNewCredential,
+    // Same as `kFidoEnrollmentWithNewCredential`, except that a credential
+    // that already exists on this device is enrolled.
+    kFidoEnrollmentWithExistingCredential,
+    // FIDO authentication is mandated, but the server did not provide a usable
+    // challenge. CVC is the only other authentication the server accepts then.
+    kCvc,
+  };
+
   AutofillClient& autofill_client() { return manager_->client(); }
 
   const AutofillClient& autofill_client() const { return manager_->client(); }
@@ -271,6 +291,13 @@ class CreditCardAccessManager
       const CreditCardFidoAuthenticator::FidoAuthenticationResponse& response)
       override;
   void OnFidoAuthorizationComplete(bool did_succeed) override;
+
+  // Ends the unmasking of `card_` after the FIDO authentication mandated by
+  // `server_controlled_reauth_flow_` failed with `failure_type`. A mandated
+  // FIDO authentication has no fallback to another authentication.
+  void OnMandatedFidoAuthenticationFailed(
+      CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType
+          failure_type);
 #endif
 
   bool is_authentication_in_progress() {
@@ -348,6 +375,26 @@ class CreditCardAccessManager
   // is enforced and the preflight call either timed out or reported that the
   // card has not yet been verified on this device.
   bool ShouldForceCvcAuthentication(bool get_unmask_details_returned) const;
+
+  // Returns whether the Payments server controls mandatory re-authentication
+  // for this device: the feature is enabled and the preflight call response
+  // reported the status of the setting that the server stores.
+  bool IsMandatoryReauthServerControlled() const;
+
+  // Returns whether the preflight call response reported this device as
+  // enrolled into FIDO authentication, in which case the server mandates FIDO
+  // authentication for the cards that are verified on this device. Must only
+  // be called if IsMandatoryReauthServerControlled().
+  bool IsEnrolledInFidoAuthOnServer() const;
+
+  // Returns how the mandatory re-authentication setting stored on the Payments
+  // server requires `card_` to be authenticated. Returns `kNone` if the
+  // setting does not decide it: the server does not control mandatory
+  // re-authentication, `card_` still has to be verified on this device, or the
+  // setting leaves `card_` to risk-based authentication. Must only be called
+  // if risk-based authentication is available for `card_`.
+  ServerControlledReauthFlow GetServerControlledReauthFlow(
+      bool get_unmask_details_returned);
 
   // Helper function to fetch masked server cards.
   void FetchMaskedServerCard();
@@ -460,6 +507,12 @@ class CreditCardAccessManager
 
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
+
+  // How the mandatory re-authentication setting stored on the Payments server
+  // requires `card_` to be authenticated. Determined when the authentication
+  // of a masked server card starts.
+  ServerControlledReauthFlow server_controlled_reauth_flow_ =
+      ServerControlledReauthFlow::kNone;
 
   // Is set to true only when waiting for the callback to
   // OnCvcAuthenticationComplete() to be executed.

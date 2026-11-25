@@ -171,6 +171,11 @@ class CreditCardFidoAuthenticator
   UserOptInIntention GetUserOptInIntention(
       payments::UnmaskDetails& unmask_details);
 
+  // Makes the local pref follow `user_is_opted_in`, the opt-in state that the
+  // Payments server reported. Used when the server is authoritative, i.e. when
+  // a mismatch with the local pref does not express an intention of the user.
+  void SetUserOptInStatusFromServer(bool user_is_opted_in);
+
   // Cancel the ongoing verification process. Used to reset states in this class
   // and in the FullCardRequest if any.
   void CancelVerification();
@@ -194,6 +199,9 @@ class CreditCardFidoAuthenticator
   // Returns true if `request_options` contains a challenge and has a non-empty
   // list of keys that each have a Credential ID.
   bool IsValidRequestOptions(const base::DictValue& request_options);
+
+  // Returns true if `creation_options` contains a challenge.
+  bool IsValidCreationOptions(const base::DictValue& creation_options);
 
  private:
   friend class CreditCardAccessManagerTestBase;
@@ -273,9 +281,6 @@ class CreditCardFidoAuthenticator
   base::DictValue ParseAttestationResponse(
       blink::mojom::MakeCredentialAuthenticatorResponsePtr
           attestation_response);
-
-  // Returns true if |request_options| contains a challenge.
-  bool IsValidCreationOptions(const base::DictValue& creation_options);
 
   // Logs the result of a WebAuthn prompt.
   void LogWebauthnResult(blink::mojom::AuthenticatorStatus status);

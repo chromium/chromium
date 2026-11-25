@@ -66,6 +66,10 @@ class TestCreditCardFidoAuthenticator : public CreditCardFidoAuthenticator {
 
   bool IsOptOutCalled() { return opt_out_called_; }
   bool authenticate_invoked() { return authenticate_invoked_; }
+  // Whether a WebAuthn prompt was started to sign a challenge with an existing
+  // credential, or to create a new credential, respectively.
+  bool get_assertion_invoked() const { return !request_options_.is_null(); }
+  bool make_credential_invoked() const { return !creation_options_.is_null(); }
   const CreditCard& card() { return *card_; }
   const std::optional<std::string>& context_token() { return context_token_; }
 

@@ -105,6 +105,16 @@ bool IsCardOnDeviceVerificationEnforced() {
 #endif
 }
 
+// Returns whether the mandatory re-authentication setting stored on the
+// Payments server may decide how server cards are unmasked. The setting only
+// applies to cards that are verified on this device, so it requires
+// card-on-device verification to be enforced.
+bool IsServerControlledMandatoryReauthEnabled() {
+  return IsCardOnDeviceVerificationEnforced() &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableServerControlledMandatoryReauth);
+}
+
 bool IsEligibleForCardInfoRetrievalAuthentication(
     const CreditCard& card,
     const std::vector<CardUnmaskChallengeOption>& challenge_options) {
@@ -366,8 +376,17 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
   }
 
 #if !BUILDFLAG(IS_IOS)
-  opt_in_intention_ =
-      GetOrCreateFidoAuthenticator()->GetUserOptInIntention(unmask_details);
+  if (IsMandatoryReauthServerControlled()) {
+    // The state of the server is authoritative. The local FIDO opt-in pref
+    // follows it, and a mismatch between the two is not turned into an opt-in
+    // or opt-out request.
+    opt_in_intention_ = UserOptInIntention::kUnspecified;
+    GetOrCreateFidoAuthenticator()->SetUserOptInStatusFromServer(
+        IsEnrolledInFidoAuthOnServer());
+  } else {
+    opt_in_intention_ =
+        GetOrCreateFidoAuthenticator()->GetUserOptInIntention(unmask_details);
+  }
 #endif
   ready_to_start_authentication_.Signal();
 
@@ -470,6 +489,7 @@ void CreditCardAccessManager::FetchCreditCard(
   }
 
   card_ = std::make_unique<CreditCard>(*card);
+  server_controlled_reauth_flow_ = ServerControlledReauthFlow::kNone;
   switch (record_type) {
     case CreditCard::RecordType::kVirtualCard:
       return FetchVirtualCard();
@@ -729,20 +749,51 @@ void CreditCardAccessManager::Authenticate(
       } else {
         CHECK_EQ(card_->record_type(),
                  CreditCard::RecordType::kMaskedServerCard);
-        if (IsMaskedServerCardRiskBasedAuthAvailable()) {
-          // If risk-based authentication is available, `context_token` is
-          // needed for further authentication. `fido_request_options` is
-          // returned within the risk-based authentication response.
-          CHECK(!risk_based_authentication_response_.context_token.empty());
-          context_token = risk_based_authentication_response_.context_token;
-          fido_request_options = std::move(
-              risk_based_authentication_response_.fido_request_options);
-        } else {
-          // If risk-based authentication is not available, the response of
-          // UnmaskDetails preflight call will be used as the resource of
-          // `fido_request_options`.
-          fido_request_options =
-              std::move(unmask_details_.fido_request_options);
+        switch (server_controlled_reauth_flow_) {
+          case ServerControlledReauthFlow::kFidoEnrollmentWithNewCredential:
+            GetOrCreateFidoAuthenticator()
+                ->EnrollAndAuthenticateWithCreationOptions(
+                    *card_, GetWeakPtr(),
+                    std::move(unmask_details_.fido_creation_options));
+            return;
+          case ServerControlledReauthFlow::
+              kFidoEnrollmentWithExistingCredential:
+            GetOrCreateFidoAuthenticator()
+                ->EnrollAndAuthenticateWithRequestOptions(
+                    *card_, GetWeakPtr(),
+                    std::move(unmask_details_.fido_request_options));
+            return;
+          case ServerControlledReauthFlow::kFidoVerification:
+            // The FIDO authentication mandated by the server does not follow
+            // a risk-based authentication, so there is no `context_token`, and
+            // `fido_request_options` comes from the UnmaskDetails preflight
+            // call.
+            fido_request_options =
+                std::move(unmask_details_.fido_request_options);
+            break;
+          case ServerControlledReauthFlow::kCvc:
+            // FetchMaskedServerCard() authenticates such a card with CVC and
+            // never gets here. Should that change, CVC authentication is still
+            // what the server expects.
+            Authenticate(UnmaskAuthFlowType::kCvc);
+            return;
+          case ServerControlledReauthFlow::kNone:
+            if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+              // If risk-based authentication is available, `context_token` is
+              // needed for further authentication. `fido_request_options` is
+              // returned within the risk-based authentication response.
+              CHECK(!risk_based_authentication_response_.context_token.empty());
+              context_token = risk_based_authentication_response_.context_token;
+              fido_request_options = std::move(
+                  risk_based_authentication_response_.fido_request_options);
+            } else {
+              // If risk-based authentication is not available, the response of
+              // UnmaskDetails preflight call will be used as the resource of
+              // `fido_request_options`.
+              fido_request_options =
+                  std::move(unmask_details_.fido_request_options);
+            }
+            break;
         }
       }
       GetOrCreateFidoAuthenticator()->Authenticate(
@@ -780,8 +831,9 @@ void CreditCardAccessManager::Authenticate(
             *card_, GetWeakPtr(),
             risk_based_authentication_response_.context_token);
       } else {
-        // Unverified card forcing CVC auth instead of Risk-based auth, or
-        // Risk-based auth is unavailable.
+        // Unverified card forcing CVC auth instead of Risk-based auth, CVC auth
+        // taking the place of a mandated FIDO auth for which the server did not
+        // provide a usable challenge, or Risk-based auth is unavailable.
         payments_autofill_client().GetCvcAuthenticator().Authenticate(
             *card_, GetWeakPtr());
       }
@@ -975,6 +1027,11 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     }
     LogMetricsAndFillFormForServerUnmaskFlows(unmask_auth_flow_type_);
     Reset();
+  } else if (server_controlled_reauth_flow_ !=
+             ServerControlledReauthFlow::kNone) {
+    // FIDO authentication is only mandated for masked server cards, so even a
+    // virtual card retrieval error is handled as an error of unmasking one.
+    OnMandatedFidoAuthenticationFailed(response.failure_type);
   } else if (response.failure_type ==
                  FailureType::kVirtualCardRetrievalTransientFailure ||
              response.failure_type ==
@@ -1011,6 +1068,41 @@ void CreditCardAccessManager::OnFidoAuthorizationComplete(bool did_succeed) {
     OnCreditCardFetched(*card_, /*card_was_fetched_from_cache=*/false);
     form_event_logger().LogCardUnmaskAuthenticationPromptCompleted(
         unmask_auth_flow_type_);
+  }
+  Reset();
+}
+
+void CreditCardAccessManager::OnMandatedFidoAuthenticationFailed(
+    CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType
+        failure_type) {
+  using FailureType =
+      CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType;
+  switch (failure_type) {
+    case FailureType::kUnknown:
+      // The user cancelled or did not pass the WebAuthn prompt, so they already
+      // know that the card was not unmasked.
+      break;
+    case FailureType::kVerificationDeclined:
+    case FailureType::kGenericFailure:
+    // Only the retrieval of a virtual card is expected to fail this way, and
+    // FIDO authentication is never mandated for a virtual card. As the failure
+    // comes from the server response, it is still handled like the others.
+    case FailureType::kVirtualCardRetrievalTransientFailure:
+    case FailureType::kVirtualCardRetrievalPermanentFailure: {
+      // The user passed the WebAuthn prompt, but the server did not return the
+      // card.
+      const bool is_temporary_error =
+          failure_type == FailureType::kGenericFailure ||
+          failure_type == FailureType::kVirtualCardRetrievalTransientFailure;
+      AutofillErrorDialogContext error_dialog_context;
+      error_dialog_context.type =
+          is_temporary_error ? AutofillErrorDialogType::
+                                   kMaskedServerCardFidoUnmaskingNetworkError
+                             : AutofillErrorDialogType::
+                                   kMaskedServerCardFidoUnmaskingPermanentError;
+      payments_autofill_client().ShowAutofillErrorDialog(error_dialog_context);
+      break;
+    }
   }
   Reset();
 }
@@ -1371,6 +1463,92 @@ bool CreditCardAccessManager::ShouldForceCvcAuthentication(
          status.value() != autofill_metrics::CardVerificationStatus::kVerified;
 }
 
+bool CreditCardAccessManager::IsMandatoryReauthServerControlled() const {
+  return IsServerControlledMandatoryReauthEnabled() &&
+         unmask_details_.mandatory_reauth_status.has_value();
+}
+
+bool CreditCardAccessManager::IsEnrolledInFidoAuthOnServer() const {
+  using MandatoryReauthStatus = payments::UnmaskDetails::MandatoryReauthStatus;
+  switch (unmask_details_.mandatory_reauth_status.value()) {
+    case MandatoryReauthStatus::kEnabled:
+      return true;
+    case MandatoryReauthStatus::kDisabled:
+      return false;
+    case MandatoryReauthStatus::kUnknown:
+      // The server treats an unset pref of a device that is enrolled into FIDO
+      // authentication as if the setting were on, and tells so by suggesting
+      // FIDO authentication.
+      return unmask_details_.unmask_auth_method ==
+             payments::PaymentsAutofillClient::UnmaskAuthMethod::kFido;
+  }
+}
+
+CreditCardAccessManager::ServerControlledReauthFlow
+CreditCardAccessManager::GetServerControlledReauthFlow(
+    bool get_unmask_details_returned) {
+#if BUILDFLAG(IS_IOS)
+  return ServerControlledReauthFlow::kNone;
+#else
+  // The setting only applies to a card that is verified on this device. A card
+  // that still has to be verified is authenticated with CVC.
+  if (!IsMandatoryReauthServerControlled() ||
+      GetCardVerificationStatus(get_unmask_details_returned) !=
+          autofill_metrics::CardVerificationStatus::kVerified) {
+    return ServerControlledReauthFlow::kNone;
+  }
+
+  // A card enrolled in card info retrieval is retrieved from its issuer by the
+  // risk-based authentication. The FIDO flows of the server do not do that.
+  if (card_->card_info_retrieval_enrollment_state() ==
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled) {
+    return ServerControlledReauthFlow::kNone;
+  }
+
+  // If the user has explicitly disabled mandatory re-authentication, the
+  // server does not control the flow.
+  if (unmask_details_.mandatory_reauth_status ==
+      payments::UnmaskDetails::MandatoryReauthStatus::kDisabled) {
+    return ServerControlledReauthFlow::kNone;
+  }
+
+  CreditCardFidoAuthenticator* fido_authenticator =
+      GetOrCreateFidoAuthenticator();
+  const bool has_valid_request_options =
+      fido_authenticator->IsValidRequestOptions(
+          unmask_details_.fido_request_options);
+  if (IsEnrolledInFidoAuthOnServer()) {
+    return has_valid_request_options
+               ? ServerControlledReauthFlow::kFidoVerification
+               : ServerControlledReauthFlow::kCvc;
+  }
+
+  // The setting has not been chosen and this device is not enrolled into FIDO
+  // authentication. It has to enroll if the server sent a challenge for it,
+  // which the server only does for a device that is able to.
+  const bool has_valid_creation_options =
+      fido_authenticator->IsValidCreationOptions(
+          unmask_details_.fido_creation_options);
+  if (!has_valid_creation_options && !has_valid_request_options) {
+    // The server did not offer an enrollment, e.g. because this device has no
+    // platform authenticator, and does not mandate FIDO authentication either,
+    // so the unmasking goes on like before the setting existed.
+    return ServerControlledReauthFlow::kNone;
+  }
+  if (autofill_client().IsOffTheRecord()) {
+    // An off-the-record session does not enroll this device, as a credential
+    // that it creates may not outlive the session. The server still mandates
+    // an authentication that is stronger than risk-based authentication, so
+    // CVC authentication is used.
+    return ServerControlledReauthFlow::kCvc;
+  }
+  return has_valid_creation_options
+             ? ServerControlledReauthFlow::kFidoEnrollmentWithNewCredential
+             : ServerControlledReauthFlow::
+                   kFidoEnrollmentWithExistingCredential;
+#endif
+}
+
 void CreditCardAccessManager::FetchMaskedServerCard() {
   is_authentication_in_progress_ = true;
 
@@ -1424,10 +1602,14 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
     // to know if the card is verified or unverified first. If the preflight
     // call has returned and we've determined it's an unverified card and are
     // forcing CVC auth, we should *not* show the progress dialog since we will
-    // proceed immediately to CVC auth.
+    // proceed immediately to CVC auth. The same holds if the preflight call
+    // has returned and the mandatory re-authentication setting stored on the
+    // server decides how the card is authenticated.
     waiting_for_preflight_call_response_ = should_wait_for_preflight;
     if (should_wait_for_preflight ||
-        !ShouldForceCvcAuthentication(get_unmask_details_returned)) {
+        (!ShouldForceCvcAuthentication(get_unmask_details_returned) &&
+         GetServerControlledReauthFlow(get_unmask_details_returned) ==
+             ServerControlledReauthFlow::kNone)) {
       payments_autofill_client().ShowAutofillProgressDialog(
           card_->card_info_retrieval_enrollment_state() ==
                   CreditCard::CardInfoRetrievalEnrollmentState::
@@ -1491,6 +1673,21 @@ void CreditCardAccessManager::AuthenticateForMaskedServerCard(
             /*no_interactive_authentication_callback=*/base::OnceClosure());
       }
       Authenticate(UnmaskAuthFlowType::kCvc);
+      return;
+    }
+
+    server_controlled_reauth_flow_ =
+        GetServerControlledReauthFlow(get_unmask_details_returned);
+    if (server_controlled_reauth_flow_ != ServerControlledReauthFlow::kNone) {
+      if (waited_for_preflight) {
+        payments_autofill_client().CloseAutofillProgressDialog(
+            /*show_confirmation_before_closing=*/false,
+            /*no_interactive_authentication_callback=*/base::OnceClosure());
+      }
+      Authenticate(server_controlled_reauth_flow_ ==
+                           ServerControlledReauthFlow::kCvc
+                       ? UnmaskAuthFlowType::kCvc
+                       : UnmaskAuthFlowType::kFido);
       return;
     }
 
@@ -1863,6 +2060,7 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
 void CreditCardAccessManager::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
+  server_controlled_reauth_flow_ = ServerControlledReauthFlow::kNone;
   is_authentication_in_progress_ = false;
   preflight_call_timestamp_ = std::nullopt;
   card_selected_without_unmask_details_timestamp_ = std::nullopt;

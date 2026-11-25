@@ -2609,6 +2609,10 @@ TEST_F(CWVAutofillControllerMandatoryReauthTest,
        CWVAutofillErrorDialogTypeUnknown},
       {AutofillErrorDialogType::kBnplUnsupportedCurrencyError,
        CWVAutofillErrorDialogTypeUnknown},
+      {AutofillErrorDialogType::kMaskedServerCardFidoUnmaskingPermanentError,
+       CWVAutofillErrorDialogTypeUnknown},
+      {AutofillErrorDialogType::kMaskedServerCardFidoUnmaskingNetworkError,
+       CWVAutofillErrorDialogTypeUnknown},
   };
   // Fails to compile if a new `AutofillErrorDialogType` has no test case.
   static_assert(std::size(kTestCases) ==

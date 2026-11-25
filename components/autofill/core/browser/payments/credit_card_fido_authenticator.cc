@@ -261,6 +261,12 @@ UserOptInIntention CreditCardFidoAuthenticator::GetUserOptInIntention(
   return UserOptInIntention::kUnspecified;
 }
 
+void CreditCardFidoAuthenticator::SetUserOptInStatusFromServer(
+    bool user_is_opted_in) {
+  user_is_opted_in_ = user_is_opted_in;
+  UpdateUserPref();
+}
+
 void CreditCardFidoAuthenticator::CancelVerification() {
   authenticator()->Cancel();
 
@@ -352,6 +358,11 @@ bool CreditCardFidoAuthenticator::IsValidRequestOptions(
   }
 
   return true;
+}
+
+bool CreditCardFidoAuthenticator::IsValidCreationOptions(
+    const base::DictValue& creation_options) {
+  return creation_options.contains("challenge");
 }
 
 void CreditCardFidoAuthenticator::GetAssertion(
@@ -780,11 +791,6 @@ base::DictValue CreditCardFidoAuthenticator::ParseAttestationResponse(
                std::move(authenticator_transport_list));
 
   return response;
-}
-
-bool CreditCardFidoAuthenticator::IsValidCreationOptions(
-    const base::DictValue& creation_options) {
-  return creation_options.contains("challenge");
 }
 
 void CreditCardFidoAuthenticator::LogWebauthnResult(

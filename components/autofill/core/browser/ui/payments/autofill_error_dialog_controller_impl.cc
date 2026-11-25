@@ -91,6 +91,8 @@ const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
         kMaskedServerCardRiskBasedUnmaskingNetworkError:
     case AutofillErrorDialogType::
         kMaskedServerCardRiskBasedUnmaskingPermanentError:
+    case AutofillErrorDialogType::kMaskedServerCardFidoUnmaskingNetworkError:
+    case AutofillErrorDialogType::kMaskedServerCardFidoUnmaskingPermanentError:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_MASKED_SERVER_CARD_RISK_BASED_UNMASKING_ERROR_TITLE);
     case AutofillErrorDialogType::kMaskedServerIbanUnmaskingTemporaryError:
@@ -151,10 +153,12 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
           IDS_AUTOFILL_CARD_INFO_RETRIEVAL_PERMANENT_ERROR_DESCRIPTION);
     case AutofillErrorDialogType::
         kMaskedServerCardRiskBasedUnmaskingNetworkError:
+    case AutofillErrorDialogType::kMaskedServerCardFidoUnmaskingNetworkError:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_NETWORK);
     case AutofillErrorDialogType::
         kMaskedServerCardRiskBasedUnmaskingPermanentError:
+    case AutofillErrorDialogType::kMaskedServerCardFidoUnmaskingPermanentError:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_PERMANENT);
     case AutofillErrorDialogType::kMaskedServerIbanUnmaskingTemporaryError:

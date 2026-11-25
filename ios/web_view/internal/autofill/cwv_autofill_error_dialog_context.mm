@@ -30,8 +30,8 @@ CWVAutofillErrorDialogType CWVTypeFromAutofillType(
       return CWVAutofillErrorDialogTypeCardInfoRetrievalTemporaryError;
     case autofill::AutofillErrorDialogType::kCardInfoRetrievalPermanentError:
       return CWVAutofillErrorDialogTypeCardInfoRetrievalPermanentError;
-    // The remaining types are either unreachable in ChromeWebView (IBAN, BNPL)
-    // or not shown through `ShowAutofillErrorDialog()`.
+    // The remaining types are either unreachable in ChromeWebView (IBAN, BNPL,
+    // FIDO) or not shown through `ShowAutofillErrorDialog()`.
     case autofill::AutofillErrorDialogType::kTypeUnknown:
     case autofill::AutofillErrorDialogType::
         kMaskedServerIbanUnmaskingTemporaryError:
@@ -41,6 +41,10 @@ CWVAutofillErrorDialogType CWVTypeFromAutofillType(
     case autofill::AutofillErrorDialogType::kBnplTemporaryError:
     case autofill::AutofillErrorDialogType::kBnplPermanentError:
     case autofill::AutofillErrorDialogType::kBnplUnsupportedCurrencyError:
+    case autofill::AutofillErrorDialogType::
+        kMaskedServerCardFidoUnmaskingPermanentError:
+    case autofill::AutofillErrorDialogType::
+        kMaskedServerCardFidoUnmaskingNetworkError:
       return CWVAutofillErrorDialogTypeUnknown;
   }
   return CWVAutofillErrorDialogTypeUnknown;

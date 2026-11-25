@@ -53,8 +53,14 @@ enum class AutofillErrorDialogType {
   kBnplPermanentError = 12,
   // Error shown when BNPL does not support the current currency.
   kBnplUnsupportedCurrencyError = 13,
+  // Error shown when the server returns a permanent error for unmasking a
+  // masked server card with FIDO authentication.
+  kMaskedServerCardFidoUnmaskingPermanentError = 14,
+  // Error shown when the card cannot be verified with FIDO authentication
+  // because Google Payments servers can't be reached.
+  kMaskedServerCardFidoUnmaskingNetworkError = 15,
   // kMaxValue is required for logging histograms.
-  kMaxValue = kBnplUnsupportedCurrencyError,
+  kMaxValue = kMaskedServerCardFidoUnmaskingNetworkError,
 };
 
 // The context for the autofill error dialog.

@@ -1965,6 +1965,8 @@ Called by update_autofill_enums.py.-->
   <int value="11" label="BNPL_TEMPORARY_ERROR"/>
   <int value="12" label="BNPL_PERMANENT_ERROR"/>
   <int value="13" label="BNPL_UNSUPPORTED_CURRENCY_ERROR"/>
+  <int value="14" label="MASKED_SERVER_CARD_FIDO_UNMASKING_PERMANENT_ERROR"/>
+  <int value="15" label="MASKED_SERVER_CARD_FIDO_UNMASKING_NETWORK_ERROR"/>
 </enum>
 
 <enum name="AutofillExpirationDateFixFlowPromptEvent">
