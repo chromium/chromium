@@ -195,6 +195,11 @@ enum class LocalGpmPasskeysMode {
 COMPONENT_EXPORT(FIDO_PUBLIC)
 extern const base::FeatureParam<LocalGpmPasskeysMode>
     kWebAuthnLocalGpmPasskeysMode;
+
+// Omit extensions when sending silent GetAssertion requests to probe allow
+// lists.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnOmitExtensionsInSilentGetAssertion);
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_

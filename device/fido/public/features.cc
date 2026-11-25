@@ -188,4 +188,8 @@ constexpr base::FeatureParam<LocalGpmPasskeysMode>
     kWebAuthnLocalGpmPasskeysMode{&kWebAuthnLocalGpmPasskeys, "mode",
                                   LocalGpmPasskeysMode::kNewUsersOnly,
                                   &kWebAuthnLocalGpmPasskeysModes};
+
+// Enabled by default in M160. Remove in or after M163.
+BASE_FEATURE(kWebAuthnOmitExtensionsInSilentGetAssertion,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace device

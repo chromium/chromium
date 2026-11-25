@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "device/base/features.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap2_device_operation.h"
 #include "device/fido/make_credential_task.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/features.h"
 #include "device/fido/u2f_sign_operation.h"
 
 namespace device {
@@ -151,10 +153,26 @@ void GetAssertionTask::StartTask() {
 
 CtapGetAssertionRequest GetAssertionTask::NextSilentRequest() {
   DCHECK(current_allow_list_batch_ < allow_list_batches_.size());
-  CtapGetAssertionRequest request = request_;
+
+  if (!base::FeatureList::IsEnabled(
+          kWebAuthnOmitExtensionsInSilentGetAssertion)) {
+    CtapGetAssertionRequest request = request_;
+    request.allow_list = allow_list_batches_.at(current_allow_list_batch_++);
+    request.user_presence_required = false;
+    request.user_verification = UserVerificationRequirement::kDiscouraged;
+    return request;
+  }
+
+  // Construct a minimal request to avoid sending extensions on silent probes.
+  CtapGetAssertionRequest request(request_.rp_id, /*client_data_json=*/"");
+  request.client_data_hash = request_.client_data_hash;
   request.allow_list = allow_list_batches_.at(current_allow_list_batch_++);
   request.user_presence_required = false;
   request.user_verification = UserVerificationRequirement::kDiscouraged;
+  if (request_.pin_auth) {
+    request.pin_auth = request_.pin_auth;
+    request.pin_protocol = request_.pin_protocol;
+  }
   return request;
 }
 

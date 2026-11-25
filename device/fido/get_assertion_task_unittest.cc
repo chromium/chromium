@@ -22,7 +22,9 @@
 #include "base/test/test_future.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/authenticator_get_info_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/ctap_request_common.h"
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/mock_fido_device.h"
@@ -318,6 +320,133 @@ TEST_F(FidoGetAssertionTaskTest, TestAvoidSilentSignInForCtapOnlyDevice) {
   EXPECT_TRUE(get_assertion_future().Wait());
   EXPECT_EQ(CtapDeviceResponseCode::kCtap2ErrOther,
             std::get<0>(get_assertion_future().Get()));
+}
+
+// Create a CTAP2 mock device that batches allow lists one credential at a time.
+std::unique_ptr<MockFidoDevice> MakeSingleCredentialBatchCtapDevice() {
+  AuthenticatorGetInfoResponse device_info =
+      ReadCTAPGetInfoResponse(
+          test_data::kTestCtap2OnlyAuthenticatorGetInfoResponse)
+          .value();
+  device_info.max_credential_count_in_list = 1;
+  device_info.max_credential_id_length = 64;
+  return MockFidoDevice::MakeCtap(std::move(device_info));
+}
+
+// Probing silently should omit extensions while preserving PIN auth.
+TEST_F(FidoGetAssertionTaskTest,
+       SilentPreFlightOmitsExtensionsAndPreservesPinAuth) {
+  const PublicKeyCredentialDescriptor unrecognized_cred(
+      CredentialType::kPublicKey, {1, 2, 3, 4});
+  const PublicKeyCredentialDescriptor matching_cred(
+      CredentialType::kPublicKey,
+      base::ToVector(test_data::kTestGetAssertionCredentialId));
+
+  CtapGetAssertionRequest request(test_data::kRelyingPartyId,
+                                  test_data::kClientDataJson);
+  request.allow_list = {unrecognized_cred, matching_cred};
+  request.pin_auth = std::vector<uint8_t>{0xaa, 0xbb, 0xcc, 0xdd};
+  request.pin_protocol = PINUVAuthProtocol::kV2;
+  request.large_blob_key = true;
+  request.get_cred_blob = true;
+  std::array<uint8_t, kP256X962Length> x962{};
+  x962[0] = 0x04;
+  request.hmac_secret.emplace(x962, std::vector<uint8_t>{1, 2, 3, 4},
+                              std::vector<uint8_t>{5, 6, 7, 8}, std::nullopt);
+
+  CtapGetAssertionRequest expected_silent_1(test_data::kRelyingPartyId,
+                                            test_data::kClientDataJson);
+  expected_silent_1.allow_list = {unrecognized_cred};
+  expected_silent_1.user_presence_required = false;
+  expected_silent_1.user_verification =
+      UserVerificationRequirement::kDiscouraged;
+  expected_silent_1.pin_auth = request.pin_auth;
+  expected_silent_1.pin_protocol = request.pin_protocol;
+
+  CtapGetAssertionRequest expected_silent_2 = expected_silent_1;
+  expected_silent_2.allow_list = {matching_cred};
+
+  CtapGetAssertionRequest expected_final = request;
+  expected_final.allow_list = {matching_cred};
+
+  auto device = MakeSingleCredentialBatchCtapDevice();
+  const std::array<uint8_t, 1> kNoCredentialsError{base::strict_cast<uint8_t>(
+      CtapDeviceResponseCode::kCtap2ErrNoCredentials)};
+  {
+    testing::InSequence s;
+    device->ExpectRequestAndRespondWith(
+        MockFidoDevice::EncodeCBORRequest(
+            AsCTAPRequestValuePair(expected_silent_1)),
+        kNoCredentialsError);
+    device->ExpectRequestAndRespondWith(
+        MockFidoDevice::EncodeCBORRequest(
+            AsCTAPRequestValuePair(expected_silent_2)),
+        test_data::kTestGetAssertionResponse);
+    device->ExpectRequestAndRespondWith(
+        MockFidoDevice::EncodeCBORRequest(
+            AsCTAPRequestValuePair(expected_final)),
+        test_data::kTestGetAssertionResponse);
+  }
+
+  auto task = std::make_unique<GetAssertionTask>(
+      device.get(), std::move(request), CtapGetAssertionOptions(),
+      get_assertion_future().GetCallback());
+
+  EXPECT_TRUE(get_assertion_future().Wait());
+  EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
+            std::get<0>(get_assertion_future().Get()));
+  EXPECT_EQ(std::get<1>(get_assertion_future().Get()).size(), 1u);
+}
+
+// Probing without PIN auth should omit extensions, PIN protocol, and UV.
+TEST_F(FidoGetAssertionTaskTest,
+       SilentPreFlightWithoutPinAuthOmitsPinProtocolUvAndExtensions) {
+  const PublicKeyCredentialDescriptor matching_cred(
+      CredentialType::kPublicKey,
+      base::ToVector(test_data::kTestGetAssertionCredentialId));
+  const PublicKeyCredentialDescriptor other_cred(CredentialType::kPublicKey,
+                                                 {1, 2, 3, 4});
+
+  CtapGetAssertionRequest request(test_data::kRelyingPartyId,
+                                  /*client_data_json=*/"");
+  request.client_data_hash.fill(0x42);
+  request.allow_list = {matching_cred, other_cred};
+  request.user_verification = UserVerificationRequirement::kRequired;
+  // Set pin_protocol without pin_auth, matching PRF without UV.
+  request.pin_protocol = PINUVAuthProtocol::kV2;
+  request.large_blob_extension_read = true;
+
+  CtapGetAssertionRequest expected_silent(test_data::kRelyingPartyId,
+                                          /*client_data_json=*/"");
+  expected_silent.client_data_hash = request.client_data_hash;
+  expected_silent.allow_list = {matching_cred};
+  expected_silent.user_presence_required = false;
+  expected_silent.user_verification = UserVerificationRequirement::kDiscouraged;
+
+  CtapGetAssertionRequest expected_final = request;
+  expected_final.allow_list = {matching_cred};
+
+  auto device = MakeSingleCredentialBatchCtapDevice();
+  {
+    testing::InSequence s;
+    device->ExpectRequestAndRespondWith(
+        MockFidoDevice::EncodeCBORRequest(
+            AsCTAPRequestValuePair(expected_silent)),
+        test_data::kTestGetAssertionResponse);
+    device->ExpectRequestAndRespondWith(
+        MockFidoDevice::EncodeCBORRequest(
+            AsCTAPRequestValuePair(expected_final)),
+        test_data::kTestGetAssertionResponse);
+  }
+
+  auto task = std::make_unique<GetAssertionTask>(
+      device.get(), std::move(request), CtapGetAssertionOptions(),
+      get_assertion_future().GetCallback());
+
+  EXPECT_TRUE(get_assertion_future().Wait());
+  EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
+            std::get<0>(get_assertion_future().Get()));
+  EXPECT_EQ(std::get<1>(get_assertion_future().Get()).size(), 1u);
 }
 
 }  // namespace
