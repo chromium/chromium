@@ -6568,7 +6568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaRecorder.Codec.{Query}.{Result}"
-    enum="MediaRecorderVideoCodec" expires_after="2026-11-29">
+    enum="MediaRecorderVideoCodec" expires_after="2027-06-01">
   <owner>handellm@google.com</owner>
   <owner>guidou@google.com</owner>
   <summary>
