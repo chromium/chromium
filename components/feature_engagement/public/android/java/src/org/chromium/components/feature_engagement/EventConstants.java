@@ -154,9 +154,6 @@ public final class EventConstants {
     /** The pinned homepage tile in MV tiles was clicked. */
     public static final String HOMEPAGE_TILE_CLICKED = "homepage_tile_clicked";
 
-    /** User has tapped on Identity Disc. */
-    public static final String IDENTITY_DISC_USED = "identity_disc_used";
-
     /** The user tapped the Incognito indicator. */
     public static final String INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS_USED =
             "incognito_indicator_close_all_windows_used";

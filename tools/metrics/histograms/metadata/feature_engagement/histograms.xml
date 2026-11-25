@@ -366,7 +366,6 @@ chromium-metrics-reviews@google.com.
       summary="encourages users to turn on high efficiency mode"/>
   <variant name="IPH_HomeCustomizationMenu"
       summary="Home customization menu entrypoint on the NTP"/>
-  <variant name="IPH_IdentityDisc" summary="Identity Disc"/>
   <variant name="IPH_IncognitoIndicatorCloseAllWindows"
       summary="educate users that they can close all Incognito windows by
                tapping the Incognito indicator"/>

@@ -85,7 +85,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHGenericAlwaysTriggerHelpUiFeature,
     &kIPHGestureUserEducation,
     &kIPHGlicPromoAndroidFeature,
-    &kIPHIdentityDiscFeature,
     &kIPHIncognitoIndicatorCloseAllWindows,
     &kIPHInstanceSwitcherFeature,
     &kIPHKeyboardAccessoryPaymentOfferFeature,

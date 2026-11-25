@@ -76,7 +76,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE,
     FeatureConstants.GESTURE_USER_EDUCATION,
     FeatureConstants.GLIC_PROMO_ANDROID_FEATURE,
-    FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.INSTANCE_SWITCHER,
     FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP,
     FeatureConstants.IPH_EXTENSIONS_MANAGE_APP_MENU_FEATURE,
@@ -303,12 +302,6 @@ public @interface FeatureConstants {
 
     /** An IPH feature to show on the Glic Promo on Android. */
     String GLIC_PROMO_ANDROID_FEATURE = "IPH_GlicPromoAndroid";
-
-    /**
-     * An IPH feature prompting user to tap on identity disc to navigate to "Sync and Google
-     * services" preferences.
-     */
-    String IDENTITY_DISC_FEATURE = "IPH_IdentityDisc";
 
     /**
      * An IPH feature prompting user that app menu has a menu for managing multiple Chrome windows

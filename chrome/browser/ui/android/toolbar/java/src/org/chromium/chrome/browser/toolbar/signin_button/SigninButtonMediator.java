@@ -22,7 +22,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
@@ -54,8 +53,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
@@ -394,7 +391,7 @@ final class SigninButtonMediator
         }
 
         mOnSigninTapped.run();
-        recordSigninButtonUsed(mProfile);
+        recordSigninButtonUsed();
 
         // TODO(crbug.com/551756560): Use a delegate pattern to handle form-factor-based behavior
         // instead of branching here.
@@ -485,15 +482,9 @@ final class SigninButtonMediator
         }
     }
 
-    /**
-     * Records SigninButton usage with feature engagement tracker. This signal can be used to decide
-     * whether to show in-product help. We also record the clicking actions on the profile icon in
-     * histograms.
-     */
-    private void recordSigninButtonUsed(Profile profile) {
+    /** Records the clicking actions on the profile icon in histograms and user actions. */
+    private void recordSigninButtonUsed() {
         BrowserUiUtils.recordIdentityDiscClicked(true);
-        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        tracker.notifyEvent(EventConstants.IDENTITY_DISC_USED);
         RecordUserAction.record("MobileToolbarIdentityDiscTap");
     }
 

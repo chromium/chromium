@@ -157,7 +157,6 @@ DEFINE_VARIATION_PARAM(kIPHGenericAlwaysTriggerHelpUiFeature,
                        "IPH_GenericAlwaysTriggerHelpUiFeature");
 DEFINE_VARIATION_PARAM(kIPHGestureUserEducation, "IPH_GestureUserEducation");
 DEFINE_VARIATION_PARAM(kIPHGlicPromoAndroidFeature, "IPH_GlicPromoAndroid");
-DEFINE_VARIATION_PARAM(kIPHIdentityDiscFeature, "IPH_IdentityDisc");
 DEFINE_VARIATION_PARAM(kIPHIncognitoIndicatorCloseAllWindows,
                        "IPH_IncognitoIndicatorCloseAllWindows");
 DEFINE_VARIATION_PARAM(kIPHInstanceSwitcherFeature, "IPH_InstanceSwitcher");
@@ -753,7 +752,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHFuseboxPlusButtonHintFeature),
         VARIATION_ENTRY(kIPHGestureUserEducation),
         VARIATION_ENTRY(kIPHGlicPromoAndroidFeature),
-        VARIATION_ENTRY(kIPHIdentityDiscFeature),
         VARIATION_ENTRY(kIPHIncognitoIndicatorCloseAllWindows),
         VARIATION_ENTRY(kIPHInstanceSwitcherFeature),
         VARIATION_ENTRY(kIPHKeyboardAccessoryPaymentOfferFeature),
