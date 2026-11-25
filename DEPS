@@ -1838,7 +1838,7 @@ deps = {
   },
 
   'src/ios/third_party/lottie/src': {
-      'url': Var('chromium_git') + '/external/github.com/airbnb/lottie-ios.git' + '@' + '4a4367659c0b8576d4a106669ff2ba129026085f',
+      'url': Var('chromium_git') + '/external/github.com/airbnb/lottie-ios.git' + '@' + '1fb4d7d5b45b0e81239c0c0cab95136a10153762',
       'condition': 'checkout_ios',
   },
 
