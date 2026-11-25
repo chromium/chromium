@@ -32,8 +32,10 @@ cr-policy-pref-indicator,
 
 cr-collapse {
   margin-inline-end: 0;
-  margin-inline-start: calc(var(--cr-radio-button-label-spacing, 20px)
-      + var(--cr-radio-button-size));
+  margin-inline-start: var(
+      --settings-collapse-margin-inline-start,
+      calc(var(--cr-radio-button-label-spacing, 20px) +
+          var(--cr-radio-button-size)));
 }
 
 .disc-wrapper {

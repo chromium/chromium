@@ -29,3 +29,13 @@ settings-collapse-radio-button:not(:first-of-type) {
   flex-direction: column;
   justify-content: center;
 }
+
+:host-context([settings-refresh-2026]) {
+  #preloadingRadioGroup {
+    width: 100%;
+  }
+
+  settings-collapse-radio-button {
+    --settings-collapse-margin-inline-start: 0;
+  }
+}
