@@ -813,7 +813,9 @@ void DiceWebSigninInterceptor::CreateBrowserAfterSigninInterception(
     std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle,
     bool is_new_profile,
     WebSigninInterceptor::SigninInterceptionType interception_type) {
-  CHECK(!state_->session_startup_helper_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/589687052): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!state_->session_startup_helper_);
   CHECK(bubble_handle, base::NotFatalUntil::M162);
   state_->interception_bubble_handle_ = std::move(bubble_handle);
   state_->account_id_ = account_id;
