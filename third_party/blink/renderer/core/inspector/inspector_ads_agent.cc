@@ -33,8 +33,7 @@ protocol::Response InspectorAdsAgent::getAdScripts(
     return protocol::Response::Success();
   }
 
-  AdTracker* ad_tracker = AdTracker::FromExecutionContext(
-      local_root->GetDocument()->GetExecutionContext());
+  AdTracker* ad_tracker = local_root->GetAdTracker();
   if (!ad_tracker) {
     return protocol::Response::Success();
   }
@@ -45,8 +44,7 @@ protocol::Response InspectorAdsAgent::getAdScripts(
   for (const auto& [script_id, provenance] : ad_scripts) {
     if (!ad_scripts_already_sent_.Contains(script_id)) {
       std::unique_ptr<protocol::Network::AdProvenance> protocol_provenance =
-          CreateAdProvenanceProtocolObject(*local_root->GetDocument(),
-                                           provenance);
+          CreateAdProvenanceProtocolObject(ad_tracker, provenance);
       (*out_newScripts)
           ->emplace_back(protocol::Ads::AdScript::create()
                              .setScriptId(String::Number(script_id.value()))

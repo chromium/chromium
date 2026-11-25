@@ -1,4 +1,14 @@
 Tests that ad-related requests are marked as such.
 ad-script.js isAdRelated: true
+ad-script.js has adProvenance: true
+ad-script.js filterlistRule contains 'ad-script.js': true
+ad-script.js has adScriptAncestry: false
 script-1.js isAdRelated: undefined
+script-1.js has adProvenance: false
+square200.png isAdRelated: true
+square200.png has filterlistRule: false
+square200.png has adScriptAncestry: true
+square200.png ancestryChain length > 0: true
+square200.png ancestryChain[0].name contains 'insert-image.js': true
+square200.png rootScriptFilterlistRule contains 'insert-image.js': true
 

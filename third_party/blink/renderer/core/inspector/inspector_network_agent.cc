@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/inspector/ad_tagging_utils.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/network_resources_data.h"
@@ -1050,7 +1051,8 @@ static std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
 static std::unique_ptr<protocol::Network::Request>
 BuildObjectForResourceRequest(const ResourceRequest& request,
                               scoped_refptr<EncodedFormData> post_data,
-                              size_t max_body_size) {
+                              size_t max_body_size,
+                              AdTracker* ad_tracker) {
   String data_string;
   auto data_entries =
       std::make_unique<protocol::Array<protocol::Network::PostDataEntry>>();
@@ -1090,8 +1092,11 @@ BuildObjectForResourceRequest(const ResourceRequest& request,
     result->setTrustTokenParams(
         BuildTrustTokenParams(*request.TrustTokenParams()));
   }
-  if (request.IsAdResource()) {
+  if (const std::optional<AdProvenance>& ad_provenance =
+          request.GetAdProvenance()) {
     result->setIsAdRelated(true);
+    result->setAdProvenance(
+        CreateAdProvenanceProtocolObject(ad_tracker, *ad_provenance));
   }
   return result;
 }
@@ -1426,9 +1431,13 @@ void InspectorNetworkAgent::WillSendRequestInternal(
                                        : nullptr,
           options.initiator_info, std::numeric_limits<int>::max());
 
+  AdTracker* ad_tracker =
+      loader && loader->GetFrame()
+          ? loader->GetFrame()->GetAdTracker()
+          : AdTracker::FromExecutionContext(GetTargetExecutionContext());
   std::unique_ptr<protocol::Network::Request> request_info(
       BuildObjectForResourceRequest(request, post_data,
-                                    max_post_data_size_.Get()));
+                                    max_post_data_size_.Get(), ad_tracker));
 
   // |loader| is null while inspecting worker.
   // TODO(horo): Refactor MixedContentChecker and set mixed content type even if

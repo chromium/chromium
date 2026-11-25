@@ -2622,8 +2622,8 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
 
     if (std::optional<AdProvenance> ad_provenance =
             element->GetAdProvenance()) {
-      value->setAdProvenance(
-          CreateAdProvenanceProtocolObject(*element, *ad_provenance));
+      value->setAdProvenance(CreateAdProvenanceProtocolObject(
+          inspected_frames_->Root()->GetAdTracker(), *ad_provenance));
     }
 
     if (auto* template_element = DynamicTo<HTMLTemplateElement>(*element)) {
@@ -3302,7 +3302,8 @@ void InspectorDOMAgent::UpdateAdRelatedState(
   CHECK(ad_provenance);
 
   GetFrontend()->adRelatedStateUpdated(
-      nodeId, CreateAdProvenanceProtocolObject(node, *ad_provenance));
+      nodeId, CreateAdProvenanceProtocolObject(
+                  inspected_frames_->Root()->GetAdTracker(), *ad_provenance));
 }
 
 void InspectorDOMAgent::UpdateAffectedByStartingStylesFlag(

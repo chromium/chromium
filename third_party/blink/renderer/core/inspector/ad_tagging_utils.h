@@ -10,7 +10,6 @@
 
 #include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/inspector/protocol/network.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 
@@ -20,7 +19,7 @@ CORE_EXPORT std::unique_ptr<protocol::Network::AdAncestry>
 CreateAdAncestryProtocolObject(const AdTracker::AdScriptAncestry& ad_ancestry);
 
 CORE_EXPORT std::unique_ptr<protocol::Network::AdProvenance>
-CreateAdProvenanceProtocolObject(const Node& node,
+CreateAdProvenanceProtocolObject(AdTracker* ad_tracker,
                                  const AdProvenance& ad_provenance);
 
 }  // namespace blink

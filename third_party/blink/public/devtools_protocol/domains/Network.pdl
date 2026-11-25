@@ -220,6 +220,9 @@ domain Network
       experimental optional boolean isSameSite
       # True when the resource request is ad-related.
       experimental optional boolean isAdRelated
+      # The provenance of an ad resource request, if it is ad-related and
+      # provenance is available.
+      experimental optional AdProvenance adProvenance
 
   # Details of a signed certificate timestamp (SCT).
   type SignedCertificateTimestamp extends object

@@ -35,16 +35,17 @@ std::unique_ptr<protocol::Network::AdAncestry> CreateAdAncestryProtocolObject(
 }
 
 std::unique_ptr<protocol::Network::AdProvenance>
-CreateAdProvenanceProtocolObject(const Node& node,
+CreateAdProvenanceProtocolObject(AdTracker* ad_tracker,
                                  const AdProvenance& ad_provenance) {
   auto protocol_provenance = protocol::Network::AdProvenance::create().build();
 
   if (auto* rule =
           std::get_if<subresource_filter::ScopedRule>(&ad_provenance)) {
-    protocol_provenance->setFilterlistRule(String(rule->ToString()));
+    if (rule->IsValid()) {
+      protocol_provenance->setFilterlistRule(String(rule->ToString()));
+    }
   } else if (auto* script_id = std::get_if<V8ScriptId>(&ad_provenance)) {
-    if (auto* ad_tracker =
-            AdTracker::FromExecutionContext(node.GetExecutionContext())) {
+    if (ad_tracker) {
       auto ad_script_ancestry = ad_tracker->GetAncestry(*script_id);
       if (!ad_script_ancestry.ancestry_chain.empty()) {
         protocol_provenance->setAdScriptAncestry(
