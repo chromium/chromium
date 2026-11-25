@@ -40,7 +40,10 @@ DEFINE_TEXT_PROTO_FUZZER(
       ToScriptStateForMainWorld(&page_holder->GetFrame());
   ScriptState::Scope scope(script_state);
 
-  AudioData* audio_data = MakeAudioData(script_state, proto.audio_data());
+  AudioData* audio_data =
+      proto.has_media_audio_buffer()
+          ? MakeAudioDataFromMediaBuffer(proto.media_audio_buffer())
+          : MakeAudioData(script_state, proto.audio_data());
   if (!audio_data)
     return;
 

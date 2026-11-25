@@ -292,6 +292,26 @@ enum AudioSampleFormat {
   F32_PLANAR = 7;
 }
 
+enum MediaAudioSampleFormat {
+  MEDIA_U8 = 0;
+  MEDIA_S16 = 1;
+  MEDIA_S24 = 2;
+  MEDIA_S32 = 3;
+  MEDIA_F32 = 4;
+  MEDIA_U8_PLANAR = 5;
+  MEDIA_S16_PLANAR = 6;
+  MEDIA_S32_PLANAR = 7;
+  MEDIA_F32_PLANAR = 8;
+}
+
+message MediaAudioBufferInit {
+  optional int64 timestamp_us = 1;
+  optional uint32 length = 2;
+  optional uint32 sample_rate = 3;
+  repeated bytes channels = 4;
+  required MediaAudioSampleFormat format = 5;
+}
+
 message AudioDataInit {
   optional uint64 timestamp = 1;
 
@@ -493,4 +513,5 @@ message AudioDataCopyToCase {
   // TODO(chcunningham): Support multiple concurrent operations, optional
   // waiting, close(), etc.
   required AudioDataCopyToInvocation copy_to = 2;
+  optional MediaAudioBufferInit media_audio_buffer = 3;
 }

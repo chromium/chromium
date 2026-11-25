@@ -1,0 +1,25 @@
+audio_data {
+  timestamp: 0
+  length: 4
+  sample_rate: 48000
+  channels: "\x00\x01\x02\x03"
+  format: S32
+}
+media_audio_buffer {
+  timestamp_us: 0
+  length: 4
+  sample_rate: 48000
+  channels: "\x00\x01\x02\x03\x00\x04\x05\x06\x00\x07\x08\x09\x00\x0a\x0b\x0c"
+  channels: "\x00\x11\x12\x13\x00\x14\x15\x16\x00\x17\x18\x19\x00\x1a\x1b\x1c"
+  format: MEDIA_S24
+}
+copy_to {
+  destination {
+    length: 64
+    view_type: INT8
+  }
+  options {
+    plane_index: 0
+    format: S32_PLANAR
+  }
+}

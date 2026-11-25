@@ -10,6 +10,9 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
+#include "media/base/audio_buffer.h"
+#include "media/base/channel_layout.h"
 #include "media/base/limits.h"
 #include "media/base/sample_format.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -715,6 +718,70 @@ AudioData* MakeAudioData(ScriptState* script_state,
   }
 
   return AudioData::Create(script_state, init, IGNORE_EXCEPTION_FOR_TESTING);
+}
+
+AudioData* MakeAudioDataFromMediaBuffer(
+    const wc_fuzzer::MediaAudioBufferInit& proto) {
+  const int channels = proto.channels_size();
+  if (channels <= 0 || channels > media::limits::kMaxChannels) {
+    return nullptr;
+  }
+
+  if (!proto.length() ||
+      proto.length() > media::limits::kMaxSamplesPerPacket / 4) {
+    return nullptr;
+  }
+
+  if (proto.sample_rate() < media::limits::kMinSampleRate ||
+      proto.sample_rate() > media::limits::kMaxSampleRate) {
+    return nullptr;
+  }
+
+  const media::SampleFormat format = [&]() {
+    switch (proto.format()) {
+      case wc_fuzzer::MEDIA_U8:
+        return media::kSampleFormatU8;
+      case wc_fuzzer::MEDIA_S16:
+        return media::kSampleFormatS16;
+      case wc_fuzzer::MEDIA_S24:
+        return media::kSampleFormatS24;
+      case wc_fuzzer::MEDIA_S32:
+        return media::kSampleFormatS32;
+      case wc_fuzzer::MEDIA_F32:
+        return media::kSampleFormatF32;
+      case wc_fuzzer::MEDIA_U8_PLANAR:
+        return media::kSampleFormatPlanarU8;
+      case wc_fuzzer::MEDIA_S16_PLANAR:
+        return media::kSampleFormatPlanarS16;
+      case wc_fuzzer::MEDIA_S32_PLANAR:
+        return media::kSampleFormatPlanarS32;
+      case wc_fuzzer::MEDIA_F32_PLANAR:
+        return media::kSampleFormatPlanarF32;
+    }
+  }();
+
+  const size_t bytes_per_channel = media::SampleFormatToBytesPerChannel(format);
+  const size_t frames = proto.length();
+  const size_t plane_count = media::IsPlanar(format) ? channels : 1;
+  const size_t plane_bytes =
+      frames * bytes_per_channel * (media::IsPlanar(format) ? 1 : channels);
+
+  std::vector<std::vector<uint8_t>> storage(plane_count);
+  std::vector<base::span<const uint8_t>> planes;
+  planes.reserve(plane_count);
+  for (size_t i = 0; i < plane_count; ++i) {
+    storage[i].resize(plane_bytes);
+    auto src = base::as_byte_span(proto.channels(static_cast<int>(i)));
+    const size_t copy_size = std::min(src.size(), plane_bytes);
+    base::span(storage[i]).first(copy_size).copy_from(src.first(copy_size));
+    planes.push_back(storage[i]);
+  }
+
+  auto media_buffer = media::AudioBuffer::CopyFrom(
+      format, media::GuessChannelLayout(channels), channels,
+      static_cast<int>(proto.sample_rate()), static_cast<int>(frames), planes,
+      base::Microseconds(proto.timestamp_us()));
+  return MakeGarbageCollected<AudioData>(std::move(media_buffer));
 }
 
 AudioDataCopyToOptions* MakeAudioDataCopyToOptions(

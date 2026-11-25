@@ -100,6 +100,9 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
 AudioData* MakeAudioData(ScriptState* script_state,
                          const wc_fuzzer::AudioDataInit& proto);
 
+AudioData* MakeAudioDataFromMediaBuffer(
+    const wc_fuzzer::MediaAudioBufferInit& proto);
+
 AudioDataCopyToOptions* MakeAudioDataCopyToOptions(
     const wc_fuzzer::AudioDataCopyToOptions& proto);
 
