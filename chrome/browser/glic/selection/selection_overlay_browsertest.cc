@@ -1632,6 +1632,31 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayTextSelectionNoSmallChipBrowserTest,
   controller->Close();
 }
 
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       CaptureRegionPreselectsTextSelectionWithPromptBox) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip));
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  auto* selection_observer = GlicSelectionObserver::From(tab);
+  ASSERT_TRUE(selection_observer);
+
+  ASSERT_TRUE(SelectAllAndWaitForBounds(web_contents));
+  ASSERT_TRUE(base::test::RunUntil([selection_observer]() {
+    return selection_observer->GetCurrentSelectionBounds().has_value();
+  }));
+  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
+
+  StartCaptureRegion(tab);
+
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+
+  controller->Close();
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+}
+
 IN_PROC_BROWSER_TEST_F(SelectionOverlayTextSelectionBrowserTest,
                        CaptureRegionIgnoresClearedSelection) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());

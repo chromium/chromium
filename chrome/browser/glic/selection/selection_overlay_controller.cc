@@ -776,9 +776,10 @@ void SelectionOverlayController::CaptureRegion(
                      mojom::CaptureRegionErrorReason::kUnknown);
     return;
   }
-  // When the small chip is enabled, pre-select the tab's current text
-  // selection.
-  if (base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip)) {
+  // When the small chip or overlay prompt box is enabled, pre-select the tab's
+  // current text selection.
+  if (base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip) ||
+      base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox)) {
     if (auto* selection_observer = GlicSelectionObserver::From(tab)) {
       if (std::optional<gfx::Rect> bounds =
               selection_observer->GetCurrentSelectionBounds()) {
@@ -792,8 +793,8 @@ void SelectionOverlayController::CaptureRegion(
           // `selected_regions` to the overlay WebUI.
           // TODO(b:579078690): Clean this up once text and region selections
           // use one path.
-          // Same as the other small chip paths: the text selection is fixed
-          // and opens directly in the post-selection state.
+          // Same as the other text pre-selection paths: the text selection is
+          // fixed and opens directly in the post-selection state.
           selection_overlay_controller->session_->interaction_options =
               selection::InteractionOptions::New(
                   /*hide_handles=*/true, /*skip_intro_animation=*/true);
