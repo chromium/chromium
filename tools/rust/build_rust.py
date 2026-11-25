@@ -778,6 +778,10 @@ def GitApplyCherryPicks():
     # # TODO(crbug.com/12345678): Remove once fixed upstream.
     # GitRevert(RUST_SRC_DIR, 'fedcba9876543210fedcba9876543210fedcba98')
 
+    # TODO(crbug.com/589797469): Remove once Crubit is updated for
+    # https://github.com/rust-lang/rust/pull/166270.
+    GitRevert(RUST_SRC_DIR, '520eab3ea8960d0f18ed55bbb8d0caba26ec5c70')
+
     print('Finished applying cherry-picks.')
 
 
@@ -806,36 +810,6 @@ def GitApplyLLVMDependentCherryPicks():
     #         '0123456789abcdef0123456789abcdef01234567',
     #         'https://github.com/rust-lang/rust.git',
     #     )
-
-    # TODO(crbug.com/567940072): Remove once
-    # https://github.com/rust-lang/rust/pull/163546 rolls into rust.
-    if IsGitAncestorToHead(
-        LLVM_DIR, 'ea14603e78faa0eda6041ffe0519d451985b4faa'
-    ):
-        GitCherryPick(
-            RUST_SRC_DIR,
-            '937145bcebff9cafefdbad652b7463a8ed04fe1f',
-            'https://github.com/rust-lang/rust.git',
-        )
-
-    # TODO(crbug.com/575030918): Remove once
-    # https://github.com/rust-lang/rust/pull/164591 rolls into rust.
-    if IsGitAncestorToHead(
-        LLVM_DIR, 'eb5c3a2dde4ea6d51a36e3df25bfc1b6503fd61c'
-    ) and not IsGitAncestorToHead(
-        RUST_SRC_DIR, '7b2a5cb692bef19a3cc7ccd03dec0105afb80f14'
-    ):
-        for commit in [
-            '2b90db31f806d8aa5168ed6c0c9a701e6e052eb8',
-            '7aa8cbec90eec97dcc24d4fef08c31b936b111ab',
-            '2b46ff9a850e100213eb5c593355143e66350aa6',
-            'e44056b967f96d3200e184aa7903c81c894749bb',
-        ]:
-            GitCherryPick(
-                RUST_SRC_DIR,
-                commit,
-                'https://github.com/rust-lang/rust.git',
-            )
 
     # TODO(crbug.com/583437762): Remove once
     # https://github.com/rust-lang/rust/pull/165680 rolls into rust.

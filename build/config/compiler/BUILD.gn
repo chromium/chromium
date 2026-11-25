@@ -685,7 +685,7 @@ config("compiler") {
     }
 
     # TODO(crbug.com/587906184): Remove once issues are resolved.
-    if (llvm_force_head_revision) {
+    if (!is_wasm) {
       if (is_win) {
         cflags += [ "/clang:-fno-module-local-hints" ]
       } else {
@@ -1880,10 +1880,7 @@ config("tot_warnings") {
   # Entries should generally require both is_clang and llvm_force_head_revision,
   # but may have additional constraints as well (e.g. only some OSes)
   if (is_clang && llvm_force_head_revision) {
-    cflags += [
-      # TODO(crbug.com/587465567): Clean up violations and remove.
-      "-Wno-unsequenced-volatile",
-    ]
+    cflags += []
   }
 }
 
@@ -2029,6 +2026,9 @@ config("default_warnings") {
 
         # TODO(crbug.com/495753203): Fix and re-enable.
         "-Wno-unused-but-set-global",
+
+        # TODO(crbug.com/587465567): Clean up violations and remove.
+        "-Wno-unsequenced-volatile",
       ]
     }
 

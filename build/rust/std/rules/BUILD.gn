@@ -108,6 +108,7 @@ cargo_crate("alloc") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/peek_mut.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/set_len_on_drop.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/spec_extend.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/spec_extend_with.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/spec_from_elem.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/spec_from_iter.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/spec_from_iter_nested.rs",
@@ -654,6 +655,7 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/f16.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/f32.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/f64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/float_macros.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/float_parse.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/imp/bignum.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/imp/dec2flt/common.rs",
@@ -680,6 +682,7 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/imp/overflow_panic.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/imp/ppcf128.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/imp/traits.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/imp/x87_f80.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/int_macros.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/niche_types.rs",
@@ -885,8 +888,10 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/powerpc64/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/powerpc64/vsx.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/riscv32/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/riscv32/zb.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/riscv32/zk.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/riscv64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/riscv64/zb.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/riscv64/zk.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/riscv_shared/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/riscv_shared/p.rs",
@@ -2075,7 +2080,11 @@ cargo_crate("profiler_builtins") {
     "//build/config/compiler:disallow_unstable_features",
   ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  deps = [ "//build/rust/std:std_build_deps" ]
+  deps = [
+    ":compiler_builtins",
+    ":core",
+    "//build/rust/std:std_build_deps",
+  ]
   rustenv = [
     "CFG_DISABLE_UNSTABLE_FEATURES=0",
     "STD_ENV_ARCH=$rust_target_arch",
@@ -2844,7 +2853,6 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/random/linux.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/random/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/random/motor.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/random/redox.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/random/sgx.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/random/solid.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/random/teeos.rs",
@@ -2930,6 +2938,7 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/thread/xous.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/thread_local/destructors/linux_like.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/thread_local/destructors/list.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/thread_local/guard/aix.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/thread_local/guard/apple.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/thread_local/guard/key.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/thread_local/guard/retained.rs",
@@ -3127,7 +3136,6 @@ cargo_crate("std_detect") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std_detect/src/detect/arch/arm.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std_detect/src/detect/arch/loongarch.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std_detect/src/detect/arch/mips.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std_detect/src/detect/arch/mips64.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std_detect/src/detect/arch/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std_detect/src/detect/arch/powerpc.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std_detect/src/detect/arch/riscv.rs",

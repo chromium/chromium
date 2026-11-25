@@ -57,12 +57,19 @@ config("compiler") {
   ]
 
   if (current_cpu == "arm64") {
+    rustflags = [
+      # TODO(crbug.com/590212567): Upstream Rust enabled outline-atomics by
+      # default on aarch64-linux-android, adding a static initializer
+      # (RUST_LSE_INIT). Keep it disabled for now and evaluate enabling it
+      # separately.
+      "-Ctarget-feature=-outline-atomics",
+    ]
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
-      rustflags = [ "-Zbranch-protection=pac-ret,bti" ]
+      rustflags += [ "-Zbranch-protection=pac-ret,bti" ]
     } else if (arm_control_flow_integrity == "pac") {
       cflags += [ "-mbranch-protection=pac-ret" ]
-      rustflags = [ "-Zbranch-protection=pac-ret" ]
+      rustflags += [ "-Zbranch-protection=pac-ret" ]
     }
   }
 
