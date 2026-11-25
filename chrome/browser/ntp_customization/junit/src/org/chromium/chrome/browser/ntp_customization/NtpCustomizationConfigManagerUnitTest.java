@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -1222,7 +1223,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify old pending sync image was cleaned up.
-        verify(mNtpBackgroundDataManager).maybeCleanUpUnusedSyncedImageData(themeData1);
+        verifyImageFileCleanupRequested(themeData1);
     }
 
     @Test
@@ -1249,7 +1250,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         // Verify pending sync was cleared and its unused image cleaned up.
         assertNull(manager.getSyncedNtpBackgroundData());
-        verify(mNtpBackgroundDataManager).maybeCleanUpUnusedSyncedImageData(themeCollectionData);
+        verifyImageFileCleanupRequested(themeCollectionData);
     }
 
     @Test
@@ -1278,11 +1279,48 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         // The image is the one being applied, so it must not be cleaned up, and the pending sync
         // state must be dropped so the theme is not applied a second time.
-        verify(mNtpBackgroundDataManager, never()).maybeCleanUpUnusedSyncedImageData(any());
+        verify(mNtpBackgroundDataManager, never()).maybeDeleteUnusedImageFiles(any());
         assertNull(manager.getSyncedNtpBackgroundData());
 
         manager.maybeApplyBackgroundUpdateFromDeviceSync(mContext);
         verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void
+            testOnBackgroundDataChanged_otherImageOfPendingDailyCollection_cleansUpPendingImage() {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+        NtpBackgroundDataThemeCollection pendingDailyData =
+                createTestThemeCollectionData(
+                        new CustomBackgroundInfo(
+                                JUnitTestGURLs.URL_1,
+                                TEST_COLLECTION_ID,
+                                /* isUploadedImage= */ false,
+                                /* isDailyRefreshEnabled= */ true));
+        manager.onSyncedThemeCollectionImageChanged(mContext, pendingDailyData);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(pendingDailyData, manager.getSyncedNtpBackgroundData());
+
+        // Selecting the same daily refresh collection locally picks another image, so the pending
+        // image is cleaned up.
+        manager.onBackgroundDataChanged(
+                mContext,
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        new CustomBackgroundInfo(
+                                JUnitTestGURLs.URL_2,
+                                TEST_COLLECTION_ID,
+                                /* isUploadedImage= */ false,
+                                /* isDailyRefreshEnabled= */ true),
+                        mBackgroundImageInfo,
+                        mBitmap,
+                        /* primaryColor= */ null,
+                        OTHER_FILE_ID_HASH));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNull(manager.getSyncedNtpBackgroundData());
+        verifyImageFileCleanupRequested(pendingDailyData);
     }
 
     @Test
@@ -1306,7 +1344,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
         assertEquals(colorData, manager.getSyncedNtpBackgroundData());
         assertCustomizedImageMetadataCleared(imageFile);
-        verify(mNtpBackgroundDataManager).maybeCleanUpUnusedSyncedImageData(themeCollectionData);
+        verifyImageFileCleanupRequested(themeCollectionData);
 
         manager.maybeApplyBackgroundUpdateFromDeviceSync(mContext);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -1347,7 +1385,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertNull(manager.getSyncedNtpBackgroundData());
         assertCustomizedImageMetadataCleared(imageFile);
         assertNull(NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
-        verify(mNtpBackgroundDataManager).maybeCleanUpUnusedSyncedImageData(themeCollectionData);
+        verifyImageFileCleanupRequested(themeCollectionData);
         // The active in-memory state isn't changed until the synced reset is applied.
         assertEquals(NtpBackgroundType.CHROME_COLOR, manager.getBackgroundType());
 
@@ -1394,7 +1432,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertPersistedBackgroundType(NtpBackgroundType.THEME_COLLECTION);
         assertEquals(
                 filePath, NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
-        verify(mNtpBackgroundDataManager, never()).maybeCleanUpUnusedSyncedImageData(any());
+        verify(mNtpBackgroundDataManager, never()).maybeDeleteUnusedImageFiles(any());
         verify(mNtpThemeDailyRefreshManager, never()).discardPendingDailyRefresh();
 
         // A synced reset to default clears SharedPreferences while the in-memory background is
@@ -1736,7 +1774,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertPersistedBackgroundType(NtpBackgroundType.DEFAULT);
         assertNull(manager.getSyncedNtpBackgroundData());
         assertCustomizedImageMetadataCleared(imageFile);
-        verify(mNtpBackgroundDataManager).maybeCleanUpUnusedSyncedImageData(themeCollectionData);
+        verifyImageFileCleanupRequested(themeCollectionData);
     }
 
     @Test
@@ -1754,7 +1792,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertPersistedBackgroundType(NtpBackgroundType.DEFAULT);
         assertNull(manager.getSyncedNtpBackgroundData());
         assertPrefsRemoved(NTP_CUSTOMIZATION_THEME_COLOR_ID);
-        verify(mNtpBackgroundDataManager, never()).maybeCleanUpUnusedSyncedImageData(any());
+        verify(mNtpBackgroundDataManager, never()).maybeDeleteUnusedImageFiles(any());
     }
 
     @Test
@@ -2029,5 +2067,16 @@ public class NtpCustomizationConfigManagerUnitTest {
                 mBitmap,
                 primaryColor,
                 FILE_ID_HASH);
+    }
+
+    /**
+     * Verifies that {@code imageData}, and nothing else, was handed over to delete its image file
+     * if unused. The instance is compared, because two images of one daily refresh collection are
+     * equal.
+     */
+    private void verifyImageFileCleanupRequested(NtpBackgroundDataImageBase imageData) {
+        verify(mNtpBackgroundDataManager)
+                .maybeDeleteUnusedImageFiles(
+                        argThat(list -> list.size() == 1 && list.get(0) == imageData));
     }
 }

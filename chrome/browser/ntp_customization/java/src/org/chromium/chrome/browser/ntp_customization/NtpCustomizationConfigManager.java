@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformTyp
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 /** Manages the NTP's background configuration and notifies listeners of changes. */
@@ -569,7 +569,7 @@ public class NtpCustomizationConfigManager {
      *
      * <ul>
      *   <li>The pending synced background in memory, i.e. {@code mSyncedNtpBackgroundData}. Its
-     *       image file is cleaned up if unused, unless it is the new background.
+     *       image file is cleaned up if unused, unless the new background shows the same image.
      *   <li>All the NTP background data in SharedPreferences, which may belong to the active or the
      *       pending synced background.
      * </ul>
@@ -579,18 +579,22 @@ public class NtpCustomizationConfigManager {
      */
     private void clearPendingSyncedBackgroundAndSharedPreference(
             Context context, @Nullable NtpBackgroundDataBase newBackgroundData) {
-        // Only cleans up the pending synced background's unused image file if it is replaced by a
-        // different background.
-        if (mSyncedNtpBackgroundData instanceof NtpBackgroundDataImageBase imageBaseData
-                && !Objects.equals(mSyncedNtpBackgroundData, newBackgroundData)) {
-            getNtpBackgroundDataManager(context).maybeCleanUpUnusedSyncedImageData(imageBaseData);
-        }
-        mSyncedNtpBackgroundData = null;
-        mIsPersistedThemeReplacedBySync = false;
         NtpCustomizationUtils.removeAllNtpBackgroundDataFromSharedPreference();
         // A daily refresh applied in memory was computed from the background that is being
         // replaced, and must not be saved over the new one at deferred startup.
         NtpThemeDailyRefreshManager.getInstance().discardPendingDailyRefresh();
+
+        // The pending synced background is replaced here, so delete its image file if unused. This
+        // must come after the SharedPreferences are cleared above. Before that, they still say this
+        // file is the current background, and the file would be kept. Skip the delete if the new
+        // background shows the same image.
+        if (mSyncedNtpBackgroundData instanceof NtpBackgroundDataImageBase imageBaseData
+                && !imageBaseData.hasSameImage(newBackgroundData)) {
+            getNtpBackgroundDataManager(context)
+                    .maybeDeleteUnusedImageFiles(List.of(imageBaseData));
+        }
+        mSyncedNtpBackgroundData = null;
+        mIsPersistedThemeReplacedBySync = false;
     }
 
     /**

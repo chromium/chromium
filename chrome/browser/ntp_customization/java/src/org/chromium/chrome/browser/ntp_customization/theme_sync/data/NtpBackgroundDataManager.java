@@ -83,8 +83,13 @@ public class NtpBackgroundDataManager {
             // of the list if exceeds the maximum allowed size of history data.
             int index = currentGroup.indexOf(backgroundData);
             NtpBackgroundDataBase dataToSave = backgroundData;
+            List<NtpBackgroundDataBase> removedItems = new ArrayList<>();
             if (index != -1) {
                 NtpBackgroundDataBase existingData = currentGroup.remove(index);
+                // A collection with daily refresh counts as the same theme even when its image
+                // changes. So the old entry may use another image file than the new one. Record
+                // it, so that its file is checked after the new list is saved.
+                removedItems.add(existingData);
                 if (existingData instanceof NtpBackgroundDataImageBase existingImage
                         && backgroundData instanceof NtpBackgroundDataImageBase newData) {
                     @Nullable
@@ -106,14 +111,17 @@ public class NtpBackgroundDataManager {
                 if (currentGroup.size() >= MAXIMUM_REMOTE_HISTORY) {
                     NtpBackgroundDataBase dataToRemove = currentGroup.get(currentGroup.size() - 1);
                     currentGroup.remove(currentGroup.size() - 1);
-                    if (dataToRemove instanceof NtpBackgroundDataImageBase imageBaseData) {
-                        cleanUpForBackgroundData(imageBaseData, /* isLocalSelected= */ false);
-                    }
+                    removedItems.add(dataToRemove);
                 }
             }
             currentGroup.add(0, dataToSave);
 
             writeToSharedPreference(currentGroup.toJsonArray(), platformType);
+
+            // Delete the files of the removed entries if nothing uses them anymore. This runs
+            // after the new list is saved. Before that, the removed entries are still in the
+            // saved list, and their files would be kept.
+            maybeDeleteUnusedImageFilesImpl(removedItems);
         } catch (JSONException e) {
             Log.i(
                     TAG,
@@ -169,6 +177,15 @@ public class NtpBackgroundDataManager {
             JSONArray jsonArray = currentGroup.toJsonArray();
             jsonArray.put(index, json);
             writeToSharedPreference(jsonArray, groupPlatformTypeToUpdate);
+
+            // The replaced entry may use another image file, e.g. after a daily refresh
+            // rotation. Delete that file if nothing uses it anymore. This runs after the new
+            // list is saved. Before that, the old entry is still in the saved list, and its
+            // file would be kept.
+            if (currentGroup.get(index) instanceof NtpBackgroundDataImageBase replacedImage
+                    && !replacedImage.hasSameImage(backgroundData)) {
+                maybeDeleteUnusedImageFilesImpl(List.of(replacedImage));
+            }
         } catch (JSONException e) {
             Log.i(
                     TAG,
@@ -232,7 +249,15 @@ public class NtpBackgroundDataManager {
             // If the backgroundData already in local history, removes the existing one.
             int index = currentGroup.indexOf(backgroundData);
             if (index != -1) {
-                currentGroup.remove(index);
+                // A collection with daily refresh counts as the same theme even when its image
+                // changes, e.g. after "Refresh daily" is turned off and on again. So the old
+                // entry may use another image file. If it does, record it for the file check
+                // below.
+                NtpBackgroundDataBase existingData = currentGroup.remove(index);
+                if (existingData instanceof NtpBackgroundDataImageBase existingImage
+                        && !existingImage.hasSameImage(backgroundData)) {
+                    removedItems.add(existingData);
+                }
             }
             currentGroup.add(0, backgroundData);
             if (currentGroup.size() > MAXIMUM_LOCAL_HISTORY) {
@@ -243,13 +268,9 @@ public class NtpBackgroundDataManager {
             writeToSharedPreference(currentGroup.toJsonArray(), platformTypeToSave);
 
             // Cleans up all removed items. Because we just wrote the new list to shared preference,
-            // isImageStillInUse() will correctly see that backgroundData is in the list,
-            // and will not prematurely delete its file.
-            for (NtpBackgroundDataBase removedItem : removedItems) {
-                if (removedItem instanceof NtpBackgroundDataImageBase imageBaseData) {
-                    cleanUpForBackgroundData(imageBaseData, /* isLocalSelected= */ true);
-                }
-            }
+            // isImageFileInUse() will correctly see that backgroundData is in the list, and will
+            // not prematurely delete its file.
+            maybeDeleteUnusedImageFilesImpl(removedItems);
         } catch (JSONException e) {
             Log.i(
                     TAG,
@@ -260,66 +281,59 @@ public class NtpBackgroundDataManager {
     }
 
     /**
-     * Removes the image file for the given synced {@link NtpBackgroundDataImageBase} if it is no
-     * longer referenced in any local or remote history list.
+     * Deletes the image files of the given backgrounds on a background thread. A file is kept if it
+     * is still in use, which means:
      *
-     * @param imageBaseData The synced image base data to clean up.
+     * <ul>
+     *   <li>It is the image of the current background, or
+     *   <li>An entry of a history list uses it.
+     * </ul>
+     *
+     * @param dataItemsListToRemove The backgrounds whose image files may no longer be needed.
+     *     Backgrounds without an image, e.g. colors, are skipped.
      */
-    public void maybeCleanUpUnusedSyncedImageData(NtpBackgroundDataImageBase imageBaseData) {
+    public void maybeDeleteUnusedImageFiles(List<NtpBackgroundDataBase> dataItemsListToRemove) {
         PostTask.postTask(
                 TaskTraits.USER_VISIBLE_MAY_BLOCK,
-                () -> maybeDeleteImageFileIfNotInUse(imageBaseData, /* platformToSkip= */ null));
+                () -> maybeDeleteUnusedImageFilesImpl(dataItemsListToRemove));
     }
 
-    /**
-     * Removes the image file for the backgroundData if it is no longer referenced in any other
-     * local or remote history list.
-     *
-     * @param imageBaseData The image base data to clean up.
-     * @param isLocalSelected Whether the cleanup was triggered by an eviction from the local
-     *     history list.
-     */
-    private void cleanUpForBackgroundData(
-            NtpBackgroundDataImageBase imageBaseData, boolean isLocalSelected) {
-        int platformToSkip;
-        if (isLocalSelected) {
-            // If the data comes from the local history list, checks if the fileIdHash exists in any
-            // remote groups.
-            platformToSkip = PlatformType.ANDROID;
-        } else {
-            // If the data comes from a remote platform list, checks local group and other remote
-            // groups which are different from the data's platform type.
-            platformToSkip = imageBaseData.getPlatformType();
-            assert platformToSkip != PlatformType.ANDROID;
+    /** Same as {@link #maybeDeleteUnusedImageFiles}, but runs on the calling thread. */
+    private void maybeDeleteUnusedImageFilesImpl(
+            List<NtpBackgroundDataBase> dataItemsListToRemove) {
+        for (NtpBackgroundDataBase data : dataItemsListToRemove) {
+            if (!(data instanceof NtpBackgroundDataImageBase imageBaseData)) continue;
+
+            @Nullable String fileIdHash = imageBaseData.getFileIdHash();
+            if (fileIdHash == null || isImageFileInUse(fileIdHash)) continue;
+
+            NtpCustomizationUtils.maybeDeleteFile(
+                    NtpCustomizationUtils.getBackgroundImageFileFromPath(
+                            imageBaseData.getLastUploadImageFilePath()));
         }
-        maybeDeleteImageFileIfNotInUse(imageBaseData, platformToSkip);
     }
 
     /**
-     * Deletes the image file for the given {@link NtpBackgroundDataImageBase} if its file ID hash
-     * is not referenced in any checked history lists in SharedPreferences.
-     *
-     * @param imageBaseData The image base data to clean up.
-     * @param platformToSkip Optional platform type to skip checking, or null to check all
-     *     platforms.
+     * Returns whether the image file of the given file ID hash is the current background image
+     * saved in SharedPreferences or is referenced in any history list.
      */
-    private void maybeDeleteImageFileIfNotInUse(
-            NtpBackgroundDataImageBase imageBaseData, @Nullable Integer platformToSkip) {
-        String fileIdHash = imageBaseData.getFileIdHash();
-        if (fileIdHash == null) return;
+    private boolean isImageFileInUse(String fileIdHash) {
+        // A theme picked in the customization sheet becomes the current background right away. It
+        // is added to the local history only when the sheet closes, so check it separately.
+        if (fileIdHash.equals(
+                NtpCustomizationUtils.getFileIdHashFromFilePath(
+                        NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference()))) {
+            return true;
+        }
 
         for (int i = PlatformType.ANDROID; i < PlatformType.MAX_COUNT; i++) {
-            if (platformToSkip != null && i == platformToSkip.intValue()) continue;
-
             NtpBackgroundDataGroup group = getBackgroundDataGroupFromSharedPreference(i);
-            if (isImageStillInUse(group, fileIdHash)) {
-                return;
+            if (isImageFileReferencedInGroup(group, fileIdHash)) {
+                return true;
             }
         }
 
-        NtpCustomizationUtils.maybeDeleteFile(
-                NtpCustomizationUtils.getBackgroundImageFileFromPath(
-                        imageBaseData.getLastUploadImageFilePath()));
+        return false;
     }
 
     /**
@@ -330,7 +344,7 @@ public class NtpBackgroundDataManager {
      * @param fileIdHash The unique file ID hash of the image to look for.
      * @return True if a matching image is found in the group, false otherwise.
      */
-    private boolean isImageStillInUse(NtpBackgroundDataGroup group, String fileIdHash) {
+    private boolean isImageFileReferencedInGroup(NtpBackgroundDataGroup group, String fileIdHash) {
         for (NtpBackgroundDataBase data : group) {
             if (data instanceof NtpBackgroundDataImageBase otherImageBaseData) {
                 if (fileIdHash.equals(otherImageBaseData.getFileIdHash())) {
@@ -431,50 +445,19 @@ public class NtpBackgroundDataManager {
     }
 
     /**
-     * Removes all background data from non-Android platforms and deletes related image files if
-     * they aren't used by local history.
+     * Removes all background data from non-Android platforms and deletes the image files that
+     * nothing uses anymore.
      */
     private void removeAllNonAndroidPlatformDataImpl() {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        List<NtpBackgroundDataImageBase> imageDataToCleanUp = new ArrayList<>();
+        List<NtpBackgroundDataBase> removedItems = new ArrayList<>();
 
         for (int i = PlatformType.ANDROID + 1; i < PlatformType.MAX_COUNT; i++) {
-            NtpBackgroundDataGroup group = getBackgroundDataGroupFromSharedPreference(i);
-            for (NtpBackgroundDataBase data : group) {
-                if (data instanceof NtpBackgroundDataImageBase imageBaseData) {
-                    imageDataToCleanUp.add(imageBaseData);
-                }
-            }
+            removedItems.addAll(getBackgroundDataGroupFromSharedPreference(i).getList());
             sharedPreferencesManager.removeKey(getSharedPreferenceKey(i));
         }
 
-        // When removing a remote sync data, we will delete its image file as long as it isn't used
-        // by the local selected group, i.e., Platform Android.
-        NtpBackgroundDataGroup groupToCheck =
-                getBackgroundDataGroupFromSharedPreference(PlatformType.ANDROID);
-        for (NtpBackgroundDataImageBase imageBaseData : imageDataToCleanUp) {
-            maybeDeleteImageFileIfNotInUseInGroup(imageBaseData, groupToCheck);
-        }
-    }
-
-    /**
-     * Deletes the image file if it isn't used in the provided group.
-     *
-     * @param imageBaseData The background image data.
-     * @param groupToCheck The group of background data to check.
-     */
-    private void maybeDeleteImageFileIfNotInUseInGroup(
-            NtpBackgroundDataImageBase imageBaseData, NtpBackgroundDataGroup groupToCheck) {
-        String fileIdHash = imageBaseData.getFileIdHash();
-        if (fileIdHash == null) return;
-
-        if (isImageStillInUse(groupToCheck, fileIdHash)) {
-            return;
-        }
-
-        NtpCustomizationUtils.maybeDeleteFile(
-                NtpCustomizationUtils.getBackgroundImageFileFromPath(
-                        imageBaseData.getLastUploadImageFilePath()));
+        maybeDeleteUnusedImageFilesImpl(removedItems);
     }
 
     /** Resets the shared preferences used by this manager. */

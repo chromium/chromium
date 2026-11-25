@@ -32,10 +32,13 @@ import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.io.File;
+import java.util.List;
 
 /** Tests for {@link NtpBackgroundDataManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -63,6 +66,8 @@ public class NtpBackgroundDataManagerUnitTest {
     @After
     public void tearDown() {
         NtpBackgroundDataManager.resetSharedPreference();
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_FILE_PATH);
         NtpCustomizationUtils.deleteThemeImageFileDir(
                 NtpCustomizationUtils.NTP_THEME_COLLECTION_IMAGES_DIR);
     }
@@ -330,7 +335,7 @@ public class NtpBackgroundDataManagerUnitTest {
     }
 
     @Test
-    public void testCleanUpForBackgroundData_RemotePlatform() {
+    public void testImageFileCleanup_RemotePlatform() {
         @PlatformType int remotePlatform = PlatformType.IOS;
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
 
@@ -420,7 +425,7 @@ public class NtpBackgroundDataManagerUnitTest {
     }
 
     @Test
-    public void testCleanUpForBackgroundData_MultipleRemotePlatforms() {
+    public void testImageFileCleanup_MultipleRemotePlatforms() {
         @PlatformType int remotePlatform1 = PlatformType.IOS;
         @PlatformType int remotePlatform2 = PlatformType.DESKTOP;
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
@@ -490,7 +495,7 @@ public class NtpBackgroundDataManagerUnitTest {
     }
 
     @Test
-    public void testCleanUpForBackgroundData_ReplaceRemoteThemeLocally() {
+    public void testImageFileCleanup_ReplaceRemoteThemeLocally() {
         @PlatformType int remotePlatform = PlatformType.IOS;
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         String remoteHash = "remote_hash_for_local_replace";
@@ -793,76 +798,223 @@ public class NtpBackgroundDataManagerUnitTest {
     }
 
     @Test
-    public void testMaybeCleanUpUnusedSyncedImageData_unusedFile_deletesFile() {
-        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+    public void testMaybeDeleteUnusedImageFiles_unusedFile_deletesFile() {
         NtpBackgroundDataThemeCollection themeData =
-                createAndSaveThemeCollectionData(bitmap, UNUSED_FILE_HASH);
+                createAndSaveThemeCollectionData(
+                        PlatformType.ANDROID,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ false,
+                        UNUSED_FILE_HASH);
         File savedFile = new File(themeData.getLastUploadImageFilePath());
 
         // File is not present in history.
-        mManager.maybeCleanUpUnusedSyncedImageData(themeData);
+        mManager.maybeDeleteUnusedImageFiles(List.of(themeData));
         RobolectricUtil.runAllBackgroundAndUi();
         assertFalse(savedFile.exists());
     }
 
     @Test
-    public void testMaybeCleanUpUnusedSyncedImageData_inUseByHistory_preservesFile() {
-        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+    public void testMaybeDeleteUnusedImageFiles_inUseByHistory_preservesFile() {
         NtpBackgroundDataThemeCollection themeData =
-                createAndSaveThemeCollectionData(bitmap, HISTORY_FILE_HASH);
+                createAndSaveThemeCollectionData(
+                        PlatformType.ANDROID,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ false,
+                        HISTORY_FILE_HASH);
         File savedFile = new File(themeData.getLastUploadImageFilePath());
 
         // Save to local history.
         mManager.saveUserSelectedBackgroundTypeToSharedPreference(themeData);
 
         // Attempt to clean up.
-        mManager.maybeCleanUpUnusedSyncedImageData(themeData);
+        mManager.maybeDeleteUnusedImageFiles(List.of(themeData));
         RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(savedFile.exists());
     }
 
     @Test
-    public void testMaybeCleanUpUnusedSyncedImageData_inUseByRemoteHistory_preservesFile() {
-        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+    public void testMaybeDeleteUnusedImageFiles_inUseByRemoteHistory_preservesFile() {
         NtpBackgroundDataThemeCollection themeData =
-                createAndSaveThemeCollectionData(bitmap, HISTORY_FILE_HASH);
+                createAndSaveThemeCollectionData(
+                        PlatformType.ANDROID,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ false,
+                        HISTORY_FILE_HASH);
         File savedFile = new File(themeData.getLastUploadImageFilePath());
 
         // Save to remote (desktop) history.
-        CustomBackgroundInfo desktopBgInfo =
-                new CustomBackgroundInfo(
-                        JUnitTestGURLs.URL_1,
-                        TEST_COLLECTION_ID,
-                        /* isUploadedImage= */ false,
-                        /* isDailyRefreshEnabled= */ false);
         NtpBackgroundDataThemeCollection desktopThemeData =
-                new NtpBackgroundDataThemeCollection(
+                createAndSaveThemeCollectionData(
                         PlatformType.DESKTOP,
-                        desktopBgInfo,
-                        /* backgroundImageInfo= */ null,
-                        bitmap,
-                        /* primaryColor= */ null,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ false,
                         HISTORY_FILE_HASH);
         mManager.saveRemoteSyncDataToSharedPreference(desktopThemeData);
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Attempt to clean up.
-        mManager.maybeCleanUpUnusedSyncedImageData(themeData);
+        mManager.maybeDeleteUnusedImageFiles(List.of(themeData));
         RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(savedFile.exists());
     }
 
+    @Test
+    public void testMaybeDeleteUnusedImageFiles_currentBackground_keepsFile() {
+        NtpBackgroundDataThemeCollection themeData =
+                createAndSaveThemeCollectionData(
+                        PlatformType.ANDROID,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ false,
+                        UNUSED_FILE_HASH);
+        File savedFile = new File(themeData.getLastUploadImageFilePath());
+        NtpCustomizationUtils.setBackgroundImageFilePathToSharedPreference(
+                savedFile.getAbsolutePath());
+
+        mManager.maybeDeleteUnusedImageFiles(List.of(themeData));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(savedFile.exists());
+    }
+
+    @Test
+    public void testSaveUserSelectedBackgroundType_dailyRefreshEntryReplaced_deletesPreviousFile() {
+        NtpBackgroundDataThemeCollection firstEntry =
+                createAndSaveThemeCollectionData(
+                        PlatformType.ANDROID,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ true,
+                        LOCAL_HISTORY_FILE_HASH);
+        NtpBackgroundDataThemeCollection secondEntry =
+                createAndSaveThemeCollectionData(
+                        PlatformType.ANDROID,
+                        JUnitTestGURLs.URL_2,
+                        /* isDailyRefreshEnabled= */ true,
+                        HISTORY_FILE_HASH);
+        File firstFile = new File(firstEntry.getLastUploadImageFilePath());
+        File secondFile = new File(secondEntry.getLastUploadImageFilePath());
+
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(firstEntry);
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(secondEntry);
+
+        assertTrue(secondFile.exists());
+        assertFalse(firstFile.exists());
+    }
+
+    @Test
+    public void testSaveUserSelectedBackgroundType_remotePlatformEntryReselected_keepsFile() {
+        NtpBackgroundDataThemeCollection iosEntry =
+                createAndSaveThemeCollectionData(
+                        PlatformType.IOS,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ false,
+                        LOCAL_HISTORY_FILE_HASH);
+        File iosFile = new File(iosEntry.getLastUploadImageFilePath());
+
+        // The entry was selected from the history of another device, and is no longer in that
+        // device's remote list when the user selects it again from the local list.
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(iosEntry);
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                createColorData(
+                        NtpThemeColorId.NTP_COLORS_BLUE, /* isDailyRefreshEnabled= */ false));
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(iosEntry);
+
+        assertTrue(iosFile.exists());
+    }
+
+    @Test
+    public void
+            testSaveUserSelectedBackgroundType_evictedEntrySharesFileWithRemainingEntry_keepsFile() {
+        NtpBackgroundDataThemeCollection staticEntry =
+                createAndSaveThemeCollectionData(
+                        PlatformType.ANDROID,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ false,
+                        HISTORY_FILE_HASH);
+        NtpBackgroundDataThemeCollection dailyEntry =
+                createAndSaveThemeCollectionData(
+                        PlatformType.ANDROID,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ true,
+                        HISTORY_FILE_HASH);
+        File sharedFile = new File(staticEntry.getLastUploadImageFilePath());
+
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(staticEntry);
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(dailyEntry);
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                createColorData(
+                        NtpThemeColorId.NTP_COLORS_BLUE, /* isDailyRefreshEnabled= */ false));
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                createColorData(
+                        NtpThemeColorId.NTP_COLORS_AQUA, /* isDailyRefreshEnabled= */ false));
+
+        assertTrue(sharedFile.exists());
+    }
+
+    @Test
+    public void testSaveRemoteSyncData_evictedEntryIsCurrentBackground_keepsFile() {
+        NtpBackgroundDataThemeCollection desktopEntry =
+                createAndSaveThemeCollectionData(
+                        PlatformType.DESKTOP,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ false,
+                        HISTORY_FILE_HASH);
+        File desktopFile = new File(desktopEntry.getLastUploadImageFilePath());
+        mManager.saveRemoteSyncDataToSharedPreference(desktopEntry);
+        NtpCustomizationUtils.setBackgroundImageFilePathToSharedPreference(
+                desktopFile.getAbsolutePath());
+
+        // desktopEntry is applied and saved as the current background. Two newer remote themes
+        // evict it before the sheet closes.
+        mManager.saveRemoteSyncDataToSharedPreference(
+                createDesktopColorData(NtpThemeColorId.NTP_COLORS_BLUE));
+        mManager.saveRemoteSyncDataToSharedPreference(
+                createDesktopColorData(NtpThemeColorId.NTP_COLORS_AQUA));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(desktopFile.exists());
+    }
+
+    @Test
+    public void testSaveRemoteSyncData_evictedEntrySharesFileWithRemainingEntry_keepsFile() {
+        NtpBackgroundDataThemeCollection staticEntry =
+                createAndSaveThemeCollectionData(
+                        PlatformType.DESKTOP,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ false,
+                        HISTORY_FILE_HASH);
+        NtpBackgroundDataThemeCollection dailyEntry =
+                createAndSaveThemeCollectionData(
+                        PlatformType.DESKTOP,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ true,
+                        HISTORY_FILE_HASH);
+        File sharedFile = new File(staticEntry.getLastUploadImageFilePath());
+
+        mManager.saveRemoteSyncDataToSharedPreference(staticEntry);
+        mManager.saveRemoteSyncDataToSharedPreference(dailyEntry);
+        mManager.saveRemoteSyncDataToSharedPreference(
+                createDesktopColorData(NtpThemeColorId.NTP_COLORS_BLUE));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(sharedFile.exists());
+    }
+
     private NtpBackgroundDataThemeCollection createAndSaveThemeCollectionData(
-            Bitmap bitmap, String fileHash) {
+            @PlatformType int platformType,
+            GURL url,
+            boolean isDailyRefreshEnabled,
+            String fileHash) {
+        Bitmap bitmap =
+                Bitmap.createBitmap(/* width= */ 10, /* height= */ 10, Bitmap.Config.ARGB_8888);
         CustomBackgroundInfo customBgInfo =
                 new CustomBackgroundInfo(
-                        JUnitTestGURLs.URL_1,
+                        url,
                         TEST_COLLECTION_ID,
                         /* isUploadedImage= */ false,
-                        /* isDailyRefreshEnabled= */ false);
+                        isDailyRefreshEnabled);
         NtpBackgroundDataThemeCollection themeData =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID,
+                        platformType,
                         customBgInfo,
                         /* backgroundImageInfo= */ null,
                         bitmap,
@@ -942,6 +1094,29 @@ public class NtpBackgroundDataManagerUnitTest {
     }
 
     @Test
+    public void testRemoveAllNonAndroidPlatformData_remoteEntryIsCurrentBackground_keepsFile() {
+        NtpBackgroundDataThemeCollection desktopEntry =
+                createAndSaveThemeCollectionData(
+                        PlatformType.DESKTOP,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ false,
+                        HISTORY_FILE_HASH);
+        File desktopFile = new File(desktopEntry.getLastUploadImageFilePath());
+        mManager.saveRemoteSyncDataToSharedPreference(desktopEntry);
+        RobolectricUtil.runAllBackgroundAndUi();
+        NtpCustomizationUtils.setBackgroundImageFilePathToSharedPreference(
+                desktopFile.getAbsolutePath());
+
+        mManager.removeAllNonAndroidPlatformData();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(
+                mManager.getBackgroundDataGroupFromSharedPreference(PlatformType.DESKTOP)
+                        .isEmpty());
+        assertTrue(desktopFile.exists());
+    }
+
+    @Test
     public void testMaybeReplaceUserSelectedBackgroundInPlace_replacesAtSameIndex() {
         // Each save goes to the front, so the daily refresh color ends up in the middle.
         mManager.saveUserSelectedBackgroundTypeToSharedPreference(
@@ -1015,11 +1190,45 @@ public class NtpBackgroundDataManagerUnitTest {
                 group.get(0), NtpThemeColorId.NTP_COLORS_AQUA, /* isDailyRefreshEnabled= */ true);
     }
 
+    @Test
+    public void
+            testMaybeReplaceUserSelectedBackgroundInPlace_dailyRefreshRotated_deletesPreviousFile() {
+        NtpBackgroundDataThemeCollection previousEntry =
+                createAndSaveThemeCollectionData(
+                        PlatformType.ANDROID,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ true,
+                        LOCAL_HISTORY_FILE_HASH);
+        NtpBackgroundDataThemeCollection rotatedEntry =
+                createAndSaveThemeCollectionData(
+                        PlatformType.ANDROID,
+                        JUnitTestGURLs.URL_2,
+                        /* isDailyRefreshEnabled= */ true,
+                        HISTORY_FILE_HASH);
+        File previousFile = new File(previousEntry.getLastUploadImageFilePath());
+        File rotatedFile = new File(rotatedEntry.getLastUploadImageFilePath());
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(previousEntry);
+
+        mManager.maybeReplaceUserSelectedBackgroundInPlace(rotatedEntry);
+
+        assertTrue(rotatedFile.exists());
+        assertFalse(previousFile.exists());
+    }
+
     /** Creates an Android Chrome color with the given color ID and daily refresh setting. */
     private NtpBackgroundDataColor createColorData(
             @NtpThemeColorId int colorId, boolean isDailyRefreshEnabled) {
         return new NtpBackgroundDataColor(
                 mContext, PlatformType.ANDROID, colorId, isDailyRefreshEnabled);
+    }
+
+    /** Creates a Desktop Chrome color with daily refresh disabled. */
+    private NtpBackgroundDataColor createDesktopColorData(@NtpThemeColorId int colorId) {
+        return new NtpBackgroundDataColor(
+                mContext,
+                PlatformType.DESKTOP,
+                colorId,
+                /* isChromeColorDailyRefreshEnabled= */ false);
     }
 
     /** Asserts that {@code entry} is a Chrome color with the given ID and daily refresh setting. */
