@@ -128,8 +128,10 @@ void RecentlyAudibleHelper::OnAudioStateChanged(bool audible) {
 }
 
 void RecentlyAudibleHelper::OnRecentlyAudibleTimerFired() {
-  CHECK(last_audible_time_ + kRecentlyAudibleTimeout <= tick_clock_->NowTicks(),
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/589683175): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(last_audible_time_ + kRecentlyAudibleTimeout <=
+         tick_clock_->NowTicks());
   // Notify of the transition to no longer being recently audible.
   callback_list_.Notify(false);
 
