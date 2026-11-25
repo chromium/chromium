@@ -306,6 +306,7 @@ android_resources("java_resources") {
     "java/res/drawable/secured_by_brand_shield_24.xml",
     "java/res/drawable/single_list_item_background.xml",
     "java/res/drawable/smartphone_black_24dp.xml",
+    "java/res/drawable/switch_to_tab.xml",
     "java/res/drawable/toolbar_hairline.xml",
     "java/res/values-night/colors.xml",
     "java/res/values-night/dimens.xml",

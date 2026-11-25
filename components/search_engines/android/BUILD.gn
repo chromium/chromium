@@ -11,10 +11,7 @@ java_group("delegate_java") {
 }
 
 android_resources("java_resources") {
-  sources = [
-    "java/res/drawable/ic_logo_googleg_20dp.xml",
-    "java/res/values/drawables.xml",
-  ]
+  sources = [ "java/res/drawable/ic_logo_googleg_20dp.xml" ]
   deps = [
     "//components/browser_ui/styles/android:java_resources",
     "//ui/android:ui_java_resources",
@@ -100,9 +97,11 @@ android_library("junit") {
     "//base:base_junit_test_support",
     "//base:promise_java",
     "//base:supplier_java",
+    "//build/android:build_java",
     "//components/favicon/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/jni_zero:jni_zero_java",
