@@ -9,4 +9,5 @@ export interface GameStateProvider {
   get hasSlowdown(): boolean;
   get hasAudioCues(): boolean;
   isAltGameModeEnabled(): boolean;
+  get isPlaying(): boolean;
 }

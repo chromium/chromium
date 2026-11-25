@@ -252,6 +252,9 @@ export class Horizon {
    * Add a new obstacle.
    */
   addNewObstacle(currentSpeed: number) {
+    if (!this.resourceProvider.isPlaying) {
+      return;
+    }
     const obstacleCount =
         this.obstacleTypes[this.obstacleTypes.length - 1]!.type !==
                 'collectable' ||

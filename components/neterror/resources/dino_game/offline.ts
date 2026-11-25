@@ -269,6 +269,11 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     return this.hasAudioCuesInternal;
   }
 
+  // GameStateProvider implementation.
+  get isPlaying(): boolean {
+    return this.playing;
+  }
+
   /**
    * Whether an alternative game mode is enabled, returns true if the load time
    * data specifies it and its assets loaded successfully. Returns false
@@ -639,6 +644,9 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
         this.setArcadeModeContainerScale();
       }
     }
+    if (!this.activated) {
+      this.setSpeed();
+    }
 
     // Redraw the elements back onto the canvas.
     if (this.canvas) {
@@ -653,7 +661,9 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
 
       this.distanceMeter.calcXpos(this.dimensions.width);
       this.clearCanvas();
-      this.horizon.update(0, 0, true, /*showNightMode = */ false);
+      const hasExistingObstacles = this.horizon.obstacles.length > 0;
+      this.horizon.update(
+          0, 0, hasExistingObstacles, /*showNightMode = */ false);
       this.tRex.update(0);
 
       // Outer container and distance meter.
