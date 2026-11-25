@@ -2006,6 +2006,206 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         Assert.assertEquals(customScheme, fetchRequestToPass.headerValue("Origin"));
     }
 
+    private static final String INTERCEPTED_FILE_DATA_URL = "file:///intercepted/data.txt";
+    private static final String INTERCEPTED_DATA = "intercepted data";
+
+    // Defines a JavaScript function that sends an XMLHttpRequest to a URL and reports the response
+    // body, or "error" if the request fails.
+    private static final String XHR_FUNCTION =
+            """
+            function xhr(url, report) {
+              const request = new XMLHttpRequest();
+              request.open('GET', url);
+              request.onload = () => report(request.responseText);
+              request.onerror = () => report('error');
+              request.send();
+            }
+            """;
+
+    private static String xhrFromFrameScript(String url) {
+        return XHR_FUNCTION
+                + String.format("xhr('%s', (result) => resultFuture.set(result));", url);
+    }
+
+    private static final String XHR_FROM_FRAME_SCRIPT =
+            xhrFromFrameScript(INTERCEPTED_FILE_DATA_URL);
+
+    /**
+     * Makes shouldInterceptRequest serve INTERCEPTED_DATA for {@code url}, without CORS headers.
+     */
+    private void enqueueInterceptedData(String url) {
+        mShouldInterceptRequestHelper.enqueueResponseForUrl(
+                url,
+                "text/plain",
+                "utf-8",
+                INTERCEPTED_DATA,
+                200,
+                "OK",
+                /* responseHeaders= */ null);
+    }
+
+    /**
+     * Loads {@code pageUrl} and runs {@code script} in the page.
+     *
+     * @return the string that {@code script} passes to {@code resultFuture.set()}.
+     */
+    private Future<String> loadUrlAndRunScript(String pageUrl, String script) throws Throwable {
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+
+        final SettableFuture<String> future = SettableFuture.create();
+        Object injectedObject =
+                new Object() {
+                    @JavascriptInterface
+                    public void set(String result) {
+                        future.set(result);
+                    }
+                };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                mAwContents, injectedObject, "resultFuture");
+
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        mActivityTestRule.executeJavaScriptAndWaitForResult(mAwContents, mContentsClient, script);
+        return future;
+    }
+
+    /** Same as loadUrlAndRunScript(), with a file:// page that shouldInterceptRequest serves. */
+    private Future<String> loadInterceptedFilePageAndRunScript(String script) throws Throwable {
+        final String pageUrl = "file:///intercepted/page.html";
+        mShouldInterceptRequestHelper.enqueueHtmlResponseForUrl(
+                pageUrl, /* data= */ "", /* responseHeaders= */ null);
+        return loadUrlAndRunScript(pageUrl, script);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorsXhrFromFileUrlToInterceptedFileUrl_defaultSettings() throws Throwable {
+        mAwContents.getSettings().setAllowFileAccessFromFileUrls(false);
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
+        enqueueInterceptedData(INTERCEPTED_FILE_DATA_URL);
+
+        final Future<String> future = loadInterceptedFilePageAndRunScript(XHR_FROM_FRAME_SCRIPT);
+        Assert.assertEquals(
+                "XHR from a file:// page to an intercepted file:// URL should fail",
+                "error",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(
+                "shouldInterceptRequest should be called for the XHR",
+                mShouldInterceptRequestHelper.getUrls().contains(INTERCEPTED_FILE_DATA_URL));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorsXhrFromFileUrlToInterceptedFileUrl_allowFileAccessFromFileUrls()
+            throws Throwable {
+        mAwContents.getSettings().setAllowFileAccessFromFileUrls(true);
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
+        enqueueInterceptedData(INTERCEPTED_FILE_DATA_URL);
+
+        final Future<String> future = loadInterceptedFilePageAndRunScript(XHR_FROM_FRAME_SCRIPT);
+        Assert.assertEquals(
+                "XHR from a file:// page to an intercepted file:// URL should read the response",
+                INTERCEPTED_DATA,
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorsXhrFromFileUrlToInterceptedFileUrl_allowUniversalAccessFromFileUrls()
+            throws Throwable {
+        mAwContents.getSettings().setAllowFileAccessFromFileUrls(false);
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(true);
+        enqueueInterceptedData(INTERCEPTED_FILE_DATA_URL);
+
+        final Future<String> future = loadInterceptedFilePageAndRunScript(XHR_FROM_FRAME_SCRIPT);
+        Assert.assertEquals(
+                "XHR from a file:// page to an intercepted file:// URL should read the response",
+                INTERCEPTED_DATA,
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNoCorsScriptFromFileUrlToInterceptedFileUrl_defaultSettings() throws Throwable {
+        mAwContents.getSettings().setAllowFileAccessFromFileUrls(false);
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
+
+        final String scriptUrl = "file:///intercepted/script.js";
+        mShouldInterceptRequestHelper.enqueueResponseForUrl(
+                scriptUrl,
+                "text/javascript",
+                "utf-8",
+                "resultFuture.set('script ran');",
+                200,
+                "OK",
+                /* responseHeaders= */ null);
+
+        final Future<String> future =
+                loadInterceptedFilePageAndRunScript(
+                        String.format(
+                                """
+                                const script = document.createElement('script');
+                                script.src = '%s';
+                                script.onerror = () => resultFuture.set('error');
+                                document.body.appendChild(script);
+                                """,
+                                scriptUrl));
+        Assert.assertEquals(
+                "A no-cors script from an intercepted file:// URL should run in a file:// page",
+                "script ran",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorsXhrFromWorkerInFileUrlToInterceptedFileUrl_defaultSettings()
+            throws Throwable {
+        mAwContents.getSettings().setAllowFileAccessFromFileUrls(false);
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
+        enqueueInterceptedData(INTERCEPTED_FILE_DATA_URL);
+        final String xhrFromWorkerScript =
+                String.format(
+                        """
+                        const source = `%s xhr('%s', (result) => postMessage(result));`;
+                        const worker = new Worker(URL.createObjectURL(new Blob([source])));
+                        worker.onmessage = (event) => resultFuture.set(event.data);
+                        worker.onerror = () => resultFuture.set('worker failed');
+                        """,
+                        XHR_FUNCTION, INTERCEPTED_FILE_DATA_URL);
+
+        // With these settings the worker has no file:// subresource factory. Its request goes
+        // through the factory for the network service, whose CORS check rejects the response.
+        final Future<String> future = loadInterceptedFilePageAndRunScript(xhrFromWorkerScript);
+        Assert.assertEquals(
+                "XHR from a worker of a file:// page to an intercepted file:// URL should fail",
+                "error",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(
+                "shouldInterceptRequest should be called for the XHR",
+                mShouldInterceptRequestHelper.getUrls().contains(INTERCEPTED_FILE_DATA_URL));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCorsXhrFromHttpUrlToInterceptedFileSystemUrl() throws Throwable {
+        final String pageUrl = addPageToTestServer(mWebServer, "/main", UNINTERESTING_HTML);
+        final String fileSystemUrl = "filesystem:" + mWebServer.getBaseUrl() + "temporary/data.txt";
+        enqueueInterceptedData(fileSystemUrl);
+
+        final Future<String> future =
+                loadUrlAndRunScript(pageUrl, xhrFromFrameScript(fileSystemUrl));
+        Assert.assertEquals(
+                "XHR to an intercepted same-origin filesystem: URL should read the response",
+                INTERCEPTED_DATA,
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+    }
+
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})

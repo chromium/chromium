@@ -111,6 +111,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       bool intercept_only,
       bool is_for_profile_initiated_prefetch,
       std::optional<SecurityOptions> security_options,
+      bool is_for_network_service,
       std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       std::vector<InterceptorEntryPtr> profile_header_interceptors,
       std::vector<InterceptorEntryPtr> web_contents_header_interceptors,
@@ -151,6 +152,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
           target_factory_remote,
       bool is_for_profile_initiated_prefetch,
       std::optional<SecurityOptions> security_options,
+      bool is_for_network_service,
       std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       std::vector<InterceptorEntryPtr> profile_header_interceptors,
       std::vector<InterceptorEntryPtr> web_contents_header_interceptors,
@@ -210,6 +212,13 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   const bool is_for_profile_initiated_prefetch_;
 
   std::optional<SecurityOptions> security_options_;
+
+  // Whether this factory was created for the network service. See
+  // ContentBrowserClient::WillCreateURLLoaderFactory(). Factories that are not,
+  // such as the file:// subresource factory, have no CORS layer around this
+  // proxy, so |security_options_| is also applied to file:// responses provided
+  // by shouldInterceptRequest.
+  const bool is_for_network_service_;
 
   scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle_;
 

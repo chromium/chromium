@@ -1092,6 +1092,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                 /* intercept_only=*/true,
                 /* is_for_profile_initiated_prefetch=*/false,
                 /* security_options=*/std::nullopt,
+                /* is_for_network_service=*/false,
                 /* origin_matched_headers=*/{},
                 /* profile_header_interceptors=*/{},
                 /* web_contents_header_interceptors=*/{},
@@ -1220,11 +1221,16 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
         target_factory_remote.InitWithNewPipeAndPassReceiver();
     (*factory_override)->skip_cors_enabled_scheme_check = true;
   } else {
-    // In this case, |factory_override| is not given. But all callers of
+    // In this case, |factory_override| is not given. For a factory for the
+    // network service, all callers of
     // ContentBrowserClient::WillCreateURLLoaderFactory guarantee that
     // |factory_override| is null only when the security features on the network
     // service is no-op for requests coming to the URLLoaderFactory. Hence we
     // can use |factory_builder| here.
+    // Other factories, such as the file:// subresource factory, have no CORS
+    // layer around the proxy. AwProxyingURLLoaderFactory applies
+    // |security_options| to the file:// responses provided by
+    // shouldInterceptRequest for them.
     std::tie(proxied_receiver, target_factory_remote) =
         factory_builder.Append();
   }
@@ -1298,16 +1304,17 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
 
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &AwProxyingURLLoaderFactory::CreateProxy, std::move(cookie_manager),
-            cookie_access_policy, isolation_info, web_contents_key,
-            frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
-            std::move(target_factory_remote),
-            /*is_for_profile_initiated_prefetch=*/false, security_options,
-            aw_browser_context->GetOriginMatchedHeaders(),
-            std::move(profile_header_interceptors),
-            std::move(web_contents_header_interceptors),
-            std::move(browser_context_handle), navigation_id));
+        base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
+                       std::move(cookie_manager), cookie_access_policy,
+                       isolation_info, web_contents_key,
+                       frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
+                       std::move(target_factory_remote),
+                       /*is_for_profile_initiated_prefetch=*/false,
+                       security_options, is_for_network_service,
+                       aw_browser_context->GetOriginMatchedHeaders(),
+                       std::move(profile_header_interceptors),
+                       std::move(web_contents_header_interceptors),
+                       std::move(browser_context_handle), navigation_id));
   } else {
     // A service worker and worker subresources set nullptr to |frame|, and
     // work without seeing the AllowUniversalAccessFromFileURLs setting.
@@ -1320,7 +1327,7 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
             std::move(proxied_receiver), std::move(target_factory_remote),
             /*is_for_profile_initiated_prefetch=*/type ==
                 URLLoaderFactoryType::kPrefetch,
-            security_options,
+            security_options, is_for_network_service,
             aw_browser_context->GetOriginMatchedHeaders(),
             std::move(profile_header_interceptors),
             /*web_contents_header_interceptors=*/

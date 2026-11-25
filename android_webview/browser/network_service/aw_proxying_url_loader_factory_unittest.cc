@@ -55,6 +55,7 @@ class AwProxyingURLLoaderFactoryTest : public testing::Test {
         /*intercept_only=*/false,
         /*is_for_profile_initiated_prefetch=*/false,
         /*security_options=*/std::nullopt,
+        /*is_for_network_service=*/true,
         /*origin_matched_headers=*/
         std::vector<scoped_refptr<AwOriginMatchedHeader>>(),
         /*profile_header_interceptors=*/

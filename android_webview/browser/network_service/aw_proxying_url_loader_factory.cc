@@ -163,6 +163,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
       bool is_for_profile_initiated_prefetch,
       std::optional<AwProxyingURLLoaderFactory::SecurityOptions>
           security_options,
+      bool is_for_network_service,
       scoped_refptr<AwProxyingURLLoaderFactory::ProxySharedState>
           proxy_shared_state,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle);
@@ -298,6 +299,9 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   std::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options_;
 
+  // See AwProxyingURLLoaderFactory::is_for_network_service_.
+  const bool is_for_network_service_;
+
   // If the |target_loader_| called OnComplete with an error this stores it.
   // That way the destructor can send it to OnReceivedError if safe browsing
   // error didn't occur.
@@ -417,6 +421,7 @@ InterceptedRequest::InterceptedRequest(
     bool intercept_only,
     bool is_for_profile_initiated_prefetch,
     std::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options,
+    bool is_for_network_service,
     scoped_refptr<AwProxyingURLLoaderFactory::ProxySharedState>
         proxy_shared_state,
     scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle)
@@ -429,6 +434,7 @@ InterceptedRequest::InterceptedRequest(
       intercept_only_(intercept_only),
       is_for_profile_initiated_prefetch_(is_for_profile_initiated_prefetch),
       security_options_(security_options),
+      is_for_network_service_(is_for_network_service),
       last_url_(request.url),
       request_(std::move(request)),
       traffic_annotation_(traffic_annotation),
@@ -618,13 +624,23 @@ void InterceptedRequest::ContinueAfterIntercept() {
 void InterceptedRequest::ContinueAfterInterceptWithOverride(
     std::unique_ptr<embedder_support::WebResourceResponse> response,
     std::unique_ptr<embedder_support::InputStream> input_stream) {
+  // Content sets |is_for_network_service_| to false for per-scheme non-network
+  // factories (such as file:// and filesystem:), which run without the network
+  // service's CORS layer. Intercepting a file:// request skips the underlying
+  // factory's CORS check, so apply |security_options_| here to enforce WebView
+  // file-access settings. Other non-network factories (like filesystem:) allow
+  // CORS requests, so scope this to file://.
+  std::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options;
+  if (!is_for_network_service_ && request_.url.SchemeIsFile()) {
+    security_options = security_options_;
+  }
   embedder_support::AndroidStreamReaderURLLoader* loader =
       new embedder_support::AndroidStreamReaderURLLoader(
           request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
           traffic_annotation_,
           std::make_unique<InterceptResponseDelegate>(
               std::move(response), weak_factory_.GetWeakPtr()),
-          std::nullopt, set_cookie_header_);
+          security_options, set_cookie_header_);
   loader->Start(std::move(input_stream));
 }
 
@@ -1123,6 +1139,7 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
     bool intercept_only,
     bool is_for_profile_initiated_prefetch,
     std::optional<SecurityOptions> security_options,
+    bool is_for_network_service,
     std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
     std::vector<InterceptorEntryPtr> profile_header_interceptors,
     std::vector<InterceptorEntryPtr> web_contents_header_interceptors,
@@ -1139,6 +1156,7 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
       intercept_only_(intercept_only),
       is_for_profile_initiated_prefetch_(is_for_profile_initiated_prefetch),
       security_options_(security_options),
+      is_for_network_service_(is_for_network_service),
       browser_context_handle_(std::move(browser_context_handle)),
       navigation_id_(navigation_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -1189,6 +1207,7 @@ void AwProxyingURLLoaderFactory::CreateProxy(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     bool is_for_profile_initiated_prefetch,
     std::optional<SecurityOptions> security_options,
+    bool is_for_network_service,
     std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
     std::vector<InterceptorEntryPtr> profile_header_interceptors,
     std::vector<InterceptorEntryPtr> web_contents_header_interceptors,
@@ -1202,7 +1221,8 @@ void AwProxyingURLLoaderFactory::CreateProxy(
       web_contents_key, frame_tree_node_id, std::move(loader_receiver),
       std::move(target_factory_remote), /*intercept_only=*/false,
       is_for_profile_initiated_prefetch, security_options,
-      std::move(origin_matched_headers), std::move(profile_header_interceptors),
+      is_for_network_service, std::move(origin_matched_headers),
+      std::move(profile_header_interceptors),
       std::move(web_contents_header_interceptors),
       std::move(browser_context_handle), navigation_id);
 }
@@ -1331,7 +1351,7 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
       std::move(request), traffic_annotation, std::move(loader),
       std::move(client), std::move(target_factory_clone), intercept_only_,
       is_for_profile_initiated_prefetch_, security_options_,
-      proxy_shared_state_, browser_context_handle_);
+      is_for_network_service_, proxy_shared_state_, browser_context_handle_);
   req->Restart();
 }
 
