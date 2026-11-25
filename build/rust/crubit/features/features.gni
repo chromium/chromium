@@ -1,0 +1,80 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This `.gni` file defines which Crubit features are enabled in Chromium.
+#
+# The `check_features.py` script (in the same directory as `features.gni`)
+# can help with keeping this file in sync with the set of Crubit features
+# enabled by Crubit upstream.
+#
+# For more information about Crubit features see:
+#
+# * https://github.com/google/crubit/blob/main/features/README.md
+# * go/crubit/team/release#howto [Google-internal link]
+# * https://docs.google.com/presentation/d/16OLCqvapHrbgBNRt0q9WcBHc2fQKCL8fMlPQNr5wF8w/edit?usp=sharing
+
+# Crubit features that Chromium enables globally (see
+# `crubit_globally_enabled_features` below) before upstream Crubit does (i.e.
+# features that are not in Crubit's `SUPPORTED_FEATURES` - see below).
+# `check_features.py` reports features from this list that upstream Crubit has
+# started to enable.
+crubit_fast_tracked_features = [
+  # `strong_ordering_traits` makes `rust_api_from_cpp` implement `Eq` and `Ord`
+  # (in addition to `PartialEq` and `PartialOrd`) for C++ types whose
+  # `operator<=>` returns `std::strong_ordering` (e.g. `GURL` and
+  # `url::Origin`).
+  "strong_ordering_traits",
+]
+
+# Crubit features enabled for all `rust_api_from_cpp` and `cpp_api_from_rust`
+# targets.  See also:
+# https://github.com/google/crubit/blob/main/features/README.md
+crubit_globally_enabled_features = [
+  # `always_specialize_generics_in_cpp_api_from_rust` only affects
+  # `cpp_api_from_rust`.
+  # TODO(b/558605603): Remove this feature from the list once it becomes the
+  # default in Crubit.
+  "always_specialize_generics_in_cpp_api_from_rust",
+
+  # `assume_lifetimes` makes `rust_api_from_cpp` apply Rust's lifetime elision
+  # rules to C++ references (e.g. `this` becomes `&self`).  For more details
+  # see the "References and lifetimes" section in
+  # `docs/rust/crubit/rust_api_from_cpp.md`.
+  "assume_lifetimes",
+
+  # `constant_arrays` makes `rust_api_from_cpp` represent C-style arrays (e.g.
+  # `T[N]` fields) as Rust arrays (`[T; N]`), rather than as opaque blobs.
+  "constant_arrays",
+
+  # `enum_api_v2` makes `cpp_api_from_rust` generate C++ bindings for
+  # non-`repr(C)` Rust enums with one nested struct for each variant.
+  # TODO(b/489126000): Remove this feature from the list once it becomes the
+  # default in Crubit.
+  "enum_api_v2",
+
+  # `forward_declare` makes `rust_api_from_cpp` generate bindings for APIs that
+  # use forward-declared (incomplete) C++ types (e.g. `const Foo&` parameter
+  # after `class Foo;`).  Rust code can use `forward_declare::CppCoerce` to
+  # convert between the incomplete and complete types.
+  "forward_declare",
+
+  # `iterator_item_references` makes `cpp_api_from_rust` represent Rust
+  # references in the `Item` type of Rust iterators (e.g. `&T`) as C++
+  # references (e.g. `const T&`), rather than as C++ pointers (e.g.
+  # `const T*`).
+  "iterator_item_references",
+
+  # `reserve_standard_macros` makes Crubit avoid generating C++ identifiers
+  # that clash with standard C/C++ macros (e.g. `stdin` or `assert`).
+  "reserve_standard_macros",
+
+  # `supported` covers a few basic Crubit features.
+  "supported",
+
+  # `template_instantiation` makes `rust_api_from_cpp` generate bindings for
+  # class template specializations (e.g. `base::IdType64<FooTag>`) used by the
+  # C++ headers.
+  "template_instantiation",
+]
+crubit_globally_enabled_features += crubit_fast_tracked_features
