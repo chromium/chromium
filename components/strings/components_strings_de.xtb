@@ -689,7 +689,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2155260325161282517">5 × 7 Zoll</translation>
 <translation id="2156467141257470387">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Deine aktuelle Arbeitsadresse wird dadurch nicht geändert. Diese wird in deinem Google-Konto (<ph name="ACCOUNT" />) gespeichert.</translation>
 <translation id="2157640075051554492">Preisbenachrichtigungen</translation>
-<translation id="2158964559178498011">Autofill an mehr Orten verfügbar – zweimal „Strg“ drücken, um Informationen zu suchen und auszufüllen</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162435186600002085">Logo der primären Kopfzeile</translation>
 <translation id="2162535140284745414">Du erhältst Echtzeitvorschläge, die dir helfen können, neue Möglichkeiten zum Surfen mit KI zu finden.</translation>
@@ -821,6 +820,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2356941001189392209">Eine begrenzte Liste mit URLs der von dir besuchten Seiten, auf denen Probleme aufgrund von veralteter Technologie auftreten</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 Tab wird geteilt}other{{NUM_TABS} Tabs werden geteilt}}</translation>
 <translation id="2357481397660644965">Dein Gerät wird von <ph name="DEVICE_MANAGER" /> und dein Konto von <ph name="ACCOUNT_MANAGER" /> verwaltet.</translation>
+<translation id="2358479643736965923">Antwort von Google AI auf die Suchanfrage auf diesem Tab ansehen</translation>
 <translation id="2359629602545592467">Mehrere</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="236000571258713023">Fahrzeuge</translation>
@@ -1140,6 +1140,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2925032407415783182">Veranstaltungsticket in Wallet speichern</translation>
 <translation id="2925454999967523701">Button „Dokument erstellen“ – aktivieren, um schnell ein neues Google-Dokument zu erstellen</translation>
 <translation id="2925673989565098301">Lieferoption</translation>
+<translation id="2927328994673424423">Vor 2 Wochen</translation>
 <translation id="2928426578619531300">Nutzer verknüpft</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> weitere}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> weitere}}</translation>
 <translation id="2930531075747147366">Tab von deinem anderen Gerät</translation>
@@ -2196,7 +2197,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Weitere Infos<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Seite übersetzen?</translation>
 <translation id="468314109939257734">Virtuelle Kartennummer anzeigen</translation>
-<translation id="4684818564800397688">Autofill an mehr Orten verfügbar – zweimal ⌘ drücken, um Informationen zu suchen und auszufüllen</translation>
 <translation id="4686942373615810936">Gerade eben erstellt</translation>
 <translation id="4690205240253392065">Anbieter für „Später bezahlen“ auswählen</translation>
 <translation id="469028408546145398">Button „Alle Inkognitofenster schließen“ – aktivieren, um alle derzeit geöffneten Inkognitofenster zu schließen.</translation>
@@ -2858,7 +2858,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="573974402615125334">Wenn du Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten möchtest, synchronisiere deinen Verlauf und deine Tabs</translation>
 <translation id="5740911612628596808">Umschlag C9</translation>
 <translation id="574392208103952083">Mittel</translation>
-<translation id="5744350700955456407">Mit der Funktion „Erweitertes Autofill“ kannst du jetzt Informationen wie Bestellnummern und Bestätigungscodes für Flüge aus Apps wie Gmail und Google Fotos abrufen und einfügen</translation>
 <translation id="5745586894920491759">Chrome verarbeitet Seitentitel und URLs in der Cloud</translation>
 <translation id="5745733273847572235">Darf nach meinem Standort fragen</translation>
 <translation id="5750869797196646528">Handtracking</translation>

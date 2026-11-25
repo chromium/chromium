@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />"ကို ထည့်ရမလား?</translation>
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' ပုံအား ကုဒ်မဖြုတ်နိုင်ပါ။</translation>
 <translation id="2193567467390483943">သင့်မိဘသည် ဤနောက်ဆက်တွဲကို ခွင့်ပြုမထားပါ</translation>
+<translation id="2207866393056347613">ဝဘ်ဆိုက်အားလုံးတွင် သင့်ဒေတာကို အမြဲသုံးခွင့်ပေးသည်</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" သည်နောက်ထပ် ခွင့်ပြုချက်များကို တောင်းဆိုခဲ့သည်။</translation>
 <translation id="2327492829706409234">အက်ပ်ကို ဖွင့်ထားရန်</translation>
 <translation id="2350172092385603347">ဒေသတွင်း အသုံးပြုနိုင်ရန် ဖန်တီးရာတွင် အသုံးပြုခဲ့၊ သို့သော် default_locale အားသိသာစွာ သတ်မှတ်မထားပါ။</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">ပြန်ဖွင့်ထားရန်</translation>
 <translation id="2743583586211388067">သင့်အဖွဲ့အစည်း၏ နောက်ဆက်တွဲအန္တရာယ် မူဝါဒအရ ဤနောက်ဆက်တွဲကို သုံးခွင့်ပိတ်ထားသည်။</translation>
 <translation id="2766161002040448006">မိဘ ခွင့်တောင်းရန်</translation>
+<translation id="2775557057525247505">ဝဘ်ဆိုက်အားလုံး ပြပါ</translation>
 <translation id="2785530881066938471">အကြောင်းအရာ စာကြောင်းတန်း အတွက် ဖိုင်'<ph name="RELATIVE_PATH" />'ကို တင် မပေးနိုင်ခဲ့ပါ။ ၎င်းသည် UTF-8 ကုဒ်သွင်းထား မဟုတ်ပါ။</translation>
 <translation id="2850541429955027218">အပြင်အဆင် ပေါင်းထည့်ရန်</translation>
 <translation id="2883143988769190738">ဤနောက်ဆက်တွဲသည် အောက်ပါခွင့်ပြုချက်များကို တောင်းဆိုသည်-</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> ထံမှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ကိုယ်ပိုင် သော့ အတွက် ထည့်သွင်းမှု တန်ဖိုးမှာ မှန်ကန်သည့် လမ်းကြောင်း ရှိရမည်။</translation>
+<translation id="3769470010314114481">ဤဝဘ်ဆိုက်တွင် သင့်ဒေတာကို ယာယီသုံးခွင့်ပေးသည်</translation>
 <translation id="3788401245189148511">ဖြစ်နိုင်ခဲ့သည်မှာ:</translation>
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" နှင့် တူနေသောကြောင့် "<ph name="TO_INSTALL_APP_NAME" />" အပလီကေးရှင်းကိုထည့်သွင်း၍မရပါ။</translation>
 <translation id="388442998277590542">ရွေးစရာ စာမျက်နှာ'<ph name="OPTIONS_PAGE" />'ကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">တိုးချဲ့မှုကို ဖွင့်ပေးရန်</translation>
 <translation id="3927932062596804919">ငြင်းပယ်</translation>
 <translation id="3984413272403535372">အိတ်စတန်းရှင်းအား လတ်မှတ်ထိုးစဉ် မှားယွင်းနေ</translation>
+<translation id="3990894032742690314">ဖော်ပြထားသော ဝဘ်ဆိုက်များတွင် အမြဲတမ်း</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" အား ပြင်မည်လား?</translation>
 <translation id="4061696872429826774">သင့်ကွန်ပျူတာရှိ အခြားပရိုဂရမ်သည် Chromium အလုပ်လုပ်ပုံကို ပြောင်းလဲနိုင်သည့် နောက်ဆက်တွဲ ထည့်လိုက်ပါသည်
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">စာမျက်နှာ '<ph name="ABOUT_PAGE" />' အကြောင်းကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="424963718355121712">အက်ပ်များကို ၎င်းတို့အကျိုးသက်ရောက်မှုရှိသည့် ဆာဗာပင်ရင်းက ဝန်ဆောင်ပေးရမည်</translation>
 <translation id="4306119971288449206">အက်ပ်များကို "<ph name="CONTENT_TYPE" />" အကြောင်းအရာ အမျိုးအစားဖြင့် ဝန်ဆောင်ပေးရမည်</translation>
+<translation id="4307774243840254737">အောက်တွင်ဖော်ပြထားသော ဝဘ်ဆိုက်များတွင် သင့်ဒေတာကို အမြဲသုံးခွင့်ပေးသည်</translation>
 <translation id="4349181963619779233">ဤဝဘ်ဆိုက်မှ နောက်ဆက်တွဲများနှင့် အက်ပ်များကို ထည့်၍မရပါ</translation>
 <translation id="4625078469366263107">အက်ပ်ကို ဖွင့်ရန်</translation>
 <translation id="4633003931260532286">နောက်ဆက်တွဲသည် အနိမ့်ဆုံးဗားရှင်း "<ph name="IMPORT_VERSION" />" ရှိသည့် "<ph name="IMPORT_NAME" />" ကို လိုအပ်သော်လည်း ဗားရှင်း "<ph name="INSTALLED_VERSION" />" ကိုသာ ထည့်သွင်းထားသည်</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">နောက်ဆုံး ဗားရှင်းအတွက် ခွင့်ပြုချက်များ နောက်ထပ် လိုအပ်သေး၍  "<ph name="EXTENSION_NAME" />" ကို ပိတ်ခဲ့ရသည်။</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />"ကို ဖွင့်ထားမလား?</translation>
 <translation id="5356315618422219272">Appview- <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">နောက်ဆက်တွဲကို နှိပ်သောအခါမှသာ</translation>
 <translation id="5405650547142096840">Chromium ထဲမှ ဖယ်ရှားရန်</translation>
 <translation id="5456409301717116725">အိတ်စတန်းရှင်းတွင် '<ph name="KEY_PATH" />' ကီးဖိုင်ပါဝင်သည်။ သင်လုပ်ချင်မည်မဟုတ်ပါ။</translation>
 <translation id="5485102783864353244">အပ်ဖ်ပေါင်းထည့်မည်</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Mimehandler- <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">ဤအိတ်စတန်းရှင်းသည် ၎င်းကိုယ်တိုင် မကြာခဏ ပြန်တင်သည်။</translation>
 <translation id="7003844668372540529">အမည်မသိပစ္စည်း <ph name="PRODUCT_ID" /> သည် <ph name="VENDOR_NAME" /> မှ ဖြစ်၏</translation>
+<translation id="7017635639223148413">စာရင်းသွင်းထားသော ဝဘ်ဆိုက်များ</translation>
 <translation id="7068383018033524534">မန်နီးဖက်စ်ဖိုင် မမှန်ကန်ပါ</translation>
 <translation id="7217838517480956708">ဒီစက်၏ စီမံအုပ်ချုပ်သူက <ph name="EXTENSION_NAME" />ကို တပ်ဆင်စေလိုသည်။ ၎င်းကို ဖယ်ရှားခြင်း သို့မဟုတ် မွမ်းမံခြင်း လုပ်မရနိုင်ပါ။</translation>
 <translation id="7287143125007575591">အသုံးပြုခွင့် မရပါ။</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">အရှေ့ဘက်ရှိ ကင်မရာ</translation>
 <translation id="8047248493720652249">"<ph name="ATTEMPTED_FILENAME" />" ဒေါင်းလုပ်ကို အမည်ပေးရန် အိတ်စတန်းရှင်း မအောင်မြင်ပါ အကြောင်းမှာ အခြားအိတ်စတန်းရှင်း(<ph name="EXTENSION_NAME" />) မှအခြားဖိုင်အမည် "<ph name="ACTUAL_FILENAME" />" ဆုံးဖြတ်ပြီးဖြစ်သည်။</translation>
 <translation id="8049705080247101012">Google က "<ph name="EXTENSION_NAME" />" သည် အန္တရာယ်ရှိကြောင်း အလံပြကာ စနစ်ထည့်သွင်းမှုကို ရပ်တန့်ထားသည်</translation>
+<translation id="823691536304079791">သင့်ဒေတာကို ဖတ်ခြင်းနှင့် ပြောင်းခြင်း</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> သည် <ph name="VENDOR_NAME" /> ဆီမှ</translation>
 <translation id="8353683614194668312">၎င်း ဖြစ်နိုင်သည်မှာ:</translation>
 <translation id="8517576857589387417">မန်နီးဖက်စ်ဖိုင် ပျောက်နေသည် သို့မဟုတ် ဖတ်မရပါ</translation>

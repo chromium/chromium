@@ -2534,6 +2534,19 @@ Se la policy viene disattivata, la funzionalità di codifica dei contenuti di <p
 <translation id="2521581787935130926">Mostra la scorciatoia per le app nella barra dei Preferiti</translation>
 <translation id="2522304491589804974">Configura la lista consentita per l'installazione delle estensioni</translation>
 <translation id="2523511232831599126">Attiva le scorciatoie di accessibilità nella schermata di accesso</translation>
+<translation id="2524400223625951315">Specifica il comportamento delle estensioni con installazione forzata in modalità isolata.
+
+Questo vale per le estensioni configurate tramite <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o con <ph name="INSTALLATION_MODE_FIELD" /> impostato su <ph name="FORCE_INSTALLED_VALUE" /> in <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. Le estensioni configurate con <ph name="INSTALLATION_MODE_FIELD" /> impostato su <ph name="NORMAL_INSTALLED_VALUE" /> sono controllate da <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" />.
+
+Se impostate su 0 (sempre attivate) o se non vengono configurate, le estensioni con installazione forzata sono sempre attivate in modalità isolata e non possono essere disattivate dall'utente.
+
+Se impostate su 1 (attivate per impostazione predefinita), le estensioni con installazione forzata sono attivate per impostazione predefinita in modalità isolata e possono essere disattivate dall'utente. La scelta dell'utente ha la precedenza finché la policy rimane impostata su 1. Al di fuori della modalità isolata, l'utente non può comunque disattivare le estensioni con installazione forzata.
+
+Le estensioni che impostano <ph name="INCOGNITO_MANIFEST_KEY" /> su <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> nel loro file manifest non possono essere eseguite in modalità isolata, indipendentemente da questa policy.
+
+Questa policy viene applicata soltanto se <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> è attivata.
+
+Per essere applicata, questa policy richiede una licenza <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />.</translation>
 <translation id="252742292004421898">Consenti l'API Direct Sockets su questi siti</translation>
 <translation id="2528762900096510743">Abilita il servizio di disconnessione automatica</translation>
 <translation id="2529880111512635313">Configura l'elenco di estensioni e app con installazione imposta</translation>
@@ -4021,6 +4034,7 @@ Questa opzione è stata rimossa in Chrome 145 e al suo posto si consiglia di uti
 
       Se la policy non viene configurata per un sito, la policy di <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> viene applicata al sito, se configurata, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
 <translation id="3435796032110614169">Consenti l'eliminazione della cronologia dei processi di stampa</translation>
+<translation id="3435849940943480491">Le estensioni con installazione forzata sono sempre attivate in modalità isolata e non possono essere disattivate</translation>
 <translation id="3436217793443508863">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene bloccato quando viene usata la batteria.</translation>
 <translation id="3437391374720747482">Preferisci metodi di scambio di chiavi che soddisfino i requisiti di CNSA 2.0</translation>
 <translation id="3437924696598384725">Consente all'utente di gestire le connessioni VPN</translation>
@@ -6388,6 +6402,7 @@ La disattivazione della decodifica video con accelerazione hardware non è consi
 <translation id="4927797103413916381">Se la policy <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> non viene disattivata, l'impostazione di <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> su Attivata o la mancata configurazione impedisce ai siti con esperienze intrusive di aprirsi in nuove schede o finestre.
 
        Se la policy <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> viene impostata su Disattivata, i siti con esperienze intrusive possono aprirsi in nuove schede o finestre.</translation>
+<translation id="4928435626872799127">Controlla il comportamento delle estensioni con installazione forzata in modalità isolata</translation>
 <translation id="4929721861648439998">Consente di attivare la funzione di accessibilità di audio in formato mono nella schermata di accesso.
 
           Questa funzione consente di cambiare la modalità del dispositivo dall'audio in formato stereo predefinito all'audio in formato mono.
@@ -9924,6 +9939,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="7054840304131108563">Disattiva le funzioni di accessibilità del renderer</translation>
 <translation id="7055022222176591388">Non consentire il plug-in <ph name="FLASH_PLUGIN_NAME" /> obsoleto</translation>
 <translation id="7056040036973126753">I dati relativi all'attendibilità dei domini potrebbero essere inviati a Google in base alla policy Metriche utente di Chrome (UMA)</translation>
+<translation id="7057522375529097624">Le estensioni con installazione forzata sono attivate per impostazione predefinita in modalità isolata e possono essere disattivate</translation>
 <translation id="7062803946218028349">Consenti l'attivazione di Phone Hub</translation>
 <translation id="7063646777978847358">Questa policy consente di stabilire se le richieste di recupero in background da parte dei service worker sono limitate. Questa policy potrebbe essere pertinente se è interessata una funzionalità che scarica file in background.
 

@@ -148,6 +148,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chrome an. Du kannst dann auch auf deine Lesezeichen und weitere Daten von <ph name="DEVICE" /> zugreifen.</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2513154137948333830">Neustart erforderlich: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">deiner Organisation</translation>
 <translation id="2521391734665471391">KI-Modus der Google Suche schließen</translation>
 <translation id="2523492931736391680">Deine Arbeit ist in Chrome geschützt</translation>
 <translation id="2534365042754120737">Erlaube Chrome zum Schutz deiner Daten, Berechtigungen von Websites zu entfernen, die du in letzter Zeit nicht besucht hast. Benachrichtigungen werden dadurch nicht deaktiviert.</translation>
@@ -226,6 +227,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="3140883423282498090">Deine Änderungen werden beim nächsten Neustart von Google Chrome wirksam.</translation>
 <translation id="3149510190863420837">Chrome-Apps</translation>
 <translation id="3161522574479303604">Alle Sprachen</translation>
+<translation id="3183555099201190073">Von jedem Tab aus auf die Google Suche zugreifen</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chrome an. Du kannst dann auch auf allen deinen Geräten auf deine Lesezeichen und weitere Daten zugreifen.</translation>
 <translation id="319199214552513804">Wenn du auf allen deinen Computern auf diese Erweiterung und mehr zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="3196187562065225381">Chrome hat diesen Download blockiert, weil die Datei gefährlich ist</translation>
@@ -303,6 +305,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="4053720452172726777">Google Chrome anpassen und verwalten</translation>
 <translation id="408393047846373801">Wenn du auf allen deinen Geräten auf deine Passwörter und andere Daten zugreifen möchtest, melde dich in Chrome an. Dieses Passwort wird in deinem Google-Konto gespeichert, nachdem du dich angemeldet hast.</translation>
 <translation id="4102173024714616627">Erweiterungen sind Add-ons zur Personalisierung von Chrome. Egal, ob du besser organisiert bleiben oder alltägliche Aufgaben vereinfachen möchtest – mit Erweiterungen kannst du Chrome ganz individuell anpassen.</translation>
+<translation id="4103543596018881622">Die Google Suche in Chrome wurde an die Symbolleiste angepinnt.</translation>
 <translation id="4110895483821904099">Neues Chrome-Profil einrichten</translation>
 <translation id="4111566860456076004">Chrome kann nicht überprüfen, woher diese Erweiterung stammt. Sie könnte unsicher sein. Entferne sie aus Chrome, damit sie deine Daten auf von dir besuchten Websites nicht mehr abrufen oder ändern kann, auch nicht personenbezogene Daten.</translation>
 <translation id="4148957013307229264">Installation wird ausgeführt...</translation>
@@ -510,6 +513,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6321592572353357376">Die Erweiterung „<ph name="EXTENSION_NAME" />“ fordert dich auf, dich in Chrome anzumelden</translation>
 <translation id="6326175484149238433">Aus Chrome entfernen</translation>
 <translation id="6339888439788291743">Neues Symbol, gleiche Verknüpfung: Klicke darauf, um mit dem KI-Modus der Google Suche beim Surfen Fragen zu stellen.</translation>
+<translation id="6349304688246983183">Mit der Google Suche kannst du beim Surfen ganz einfach Fragen stellen</translation>
 <translation id="63540178978900677">Chrome ist nicht mehr dein Standardbrowser. Chrome als Standardbrowser verwenden?</translation>
 <translation id="6357670763064300993">Gemini Enterprise in Chrome</translation>
 <translation id="6360449101159168105">Während dieser Tab inaktiv war, wurde Arbeitsspeicher freigegeben, damit Chrome schnell bleibt. Du kannst festlegen, dass diese Website nie inaktiv sein soll.</translation>

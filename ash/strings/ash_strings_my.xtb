@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">မလှုပ်မရှား အခြေအနေ ဒေတာ</translation>
 <translation id="2058456167109518507">စက်ပစ္စည်း တွေ့ရှိထားသည်</translation>
 <translation id="2064048859448024834">ကင်မရာအစမ်းကြည့်ရှုခြင်း ပြထားသည်</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{လင့်ခ် ၁ ခု}other{လင့်ခ် # ခု}}</translation>
 <translation id="2067220651560163985">အပူချိန်ကို စင်တီဂရိတ်ဖြင့် ပြပါ</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> သည် <ph name="PRINTER_NAME" /> တွင် ပုံနှိပ်ထုတ်ယူပြီးပါပြီ</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ပြောင်းရန်။ <ph name="CAPTURE_MEDIUM" /> သည် <ph name="CAPTURE_STATE" /> ဖြစ်သည်</translation>

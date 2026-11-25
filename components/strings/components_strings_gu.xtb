@@ -690,7 +690,6 @@
 <translation id="2155260325161282517">5 x 7 ઇંચ</translation>
 <translation id="2156467141257470387">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. તેનાથી તમારું ઑફિસનું વર્તમાન સરનામું બદલાશે નહીં. તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT" />માં સાચવવામાં આવશે.</translation>
 <translation id="2157640075051554492">કિંમત ટ્રૅક કરવા વિશેના નોટિફિકેશન</translation>
-<translation id="2158964559178498011">ઑટોમૅટિક રીતે ભરવાની સુવિધા વધુ સ્થાનો પર કામ કરે છે — માહિતી શોધવા અને ભરવા માટે બે વાર Ctrl દબાવો</translation>
 <translation id="2161656808144014275">ટેક્સ્ટ</translation>
 <translation id="2162435186600002085">પ્રાથમિક હેડરનો લોગો</translation>
 <translation id="2162535140284745414">AI વડે બ્રાઉઝ કરવાની નવી રીતો શોધવામાં તમારી મદદ કરી શકે તેવા રિઅલ-ટાઇમ સૂચનો મેળવો.</translation>
@@ -2201,7 +2200,6 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">પેજનો અનુવાદ કરીએ?</translation>
 <translation id="468314109939257734">તમારો વર્ચ્યુઅલ કાર્ડ નંબર જુઓ</translation>
-<translation id="4684818564800397688">ઑટોમૅટિક રીતે ભરવાની સુવિધા વધુ સ્થાનો પર કામ કરે છે — માહિતી શોધવા અને ભરવા માટે બે વાર ⌘ દબાવો</translation>
 <translation id="4686942373615810936">હમણાં જ બનાવ્યું</translation>
 <translation id="4690205240253392065">પછીથી ચુકવણી કરવાની સુવિધાના પ્રદાતા પસંદ કરો</translation>
 <translation id="469028408546145398">'છૂપી વિન્ડો બંધ કરો' બટન, હાલમાં ખુલ્લી તમામ છૂપી વિન્ડો બંધ કરવા માટે સક્રિય કરો</translation>
@@ -2863,7 +2861,6 @@
 <translation id="573974402615125334">ટૅબના ગ્રૂપ શેર કરવા, તેમાં જોડાવા અથવા તેમાં સહયોગ કરવા માટે, તમારો ઇતિહાસ અને ટૅબ સિંક કરો</translation>
 <translation id="5740911612628596808">એન્વલપ C9</translation>
 <translation id="574392208103952083">મધ્યમ</translation>
-<translation id="5744350700955456407">ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધા હવે — Gmail અને Photos જેવી ઍપમાંથી — ઑર્ડર નંબર અને ફ્લાઇટ કન્ફર્મેશન કોડ જેવી માહિતી શોધી અને ભરી શકે છે</translation>
 <translation id="5745586894920491759">Chrome ક્લાઉડમાં પેજના શીર્ષકો અને URLs પર પ્રક્રિયા કરે છે</translation>
 <translation id="5745733273847572235">તમારા સ્થાન માટે પૂછી શકે છે</translation>
 <translation id="5750869797196646528">હાથ ટ્રૅક કરવાની સુવિધા</translation>
@@ -4762,6 +4759,7 @@
 <translation id="8975263830901772334">તમે પ્રિન્ટ કરો તે ફાઇલોના નામ</translation>
 <translation id="8982884016487650216">PDF લોડ કરવાની પ્રક્રિયા પૂર્ણ થઈ</translation>
 <translation id="8983369100812962543">તમે હવે ઍપનું કદ બદલી શકો છો</translation>
+<translation id="8984453891367472218">ગ્રૂપ મુજબ સૉર્ટ કરો</translation>
 <translation id="8984785270737450103">શેરિંગ હાલમાં બંધ છે</translation>
 <translation id="8985112471026018799">વધુ ઝડપી ચેકઆઉટ કરવા માટે કાર્ડને સાચવો</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeમાં તમારો બ્રાઉઝિંગ ઇતિહાસ જોવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>

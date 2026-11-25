@@ -2528,6 +2528,23 @@ WebSocket 以外のリクエストの上限を変更するには、<ph name="MAX
        有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
 
        このポリシーは以前、Android で誤って有効になっていましたが、Android でこの機能がフルサポートされていたことはありません。</translation>
+<translation id="2585054570696570117">このポリシーを設定することで、既存の拡張機能関連ポリシーで管理されている設定もすべて含め、<ph name="PRODUCT_NAME" /> の拡張機能の設定を管理できます。
+
+このポリシーでは、特定の設定のみを指定するには拡張機能 ID または更新 URL を使用します。また、「<ph name="DEFAULT_SCOPE" />」という特別な ID でデフォルトの設定を指定できます。デフォルトの設定は、このポリシーでカスタムの設定が指定されていないすべての拡張機能に適用されます。
+
+このポリシーでは、以前のポリシーの拡張機能ごとの設定をオーバーライドできます。
+
+<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />、または <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> の ID ごとの拡張機能の設定には、<ph name="DEFAULT_SCOPE" /> のデフォルト設定から「installation_mode」と「update_url」のみが継承されます。他のプロパティは継承されません。更新 URL の場合、拡張機能マニフェストで指定された更新 URL が正確に一致する拡張機能に設定が適用されます（http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy）。「override_update_url」フラグが true に設定されている場合、拡張機能は、<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ポリシーまたはこのポリシーの「update_url」フィールドで指定された「更新」URL を使用してインストールおよび更新されます。「update_url」が Chrome ウェブストアの URL の場合、「override_update_url」フラグは無視されます。
+
+<ph name="PRODUCT_NAME" /> バージョン 155～158 では、「debugger」権限を持つ拡張機能に「runtime_blocked_hosts」を適用すると、すべてのターゲットで「chrome.debugger.attach()」が完全に無効化される場合があります（<ph name="CHROME_VARIATIONS_POLICY_NAME" /> ポリシーですべてのバリエーションが無効になっている場合など）。
+
+<ph name="PRODUCT_NAME" /> バージョン 160 以降では、「blocked_permissions」と「allowed_permissions」で、拡張機能がマニフェスト キーから取得する内部権限（「chrome_settings_overrides」からの「searchProvider」、「homepage」、「startupPages」（<ph name="MS_WIN_NAME" /> と <ph name="MAC_OS_NAME" /> のみ）、および「chrome_url_overrides」からの「newTabPageOverride」）も指定できます。
+
+<ph name="MS_WIN_NAME" /> の場合、Chrome ウェブストア以外から取得されたアプリと拡張機能を自動インストールできるのは、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、<ph name="MS_AAD_NAME" /> に追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスのみです。
+
+<ph name="MAC_OS_NAME" /> の場合、Chrome ウェブストア以外から取得されたアプリと拡張機能を自動インストールできるのは、MDM を介して管理されるインスタンス、MCX を介してドメインに追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスのみです。
+
+注: このポリシーは、拡張機能がサポートされているプラットフォームにのみ適用されます。</translation>
 <translation id="2585535930727399201">エンタープライズ拡張機能では、chrome.systemLog API を介してシステムログ ファイルにログを追加できます。
 
 このポリシーを有効に設定した場合、システムログ ファイルに一定期間ログを保持できます。

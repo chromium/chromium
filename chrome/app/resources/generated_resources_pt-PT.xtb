@@ -1297,6 +1297,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="244071666433939959">As apps são abertas numa janela</translation>
 <translation id="2442916515643169563">Sombra do texto</translation>
 <translation id="2443487764245141020">Os sites também podem ter de reconhecer o seu dispositivo através de um identificador</translation>
+<translation id="2444282212665587861">atualização, atualizações, melhoria, versão, compilação, informações, procurar atualizações</translation>
 <translation id="244475495405467108">Fechar separadores à esquerda</translation>
 <translation id="2444874983932528148">Continue facilmente a partir do ponto onde ficou</translation>
 <translation id="2445081178310039857">É necessário o directório de raiz da extensão.</translation>
@@ -2134,6 +2135,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="3321512411079201586">&amp;Isolado</translation>
 <translation id="3323288183237359315">Instalar para o Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Para proteger a sua privacidade, foram removidas as autorizações de um site}other{Para proteger a sua privacidade, foram removidas as autorizações de alguns sites}}</translation>
+<translation id="3325561120400598624">Os chats são revistos e usados para treinar os modelos de IA generativa. O Gemini é IA e pode cometer erros. Algum conteúdo pode não ser adequado para todos. Pode <ph name="BEGIN_LINK_MANAGE_HISTORY" />gerir o seu histórico<ph name="END_LINK_MANAGE_HISTORY" />, incluindo <ph name="BEGIN_LINK_LOCATION_INFO" />informações sobre a sua localização<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais sobre as suas escolhas<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Estilo</translation>
 <translation id="3331974543021145906">Informações da aplicação</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – vídeo em reprodução no modo ecrã no ecrã.</translation>
@@ -2259,6 +2261,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Carregue 1 ficheiro .pdf para usar com a sua pergunta}other{Carregue até # ficheiros .pdf para usar com a sua pergunta}}</translation>
 <translation id="3456750372063895499">Abrir link numa janela i&amp;solada</translation>
 <translation id="345693547134384690">Abrir imagem num novo separador</translation>
+<translation id="3456949031754827166">Reorganizar</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Manter grupo}other{Manter grupos}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 marcador apagado}other{# marcadores apagados}}</translation>
 <translation id="3471687177769494956">Editar atalho de navegação</translation>
@@ -3313,6 +3316,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="4602776638371779614">Este separador está ativamente a procurar dispositivos Bluetooth</translation>
 <translation id="4605026046465576953">Não é possível abrir esta app porque não tem autorização para executar apps Web isoladas</translation>
 <translation id="4606551464649945562">Não permitir que os sites criem um mapa 3D do ambiente à sua volta nem monitorizem a posição da câmara</translation>
+<translation id="4606965546067937011">velocidade, RAM, atraso, bloqueio, falha de sistema, recurso, utilização, bateria, otimizador, lento, memória, poupança de memória</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Eliminar o grupo de separadores?}other{Eliminar os grupos de separadores?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Carregue 1 ficheiro para usar com a sua pergunta}other{Carregue até # ficheiros para usar com a sua pergunta}}</translation>
 <translation id="4608500690299898628">&amp;Localizar...</translation>
@@ -4146,6 +4150,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="5535769176698670170">Trocar com vista superior</translation>
 <translation id="5536642445914063887">Mudar de perfil</translation>
 <translation id="5537725057119320332">Transmitir</translation>
+<translation id="553876896781261711">eliminar, remover, segurança, privacidade, limpeza, armazenamento, repor, cache, cookies, lento, velocidade, histórico</translation>
 <translation id="5541091577812545428">A palavra-passe não foi alterada</translation>
 <translation id="5542132724887566711">Perfil</translation>
 <translation id="5543983818738093899">A verificar o estado...</translation>
@@ -4738,6 +4743,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6214157047210274853">Editar na Carteira do Google</translation>
 <translation id="621470880408090483">Não permitir que os sites estabeleçam ligação a dispositivos Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Para manter as suas palavras-passe seguras, o <ph name="BRAND" /> é bloqueado após 1 minuto de inatividade}other{Para manter as suas palavras-passe seguras, o <ph name="BRAND" /> é bloqueado após # minutos de inatividade}}</translation>
+<translation id="6215427500141060726">Os chats são revistos e usados para treinar os modelos de IA generativa. O Gemini é IA e pode cometer erros. Pode <ph name="BEGIN_LINK_MANAGE_HISTORY" />gerir o seu histórico<ph name="END_LINK_MANAGE_HISTORY" />, incluindo <ph name="BEGIN_LINK_LOCATION_INFO" />informações sobre a sua localização<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais sobre as suas escolhas<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Sites e apps recusados</translation>
 <translation id="6216696360484424239">Iniciar sessão automaticamente</translation>
 <translation id="6218961554829577610">Não gostei da voz</translation>
@@ -4889,6 +4895,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="639880411171387127">A sua seleção do Google Lens. Prima Enter ou a tecla de retrocesso para eliminar a sua seleção do Google Lens</translation>
 <translation id="6400360390396538896">Sempre em <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Retirar foco do grupo de separadores</translation>
+<translation id="6401522392962817913">Ao continuar, aceita os Termos de Utilização do Google Payments. O Aviso de Privacidade descreve a forma como tratamos os seus dados. O seu cartão é guardado na sua Conta Google <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Para saber o motivo, contacte o programador da app</translation>
 <translation id="6402921224457714577">Os sites podem pedir para controlar e reprogramar os seus dispositivos MIDI</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
@@ -4977,6 +4984,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6499143127267478107">A resolver anfitrião no script de proxy...</translation>
 <translation id="6503077044568424649">Mais visitadas</translation>
 <translation id="6504601948739128893">Sem autorização para utilizar tipos de letra instalados no dispositivo</translation>
+<translation id="6505525633061207363">credenciais, início de sessão, chave de acesso, bloqueio, cofre, chaves, início de sessão, iniciar sessão</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" quer instalar a seguinte app neste dispositivo:}other{"<ph name="APP_NAME" />" quer instalar as seguintes apps neste dispositivo:}}</translation>
 <translation id="6508248480704296122">Relacionado com <ph name="NAME_PH" />.</translation>
 <translation id="6508261954199872201">Aplicação: <ph name="APP_NAME" /></translation>

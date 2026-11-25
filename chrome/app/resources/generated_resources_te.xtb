@@ -851,6 +851,7 @@
 <translation id="1921544956190977703">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి రక్షణ పొందడానికి మీ దగ్గర Chrome అత్యంత శక్తివంతమైన సెక్యూరిటీ ఉంది</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">"<ph name="NAME" />", మీ పరికరంలో మాత్రమే సేవ్ చేయబడుతుంది. దీన్ని మీ ఇతర పరికరాల్లో ఉపయోగించడానికి, మీ Google ఖాతాలో దీన్ని సేవ్ చేయండి.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">దీనితో తెరువు</translation>
 <translation id="1925017091976104802">అతికించడానికి <ph name="MODIFIER_KEY_DESCRIPTION" />ను నొక్కండి</translation>
 <translation id="1925021887439448749">అనుకూల వెబ్ అడ్రస్‌ను నమోదు చేయండి</translation>
@@ -1401,6 +1402,7 @@
 <translation id="2528487766183344810">క్లయింట్ సర్టిఫికెట్‌ను ఎగుమతి చేయడానికి దయచేసి <ph name="TOKEN_NAME" />‌ను అన్‌లాక్ చేయండి.</translation>
 <translation id="2532198298278778531">ChromeOS Flex సెట్టింగ్‌లలో సురక్షిత DNSను మేనేజ్ చేయండి</translation>
 <translation id="253434972992662860">&amp;పాజ్ చేయి</translation>
+<translation id="2534439599863644240">సీరియల్ పోర్ట్</translation>
 <translation id="253498598929009420">సైట్ మీ స్క్రీన్ కంటెంట్‌లను చూడగలుగుతుంది</translation>
 <translation id="253557089021624350">సక్రియ కార్యాచరణల గణన</translation>
 <translation id="2537395079978992874">కింది ఫైళ్లు, ఫోల్డర్‌లను <ph name="ORIGIN" /> చూడగలదు, సవరించగలదు</translation>

@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Cache da política OK</translation>
 <translation id="1131264053432022307">Imagem que copiou</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para sair do ecrã inteiro, arraste a partir da parte superior e toque no botão anterior</translation>
+<translation id="1132789342529761192">Não é recomendado carregar</translation>
 <translation id="11370190534773372">Detalhes do cartão preenchidos</translation>
 <translation id="1138458427267715730">Receba alertas quando o preço descer em qualquer site na Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
@@ -604,6 +605,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2025891858974379949">Conteúdo inseguro</translation>
 <translation id="2027465737841872819">Plástico</translation>
 <translation id="2027707238798802149">Cartão não disponível</translation>
+<translation id="2028329426302356196">Não é recomendado transferir</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Rever o proxy e a firewall<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Esta instância do Chrome está a ser executada com marcas da linha de comandos definidas manualmente. Tenha em atenção que as marcas da linha de comandos podem mudar em qualquer altura e não são compatíveis.</translation>
 <translation id="2033900728810589426">O atalho não pode ser igual à palavra-chave do fornecedor de pesquisa predefinido definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -690,7 +692,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2155260325161282517">5 x 7 pol.</translation>
 <translation id="2156467141257470387">Pode usar moradas guardadas em produtos Google. Isto não altera a sua morada do trabalho existente. Esta morada vai ser guardada na sua Conta Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Notificações de monitorização de preços</translation>
-<translation id="2158964559178498011">O preenchimento automático funciona em mais locais: prima Ctrl duas vezes para encontrar e preencher informações</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2162435186600002085">Logótipo do cabeçalho principal</translation>
 <translation id="2162535140284745414">Receba sugestões em tempo real que podem ajudar a encontrar novas formas de navegar com a IA.</translation>
@@ -1458,6 +1459,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3443504041532578451">Disco ótico (acetinado)</translation>
 <translation id="3447661539832366887">O proprietário deste dispositivo desativou o jogo do dinossauro.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Não é recomendado imprimir</translation>
 <translation id="3450323514459570273">Pode pedir para controlar e reprogramar os seus dispositivos MIDI</translation>
 <translation id="3452404311384756672">Intervalo de obtenção:</translation>
 <translation id="345268527248907593">Não foi possível aceder a este site</translation>
@@ -2201,7 +2203,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Traduzir a página?</translation>
 <translation id="468314109939257734">Veja o número do cartão virtual</translation>
-<translation id="4684818564800397688">O preenchimento automático funciona em mais locais: prima ⌘ duas vezes para encontrar e preencher informações</translation>
 <translation id="4686942373615810936">Criado agora mesmo</translation>
 <translation id="4690205240253392065">Escolha um fornecedor de opções para pagar depois</translation>
 <translation id="469028408546145398">Botão Fechar janelas de navegação anónima; ative para fechar todas as janelas de navegação anónima atualmente abertas</translation>
@@ -2863,7 +2864,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="573974402615125334">Para partilhar, aderir e colaborar em grupos de separadores, sincronize o seu histórico e separadores</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="574392208103952083">Médio</translation>
-<translation id="5744350700955456407">O preenchimento automático melhorado já pode encontrar e preencher informações, como números de encomendas e códigos de validação de voos, a partir de apps como o Gmail e o Fotos</translation>
 <translation id="5745586894920491759">O Chrome processa os títulos e os URLs das páginas na nuvem</translation>
 <translation id="5745733273847572235">Pode solicitar a sua localização</translation>
 <translation id="5750869797196646528">Monitorização das mãos</translation>
@@ -2921,6 +2921,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5851548754964597211">Lista de separadores</translation>
 <translation id="5851868085455377790">Emissor</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Não é recomendado copiar</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5862579898803147654">Empilhador 8</translation>
 <translation id="5863515189965725638">Edite o IBAN</translation>

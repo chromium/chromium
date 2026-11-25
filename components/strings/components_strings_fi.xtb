@@ -690,7 +690,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2155260325161282517">5 x 7 tuumaa</translation>
 <translation id="2156467141257470387">Voit käyttää tallennettuja osoitteita kaikissa Googlen tuotteissa. Tämä ei muuta nykyistä työosoitettasi. Se tallennetaan Google-tilillesi (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Hintaseurannan ilmoitukset</translation>
-<translation id="2158964559178498011">Automaattinen täyttö toimii useammissa paikoissa – paina Ctrl kahdesti, niin voit hakea ja täyttää tietoja</translation>
 <translation id="2161656808144014275">Teksti</translation>
 <translation id="2162435186600002085">Ensisijainen otsikkologo</translation>
 <translation id="2162535140284745414">Saat reaaliaikaisia ehdotuksia, joiden avulla voit löytää uusia tapoja selata tekoälyn avulla.</translation>
@@ -2202,7 +2201,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Käännetäänkö sivu?</translation>
 <translation id="468314109939257734">Katso virtuaalisen kortin numero</translation>
-<translation id="4684818564800397688">Automaattinen täyttö toimii useammissa paikoissa – paina ⌘ kahdesti, niin voit hakea ja täyttää tietoja</translation>
 <translation id="4686942373615810936">Luotiin juuri nyt</translation>
 <translation id="4690205240253392065">Valitse maksamisen palveluntarjoaja myöhemmin</translation>
 <translation id="469028408546145398">Sulje incognito-ikkunat ‑painike, aktivoi sulkeaksesi kaikki tällä hetkellä avoinna olevat incognito-ikkunat</translation>
@@ -2864,7 +2862,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="573974402615125334">Synkronoi historia ja välilehdet, jotta voit jakaa välilehtiryhmiä, liittyä niihin ja yhteiskäyttää niitä</translation>
 <translation id="5740911612628596808">Kirjekuori C9</translation>
 <translation id="574392208103952083">Keskivahva</translation>
-<translation id="5744350700955456407">Parannettu automaattinen täyttö voi nyt löytää ja täyttää tietoja (esim. tilausnumeroita ja lentojen vahvistuskoodeja) sovelluksista, kuten Gmailista ja Kuvista</translation>
 <translation id="5745586894920491759">Chrome käsittelee sivujen otsikoita ja URL-osoitteita pilvessä</translation>
 <translation id="5745733273847572235">Saa pyytää sijaintiasi</translation>
 <translation id="5750869797196646528">Käsien seuranta</translation>

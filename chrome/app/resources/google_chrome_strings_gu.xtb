@@ -141,6 +141,7 @@
 <translation id="2295218613066132598">Chrome સાઇટના શૉર્ટકટ બતાવો</translation>
 <translation id="2301513536169703857">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ, બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="2307973900865360088">ડૉકમાં રાખો</translation>
+<translation id="2308558013860776484">Chromeની બહારના કન્ટેન્ટનો સ્ક્રીનશૉટ શેર કરો, જેમ કે અન્ય ઍપ અથવા ફાઇલો</translation>
 <translation id="2309047409763057870">આ Google Chrome નું દ્વિતીય ઇન્સ્ટૉલેશન છે અને આને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવી શકાતું નથી.</translation>
 <translation id="2345992953227471816">Chromeને આ એક્સ્ટેન્શનમાં માલવેર હોવાનું જાણવા મળ્યું છે:</translation>
 <translation id="2358140144860869442">તમારા બધા ડિવાઇસ પર તમારી વાંચન સૂચિ અને બીજું ઘણું મેળવવા માટે, Chromeમાં સાઇન ઇન કરો</translation>
@@ -250,6 +251,7 @@
 <translation id="3294686910656423119">વપરાશનાં આંકડા અને ક્રૅશ રિપોર્ટ</translation>
 <translation id="3327226547491422998">પછીથી, તમે તમારા માટે ફોર્મ ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે સચવાયેલી માહિતીનો ઉપયોગ કરવા માગો છો કે કેમ તે વિશે Chrome તમને પૂછી શકે છે</translation>
 <translation id="3352986031709923790">શોધ વિસ્તારના સૌથી ઉપર જમણા ખૂણે: જમણી બાજુ <ph name="RIGHT" />%, સૌથી ઉપર <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">સાઇટ અને Chrome સીધા તમારા ડિવાઇસ પર ચાલતા AIનો ઉપયોગ સારાંશો, પ્રૂફરીડિંગ, કૅપ્શન અને બીજી ઘણી સુવિધાઓ માટે કરી શકે છે. આ Gemini in Chromeથી અલગ છે. <ph name="BEGIN_LINK" />ડિવાઇસ પર AI વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Chromeની કેટલીક સુવિધાઓ અને એક્સ્ટેન્શન શૉર્ટકટ સાથે આવે છે. તમે તેને ફરીથી ચાલુ કરવાનું પસંદ કરી શકો છો.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome હમણાં ફરીથી લૉન્ચ થશે}=1{Chrome 1 સેકન્ડમાં ફરીથી લૉન્ચ થશે}one{Chrome # સેકન્ડમાં ફરીથી લૉન્ચ થશે}other{Chrome # સેકન્ડમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="3380249972812870825">Gemini in Chrome ખોલવા માટે, <ph name="GLOBAL_HOTKEY" /> દબાવો</translation>
@@ -349,6 +351,7 @@
 <translation id="4427306783828095590">વધારેલી સુરક્ષા ફિશિંગ અને માલવેરને બ્લૉક કરવામાં વધુ સહાયરૂપ થાય છે</translation>
 <translation id="4434353761996769206">ઇન્સ્ટૉલરની ભૂલ <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">ઝડપી ઓવરવ્યૂ મેળવવા અને ફૉલોઅપ પ્રશ્નો પૂછવા માટે, આ દસ્તાવેજને Gemini in Chrome સાથે શેર કરો</translation>
+<translation id="4440999670272408191">તમે કોઈપણ સમયે તેમને કાઢી નાખી શકો છો. જ્યારે કોઈ સાઇટ અથવા સુવિધાને તેમની જરૂર હોય, ત્યારે Chrome તેમને ઑટોમૅટિક રીતે ફરીથી ડાઉનલોડ કરી શકે છે.</translation>
 <translation id="4450664632294415862">Chrome - નેટવર્ક સાઇન ઇન - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome પર બીજી ક્રિયા ચાલુ છે. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="4493028449971051158">સ્ટાર્ટઅપ દરમિયાન ભૂલ: કૃપા કરીને ઇન્સ્ટૉલરને ઍડમિનિસ્ટ્રેટર તરીકે ચલાવો.</translation>
@@ -356,6 +359,7 @@
 <translation id="4501839397124711198">તમે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે, તમે બાજુની પૅનલમાં Google Searchને પિન કરી શકો છો</translation>
 <translation id="4571503333518166079">Chromeની નોટિફિકેશનની સેટિંગ પર જાઓ</translation>
 <translation id="4580939929828762295">Google Password Manager સાથે સુરક્ષિત રહો</translation>
+<translation id="4589544932092381064">Windows ટાસ્કબારમાં Chromeમાં શોધવાની સુવિધા બતાવો અને કીબોર્ડ શૉર્ટકટ ચાલુ કરો</translation>
 <translation id="459622048091363950">એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.</translation>
 <translation id="4598116752460667024">સૂચિમાંથી કોઈપણ પ્રક્રિયા શોધો.</translation>
 <translation id="4600710005438004015">Chromeનું નવું વર્ઝન અપડેટ ન થવાથી, તમે નવી સુવિધાઓ અને સુરક્ષાના સુધારા ચૂકી રહ્યા છો.</translation>
@@ -371,6 +375,7 @@
 <translation id="4754614261631455953">Google Chrome કૅનેરી (mDNS-In)</translation>
 <translation id="4756182432527369254">Chromeના V8 એન્જિન વડે સાઇટની ગતિ વધારે છે પરંતુ Chromeને અટૅક સામે થોડું ઓછું પ્રતિરોધક બનાવે છે</translation>
 <translation id="4768676935374695498">Google Lens વડે આ વીડિયો શોધો</translation>
+<translation id="4783580253728290203">જ્યારે બંધ હોય, ત્યારે Chrome ડિવાઇસ પરના AI મૉડલ કાઢી નાખે છે અને તેને ફરીથી ડાઉનલોડ કરશે નહીં. કેટલીક સાઇટ અને Chromeની સુવિધાઓ કદાચ કામ ન કરે.</translation>
 <translation id="479167709087336770">આ પણ Google Searchમાં જે જોડણી તપાસનારનો ઉપયોગ થાય છે તેનો જ ઉપયોગ કરે છે. તમે બ્રાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Googleને મોકલવામાં આવે છે. તમે સેટિંગમાં આ વર્તણૂકને હંમેશાં બદલી શકો છો.</translation>
 <translation id="4793679854893018356">Chromeની તમને સલામત રાખવાની રીત વિશે જાણો</translation>
 <translation id="4803313124144656665">Chromeમાં Google Search બંધ કરો</translation>
@@ -456,6 +461,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. પ્રૉક્સી સર્વરને પ્રમાણીકરણની જરૂર છે.</translation>
 <translation id="5709557627224531708">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
+<translation id="5715427327524421317">Chrome આ AI મૉડલને ઑટોમૅટિક રીતે ડાઉનલોડ અને અપડેટ કરે છે</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{અપડેટ લાગુ કરવા, અદ્યતન સુરક્ષા માટે એ જરૂરી છે કે તમે Chrome ફરીથી લૉન્ચ કરો. તમારી આઇસોલેટેડ વિન્ડો ફરીથી ખુલશે નહીં.}one{અપડેટ લાગુ કરવા, અદ્યતન સુરક્ષા માટે એ જરૂરી છે કે તમે Chrome ફરીથી લૉન્ચ કરો. તમારી # આઇસોલેટેડ વિન્ડો ફરીથી ખુલશે નહીં.}other{અપડેટ લાગુ કરવા, અદ્યતન સુરક્ષા માટે એ જરૂરી છે કે તમે Chrome ફરીથી લૉન્ચ કરો. તમારી # આઇસોલેટેડ વિન્ડો ફરીથી ખુલશે નહીં.}}</translation>
 <translation id="5719246646468301581">Google Chrome અને ChromeOSની વધારાની સેવાની શરતો</translation>
 <translation id="5736850870166430177">જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટ સહિત URLs પણ Safe Browsingને મોકલી શકે છે</translation>
@@ -547,6 +553,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6491330562720922580">મોબાઇલ ડિવાઇસ પર Chrome બ્રાઉઝર ડાઉનલોડ કરવા માટેનો QR કોડ</translation>
 <translation id="6493527311031785448">Google Chrome <ph name="AUTHENTICATION_PURPOSE" />નો પ્રયાસ કરી રહ્યું છે</translation>
 <translation id="6497147134301593682">Chrome ઑટોમેટિક રીતે બંધ થઈ ગયું હતું</translation>
+<translation id="650039555447046671">Chrome આ ડિવાઇસમાંથી AI મૉડલ કાઢી નાખશે. કેટલીક સાઇટ અને Chromeની સુવિધાઓ કદાચ કામ ન કરે.</translation>
 <translation id="6506909944137591434">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને કૅમેરાની પરવાનગીની જરૂર છે</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">તમારા લોકેશનનો ઉપયોગ કરવા માટે, <ph name="BEGIN_LINK" />સિસ્ટમના સેટિંગ<ph name="END_LINK" />માં જઈને Chromeને ઍક્સેસ આપો</translation>
@@ -585,6 +592,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6877155553248388166">શોધ વિસ્તારના સૌથી નીચે જમણા ખૂણે: જમણી બાજુ <ph name="RIGHT" />%, સૌથી નીચે <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Chrome વડે શોધ ખોલો</translation>
 <translation id="6881299373831449287">Chrome અપડેટ કરી રહ્યાં છીએ</translation>
+<translation id="6881997500528805781">ડિવાઇસ સ્ટોરેજનો ઉપયોગ કરે છે. Chrome 45 દિવસ પછી અથવા સ્ટોરેજ ઓછો હોય ત્યારે ઉપયોગમાં ન લેવાતા AI મૉડલ કાઢી નાખે છે</translation>
 <translation id="6885412569789873916">Chrome બીટા ઍપ્લિકેશનો</translation>
 <translation id="6893363893008038481">Chromeમાંથી એકાઉન્ટ કાઢી નાખો</translation>
 <translation id="6896758677409633944">કૉપિ કરો</translation>

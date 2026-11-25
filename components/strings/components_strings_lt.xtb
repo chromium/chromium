@@ -690,7 +690,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2155260325161282517">5 x 7 col.</translation>
 <translation id="2156467141257470387">Išsaugotus adresus galite naudoti „Google“ produktuose. Dėl to esamas darbo adresas nepasikeis. Jis bus išsaugotas „Google“ paskyroje (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Kainų stebėjimo pranešimai</translation>
-<translation id="2158964559178498011">Automatinis pildymas veikia daugiau vietų – dukart paspauskite „Ctrl“, kad būtų rasta ir užpildyta informacija</translation>
 <translation id="2161656808144014275">Tekstas</translation>
 <translation id="2162435186600002085">Pagrindinės antraštės logotipas</translation>
 <translation id="2162535140284745414">Gaukite pasiūlymų realiuoju laiku, kurie gali padėti rasti naujų būdų naršyti naudojant DI.</translation>
@@ -2202,7 +2201,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Versti puslapį?</translation>
 <translation id="468314109939257734">Žr. virtualios kortelės numerį</translation>
-<translation id="4684818564800397688">Automatinis pildymas veikia daugiau vietų – dukart paspauskite ⌘, kad būtų rasta ir užpildyta informacija</translation>
 <translation id="4686942373615810936">Ką tik sukurta</translation>
 <translation id="4690205240253392065">Pasirinkite mokėjimo vėliau paslaugos teikėją</translation>
 <translation id="469028408546145398">Mygtukas „Uždaryti inkognito langus“; suaktyvinkite, jei norite uždaryti visus šiuo metu atidarytus inkognito langus</translation>
@@ -2864,7 +2862,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="573974402615125334">Jei norite bendrinti, prisijungti ir bendradarbiauti skirtukų grupėse, sinchronizuokite istoriją ir skirtukus</translation>
 <translation id="5740911612628596808">C9 vokas</translation>
 <translation id="574392208103952083">Vidutinis</translation>
-<translation id="5744350700955456407">Išmanusis automatinis pildymas dabar gali rasti ir užpildyti informaciją, pvz., užsakymų numerius ir skrydžių patvirtinimo kodus, iš tokių programų kaip „Gmail“ ir Nuotraukos</translation>
 <translation id="5745586894920491759">„Chrome“ apdoroja puslapių pavadinimus ir URL debesyje</translation>
 <translation id="5745733273847572235">Gali būti prašoma jūsų vietovės informacijos</translation>
 <translation id="5750869797196646528">Rankų stebėjimas</translation>

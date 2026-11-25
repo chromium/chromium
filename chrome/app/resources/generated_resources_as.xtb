@@ -852,6 +852,7 @@
 <translation id="1921544956190977703">বিপজ্জনক ৱেবছাইট, ডাউনল’ড আৰু এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষিত হৈ থাকিবলৈ আপোনাৰ ওচৰত Chromeৰ আটাইতকৈ শক্তিশালী সুৰক্ষা ব্যৱস্থাটো আছে</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">"<ph name="NAME" />" কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। এইটো আপোনাৰ আন ডিভাইচসমূহত ব্যৱহাৰ কৰিবলৈ, এইটো আপোনাৰ Google একাউণ্টত ছেভ কৰক।</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">ইয়াৰ জৰিয়তে খোলক</translation>
 <translation id="1925017091976104802">পে’ষ্ট কৰিবলৈ <ph name="MODIFIER_KEY_DESCRIPTION" /> টিপক</translation>
 <translation id="1925021887439448749">কাষ্টম ৱেব ঠিকনা দিয়ক</translation>
@@ -1401,6 +1402,7 @@
 <translation id="2528487766183344810">ক্লায়েণ্টৰ প্ৰমাণপত্ৰ ৰপ্তানি কৰিবলৈ অনুগ্ৰহ কৰি <ph name="TOKEN_NAME" /> আনলক কৰক।</translation>
 <translation id="2532198298278778531">ChromeOS Flexৰ ছেটিঙত সুৰক্ষিত DNS পৰিচালনা কৰক</translation>
 <translation id="253434972992662860">&amp;পজ কৰক</translation>
+<translation id="2534439599863644240">ক্ৰমিক প’ৰ্ট</translation>
 <translation id="253498598929009420">এই ছাইটটোৱে আপোনাৰ স্ক্ৰীনত থকা সমল চাব পাৰিব</translation>
 <translation id="253557089021624350">সক্রিয় ৰখাৰ সংখ্যা</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" />এ তলৰ ফাইলসমূহ আৰু ফ’ল্ডাৰসমূহ চাব আৰু সম্পাদনা কৰিব পাৰে</translation>

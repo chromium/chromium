@@ -690,7 +690,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2155260325161282517">5 × 7 hüvelyk</translation>
 <translation id="2156467141257470387">A mentett címeket használhatja a Google-termékekben. Ez nem módosítja a meglévő munkahelyi címét. A rendszer a címet a Google-fiókjába (<ph name="ACCOUNT" />) menti.</translation>
 <translation id="2157640075051554492">Árkövetési értesítések</translation>
-<translation id="2158964559178498011">Az automatikus kitöltés több helyen működik – nyomja le kétszer a Ctrl billentyűt az adatok kereséséhez és kitöltéséhez</translation>
 <translation id="2161656808144014275">Szöveg</translation>
 <translation id="2162435186600002085">Elsődleges fejléclogó</translation>
 <translation id="2162535140284745414">Valós idejű javaslatokat kaphat, amelyek segítségével új módokon böngészhet az AI használatával.</translation>
@@ -2198,7 +2197,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Lefordítja az oldalt?</translation>
 <translation id="468314109939257734">Virtuális kártyaszám megtekintése</translation>
-<translation id="4684818564800397688">Az automatikus kitöltés több helyen működik – nyomja le kétszer a ⌘ billentyűt az adatok kereséséhez és kitöltéséhez</translation>
 <translation id="4686942373615810936">Épp most létrehozva</translation>
 <translation id="4690205240253392065">Későbbi fizetési lehetőséget kínáló szolgáltató kiválasztása</translation>
 <translation id="469028408546145398">Inkognitó ablakok bezárása gomb. A gombot megnyomva bezárhatja a jelenleg megnyitott összes inkognitó ablakot.</translation>
@@ -2860,7 +2858,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="573974402615125334">Ha meg szeretne osztani lapcsoportokat, csatlakozni szeretne hozzájuk, illetve együtt szeretne dolgozni másokkal bennük, szinkronizálja az előzményeket és a lapokat</translation>
 <translation id="5740911612628596808">C9 boríték</translation>
 <translation id="574392208103952083">Közepes</translation>
-<translation id="5744350700955456407">A továbbfejlesztett automatikus kitöltés mostantól megkereshet és kitölthet információkat (például rendelésszámokat és járatok visszaigazoló kódjait) olyan alkalmazásokból, mint a Gmail és a Fotók.</translation>
 <translation id="5745586894920491759">A Chrome a felhőben dolgozza fel az oldalcímeket és az URL-eket</translation>
 <translation id="5745733273847572235">Engedélyt kérhet a helyadataihoz való hozzáférésre</translation>
 <translation id="5750869797196646528">Kézmozgás követése</translation>

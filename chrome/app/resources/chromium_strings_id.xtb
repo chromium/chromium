@@ -52,6 +52,7 @@
 <translation id="1572572333538561328">Buka kembali Mode AI Penelusuran</translation>
 <translation id="1574377791422810894">Alat keamanan Chromium</translation>
 <translation id="1594928384848033697">Chromium ingin menghapus data Pengelola Sandi Anda. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
+<translation id="1599690375407103815">Jika dinonaktifkan, Chromium akan menghapus model AI di perangkat dan tidak akan mendownloadnya lagi. Beberapa situs dan fitur Chromium mungkin tidak berfungsi.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update}=1{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="1625909126243026060">Meninjau kontrol privasi dan keamanan utama di Chromium</translation>
 <translation id="1640672724030957280">Mengunduh...</translation>
@@ -66,6 +67,7 @@
 <translation id="1745121272106313518">Chromium akan dimulai ulang dalam <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Jika HTTPS tidak tersedia, Chromium akan menggunakan koneksi yang tidak aman tanpa memperingatkan Anda</translation>
 <translation id="1774152462503052664">Jalankan Chromium di latar belakang</translation>
+<translation id="1792680680989393197">Anda dapat menghapusnya kapan saja. Chromium dapat otomatis mendownloadnya lagi saat situs atau fitur membutuhkannya.</translation>
 <translation id="1793486931176048546">Klik <ph name="BEGIN_BOLD" />Ya<ph name="END_BOLD" /> di notifikasi Windows untuk menyematkan Chromium ke taskbar agar dapat diakses dengan cepat.</translation>
 <translation id="1808667845054772817">Instal ulang Chromium</translation>
 <translation id="1820835682567584003">Chromium sedang mencoba <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -250,6 +252,7 @@
 <translation id="3751920144677881410">Dari tombol "Panel samping Penelusuran" di toolbar, Anda dapat membuka kembali panel samping Penelusuran untuk mengajukan pertanyaan saat menjelajah</translation>
 <translation id="3788675262216168505">Kelola Profil Chromium</translation>
 <translation id="3790262771324122253">Pelajari alasan Chromium memblokir beberapa download</translation>
+<translation id="3793196697433239004">Menggunakan penyimpanan perangkat. Chromium akan menghapus model AI yang tidak digunakan setelah 45 hari atau saat penyimpanan hampir penuh</translation>
 <translation id="379589255253486813">Chromium akan memberi tahu Anda jika ada yang perlu ditinjau</translation>
 <translation id="3802055581630249637">Chromium melakukan pramuat halaman yang mungkin akan Anda buka, agar halaman tersebut dimuat lebih cepat saat Anda membukanya</translation>
 <translation id="3810973564298564668">Kelola</translation>
@@ -331,6 +334,7 @@
 <translation id="4621240073146040695">Hampir selesai diperbarui! Luncurkan ulang Chromium untuk menyelesaikan pembaruan.</translation>
 <translation id="4625064703209785397">Mempercepat situs dengan mesin V8 Chromium, tetapi membuat Chromium sedikit lebih rentan terhadap serangan</translation>
 <translation id="4626321472657185181">Buka Penelusuran dengan Chromium</translation>
+<translation id="4639628733881319833">Bagikan screenshot konten di luar Chromium, seperti aplikasi atau file lain</translation>
 <translation id="4654639495249754755">Profil Chromium</translation>
 <translation id="4665829708273112819">Peringatan: Chromium tidak dapat mencegah ekstensi merekam histori penjelajahan Anda. Untuk menonaktifkan ekstensi ini dalam mode Samaran, batalkan pilihan opsi ini.</translation>
 <translation id="4673151026126227699">Jika Anda juga membagikan laporan penggunaan Chromium, laporan tersebut akan menyertakan URL yang Anda buka</translation>
@@ -388,6 +392,7 @@
 <translation id="5405650547142096840">Hapus dari Chromium</translation>
 <translation id="5424544524441439284">Menurunkan performa tetapi membuat Chromium lebih tahan terhadap serangan</translation>
 <translation id="5427571867875391349">Setel Chromium sebagai browser default</translation>
+<translation id="5435079900593041559">Tampilkan penelusuran dengan Chromium di taskbar Windows dan aktifkan pintasan keyboard</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium Merekomendasikan untuk Menjeda Tab yang Memperlambat Browser Anda}other{Chromium Merekomendasikan untuk Menjeda Tab yang Memperlambat Browser Anda}}</translation>
 <translation id="5473971139929175403">Chromium mungkin tidak berfungsi dengan semestinya karena sudah tidak didukung di distribusi Linux ini</translation>
@@ -414,6 +419,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Tampilkan Chromium dalam bahasa ini</translation>
 <translation id="569897634095159764">Tidak dapat terhubung ke internet. Server proxy memerlukan autentikasi.</translation>
+<translation id="5755377560105094542">Situs dan Chromium dapat menggunakan AI yang berjalan langsung di perangkat Anda untuk fitur seperti ringkasan, pemeriksaan tata bahasa, pemberian teks, dan lainnya. Fitur ini terpisah dari Gemini di Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut AI di perangkat<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">Dari tombol "Panel Penelusuran" di toolbar, Anda dapat membuka kembali panel Penelusuran untuk mengajukan pertanyaan saat menjelajah</translation>
 <translation id="5768371961535086509">Chromium akan membebaskan memori dari tab yang tidak aktif. Tindakan ini akan memberikan lebih banyak resource komputer untuk tab aktif dan aplikasi lainnya, serta menjaga Chromium tetap cepat. Tab yang tidak aktif akan otomatis menjadi aktif lagi saat Anda kembali ke tab tersebut. <ph name="BEGIN_LINK" />Pelajari lebih lanjut Penghemat Memori<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="SETTINGS_LINK" /> data Chromium di akun Anda</translation>
@@ -470,6 +476,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6245734527075554892">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium</translation>
 <translation id="6248213926982192922">Jadikan Chromium browser default</translation>
 <translation id="6248988683584659830">Telusuri setelan</translation>
+<translation id="6251986571402453005">Chromium otomatis mendownload dan mengupdate model AI ini</translation>
 <translation id="6268381023930128611">Keluar dari Chromium?</translation>
 <translation id="6270547683008298381">Tab ini menggunakan lebih banyak resource. Untuk meningkatkan performa, izinkan Chromium menonaktifkannya.</translation>
 <translation id="6281746429495226318">Sesuaikan profil Chromium Anda</translation>
@@ -758,6 +765,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8981886272598860786">untuk menelusuri dengan Chromium atau menyesuaikan di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Kelola profil Chromium</translation>
 <translation id="8993855408334954620">Gunakan keyboard untuk beralih antara Gemini di Chromium dan tab yang terbuka.</translation>
+<translation id="9002987346523307190">Chromium akan menghapus model AI dari perangkat ini. Beberapa situs dan fitur Chromium mungkin tidak berfungsi.</translation>
 <translation id="9018218886431812662">Penginstalan selesai</translation>
 <translation id="9022552996538154597">Login ke Chromium</translation>
 <translation id="9035791714111278917">Tampilkan penelusuran dengan Chromium di panel menu Mac dan aktifkan pintasan keyboard</translation>

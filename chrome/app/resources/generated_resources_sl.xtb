@@ -851,6 +851,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1921544956190977703">Uporabljate Chromovo najmočnejšo zaščito proti nevarnim spletnim mestom, prenosom in razširitvam.</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">Razširitev »<ph name="NAME" />« je shranjena samo v tej napravi. Če jo želite uporabiti v drugih napravah, jo shranite v računu Google.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Odpiranje z aplikacijo</translation>
 <translation id="1925017091976104802">Pritisnite <ph name="MODIFIER_KEY_DESCRIPTION" />, če želite prilepiti</translation>
 <translation id="1925021887439448749">Vnesite spletni naslov po meri</translation>
@@ -1400,6 +1401,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="2528487766183344810">Odklenite <ph name="TOKEN_NAME" /> za izvoz potrdila odjemalca.</translation>
 <translation id="2532198298278778531">Upravljanje varnega DNS-ja v nastavitvah sistema ChromeOS Flex</translation>
 <translation id="253434972992662860">&amp;Premor</translation>
+<translation id="2534439599863644240">Serijska vrata</translation>
 <translation id="253498598929009420">Spletnemu mestu bo vidna vsebina vašega zaslona.</translation>
 <translation id="253557089021624350">Štetje ohranjanja dejavnosti</translation>
 <translation id="2537395079978992874">Spletno mesto <ph name="ORIGIN" /> si lahko ogleda in ureja naslednje datoteke in mape</translation>

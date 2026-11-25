@@ -139,6 +139,7 @@
 <translation id="2295218613066132598">Hiện lối tắt đến các trang web trên Chrome</translation>
 <translation id="2301513536169703857">Để sử dụng mật khẩu, dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
 <translation id="2307973900865360088">Ghim vào thanh Dock</translation>
+<translation id="2308558013860776484">Chia sẻ ảnh chụp màn hình nội dung bên ngoài Chrome, chẳng hạn như các ứng dụng hoặc tệp khác</translation>
 <translation id="2309047409763057870">Đây là cài đặt thứ cấp của Google Chrome và không thể trở thành trình duyệt mặc định của bạn.</translation>
 <translation id="2345992953227471816">Chrome nhận thấy rằng các tiện ích này chứa phần mềm độc hại:</translation>
 <translation id="2358140144860869442">Để sử dụng danh sách đọc và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
@@ -248,6 +249,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="3294686910656423119">Thống kê mức sử dụng và báo cáo sự cố</translation>
 <translation id="3327226547491422998">Sau đó, Chrome có thể hỏi xem bạn có muốn sử dụng thông tin đã lưu để tự động điền vào biểu mẫu hay không</translation>
 <translation id="3352986031709923790">góc trên cùng bên phải của khu vực tìm kiếm: <ph name="RIGHT" />% từ bên phải sang, <ph name="TOP" />% từ trên cùng xuống</translation>
+<translation id="3370239327277137701">Các trang web và Chrome có thể sử dụng AI chạy trực tiếp trên thiết bị của bạn cho các tính năng như tóm tắt, hiệu đính, tạo phụ đề và nhiều tính năng khác. AI này tách biệt với Gemini trong Chrome. <ph name="BEGIN_LINK" />Tìm hiểu thêm về AI trên thiết bị<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Một số tính năng và tiện ích của Chrome đi kèm lối tắt. Bạn có thể chọn bật lại các lối tắt này.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sẽ khởi động lại ngay bây giờ}=1{Chrome sẽ khởi động lại sau 1 giây}other{Chrome sẽ khởi động lại sau # giây}}</translation>
 <translation id="3380249972812870825">Để mở Gemini trong Chrome, hãy nhấn <ph name="GLOBAL_HOTKEY" /></translation>
@@ -347,6 +349,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="4427306783828095590">Chế độ bảo vệ tăng cường giúp chặn phần mềm độc hại và hành vi lừa đảo hiệu quả hơn</translation>
 <translation id="4434353761996769206">Lỗi trình cài đặt: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Chia sẻ tài liệu này với Gemini trong Chrome để xem thông tin tổng quan nhanh và đặt các câu hỏi nối tiếp</translation>
+<translation id="4440999670272408191">Bạn có thể xoá các mô hình này bất cứ lúc nào. Chrome có thể tự động tải các mô hình này xuống lại khi một trang web hoặc tính năng cần đến.</translation>
 <translation id="4450664632294415862">Chrome – Đăng nhập vào mạng – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Một hoạt động khác trên Google Chrome đang diễn ra. Vui lòng thử lại sau.</translation>
 <translation id="4493028449971051158">Lỗi khi khởi động: vui lòng chạy trình cài đặt với tư cách quản trị viên.</translation>
@@ -354,6 +357,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="4501839397124711198">Bạn có thể ghim Google Tìm kiếm vào bảng điều khiển bên để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="4571503333518166079">Chuyển đến cài đặt thông báo của Chrome</translation>
 <translation id="4580939929828762295">Bảo vệ bạn an toàn bằng Trình quản lý mật khẩu của Google</translation>
+<translation id="4589544932092381064">Hiện tính năng tìm kiếm bằng Chrome trên thanh tác vụ của Windows và bật phím tắt</translation>
 <translation id="459622048091363950">Sau khi Chrome có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.</translation>
 <translation id="4598116752460667024">Tìm quy trình bất kỳ trong danh sách.</translation>
 <translation id="4600710005438004015">Chrome không thể cập nhật lên phiên bản mới nhất nên bạn đang bỏ lỡ các tính năng và bản vá bảo mật mới.</translation>
@@ -369,6 +373,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Tăng tốc độ tải trang web bằng công cụ V8 của Chrome nhưng làm giảm khả năng chống lại các cuộc tấn công của Chrome</translation>
 <translation id="4768676935374695498">Tìm kiếm video này bằng Google Ống kính</translation>
+<translation id="4783580253728290203">Khi bạn tắt chế độ cài đặt này, Chrome sẽ xoá các mô hình AI trên thiết bị và không tải các mô hình đó xuống nữa. Một số trang web và tính năng của Chrome có thể không hoạt động.</translation>
 <translation id="479167709087336770">Dịch vụ này sử dụng cùng một trình kiểm tra chính tả dùng trong Google Tìm kiếm. Thông tin bạn nhập vào trình duyệt sẽ được gửi tới Google. Bạn luôn có thể thay đổi hành động này trong phần cài đặt.</translation>
 <translation id="4793679854893018356">Tìm hiểu cách Chrome bảo vệ bạn</translation>
 <translation id="4803313124144656665">Đóng Google Tìm kiếm trong Chrome</translation>
@@ -452,6 +457,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Không thể kết nối với Internet. Máy chủ proxy yêu cầu xác thực.</translation>
 <translation id="5709557627224531708">Đặt Chrome làm trình duyệt mặc định</translation>
+<translation id="5715427327524421317">Chrome sẽ tự động tải xuống và cập nhật các mô hình AI này</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Cửa sổ biệt lập sẽ không mở lại.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. # cửa sổ biệt lập sẽ không mở lại.}}</translation>
 <translation id="5719246646468301581">Điều khoản dịch vụ bổ sung của Google Chrome và ChromeOS</translation>
 <translation id="5736850870166430177">Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang</translation>
@@ -543,6 +549,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6491330562720922580">Mã QR để tải trình duyệt Chrome xuống thiết bị di động</translation>
 <translation id="6493527311031785448">Google Chrome đang cố gắng <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome đã tự động đóng</translation>
+<translation id="650039555447046671">Chrome sẽ xoá các mô hình AI khỏi thiết bị này. Một số trang web và tính năng của Chrome có thể không hoạt động.</translation>
 <translation id="6506909944137591434">Chrome cần quyền truy cập camera để tạo bản đồ 3D khu vực xung quanh bạn</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome dành cho nhà phát triển</translation>
 <translation id="6520670145826811516">Để cho phép Chrome dùng thông tin vị trí, hãy cấp quyền sử dụng trong phần <ph name="BEGIN_LINK" />cài đặt hệ thống<ph name="END_LINK" /></translation>
@@ -581,6 +588,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6877155553248388166">góc dưới cùng bên phải của khu vực tìm kiếm: <ph name="RIGHT" />% từ bên phải sang, <ph name="BOTTOM" />% từ dưới cùng lên</translation>
 <translation id="6879791154455204815">Mở tính năng Tìm kiếm bằng Chrome</translation>
 <translation id="6881299373831449287">Đang cập nhật Chrome</translation>
+<translation id="6881997500528805781">Sử dụng bộ nhớ trên thiết bị. Chrome sẽ xoá các mô hình AI không dùng đến sau 45 ngày hoặc khi bộ nhớ sắp hết</translation>
 <translation id="6885412569789873916">Ứng dụng Chrome Beta</translation>
 <translation id="6893363893008038481">Xoá tài khoản khỏi Chrome</translation>
 <translation id="6896758677409633944">Sao chép</translation>

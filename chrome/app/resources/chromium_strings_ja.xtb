@@ -51,6 +51,7 @@
 <translation id="1572572333538561328">検索 AI モードを再度開く</translation>
 <translation id="1574377791422810894">Chromium の安全性ツール</translation>
 <translation id="1594928384848033697">Chromium がパスワード マネージャーのデータの削除をリクエストしています。続行するには、Windows のパスワードを入力してください。</translation>
+<translation id="1599690375407103815">オフにすると、オンデバイスの AI モデルが削除され、再ダウンロードもされなくなります。一部のサイトや Chromium の機能が動作しなくなる可能性があります。</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{管理者が、アップデートを適用するために Chromium を再起動するよう求めています}=1{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。シークレット ウィンドウは、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="1625909126243026060">Chromium のプライバシーとセキュリティに関する重要な設定を確認します</translation>
 <translation id="1640672724030957280">ダウンロードしています...</translation>
@@ -65,6 +66,7 @@
 <translation id="1745121272106313518">Chromium は <ph name="REMAINING_TIME" /> 後に再起動します</translation>
 <translation id="1749104137266986751">HTTPS を使用できない場合、Chromium で警告を表示せずに安全でない接続を使用します</translation>
 <translation id="1774152462503052664">Chromium をバックグラウンドで実行する</translation>
+<translation id="1792680680989393197">これらはいつでも削除できます。サイトや機能で必要になった場合、Chromium がこれらを自動的に再ダウンロードすることがあります。</translation>
 <translation id="1793486931176048546">Windows の通知で [<ph name="BEGIN_BOLD" />はい<ph name="END_BOLD" />] をクリックすると、Chromium がタスクバーに固定され、すばやくアクセスできるようになります。</translation>
 <translation id="1808667845054772817">Chromium を再インストール</translation>
 <translation id="1820835682567584003">Chromium が <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -249,6 +251,7 @@
 <translation id="3751920144677881410">ツールバーの [検索サイドパネル] ボタンから、検索サイドパネルを再度開いて、ブラウジング中に質問できます</translation>
 <translation id="3788675262216168505">Chromium プロファイルを管理</translation>
 <translation id="3790262771324122253">Chromium で一部のダウンロードがブロックされる理由</translation>
+<translation id="3793196697433239004">デバイスのストレージを使用します。45 日間使用されていない場合やストレージが不足している場合は、AI モデルを削除します</translation>
 <translation id="379589255253486813">確認の必要な項目がありましたらお知らせします</translation>
 <translation id="3802055581630249637">アクセスする可能性の高いページがプリロードされ、該当のページにアクセスしたときにページの読み込み速度が向上します。</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -330,6 +333,7 @@
 <translation id="4621240073146040695">Chromium を再起動して更新を完了してください。</translation>
 <translation id="4625064703209785397">Chromium の V8 エンジンでサイトを高速化する（攻撃に対する Chromium の耐性は若干低下します）</translation>
 <translation id="4626321472657185181">「Chromium で検索」を開く</translation>
+<translation id="4639628733881319833">他のアプリやファイルなど、Chromium 以外のコンテンツのスクリーンショットを共有できます</translation>
 <translation id="4654639495249754755">Chromium プロファイル</translation>
 <translation id="4665829708273112819">警告: 拡張機能による閲覧履歴の記録を Chromium で停止することはできません。シークレット モードでこの拡張機能を無効にするには、このオプションの選択を解除してください。</translation>
 <translation id="4673151026126227699">Chromium の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
@@ -387,6 +391,7 @@
 <translation id="5405650547142096840">Chromium から削除</translation>
 <translation id="5424544524441439284">パフォーマンスは低下しますが、攻撃に対する Chromium の耐性が強化されます</translation>
 <translation id="5427571867875391349">Chromium をデフォルト ブラウザに設定する</translation>
+<translation id="5435079900593041559">Windows タスクバーに「Chromium で検索」を表示して、キーボード ショートカットをオンにする</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}other{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}}</translation>
 <translation id="5473971139929175403">この Linux ディストリビューションはサポートされなくなったため、Chromium は正常に機能しない可能性があります</translation>
@@ -411,6 +416,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium をこの言語で表示</translation>
 <translation id="569897634095159764">インターネットに接続できません。プロキシ サーバーにより認証を求められています。</translation>
+<translation id="5755377560105094542">サイトや Chromium で、要約、校正、字幕作成などの機能に、デバイス上で直接動作する AI を使用できます。これは Gemini in Chromium とは別のものです。<ph name="BEGIN_LINK" />オンデバイス AI の詳細<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">ツールバーの [検索パネル] ボタンから、検索パネルを再度開いて、ブラウジング中に質問できます</translation>
 <translation id="5768371961535086509">アクティブでないタブのメモリを解放します。これにより、アクティブなタブや他のアプリで利用できるコンピュータ リソースが増え、Chromium の速度低下を抑えられます。アクティブでないタブは、再度アクセスすると自動的にアクティブになります。<ph name="BEGIN_LINK" />メモリセーバーの詳細<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">パスフレーズを忘れた場合や、この設定を変更する場合は、アカウントの Chromium データを<ph name="SETTINGS_LINK" />してください</translation>
@@ -467,6 +473,7 @@
 <translation id="6245734527075554892">Chromium に保存されている安全でないサイトのリストと URL を照合します</translation>
 <translation id="6248213926982192922">Chromium を既定のブラウザにする</translation>
 <translation id="6248988683584659830">設定項目を検索</translation>
+<translation id="6251986571402453005">Chromium でこれらの AI モデルを自動的にダウンロードして更新します</translation>
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
 <translation id="6270547683008298381">これらのタブでは追加のリソースが使用されています。パフォーマンスを改善するには、Chromium でこれらのタブを非アクティブにしてください。</translation>
 <translation id="6281746429495226318">Chromium プロフィールをカスタマイズ</translation>
@@ -508,6 +515,7 @@
 <translation id="6598877126913850652">Chromium の通知設定に移動</translation>
 <translation id="6600016381025017075">このページの内容を検索</translation>
 <translation id="6613594504749178791">変更内容は次に Chromium を再起動したときに有効になります。</translation>
+<translation id="6637855549677695722">次回 <ph name="DEVICE_TYPE" /> で Chromium を開いたときに、Chromium の最高の安全機能を使用するよう促すメッセージが表示されます。</translation>
 <translation id="6637908313088374648">Windows の起動時に Chromium を自動で起動して、すぐにブラウジングを開始できるようになりました。この動作は設定でオフにできます。</translation>
 <translation id="6644846457769259194">デバイスを更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="665732753414869868">周囲の 3D マップを作成するには、Chromium にカメラの使用を許可する必要があります</translation>
@@ -757,6 +765,7 @@
 <translation id="8981886272598860786">Chromium で検索するか、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] でカスタマイズします</translation>
 <translation id="8988036198400390003">Chromium プロファイルを管理</translation>
 <translation id="8993855408334954620">キーボードを使用して、Gemini in Chromium と開いているタブを切り替えます。</translation>
+<translation id="9002987346523307190">このデバイスから AI モデルを削除します。一部のサイトや Chromium の機能が動作しなくなる可能性があります。</translation>
 <translation id="9018218886431812662">インストールが完了しました</translation>
 <translation id="9022552996538154597">Chromium にログイン</translation>
 <translation id="9035791714111278917">「Chromium で検索」を Mac のメニューバーに表示して、キーボード ショートカットをオンにする</translation>

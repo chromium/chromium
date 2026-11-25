@@ -72,6 +72,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1792680680989393197">Du kan ta bort dem när som helst. Chromium kan ladda ned dem igen automatiskt när en webbplats eller funktion behöver dem.</translation>
 <translation id="1793486931176048546">Klicka på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-aviseringen för att fästa Chromium i aktivitetsfältet för snabb åtkomst.</translation>
 <translation id="1808667845054772817">Installera om Chromium</translation>
+<translation id="1814482312667514397">Få Chromiums bästa säkerhetsfunktioner var du än är med Chromium-appen på telefonen</translation>
 <translation id="1820835682567584003">Chromium försöker att <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> är redan inloggad. Du kan hålla isär webbinformationen genom att logga in i Chromium i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även dina tillägg med mera från <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Nästa gång du öppnar Chromium på din <ph name="DEVICE_TYPE" /> visas en uppmaning om att använda Google Lösenordshantering.</translation>
@@ -135,6 +136,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Minst ett Chromium-tillägg har fått åtkomst till 1 styrdon}=1{Minst ett Chromium-tillägg har åtkomst till 1 styrdon}other{Minst ett Chromium-tillägg har åtkomst till # styrdon}}</translation>
 <translation id="2401032172288869980">Du behöver ge Chromium kamera- och mikrofonbehörighet för den här webbplatsen</translation>
 <translation id="2403703063067034158">Startfel: En annan instans av konfigurationen körs för närvarande. Försök igen senare.</translation>
+<translation id="241044568699443215">Ta med dig Chromium-säkerheten var du än är med Chromium-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Öppna länkar från appar i Chromium och ha webbläsaren tillgänglig i aktivitetsfältet</translation>
 <translation id="2425157128016763890">Klicka på knappen Sammanfatta för att dela det här dokumentet med Gemini i Chromium och få en snabb översikt och ställa följdfrågor</translation>
 <translation id="2440750600860946460">Med <ph name="BEGIN_LINK" />verktyg från Chromium<ph name="END_LINK" /> kan du surfa säkert och behålla kontrollen</translation>
@@ -753,6 +755,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8907580949721785412">Skriv ditt lösenord i Windows om du vill tillåta att lösenord visas i Chromium.</translation>
 <translation id="8910309838319708610">Klart! Nu kan du enkelt ställa frågor medan du surfar med AI-läget i Sök</translation>
 <translation id="8932992523185907506">Chromium är inte längre din standardwebbläsare. Vill du använda Chromium som standardwebbläsare?</translation>
+<translation id="8940844567350264767">Få Chromiums bästa säkerhetsfunktioner var du än är med Chromium</translation>
 <translation id="8941642502866065432">Det gick inte att uppdatera Chromium</translation>
 <translation id="8944232836376404813">Den här åtgärden kommer att
           <ph name="LINE_BREAKS" />

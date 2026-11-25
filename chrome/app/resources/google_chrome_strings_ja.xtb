@@ -99,6 +99,7 @@
 <translation id="1896602904211344018">Chrome アプリを入手</translation>
 <translation id="1919130412786645364">Chrome へのログインを許可する</translation>
 <translation id="1925069572871307609">今後、Google Chrome のアップデートを受信するには、Windows 10 バージョン 1809 以降が必要となります。このパソコンでは、古いバージョンの Windows 10 が使用されています。</translation>
+<translation id="1975069140856174874">次回 <ph name="DEVICE_TYPE" /> で Chrome を開いたときに、Google の最高の安全機能を使用するよう促すメッセージが表示されます。</translation>
 <translation id="1975400514743766362"><ph name="DEVICE_TYPE" /> の Chrome アプリで、Google の安全機能を外出先でも利用できます</translation>
 <translation id="1979600810166324878">iOS 版 Chrome のセーフ ブラウジング保護強化機能により、外出先で安全に使用できます</translation>
 <translation id="2001586581944147178">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。Chrome では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。</translation>
@@ -137,6 +138,7 @@
 <translation id="2295218613066132598">Chrome のサイト ショートカットを表示する</translation>
 <translation id="2301513536169703857">すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用するには、Chrome にログインしてください</translation>
 <translation id="2307973900865360088">Dock に追加</translation>
+<translation id="2308558013860776484">他のアプリやファイルなど、Chrome 以外のコンテンツのスクリーンショットを共有できます</translation>
 <translation id="2309047409763057870">この Google Chrome はセカンダリ インストールのため、既定のブラウザには設定できません。</translation>
 <translation id="2345992953227471816">Chrome で次の拡張機能に不正なソフトウェアが含まれていることが検出されました。</translation>
 <translation id="2358140144860869442">すべてのデバイスで同じリーディング リストなどを使用するには、Chrome にログインしてください</translation>
@@ -244,6 +246,7 @@
 <translation id="3294686910656423119">使用統計データと障害レポート</translation>
 <translation id="3327226547491422998">今後、Chrome で保存した情報を使用してフォームに自動入力するかどうかを確認するメッセージが表示されます</translation>
 <translation id="3352986031709923790">検索範囲の右上隅: 右 <ph name="RIGHT" />%、上 <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">サイトや Chrome で、要約、校正、字幕作成などの機能に、デバイス上で直接動作する AI を使用できます。これは Gemini in Chrome とは別のものです。<ph name="BEGIN_LINK" />オンデバイス AI の詳細<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Chrome の一部の機能と拡張機能にはショートカットが用意されており、有効にするよう選択できます。</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome は今すぐ再起動されます}=1{Chrome は 1 秒後に再起動されます}other{Chrome は # 秒後に再起動されます}}</translation>
 <translation id="3380249972812870825">Gemini in Chrome を開くには、<ph name="GLOBAL_HOTKEY" /> キーを押します</translation>
@@ -342,6 +345,7 @@
 <translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
 <translation id="4434353761996769206">インストーラー エラー: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">このドキュメントを Gemini in Chrome と共有すると、概要の確認や追加の質問ができます</translation>
+<translation id="4440999670272408191">これらはいつでも削除できます。サイトや機能で必要になった場合、Chrome がこれらを自動的に再ダウンロードすることがあります。</translation>
 <translation id="4450664632294415862">Chrome - ネットワークにログイン - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome で別の処理が行われています。しばらくしてからもう一度お試しください。</translation>
 <translation id="4493028449971051158">起動エラー: 管理者としてインストーラを実行してください。</translation>
@@ -349,6 +353,7 @@
 <translation id="4501839397124711198">サイドパネルに Google 検索を固定して、ブラウジング中に質問できます</translation>
 <translation id="4571503333518166079">Chrome の通知設定に移動</translation>
 <translation id="4580939929828762295">Google パスワード マネージャーで安全を確保</translation>
+<translation id="4589544932092381064">Windows タスクバーに「Chrome で検索」を表示して、キーボード ショートカットをオンにする</translation>
 <translation id="459622048091363950">Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。</translation>
 <translation id="4598116752460667024">リストからプロセスを検索します。</translation>
 <translation id="4600710005438004015">Chrome を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
@@ -364,6 +369,7 @@
 <translation id="4754614261631455953">Google Chrome Canary（mDNS インバウンド）</translation>
 <translation id="4756182432527369254">Chrome の V8 エンジンでサイトを高速化する（攻撃に対する Chrome の耐性は若干低下します）</translation>
 <translation id="4768676935374695498">Google レンズでこの動画を検索</translation>
+<translation id="4783580253728290203">オフにすると、オンデバイスの AI モデルが削除され、再ダウンロードもされなくなります。一部のサイトや Chrome の機能が動作しなくなる可能性があります。</translation>
 <translation id="479167709087336770">Google 検索と同じスペルチェックが使用されます。ブラウザに入力したテキストは Google に送信されます。この動作はいつでも設定で変更できます。</translation>
 <translation id="4793679854893018356">Chrome のユーザー保護の仕組みについて</translation>
 <translation id="4803313124144656665">「Chrome で Google 検索」を閉じる</translation>
@@ -445,6 +451,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">インターネットに接続できません。プロキシ サーバーにより認証を求められています。</translation>
 <translation id="5709557627224531708">Chrome を既定のブラウザに設定する</translation>
+<translation id="5715427327524421317">Chrome でこれらの AI モデルを自動的にダウンロードして更新します</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{高度な保護機能を使用している場合は、アップデートを適用するために Chrome を再起動する必要があります。アイソレート ウィンドウは、再起動後は自動的には開きません。}other{高度な保護機能を使用している場合は、アップデートを適用するために Chrome を再起動する必要があります。現在開いている # 個のアイソレート ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="5719246646468301581">Google Chrome および ChromeOS 追加利用規約</translation>
 <translation id="5736850870166430177">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
@@ -536,6 +543,7 @@
 <translation id="6491330562720922580">モバイル デバイスに Chrome ブラウザをダウンロードするための QR コード</translation>
 <translation id="6493527311031785448">Google Chrome が <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome は自動的に終了しました</translation>
+<translation id="650039555447046671">このデバイスから AI モデルを削除します。一部のサイトや Chrome の機能が動作しなくなる可能性があります。</translation>
 <translation id="6506909944137591434">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">位置情報を使用するには、<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />で Chrome にアクセスを許可してください</translation>
@@ -574,6 +582,7 @@
 <translation id="6877155553248388166">検索範囲の右下隅: 右 <ph name="RIGHT" />%、下 <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">「Chrome で検索」を開く</translation>
 <translation id="6881299373831449287">Chrome を更新しています</translation>
+<translation id="6881997500528805781">デバイスのストレージを使用します。45 日間使用されていない場合やストレージが不足している場合は、AI モデルを削除します</translation>
 <translation id="6885412569789873916">Chrome ベータ版アプリ</translation>
 <translation id="6893363893008038481">Chrome からアカウントを削除</translation>
 <translation id="6896758677409633944">コピー</translation>

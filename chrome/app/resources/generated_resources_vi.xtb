@@ -820,6 +820,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="188537499764410817">Các trang web mà Gemini có thể đăng nhập cho bạn vào sẽ xuất hiện ở đây</translation>
 <translation id="1886996562706621347">Cho phép các trang web yêu cầu trở thành trình xử lý mặc định cho giao thức (nên chọn)</translation>
 <translation id="1887210448491286312">Dừng truyền thẻ tới <ph name="DEVICE_NAME" /></translation>
+<translation id="1888096615505794228">Kiểm tra hoạt động của bạn</translation>
 <translation id="1888692623866312036">Kỹ năng đã lưu</translation>
 <translation id="1890026367080681123">Chuyển đến phần cài đặt nội dung được nhúng</translation>
 <translation id="1892453608039100484">1. Nhấp vào <ph name="BUTTON_LABEL" /> bên dưới
@@ -1197,6 +1198,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="2300332192655962933">Không thấy tệp trên trang</translation>
 <translation id="2300383962156589922">Tùy chỉnh và kiểm soát <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Thư mục gốc của tiện ích không hợp lệ.</translation>
+<translation id="2301564937934269788">Quản lý AI dùng cho các tính năng như hỗ trợ viết và nhiều tính năng khác</translation>
 <translation id="2304820083631266885">Hành tinh</translation>
 <translation id="2306794767168143227">Lưu vào <ph name="BRAND" /> trên thiết bị này</translation>
 <translation id="2309620859903500144">Trang web này đã bị chặn sử dụng cảm biến chuyển động hoặc ánh sáng của thiết bị.</translation>
@@ -1436,6 +1438,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="2575502321843437554">Không đủ hấp dẫn</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Thiết bị này sẽ được lưu trong 1 năm và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {YEARS} năm và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) sẽ ngay lập tức mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và sẽ không thể tương tác với bạn trên các dịch vụ của Google được nữa.</translation>
+<translation id="2579341115189727508">Giúp các trang web tóm tắt, hiệu đính, tạo phụ đề và làm nhiều việc khác</translation>
 <translation id="2580889980133367162">Luôn cho phép <ph name="HOST" /> tải xuống nhiều tệp</translation>
 <translation id="2583877283803564049">Ghim vào thanh công cụ</translation>
 <translation id="2583905535229480958">Mọi loại máy đọc thẻ thông minh</translation>
@@ -1807,6 +1810,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> đã gỡ cài đặt một ứng dụng}other{<ph name="APP_NAME" /> đã gỡ cài đặt # ứng dụng}}</translation>
 <translation id="2988018669686457659">Trình kết xuất dự phòng</translation>
 <translation id="2988328607561082373">Bạn không sử dụng lại bất kỳ mật khẩu nào</translation>
+<translation id="298928587890404307">Cung cấp các ý chính, bản tóm tắt ngắn gọn hoặc tiêu đề</translation>
 <translation id="2989523299700148168">Đã truy cập gần đây</translation>
 <translation id="2989786307324390836">DER-mã hóa nhị phân, chứng chỉ đơn</translation>
 <translation id="2990583317361835189">Không cho phép các trang web sử dụng cảm biến chuyển động</translation>
@@ -1885,6 +1889,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3057938290530993634">Nhấn và giữ để ghim những trang web bạn truy cập nhiều nhất, giúp dễ dàng truy cập vào lần tới</translation>
 <translation id="3058498974290601450">Bạn có thể bật tính năng đồng bộ hóa bất cứ lúc nào trong phần cài đặt</translation>
 <translation id="3060694926634506594">Kỹ năng</translation>
+<translation id="3061501546390656547">Tóm tắt</translation>
 <translation id="306166624240243643">Xem xét việc cập nhật tên và URL</translation>
 <translation id="3062037978804523418"><ph name="TASK_TITLE" />: Nếu bạn không phản hồi sớm, Gemini sẽ dừng thực hiện công việc này để tiết kiệm pin</translation>
 <translation id="3062655045399308513">Xoá dữ liệu duyệt web...</translation>
@@ -2434,6 +2439,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3630132874740063857">Điện thoại</translation>
 <translation id="3633492436029262388">Để sử dụng mật khẩu, dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy lưu các dữ liệu đó vào Tài khoản Google</translation>
 <translation id="3633759325857031264">Thiết bị HDMI</translation>
+<translation id="3634271025780115616">Tắt AI trên thiết bị?</translation>
 <translation id="3634652306074934350">Yêu cầu cấp quyền đã hết hạn</translation>
 <translation id="3635353578505343390">Gửi ý kiến phản hồi cho Google</translation>
 <translation id="3636538438330991674">Quản lý những ứng dụng mà Gemini kết nối</translation>
@@ -2708,6 +2714,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3893268973182382220">Không thể tải bảng điều khiển này ngay bây giờ</translation>
 <translation id="3893536212201235195">Đọc và thay đổi cài đặt khả năng truy cập của bạn</translation>
 <translation id="3893858854379998374">Để lưu dấu trang vào tài khoản của bạn, hãy xoá những dấu trang không dùng đến</translation>
+<translation id="3893902465710154528">Các mô hình AI trên thiết bị này</translation>
 <translation id="3894427358181296146">Thêm thư mục</translation>
 <translation id="389521680295183045">Các trang web có thể yêu cầu được phát hiện khi bạn đang dùng thiết bị</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> muốn: <ph name="FIRST_PERMISSION" /> và <ph name="SECOND_PERMISSION" /></translation>
@@ -2741,6 +2748,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3928570707778085600">Lưu các thay đổi vào <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Sắp hết mực</translation>
 <translation id="3929426037718431833">Các tiện ích này có thể xem và thay đổi thông tin trên trang web này.</translation>
+<translation id="3930298488600685734">Giúp soạn thảo, diễn đạt lại và sắp xếp văn bản trên các trang web sử dụng tính năng này</translation>
 <translation id="3930737994424905957">Đang tìm thiết bị</translation>
 <translation id="3930968231047618417">Màu nền</translation>
 <translation id="3932356525934356570">Ghim <ph name="EXTENSION_NAME" /></translation>
@@ -2953,6 +2961,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="4202536110335087135">Thử ngay</translation>
 <translation id="4203065553461038553">Tên tệp hoặc đường dẫn quá dài</translation>
 <translation id="4203769790323223880">Không cho phép truy cập máy ảnh</translation>
+<translation id="4203999225629028925">Sử dụng AI trên thiết bị</translation>
 <translation id="4204415812590935863">Không thể tạo giao diện vào lúc này.</translation>
 <translation id="4206323443866416204">Báo cáo phản hồi</translation>
 <translation id="4206585797409671301">Được phép hiện yêu cầu</translation>
@@ -2973,6 +2982,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="4216511743389425832">Đọc trang này</translation>
 <translation id="4218081191298393750">Nhấp vào biểu tượng loa để tắt tiếng thẻ này</translation>
 <translation id="4220157655212610908">Dùng khoá bảo mật bên ngoài</translation>
+<translation id="4222217401873406622">Nhanh hơn và gọn nhẹ hơn so với tính năng viết nội dung cho nhiều mục đích</translation>
 <translation id="4222917615373664617">Tính năng theo dõi giá đang bật. Giá là <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Không cho phép truy cập micrô</translation>
 <translation id="4224541845943007092">Đọc và lưu nội dung nhập bằng bàn phím trên thanh địa chỉ</translation>
@@ -3416,6 +3426,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Xoá khi bạn đóng tất cả cửa sổ</translation>
 <translation id="4714414859110184926">Sử dụng khoá truy cập</translation>
+<translation id="4715398813921022332">Xử lý được nhiều tác vụ nên chỉ cần tải xuống một lần là có thể dùng cho nhiều tính năng</translation>
 <translation id="4715631922189108923">Chỉnh sửa tên người dùng</translation>
 <translation id="47158868804223727">Nhấp vào tên nhóm để mở rộng hoặc thu gọn</translation>
 <translation id="471759229191973607">Thay đổi chủ đề</translation>
@@ -3573,6 +3584,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="4876273079589074638">Giúp các kỹ sư của chúng tôi điều tra và khắc phục trục trặc này. Liệt kê các bước chính xác nếu bạn có thể. Không cần liệt kê quá chi tiết!</translation>
 <translation id="4876305945144899064">Không có tên người dùng</translation>
 <translation id="4876327226315760474">Điều này có nghĩa là các tính năng của trang web sẽ hoạt động như mong đợi, nhưng khả năng bảo vệ khi duyệt web có thể bị giảm.</translation>
+<translation id="4876867869589423092">Kiểm tra chính tả và ngữ pháp</translation>
 <translation id="4877276003880815204">Kiểm tra phần tử</translation>
 <translation id="4878634973244289103">Không thể gửi ý kiến phản hồi. Vui lòng thử lại sau.</translation>
 <translation id="4878718769565915065">Không thêm được vân tay vào khóa bảo mật này</translation>
@@ -3617,6 +3629,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="4922104989726031751">Để sử dụng Trình quản lý mật khẩu trên hệ điều hành của bạn, hãy chạy lại Chromium và cho phép truy cập vào trình quản lý mật khẩu trên máy tính. Các thẻ sẽ mở lại sau khi bạn chạy lại Chromium.</translation>
 <translation id="4923561999941435531">{0,plural, =1{Lưu 1 mục vào tài khoản}other{Lưu # mục vào tài khoản}}</translation>
 <translation id="4923977675318667854">Hiện nhóm thẻ</translation>
+<translation id="4924283156756356309">Trên thiết bị</translation>
 <translation id="49265687513387605">Không truyền được màn hình.  Hãy kiểm tra xem bạn đã xác nhận lời nhắc để bắt đầu chia sẻ màn hình hay chưa.</translation>
 <translation id="4927753642311223124">Không có nội dung nào để xem ở đây, hãy tiếp tục.</translation>
 <translation id="4928488083257788101">Nhân viên đánh giá có thể xem xét dữ liệu được gửi tới Google để cải thiện tính năng này</translation>
@@ -3703,6 +3716,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="5026572062076949786">cài đặt, kiểm soát bảo mật, tuỳ chỉnh thiết lập, quản lý quyền riêng tư, cài đặt ngôn ngữ, thiết lập bảo mật, cài đặt mặc định, cài đặt nâng cao</translation>
 <translation id="5026874946691314267">Không hiện lại thông báo này</translation>
 <translation id="5027550639139316293">Chứng chỉ Email</translation>
+<translation id="5027821222544962995">Chuyển lời nói thành văn bản, chẳng hạn như phụ đề</translation>
 <translation id="502811790397568978">Vui lòng mở khoá <ph name="TOKEN_NAME" /> để nhập chứng chỉ máy khách từ <ph name="HOST_NAME" />.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Địa chỉ}=1{Địa chỉ ({SELECTED_ITEMS})}other{Địa chỉ ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Không thể tạo mã QR</translation>
@@ -3889,6 +3903,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="5234764350956374838">Đóng</translation>
 <translation id="5235050375939235066">Gỡ cài đặt ứng dụng?</translation>
 <translation id="5235750401727657667">Thay thế trang bạn sẽ nhìn thấy khi mở thẻ mới</translation>
+<translation id="5235961530490811036">Đề xuất cách sửa lỗi chính tả, ngữ pháp và dấu câu ngay khi bạn nhập</translation>
 <translation id="5238301240406177137">Lưu vào tài khoản</translation>
 <translation id="523862956770478816">Quyền cho trang web</translation>
 <translation id="5240247138804326767">Sắp xếp chế độ xem chia đôi màn hình</translation>
@@ -4011,6 +4026,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="5395353843367783642">Đang lưu vào tài khoản của bạn...</translation>
 <translation id="5397656531674854099">Sử dụng nhóm thẻ trên điện thoại của bạn</translation>
 <translation id="5397794290049113714">Bạn</translation>
+<translation id="5397922003973770546"><ph name="MODEL_NAME" /> · khoảng <ph name="SIZE" /></translation>
 <translation id="5398497406011404839">Dấu trang đã ẩn</translation>
 <translation id="5398572795982417028">Vượt quá phạm vi trang, giới hạn là <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Giúp bạn viết văn bản ngắn gọn cho các mục trên web, chẳng hạn như bài đánh giá</translation>
@@ -4269,6 +4285,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="5683916195767086779">Nhóm thẻ</translation>
 <translation id="5684110242705861346">Tiện ích "<ph name="NAME" />" đã được thêm theo chính sách của tổ chức và đang kiểm soát chế độ cài đặt này. <ph name="BEGIN_LINK" />Xem chi tiết<ph name="END_LINK" /></translation>
 <translation id="5687340364605915800">Các trang web sẽ có toàn quyền quyết định khi phản hồi yêu cầu này</translation>
+<translation id="5688905504429733599">Giúp soạn thảo, viết lại và tóm tắt văn bản</translation>
 <translation id="5689516760719285838">Vị trí</translation>
 <translation id="568984110402742489">Không thể gửi ý kiến phản hồi</translation>
 <translation id="5691772641933328258">Không nhận dạng được vân tay</translation>
@@ -4530,6 +4547,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="5992652489368666106">Không có đường viền</translation>
 <translation id="5996490984199062729">Hồ sơ của bạn chưa được thiết lập</translation>
 <translation id="5997337190805127100">Tìm hiểu thêm về quyền truy cập vào trang web</translation>
+<translation id="5997562608469198702">Hiện thông tin chi tiết về <ph name="MODEL_CATEGORY" /></translation>
 <translation id="5997802678829218272">Khi đăng nhập vào Chrome bằng cùng một tài khoản, bạn có thể nhanh chóng gửi đường liên kết giữa các thiết bị</translation>
 <translation id="5998458948782718639">Góp phần cải thiện tính năng tự động điền</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
@@ -4775,6 +4793,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="6264376385120300461">Vẫn tải xuống</translation>
 <translation id="6264636978858465832">Trình quản lý mật khẩu cần thêm quyền truy cập</translation>
 <translation id="626495329434552273">Được phép ghi đè thao tác nhập bằng bàn phím</translation>
+<translation id="6265472496386910894">Hỏi về nội dung trên màn hình bằng Google Ống kính</translation>
 <translation id="6266984048393265562">Tuỳ chỉnh hồ sơ</translation>
 <translation id="6267166720438879315">Chọn một chứng chỉ để xác thực bạn với <ph name="HOST_NAME" /></translation>
 <translation id="6269392226729599142">Khôi phục chế độ xem chia đôi màn hình</translation>
@@ -5028,6 +5047,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="6571178651832779742">Để dọn dẹp mọi dấu trang trùng lặp, hãy lưu dấu trang vào Tài khoản Google</translation>
 <translation id="6571533309669248172">Định dạng văn bản</translation>
 <translation id="6571772921213691236">Chỉnh sửa dữ liệu đăng nhập</translation>
+<translation id="657215700875716805">Rút ra các ý chính từ những trang văn bản dài</translation>
 <translation id="657229725818377235">Tăng cường khả năng bảo vệ trước các trang web và tệp đã tải xuống nguy hiểm</translation>
 <translation id="6573096386450695060">Luôn cho phép</translation>
 <translation id="657402800789773160">&amp;Tải lại trang này</translation>
@@ -5200,6 +5220,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6746834324024491643">Để sử dụng mật khẩu và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="6749077623962119521">Đặt lại quyền?</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Ẩn danh)</translation>
+<translation id="6754302065638000088">Hiệu đính</translation>
 <translation id="6754359471209693699">Bắt đầu lượt tìm kiếm mới</translation>
 <translation id="6756882635793733911">Hỏi về nội dung bất kỳ trên màn hình</translation>
 <translation id="6757615605516049275">Vui lòng mở khoá <ph name="TOKEN_NAME" />.</translation>
@@ -5304,6 +5325,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6853118789186721762">Đã gửi lời nhắc đến <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> năm</translation>
 <translation id="68541483639528434">Đóng các thẻ khác</translation>
+<translation id="6855569790346583403">Xoá <ph name="MODEL_CATEGORY" /></translation>
 <translation id="6856348640027512653">Không được phép sử dụng dữ liệu hoặc thiết bị thực tế ảo</translation>
 <translation id="6856607887871564638">Thiết lập một hồ sơ công việc để lưu và sử dụng mật khẩu cùng nhiều thông tin khác trong tài khoản của bạn</translation>
 <translation id="68601584151169673">&amp;Lưu và Chia sẻ</translation>
@@ -5424,6 +5446,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6979440798594660689">Tắt tiếng (mặc định)</translation>
 <translation id="6979557074007409812">Có, hãy tách biệt dữ liệu của tôi với dữ liệu công việc</translation>
 <translation id="6979737339423435258">Từ trước đến nay</translation>
+<translation id="6981951388037216929">Bạn có thể hỏi bất cứ điều gì về nội dung trên màn hình bằng cách chia sẻ màn hình.</translation>
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="698428203349952091">Thêm trang web vào danh sách không được phép</translation>
 <translation id="6985235333261347343">Tác nhân Phục hồi Khoá của Microsoft</translation>
@@ -5758,6 +5781,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7341834142292923918">Muốn truy cập vào trang web này</translation>
 <translation id="7343372807593926528">Vui lòng mô tả sự cố trước khi gửi ý kiến phản hồi.</translation>
 <translation id="7344585835349671209">Quản lý chứng chỉ HTTPS/SSL trên thiết bị của bạn</translation>
+<translation id="734576882396032500">Tải xuống một lần cho tất cả ngôn ngữ bạn sử dụng</translation>
 <translation id="7346909386216857016">Ok</translation>
 <translation id="7347751611463936647">Để sử dụng tiện ích này, nhập "<ph name="EXTENSION_KEYWORD" />", sau đó nhấn TAB rồi câu lệnh hoặc tìm kiếm của bạn.</translation>
 <translation id="7347943691222276892">Nhấp để thoát khỏi <ph name="SUBPAGE_TITLE" />.</translation>
@@ -6156,6 +6180,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7793098747275782155">Xanh lam đậm</translation>
 <translation id="7798504574384119986">Xem các quyền trên web</translation>
 <translation id="7798559336183476274">Thao tác khác cho <ph name="BUTTON_TITLE" /></translation>
+<translation id="7798702742851934390">Chỉ đề xuất cách sửa mà không viết lại văn bản</translation>
 <translation id="7798844538707273832">Đã tự động chặn <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Xoay &amp;ngược chiều kim đồng hồ</translation>
 <translation id="780254490276923052">Cấp 2: TRUNG BÌNH</translation>
@@ -6312,6 +6337,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7974713334845253259">Màu mặc định</translation>
 <translation id="7977029776654598145">Khi sử dụng</translation>
 <translation id="7978100757563451333">Các thẻ được chia sẻ để Gemini có thể đưa ra câu trả lời phù hợp hơn. Google sử dụng nội dung và URL của các thẻ được chia sẻ. Thẻ hiện tại sẽ được chia sẻ trong các cuộc trò chuyện mới. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào.</translation>
+<translation id="7978324202327430335">Hoạt động trên các trang web hỗ trợ tính năng chép lời trực tiếp</translation>
 <translation id="7978412674231730200">Khoá cá nhân</translation>
 <translation id="7978450511781612192">Việc này này sẽ đăng xuất bạn khỏi các Tài khoản Google. Dấu trang, lịch sử, mật khẩu và các dữ liệu khác của bạn sẽ không còn đồng bộ hoá nữa.</translation>
 <translation id="7980066177668669492">ASCII được mã hoá Base64, nhiều chứng chỉ</translation>
@@ -7394,6 +7420,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9154194610265714752">Đã cập nhật</translation>
 <translation id="9155344700756733162">Bỏ chọn màu</translation>
 <translation id="9155515662479003830">Bạn có thể chuyển về giao diện cũ bất cứ lúc nào trong phần cài đặt</translation>
+<translation id="9157129135366432684">Chưa thêm AI trên thiết bị</translation>
 <translation id="9157915340203975005">Cửa của máy in đang mở</translation>
 <translation id="9165856803582999927">Quét mã QR này bằng camera trên thiết bị mà bạn muốn tạo và lưu khoá truy cập cho <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Ảnh trong ảnh</translation>

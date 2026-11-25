@@ -690,7 +690,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2155260325161282517">5 x 7 tommer</translation>
 <translation id="2156467141257470387">Du kan bruge gemte adresser på tværs af Google-produkter. Dette ændrer ikke din eksisterende arbejdsadresse. Den gemmes på din Google-konto <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Notifikationer om prissporing</translation>
-<translation id="2158964559178498011">Autofyld fungerer flere steder – tryk to gange på Ctrl for at finde og udfylde oplysninger</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2162435186600002085">Primært headerlogo</translation>
 <translation id="2162535140284745414">Få forslag i realtid, der kan hjælpe dig med at finde nye måder at browse på med AI.</translation>
@@ -2201,7 +2200,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Vil du oversætte siden?</translation>
 <translation id="468314109939257734">Se dit virtuelle kortnummer</translation>
-<translation id="4684818564800397688">Autofyld fungerer flere steder – tryk to gange på ⌘ for at finde og udfylde oplysninger</translation>
 <translation id="4686942373615810936">Oprettet lige nu</translation>
 <translation id="4690205240253392065">Vælg en udbyder af Betal senere</translation>
 <translation id="469028408546145398">Knappen Luk inkognitovinduer, aktivér for at lukke alle inkognitovinduer, der i øjeblikket er åbne</translation>
@@ -2863,7 +2861,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="573974402615125334">Synkroniser din historik og dine faner for at dele, deltage i og samarbejde i fanegrupper</translation>
 <translation id="5740911612628596808">Konvolut C9</translation>
 <translation id="574392208103952083">Mellem</translation>
-<translation id="5744350700955456407">Forbedret autofyld kan nu finde og udfylde oplysninger – f.eks. ordrenumre og bekræftelseskoder til flyafgange – fra apps som f.eks. Gmail og Fotos</translation>
 <translation id="5745586894920491759">Chrome behandler sidetitler og webadresser i skyen</translation>
 <translation id="5745733273847572235">Websitet kan anmode om adgang til din lokation</translation>
 <translation id="5750869797196646528">Registrering af håndbevægelser</translation>
@@ -4763,6 +4760,7 @@ Yderligere oplysninger:
 <translation id="8975263830901772334">Navne på filer, som du udskriver</translation>
 <translation id="8982884016487650216">PDF-filen er indlæst</translation>
 <translation id="8983369100812962543">Du kan nu vælge en anden størrelse på appen</translation>
+<translation id="8984453891367472218">Sortér efter grupper</translation>
 <translation id="8984785270737450103">Deling er i øjeblikket deaktiveret</translation>
 <translation id="8985112471026018799">Gem kortet, så du kan betale hurtigere</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten for at se din browserhistorik i Chrome</translation>

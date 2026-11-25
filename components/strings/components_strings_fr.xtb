@@ -690,7 +690,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2155260325161282517">5 x 7 pouces</translation>
 <translation id="2156467141257470387">Vous pouvez utiliser les adresses enregistrées dans les produits Google. Votre adresse professionnelle ne sera pas modifiée. Elle sera enregistrée dans votre compte Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Notifications de suivi des prix</translation>
-<translation id="2158964559178498011">La saisie automatique fonctionne dans davantage d'endroits : appuyez deux fois sur Ctrl pour rechercher et saisir des informations</translation>
 <translation id="2161656808144014275">Texte</translation>
 <translation id="2162435186600002085">Logo de l'en-tête principal</translation>
 <translation id="2162535140284745414">Profitez de suggestions en temps réel pour découvrir de nouvelles façons de naviguer grâce à l'IA.</translation>
@@ -2201,7 +2200,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Traduire la page ?</translation>
 <translation id="468314109939257734">Afficher votre numéro de carte virtuelle</translation>
-<translation id="4684818564800397688">La saisie automatique fonctionne dans davantage d'endroits : appuyez deux fois sur ⌘ pour rechercher et saisir des informations</translation>
 <translation id="4686942373615810936">Créé à l'instant</translation>
 <translation id="4690205240253392065">Sélectionnez un fournisseur de paiement différé</translation>
 <translation id="469028408546145398">Bouton "Fermer les fenêtres de navigation privée" à activer pour fermer toutes les fenêtres de navigation privée actuellement ouvertes</translation>
@@ -2863,7 +2861,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="573974402615125334">Pour rejoindre des groupes d'onglets, en partager et collaborer dessus, synchronisez votre historique et vos onglets</translation>
 <translation id="5740911612628596808">Enveloppe C9</translation>
 <translation id="574392208103952083">Moyen</translation>
-<translation id="5744350700955456407">La saisie automatique améliorée peut désormais trouver et saisir des informations (numéros de commande, codes de confirmation de vol, etc.) depuis des applis comme Gmail et Photos</translation>
 <translation id="5745586894920491759">Chrome traite les titres des pages et les URL dans le cloud</translation>
 <translation id="5745733273847572235">Peut demander votre position</translation>
 <translation id="5750869797196646528">Suivi des mains</translation>

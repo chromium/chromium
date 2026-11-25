@@ -141,6 +141,7 @@
 <translation id="2295218613066132598">Chrome වෙබ් අඩවි කෙටිමං පෙන්වන්න</translation>
 <translation id="2301513536169703857">ඔබේ සියලු උපාංග මත ඔබේ මුරපද, පිටුසන්, සහ තවත් දේ ලබා ගැනීමට, Chrome වෙත පුරන්න</translation>
 <translation id="2307973900865360088">ඩොකයේ තබන්න</translation>
+<translation id="2308558013860776484">වෙනත් යෙදුම් හෝ ගොනු වැනි Chrome වලින් පිටත අන්තර්ගතයේ තිර රුවක් බෙදා ගන්න</translation>
 <translation id="2309047409763057870">මෙය Google Chrome හි දෙවන ස්ථාපනයක් වන අතර, ඔබේ පෙරනිමි බ්‍රව්සරය කළ නොහැකිය.</translation>
 <translation id="2345992953227471816">මෙම දිගුවල අනිෂ්ට මෘදුකාංග අඩංගු බව Chrome සොයා ගෙන ඇත:</translation>
 <translation id="2358140144860869442">ඔබේ සියලු උපාංග මත ඔබේ කියවීම් ලැයිස්තුව සහ තවත් දේ ලබා ගැනීමට, Chrome තුළට පුරන්න</translation>
@@ -250,6 +251,7 @@
 <translation id="3294686910656423119">භාවිත සංඛ්‍යාන සහ බිඳ වැටීම් වාර්තා</translation>
 <translation id="3327226547491422998">පසුව, ඔබ වෙනුවෙන් පෝරම ස්වයංව පිරවීමට සුරකින ලද තතු භාවිතා කිරීමට අවශ්‍ය දැයි Chrome විමසිය හැක</translation>
 <translation id="3352986031709923790">සෙවීම් ප්‍රදේශයේ ඉහළම දකුණු කෙළවර: දකුණ <ph name="RIGHT" />%, ඉහළ <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">වෙබ් අඩවි සහ Chrome හට සාරාංශ, සෝදුපත් කියවීම, සිරස්තල සහ තවත් දේ වැනි විශේෂාංග සඳහා ඔබේ උපාංගයේ සෘජුවම ධාවනය වන AI භාවිතා කළ හැකි ය. මෙය Chrome හි Gemini වෙතින් වෙන්ව ඇත. <ph name="BEGIN_LINK" />උපාංගය මත AI ගැන තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">සමහර Chrome විශේෂාංග සහ දිගු කෙටිමං සමග පැමිණේ. ඔබට ඒවා නැවත ක්‍රියාත්මක කිරීමට තෝරා ගත හැක.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome දැන් යළි දියත් වෙයි}=1{Chrome 1 තත්පරයකින් යළි දියත් වෙයි}one{Chrome තත්පර # කින් යළි දියත් වෙයි}other{Chrome තත්පර # කින් යළි දියත් වෙයි}}</translation>
 <translation id="3380249972812870825">Chrome හි Gemini විවෘත කිරීමට, <ph name="GLOBAL_HOTKEY" /> ඔබන්න</translation>
@@ -348,6 +350,7 @@
 <translation id="4427306783828095590">තතුබෑම් සහ අනිෂ්ට මෘදුකාංග අවහිර කිරීමට වැඩි දියුණු කළ ආරක්ෂාව වැඩි දෙයක් කරයි</translation>
 <translation id="4434353761996769206">ස්ථාපක දෝෂය: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">ඉක්මන් දළ විශ්ලේෂණයක් ලබා ගැනීමට සහ පසු විපරම් ප්‍රශ්න ඇසීමට මෙම ලේඛනය Chrome හි Gemini සමග බෙදා ගන්න</translation>
+<translation id="4440999670272408191">ඔබට ඕනෑම වේලාවක ඒවා ඉවත් කළ හැකි ය. වෙබ් අඩවියකට හෝ විශේෂාංගයකට අවශ්‍ය වූ විට Chrome ඒවා ස්වයංක්‍රීයව නැවත බාගැනීමට හැකි ය.</translation>
 <translation id="4450664632294415862">Chrome - ජාල පුරනය - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome මත තවත් මෙහෙයුමක් ක්‍රියාත්මක වෙමින් පවතී. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="4493028449971051158">ආරම්භක දෝෂය: ස්ථාපකය පරිපාලක ලෙස ධාවනය කරන්න.</translation>
@@ -355,6 +358,7 @@
 <translation id="4501839397124711198">ඔබ බ්‍රවුස් කරන විට ප්‍රශ්න ඇසීමට ඔබට පැති පැනලයේ Google සෙවීම ඇමිණිය හැක</translation>
 <translation id="4571503333518166079">Chrome දැනුම් දීම් සැකසීම්වලට යන්න</translation>
 <translation id="4580939929828762295">Google මුරපද කළමනාකරු සමග සුරක්ෂිතව සිටින්න</translation>
+<translation id="4589544932092381064">Windows කාර්ය තීරුවේ Chrome සමඟ සෙවීම පෙන්වා යතුරු පුවරු කෙටිමඟ ක්‍රියාත්මක කරන්න</translation>
 <translation id="459622048091363950">Chrome හට ප්‍රවේශය ඇති විට, වෙබ් අඩවි හට ඔබගෙන් ප්‍රවේශය සඳහා ඉල්ලීමට හැකිය.</translation>
 <translation id="4598116752460667024">ලැයිස්තුවෙන් ඕනෑම ක්‍රියාවලියක් සොයන්න.</translation>
 <translation id="4600710005438004015">Chrome අලුත්ම අනුවාදයට යාවත්කාලීන කළ නොහැකිය, එබැවින් ඔබට අලුත් විශේෂාංග සහ ආරක්ෂණ පිළියම් මඟ හැරෙයි.</translation>
@@ -370,6 +374,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Chrome හි V8 එන්ජිම සමග අඩවි වේගවත් කරයි, නමුත් Chrome ප්‍රහාරවලට තරමක් අඩු ප්‍රතිරෝධයක් දක්වයි</translation>
 <translation id="4768676935374695498">Google Lens සමග මෙම වීඩියෝව සොයන්න</translation>
+<translation id="4783580253728290203">ක්‍රියාවිරහිත වූ විට, Chrome උපාංගයේ AI ආකෘති ඉවත් කරන අතර ඒවා නැවත බාගන්නේ නැත. සමහර වෙබ් අඩවි සහ Chrome විශේෂාංග ක්‍රියා නොකරනු ඇත.</translation>
 <translation id="479167709087336770">මෙය Google සෙවීම තුළ භාවිත කෙරෙන අක්‍ෂර පරීක්‍ෂකයම භාවිත කරයි. ඔබ බ්‍රවුසරය තුළ ටයිප් කරන පාඨය Google වෙත යවනු ලැබේ. ඔබට සැම විටම මෙම හැසිරීම සැකසීම් තුළ වෙනස් කළ හැක.</translation>
 <translation id="4793679854893018356">Chrome ඔබව සුරක්ෂිතව තබන ආකාරය ඉගෙන ගන්න</translation>
 <translation id="4803313124144656665">Chrome හි Google සෙවීම වසන්න</translation>
@@ -455,6 +460,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">අන්තර්ජාලය වෙත සම්බන්ධ වීමට නොහැකි වේ. ප්‍රොක්සි සේවාදායකයට සත්‍යාපනය අවශ්‍යයි.</translation>
 <translation id="5709557627224531708">Chrome ඔබේ පෙරනිමි බ්‍රවුසරය ලෙස සකසන්න</translation>
+<translation id="5715427327524421317">Chrome මෙම AI ආකෘති ස්වයංක්‍රීයව බාගෙන යාවත්කාලීන කරයි</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{යාවත්කාලීනයක් යෙදීමට උසස් ආරක්ෂාව සඳහා ඔබ Chrome යළි දියත් කළ යුතුය. ඔබේ හුදකලා කවුළුව නැවත විවෘත නොවනු ඇත.}one{යාවත්කාලීනයක් යෙදීමට උසස් ආරක්ෂාව සඳහා ඔබ Chrome යළි දියත් කළ යුතුය. ඔබේ හුදකලා කවුළු # යළි විවෘත නොවෙයි.}other{යාවත්කාලීනයක් යෙදීමට උසස් ආරක්ෂාව සඳහා ඔබ Chrome යළි දියත් කළ යුතුය. ඔබේ හුදකලා කවුළු # යළි විවෘත නොවෙයි.}}</translation>
 <translation id="5719246646468301581">Google Chrome සහ ChromeOS අතිරේක සේවා නියම</translation>
 <translation id="5736850870166430177">අඩවියක් ඔබගේ මුරපදය සොරා ගැනීමට උත්සාහ කළහොත්, හෝ ඔබ හානිකර ගොනුවක් බාගන්නා විට, Chrome පිටු අන්තර්ගතයේ කැබලි ඇතුළුව, URL සුරක්ෂිත බ්‍රවුස් කිරීම වෙත යැවීමටද හැකිය</translation>
@@ -546,6 +552,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6491330562720922580">ජංගම උපාංගවල Chrome බ්‍රව්සරය බාගැනීමට QR කේතය</translation>
 <translation id="6493527311031785448">Google Chrome <ph name="AUTHENTICATION_PURPOSE" /> සඳහා උත්සාහ කරයි</translation>
 <translation id="6497147134301593682">Chrome ස්වයංක්‍රීයව වසන ලදි</translation>
+<translation id="650039555447046671">Chrome මෙම උපාංගයෙන් AI ආකෘති ඉවත් කරනු ඇත. සමහර වෙබ් අඩවි සහ Chrome විශේෂාංග ක්‍රියා නොකරනු ඇත.</translation>
 <translation id="6506909944137591434">ඔබගේ වටපිටාවේ 3D සිතියමක් තැනීමට Chrome හට කැමරා අවසරය අවශ්‍යයි</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">ඔබේ ස්ථානය භාවිත කිරීමට, <ph name="BEGIN_LINK" />පද්ධති සැකසීම්<ph name="END_LINK" /> තුළ Chrome හට ප්‍රවේශය දෙන්න</translation>
@@ -584,6 +591,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6877155553248388166">සෙවීම් ප්‍රදේශයේ පහළම දකුණු කෙළවර: දකුණ <ph name="RIGHT" />%, පහළ <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Chrome සමග සෙවීම විවෘත කරන්න</translation>
 <translation id="6881299373831449287">Chrome යාවත්කාලීන කරමින්</translation>
+<translation id="6881997500528805781">උපාංග ගබඩාව භාවිතා කරයි. Chrome දින 45කට පසු හෝ ආචයනය අඩු වූ විට භාවිතයට නොගත් AI ආකෘති ඉවත් කරයි</translation>
 <translation id="6885412569789873916">Chrome බීටා යෙදුම්</translation>
 <translation id="6893363893008038481">Chrome වෙතින් ගිණුම ඉවත් කරන්න</translation>
 <translation id="6896758677409633944">පිටපත්</translation>

@@ -137,6 +137,7 @@
 <translation id="2295218613066132598">Tampilkan pintasan situs Chrome</translation>
 <translation id="2301513536169703857">Untuk mendapatkan sandi, bookmark, dan info Anda yang lain di semua perangkat Anda, login ke Chrome</translation>
 <translation id="2307973900865360088">Simpan di Dok</translation>
+<translation id="2308558013860776484">Bagikan screenshot konten di luar Chrome, seperti aplikasi atau file lain</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan Google Chrome sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
 <translation id="2345992953227471816">Chrome menemukan bahwa ekstensi berikut berisi malware:</translation>
 <translation id="2358140144860869442">Untuk mendapatkan daftar bacaan dan data lainnya di semua perangkat Anda, login ke Chrome</translation>
@@ -246,6 +247,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3294686910656423119">Statistik penggunaan dan laporan kerusakan</translation>
 <translation id="3327226547491422998">Nanti, Chrome dapat menanyakan apakah Anda ingin menggunakan info tersimpan guna mengisi formulir secara otomatis untuk Anda</translation>
 <translation id="3352986031709923790">pojok kanan atas area penelusuran: kanan <ph name="RIGHT" />%, atas <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">Situs dan Chrome dapat menggunakan AI yang berjalan langsung di perangkat Anda untuk fitur seperti ringkasan, pemeriksaan tata bahasa, pemberian teks, dan lainnya. Fitur ini terpisah dari Gemini di Chrome. <ph name="BEGIN_LINK" />Pelajari lebih lanjut AI di perangkat<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Beberapa fitur dan ekstensi Chrome dilengkapi pintasan. Anda dapat mengaktifkannya kembali.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome akan diluncurkan ulang sekarang}=1{Chrome akan diluncurkan ulang dalam 1 detik}other{Chrome akan diluncurkan ulang dalam # detik}}</translation>
 <translation id="3380249972812870825">Untuk membuka Gemini di Chrome, tekan <ph name="GLOBAL_HOTKEY" /></translation>
@@ -345,6 +347,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
 <translation id="4434353761996769206">Error penginstal: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Bagikan dokumen ini ke Gemini di Chrome untuk mendapatkan ringkasan singkat dan mengajukan pertanyaan lanjutan</translation>
+<translation id="4440999670272408191">Anda dapat menghapusnya kapan saja. Chrome dapat otomatis mendownloadnya lagi saat situs atau fitur membutuhkannya.</translation>
 <translation id="4450664632294415862">Chrome - Login Jaringan - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Operasi lain di Google Chrome sedang berlangsung. Coba lagi nanti.</translation>
 <translation id="4493028449971051158">Error saat sistem dimulai: jalankan penginstal sebagai administrator.</translation>
@@ -352,6 +355,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="4501839397124711198">Anda dapat menyematkan Google Penelusuran di panel samping untuk mengajukan pertanyaan saat menjelajah</translation>
 <translation id="4571503333518166079">Buka setelan notifikasi Chrome</translation>
 <translation id="4580939929828762295">Tetap aman dengan Pengelola Sandi Google</translation>
+<translation id="4589544932092381064">Tampilkan penelusuran dengan Chrome di taskbar Windows dan aktifkan pintasan keyboard</translation>
 <translation id="459622048091363950">Setelah Chrome memiliki akses, situs dapat meminta akses dari Anda.</translation>
 <translation id="4598116752460667024">Telusuri proses apa saja dari daftar.</translation>
 <translation id="4600710005438004015">Chrome tidak dapat diupdate ke versi terbaru, sehingga Anda tidak mendapatkan perbaikan keamanan dan fitur baru.</translation>
@@ -367,6 +371,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Mempercepat situs dengan mesin V8 Chrome, tetapi membuat Chrome sedikit lebih rentan terhadap serangan</translation>
 <translation id="4768676935374695498">Telusuri Video Ini dengan Google Lens</translation>
+<translation id="4783580253728290203">Jika dinonaktifkan, Chrome akan menghapus model AI di perangkat dan tidak akan mendownloadnya lagi. Beberapa situs dan fitur Chrome mungkin tidak berfungsi.</translation>
 <translation id="479167709087336770">Tindakan ini akan menggunakan pemeriksa ejaan yang sama dengan yang digunakan di penelusuran Google. Teks yang Anda ketikkan di browser dikirim ke Google. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="4793679854893018356">Pelajari cara Chrome menjaga keamanan Anda</translation>
 <translation id="4803313124144656665">Tutup Google Penelusuran di Chrome</translation>
@@ -448,6 +453,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Tidak dapat terhubung ke internet. Server proxy memerlukan autentikasi.</translation>
 <translation id="5709557627224531708">Setel Chrome sebagai browser default Anda</translation>
+<translation id="5715427327524421317">Chrome otomatis mendownload dan mengupdate model AI ini</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Perlindungan Lanjutan mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. Jendela Terisolasi Anda tidak akan dibuka lagi.}other{Perlindungan Lanjutan mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. # jendela Terisolasi Anda tidak akan dibuka lagi.}}</translation>
 <translation id="5719246646468301581">Persyaratan layanan tambahan Google Chrome dan ChromeOS</translation>
 <translation id="5736850870166430177">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Safe Browsing</translation>
@@ -539,6 +545,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6491330562720922580">Kode QR untuk mendownload browser Chrome di perangkat seluler</translation>
 <translation id="6493527311031785448">Google Chrome sedang mencoba <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome otomatis ditutup</translation>
+<translation id="650039555447046671">Chrome akan menghapus model AI dari perangkat ini. Beberapa situs dan fitur Chrome mungkin tidak berfungsi.</translation>
 <translation id="6506909944137591434">Chrome memerlukan izin kamera untuk membuat peta 3D area sekitar Anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Untuk menggunakan lokasi, beri Chrome akses di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" /></translation>
@@ -577,6 +584,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6877155553248388166">pojok kanan bawah area penelusuran: kanan <ph name="RIGHT" />%, bawah <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Buka Penelusuran dengan Chrome</translation>
 <translation id="6881299373831449287">Mengupdate Chrome</translation>
+<translation id="6881997500528805781">Menggunakan penyimpanan perangkat. Chrome akan menghapus model AI yang tidak digunakan setelah 45 hari atau saat penyimpanan hampir penuh</translation>
 <translation id="6885412569789873916">Aplikasi Chrome Beta</translation>
 <translation id="6893363893008038481">Hapus Akun dari Chrome</translation>
 <translation id="6896758677409633944">Salin</translation>

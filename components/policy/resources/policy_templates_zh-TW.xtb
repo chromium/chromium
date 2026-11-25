@@ -2555,6 +2555,21 @@ PAC 樣式的字串：
       如要進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://chromeenterprise.google/policies/url-patterns。指定時可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
 
       請注意，這項功能從未完整支援 Android 裝置，之前我們誤在 Android 裝置上啟用這項政策。</translation>
+<translation id="2585054570696570117">你可以透過這項政策控管 <ph name="PRODUCT_NAME" /> 的擴充功能管理設定，包括由現有擴充功能相關政策控管的任何設定。
+
+這項政策只能將擴充功能 ID 或更新網址對應到其特定的設定。你可以為特殊 ID <ph name="DEFAULT_SCOPE" /> 指定預設設定，凡是未透過這項政策自訂設定的擴充功能，一律會套用此預設設定。
+
+這項政策可覆寫舊版政策中針對個別擴充功能所做的設定。
+
+請注意，凡是來自 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 的個別 ID 擴充功能設定，都只會從 <ph name="DEFAULT_SCOPE" /> 的預設值繼承「installation_mode」和「update_url」，不會繼承任何其他屬性。如果指定更新網址，系統會將設定套用到擴充功能資訊清單中載明相同更新網址的擴充功能 (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy)。如果「override_update_url」旗標設為 true，系統則會使用 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中指定的「更新」網址，或是本政策中「update_url」欄位指定的網址，來安裝及更新擴充功能。如果「update_url」是 Chrome 線上應用程式商店網址，系統會忽略「override_update_url」旗標。
+
+在 <ph name="PRODUCT_NAME" /> 155 至 158 版中，若將「runtime_blocked_hosts」套用至具備「debugger」權限的擴充功能，可能會導致所有目標的「chrome.debugger.attach()」完全失效，例如當 <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 政策停用所有變化版本時。
+
+自 <ph name="PRODUCT_NAME" /> 160 版起，「blocked_permissions」和「allowed_permissions」也開始支援下列內部權限 (擴充功能可透過資訊清單金鑰取得)：來自「chrome_settings_overrides」的「searchProvider」、「homepage」和「startupPages」（僅限 <ph name="MS_WIN_NAME" /> 與 <ph name="MAC_OS_NAME" />），以及來自「chrome_url_overrides」的「newTabPageOverride」。<ph name="MS_WIN_NAME" /> 執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能強制安裝 Chrome 線上應用程式商店以外的應用程式和擴充功能。
+
+<ph name="MAC_OS_NAME" /> 執行個體必須由行動裝置管理 (MDM) 軟體控管、透過 MCX 加入網域，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能強制安裝 Chrome 線上應用程式商店以外的應用程式和擴充功能。
+
+注意：這項政策僅適用支援擴充功能的平台。</translation>
 <translation id="2585535930727399201">企業擴充功能可以透過 chrome.systemLog API 將記錄加入系統記錄檔。
 
 如果將這項政策設為啟用，記錄可在系統記錄檔內保留一小段時間。

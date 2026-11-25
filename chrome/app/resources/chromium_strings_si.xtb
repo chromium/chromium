@@ -53,6 +53,7 @@
 <translation id="1572572333538561328">සෙවීම් AI මාදිලිය නැවත විවෘත කරන්න</translation>
 <translation id="1574377791422810894">Chromium හි සුරක්ෂිතතා මෙවලම්</translation>
 <translation id="1594928384848033697">Chromium හට ඔබේ මුරපද කළමනාකරු දත්ත මැකීමට අවශ්‍යයි. මෙයට ඉඩ දීමට ඔබේ Windows මුරපදය ටයිප් කරන්න.</translation>
+<translation id="1599690375407103815">ක්‍රියාවිරහිත වූ විට, Chromium උපාංගයේ AI ආකෘති ඉවත් කරන අතර ඒවා නැවත බාගන්නේ නැත. සමහර වෙබ් අඩවි සහ Chromium විශේෂාංග ක්‍රියා නොකරනු ඇත.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{යාවත්කාලීනයක් යෙදීමට ඔබ Chromium නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ}=1{යාවත්කාලීනයක් යෙදීමට ඔබ Chromium නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළුව යළි විවෘත නොවෙයි.}one{යාවත්කාලීනයක් යෙදීමට ඔබ Chromium නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}other{යාවත්කාලීනයක් යෙදීමට ඔබ Chromium නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}}</translation>
 <translation id="1625909126243026060">Chromium හි ප්‍රධාන පෞද්ගලිකත්ව සහ ආරක්ෂක පාලන සමාලෝචනය කරන්න</translation>
 <translation id="1640672724030957280">බාගනිමින්...</translation>
@@ -67,6 +68,7 @@
 <translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" />කින් යළි ඇරඹෙනු ඇත</translation>
 <translation id="1749104137266986751">HTTPS නොමැති විට, Chromium ඔබට අනතුරු ඇඟවීමකින් තොරව අනාරක්ෂිත සම්බන්ධතාවයක් භාවිතා කරනු ඇත</translation>
 <translation id="1774152462503052664">පසුබිමේ Chromium ධාවනය වීමට ඉඩ දෙන්න</translation>
+<translation id="1792680680989393197">ඔබට ඕනෑම වේලාවක ඒවා ඉවත් කළ හැකි ය. වෙබ් අඩවියකට හෝ විශේෂාංගයකට ඒවා අවශ්‍ය වූ විට Chromium ඒවා ස්වයංක්‍රීයව නැවත බාගැනීමට හැකි ය.</translation>
 <translation id="1793486931176048546">ඉක්මන් ප්‍රවේශය සඳහා Chromium ඔබේ කාර්ය තීරුවට ඇමිණීමට, Windows දැනුම්දීමෙහි ඇති <ph name="BEGIN_BOLD" />ඔව්<ph name="END_BOLD" /> යන්න ක්ලික් කරන්න.</translation>
 <translation id="1808667845054772817">Chromium ප්‍රතිස්ථාපනය කරන්න</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> සඳහා උත්සාහ කරයි</translation>
@@ -251,6 +253,7 @@
 <translation id="3751920144677881410">මෙවලම් තීරුවේ "සෙවීම් පැති පැනලය" බොත්තමෙන්, ඔබ බ්‍රවුස් කරන අතරේ ප්‍රශ්න ඇසීමට ඔබට සෙවීම් පැති පැනලය නැවත විවෘත කළ හැක</translation>
 <translation id="3788675262216168505">Chromium පැතිකඩවල් කළමනා කරන්න</translation>
 <translation id="3790262771324122253">Chromium සමහර බාගැනීම් අවහිර කරන හේතුව ඉගෙන ගන්න</translation>
+<translation id="3793196697433239004">උපාංග ගබඩාව භාවිතා කරයි. Chromium දින 45කට පසු හෝ ආචයනය අඩු වූ විට භාවිත නොකළ AI ආකෘති ඉවත් කරයි</translation>
 <translation id="379589255253486813">ඕනෑම දෙයකට ඔබේ සමාලෝචනය අවශ්‍ය නම් Chromium ඔබට දන්වනු ඇත</translation>
 <translation id="3802055581630249637">Chromium ඔබ පැමිණීමට ඉඩ ඇති පිටු පූර්ව පූරණය කරන බැවින්, ඔබ ඒවාට පැමිණෙන විට ඒවා වඩාත් ඉක්මනින් පූරණය වේ</translation>
 <translation id="3810973564298564668">කළමනාකරණය</translation>
@@ -332,6 +335,7 @@
 <translation id="4621240073146040695">බොහෝ දුරට යාවත්කාලීනයි! යාවත්කාලීනය අවසන් කිරීමට Chromium යළි දියත් කරන්න.</translation>
 <translation id="4625064703209785397">Chromium හි V8 එන්ජිම සමග අඩවි වේගවත් කරයි, නමුත් Chromium ප්‍රහාරවලට තරමක් අඩු ප්‍රතිරෝධයක් දක්වයි</translation>
 <translation id="4626321472657185181">Chromium සමග සෙවීම විවෘත කරන්න</translation>
+<translation id="4639628733881319833">වෙනත් යෙදුම් හෝ ගොනු වැනි Chromium වලින් පිටත අන්තර්ගතයේ තිර රුවක් බෙදා ගන්න</translation>
 <translation id="4654639495249754755">Chromium පැතිකඩ</translation>
 <translation id="4665829708273112819">අනතුරු ඇඟවීමයි: Chromium හට ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය පටිගත කිරීමෙන් දිගු වැළැක්විය නොහැක. මෙම දිගුව අප්‍රසිද්ධ ප්‍රකාරය තුළ අබල කිරීමට, මෙම විකල්පය තේරීම ඉවත් කරන්න.</translation>
 <translation id="4673151026126227699">ඔබ Chromium පරිශීලන වාර්තාද බෙදා ගතහොත්, එම වාර්තාවලට ඔබ පිවිසෙන URL ඇතුළත් වේ</translation>
@@ -389,6 +393,7 @@
 <translation id="5405650547142096840">Chromium වෙතින් ඉවත් කරන්න</translation>
 <translation id="5424544524441439284">කාර්යසාධනය අඩු කරන නමුත් Chromium ප්‍රහාරවලට ඉතා විරුද්ධයි</translation>
 <translation id="5427571867875391349">Chromium ඔබේ පෙරනිමි බ්‍රව්සරය ලෙස සකසන්න</translation>
+<translation id="5435079900593041559">Windows කාර්ය තීරුවේ Chromium සෙවුම පෙන්වා යතුරු පුවරු කෙටිමඟ සක්‍රිය කරන්න</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium බීටා</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{ඔබේ බ්‍රව්සරය මන්දගාමී කරන පටිත්ත විරාම කිරීමට Chromium නිර්දේශ කරයි}one{ඔබේ බ්‍රව්සරය මන්දගාමී කරන පටිති විරාම කිරීමට Chromium නිර්දේශ කරයි}other{ඔබේ බ්‍රව්සරය මන්දගාමී කරන පටිති විරාම කිරීමට Chromium නිර්දේශ කරයි}}</translation>
 <translation id="5473971139929175403">එය තවදුරටත් මෙම Linux ව්‍යාප්තියට සහාය නොදක්වන නිසා Chromium නිවැරදිව ක්‍රියා නොකළ හැකිය.</translation>
@@ -415,6 +420,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">මෙම භාෂාවෙන් Chromium දර්ශනය කරන්න</translation>
 <translation id="569897634095159764">අන්තර්ජාලය වෙත සම්බන්ධ වීමට නොහැකි වේ. ප්‍රොක්සි සේවාදායකයට සත්‍යාපනය අවශ්‍යයි.</translation>
+<translation id="5755377560105094542">වෙබ් අඩවි සහ Chromium හට සාරාංශ, සෝදුපත් කියවීම, සිරස්තල සහ තවත් දේ වැනි විශේෂාංග සඳහා ඔබේ උපාංගයේ සෘජුවම ධාවනය වන AI භාවිතා කළ හැකි ය. මෙය Chromium හි Gemini වෙතින් වෙනම වේ. <ph name="BEGIN_LINK" />උපාංගය මත AI ගැන තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">මෙවලම් තීරුවේ "සෙවීම් පැනලය" බොත්තමෙන්, ඔබ බ්‍රවුස් කරන අතරේ ප්‍රශ්න ඇසීමට ඔබට සෙවීම් පැනලය නැවත විවෘත කළ හැක</translation>
 <translation id="5768371961535086509">Chromium අක්‍රිය පටිති වෙතින් මතකය නිදහස් කරයි. මෙය සක්‍රිය පටිති සහ අනෙකුත් යෙදුම්වලට වැඩි පරිගණක සම්පත් ලබා දෙන අතර Chromium වේගවත්ව තබා ගනී. ඔබ ඒවා වෙත ආපසු යන විට ඔබේ අක්‍රිය පටිති ස්වයංක්‍රීයව නැවත සක්‍රිය වේ. <ph name="BEGIN_LINK" />මතක සුරකිනය පිළිබඳ තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම්, ඔබේ ගිණුමේ ඇති Chromium දත්ත <ph name="SETTINGS_LINK" /></translation>
@@ -471,6 +477,7 @@
 <translation id="6245734527075554892">Chromium තුළ ගබඩා කර ඇති අනාරක්ෂිත වෙබ් අඩවි ලැයිස්තුවක් සමඟ URL පරීක්ෂා කරයි</translation>
 <translation id="6248213926982192922">Chromium පෙරනිමි බ්‍රව්සරය බවට පත් කරන්න</translation>
 <translation id="6248988683584659830">සෙවීමේ සැකසීම්</translation>
+<translation id="6251986571402453005">Chromium මෙම AI ආකෘති ස්වයංක්‍රීයව බාගෙන යාවත්කාලීන කරයි</translation>
 <translation id="6268381023930128611">Chromium වෙතින් වරන්නද?</translation>
 <translation id="6270547683008298381">මෙම පටිති අමතර සම්පත් භාවිතා කරයි. ඔබේ කාර්ය සාධනය වැඩි දියුණු කිරීමට, Chromium හට ඒවා අක්‍රිය කිරීමට ඉඩ දෙන්න.</translation>
 <translation id="6281746429495226318">ඔබගේ Chromium පැතිකඩ අභිරුචිකරණය කරන්න</translation>
@@ -760,6 +767,7 @@ Chromium හට ඔබගේ සැකසුම් ප්‍රතිසාධ�
 <translation id="8981886272598860786">Chromium සමග සෙවීමට හෝ <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ අභිරුචිකරණය කිරීමට</translation>
 <translation id="8988036198400390003">Chromium පැතිකඩවල් කළමනා කරන්න</translation>
 <translation id="8993855408334954620">Chromium තුළ Gemini සහ ඔබේ විවෘත පටිත්ත අතර සංචාලනය කිරීමට ඔබේ යතුරු පුවරුව භාවිත කරන්න.</translation>
+<translation id="9002987346523307190">Chromium මෙම උපාංගයෙන් AI ආකෘති ඉවත් කරනු ඇත. සමහර වෙබ් අඩවි සහ Chromium විශේෂාංග ක්‍රියා නොකරනු ඇත.</translation>
 <translation id="9018218886431812662">ස්ථාපනය සම්පූර්ණයි</translation>
 <translation id="9022552996538154597">Chromium වෙත පිවිසෙන්න</translation>
 <translation id="9035791714111278917">Mac මෙනු තීරුවේ Chromium සෙවුම පෙන්වා යතුරුපුවරු කෙටිමඟ සක්‍රිය කරන්න</translation>

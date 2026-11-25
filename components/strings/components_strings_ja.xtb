@@ -78,6 +78,7 @@
 <translation id="112840717907525620">ポリシー キャッシュは正常です</translation>
 <translation id="1131264053432022307">コピーした画像</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – 全画面表示を終了するには、上部からドラッグして [戻る] ボタンをタップします</translation>
+<translation id="1132789342529761192">アップロードは推奨されません</translation>
 <translation id="11370190534773372">カード情報を入力しました</translation>
 <translation id="1138458427267715730">値下げしたウェブサイトがあった場合にアラートを受け取ります</translation>
 <translation id="1142713751288681188">用紙の種類</translation>
@@ -604,6 +605,7 @@
 <translation id="2025891858974379949">安全でないコンテンツ</translation>
 <translation id="2027465737841872819">プラスチック</translation>
 <translation id="2027707238798802149">使用できないカード</translation>
+<translation id="2028329426302356196">ダウンロードは推奨されません</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />プロキシとファイアウォールを確認する<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">この Chrome インスタンスは、手動で設定されたコマンドライン フラグを使用して実行されています。コマンドライン フラグは随時変更される可能性があり、サポート対象外であることに注意してください。</translation>
 <translation id="2033900728810589426"><ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> で定義されたデフォルトの検索プロバイダのキーワードと同じショートカットを指定することはできません: <ph name="SHORTCUT_NAME" /></translation>
@@ -690,7 +692,6 @@
 <translation id="2155260325161282517">5x7 インチ（2L 判）</translation>
 <translation id="2156467141257470387">保存した住所は Google サービス全体で使用できます。既存の職場の住所は変更されません。この住所は Google アカウント（<ph name="ACCOUNT" />）に保存されます。</translation>
 <translation id="2157640075051554492">価格トラッキングの通知</translation>
-<translation id="2158964559178498011">自動入力がより多くの場所で利用可能に - Ctrl キーを 2 回押すと情報を検索して入力できます</translation>
 <translation id="2161656808144014275">テキスト</translation>
 <translation id="2162435186600002085">メインヘッダーのロゴ</translation>
 <translation id="2162535140284745414">AI を活用した新しいブラウジング方法を見つけるのに役立つリアルタイムの提案が表示されます。</translation>
@@ -1458,6 +1459,7 @@
 <translation id="3443504041532578451">光ディスク（サテン）</translation>
 <translation id="3447661539832366887">このデバイスの所有者が恐竜ゲームを無効にしています。</translation>
 <translation id="3447884698081792621">証明書（発行元: <ph name="ISSUER" />）を表示</translation>
+<translation id="3449239216441121005">印刷は推奨されません</translation>
 <translation id="3450323514459570273">MIDI デバイスの操作と再プログラムを要求できる</translation>
 <translation id="3452404311384756672">取得間隔:</translation>
 <translation id="345268527248907593">このサイトにアクセスできませんでした</translation>
@@ -2201,7 +2203,6 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">ページを翻訳しますか？</translation>
 <translation id="468314109939257734">仮想カード番号を表示します</translation>
-<translation id="4684818564800397688">自動入力がより多くの場所で利用可能に - ⌘ キーを 2 回押すと情報を検索して入力できます</translation>
 <translation id="4686942373615810936">たった今作成</translation>
 <translation id="4690205240253392065">後払いの金融機関を選択</translation>
 <translation id="469028408546145398">[すべてのシークレット ウィンドウを閉じる] ボタンです。実行すると、現在開いているすべてのシークレット ウィンドウを閉じることができます</translation>
@@ -2863,7 +2864,6 @@
 <translation id="573974402615125334">タブグループの共有、参加、共同作業を行うには、履歴とタブを同期してください</translation>
 <translation id="5740911612628596808">C9 封筒</translation>
 <translation id="574392208103952083">中</translation>
-<translation id="5744350700955456407">高精度の自動入力機能で、Gmail やフォトなどのアプリから情報（注文番号やフライトの確認コードなど）を探して入力できるようになりました</translation>
 <translation id="5745586894920491759">Chrome はクラウドでページのタイトルと URL を処理します</translation>
 <translation id="5745733273847572235">位置情報を要求できる</translation>
 <translation id="5750869797196646528">ハンド トラッキング</translation>
@@ -2921,6 +2921,7 @@
 <translation id="5851548754964597211">タブ リスト</translation>
 <translation id="5851868085455377790">発行元</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">コピーは推奨されません</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5862579898803147654">スタッカー 8</translation>
 <translation id="5863515189965725638">IBAN の編集</translation>
@@ -4763,6 +4764,7 @@
 <translation id="8975263830901772334">印刷するファイルの名前</translation>
 <translation id="8982884016487650216">PDF の読み込みが完了しました</translation>
 <translation id="8983369100812962543">アプリのサイズ変更を許可できるようになりました</translation>
+<translation id="8984453891367472218">グループで並べ替え</translation>
 <translation id="8984785270737450103">共有は現在無効になっています</translation>
 <translation id="8985112471026018799">カードを保存して簡単に購入手続き</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の閲覧履歴を表示します</translation>

@@ -690,7 +690,6 @@
 <translation id="2155260325161282517">5 x 7 ኢንች</translation>
 <translation id="2156467141257470387">በመላ Google ምርቶች ላይ የተቀመጡ አድራሻዎችን መጠቀም ይችላሉ። ይህ ነባር የሥራ አድራሻዎን አይለውጥም። በእርስዎ Google መለያ፣ <ph name="ACCOUNT" /> ውስጥ ይቀመጣል።</translation>
 <translation id="2157640075051554492">የዋጋ መከታተያ ማሳወቂያዎች</translation>
-<translation id="2158964559178498011">ራስ-ሙላ ተጨማሪ ቦታዎች ውስጥ ይሠራል — መረጃን ለማግኘት እና ለመሙላት Ctrlን ሁለት ጊዜ ይጫኑ</translation>
 <translation id="2161656808144014275">ጽሁፍ</translation>
 <translation id="2162435186600002085">ቀዳሚ የራስጌ ዓርማ</translation>
 <translation id="2162535140284745414">በሰው ሠራሽ አስተውሎት ለማሰስ አዳዲስ መንገዶችን እንዲያገኙ የሚያግዙዎትን የእውነተኛ ጊዜ ጥቆማዎችን ያግኙ።</translation>
@@ -2200,7 +2199,6 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">ገፅ ይተርጎም?</translation>
 <translation id="468314109939257734">የእርስዎን ምናባዊ ካርድ ቁጥር ይመልከቱ</translation>
-<translation id="4684818564800397688">ራስ-ሙላ ተጨማሪ ቦታዎች ውስጥ ይሠራል — መረጃን ለማግኘት እና ለመሙላት ⌘ ሁለቴ ይጫኑ</translation>
 <translation id="4686942373615810936">አሁን የተፈጠረ</translation>
 <translation id="4690205240253392065">የበኋላ ላይ መክፈል አቅራቢ ይምረጡ</translation>
 <translation id="469028408546145398">ማንነትን የማያሳውቅ የመስኮት አዝራርን ይዝጉ፣ አሁን ክፍት የሆኑትን ሁሉንም ማንነት የማያሳውቁ መስኮቶች ለመዝጋት ያግብሩ</translation>
@@ -2862,7 +2860,6 @@
 <translation id="573974402615125334">የትር ቡድኖች ውስጥ ለማጋራት፣ ለመቀላቀል እና ለመተባበር ታሪክዎን እና ትሮችዎን ያሥምሩ</translation>
 <translation id="5740911612628596808">ሲ9 ፖስታ</translation>
 <translation id="574392208103952083">መካከለኛ</translation>
-<translation id="5744350700955456407">የተሻሻለ ራስ-ሙላ አሁን እንደ የትዕዛዝ ቁጥሮች እና የበረራ ማረጋገጫ ኮዶች ያሉ መረጃዎችን እንደ Gmail እና ፎቶዎች ካሉ መተግበሪያዎች ማግኘት እና መሙላት ይችላል</translation>
 <translation id="5745586894920491759">Chrome በደመና ውስጥ የገጽ ርዕሶችን እና ዩአርኤሎችን ያሰናዳል</translation>
 <translation id="5745733273847572235">አካባቢዎን መጠየቅ ይችላል</translation>
 <translation id="5750869797196646528">የእጅ ክትትል</translation>
@@ -4762,6 +4759,7 @@
 <translation id="8975263830901772334">እርስዎ የሚያትሟቸው የፋይሎች ስም</translation>
 <translation id="8982884016487650216">PDF መጫን አልቋል</translation>
 <translation id="8983369100812962543">አሁን የመተግበሪያውን መጠን መለወጥ ይችላሉ</translation>
+<translation id="8984453891367472218">በቡድኖች ደርድር</translation>
 <translation id="8984785270737450103">ማጋራት በአሁኑ ጊዜ ጠፍቷል</translation>
 <translation id="8985112471026018799">ይበልጥ ፈጠን ላለ ክፍያ ማጠናቀቅ ካርድን ያስቀምጡ</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ከዚያ በChrome ውስጥ የአሰሳ ታሪክዎን ለማየት ትርን ከዚያ አስገባን ይጫኑ</translation>

@@ -852,6 +852,7 @@
 <translation id="1921544956190977703">Chrome 最強大的安全功能可協助防範危險網站、下載檔案容及擴充程式</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">「<ph name="NAME" />」只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至帳戶。</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">選擇開啟程式</translation>
 <translation id="1925017091976104802">按下 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可貼上</translation>
 <translation id="1925021887439448749">輸入自訂網址</translation>
@@ -1402,6 +1403,7 @@
 <translation id="2528487766183344810">請解鎖「<ph name="TOKEN_NAME" />」以匯出用戶端憑證。</translation>
 <translation id="2532198298278778531">在 ChromeOS Flex 設定中管理安全 DNS</translation>
 <translation id="253434972992662860">暫停(&amp;P)</translation>
+<translation id="2534439599863644240">序列埠</translation>
 <translation id="253498598929009420">網站將可見到您螢幕上的內容</translation>
 <translation id="253557089021624350">Keepalive 數量</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> 可查看及編輯以下檔案和資料夾</translation>

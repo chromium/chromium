@@ -690,7 +690,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2155260325161282517">5 x 7 polgadas</translation>
 <translation id="2156467141257470387">Podes usar os enderezos gardados nos produtos de Google. Isto non cambiará o teu enderezo actual do traballo, que se gardará na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Notificacións de seguimento de prezos</translation>
-<translation id="2158964559178498011">A función de autocompletar funciona en máis lugares. Preme Control dúas veces para buscar e completar información</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2162435186600002085">Logotipo da cabeceira principal</translation>
 <translation id="2162535140284745414">Recibe suxestións en tempo real que che poden axudar a atopar novas formas de navegar coa IA.</translation>
@@ -2201,7 +2200,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Queres traducir a páxina?</translation>
 <translation id="468314109939257734">Ver número de tarxeta virtual</translation>
-<translation id="4684818564800397688">A función de autocompletar funciona en máis lugares. Preme ⌘ dúas veces para buscar e completar información</translation>
 <translation id="4686942373615810936">Creouse agora mesmo</translation>
 <translation id="4690205240253392065">Escolle un fornecedor para pagar máis tarde</translation>
 <translation id="469028408546145398">Botón para pechar as ventás do modo de incógnito. Actívao para pechar todas as ventás do modo de incógnito que estean abertas</translation>
@@ -2863,7 +2861,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="573974402615125334">Para compartir grupos de pestanas, unirte a eles e colaborar, sincroniza o teu historial e as pestanas</translation>
 <translation id="5740911612628596808">Sobre C9</translation>
 <translation id="574392208103952083">Medio</translation>
-<translation id="5744350700955456407">A función de autocompletar mellorada agora pode buscar e completar información (por exemplo, números de pedido e códigos de confirmación de voos) en aplicacións como Gmail e Fotos</translation>
 <translation id="5745586894920491759">Chrome procesa os títulos das páxinas e os URL na nube</translation>
 <translation id="5745733273847572235">Pode pedirche permiso para usar a túa localización</translation>
 <translation id="5750869797196646528">Seguimento das mans</translation>
@@ -4761,6 +4758,7 @@ Detalles adicionais:
 <translation id="8975263830901772334">Nomes dos ficheiros que imprimes</translation>
 <translation id="8982884016487650216">Carga do PDF completada</translation>
 <translation id="8983369100812962543">Xa podes cambiar o tamaño da aplicación</translation>
+<translation id="8984453891367472218">Ordenar por grupos</translation>
 <translation id="8984785270737450103">A opción de compartir está desactivada neste momento</translation>
 <translation id="8985112471026018799">Garda a tarxeta para tramitar a compra máis rapidamente</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para consultar o teu historial de navegación en Chrome, preme Tabulador e, a continuación, Introducir</translation>
