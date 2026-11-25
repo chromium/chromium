@@ -52,7 +52,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <!-- LINT.ThenChange(
-    //chrome/browser/ui/webui/history/browsing_history_handler.cc:OpenConversationSourceToHistogramSuffix,
+    //chrome/browser/critical_actions/critical_action_ui_utils.cc:OpenConversationSourceToHistogramSuffix,
+    //components/critical_actions/core/browser/critical_action_types.h:OpenConversationSource,
     //ui/webui/resources/cr_components/history/history.mojom:OpenConversationSource,
 ) -->
 

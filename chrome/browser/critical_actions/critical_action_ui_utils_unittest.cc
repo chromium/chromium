@@ -4,15 +4,29 @@
 
 #include "chrome/browser/critical_actions/critical_action_ui_utils.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
+#include "components/critical_actions/core/browser/features.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -119,6 +133,167 @@ TEST(CriticalActionUiUtilsTest, SettingChangeWithEmptyUrlDoesNotLinkToNull) {
                                    chrome::kSiteDetailsSubpage})),
                 "site", "null")
                 .spec());
+}
+
+class OpenCriticalActionConversationTest : public testing::Test {
+ protected:
+  explicit OpenCriticalActionConversationTest(
+      bool action_level_chat_linkouts_enabled = false) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kCriticalActionHistory,
+        {{"enable_chat_linkouts", "true"},
+         {"enable_action_level_chat_linkouts",
+          action_level_chat_linkouts_enabled ? "true" : "false"}});
+  }
+
+  void SetUp() override { profile_ = TestingProfile::Builder().Build(); }
+
+  // Adds a critical action with a conversation (but no anchor) to the
+  // profile's `CriticalActionService`.
+  void AddStoredCriticalAction(const std::string& id) {
+    CriticalActionService* service =
+        CriticalActionFactory::GetForProfile(profile_.get());
+    ASSERT_NE(service, nullptr);
+    CriticalActionEntry entry;
+    entry.critical_action_id = id;
+    entry.visit_id = 42;
+    entry.timestamp = base::Time::Now();
+    entry.action_source = ActionSource::kActor;
+    entry.action_type = ActionType::kFormFill;
+    entry.conversation_id = "conv-123";
+    service->AddCriticalAction(entry);
+  }
+
+  // Runs `OpenCriticalActionConversation()` without a WebContents and returns
+  // its result.
+  OpenConversationResult OpenConversation(Profile* profile,
+                                          const std::string& id,
+                                          OpenConversationSource source) {
+    base::test::TestFuture<OpenConversationResult> future;
+    OpenCriticalActionConversation(profile, /*web_contents=*/nullptr, id,
+                                   source, future.GetCallback());
+    return future.Get();
+  }
+
+  Profile* profile() { return profile_.get(); }
+
+ private:
+  // Declared before `task_environment_` so that it outlives it.
+  base::test::ScopedFeatureList feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+};
+
+class OpenCriticalActionConversationActionLevelTest
+    : public OpenCriticalActionConversationTest {
+ protected:
+  OpenCriticalActionConversationActionLevelTest()
+      : OpenCriticalActionConversationTest(
+            /*action_level_chat_linkouts_enabled=*/true) {}
+};
+
+TEST_F(OpenCriticalActionConversationTest, EmptyIdIsInvalidActionEntry) {
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(OpenConversation(profile(), /*id=*/"",
+                             OpenConversationSource::kEntryMenu),
+            OpenConversationResult::kErrorInvalidActionEntry);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult.EntryMenu",
+      OpenConversationResult::kErrorInvalidActionEntry, 1);
+}
+
+TEST_F(OpenCriticalActionConversationTest, NullProfileIsInternalError) {
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(OpenConversation(/*profile=*/nullptr, "action-1",
+                             OpenConversationSource::kEntryMenu),
+            OpenConversationResult::kErrorInternal);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult.EntryMenu",
+      OpenConversationResult::kErrorInternal, 1);
+}
+
+TEST_F(OpenCriticalActionConversationTest, MissingActionIsInvalidActionEntry) {
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(OpenConversation(profile(), "missing-id",
+                             OpenConversationSource::kEntryMenu),
+            OpenConversationResult::kErrorInvalidActionEntry);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult.EntryMenu",
+      OpenConversationResult::kErrorInvalidActionEntry, 1);
+}
+
+TEST_F(OpenCriticalActionConversationTest, NullWebContentsIsInternalError) {
+  ASSERT_NO_FATAL_FAILURE(AddStoredCriticalAction("stored-action-id"));
+
+  base::HistogramTester histogram_tester;
+  // Without a WebContents, `GlicLinkoutHandler` fails cleanly with
+  // `kErrorInternal`, which is recorded.
+  EXPECT_EQ(OpenConversation(profile(), "stored-action-id",
+                             OpenConversationSource::kEntryMenu),
+            OpenConversationResult::kErrorInternal);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult.EntryMenu",
+      OpenConversationResult::kErrorInternal, 1);
+}
+
+// Opening a conversation stored in one profile on another profile's tab would
+// leak it across profiles, so a mismatch is a fatal error.
+TEST_F(OpenCriticalActionConversationTest, WebContentsFromOtherProfileCrashes) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  std::unique_ptr<TestingProfile> other_profile =
+      TestingProfile::Builder().Build();
+  std::unique_ptr<content::WebContents> other_web_contents =
+      content::WebContentsTester::CreateTestWebContents(other_profile.get(),
+                                                        /*instance=*/nullptr);
+
+  EXPECT_CHECK_DEATH(OpenCriticalActionConversation(
+      profile(), other_web_contents.get(), "action-1",
+      OpenConversationSource::kEntryMenu, base::DoNothing()));
+}
+
+TEST_F(OpenCriticalActionConversationTest,
+       FromRowWithActionLevelLinkoutsDisabled) {
+  ASSERT_NO_FATAL_FAILURE(AddStoredCriticalAction("stored-action-id"));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(OpenConversation(profile(), "stored-action-id",
+                             OpenConversationSource::kCriticalActionRow),
+            OpenConversationResult::kErrorInternal);
+  // Still recorded under the requesting source, even though it is served like
+  // the entry menu while action-level chat linkouts are disabled.
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult.CriticalActionRow",
+      OpenConversationResult::kErrorInternal, 1);
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.OpenConversationResult.EntryMenu", 0);
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.OpenConversation.HasConversationAnchor", 0);
+}
+
+TEST_F(OpenCriticalActionConversationActionLevelTest,
+       HasAnchorNotRecordedForEntryMenu) {
+  ASSERT_NO_FATAL_FAILURE(AddStoredCriticalAction("stored-action-id"));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(OpenConversation(profile(), "stored-action-id",
+                             OpenConversationSource::kEntryMenu),
+            OpenConversationResult::kErrorInternal);
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.OpenConversation.HasConversationAnchor", 0);
+}
+
+TEST_F(OpenCriticalActionConversationActionLevelTest, HasAnchorRecordedForRow) {
+  ASSERT_NO_FATAL_FAILURE(AddStoredCriticalAction("stored-action-id"));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(OpenConversation(profile(), "stored-action-id",
+                             OpenConversationSource::kCriticalActionRow),
+            OpenConversationResult::kErrorInternal);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversation.HasConversationAnchor", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult.CriticalActionRow",
+      OpenConversationResult::kErrorInternal, 1);
 }
 
 }  // namespace

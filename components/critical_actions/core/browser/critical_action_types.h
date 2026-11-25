@@ -96,6 +96,19 @@ ActionType GetFormFillGroup(FormFillType type);
 // Writes `types` into `metadata_dict` under the "form_fill_types" key.
 void SetFormFillTypes(base::DictValue& metadata_dict, FormFillTypes types);
 
+// Identifies which History UI surface requested opening a conversation.
+// `kEntryMenu` is the visit-level linkout, which opens the conversation at its
+// default position (the "Go to Gemini chat" history entry menu item).
+// `kCriticalActionRow` is the per-action linkout, which opens the conversation
+// at the action's turn when action-level chat linkouts are enabled.
+// LINT.IfChange(OpenConversationSource)
+enum class OpenConversationSource {
+  kEntryMenu = 0,
+  kCriticalActionRow = 1,
+  kMaxValue = kCriticalActionRow,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/histograms.xml:OpenConversationSource)
+
 // Maximum allowed byte length for
 // `CriticalActionEntry::conversation_anchor_id`. Generous enough for
 // agent-agnostic identifiers (e.g., Glic turn IDs, UUIDs, or opaque 3P agent

@@ -41,10 +41,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace critical_actions {
-struct CriticalActionEntry;
-}  // namespace critical_actions
-
 class HistoryIdentityStateWatcher;
 
 // The handler for Javascript messages related to the "history" view.
@@ -184,11 +180,6 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
 
   // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
-
-  void OnCriticalActionRetrievedForLinkout(
-      history::mojom::OpenConversationSource source,
-      OpenCriticalActionConversationCallback callback,
-      std::optional<critical_actions::CriticalActionEntry> entry);
 
   history::mojom::HistoryIdentityStatePtr GetHistoryIdentityStateMojo() const;
   void IdentityStateChanged();
