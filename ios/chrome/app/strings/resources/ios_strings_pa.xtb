@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">ਤੁਹਾਨੂੰ ਢੁਕਵੇਂ ਸੁਝਾਅ ਦੇਣ ਲਈ, ਤੁਹਾਡੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਦੇ ਪੰਨਾ ਸਿਰਲੇਖਾਂ ਅਤੇ URL ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="4439968635693513370">ਇਸ ਨਾਲ ਆਪਣੇ ਵੀਕੈਂਡ ਦੀ ਯੋਜਨਾ ਬਣਾਓ</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ਸੈਟਿੰਗਾਂ<ph name="END_BOLD" /> ਖੋਲ੍ਹੋ</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} ਨਤੀਜਾ ਉਪਲਬਧ ਹੈ।}one{{count} ਨਤੀਜਾ ਉਪਲਬਧ ਹੈ।}other{{count} ਨਤੀਜੇ ਉਪਲਬਧ ਹਨ।}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> ਲਈ ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="4455710003856931944">ਤੁਸੀਂ ਪਿੱਛੇ ਜਾਂ ਅੱਗੇ ਜਾਣ ਲਈ ਕੋਨੇ 'ਤੇ ਸਵਾਈਪ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4460014764210899310">ਗਰੁੱਪ ਹਟਾਓ</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">ਦਿਖਾਓ</translation>
 <translation id="5311061401280561833">ਕੈਮਰੇ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="5313967007315987356">ਸਾਈਟ ਜੋੜੋ</translation>
-<translation id="5315029634103634221">Gemini ਇੱਕ AI ਹੈ ਅਤੇ ਇਹ ਗਲਤੀਆਂ ਕਰ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />Google ਨੂੰ ਭੇਜੇ ਗਏ ਸੰਬੰਧਿਤ ਡਾਟੇ ਬਾਰੇ ਹੋਰ ਜਾਣਕਾਰੀ<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ਆਯਾਤ ਕਰਨ ਲਈ ਕੁਝ ਨਹੀਂ</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> ਵਿੱਚੋਂ <ph name="INDEX" /></translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>

@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Açıq tablarınızın səhifə başlıqları və URL-ləri sizə uyğun təkliflər vermək üçün istifadə olunur.</translation>
 <translation id="4439968635693513370">Həftəsonunuzu planlaşdırın</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Ayarları<ph name="END_BOLD" /> açın</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} nəticə əlçatandır.}other{{count} nəticə əlçatandır.}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> üçün əlavə seçimlər</translation>
 <translation id="4455710003856931944">Kənarı geri və ya irəli çəkə bilərsiniz.</translation>
 <translation id="4460014764210899310">Qruplaşdırma olmasın</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Göstərin</translation>
 <translation id="5311061401280561833">Kamera və mikrofona giriş icazəsi verilib</translation>
 <translation id="5313967007315987356">Sayt əlavə edin</translation>
-<translation id="5315029634103634221">Gemini AI-dır və səhv edə bilər. <ph name="BEGIN_LINK" />Google-a göndərilən müvafiq data haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">İmport etmək üçün heç nə yoxdur</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> ünvanına daxil olun</translation>

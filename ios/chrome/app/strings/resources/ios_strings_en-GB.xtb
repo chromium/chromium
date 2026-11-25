@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Page titles and URLs of your open tabs are used to give you relevant suggestions.</translation>
 <translation id="4439968635693513370">Plan your weekend with</translation>
 <translation id="4442550905108052454">Open <ph name="BEGIN_BOLD" />Settings<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} result available.}other{{count} results available.}}</translation>
 <translation id="4445840280797509738">More options for <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">You can swipe the edge to go back or forward.</translation>
 <translation id="4460014764210899310">Ungroup</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Show</translation>
 <translation id="5311061401280561833">Camera and microphone access allowed</translation>
 <translation id="5313967007315987356">Add site</translation>
-<translation id="5315029634103634221">Gemini is AI and can make mistakes. <ph name="BEGIN_LINK" />More about relevant data sent to Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nothing to import</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> of <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Sign in to <ph name="SITE_DOMAIN" /></translation>

@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Os títulos das páginas e os URLs dos seus separadores abertos são usados para lhe dar sugestões relevantes.</translation>
 <translation id="4439968635693513370">Planeie o seu fim de semana com o</translation>
 <translation id="4442550905108052454">Abra as <ph name="BEGIN_BOLD" />Definições<ph name="END_BOLD" />.</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} resultado disponível.}other{{count} resultados disponíveis.}}</translation>
 <translation id="4445840280797509738">Mais opções para <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Pode deslizar rapidamente na extremidade para retroceder ou avançar.</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5311061401280561833">Acesso à câmara e ao microfone permitido</translation>
 <translation id="5313967007315987356">Adicionar site</translation>
-<translation id="5315029634103634221">O Gemini é IA e pode cometer erros. <ph name="BEGIN_LINK" />Mais sobre os dados relevantes enviados para a Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nada para importar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Inicie sessão em <ph name="SITE_DOMAIN" /></translation>

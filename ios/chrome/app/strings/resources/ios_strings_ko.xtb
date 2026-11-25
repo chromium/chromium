@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">열린 탭의 페이지 제목과 URL이 관련성 높은 추천을 제공하는 데 사용됩니다.</translation>
 <translation id="4439968635693513370">다음 도구로 주말 계획 세우기:</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />설정<ph name="END_BOLD" />을 엽니다.</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count}개 결과를 확인할 수 있습니다.}other{{count}개 결과를 확인할 수 있습니다.}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> 옵션 더보기</translation>
 <translation id="4455710003856931944">가장자리를 스와이프하여 앞으로 또는 뒤로 이동할 수 있습니다.</translation>
 <translation id="4460014764210899310">그룹 해제</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">표시</translation>
 <translation id="5311061401280561833">카메라 및 마이크 액세스 허용됨</translation>
 <translation id="5313967007315987356">사이트 추가</translation>
-<translation id="5315029634103634221">Gemini는 AI이며 실수를 할 수 있습니다. <ph name="BEGIN_LINK" />Google로 전송되는 관련 데이터에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">가져올 항목이 없습니다.</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" />에 로그인</translation>

@@ -52,6 +52,7 @@
 <translation id="1572572333538561328">Search AI মোড আবার খুলুন</translation>
 <translation id="1574377791422810894">Chromium-এর নিরাপত্তা টুল</translation>
 <translation id="1594928384848033697">Chromium আপনার Password Manager সম্পর্কিত ডেটা মুছতে চায়। এটি করার অনুমতি দিতে, আপনার Windows-এর পাসওয়ার্ড টাইপ করুন।</translation>
+<translation id="1599690375407103815">বন্ধ থাকলে, Chromium অন-ডিভাইস AI মডেল সরিয়ে দেয় এবং সেগুলি আবার ডাউনলোড করবে না। কিছু সাইট ও Chromium ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chromium আবার চালু করতে বলছেন}=1{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chromium আবার চালু করতে বলছেন। আপনার ছদ্মবেশী উইন্ডো আবার খুলবে না।}one{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chromium আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}other{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chromium আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}}</translation>
 <translation id="1625909126243026060">Chromium-এ মূল গোপনীয়তা এবং নিরাপত্তা নিয়ন্ত্রণ পর্যালোচনা করুন</translation>
 <translation id="1640672724030957280">ডাউনলোড হচ্ছে...</translation>
@@ -66,6 +67,7 @@
 <translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" />-এর মধ্যে রিস্টার্ট হবে</translation>
 <translation id="1749104137266986751">HTTPS উপলভ্য না থাকলে, Chromium আপনাকে সতর্ক না করেই অসুরক্ষিত কানেকশন ব্যবহার করবে</translation>
 <translation id="1774152462503052664">Chromium-কে ব্যাকগ্রাউন্ডে চলতে দিন</translation>
+<translation id="1792680680989393197">আপনি যেকোনও সময় এগুলি সরিয়ে দিতে পারবেন। কোনও সাইট বা ফিচারের প্রয়োজন হলে Chromium সেগুলি অটোমেটিক আবার ডাউনলোড করতে পারে।</translation>
 <translation id="1793486931176048546">দ্রুত অ্যাক্সেসের জন্য আপনার টাস্কবারে Chromium পিন করতে, Windows বিজ্ঞপ্তিতে <ph name="BEGIN_BOLD" />হ্যাঁ<ph name="END_BOLD" /> বিকল্পে ক্লিক করুন</translation>
 <translation id="1808667845054772817">Chromium আবার ইন্সটল করুন</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" />-এর চেষ্টা করছে</translation>
@@ -250,6 +252,7 @@
 <translation id="3751920144677881410">টুলবারে থাকা "Search সাইড প্যানেল" বোতাম থেকে, ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Search সাইড প্যানেল আবার খুলতে পারবেন</translation>
 <translation id="3788675262216168505">Chromium প্রোফাইল ম্যানেজ করুন</translation>
 <translation id="3790262771324122253">Chromium কেন কিছু ডাউনলোড ব্লক করে তা জানুন</translation>
+<translation id="3793196697433239004">ডিভাইস স্টোরেজ ব্যবহার করে। Chromium ৪৫ দিন পরে বা স্টোরেজ কম থাকলে অব্যবহৃত AI মডেল সরিয়ে দেয়</translation>
 <translation id="379589255253486813">আপনাকে কোনও কিছু পর্যালোচনা করতে হবে কিনা তা Chromium আপনাকে জানাবে</translation>
 <translation id="3802055581630249637">আপনি দেখতে পারেন এমন পৃষ্ঠা Chromium প্রিলোড করে, যাতে আপনি দেখার সময় সেগুলি আরও দ্রুত লোড হতে পারে</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
@@ -331,6 +334,7 @@
 <translation id="4621240073146040695">প্রায় আপ-টু-ডেট হয়েছে! আপডেট শেষ করতে Chromium আবার চালু করুন।</translation>
 <translation id="4625064703209785397">Chromium-এর ভি৮ ইঞ্জিন সাইটের স্পিড বাড়িয়ে দেয় কিন্তু Chromium-এর অ্যাটাক প্রতিরোধের ক্ষমতা সামান্য কমে যায়</translation>
 <translation id="4626321472657185181">Chromium-এর মাধ্যমে সার্চ খুলুন</translation>
+<translation id="4639628733881319833">Chromium-এর বাইরের কন্টেন্ট, যেমন অন্যান্য অ্যাপ বা ফাইলের স্ক্রিনশট শেয়ার করুন</translation>
 <translation id="4654639495249754755">Chromium প্রোফাইল</translation>
 <translation id="4665829708273112819">সতর্কতা: Chromium কোনও এক্সটেনশনকে আপনার ব্রাউজিং ইতিহাস রেকর্ড করার কাজে বাধা দিতে পারে না। ছদ্মবেশী মোডে এই এক্সটেনশনটি বন্ধ করতে, আপনার বেছে নেওয়া বিকল্পগুলির মধ্যে থেকে এটিকে সরিয়ে দিন।</translation>
 <translation id="4673151026126227699">আপনি Chromium ব্যবহারের রিপোর্ট শেয়ার করলেও, আপনার দেখা URL তার মধ্যে অন্তর্ভুক্ত থাকে</translation>
@@ -388,6 +392,7 @@
 <translation id="5405650547142096840">Chromium থেকে সরান</translation>
 <translation id="5424544524441439284">পারফর্ম্যান্স কমিয়ে দেয় তবে অ্যাটাকের হাত থেকে Chromium-কে আরও বেশি প্রতিরোধক করে তোলে</translation>
 <translation id="5427571867875391349">Chromium-কে আপনার ডিফল্ট ব্রাউজার হিসাবে সেট করুন</translation>
+<translation id="5435079900593041559">Windows টাস্কবারে 'Chromium-এর মাধ্যমে সার্চ করুন' ফিচার দেখান এবং কীবোর্ড শর্টকাট চালু করুন</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium বিটা</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{আপনার ব্রাউজারের গতি কমিয়ে দেয় এমন ট্যাব পজ করার জন্য Chromium সাজেস্ট করে}one{আপনার ব্রাউজারের গতি কমিয়ে দেয় এমন ট্যাব পজ করার জন্য Chromium সাজেস্ট করে}other{আপনার ব্রাউজারের গতি কমিয়ে দেয় এমন ট্যাবগুলি পজ করার জন্য Chromium সাজেস্ট করে}}</translation>
 <translation id="5473971139929175403">Chromium সঠিকভাবে কাজ নাও করতে পারে কারণ এটি এখন আর Linux ডিস্ট্রিবিউশনে সমর্থিত নয়</translation>
@@ -414,6 +419,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">এই ভাষায় Chromium প্রদর্শন করুন</translation>
 <translation id="569897634095159764">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। প্রক্সি সার্ভার যাচাই করতে হবে।</translation>
+<translation id="5755377560105094542">সারসংক্ষেপ, প্রুফরিডিং, ক্যাপশন এবং আরও অনেক কিছুর মতো ফিচারের জন্য সাইট ও Chromium আপনার ডিভাইসে সরাসরি রান করে এমন AI ব্যবহার করতে পারে। এটি Chromium-এ Gemini থেকে আলাদা। <ph name="BEGIN_LINK" />অন-ডিভাইস AI সম্পর্কে আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">টুলবারে থাকা "Search প্যানেল" বোতামটি ব্যবহার করে, ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Search প্যানেল আবার খুলতে পারবেন</translation>
 <translation id="5768371961535086509">Chromium ইনঅ্যাক্টিভ ট্যাব থেকে মেমরি খালি করে। এর ফলে অ্যাক্টিভ থাকা ট্যাব এবং অন্যান্য অ্যাপ আরও বেশি কম্পিউটার রিসোর্স পায় এবং Chromium দ্রুত কাজ করতে পারে। আপনার ইনঅ্যাক্টিভ ট্যাব আবার ব্যবহার করা শুরু করলে অটোমেটিক সেগুলি অ্যাক্টিভ হয়ে যাবে। <ph name="BEGIN_LINK" />মেমরি সেভার সম্পর্কে আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, আপনার অ্যাকাউন্টে থাকা Chromium ডেটা <ph name="SETTINGS_LINK" /></translation>
@@ -470,6 +476,7 @@
 <translation id="6245734527075554892">Chromium-এ স্টোর করা নিরাপদ নয় এমন সাইটের তালিকা থেকে সেগুলির URL পরীক্ষা করে দেখে</translation>
 <translation id="6248213926982192922">Chromium-কে ডিফল্ট ব্রাউজার করুন</translation>
 <translation id="6248988683584659830">সার্চ সেটিংস</translation>
+<translation id="6251986571402453005">Chromium এইসব AI মডেল অটোমেটিক ডাউনলোড ও আপডেট করে</translation>
 <translation id="6268381023930128611">Chromium থেকে সাইন-আউট করবেন?</translation>
 <translation id="6270547683008298381">এইসব ট্যাব অতিরিক্ত রিসোর্স ব্যবহার করছে। আপনার পারফর্ম্যান্স উন্নত করতে, Chromium-কে এগুলি বন্ধ করতে দিন।</translation>
 <translation id="6281746429495226318">আপনার Chromium প্রোফাইল কাস্টমাইজ করুন</translation>
@@ -757,6 +764,7 @@ Chromium আপনার সেটিংস পুনরুদ্ধার ক�
 <translation id="8981886272598860786">Chromium ব্যবহার করে সার্চ করতে বা <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে কাস্টমাইজ করতে</translation>
 <translation id="8988036198400390003">Chromium প্রোফাইল ম্যানেজ করুন</translation>
 <translation id="8993855408334954620">Chromium-এ Gemini ও আপনার খোলা ট্যাবের মধ্যে নেভিগেট করতে কীবোর্ড ব্যবহার করুন।</translation>
+<translation id="9002987346523307190">Chromium এই ডিভাইস থেকে AI মডেল সরিয়ে দেবে। কিছু সাইট ও Chromium ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="9018218886431812662">ইনস্টল হয়ে গেছে</translation>
 <translation id="9022552996538154597">Chromium-এ সাইন-ইন করুন</translation>
 <translation id="9035791714111278917">Mac মেনু বারে Chromium-এর সাহায্যে সার্চ করুন ফিচার দেখান এবং কীবোর্ড শর্টকাট চালু করুন</translation>

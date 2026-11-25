@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Bladsytitels en URL’e van jou oop oortjies word gebruik om vir jou relevante voorstelle te gee.</translation>
 <translation id="4439968635693513370">Beplan jou naweek met</translation>
 <translation id="4442550905108052454">Maak <ph name="BEGIN_BOLD" />Instellings<ph name="END_BOLD" /> oop</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} resultaat is beskikbaar.}other{{count} resultate is beskikbaar.}}</translation>
 <translation id="4445840280797509738">Meer opsies vir <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Jy kan die rand swiep om terug of vorentoe te gaan.</translation>
 <translation id="4460014764210899310">Ongroepeer</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5311061401280561833">Kamera- en mikrofoontoegang word toegelaat</translation>
 <translation id="5313967007315987356">Voeg werf by</translation>
-<translation id="5315029634103634221">Gemini is KI en kan foute maak. <ph name="BEGIN_LINK" />Meer oor relevante data wat na Google toe gestuur word<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Niks om in te voer nie</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> van <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Meld aan by <ph name="SITE_DOMAIN" /></translation>

@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chrome שולח את הטקסט הזה לכלי החיפוש, הבינה המלאכותית והסוכנים של הארגון כדי לקבל הצעות.</translation>
 <translation id="1698376642261615901">‏Google Chrome הוא דפדפן אינטרנט המפעיל דפי אינטרנט ואפליקציות במהירות הבזק. זהו דפדפן מהיר, יציב וקל לשימוש. הגלישה באינטרנט בטוחה יותר הודות להגנה מפני תוכנות זדוניות ופישינג, המובנית ב-Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{‏Chrome יופעל מחדש בעוד שעה}one{‏Chrome יופעל מחדש בעוד # שעות}two{‏Chrome יופעל מחדש בעוד # שעות}other{‏Chrome יופעל מחדש בעוד # שעות}}</translation>
+<translation id="1713866023633141719">‏ה-AI במכשיר מוכן</translation>
 <translation id="1722488837206509557">כך תהיה לך אפשרות לבחור מבין המכשירים הזמינים ולהציג בהם תוכן.</translation>
 <translation id="1724094881572874997">‏כדי להגן על העבודה שלך ב-Chrome, הארגון יוכל לראות מידע מסוים או לנהל אותו אם התחברת לחשבון בדפדפן.</translation>
 <translation id="1769661297620183092">‏כדי לשאול שאלות תוך כדי גלישה, אפשר לפתוח מחדש את החלונית של חיפוש Google</translation>
@@ -151,6 +152,7 @@
 <translation id="2513154137948333830">נדרשת הפעלה מחדש: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">הארגון שלך</translation>
 <translation id="2521391734665471391">‏סגירת מצב AI בחיפוש Google</translation>
+<translation id="2523048609826818526">כתיבה לשימוש כללי</translation>
 <translation id="2523492931736391680">‏עבודה מאובטחת ב-Chrome</translation>
 <translation id="2534365042754120737">‏כדי להגן על הנתונים שלך, כדאי לאפשר ל-Chrome להסיר הרשאות מאתרים שלא נכנסת אליהם לאחרונה. המערכת תמשיך לשלוח התראות.</translation>
 <translation id="2556847002339236023">‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך <ph name="TIMEOUT_DURATION" />. נתוני הגלישה נמחקו. בין הנתונים שנמחקו: היסטוריה, מילוי אוטומטי והורדות.</translation>
@@ -249,6 +251,7 @@
 <translation id="3373752068427117404">‏חלק מהתכונות והתוספים של Chrome מגיעים עם מקשי קיצור. אפשר להפעיל אותם מחדש.</translation>
 <translation id="3379938682270551431">{0,plural, =0{‏Chrome יופעל מחדש עכשיו}=1{‏Chrome יופעל מחדש בעוד שנייה}one{‏Chrome יופעל מחדש בעוד # שניות}two{‏Chrome יופעל מחדש בעוד # שניות}other{‏Chrome יופעל מחדש בעוד # שניות}}</translation>
 <translation id="3380249972812870825">‏כדי לפתוח את Gemini ב-Chrome, צריך ללחוץ על <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">‏‫Chrome הוסיף יכולות AI שפועלות במכשיר שלך. אתרי אינטרנט ו-Chrome יכולים להשתמש בהן לתכונות כמו:</translation>
 <translation id="3396977131400919238">‏במהלך ההתקנה אירעה שגיאה של מערכת ההפעלה. יש להוריד שוב את Google Chrome.</translation>
 <translation id="3428747202529429621">‏מגן עליך ב-Chrome וייתכן שייעשה בו שימוש לשיפור האבטחה באפליקציות אחרות של Google שבהן נכנסת לחשבון</translation>
 <translation id="3438681572027105609">‏כדי לקבל גישה לסיסמאות ולנתונים נוספים בכל המכשירים שלך, כדאי להיכנס ל-Chrome</translation>
@@ -298,6 +301,7 @@
 <translation id="3973161977468201858">‏‫Google Chrome רוצה למחוק את הנתונים שלך במנהל הסיסמאות של Google. כדי לאפשר זאת, צריך להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="3984557288004650913">‏כדי לפתוח את החלונית מחדש ולשאול שאלות תוך כדי גלישה, עליך ללחוץ על הכפתור "חיפוש Google ב-Chrome" שבסרגל הכלים</translation>
 <translation id="399788104667917863">הצמדה לסרגל הכלים</translation>
+<translation id="4000385468528550798">‏ה-AI במכשיר עודכן</translation>
 <translation id="400161754580828648">‏כדי לשתף את המסך, צריך לאפשר הקלטת מסך ב-Chrome בקטע "הגדרות המערכת".</translation>
 <translation id="4012899077942246412">‏כשמחוברים לחשבון, אפשר להשתמש בסיסמאות ובפרטים נוספים מחשבון Google ב-Chrome. כדי לשנות את האפשרות הזאת, כדאי לעבור אל "החשבון שלך ב-Chrome".</translation>
 <translation id="4022972681110646219">תרגום המסך</translation>
@@ -556,6 +560,7 @@
 <translation id="6632012506031284914">‏כדי לחפש באמצעות Chrome.</translation>
 <translation id="6634299872736643004">‏השינויים בהגדרה הזו ייכנסו לתוקף לאחר הפעלה מחדש של Chrome.</translation>
 <translation id="6644846457769259194">עדכון המכשיר שלך מתבצע (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">‏ה-AI במכשיר מעודכן</translation>
 <translation id="6660596345553328257">‏להיכנס אל Chrome?</translation>
 <translation id="6664219008737641504">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזאת, עליך <ph name="SETTINGS_LINK" /> את נתוני Chrome בחשבון</translation>
 <translation id="6676384891291319759">גישה אל האינטרנט</translation>
@@ -598,6 +603,7 @@
 <translation id="7024536598735240744">שגיאה בפתיחה: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">‏כאן ניתן לעבור בין פרופילים של Chrome</translation>
 <translation id="7026856149118332950">‏כדי להצמיד את Chrome לסרגל האפליקציות וליהנות מגישה מהירה, צריך ללחוץ על <ph name="BEGIN_BOLD" />כן<ph name="END_BOLD" /> בהתראה של Windows.</translation>
+<translation id="7033785662379319359">‏גרסה חדשה וקומפקטית יותר של ה-AI במכשיר מוכנה לשימוש במשימות כמו סיכומים, הגהה ועוד</translation>
 <translation id="7047386856539490735">התוצאות האלה מועילות?</translation>
 <translation id="7051685429025310665">‏לא נכנסת לאתר הזה בזמן האחרון. ההרשאות "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" ו"<ph name="PERMISSION_3" />" הוסרו על ידי Chrome</translation>
 <translation id="7059914902409643750">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>

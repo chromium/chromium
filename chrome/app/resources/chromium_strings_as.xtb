@@ -54,6 +54,7 @@
 <translation id="1572572333538561328">Searchৰ AI ম’ড পুনৰ খোলক</translation>
 <translation id="1574377791422810894">Chromiumৰ সুৰক্ষা সঁজুলি</translation>
 <translation id="1594928384848033697">Chromiumএ আপোনাৰ Password Managerৰ ডেটা মচিব বিচাৰে। এই কাৰ্যৰ বাবে অনুমতি দিবলৈ আপোনাৰ Windowsৰ পাছৱৰ্ডটো টাইপ কৰক।</translation>
+<translation id="1599690375407103815">অফ থাকিলে, Chromiumএ অন-ডিভাইচ AI মডেলসমূহ আঁতৰায় আৰু সেইসমূহ পুনৰ ডাউনল’ড নকৰে। কিছুমান ছাইট আৰু Chromiumৰ সুবিধাই কাম নকৰিব পাৰে।</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chromium পুনৰ লঞ্চ কৰাটো বিচাৰে}=1{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chromium পুনৰ লঞ্চ কৰাটো বিচাৰে। আপোনাৰ.ইনক’গনিট' ৱিণ্ড'খন পুনৰ খুলিব নোৱাৰিব।}one{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chromium পুনৰ লঞ্চ কৰাটো বিচাৰে। আপোনাৰ #খন.ইনক’গনিট' ৱিণ্ড' পুনৰ খুলিব নোৱাৰিব।}other{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chromium পুনৰ লঞ্চ কৰাটো বিচাৰে। আপোনাৰ #খন.ইনক’গনিট' ৱিণ্ড' পুনৰ খুলিব নোৱাৰিব।}}</translation>
 <translation id="1625909126243026060">Chromiumত গোপনীয়তা আৰু সুৰক্ষা সম্পৰ্কীয় মুখ্য নিয়ন্ত্ৰণসমূহ পৰ্যালোচনা কৰক</translation>
 <translation id="1640672724030957280">ডাউনল’ড হৈ আছে...</translation>
@@ -68,6 +69,7 @@
 <translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" />ত ৰিষ্টাৰ্ট হ’ব</translation>
 <translation id="1749104137266986751">HTTPS উপলব্ধ নোহোৱা সময়ত, Chromiumএ আপোনাক সতৰ্ক নকৰাকৈ কোনো অসুৰক্ষিত সংযোগ ব্যৱহাৰ কৰিব</translation>
 <translation id="1774152462503052664">Chromiumক নেপথ্যত চলিবলৈ দিয়ক</translation>
+<translation id="1792680680989393197">আপুনি সেইবোৰ যিকোনো সময়তে আঁতৰাব পাৰে। কোনো ছাইট বা সুবিধাক সেইসমূহৰ প্ৰয়োজন হ’লে Chromiumএ স্বয়ংক্ৰিয়ভাৱে সেইসমূহ পুনৰ ডাউনল’ড কৰিব পাৰে।</translation>
 <translation id="1793486931176048546">দ্ৰুত এক্সেছৰ বাবে Chromiumক আপোনাৰ টাস্কবাৰত পিন কৰিবলৈ Windowsৰ জাননীত <ph name="BEGIN_BOLD" />হয়<ph name="END_BOLD" />ত ক্লিক কৰক।</translation>
 <translation id="1808667845054772817">Chromium ৰিইনষ্টল কৰক</translation>
 <translation id="1820835682567584003">Chromiumএ <ph name="AUTHENTICATION_PURPOSE" /> চেষ্টা কৰি আছে</translation>
@@ -252,6 +254,7 @@
 <translation id="3751920144677881410">টুলবাৰত থকা "Searchৰ ছাইডৰ পেনেল" বুটামটোৰ পৰা, আপুনি ব্ৰাউজ কৰোঁতে প্ৰশ্ন সুধিবলৈ Searchৰ ছাইডৰ পেনেল পুনৰ খুলিব পাৰে</translation>
 <translation id="3788675262216168505">Chromium প্ৰ’ফাইল পৰিচালনা কৰক</translation>
 <translation id="3790262771324122253">Chromiumএ কিয় কিছুমান ডাউনল’ড অৱৰোধ কৰে সেই বিষয়ে জানক</translation>
+<translation id="3793196697433239004">ডিভাইচৰ ষ্ট’ৰেজ ব্যৱহাৰ কৰে। Chromiumএ ৪৫ দিনৰ পাছত বা ষ্ট’ৰেজ কম হ’লে অব্যৱহৃত AI মডেলসমূহ আঁতৰায়</translation>
 <translation id="379589255253486813">ক’ৰবাত আপোনাৰ পৰ্যালোচনাৰ প্ৰয়োজন হ’লে Chromiumএ আপোনাক জনাব</translation>
 <translation id="3802055581630249637">Chromiumএ আপুনি চোৱাৰ সম্ভাৱনা থকা পৃষ্ঠাসমূহ আগতীয়াকৈ ল’ড কৰে, যাতে আপুনি চোৱাৰ সময়ত সেইবোৰ অধিক ক্ষিপ্ৰতাৰে ল’ড হয়</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
@@ -333,6 +336,7 @@
 <translation id="4621240073146040695">প্ৰায় আপ-টু-ডে’ট কৰা হৈছে! আপডে’ট সম্পূৰ্ণ কৰিবলৈ Chromium পুনৰ লঞ্চ কৰক৷</translation>
 <translation id="4625064703209785397">Chromiumৰ V8 ইঞ্জিনৰ সৈতে ছাইটবোৰ খৰতকীয়া কৰি তোলে কিন্তু Chromiumক আক্ৰমণৰ পৰা সামান্য কম প্ৰতিৰোধী কৰে</translation>
 <translation id="4626321472657185181">Chromiumৰ জৰিয়তে সন্ধান কৰাৰ সুবিধাটো খোলক</translation>
+<translation id="4639628733881319833">অন্য এপ্‌ বা ফাইলৰ দৰে Chromiumৰ বাহিৰৰ সমলৰ এখন স্ক্ৰীনশ্বট শ্বেয়াৰ কৰক</translation>
 <translation id="4654639495249754755">Chromium প্ৰ’ফাইল</translation>
 <translation id="4665829708273112819">সকীয়নি: Chromeএ কোনো এক্সটেনশ্বনক আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস ৰেকৰ্ড কৰাত বাধা দিব নোৱাৰে। এই এক্সটেনশ্বনটো ইনক’গনিট’ ম’ডত অক্ষম কৰিবলৈ এই বিকল্পটো বাছনিৰ পৰা আঁতৰাওক।</translation>
 <translation id="4673151026126227699">যদি আপুনি Chromium ব্যৱহাৰ কৰাৰ ৰিপ’ৰ্টও শ্বেয়াৰ কৰে, সেই ৰিপ’ৰ্টত আপুনি চোৱা URLসমূহ অন্তৰ্ভুক্ত হয়</translation>
@@ -390,6 +394,7 @@
 <translation id="5405650547142096840">Chromiumৰ পৰা আঁতৰাওক</translation>
 <translation id="5424544524441439284">কাৰ্যদক্ষতা কম কৰে কিন্তু Chromiumক আক্ৰমণৰ বাবে অধিক প্ৰতিৰোধী কৰে</translation>
 <translation id="5427571867875391349">আপোনাৰ ডিফ'ল্ট ব্ৰাউজাৰ হিচাপে Chromiumক ছেট কৰক</translation>
+<translation id="5435079900593041559">Windowsৰ টাস্কবাৰত Chromiumৰ জৰিয়তে সন্ধান কৰাৰ বিকল্প দেখুৱাওক আৰু কীব’ৰ্ডৰ শ্বৰ্টকাট অন কৰক</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium বিটা</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromiumএ আপোনাৰ ব্ৰাউজাৰ লেহেমীয়া কৰি টেবটো পজ কৰাটো চুপাৰিছ কৰে}one{Chromiumএ আপোনাৰ ব্ৰাউজাৰ লেহেমীয়া কৰি টেবসমূহ পজ কৰাটো চুপাৰিছ কৰে}other{Chromiumএ আপোনাৰ ব্ৰাউজাৰ লেহেমীয়া কৰি টেবসমূহ পজ কৰাটো চুপাৰিছ কৰে}}</translation>
 <translation id="5473971139929175403">Chromiumএ সঠিকভাৱে কাম নকৰিবও পাৰে কাৰণ এইটো আৰু Linux বিতৰণত সমৰ্থিত নহয়</translation>
@@ -416,6 +421,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">এই ভাষাত Chromium প্ৰদর্শন কৰক</translation>
 <translation id="569897634095159764">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব পৰা নাই। প্ৰ’ক্সি ছাৰ্ভাৰৰ বাবে বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ আৱশ্যক।</translation>
+<translation id="5755377560105094542">ছাইট আৰু Chromiumএ সাৰাংশ, খচৰা শুধৰণি, কেপশ্বন আৰু অধিকৰ দৰে সুবিধাসমূহৰ বাবে আপোনাৰ ডিভাইচত পোনপটীয়াকৈ চলা AI ব্যৱহাৰ কৰিব পাৰে। এইটো Chromiumত Geminiৰ পৰা পৃথক। <ph name="BEGIN_LINK" />অন-ডিভাইচ AIৰ বিষয়ে অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">টুলবাৰত থকা "Searchৰ পেনেল" বুটামটোৰ পৰা, আপুনি ব্ৰাউজ কৰাৰ সময়ত প্ৰশ্ন সুধিবলৈ Searchৰ পেনেল পুনৰ খুলিব পাৰে</translation>
 <translation id="5768371961535086509">Chromiumএ নিষ্ক্ৰিয় টেবসমূহৰ পৰা মেম’ৰী খালী কৰে। এইটোৱে সক্ৰিয় টেব আৰু অন্য এপক কম্পিউটাৰৰ অধিক সম্পদ দিয়ে আৰু Chromiumক দ্ৰুত কৰি ৰাখে। আপুনি নিজৰ নিষ্ক্ৰিয় টেবসমূহলৈ গ’লে সেইবোৰ স্বয়ংক্ৰিয়ভাৱে পুনৰ সক্ৰিয় হয়। <ph name="BEGIN_LINK" />মেম’ৰী সঞ্চয়কাৰীৰ বিষয়ে অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰিছে বা এই ছেটিংটো সলাব বিচাৰে, তেন্তে আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা <ph name="SETTINGS_LINK" /></translation>
@@ -472,6 +478,7 @@
 <translation id="6245734527075554892">Chromiumত ষ্ট’ৰ কৰি ৰখা অসুৰক্ষিত ছাইটসমূহৰ এখন সূচীৰ সৈতে URLসমূহ পৰীক্ষা কৰে</translation>
 <translation id="6248213926982192922">Chromiumক ডিফ’ল্ট ব্ৰাউজাৰ বনাওক</translation>
 <translation id="6248988683584659830">সন্ধান সম্পৰ্কীয় ছেটিংসমূহ</translation>
+<translation id="6251986571402453005">Chromiumএ এই AI মডেলসমূহ স্বয়ংক্ৰিয়ভাৱে ডাউনল’ড আৰু আপডে’ট কৰে</translation>
 <translation id="6268381023930128611">Chromiumৰ পৰা ছাইন আউট কৰিবনে?</translation>
 <translation id="6270547683008298381">এই টেবসমূহে অতিৰিক্ত সম্পদ ব্যৱহাৰ কৰি আছে। আপোনাৰ কাৰ্যদক্ষতা উন্নত কৰিবলৈ Chromiumক সেইসমূহ নিষ্ক্ৰিয় কৰিবলৈ দিয়ক।</translation>
 <translation id="6281746429495226318">আপোনাৰ Chromium প্ৰ’ফাইল কাষ্টমাইজ কৰক</translation>
@@ -762,6 +769,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8981886272598860786">Chromiumৰ জৰিয়তে সন্ধান কৰিবলৈ বা <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />ত কাষ্টমাইজ কৰিবলৈ</translation>
 <translation id="8988036198400390003">Chromium প্ৰ’ফাইল পৰিচালনা কৰক</translation>
 <translation id="8993855408334954620">Chromiumত Gemini আৰু আপোনাৰ খোলা টেবৰ মাজত নেভিগে’ট কৰিবলৈ আপোনাৰ কীব’ৰ্ড ব্যৱহাৰ কৰক।</translation>
+<translation id="9002987346523307190">Chromiumএ এই ডিভাইচটোৰ পৰা AI মডেলসমূহ আঁতৰাব। কিছুমান ছাইট আৰু Chromiumৰ সুবিধাই কাম নকৰিব পাৰে।</translation>
 <translation id="9018218886431812662">ইনষ্টল সম্পূৰ্ণ হ’ল</translation>
 <translation id="9022552996538154597">Chromiumত ছাইন ইন কৰক</translation>
 <translation id="9035791714111278917">Macৰ মেনু বাৰত Chromiumৰ জৰিয়তে সন্ধান কৰাৰ বিকল্প দেখুৱাওক আৰু কীব’ৰ্ডৰ শ্বৰ্টকাট অন কৰক</translation>

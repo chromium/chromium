@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">আপনাকে প্রাসঙ্গিক সাজেশন দিতে, আপনার খোলা ট্যাবের পৃষ্ঠার টাইটেল ও URL ব্যবহার করা হয়।</translation>
 <translation id="4439968635693513370">এর সাহায্যে আপনার উইকএন্ড প্ল্যান করুন</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />সেটিংস<ph name="END_BOLD" /> খুলুন</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count}টি ফলাফল উপলভ্য।}one{{count}টি ফলাফল উপলভ্য।}other{{count}টি ফলাফল উপলভ্য।}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />-এর জন্য আরও বিকল্প</translation>
 <translation id="4455710003856931944">পিছনে বা সামনে যেতে স্ক্রিনের প্রান্তটি সোয়াইপ করুন।</translation>
 <translation id="4460014764210899310">আলাদা করুন</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5311061401280561833">ক্যামেরা ও মাইক্রোফোন অ্যাক্সেসের অনুমতি আছে</translation>
 <translation id="5313967007315987356">সাইট যোগ করুন</translation>
-<translation id="5315029634103634221">Gemini হল AI এবং এটি ভুল করতে পারে। <ph name="BEGIN_LINK" />Google-এ পাঠানো প্রাসঙ্গিক ডেটা সম্পর্কে আরও তথ্য<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ইমপোর্ট করার জন্য কিছুই নেই</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />-এর <ph name="INDEX" /></translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> লিঙ্কে সাইন-ইন করুন</translation>

@@ -2473,6 +2473,19 @@ Si cette règle est désactivée, la fonctionnalité d'encodage de contenu <ph n
 <translation id="2521581787935130926">Afficher le raccourci des applications dans la barre de favoris</translation>
 <translation id="2522304491589804974">Configurer la liste d'autorisation concernant l'installation des extensions</translation>
 <translation id="2523511232831599126">Activer les raccourcis d'accessibilité sur l'écran de connexion</translation>
+<translation id="2524400223625951315">Spécifie le comportement en mode isolé des extensions installées d'office.
+
+Cette règle s'applique aux extensions configurées via <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou avec <ph name="INSTALLATION_MODE_FIELD" /> défini sur <ph name="FORCE_INSTALLED_VALUE" /> dans <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. Les extensions configurées avec <ph name="INSTALLATION_MODE_FIELD" /> défini sur <ph name="NORMAL_INSTALLED_VALUE" /> sont contrôlées par <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" />.
+
+Si cette règle est définie sur 0 (toujours activées) ou si elle n'est pas configurée, les extensions installées d'office sont toujours activées en mode isolé et ne peuvent pas être désactivées par l'utilisateur.
+
+Si cette règle est définie sur 1 (activées par défaut), les extensions installées d'office sont activées par défaut en mode isolé et peuvent être désactivées par l'utilisateur. Le choix de l'utilisateur prévaut tant que la règle est définie sur 1. En dehors du mode isolé, l'utilisateur ne peut toujours pas désactiver les extensions installées d'office.
+
+Les extensions qui définissent <ph name="INCOGNITO_MANIFEST_KEY" /> sur <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> dans leur fichier manifeste ne peuvent pas s'exécuter en mode isolé, quelle que soit la valeur de cette règle.
+
+Cette règle ne prend effet que lorsque <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> est activée.
+
+Cette règle nécessite une licence <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> pour être appliquée.</translation>
 <translation id="252742292004421898">Autoriser l'API Direct Sockets sur ces sites</translation>
 <translation id="2528762900096510743">Activer le service de déconnexion automatique</translation>
 <translation id="2529880111512635313">Configurer la liste des applications et des extensions dont l'installation est forcée</translation>
@@ -3937,6 +3950,7 @@ Cette règle a été supprimée dans Chrome 145. Nous vous recommandons d'utili
 
       Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
 <translation id="3435796032110614169">Autoriser la suppression de l'historique des tâches d'impression</translation>
+<translation id="3435849940943480491">Les extensions installées d'office sont toujours activées en mode isolé et ne peuvent pas être désactivées</translation>
 <translation id="3436217793443508863">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'écran est verrouillé (lorsque l'appareil fonctionne sur batterie).</translation>
 <translation id="3437391374720747482">Privilégier les méthodes d'échange de clés répondant aux exigences de la suite CNSA 2.0</translation>
 <translation id="3437924696598384725">Autoriser l'utilisateur à gérer les connexions VPN</translation>
@@ -6284,6 +6298,7 @@ La désactivation du décodage vidéo avec accélération matérielle n'est pas 
 <translation id="4927797103413916381">Si la règle <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> est activée ou n'est pas configurée et que la règle <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> n'est pas désactivée, les sites aux expériences abusives visant à tromper les utilisateurs ne peuvent pas ouvrir de nouvelles fenêtres ni de nouveaux onglets.
 
        Si les règles <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> ou <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> sont désactivées, ces sites peuvent ouvrir de nouvelles fenêtres ou de nouveaux onglets.</translation>
+<translation id="4928435626872799127">Contrôler le comportement en mode isolé des extensions installées d'office</translation>
 <translation id="4929721861648439998">Permet d'activer la fonctionnalité d'accessibilité d'audio mono sur l'écran de connexion.
 
           Celle-ci permet de changer le mode de l'appareil en remplaçant le mode stéréo (activé par défaut) par l'audio mono.
@@ -9758,6 +9773,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="7054840304131108563">Désactiver les fonctionnalités d'accessibilité du moteur de rendu</translation>
 <translation id="7055022222176591388">Interdire le plug-in obsolète <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7056040036973126753">Les données sur la fiabilité du domaine peuvent être envoyées à Google, en fonction des règles sur les métriques utilisateur de Chrome (UMA, User Metrics Analysis)</translation>
+<translation id="7057522375529097624">Les extensions installées d'office sont activées par défaut en mode isolé et peuvent être désactivées</translation>
 <translation id="7062803946218028349">Autoriser l'activation de Phone Hub</translation>
 <translation id="7063646777978847358">Cette règle détermine si les requêtes de récupération en arrière-plan provenant des service workers sont restreintes. Si une fonctionnalité qui télécharge des fichiers en arrière-plan est affectée, cette règle peut être pertinente.
 

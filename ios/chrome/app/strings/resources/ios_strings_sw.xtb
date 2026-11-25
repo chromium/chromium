@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Majina ya kurasa na URL za vichupo ulivyofungua hutumiwa kukupa mapendekezo yanayofaa.</translation>
 <translation id="4439968635693513370">Panga wikendi yako ukitumia</translation>
 <translation id="4442550905108052454">Fungua <ph name="BEGIN_BOLD" />Mipangilio<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{Tokeo {count} linapatikana.}other{Matokeo {count} yanapatikana.}}</translation>
 <translation id="4445840280797509738">Chaguo zaidi za <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Unaweza kutelezesha kidole kwenye ukingo ili urudi nyuma au uende mbele.</translation>
 <translation id="4460014764210899310">Ondoa kwenye kundi</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Onyesha</translation>
 <translation id="5311061401280561833">Umeruhusu ufikiaji wa kamera na maikrofoni</translation>
 <translation id="5313967007315987356">Ongeza tovuti</translation>
-<translation id="5315029634103634221">Gemini ni AI na inaweza kukosea. <ph name="BEGIN_LINK" />Maelezo zaidi kuhusu data husika inayotumwa kwa Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Hakuna kipengee cha kupakia</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> kati ya <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Ingia katika akaunti ya <ph name="SITE_DOMAIN" /></translation>

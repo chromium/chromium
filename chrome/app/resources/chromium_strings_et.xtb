@@ -52,6 +52,7 @@
 <translation id="1572572333538561328">Otsingu AI-režiimi uuesti avamine</translation>
 <translation id="1574377791422810894">Chromiumi ohutustööriistad</translation>
 <translation id="1594928384848033697">Chromium soovib kustutada teie Paroolihalduri andmed. Selle lubamiseks sisestage oma Windowsi parool.</translation>
+<translation id="1599690375407103815">Kui see on välja lülitatud, eemaldab Chromium seadmes olevad AI-mudelid ega laadi neid uuesti alla. Mõned saidid ja Chromiumi funktsioonid ei pruugi töötada.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti}=1{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie inkognito akent ei avata uuesti.}other{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="1625909126243026060">Vaadake üle Chromiumi peamised privaatsus- ja turvaseaded</translation>
 <translation id="1640672724030957280">Allalaadimine ...</translation>
@@ -66,6 +67,7 @@
 <translation id="1745121272106313518">Chromium taaskäivitub <ph name="REMAINING_TIME" /> pärast</translation>
 <translation id="1749104137266986751">Kui HTTPS pole saadaval, kasutab Chromium ebaturvalist ühendust ilma teid hoiatamata</translation>
 <translation id="1774152462503052664">Luba Chromiumil taustal töötada</translation>
+<translation id="1792680680989393197">Saate need igal ajal eemaldada. Chromium võib need automaatselt uuesti alla laadida, kui sait või funktsioon neid vajab.</translation>
 <translation id="1793486931176048546">Kiireks juurdepääsuks klõpsake Windowsi märguandes nupul <ph name="BEGIN_BOLD" />Jah<ph name="END_BOLD" />, et kinnitada Chromium tegumiribale</translation>
 <translation id="1808667845054772817">Installi Chromium uuesti</translation>
 <translation id="1820835682567584003">Chromium püüab teha järgmist: <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -250,6 +252,7 @@
 <translation id="3751920144677881410">Tööriistaribal oleva nupu „Otsingu külgpaneel“ abil saate otsingu külgpaneeli uuesti avada, et sirvimise ajal küsimusi esitada</translation>
 <translation id="3788675262216168505">Halda Chromiumi profiile</translation>
 <translation id="3790262771324122253">Vaadake, miks Chromium mõned allalaadimised blokeerib</translation>
+<translation id="3793196697433239004">Kasutab seadme salvestusruumi. Chromium eemaldab kasutamata AI-mudelid 45 päeva möödudes või kui salvestusruumi on vähe</translation>
 <translation id="379589255253486813">Chromium annab teile teada, kui midagi tuleb üle vaadata</translation>
 <translation id="3802055581630249637">Chromium eellaadib lehed, mida tõenäoliselt külastada soovite, et need laaditaks avamisel kiiremini</translation>
 <translation id="3810973564298564668">Halda</translation>
@@ -331,6 +334,7 @@
 <translation id="4621240073146040695">Rakendus on peaaegu ajakohane! Värskenduse lõpuleviimiseks taaskäivitage Chromium.</translation>
 <translation id="4625064703209785397">Kiirendab Chromiumi V8 mootoriga saite, kuid muudab Chromiumi rünnetele veidi vähem vastupidavaks</translation>
 <translation id="4626321472657185181">Ava otsing Chromiumiga</translation>
+<translation id="4639628733881319833">Jagage ekraanipilti Chromiumi-välisest sisust, näiteks muudest rakendustest või failidest.</translation>
 <translation id="4654639495249754755">Chromiumi profiil</translation>
 <translation id="4665829708273112819">Hoiatus. Chromium ei saa takistada laiendustel teie sirvimisajalugu salvestada. Kui soovite laienduse inkognito režiimis keelata, siis tühistage see valik.</translation>
 <translation id="4673151026126227699">Kui jagate ka Chromiumi kasutusaruandeid, hõlmavad need teie külastatavaid URL-e</translation>
@@ -388,6 +392,7 @@
 <translation id="5405650547142096840">Eemalda Chromiumist</translation>
 <translation id="5424544524441439284">Vähendab jõudlust, kuid muudab Chromiumi rünnakutele vastupidavamaks</translation>
 <translation id="5427571867875391349">Määra Chromium vaikebrauseriks</translation>
+<translation id="5435079900593041559">Kuva Chromiumiga otsing Windowsi tegumiribal ja lülita sisse klaviatuuri otsetee</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromiumi beetaversioon</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium soovitab teie brauserit aeglustava vahelehe peatada}other{Chromium soovitab teie brauserit aeglustavad vahelehed peatada}}</translation>
 <translation id="5473971139929175403">Chromium ei pruugi õigesti töötada, kuna seda ei toetata enam selles Linuxi versioonis</translation>
@@ -414,6 +419,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Kuva Chromium selles keeles</translation>
 <translation id="569897634095159764">Internetiga ei õnnestu ühendust luua. Puhverserver nõuab autentimist.</translation>
+<translation id="5755377560105094542">Saidid ja Chromium saavad kasutada otse teie seadmes töötavat AI-d selliste funktsioonide jaoks nagu kokkuvõtted, korrektuur, subtiitrid ja palju muud. See on Chromiumis olevast Geminist eraldi. <ph name="BEGIN_LINK" />Lugege lisaks seadmes oleva AI kohta.<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">Tööriistaribal oleva nupu „Otsingupaneel“ abil saate otsingupaneeli uuesti avada, et sirvimise ajal küsimusi esitada</translation>
 <translation id="5768371961535086509">Chromium vabastab inaktiivsete vahelehtede mälu. See annab aktiivsetele vahelehtedele ja muudele rakendustele rohkem arvutiressursse ja tagab Chromiumi kiiruse. Teie inaktiivsed vahelehed muutuvad automaatselt aktiivseks niipea, kui nendele naasete. <ph name="BEGIN_LINK" />Lisateave mälusäästja kohta<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Kui unustasite parooli või soovite seda seadet muuta, <ph name="SETTINGS_LINK" /> oma kontol Chromiumi andmed</translation>
@@ -470,6 +476,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="6245734527075554892">Kontrollib URL-e Chromiumi talletatud ohtlike saitide loendi alusel.</translation>
 <translation id="6248213926982192922">Määra Chromium vaikebrauseriks</translation>
 <translation id="6248988683584659830">Otsige seadetest</translation>
+<translation id="6251986571402453005">Chromium laadib need AI-mudelid automaatselt alla ja värskendab neid</translation>
 <translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
 <translation id="6270547683008298381">Need vahelehed kasutavad lisaressursse. Las Chromium teeb need toimivuse täiustamiseks interaktiivseks.</translation>
 <translation id="6281746429495226318">Kohandage oma Chromiumi profiili</translation>
@@ -760,6 +767,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8981886272598860786">Chromiumiga otsimiseks või <ph name="BEGIN_LINK" />seadetes<ph name="END_LINK" /> kohandamiseks.</translation>
 <translation id="8988036198400390003">Halda Chromiumi profiile</translation>
 <translation id="8993855408334954620">Kasutage klaviatuuri, et navigeerida Chromiumi Gemini ja avatud vahelehe vahel.</translation>
+<translation id="9002987346523307190">Chromium eemaldab sellest seadmest AI-mudelid. Mõned saidid ja Chromiumi funktsioonid ei pruugi töötada.</translation>
 <translation id="9018218886431812662">Installimine lõpetati</translation>
 <translation id="9022552996538154597">Logige Chromiumi sisse</translation>
 <translation id="9035791714111278917">Kuva Chromiumiga otsing Maci menüüribal ja lülita sisse klaviatuuri otsetee</translation>

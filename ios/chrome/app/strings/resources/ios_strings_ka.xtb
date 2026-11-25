@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">გვერდის სათაურები და თქვენი გახსნილი ჩანართების URL-ები გამოიყენება თქვენთვის შესაბამისი შეთავაზებების მოსაწოდებლად.</translation>
 <translation id="4439968635693513370">უქმეების დასაგეგმად გამოიყენეთ</translation>
 <translation id="4442550905108052454">გახსენით <ph name="BEGIN_BOLD" />პარამეტრები<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{ხელმისაწვდომია {count} შედეგი.}other{ხელმისაწვდომია {count} შედეგი.}}</translation>
 <translation id="4445840280797509738">სხვა ვარიანტები — <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">უკან ან წინ გადასასვლელად გაფურცლეთ კიდიდან.</translation>
 <translation id="4460014764210899310">დაჯგუფების გაუქმება</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">ჩვენება</translation>
 <translation id="5311061401280561833">კამერასა და მიკროფონზე წვდომა დაშვებულია</translation>
 <translation id="5313967007315987356">საიტის დამატება</translation>
-<translation id="5315029634103634221">Gemini ხელოვნური ინტელექტია და შეიძლება შეცდეს. <ph name="BEGIN_LINK" />ვრცლად Google-ისთვის გაგზავნილი შესაბამისი მონაცემების შესახებ<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">იმპორტისთვის არაფერია</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" />-დან</translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" />-ში შესვლა</translation>

@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">தொடர்புடைய பரிந்துரைகளை உங்களுக்கு வழங்க, திறந்திருக்கும் பக்கங்களின் தலைப்புகளும் URLகளும் பயன்படுத்தப்படும்.</translation>
 <translation id="4439968635693513370">வார இறுதியை இதன் மூலம் திட்டமிடுங்கள்:</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />அமைப்புகளைத்<ph name="END_BOLD" /> திறக்கவும்</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} முடிவு உள்ளது.}other{{count} முடிவுகள் உள்ளன.}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />க்கான கூடுதல் விருப்பங்கள்</translation>
 <translation id="4455710003856931944">பின்செல்ல அல்லது அடுத்ததற்குச் செல்ல ஓரத்திலிருந்து ஸ்வைப் செய்யலாம்.</translation>
 <translation id="4460014764210899310">குழுவைப் பிரி</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">காண்பி</translation>
 <translation id="5311061401280561833">கேமரா மற்றும் மைக்ரோஃபோனுக்கான அணுகல் உள்ளது</translation>
 <translation id="5313967007315987356">தளத்தைச் சேர்</translation>
-<translation id="5315029634103634221">Gemini ஒரு AI என்பதால் தவறான பதில்களை அது வழங்கக்கூடும். <ph name="BEGIN_LINK" />Googleளுக்கு அனுப்பப்படும் தொடர்புடைய தரவு குறித்த கூடுதல் தகவல்கள்<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">இறக்க எதுவுமில்லை</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> இல் உள்நுழையுங்கள்</translation>

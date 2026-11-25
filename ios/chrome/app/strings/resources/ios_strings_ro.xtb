@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Titlurile paginilor și adresele URL ale filelor deschise sunt folosite pentru a-ți oferi sugestii relevante.</translation>
 <translation id="4439968635693513370">Planifică-ți weekendul cu</translation>
 <translation id="4442550905108052454">Deschide <ph name="BEGIN_BOLD" />Setările<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{Este disponibil {count} rezultat.}few{Sunt disponibile {count} rezultate.}other{Sunt disponibile {count} de rezultate.}}</translation>
 <translation id="4445840280797509738">Mai multe opțiuni pentru <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Poți să glisezi pe margine pentru a te deplasa înainte sau înapoi.</translation>
 <translation id="4460014764210899310">Anulați gruparea</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5311061401280561833">Se acordă acces la camera foto și la microfon</translation>
 <translation id="5313967007315987356">Adaugă un site</translation>
-<translation id="5315029634103634221">Gemini este un AI și poate să facă greșeli. <ph name="BEGIN_LINK" />Mai multe despre datele relevante trimise la Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nimic de importat</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> din <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Conectează-te la <ph name="SITE_DOMAIN" /></translation>

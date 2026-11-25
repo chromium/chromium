@@ -817,6 +817,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="188537499764410817">Nettsteder der Gemini kan logge deg på, vises her</translation>
 <translation id="1886996562706621347">Tillat at nettsteder kan be om å bli standardbehandlere for protokoller (anbefales)</translation>
 <translation id="1887210448491286312">Slutt å caste fanen til <ph name="DEVICE_NAME" /></translation>
+<translation id="1888096615505794228">Sjekk aktiviteten din</translation>
 <translation id="1888692623866312036">Ferdigheten er lagret</translation>
 <translation id="1890026367080681123">Gå til innstillingene for innebygd innhold</translation>
 <translation id="1892453608039100484">1. Klikk på <ph name="BUTTON_LABEL" /> nedenfor
@@ -849,6 +850,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1921544956190977703">Du har den sterkeste beskyttelsen i Chrome mot farlige nettsteder, nedlastinger og utvidelser</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> ppt</translation>
 <translation id="1921600948984918136">«<ph name="NAME" />» er bare lagret på denne enheten. For å bruke den på andre enheter, lagre den i Google-kontoen din.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Åpne med</translation>
 <translation id="1925017091976104802">Trykk på <ph name="MODIFIER_KEY_DESCRIPTION" /> for å lime inn</translation>
 <translation id="1925021887439448749">Skriv inn en egendefinert nettadresse</translation>
@@ -1193,6 +1195,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2300332192655962933">Filen var ikke tilgjengelig på nettstedet</translation>
 <translation id="2300383962156589922">Tilpass og kontroller <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Utvidelsens rotkatalog er ugyldig.</translation>
+<translation id="2301564937934269788">Administrer AI som brukes til funksjoner som skrivehjelp med mer</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2306794767168143227">Lagre i <ph name="BRAND" /> på denne enheten</translation>
 <translation id="2309620859903500144">Bevegelses- og lyssensorene er blokkert fra dette nettstedet.</translation>
@@ -1398,6 +1401,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2528487766183344810">Lås opp <ph name="TOKEN_NAME" /> for å eksportere klientsertifikatet.</translation>
 <translation id="2532198298278778531">Administrer sikker DNS i ChromeOS Flex-innstillingene</translation>
 <translation id="253434972992662860">&amp;Stans midlertidig</translation>
+<translation id="2534439599863644240">Seriell port</translation>
 <translation id="253498598929009420">Nettstedet kan se innholdet på skjermen din</translation>
 <translation id="253557089021624350">Keepalive-teller</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> kan se og redigere disse filene og mappene</translation>
@@ -1431,6 +1435,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2575502321843437554">Ikke engasjerende nok</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Denne enheten blir lagret i 1 år, og du kan koble til uten noen kode neste gang. Dette er angitt av administratoren din.}other{Denne enheten blir lagret i {YEARS} år, og du kan koble til uten noen kode neste gang. Dette er angitt av administratoren din.}}</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) mister umiddelbart tilgangen til fanegruppen «<ph name="GROUP_NAME" />» og kan ikke samhandle med deg i Google-tjenester lenger.</translation>
+<translation id="2579341115189727508">Hjelper nettsteder med å oppsummere, korrekturlese, tekste med mer</translation>
 <translation id="2580889980133367162">Tillat alltid at <ph name="HOST" /> laster ned flere filer</translation>
 <translation id="2583877283803564049">Fest på verktøyraden</translation>
 <translation id="2583905535229480958">Alle smartkortlesere</translation>
@@ -1802,6 +1807,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> avinstallerte en app}other{<ph name="APP_NAME" /> avinstallerte # apper}}</translation>
 <translation id="2988018669686457659">Reservegjengivelse</translation>
 <translation id="2988328607561082373">Du gjenbruker ingen passord</translation>
+<translation id="298928587890404307">Gir deg hovedpunkter, et kort sammendrag eller en overskrift</translation>
 <translation id="2989523299700148168">Nylig besøkte</translation>
 <translation id="2989786307324390836">DER-kodet binært, enkelt sertifikat</translation>
 <translation id="2990583317361835189">Ikke la nettsteder bruke bevegelsessensorer</translation>
@@ -1880,6 +1886,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3057938290530993634">Trykk og hold for å feste de mest besøkte nettstedene dine, slik at du enkelt kan finne dem neste gang</translation>
 <translation id="3058498974290601450">Du kan når som helst slå på synkronisering i innstillingene</translation>
 <translation id="3060694926634506594">Ferdigheter</translation>
+<translation id="3061501546390656547">Oppsummering</translation>
 <translation id="306166624240243643">Gjennomgå navne- og nettadresseoppdateringer</translation>
 <translation id="3062037978804523418"><ph name="TASK_TITLE" />: Hvis du ikke svarer snart, slutter Gemini å jobbe med denne oppgaven for å spare batteri</translation>
 <translation id="3062655045399308513">Slett nettlesingsdata…</translation>
@@ -2429,6 +2436,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3630132874740063857">Telefonen din</translation>
 <translation id="3633492436029262388">For å få passordene dine og bokmerkene med mer på alle enhetene dine, lagre dem i Google-kontoen din</translation>
 <translation id="3633759325857031264">HDMI-enhet</translation>
+<translation id="3634271025780115616">Vil du slå av AI på enheten?</translation>
 <translation id="3634652306074934350">Tillatelsesforespørselen er utløpt</translation>
 <translation id="3635353578505343390">Send tilbakemelding til Google</translation>
 <translation id="3636538438330991674">Administrer hvilke apper Gemini kobles til</translation>
@@ -2703,6 +2711,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3893268973182382220">Kan ikke laste inn dette panelet akkurat nå</translation>
 <translation id="3893536212201235195">lese og endre innstillingene for tilgjengelighet</translation>
 <translation id="3893858854379998374">Du må slette de ubrukte bokmerkene dine for å lagre bokmerker i kontoen din</translation>
+<translation id="3893902465710154528">AI-modeller på denne enheten</translation>
 <translation id="3894427358181296146">Legg til en mappe</translation>
 <translation id="389521680295183045">Nettsteder kan be om å få vite når du bruker enheten aktivt</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> vil <ph name="FIRST_PERMISSION" /> og <ph name="SECOND_PERMISSION" /></translation>
@@ -2736,6 +2745,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3928570707778085600">Vil du lagre endringene i <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Lite blekk</translation>
 <translation id="3929426037718431833">Disse utvidelsene kan se og endre informasjonen på dette nettstedet.</translation>
+<translation id="3930298488600685734">Hjelper deg med å skrive, omformulere og organisere tekst på nettsteder som bruker det</translation>
 <translation id="3930737994424905957">Leter etter enheter</translation>
 <translation id="3930968231047618417">Bakgrunnsfarge</translation>
 <translation id="3932356525934356570">Fest <ph name="EXTENSION_NAME" /></translation>
@@ -2946,6 +2956,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4202536110335087135">Prøv nå</translation>
 <translation id="4203065553461038553">Filnavnet eller -plasseringen er for lang</translation>
 <translation id="4203769790323223880">Kamera er ikke tillatt</translation>
+<translation id="4203999225629028925">Bruk AI på enheten</translation>
 <translation id="4204415812590935863">Kan ikke opprette noe tema akkurat nå.</translation>
 <translation id="4206323443866416204">Tilbakemeldingsrapport</translation>
 <translation id="4206585797409671301">Tillatt å vise forespørsler</translation>
@@ -2966,6 +2977,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4216511743389425832">Lytt til denne siden</translation>
 <translation id="4218081191298393750">Klikk på høyttalerikonet for å kutte lyden for denne fanen</translation>
 <translation id="4220157655212610908">Bruk en ekstern sikkerhetsnøkkel</translation>
+<translation id="4222217401873406622">Raskere og mer kompakt enn skriving til generelle formål</translation>
 <translation id="4222917615373664617">Prissporing er på. Prisen er <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Mikrofon er ikke tillatt</translation>
 <translation id="4224541845943007092">Les og lagre tastaturinndata fra adressefeltet</translation>
@@ -3409,6 +3421,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Slett når du lukker alle vinduer</translation>
 <translation id="4714414859110184926">Få passnøkler</translation>
+<translation id="4715398813921022332">Håndterer mange oppgaver, slik at én nedlasting dekker flere funksjoner</translation>
 <translation id="4715631922189108923">Endre brukernavn</translation>
 <translation id="47158868804223727">Klikk på gruppenavnet for å vise eller skjule det</translation>
 <translation id="471759229191973607">Endre tema</translation>
@@ -3565,6 +3578,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4876273079589074638">Hjelp teknikerne våre med å undersøke og fikse denne feilen. Legg inn den nøyaktige fremgangsmåten om du kan. Ingen detaljer er ubetydelige.</translation>
 <translation id="4876305945144899064">Uten brukernavn</translation>
 <translation id="4876327226315760474">Dette betyr at funksjoner på nettstedet skal fungere som forventet, men det kan hende at surfebeskyttelsen svekkes.</translation>
+<translation id="4876867869589423092">Sjekker rettskriving og grammatikk</translation>
 <translation id="4877276003880815204">Undersøk elementer</translation>
 <translation id="4878634973244289103">Kunne ikke sende tilbakemeldingen. Prøv på nytt senere.</translation>
 <translation id="4878718769565915065">Kunne ikke legge til fingeravtrykket på denne sikkerhetsnøkkelen</translation>
@@ -3609,6 +3623,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4922104989726031751">For å bruke Passordlagring med operativsystemet ditt, start Chromium på nytt og gi tilgang til passordlagringen på datamaskinen. Fanene dine åpnes på nytt når du starter på nytt.</translation>
 <translation id="4923561999941435531">{0,plural, =1{Lagre 1 element i kontoen}other{Lagre # elementer i kontoen}}</translation>
 <translation id="4923977675318667854">Vis fanegrupper</translation>
+<translation id="4924283156756356309">På enheten</translation>
 <translation id="49265687513387605">Kunne ikke caste skjermen. Sjekk om du har bekreftet forespørselen om å begynne å dele skjermen din.</translation>
 <translation id="4927753642311223124">Her er det ikke noe nytt. Men intet nytt er jo godt nytt!</translation>
 <translation id="4928488083257788101">Data som sendes til Google, kan bli sett av menneskelige evaluerere som jobber med å gjøre denne funksjonen bedre</translation>
@@ -3695,6 +3710,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="5026572062076949786">kontroller, tilpasning, språk, personvern, standarder, avansert</translation>
 <translation id="5026874946691314267">Ikke vis dette igjen.</translation>
 <translation id="5027550639139316293">E-postsertifikat</translation>
+<translation id="5027821222544962995">Gjør tale om til tekst, for eksempel teksting</translation>
 <translation id="502811790397568978">Lås opp <ph name="TOKEN_NAME" /> for å importere klientsertifikatet fra <ph name="HOST_NAME" />.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresser}=1{Adresser ({SELECTED_ITEMS})}other{Adresser ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Kan ikke opprette QR-kode</translation>
@@ -3881,6 +3897,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5235050375939235066">Vil du avinstallere appen?</translation>
 <translation id="5235750401727657667">Erstatt siden du ser når du åpner nye faner</translation>
+<translation id="5235961530490811036">Foreslår rettelser for staving, grammatikk og tegnsetting mens du skriver</translation>
 <translation id="5238301240406177137">Lagre i konto</translation>
 <translation id="523862956770478816">Nettstedstillatelser</translation>
 <translation id="5240247138804326767">Organiser delt visning</translation>
@@ -4002,6 +4019,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="5395353843367783642">Lagrer i kontoen din …</translation>
 <translation id="5397656531674854099">Bruk fanegruppene dine på telefonen</translation>
 <translation id="5397794290049113714">Deg</translation>
+<translation id="5397922003973770546"><ph name="MODEL_NAME" /> · ca. <ph name="SIZE" /></translation>
 <translation id="5398497406011404839">Skjulte bokmerker</translation>
 <translation id="5398572795982417028">Sidereferansen ligger utenfor det gyldige området. Grensen er <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Hjelper deg med å skrive kortfattet tekst til ulike ting på nettet, for eksempel anmeldelser</translation>
@@ -4260,6 +4278,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="5683916195767086779">Fanegruppe</translation>
 <translation id="5684110242705861346">«<ph name="NAME" />»-utvidelsen ble lagt til av organisasjonens retningslinjer og kontrollerer denne innstillingen. <ph name="BEGIN_LINK" />Se detaljer<ph name="END_LINK" /></translation>
 <translation id="5687340364605915800">Nettsteder er ikke pålagt å respektere denne forespørselen</translation>
+<translation id="5688905504429733599">Hjelper deg med å skrive, skrive om og oppsummere tekst</translation>
 <translation id="5689516760719285838">Sted</translation>
 <translation id="568984110402742489">Kan ikke sende tilbakemelding</translation>
 <translation id="5691772641933328258">Gjenkjenner ikke fingeravtrykket</translation>
@@ -4521,6 +4540,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="5992652489368666106">Ingen kantlinje</translation>
 <translation id="5996490984199062729">Profilen din er ikke konfigurert</translation>
 <translation id="5997337190805127100">Finn ut mer om nettstedstilgang</translation>
+<translation id="5997562608469198702">Vis detaljer for <ph name="MODEL_CATEGORY" /></translation>
 <translation id="5997802678829218272">Når du er logget på Chrome med den samme kontoen, kan du raskt sende linker mellom alle enheter</translation>
 <translation id="5998458948782718639">Bidra til å gjøre autofyll bedre</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for «<ph name="SEARCH_TEXT" />»</translation>
@@ -4766,6 +4786,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6264636978858465832">Passordlagring trenger mer tilgang</translation>
 <translation id="626495329434552273">Nettsteder som har lov til å overstyre tastaturinndataene dine</translation>
+<translation id="6265472496386910894">Spør om det som er på skjermen, med Google Lens</translation>
 <translation id="6266984048393265562">Tilpass profil</translation>
 <translation id="6267166720438879315">Velg sertifikat for å autentisere deg selv til <ph name="HOST_NAME" /></translation>
 <translation id="6269392226729599142">Gjenopprett delt visning</translation>
@@ -5019,6 +5040,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="6571178651832779742">For å fjerne eventuelle dupliserte bokmerker, lagre dem i Google-kontoen din</translation>
 <translation id="6571533309669248172">Tekstformatering</translation>
 <translation id="6571772921213691236">Rediger påloggingsinformasjon</translation>
+<translation id="657215700875716805">Gjør lange tekstsider om til hovedpunkter</translation>
 <translation id="657229725818377235">Få mer beskyttelse mot farlige nettsteder og nedlastinger</translation>
 <translation id="6573096386450695060">Tillat alltid</translation>
 <translation id="657402800789773160">&amp;Last inn denne siden på nytt</translation>
@@ -5191,6 +5213,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6746834324024491643">For å få passordene dine med mer på alle enhetene dine, logg på som <ph name="EMAIL" /></translation>
 <translation id="6749077623962119521">Vil du tilbakestille tillatelser?</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
+<translation id="6754302065638000088">Korrekturlesing</translation>
 <translation id="6754359471209693699">Start et nytt søk</translation>
 <translation id="6756882635793733911">Spør om hva som helst på skjermen</translation>
 <translation id="6757615605516049275">Lås opp <ph name="TOKEN_NAME" />.</translation>
@@ -5295,6 +5318,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6853118789186721762">Påminnelsen er sendt til <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629">År for <ph name="DROPDOWN_NAME" /></translation>
 <translation id="68541483639528434">Lukk andre faner</translation>
+<translation id="6855569790346583403">Slett <ph name="MODEL_CATEGORY" /></translation>
 <translation id="6856348640027512653">Nettsteder som ikke har lov til å bruke virtuell virkelighet-enheter eller -data</translation>
 <translation id="6856607887871564638">Konfigurer en jobbprofil for å lagre og bruke passordene dine med mer i kontoen din</translation>
 <translation id="68601584151169673">&amp;Lagre og del</translation>
@@ -5415,6 +5439,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6979440798594660689">Kutt lyden (standard)</translation>
 <translation id="6979557074007409812">Ja, hold dataene mine atskilt fra jobbdata</translation>
 <translation id="6979737339423435258">Alle datoer</translation>
+<translation id="6981951388037216929">Spør om hva som helst på skjermen ved å dele skjermen.</translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>
 <translation id="698428203349952091">Legg til nettsted på listen over nettsteder som ikke har tillatelse</translation>
 <translation id="6985235333261347343">Microsoft nøkkelgjenopprettingsagent</translation>
@@ -5749,6 +5774,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7341834142292923918">Vil ha tilgang til dette nettstedet</translation>
 <translation id="7343372807593926528">Beskriv problemet før du sender tilbakemeldingen.</translation>
 <translation id="7344585835349671209">Administrer sertifikater for HTTPS/SSL på enheten din</translation>
+<translation id="734576882396032500">Lastes ned én gang for alle språkene du bruker</translation>
 <translation id="7346909386216857016">Greit</translation>
 <translation id="7347751611463936647">For å bruke denne utvidelsen, skriver du «<ph name="EXTENSION_KEYWORD" />» , trykker på TAB, og skriver kommandoordet eller søkeordet.</translation>
 <translation id="7347943691222276892">Klikk for å navigere bort fra <ph name="SUBPAGE_TITLE" />.</translation>
@@ -6147,6 +6173,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="7793098747275782155">Mørk blå</translation>
 <translation id="7798504574384119986">Se nettillatelser</translation>
 <translation id="7798559336183476274">Flere handlinger for <ph name="BUTTON_TITLE" /></translation>
+<translation id="7798702742851934390">Foreslår bare rettelser uten å skrive om teksten</translation>
 <translation id="7798844538707273832">Automatisk blokkert <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Rotér m&amp;ot klokken</translation>
 <translation id="780254490276923052">Nivå 2: MEDIUM</translation>
@@ -6303,6 +6330,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="7974713334845253259">Standardfarge</translation>
 <translation id="7977029776654598145">Når den brukes</translation>
 <translation id="7978100757563451333">Faner deles for å gi deg mer relevante svar. Google bruker innholdet i og nettadressen til delte faner. Den aktive fanen deles i nye chatter. Du kan endre denne innstillingen når som helst.</translation>
+<translation id="7978324202327430335">Fungerer på nettsteder som støtter transkripsjon av lyd i sanntid</translation>
 <translation id="7978412674231730200">Privatnøkkel</translation>
 <translation id="7978450511781612192">Dette logger deg av Google-kontoene dine. Bokmerkene dine, loggen din, passordene dine med mer blir ikke lenger synkronisert.</translation>
 <translation id="7980066177668669492">Base64-kodet ASCII, flere sertifikater</translation>
@@ -7385,6 +7413,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9154194610265714752">Oppdatert</translation>
 <translation id="9155344700756733162">Fjern merking av farge</translation>
 <translation id="9155515662479003830">Du kan når som helst bytte tilbake til den klassiske stilen i innstillingene</translation>
+<translation id="9157129135366432684">Ingen AI på enheten er lagt til</translation>
 <translation id="9157915340203975005">Skriverluken er åpen</translation>
 <translation id="9165856803582999927">Skann denne QR-koden med kameraet på enheten der du vil opprette og lagre passnøkkelen for <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Bilde i bilde</translation>

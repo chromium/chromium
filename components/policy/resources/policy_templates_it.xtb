@@ -2691,6 +2691,23 @@ NOTA: questa policy presentava un valore predefinito documentato erroneamente "t
        Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
 
        Tieni presente che in precedenza questa policy è stata erroneamente abilitata su Android, ma questa funzionalità non è mai stata completamente supportata su Android.</translation>
+<translation id="2585054570696570117">La configurazione della policy permette di controllare le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da policy relative alle estensioni esistenti.
+
+Questa policy consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questa policy.
+
+Questa policy può fare l'override della configurazione per singola estensione delle policy legacy.
+
+Tieni presente che qualsiasi impostazione dell'estensione per ID da <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> erediterà solo "installation_mode" e "update_url" dalle impostazioni predefinite di <ph name="DEFAULT_SCOPE" />. Non erediterà altre proprietà. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se il flag "override_update_url" viene impostato su true, l'estensione verrà installata e aggiornata usando l'URL di aggiornamento ("update") specificato nella policy <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo "update_url" di questa policy. Il flag "override_update_url" viene ignorato se il valore "update_url" è un URL del Chrome Web Store.
+
+Nelle versioni di <ph name="PRODUCT_NAME" /> dalla 155 alla 158, l'applicazione di "runtime_blocked_hosts" a un'estensione con l'autorizzazione "debugger" può disattivare completamente "chrome.debugger.attach()" su tutte le destinazioni, ad esempio quando la policy <ph name="CHROME_VARIATIONS_POLICY_NAME" /> disattiva tutte le varianti.
+
+A partire dalla versione 160 di <ph name="PRODUCT_NAME" />, "blocked_permissions" e "allowed_permissions" accettano anche queste autorizzazioni interne, che le estensioni ricevono dalle chiavi del file manifest: "searchProvider", "homepage" e "startupPages" (solo da "chrome_settings_overrides", <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />) e "newTabPageOverride" (da "chrome_url_overrides").
+
+Sulle istanze di <ph name="MS_WIN_NAME" />, è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è collegata a un dominio <ph name="MS_AD_NAME" />, associata a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Nota: questa policy si applica solo alle piattaforme che supportano le estensioni.</translation>
 <translation id="2585535930727399201">Le estensioni aziendali possono aggiungere log a un file di log di sistema tramite l'API chrome.systemLog.
 
 Se la policy viene attivata, i log saranno mantenuti nel file di log di sistema per un periodo di tempo limitato.

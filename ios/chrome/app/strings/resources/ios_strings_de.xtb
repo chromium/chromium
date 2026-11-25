@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Die Seitentitel und URLs deiner geöffneten Tabs werden verwendet, um dir relevante Vorschläge zu bieten.</translation>
 <translation id="4439968635693513370">Wochenende planen mit</translation>
 <translation id="4442550905108052454">Öffne die <ph name="BEGIN_BOLD" />Einstellungen<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} Ergebnis verfügbar.}other{{count} Ergebnisse verfügbar.}}</translation>
 <translation id="4445840280797509738">Weitere Optionen für „<ph name="CELL_ACCESSIBILITY_LABEL" />“</translation>
 <translation id="4455710003856931944">Du kannst über den Rand wischen, um zurück- oder weiterzugehen.</translation>
 <translation id="4460014764210899310">Gruppierung aufheben</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5311061401280561833">Kamera- und Mikrofonzugriff gewährt</translation>
 <translation id="5313967007315987356">Website hinzufügen</translation>
-<translation id="5315029634103634221">Gemini ist eine KI und kann Fehler machen. <ph name="BEGIN_LINK" />Weitere Informationen zu den relevanten Daten, die an Google gesendet werden<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Keine Daten zum Importieren vorhanden</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> von <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">In <ph name="SITE_DOMAIN" /> anmelden</translation>

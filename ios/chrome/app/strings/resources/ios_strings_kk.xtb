@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Ашық қойындылардың бет атаулары мен URL мекенжайлары сізге сәйкес ұсыныстар беру үшін пайдаланылады.</translation>
 <translation id="4439968635693513370">Демалыс күндерін жоспарлаңыз:</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Параметрлер<ph name="END_BOLD" /> бөлімін ашыңыз.</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} нәтиже қолжетімді.}other{{count} нәтиже қолжетімді.}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />: басқа опциялар</translation>
 <translation id="4455710003856931944">Артқа не алға өту үшін шетке сырғытуға болады.</translation>
 <translation id="4460014764210899310">Топты тарату</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Көрсету</translation>
 <translation id="5311061401280561833">Камера мен микрофонды пайдалану рұқсаты бар.</translation>
 <translation id="5313967007315987356">Сайт қосу</translation>
-<translation id="5315029634103634221">Gemini — жасанды интеллект және ол қателесуі мүмкін. <ph name="BEGIN_LINK" />Google-ға жіберілетін тиісті деректер туралы қосымша ақпарат алыңыз.<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Импортталатын ешнәрсе жоқ</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> сайтына кіріңіз</translation>

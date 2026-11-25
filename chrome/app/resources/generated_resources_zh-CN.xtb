@@ -842,6 +842,7 @@
 <translation id="1921544956190977703">Chrome 正在为您提供极强大的安全保护，帮助您防范危险的网站、下载内容和扩展程序</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">“<ph name="NAME" />”仅会保存到此设备上。若要在其他设备上使用，请将其保存到您的账号中。</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" />（<ph name="SERVICE_NAME" />）</translation>
 <translation id="192494336144674234">打开方式</translation>
 <translation id="1925017091976104802">按 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可粘贴</translation>
 <translation id="1925021887439448749">输入自定义网址</translation>
@@ -1388,6 +1389,7 @@
 <translation id="2528487766183344810">请解锁“<ph name="TOKEN_NAME" />”，导出客户端证书。</translation>
 <translation id="2532198298278778531">在 ChromeOS Flex 设置中管理安全 DNS</translation>
 <translation id="253434972992662860">暂停(&amp;P)</translation>
+<translation id="2534439599863644240">串行端口</translation>
 <translation id="253498598929009420">该网站将能看到您屏幕上的内容</translation>
 <translation id="253557089021624350">保活计数</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> 可查看和修改以下文件和文件夹</translation>

@@ -137,6 +137,7 @@
 <translation id="2295218613066132598">Pokaż skróty do witryn w Chrome</translation>
 <translation id="2301513536169703857">Aby mieć dostęp do haseł, zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome</translation>
 <translation id="2307973900865360088">Zachowaj w Docku</translation>
+<translation id="2308558013860776484">Udostępniaj zrzuty ekranu spoza Chrome, np. z innych aplikacji lub plików</translation>
 <translation id="2309047409763057870">To jest druga instalacja Google Chrome. Nie można ustawić jej jako przeglądarki domyślnej.</translation>
 <translation id="2345992953227471816">Przeglądarka Chrome wykryła w tych rozszerzeniach złośliwe oprogramowanie:</translation>
 <translation id="2358140144860869442">Aby mieć dostęp do listy Do przeczytania oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome</translation>
@@ -246,6 +247,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="3294686910656423119">Statystyki użytkowania i raporty o awariach</translation>
 <translation id="3327226547491422998">Później Chrome może zapytać, czy chcesz używać zapisanych informacji do automatycznego wypełniania formularzy</translation>
 <translation id="3352986031709923790">prawy górny róg obszaru wyszukiwania: po prawej stronie <ph name="RIGHT" />%, u góry <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">Strony internetowe i Chrome mogą korzystać z AI działającej bezpośrednio na Twoim urządzeniu – np. do tworzenia podsumowań, korekty tekstu, generowania napisów i nie tylko. To funkcja niezależna od Gemini w Chrome. <ph name="BEGIN_LINK" />Więcej informacji o AI na urządzeniu<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Niektóre funkcje i rozszerzenia Chrome mają skróty. Możesz je ponownie włączyć.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome uruchomi się ponownie teraz}=1{Chrome uruchomi się ponownie za 1 sekundę}few{Chrome uruchomi się ponownie za # sekundy}many{Chrome uruchomi się ponownie za # sekund}other{Chrome uruchomi się ponownie za # sekundy}}</translation>
 <translation id="3380249972812870825">Aby otworzyć Gemini w Chrome, naciśnij <ph name="GLOBAL_HOTKEY" /></translation>
@@ -344,6 +346,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
 <translation id="4434353761996769206">Błąd instalatora: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Udostępnij ten dokument Gemini w Chrome, aby uzyskać szybki przegląd i zadać dodatkowe pytania</translation>
+<translation id="4440999670272408191">W każdej chwili możesz je usunąć. Chrome może automatycznie pobrać je ponownie, gdy będą potrzebne jakiejś stronie lub funkcji.</translation>
 <translation id="4450664632294415862">Chrome – logowanie do sieci – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome wykonuje teraz inną operację. Spróbuj ponownie później.</translation>
 <translation id="4493028449971051158">Błąd uruchamiania: uruchom instalator z uprawnieniami administratora.</translation>
@@ -351,6 +354,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4501839397124711198">Możesz przypiąć wyszukiwarkę Google w panelu bocznym, aby zadawać pytania podczas przeglądania</translation>
 <translation id="4571503333518166079">Otwórz ustawienia powiadomień Chrome</translation>
 <translation id="4580939929828762295">Zadbaj o bezpieczeństwo dzięki Menedżerowi haseł Google</translation>
+<translation id="4589544932092381064">Pokaż „Wyszukaj w Chrome” na pasku zadań systemu Windows i włącz skrót klawiszowy</translation>
 <translation id="459622048091363950">Gdy Chrome będzie mieć dostęp, strony będą mogły prosić Cię o dostęp.</translation>
 <translation id="4598116752460667024">Wyszukaj dowolny proces na liście.</translation>
 <translation id="4600710005438004015">Aktualizacja Chrome do najnowszej wersji nie udała się, więc nie masz dostępu do najnowszych funkcji i poprawek zabezpieczeń.</translation>
@@ -366,6 +370,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chrome, ale będzie ona trochę mniej odporna na ataki</translation>
 <translation id="4768676935374695498">Wyszukaj ten film za pomocą Obiektywu Google</translation>
+<translation id="4783580253728290203">Gdy to ustawienie jest wyłączone, Chrome usuwa modele AI na urządzeniu i nie pobiera ich ponownie. Niektóre strony i funkcje Chrome mogą przestać działać.</translation>
 <translation id="479167709087336770">Będzie stosowany ten sam mechanizm sprawdzania pisowni, który jest używany w wyszukiwarce Google. Tekst wpisywany w przeglądarce jest wysyłany do Google. Zawsze możesz to zmienić w ustawieniach.</translation>
 <translation id="4793679854893018356">Jak Chrome dba o Twoje bezpieczeństwo</translation>
 <translation id="4803313124144656665">Zamknij wyszukiwarkę Google w Chrome</translation>
@@ -445,8 +450,10 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="568656514202614970">Gotowe! Teraz możesz łatwo zadawać pytania podczas przeglądania za pomocą panelu bocznego wyszukiwarki Google</translation>
 <translation id="5686916850681061684">Dostosuj i kontroluj Google Chrome. Pewna kwestia wymaga Twojej uwagi – kliknij, by przejść do szczegółów.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Korzystaj z najlepszych funkcji bezpieczeństwa Google z dowolnego miejsca dzięki Chrome</translation>
 <translation id="569897634095159764">Nie można połączyć się z internetem. Serwer proxy wymaga uwierzytelnienia.</translation>
 <translation id="5709557627224531708">Ustaw Chrome jako domyślną przeglądarkę</translation>
+<translation id="5715427327524421317">Chrome automatycznie pobiera i aktualizuje te modele AI</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Ochrona zaawansowana wymaga ponownego uruchomienia Chrome, aby przeglądarka mogła zainstalować aktualizację. Okno przeglądania prywatnego nie otworzy się ponownie.}few{Ochrona zaawansowana wymaga ponownego uruchomienia Chrome, aby przeglądarka mogła zainstalować aktualizację. # okna przeglądania prywatnego nie otworzą się ponownie.}many{Ochrona zaawansowana wymaga ponownego uruchomienia Chrome, aby przeglądarka mogła zainstalować aktualizację. # okien przeglądania prywatnego nie otworzy się ponownie.}other{Ochrona zaawansowana wymaga ponownego uruchomienia Chrome, aby przeglądarka mogła zainstalować aktualizację. # okna przeglądania prywatnego nie otworzy się ponownie.}}</translation>
 <translation id="5719246646468301581">Dodatkowe warunki korzystania z Google Chrome i ChromeOS</translation>
 <translation id="5736850870166430177">Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
@@ -538,6 +545,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6491330562720922580">Kod QR umożliwiający pobranie przeglądarki Chrome na urządzeniach mobilnych</translation>
 <translation id="6493527311031785448">Google Chrome próbuje <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Przeglądarka Chrome została automatycznie zamknięta</translation>
+<translation id="650039555447046671">Chrome usunie modele AI z tego urządzenia. Niektóre strony i funkcje Chrome mogą przestać działać.</translation>
 <translation id="6506909944137591434">Aby utworzyć mapę 3D Twojego otoczenia, Chrome potrzebuje dostępu do aparatu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Aby używać lokalizacji, przyznaj Chrome dostęp w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" /></translation>
@@ -576,6 +584,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6877155553248388166">prawy dolny róg obszaru wyszukiwania: po prawej stronie <ph name="RIGHT" />%, u dołu <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Otwórz wyszukiwanie w Chrome</translation>
 <translation id="6881299373831449287">Aktualizuję Chrome</translation>
+<translation id="6881997500528805781">Korzysta z pamięci urządzenia. Chrome usuwa nieużywane modele AI po 45 dniach lub gdy kończy się miejsce na dane</translation>
 <translation id="6885412569789873916">Aplikacje do Chrome Beta</translation>
 <translation id="6893363893008038481">Usuń konto z Chrome</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
@@ -607,6 +616,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="7099479769133613710">Uruchom ponownie, aby zaktualizować &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Menedżer zadań – Google Chrome</translation>
 <translation id="7121179479711575744">Zaloguj się w Chrome</translation>
+<translation id="7137056136322108339">Korzystaj z najlepszych funkcji bezpieczeństwa Google z dowolnego miejsca dzięki aplikacji Chrome na telefonie</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji.}=1{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. Okno incognito nie otworzy się ponownie.}few{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okna incognito nie otworzą się ponownie.}many{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okien incognito nie otworzy się ponownie.}other{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okna incognito nie otworzy się ponownie.}}</translation>
 <translation id="7161904924553537242">Witamy w Google Chrome</translation>
 <translation id="7193885263065350793">Twoja organizacja zamyka przeglądarkę Chrome, jeśli przez <ph name="TIMEOUT_DURATION" /> nie jest ona używana.</translation>

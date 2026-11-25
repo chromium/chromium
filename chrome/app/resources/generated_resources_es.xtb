@@ -810,6 +810,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="188537499764410817">Los sitios en los que Gemini puede iniciar tu sesión aparecerán aquí</translation>
 <translation id="1886996562706621347">Permitir que los sitios se conviertan en controladores de protocolos predeterminados (recomendado)</translation>
 <translation id="1887210448491286312">Detener envío de pestaña a <ph name="DEVICE_NAME" /></translation>
+<translation id="1888096615505794228">Consultar tu actividad</translation>
 <translation id="1888692623866312036">Habilidad guardada</translation>
 <translation id="1890026367080681123">Ir a la configuración de contenido insertado</translation>
 <translation id="1892453608039100484">1. Haz clic en <ph name="BUTTON_LABEL" /> a continuación
@@ -1185,6 +1186,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="2300332192655962933">El archivo no estaba disponible en el sitio</translation>
 <translation id="2300383962156589922">Personalizar y controlar <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">El directorio raíz de la extensión no es válido.</translation>
+<translation id="2301564937934269788">Gestiona la IA que se usa para funciones como la ayuda para escribir, entre otras</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2306794767168143227">Guardar en <ph name="BRAND" /> en este dispositivo</translation>
 <translation id="2309620859903500144">Esta página no tiene permiso para acceder a los sensores de luz y movimiento.</translation>
@@ -1424,6 +1426,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="2575502321843437554">No es lo suficientemente interesante</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Este dispositivo se guardará durante 1 año y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}other{Este dispositivo se guardará durante {YEARS} años y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}}</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderá inmediatamente el acceso al grupo de pestañas "<ph name="GROUP_NAME" />" y ya no podrá interactuar contigo en los servicios de Google.</translation>
+<translation id="2579341115189727508">Ayuda a los sitios a ofrecer resúmenes, revisiones de texto, subtítulos y otras funciones</translation>
 <translation id="2580889980133367162">Permitir siempre a <ph name="HOST" /> descargar varios archivos</translation>
 <translation id="2583877283803564049">Fijar en la barra de herramientas</translation>
 <translation id="2583905535229480958">Cualquier lector de tarjetas inteligentes</translation>
@@ -1795,6 +1798,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ha desinstalado una aplicación}other{<ph name="APP_NAME" /> ha desinstalado # aplicaciones}}</translation>
 <translation id="2988018669686457659">Renderizador auxiliar</translation>
 <translation id="2988328607561082373">No estás reutilizando ninguna contraseña</translation>
+<translation id="298928587890404307">Te ofrece los puntos clave, un resumen breve o un titular</translation>
 <translation id="2989523299700148168">Visitados recientemente</translation>
 <translation id="2989786307324390836">DER binario codificado, certificado único</translation>
 <translation id="2990583317361835189">No permitir que los sitios usen sensores de movimiento</translation>
@@ -1873,6 +1877,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="3057938290530993634">Mantén pulsado para fijar los sitios web que más visitas y acceder a ellos fácilmente la próxima vez</translation>
 <translation id="3058498974290601450">Puedes activar la sincronización en cualquier momento desde la configuración</translation>
 <translation id="3060694926634506594">Habilidades</translation>
+<translation id="3061501546390656547">Resumen</translation>
 <translation id="306166624240243643">Revisar actualizaciones de nombre y URL</translation>
 <translation id="3062037978804523418"><ph name="TASK_TITLE" />: Si no respondes pronto, Gemini dejará de trabajar en esta tarea para ahorrar batería</translation>
 <translation id="3062655045399308513">Eliminar datos de navegación...</translation>
@@ -2422,6 +2427,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="3630132874740063857">Tu teléfono</translation>
 <translation id="3633492436029262388">Para acceder a tus contraseñas y marcadores, entre otros, en todos tus dispositivos, guárdalos en tu cuenta de Google</translation>
 <translation id="3633759325857031264">Dispositivo HDMI</translation>
+<translation id="3634271025780115616">¿Desactivar la IA en el dispositivo?</translation>
 <translation id="3634652306074934350">Solicitud de permiso caducada</translation>
 <translation id="3635353578505343390">Enviar comentarios a Google</translation>
 <translation id="3636538438330991674">Gestiona a qué aplicaciones se conecta Gemini</translation>
@@ -2696,6 +2702,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="3893268973182382220">No se puede cargar este panel ahora</translation>
 <translation id="3893536212201235195">Leer y cambiar tu configuración de accesibilidad</translation>
 <translation id="3893858854379998374">Para guardar marcadores en tu cuenta, elimina los que no uses</translation>
+<translation id="3893902465710154528">Modelos de IA en este dispositivo</translation>
 <translation id="3894427358181296146">Añadir carpeta</translation>
 <translation id="389521680295183045">Los sitios pueden preguntarte cuándo usas activamente tu dispositivo</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> quiere: <ph name="FIRST_PERMISSION" /> y <ph name="SECOND_PERMISSION" /></translation>
@@ -2729,6 +2736,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="3928570707778085600">¿Quieres guardar los cambios en <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Queda poca tinta</translation>
 <translation id="3929426037718431833">Estas extensiones pueden ver y cambiar información en este sitio web.</translation>
+<translation id="3930298488600685734">Ayuda a redactar, reformular y organizar texto en los sitios que usan esta función</translation>
 <translation id="3930737994424905957">Buscando dispositivos</translation>
 <translation id="3930968231047618417">Color de fondo</translation>
 <translation id="3932356525934356570">Fijar <ph name="EXTENSION_NAME" /></translation>
@@ -2940,6 +2948,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="4202536110335087135">Probar ahora</translation>
 <translation id="4203065553461038553">Nombre de archivo o ubicación demasiado largos</translation>
 <translation id="4203769790323223880">Cámara no permitida</translation>
+<translation id="4203999225629028925">Usar IA en el dispositivo</translation>
 <translation id="4204415812590935863">No se puede crear un tema en este momento.</translation>
 <translation id="4206323443866416204">Informe de comentarios</translation>
 <translation id="4206585797409671301">Tiene permiso para mostrar solicitudes</translation>
@@ -2960,6 +2969,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="4216511743389425832">Escuchar esta página</translation>
 <translation id="4218081191298393750">Haz clic en el icono de altavoz para silenciar esta pestaña</translation>
 <translation id="4220157655212610908">Utilizar una llave de seguridad externa</translation>
+<translation id="4222217401873406622">Más rápido y compacto que la escritura de uso general</translation>
 <translation id="4222917615373664617">El seguimiento de precios está habilitado. El precio es <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Micrófono no permitido</translation>
 <translation id="4224541845943007092">Leer y guardar la entrada del teclado desde la barra de direcciones</translation>
@@ -3403,6 +3413,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Eliminar al cerrar todas las ventanas</translation>
 <translation id="4714414859110184926">Obtener llaves de acceso</translation>
+<translation id="4715398813921022332">Puede realizar muchas tareas, así que con una sola descarga se obtienen varias funciones</translation>
 <translation id="4715631922189108923">Editar nombre de usuario</translation>
 <translation id="47158868804223727">Haz clic en el nombre del grupo para ampliarlo o contraerlo</translation>
 <translation id="471759229191973607">Cambiar tema</translation>
@@ -3559,6 +3570,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="4876273079589074638">Cuéntanos lo que ocurrió paso a paso para que nuestros ingenieros puedan investigar y solucionar el error. Cualquier detalle es importante.</translation>
 <translation id="4876305945144899064">Ningún nombre de usuario</translation>
 <translation id="4876327226315760474">Esto significa que las opciones del sitio deberían funcionar según lo previsto, pero es posible que tengas menos protección al navegar.</translation>
+<translation id="4876867869589423092">Comprueba la ortografía y la gramática</translation>
 <translation id="4877276003880815204">Inspeccionar elementos</translation>
 <translation id="4878634973244289103">No se pueden enviar los comentarios. Vuelve a intentarlo más tarde.</translation>
 <translation id="4878718769565915065">No se ha podido añadir una huella digital a esta llave de seguridad</translation>
@@ -3603,6 +3615,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="4922104989726031751">Para usar el Gestor de contraseñas con tu sistema operativo, reinicia Chromium y permite el acceso al gestor de contraseñas de tu ordenador. Las pestañas que tuvieras abiertas se reabrirán después de reiniciar.</translation>
 <translation id="4923561999941435531">{0,plural, =1{Guardar 1 elemento en la cuenta}other{Guardar # elementos en la cuenta}}</translation>
 <translation id="4923977675318667854">Mostrar grupos de pestañas</translation>
+<translation id="4924283156756356309">En tu dispositivo</translation>
 <translation id="49265687513387605">No se ha podido enviar la pantalla. Comprueba si has confirmado que se empiece a compartir en el mensaje correspondiente.</translation>
 <translation id="4927753642311223124">Aquí no hay nada que ver, circulen...</translation>
 <translation id="4928488083257788101">Puede que los datos enviados a Google los vean revisores humanos para mejorar esta función</translation>
@@ -3689,6 +3702,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="5026572062076949786">controles, personalización, idioma, privacidad, valores predeterminados, avanzado</translation>
 <translation id="5026874946691314267">No volver a mostrar esta notificación</translation>
 <translation id="5027550639139316293">Certificado de correo electrónico</translation>
+<translation id="5027821222544962995">Convierte la voz en texto; por ejemplo, para generar subtítulos</translation>
 <translation id="502811790397568978">Desbloquea <ph name="TOKEN_NAME" /> para importar el certificado de cliente de <ph name="HOST_NAME" />.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Direcciones}=1{Direcciones ({SELECTED_ITEMS})}other{Direcciones ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">No se puede crear el código QR</translation>
@@ -3875,6 +3889,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="5234764350956374838">Cerrar</translation>
 <translation id="5235050375939235066">¿Desinstalar aplicación?</translation>
 <translation id="5235750401727657667">Cambiar la página que ves al abrir una nueva pestaña</translation>
+<translation id="5235961530490811036">Sugiere correcciones de ortografía, gramática y puntuación mientras escribes</translation>
 <translation id="5238301240406177137">Guardar en la cuenta</translation>
 <translation id="523862956770478816">Permisos de sitios</translation>
 <translation id="5240247138804326767">Disponer vista dividida</translation>
@@ -3996,6 +4011,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="5395353843367783642">Guardando en tu cuenta...</translation>
 <translation id="5397656531674854099">Usar tus grupos de pestañas en tu teléfono</translation>
 <translation id="5397794290049113714">Tú</translation>
+<translation id="5397922003973770546"><ph name="MODEL_NAME" /> · aproximadamente <ph name="SIZE" /></translation>
 <translation id="5398497406011404839">Marcadores ocultos</translation>
 <translation id="5398572795982417028">La referencia de página está fuera de los límites admitidos, el límite es <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Te ayuda a escribir texto de formato corto para la Web, como reseñas.</translation>
@@ -4254,6 +4270,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="5683916195767086779">Grupo de pestañas</translation>
 <translation id="5684110242705861346">La extensión "<ph name="NAME" />" se ha añadido mediante la política de tu organización y controla este ajuste. <ph name="BEGIN_LINK" />Ver detalles<ph name="END_LINK" /></translation>
 <translation id="5687340364605915800">Los sitios pueden responder a esta solicitud según su propio criterio</translation>
+<translation id="5688905504429733599">Ayuda a escribir, reescribir y resumir texto</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="568984110402742489">No se pueden enviar comentarios</translation>
 <translation id="5691772641933328258">Huella digital no reconocida</translation>
@@ -4515,6 +4532,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5992652489368666106">Sin bordes</translation>
 <translation id="5996490984199062729">Tu perfil no se ha configurado</translation>
 <translation id="5997337190805127100">Más información sobre el acceso del sitio web</translation>
+<translation id="5997562608469198702">Mostrar detalles de <ph name="MODEL_CATEGORY" /></translation>
 <translation id="5997802678829218272">Si inicias sesión en Chrome con la misma cuenta, puedes enviar enlaces rápidamente entre cualquier dispositivo</translation>
 <translation id="5998458948782718639">Ayuda a mejorar Autocompletar</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
@@ -4760,6 +4778,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6264376385120300461">Descargar de todos modos</translation>
 <translation id="6264636978858465832">El Gestor de contraseñas necesita más acceso</translation>
 <translation id="626495329434552273">Tiene permiso para anular la entrada de tu teclado</translation>
+<translation id="6265472496386910894">Haz preguntas sobre lo que aparece en tu pantalla con Google Lens</translation>
 <translation id="6266984048393265562">Personalizar perfil</translation>
 <translation id="6267166720438879315">Selecciona un certificado para autenticar tu identidad en <ph name="HOST_NAME" />.</translation>
 <translation id="6269392226729599142">Restaurar vista dividida</translation>
@@ -5013,6 +5032,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6571178651832779742">Para eliminar los marcadores duplicados, guárdalos en tu cuenta de Google</translation>
 <translation id="6571533309669248172">Formato del texto</translation>
 <translation id="6571772921213691236">Cambiar datos de inicio de sesión</translation>
+<translation id="657215700875716805">Convierte páginas de texto largas en puntos clave</translation>
 <translation id="657229725818377235">Aumenta la protección contra las descargas y los sitios web peligrosos</translation>
 <translation id="6573096386450695060">Permitir siempre</translation>
 <translation id="657402800789773160">Volver a &amp;cargar la página</translation>
@@ -5185,6 +5205,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6746834324024491643">Para acceder a tus contraseñas y a más cosas en todos tus dispositivos, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="6749077623962119521">¿Restablecer permisos?</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (incógnito)</translation>
+<translation id="6754302065638000088">Revisión</translation>
 <translation id="6754359471209693699">Iniciar nueva búsqueda</translation>
 <translation id="6756882635793733911">Pregunta sobre cualquier cosa que aparezca en tu pantalla</translation>
 <translation id="6757615605516049275">Desbloquea <ph name="TOKEN_NAME" />.</translation>
@@ -5289,6 +5310,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6853118789186721762">Recordatorio enviado a tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629">Año de <ph name="DROPDOWN_NAME" /></translation>
 <translation id="68541483639528434">Cerrar las demás pestañas</translation>
+<translation id="6855569790346583403">Eliminar <ph name="MODEL_CATEGORY" /></translation>
 <translation id="6856348640027512653">No pueden usar datos ni dispositivos de realidad virtual</translation>
 <translation id="6856607887871564638">Configura un perfil de trabajo para guardar y usar tus contraseñas, entre otras opciones, en tu cuenta</translation>
 <translation id="68601584151169673">&amp;Guardar y compartir</translation>
@@ -5409,6 +5431,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6979440798594660689">Silenciar (predeterminado)</translation>
 <translation id="6979557074007409812">Sí, mantener mis datos separados de los del trabajo</translation>
 <translation id="6979737339423435258">Desde siempre</translation>
+<translation id="6981951388037216929">Pregunta lo que quieras sobre lo que aparece en tu pantalla compartiéndola.</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
 <translation id="698428203349952091">Añadir sitio a la lista de no permitidos</translation>
 <translation id="6985235333261347343">Agente de recuperación de claves de Microsoft</translation>
@@ -5743,6 +5766,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7341834142292923918">Quiere acceder a este sitio web</translation>
 <translation id="7343372807593926528">Describe el problema antes de enviar tus comentarios.</translation>
 <translation id="7344585835349671209">Gestiona los certificados HTTPS/SSL de tu dispositivo</translation>
+<translation id="734576882396032500">Se descarga una vez para todos los idiomas que uses</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7347751611463936647">Para utilizar esta extensión, escribe "<ph name="EXTENSION_KEYWORD" />", pulsa el tabulador e introduce el comando o la búsqueda que desees.</translation>
 <translation id="7347943691222276892">Haz clic para salir de <ph name="SUBPAGE_TITLE" />.</translation>
@@ -6141,6 +6165,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="7793098747275782155">Azul oscuro</translation>
 <translation id="7798504574384119986">Ver permisos web</translation>
 <translation id="7798559336183476274">Más acciones de <ph name="BUTTON_TITLE" /></translation>
+<translation id="7798702742851934390">Solo sugiere correcciones sin reescribir el texto</translation>
 <translation id="7798844538707273832">bloqueado automáticamente: <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Girar a la &amp;izquierda</translation>
 <translation id="780254490276923052">Nivel 2: MEDIO</translation>
@@ -6297,6 +6322,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="7974713334845253259">Color predeterminado</translation>
 <translation id="7977029776654598145">Cuándo se usa</translation>
 <translation id="7978100757563451333">Las pestañas se comparten para obtener respuestas más pertinentes. Google usa el contenido y la URL de las pestañas compartidas. Tu pestaña actual se comparte en las conversaciones nuevas. Puedes cambiar este ajuste en cualquier momento.</translation>
+<translation id="7978324202327430335">Funciona en sitios que admiten la transcripción de audio en tiempo real</translation>
 <translation id="7978412674231730200">Clave privada</translation>
 <translation id="7978450511781612192">Se cerrará la sesión en tus cuentas de Google. Tus marcadores, historial, contraseñas y otros elementos dejarán de sincronizarse.</translation>
 <translation id="7980066177668669492">ASCII codificado en Base64, varios certificados</translation>
@@ -7379,6 +7405,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9154194610265714752">Actualizado</translation>
 <translation id="9155344700756733162">Deseleccionar color</translation>
 <translation id="9155515662479003830">Siempre puedes volver al estilo clásico en la configuración</translation>
+<translation id="9157129135366432684">No se ha añadido IA en el dispositivo</translation>
 <translation id="9157915340203975005">La cubierta de la impresora está abierta</translation>
 <translation id="9165856803582999927">Escanea este código QR con la cámara del dispositivo en el que quieras crear y guardar tu llave de acceso en <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Imagen en imagen</translation>

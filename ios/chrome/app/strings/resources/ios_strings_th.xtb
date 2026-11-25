@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">ระบบจะใช้ชื่อหน้าและ URL ของแท็บที่เปิดอยู่เพื่อให้คำแนะนำที่เกี่ยวข้อง</translation>
 <translation id="4439968635693513370">วางแผนวันหยุดสุดสัปดาห์ด้วย</translation>
 <translation id="4442550905108052454">เปิด<ph name="BEGIN_BOLD" />การตั้งค่า<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{มีผลการค้นหา {count} รายการ}other{มีผลการค้นหา {count} รายการ}}</translation>
 <translation id="4445840280797509738">ตัวเลือกเพิ่มเติมสำหรับ <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">คุณสามารถปัดขอบเพื่อย้อนกลับหรือไปข้างหน้า</translation>
 <translation id="4460014764210899310">เลิกจัดกลุ่ม</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5311061401280561833">อนุญาตให้เข้าถึงกล้องและไมโครโฟน</translation>
 <translation id="5313967007315987356">เพิ่มเว็บไซต์</translation>
-<translation id="5315029634103634221">Gemini เป็น AI และอาจทำผิดพลาดได้ <ph name="BEGIN_LINK" />ดูเพิ่มเติมเกี่ยวกับข้อมูลที่เกี่ยวข้องซึ่งส่งไปยัง Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ไม่มีรายการที่จะนำเข้า</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> จาก <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">ลงชื่อเข้าใช้ <ph name="SITE_DOMAIN" /></translation>

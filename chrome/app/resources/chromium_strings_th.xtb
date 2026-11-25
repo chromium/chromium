@@ -51,6 +51,7 @@
 <translation id="1572572333538561328">เปิดโหมด AI ของ Search อีกครั้ง</translation>
 <translation id="1574377791422810894">เครื่องมือด้านความปลอดภัยของ Chromium</translation>
 <translation id="1594928384848033697">Chromium ต้องการลบข้อมูลในเครื่องมือจัดการรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
+<translation id="1599690375407103815">เมื่อปิด Chromium จะนำโมเดล AI ในอุปกรณ์ออกและจะไม่ดาวน์โหลดอีก บางเว็บไซต์และฟีเจอร์บางอย่างของ Chromium อาจไม่ทำงาน</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{ผู้ดูแลระบบต้องการให้คุณเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต}=1{ผู้ดูแลระบบต้องการให้คุณเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างที่ไม่ระบุตัวตนจะไม่เปิดให้อีก}other{ผู้ดูแลระบบต้องการให้คุณเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างที่ไม่ระบุตัวตนจำนวน # หน้าต่างจะไม่เปิดให้อีก}}</translation>
 <translation id="1625909126243026060">ตรวจสอบการควบคุมที่สำคัญด้านความเป็นส่วนตัวและความปลอดภัยใน Chromium</translation>
 <translation id="1640672724030957280">กำลังดาวน์โหลด...</translation>
@@ -65,6 +66,7 @@
 <translation id="1745121272106313518">Chromium จะรีสตาร์ทใน <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">เมื่อ HTTPS ไม่พร้อมใช้งาน Chromium จะใช้การเชื่อมต่อที่ไม่ปลอดภัยโดยไม่แจ้งเตือนคุณ</translation>
 <translation id="1774152462503052664">ให้ Chromium ทำงานในพื้นหลัง</translation>
+<translation id="1792680680989393197">คุณนำโมเดลเหล่านี้ออกได้ทุกเมื่อ Chromium อาจดาวน์โหลดโมเดลอีกครั้งโดยอัตโนมัติเมื่อเว็บไซต์หรือฟีเจอร์ต้องการใช้</translation>
 <translation id="1793486931176048546">คลิก<ph name="BEGIN_BOLD" />ใช่<ph name="END_BOLD" />ในการแจ้งเตือนของ Windows เพื่อปักหมุด Chromium ไว้ที่แถบงานเพื่อให้เข้าถึงได้รวดเร็ว</translation>
 <translation id="1808667845054772817">ติดตั้ง Chromium ใหม่</translation>
 <translation id="1820835682567584003">Chromium กำลังพยายาม<ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -249,6 +251,7 @@
 <translation id="3751920144677881410">จากปุ่ม "แผงด้านข้างของ Search" บนแถบเครื่องมือ คุณสามารถเปิดแผงด้านข้างของ Search อีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="3788675262216168505">จัดการโปรไฟล์ Chromium</translation>
 <translation id="3790262771324122253">ดูสาเหตุที่ Chromium บล็อกการดาวน์โหลดบางรายการ</translation>
+<translation id="3793196697433239004">ใช้พื้นที่เก็บข้อมูลของอุปกรณ์ Chromium จะนำโมเดล AI ที่ไม่ได้ใช้ออกหลังจากผ่านไป 45 วันหรือเมื่อพื้นที่เก็บข้อมูลเหลือน้อย</translation>
 <translation id="379589255253486813">Chromium จะแจ้งให้คุณทราบหากมีสิ่งใดที่คุณควรตรวจสอบ</translation>
 <translation id="3802055581630249637">Chromium จะโหลดหน้าเว็บที่คุณน่าจะเข้าชมเอาไว้ล่วงหน้าเพื่อให้หน้าเหล่านั้นโหลดเร็วขึ้นเมื่อคุณเข้าชม</translation>
 <translation id="3810973564298564668">จัดการ</translation>
@@ -330,6 +333,7 @@
 <translation id="4621240073146040695">การอัปเดตใกล้จะเสร็จเรียบร้อยแล้ว เปิด Chromium อีกครั้งเพื่อให้การอัปเดตเสร็จสิ้น</translation>
 <translation id="4625064703209785397">เพิ่มความเร็วให้เว็บไซต์ด้วยเครื่องมือ V8 ของ Chromium แต่ทำให้ Chromium ต้านทานการโจมตีได้น้อยลงเล็กน้อย</translation>
 <translation id="4626321472657185181">เปิดการค้นหาด้วย Chromium</translation>
+<translation id="4639628733881319833">แชร์ภาพหน้าจอของเนื้อหาภายนอก Chromium เช่น แอปหรือไฟล์อื่นๆ</translation>
 <translation id="4654639495249754755">โปรไฟล์ Chromium</translation>
 <translation id="4665829708273112819">คำเตือน: Chromium ไม่สามารถป้องกันไม่ให้ส่วนขยายบันทึกประวัติการท่องเว็บได้ หากคุณต้องการปิดใช้ส่วนขยายนี้ในโหมดไม่ระบุตัวตน ให้ยกเลิกการเลือกตัวเลือกนี้</translation>
 <translation id="4673151026126227699">หากคุณแชร์รายงานการใช้งาน Chromium ด้วย รายงานดังกล่าวจะรวม URL ที่คุณเข้าชม</translation>
@@ -387,6 +391,7 @@
 <translation id="5405650547142096840">ลบจาก Chromium</translation>
 <translation id="5424544524441439284">ลดประสิทธิภาพแต่ทำให้ Chromium ต้านทานการโจมตีได้มากขึ้น</translation>
 <translation id="5427571867875391349">ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้นของคุณ</translation>
+<translation id="5435079900593041559">แสดงการค้นหาด้วย Chromium ในแถบงานของ Windows และเปิดแป้นพิมพ์ลัด</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium เบต้า</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium แนะนำให้หยุดแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}other{Chromium แนะนำให้หยุดแท็บที่ทําให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}}</translation>
 <translation id="5473971139929175403">Chromium อาจทำงานไม่ถูกต้องเพราะไม่รองรับใน Linux Distribution นี้แล้ว</translation>
@@ -413,6 +418,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">แสดง Chromium ในภาษานี้</translation>
 <translation id="569897634095159764">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ พร็อกซีเซิร์ฟเวอร์ต้องมีการตรวจสอบสิทธิ์</translation>
+<translation id="5755377560105094542">เว็บไซต์และ Chromium สามารถใช้ AI ที่ทำงานโดยตรงในอุปกรณ์ของคุณสำหรับฟีเจอร์ต่างๆ เช่น ข้อมูลสรุป การพิสูจน์อักษร คำบรรยายแทนเสียง และอื่นๆ ซึ่งแยกต่างหากจาก Gemini ใน Chromium <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับ AI ในอุปกรณ์<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">จากปุ่ม "แผง Search" บนแถบเครื่องมือ คุณสามารถเปิดแผง Search อีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="5768371961535086509">Chromium จะเพิ่มหน่วยความจำจากแท็บที่ไม่ได้ใช้งาน ซึ่งทำให้แท็บที่ใช้งานอยู่และแอปอื่นๆ มีทรัพยากรสำหรับคอมพิวเตอร์เพิ่มขึ้นและช่วยให้ Chromium ทำงานได้เร็ว แท็บที่ไม่มีการใช้งานจะกลับมาทำงานโดยอัตโนมัติเมื่อคุณไปที่แท็บเหล่านั้น <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการประหยัดหน่วยความจำ<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">หากลืมพาสเฟรสหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="SETTINGS_LINK" />ข้อมูล Chromium ในบัญชี</translation>
@@ -469,6 +475,7 @@
 <translation id="6245734527075554892">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chromium</translation>
 <translation id="6248213926982192922">ทำให้ Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="6248988683584659830">ค้นหาการตั้งค่า</translation>
+<translation id="6251986571402453005">Chromium จะดาวน์โหลดและอัปเดตโมเดล AI เหล่านี้โดยอัตโนมัติ</translation>
 <translation id="6268381023930128611">ต้องการออกจาก Chromium ใช่ไหม</translation>
 <translation id="6270547683008298381">แท็บเหล่านี้ใช้ทรัพยากรมากเป็นพิเศษ ให้ Chromium ช่วยปิดใช้งานแท็บเหล่านี้เพื่อปรับปรุงประสิทธิภาพ</translation>
 <translation id="6281746429495226318">ปรับแต่งโปรไฟล์ Chromium ของคุณ</translation>
@@ -759,6 +766,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8981886272598860786">เพื่อค้นหาด้วย Chromium หรือปรับแต่งใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">จัดการโปรไฟล์ Chromium</translation>
 <translation id="8993855408334954620">ใช้แป้นพิมพ์เพื่อไปยังส่วนต่างๆ ระหว่าง Gemini ใน Chromium กับแท็บที่เปิดอยู่</translation>
+<translation id="9002987346523307190">Chromium จะนำโมเดล AI ออกจากอุปกรณ์นี้ บางเว็บไซต์และฟีเจอร์บางอย่างของ Chromium อาจไม่ทำงาน</translation>
 <translation id="9018218886431812662">ติดตั้งเสร็จสมบูรณ์แล้ว</translation>
 <translation id="9022552996538154597">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="9035791714111278917">แสดงการค้นหาด้วย Chromium ในแถบเมนูของ Mac และเปิดแป้นพิมพ์ลัด</translation>

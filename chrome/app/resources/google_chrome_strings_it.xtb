@@ -137,6 +137,7 @@
 <translation id="2295218613066132598">Mostra scorciatoie per i siti su Chrome</translation>
 <translation id="2301513536169703857">Accedi a Chrome per avere password, preferiti  e altro su tutti i dispositivi</translation>
 <translation id="2307973900865360088">Mantieni nel dock</translation>
+<translation id="2308558013860776484">Condividi uno screenshot di contenuti esterni a Chrome, come altre app o altri file</translation>
 <translation id="2309047409763057870">Questa è un'installazione secondaria, di conseguenza Google Chrome non può essere impostato come browser predefinito.</translation>
 <translation id="2345992953227471816">Chrome ha rilevato che le seguenti estensioni contengono malware:</translation>
 <translation id="2358140144860869442">Accedi a Chrome per trovare il tuo elenco di lettura e altri dati su tutti i dispositivi</translation>
@@ -246,6 +247,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="3294686910656423119">Statistiche sull'utilizzo e report sugli arresti anomali</translation>
 <translation id="3327226547491422998">In un secondo momento, Chrome può chiederti se vuoi usare le informazioni salvate per compilare automaticamente i moduli per te</translation>
 <translation id="3352986031709923790">angolo in alto a destra dell'area di ricerca: destra <ph name="RIGHT" />%, in alto <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">I siti e Chrome possono utilizzare l'AI che viene eseguita direttamente sul tuo dispositivo per funzionalità come riepiloghi, correzione di bozze, sottotitoli codificati e altro ancora. Questa funzionalità è separata da Gemini in Chrome. <ph name="BEGIN_LINK" />Scopri di più sull'AI on-device<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Alcune funzionalità ed estensioni di Chrome sono dotate di scorciatoie. Puoi scegliere di riattivarle.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verrà riavviato ora}=1{Chrome verrà riavviato tra 1 secondo}other{Chrome verrà riavviato tra # secondi}}</translation>
 <translation id="3380249972812870825">Per aprire Gemini in Chrome, premi <ph name="GLOBAL_HOTKEY" /></translation>
@@ -344,6 +346,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="4427306783828095590">La protezione avanzata blocca malware e tentativi di phishing con maggiore efficacia</translation>
 <translation id="4434353761996769206">Errore del programma di installazione: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Condividi questo documento con Gemini in Chrome per ottenere una rapida panoramica e fare domande aggiuntive</translation>
+<translation id="4440999670272408191">Puoi rimuoverli in qualsiasi momento. Chrome potrebbe scaricarli di nuovo automaticamente quando un sito o una funzionalità ne ha bisogno.</translation>
 <translation id="4450664632294415862">Chrome - Accesso rete - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">C'è un'altra operazione in corso su Google Chrome. Riprova più tardi.</translation>
 <translation id="4493028449971051158">Errore di avvio: esegui il programma di installazione come amministratore.</translation>
@@ -351,6 +354,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="4501839397124711198">Puoi fissare la Ricerca Google nel riquadro laterale per porre domande mentre navighi</translation>
 <translation id="4571503333518166079">Vai alle impostazioni di notifica di Chrome</translation>
 <translation id="4580939929828762295">Naviga sicuro con Gestore delle password di Google</translation>
+<translation id="4589544932092381064">Mostra la ricerca con Chrome nella barra delle app di Windows e attiva la scorciatoia da tastiera</translation>
 <translation id="459622048091363950">Dopo che Chrome avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
 <translation id="4598116752460667024">Cerca qualsiasi procedura nell'elenco.</translation>
 <translation id="4600710005438004015">Non è stato possibile aggiornare Chrome alla versione più recente, quindi non potrai utilizzare le nuove funzioni e gli aggiornamenti di sicurezza.</translation>
@@ -366,6 +370,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Accelera i siti con il motore V8 di Chrome, ma rende Chrome leggermente meno resistente agli attacchi</translation>
 <translation id="4768676935374695498">Cerca questo video con Google Lens</translation>
+<translation id="4783580253728290203">Se l'opzione è disattivata, Chrome rimuove i modelli di AI on-device e non li scarica di nuovo. Alcuni siti e funzionalità di Chrome potrebbero non funzionare.</translation>
 <translation id="479167709087336770">Viene usato lo stesso controllo ortografico utilizzato nella Ricerca Google. Il testo che digiti nel browser viene inviato a Google. Puoi modificare questo comportamento in qualsiasi momento nelle impostazioni.</translation>
 <translation id="4793679854893018356">Scopri in che modo Chrome ti protegge</translation>
 <translation id="4803313124144656665">Chiudi Ricerca Google in Chrome</translation>
@@ -447,6 +452,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Impossibile connettersi a internet. Il server proxy richiede l'autenticazione.</translation>
 <translation id="5709557627224531708">Imposta Chrome come browser predefinito</translation>
+<translation id="5715427327524421317">Chrome scarica e aggiorna automaticamente questi modelli di AI</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{La protezione avanzata richiede il riavvio di Chrome per applicare un aggiornamento. La finestra isolata non verrà riaperta.}other{La protezione avanzata richiede il riavvio di Chrome per applicare un aggiornamento. # finestre isolate non verranno riaperte.}}</translation>
 <translation id="5719246646468301581">Termini di servizio aggiuntivi di Google Chrome e ChromeOS</translation>
 <translation id="5736850870166430177">Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura</translation>
@@ -538,6 +544,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6491330562720922580">Codice QR per scaricare il browser Chrome sui dispositivi mobili</translation>
 <translation id="6493527311031785448">Google Chrome sta cercando di <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome è stato chiuso automaticamente</translation>
+<translation id="650039555447046671">Chrome rimuoverà i modelli di AI da questo dispositivo. Alcuni siti e funzionalità di Chrome potrebbero non funzionare.</translation>
 <translation id="6506909944137591434">Chrome deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome per gli sviluppatori</translation>
 <translation id="6520670145826811516">Per usare la posizione, concedi l'accesso a Chrome nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" /></translation>
@@ -576,6 +583,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6877155553248388166">angolo in basso a destra dell'area di ricerca: destra <ph name="RIGHT" />%, in basso <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Apri la ricerca con Chrome</translation>
 <translation id="6881299373831449287">Aggiornamento di Chrome</translation>
+<translation id="6881997500528805781">Utilizza lo spazio sul dispositivo. Chrome rimuove i modelli di AI non utilizzati dopo 45 giorni o quando lo spazio di archiviazione è insufficiente</translation>
 <translation id="6885412569789873916">App di Chrome Beta</translation>
 <translation id="6893363893008038481">Rimuovi account da Chrome</translation>
 <translation id="6896758677409633944">Copia</translation>

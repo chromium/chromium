@@ -844,6 +844,7 @@
 <translation id="1921544956190977703">ବିପଦଜନକ ୱେବସାଇଟ, ଡାଉନଲୋଡ ଏବଂ ଏକ୍ସଟେନ୍ସନଗୁଡ଼ିକଠାରୁ ରକ୍ଷା ପାଇବା ପାଇଁ ଆପଣଙ୍କ ପାଖରେ Chromeର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ଅଛି</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">"<ph name="NAME" />" କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ ହୋଇଛି। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ଏହାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଏହାକୁ ସେଭ କରନ୍ତୁ।</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">ଏହା ମାଧ୍ୟମରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="1925017091976104802">ପେଷ୍ଟ କରିବାକୁ <ph name="MODIFIER_KEY_DESCRIPTION" /> ଦବାନ୍ତୁ</translation>
 <translation id="1925021887439448749">ଏକ କଷ୍ଟମ୍ ୱେବ୍ ଠିକଣା ଲେଖନ୍ତୁ</translation>
@@ -1392,6 +1393,7 @@
 <translation id="2528487766183344810">ଦୟାକରି କ୍ଲାଏଣ୍ଟ ସାର୍ଟିଫିକେଟ ଏକ୍ସପୋର୍ଟ କରିବା ପାଇଁ <ph name="TOKEN_NAME" />କୁ ଅନଲକ କରନ୍ତୁ।</translation>
 <translation id="2532198298278778531">ChromeOS Flex ସେଟିଂସରେ ସୁରକ୍ଷିତ DNSକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="253434972992662860">&amp;ବିରତି</translation>
+<translation id="2534439599863644240">ସିରିଏଲ ପୋର୍ଟ</translation>
 <translation id="253498598929009420">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ବିଷୟବସ୍ତୁକୁ ଦେଖିବାରେ ସାଇଟ ସକ୍ଷମ ହେବ</translation>
 <translation id="253557089021624350">କିପ୍‍ଆଲାଇଭ୍ କାଉଣ୍ଟ</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> ନିମ୍ନୋକ୍ତ ଫାଇଲ୍ ଏବଂ ଏଡିଟ୍ କରିପାରିବ</translation>

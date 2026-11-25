@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Чтобы давать вам подходящие подсказки, мы используем заголовки и URL открытых вкладок.</translation>
 <translation id="4439968635693513370">Планируйте выходные с</translation>
 <translation id="4442550905108052454">Откройте <ph name="BEGIN_BOLD" />Настройки<ph name="END_BOLD" />.</translation>
-<translation id="4444574452810111637">{count,plural, =1{Доступен {count} результат.}one{Доступен {count} результат.}few{Доступно {count} результата.}many{Доступно {count} результатов.}other{Доступно {count} результата.}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />, другие действия</translation>
 <translation id="4455710003856931944">Чтобы перейти вперед или назад, проведите пальцем по краю экрана.</translation>
 <translation id="4460014764210899310">Разгруппировать</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5311061401280561833">Доступ к камере и микрофону разрешен.</translation>
 <translation id="5313967007315987356">Добавить сайт</translation>
-<translation id="5315029634103634221">Gemini — это ИИ. Он может ошибаться. Подробнее <ph name="BEGIN_LINK" />о данных, которые передаются в Google<ph name="END_LINK" />…</translation>
 <translation id="5315870524563628285">Нет данных для импорта</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> из <ph name="INDEX" /></translation>
 <translation id="5316823130598991834">Войдите на сайт <ph name="SITE_DOMAIN" /></translation>

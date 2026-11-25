@@ -137,6 +137,7 @@
 <translation id="2295218613066132598">แสดงทางลัดของเว็บไซต์ใน Chrome</translation>
 <translation id="2301513536169703857">ลงชื่อเข้าใช้ Chrome เพื่อเข้าถึงรหัสผ่าน บุ๊กมาร์ก และข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="2307973900865360088">ปักหมุดไว้ที่แถบแอป</translation>
+<translation id="2308558013860776484">แชร์ภาพหน้าจอของเนื้อหาภายนอก Chrome เช่น แอปหรือไฟล์อื่นๆ</translation>
 <translation id="2309047409763057870">นี่เป็นการติดตั้ง Google Chrome แบบสำรอง และไม่สามารถใช้เป็นเบราว์เซอร์เริ่มต้นของคุณ</translation>
 <translation id="2345992953227471816">Chrome พบว่าส่วนขยายเหล่านี้มีมัลแวร์</translation>
 <translation id="2358140144860869442">ลงชื่อเข้าใช้ Chrome เพื่อเข้าถึงเรื่องรออ่านและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
@@ -246,6 +247,7 @@
 <translation id="3294686910656423119">สถิติการใช้งานและรายงานข้อขัดข้อง</translation>
 <translation id="3327226547491422998">Chrome จะถามว่าคุณต้องการใช้ข้อมูลที่บันทึกไว้เพื่อให้ระบบป้อนข้อความให้คุณอัตโนมัติในแบบฟอร์มหรือไม่ในภายหลัง</translation>
 <translation id="3352986031709923790">มุมขวาบนของพื้นที่การค้นหา: ขวา <ph name="RIGHT" />% บน <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">เว็บไซต์และ Chrome สามารถใช้ AI ที่ทำงานโดยตรงในอุปกรณ์ของคุณสำหรับฟีเจอร์ต่างๆ เช่น ข้อมูลสรุป การพิสูจน์อักษร คำบรรยายแทนเสียง และอื่นๆ ซึ่งแยกต่างหากจาก Gemini ใน Chrome <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับ AI ในอุปกรณ์<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">ฟีเจอร์และส่วนขยายบางอย่างของ Chrome มาพร้อมทางลัด ซึ่งคุณเลือกเปิดใช้อีกครั้งได้</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome จะเปิดขึ้นมาใหม่ตอนนี้}=1{Chrome จะเปิดขึ้นมาใหม่ใน 1 วินาที}other{Chrome จะเปิดขึ้นมาใหม่ใน # วินาที}}</translation>
 <translation id="3380249972812870825">หากต้องการเปิด Gemini ใน Chrome ให้กด <ph name="GLOBAL_HOTKEY" /></translation>
@@ -344,6 +346,7 @@
 <translation id="4427306783828095590">การปกป้องที่ปรับปรุงแล้วทำได้มากกว่าบล็อกฟิชชิงและมัลแวร์</translation>
 <translation id="4434353761996769206">ข้อผิดพลาดของโปรแกรมติดตั้ง: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">แชร์เอกสารนี้กับ Gemini ใน Chrome เพื่อดูภาพรวมคร่าวๆ และถามคำถามต่อเนื่อง</translation>
+<translation id="4440999670272408191">คุณนำโมเดลเหล่านี้ออกได้ทุกเมื่อ Chrome อาจดาวน์โหลดโมเดลอีกครั้งโดยอัตโนมัติเมื่อเว็บไซต์หรือฟีเจอร์ต้องการใช้</translation>
 <translation id="4450664632294415862">Chrome - หน้าลงชื่อเข้าใช้ของเครือข่าย - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome กำลังดำเนินการอย่างอื่นอยู่ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="4493028449971051158">ข้อผิดพลาดในการเริ่มต้น: โปรดเรียกใช้โปรแกรมติดตั้งในฐานะผู้ดูแลระบบ</translation>
@@ -351,6 +354,7 @@
 <translation id="4501839397124711198">คุณสามารถปักหมุด Google Search ในแผงด้านข้างเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="4571503333518166079">ไปที่การตั้งค่าการแจ้งเตือน Chrome</translation>
 <translation id="4580939929828762295">ปลอดภัยอยู่เสมอด้วยเครื่องมือจัดการรหัสผ่านบน Google</translation>
+<translation id="4589544932092381064">แสดงการค้นหาด้วย Chrome ในแถบงานของ Windows และเปิดแป้นพิมพ์ลัด</translation>
 <translation id="459622048091363950">เมื่อ Chrome มีสิทธิ์การเข้าถึงแล้ว เว็บไซต์จะขอสิทธิ์การเข้าถึงจากคุณได้</translation>
 <translation id="4598116752460667024">ค้นหากระบวนการใดๆ จากรายการ</translation>
 <translation id="4600710005438004015">Chrome อัปเดตเป็นเวอร์ชันล่าสุดไม่ได้ คุณจึงไม่ได้รับฟีเจอร์ใหม่และการแก้ไขด้านความปลอดภัย</translation>
@@ -366,6 +370,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">เร่งความเร็วเว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้น้อยลงเล็กน้อย</translation>
 <translation id="4768676935374695498">ค้นหาวิดีโอนี้ด้วย Google Lens</translation>
+<translation id="4783580253728290203">เมื่อปิด Chrome จะนำโมเดล AI ในอุปกรณ์ออกและจะไม่ดาวน์โหลดอีก บางเว็บไซต์และฟีเจอร์บางอย่างของ Chrome อาจไม่ทำงาน</translation>
 <translation id="479167709087336770">การดำเนินการนี้จะใช้โปรแกรมตรวจตัวสะกดแบบเดียวกับใน Google Search ข้อความที่คุณพิมพ์ในเบราว์เซอร์จะส่งไปยัง Google คุณปรับเปลี่ยนลักษณะการทำงานนี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="4793679854893018356">ดูวิธีที่ Chrome ช่วยให้คุณปลอดภัย</translation>
 <translation id="4803313124144656665">ปิด Google Search ใน Chrome</translation>
@@ -447,6 +452,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ พร็อกซีเซิร์ฟเวอร์ต้องมีการตรวจสอบสิทธิ์</translation>
 <translation id="5709557627224531708">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
+<translation id="5715427327524421317">Chrome จะดาวน์โหลดและอัปเดตโมเดล AI เหล่านี้โดยอัตโนมัติ</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{การปกป้องขั้นสูงกำหนดให้คุณต้องเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างแยกจะไม่เปิดขึ้นมาใหม่}other{การปกป้องขั้นสูงกำหนดให้คุณต้องเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างแยก # หน้าต่างจะไม่เปิดขึ้นมาใหม่}}</translation>
 <translation id="5719246646468301581">ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ ChromeOS</translation>
 <translation id="5736850870166430177">หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
@@ -538,6 +544,7 @@
 <translation id="6491330562720922580">คิวอาร์โค้ดสำหรับดาวน์โหลดเบราว์เซอร์ Chrome บนมือถือ</translation>
 <translation id="6493527311031785448">Google Chrome กำลังพยายาม<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">มีการปิด Chrome โดยอัตโนมัติ</translation>
+<translation id="650039555447046671">Chrome จะนำโมเดล AI ออกจากอุปกรณ์นี้ บางเว็บไซต์และฟีเจอร์บางอย่างของ Chrome อาจไม่ทำงาน</translation>
 <translation id="6506909944137591434">Chrome ต้องการสิทธิ์เข้าถึงกล้องเพื่อสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">หากต้องการใช้ตำแหน่ง โปรดให้สิทธิ์เข้าถึงแก่ Chrome ใน<ph name="BEGIN_LINK" />การตั้งค่าระบบ<ph name="END_LINK" /></translation>
@@ -576,6 +583,7 @@
 <translation id="6877155553248388166">มุมขวาล่างของพื้นที่การค้นหา: ขวา <ph name="RIGHT" />% ล่าง <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">เปิดการค้นหาด้วย Chrome</translation>
 <translation id="6881299373831449287">กำลังอัปเดต Chrome</translation>
+<translation id="6881997500528805781">ใช้พื้นที่เก็บข้อมูลของอุปกรณ์ Chrome จะนำโมเดล AI ที่ไม่ได้ใช้ออกหลังจากผ่านไป 45 วันหรือเมื่อพื้นที่เก็บข้อมูลเหลือน้อย</translation>
 <translation id="6885412569789873916">แอป Chrome เบต้า</translation>
 <translation id="6893363893008038481">นำบัญชีออกจาก Chrome</translation>
 <translation id="6896758677409633944">คัดลอก</translation>

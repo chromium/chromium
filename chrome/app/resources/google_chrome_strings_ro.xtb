@@ -137,6 +137,7 @@
 <translation id="2295218613066132598">Afișează comenzile rapide pentru site-uri din Chrome</translation>
 <translation id="2301513536169703857">Pentru a accesa parolele, marcajele și alte date pe toate dispozitivele, conectează-te la Chrome</translation>
 <translation id="2307973900865360088">Păstrează în bara de andocare</translation>
+<translation id="2308558013860776484">Trimite o captură de ecran cu conținut din afara Chrome, cum ar fi alte aplicații sau fișiere</translation>
 <translation id="2309047409763057870">Aceasta este o instalare secundară a browserului Google Chrome și nu poate fi setat ca browser prestabilit.</translation>
 <translation id="2345992953227471816">Chrome a descoperit că următoarele extensii conțin programe malware:</translation>
 <translation id="2358140144860869442">Pentru a accesa lista de lecturi și alte date pe toate dispozitivele, conectează-te la Chrome</translation>
@@ -246,6 +247,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3294686910656423119">Statistici de utilizare și rapoarte de blocare</translation>
 <translation id="3327226547491422998">Ulterior, Chrome te poate întreba dacă vrei să folosești informațiile salvate pentru a completa automat formulare</translation>
 <translation id="3352986031709923790">colțul din dreapta sus al zonei de căutare: dreapta <ph name="RIGHT" /> %, sus <ph name="TOP" /> %</translation>
+<translation id="3370239327277137701">Site-urile și Chrome pot folosi AI care rulează direct pe dispozitiv pentru funcții precum rezumate, verificare, subtitrări și altele. Aceasta este o funcție separată de Gemini în Chrome. <ph name="BEGIN_LINK" />Află mai multe despre AI pe dispozitiv<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Unele funcții și extensii Chrome au comenzi rapide. Poți alege să le reactivezi.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se va relansa acum}=1{Chrome se va relansa într-o secundă}few{Chrome se va relansa în # secunde}other{Chrome se va relansa în # de secunde}}</translation>
 <translation id="3380249972812870825">Pentru a deschide Gemini în Chrome, apasă pe <ph name="GLOBAL_HOTKEY" /></translation>
@@ -345,6 +347,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4427306783828095590">Protecția îmbunătățită face mai multe pentru blocarea phishingului și a programelor malware</translation>
 <translation id="4434353761996769206">Eroare în programul de instalare: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Trimite acest document la Gemini în Chrome pentru a obține o prezentare generală rapidă și a pune întrebări suplimentare</translation>
+<translation id="4440999670272408191">Le poți elimina oricând. Chrome le poate descărca din nou automat când un site sau o funcție are nevoie de ele.</translation>
 <translation id="4450664632294415862">Chrome – conectare la rețea – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">O altă operație din Google Chrome este în curs de desfășurare. Încearcă din nou mai târziu.</translation>
 <translation id="4493028449971051158">Eroare la pornire: rulează programul de instalare ca administrator.</translation>
@@ -352,6 +355,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4501839397124711198">Poți să fixezi Căutarea Google în panoul lateral pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="4571503333518166079">Accesează setările pentru notificări Chrome</translation>
 <translation id="4580939929828762295">Rămâi în siguranță cu Managerul de parole Google</translation>
+<translation id="4589544932092381064">Afișează căutarea cu Chrome în bara de activități Windows și activează comanda rapidă de la tastatură</translation>
 <translation id="459622048091363950">Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.</translation>
 <translation id="4598116752460667024">Caută orice proces din listă.</translation>
 <translation id="4600710005438004015">Chrome nu s-a putut actualiza la cea mai recentă versiune. Astfel, pierzi noi funcții și remedieri de securitate.</translation>
@@ -367,6 +371,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Accelerează site-urile cu motorul V8 din Chrome, dar reduce ușor rezistența Chrome la atacuri</translation>
 <translation id="4768676935374695498">Caută în acest videoclip cu Google Lens</translation>
+<translation id="4783580253728290203">Când este dezactivată, Chrome elimină modelele AI de pe dispozitiv și nu le va descărca din nou. Este posibil ca unele site-uri și funcții Chrome să nu funcționeze.</translation>
 <translation id="479167709087336770">Folosește același verificator ortografic folosit în Căutarea Google. Textul pe care îl introduci în browser este trimis la Google. Poți schimba acest comportament în setări.</translation>
 <translation id="4793679854893018356">Află cum te protejează Chrome</translation>
 <translation id="4803313124144656665">Închide Căutarea Google în Chrome</translation>
@@ -448,6 +453,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nu se poate realiza conexiunea la internet. Pentru serverul proxy este necesară autentificarea.</translation>
 <translation id="5709557627224531708">Setează Chrome ca browser prestabilit</translation>
+<translation id="5715427327524421317">Chrome descarcă și actualizează automat aceste modele AI</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Protecția avansată necesită relansarea Chrome pentru a aplica o actualizare. Fereastra izolată nu se va mai deschide.}few{Protecția avansată necesită relansarea Chrome pentru a aplica o actualizare. Cele # ferestre izolate nu se vor mai deschide.}other{Protecția avansată necesită relansarea Chrome pentru a aplica o actualizare. Cele # de ferestre izolate nu se vor mai deschide.}}</translation>
 <translation id="5719246646468301581">Termenii și condițiile suplimentare pentru Google Chrome și ChromeOS</translation>
 <translation id="5736850870166430177">Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură</translation>
@@ -539,6 +545,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6491330562720922580">Cod QR pentru descărcarea browserului Chrome pe dispozitive mobile</translation>
 <translation id="6493527311031785448">Google Chrome încearcă să <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome s-a închis automat</translation>
+<translation id="650039555447046671">Chrome va elimina modelele AI de pe acest dispozitiv. Este posibil ca unele site-uri și funcții Chrome să nu funcționeze.</translation>
 <translation id="6506909944137591434">Chrome are nevoie de acces la cameră pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Pentru a folosi locația, permite accesul browserului Chrome în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" /></translation>
@@ -577,6 +584,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6877155553248388166">colțul din dreapta jos al zonei de căutare: dreapta <ph name="RIGHT" /> %, jos <ph name="BOTTOM" /> %</translation>
 <translation id="6879791154455204815">Deschide Căutarea cu Chrome</translation>
 <translation id="6881299373831449287">Se actualizează Chrome</translation>
+<translation id="6881997500528805781">Folosește spațiul de stocare al dispozitivului. Chrome elimină modelele AI nefolosite după 45 de zile sau când spațiul de stocare este redus</translation>
 <translation id="6885412569789873916">Aplicații Chrome Beta</translation>
 <translation id="6893363893008038481">Elimină contul din Chrome</translation>
 <translation id="6896758677409633944">Copiază</translation>

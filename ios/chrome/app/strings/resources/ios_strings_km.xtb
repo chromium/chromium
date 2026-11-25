@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">ចំណងជើងទំព័រ និង URL នៃផ្ទាំង​ដែលអ្នក​បើកត្រូវបាន​ប្រើ ដើម្បី​ផ្ដល់​ការណែនាំ​ដែល​ពាក់ព័ន្ធ​ដល់អ្នក។</translation>
 <translation id="4439968635693513370">រៀបគម្រោងចុងសប្ដាហ៍របស់អ្នកដោយប្រើ</translation>
 <translation id="4442550905108052454">បើក<ph name="BEGIN_BOLD" />ការកំណត់<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{មានលទ្ធផល {count}។}other{មានលទ្ធផល {count}។}}</translation>
 <translation id="4445840280797509738">ជម្រើស​ច្រើន​ទៀត​សម្រាប់ <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">អ្នកអាចអូសគែមដើម្បីត្រឡប់ក្រោយ ឬទៅមុខ។</translation>
 <translation id="4460014764210899310">បំបែក​ក្រុម</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">បង្ហាញ</translation>
 <translation id="5311061401280561833">បានអនុញ្ញាត​ឱ្យចូលប្រើប្រាស់​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="5313967007315987356">បន្ថែមគេហទំព័រ</translation>
-<translation id="5315029634103634221">Gemini គឺជា AI និងអាចមានកំហុស។ <ph name="BEGIN_LINK" />ព័ត៌មានបន្ថែមអំពីទិន្នន័យពាក់ព័ន្ធដែលបានបញ្ជូនទៅ Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">គ្មានអ្វី​ដែលត្រូវ​នាំចូលទេ</translation>
 <translation id="5316356981864168850">ទី <ph name="INDEX" /> នៃ <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">ចូលគណនី <ph name="SITE_DOMAIN" /></translation>

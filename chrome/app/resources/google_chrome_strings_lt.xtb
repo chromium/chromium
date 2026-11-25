@@ -141,6 +141,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2295218613066132598">Rodyti „Chrome“ svetainių sparčiuosius klavišus</translation>
 <translation id="2301513536169703857">Jei norite pasiekti slaptažodžius, žymes ir kitas funkcijas visuose įrenginiuose, prisijunkite prie „Chrome“</translation>
 <translation id="2307973900865360088">Palikti doke</translation>
+<translation id="2308558013860776484">Bendrinkite turinio ne „Chrome“, pvz., kitų programų ar failų, ekrano kopiją</translation>
 <translation id="2309047409763057870">Tai yra antrinis „Google Chrome“ diegimas, todėl ji negali būti nustatyta kaip numatytoji naršyklė.</translation>
 <translation id="2345992953227471816">„Chrome“ aptiko kenkėjišką programą šiuose plėtiniuose:</translation>
 <translation id="2358140144860869442">Jei norite pasiekti skaitymo sąrašą ir kt. visuose įrenginiuose, prisijunkite prie „Chrome“</translation>
@@ -250,6 +251,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="3294686910656423119">Naudojimo statistika ir strigčių ataskaitos</translation>
 <translation id="3327226547491422998">Vėliau „Chrome“ gali paklausti, ar norite naudoti išsaugotą informaciją automatiškai užpildydami formas</translation>
 <translation id="3352986031709923790">viršutinis dešinysis paieškos srities kampas: dešinė – <ph name="RIGHT" /> %, viršus – <ph name="TOP" /> %</translation>
+<translation id="3370239327277137701">Svetainės ir „Chrome“ gali naudoti DI, kuris veikia tiesiogiai jūsų įrenginyje, tokioms funkcijoms kaip suvestinės, korektūra, subtitrai ir kt. Tai atskirta nuo „Gemini“ naršyklėje „Chrome“. <ph name="BEGIN_LINK" />Sužinokite daugiau apie DI įrenginyje<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Kai kurioms „Chrome“ funkcijoms ir plėtiniams priskirti šaukiniai. Galite pasirinkti vėl juos įjungti.</translation>
 <translation id="3379938682270551431">{0,plural, =0{„Chrome“ bus paleista iš naujo dabar}=1{„Chrome“ bus paleista iš naujo po 1 sekundės}one{„Chrome“ bus paleista iš naujo po # sekundės}few{„Chrome“ bus paleista iš naujo po # sekundžių}many{„Chrome“ bus paleista iš naujo po # sekundės}other{„Chrome“ bus paleista iš naujo po # sekundžių}}</translation>
 <translation id="3380249972812870825">Jei norite atidaryti „Gemini“ naršyklėje „Chrome“, paspauskite <ph name="GLOBAL_HOTKEY" /></translation>
@@ -349,6 +351,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="4427306783828095590">Naudojant sustiprintą apsaugą pasitelkiama papildomų priemonių sukčiavimui ir kenkėjiškoms programoms užblokuoti</translation>
 <translation id="4434353761996769206">Diegimo programos klaida: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Bendrinkite šį dokumentą su „Gemini“ naršyklėje „Chrome“, kad gautumėte trumpą apžvalgą ir užduotumėte papildomų klausimų</translation>
+<translation id="4440999670272408191">Galite bet kada juos pašalinti. „Chrome“ gali automatiškai juos vėl atsisiųsti, kai svetainei ar funkcijai jų reikia.</translation>
 <translation id="4450664632294415862">„Chrome“ – prisijungimas prie tinklo – „<ph name="PAGE_TITLE" />“</translation>
 <translation id="4458462641685292929">Vykdoma kita „Google Chrome“ operacija. Vėliau bandykite dar kartą.</translation>
 <translation id="4493028449971051158">Paleisties klaida: diegimo programą paleiskite kaip administratorius.</translation>
@@ -356,6 +359,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="4501839397124711198">Galite prisegti „Google“ paiešką šoniniame skydelyje, kad naršydami galėtumėte užduoti klausimų</translation>
 <translation id="4571503333518166079">Eiti į „Chrome“ pranešimų nustatymus</translation>
 <translation id="4580939929828762295">Išlikite saugūs su „Google“ slaptažodžių tvarkykle</translation>
+<translation id="4589544932092381064">Rodyti paiešką naudojant „Chrome“ „Windows“ užduočių juostoje ir įjungti spartųjį klavišą</translation>
 <translation id="459622048091363950">Kai „Chrome“ galės pasiekti duomenis, svetainės taip pat galės prašyti suteikti leidimą juos pasiekti.</translation>
 <translation id="4598116752460667024">Ieškokite bet kurio proceso iš sąrašo.</translation>
 <translation id="4600710005438004015">Nepavyko atnaujinti „Chrome“ į naujausią versiją, todėl nebus pasiekiamos naujos funkcijos ir saugos pataisos.</translation>
@@ -371,6 +375,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="4754614261631455953">„Canary“ versijos „Google Chrome“ (mDNS-In)</translation>
 <translation id="4756182432527369254">Paspartina svetaines naudojant „Chrome“ V8 variklį, bet daro „Chrome“ šiek tiek mažiau atsparią atakoms</translation>
 <translation id="4768676935374695498">Ieškoti šiame vaizdo įraše naudojant „Google Lens“</translation>
+<translation id="4783580253728290203">Kai išjungta, „Chrome“ pašalina įrenginyje esančius DI modelius ir jų nebeatsisiunčia. Kai kurios svetainės ir „Chrome“ funkcijos gali neveikti.</translation>
 <translation id="479167709087336770">Naudojamas tas pats rašybos tikrinimas kaip ir „Google“ paieškoje. Tekstas, kurį įvedate naršyklėje, nusiunčiamas „Google“. Šį veikimą visada galite pakeisti nustatymuose.</translation>
 <translation id="4793679854893018356">Sužinokite, kaip „Chrome“ užtikrina jūsų saugą</translation>
 <translation id="4803313124144656665">Uždaryti „Google“ paiešką naršyklėje „Chrome“</translation>
@@ -456,6 +461,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nepavyko prisijungti prie interneto. Reikalingas tarpinio serverio autentifikavimas.</translation>
 <translation id="5709557627224531708">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
+<translation id="5715427327524421317">„Chrome“ automatiškai atsisiunčia ir atnaujina šiuos DI modelius</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Naudojant Papildomą apsaugą reikia paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti naujinį. Izoliuotas langas nebus atidarytas iš naujo.}one{Naudojant Papildomą apsaugą reikia paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti naujinį. # izoliuotas langas nebus atidarytas iš naujo.}few{Naudojant Papildomą apsaugą reikia paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti naujinį. # izoliuoti langai nebus atidaryti iš naujo.}many{Naudojant Papildomą apsaugą reikia paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti naujinį. # izoliuoto lango nebus atidaryta iš naujo.}other{Naudojant Papildomą apsaugą reikia paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti naujinį. # izoliuotų langų nebus atidaryta iš naujo.}}</translation>
 <translation id="5719246646468301581">„Google Chrome“ ir „ChromeOS“ papildomos paslaugų teikimo sąlygos</translation>
 <translation id="5736850870166430177">Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai</translation>
@@ -547,6 +553,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6491330562720922580">QR kodas, kuriuo galite atsisiųsti „Chrome“ naršyklę mobiliuosiuose įrenginiuose</translation>
 <translation id="6493527311031785448">„Google Chrome“ bando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">„Chrome“ automatiškai uždaryta</translation>
+<translation id="650039555447046671">„Chrome“ pašalins DI modelius iš šio įrenginio. Kai kurios svetainės ir „Chrome“ funkcijos gali neveikti.</translation>
 <translation id="6506909944137591434">„Chrome“ reikalingas fotoaparato leidimas, kad būtų galima sukurti trimatį aplinkos žemėlapį</translation>
 <translation id="6515495397637126556">„<ph name="PAGE_TITLE" />“ – „Google Chrome Dev“</translation>
 <translation id="6520670145826811516">Kad būtų galima naudoti jūsų vietovės informaciją, suteikite „Chrome“ prieigą <ph name="BEGIN_LINK" />sistemos nustatymuose<ph name="END_LINK" /></translation>
@@ -585,6 +592,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6877155553248388166">apatinis dešinysis paieškos srities kampas: dešinė – <ph name="RIGHT" /> %, apačia – <ph name="BOTTOM" /> %</translation>
 <translation id="6879791154455204815">Atidaryti paiešką naudojant „Chrome“</translation>
 <translation id="6881299373831449287">„Chrome“ atnaujinimas</translation>
+<translation id="6881997500528805781">Naudojama įrenginio saugykla. „Chrome“ pašalina nenaudojamus DI modelius po 45 dienų arba kai saugykloje mažai vietos</translation>
 <translation id="6885412569789873916">„Chrome“ beta versijos programos</translation>
 <translation id="6893363893008038481">Pašalinti paskyrą iš „Chrome“</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>

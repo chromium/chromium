@@ -52,6 +52,7 @@
 <translation id="1572572333538561328">Redeschide Modul AI în Căutare</translation>
 <translation id="1574377791422810894">Instrumentele de siguranță din Chromium</translation>
 <translation id="1594928384848033697">Chromium dorește să șteargă datele din Managerul de parole. Introdu parola Windows pentru a permite acest lucru.</translation>
+<translation id="1599690375407103815">Când este dezactivată, Chromium elimină modelele AI de pe dispozitiv și nu le va descărca din nou. Este posibil ca unele site-uri și funcții Chromium să nu funcționeze.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare}=1{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="1625909126243026060">Examinează cele mai importante opțiuni de confidențialitate și de securitate din Chromium</translation>
 <translation id="1640672724030957280">Se descarcă…</translation>
@@ -66,6 +67,7 @@
 <translation id="1745121272106313518">Chromium va reporni în <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Când protocolul HTTPS nu este disponibil, Chromium va folosi o conexiune nesecurizată fără să te avertizeze</translation>
 <translation id="1774152462503052664">Permiteți Chromium să ruleze în fundal</translation>
+<translation id="1792680680989393197">Le poți elimina oricând. Chromium le poate descărca din nou automat când un site sau o funcție are nevoie de ele.</translation>
 <translation id="1793486931176048546">Dă clic pe <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> în notificarea Windows ca să fixezi Chromium în bara de activități pentru acces rapid.</translation>
 <translation id="1808667845054772817">Reinstalați Chromium</translation>
 <translation id="1820835682567584003">Chromium încearcă să <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -250,6 +252,7 @@
 <translation id="3751920144677881410">Folosind butonul Panoul lateral de căutare din bara de instrumente, poți să redeschizi panoul lateral de căutare pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="3788675262216168505">Gestionează profilurile Chromium</translation>
 <translation id="3790262771324122253">Află de ce Chromium blochează unele descărcări</translation>
+<translation id="3793196697433239004">Folosește spațiul de stocare al dispozitivului. Chromium elimină modelele AI nefolosite după 45 de zile sau când spațiul de stocare este redus</translation>
 <translation id="379589255253486813">Chromium te va anunța dacă trebuie să examinezi ceva</translation>
 <translation id="3802055581630249637">Chromium preîncarcă paginile pe care este posibil să le accesezi, astfel încât să se încarce mai rapid când le accesezi</translation>
 <translation id="3810973564298564668">Gestionează</translation>
@@ -331,6 +334,7 @@
 <translation id="4621240073146040695">Aproape actualizat! Repornește Chromium pentru a finaliza actualizarea.</translation>
 <translation id="4625064703209785397">Accelerează site-urile cu motorul V8 din Chromium, dar reduce ușor rezistența Chromium la atacuri</translation>
 <translation id="4626321472657185181">Deschide Căutarea cu Chromium</translation>
+<translation id="4639628733881319833">Trimite o captură de ecran cu conținut din afara Chromium, cum ar fi alte aplicații sau fișiere</translation>
 <translation id="4654639495249754755">Profil Chromium</translation>
 <translation id="4665829708273112819">Avertisment: Chromium nu poate împiedica extensiile să înregistreze istoricul de navigare. Pentru a dezactiva această extensie în modul incognito, debifează această opțiune.</translation>
 <translation id="4673151026126227699">Dacă trimiți rapoarte privind folosirea Chromium, acestea includ adresele URL pe care le accesezi</translation>
@@ -388,6 +392,7 @@
 <translation id="5405650547142096840">Eliminați din Chromium</translation>
 <translation id="5424544524441439284">Reduce performanța, dar face Chromium mai rezistent la atacuri</translation>
 <translation id="5427571867875391349">Setați Chromium ca browser prestabilit</translation>
+<translation id="5435079900593041559">Afișează căutarea cu Chromium în bara de activități Windows și activează comanda rapidă de la tastatură</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium recomandă să întrerupi fila care încetinește browserul}few{Chromium recomandă să întrerupi filele care încetinesc browserul}other{Chromium recomandă să întrerupi filele care încetinesc browserul}}</translation>
 <translation id="5473971139929175403">Este posibil ca Chromium să nu funcționeze corespunzător, deoarece nu mai este acceptat pe această versiune Linux</translation>
@@ -414,6 +419,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Afișează Chromium în această limbă</translation>
 <translation id="569897634095159764">Nu se poate realiza conexiunea la internet. Pentru serverul proxy este necesară autentificarea.</translation>
+<translation id="5755377560105094542">Site-urile și Chromium pot folosi AI care rulează direct pe dispozitivul tău pentru funcții precum rezumate, verificare, subtitrări și altele. Aceasta este o funcție separată de Gemini în Chromium. <ph name="BEGIN_LINK" />Află mai multe despre AI pe dispozitiv<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">Folosind butonul Panoul de căutare din bara de instrumente, poți să redeschizi panoul de căutare pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="5768371961535086509">Chromium eliberează memoria din filele inactive. Astfel, filele active și alte aplicații beneficiază de mai multe resurse ale computerului și Chromium funcționează rapid. Filele inactive se reactivează automat când revii la ele. <ph name="BEGIN_LINK" />Află mai multe despre Economisirea memoriei<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="SETTINGS_LINK" /> datele Chromium din cont</translation>
@@ -470,6 +476,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6245734527075554892">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chromium</translation>
 <translation id="6248213926982192922">Setați Chromium ca browser prestabilit</translation>
 <translation id="6248988683584659830">Setări de căutare</translation>
+<translation id="6251986571402453005">Chromium descarcă și actualizează automat aceste modele AI</translation>
 <translation id="6268381023930128611">Te deconectezi de la Chromium?</translation>
 <translation id="6270547683008298381">Aceste file folosesc resurse suplimentare. Pentru a îmbunătăți performanța, permite-i browserului Chromium să le dezactiveze.</translation>
 <translation id="6281746429495226318">Personalizează-ți profilul Chromium</translation>
@@ -760,6 +767,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8981886272598860786">pentru a căuta cu Chromium sau a personaliza în <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Gestionează profilurile Chromium</translation>
 <translation id="8993855408334954620">Folosește tastatura pentru a naviga între Gemini în Chromium și fila deschisă.</translation>
+<translation id="9002987346523307190">Chromium va elimina modelele AI de pe acest dispozitiv. Este posibil ca unele site-uri și funcții Chromium să nu funcționeze.</translation>
 <translation id="9018218886431812662">Instalare finalizată</translation>
 <translation id="9022552996538154597">Conectați-vă la Chromium</translation>
 <translation id="9035791714111278917">Afișează căutarea cu Chromium în bara de meniu Mac și activează comanda rapidă de la tastatură</translation>

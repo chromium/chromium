@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">A megnyitott lapok oldalcímeit és URL-jeit arra használja a böngésző, hogy releváns javaslatokat adjon Önnek.</translation>
 <translation id="4439968635693513370">Tervezze meg a hétvégét a következővel:</translation>
 <translation id="4442550905108052454">Nyissa meg a <ph name="BEGIN_BOLD" />Beállításokat<ph name="END_BOLD" />.</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} találat áll rendelkezésre.}other{{count} találat áll rendelkezésre.}}</translation>
 <translation id="4445840280797509738">További lehetőségek a következőhöz: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Az előre- vagy visszalépéshez csúsztassa gyorsan ujját a képernyő szélére.</translation>
 <translation id="4460014764210899310">Csoportosítás megszüntetése</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Megjelenítés</translation>
 <translation id="5311061401280561833">Kamera- és mikrofon-hozzáférés engedélyezve</translation>
 <translation id="5313967007315987356">Webhely hozzáadása</translation>
-<translation id="5315029634103634221">A Gemini egy mesterséges intelligencia, amely hibázhat. <ph name="BEGIN_LINK" />További információ a Google-nak küldött releváns adatokról<ph name="END_LINK" />.</translation>
 <translation id="5315870524563628285">Nincs importálható elem</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />/<ph name="INDEX" />.</translation>
 <translation id="5316823130598991834">Bejelentkezés ide: <ph name="SITE_DOMAIN" /></translation>

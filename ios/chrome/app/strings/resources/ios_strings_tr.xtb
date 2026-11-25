@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Açık sekmelerinizin sayfa başlıkları ve URL'leri size alakalı öneriler sunmak için kullanılır.</translation>
 <translation id="4439968635693513370">Hafta sonunuzu şununla planlayın:</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Ayarlar<ph name="END_BOLD" />'ı açın.</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} sonuç mevcut.}other{{count} sonuç mevcut.}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> için diğer seçenekler</translation>
 <translation id="4455710003856931944">Geri veya ileri gitmek için kenarı kaydırabilirsiniz.</translation>
 <translation id="4460014764210899310">Grubu çöz</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Göster</translation>
 <translation id="5311061401280561833">Kamera ve mikrofon erişimine izin veriliyor</translation>
 <translation id="5313967007315987356">Site ekle</translation>
-<translation id="5315029634103634221">Gemini bir yapay zeka modeli olduğu için hata yapabilir. <ph name="BEGIN_LINK" />Google'a gönderilen ilgili veriler hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="5315870524563628285">İçe aktarılacak öğe yok</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> sitesinde oturum aç</translation>

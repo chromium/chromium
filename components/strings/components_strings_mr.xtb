@@ -78,6 +78,7 @@
 <translation id="112840717907525620">धोरण कॅशे  ठीक</translation>
 <translation id="1131264053432022307">तुम्ही कॉपी केलेली इमेज</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – फुल स्क्रीनमधून बाहेर पडण्यासाठी, वरून ड्रॅग करा आणि मागे जा बटणाला स्पर्श करा</translation>
+<translation id="1132789342529761192">अपलोड करण्याची शिफारस केलेली नाही</translation>
 <translation id="11370190534773372">कार्डचे तपशील भरले आहेत</translation>
 <translation id="1138458427267715730">संपूर्ण वेबवरील कोणत्याही साइटवर किंमत कमी झाल्यावर सूचना मिळवा</translation>
 <translation id="1142713751288681188">पेपर टाइप</translation>
@@ -604,6 +605,7 @@
 <translation id="2025891858974379949">असुरक्षित आशय</translation>
 <translation id="2027465737841872819">प्लॅस्टिक</translation>
 <translation id="2027707238798802149">कार्ड उपलब्ध नाही</translation>
+<translation id="2028329426302356196">डाउनलोड करण्याची शिफारस केलेली नाही</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रॉक्सी आणि फायरवॉल तपासणे<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Chrome चा हा इंस्टन्स मॅन्युअली सेट केलेल्या कमांड लाइन फ्लॅगसह रन होत आहे. लक्षात ठेवा, की कमांड लाइन फ्लॅग कधीही बदलू शकतात आणि त्यांना सपोर्ट नाही.</translation>
 <translation id="2033900728810589426">शॉर्टकट हा <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> द्वारे परिभाषित केलेल्या शोध पुरवठादाराच्या डीफॉल्ट कीवर्डसारखा असू शकत नाही: <ph name="SHORTCUT_NAME" /></translation>
@@ -1457,6 +1459,7 @@
 <translation id="3443504041532578451">ऑप्टिकल डिस्क (सॅटिन)</translation>
 <translation id="3447661539832366887">या डिव्हाइसच्या मालकाने डायनासोर गेम बंद केला आहे.</translation>
 <translation id="3447884698081792621">सर्टिफिकेट दाखवा (<ph name="ISSUER" /> ने जारी केलेले)</translation>
+<translation id="3449239216441121005">प्रिंट करण्याची शिफारस केलेली नाही</translation>
 <translation id="3450323514459570273">तुमची MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करण्यास सांगू शकते</translation>
 <translation id="3452404311384756672">मध्यंतर मिळवा:</translation>
 <translation id="345268527248907593">या साइटवर पोहचू शकत नाही</translation>
@@ -2917,6 +2920,7 @@
 <translation id="5851548754964597211">टॅब सूची</translation>
 <translation id="5851868085455377790">जारीकर्ता</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">कॉपी करण्याची शिफारस केलेली नाही</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
 <translation id="5862579898803147654">स्टॅकर ८</translation>
 <translation id="5863515189965725638">IBAN संपादित करा</translation>

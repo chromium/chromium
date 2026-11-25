@@ -141,6 +141,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2295218613066132598">Prikaz bližnjic do spletnih mest v Chromu</translation>
 <translation id="2301513536169703857">Če želite dostopati do gesel, zaznamkov in drugega v vseh napravah, se prijavite v Chrome</translation>
 <translation id="2307973900865360088">Obdrži v vrstici Dock</translation>
+<translation id="2308558013860776484">Delite posnetek zaslona vsebine zunaj Chroma, na primer drugih aplikacij ali datotek</translation>
 <translation id="2309047409763057870">To je sekundarna namestitev Google Chroma in ga ni mogoče nastaviti kot privzeti brskalnik.</translation>
 <translation id="2345992953227471816">Chrome je ugotovil, da te razširitve vsebujejo zlonamerno programsko opremo:</translation>
 <translation id="2358140144860869442">Če želite dostopati do bralnega seznama in drugega v vseh napravah, se prijavite v Chrome</translation>
@@ -250,6 +251,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3294686910656423119">Statistični podatki o uporabi in poročila o zrušitvah</translation>
 <translation id="3327226547491422998">Chrome vas lahko pozneje vpraša, ali želite uporabiti shranjene podatke za samodejno izpolnjevanje obrazcev</translation>
 <translation id="3352986031709923790">zgornji desni kot območja za iskanje: desno <ph name="RIGHT" /> %, zgoraj <ph name="TOP" /> %</translation>
+<translation id="3370239327277137701">Spletna mesta in Chrome lahko za funkcije, kot so povzetki, lektoriranje, podnapisi in drugo, uporabljajo umetno inteligenco, ki se izvaja neposredno v vaši napravi. To je ločeno od Geminija v Chromu. <ph name="BEGIN_LINK" />Preberite več o umetni inteligenci v napravi<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Nekatere funkcije in razširitve Chroma imajo bližnjice. Lahko jih znova vklopite.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se bo zdaj znova zagnal}=1{Chrome se bo znova zagnal čez eno sekundo}one{Chrome se bo znova zagnal čez # sekundo}two{Chrome se bo znova zagnal čez # sekundi}few{Chrome se bo znova zagnal čez # sekunde}other{Chrome se bo znova zagnal čez # sekund}}</translation>
 <translation id="3380249972812870825">Če želite odpreti Geminija v Chromu, pritisnite <ph name="GLOBAL_HOTKEY" /></translation>
@@ -349,6 +351,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4427306783828095590">Izboljšana zaščita učinkoviteje blokira lažno predstavljanje in zlonamerno programsko opremo.</translation>
 <translation id="4434353761996769206">Napaka namestitvenega programa: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Delite ta dokument z Geminijem v Chromu, če želite hiter pregled in zastaviti dodatna vprašanja</translation>
+<translation id="4440999670272408191">Odstranite jih lahko kadar koli. Chrome jih lahko samodejno znova prenese, ko jih spletno mesto ali funkcija potrebuje.</translation>
 <translation id="4450664632294415862">Chrome – Prijava v omrežje – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Poteka druga operacija v Google Chromu. Poskusite znova pozneje.</translation>
 <translation id="4493028449971051158">Napaka pri zagonu: Zaženite namestitveni program kot skrbnik.</translation>
@@ -356,6 +359,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4501839397124711198">Iskanje Google lahko pripnete v stranskem podoknu in postavljate vprašanja med brskanjem</translation>
 <translation id="4571503333518166079">Odpri nastavitve obvestil v Chromu</translation>
 <translation id="4580939929828762295">Poskrbite za svojo varnost z Googlovim upraviteljem gesel</translation>
+<translation id="4589544932092381064">Prikaz iskanja s Chromom v opravilni vrstici sistema Windows in vklop bližnjičnih tipk</translation>
 <translation id="459622048091363950">Ko bo imel Chrome dostop, vas bodo spletna mesta lahko pozvala k omogočanju dostopa.</translation>
 <translation id="4598116752460667024">Na seznamu poiščite poljubni postopek.</translation>
 <translation id="4600710005438004015">Chroma ni bilo mogoče posodobiti na najnovejšo različico, zato nimate novih funkcij in popravkov varnosti.</translation>
@@ -371,6 +375,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">S Chromovim mehanizmom V8 pospešite delovanje spletnih mest, vendar je Chrome zato nekoliko manj odporen proti napadom</translation>
 <translation id="4768676935374695498">Iščite ta videoposnetek z Googlom Lens</translation>
+<translation id="4783580253728290203">Ko je ta možnost izklopljena, Chrome odstrani modele umetne inteligence v napravi in jih ne bo več prenesel. Nekatera spletna mesta in funkcije Chroma morda ne bodo delovali.</translation>
 <translation id="479167709087336770">Uporabljeno je isto preverjanje črkovanja kot v Iskanju Google. Besedilo, ki ga vnesete v brskalniku, je poslano Googlu. To lahko kadar koli spremenite v nastavitvah.</translation>
 <translation id="4793679854893018356">Preberite, kako vas Chrome varuje</translation>
 <translation id="4803313124144656665">Zapiranje Iskanja Google v Chromu</translation>
@@ -456,6 +461,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Internetne povezave ni mogoče vzpostaviti. Strežnik proxy zahteva preverjanje pristnosti.</translation>
 <translation id="5709557627224531708">Nastavite Chrome kot privzeti brskalnik</translation>
+<translation id="5715427327524421317">Chrome samodejno prenese in posodobi te modele umetne inteligence</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chrome. Izolirano okno se ne bo znova odprlo.}one{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chrome. # izolirano okno se ne bo znova odprlo.}two{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chrome. # izolirani okni se ne bosta znova odprli.}few{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chrome. # izolirana okna se ne bodo znova odprla.}other{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chrome. # izoliranih oken se ne bo znova odprlo.}}</translation>
 <translation id="5719246646468301581">Dodatni pogoji storitve za Google Chrome in ChromeOS</translation>
 <translation id="5736850870166430177">Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
@@ -547,6 +553,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6491330562720922580">Koda QR za prenos brskalnika Chrome v mobilnih napravah</translation>
 <translation id="6493527311031785448">Google Chrome poskuša <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome je bil samodejno zaprt</translation>
+<translation id="650039555447046671">Chrome bo iz te naprave odstranil modele umetne inteligence. Nekatera spletna mesta in funkcije Chroma morda ne bodo delovali.</translation>
 <translation id="6506909944137591434">Chrome potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> različica Google Chroma za razvijalce</translation>
 <translation id="6520670145826811516">Če želite uporabljati lokacijo, omogočite Chromu dostop v <ph name="BEGIN_LINK" />sistemskih nastavitvah<ph name="END_LINK" /></translation>
@@ -585,6 +592,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6877155553248388166">spodnji desni kot območja za iskanje: desno <ph name="RIGHT" /> %, spodaj <ph name="BOTTOM" /> %</translation>
 <translation id="6879791154455204815">Odpiranje Iskanja s Chromom</translation>
 <translation id="6881299373831449287">Posodabljanje Chroma</translation>
+<translation id="6881997500528805781">Uporablja shrambo naprave. Chrome odstrani neuporabljene modele umetne inteligence po 45 dneh ali ko je v shrambi malo prostora.</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
 <translation id="6893363893008038481">Odstranitev računa iz Chroma</translation>
 <translation id="6896758677409633944">Kopiraj</translation>

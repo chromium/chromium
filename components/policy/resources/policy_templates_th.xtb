@@ -2639,6 +2639,23 @@ Web Worker สามารถสร้างได้โดยใช้ URL ข�
        ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ <ph name="URL_LABEL" /> ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns ใช้ไวลด์การ์ด (<ph name="WILDCARD_VALUE" />) ได้
 
        โปรดทราบว่าก่อนหน้านี้นโยบายนี้เปิดใช้อย่างไม่ถูกต้องใน Android แต่ Android ก็ไม่เคยรองรับฟังก์ชันนี้โดยสมบูรณ์</translation>
+<translation id="2585054570696570117">การตั้งค่านโยบายนี้จะควบคุมการตั้งค่าการจัดการส่วนขยายสำหรับ <ph name="PRODUCT_NAME" /> ซึ่งรวมถึงการตั้งค่าที่ควบคุมโดยนโยบายเกี่ยวกับส่วนขยายที่มีอยู่
+
+นโยบายนี้จะจับคู่รหัสส่วนขยายหรือ URL อัปเดตกับการตั้งค่าที่เฉพาะเจาะจงของรายการนั้นๆ เท่านั้น คุณกำหนดค่าเริ่มต้นสำหรับรหัสพิเศษ <ph name="DEFAULT_SCOPE" /> ได้ ซึ่งระบบจะใช้กับส่วนขยายทั้งหมดที่ไม่มีการกำหนดค่าเองในนโยบายนี้
+
+นโยบายนี้สามารถลบล้างการกำหนดค่าต่อส่วนขยายจากนโยบายเดิมได้
+
+โปรดทราบว่าการตั้งค่าส่วนขยายต่อรหัสจาก <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> หรือ <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> อย่างใดอย่างหนึ่งนี้ จะรับค่า "installation_mode" และ "update_url" จากค่าเริ่มต้นของ <ph name="DEFAULT_SCOPE" /> มาใช้ต่อเท่านั้น โดยจะไม่รับค่าพร็อพเพอร์ตี้อื่นๆ เมื่อใช้ URL อัปเดต ระบบจะใช้การกำหนดค่ากับส่วนขยายที่มี URL อัปเดตตรงกับที่ระบุไว้ในไฟล์ Manifest ของส่วนขยาย ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ) หากตั้งค่า Flag "override_update_url" เป็น "จริง" ระบบจะติดตั้งและอัปเดตส่วนขยายโดยใช้ URL "อัปเดต" ที่ระบุในนโยบาย <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> หรือในช่อง "update_url" ในนโยบายนี้ ระบบจะไม่สนใจ Flag "override_update_url" หาก "update_url" คือ URL Chrome เว็บสโตร์
+
+ใน <ph name="PRODUCT_NAME" /> เวอร์ชัน 155 ถึง 158 การใช้ "runtime_blocked_hosts" กับส่วนขยายที่มีสิทธิ์ "debugger" จะปิดใช้ "chrome.debugger.attach()" ในเป้าหมายทั้งหมดโดยสมบูรณ์ เช่น เมื่อนโยบาย <ph name="CHROME_VARIATIONS_POLICY_NAME" /> ปิดใช้รูปแบบทั้งหมด
+
+ตั้งแต่ <ph name="PRODUCT_NAME" /> เวอร์ชัน 160 เป็นต้นไป "blocked_permissions" และ "allowed_permissions" จะยอมรับสิทธิ์ภายในเหล่านี้ด้วย ซึ่งส่วนขยายจะได้รับจากคีย์ไฟล์ Manifest: "searchProvider", "homepage" และ "startupPages" (จาก "chrome_settings_overrides", <ph name="MS_WIN_NAME" /> และ <ph name="MAC_OS_NAME" /> เท่านั้น) และ "newTabPageOverride" (จาก "chrome_url_overrides")
+
+ในอินสแตนซ์ <ph name="MS_WIN_NAME" /> จะบังคับติดตั้งแอปและส่วนขยายที่ไม่ได้มาจาก Chrome เว็บสโตร์ได้เฉพาะในกรณีที่อินสแตนซ์นั้นเข้าร่วมโดเมน <ph name="MS_AD_NAME" />, เข้าร่วม <ph name="MS_AAD_NAME" /> หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" />
+
+ในอินสแตนซ์ <ph name="MAC_OS_NAME" /> จะบังคับติดตั้งแอปและส่วนขยายที่ไม่ได้มาจาก Chrome เว็บสโตร์ได้เฉพาะในกรณีที่อินสแตนซ์นั้นจัดการผ่าน MDM, เข้าร่วมโดเมนผ่าน MCX หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" />
+
+หมายเหตุ: นโยบายนี้มีผลเฉพาะกับแพลตฟอร์มที่รองรับส่วนขยาย</translation>
 <translation id="2585535930727399201">ส่วนขยายสำหรับองค์กรจะเพิ่มบันทึกผ่าน chrome.systemLog API ลงในไฟล์บันทึกของระบบได้
 
 การตั้งค่านโยบายเป็น "เปิดใช้" จะทำให้เก็บบันทึกไว้ในไฟล์บันทึกของระบบได้ในระยะเวลาจำกัด

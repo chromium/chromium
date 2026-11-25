@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">አግባብነት ያላቸውን ጥቆማዎች ለእርስዎ ለመስጠት የክፍት ትሮችዎ የገጽ ርዕሶች እና ዩአርኤሎች ጥቅም ላይ ይውላሉ።</translation>
 <translation id="4439968635693513370">የሳምንት መጨረሻዎን በሚከተለው ያቅዱ</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ቅንብሮች<ph name="END_BOLD" />ን ይክፈቱ</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} ውጤት ይገኛል።}one{{count} ውጤት ይገኛል።}other{{count} ውጤቶች ይገኛሉ።}}</translation>
 <translation id="4445840280797509738">ተጨማሪ አማራጮች ለ<ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">ወደ ኋላ ወይም ወደ ፊት ለመሄድ ጠርዙን ማንሸራተት ይችላሉ።</translation>
 <translation id="4460014764210899310">ነጥል</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">አሳይ</translation>
 <translation id="5311061401280561833">የካሜራ እና የማይክሮፎን መዳረሻ ተፈቅዷል</translation>
 <translation id="5313967007315987356">ጣቢያ አክል</translation>
-<translation id="5315029634103634221">Gemini ሰው ሠራሽ አስተውሎት ነው እና ስሕተቶችን ሊሠራ ይችላል። <ph name="BEGIN_LINK" />ወደ Google ስለሚላክ አግባብነት ያለው ውሂብ ተጨማሪ<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ለማምጣት ምንም የለም</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> ከ<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">ወደ <ph name="SITE_DOMAIN" /> ይግቡ</translation>

@@ -2499,6 +2499,19 @@ Si se inhabilita esta política, se desactivará la función <ph name="ZSTANDARD
 <translation id="2521581787935130926">Mostrar el acceso directo de aplicaciones en la barra de marcadores</translation>
 <translation id="2522304491589804974">Configura la lista de extensiones de instalación permitidas</translation>
 <translation id="2523511232831599126">Habilitar los accesos directos de accesibilidad en la pantalla de inicio de sesión</translation>
+<translation id="2524400223625951315">Especifica el comportamiento de las extensiones de instalación forzada en el modo Aislado.
+
+Esta política se aplica a las extensiones configuradas mediante <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o con <ph name="INSTALLATION_MODE_FIELD" /> definido como <ph name="FORCE_INSTALLED_VALUE" /> en <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. Las extensiones configuradas con <ph name="INSTALLATION_MODE_FIELD" /> definido como <ph name="NORMAL_INSTALLED_VALUE" /> están controladas por <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" />.
+
+Si a esta política se le asigna el valor 0 (siempre habilitada) o no se le asigna ninguno, las extensiones de instalación forzada se habilitarán siempre en el modo Aislado y el usuario no podrá inhabilitarlas.
+
+Si se le asigna el valor 1 (habilitada de forma predeterminada), las extensiones de instalación forzada se habilitarán de forma predeterminada en el modo Aislado y el usuario podrá inhabilitarlas. La elección del usuario prevalecerá siempre que la política tenga asignado el valor 1. Fuera del modo Aislado, el usuario no podrá inhabilitar las extensiones de instalación forzada.
+
+Las extensiones que definan <ph name="INCOGNITO_MANIFEST_KEY" /> como <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> en su archivo de manifiesto no se pueden ejecutar en modo Aislado, independientemente de esta política.
+
+Esta política solo se aplica cuando <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> está habilitada.
+
+Es necesario tener una licencia de <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> para poder aplicar esta política.</translation>
 <translation id="252742292004421898">Permitir la API Direct Sockets en estos sitios</translation>
 <translation id="2528762900096510743">Habilitar el servicio de cierre de sesión automático</translation>
 <translation id="2529880111512635313">Configura la lista de aplicaciones y extensiones de instalación forzada</translation>
@@ -2643,6 +2656,23 @@ NOTA: Esta política tenía un valor predeterminado true documentado de forma in
        Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://chromeenterprise.google/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
 
        Ten en cuenta que esta política se habilitó anteriormente en Android por error, pero la función nunca ha sido totalmente compatible con Android.</translation>
+<translation id="2585054570696570117">Si se define esta política, se controlarán los ajustes de gestión de extensiones de <ph name="PRODUCT_NAME" />, incluidos los que ya controlan las políticas existentes relacionadas con las extensiones.
+
+Esta política asociará un ID de extensión o una URL de actualización únicamente a su configuración específica. Se puede definir una configuración predeterminada para el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las extensiones para las que no se haya definido una configuración personalizada en esta política.
+
+Esta política puede anular los ajustes por extensión de las políticas antiguas.
+
+Ten en cuenta que cualquier ajuste por ID de extensión de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> solo heredará "installation_mode" y "update_url" de los valores predeterminados de <ph name="DEFAULT_SCOPE" />. No heredará ninguna otra propiedad. Si se usa una URL de actualización, la configuración se aplicará a las extensiones que incluyan la misma URL de actualización en su archivo de manifiesto (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si a la marca "override_update_url" se le asigna el valor true, la extensión se instalará y se actualizará mediante la URL de actualización que se especifique en la política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o en el campo "update_url" de esta política. Se ignorará la marca "override_update_url" si el valor de "update_url" es una URL de Chrome Web Store.
+
+En las versiones 155 a 158 de <ph name="PRODUCT_NAME" />, si se aplica "runtime_blocked_hosts" a una extensión que tiene el permiso "debugger", se puede inhabilitar por completo "chrome.debugger.attach()" en todos los destinos; por ejemplo, cuando la política <ph name="CHROME_VARIATIONS_POLICY_NAME" /> inhabilita todas las variantes.
+
+A partir de la versión 160 de <ph name="PRODUCT_NAME" />, "blocked_permissions" y "allowed_permissions" también aceptan estos permisos internos, que las extensiones obtienen de las claves del archivo de manifiesto: "searchProvider", "homepage" y "startupPages" (de "chrome_settings_overrides", solo <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />) y "newTabPageOverride" (de "chrome_url_overrides").
+
+En las instancias de <ph name="MS_WIN_NAME" />, las aplicaciones y extensiones que no estén alojadas en Chrome Web Store solo se podrán instalar de manera forzada si la instancia está vinculada a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o si se ha registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En las instancias de <ph name="MAC_OS_NAME" />, las aplicaciones y extensiones externas a Chrome Web Store solo se podrán instalar de manera forzada si la instancia se gestiona mediante MDM, está vinculada a un dominio a través de MCX o se ha registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Nota: Esta política solo se aplica a las plataformas compatibles con extensiones.</translation>
 <translation id="2585535930727399201">Las extensiones de empresas pueden añadir registros a un archivo de registro del sistema mediante la API chrome.systemLog.
 
 Si se habilita esta política, los registros se conservarán en el archivo de registro del sistema durante un tiempo limitado.
@@ -3969,6 +3999,7 @@ Se eliminó en Chrome 145 y se recomienda usar el método requestStorageAccess e
 
       Si esta política no se establece para un sitio, se le aplicará la de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> (si se ha definido). En caso contrario, el permiso se ajustará a los valores predeterminados del navegador y los usuarios podrán elegir este permiso en función del sitio.</translation>
 <translation id="3435796032110614169">Permitir eliminar el historial de trabajos de impresión</translation>
+<translation id="3435849940943480491">Las extensiones de instalación forzada siempre están habilitadas en el modo Aislado y no se pueden inhabilitar</translation>
 <translation id="3436217793443508863">El tiempo que debe transcurrir (en milisegundos) sin que el usuario realice ninguna acción antes de que se bloquee la pantalla cuando el dispositivo funcione con la batería</translation>
 <translation id="3437391374720747482">Dar prioridad a los métodos de intercambio de claves que cumplan los requisitos de CNSA 2.0</translation>
 <translation id="3437924696598384725">Permitir que el usuario gestione conexiones VPN</translation>
@@ -6323,6 +6354,7 @@ No se recomienda inhabilitar la decodificación de vídeo acelerada por hardware
 <translation id="4927797103413916381">Si no se inhabilita <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />, habilitar <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> o dejarla sin definir evita que sitios web con experiencias engañosas abran ventanas o pestañas nuevas.
 
        Si se inhabilitan <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" />, se permitirá que los sitios web con experiencias engañosas abran nuevas ventanas o pestañas.</translation>
+<translation id="4928435626872799127">Controlar el comportamiento de las extensiones de instalación forzada en el modo Aislado</translation>
 <translation id="4929721861648439998">Habilita la función de accesibilidad de audio en mono en la pantalla de inicio de sesión.
 
           Esta función permite cambiar el modo del dispositivo del modo de audio en estéreo predeterminado al modo de audio en mono.
@@ -9850,6 +9882,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="7054840304131108563">Inhabilitar funciones de accesibilidad del renderizador</translation>
 <translation id="7055022222176591388">No permitir versiones obsoletas de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7056040036973126753">Podrán enviarse datos de fiabilidad de dominios a Google en función de los ajustes de la política de análisis de métricas de usuario de Chrome</translation>
+<translation id="7057522375529097624">Las extensiones de instalación forzada están habilitadas de forma predeterminada en el modo Aislado y se pueden inhabilitar</translation>
 <translation id="7062803946218028349">Permitir que se habilite Mi teléfono</translation>
 <translation id="7063646777978847358">Esta política controla si las solicitudes de recuperación en segundo plano de los service workers están restringidas. Si se ve afectada una función que descarga archivos en segundo plano, esta política puede ser pertinente.
 

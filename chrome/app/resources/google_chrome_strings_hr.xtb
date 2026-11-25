@@ -137,6 +137,7 @@
 <translation id="2295218613066132598">Prikaži prečace web-lokacija u Chromeu</translation>
 <translation id="2301513536169703857">Da biste mogli pristupati svojim zaporkama, oznakama i drugim podacima na svim svojim uređajima, prijavite se na Chrome</translation>
 <translation id="2307973900865360088">Zadrži na traci</translation>
+<translation id="2308558013860776484">Podijelite snimku zaslona sadržaja izvan Chromea, kao što su druge aplikacije ili datoteke</translation>
 <translation id="2309047409763057870">Ovo je sekundarna instalacija Google Chromea, pa on ne može biti vaš zadani preglednik.</translation>
 <translation id="2345992953227471816">Chrome je otkrio da ova proširenja sadrže zlonamjerni softver:</translation>
 <translation id="2358140144860869442">Da biste mogli pristupati svom popisu za čitanje i drugim podacima na svim svojim uređajima, prijavite se u Chrome</translation>
@@ -246,6 +247,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="3294686910656423119">Statistika upotrebe i izvješća o padu programa</translation>
 <translation id="3327226547491422998">Chrome vas poslije može pitati želite li upotrijebiti spremljene podatke za automatsko popunjavanje obrazaca</translation>
 <translation id="3352986031709923790">gornji desni kut područja za pretraživanje: desno <ph name="RIGHT" />%, vrh <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">Web-lokacije i Chrome mogu upotrebljavati AI koji se izvodi izravno na vašem uređaju za značajke kao što su sažeci, provjera pravopisa, titlovi i drugo. To je odvojeno od Geminija u Chromeu. <ph name="BEGIN_LINK" />Saznajte više o AI-ju na uređaju<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Neke Chromeove značajke i proširenja imaju prečace. Možete ih ponovo uključiti.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome će se sada ponovo pokrenuti}=1{Chrome će se ponovo pokrenuti za jednu sekundu}one{Chrome će se ponovo pokrenuti za # s}few{Chrome će se ponovo pokrenuti za # s}other{Chrome će se ponovo pokrenuti za # s}}</translation>
 <translation id="3380249972812870825">Da biste otvorili Gemini u Chromeu, pritisnite <ph name="GLOBAL_HOTKEY" /></translation>
@@ -345,6 +347,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="4427306783828095590">Poboljšana zaštita blokira krađu identiteta i zlonamjerni softver na više načina</translation>
 <translation id="4434353761996769206">Pogreška programa za instalaciju: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Podijelite ovaj dokument s Geminijem u Chromeu da biste dobili brzi pregled i postavili dodatna pitanja</translation>
+<translation id="4440999670272408191">Uvijek ih možete ukloniti. Chrome ih može automatski ponovno preuzeti kada su potrebni za web-lokaciju ili značajku.</translation>
 <translation id="4450664632294415862">Chrome – Prijava na mrežu – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">U tijeku je neka druga operacija na Google Chromeu. Pokušajte ponovo kasnije.</translation>
 <translation id="4493028449971051158">Pogreška pri pokretanju: pokrenite program za instalaciju kao administrator.</translation>
@@ -352,6 +355,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="4501839397124711198">Možete prikvačiti Google pretraživanje na bočnu ploču da biste postavljali pitanja dok pregledavate</translation>
 <translation id="4571503333518166079">Otvori postavke obavijesti za Chrome</translation>
 <translation id="4580939929828762295">Ostanite sigurni uz Google upravitelj zaporki</translation>
+<translation id="4589544932092381064">Prikaži pretraživanje s Chromeom na traci sa zadacima Windowsa i uključi tipkovni prečac</translation>
 <translation id="459622048091363950">Kada Chrome dobije pristup, web-lokacije će vas moći tražiti pristup.</translation>
 <translation id="4598116752460667024">Potražite bilo koji proces s popisa.</translation>
 <translation id="4600710005438004015">Chrome se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
@@ -367,6 +371,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Ubrzava web-lokacije s Chromeovom tražilicom V8, ali Chrome čini malo manje otpornim na napade</translation>
 <translation id="4768676935374695498">Pretražite ovaj videozapis pomoću Google objektiva</translation>
+<translation id="4783580253728290203">Kad je postavka isključena, Chrome uklanja AI modele na uređaju i neće ih ponovno preuzeti. Neke web-lokacije i značajke Chromea možda neće funkcionirati.</translation>
 <translation id="479167709087336770">Upotrebljava istu provjeru pravopisa koja se upotrebljava na Google pretraživanju. Tekst koji unesete u preglednik šalje se Googleu. To ponašanje možete promijeniti u postavkama kad god želite.</translation>
 <translation id="4793679854893018356">Saznajte kako vas Chrome štiti</translation>
 <translation id="4803313124144656665">Zatvorite Google pretraživanje u Chromeu</translation>
@@ -448,6 +453,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Povezivanje s internetom nije moguće. Proxy poslužitelj zahtijeva autentifikaciju.</translation>
 <translation id="5709557627224531708">Postavite Chrome kao zadani preglednik</translation>
+<translation id="5715427327524421317">Chrome automatski preuzima i ažurira te AI modele</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaš izolirani prozor neće se ponovno otvoriti.}one{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaš # izolirani prozor neće se ponovno otvoriti.}few{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaša # izolirana prozora neće se ponovno otvoriti.}other{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaših # izoliranih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="5719246646468301581">Dodatni uvjeti pružanja usluge za Google Chrome i ChromeOS</translation>
 <translation id="5736850870166430177">Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može sigurnom pregledavanju poslati URL-ove, uključujući dijelove sadržaja web-stranice</translation>
@@ -539,6 +545,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="6491330562720922580">QR kôd za preuzimanje preglednika Chrome na mobilne uređaje</translation>
 <translation id="6493527311031785448">Google Chrome pokušava sljedeće: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome je automatski zatvoren</translation>
+<translation id="650039555447046671">Chrome će ukloniti AI modele s ovog uređaja. Neke web-lokacije i značajke Chromea možda neće funkcionirati.</translation>
 <translation id="6506909944137591434">Chrome treba dopuštenje za fotoaparat kako bi mogao izraditi 3D kartu vašeg okruženja</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Da biste upotrebljavali lokaciju, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
@@ -577,6 +584,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="6877155553248388166">donji desni kut područja za pretraživanje: desno <ph name="RIGHT" />%, dno <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Otvorite pretraživanje u Chromeu</translation>
 <translation id="6881299373831449287">Ažuriranje Chromea</translation>
+<translation id="6881997500528805781">Upotrebljava pohranu uređaja. Chrome uklanja neiskorištene AI modele nakon 45 dana ili kad je pohrana pri kraju</translation>
 <translation id="6885412569789873916">Aplikacije preglednika Chrome Beta</translation>
 <translation id="6893363893008038481">Uklanjanje računa iz Chromea</translation>
 <translation id="6896758677409633944">Kopiraj</translation>

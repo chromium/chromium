@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Загалоўкі старонак і URL-адрасы адкрытых укладак выкарыстоўваюцца для паказу рэлевантных прапаноў.</translation>
 <translation id="4439968635693513370">Сплануйце выхадныя з дапамогай</translation>
 <translation id="4442550905108052454">Адкрыйце <ph name="BEGIN_BOLD" />Налады<ph name="END_BOLD" />.</translation>
-<translation id="4444574452810111637">{count,plural, =1{Даступны {count} вынік.}one{Даступны {count} вынік.}few{Даступныя {count} вынікі.}many{Даступныя {count} вынікаў.}other{Даступныя {count} выніку.}}</translation>
 <translation id="4445840280797509738">Іншыя варыянты для аб’екта "<ph name="CELL_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="4455710003856931944">Каб перайсці назад ці ўперад, правядзіце пальцам па краі.</translation>
 <translation id="4460014764210899310">Разгрупаваць</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5311061401280561833">Доступ да камеры і мікрафона дазволены</translation>
 <translation id="5313967007315987356">Дадаванне сайта</translation>
-<translation id="5315029634103634221">Gemini – штучны інтэлект і можа рабіць памылкі. <ph name="BEGIN_LINK" />Больш пра адпраўку рэлевантных даных у Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Няма што імпартаваць</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> з <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Увайдзіце на сайт <ph name="SITE_DOMAIN" /></translation>

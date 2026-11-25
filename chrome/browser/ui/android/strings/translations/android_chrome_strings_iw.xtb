@@ -385,6 +385,7 @@
 <translation id="2496180316473517155">היסטוריית גלישה</translation>
 <translation id="250020030759455918">‏ב-Chrome יוצגו סטטוס הכניסה שלך ל-<ph name="SITE_NAME" />, נתוני הגלישה ונתוני האתר</translation>
 <translation id="2501278716633472235">חזרה</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{פריט אחד בהורדה}one{‫# פריטים בהורדה}two{‫# פריטים בהורדה}other{‫# פריטים בהורדה}}</translation>
 <translation id="2510106555128151389">מתבצעת התקנה של <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">חיפוש אפשרויות קנייה</translation>
 <translation id="2513403576141822879">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדף <ph name="BEGIN_LINK" />סנכרון ושירותי Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">חשוב לוודא שהאתר הזה מהימן</translation>
 <translation id="3740525748616366977">חיפוש קולי לא זמין במכשיר הזה</translation>
 <translation id="3749289110408117711">שם קובץ</translation>
+<translation id="3751708358601675711">עריכת מעקב המחירים</translation>
 <translation id="3756823472711156529">שחזור קבוצת הכרטיסיות</translation>
 <translation id="3759306015475526475">ניהול ההגדרות של נתוני השימוש ונתוני הקריסה</translation>
 <translation id="3763110477555836428">‏כדי להגן על הפרטים האמיתיים שלך במהלך התשלום בכרטיס הזה, המערכת תמלא אוטומטית מספר כרטיס וירטואלי. אפשר לערוך את ההגדרה הזו ב-Google Wallet. <ph name="BEGIN_LINK1" />מידע נוסף על כרטיסים וירטואליים<ph name="END_LINK1" /></translation>

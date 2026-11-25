@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">మీకు సందర్భోచిత సూచనలను అందించడానికి, ఓపెన్ అయి ఉన్న ట్యాబ్‌ల పేజీ టైటిల్స్, URLలను ఉపయోగిస్తాము.</translation>
 <translation id="4439968635693513370">దీనితో మీ వీకెండ్‌ను ప్లాన్ చేసుకోండి</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />సెట్టింగ్‌ల<ph name="END_BOLD" />ను తెరవండి</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} ఫలితం అందుబాటులో ఉంది.}other{{count} ఫలితాలు అందుబాటులో ఉన్నాయి.}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> కోసం మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="4455710003856931944">మీరు వెనుకకు లేదా ముందుకు వెళ్లడానికి అంచుని స్వైప్ చేయవచ్చు.</translation>
 <translation id="4460014764210899310">విడివిడిగా ఉంచు</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">చూపించు</translation>
 <translation id="5311061401280561833">కెమెరా, మైక్రోఫోన్ యాక్సెస్ అనుమతించబడ్డాయి</translation>
 <translation id="5313967007315987356">సైట్‌ను జోడించండి</translation>
-<translation id="5315029634103634221">Gemini అనేది AI, అది పొరపాట్లు చేయవచ్చు. <ph name="BEGIN_LINK" />Googleకు పంపే సంబంధిత డేటా గురించి మరింత సమాచారం<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">దిగుమతి చేయడానికి ఏవీ లేవు</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />లో <ph name="INDEX" /></translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" />‌కు సైన్ ఇన్ చేయండి</translation>

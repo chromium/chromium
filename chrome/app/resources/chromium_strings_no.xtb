@@ -52,6 +52,7 @@
 <translation id="1572572333538561328">Åpne AI-modus for Søk på nytt</translation>
 <translation id="1574377791422810894">Sikkerhetsverktøyene i Chromium</translation>
 <translation id="1594928384848033697">Chromium vil slette Passordlagring-dataene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
+<translation id="1599690375407103815">Når dette er av, fjerner Chromium AI-modeller på enheten og laster dem ikke ned igjen. Noen nettsteder og Chromium-funksjoner fungerer kanskje ikke.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering}=1{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="1625909126243026060">Gjennomgå viktige personvern- og sikkerhetskontroller i Chromium</translation>
 <translation id="1640672724030957280">Laster ned …</translation>
@@ -66,6 +67,7 @@
 <translation id="1745121272106313518">Chromium startes på nytt om <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Når HTTPS ikke er tilgjengelig, bruker Chromium usikre tilkoblinger uten å advare deg</translation>
 <translation id="1774152462503052664">La Chromium kjøre i bakgrunnen</translation>
+<translation id="1792680680989393197">Du kan fjerne dem når som helst. Chromium kan laste dem ned på nytt automatisk når et nettsted eller en funksjon trenger dem.</translation>
 <translation id="1793486931176048546">Klikk på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-varselet for å feste Chromium til oppgavelinjen for rask tilgang</translation>
 <translation id="1808667845054772817">Installer Chromium på nytt</translation>
 <translation id="1820835682567584003">Chromium prøver å <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -250,6 +252,7 @@
 <translation id="3751920144677881410">Med knappen «Søk-sidepanelet» på verktøylinjen kan du åpne Søk-sidepanelet igjen for å stille spørsmål mens du surfer</translation>
 <translation id="3788675262216168505">Administrer Chromium-profiler</translation>
 <translation id="3790262771324122253">Finn ut hvorfor Chromium blokkerer enkelte nedlastinger</translation>
+<translation id="3793196697433239004">Bruker enhetslagring. Chromium fjerner ubrukte AI-modeller etter 45 dager eller når lagringsplassen er lav</translation>
 <translation id="379589255253486813">Chromium gir deg beskjed hvis noe må gjennomgås</translation>
 <translation id="3802055581630249637">Chromium forhåndslaster sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
 <translation id="3810973564298564668">Administrer</translation>
@@ -331,6 +334,7 @@
 <translation id="4621240073146040695">Nå er oppdateringen snart ferdig! Start Chromium på nytt for å fullføre oppdateringen.</translation>
 <translation id="4625064703209785397">Gjør nettsteder raskere med V8-motoren i Chromium, men gjør Chromium litt mindre motstandsdyktig mot angrep</translation>
 <translation id="4626321472657185181">Åpne Søk med Chromium</translation>
+<translation id="4639628733881319833">Del et skjermbilde av innhold utenfor Chromium, for eksempel andre apper eller filer</translation>
 <translation id="4654639495249754755">Chromium-profil</translation>
 <translation id="4665829708273112819">Advarsel: Chromium kan ikke forhindre utvidelser fra å registrere nettleserloggen din. For å deaktivere denne utvidelsen i Inkognitomodus, fjern merkingen for dette alternativet.</translation>
 <translation id="4673151026126227699">Hvis du også deler Chromium-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>
@@ -388,6 +392,7 @@
 <translation id="5405650547142096840">Fjern fra Chromium</translation>
 <translation id="5424544524441439284">Reduserer ytelsen, men gjør Chromium mer motstandsdyktig mot angrep</translation>
 <translation id="5427571867875391349">Bruk Chromium som standardnettleser</translation>
+<translation id="5435079900593041559">Vis søk med Chromium på Windows-oppgavelinjen, og slå på hurtigtasten</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – betaversjon av Chromium</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium anbefaler at du setter fanen som gjør nettleseren treg, på pause}other{Chromium anbefaler at du setter fanene som gjør nettleseren treg, på pause}}</translation>
 <translation id="5473971139929175403">Det kan hende Chromium ikke fungerer skikkelig fordi den ikke lenger støttes i denne Linux-distribusjonen</translation>
@@ -414,6 +419,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Vis Chromium på dette språket</translation>
 <translation id="569897634095159764">Kan ikke koble til internett. Proxy-tjeneren krever autentisering.</translation>
+<translation id="5755377560105094542">Nettsteder og Chromium kan bruke AI som kjører direkte på enheten din, for funksjoner som sammendrag, korrekturlesing, teksting med mer. Dette er atskilt fra Gemini i Chromium. <ph name="BEGIN_LINK" />Finn ut mer om AI på enheten<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">Med knappen «Søk-panelet» på verktøylinjen kan du åpne søkepanelet igjen for å stille spørsmål mens du surfer</translation>
 <translation id="5768371961535086509">Chromium frigjør minne fra inaktive faner. Dette gir aktive faner og andre apper flere datamaskinressurser og holder Chromium rask. De inaktive fanene dine blir automatisk aktive igjen når du går tilbake til dem. <ph name="BEGIN_LINK" />Finn ut mer om minnesparing<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Hvis du har glemt passordfrasen eller vil endre denne innstillingen, kan du <ph name="SETTINGS_LINK" /> Chromium-dataene i kontoen din</translation>
@@ -470,6 +476,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6245734527075554892">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder</translation>
 <translation id="6248213926982192922">Gjør Chromium til standardnettleser</translation>
 <translation id="6248988683584659830">Søk i innstillingene</translation>
+<translation id="6251986571402453005">Chromium laster ned og oppdaterer disse AI-modellene automatisk</translation>
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
 <translation id="6270547683008298381">Disse fanene bruker ekstra ressurser. For å få bedre ytelse kan du la Chromium gjøre dem inaktive.</translation>
 <translation id="6281746429495226318">Tilpass Chromium-profilen din</translation>
@@ -760,6 +767,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8981886272598860786">for å søke med Chromium eller tilpasse i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Administrer Chromium-profiler</translation>
 <translation id="8993855408334954620">Bruk tastaturet til å navigere mellom Gemini i Chromium og den åpne fanen.</translation>
+<translation id="9002987346523307190">Chromium fjerner AI-modeller fra denne enheten. Noen nettsteder og Chromium-funksjoner fungerer kanskje ikke.</translation>
 <translation id="9018218886431812662">Installasjonen er fullført</translation>
 <translation id="9022552996538154597">Logg på Chromium</translation>
 <translation id="9035791714111278917">Vis søk med Chromium på Mac-menylinjen, og slå på hurtigtasten</translation>

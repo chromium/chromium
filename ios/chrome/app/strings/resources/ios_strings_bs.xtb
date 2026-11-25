@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Naslovi stranica i URL-ovi otvorenih kartica se koriste da vam se daju relevantni prijedlozi.</translation>
 <translation id="4439968635693513370">Planirajte vikend uz</translation>
 <translation id="4442550905108052454">Otvorite <ph name="BEGIN_BOLD" />Postavke<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{Dostupan je {count} rezultat.}one{Dostupan je {count} rezultat.}few{Dostupna su {count} rezultata.}other{Dostupno je {count} rezultata.}}</translation>
 <translation id="4445840280797509738">Više opcija za <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Možete prevući na rubu da se vratite ili se pomaknete unaprijed.</translation>
 <translation id="4460014764210899310">Razgrupiši</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5311061401280561833">Pristup kameri i mikrofonu je dozvoljen</translation>
 <translation id="5313967007315987356">Dodajte web lokaciju</translation>
-<translation id="5315029634103634221">Gemini je AI i može pogriješiti. <ph name="BEGIN_LINK" />Više o relevantnim podacima koji se šalju Googleu<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nema ništa za uvoz</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />. od <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Prijavite se na <ph name="SITE_DOMAIN" /></translation>

@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">ଆପଣଙ୍କୁ ପ୍ରାସଙ୍ଗିକ ପରାମର୍ଶଗୁଡ଼ିକ ଦେବା ପାଇଁ ଆପଣଙ୍କ ଖୋଲା ଟାବଗୁଡ଼ିକର ପୃଷ୍ଠା ଟାଇଟେଲ ଏବଂ URLଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଏ।</translation>
 <translation id="4439968635693513370">ଏହା ସହ ଆପଣଙ୍କ ୱିକେଣ୍ଡ ପ୍ଲାନ କରନ୍ତୁ</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ସେଟିଂସ୍<ph name="END_BOLD" /> ଖୋଲନ୍ତୁ</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି।}other{{count} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି।}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> ପାଇଁ ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="4455710003856931944">ପଛକୁ କିମ୍ବା ଆଗକୁ ଯିବା ପାଇଁ ଆପଣ ଧାରକୁ ସ୍ୱାଇପ କରିପାରିବେ।</translation>
 <translation id="4460014764210899310">ଅଣଗୋଷ୍ଠୀ କରନ୍ତୁ</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="5311061401280561833">କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସ ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5313967007315987356">ସାଇଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
-<translation id="5315029634103634221">Gemini ହେଉଛି AI ଏବଂ ଏହା ଭୁଲ କରିପାରେ। <ph name="BEGIN_LINK" />Googleକୁ ପଠାଯାଇଥିବା ପ୍ରାସଙ୍ଗିକ ଡାଟା ବିଷୟରେ ଅଧିକ<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ଇମ୍ପୋର୍ଟ କରିବା ପାଇଁ କିଛି ନାହିଁ</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />ରୁ <ph name="INDEX" /></translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" />ରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>

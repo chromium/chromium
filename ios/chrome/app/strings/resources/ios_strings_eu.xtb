@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Fitxetan irekita dauzkazun orrien izenak eta URLak iradokizun egokiak emateko erabiltzen dira.</translation>
 <translation id="4439968635693513370">Antolatu asteburua honekin:</translation>
 <translation id="4442550905108052454">Ireki <ph name="BEGIN_BOLD" />Ezarpenak<ph name="END_BOLD" />.</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} emaitza dago erabilgarri}other{{count} emaitza daude erabilgarri}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> elementuaren aukera gehiago</translation>
 <translation id="4455710003856931944">Aurrera edo atzera egiteko, hatza ertzetik pasa dezakezu.</translation>
 <translation id="4460014764210899310">Desegin taldea</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Erakutsi</translation>
 <translation id="5311061401280561833">Kamera eta mikrofonoa erabiltzeko baimenak eman dira</translation>
 <translation id="5313967007315987356">Gehitu webgunea</translation>
-<translation id="5315029634103634221">Gemini AA da, eta baliteke akatsak egitea. <ph name="BEGIN_LINK" />Google-ri bidaltzen zaizkion datu garrantzitsuei buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Ez dago ezer inportatzeko</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> posiziotatik <ph name="INDEX" />garrena</translation>
 <translation id="5316823130598991834">Hasi saioa <ph name="SITE_DOMAIN" /> domeinuan</translation>

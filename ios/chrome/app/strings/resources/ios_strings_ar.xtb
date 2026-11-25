@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">‏يتم استخدام عناوين الصفحات وعناوين URL لعلامات التبويب المفتوحة لتقديم اقتراحات ذات صلة.</translation>
 <translation id="4439968635693513370">فرصتك لتخطيط عطلة نهاية الأسبوع مع</translation>
 <translation id="4442550905108052454">‏افتح <ph name="BEGIN_BOLD" />الإعدادات (Settings)<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{تتوفّر نتيجة واحدة ({count}).}zero{تتوفّر {count} نتيجة.}two{تتوفّر نتيجتان ({count}).}few{تتوفّر {count} نتائج.}many{تتوفّر {count} نتيجة.}other{تتوفّر {count} نتيجة.}}</translation>
 <translation id="4445840280797509738">خيارات إضافية حول "<ph name="CELL_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="4455710003856931944">يمكنك التمرير سريعًا من الحافة للرجوع للخلف أو التقدّم للأمام.</translation>
 <translation id="4460014764210899310">إلغاء التجميع</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5311061401280561833">الوصول إلى الكاميرا والميكروفون مسموح به</translation>
 <translation id="5313967007315987356">إضافة موقع إلكتروني</translation>
-<translation id="5315029634103634221">‏‫Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً. <ph name="BEGIN_LINK" />مزيد من المعلومات حول البيانات ذات الصلة التي يتم إرسالها إلى Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ما مِن عناصر متاحة للاستيراد</translation>
 <translation id="5316356981864168850">‫<ph name="INDEX" /> من إجمالي <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">يجب تسجيل الدخول إلى <ph name="SITE_DOMAIN" /></translation>

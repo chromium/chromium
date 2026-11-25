@@ -24,6 +24,7 @@
 <translation id="4949828774841497663">Siirry kohtaan Sovellukset &gt; Järjestelmäasetukset &gt; Verkko, valitse
           aktiivinen verkko, klikkaa Tiedot…-painiketta ja poista valinta kaikista mahdollisesti
           valituista välityspalvelimista.</translation>
+<translation id="5228339820845278804">Muistutus: Chromiumin parhaat turvaominaisuudet taskussasi</translation>
 <translation id="6480456350195404966">Siirry
           Chromium-valikkoon &gt;
           <ph name="SETTINGS_TITLE" />
@@ -39,6 +40,7 @@
 <translation id="6613594504749178791">Muutokset tulevat voimaan, kun käynnistät Chromiumin seuraavan kerran.</translation>
 <translation id="691026815377248078">Chromium tarvitsee Bluetoothia jatkaakseen 
  laiteparin muodostusta. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">Chromium-sovelluksella saat Chromiumin turvallisuuden mukaan minne tahansa</translation>
 <translation id="7681937895330411637">Chromiumin mahdollistivat avoimen lähdekoodin projekti <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Avaa
         Chromium-valikko &gt;

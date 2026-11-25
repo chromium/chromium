@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Paginatitels en URL's van je geopende tabbladen worden gebruikt om je relevante suggesties te geven.</translation>
 <translation id="4439968635693513370">Plan je weekend met</translation>
 <translation id="4442550905108052454">Open <ph name="BEGIN_BOLD" />Instellingen<ph name="END_BOLD" />.</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} resultaat beschikbaar.}other{{count} resultaten beschikbaar.}}</translation>
 <translation id="4445840280797509738">Meer opties voor <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Je kunt over de rand swipen om terug of vooruit te gaan.</translation>
 <translation id="4460014764210899310">Groeperen ongedaan maken</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Tonen</translation>
 <translation id="5311061401280561833">Camera- en microfoontoegang toegestaan</translation>
 <translation id="5313967007315987356">Site toevoegen</translation>
-<translation id="5315029634103634221">Gemini is AI en kan fouten maken. <ph name="BEGIN_LINK" />Meer informatie over relevante gegevens die naar Google worden gestuurd<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Niets te importeren</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> van <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Inloggen bij <ph name="SITE_DOMAIN" /></translation>

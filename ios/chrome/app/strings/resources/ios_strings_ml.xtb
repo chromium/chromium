@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">പ്രസക്തമായ നിർദ്ദേശങ്ങൾ നൽകാൻ, നിങ്ങളുടെ തുറന്നിരിക്കുന്ന ടാബുകളുടെ പേജുകളുടെ പേരുകളും URL-കളും ഉപയോഗിക്കുന്നു.</translation>
 <translation id="4439968635693513370">നിങ്ങളുടെ വാരാന്ത്യം പ്ലാൻ ചെയ്യാൻ</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ക്രമീകരണം<ph name="END_BOLD" /> തുറക്കുക</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} ഫലം ലഭ്യമാണ്.}other{{count} ഫലങ്ങൾ ലഭ്യമാണ്.}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> എന്നതിനുള്ള കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
 <translation id="4455710003856931944">മുന്നിലേക്കോ പിന്നിലേക്കോ പോകാൻ അറ്റത്ത് സ്വൈപ്പ് ചെയ്യാം.</translation>
 <translation id="4460014764210899310">ഗ്രൂപ്പ് അല്ലാതാക്കി മാറ്റുക</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">കാണിക്കുക</translation>
 <translation id="5311061401280561833">ക്യാമറ, മൈക്രോഫോൺ ആക്‌സസ് അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="5313967007315987356">സൈറ്റ് ചേർക്കുക</translation>
-<translation id="5315029634103634221">Gemini AI ആണ്, അതിന് തെറ്റുകൾ സംഭവിക്കാം. <ph name="BEGIN_LINK" />Google-ലേക്ക് അയച്ച പ്രസക്തമായ ഡാറ്റയെക്കുറിച്ച് കൂടുതൽ<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ഇമ്പോർട്ട് ചെയ്യാനൊന്നുമില്ല</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />-ൽ <ph name="INDEX" /> എണ്ണം</translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>

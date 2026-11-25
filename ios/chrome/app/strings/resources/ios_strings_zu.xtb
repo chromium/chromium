@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Izihloko zamakhasi nama-URL amathebhu akho avuliwe asetshenziselwa ukukunikeza iziphakamiso ezihambisanayo.</translation>
 <translation id="4439968635693513370">Hlela impelasonto yakho</translation>
 <translation id="4442550905108052454">Vula <ph name="BEGIN_BOLD" />Amasethingi<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{Umphumela ongu-{count} uyatholakala.}one{Imiphumela engu-{count} iyatholakala.}other{Imiphumela engu-{count} iyatholakala.}}</translation>
 <translation id="4445840280797509738">Okwengeziwe ongakhetha kukho kwe-<ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Ungaswayipha unqenqema ukuze ubuyele emuva noma uye phambili.</translation>
 <translation id="4460014764210899310">Khipha ukubuthana</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Bonisa</translation>
 <translation id="5311061401280561833">Ukufinyelela kwekhamera nemakrofoni kuvunyelwe</translation>
 <translation id="5313967007315987356">Engeza isayithi</translation>
-<translation id="5315029634103634221">IGemini yi-AI futhi ingenza amaphutha. <ph name="BEGIN_LINK" />Okwengeziwe mayelana nedatha efanele ethunyelwe kuGoogle<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Akukho okungangeniswa</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> ku-<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Ngena ngemvume ku-<ph name="SITE_DOMAIN" /></translation>

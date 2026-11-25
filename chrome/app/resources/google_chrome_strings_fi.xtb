@@ -451,6 +451,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="568656514202614970">Valmista! Voit nyt helposti esittää kysymyksiä selaamisen aikana Google Haun sivupaneelissa</translation>
 <translation id="5686916850681061684">Yksilöi ja ylläpidä Google Chromea. Toimenpiteitä vaaditaan. Katso lisätiedot klikkaamalla.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Chromella saat Googlen parhaat turvaominaisuudet käyttöösi missä tahansa</translation>
 <translation id="569897634095159764">Internetyhteyden muodostaminen ei onnistu. Välityspalvelin edellyttää todennusta.</translation>
 <translation id="5709557627224531708">Aseta Chrome oletusselaimeksi</translation>
 <translation id="5715427327524421317">Chrome lataa ja päivittää tekoälymallit automaattisesti</translation>
@@ -616,6 +617,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7099479769133613710">Päivitä &amp;Chrome-käyttöjärjestelmä käynnistämällä se uudelleen</translation>
 <translation id="7106741999175697885">Tehtävänhallinta - Google Chrome</translation>
 <translation id="7121179479711575744">Kirjaudu Chromeen</translation>
+<translation id="7137056136322108339">Puhelimen Chrome-sovelluksella saat Chromen parhaat turvaominaisuudet käyttöösi missä tahansa</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen.}=1{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Incognito-ikkunaasi ei avata uudelleen.}other{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="7161904924553537242">Tervetuloa Google Chromeen</translation>
 <translation id="7193885263065350793">Kun Chrome on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi sulkee sen.</translation>

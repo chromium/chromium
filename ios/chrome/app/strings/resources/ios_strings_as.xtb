@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">আপোনাক প্ৰাসংগিক পৰামৰ্শ দিবলৈ আপোনাৰ খোলা টেবসমূহৰ পৃষ্ঠাৰ শিৰোনাম আৰু URL ব্যৱহাৰ কৰা হয়।</translation>
 <translation id="4439968635693513370">ইয়াৰ জৰিয়তে আপোনাৰ সপ্তাহান্তৰ পৰিকল্পনা কৰক</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ছেটিং<ph name="END_BOLD" /> খোলক</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} টা ফলাফল উপলব্ধ।}one{{count} টা ফলাফল উপলব্ধ।}other{{count} টা ফলাফল উপলব্ধ।}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />ৰ বাবে অধিক বিকল্প</translation>
 <translation id="4455710003856931944">পাছলৈ বা আগলৈ যাবলৈ আপুনি কাষৰ পৰা ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="4460014764210899310">গোট ভংগ কৰক</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">দেখুৱাওক</translation>
 <translation id="5311061401280561833">কেমেৰা আৰু মাইক্ৰ’ফ’ন এক্সেছ কৰাৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="5313967007315987356">ছাইট যোগ দিয়ক</translation>
-<translation id="5315029634103634221">Gemini হৈছে AI আৰু ই ভুল কৰিব পাৰে। <ph name="BEGIN_LINK" />Googleলৈ পঠিওৱা প্ৰাসংগিক ডেটাৰ বিষয়ে অধিক<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">আমদানি কৰিবলৈ একো নাই</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />ৰ <ph name="INDEX" />তম</translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" />ত ছাইন ইন কৰক</translation>

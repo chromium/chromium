@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">برای ارائه پیشنهادهای مرتبط، از عنوان صفحه‌ها و نشانی‌های وب در زبانه‌های باز شما استفاده می‌شود.</translation>
 <translation id="4439968635693513370">برنامه‌ریزی کردن برای آخر هفته با</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />تنظیمات<ph name="END_BOLD" /> را باز کنید</translation>
-<translation id="4444574452810111637">{count,plural, =1{‫{count} نتیجه دردسترس است.}one{‫{count} نتیجه دردسترس است.}other{‫{count} نتیجه دردسترس است.}}</translation>
 <translation id="4445840280797509738">گزینه‌های بیشتر برای <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">برای رفتن به‌عقب یا جلو، می‌توانید از لبه تند بکشید.</translation>
 <translation id="4460014764210899310">لغو گروه‌بندی</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5311061401280561833">دسترسی به دوربین و میکروفون مجاز است</translation>
 <translation id="5313967007315987356">افزودن سایت</translation>
-<translation id="5315029634103634221">‏‫Gemini هوشواره است و ممکن است اشتباه کند. <ph name="BEGIN_LINK" />اطلاعات بیشتر درباره داده‌های مربوط که به Google ارسال می‌شود<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">چیزی برای وارد کردن نیست</translation>
 <translation id="5316356981864168850">‫<ph name="INDEX" /> از <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">به سیستم <ph name="SITE_DOMAIN" /> وارد شوید</translation>

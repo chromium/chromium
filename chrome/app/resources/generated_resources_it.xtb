@@ -810,6 +810,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="188537499764410817">I siti a cui Gemini può consentirti di accedere verranno visualizzati qui</translation>
 <translation id="1886996562706621347">Consenti ai siti di chiedere di diventare gestori predefiniti dei protocolli (consigliata)</translation>
 <translation id="1887210448491286312">Interrompi la trasmissione della scheda su <ph name="DEVICE_NAME" /></translation>
+<translation id="1888096615505794228">Controlla la tua attività</translation>
 <translation id="1888692623866312036">Competenza salvata</translation>
 <translation id="1890026367080681123">Vai alle impostazioni dei contenuti incorporati</translation>
 <translation id="1892453608039100484">1. Fai clic su <ph name="BUTTON_LABEL" /> qui sotto 2. Fai clic su <ph name="BUTTON_2" /> nelle impostazioni di Windows</translation>
@@ -1183,6 +1184,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2300332192655962933">Il file non era disponibile sul sito</translation>
 <translation id="2300383962156589922">Personalizza e controlla <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Directory principale dell'estensione non valida.</translation>
+<translation id="2301564937934269788">Gestisci l'AI utilizzata per funzionalità come l'aiuto per la scrittura e altro ancora</translation>
 <translation id="2304820083631266885">Pianeta</translation>
 <translation id="2306794767168143227">Salva su <ph name="BRAND" /> su questo dispositivo</translation>
 <translation id="2309620859903500144">A questo sito è stato impedito l'accesso ai sensori di movimento o della luce.</translation>
@@ -1422,6 +1424,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2575502321843437554">Non è abbastanza coinvolgente</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Questo dispositivo verrà salvato per 1 anno e la prossima volta potrai connetterti senza un codice. Questa impostazione è stata configurata dal tuo amministratore.}other{Questo dispositivo verrà salvato per {YEARS} anni e la prossima volta potrai connetterti senza un codice. Questa impostazione è stata configurata dal tuo amministratore.}}</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderà immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e non potrà più interagire con te nei servizi Google.</translation>
+<translation id="2579341115189727508">Aiuta i siti a riassumere, correggere le bozze, aggiungere sottotitoli e altro ancora</translation>
 <translation id="2580889980133367162">Consenti sempre a <ph name="HOST" /> di scaricare più file</translation>
 <translation id="2583877283803564049">Fissa alla barra degli strumenti</translation>
 <translation id="2583905535229480958">Qualsiasi lettore di smart card</translation>
@@ -1793,6 +1796,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ha disinstallato un'app}other{<ph name="APP_NAME" /> ha disinstallato # app}}</translation>
 <translation id="2988018669686457659">Renderer di riserva</translation>
 <translation id="2988328607561082373">Non stai riutilizzando alcuna password</translation>
+<translation id="298928587890404307">Ti fornisce i punti chiave, un breve riepilogo o un titolo</translation>
 <translation id="2989523299700148168">Visitati di recente</translation>
 <translation id="2989786307324390836">Binario codificato DER, singolo certificato</translation>
 <translation id="2990583317361835189">Non consentire ai siti di usare i sensori di movimento</translation>
@@ -1871,6 +1875,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3057938290530993634">Tocca e tieni premuto per fissare i siti web più visitati e accedervi facilmente la prossima volta</translation>
 <translation id="3058498974290601450">Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni</translation>
 <translation id="3060694926634506594">Skills</translation>
+<translation id="3061501546390656547">Riassunto</translation>
 <translation id="306166624240243643">Controlla gli aggiornamenti di nome e URL</translation>
 <translation id="3062037978804523418"><ph name="TASK_TITLE" />: se non rispondi a breve, Gemini smetterà di lavorare su questa attività per risparmiare batteria</translation>
 <translation id="3062655045399308513">Elimina dati di navigazione…</translation>
@@ -2420,6 +2425,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3630132874740063857">Il tuo telefono</translation>
 <translation id="3633492436029262388">Per trovare le password, i preferiti e altri dati su tutti i dispositivi, salvali nel tuo Account Google</translation>
 <translation id="3633759325857031264">Dispositivo HDMI</translation>
+<translation id="3634271025780115616">Disattivare l'AI on-device?</translation>
 <translation id="3634652306074934350">Richiesta di autorizzazione scaduta</translation>
 <translation id="3635353578505343390">Invia feedback a Google</translation>
 <translation id="3636538438330991674">Gestisci le app a cui connettere Gemini</translation>
@@ -2694,6 +2700,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3893268973182382220">Al momento non è possibile caricare questo riquadro</translation>
 <translation id="3893536212201235195">Leggere e modificare le impostazioni di accessibilità</translation>
 <translation id="3893858854379998374">Per salvare i preferiti nel tuo account, elimina quelli inutilizzati</translation>
+<translation id="3893902465710154528">Modelli di AI su questo dispositivo</translation>
 <translation id="3894427358181296146">Aggiungi cartella</translation>
 <translation id="389521680295183045">I siti possono chiedere di sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> richiede le autorizzazioni: <ph name="FIRST_PERMISSION" /> e <ph name="SECOND_PERMISSION" /></translation>
@@ -2727,6 +2734,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3928570707778085600">Salvare le modifiche per <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Inchiostro in esaurimento</translation>
 <translation id="3929426037718431833">Queste estensioni possono vedere e modificare le informazioni sul sito.</translation>
+<translation id="3930298488600685734">Aiuta a scrivere, riformulare e organizzare il testo sui siti che lo utilizzano</translation>
 <translation id="3930737994424905957">Ricerca di dispositivi in corso</translation>
 <translation id="3930968231047618417">Colore sfondo</translation>
 <translation id="3932356525934356570">Blocca <ph name="EXTENSION_NAME" /></translation>
@@ -2939,6 +2947,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4202536110335087135">Prova subito</translation>
 <translation id="4203065553461038553">La posizione o il nome del file sono troppo lunghi</translation>
 <translation id="4203769790323223880">Fotocamera non consentita</translation>
+<translation id="4203999225629028925">Utilizza l'AI on-device</translation>
 <translation id="4204415812590935863">Al momento non è possibile creare un tema.</translation>
 <translation id="4206323443866416204">Report di feedback</translation>
 <translation id="4206585797409671301">Autorizzate a mostrare richieste</translation>
@@ -2959,6 +2968,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4216511743389425832">Ascolta questa pagina</translation>
 <translation id="4218081191298393750">Fai clic sull'icona dell'altoparlante per disattivare l'audio di questa scheda</translation>
 <translation id="4220157655212610908">Usa un token di sicurezza esterno</translation>
+<translation id="4222217401873406622">Più veloce e compatto rispetto alla scrittura per uso generico</translation>
 <translation id="4222917615373664617">Il monitoraggio dei prezzi è attivo. Il prezzo è <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Microfono non consentito</translation>
 <translation id="4224541845943007092">Leggi e salva l'input della tastiera dalla barra degli indirizzi</translation>
@@ -3402,6 +3412,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Elimina alla chiusura di tutte le finestre</translation>
 <translation id="4714414859110184926">Usa le passkey</translation>
+<translation id="4715398813921022332">Gestisce molte attività, quindi un unico download copre più funzionalità</translation>
 <translation id="4715631922189108923">Modifica nome utente</translation>
 <translation id="47158868804223727">Fai clic sul nome del gruppo per espanderlo o comprimerlo</translation>
 <translation id="471759229191973607">Cambia tema</translation>
@@ -3558,6 +3569,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4876273079589074638">Aiuta i nostri ingegneri a effettuare accertamenti e risolvere il problema che causa l'arresto anomalo. Se puoi, elenca i passaggi esatti fornendo il maggior numero possibile di dettagli.</translation>
 <translation id="4876305945144899064">Nessun nome utente</translation>
 <translation id="4876327226315760474">Ciò significa che le funzionalità del sito dovrebbero funzionare come previsto, ma potresti avere meno protezione durante la navigazione.</translation>
+<translation id="4876867869589423092">Controlla l'ortografia e la grammatica</translation>
 <translation id="4877276003880815204">Ispeziona elementi</translation>
 <translation id="4878634973244289103">Impossibile inviare il feedback. Riprova più tardi.</translation>
 <translation id="4878718769565915065">Impossibile aggiungere un'impronta a questo token di sicurezza</translation>
@@ -3602,6 +3614,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4922104989726031751">Per usare Gestore delle password con il tuo sistema operativo, riavvia Chromium e consenti l'accesso al gestore delle password del tuo computer. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="4923561999941435531">{0,plural, =1{Salva 1 elemento nell'account}other{Salva # elementi nell'account}}</translation>
 <translation id="4923977675318667854">Mostra gruppi di schede</translation>
+<translation id="4924283156756356309">Sul dispositivo</translation>
 <translation id="49265687513387605">Impossibile trasmettere lo schermo. Verifica di avere confermato la richiesta di avvio della condivisione dello schermo.</translation>
 <translation id="4927753642311223124">Nessuna notifica.</translation>
 <translation id="4928488083257788101">I dati inviati a Google potrebbero essere esaminati da revisori per migliorare questa funzionalità</translation>
@@ -3688,6 +3701,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="5026572062076949786">controlli, personalizzazione, lingua, privacy, impostazioni predefinite, avanzate</translation>
 <translation id="5026874946691314267">Non visualizzare più</translation>
 <translation id="5027550639139316293">Certificato email</translation>
+<translation id="5027821222544962995">Trasforma il parlato in testo, come i sottotitoli codificati</translation>
 <translation id="502811790397568978">Sblocca <ph name="TOKEN_NAME" /> per importare il certificato client da <ph name="HOST_NAME" />.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Indirizzi}=1{Indirizzo ({SELECTED_ITEMS})}other{Indirizzi ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Impossibile creare codice QR</translation>
@@ -3874,6 +3888,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5235050375939235066">Disinstallare l'app?</translation>
 <translation id="5235750401727657667">Sostituzione della pagina visualizzata quando viene aperta una nuova scheda</translation>
+<translation id="5235961530490811036">Suggerisce correzioni per ortografia, grammatica e punteggiatura mentre digiti</translation>
 <translation id="5238301240406177137">Salva nell'account</translation>
 <translation id="523862956770478816">Autorizzazioni siti</translation>
 <translation id="5240247138804326767">Organizza visualizzazione divisa</translation>
@@ -3996,6 +4011,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="5395353843367783642">Salvataggio nel tuo account in corso…</translation>
 <translation id="5397656531674854099">Usa i gruppi di schede sullo smartphone</translation>
 <translation id="5397794290049113714">Tu</translation>
+<translation id="5397922003973770546"><ph name="MODEL_NAME" /> · circa <ph name="SIZE" /></translation>
 <translation id="5398497406011404839">Preferiti nascosti</translation>
 <translation id="5398572795982417028">Riferimento pagina oltre i limiti. Il limite è <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Ti aiuta a scrivere brevi testi per il web, come le recensioni</translation>
@@ -4252,6 +4268,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="5683916195767086779">Gruppo di schede</translation>
 <translation id="5684110242705861346">L'estensione"<ph name="NAME" />" è stata aggiunta dalla policy della tua organizzazione e controlla questa impostazione. <ph name="BEGIN_LINK" />Visualizza dettagli<ph name="END_LINK" /></translation>
 <translation id="5687340364605915800">I siti rispondono a questa richiesta a propria discrezione</translation>
+<translation id="5688905504429733599">Aiuta a scrivere, riscrivere e riassumere il testo</translation>
 <translation id="5689516760719285838">Posizione</translation>
 <translation id="568984110402742489">Impossibile inviare il feedback</translation>
 <translation id="5691772641933328258">Impronta digitale non riconosciuta</translation>
@@ -4512,6 +4529,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="5992652489368666106">Senza bordo</translation>
 <translation id="5996490984199062729">Il tuo profilo non è stato configurato</translation>
 <translation id="5997337190805127100">Ulteriori informazioni sull'accesso ai siti</translation>
+<translation id="5997562608469198702">Mostra i dettagli di <ph name="MODEL_CATEGORY" /></translation>
 <translation id="5997802678829218272">Se hai fatto l'accesso a Chrome con lo stesso account, puoi inviare rapidamente link tra i dispositivi</translation>
 <translation id="5998458948782718639">Contribuisci a migliorare la compilazione automatica</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> risultati per "<ph name="SEARCH_TEXT" />"</translation>
@@ -4757,6 +4775,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="6264376385120300461">Scarica comunque</translation>
 <translation id="6264636978858465832">Gestore delle password richiede un maggiore accesso</translation>
 <translation id="626495329434552273">Autorizzati a eseguire l'override dell'input della tastiera</translation>
+<translation id="6265472496386910894">Chiedi informazioni su ciò che vedi sullo schermo con Google Lens</translation>
 <translation id="6266984048393265562">Personalizza il profilo</translation>
 <translation id="6267166720438879315">Seleziona un certificato per autenticarti a <ph name="HOST_NAME" /></translation>
 <translation id="6269392226729599142">Ripristina visualizzazione divisa</translation>
@@ -5010,6 +5029,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="6571178651832779742">Per eliminare i preferiti duplicati, salvali nel tuo Account Google</translation>
 <translation id="6571533309669248172">Formattazione del testo</translation>
 <translation id="6571772921213691236">Modifica i dati di accesso</translation>
+<translation id="657215700875716805">Trasforma lunghe pagine di testo in punti chiave</translation>
 <translation id="657229725818377235">Aumenta la protezione da download e siti web pericolosi</translation>
 <translation id="6573096386450695060">Consenti sempre</translation>
 <translation id="657402800789773160">&amp;Ricarica questa pagina</translation>
@@ -5182,6 +5202,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6746834324024491643">Accedi come <ph name="EMAIL" /> per avere password e altro su tutti i tuoi dispositivi</translation>
 <translation id="6749077623962119521">Reimpostare le autorizzazioni?</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (In incognito)</translation>
+<translation id="6754302065638000088">Correttore automatico</translation>
 <translation id="6754359471209693699">Inizia una nuova ricerca</translation>
 <translation id="6756882635793733911">Chiedi informazioni su tutto ciò che vedi sullo schermo</translation>
 <translation id="6757615605516049275">Sblocca <ph name="TOKEN_NAME" />.</translation>
@@ -5286,6 +5307,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6853118789186721762">Promemoria inviato al tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> anno</translation>
 <translation id="68541483639528434">Chiudi le altre schede</translation>
+<translation id="6855569790346583403">Elimina <ph name="MODEL_CATEGORY" /></translation>
 <translation id="6856348640027512653">Non autorizzati a usare i dati o dispositivi per realtà virtuale</translation>
 <translation id="6856607887871564638">Configura un profilo di lavoro per salvare e usare le tue password e altri dati nel tuo account</translation>
 <translation id="68601584151169673">&amp;Salva e condividi</translation>
@@ -5406,6 +5428,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6979440798594660689">Disattivazione audio (impostazione predefinita)</translation>
 <translation id="6979557074007409812">Sì, mantieni i miei dati separati da quelli di lavoro</translation>
 <translation id="6979737339423435258">Dall'inizio</translation>
+<translation id="6981951388037216929">Chiedi qualsiasi cosa su ciò che vedi sullo schermo condividendo lo schermo.</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="698428203349952091">Aggiungi sito all'elenco dei siti non consentiti</translation>
 <translation id="6985235333261347343">Agente di recupero chiavi Microsoft</translation>
@@ -5740,6 +5763,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7341834142292923918">Vuole accedere a questo sito</translation>
 <translation id="7343372807593926528">Prima di inviare il feedback, descrivi il problema.</translation>
 <translation id="7344585835349671209">Gestisci i certificati HTTPS/SSL sul tuo dispositivo</translation>
+<translation id="734576882396032500">Un unico download per tutte le lingue che utilizzi</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347751611463936647">Per utilizzare questa estensione, digita "<ph name="EXTENSION_KEYWORD" />", quindi TAB, poi il tuo comando o la tua ricerca.</translation>
 <translation id="7347943691222276892">Fai clic per uscire da <ph name="SUBPAGE_TITLE" />.</translation>
@@ -6138,6 +6162,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7793098747275782155">Blu scuro</translation>
 <translation id="7798504574384119986">Visualizza autorizzazioni web</translation>
 <translation id="7798559336183476274">Altre azioni per <ph name="BUTTON_TITLE" /></translation>
+<translation id="7798702742851934390">Suggerisce solo correzioni senza riscrivere il testo</translation>
 <translation id="7798844538707273832">Autorizzazione <ph name="PERMISSION" /> bloccata automaticamente</translation>
 <translation id="7800518121066352902">Ruota in senso anti&amp;orario</translation>
 <translation id="780254490276923052">Livello 2: MEDIO</translation>
@@ -6294,6 +6319,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7974713334845253259">Colore predefinito</translation>
 <translation id="7977029776654598145">Quando viene utilizzata</translation>
 <translation id="7978100757563451333">Le schede vengono condivise per ricevere risposte più pertinenti. Google utilizza i contenuti e l'URL delle schede condivise. La scheda corrente viene condivisa nelle nuove chat. Puoi modificare questa impostazione in qualsiasi momento.</translation>
+<translation id="7978324202327430335">Funziona sui siti che supportano la trascrizione audio in tempo reale</translation>
 <translation id="7978412674231730200">Chiave privata</translation>
 <translation id="7978450511781612192">I tuoi Account Google verranno scollegati e verrà interrotta la sincronizzazione di preferiti, cronologia, password e altro.</translation>
 <translation id="7980066177668669492">ASCII con codifica Base64, più certificati</translation>
@@ -7376,6 +7402,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9154194610265714752">Aggiornato</translation>
 <translation id="9155344700756733162">Deseleziona colore</translation>
 <translation id="9155515662479003830">Puoi sempre tornare allo stile classico dalle impostazioni</translation>
+<translation id="9157129135366432684">Nessuna AI on-device aggiunta</translation>
 <translation id="9157915340203975005">Lo sportello della stampante è aperto</translation>
 <translation id="9165856803582999927">Scansiona questo codice QR con la fotocamera sul dispositivo in cui vuoi creare e salvare la passkey per <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Picture in picture</translation>

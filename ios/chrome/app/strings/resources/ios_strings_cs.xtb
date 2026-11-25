@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Názvy stránek a adresy URL vašich otevřených karet se používají k poskytování relevantních návrhů.</translation>
 <translation id="4439968635693513370">Naplánujte si víkend pomocí</translation>
 <translation id="4442550905108052454">Otevřete <ph name="BEGIN_BOLD" />Nastavení<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{K dispozici je {count} výsledek.}few{K dispozici jsou {count} výsledky.}many{K dispozici je {count} výsledku.}other{K dispozici je {count} výsledků.}}</translation>
 <translation id="4445840280797509738">Další možnosti pro <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Přejetím přes okraj se můžete vrátit zpět nebo přejít vpřed.</translation>
 <translation id="4460014764210899310">Zrušit seskupení</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Zobrazit</translation>
 <translation id="5311061401280561833">Přístup k fotoaparátu a mikrofonu je povolen</translation>
 <translation id="5313967007315987356">Přidat web</translation>
-<translation id="5315029634103634221">Gemini je umělá inteligence a může se mýlit. <ph name="BEGIN_LINK" />Další informace o relevantních datech odesílaných do Googlu<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nic k importování</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Přihlaste se na web <ph name="SITE_DOMAIN" /></translation>

@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Titujt e faqeve dhe URL-të e skedave të tua të hapura përdoren për të të dhënë sugjerime të përshtatshme.</translation>
 <translation id="4439968635693513370">Planifiko fundjavën tënde me</translation>
 <translation id="4442550905108052454">Hap <ph name="BEGIN_BOLD" />Cilësimet<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{Ofrohet {count} rezultat.}other{Ofrohen {count} rezultate.}}</translation>
 <translation id="4445840280797509738">Më shumë opsione për "<ph name="CELL_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="4455710003856931944">Mund të rrëshqasësh shpejt anash për të kaluar pas dhe para.</translation>
 <translation id="4460014764210899310">Mos grupo</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5311061401280561833">Lejohet qasja te kamera dhe mikrofoni</translation>
 <translation id="5313967007315987356">Shto një sajt</translation>
-<translation id="5315029634103634221">Gemini është IA dhe mund të bëjë gabime. <ph name="BEGIN_LINK" />Më shumë rreth të dhënave përkatëse të dërguara te Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nuk ka asgjë për të importuar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> nga <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Identifikohu në <ph name="SITE_DOMAIN" /></translation>

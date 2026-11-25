@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">ລະບົບຈະໃຊ້ຊື່ໜ້າ ແລະ URL ຂອງແຖບທີ່ເປີດຢູ່ຂອງທ່ານເພື່ອໃຫ້ຄຳແນະນຳທີ່ກ່ຽວຂ້ອງກັບທ່ານ.</translation>
 <translation id="4439968635693513370">ວາງແຜນວັນເສົາອາທິດຂອງທ່ານດ້ວຍ</translation>
 <translation id="4442550905108052454">ເປີດ <ph name="BEGIN_BOLD" />ການຕັ້ງຄ່າ<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{ມີຜົນຮາງວັນ {count} ອອກແລ້ວ.}other{ມີຜົນການຊອກຫາ {count} ລາຍການ.}}</translation>
 <translation id="4445840280797509738">ຕົວເລືອກເພີ່ມເຕີມສຳລັບ <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">ທ່ານສາມາດປັດຂອບເພື່ອກັບຫຼັງ ຫຼື ໄປໜ້າໄດ້.</translation>
 <translation id="4460014764210899310">ຍົກເລີກການຈັດກຸ່ມ</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">ສະ​ແດງ​</translation>
 <translation id="5311061401280561833">ອະນຸຍາດໃຫ້ເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>
 <translation id="5313967007315987356">ເພີ່ມ​ເວັບ​ໄຊ​ທ໌</translation>
-<translation id="5315029634103634221">Gemini ເປັນ AI ແລະ ອາດເຮັດຜິດພາດໄດ້. <ph name="BEGIN_LINK" />ຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບຂໍ້ມູນທີ່ກ່ຽວຂ້ອງເຊິ່ງສົ່ງໃຫ້ Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ບໍ່ມີລາຍຊື່ທີ່ຈະນຳເຂົ້າ</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> ຈາກທັງໝົດ <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">ເຂົ້າສູ່ລະບົບ <ph name="SITE_DOMAIN" /></translation>

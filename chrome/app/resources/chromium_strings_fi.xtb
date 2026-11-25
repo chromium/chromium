@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">Voit poistaa niitä milloin tahansa. Chromium voi ladata ne automaattisesti uudelleen, kun sivusto tai ominaisuus tarvitsee niitä.</translation>
 <translation id="1793486931176048546">Klikkaa Windowsin ilmoituksesta <ph name="BEGIN_BOLD" />Kyllä<ph name="END_BOLD" />, niin voit kiinnittää Chromiumin tehtäväpalkkiin nopeaa käyttöä varten.</translation>
 <translation id="1808667845054772817">Asenna Chromium uudelleen</translation>
+<translation id="1814482312667514397">Puhelimen Chromium-sovelluksella saat Chromiumin parhaat turvaominaisuudet käyttöösi missä tahansa</translation>
 <translation id="1820835682567584003">Chromium yrittää seuraavaa: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromiumiin omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää laajennuksia ja muita tietoja laitteelta: <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Seuraavan kerran kun avaat Chromiumin laitteella (<ph name="DEVICE_TYPE" />), näet kehotteen käyttää Googlen salasanoja.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Yhdellä tai useammalla Chromium-laajennuksella oli pääsy yhdelle HID-laitteelle}=1{Yhdellä tai useammalla Chromium-laajennuksella on pääsy yhdelle HID-laitteelle}other{Yhdellä tai useammalla Chromium-laajennuksella on pääsy # HID-laitteelle}}</translation>
 <translation id="2401032172288869980">Chromium tarvitsee kameran ja mikrofonin luvan tällä sivustolla</translation>
 <translation id="2403703063067034158">Käynnistysvirhe: toinen käyttöönotto on käynnissä, yritä myöhemmin uudelleen.</translation>
+<translation id="241044568699443215">Chromium-sovelluksella saat Chromiumin turvallisuuden mukaan minne tahansa laitteellasi (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="2418322681019544463">Avaa linkkejä Chromiumissa mistä tahansa sovelluksesta ja pidä selain käytettävissä tehtäväpalkissa</translation>
 <translation id="2425157128016763890">Klikkaa Tee yhteenveto ‐painiketta, niin voit jakaa dokumentin Gemini in Chromiumille, saada nopean yleiskatsauksen ja esittää jatkokysymyksiä</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromiumin työkalujen<ph name="END_LINK" /> avulla voit selata turvallisesti ja pitää ohjat omissa käsissäsi</translation>
@@ -751,6 +753,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8907580949721785412">Chromium yrittää näyttää salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="8910309838319708610">Valmista! Voit nyt helposti esittää kysymyksiä selaamisen aikana Haun tekoälytilassa</translation>
 <translation id="8932992523185907506">Chromium ei ole enää oletusselaimesi. Haluatko tehdä Chromiumista oletusselaimen?</translation>
+<translation id="8940844567350264767">Chromiumilla saat Chromiumin parhaat turvaominaisuudet käyttöösi missä tahansa</translation>
 <translation id="8941642502866065432">Chromiumin päivitys epäonnistui</translation>
 <translation id="8944232836376404813">Tämä
           <ph name="LINE_BREAKS" />

@@ -141,6 +141,7 @@
 <translation id="2295218613066132598">Chromeৰ ছাইটৰ শ্বৰ্টকাট দেখুৱাওক</translation>
 <translation id="2301513536169703857">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ পাছৱৰ্ড, বুকমাৰ্ক আৰু আন বহুতো বস্তু পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
 <translation id="2307973900865360088">ড’কত ৰাখক</translation>
+<translation id="2308558013860776484">অন্য এপ্‌ বা ফাইলৰ দৰে Chromeৰ বাহিৰৰ সমলৰ এখন স্ক্ৰীনশ্বট শ্বেয়াৰ কৰক</translation>
 <translation id="2309047409763057870">এয়া Google Chromeৰ এক গৌণ ইনষ্টলেশ্বন আৰু ইয়াক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰিব নোৱাৰি।</translation>
 <translation id="2345992953227471816">Chromeএ এই বস্তুবোৰত মালৱেৰ থকাটো পাইছে:</translation>
 <translation id="2358140144860869442">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ পঢ়াৰ সূচী আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
@@ -250,6 +251,7 @@
 <translation id="3294686910656423119">ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্টসমূহ</translation>
 <translation id="3327226547491422998">পাছত, Chromeএ আপোনাৰ বাবে স্বয়ংক্ৰিয়ভাৱে ফৰ্ম পূৰ কৰিবলৈ আপুনি ছেভ কৰি থোৱা তথ্য ব্যৱহাৰ কৰিব বিচাৰে নেকি সুধিব পাৰে</translation>
 <translation id="3352986031709923790">সন্ধান এলেকাৰ ওপৰৰ সোঁফালৰ কোণ: <ph name="RIGHT" />% সোঁফালে, <ph name="TOP" />% ওপৰলৈ</translation>
+<translation id="3370239327277137701">ছাইট আৰু Chromeএ সাৰাংশ, খচৰা শুধৰণি, কেপশ্বন আৰু অধিকৰ দৰে সুবিধাসমূহৰ বাবে আপোনাৰ ডিভাইচত পোনপটীয়াকৈ চলা AI ব্যৱহাৰ কৰিব পাৰে। এইটো Chromeত Geminiৰ পৰা পৃথক। <ph name="BEGIN_LINK" />অন-ডিভাইচ AIৰ বিষয়ে অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Chromeৰ কিছুমান সুবিধা আৰু এক্সটেনশ্বনৰ শ্বৰ্টকাট থাকে। আপুনি সেইসমূহ পুনৰ অন কৰিবলৈ বাছনি কৰিব পাৰে।</translation>
 <translation id="3379938682270551431">{0,plural, =0{এতিয়া Chrome পুনৰ লঞ্চ হ’ব}=1{১ ছেকেণ্ডত Chrome পুনৰ লঞ্চ হ’ব}one{# ছেকেণ্ডত Chrome পুনৰ লঞ্চ হ’ব}other{# ছেকেণ্ডত Chrome পুনৰ লঞ্চ হ’ব}}</translation>
 <translation id="3380249972812870825">Chromeত Gemini খুলিবলৈ, <ph name="GLOBAL_HOTKEY" />ত টিপক</translation>
@@ -349,6 +351,7 @@
 <translation id="4427306783828095590">বৰ্ধিত সুৰক্ষাৰ সুবিধাটোৱে ফিশ্বিং আৰু মালৱেৰ অৱৰোধ কৰিবলৈ অধিক কাৰ্য কৰে</translation>
 <translation id="4434353761996769206">ইনষ্টলাৰৰ আসোঁৱাহ: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">এটা ক্ষিপ্ৰ ৰূপৰেখা পাবলৈ আৰু ফ’ল’ আপ প্ৰশ্ন সোধিবলৈ এই নথিখন Chromeত Geminiৰ সৈতে শ্বেয়াৰ কৰক</translation>
+<translation id="4440999670272408191">আপুনি সেইবোৰ যিকোনো সময়তে আঁতৰাব পাৰে। কোনো ছাইট বা সুবিধাক সেইসমূহৰ প্ৰয়োজন হ’লে Chromeএ স্বয়ংক্ৰিয়ভাৱে সেইসমূহ পুনৰ ডাউনল’ড কৰিব পাৰে।</translation>
 <translation id="4450664632294415862">Chrome - নেটৱর্কত ছাইন ইন - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chromeত অন্য এটা কার্য চলি আছে। অনুগ্ৰহ কৰি কিছু সময়ৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4493028449971051158">ষ্টাৰ্টআপ সম্পৰ্কীয় আসোঁৱাহ: অনুগ্ৰহ কৰি ইনষ্টলাৰটো এগৰাকী প্ৰশাসক হিচাপে চলাওক।</translation>
@@ -356,6 +359,7 @@
 <translation id="4501839397124711198">আপুনি ব্ৰাউজ কৰোঁতে প্ৰশ্ন সুধিবলৈ আপুনি ছাইডৰ পেনেলত Google Search পিন কৰিব পাৰে</translation>
 <translation id="4571503333518166079">Chromeৰ জাননী ছেটিংসমূহ-লৈ যাওক</translation>
 <translation id="4580939929828762295">Google Password Managerৰ জৰিয়তে সুৰক্ষিত হৈ থাকক</translation>
+<translation id="4589544932092381064">Windowsৰ টাস্কবাৰত Chromeৰ জৰিয়তে সন্ধান কৰাৰ বিকল্প দেখুৱাওক আৰু কীব’ৰ্ডৰ শ্বৰ্টকাট অন কৰক</translation>
 <translation id="459622048091363950">Chromeএ এক্সেছ পোৱাৰ পাছতেই ৱেবছাইটসমূহে আপোনাক এক্সেছৰ বাবে অনুমতি বিচাৰিব পাৰিব।</translation>
 <translation id="4598116752460667024">সূচীখনৰ পৰা যিকোনো প্ৰক্ৰিয়া সন্ধান কৰক।</translation>
 <translation id="4600710005438004015">Chromeক শেহতীয়া সংস্কৰণলৈ আপডে'ট কৰিব পৰা নগ'ল, গতিকে আপুনি নতুন সুবিধা আৰু সমস্যা সমাধানৰ উপায়সমূহ লাভ কৰা নাই।</translation>
@@ -371,6 +375,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Chromeৰ V8 ইঞ্জিনৰ সৈতে ছাইটবোৰ খৰতকীয়া কৰি তোলে কিন্তু Chromeক আক্ৰমণৰ পৰা সামান্য কম প্ৰতিৰোধী কৰে</translation>
 <translation id="4768676935374695498">Google Lensৰ জৰিয়তে এই ভিডিঅ’টো সন্ধান কৰক</translation>
+<translation id="4783580253728290203">অফ থাকিলে, Chromeএ অন-ডিভাইচ AI মডেলসমূহ আঁতৰায় আৰু সেইসমূহ পুনৰ ডাউনল’ড নকৰে। কিছুমান ছাইট আৰু Chromeৰ সুবিধাই কাম নকৰিব পাৰে।</translation>
 <translation id="479167709087336770">এইটোৱে Google Searchত ব্যৱহৃত একেটা বানান পৰীক্ষকেই ব্যৱহাৰ কৰে। আপুনি ব্ৰাউজাৰত টাইপ কৰা পাঠ Googleলৈ পঠিওৱা হয়। আপুনি ছেটিংসমূহ-ত যিকোনো সময়তে এই আচৰণটো সলনি কৰিব পাৰে।</translation>
 <translation id="4793679854893018356">Chromeএ আপোনাক কিদৰে সুৰক্ষিত কৰি ৰাখে জানক</translation>
 <translation id="4803313124144656665">Chromeত Google Search বন্ধ কৰক</translation>
@@ -456,6 +461,7 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব পৰা নাই। প্ৰ’ক্সি ছাৰ্ভাৰৰ বাবে বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ আৱশ্যক।</translation>
 <translation id="5709557627224531708">Chromeক আপোনাৰ ডিফ'ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
+<translation id="5715427327524421317">Chromeএ এই AI মডেলসমূহ স্বয়ংক্ৰিয়ভাৱে ডাউনল’ড আৰু আপডে’ট কৰে</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাৰ বাবে আপুনি কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ Chrome পুনৰ লঞ্চ কৰাটো প্ৰয়োজন। আপোনাৰ আইচ’লেটেড ৱিণ্ড’ পুনৰ খোল নাখাব।}one{সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাৰ বাবে আপুনি কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ Chrome পুনৰ লঞ্চ কৰাটো প্ৰয়োজন। আপোনাৰ # টা আইচ’লেটেড ৱিণ্ড’ পুনৰ খোল নাখাব।}other{সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাৰ বাবে আপুনি কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ Chrome পুনৰ লঞ্চ কৰাটো প্ৰয়োজন। আপোনাৰ # টা আইচ’লেটেড ৱিণ্ড’ পুনৰ খোল নাখাব।}}</translation>
 <translation id="5719246646468301581">Google Chrome আৰু Chrome OSৰ অতিৰিক্ত সেৱাৰ চৰ্তাৱলী</translation>
 <translation id="5736850870166430177">যদি কোনোবা ছাইটে আপোনাৰ পাছৱৰ্ড চুৰি কৰিবলৈ চেষ্টা কৰে অথবা আপুনি কোনো ক্ষতিকাৰক ফাইল ডাউনল’ড কৰাৰ সময়ত Chromeএ পৃষ্ঠাৰ সমলৰ বিটসমূহকে ধৰি URLসমূহ সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াব পাৰে</translation>
@@ -547,6 +553,7 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="6491330562720922580">ম’বাইল ডিভাইচত Chrome ব্ৰাউজাৰ ডাউনল’ড কৰিবলৈ কিউআৰ ক’ড</translation>
 <translation id="6493527311031785448">Google Chromeএ <ph name="AUTHENTICATION_PURPOSE" /> চেষ্টা কৰি আছে</translation>
 <translation id="6497147134301593682">Chrome স্বয়ংক্ৰিয়াভাৱে বন্ধ কৰা হৈছে</translation>
+<translation id="650039555447046671">Chromeএ এই ডিভাইচটোৰ পৰা AI মডেলসমূহ আঁতৰাব। কিছুমান ছাইট আৰু Chromeৰ সুবিধাই কাম নকৰিব পাৰে।</translation>
 <translation id="6506909944137591434">আপোনাৰ ওচৰ-পাজৰৰ ঠাইসমূহৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ Chromeক কেমেৰাৰ অনুমতিৰ আৱশ্যক</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">আপোনাৰ অৱস্থান ব্যৱহাৰ কৰিবলৈ, <ph name="BEGIN_LINK" />ছিষ্টেমৰ ছেটিঙ<ph name="END_LINK" />ত Chromeক এক্সেছ দিয়ক</translation>
@@ -585,6 +592,7 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="6877155553248388166">সন্ধান এলেকাৰ তলৰ সোঁফালৰ কোণ: <ph name="RIGHT" />% সোঁফালে, <ph name="BOTTOM" />% তললৈ</translation>
 <translation id="6879791154455204815">Chromeৰ জৰিয়তে সন্ধান কৰাৰ সুবিধাটো খোলক</translation>
 <translation id="6881299373831449287">Chrome আপডে’ট কৰি থকা হৈছে</translation>
+<translation id="6881997500528805781">ডিভাইচৰ ষ্ট’ৰেজ ব্যৱহাৰ কৰে। Chromeএ ৪৫ দিনৰ পাছত বা ষ্ট’ৰেজ কম হ’লে অব্যৱহৃত AI মডেলসমূহ আঁতৰায়</translation>
 <translation id="6885412569789873916">Chrome বিটা এপ্‌সমূহ</translation>
 <translation id="6893363893008038481">Chromeৰ পৰা একাউণ্ট আঁতৰাওক</translation>
 <translation id="6896758677409633944">প্ৰতিলিপি কৰক</translation>

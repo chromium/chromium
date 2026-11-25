@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Atidarytų skirtukų puslapių pavadinimai ir URL naudojami siekiant pateikti jums aktualių pasiūlymų.</translation>
 <translation id="4439968635693513370">Suplanuokite savaitgalį naudodami</translation>
 <translation id="4442550905108052454">Atidarykite skiltį <ph name="BEGIN_BOLD" />Nustatymai<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{Pateikiamas {count} rezultatas.}one{Pateikiamas {count} rezultatas.}few{Pateikiami {count} rezultatai.}many{Pateikiama {count} rezultato.}other{Pateikiama {count} rezultatų.}}</translation>
 <translation id="4445840280797509738">Daugiau „<ph name="CELL_ACCESSIBILITY_LABEL" />“ parinkčių</translation>
 <translation id="4455710003856931944">Galite perbraukti kraštą, kad pereitumėte atgal arba pirmyn.</translation>
 <translation id="4460014764210899310">Išgrupuoti</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Rodyti</translation>
 <translation id="5311061401280561833">Leidžiama pasiekti vaizdo kamerą ir mikrofoną</translation>
 <translation id="5313967007315987356">Pridėti svetainę</translation>
-<translation id="5315029634103634221">„Gemini“ yra DI ir gali klysti. <ph name="BEGIN_LINK" />Daugiau apie atitinkamus duomenis, siunčiamus „Google“<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nėra nieko, ką būtų galima importuoti</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> iš <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Prisijungimas prie „<ph name="SITE_DOMAIN" />“</translation>

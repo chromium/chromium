@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Танд хамааралтай зөвлөмж өгөхөд таны нээлттэй табуудын хуудасны гарчиг, URL-г ашигладаг.</translation>
 <translation id="4439968635693513370">Дараахаар амралтын өдрөө төлөвлөөрэй</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Тохиргоо<ph name="END_BOLD" />-г нээнэ үү</translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} илэрц боломжтой.}other{{count} илэрц боломжтой.}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />-н бусад сонголт</translation>
 <translation id="4455710003856931944">Та буцах эсвэл урагшлахын тулд ирмэгээс шудрах боломжтой.</translation>
 <translation id="4460014764210899310">Бүлгийг болих</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Харуулах</translation>
 <translation id="5311061401280561833">Камер болон микрофоны хандалтыг зөвшөөрсөн</translation>
 <translation id="5313967007315987356">Сайт нэмэх</translation>
-<translation id="5315029634103634221">Gemini бол ХОУ бөгөөд алдаа гаргаж болно. <ph name="BEGIN_LINK" />Google-д илгээсэн холбогдох өгөгдлийн талаарх нэмэлт мэдээлэл<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Импортлох зүйл байхгүй</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />-н <ph name="INDEX" /></translation>
 <translation id="5316823130598991834"><ph name="SITE_DOMAIN" />-д нэвтрэх</translation>

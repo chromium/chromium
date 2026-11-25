@@ -141,6 +141,7 @@
 <translation id="2295218613066132598">‏‫Chrome سائٹ کے شارٹ کٹس دکھائیں</translation>
 <translation id="2301513536169703857">‏اپنے تمام آلات پر اپنے پاس ورڈز، بُک مارکس وغیرہ حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
 <translation id="2307973900865360088">ڈاک میں رکھیں</translation>
+<translation id="2308558013860776484">‏‫Chrome سے باہر کے مواد کا اسکرین شاٹ شیئر کریں، جیسے دیگر ایپس یا فائلز</translation>
 <translation id="2309047409763057870">‏یہ Google Chrome کا ثانوی انسٹالیشن ہے اور اسے آپ کا ڈیفالٹ براؤزر نہیں بنایا جا سکتا ہے۔</translation>
 <translation id="2345992953227471816">‏Chrome کو پتا چلا ہے کہ یہ ایکسٹینشنز میلوئیر پر مشتمل ہیں:</translation>
 <translation id="2358140144860869442">‏اپنے تمام آلات پر اپنی پڑھنے کی فہرست اور مزید حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
@@ -250,6 +251,7 @@
 <translation id="3294686910656423119">استعمال کے اعداد و شمار اور کریش رپورٹس</translation>
 <translation id="3327226547491422998">‏بعد میں، Chrome پوچھ سکتا ہے کہ کیا آپ اپنی خاطر فارمز کو آٹو فل کرنے کے لیے محفوظ کردہ معلومات استعمال کرنا چاہتے ہیں</translation>
 <translation id="3352986031709923790">تلاش کے حلقے کا اوپری بایاں کونا: <ph name="RIGHT" /> فیصد بائیں، <ph name="TOP" /> فیصد اوپر</translation>
+<translation id="3370239327277137701">‏سائٹس اور Chrome خلاصوں، پروف ریڈنگ، کیپشنز اور مزید جیسی خصوصیات کے لیے براہ راست آپ کے آلے پر چلنے والے AI کا استعمال کر سکتے ہیں۔ یہ Chrome میں Gemini سے الگ ہے۔ <ph name="BEGIN_LINK" />آلہ پر AI کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">‏‫Chrome کی کچھ خصوصیات اور ایکسٹینشنز شارٹ کٹس کے ساتھ آتی ہیں۔ آپ انہیں دوبارہ آن کرنے کا انتخاب کر سکتے ہیں۔</translation>
 <translation id="3379938682270551431">{0,plural, =0{‏ابھی Chrome دوبارہ لانچ ہوگا}=1{‏1 سیکنڈ میں Chrome دوبارہ لانچ ہوگا}other{‏# سیکنڈ میں Chrome دوبارہ لانچ ہوگا}}</translation>
 <translation id="3380249972812870825">‏‫Chrome میں Gemini کھولنے کے لیے، <ph name="GLOBAL_HOTKEY" /> دبائیں</translation>
@@ -348,6 +350,7 @@
 <translation id="4427306783828095590">فریب دہی اور میلوئیر کو مسدود کرنے کیلئے بہتر کردہ حفاظت مزید کام کرتی ہے</translation>
 <translation id="4434353761996769206">انسٹالر کی خرابی: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">‏فوری جائزہ حاصل کرنے کے لیے اس دستاویز کا اشتراک Chrome میں Gemini کے ساتھ کریں اور فالو اپ سوالات پوچھیں</translation>
+<translation id="4440999670272408191">‏آپ انہیں کسی بھی وقت ہٹا سکتے ہیں۔ جب کسی سائٹ یا خصوصیت کو ان کی ضرورت ہو تو Chrome انہیں خودکار طور پر دوبارہ ڈاؤن لوڈ کر سکتا ہے۔</translation>
 <translation id="4450664632294415862">‏Chrome - نیٹ ورک سائن ان - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">‏Google Chrome پر ایک اور کارروائی کی جا رہی ہے۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="4493028449971051158">اسٹارٹ اپ کی خرابی: براہ کرم انسٹالر کو بطور منتظم چلائیں۔</translation>
@@ -355,6 +358,7 @@
 <translation id="4501839397124711198">‏براؤز کرتے وقت سوالات پوچھنے کے لیے آپ سائیڈ پینل میں Google تلاش کو پن کر سکتے ہیں</translation>
 <translation id="4571503333518166079">‏Chrome کی اطلاع کی ترتیبات پر جائیں</translation>
 <translation id="4580939929828762295">‏‫Google پاس ورڈ مینیجر کے ساتھ محفوظ رہیں</translation>
+<translation id="4589544932092381064">‏‫Windows ٹاسک بار میں Chrome کے ساتھ تلاش دکھائیں اور کی بورڈ شارٹ کٹ آن کریں</translation>
 <translation id="459622048091363950">‏Chrome کو رسائی مل جانے کے بعد، ویب سائٹس آپ سے رسائی طلب کر سکیں گی۔</translation>
 <translation id="4598116752460667024">فہرست سے کوئی بھی پروسیس تلاش کریں۔</translation>
 <translation id="4600710005438004015">‏Chrome تازہ ترین ورژن میں اپ ڈیٹ نہیں ہو سکا اسلئے آپ نئی خصوصیات اور سیکیورٹی کی اصلاحات سے محروم ہو رہے ہیں۔</translation>
@@ -370,6 +374,7 @@
 <translation id="4754614261631455953">‎Google Chrome (mDNS-In)‎</translation>
 <translation id="4756182432527369254">‏‫Chrome کے V8 انجن کے ساتھ سائٹس کو تیز رفتار بناتا ہے لیکن Chrome کو حملوں کے خلاف قدرے کم مزاحم بناتا ہے</translation>
 <translation id="4768676935374695498">‏‫Google لینز کے ساتھ اس ویڈیو کو تلاش کریں</translation>
+<translation id="4783580253728290203">‏آف ہونے پر، Chrome آلہ پر موجود AI ماڈلز کو ہٹا دیتا ہے اور انہیں دوبارہ ڈاؤن لوڈ نہیں کرے گا۔ ہو سکتا ہے کہ کچھ سائٹس اور Chrome کی خصوصیات کام نہ کریں۔</translation>
 <translation id="479167709087336770">‏یہ وہی املا جانچ کنندہ استعمال کرتا ہے جسے Google تلاش میں استعمال کیا جاتا ہے۔ آپ براؤزر میں جو متن ٹائپ کرتے ہیں، اسے Google کو بھیجا جاتا ہے۔ آپ اس برتاؤ کو کسی بھی وقت ترتیبات میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="4793679854893018356">‏جانیں کہ Chrome آپ کو کیسے محفوظ رکھتا ہے</translation>
 <translation id="4803313124144656665">‏‫Chrome میں Google تلاش بند کریں</translation>
@@ -455,6 +460,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">انٹرنیٹ سے منسلک ہونے سے قاصر۔ پراکسی سرور کیلئے تصدیق درکار ہے۔</translation>
 <translation id="5709557627224531708">‏Chrome کو اپنے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
+<translation id="5715427327524421317">‏‫Chrome ان AI ماڈلز کو خودکار طور پر ڈاؤن لوڈ اور اپ ڈیٹ کرتا ہے</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{‏اعلی تحفظ کا تقاضہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کے لیے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی الگ تھلگ ونڈو دوبارہ نہیں کھلے گی۔}other{‏اعلی تحفظ کا تقاضہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کے لیے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی # الگ تھلگ ونڈوز دوبارہ نہیں کھلیں گی۔}}</translation>
 <translation id="5719246646468301581">‏‫Google Chrome اور Chrome OS کی سروس کی اضافی شرائط</translation>
 <translation id="5736850870166430177">‏اگر کوئی سائٹ آپ کا پاس ورڈ چرانے کی کوشش کرتی ہے یا جب آپ نقصان دہ فائل ڈاؤن لوڈ کرتے ہیں تو Chrome محفوظ براؤزنگ پر صفحہ کے مواد کے کچھ حصوں سمیت URLs بھی بھیج سکتا ہے</translation>
@@ -546,6 +552,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="6491330562720922580">‏موبائل آلات پر Chrome براؤزر ڈاؤن لوڈ کرنے کے لیے QR کوڈ</translation>
 <translation id="6493527311031785448">‏Google Chrome <ph name="AUTHENTICATION_PURPOSE" /> کی کوشش کر رہا ہے</translation>
 <translation id="6497147134301593682">‏Chrome خودکار طور پر بند ہو گیا</translation>
+<translation id="650039555447046671">‏‫Chrome اس آلہ سے AI ماڈلز کو ہٹا دے گا۔ ہو سکتا ہے کہ کچھ سائٹس اور Chrome کی خصوصیات کام نہ کریں۔</translation>
 <translation id="6506909944137591434">‏Chrome کو آپ کے اطراف کا 3D نقشہ تخلیق کرنے کے لیے کیمرے کی اجازت درکار ہے</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">‏اپنے مقام کا استعمال کرنے کے لیے، <ph name="BEGIN_LINK" />سسٹم کی ترتیبات<ph name="END_LINK" /> میں Chrome کو رسائی فراہم کریں</translation>
@@ -584,6 +591,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="6877155553248388166">تلاش کے حلقے کا نیچے والا بایاں کونا: <ph name="RIGHT" /> فیصد بائیں، <ph name="BOTTOM" /> فیصد نیچے</translation>
 <translation id="6879791154455204815">‏‫Chrome کے ساتھ تلاش کھولیں</translation>
 <translation id="6881299373831449287">‏Chrome اپ ڈیٹ کیا جا رہا ہے</translation>
+<translation id="6881997500528805781">‏آلے کی اسٹوریج استعمال کرتا ہے۔ ‫Chrome غیر استعمال شدہ AI ماڈلز کو 45 دن کے بعد یا اسٹوریج کم ہونے پر ہٹا دیتا ہے</translation>
 <translation id="6885412569789873916">‏Chrome بی ٹا ایپس</translation>
 <translation id="6893363893008038481">‏‫Chrome سے اکاؤنٹ ہٹائیں</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>

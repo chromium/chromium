@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Avoimien välilehtien otsikoita ja URL-osoitteita käytetään relevanttien ehdotusten antamiseen.</translation>
 <translation id="4439968635693513370">Ota viikonlopun suunnitteluun avuksi</translation>
 <translation id="4442550905108052454">Avaa <ph name="BEGIN_BOLD" />Asetukset<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} tulos saatavilla.}other{{count} tulosta saatavilla.}}</translation>
 <translation id="4445840280797509738">Lisää vaihtoehtoja: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Voit siirtyä taakse- tai eteenpäin pyyhkäisemällä sivun reunaa.</translation>
 <translation id="4460014764210899310">Poista ryhmittely</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5311061401280561833">Pääsy kameraan ja mikrofoniin myönnetty</translation>
 <translation id="5313967007315987356">Lisää sivusto</translation>
-<translation id="5315029634103634221">Gemini on tekoäly ja voi tehdä virheitä. <ph name="BEGIN_LINK" />Lisätietoa Googlelle lähetetystä relevantista datasta<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Ei tuotavia tietoja</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Kirjaudu sisään: <ph name="SITE_DOMAIN" /></translation>

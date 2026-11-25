@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Els títols de pàgina i els URL de les pestanyes obertes s'utilitzen per fer-te suggeriments rellevants.</translation>
 <translation id="4439968635693513370">Planifica el teu cap de setmana amb</translation>
 <translation id="4442550905108052454">Obre <ph name="BEGIN_BOLD" />Configuració<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} resultat disponible.}other{{count} resultats disponibles.}}</translation>
 <translation id="4445840280797509738">Més opcions per a <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Pots fer lliscar la vora per anar enrere o endavant.</translation>
 <translation id="4460014764210899310">Desagrupa</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5311061401280561833">S'ha permès l'accés a la càmera i al micròfon</translation>
 <translation id="5313967007315987356">Afegeix un lloc web</translation>
-<translation id="5315029634103634221">Gemini és una IA i pot cometre errors. <ph name="BEGIN_LINK" />Més informació sobre les dades rellevants que s'envien a Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">No hi ha res per importar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Inicia la sessió a <ph name="SITE_DOMAIN" /></translation>

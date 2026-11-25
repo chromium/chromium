@@ -1102,7 +1102,6 @@
 <translation id="443295142249850475">Οι τίτλοι σελίδων και τα URL των ανοικτών καρτελών σας χρησιμοποιούνται για την παροχή σχετικών προτάσεων.</translation>
 <translation id="4439968635693513370">Προγραμματίστε το Σαββατοκύριακό σας με το</translation>
 <translation id="4442550905108052454">Ανοίξτε τις <ph name="BEGIN_BOLD" />Ρυθμίσεις<ph name="END_BOLD" /></translation>
-<translation id="4444574452810111637">{count,plural, =1{{count} διαθέσιμο αποτέλεσμα.}other{{count} διαθέσιμα αποτελέσματα.}}</translation>
 <translation id="4445840280797509738">Περισσότερες επιλογές για <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Μπορείτε να σύρετε την άκρη για μετάβαση προς τα πίσω ή προς τα εμπρός.</translation>
 <translation id="4460014764210899310">Κατάργηση ομαδοποίησης</translation>
@@ -1398,7 +1397,6 @@
 <translation id="5300589172476337783">Εμφάνιση</translation>
 <translation id="5311061401280561833">Επιτρέπεται η πρόσβαση στην κάμερα και το μικρόφωνο</translation>
 <translation id="5313967007315987356">Προσθήκη ιστότοπου</translation>
-<translation id="5315029634103634221">Το Gemini είναι AI και μπορεί να κάνει λάθη. <ph name="BEGIN_LINK" />Περισσότερα για τα σχετικά δεδομένα που αποστέλλονται στην Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Δεν υπάρχει τίποτα προς εισαγωγή</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> από <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5316823130598991834">Συνδεθείτε στο <ph name="SITE_DOMAIN" /></translation>
