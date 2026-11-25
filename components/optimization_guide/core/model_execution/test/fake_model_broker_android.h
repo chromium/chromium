@@ -33,7 +33,7 @@ class ScopedModelBrokerAndroidFeatureList {
 class FakeModelBrokerAndroid {
  public:
   struct Options {
-    on_device_model::ModelDownloaderAndroid::BaseModelSpec base_model_spec{
+    on_device_model::AICoreModelSpec base_model_spec{
         .name = "Test",
         .version = "0.0.1",
     };

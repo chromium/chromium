@@ -19,7 +19,6 @@
 namespace on_device_model {
 
 using DownloadFailureReason = ModelDownloaderAndroid::DownloadFailureReason;
-using BaseModelSpec = ModelDownloaderAndroid::BaseModelSpec;
 using ModelStatus = ModelDownloaderAndroid::ModelStatus;
 
 namespace {
@@ -73,7 +72,7 @@ class ModelDownloaderAndroidTest : public testing::Test {
 TEST_F(ModelDownloaderAndroidTest, DefaultDownloader) {
   java_helper_.SetDefaultAiCoreFactory();
 
-  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+  base::test::TestFuture<base::expected<AICoreModelSpec, DownloadFailureReason>>
       future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(
       kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
@@ -87,7 +86,7 @@ TEST_F(ModelDownloaderAndroidTest, DefaultDownloader) {
 TEST_F(ModelDownloaderAndroidTest, DownloadAvailable) {
   java_helper_.SetMockAiCoreFactory();
 
-  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+  base::test::TestFuture<base::expected<AICoreModelSpec, DownloadFailureReason>>
       future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(
       kFeature, MakeDownloaderParams(/*require_persistent_mode=*/true));
@@ -106,7 +105,7 @@ TEST_F(ModelDownloaderAndroidTest, DownloadAvailable) {
 TEST_F(ModelDownloaderAndroidTest, DownloadUnavailable) {
   java_helper_.SetMockAiCoreFactory();
 
-  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+  base::test::TestFuture<base::expected<AICoreModelSpec, DownloadFailureReason>>
       future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(
       kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
@@ -122,7 +121,7 @@ TEST_F(ModelDownloaderAndroidTest, DownloadUnavailable) {
 TEST_F(ModelDownloaderAndroidTest, DownloadAvailableOnDifferentThread) {
   java_helper_.SetMockAiCoreFactory();
 
-  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+  base::test::TestFuture<base::expected<AICoreModelSpec, DownloadFailureReason>>
       future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(
       kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
@@ -142,7 +141,7 @@ TEST_F(ModelDownloaderAndroidTest, DownloadAvailableOnDifferentThread) {
 TEST_F(ModelDownloaderAndroidTest, DownloadUnavailableOnDifferentThread) {
   java_helper_.SetMockAiCoreFactory();
 
-  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+  base::test::TestFuture<base::expected<AICoreModelSpec, DownloadFailureReason>>
       future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(
       kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
@@ -259,7 +258,7 @@ TEST_F(ModelDownloaderAndroidTest, CheckStatusDoesNotAffectStartDownload) {
   downloader->CheckStatus(check_future.GetCallback());
 
   // Call StartDownload on the same instance.
-  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+  base::test::TestFuture<base::expected<AICoreModelSpec, DownloadFailureReason>>
       download_future;
   downloader->StartDownload(download_future.GetCallback(), base::DoNothing());
 

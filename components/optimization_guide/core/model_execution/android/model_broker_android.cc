@@ -48,7 +48,7 @@ namespace optimization_guide {
 
 namespace {
 
-using BaseModelSpec = on_device_model::ModelDownloaderAndroid::BaseModelSpec;
+using AICoreModelSpec = on_device_model::AICoreModelSpec;
 using DownloadFailureReason =
     on_device_model::ModelDownloaderAndroid::DownloadFailureReason;
 using ModelStatus = on_device_model::ModelDownloaderAndroid::ModelStatus;
@@ -94,7 +94,7 @@ bool IsModelAllowed(PrefService* local_state) {
                  GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed;
 }
 
-proto::OnDeviceModelVersions GetModelVersions(const BaseModelSpec& spec) {
+proto::OnDeviceModelVersions GetModelVersions(const AICoreModelSpec& spec) {
   proto::OnDeviceModelVersions versions;
   auto* on_device_model_version =
       versions.mutable_on_device_model_service_version();
@@ -161,7 +161,7 @@ class SolutionImpl : public ModelBrokerImpl::Solution {
  public:
   SolutionImpl(base::WeakPtr<ModelBrokerAndroid> parent,
                scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
-               const BaseModelSpec& spec,
+               const AICoreModelSpec& spec,
                base::Token manifest_id);
   ~SolutionImpl() override;
 
@@ -182,14 +182,14 @@ class SolutionImpl : public ModelBrokerImpl::Solution {
 
   base::WeakPtr<ModelBrokerAndroid> parent_;
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter_;
-  const BaseModelSpec spec_;
+  const AICoreModelSpec spec_;
   const base::Token manifest_id_;
 };
 
 SolutionImpl::SolutionImpl(
     base::WeakPtr<ModelBrokerAndroid> parent,
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
-    const BaseModelSpec& spec,
+    const AICoreModelSpec& spec,
     base::Token manifest_id)
     : parent_(std::move(parent)),
       adapter_(std::move(adapter)),
@@ -287,7 +287,7 @@ class ModelBrokerAndroid::SolutionFactory final
   // Called when an AICore model was found (or not supported).
   void OnAICoreModelUpdated(
       AICoreFeature aicore_feature,
-      base::expected<BaseModelSpec, DownloadFailureReason> result);
+      base::expected<AICoreModelSpec, DownloadFailureReason> result);
 
   // Called when CheckStatus completes. Calls |barrier_done_callback| when
   // finished.
@@ -305,7 +305,7 @@ class ModelBrokerAndroid::SolutionFactory final
   // reason if the spec is not available.
   absl::flat_hash_map<
       AICoreFeature,
-      base::expected<BaseModelSpec, OnDeviceModelEligibilityReason>>
+      base::expected<AICoreModelSpec, OnDeviceModelEligibilityReason>>
       base_model_specs_;
 
   // Map from AICore feature to the downloader for the base model. The
@@ -387,7 +387,7 @@ void ModelBrokerAndroid::SolutionFactory::MaybeStartDownload(
 
 void ModelBrokerAndroid::SolutionFactory::OnAICoreModelUpdated(
     AICoreFeature aicore_feature,
-    base::expected<BaseModelSpec, DownloadFailureReason> result) {
+    base::expected<AICoreModelSpec, DownloadFailureReason> result) {
   // The download has completed, so the downloader can be removed.
   model_downloaders_.erase(aicore_feature);
   if (result.has_value()) {

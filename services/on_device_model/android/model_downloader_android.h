@@ -5,6 +5,8 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_ANDROID_MODEL_DOWNLOADER_ANDROID_H_
 #define SERVICES_ON_DEVICE_MODEL_ANDROID_MODEL_DOWNLOADER_ANDROID_H_
 
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -16,18 +18,18 @@
 
 namespace on_device_model {
 
+// The name and version of an AICore model.
+struct AICoreModelSpec {
+  std::string name;
+  std::string version;
+};
+
 // This class is used to download models or check model status on Android. The
 // Java counterpart will be created when this object is created. One object
 // should only handle one download request (i.e. call StartDownload() only once)
 // or one check status request (i.e. call CheckStatus() only once).
 class ModelDownloaderAndroid {
  public:
-  // Specification of the base model.
-  struct BaseModelSpec {
-    std::string name;
-    std::string version;
-  };
-
   // The reason for a download failure.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -63,7 +65,7 @@ class ModelDownloaderAndroid {
   };
 
   using OnDownloadCompleteCallback = base::OnceCallback<void(
-      base::expected<BaseModelSpec, DownloadFailureReason>)>;
+      base::expected<AICoreModelSpec, DownloadFailureReason>)>;
 
   using OnDownloadProgressCallback =
       base::RepeatingCallback<void(int64_t downloaded_bytes,

@@ -101,8 +101,8 @@ void ModelDownloaderAndroid::OnAvailableOnSequence(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LogModelDownloadResult(feature_, base::ok());
   std::move(on_download_complete_callback_)
-      .Run(BaseModelSpec{.name = base_model_name,
-                         .version = base_model_version});
+      .Run(AICoreModelSpec{.name = base_model_name,
+                           .version = base_model_version});
 }
 
 void ModelDownloaderAndroid::OnUnavailable(

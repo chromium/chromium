@@ -50,7 +50,6 @@ namespace optimization_guide {
 
 namespace {
 
-using BaseModelSpec = on_device_model::ModelDownloaderAndroid::BaseModelSpec;
 using ModelStatus = on_device_model::ModelDownloaderAndroid::ModelStatus;
 
 class FakeManifestProvider : public ManifestProvider {
@@ -166,7 +165,7 @@ class ModelBrokerAndroidTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  BaseModelSpec spec_{.name = "Test", .version = "0.0.1"};
+  on_device_model::AICoreModelSpec spec_{.name = "Test", .version = "0.0.1"};
   FakeModelBrokerAndroid fake_broker_{{
       .base_model_spec = spec_,
       .preinstall_base_model = false,
@@ -711,7 +710,7 @@ TEST_F(ModelBrokerAndroidStatusCheckTest,
   fake_broker_.java_helper().TriggerDownloaderOnAvailable(spec_.name,
                                                           spec_.version);
 
-  // The returned BaseModelSpec makes the summarize solution available.
+  // The returned AICoreModelSpec makes the summarize solution available.
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !subscriber.unavailable_reason().has_value(); }));
 }
