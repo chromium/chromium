@@ -29,39 +29,46 @@ class FontCustomPlatformData;
 class FontDescription;
 class FontResource;
 struct FontSelectionCapabilities;
-class IftCustomFontData;
 class IftPatcher;
 class IftSubsetDefinition;
-class RemoteFontFaceSource;
 class Resource;
+class ResourceFetcher;
+
+// Observes updates to an `IftFont` and provides a `ResourceFetcher` for patch
+// requests.
+class CORE_EXPORT IftFontObserver : public GarbageCollectedMixin {
+ public:
+  // Returns the `ResourceFetcher` to use for patch requests, or nullptr if this
+  // observer cannot fetch resources (e.g. its context is detached).
+  virtual ResourceFetcher* GetIftResourceFetcher() const = 0;
+
+  // Called when patches have been applied and `custom_font_data` has been
+  // decoded from the extended font. `custom_font_data` is never null.
+  virtual void OnIftFontUpdated(
+      const FontCustomPlatformData* custom_font_data) = 0;
+};
 
 // The state of an Incremental Font Transfer (IFT) font. See the W3 spec
 // (https://www.w3.org/TR/IFT/).
 //
 // A single instance that is shared by every `SimpleFontData` created from the
-// same `RemoteFontFaceSource.
+// same `RemoteFontFaceSource`.
 class CORE_EXPORT IftFont final : public GarbageCollected<IftFont> {
  public:
-  // Returns a new `IftFont` if `font_resource` holds an IFT font, taking
-  // ownership of its patcher. Returns nullptr otherwise.
-  static IftFont* MaybeCreate(RemoteFontFaceSource* font_face_source,
+  // Returns a new `IftFont` if `font_resource` holds an IFT font, cloning its
+  // patcher. Returns nullptr otherwise. `observer` must be non-null.
+  static IftFont* MaybeCreate(IftFontObserver* observer,
                               FontResource& font_resource);
 
+  // `observer` and `patcher` must be non-null. `world_for_csp` may be null.
   IftFont(base::PassKey<IftFont>,
-          RemoteFontFaceSource* font_face_source,
+          IftFontObserver* observer,
           const KURL& font_url,
           const DOMWrapperWorld* world_for_csp,
           std::unique_ptr<IftPatcher> patcher);
   ~IftFont();
 
   void Trace(Visitor*) const;
-
-  // Returns the `CustomFontData` for the given `font_platform_data`,
-  // `font_description`, and `font_selection_capabilities`.
-  IftCustomFontData* CreateCustomFontData(
-      const FontCustomPlatformData& font_platform_data,
-      const FontDescription& font_description,
-      const FontSelectionCapabilities& font_selection_capabilities) const;
 
   // Requests that the font is extended to support `text` for the given
   // `variation_axes`. Returns true if the rendered font already supports it, or
@@ -108,7 +115,7 @@ class CORE_EXPORT IftFont final : public GarbageCollected<IftFont> {
   void OnPatchLoaded(PatchLoader* loader, const Resource* resource) const;
 
   mutable State state_ = State::kIdle;
-  Member<RemoteFontFaceSource> font_face_source_;
+  Member<IftFontObserver> observer_;
   // The URL of the font. Patch URLs are resolved relative to this.
   const KURL font_url_;
   Member<const DOMWrapperWorld> world_for_csp_;
@@ -128,6 +135,15 @@ class CORE_EXPORT IftFont final : public GarbageCollected<IftFont> {
 // The `CustomFontData` of a single `SimpleFontData` backed by an IFT font.
 class CORE_EXPORT IftCustomFontData final : public CustomFontData {
  public:
+  // Returns the `IftCustomFontData` for the given `ift_font`,
+  // `font_platform_data`, `font_description`, and
+  // `font_selection_capabilities`.
+  static IftCustomFontData* Create(
+      const IftFont* ift_font,
+      const FontCustomPlatformData& font_platform_data,
+      const FontDescription& font_description,
+      const FontSelectionCapabilities& font_selection_capabilities);
+
   IftCustomFontData(const IftFont* ift_font,
                     Vector<FontVariationAxis, 5> variation_axes);
   ~IftCustomFontData() override;

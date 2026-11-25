@@ -8,6 +8,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
+#include "third_party/blink/renderer/core/css/ift_custom_font_data.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -21,7 +22,8 @@ class FontSelector;
 class IftFont;
 
 class RemoteFontFaceSource final : public CSSFontFaceSource,
-                                   public FontResourceClient {
+                                   public FontResourceClient,
+                                   public IftFontObserver {
  public:
   enum Phase : uint8_t {
     kNoLimitExceeded,
@@ -66,9 +68,11 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
 
   ExecutionContext* GetExecutionContext() const;
 
-  // Replaces the font data with `custom_font_data` and invalidates the font
-  // face. Used by IFT fonts after patches have been applied.
-  void UpdateCustomFontData(const FontCustomPlatformData* custom_font_data);
+  // IftFontObserver:
+  ResourceFetcher* GetIftResourceFetcher() const override;
+  void OnIftFontUpdated(
+      const FontCustomPlatformData* custom_font_data) override;
+
   // Invalidates the font face so that text using it is re-laid out.
   void InvalidateFontFace();
 

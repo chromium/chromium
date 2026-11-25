@@ -314,7 +314,15 @@ bool RemoteFontFaceSource::UpdatePeriod() {
   return changed;
 }
 
-void RemoteFontFaceSource::UpdateCustomFontData(
+ResourceFetcher* RemoteFontFaceSource::GetIftResourceFetcher() const {
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context || execution_context->IsContextDestroyed()) {
+    return nullptr;
+  }
+  return execution_context->Fetcher();
+}
+
+void RemoteFontFaceSource::OnIftFontUpdated(
     const FontCustomPlatformData* custom_font_data) {
   CHECK(custom_font_data);
   custom_font_data_ = custom_font_data;
@@ -364,9 +372,9 @@ const SimpleFontData* RemoteFontFaceSource::CreateFontData(
   histograms_.RecordFallbackTime();
 
   CustomFontData* custom_font_data =
-      ift_font_ ? ift_font_->CreateCustomFontData(*custom_font_data_,
-                                                  font_description,
-                                                  font_selection_capabilities)
+      ift_font_ ? IftCustomFontData::Create(ift_font_.Get(), *custom_font_data_,
+                                            font_description,
+                                            font_selection_capabilities)
                 : MakeGarbageCollected<CustomFontData>();
   return MakeGarbageCollected<SimpleFontData>(
       custom_font_data_->GetFontPlatformData(
@@ -470,6 +478,7 @@ void RemoteFontFaceSource::Trace(Visitor* visitor) const {
   visitor->Trace(ift_font_);
   CSSFontFaceSource::Trace(visitor);
   FontResourceClient::Trace(visitor);
+  IftFontObserver::Trace(visitor);
 }
 
 void RemoteFontFaceSource::FontLoadHistograms::LoadStarted() {

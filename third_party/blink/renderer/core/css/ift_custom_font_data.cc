@@ -15,22 +15,20 @@
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/core/css/remote_font_face_source.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/ift/ift_patcher.h"
-#include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -73,7 +71,7 @@ class IftFont::PatchLoader final : public GarbageCollected<PatchLoader>,
   const String patch_url_;
 };
 
-IftFont* IftFont::MaybeCreate(RemoteFontFaceSource* font_face_source,
+IftFont* IftFont::MaybeCreate(IftFontObserver* observer,
                               FontResource& font_resource) {
   std::unique_ptr<IftPatcher> patcher = font_resource.CloneIftPatcher();
   if (!patcher) {
@@ -86,53 +84,32 @@ IftFont* IftFont::MaybeCreate(RemoteFontFaceSource* font_face_source,
   // patches are fetched relative to where the font bytes actually came from.
   const KURL initial_font_url = font_resource.GetResponse().ResponseUrl();
   return MakeGarbageCollected<IftFont>(
-      base::PassKey<IftFont>(), font_face_source, initial_font_url,
+      base::PassKey<IftFont>(), observer, initial_font_url,
       font_resource.Options().WorldForCsp(), std::move(patcher));
 }
 
 IftFont::IftFont(base::PassKey<IftFont>,
-                 RemoteFontFaceSource* font_face_source,
+                 IftFontObserver* observer,
                  const KURL& font_url,
                  const DOMWrapperWorld* world_for_csp,
                  std::unique_ptr<IftPatcher> patcher)
-    : font_face_source_(font_face_source),
+    : observer_(observer),
       font_url_(font_url),
       world_for_csp_(world_for_csp),
       patcher_(std::move(patcher)),
       requested_subset_(std::make_unique<IftSubsetDefinition>()),
       fetched_subset_(std::make_unique<IftSubsetDefinition>()),
       scratch_subset_(std::make_unique<IftSubsetDefinition>()) {
-  CHECK(font_face_source_);
+  CHECK(observer_);
   CHECK(patcher_);
 }
 
 IftFont::~IftFont() = default;
 
 void IftFont::Trace(Visitor* visitor) const {
-  visitor->Trace(font_face_source_);
+  visitor->Trace(observer_);
   visitor->Trace(world_for_csp_);
   visitor->Trace(patch_loaders_);
-}
-
-IftCustomFontData* IftFont::CreateCustomFontData(
-    const FontCustomPlatformData& font_platform_data,
-    const FontDescription& font_description,
-    const FontSelectionCapabilities& font_selection_capabilities) const {
-  // Resolve variation axis coordinates without clamping or filtering against
-  // the base font's `fvar` table, which in an unpatched IFT font may omit
-  // pinned axes or have narrowed `[min, max]` ranges until patches are applied.
-  // Coordinates for axes the font does not have never match a patch; see
-  // https://www.w3.org/TR/IFT/#abstract-opdef-check-entry-intersection.
-  //
-  // TODO(wmedrano): Clamp out-of-bounds CSS coordinates (e.g. `wght: 950`,
-  // `slnt: -14`) to the full font / patch-map axis bounds so finite outer patch
-  // segments still match, and include `fvar` defaults for omitted axes
-  // (`font-optical-sizing: none` or custom axes) when needed.
-  return MakeGarbageCollected<IftCustomFontData>(
-      this,
-      font_platform_data.ResolveVariationAxes(
-          font_description, font_selection_capabilities,
-          FontCustomPlatformData::VariationAxisMode::kIgnoreTypefaceAxes));
 }
 
 bool IftFont::RequireSubset(
@@ -192,7 +169,7 @@ void IftFont::BeginIdle() const {
     return;
   }
   patcher_->MarkFontDataRendered();
-  font_face_source_->UpdateCustomFontData(custom_font_data);
+  observer_->OnIftFontUpdated(custom_font_data);
 }
 
 void IftFont::BeginCollecting() const {
@@ -203,26 +180,21 @@ void IftFont::BeginCollecting() const {
   // Leaving `kIdle` starts a new execution of the extension algorithm. Subsets
   // requested before returning to `kIdle` share its patch limits.
   patcher_->BeginExtension();
-  ExecutionContext* execution_context =
-      font_face_source_->GetExecutionContext();
-  if (!execution_context) {
+  ResourceFetcher* fetcher = observer_->GetIftResourceFetcher();
+  if (!fetcher || fetcher->IsDetached()) {
     BeginFailed();
     return;
   }
-  execution_context->GetTaskRunner(TaskType::kFontLoading)
-      ->PostTask(FROM_HERE,
-                 BindOnce(&IftFont::BeginFetching, WrapPersistent(this)));
+  fetcher->GetTaskRunner()->PostTask(
+      FROM_HERE, BindOnce(&IftFont::BeginFetching, WrapPersistent(this)));
 }
 
 void IftFont::BeginFetching() const {
   if (state_ != State::kCollecting) {
     return;
   }
-  ExecutionContext* execution_context =
-      font_face_source_->GetExecutionContext();
-  ResourceFetcher* fetcher =
-      execution_context ? execution_context->Fetcher() : nullptr;
-  if (!fetcher) {
+  ResourceFetcher* fetcher = observer_->GetIftResourceFetcher();
+  if (!fetcher || fetcher->IsDetached()) {
     BeginFailed();
     return;
   }
@@ -240,6 +212,9 @@ void IftFont::BeginFetching() const {
     return;
   }
 
+  const SecurityOrigin* security_origin = fetcher->GetProperties()
+                                              .GetFetchClientSettingsObject()
+                                              .GetSecurityOrigin();
   // Register every loader before starting any fetch so that a fetch finishing
   // synchronously does not observe an incomplete `patch_loaders_`.
   for (const String& patch_url : *patch_urls) {
@@ -254,7 +229,7 @@ void IftFont::BeginFetching() const {
     ResourceLoaderOptions options(world_for_csp_);
     options.initiator_info.name = fetch_initiator_type_names::kFont;
     FetchParameters params(std::move(resource_request), std::move(options));
-    params.SetCrossOriginAccessControl(execution_context->GetSecurityOrigin(),
+    params.SetCrossOriginAccessControl(security_origin,
                                        kCrossOriginAttributeAnonymous);
     RawResource::Fetch(params, fetcher, loader);
   }
@@ -310,6 +285,28 @@ void IftFont::OnPatchLoaded(PatchLoader* loader,
   if (patch_loaders_.empty()) {
     ApplyPatches();
   }
+}
+
+IftCustomFontData* IftCustomFontData::Create(
+    const IftFont* ift_font,
+    const FontCustomPlatformData& font_platform_data,
+    const FontDescription& font_description,
+    const FontSelectionCapabilities& font_selection_capabilities) {
+  // Resolve variation axis coordinates without clamping or filtering against
+  // the base font's `fvar` table, which in an unpatched IFT font may omit
+  // pinned axes or have narrowed `[min, max]` ranges until patches are applied.
+  // Coordinates for axes the font does not have never match a patch; see
+  // https://www.w3.org/TR/IFT/#abstract-opdef-check-entry-intersection.
+  //
+  // TODO(wmedrano): Clamp out-of-bounds CSS coordinates (e.g. `wght: 950`,
+  // `slnt: -14`) to the full font / patch-map axis bounds so finite outer patch
+  // segments still match, and include `fvar` defaults for omitted axes
+  // (`font-optical-sizing: none` or custom axes) when needed.
+  return MakeGarbageCollected<IftCustomFontData>(
+      ift_font,
+      font_platform_data.ResolveVariationAxes(
+          font_description, font_selection_capabilities,
+          FontCustomPlatformData::VariationAxisMode::kIgnoreTypefaceAxes));
 }
 
 IftCustomFontData::IftCustomFontData(
