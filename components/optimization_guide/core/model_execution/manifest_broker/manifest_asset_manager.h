@@ -355,6 +355,7 @@ class ManifestAssetManager : public UsageTracker::Observer,
   bool ShouldInstallOrRetain(const ComponentContext& context,
                              const proto::OnDemandComponent* component) const;
   bool ShouldRequestForegroundDownload(const ComponentContext& context) const;
+  bool AnyAssetIsUserBlockingAndNotReady() const;
 
   bool IsEvictionEnabled() const;
 

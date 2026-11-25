@@ -950,27 +950,29 @@ Manifest::UninstallReason ManifestAssetManager::RecordUninstallReason(
   return log_reason;
 }
 
+bool ManifestAssetManager::AnyAssetIsUserBlockingAndNotReady() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& [asset_id, component] :
+       factory_->manifest().GetAssets().on_demand_components()) {
+    if (!asset_priorities_.IsAtLeast(AssetPriority::kUserBlocking, asset_id)) {
+      continue;
+    }
+    const auto* context = ledger_.GetContext(component.public_key());
+    CHECK(context);
+    if (!context->IsReadyFor(component.target_version())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void ManifestAssetManager::UpdateRegistrations() {
   TRACE_EVENT("optimization_guide", "ManifestAssetManager::UpdateRegistrations",
               perfetto::Flow::FromPointer(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const bool needs_disk_evaluation = !disk_space_status_.IsFresh();
-  bool needs_foreground_evaluation = false;
-  if (needs_disk_evaluation) {
-    for (const auto& [asset_id, component] :
-         factory_->manifest().GetAssets().on_demand_components()) {
-      if (!asset_priorities_.IsAtLeast(AssetPriority::kUserBlocking,
-                                       asset_id)) {
-        continue;
-      }
-      const auto* context = ledger_.GetContext(component.public_key());
-      CHECK(context);
-      if (!context->IsReadyFor(component.target_version())) {
-        needs_foreground_evaluation = true;
-        break;
-      }
-    }
-  }
+  const bool needs_foreground_evaluation =
+      needs_disk_evaluation && AnyAssetIsUserBlockingAndNotReady();
   delegate_->SetDiskSpaceCheckPriority(
       ManifestMonitorDelegate::DiskSpaceCheckReason::kAssetRegistration,
       needs_foreground_evaluation);
