@@ -20,8 +20,8 @@ namespace webui {
 // can't host the WebUIs of another BrowserContext.
 bool ShouldUseTopChromeWebUIProfile();
 
-// Creates the profile. Called once at startup, after the initial user profile
-// is loaded and before any Top Chrome WebUI is created.
+// Creates the profile. Called once at startup, before any Top Chrome WebUI is
+// created and before the initial user profile is created.
 void CreateTopChromeWebUIProfile();
 
 // Destroys the profile. Called after the user profiles are destroyed, since

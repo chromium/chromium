@@ -116,6 +116,7 @@ source_set("waap_utils") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui/prefs",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//components/performance_manager",
@@ -123,6 +124,7 @@ source_set("waap_utils") {
     "//content/public/browser",
     "//content/public/common",
     "//skia",
+    "//ui/base",
     "//url",
   ]
   if (is_android) {
@@ -130,8 +132,6 @@ source_set("waap_utils") {
   } else {
     deps += [
       "//chrome/browser/themes",
-      "//chrome/browser/ui/webui/top_chrome",
-      "//ui/base",
       "//ui/color",
       "//ui/native_theme",
       "//ui/views/controls/webview",
@@ -217,6 +217,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui/prefs",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/test/base:chrome_render_view_host_test_harness",
@@ -247,7 +248,6 @@ source_set("unit_tests") {
       "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window/test:test_support",
-      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/test:test_support",
       "//components/prefs",

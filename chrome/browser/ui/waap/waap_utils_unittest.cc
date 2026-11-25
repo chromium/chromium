@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/waap/waap_utils.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -26,9 +30,6 @@
 #else
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_controller.h"
@@ -148,6 +149,26 @@ TEST_F(PrewarmHelperTest, ConfigureWebUIContents) {
           web_contents());
   ASSERT_TRUE(page_node);
   EXPECT_EQ(performance_manager::PageType::kNonTabWebUI, page_node->GetType());
+}
+
+// With the shared renderer, the initial WebUI is created in
+// TopChromeWebUIProfile and bound to the profile of its window.
+TEST_F(PrewarmHelperTest, PrewarmWebUiContentsUsesTopChromeWebUIProfile) {
+  base::test::ScopedFeatureList feature_list{
+      features::kTopChromeWebUISharedRenderer};
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_top_chrome_profile;
+
+  std::unique_ptr<content::WebContents> contents =
+      PrewarmHelper::PrewarmWebUiContents(
+          profile(),
+          GURL(base::StrCat({content::kChromeUIScheme,
+                             url::kStandardSchemeSeparator, kInitialWebUIHost,
+                             "/"})),
+          IDS_TASK_MANAGER_WEBUI_TOOLBAR, /*pre_navigate=*/false);
+
+  EXPECT_EQ(webui::GetTopChromeWebUIProfile(), contents->GetBrowserContext());
+  EXPECT_EQ(profile(), webui::GetUserProfile(contents.get()));
+  EXPECT_TRUE(PrefsTabHelper::FromWebContents(contents.get()));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

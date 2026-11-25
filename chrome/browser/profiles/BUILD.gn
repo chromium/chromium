@@ -57,6 +57,8 @@ source_set("misc") {
     "profiles_state.cc",
     "sql_init_error_message_ids.cc",
     "storage_partition_descriptor.h",
+    "top_chrome_webui_profile_impl.cc",
+    "top_chrome_webui_profile_impl.h",
   ]
 
   public_deps = [ ":profiles" ]
@@ -73,6 +75,7 @@ source_set("misc") {
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
     "//chrome/browser:buildflags",
+    "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:flags",
     "//chrome/browser:global_features",
     "//chrome/browser:shell_integration",
@@ -179,12 +182,7 @@ source_set("misc") {
       "//content/public/browser",
     ]
   } else {
-    sources += [
-      "top_chrome_webui_profile_impl.cc",
-      "top_chrome_webui_profile_impl.h",
-    ]
     deps += [
-      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/ui/dialogs:browser_dialogs",
       "//chrome/browser/ui/signin",
     ]

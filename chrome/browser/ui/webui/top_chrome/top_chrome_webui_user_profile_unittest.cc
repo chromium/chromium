@@ -6,27 +6,32 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/prefs/pref_service.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/test/scoped_feature_list.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/site_instance.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace webui {
 
 class TopChromeWebUIUserProfileTest : public testing::Test {
  protected:
+#if !BUILDFLAG(IS_ANDROID)
   // Creates the WebUI toolbar's WebContents in TopChromeWebUIProfile, the only
   // one that may compute WebPreferences before its user profile is set.
   std::unique_ptr<content::WebContents> CreateToolbarWebContents() {
@@ -36,6 +41,7 @@ class TopChromeWebUIUserProfileTest : public testing::Test {
         content::SiteInstance::CreateForURL(
             top_chrome_webui_profile, GURL(chrome::kChromeUIWebUIToolbarURL)));
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -65,6 +71,10 @@ TEST_F(TopChromeWebUIUserProfileTest, UserProfileInTopChromeWebUIProfile) {
   user_profile.reset();
   EXPECT_FALSE(GetUserProfile(web_contents.get()));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// On Android, unbound prerendering is not supported and the user profile is
+// always set early (before WebPreferences are computed).
 
 // The WebUI toolbar in TopChromeWebUIProfile without a user profile computes
 // WebPreferences before and after navigation using content defaults; a late
@@ -122,4 +132,5 @@ TEST_F(TopChromeWebUIUserProfileTest,
                   .standard_font_family_map.empty());
   EXPECT_EQ(22, web_contents->GetOrCreateWebPreferences().default_font_size);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace webui

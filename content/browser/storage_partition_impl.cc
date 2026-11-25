@@ -1576,31 +1576,32 @@ void StoragePartitionImpl::Initialize(
       step_timer.Elapsed());
   step_timer = base::ElapsedTimer();
 
-  GeneratedCodeCacheSettings settings =
-      GetContentClient()->browser()->GetGeneratedCodeCacheSettings(
-          browser_context_);
-
   // For Incognito mode, we should not persist anything on the disk so
   // we do not create a code cache. Caching the generated code in memory
   // is not useful, since V8 already maintains one copy in memory.
-  if (!is_in_memory() && settings.enabled()) {
-    generated_code_cache_context_ =
-        base::MakeRefCounted<GeneratedCodeCacheContext>();
+  if (!is_in_memory()) {
+    GeneratedCodeCacheSettings settings =
+        GetContentClient()->browser()->GetGeneratedCodeCacheSettings(
+            browser_context_);
+    if (settings.enabled()) {
+      generated_code_cache_context_ =
+          base::MakeRefCounted<GeneratedCodeCacheContext>();
 
-    base::FilePath code_cache_path;
-    if (config_.partition_domain().empty()) {
-      code_cache_path = settings.path().AppendASCII("Code Cache");
-    } else {
-      // For site isolated partitions use the config directory.
-      code_cache_path = settings.path()
-                            .Append(relative_partition_path_)
-                            .AppendASCII("Code Cache");
+      base::FilePath code_cache_path;
+      if (config_.partition_domain().empty()) {
+        code_cache_path = settings.path().AppendASCII("Code Cache");
+      } else {
+        // For site isolated partitions use the config directory.
+        code_cache_path = settings.path()
+                              .Append(relative_partition_path_)
+                              .AppendASCII("Code Cache");
+      }
+      // TODO(crbug.com/562462615): CHECK-exclusion: Convert to a CHECK once
+      // we are confident it won't be triggered.
+      DCHECK_GE(settings.size_in_bytes(), 0);
+      GetGeneratedCodeCacheContext()->Initialize(code_cache_path,
+                                                 settings.size_in_bytes());
     }
-    // TODO(crbug.com/562462615): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK_GE(settings.size_in_bytes(), 0);
-    GetGeneratedCodeCacheContext()->Initialize(code_cache_path,
-                                               settings.size_in_bytes());
   }
 
   font_access_manager_ = FontAccessManager::Create();

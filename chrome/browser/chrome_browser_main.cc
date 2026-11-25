@@ -83,6 +83,7 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_configs.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_metrics_mapping.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/updater/updater.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -168,7 +169,6 @@
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/usb/web_usb_detector.h"
 #include "components/soda/soda_installer.h"
@@ -1724,11 +1724,7 @@ void ChromeBrowserMainParts::PreBrowserStart() {
   // Start the tab manager here so that we give the most amount of time for the
   // other services to start up before we start adjusting the oom priority.
   g_browser_process->GetTabManager()->Start();
-
-  if (webui::ShouldUseTopChromeWebUIProfile()) {
-    webui::CreateTopChromeWebUIProfile();
-  }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // The RulesetService will make the filtering rules available to renderers
   // immediately after its construction, provided that the rules are already
@@ -1928,6 +1924,16 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
       ChromeWebUIControllerFactory::GetInstance());
   RegisterChromeWebUIConfigs();
   RegisterChromeUntrustedWebUIConfigs();
+
+  // Created before the initial profile, since, on Android, Java creates the
+  // WebUI tab strip new tab button of the first window as soon as it is
+  // notified of that profile, inside CreateInitialProfile(). Note: This profile
+  // is never destroyed on Android. Android kills the browser process without
+  // running the shutdown path that destroys the profiles, since
+  // PostMainMessageLoopRun() is never reached there.
+  if (webui::ShouldUseTopChromeWebUIProfile()) {
+    webui::CreateTopChromeWebUIProfile();
+  }
 
   // This step is costly and is already measured in Startup.CreateFirstProfile
   // and more directly Profile.CreateAndInitializeProfile.

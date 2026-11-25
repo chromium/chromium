@@ -1364,8 +1364,6 @@ BASE_DECLARE_FEATURE(kWebium);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kWebUIReloadButton);
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kTopChromeWebUISharedRenderer);
-COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kTopChromeWebUIPrerendering);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
@@ -1441,6 +1439,11 @@ BASE_DECLARE_FEATURE(kWebUIBundledCodeCacheForNewTabPage);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kWebUIToolbarFrameEvictionOptOut);
+
+// Creates the Top Chrome WebUIs of the windows of all profiles in a single
+// TopChromeWebUIProfile, so that they share a renderer process.
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kTopChromeWebUISharedRenderer);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kRespectUserAgentOverrideInSearchPrefetch);

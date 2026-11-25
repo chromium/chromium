@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -178,7 +179,7 @@ void TabStripNtbUI::PopulateLocalResourceLoaderConfig(
     const url::Origin& requesting_origin) {
   TRACE_EVENT("ui", "TabStripNtbUI::PopulateLocalResourceLoaderConfig");
   auto* theme_colors_manager = ThemeColorsSourceManagerFactory::GetForProfile(
-      Profile::FromWebUI(web_ui()));
+      webui::GetUserProfile(web_ui()->GetWebContents()));
   // Without a manager the stylesheet is still fetched over the network.
   if (!theme_colors_manager) {
     return;

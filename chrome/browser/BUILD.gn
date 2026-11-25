@@ -5051,6 +5051,7 @@ source_set("core_unit_tests") {
     "//chrome/browser/search",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/startup",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common:non_code_constants",
     "//chrome/common:version_header",
     "//chrome/test:test_interfaces",
@@ -5104,10 +5105,8 @@ source_set("core_unit_tests") {
       deps += [ "//chrome/browser/android/guest_view" ]
     }
   } else {
-    deps += [
-      "//chrome/browser/ui/webui/top_chrome",
-      "//chrome/browser/web_applications:web_applications_test_support",
-    ]
+    deps +=
+        [ "//chrome/browser/web_applications:web_applications_test_support" ]
   }
 
   if (is_win || is_mac || is_linux) {

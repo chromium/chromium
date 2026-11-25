@@ -225,6 +225,7 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/internal_debug_pages_disabled/internal_debug_pages_disabled_ui.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/webui_url_utils.h"
 #include "chrome/browser/universal_web_contents_observers.h"
 #include "chrome/browser/usb/chrome_usb_delegate.h"
@@ -589,7 +590,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_error_page.h"
@@ -892,10 +892,6 @@ BASE_FEATURE(kPrefetchRequestIntegrityHeaders,
 // WebContents in TopChromeWebUIProfile must set its user profile before its
 // WebPreferences are first computed.
 Profile* GetProfileForWebPreferences(content::WebContents* web_contents) {
-#if BUILDFLAG(IS_ANDROID)
-  // There is no TopChromeWebUIProfile on Android.
-  return Profile::FromBrowserContext(web_contents->GetBrowserContext());
-#else
   Profile* profile = webui::GetUserProfile(web_contents);
   if (!profile) {
     const content::SecurityPrincipal& principal =
@@ -904,7 +900,6 @@ Profile* GetProfileForWebPreferences(content::WebContents* web_contents) {
           principal.GetHost() == chrome::kChromeUIWebUIToolbarHost);
   }
   return profile;
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Cached version of the locale so we can return the locale on the I/O
@@ -6297,18 +6292,19 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   CHECK(profile, base::NotFatalUntil::M163);
 
+  // TopChromeWebUIProfile only hosts Top Chrome WebUIs, and does not have the
+  // keyed services and prefs that the throttles below depend on. Its requests
+  // never carry the internal X-Chrome-offline header either.
+  if (profile->IsTopChromeWebUIProfile()) {
+    return result;
+  }
+
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   // Strip internal X-Chrome-offline headers before network dispatch or
   // redirect.
   result.push_back(
       std::make_unique<offline_pages::OfflinePageURLLoaderThrottle>());
 #endif
-
-  // TopChromeWebUIProfile only hosts Top Chrome WebUIs, and does not have the
-  // keyed services and prefs that the throttles below depend on.
-  if (profile->IsTopChromeWebUIProfile()) {
-    return result;
-  }
 
   ChromeNavigationUIData* chrome_navigation_ui_data =
       static_cast<ChromeNavigationUIData*>(navigation_ui_data);
@@ -8341,14 +8337,12 @@ ChromeContentBrowserClient::MaybeOverrideSourceURLForClipboardAccess(
 
 content::BrowserContext* ChromeContentBrowserClient::GetUserBrowserContext(
     content::WebContents& web_contents) {
-#if !BUILDFLAG(IS_ANDROID)
   // When the WebContents of a Top Chrome WebUI is in TopChromeWebUIProfile,
   // which is shared by the windows of all profiles, return its user profile.
   // Otherwise, this is the profile of the WebContents.
   if (Profile* user_profile = webui::GetUserProfile(&web_contents)) {
     return user_profile;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
   return web_contents.GetBrowserContext();
 }
 

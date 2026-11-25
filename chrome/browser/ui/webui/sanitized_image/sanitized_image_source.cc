@@ -21,6 +21,7 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "content/public/browser/browser_context.h"
@@ -42,10 +43,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "url/url_util.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -189,7 +186,6 @@ void SanitizedImageSource::StartDataRequest(
 
   signin::IdentityManager* identity_manager = identity_manager_;
   request_attributes.url_loader_factory = url_loader_factory_;
-#if !BUILDFLAG(IS_ANDROID)
   if (!url_loader_factory_) {
     // In TopChromeWebUIProfile, which is shared by the windows of all profiles,
     // use the account and the network of the user who requests the image. A
@@ -204,7 +200,6 @@ void SanitizedImageSource::StartDataRequest(
     identity_manager = IdentityManagerFactory::GetForProfile(user_profile);
     request_attributes.url_loader_factory = user_profile->GetURLLoaderFactory();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Download the image body.
   if (!send_auth_token) {

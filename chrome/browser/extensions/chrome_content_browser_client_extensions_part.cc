@@ -338,9 +338,12 @@ bool ChromeContentBrowserClientExtensionsPart::ShouldUseSpareRenderProcessHost(
 bool ChromeContentBrowserClientExtensionsPart::DoesSiteRequireDedicatedProcess(
     content::BrowserContext* browser_context,
     const GURL& effective_site_url) {
-  const Extension* extension = ExtensionRegistry::Get(browser_context)
-                                   ->enabled_extensions()
-                                   .GetExtensionOrAppByURL(effective_site_url);
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
+  if (!registry) {
+    return false;
+  }
+  const Extension* extension =
+      registry->enabled_extensions().GetExtensionOrAppByURL(effective_site_url);
   // Isolate all extensions.
   return extension != nullptr;
 }

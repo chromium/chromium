@@ -78,6 +78,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -182,8 +184,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -6990,8 +6990,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   )"));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-class DevToolsTopChromeWebUITest : public InProcessBrowserTest {
+class DevToolsTopChromeWebUITest : public PlatformBrowserTest {
  public:
   DevToolsTopChromeWebUITest() {
     feature_list_.InitWithFeatures({features::kTopChromeWebUISharedRenderer,
@@ -7009,7 +7008,8 @@ class DevToolsTopChromeWebUITest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(DevToolsTopChromeWebUITest, OpensDevToolsInUserProfile) {
   std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
       content::WebContents::CreateParams(webui::GetTopChromeWebUIProfile()));
-  webui::SetUserProfile(contents.get(), browser()->GetProfile());
+  Profile* user_profile = chrome_test_utils::GetProfile(this);
+  webui::SetUserProfile(contents.get(), user_profile);
   DevToolsWindow::OpenDevToolsWindow(contents.get(),
                                      DevToolsOpenedByAction::kUnknown);
   DevToolsWindow* window =
@@ -7017,11 +7017,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsTopChromeWebUITest, OpensDevToolsInUserProfile) {
   ASSERT_TRUE(window);
   content::WebContents* frontend =
       DevToolsWindowTesting::Get(window)->main_web_contents();
-  EXPECT_EQ(browser()->GetProfile(), frontend->GetBrowserContext());
+  EXPECT_EQ(user_profile, frontend->GetBrowserContext());
   EXPECT_TRUE(content::WaitForLoadStop(frontend));
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // When debugging Top Chrome WebUIs, chrome://inspect lists a WebContents in
 // TopChromeWebUIProfile only in the user profile of the WebContents.
 IN_PROC_BROWSER_TEST_F(DevToolsTopChromeWebUITest, ListsTargetInUserProfile) {

@@ -2103,6 +2103,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/supervised_user",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/browser/update_client",
     "//chrome/common:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
@@ -2159,10 +2160,6 @@ source_set("unit_tests") {
 
   if (enable_webui_ntp) {
     deps += [ "//components/search" ]
-  }
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/webui/top_chrome" ]
   }
 
   if (!is_chromeos) {

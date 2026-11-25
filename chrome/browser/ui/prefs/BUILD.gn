@@ -42,6 +42,7 @@ source_set("impl") {
     "//chrome/browser:renderer_preferences_util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/browser/ui/zoom",
     "//chrome/common",
     "//chrome/common:chrome_features",
@@ -67,10 +68,6 @@ source_set("impl") {
 
   if (is_linux) {
     deps += [ "//ui/linux:linux_ui" ]
-  }
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/webui/top_chrome" ]
   }
 }
 

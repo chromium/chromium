@@ -121,30 +121,28 @@ class PrewarmHelper {
  public:
   // Configures the WebContents used for a non-tab WebUI (e.g. page type, page
   // load metrics, task manager tag, background color, and zoom gestures).
-  // `profile` is the profile of the window showing `web_contents`. On
-  // non-Android platforms, when `web_contents` is in TopChromeWebUIProfile,
-  // `profile` is first set as its user profile.
+  // `profile` is the profile of the window showing `web_contents`. When
+  // `web_contents` is in TopChromeWebUIProfile, `profile` is first set as its
+  // user profile.
   static void ConfigureWebUIContents(content::WebContents* web_contents,
                                      Profile* profile,
                                      int task_manager_string_id);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Returns the color provider key that `ConfigureWebUIContents()` gives the
-  // WebContents, which the WebUI keeps until it is attached to a window.
-  static ui::ColorProviderKey GetColorProviderKey(Profile* profile);
 
   // Prewarms the WebContents of the Top Chrome WebUI at `url` for a window of
   // `profile`. Creates the WebContents in
   // webui::GetProfileForTopChromeWebUIContents() and configures it for
   // `profile` using ConfigureWebUIContents(). If `pre_navigate` is true, starts
   // loading `url`; otherwise, only initializes the renderer process.
-  // TODO(crbug.com/581783426): Enable on Android for the tab strip new tab
-  // button, once TopChromeWebUIProfile is supported there.
   static std::unique_ptr<content::WebContents> PrewarmWebUiContents(
       Profile* profile,
       const GURL& url,
       int task_manager_string_id,
       bool pre_navigate);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns the color provider key that `ConfigureWebUIContents()` gives the
+  // WebContents, which the WebUI keeps until it is attached to a window.
+  static ui::ColorProviderKey GetColorProviderKey(Profile* profile);
 
   // Prewarms and navigates an unbound WebUI toolbar WebContents in
   // TopChromeWebUIProfile, seeding its prewarm color provider key from

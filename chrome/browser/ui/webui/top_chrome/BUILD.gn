@@ -7,6 +7,8 @@ source_set("top_chrome") {
     "top_chrome_web_ui_controller.h",
     "top_chrome_webui_config.h",
     "top_chrome_webui_metrics_mapping.h",
+    "top_chrome_webui_profile.h",
+    "top_chrome_webui_user_profile.h",
     "untrusted_top_chrome_web_ui_controller.h",
   ]
 
@@ -26,8 +28,6 @@ source_set("top_chrome") {
       "preload_candidate_selector.h",
       "preload_context.h",
       "profile_preload_candidate_selector.h",
-      "top_chrome_webui_profile.h",
-      "top_chrome_webui_user_profile.h",
       "webui_contents_preload_manager.h",
       "webui_contents_preload_state.h",
       "webui_contents_prerenderer.h",
@@ -50,6 +50,8 @@ source_set("impl") {
     "top_chrome_web_ui_controller.cc",
     "top_chrome_webui_config.cc",
     "top_chrome_webui_metrics_mapping.cc",
+    "top_chrome_webui_profile.cc",
+    "top_chrome_webui_user_profile.cc",
     "untrusted_top_chrome_web_ui_controller.cc",
   ]
 
@@ -57,9 +59,11 @@ source_set("impl") {
     ":top_chrome",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:misc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui:log_web_ui_url",
     "//chrome/common",
+    "//chrome/common:chrome_features",
     "//components/input",
     "//components/metrics/mapping",
     "//components/zoom",
@@ -75,8 +79,6 @@ source_set("impl") {
       "preload_candidate_selector.cc",
       "preload_context.cc",
       "profile_preload_candidate_selector.cc",
-      "top_chrome_webui_profile.cc",
-      "top_chrome_webui_user_profile.cc",
       "webui_contents_preload_manager.cc",
       "webui_contents_preload_state.cc",
       "webui_contents_prerenderer.cc",
@@ -88,7 +90,6 @@ source_set("impl") {
       "//chrome/browser:browser_process",
       "//chrome/browser/lifetime",
       "//chrome/browser/page_load_metrics",
-      "//chrome/browser/profiles:misc",
       "//chrome/browser/task_manager",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:ui_features",
@@ -151,42 +152,49 @@ if (!is_android) {
       "//ui/views:test_support",
     ]
   }
+}
 
-  source_set("unit_tests") {
-    testonly = true
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "top_chrome_webui_profile_unittest.cc",
+    "top_chrome_webui_user_profile_unittest.cc",
+  ]
+  deps = [
+    ":impl",
+    ":top_chrome",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (!is_android) {
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-    sources = [
+    sources += [
       "per_profile_webui_tracker_unittest.cc",
       "profile_preload_candidate_selector_unittest.cc",
       "top_chrome_webui_config_unittest.cc",
-      "top_chrome_webui_profile_unittest.cc",
-      "top_chrome_webui_user_profile_unittest.cc",
       "webui_contents_preload_manager_unittest.cc",
       "webui_contents_prerenderer_unittest.cc",
       "webui_contents_wrapper_unittest.cc",
     ]
-    deps = [
-      ":impl",
+    deps += [
       ":test_support",
-      ":top_chrome",
-      "//base/test:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui_features",
-      "//chrome/common",
-      "//chrome/common:chrome_features",
       "//chrome/common:constants",
-      "//chrome/test:test_support",
       "//chrome/test/base:chrome_render_view_host_test_harness",
       "//chrome/test/base:testing_browser_process",
       "//components/input",
       "//components/prefs",
       "//components/site_engagement/content",
-      "//content/public/browser",
-      "//content/public/common",
-      "//content/test:test_support",
-      "//testing/gtest",
       "//third_party/blink/public/common",
-      "//url",
     ]
   }
 }

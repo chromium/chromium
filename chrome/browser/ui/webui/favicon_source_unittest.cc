@@ -19,6 +19,8 @@
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
@@ -48,11 +50,6 @@
 #include "chrome/browser/search/instant_service_factory.h"
 #include "components/search/ntp_features.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 using GotDataCallback = content::URLDataSource::GotDataCallback;
 using WebContentsGetter = content::WebContents::Getter;
@@ -600,7 +597,6 @@ TEST_F(FaviconResultReportingTest,
   tester.ExpectTotalCount("Settings.SearchEngines.GoogleIconMismatches", 0);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 class FaviconSourceTopChromeWebUIProfileTest : public FaviconSourceTestBase {
  public:
   FaviconSourceTopChromeWebUIProfileTest()
@@ -635,4 +631,3 @@ TEST_F(FaviconSourceTopChromeWebUIProfileTest,
       base::BindLambdaForTesting([&] { return web_contents.get(); }),
       base::DoNothing());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)

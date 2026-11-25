@@ -894,6 +894,7 @@
                         "InitialWebUI",
                         "InitialWebUISurfaceSync",
                         "InitialWebUIWithoutExtensions",
+                        "TopChromeWebUISharedRenderer",
                         "WebUIBypassMojoConnections",
                         "WebUIToolbarFrameEvictionOptOut",
                         "WebUiAndroidTheming",

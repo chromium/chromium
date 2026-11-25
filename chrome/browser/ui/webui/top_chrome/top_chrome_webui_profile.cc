@@ -38,9 +38,13 @@ bool IsInTopChromeWebUIProfile(const GURL& url) {
     return false;
   }
   static constexpr auto kHosts = base::MakeFixedFlatSet<std::string_view>({
+#if BUILDFLAG(IS_ANDROID)
+      chrome::kChromeUITabStripNtbHost,
+#else
       chrome::kChromeUIOmniboxPopupHost,
       chrome::kChromeUITabSearchHost,
       chrome::kChromeUIWebUIToolbarHost,
+#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       chrome::kChromeUIDefaultBrowserModalHost,
 #endif

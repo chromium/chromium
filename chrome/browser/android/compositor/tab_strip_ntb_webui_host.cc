@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_api_injector.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/tab_strip/tab_strip_service.h"
@@ -27,7 +28,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -53,17 +53,6 @@ constexpr uint32_t kMaxCrashRecoveryTimes = 3;
 constexpr base::TimeDelta kCrashRecoverResetInterval = base::Seconds(10);
 // Delay before retrying recovery once `kMaxCrashRecoveryTimes` is exceeded.
 constexpr base::TimeDelta kCrashRecoverRetryInterval = base::Minutes(1);
-
-std::unique_ptr<content::WebContents> CreateWebContents(Profile* profile,
-                                                        const GURL& url) {
-  // Creating the WebContents with a SiteInstance for the WebUI URL (rather than
-  // an unassigned one) lets top-chrome WebUIs share a renderer process across
-  // windows.
-  content::WebContents::CreateParams params(
-      profile, content::SiteInstance::CreateForURL(profile, url));
-  params.initially_hidden = false;
-  return content::WebContents::Create(params);
-}
 
 bool IsActivatingInputEvent(const blink::WebInputEvent& event) {
   switch (event.GetType()) {
@@ -95,12 +84,14 @@ TabStripNtbWebUiHost::TabStripNtbWebUiHost(
   CHECK(profile);
   window_tracker_ = std::make_unique<TabStripWindowTracker>(profile);
   profile_observation_.Observe(profile);
-  const GURL url(chrome::kChromeUITabStripNtbURL);
-  web_contents_ = CreateWebContents(profile, url);
+  // With `pre_navigate=false`, this starts the renderer process but not the
+  // load: StartLoad() runs once the WebContents is attached to its
+  // WindowAndroid, so that the first load uses the window's ColorProvider.
+  web_contents_ = waap::PrewarmHelper::PrewarmWebUiContents(
+      profile, GURL(chrome::kChromeUITabStripNtbURL), IDS_ACCNAME_NEWTAB,
+      /*pre_navigate=*/false);
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
   web_contents_->SetDelegate(this);
-  waap::PrewarmHelper::ConfigureWebUIContents(web_contents_.get(), profile,
-                                              IDS_ACCNAME_NEWTAB);
   Observe(web_contents_.get());
   if (content::RenderFrameHost* main_frame =
           web_contents_->GetPrimaryMainFrame()) {
@@ -119,7 +110,7 @@ void TabStripNtbWebUiHost::SetTabModel(TabModel* tab_model) {
   if (!web_contents_) {
     return;
   }
-  CHECK_EQ(web_contents_->GetBrowserContext(), tab_model->GetProfile());
+  CHECK_EQ(webui::GetUserProfile(web_contents_.get()), tab_model->GetProfile());
   tab_model_ = tab_model;
   TabModelList::AddObserver(this, profile_observation_.GetSource());
   service_ = std::make_unique<tabs_api::TabStripServiceImpl>(
@@ -132,9 +123,12 @@ void TabStripNtbWebUiHost::SetTabModel(TabModel* tab_model) {
 void TabStripNtbWebUiHost::OnProfileWillBeDestroyed(Profile* profile) {
   // IncognitoTabModelImpl notifies IncognitoProfileDestroyer::didBecomeEmpty()
   // before destroying the delegate TabModel (and firing OnTabModelRemoved).
-  // Tear down the WebContents here during MaybeSendDestroyedNotification() so
-  // its RenderProcessHost is unregistered before ProfileDestroyer checks for
-  // live hosts.
+  // Tear down the WebContents and service here during
+  // MaybeSendDestroyedNotification() so that nothing outlives the profile: the
+  // TabModelList observer and PrefsTabHelper are bound to it, and the service
+  // references its TabModel. Unless the WebContents is in
+  // TopChromeWebUIProfile, this also unregisters its RenderProcessHost before
+  // ProfileDestroyer checks for live hosts.
   Reset();
 }
 
@@ -177,7 +171,7 @@ void TabStripNtbWebUiHost::Reset() {
   web_contents_->SetDelegate(nullptr);
   // Destroy before |service_| so TabStripServiceUserData is torn down first.
   // Also detaches the scene layer, clears the Java WebContents/EventForwarder
-  // pointers, and releases the Profile's RenderProcessHost.
+  // pointers, and releases its RenderProcessHost.
   web_contents_.reset();
   // Destroy before |tab_model_| finishes destruction so the adapters'
   // TabModel* never dangles.

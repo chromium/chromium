@@ -47,6 +47,10 @@ void Profile::DestroyJavaObject() {
 }
 
 ScopedJavaLocalRef<jobject> Profile::GetJavaObject() const {
+  // TopChromeWebUIProfile has no ProfileKey and is shared across windows of
+  // all profiles: Java must not hold a Profile object for it and should use
+  // the hosting window's user profile instead.
+  CHECK(!IsTopChromeWebUIProfile());
   JNIEnv* env = AttachCurrentThread();
   if (!j_obj_) {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI);

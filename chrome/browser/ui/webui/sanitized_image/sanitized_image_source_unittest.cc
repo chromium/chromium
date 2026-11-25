@@ -13,6 +13,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -29,11 +31,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "url/url_util.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 using data_decoder::mojom::AnimationFramePtr;
 
@@ -211,7 +208,6 @@ TEST_F(SanitizedImageSourceTest, WrongUrl) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Verifies that in TopChromeWebUIProfile, which is shared by the windows of all
 // profiles, an image is downloaded with the network of the user profile of the
 // requesting WebContents.
@@ -246,7 +242,6 @@ TEST_F(SanitizedImageSourceTest, TopChromeWebUIProfileUsesUserProfile) {
   EXPECT_EQ(GURL("https://foo.com/img.png"),
             user_url_loader_factory.GetPendingRequest(0)->request.url);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verifies that the image source sends a Google Photos auth token with its data
 // request if and only if asked to by URL specification.

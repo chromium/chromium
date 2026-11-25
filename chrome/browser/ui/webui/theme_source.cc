@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/webui/current_channel_logo.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/theme_resources.h"
@@ -62,7 +63,6 @@
 #include "chrome/browser/themes/theme_service.h"  // nogncheck
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -234,16 +234,12 @@ Profile* ThemeSource::GetProfileForRequest(
   if (profile_) {
     return profile_;
   }
-#if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
-#else
   // A source created for TopChromeWebUIProfile, see the constructor. The user
   // profile is null if it was not set, e.g. for the DevTools frontend in
   // TopChromeWebUIProfile with features::kDebugTopChromeWebUI, or has been
   // destroyed.
   content::WebContents* web_contents = wc_getter.Run();
   return web_contents ? webui::GetUserProfile(web_contents) : nullptr;
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ThemeSource::SendThemeBitmap(

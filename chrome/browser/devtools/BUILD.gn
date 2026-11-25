@@ -252,6 +252,7 @@ static_library("devtools") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/prefs",
+      "//chrome/browser/ui/webui/top_chrome",
       "//components/infobars/content",
       "//components/infobars/core",
       "//components/javascript_dialogs",
@@ -274,7 +275,6 @@ static_library("devtools") {
         "//chrome/browser/ui:browser_commands",
         "//chrome/browser/ui:browser_tabstrip",
         "//chrome/browser/ui:scoped_tabbed_browser_displayer",
-        "//chrome/browser/ui/webui/top_chrome",
       ]
     }
   }
@@ -630,6 +630,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/file_system_access",
     "//chrome/browser/sync",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
@@ -703,7 +704,6 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/media/router",
       "//chrome/browser/origin_gating",
-      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/media_router/browser",
       "//components/media_router/browser:test_support",
@@ -766,6 +766,7 @@ if (enable_devtools_frontend) {
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/autofill:test_support",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/test:test_support",
       "//chrome/test/base:browser_test_waiters",
       "//chrome/test/base:chrome_test_utils",
@@ -797,7 +798,6 @@ if (enable_devtools_frontend) {
         "//chrome/browser/ui/side_panel:side_panel_views_dependent",
         "//chrome/browser/ui/views/frame:browser_view_header",
         "//chrome/browser/ui/web_applications/test:test_support_ui",
-        "//chrome/browser/ui/webui/top_chrome",
         "//chrome/browser/web_applications:web_applications_test_support",
         "//media:media_buildflags",
         "//ui/views:test_support",

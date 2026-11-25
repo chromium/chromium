@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/ui/prefs/pref_watcher.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/pref_names_util.h"
@@ -55,7 +56,6 @@
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "ui/base/device_form_factor.h"
 #else  // !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #endif
 
@@ -350,13 +350,9 @@ void RegisterLocalizedFontPref(user_prefs::PrefRegistrySyncable* registry,
 // Returns the profile whose prefs `contents` uses. For a WebContents in
 // TopChromeWebUIProfile, which has no user prefs, this is its user profile.
 Profile* GetProfileForPrefs(WebContents* contents) {
-#if BUILDFLAG(IS_ANDROID)
-  return Profile::FromBrowserContext(contents->GetBrowserContext());
-#else
   Profile* profile = webui::GetUserProfile(contents);
   CHECK(profile);
   return profile;
-#endif
 }
 
 }  // namespace

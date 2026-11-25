@@ -10,6 +10,7 @@
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
@@ -35,7 +36,6 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -932,6 +932,7 @@ TEST_F(DevToolsAvailabilityCheckerTest,
   EXPECT_EQ(DevToolsBlockReason::kPolicyInstalledIsolatedWebApp,
             GetDevToolsBlockReason(profile_.get(), sw_url));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // DevTools are disallowed for TopChromeWebUIProfile, since its renderers are
 // shared by the windows of all profiles.
@@ -958,7 +959,6 @@ TEST_F(DevToolsAvailabilityCheckerTest,
                                    GURL("chrome://webui-toolbar.top-chrome/")));
   EXPECT_FALSE(HasDevToolsPolicyCheck(webui::GetTopChromeWebUIProfile()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DevToolsAvailabilityCheckerTest, HasDevToolsPolicyCheck) {
   EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));

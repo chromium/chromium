@@ -58,6 +58,8 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/ui/startup/google_chrome_scheme_util.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
@@ -129,6 +131,7 @@
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "crypto/crypto_buildflags.h"
@@ -170,8 +173,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -180,7 +181,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/test/test_web_contents_factory.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -2310,7 +2310,6 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
       nullptr, GURL("https://www.example.com"), refused_reason));
   EXPECT_EQ(SpareProcessRefusedByEmbedderReason::NoProfile, refused_reason);
 
-#if !BUILDFLAG(IS_ANDROID)
   {
     webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
     Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
@@ -2322,7 +2321,6 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
     EXPECT_EQ(SpareProcessRefusedByEmbedderReason::TopFrameChromeWebUI,
               refused_reason);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
   {
@@ -2365,16 +2363,13 @@ TEST_F(ChromeContentBrowserClientTest,
   EXPECT_TRUE(
       browser_client.CanBrowserContextUseSpareRenderProcessHost(&profile_));
 
-#if !BUILDFLAG(IS_ANDROID)
   webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
   Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
   ASSERT_TRUE(top_chrome_webui_profile);
   EXPECT_FALSE(browser_client.CanBrowserContextUseSpareRenderProcessHost(
       top_chrome_webui_profile));
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that WebPreferences of a WebContents in the Top Chrome WebUI profile
 // are computed from the user profile set for it.
 TEST_F(ChromeContentBrowserClientTest,
@@ -2387,15 +2382,20 @@ TEST_F(ChromeContentBrowserClientTest,
   content::WebContents* web_contents =
       web_contents_factory.CreateWebContents(top_chrome_webui_profile);
   webui::SetUserProfile(web_contents, profile());
-  profile()->GetPrefs()->SetInteger(prefs::kWebKitDefaultFontSize, 22);
+  profile()->GetPrefs()->SetBoolean(prefs::kWebKitDomPasteEnabled, true);
 
   ChromeContentBrowserClient client;
   blink::web_pref::WebPreferences web_prefs;
   client.OverrideWebPreferences(web_contents, *web_contents->GetSiteInstance(),
                                 &web_prefs);
-  EXPECT_EQ(22, web_prefs.default_font_size);
+  EXPECT_TRUE(web_prefs.dom_paste_enabled);
 }
 
+// ChromeContentBrowserClientWebUiPart, which recomputes font preferences after
+// navigation, is not used on Android.
+// TODO(crbug.com/588487865): Enable on desktop Android once the part is used
+// there.
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that WebPreferences of a WebContents in the Top Chrome WebUI profile
 // are computed from the user profile set for it after a navigation to a non
 // WebUI URL.
@@ -2419,6 +2419,7 @@ TEST_F(ChromeContentBrowserClientTest,
       web_contents, *web_contents->GetSiteInstance(), &web_prefs);
   EXPECT_EQ(22, web_prefs.default_font_size);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that the autoplay policy of a WebContents in the Top Chrome WebUI
 // profile is computed from the user profile set for it.
@@ -2580,7 +2581,6 @@ TEST_F(ChromeContentBrowserClientTest,
   client.UpdateRendererPreferencesForWorker(profile(), &user_prefs);
   EXPECT_TRUE(user_prefs.enable_do_not_track);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 class WillComputeSiteForNavigationTest : public ChromeContentBrowserClientTest {
  public:

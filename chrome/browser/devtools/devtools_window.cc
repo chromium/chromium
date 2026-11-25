@@ -63,9 +63,7 @@
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
-#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -911,7 +909,6 @@ Profile* DevToolsWindow::GetProfileForDevToolsWindow(
     content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-#if !BUILDFLAG(IS_ANDROID)
   // TopChromeWebUIProfile has no services or prefs for the DevTools frontend,
   // e.g. ThemeService. When debugging a Top Chrome WebUI in it, open DevTools
   // in the user profile of the WebUI instead. Without kDebugTopChromeWebUI,
@@ -922,7 +919,6 @@ Profile* DevToolsWindow::GetProfileForDevToolsWindow(
       profile = user_profile;
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
   if (profile->IsPrimaryOTRProfile() || profile->IsDevToolsOTRProfile()) {
     return profile;
   }
@@ -1447,8 +1443,8 @@ bool DevToolsWindow::AllowDevToolsFor(Profile* profile,
                                       content::WebContents* web_contents) {
 #if BUILDFLAG(IS_ANDROID)
   if (IsNonPrimaryOtrProfile(profile) ||
-      (web_contents && IsNonPrimaryOtrProfile(Profile::FromBrowserContext(
-                           web_contents->GetBrowserContext())))) {
+      (web_contents &&
+       IsNonPrimaryOtrProfile(webui::GetUserProfile(web_contents)))) {
     return false;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1460,11 +1456,20 @@ bool DevToolsWindow::AllowDevToolsFor(Profile* profile,
 bool DevToolsWindow::AllowDevToolsFor(Profile* profile,
                                       content::DevToolsAgentHost* agent_host) {
 #if BUILDFLAG(IS_ANDROID)
-  if (IsNonPrimaryOtrProfile(profile) ||
-      (agent_host && agent_host->GetBrowserContext() &&
-       IsNonPrimaryOtrProfile(
-           Profile::FromBrowserContext(agent_host->GetBrowserContext())))) {
+  if (IsNonPrimaryOtrProfile(profile)) {
     return false;
+  }
+  if (agent_host) {
+    Profile* agent_profile = nullptr;
+    if (content::WebContents* web_contents = agent_host->GetWebContents()) {
+      agent_profile = webui::GetUserProfile(web_contents);
+    } else if (content::BrowserContext* browser_context =
+                   agent_host->GetBrowserContext()) {
+      agent_profile = Profile::FromBrowserContext(browser_context);
+    }
+    if (IsNonPrimaryOtrProfile(agent_profile)) {
+      return false;
+    }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   return GetProfileBlockReason(profile) == DevToolsBlockReason::kNotBlocked &&

@@ -844,6 +844,7 @@ if (is_android) {
       "//chrome/browser/ui/webui/notifications_internals",
       "//chrome/browser/ui/webui/notifications_internals:impl",
       "//chrome/browser/ui/webui/tabstrip_ntb",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/universal_optout",
       "//chrome/browser/wallet/android:wallet_android",
       "//chrome/browser/webapps:android",

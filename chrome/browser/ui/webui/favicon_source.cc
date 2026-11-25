@@ -18,6 +18,7 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
@@ -43,7 +44,6 @@
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -284,16 +284,12 @@ Profile* FaviconSource::GetProfileForRequest(
   if (profile_) {
     return profile_;
   }
-#if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
-#else
   // A source created for TopChromeWebUIProfile, see the constructor.
   content::WebContents* web_contents = wc_getter.Run();
   CHECK(web_contents);
   // The user profile is null until it is set, see webui::SetUserProfile().
   Profile* user_profile = webui::GetUserProfile(web_contents);
   return user_profile ? user_profile->GetOriginalProfile() : nullptr;
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void FaviconSource::OnFaviconDataAvailable(

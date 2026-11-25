@@ -546,6 +546,11 @@ const extensions::Extension* ExtensionUrlOverrides::GetExtensionControllingURL(
 size_t ExtensionUrlOverrides::GetNumberOfExtensionsOverridingURL(
     const GURL& url,
     content::BrowserContext* browser_context) {
+  if (extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(browser_context)) {
+    return 0;
+  }
+
   if (!url.SchemeIs(content::kChromeUIScheme)) {
     return 0;
   }

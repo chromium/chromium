@@ -54,11 +54,8 @@ InitialWebUIProfileServiceFactory::BuildServiceInstanceForBrowserContext(
   //
   // A prerendering service creates each spare in TopChromeWebUIProfile with
   // this profile set as its user profile before navigation, and only windows
-  // of this profile adopt it. At startup, the initial profile's service is
-  // built before PreBrowserStart() calls CreateTopChromeWebUIProfile(), so
-  // GetTopChromeWebUIProfile() is still null here. This relies on prerendering
-  // creating no WebContents when that profile is initialized: its first spare
-  // is built after its first window opens, or with
+  // of this profile adopt it. No WebContents is created when the profile is
+  // initialized: its first spare is built after its first window opens, or with
   // `TopChromeWebUIPrerenderingAtStartup`, by
   // InitialWebUIProfileService::MaybeBuildStartupSpare() before that window.
   if (webui::ShouldUseTopChromeWebUIProfile() &&

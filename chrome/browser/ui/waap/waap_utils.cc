@@ -4,52 +4,56 @@
 
 #include "chrome/browser/ui/waap/waap_utils.h"
 
+#include <memory>
+#include <string>
+
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/frame_eviction_opt_out_client.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/security_principal.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/referrer.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #else
-#include <memory>
-#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/site_instance.h"
-#include "content/public/common/referrer.h"
-#include "ui/base/page_transition_types.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
 
 // Lightweight `ColorProviderSource` for use during WebUI prewarming.
 // During the prewarming phase, `WebContents` are created in the background
@@ -97,6 +101,8 @@ void SetPrewarmColorProviderSource(content::WebContents* web_contents,
                             std::move(source));
 }
 
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 std::unique_ptr<content::WebContents> CreateWebUiContents(
     Profile& contents_profile,
     const GURL& url) {
@@ -115,7 +121,6 @@ void NavigateWebUiContents(content::WebContents& web_contents,
 }
 
 }  // namespace
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace waap {
 
@@ -160,14 +165,12 @@ bool IsForInitialWebUI(const content::SecurityPrincipal& principal) {
 void PrewarmHelper::ConfigureWebUIContents(content::WebContents* web_contents,
                                            Profile* profile,
                                            int task_manager_string_id) {
-#if !BUILDFLAG(IS_ANDROID)
   if (Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->IsTopChromeWebUIProfile()) {
-    // Set first: SetColorProviderSource() below computes WebPreferences for the
-    // first time, which need the user profile.
+    // Set first: PrefsTabHelper below and the first WebPreferences computation
+    // (e.g. in SetColorProviderSource() on desktop) need the user profile.
     webui::SetUserProfile(web_contents, profile);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   ConfigureCommonWebUiContents(web_contents, task_manager_string_id,
                                /*create_prefs_tab_helper=*/true);
@@ -175,13 +178,10 @@ void PrewarmHelper::ConfigureWebUIContents(content::WebContents* web_contents,
 #if !BUILDFLAG(IS_ANDROID)
   // Set up the color provider source so that early navigation during background
   // prewarming (before a views::Widget exists) can resolve theme color
-  // properties. Skipped on Android, where the NTB starts loading only after
-  // NtbWebUiCoordinator attaches the WindowAndroid (the real
-  // ColorProviderSource), so a temporary source would only cause an extra
-  // ColorProvider and WebPreferences recomputation.
-  // TODO(crbug.com/581783426): Enable for Android if the NTB WebContents is
-  // prewarmed before a window exists (e.g. PrewarmWebUiContents with
-  // TopChromeWebUIProfile), with an Android ColorProviderKey source.
+  // properties. Not needed on Android, where every NTB WebContents is created
+  // for an Activity and starts loading only after NtbWebUiCoordinator attaches
+  // the WindowAndroid (the real ColorProviderSource), so a temporary source
+  // would only cause an extra ColorProvider and WebPreferences recomputation.
   SetPrewarmColorProviderSource(web_contents, GetColorProviderKey(profile));
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -224,13 +224,6 @@ void PrewarmHelper::ConfigureCommonWebUiContents(
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-ui::ColorProviderKey PrewarmHelper::GetColorProviderKey(Profile* profile) {
-  return ThemeServiceFactory::GetForProfile(profile)->GetColorProviderKey(
-      ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(nullptr),
-      profile);
-}
-
 std::unique_ptr<content::WebContents> PrewarmHelper::PrewarmWebUiContents(
     Profile* profile,
     const GURL& url,
@@ -250,6 +243,13 @@ std::unique_ptr<content::WebContents> PrewarmHelper::PrewarmWebUiContents(
   }
 
   return web_contents;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+ui::ColorProviderKey PrewarmHelper::GetColorProviderKey(Profile* profile) {
+  return ThemeServiceFactory::GetForProfile(profile)->GetColorProviderKey(
+      ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(nullptr),
+      profile);
 }
 
 std::unique_ptr<content::WebContents>
