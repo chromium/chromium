@@ -285,6 +285,8 @@ bool SearchPrefetchRequest::StartPrefetchRequest(
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, prefetch_origin, prefetch_origin,
       resource_request->site_for_cookies);
+  resource_request->trusted_params->include_request_cookies_with_response =
+      true;
   resource_request->referrer_policy = net::ReferrerPolicy::NO_REFERRER;
   resource_request->update_first_party_url_on_redirect = true;
 

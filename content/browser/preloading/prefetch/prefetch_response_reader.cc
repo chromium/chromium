@@ -467,10 +467,10 @@ void PrefetchResponseReader::OnReceiveResponse(
 
   service_worker_handle_ = std::move(service_worker_handle);
 
-  // Store away the info we want, then clear the request cookies before we
-  // potentially forward them to any client.
+  // `head->request_cookies` is retained on `head_` for the browser-process
+  // serving navigation client (e.g. activation beacon snapshot) and stripped
+  // by `NavigationRequest::OnResponseStarted()` on arrival.
   StoreInfoFromResponseHead(*head);
-  head->request_cookies.clear();
 
   head_ = std::move(head);
   body_tee_ = base::MakeRefCounted<PrefetchDataPipeTee>(

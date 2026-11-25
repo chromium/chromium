@@ -3696,6 +3696,9 @@ void NavigationRequest::RegisterSubresourceOverride(
   if (!transferrable_loader) {
     return;
   }
+  if (transferrable_loader->head) {
+    transferrable_loader->head->request_cookies.clear();
+  }
   if (!subresource_overrides_) {
     subresource_overrides_.emplace();
   }
@@ -3934,6 +3937,12 @@ void NavigationRequest::OnRequestRedirected(
   CHECK(response_head);
   CHECK(response_head->parsed_headers);
   response_head_ = std::move(response_head);
+  // Clear `request_cookies` on intermediate redirect responses so raw cookies
+  // (including `HttpOnly`) are never copied into
+  // `commit_params_->redirect_params` and sent over Mojo IPC to the renderer
+  // process; the final response's `request_cookies` arrive separately in
+  // `OnResponseStarted()`.
+  response_head_->request_cookies.clear();
   ssl_info_ = response_head_->ssl_info;
   BrowserContext* browser_context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
@@ -5242,6 +5251,19 @@ void NavigationRequest::OnResponseStarted(
   EnterChildTraceEvent("OnResponseStarted", this);
   SetState(WILL_PROCESS_RESPONSE);
   response_head_ = std::move(response_head);
+  // Preloading loaders (`PrefetchResponseReader`,
+  // `StreamingSearchPrefetchURLLoader`, and direct prerender) pass sent
+  // `request_cookies` on `response_head` in the browser process so
+  // `PrerenderHost` and `DidCommitNavigation()` can send the frozen cookie
+  // snapshot with activation beacons. Move `request_cookies` into browser-only
+  // `request_cookies_` and clear `response_head_->request_cookies` immediately
+  // so raw (potentially `HttpOnly`) cookies never cross into an untrusted
+  // renderer or downstream consumer when `response_head_` is cloned. This does
+  // not affect common navigations: `include_request_cookies_with_response` is
+  // false by default (leaving `request_cookies` empty), and neither HTTP cookie
+  // jar storage nor `document.cookie` reads `URLResponseHead::request_cookies`.
+  request_cookies_ = std::move(response_head_->request_cookies);
+  response_head_->request_cookies.clear();
   response_body_ = std::move(response_body);
 
   // If the navigation is activating a prefetched response, and the response
@@ -7840,6 +7862,19 @@ void NavigationRequest::CommitNavigation() {
   auto common_params = common_params_->Clone();
   auto commit_params = commit_params_.Clone();
   auto response_head = response_head_.Clone();
+  // `OnRequestRedirected()`, `OnResponseStarted()`, and
+  // `RegisterSubresourceOverride()` clear `request_cookies` on arrival so raw
+  // cookies never cross into an untrusted renderer process.
+  CHECK(!response_head || response_head->request_cookies.empty());
+  CHECK(std::ranges::all_of(
+      commit_params->redirect_params, [](const auto& param) {
+        return !param->response_head ||
+               param->response_head->request_cookies.empty();
+      }));
+  CHECK(!subresource_overrides_ ||
+        std::ranges::all_of(*subresource_overrides_, [](const auto& loader) {
+          return !loader->head || loader->head->request_cookies.empty();
+        }));
   if (!subresource_loader_params_.prefetched_signed_exchanges.empty()) {
     commit_params->prefetched_signed_exchanges =
         std::move(subresource_loader_params_.prefetched_signed_exchanges);

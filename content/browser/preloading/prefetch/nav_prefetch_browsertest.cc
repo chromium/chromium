@@ -19,6 +19,7 @@
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_service_impl.h"
+#include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
@@ -390,6 +391,57 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
       EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), "document.cookie")
           .ExtractString(),
       "");
+}
+
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
+                       StoreRequestCookiesInResponseReader) {
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL same_origin_url = GetUrl("a.test", "/title1.html");
+  GURL cross_site_url = GetUrl("b.test", "/set-cookie?server_cookie=1");
+
+  ASSERT_TRUE(SetCookie(shell()->web_contents()->GetBrowserContext(),
+                        same_origin_url, "same_origin_cookie=1"));
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  // 1. Same-origin prefetch sends cookies and retains them on the non-redirect
+  // `URLResponseHead`.
+  {
+    test::TestPrefetchWatcher test_prefetch_watcher;
+    StartPrefetch(same_origin_url);
+    test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+        GetPrimaryMainFrameHost().GetDocumentToken(), same_origin_url);
+
+    PrefetchKey key(GetPrimaryMainFrameHost().GetDocumentToken(),
+                    same_origin_url);
+    const PrefetchContainer* prefetch_container =
+        prefetch_service().GetPrefetchContainerForTesting(key);
+    ASSERT_TRUE(prefetch_container);
+    ASSERT_TRUE(prefetch_container->GetNonRedirectHead());
+    EXPECT_THAT(prefetch_container->GetNonRedirectHead()->request_cookies,
+                testing::ElementsAre(testing::Pair("same_origin_cookie", "1")));
+  }
+
+  // 2. Cross-site prefetches are only eligible when the destination has no
+  // cookies in the default cookie jar
+  // (`PreloadingEligibility::kUserHasCookies`) and execute in an isolated
+  // network context without outbound cookies, so `request_cookies` is empty
+  // even when the response sets a cookie.
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+  {
+    test::TestPrefetchWatcher test_prefetch_watcher;
+    StartPrefetch(cross_site_url);
+    test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+        GetPrimaryMainFrameHost().GetDocumentToken(), cross_site_url);
+
+    PrefetchKey key(GetPrimaryMainFrameHost().GetDocumentToken(),
+                    cross_site_url);
+    const PrefetchContainer* prefetch_container =
+        prefetch_service().GetPrefetchContainerForTesting(key);
+    ASSERT_TRUE(prefetch_container);
+    ASSERT_TRUE(prefetch_container->GetNonRedirectHead());
+    EXPECT_TRUE(
+        prefetch_container->GetNonRedirectHead()->request_cookies.empty());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -481,7 +481,9 @@ void PrefetchTestURLLoaderClient::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   CHECK(!cached_metadata);
+  CHECK(!head_);
   CHECK(!body_);
+  head_ = std::move(head);
   body_ = std::move(body);
 
   if (auto_draining_) {

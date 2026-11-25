@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/embedder_isolation_info.h"
@@ -43,6 +44,7 @@
 #include "content/test/test_web_contents.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
+#include "net/cookies/cookie_util.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -55,6 +57,7 @@
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -2597,5 +2600,55 @@ TEST_F(
   request->set_isolation_info_for_testing(original_isolation_info);
 }
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
+
+TEST_F(NavigationRequestTest,
+       StripsRequestCookiesOnRedirectAndBeforeRendererCommit) {
+  const GURL kInitialUrl("https://a.com/start");
+  const GURL kFinalUrl("https://b.com/final");
+  const net::cookie_util::ParsedRequestCookies kRedirectCookies = {
+      {"redirect_cookie", "1"}};
+  const net::cookie_util::ParsedRequestCookies kFinalCookies = {
+      {"final_cookie", "2"}};
+
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kInitialUrl, main_rfh());
+  bool is_redirect_response = true;
+  navigation->set_response_postprocess_hook(base::BindLambdaForTesting(
+      [&is_redirect_response, &kRedirectCookies,
+       &kFinalCookies](network::mojom::URLResponseHead& response) {
+        response.request_cookies =
+            is_redirect_response ? kRedirectCookies : kFinalCookies;
+      }));
+
+  navigation->Start();
+  navigation->Redirect(kFinalUrl);
+
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  ASSERT_EQ(request->commit_params().redirect_params.size(), 1u);
+  ASSERT_TRUE(request->commit_params().redirect_params[0]->response_head);
+  EXPECT_TRUE(request->commit_params()
+                  .redirect_params[0]
+                  ->response_head->request_cookies.empty());
+
+  auto override_loader = blink::mojom::TransferrableURLLoader::New();
+  override_loader->head = network::mojom::URLResponseHead::New();
+  override_loader->head->request_cookies = {{"override_cookie", "3"}};
+  request->RegisterSubresourceOverride(std::move(override_loader));
+
+  is_redirect_response = false;
+  navigation->ReadyToCommit();
+
+  // `NavigationRequest::OnResponseStarted()` moves the final response's
+  // `request_cookies` into browser-only `NavigationRequest::request_cookies()`
+  // and clears `URLResponseHead::request_cookies` immediately, and
+  // `CommitNavigation()` enforces `CHECK`s across `response_head`,
+  // `redirect_params`, and `subresource_overrides_`.
+  EXPECT_EQ(request->request_cookies(), kFinalCookies);
+  ASSERT_TRUE(request->response());
+  EXPECT_TRUE(request->response()->request_cookies.empty());
+
+  navigation->Commit();
+}
 
 }  // namespace content

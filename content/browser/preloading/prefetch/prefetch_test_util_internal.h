@@ -135,6 +135,7 @@ class PrefetchTestURLLoaderClient : public network::mojom::URLLoaderClient,
   uint32_t total_bytes_read() { return total_bytes_read_; }
   bool body_finished() { return body_finished_; }
   int32_t total_transfer_size_diff() { return total_transfer_size_diff_; }
+  const network::mojom::URLResponseHeadPtr& head() const { return head_; }
   std::optional<network::URLLoaderCompletionStatus> completion_status() {
     return completion_status_;
   }
@@ -169,6 +170,7 @@ class PrefetchTestURLLoaderClient : public network::mojom::URLLoaderClient,
 
   std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
   bool auto_draining_{true};
+  network::mojom::URLResponseHeadPtr head_;
   mojo::ScopedDataPipeConsumerHandle body_;
 
   std::string body_content_;

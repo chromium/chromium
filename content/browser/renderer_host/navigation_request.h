@@ -72,6 +72,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/isolation_info.h"
+#include "net/cookies/cookie_util.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_connection_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -685,6 +686,10 @@ class CONTENT_EXPORT NavigationRequest
 
   const network::mojom::URLResponseHead* response() {
     return response_head_.get();
+  }
+
+  const net::cookie_util::ParsedRequestCookies& request_cookies() const {
+    return request_cookies_;
   }
 
   const mojo::DataPipeConsumerHandle& response_body() {
@@ -4011,6 +4016,12 @@ class CONTENT_EXPORT NavigationRequest
 
   // The resolved and validated full URL for the activation beacon.
   GURL activation_beacon_url_;
+
+  // Browser-only snapshot of cookies sent on the final navigation request when
+  // `TrustedParams::include_request_cookies_with_response` was enabled by a
+  // preloading loader, extracted and cleared from `response_head_` in
+  // `OnResponseStarted()` before `response_head_` can be cloned or forwarded.
+  net::cookie_util::ParsedRequestCookies request_cookies_;
 
   // A record of the state of the document that initiated the navigation. Null
   // for browser intiiated navigations.

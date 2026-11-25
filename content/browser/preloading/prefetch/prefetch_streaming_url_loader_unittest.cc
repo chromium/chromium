@@ -6,12 +6,14 @@
 
 #include "base/containers/span.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/cookies/cookie_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -63,11 +65,14 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory {
   TestURLLoaderFactory(const TestURLLoaderFactory&) = delete;
   TestURLLoaderFactory& operator=(const TestURLLoaderFactory&) = delete;
 
-  void SimulateReceiveHead(net::HttpStatusCode http_status,
-                           uint32_t expected_total_body_size) {
+  void SimulateReceiveHead(
+      net::HttpStatusCode http_status,
+      uint32_t expected_total_body_size,
+      net::cookie_util::ParsedRequestCookies request_cookies = {}) {
     ASSERT_TRUE(streaming_client_remote_);
 
     auto head = network::CreateURLResponseHead(http_status);
+    head->request_cookies = std::move(request_cookies);
 
     mojo::ScopedDataPipeConsumerHandle body;
     if (expected_total_body_size > 0) {
@@ -100,14 +105,17 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory {
     streaming_client_remote_->OnComplete(completion_status);
   }
 
-  void SimulateRedirect(const GURL& redirect_url,
-                        net::HttpStatusCode http_status) {
+  void SimulateRedirect(
+      const GURL& redirect_url,
+      net::HttpStatusCode http_status,
+      net::cookie_util::ParsedRequestCookies request_cookies = {}) {
     ASSERT_TRUE(streaming_client_remote_);
 
     net::RedirectInfo redirect_info;
     redirect_info.new_url = redirect_url;
 
     auto head = network::CreateURLResponseHead(http_status);
+    head->request_cookies = std::move(request_cookies);
 
     streaming_client_remote_->OnReceiveRedirect(redirect_info, std::move(head));
   }
@@ -1448,6 +1456,133 @@ TEST_P(PrefetchStreamingURLLoaderTest, DoesNotTakeDevToolsObserver) {
           /*on_head_received=*/NotReachedTagForTests());
 
   EXPECT_TRUE(request.trusted_params->devtools_observer.is_valid());
+}
+
+TEST_P(PrefetchStreamingURLLoaderTest, StoreRequestCookiesInResponseReader) {
+  const GURL kTestUrl = GURL("https://example.com");
+  const GURL kRedirectUrl = GURL("https://redirect.com");
+  const std::string kBodyContent = "example body";
+
+  auto prefetch_request = std::make_unique<network::ResourceRequest>();
+  prefetch_request->url = kTestUrl;
+  prefetch_request->method = "GET";
+
+  OnPrefetchReceiveRedirectTestFuture on_receive_redirect;
+  base::RunLoop on_follow_redirect_loop;
+  base::RunLoop on_response_received_loop;
+  base::RunLoop on_head_received_loop;
+  base::RunLoop on_complete;
+
+  auto [redirect_response_reader, streaming_loader] =
+      CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
+          shared_test_url_loader_factory(), *prefetch_request,
+          &on_response_received_loop, /*on_complete=*/NotReachedTagForTests(),
+          &on_receive_redirect,
+          /*on_head_received=*/NotReachedTagForTests());
+
+  ASSERT_TRUE(test_url_loader_factory()->test_url_loader());
+  test_url_loader_factory()->test_url_loader()->SetOnFollowRedirectClosure(
+      on_follow_redirect_loop.QuitClosure());
+
+  // Simulate a redirect hop with redirect `request_cookies`.
+  test_url_loader_factory()->SimulateRedirect(
+      kRedirectUrl, net::HTTP_PERMANENT_REDIRECT, {{"redirect_cookie", "1"}});
+  auto [redirect_info, redirect_head] = on_receive_redirect.Take();
+
+  ASSERT_TRUE(streaming_loader);
+  streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
+                                   redirect_info, std::move(redirect_head),
+                                   /*headers_update_params=*/{});
+  on_follow_redirect_loop.Run();
+
+  // Redirect `PrefetchResponseReader` should not retain `head_` or
+  // `request_cookies`.
+  EXPECT_FALSE(redirect_response_reader->GetHead());
+
+  auto final_response_reader = base::MakeRefCounted<PrefetchResponseReader>(
+      base::BindOnce([](base::RunLoop* on_head_received_loop,
+                        bool is_success) { on_head_received_loop->Quit(); },
+                     &on_head_received_loop),
+      base::BindOnce(
+          [](base::RunLoop* on_complete, bool is_success,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_complete->Quit();
+          },
+          &on_complete),
+      perfetto::Flow::ProcessScoped(0));
+  ASSERT_TRUE(streaming_loader);
+  streaming_loader->SetResponseReader(final_response_reader->GetWeakPtr());
+
+  // Simulate receiving the final non-redirect response with final
+  // `request_cookies`.
+  const net::cookie_util::ParsedRequestCookies kExpectedCookies = {
+      {"final_cookie", "2"}};
+  test_url_loader_factory()->SimulateReceiveHead(
+      net::HTTP_OK, kBodyContent.size(), kExpectedCookies);
+  on_response_received_loop.Run();
+  if (ShouldWaitForHeadReceived()) {
+    on_head_received_loop.Run();
+  }
+
+  ASSERT_TRUE(final_response_reader->GetHead());
+  EXPECT_EQ(final_response_reader->GetHead()->request_cookies,
+            kExpectedCookies);
+
+  test_url_loader_factory()->SimulateReceiveData(kBodyContent);
+  test_url_loader_factory()->SimulateResponseComplete(net::OK);
+  on_complete.Run();
+
+  // Serve the redirect response and verify `request_cookies` is empty.
+  base::WeakPtr<PrefetchResponseReader> weak_redirect_response_reader =
+      redirect_response_reader->GetWeakPtr();
+  PrefetchRequestHandler redirect_handler =
+      weak_redirect_response_reader->CreateRequestHandler().first;
+  redirect_response_reader.reset();
+
+  auto redirect_url_loader_client =
+      std::make_unique<PrefetchTestURLLoaderClient>();
+  network::ResourceRequest serving_request;
+  serving_request.url = kTestUrl;
+  serving_request.method = "GET";
+
+  ASSERT_TRUE(redirect_handler);
+  std::move(redirect_handler)
+      .Run(serving_request,
+           redirect_url_loader_client->BindURLloaderAndGetReceiver(),
+           redirect_url_loader_client->BindURLLoaderClientAndGetRemote());
+  ASSERT_TRUE(base::test::RunUntil([&redirect_url_loader_client]() {
+    return redirect_url_loader_client->received_redirects().size() == 1U;
+  }));
+
+  EXPECT_TRUE(redirect_url_loader_client->received_redirects()[0]
+                  .second->request_cookies.empty());
+  redirect_url_loader_client->DisconnectMojoPipes();
+
+  // Serve the final response and verify `serving_url_loader_client` receives
+  // `request_cookies`.
+  base::WeakPtr<PrefetchResponseReader> weak_final_response_reader =
+      final_response_reader->GetWeakPtr();
+  PrefetchRequestHandler final_response_handler =
+      weak_final_response_reader->CreateRequestHandler().first;
+  final_response_reader.reset();
+
+  auto serving_url_loader_client =
+      std::make_unique<PrefetchTestURLLoaderClient>();
+  ASSERT_TRUE(final_response_handler);
+  std::move(final_response_handler)
+      .Run(serving_request,
+           serving_url_loader_client->BindURLloaderAndGetReceiver(),
+           serving_url_loader_client->BindURLLoaderClientAndGetRemote());
+  ASSERT_TRUE(base::test::RunUntil([&serving_url_loader_client]() {
+    return serving_url_loader_client->completion_status().has_value();
+  }));
+
+  ASSERT_TRUE(serving_url_loader_client->head());
+  EXPECT_EQ(serving_url_loader_client->head()->request_cookies,
+            kExpectedCookies);
+  serving_url_loader_client->DisconnectMojoPipes();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&weak_final_response_reader]() { return !weak_final_response_reader; }));
 }
 
 }  // namespace

@@ -826,8 +826,9 @@ MakeInitialResourceRequestWithoutHeadersForPrefetch(
 
   // Request cookies will be included with the response.
   // They must be removed before forwarding to any untrusted client.
-  // This happens in `PrefetchResponseReader::HandleRedirect` and
-  // `PrefetchResponseReader::OnReceiveResponse`.
+  // Redirect-hop cookies are cleared in
+  // `PrefetchResponseReader::HandleRedirect`, and final-response cookies are
+  // extracted and cleared in `NavigationRequest::OnResponseStarted()`.
   if (!resource_request->trusted_params) {
     resource_request->trusted_params.emplace();
   }
