@@ -1129,18 +1129,19 @@ WebInputEventResult MouseEventManager::DispatchDragEvent(
       related_target->GetDocument() != drag_target->GetDocument())
     related_target = nullptr;
 
+  LocalDOMWindow* dom_window = drag_target->GetDocument().domWindow();
+
   DragEventInit* initializer = DragEventInit::Create();
   initializer->setBubbles(true);
   initializer->setCancelable(event_type != event_type_names::kDragleave &&
                              event_type != event_type_names::kDragend);
-  MouseEvent::SetCoordinatesFromWebPointerProperties(
-      event.FlattenTransform(), frame_->GetDocument()->domWindow(),
-      initializer);
+  MouseEvent::SetCoordinatesFromWebPointerProperties(event.FlattenTransform(),
+                                                     dom_window, initializer);
   initializer->setButton(0);
   initializer->setButtons(
       MouseEvent::WebInputEventModifiersToButtons(event.GetModifiers()));
   initializer->setRelatedTarget(related_target);
-  initializer->setView(frame_->GetDocument()->domWindow());
+  initializer->setView(dom_window);
   initializer->setComposed(true);
   // Per the DnD spec, these events have a default `dropEffect`.
   if (event_type == event_type_names::kDragenter ||
@@ -1152,12 +1153,9 @@ WebInputEventResult MouseEventManager::DispatchDragEvent(
   }
   initializer->setDataTransfer(data_transfer);
   initializer->setSourceCapabilities(
-      frame_->GetDocument()->domWindow()
-          ? frame_->GetDocument()
-                ->domWindow()
-                ->GetInputDeviceCapabilities()
-                ->FiresTouchEvents(event.FromTouch())
-          : nullptr);
+      dom_window ? dom_window->GetInputDeviceCapabilities()->FiresTouchEvents(
+                       event.FromTouch())
+                 : nullptr);
   UIEventWithKeyState::SetFromWebInputEventModifiers(
       initializer, static_cast<WebInputEvent::Modifiers>(event.GetModifiers()));
 

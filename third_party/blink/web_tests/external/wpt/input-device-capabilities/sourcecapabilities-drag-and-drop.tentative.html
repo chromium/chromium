@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>DragEvent.sourceCapabilities across frames during drag and drop</title>
+<link rel="help" href="https://wicg.github.io/input-device-capabilities/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<style>
+body {
+  margin: 0;
+}
+#parent_target {
+  width: 100px;
+  height: 100px;
+}
+iframe {
+  width: 100px;
+  height: 100px;
+  border: 0;
+  display: block;
+}
+</style>
+<div id="parent_target" draggable="true">parent</div>
+<script>
+const CHILD_PATH =
+    '/input-device-capabilities/resources/drag-and-drop-child.html';
+const parentTarget = document.getElementById('parent_target');
+
+function waitForChildMessage(t, iframe, type) {
+  return new Promise(resolve => {
+    function listener(e) {
+      if (e.source === iframe.contentWindow && e.data.type === type) {
+        window.removeEventListener('message', listener);
+        resolve(e.data);
+      }
+    }
+    window.addEventListener('message', listener);
+    t.add_cleanup(() => window.removeEventListener('message', listener));
+  });
+}
+
+async function createChildFrame(t, origin) {
+  const iframe = document.createElement('iframe');
+  iframe.src = origin + CHILD_PATH;
+  const ready = waitForChildMessage(t, iframe, 'ready');
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+  await ready;
+  return iframe;
+}
+
+function crossFrameDragTests(origin, description) {
+  promise_test(async t => {
+    const iframe = await createChildFrame(t, origin);
+
+    const parentEvents = [];
+    const recordEvent = e => parentEvents.push(e);
+    parentTarget.addEventListener('dragstart', recordEvent);
+    parentTarget.addEventListener('drag', recordEvent);
+    t.add_cleanup(() => {
+      parentTarget.removeEventListener('dragstart', recordEvent);
+      parentTarget.removeEventListener('drag', recordEvent);
+    });
+
+    const parentDragEnd = new Promise(resolve => {
+      const onDragEnd = e => {
+        parentEvents.push(e);
+        resolve();
+      };
+      parentTarget.addEventListener('dragend', onDragEnd, {once: true});
+      t.add_cleanup(() => {
+        parentTarget.removeEventListener('dragend', onDragEnd);
+      });
+    });
+
+    // Move into the child frame so its cached InputDeviceCapabilities wrapper
+    // is created in the child realm before dragging into it.
+    const childMouseMove = waitForChildMessage(t, iframe, 'mousemove');
+    await new test_driver.Actions()
+        .pointerMove(0, 0, {origin: iframe})
+        .send();
+    await childMouseMove;
+
+    await new test_driver.Actions()
+        .pointerMove(0, 0, {origin: parentTarget})
+        .pointerDown()
+        .pointerMove(15, 15, {origin: parentTarget})
+        .pointerMove(0, 0, {origin: iframe})
+        .pointerMove(5, 5, {origin: iframe})
+        .pointerUp()
+        .send();
+    await parentDragEnd;
+
+    assert_true(parentEvents.some(e => e.type === 'drag'),
+                'parent drag fired');
+    assert_true(parentEvents.some(e => e.type === 'dragend'),
+                'parent dragend fired');
+    for (const event of parentEvents) {
+      assert_not_equals(event.sourceCapabilities, null,
+                        `parent ${event.type} has sourceCapabilities`);
+      assert_equals(Object.getPrototypeOf(event.sourceCapabilities),
+                    InputDeviceCapabilities.prototype,
+                    `parent ${event.type} sourceCapabilities belongs to parent realm`);
+      assert_false(event.sourceCapabilities.firesTouchEvents,
+                   `parent ${event.type} firesTouchEvents`);
+      assert_equals(event.view, window,
+                    `parent ${event.type} view is parent window`);
+    }
+  }, `parent-to-child drag (${description})`);
+
+  promise_test(async t => {
+    const iframe = await createChildFrame(t, origin);
+
+    const preventDefault = e => e.preventDefault();
+    parentTarget.addEventListener('dragover', preventDefault);
+    parentTarget.addEventListener('drop', preventDefault);
+    t.add_cleanup(() => {
+      parentTarget.removeEventListener('dragover', preventDefault);
+      parentTarget.removeEventListener('drop', preventDefault);
+    });
+
+    // Keep a reference to this window's InputDeviceCapabilities wrapper so it
+    // stays in this realm before the child inspects its drag/dragend events.
+    let parentCapabilities = null;
+    const parentMouseMove = new Promise(resolve => {
+      const onMouseMove = e => {
+        parentCapabilities = e.sourceCapabilities;
+        resolve();
+      };
+      parentTarget.addEventListener('mousemove', onMouseMove, {once: true});
+      t.add_cleanup(() => {
+        parentTarget.removeEventListener('mousemove', onMouseMove);
+      });
+    });
+    await new test_driver.Actions()
+        .pointerMove(0, 0, {origin: parentTarget})
+        .send();
+    await parentMouseMove;
+
+    const childDragEndPromise = waitForChildMessage(t, iframe, 'child-dragend');
+    await new test_driver.Actions()
+        .pointerMove(0, 0, {origin: iframe})
+        .pointerDown()
+        .pointerMove(15, 15, {origin: iframe})
+        .pointerMove(0, 0, {origin: parentTarget})
+        .pointerMove(5, 5, {origin: parentTarget})
+        .pointerUp()
+        .send();
+    const childDragResult = await childDragEndPromise;
+
+    assert_not_equals(parentCapabilities, null,
+                      'parent mousemove has sourceCapabilities');
+
+    assert_true(childDragResult.events.some(e => e.eventType === 'drag'),
+                'child drag fired');
+    assert_true(childDragResult.events.some(e => e.eventType === 'dragend'),
+                'child dragend fired');
+    for (const event of childDragResult.events) {
+      assert_false(event.isNull,
+                   `child ${event.eventType} has sourceCapabilities`);
+      assert_true(event.ownRealm,
+                  `child ${event.eventType} sourceCapabilities belongs to child realm`);
+      assert_false(event.firesTouchEvents,
+                   `child ${event.eventType} firesTouchEvents`);
+      assert_true(event.ownView,
+                  `child ${event.eventType} view is child window`);
+    }
+  }, `child-to-parent drag (${description})`);
+}
+
+crossFrameDragTests(get_host_info().ORIGIN, 'same-origin iframe');
+crossFrameDragTests(get_host_info().REMOTE_ORIGIN, 'same-site cross-origin iframe');
+</script>
