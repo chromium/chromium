@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.ui.side_panel;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JniPtr;
 
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
+import org.chromium.chrome.browser.ui.browser_window.NativeBrowserWindowInterface;
 
 /**
  * Supports {@code window_scoped_side_panel_registry_bridge_unittest.cc}.

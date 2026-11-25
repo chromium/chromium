@@ -11,7 +11,6 @@ import org.jni_zero.JniPtr;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 
 /**
  * Represents a Chrome feature whose lifecycle is bound by a {@link ChromeAndroidTask}.

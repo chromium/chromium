@@ -26,8 +26,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.GlicNudgeActivity;
 import org.chromium.chrome.browser.glic.SecondaryAction;
 import org.chromium.chrome.browser.glic.SecondaryIcon;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
+import org.chromium.chrome.browser.ui.browser_window.NativeBrowserWindowInterface;
 
 /** Unit tests for {@link GlicSplitButtonDelegateBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)

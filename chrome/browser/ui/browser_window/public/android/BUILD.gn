@@ -15,11 +15,7 @@ android_library("browser_window_interface_java") {
     "//build/android:build_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
-  srcjar_deps = [ ":browser_window_interface_jni" ]
-}
-
-generate_jni("browser_window_interface_jni") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/browser_window/NativeBrowserWindowInterface.java" ]
+  srcjar_deps = [ ":jni" ]
 }
 
 # Public Java interfaces
@@ -48,14 +44,11 @@ android_library("java") {
     "//ui/base:ui_base_types_java",
     "//ui/base/mojom:ui_base_types_java",
   ]
-  srcjar_deps = [
-    ":java_enum_srcjar",
-    ":jni",
-  ]
+  srcjar_deps = [ ":java_enum_srcjar" ]
 }
 
 generate_jni("jni") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTask.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/browser_window/NativeBrowserWindowInterface.java" ]
 }
 
 # Public Java factory

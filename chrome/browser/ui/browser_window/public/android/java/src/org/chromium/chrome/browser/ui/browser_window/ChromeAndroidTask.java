@@ -8,8 +8,6 @@ import android.app.Activity;
 import android.graphics.Rect;
 
 import org.jni_zero.JniPtr;
-import org.jni_zero.JniType;
-import org.jni_zero.JniTypeToken;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -56,13 +54,6 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public interface ChromeAndroidTask {
-    /**
-     * Type token for the native {@code BrowserWindowInterface}. Use it as the type argument of
-     * {@code JniPtr} and {@code JniUniquePtr} to pass a native browser window across JNI.
-     */
-    @JniType("::BrowserWindowInterface")
-    interface NativeBrowserWindowInterface extends JniTypeToken {}
-
     /** Contains objects whose lifecycle is in sync with an {@code Activity}. */
     final class ActivityScopedObjects {
         final ActivityWindowAndroid mActivityWindowAndroid;

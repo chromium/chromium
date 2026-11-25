@@ -262,6 +262,7 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
+      "//chrome/browser/ui/browser_window/public/android:browser_window_interface_java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//components/cached_flags:java",
       "//content/public/android:content_full_java",

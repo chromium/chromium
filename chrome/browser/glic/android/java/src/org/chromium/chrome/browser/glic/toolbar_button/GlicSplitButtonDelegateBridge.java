@@ -14,9 +14,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.glic.GlicNudgeActivity;
 import org.chromium.chrome.browser.glic.SecondaryAction;
 import org.chromium.chrome.browser.glic.SecondaryIcon;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
+import org.chromium.chrome.browser.ui.browser_window.NativeBrowserWindowInterface;
 
 import java.util.List;
 

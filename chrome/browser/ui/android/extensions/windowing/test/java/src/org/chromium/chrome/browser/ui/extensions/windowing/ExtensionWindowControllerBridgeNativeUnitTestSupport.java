@@ -12,8 +12,8 @@ import org.jni_zero.JniPtr;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
+import org.chromium.chrome.browser.ui.browser_window.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.extensions.windowing.ExtensionWindowControllerBridgeImpl.NativeExtensionWindowControllerBridge;
 
 /**
