@@ -158,6 +158,24 @@ if (!use_native_image_inputs) {
       [ "//build/android/bytecode/cipd/bytecode_rewriter.jar" ]
 }
 
+# Creates a dep-only generated_file() target that walks metadata starting at
+# |walk_deps| (without depending on them) and depends only on the targets
+# emitted under |dep_keys|.
+template("walk_deps_group") {
+  generated_file(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "dep_keys",
+                             "testonly",
+                             "walk_deps",
+                             "walk_keys",
+                           ])
+    visibility = [ ":*" ]
+    outputs = [ "$target_gen_dir/${target_name}.txt" ]
+    data_keys = dep_keys
+  }
+}
+
 # Write the target's .build_config.json file. This is a json file that contains
 # a dictionary of information about how to build this target (things that
 # require knowledge about this target's dependencies and cannot be calculated at
@@ -1091,9 +1109,11 @@ if (enable_java_templates) {
     }
 
     # Lint requires generated sources and generated resources from the build.
-    # Turbine __header targets depend on all generated sources, and the
-    # __assetres targets depend on all generated resources.
+    # Turbine __header targets depend on all generated sources, and walking
+    # __assetres collects only targets producing generated lint resources
+    # (skipping prepare_resources() and android_assets()).
     _deps = []
+    _lint_res_walk_deps = []
     _lib_partials_deps = []
     _lib_annotations_deps = []
     _non_lib_deps = []
@@ -1104,10 +1124,8 @@ if (enable_java_templates) {
       foreach(_lib_dep, _lib_deps) {
         # Expand //foo/java -> //foo/java:java
         _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
-        _deps += [
-          "${_lib_dep}__assetres",
-          "${_lib_dep}__header",
-        ]
+        _deps += [ "${_lib_dep}__header" ]
+        _lint_res_walk_deps += [ "${_lib_dep}__assetres" ]
         _lib_partials_deps += [ "${_lib_dep}__lint_partials" ]
         _lib_annotations_deps += [ "${_lib_dep}__lint_annotations" ]
       }
@@ -1120,6 +1138,20 @@ if (enable_java_templates) {
     if (defined(invoker.manifest_dep)) {
       _non_lib_deps += [ invoker.manifest_dep ]
       _deps += [ invoker.manifest_dep ]
+    }
+    if (_lint_res_walk_deps != []) {
+      # Walk __assetres deps without depending on them so lint only waits on
+      # targets that generate first-party resource files (skipping
+      # prepare_resources() and android_assets()).
+      _lint_res_deps_target = "${target_name}__res_deps"
+
+      walk_deps_group(_lint_res_deps_target) {
+        forward_variables_from(invoker, [ "testonly" ])
+        walk_deps = _lint_res_walk_deps
+        dep_keys = [ "android_lint_resource_deps" ]
+        walk_keys = [ "android_assetres_walk_keys" ]
+      }
+      _deps += [ ":$_lint_res_deps_target" ]
     }
     _deps += [ invoker.build_config_dep ]
 
@@ -2229,12 +2261,11 @@ if (enable_java_templates) {
     # changes do not trigger manifest merging.
     _manifest_deps_target = "${target_name}__deps"
 
-    generated_file(_manifest_deps_target) {
+    walk_deps_group(_manifest_deps_target) {
       forward_variables_from(invoker, [ "testonly" ])
       walk_deps = invoker.manifest_walk_deps
-      outputs = [ "$target_gen_dir/${_manifest_deps_target}.txt" ]
-      data_keys = [ "mergeable_android_manifest_deps" ]
       dep_keys = [ "mergeable_android_manifest_deps" ]
+      walk_keys = [ "android_assetres_walk_keys" ]
     }
 
     python_action(target_name) {
@@ -2391,7 +2422,11 @@ if (enable_java_templates) {
   # Input variables:
   #   android_sdk_dep: The sdk dep that these resources should compile against.
   #
-  #   deps: Specifies the input dependencies for this target.
+  #   deps: (optional) Specifies additional input dependencies for this target.
+  #
+  #   resources_walk_deps: (optional) Targets to walk for android_resources
+  #     __prepare deps via android_resources_rtxt_deps /
+  #     android_assetres_walk_keys.
   #
   #   build_config: Path to the .build_config.json file corresponding to the target.
   #
@@ -2460,9 +2495,24 @@ if (enable_java_templates) {
   template("compile_resources") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-    _deps = invoker.deps + [ invoker.build_config_dep ]
+    _deps = [ invoker.build_config_dep ]
+    if (defined(invoker.deps)) {
+      _deps += invoker.deps
+    }
     if (defined(invoker.android_manifest_dep)) {
       _deps += [ invoker.android_manifest_dep ]
+    }
+    if (defined(invoker.resources_walk_deps)) {
+      # Walk __assetres deps without depending on them and depend only on the
+      # prepare_resources() actions, avoiding unrelated asset or non-java deps.
+      _res_deps_target = "${target_name}__res_deps"
+
+      walk_deps_group(_res_deps_target) {
+        walk_deps = invoker.resources_walk_deps
+        dep_keys = [ "android_resources_rtxt_deps" ]
+        walk_keys = [ "android_assetres_walk_keys" ]
+      }
+      _deps += [ ":$_res_deps_target" ]
     }
 
     if (defined(invoker.arsc_output)) {
@@ -4938,6 +4988,9 @@ if (enable_java_templates) {
             # Consumed by generate_r_java() to restrict its R.txt metadata walk
             # to public_deps.
             android_resources_walk_keys = _walk_keys
+
+            # Consumed by resource, manifest, lint, asset, and size-info walks.
+            android_assetres_walk_keys = _java_assetres_deps
             if (_has_generated_manifest_deps) {
               # Consumed by merge_manifests() so it depends on targets
               # generating mergeable_android_manifests.
