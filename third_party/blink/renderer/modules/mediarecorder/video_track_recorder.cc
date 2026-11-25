@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
@@ -348,14 +347,6 @@ GetCreateSoftwareVideoEncoderCallback(media::VideoCodec codec) {
     default:
       NOTREACHED() << "Unsupported codec=" << static_cast<int>(codec);
   }
-}
-
-std::optional<media::VideoTransformation> GetFrameTransformation(
-    scoped_refptr<media::VideoFrame> video_frame) {
-  if (const auto& transformation = video_frame->metadata().transformation) {
-    return *transformation;
-  }
-  return std::nullopt;
 }
 }  // anonymous namespace
 
@@ -832,10 +823,6 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
 VideoTrackRecorderImpl::~VideoTrackRecorderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DisconnectFromTrack();
-
-  UMA_HISTOGRAM_COUNTS_100(
-      "Media.MediaRecorder.TrackTransformationChangeCount",
-      base::saturated_cast<int>(num_video_transformation_changes_));
 }
 
 void VideoTrackRecorderImpl::OnEncoderSupportKnown() {
@@ -863,15 +850,6 @@ void VideoTrackRecorderImpl::OnVideoFrame(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   TRACE_EVENT("media", "VideoTrackRecorderImpl::OnVideoFrame");
   CHECK(video_frame);
-
-  // Measure how common video transformation changes are, crbug.com/391786486.
-  auto frame_transformation = GetFrameTransformation(video_frame);
-  if (num_video_transformation_changes_ == 0) {
-    num_video_transformation_changes_ = 1;
-  } else if (last_transformation_ != frame_transformation) {
-    ++num_video_transformation_changes_;
-  }
-  last_transformation_ = frame_transformation;
 
   if (encoder_support_known_) {
     ProcessOneVideoFrame(allow_vea_encoder, std::move(video_frame),
