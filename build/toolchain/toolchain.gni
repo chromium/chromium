@@ -28,6 +28,10 @@ declare_args() {
   # scripts.
   toolchain_for_rust_host_build_tools = false
 
+  # Whether this toolchain is a cross-architecture host toolchain used only to
+  # build V8 snapshot / code-cache generators that run on the build host.
+  toolchain_for_v8_snapshot = false
+
   # If false, the toolchain overrides `use_partition_alloc_as_malloc` in
   # PartitionAlloc, to allow use of the system allocator.
   toolchain_allows_use_partition_alloc_as_malloc = true
@@ -108,10 +112,11 @@ if (host_os == "win") {
 # binary. This generally means "not the host toolchain", but in the case where
 # we're targeting the host it's true then as well. We do require current_os to
 # match target_os so that for example we avoid considering Android as a target
-# toolchain when targeting CrOS.
+# toolchain when targeting CrOS, and we exclude cross-architecture host V8
+# snapshot toolchains unless explicitly selected as the default toolchain.
 is_a_target_toolchain =
-    (current_toolchain != host_toolchain ||
-     default_toolchain == host_toolchain) && current_os == target_os
+    ((current_toolchain != host_toolchain && !toolchain_for_v8_snapshot) ||
+     current_toolchain == default_toolchain) && current_os == target_os
 
 # A toolchain for building tools that run on the host machine and need to use
 # the system allocator. This toolchain does not use PartitionAlloc-Everywhere by

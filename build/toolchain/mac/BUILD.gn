@@ -67,6 +67,7 @@ mac_toolchain("clang_x64_v8_arm64") {
   toolchain_args = {
     current_cpu = "x64"
     v8_current_cpu = "arm64"
+    toolchain_for_v8_snapshot = true
   }
 }
 
@@ -74,6 +75,7 @@ mac_toolchain("clang_x64_v8_mips64el") {
   toolchain_args = {
     current_cpu = "x64"
     v8_current_cpu = "mips64el"
+    toolchain_for_v8_snapshot = true
   }
 }
 
@@ -81,6 +83,7 @@ mac_toolchain("clang_arm64_v8_x64") {
   toolchain_args = {
     current_cpu = "arm64"
     v8_current_cpu = "x64"
+    toolchain_for_v8_snapshot = true
   }
 }
 
@@ -89,5 +92,6 @@ mac_toolchain("clang_arm64_v8_arm64") {
   toolchain_args = {
     current_cpu = "arm64"
     v8_current_cpu = "arm64"
+    toolchain_for_v8_snapshot = true
   }
 }
