@@ -80,7 +80,6 @@ export abstract class PdfViewerBaseElement extends HelpBubbleCrLitElementBase {
   protected lastViewportPosition: Point|null = null;
   protected originalUrl: string = '';
   protected paramsParser: OpenPdfParamsParser|null = null;
-  protected pdfOopifEnabled: boolean = false;
   accessor showErrorDialog: boolean = false;
   protected accessor strings: LoadTimeDataRaw|undefined;
   protected tracker: EventTracker = new EventTracker();
@@ -135,20 +134,12 @@ export abstract class PdfViewerBaseElement extends HelpBubbleCrLitElementBase {
     }
 
     // Pass the attributes for loading PDF plugin through the `pdfViewerPrivate`
-    // API if OOPIF PDF is enabled, or the `mimeHandlerPrivate` API.
-    const attributesForLoading:
-        chrome.mimeHandlerPrivate.PdfPluginAttributes = {
-      backgroundColor: this.getBackgroundColor(),
-      allowJavascript: javascript === 'allow',
-    };
-
-    // PDF viewer only, as Print Preview doesn't set PDF plugin attributes.
-    if (this.pdfOopifEnabled) {
-      if (chrome.pdfViewerPrivate) {
-        chrome.pdfViewerPrivate.setPdfPluginAttributes(attributesForLoading);
-      }
-    } else if (chrome.mimeHandlerPrivate) {
-      chrome.mimeHandlerPrivate.setPdfPluginAttributes(attributesForLoading);
+    // API. PDF viewer only, as Print Preview doesn't set PDF plugin attributes.
+    if (chrome.pdfViewerPrivate) {
+      chrome.pdfViewerPrivate.setPdfPluginAttributes({
+        backgroundColor: this.getBackgroundColor(),
+        allowJavascript: javascript === 'allow',
+      });
     }
 
     return plugin;
@@ -168,8 +159,6 @@ export abstract class PdfViewerBaseElement extends HelpBubbleCrLitElementBase {
       content: HTMLElement) {
     this.browserApi = browserApi;
     this.originalUrl = this.browserApi.getStreamInfo().originalUrl;
-    this.pdfOopifEnabled =
-        document.documentElement.hasAttribute('pdfOopifEnabled');
 
     record(UserAction.DOCUMENT_OPENED);
 
@@ -376,13 +365,6 @@ export abstract class PdfViewerBaseElement extends HelpBubbleCrLitElementBase {
     this.paramsParser!.setPageCount(documentDimensions.pageDimensions.length);
     this.paramsParser!.setViewportDimensions(this.viewport_!.size);
     this.isUserInitiatedEvent = true;
-  }
-
-  /**
-   * @return True if OOPIF PDF is enabled, false otherwise.
-   */
-  get isPdfOopifEnabled(): boolean {
-    return this.pdfOopifEnabled;
   }
 
   /**

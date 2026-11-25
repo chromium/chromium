@@ -530,11 +530,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         new NavigatorDelegateImpl(browserApi));
 
     // Listen for save commands from the browser.
-    if (this.pdfOopifEnabled) {
-      chrome.pdfViewerPrivate.onSave.addListener(this.onSave_.bind(this));
-    } else {
-      chrome.mimeHandlerPrivate.onSave.addListener(this.onSave_.bind(this));
-    }
+    chrome.pdfViewerPrivate.onSave.addListener(this.onSave_.bind(this));
 
     // Listen for hash updates from the browser.
     chrome.pdfViewerPrivate.onShouldUpdateViewport.addListener(
@@ -547,7 +543,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     this.embedded_ = this.browserApi!.getStreamInfo().embedded;
 
-    if (this.pdfOopifEnabled && !this.embedded_) {
+    if (!this.embedded_) {
       // Give the full page PDF viewer focus so it can handle keyboard events
       // immediately.
       window.focus();
@@ -1399,7 +1395,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (modified) {
       this.hasCommittedInk2Edits_ = true;
       this.hasUnsavedEdits_ = true;
-      this.setShowBeforeUnloadDialog_(true);
+      this.showBeforeUnloadDialog_ = true;
     }
     this.pluginController_.getEventTarget().dispatchEvent(new CustomEvent(
         PluginControllerEventType.FINISH_INK_STROKE, {detail: modified}));
@@ -1438,7 +1434,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // the current document is the child of a top-level document, hence using a
     // private API to set the tab title.
     // NOTE: Title should only be set for full-page PDFs.
-    if (this.pdfOopifEnabled && !this.embedded_) {
+    if (!this.embedded_) {
       PdfViewerPrivateProxyImpl.getInstance().setPdfDocumentTitle(this.title_);
     } else {
       document.title = this.title_;
@@ -1670,7 +1666,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     if (newState === SaveToDriveState.UPLOADING) {
       // Block unloading the window if upload is in progress.
-      this.setShowBeforeUnloadDialog_(true);
+      this.showBeforeUnloadDialog_ = true;
       if (isEditedSaveRequestType(this.saveToDriveRequestType_)) {
         this.hasUnsavedEdits_ = false;
       }
@@ -1681,7 +1677,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         newState === SaveToDriveState.UNINITIALIZED,
         `Unexpected state: ${newState}`);
     if (oldState !== SaveToDriveState.UPLOADING) {
-      this.setShowBeforeUnloadDialog_(this.hasUnsavedEdits_);
+      this.showBeforeUnloadDialog_ = this.hasUnsavedEdits_;
     }
   }
   // </if> enable_pdf_save_to_drive
@@ -1736,7 +1732,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       e: CustomEvent<UndoRedoStateChangedDetail>) {
     this.hasCommittedInk2Edits_ = e.detail.canUndo;
     this.hasUnsavedEdits_ = e.detail.hasUnsavedEdits;
-    this.setShowBeforeUnloadDialog_(this.shouldShowBeforeUnloadDialog_());
+    this.showBeforeUnloadDialog_ = this.shouldShowBeforeUnloadDialog_();
   }
   // </if>
 
@@ -2003,7 +1999,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * Performs required tasks after a successful save.
    */
   private onSaveSuccessful_(requestType: SaveRequestType) {
-    this.setShowBeforeUnloadDialog_(this.shouldShowBeforeUnloadDialog_());
+    this.showBeforeUnloadDialog_ = this.shouldShowBeforeUnloadDialog_();
     if (this.pdfInk2Enabled_ && requestType === SaveRequestType.ANNOTATION) {
       Ink2Manager.getInstance().saved();
     }
@@ -2016,7 +2012,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * Performs required tasks after a successful save.
    */
   private onSaveSuccessful_(_requestType: SaveRequestType) {
-    this.setShowBeforeUnloadDialog_(this.shouldShowBeforeUnloadDialog_());
+    this.showBeforeUnloadDialog_ = this.shouldShowBeforeUnloadDialog_();
     this.fire('save-completed-for-testing');
   }
   // </if>
@@ -2149,7 +2145,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       Ink2Manager.getInstance().cancelSave();
     }
     // </if>
-    this.setShowBeforeUnloadDialog_(this.shouldShowBeforeUnloadDialog_());
+    this.showBeforeUnloadDialog_ = this.shouldShowBeforeUnloadDialog_();
     this.fire('save-completed-for-testing');
   }
 
@@ -2158,7 +2154,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (e.detail === TextBoxState.INACTIVE) {
       this.focusPlugin_();
     } else if (e.detail === TextBoxState.EDITED) {
-      this.setShowBeforeUnloadDialog_(true);
+      this.showBeforeUnloadDialog_ = true;
     }
   }
 
@@ -2177,26 +2173,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    */
   private onBeforeUnload_(event: BeforeUnloadEvent) {
     // When a user tries to leave PDF with unsaved changes or when Save to Drive
-    // is in progress, show the 'Leave site' dialog. OOPIF PDF only, since
-    // MimeHandler handles the beforeunload event instead.
-    if (this.pdfOopifEnabled && this.showBeforeUnloadDialog_) {
+    // is in progress, show the 'Leave site' dialog.
+    if (this.showBeforeUnloadDialog_) {
       BeforeUnloadProxyImpl.getInstance().preventDefault(event);
-    }
-  }
-
-  /**
-   * Sets whether to show the beforeunload dialog when navigating away from pdf.
-   * @param showDialog A boolean indicating whether to show the beforeunload
-   * dialog.
-   */
-  private setShowBeforeUnloadDialog_(showDialog: boolean) {
-    if (this.showBeforeUnloadDialog_ === showDialog) {
-      return;
-    }
-
-    this.showBeforeUnloadDialog_ = showDialog;
-    if (!this.pdfOopifEnabled) {
-      chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(showDialog);
     }
   }
   // </if>

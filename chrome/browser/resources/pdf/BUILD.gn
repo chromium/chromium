@@ -216,7 +216,6 @@ build_webui("build") {
     "//tools/typescript/definitions/content_settings.d.ts",
     "//tools/typescript/definitions/file_system.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/mime_handler_private.d.ts",
     "//tools/typescript/definitions/pdf_viewer_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/resources_private.d.ts",

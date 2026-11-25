@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-export type StreamInfoWithExtras = chrome.mimeHandlerPrivate.StreamInfo&{
+export type StreamInfoWithExtras = chrome.pdfViewerPrivate.StreamInfo&{
   // Appended in main.js
   javascript?: 'allow' | 'block',
 };
@@ -14,7 +14,7 @@ export type StreamInfoWithExtras = chrome.mimeHandlerPrivate.StreamInfo&{
  *     PDF.
  * @return A promise that will resolve to the default zoom factor.
  */
-function lookupDefaultZoom(streamInfo: chrome.mimeHandlerPrivate.StreamInfo):
+function lookupDefaultZoom(streamInfo: chrome.pdfViewerPrivate.StreamInfo):
     Promise<number> {
   // Webviews don't run in tabs so |streamInfo.tabId| is -1 when running within
   // a webview.
@@ -37,7 +37,7 @@ function lookupDefaultZoom(streamInfo: chrome.mimeHandlerPrivate.StreamInfo):
  *     PDF.
  * @return A promise that will resolve to the initial zoom factor.
  */
-function lookupInitialZoom(streamInfo: chrome.mimeHandlerPrivate.StreamInfo):
+function lookupInitialZoom(streamInfo: chrome.pdfViewerPrivate.StreamInfo):
     Promise<number> {
   // Webviews don't run in tabs so |streamInfo.tabId| is -1 when running within
   // a webview.
@@ -99,12 +99,12 @@ export class BrowserApi {
     const tabId = this.getStreamInfo().tabId;
     // We need to use the tabs API to navigate because
     // |window.location.href| cannot be used. This PDF extension is not loaded
-    // in the top level frame (it's embedded using MimeHandlerView). Using
+    // in the top level frame (it's embedded in an OOPIF). Using
     // |window.location| would navigate the wrong frame, so we can't
     // use it as a fallback. If it turns out that we do need a way to navigate
     // in non-tab cases, we would need to create another mechanism to
-    // communicate with MimeHandler code in the browser (e.g. via
-    // mimeHandlerPrivate), which could then navigate the correct frame.
+    // communicate with the browser (e.g. via pdfViewerPrivate), which could
+    // then navigate the correct frame.
     // Furthermore, navigations to local resources would be blocked with
     // |window.location|.
     if (chrome.tabs && tabId !== chrome.tabs.TAB_ID_NONE) {
@@ -171,17 +171,12 @@ export enum ZoomBehavior {
 
 /**
  * Creates a BrowserApi for an extension running as a mime handler.
- * @return A promise to a BrowserApi instance. The instance is constructed by
- *     the pdfViewerPrivate API if PDF OOPIF is enabled, otherwise it is
- *     constructed by the mimeHandlerPrivate API.
+ * @return A promise to a BrowserApi instance constructed by the
+ *     pdfViewerPrivate API.
  */
 export function createBrowserApi(): Promise<BrowserApi> {
-  return new Promise<chrome.mimeHandlerPrivate.StreamInfo>(function(resolve) {
-           if (document.documentElement.hasAttribute('pdfOopifEnabled')) {
-             chrome.pdfViewerPrivate.getStreamInfo(resolve);
-           } else {
-             chrome.mimeHandlerPrivate.getStreamInfo(resolve);
-           }
+  return new Promise<chrome.pdfViewerPrivate.StreamInfo>(function(resolve) {
+           chrome.pdfViewerPrivate.getStreamInfo(resolve);
          })
       .then(function(streamInfo) {
         let zoomBehavior = ZoomBehavior.NONE;
@@ -215,10 +210,8 @@ export function createBrowserApiForPrintPreview(): Promise<BrowserApi> {
   const streamInfo: StreamInfoWithExtras = {
     streamUrl: url,
     originalUrl: url,
-    responseHeaders: {},
     embedded: window.parent !== window,
     tabId: -1,
-    mimeType: '',
   };
   return new Promise<void>(function(resolve) {
            if (!chrome.tabs) {

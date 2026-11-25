@@ -44,7 +44,6 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/management.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/metrics_private_individual_apis.d.ts",
-    "//tools/typescript/definitions/mime_handler_private.d.ts",
     "//tools/typescript/definitions/networking_private.d.ts",
     "//tools/typescript/definitions/notifications.d.ts",
     "//tools/typescript/definitions/offscreen.d.ts",

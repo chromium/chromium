@@ -82,8 +82,6 @@ base::DictValue GetCommonStrings() {
   }
 
   dict.Set("presetZoomFactors", zoom::GetPresetZoomFactorsAsJSON());
-  dict.Set("pdfOopifEnabled",
-           chrome_pdf::features::IsOopifPdfEnabled() ? "pdfOopifEnabled" : "");
   dict.Set(
       "webuiRoundedIconsAttribute",
       features::IsWebUIRoundedIconsEnabled() ? "webui-rounded-icons" : "");

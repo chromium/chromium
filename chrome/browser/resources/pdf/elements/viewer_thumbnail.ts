@@ -63,13 +63,10 @@ export class ViewerThumbnailElement extends CrLitElement {
     }
 
     if (changedProperties.has('isActive') && this.isActive) {
-      const scrollIntoViewOptions: ScrollIntoViewOptions = {
+      this.scrollIntoView({
         block: 'nearest',
-      };
-      if (document.documentElement.hasAttribute('pdfOopifEnabled')) {
-        scrollIntoViewOptions.container = 'nearest';
-      }
-      this.scrollIntoView(scrollIntoViewOptions);
+        container: 'nearest',
+      });
     }
   }
 

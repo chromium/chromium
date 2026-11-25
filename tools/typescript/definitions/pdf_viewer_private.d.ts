@@ -69,16 +69,10 @@ declare global {
       }
       // </if>
 
-      // `mimeType` and `responseHeaders` are unused fields, but they are
-      // necessary to be able to cast to chrome.mimeHandlerPrivate.StreamInfo.
-      // TODO(crbug.com/40268279): Remove `mimeType` and `responseHeaders` after
-      // PDF viewer no longer uses chrome.mimeHandlerPrivate.
       export interface StreamInfo {
-        mimeType: string;
         originalUrl: string;
         streamUrl: string;
         tabId: number;
-        responseHeaders: Record<string, string>;
         embedded: boolean;
       }
 
