@@ -421,7 +421,6 @@ public class DownloadActivityV2Test {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/571584010
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.BAKLAVA,
             message = "https://crbug.com/570571761")
@@ -454,7 +453,10 @@ public class DownloadActivityV2Test {
         // Delete an item. The item should be gone and the storage text should be updated.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mStubbedOfflineContentProvider.removeItem(item5.id));
-        onView(withText("page 5")).check(doesNotExist());
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    onView(withText("page 5")).check(doesNotExist());
+                });
         onView(withText(containsString("Using 1.12 KB of"))).check(matches(isDisplayed()));
     }
 
