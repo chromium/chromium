@@ -260,6 +260,7 @@ void PingRlzServer(std::string url,
             "3- Whether Google is the default omnibox search.\n"
             "4- Whether google.com is the default home page."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://clients1.google.com/tools/pso/ping"
         }
         policy {
           cookies_allowed: NO
