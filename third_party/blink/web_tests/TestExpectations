@@ -2443,6 +2443,8 @@ crbug.com/501198804 external/wpt/visual-viewport/viewport-scale-clamped.html [ F
 crbug.com/501209160 [ Mac ] external/wpt/webrtc/RTCDtlsTransport-state.html [ Timeout ]
 crbug.com/501209160 [ Mac ] external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Failure Timeout ]
 crbug.com/501209160 external/wpt/webrtc/rtp-stats-lifetime.https.html [ Failure ]
+# Temporarily allow Failure/Pass while WebRTC CL 517665 rolls.
+crbug.com/501209160 external/wpt/webrtc/RTCPeerConnection-remote-track-properties.https.html?interop-2026 [ Failure Pass ]
 
 crbug.com/503010262 external/wpt/webgl/compressed-tex-sub-image-2d-without-base-image.html [ Failure Pass ]
 
