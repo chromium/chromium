@@ -59,14 +59,13 @@ void ConfigSource::UpdateConfigForUser(const AccountId& account_id,
   CHECK(user->IsChild(), base::NotFatalUntil::M160);
 #endif  // DCHECK_IS_ON()
 
+  // KnownUser doesn't store prefs of ephemeral users, so load the config
+  // directly instead of reading it back from Local State.
+  LoadConfigForUser(account_id, config);
+
   user_manager::KnownUser known_user(&local_state_.get());
   known_user.SetPath(account_id, ash::prefs::kKnownUserParentAccessCodeConfig,
                      base::Value(std::move(config)));
-
-  const base::Value* dictionary = known_user.FindPath(
-      account_id, ash::prefs::kKnownUserParentAccessCodeConfig);
-  CHECK(dictionary);
-  LoadConfigForUser(account_id, dictionary->GetDict());
 }
 
 void ConfigSource::RemoveConfigForUser(const AccountId& account_id) {
