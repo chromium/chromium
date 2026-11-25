@@ -247,4 +247,8 @@ crbug.com/575489509 [ Simulator ] SharedTabGroupsSigninTestCase/testJoinGroupNot
 crbug.com/575489890 AutofillProfileSettingsTestCase/testDoneButtonByRequirementsOfCountries [ Pass Failure ]
 
 # Gardening suppression 2026-10-26
-crbug.com/556601479 [ iPhone Simulator ] PolicyUIMojoEnabledTestCase/testPolicyPageManagedWithCBCM [ Pass Failure ]
+crbug.com/556601479 [ Simulator ] PolicyUIMojoEnabledTestCase/testPolicyPageManagedWithCBCM [ Pass Failure ]
+
+# Gardening suppression 2026-11-02
+crbug.com/578500873 GeminiCopresenceTestCase/testFloatyHiddenWhenOmniboxFocused [ Pass Failure ]
+crbug.com/579456339 [ Simulator ] BrowserEditMenuHandlerTestCase/testEmailMenu [ Pass Failure ]
