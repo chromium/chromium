@@ -428,8 +428,10 @@ BASE_FEATURE(kSkipVulkanBlocklist,
 // native implementation if --use-vulkan flag is not used. Otherwise
 // --use-vulkan will be followed.
 // Note Android WebView uses kWebViewDrawFunctorUsesVulkan instead of this.
+// TODO(crbug.com/40194695): Enable on arm64 Fuchsia once QEMU switches off
+// headless SwiftShader.
 BASE_FEATURE(kVulkan,
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_X86_64))
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT

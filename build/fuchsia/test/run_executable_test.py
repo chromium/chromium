@@ -170,21 +170,44 @@ class ExecutableTestRunner(TestRunner):
                 '--test-launcher-filter-file='
                 + ';'.join(test_launcher_filter_files)
             )
+        if args.test_args:
+            child_args.extend(args.test_args)
         # flatbuffers_unittests fails if it receives unrecognized arguments
-        # (like --use-vulkan), so we must not pass them.
+        # (like --use-vulkan or --use-gpu-in-tests), so we must not pass them.
         if self._test_name != 'flatbuffers_unittests':
-            if get_host_arch() == 'x64':
-                # TODO(crbug.com/40202294) Remove once Vulkan is enabled by
-                # default.
-                child_args.append('--use-vulkan=native')
-            else:
+            if get_host_arch() != 'x64':
                 # TODO(crbug.com/42050042, crbug.com/42050537) Remove
                 # swiftshader once the vulkan is enabled by default.
                 child_args.extend(
                     ['--use-vulkan=swiftshader', '--ozone-platform=headless']
                 )
-        if args.test_args:
-            child_args.extend(args.test_args)
+            elif '--ozone-platform=headless' not in child_args:
+                # Headless Ozone lacks native Vulkan surface support.
+                # TODO(crbug.com/40202294) Remove once Vulkan is enabled by
+                # default.
+                child_args.append('--use-vulkan=native')
+                if self._test_name not in (
+                    'cc_unittests',
+                    'content_unittests',
+                    'viz_unittests',
+                ):
+                    # - content_unittests: ContentTestSuite::Initialize()
+                    #   initializes no-extensions GL and probes GPU info in
+                    #   every 10-test worker batch across thousands of non-GPU
+                    #   unit tests, which can stall AEMU's 15s main-loop
+                    #   watchdog over goldfish_vulkan.
+                    # - cc_unittests & viz_unittests: cc::PixelTest golden
+                    #   images are generated with SwiftShader (other platforms
+                    #   also run these suites without --use-gpu-in-tests), so
+                    #   let cc::PixelTest stay on SwiftShader rather than
+                    #   widening pixel tolerances for Lavapipe.
+                    child_args.append('--use-gpu-in-tests')
+                if self._test_name == 'media_unittests':
+                    # Biplanar UV RG_88 SharedImage tests in media_unittests
+                    # allocate an external VK_FORMAT_R8G8_UNORM ColorBufferVk
+                    # over goldfish_vulkan, which host AEMU does not support and
+                    # FATAL-aborts QEMU on when Vulkan is enabled.
+                    child_args.append('--disable-features=Vulkan')
         has_screen_info = any(
             arg.startswith(('--ozone-override-screen-size=', '--screen-info='))
             for arg in child_args

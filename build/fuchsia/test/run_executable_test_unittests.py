@@ -9,6 +9,7 @@ import os
 import sys
 import tempfile
 import unittest
+from typing import List, Optional
 from unittest import mock
 
 import run_executable_test
@@ -16,6 +17,22 @@ import run_executable_test
 
 class RunExecutableTestUnittests(unittest.TestCase):
     """Unittests for run_executable_test.py."""
+
+    @staticmethod
+    def _create_runner(
+        test_name: str = 'base_unittests',
+        test_args: Optional[List[str]] = None,
+    ) -> run_executable_test.ExecutableTestRunner:
+        return run_executable_test.ExecutableTestRunner(
+            out_dir='/abs/out',
+            test_args=test_args or [],
+            test_name=test_name,
+            target_id=None,
+            code_coverage_dir='',
+            logs_dir=None,
+            package_deps={test_name: f'{test_name}.far'},
+            test_realm=None,
+        )
 
     def test_main_loads_exposed_env_from_ffx_isolate_dir(self) -> None:
         with tempfile.TemporaryDirectory() as isolate_dir:
@@ -136,6 +153,125 @@ class RunExecutableTestUnittests(unittest.TestCase):
                 run_executable_test.main()
             self.assertIn('9999', str(ctx.exception))
             self.assertIn(logs_dir, str(ctx.exception))
+
+    def test_get_args_x64_enables_native_vulkan_and_gpu_in_tests(self) -> None:
+        with mock.patch('platform.machine', return_value='x86_64'):
+            args = self._create_runner()._get_args()
+        self.assertIn('--use-vulkan=native', args)
+        self.assertIn('--use-gpu-in-tests', args)
+        self.assertFalse(
+            any(
+                arg.startswith(('--enable-features=', '--disable-features='))
+                for arg in args
+            )
+        )
+        self.assertNotIn('--use-vulkan=swiftshader', args)
+        self.assertNotIn('--ozone-platform=headless', args)
+
+    def test_get_args_non_x64_uses_swiftshader_and_headless(self) -> None:
+        with mock.patch('platform.machine', return_value='aarch64'):
+            args = self._create_runner()._get_args()
+        self.assertIn('--use-vulkan=swiftshader', args)
+        self.assertIn('--ozone-platform=headless', args)
+        self.assertIn('--ozone-override-screen-size=800,600', args)
+        self.assertNotIn('--use-vulkan=native', args)
+        self.assertNotIn('--use-gpu-in-tests', args)
+        self.assertFalse(
+            any(arg.startswith('--enable-features=') for arg in args)
+        )
+
+    def test_get_args_omits_vulkan_for_flatbuffers_unittests(self) -> None:
+        for arch in ('x86_64', 'aarch64'):
+            with mock.patch('platform.machine', return_value=arch):
+                args = self._create_runner(
+                    test_name='flatbuffers_unittests'
+                )._get_args()
+                self.assertFalse(
+                    any(arg.startswith('--use-vulkan') for arg in args)
+                )
+                self.assertNotIn('--use-gpu-in-tests', args)
+                self.assertFalse(
+                    any(arg.startswith('--enable-features=') for arg in args)
+                )
+                self.assertNotIn('--ozone-platform=headless', args)
+                self.assertNotIn('--ozone-override-screen-size=800,600', args)
+
+    def test_get_args_x64_headless_sets_default_screen_size(self) -> None:
+        for test_args in (
+            ['--ozone-platform=headless'],
+            ['--test-arg=--ozone-platform=headless'],
+        ):
+            with mock.patch('platform.machine', return_value='x86_64'):
+                args = self._create_runner(test_args=test_args)._get_args()
+                self.assertIn('--ozone-platform=headless', args)
+                self.assertIn('--ozone-override-screen-size=800,600', args)
+                self.assertFalse(
+                    any(arg.startswith('--use-vulkan') for arg in args)
+                )
+                self.assertNotIn('--use-gpu-in-tests', args)
+                self.assertFalse(
+                    any(arg.startswith('--enable-features=') for arg in args)
+                )
+
+    def test_get_args_preserves_explicit_screen_override_for_headless(
+        self,
+    ) -> None:
+        with mock.patch('platform.machine', return_value='x86_64'):
+            x64_args = self._create_runner(
+                test_args=[
+                    '--test-arg=--ozone-platform=headless',
+                    '--test-arg=--ozone-override-screen-size=1024,768',
+                ]
+            )._get_args()
+        self.assertIn('--ozone-platform=headless', x64_args)
+        self.assertIn('--ozone-override-screen-size=1024,768', x64_args)
+        self.assertNotIn('--ozone-override-screen-size=800,600', x64_args)
+        self.assertFalse(
+            any(arg.startswith('--use-vulkan') for arg in x64_args)
+        )
+        self.assertNotIn('--use-gpu-in-tests', x64_args)
+        self.assertFalse(
+            any(arg.startswith('--enable-features=') for arg in x64_args)
+        )
+
+        with mock.patch('platform.machine', return_value='aarch64'):
+            arm64_args = self._create_runner(
+                test_args=['--screen-info=800x600']
+            )._get_args()
+        self.assertIn('--ozone-platform=headless', arm64_args)
+        self.assertIn('--screen-info=800x600', arm64_args)
+        self.assertNotIn('--ozone-override-screen-size=800,600', arm64_args)
+
+    def test_get_args_x64_omits_use_gpu_in_tests_for_excluded_suites(
+        self,
+    ) -> None:
+        for test_name in (
+            'cc_unittests',
+            'content_unittests',
+            'viz_unittests',
+        ):
+            with self.subTest(test_name=test_name):
+                with mock.patch('platform.machine', return_value='x86_64'):
+                    args = self._create_runner(test_name=test_name)._get_args()
+                self.assertIn('--use-vulkan=native', args)
+                self.assertNotIn('--use-gpu-in-tests', args)
+                self.assertFalse(
+                    any(arg.startswith('--enable-features=') for arg in args)
+                )
+                self.assertNotIn('--ozone-platform=headless', args)
+
+    def test_get_args_x64_disables_vulkan_feature_for_media_unittests(
+        self,
+    ) -> None:
+        with mock.patch('platform.machine', return_value='x86_64'):
+            args = self._create_runner(test_name='media_unittests')._get_args()
+        self.assertIn('--use-vulkan=native', args)
+        self.assertIn('--use-gpu-in-tests', args)
+        self.assertIn('--disable-features=Vulkan', args)
+        self.assertFalse(
+            any(arg.startswith('--enable-features=') for arg in args)
+        )
+        self.assertNotIn('--ozone-platform=headless', args)
 
 
 if __name__ == '__main__':

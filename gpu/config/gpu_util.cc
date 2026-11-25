@@ -174,10 +174,11 @@ GpuFeatureStatus GetGpuRasterizationFeatureStatus(
 
   // Enable gpu rasterization for vulkan, unless it is overridden by
   // commandline.
+  auto* feature_list = base::FeatureList::GetInstance();
   if (features::IsUsingVulkan() &&
-      !base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-          features::kDefaultEnableGpuRasterization.name,
-          base::FeatureList::OVERRIDE_DISABLE_FEATURE)) {
+      (!feature_list || !feature_list->IsFeatureOverriddenFromCommandLine(
+                            features::kDefaultEnableGpuRasterization.name,
+                            base::FeatureList::OVERRIDE_DISABLE_FEATURE))) {
     return kGpuFeatureStatusEnabled;
   }
 
