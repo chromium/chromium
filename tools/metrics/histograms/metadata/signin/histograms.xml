@@ -304,12 +304,13 @@ to monitor/debug fetching OAuth2 Token issues. -->
                  result."/>
     <variant name="Network"
         summary="The cumulative latency of all HTTP token requests to Gaia
-                 (IssueToken) across all retry attempts of a token service
-                 fetch on Windows/Mac/Linux, excluding any DBSC challenge
-                 signing or retry backoff delays. Only recorded if at least
-                 one HTTP request completed during the fetch (cache hits and
-                 immediate non-network rejections are excluded). Recorded
-                 once when the token service fetch completes."/>
+                 (IssueToken or GetToken) across all retry attempts of a
+                 token service fetch on Windows/Mac/Linux/ChromeOS, excluding
+                 any DBSC challenge signing or retry backoff delays. Only
+                 recorded if at least one HTTP request completed during the
+                 fetch (cache hits and immediate non-network rejections are
+                 excluded). Recorded once when the token service fetch
+                 completes."/>
     <variant name="Request"
         summary="From the start of the access token request until the result
                  is returned to the client, excluding any wait for a refresh

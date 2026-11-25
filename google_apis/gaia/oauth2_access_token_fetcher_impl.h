@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_response.h"
@@ -125,6 +126,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImpl
 
   // While a fetch is in progress.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  std::optional<base::ElapsedTimer> network_request_timer_;
+  Latencies latencies_;
   std::string client_id_;
   std::string client_secret_;
   std::vector<std::string> scopes_;

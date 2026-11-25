@@ -7,6 +7,7 @@
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -20,6 +21,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -142,7 +144,8 @@ class OAuth2AccessTokenFetcherImplTest : public testing::Test {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockOAuth2AccessTokenConsumer consumer_;
   URLLoaderFactoryInterceptor url_loader_factory_interceptor_;
   network::TestURLLoaderFactory url_loader_factory_;
@@ -216,12 +219,52 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, SuccessUnexpectedFormat) {
 }
 
 TEST_F(OAuth2AccessTokenFetcherImplTest, CancelOngoingRequest) {
-  SetupGetAccessToken(net::OK, net::HTTP_OK, kValidTokenResponse);
+  GURL url(GaiaUrls::GetInstance()->oauth2_token_url());
+  EXPECT_CALL(url_loader_factory_interceptor_,
+              Intercept(resourceRequestUrlEquals(url)));
   // `OnGetTokenSuccess()` should not be called.
-  EXPECT_CALL(consumer_, OnGetTokenSuccess(_)).Times(0);
+  EXPECT_CALL(consumer_, OnGetTokenSuccess).Times(0);
   fetcher_->Start("client_id", "client_secret", ScopeList());
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   fetcher_->CancelRequest();
+  url_loader_factory_.AddResponse(url.spec(), kValidTokenResponse,
+                                  net::HTTP_OK);
   base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(fetcher_->GetLatencies(), OAuth2AccessTokenFetcher::Latencies());
+}
+
+TEST_F(OAuth2AccessTokenFetcherImplTest, GetLatenciesOnSuccess) {
+  GURL url(GaiaUrls::GetInstance()->oauth2_token_url());
+  EXPECT_EQ(fetcher_->GetLatencies(), OAuth2AccessTokenFetcher::Latencies());
+  EXPECT_CALL(url_loader_factory_interceptor_,
+              Intercept(resourceRequestUrlEquals(url)));
+
+  fetcher_->Start("client_id", "client_secret", ScopeList());
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  EXPECT_EQ(fetcher_->GetLatencies(), OAuth2AccessTokenFetcher::Latencies());
+
+  EXPECT_CALL(consumer_, OnGetTokenSuccess);
+  ASSERT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
+      url.spec(), kValidTokenResponse, net::HTTP_OK));
+
+  EXPECT_EQ(fetcher_->GetLatencies(), (OAuth2AccessTokenFetcher::Latencies{
+                                          .network = base::Milliseconds(250)}));
+}
+
+TEST_F(OAuth2AccessTokenFetcherImplTest, GetLatenciesOnFailure) {
+  GURL url(GaiaUrls::GetInstance()->oauth2_token_url());
+  EXPECT_CALL(url_loader_factory_interceptor_,
+              Intercept(resourceRequestUrlEquals(url)));
+
+  fetcher_->Start("client_id", "client_secret", ScopeList());
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+
+  EXPECT_CALL(consumer_, OnGetTokenFailure);
+  ASSERT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
+      url.spec(), kValidFailureTokenResponse, net::HTTP_BAD_REQUEST));
+
+  EXPECT_EQ(fetcher_->GetLatencies(), (OAuth2AccessTokenFetcher::Latencies{
+                                          .network = base::Milliseconds(300)}));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

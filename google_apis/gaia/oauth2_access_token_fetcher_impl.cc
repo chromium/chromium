@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "google_apis/credentials_mode.h"
@@ -195,12 +196,13 @@ OAuth2AccessTokenFetcherImpl::~OAuth2AccessTokenFetcherImpl() = default;
 
 void OAuth2AccessTokenFetcherImpl::CancelRequest() {
   state_ = GET_ACCESS_TOKEN_CANCELED;
+  network_request_timer_.reset();
   url_loader_.reset();
 }
 
 OAuth2AccessTokenFetcher::Latencies OAuth2AccessTokenFetcherImpl::GetLatencies()
     const {
-  return {};
+  return latencies_;
 }
 
 void OAuth2AccessTokenFetcherImpl::Start(
@@ -221,6 +223,7 @@ void OAuth2AccessTokenFetcherImpl::StartGetAccessToken() {
       MakeGetAccessTokenBody(client_id_, client_secret_, refresh_token_,
                              auth_code_, scopes_),
       GetTrafficAnnotationTag());
+  network_request_timer_.emplace();
   // It's safe to use Unretained below as the |url_loader_| is owned by |this|.
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
@@ -233,6 +236,9 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
     std::optional<std::string> response_body) {
   CHECK_EQ(GET_ACCESS_TOKEN_STARTED, state_);
   state_ = GET_ACCESS_TOKEN_DONE;
+  // Record latency before firing consumer callbacks, which may destroy `this`.
+  latencies_.network = network_request_timer_->Elapsed();
+  network_request_timer_.reset();
 
   bool net_failure = url_loader_->NetError() != net::OK ||
                      !url_loader_->ResponseInfo() ||
