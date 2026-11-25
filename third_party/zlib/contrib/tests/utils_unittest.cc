@@ -1434,7 +1434,11 @@ static base::FilePath TestDataDir() {
 TEST(ZlibTest, ZipUnicodePathExtraSizeFilenameOverflow) {
   // This is based on components/test/data/unzip_service/bug953599.zip (added
   // in https://crrev.com/1004132), with the Unicode Path Extra Field's
-  // dataSize hex edited to four.
+  // dataSize hex edited to four. The 15 bytes left after that field form a
+  // record of their own (its dataSize at offset 0x75 hex edited to 11),
+  // because minizip rejects an extra field whose records overrun it. That
+  // record starts with 0xc8, the last byte of the name CRC, so a parser that
+  // ignores the short dataSize would find a matching CRC.
   base::FilePath zip_file = TestDataDir().AppendASCII("unicode_path_extra_overflow.zip");
   unzFile uzf = unzOpen(zip_file.AsUTF8Unsafe().c_str());
   ASSERT_NE(uzf, nullptr);
