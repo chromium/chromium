@@ -196,6 +196,8 @@ public class VerticalTabRailLayout extends ConstraintLayout {
                         outline.setRoundRect(-radius, 0, view.getWidth(), view.getHeight(), radius);
                     }
                 });
+        mSearchIcon.setImageResource(
+                isTablet ? R.drawable.ic_manage_search_24dp : R.drawable.ic_manage_search_20dp);
         updateHeaderLayout();
     }
 
@@ -455,6 +457,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         if (mLastAppliedCollapseState == mCollapseState) {
             return;
         }
+        @RailCollapseState int previousCollapseState = mLastAppliedCollapseState;
         mLastAppliedCollapseState = mCollapseState;
 
         // The collapsed and hover-expanded rails keep the header buttons in their collapsed
@@ -464,7 +467,6 @@ public class VerticalTabRailLayout extends ConstraintLayout {
 
         Context context = getContext();
         Resources res = getResources();
-        boolean isTablet = VerticalTabUtils.isTablet(context);
 
         // The whole header button container. The buttons are start-aligned with an explicit offset
         // rather than centered, so they keep the same position when the rail is expanded for
@@ -489,23 +491,24 @@ public class VerticalTabRailLayout extends ConstraintLayout {
                         ? 0
                         : res.getDimensionPixelOffset(
                                 R.dimen.vertical_tabs_header_padding_vertical);
-        mCollapseButton.setImageResource(
-                isTablet
-                        ? (isManuallyExpanded
-                                ? R.drawable.vertical_tabs_menu_collapse_24dp
-                                : R.drawable.vertical_tabs_menu_expand_24dp)
-                        : (isManuallyExpanded
-                                ? R.drawable.vertical_tabs_menu_collapse
-                                : R.drawable.vertical_tabs_menu_expand));
-        mSearchIcon.setImageResource(
-                isTablet ? R.drawable.ic_manage_search_24dp : R.drawable.ic_manage_search_20dp);
-        int resId =
-                isManuallyExpanded
-                        ? R.string.accessibility_collapse_vertical_tabs
-                        : R.string.accessibility_expand_vertical_tabs;
-        String tooltipText = context.getString(resId);
-        mCollapseButton.setContentDescription(tooltipText);
-        TooltipCompat.setTooltipText(mCollapseButton, tooltipText);
+        if (previousCollapseState == RailCollapseState.UNKNOWN
+                || (previousCollapseState == RailCollapseState.EXPANDED) != isManuallyExpanded) {
+            mCollapseButton.setImageResource(
+                    VerticalTabUtils.isTablet(context)
+                            ? (isManuallyExpanded
+                                    ? R.drawable.vertical_tabs_menu_collapse_24dp
+                                    : R.drawable.vertical_tabs_menu_expand_24dp)
+                            : (isManuallyExpanded
+                                    ? R.drawable.vertical_tabs_menu_collapse
+                                    : R.drawable.vertical_tabs_menu_expand));
+            int resId =
+                    isManuallyExpanded
+                            ? R.string.accessibility_collapse_vertical_tabs
+                            : R.string.accessibility_expand_vertical_tabs;
+            String tooltipText = context.getString(resId);
+            mCollapseButton.setContentDescription(tooltipText);
+            TooltipCompat.setTooltipText(mCollapseButton, tooltipText);
+        }
 
         // Horizontal header spacer
         mHeaderSpacer.setVisibility(showSingleRowHeader ? View.VISIBLE : View.GONE);

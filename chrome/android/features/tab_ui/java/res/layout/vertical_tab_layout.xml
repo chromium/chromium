@@ -38,7 +38,6 @@ found in the LICENSE file.
             android:id="@+id/collapse_button"
             android:layout_width="@dimen/vertical_tabs_header_button_size"
             android:layout_height="@dimen/vertical_tabs_header_button_size"
-            android:src="@drawable/vertical_tabs_menu_collapse"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/accessibility_collapse_vertical_tabs"
             android:scaleType="center"
@@ -66,7 +65,6 @@ found in the LICENSE file.
                 android:id="@+id/tab_search_icon"
                 android:layout_width="@dimen/vertical_tabs_header_button_size"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_manage_search_20dp"
                 android:scaleType="center"
                 android:importantForAccessibility="no" />
             <TextView

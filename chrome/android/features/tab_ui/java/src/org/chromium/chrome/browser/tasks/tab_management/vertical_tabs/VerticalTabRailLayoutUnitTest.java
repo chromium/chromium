@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -22,6 +23,7 @@ import android.content.res.Configuration;
 import android.graphics.Outline;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -864,16 +866,29 @@ public class VerticalTabRailLayoutUnitTest {
 
         ImageView tabletCollapseButton = tabletLayout.findViewById(R.id.collapse_button);
         ImageView tabletSearchButton = tabletLayout.findViewById(R.id.tab_search_icon);
+        Drawable initialTabletSearchDrawable = tabletSearchButton.getDrawable();
         assertEquals(
                 R.drawable.vertical_tabs_menu_collapse_24dp,
                 shadowOf(tabletCollapseButton.getDrawable()).getCreatedFromResId());
         assertEquals(
                 R.drawable.ic_manage_search_24dp,
-                shadowOf(tabletSearchButton.getDrawable()).getCreatedFromResId());
+                shadowOf(initialTabletSearchDrawable).getCreatedFromResId());
         tabletLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        Drawable collapsedTabletDrawable = tabletCollapseButton.getDrawable();
         assertEquals(
                 R.drawable.vertical_tabs_menu_expand_24dp,
+                shadowOf(collapsedTabletDrawable).getCreatedFromResId());
+        assertSame(initialTabletSearchDrawable, tabletSearchButton.getDrawable());
+        tabletLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertSame(collapsedTabletDrawable, tabletCollapseButton.getDrawable());
+        assertSame(initialTabletSearchDrawable, tabletSearchButton.getDrawable());
+        tabletLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        assertSame(collapsedTabletDrawable, tabletCollapseButton.getDrawable());
+        tabletLayout.setCollapseState(RailCollapseState.EXPANDED);
+        assertEquals(
+                R.drawable.vertical_tabs_menu_collapse_24dp,
                 shadowOf(tabletCollapseButton.getDrawable()).getCreatedFromResId());
+        assertSame(initialTabletSearchDrawable, tabletSearchButton.getDrawable());
 
         DeviceInfo.setIsDesktopForTesting(true);
         VerticalTabRailLayout desktopLayout =
