@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -16,6 +17,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -394,6 +396,69 @@ TEST_F(BookmarkCodecTest, CannotDecodeModelWithoutMobileBookmarks) {
   EXPECT_FALSE(Decode(&decoder, *(root->GetIfDict()),
                       /*already_assigned_ids=*/{}, decoded_model.get(),
                       /*sync_metadata_str=*/nullptr));
+}
+
+TEST_F(BookmarkCodecTest, CannotDecodeModelWithPermanentFolderMissingChildren) {
+  std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
+  base::DictValue value = EncodeModel(model_to_encode.get());
+  base::DictValue* roots = value.FindDict(BookmarkCodec::kRootsKey);
+  ASSERT_TRUE(roots);
+  base::DictValue* other_dict =
+      roots->FindDict(BookmarkCodec::kOtherBookmarkFolderNameKey);
+  ASSERT_TRUE(other_dict);
+  ASSERT_TRUE(other_dict->Remove(BookmarkCodec::kChildrenKey));
+
+  // Missing `children` list on a permanent folder must fail without partially
+  // populating earlier permanent folders.
+  std::unique_ptr<BookmarkModel> decoded_model(
+      TestBookmarkClient::CreateModel());
+  BookmarkCodec decoder;
+  EXPECT_FALSE(Decode(&decoder, value, /*already_assigned_ids=*/{},
+                      decoded_model.get(), /*sync_metadata_str=*/nullptr));
+  EXPECT_TRUE(decoded_model->bookmark_bar_node()->children().empty());
+  EXPECT_TRUE(decoder.release_assigned_ids().empty());
+}
+
+TEST_F(BookmarkCodecTest, CannotDecodeModelWithPermanentFolderWrongType) {
+  std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
+  base::DictValue value = EncodeModel(model_to_encode.get());
+  base::DictValue* roots = value.FindDict(BookmarkCodec::kRootsKey);
+  ASSERT_TRUE(roots);
+  base::DictValue* bb_dict =
+      roots->FindDict(BookmarkCodec::kBookmarkBarFolderNameKey);
+  ASSERT_TRUE(bb_dict);
+  bb_dict->Set(BookmarkCodec::kTypeKey, BookmarkCodec::kTypeURL);
+
+  std::unique_ptr<BookmarkModel> decoded_model(
+      TestBookmarkClient::CreateModel());
+  BookmarkCodec decoder;
+  EXPECT_FALSE(Decode(&decoder, value, /*already_assigned_ids=*/{},
+                      decoded_model.get(), /*sync_metadata_str=*/nullptr));
+}
+
+TEST_F(BookmarkCodecTest, ReassignExtremeId) {
+  std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel2());
+  base::DictValue value = EncodeModel(model_to_encode.get());
+
+  base::Value* child0_value = nullptr;
+  GetBookmarksBarChildValue(&value, 0, &child0_value);
+  child0_value->GetDict().Set(
+      BookmarkCodec::kIdKey,
+      base::NumberToString(std::numeric_limits<int64_t>::max()));
+
+  std::unique_ptr<BookmarkModel> decoded_model(
+      TestBookmarkClient::CreateModel());
+  BookmarkCodec decoder;
+  ASSERT_TRUE(Decode(&decoder, value, /*already_assigned_ids=*/{},
+                     decoded_model.get(), /*sync_metadata_str=*/nullptr));
+
+  EXPECT_TRUE(decoder.ids_reassigned());
+  EXPECT_TRUE(decoder.required_recovery());
+  ASSERT_EQ(2u, decoded_model->bookmark_bar_node()->children().size());
+  EXPECT_EQ(6, decoded_model->bookmark_bar_node()->children()[0]->id());
+  EXPECT_EQ(5, decoded_model->bookmark_bar_node()->children()[1]->id());
+  EXPECT_EQ(7, decoded_model->next_node_id());
+  ExpectIDsUnique(decoded_model.get());
 }
 
 TEST_F(BookmarkCodecTest, DecodeWithDuplicateIds) {

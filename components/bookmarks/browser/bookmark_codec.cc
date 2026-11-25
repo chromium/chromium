@@ -5,8 +5,10 @@
 #include "components/bookmarks/browser/bookmark_codec.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -59,6 +61,18 @@ const char BookmarkCodec::kDateLastUsed[] = "date_last_used";
 static const int kCurrentVersion = 1;
 
 namespace {
+
+// Upper bound for persisted node IDs accepted without reassignment during
+// decoding. Leaves ample headroom below `std::numeric_limits<int64_t>::max()`
+// so subsequent ID reassignments, permanent/managed node allocations, and
+// runtime `next_node_id_` increments cannot overflow signed `int64_t`.
+constexpr int64_t kMaxValidNodeId = std::numeric_limits<int64_t>::max() / 2;
+
+bool IsValidPermanentFolderDict(const base::DictValue& value) {
+  const std::string* type_string = value.FindString(BookmarkCodec::kTypeKey);
+  return type_string && *type_string == BookmarkCodec::kTypeFolder &&
+         value.FindList(BookmarkCodec::kChildrenKey) != nullptr;
+}
 
 // Encodes Sync metadata and cleans up the input string to decrease peak memory
 // usage during encoding.
@@ -149,7 +163,7 @@ bool BookmarkCodec::Decode(const base::DictValue& value,
   }
 
   ids_ = std::move(already_assigned_ids);
-  maximum_id_ = ids_.empty() ? 0 : *ids_.rbegin();
+  maximum_id_ = ids_.empty() ? 0 : std::max<int64_t>(0, *ids_.rbegin());
   uuids_ = {base::Uuid::ParseLowercase(kRootNodeUuid),
             base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
             base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
@@ -241,8 +255,15 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
   const base::DictValue* mobile_folder_value =
       roots->FindDict(kMobileBookmarkFolderNameKey);
 
-  if (!bb_value || !other_folder_value || !mobile_folder_value)
+  if (!bb_value || !other_folder_value || !mobile_folder_value) {
     return false;
+  }
+
+  if (!IsValidPermanentFolderDict(*bb_value) ||
+      !IsValidPermanentFolderDict(*other_folder_value) ||
+      !IsValidPermanentFolderDict(*mobile_folder_value)) {
+    return false;
+  }
 
   DecodeNode(*bb_value, nullptr, bb_node);
   DecodeNode(*other_folder_value, nullptr, other_folder_node);
@@ -283,7 +304,7 @@ void BookmarkCodec::DecodeNode(const base::DictValue& value,
 
   if (const std::string* string = value.FindString(kIdKey);
       string && base::StringToInt64(*string, &id) && id > 0 &&
-      ids_.insert(id).second) {
+      id <= kMaxValidNodeId && ids_.insert(id).second) {
     id_requires_reassignment = false;
     maximum_id_ = std::max(maximum_id_, id);
   }
@@ -328,16 +349,19 @@ void BookmarkCodec::DecodeNode(const base::DictValue& value,
 
   const std::string* type_string = value.FindString(kTypeKey);
   if (!type_string) {
+    CHECK(!node);
     return;
   }
 
   if (*type_string != kTypeURL && *type_string != kTypeFolder) {
+    CHECK(!node);
     return;  // Unknown type.
   }
 
   if (*type_string == kTypeURL) {
     const std::string* url_string = value.FindString(kURLKey);
     if (!url_string) {
+      CHECK(!node);
       return;
     }
 
@@ -346,6 +370,7 @@ void BookmarkCodec::DecodeNode(const base::DictValue& value,
       DCHECK(uuid.is_valid());
       node = new BookmarkNode(id, uuid, url);
     } else {
+      CHECK(!node);
       return;  // Node invalid.
     }
 
@@ -353,8 +378,10 @@ void BookmarkCodec::DecodeNode(const base::DictValue& value,
       parent->Add(base::WrapUnique(node));
   } else {
     const base::ListValue* child_values = value.FindList(kChildrenKey);
-    if (!child_values)
+    if (!child_values) {
+      CHECK(!node);
       return;
+    }
 
     if (!node) {
       DCHECK(uuid.is_valid());

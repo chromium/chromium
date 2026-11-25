@@ -1126,6 +1126,59 @@ TEST_F(ModelLoaderTest, LoadModelWithNestedUserFolders) {
       /*sample=*/2, /*expected_count=*/1);
 }
 
+TEST_F(ModelLoaderTest, LoadAccountFileWithMalformedPermanentFolder) {
+  base::HistogramTester histogram_tester;
+  base::test::TaskEnvironment task_environment;
+  const base::FilePath temp_dir = base::CreateUniqueTempDirectoryScopedToTest();
+  const base::FilePath local_file_clear =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
+  const base::FilePath account_file_clear =
+      temp_dir.AppendASCII("AccountBookmarks");
+  const base::FilePath local_file_encrypted =
+      temp_dir.AppendASCII("encrypted1");
+  const base::FilePath account_file_encrypted =
+      temp_dir.AppendASCII("encrypted2");
+
+  // `bookmark_bar` is missing its `children` list.
+  constexpr char kMalformedAccountJson[] = R"({
+    "version": 1,
+    "roots": {
+      "bookmark_bar": { "id": "1", "type": "folder" },
+      "other": { "id": "2", "type": "folder", "children": [] },
+      "synced": { "id": "3", "type": "folder", "children": [] }
+    }
+  })";
+  ASSERT_TRUE(base::WriteFile(account_file_clear, kMalformedAccountJson));
+
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create();
+  loader->Load(
+      /*encryptor=*/encryptor,
+      /*local_or_syncable_file_path=*/local_file_clear,
+      /*encrypted_local_or_syncable_file_path=*/local_file_encrypted,
+      /*account_file_path=*/account_file_clear,
+      /*encrypted_account_file_path=*/account_file_encrypted,
+      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      /*save_local_or_syncable_single_file_callback=*/base::DoNothing(),
+      /*save_account_single_file_callback=*/base::DoNothing(),
+      /*files_to_delete=*/{}, /*callback=*/details_future.GetCallback());
+
+  const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
+  ASSERT_NE(nullptr, details);
+  EXPECT_EQ(nullptr, details->account_bb_node());
+  EXPECT_EQ(nullptr, details->account_other_folder_node());
+  EXPECT_EQ(nullptr, details->account_mobile_folder_node());
+  EXPECT_NE(0, details->bb_node()->id());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
+      metrics::BookmarksFileLoadResult::kBookmarkCodecDecodingFailed,
+      /*expected_bucket_count=*/1);
+}
+
 void VerifyPrimaryLoadCorrectlySecondaryHasGivenResult(
     base::HistogramTester& histogram_tester,
     std::string_view primary_histogram_suffix,
