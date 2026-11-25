@@ -380,6 +380,7 @@ void TextInputClientMac::SetCharacterIndexWhileLockedForTesting(
   // `condition_.Wait()` call, so it must run on the same thread (not just
   // sequence) that calls Wait() to preserve ordering.
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  lock_.AssertAcquired();
   base::AutoUnlock unlock(lock_);
   SetCharacterIndexAndSignal(request_token, index);
 }
@@ -392,6 +393,7 @@ void TextInputClientMac::SetFirstRectWhileLockedForTesting(
   // `condition_.Wait()` call, so it must run on the same thread (not just
   // sequence) that calls Wait() to preserve ordering.
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  lock_.AssertAcquired();
   base::AutoUnlock unlock(lock_);
   SetFirstRectAndSignal(request_token, first_rect);
 }

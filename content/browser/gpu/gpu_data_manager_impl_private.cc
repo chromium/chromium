@@ -1052,6 +1052,7 @@ void GpuDataManagerImplPrivate::TerminateInfoCollectionGpuProcess() {
 
   // GpuProcessHost::Get() calls GpuDataManagerImpl functions and causes a
   // re-entry of lock.
+  owner_->lock_.AssertAcquired();
   base::AutoUnlock unlock(owner_->lock_);
   // GpuProcessHost::Get() only runs on the IO thread. Get() can be called
   // directly here from TerminateInfoCollectionGpuProcess(), which also runs on
@@ -1440,6 +1441,7 @@ base::ListValue GpuDataManagerImplPrivate::GetLogMessages() const {
 
 void GpuDataManagerImplPrivate::OnDisplayAdded(
     const display::Display& new_display) {
+  owner_->lock_.AssertAcquired();
   base::AutoUnlock unlock(owner_->lock_);
 
   // Pass the notification to the GPU process to notify observers there.
@@ -1453,6 +1455,7 @@ void GpuDataManagerImplPrivate::OnDisplayAdded(
 
 void GpuDataManagerImplPrivate::OnDisplaysRemoved(
     const display::Displays& removed_displays) {
+  owner_->lock_.AssertAcquired();
   base::AutoUnlock unlock(owner_->lock_);
 
   // Pass the notification to the GPU process to notify observers there.
@@ -1467,6 +1470,7 @@ void GpuDataManagerImplPrivate::OnDisplaysRemoved(
 void GpuDataManagerImplPrivate::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
+  owner_->lock_.AssertAcquired();
   base::AutoUnlock unlock(owner_->lock_);
 
   // Pass the notification to the GPU process to notify observers there.

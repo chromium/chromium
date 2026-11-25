@@ -262,12 +262,18 @@ class [[nodiscard]] SCOPED_LOCKABLE BasicAutoTryLock {
 };
 
 // This is an implementation used for AutoUnlock templated on the lock type.
+//
+// Clang's `SCOPED_LOCKABLE` only supports scoped acquisition, not scoped
+// release (it does not re-add the lock to the held set in `~BasicAutoUnlock`).
+// Annotating the constructor with `EXCLUSIVE_LOCKS_REQUIRED(lock)` still
+// verifies at compile time that the caller holds `lock`.
 template <class LockType>
 class [[nodiscard]] BasicAutoUnlock {
   STACK_ALLOCATED();
 
  public:
-  explicit BasicAutoUnlock(LockType& lock) : lock_(lock) {
+  explicit BasicAutoUnlock(LockType& lock)
+      EXCLUSIVE_LOCKS_REQUIRED(lock) NO_THREAD_SAFETY_ANALYSIS : lock_(lock) {
     // We require our caller to have the lock.
     lock_.AssertAcquired();
     lock_.Release();
@@ -276,7 +282,7 @@ class [[nodiscard]] BasicAutoUnlock {
   BasicAutoUnlock(const BasicAutoUnlock&) = delete;
   BasicAutoUnlock& operator=(const BasicAutoUnlock&) = delete;
 
-  ~BasicAutoUnlock() { lock_.Acquire(); }
+  ~BasicAutoUnlock() NO_THREAD_SAFETY_ANALYSIS { lock_.Acquire(); }
 
  private:
   LockType& lock_;
