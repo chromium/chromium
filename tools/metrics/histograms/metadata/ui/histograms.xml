@@ -1065,7 +1065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InitialWebUI.Toolbar.RenderProcessGone"
-    enum="TerminationStatus" expires_after="2026-07-05">
+    enum="TerminationStatus" expires_after="2027-11-25">
   <owner>leimy@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
@@ -1075,16 +1075,22 @@ chromium-metrics-reviews@google.com.
     `PrimaryMainFrameRenderProcessGone()` signal including the normal
     termination (i.e. `TERMINATION_STATUS_NORMAL_TERMINATION` and
     `TERMINATION_STATUS_STILL_RUNNING`).
+
+    Warning: this histogram was expired from 2026-07-05 to 2026-11-25; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="InitialWebUI.Toolbar.RenderProcessGoneExceedingRecoveryLimit"
-    enum="Boolean" expires_after="2026-07-05">
+    enum="Boolean" expires_after="2027-11-25">
   <owner>leimy@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Record the number of times that the Web UI Toolbar render process is
     terminated abnormmaly and it exceeds the recovery limit.
+
+    Warning: this histogram was expired from 2026-07-05 to 2026-11-25; data may
+    be missing.
   </summary>
 </histogram>
 
