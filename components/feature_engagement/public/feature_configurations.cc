@@ -1755,7 +1755,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // * Once per week.
     // * Up to 3 times per year.
     // * And only as long as the user has never initiated price tracking from
-    // the menu.
+    // the menu or the toolbar button.
     FeatureConfig config;
     config.valid = true;
     config.availability = kAlwaysAvailable;
@@ -1766,6 +1766,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.event_configs.insert(
         EventConfig("shopping_list_menu_item_iph_triggered",
                     Comparator(LESS_THAN, 3), /*window=*/360, /*storage=*/360));
+    config.event_configs.insert(
+        EventConfig("shopping_list_track_price_from_toolbar",
+                    Comparator(EQUAL, 0), /*window=*/360, /*storage=*/360));
     config.used =
         EventConfig("shopping_list_track_price_from_menu", Comparator(EQUAL, 0),
                     /*window=*/360, /*storage=*/360);

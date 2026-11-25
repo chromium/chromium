@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
@@ -56,6 +57,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.MockitoHelper;
 
@@ -80,6 +83,7 @@ public class PriceTrackingButtonControllerUnitTest {
     @Mock private Profile mMockProfile;
     @Mock private BookmarkModel mMockBookmarkModel;
     @Mock PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
+    @Mock private Tracker mMockTracker;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     @Before
@@ -88,6 +92,7 @@ public class PriceTrackingButtonControllerUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
+        TrackerFactory.setTrackerForTests(mMockTracker);
         mPriceTrackingStateSupplier = ObservableSuppliers.createNonNull(false);
         mProfileSupplier = ObservableSuppliers.createNonNull(mMockProfile);
         mBookmarkModelSupplier = ObservableSuppliers.createNonNull(mMockBookmarkModel);
@@ -139,6 +144,7 @@ public class PriceTrackingButtonControllerUnitTest {
         buttonData.getButtonSpec().getOnClickListener().onClick(view);
 
         verify(mMockTabBookmarker).startOrModifyPriceTracking(mMockTab, view);
+        verify(mMockTracker).notifyEvent(EventConstants.SHOPPING_LIST_PRICE_TRACK_FROM_TOOLBAR);
     }
 
     @Test
@@ -161,6 +167,8 @@ public class PriceTrackingButtonControllerUnitTest {
         buttonData.getButtonSpec().getOnClickListener().onClick(view);
 
         verify(mMockTabBookmarker, never()).startOrModifyPriceTracking(any(), any());
+        verify(mMockTracker, never())
+                .notifyEvent(EventConstants.SHOPPING_LIST_PRICE_TRACK_FROM_TOOLBAR);
         verify(mMockPriceTrackingUtilsJni)
                 .setPriceTrackingStateForBookmark(
                         eq(mMockProfile),
@@ -192,6 +200,7 @@ public class PriceTrackingButtonControllerUnitTest {
 
         verify(mMockTabBookmarker).showPriceTrackingManagePopup(mMockTab, view);
         verify(mMockTabBookmarker, never()).startOrModifyPriceTracking(any(), any());
+        verify(mMockTracker, never()).notifyEvent(any());
         verify(mMockPriceTrackingUtilsJni, never())
                 .setPriceTrackingStateForBookmark(
                         /* profile= */ any(),

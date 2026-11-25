@@ -24,6 +24,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -177,6 +179,8 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                     PriceDropNotificationManagerFactory.create(profile));
         } else {
             mTabBookmarkerSupplier.get().startOrModifyPriceTracking(mActiveTabSupplier.get(), view);
+            TrackerFactory.getTrackerForProfile(assertNonNull(mProfileSupplier.get()))
+                    .notifyEvent(EventConstants.SHOPPING_LIST_PRICE_TRACK_FROM_TOOLBAR);
         }
     }
 
