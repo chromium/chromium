@@ -81,10 +81,14 @@ def smoke_test(javac_cmd, work_dir, env=None):
             )
         return res
 
-    def run_lazy(cp, src, expect_fail=None):
+    def run_lazy(cp, src, expect_fail=None, extra_args=()):
         cp_str = os.pathsep.join(cp) if isinstance(cp, (list, tuple)) else cp
+        srcs = list(src) if isinstance(src, (list, tuple)) else [src]
         return run(
-            ['-XDcrFastClassPath', '-cp', cp_str, '-d', out_dir, src],
+            ['-XDcrFastClassPath']
+            + list(extra_args)
+            + ['-cp', cp_str, '-d', out_dir]
+            + srcs,
             expect_fail=expect_fail,
         )
 
@@ -283,3 +287,59 @@ def smoke_test(javac_cmd, work_dir, env=None):
         use_dep,
         expect_fail='Expected corrupt classpath JAR to fail compilation',
     )
+
+    # 8. -XDcrClassPathUsageOut writes one line per used classpath JAR (both
+    #    lazy IndexedJars and Multi-Release fallback JARs), omits used
+    #    directories and unused/shadowed JARs, writes empty output when 0 JARs
+    #    are used, and omits the file on failure or without -XDcrFastClassPath.
+    usage_both = os.path.join(test_dir, 'both.usage.txt')
+    run_lazy(
+        [prec_dir, dep_jar, prec_jar, mr_jar],
+        [use_dep, use_mr, use_int],
+        extra_args=[f'-XDcrClassPathUsageOut={usage_both}'],
+    )
+    used_lines = (
+        pathlib.Path(usage_both).read_text(encoding='utf-8').splitlines()
+    )
+    if used_lines != [dep_jar, mr_jar]:
+        raise RuntimeError(
+            f'Unexpected usage.txt lines: got {used_lines!r}, '
+            f'expected {[dep_jar, mr_jar]!r}'
+        )
+
+    usage_empty = os.path.join(test_dir, 'empty.usage.txt')
+    run_lazy(
+        prec_jar,
+        dep_src,
+        extra_args=[f'-XDcrClassPathUsageOut={usage_empty}'],
+    )
+    if pathlib.Path(usage_empty).read_text(encoding='utf-8') != '':
+        raise RuntimeError(
+            'Expected empty usage.txt when no classpath JARs were read'
+        )
+
+    usage_disabled = os.path.join(test_dir, 'disabled.usage.txt')
+    run(
+        [
+            f'-XDcrClassPathUsageOut={usage_disabled}',
+            '-cp',
+            dep_jar,
+            '-d',
+            out_dir,
+            use_dep,
+        ]
+    )
+    if os.path.exists(usage_disabled):
+        raise RuntimeError(
+            'Expected no usage.txt when -XDcrFastClassPath is not enabled'
+        )
+
+    usage_fail = os.path.join(test_dir, 'fail.usage.txt')
+    run_lazy(
+        prec_jar,
+        use_dep,
+        extra_args=[f'-XDcrClassPathUsageOut={usage_fail}'],
+        expect_fail='Expected compilation with missing Dep to fail',
+    )
+    if os.path.exists(usage_fail):
+        raise RuntimeError('Expected no usage.txt when compilation fails')

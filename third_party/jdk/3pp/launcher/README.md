@@ -19,6 +19,11 @@ falling back safely on stock `javac` and pre-roll CIPD packages.
     ZIP central-directory indexing (`LazyJavacFileManager`), delegating
     non-standard classpath entries (directories, Multi-Release JARs, or
     ZIP64/commented/corrupt archives) to `JavacFileManager`.
+* **`-XDcrClassPathUsageOut=<path>`** (active when `-XDcrFastClassPath` is
+  enabled and compilation succeeds): writes one line per `-classpath` JAR
+  actually read during compilation, used by
+  `//build/android/gyp/compile_java.py` to prune unused classpath JARs from
+  Ninja depfiles.
 
 ## Testing Locally
 

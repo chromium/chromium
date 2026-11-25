@@ -138,6 +138,26 @@ def _AllowSharding(options, javac_cmd, use_errorprone):
     )
 
 
+def _ExtractUsedClasspathJarsFromUsageFiles(usage_paths, classpath):
+    """Returns the subset of |classpath| jars listed in |usage_paths|.
+
+    Pruning the depfile to used jars is safe because we continue to pass the
+    full classpath to javac. If a used symbol moves to another jar on the
+    classpath, the jar it moved from changes and triggers a rebuild with the
+    full classpath. Note that LazyJavacFileManager records IndexedJars when
+    class bytes are opened, not on package listing, so an unused wildcard import
+    referencing a package unique to an otherwise-unused jar is not recorded.
+    """
+    used_jars = set()
+    for usage_path in usage_paths:
+        with open(usage_path, encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    used_jars.add(os.path.normpath(line))
+    return [jar for jar in classpath if os.path.normpath(jar) in used_jars]
+
+
 def _RunShardedJavac(
     cmd,
     java_files,
@@ -152,16 +172,25 @@ def _RunShardedJavac(
     Each process compiles a subset of |java_files|, and finds classes from the
     other subsets via the target's header jar (which is on the classpath). All
     processes write to the same output directory.
+
+    Returns the list of per-shard classpath usage file paths passed via
+    -XDcrClassPathUsageOut.
     """
     assert cmd[-1] == '@' + java_files_rsp_path
     shard_cmds = []
+    usage_paths = []
     for i, shard in enumerate(
         build_utils.ShardFilesBySize(java_files, num_shards)
     ):
         shard_rsp_path = f'{java_files_rsp_path}.shard{i}'
         with open(shard_rsp_path, 'w', encoding='utf-8') as f:
             f.write(' '.join(shard))
-        shard_cmds.append(cmd[:-1] + ['@' + shard_rsp_path])
+        usage_path = f'{shard_rsp_path}.usage.txt'
+        usage_paths.append(usage_path)
+        shard_cmds.append(
+            cmd[:-1]
+            + [f'-XDcrClassPathUsageOut={usage_path}', '@' + shard_rsp_path]
+        )
 
     # Concurrency does not affect the output, so can depend on the machine.
     max_workers = min(len(shard_cmds), os.cpu_count() or 1)
@@ -203,6 +232,7 @@ def _RunShardedJavac(
         print_stdout=options.chromium_code,
         fail_on_output=options.warnings_as_errors,
     )
+    return usage_paths
 
 
 def CreateJarFile(
@@ -494,7 +524,7 @@ def _Compile(
     # Compiles with Error Prone take twice as long to run as pure javac. Thus GN
     # rules run both in parallel, with Error Prone only used for checks.
     try:
-        _RunCompiler(
+        used_classpath_jars = _RunCompiler(
             options,
             javac_cmd + javac_args,
             java_files,
@@ -513,6 +543,7 @@ def _Compile(
         sys.exit(1)
 
     logging.info('Completed all steps in _Compile')
+    return used_classpath_jars
 
 
 def _RunCompiler(
@@ -554,6 +585,7 @@ def _RunCompiler(
         options.jar_exclude_globs, options.jar_include_globs
     )
     metadata_parser = _MetadataParser(options.chromium_code, filter_func)
+    used_classpath_jars = None
     try:
         classes_dir = os.path.join(temp_dir, 'classes')
 
@@ -612,13 +644,13 @@ def _RunCompiler(
 
             if options.print_javac_command_line:
                 print(shlex.join(cmd))
-                return
+                return None
 
             num_shards = 1
             if allow_sharding:
                 num_shards = _ComputeNumShards(java_files, use_errorprone)
             if num_shards > 1:
-                _RunShardedJavac(
+                usage_paths = _RunShardedJavac(
                     cmd,
                     java_files,
                     num_shards,
@@ -628,6 +660,12 @@ def _RunCompiler(
                     before_join_callback,
                 )
             else:
+                usage_path = os.path.join(temp_dir, 'usage.txt')
+                usage_paths = [usage_path]
+                cmd = cmd[:-1] + [
+                    f'-XDcrClassPathUsageOut={usage_path}',
+                    cmd[-1],
+                ]
                 build_utils.CheckOutput(
                     cmd,
                     print_stdout=options.chromium_code,
@@ -635,6 +673,10 @@ def _RunCompiler(
                     stderr_filter=process_javac_output_partial,
                     fail_on_output=options.warnings_as_errors,
                     before_join_callback=before_join_callback,
+                )
+            if all(os.path.exists(p) for p in usage_paths):
+                used_classpath_jars = _ExtractUsedClasspathJarsFromUsageFiles(
+                    usage_paths, options.classpath
                 )
             end = time.time() - start
             logging.info('Java compilation took %ss', end)
@@ -678,6 +720,7 @@ def _RunCompiler(
                     os.unlink(p)
 
         logging.info('Completed all steps in _RunCompiler')
+        return used_classpath_jars
     finally:
         # preserve temp_dir for rsp fie when --print-javac-command-line
         if not options.print_javac_command_line:
@@ -928,10 +971,14 @@ def main(
         sys.stderr.write('\n'.join(missing_jars) + '\n')
         sys.exit(1)
 
+    used_classpath_jars = None
     if not write_depfile_only:
-        do_it()
+        used_classpath_jars = do_it()
+    depfile_jars = classpath_jars
+    if used_classpath_jars is not None:
+        depfile_jars = used_classpath_jars + options.processorpath
     action_helpers.write_depfile(
-        options.depfile, options.jar_path, classpath_jars
+        options.depfile, options.jar_path, depfile_jars
     )
     return 0
 

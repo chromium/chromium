@@ -257,7 +257,10 @@ class ShardingTests(unittest.TestCase):
         rsp_path = os.path.join(self._temp_dir.name, 'files.txt')
         # Prints the files it is given, and fails if F02.java is one of them.
         script = (
-            'import sys; files = open(sys.argv[1][1:]).read().split(); '
+            'import sys; '
+            'usage = sys.argv[1].split("=", 1)[1]; '
+            'files = open(sys.argv[2][1:]).read().split(); '
+            'open(usage, "w").write("\\n".join(files) + "\\n"); '
             'names = [f.rsplit("/", 1)[1] for f in files]; '
             'print("out", *names); print("err", *names, file=sys.stderr); '
             'sys.exit("F02.java" in names)'
@@ -268,7 +271,7 @@ class ShardingTests(unittest.TestCase):
         callback = mock.Mock()
         output_filter = mock.Mock(side_effect=lambda x: x)
         try:
-            compile_java._RunShardedJavac(
+            usage_paths = compile_java._RunShardedJavac(
                 [sys.executable, '-c', script, '@' + rsp_path],
                 files,
                 len(sizes),
@@ -276,6 +279,12 @@ class ShardingTests(unittest.TestCase):
                 options,
                 output_filter,
                 callback,
+            )
+            self.assertEqual(
+                files,
+                compile_java._ExtractUsedClasspathJarsFromUsageFiles(
+                    usage_paths, files
+                ),
             )
         finally:
             callback.assert_called_once_with()
@@ -384,6 +393,34 @@ class ClasspathDepfileFilteringTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             turbine.ExtractUsedClasspathJarsFromJdeps(
                 uninitialized.SerializePartialToString(), classpath
+            )
+
+    def testExtractUsedClasspathJarsFromUsageFiles(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            u0 = os.path.join(tmp, 'shard0.usage.txt')
+            u1 = os.path.join(tmp, 'shard1.usage.txt')
+            with open(u0, 'w', encoding='utf-8') as f:
+                f.write('obj/./b.jar\nobj/not_in_cp.jar\n\n')
+            with open(u1, 'w', encoding='utf-8') as f:
+                f.write('obj/a.jar\nobj/b.jar\n')
+            classpath = ['obj/c.jar', 'obj/a.jar', 'obj/b.jar']
+            self.assertEqual(
+                ['obj/a.jar', 'obj/b.jar'],
+                compile_java._ExtractUsedClasspathJarsFromUsageFiles(
+                    [u0, u1], classpath
+                ),
+            )
+
+    def testExtractUsedClasspathJarsFromUsageFiles_Empty(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            u0 = os.path.join(tmp, 'usage.txt')
+            with open(u0, 'w', encoding='utf-8') as f:
+                f.write('')
+            self.assertEqual(
+                [],
+                compile_java._ExtractUsedClasspathJarsFromUsageFiles(
+                    [u0], ['obj/a.jar', 'obj/b.jar']
+                ),
             )
 
 

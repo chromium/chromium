@@ -36,6 +36,8 @@ import javax.tools.JavaFileManager;
  *       traversals for shared directory prefixes.
  *   <li>Lazily indexes classpath JARs directly from raw ZIP central directories via {@link
  *       LazyJavacFileManager}.
+ *   <li>When {@code -XDcrClassPathUsageOut=<path>} is also passed and compilation succeeds, writes
+ *       one line per classpath JAR that was actually used during compilation.
  * </ul>
  *
  * <p>Without {@code -XDcrFastClassPath}, behaves identically to stock OpenJDK {@code javac}.
@@ -61,16 +63,38 @@ public class JavacLauncher {
                         super.put(clazz, fac);
                     }
                 };
+        // Capture LazyJavacFileManager directly because --release wraps it in a
+        // DelegatingJavaFileManager inside Context.
+        LazyJavacFileManager[] lazyFmRef = new LazyJavacFileManager[1];
         context.put(
                 JavaFileManager.class,
                 (Context.Factory<JavaFileManager>)
-                        c ->
-                                isFastClassPathEnabled(Options.instance(c))
-                                        ? new LazyJavacFileManager(c)
-                                        : new JavacFileManager(c, /* register= */ true, null));
+                        c -> {
+                            if (isFastClassPathEnabled(Options.instance(c))) {
+                                LazyJavacFileManager fm = new LazyJavacFileManager(c);
+                                lazyFmRef[0] = fm;
+                                return fm;
+                            }
+                            return new JavacFileManager(c, /* register= */ true, null);
+                        });
         // Main.compile() flushes/closes compilation outputs; skip
         // fileManager.close() since the process exits immediately.
-        System.exit(new Main("javac").compile(args, context).exitCode);
+        Main.Result result = new Main("javac").compile(args, context);
+        LazyJavacFileManager lazyFm = lazyFmRef[0];
+        if (result == Main.Result.OK && lazyFm != null) {
+            String usageOut = Options.instance(context).get("crClassPathUsageOut");
+            if (usageOut != null
+                    && !usageOut.isEmpty()
+                    && !"crClassPathUsageOut".equals(usageOut)) {
+                try {
+                    lazyFm.writeUsedClassPathJars(Path.of(usageOut));
+                } catch (IOException e) {
+                    System.err.println("Failed to write classpath usage to " + usageOut + ": " + e);
+                    System.exit(Main.Result.SYSERR.exitCode);
+                }
+            }
+        }
+        System.exit(result.exitCode);
     }
 
     /**

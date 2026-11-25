@@ -238,7 +238,12 @@ def _build_native_jdk_tools(jdk_home):
         # Traced using GraalVM's own jdk.compiler/jdk.jdeps (rather than this
         # JDK's), which is fine so long as their major versions match.
         tracing_args_list=(
-            [['javac', '-XDcrFastClassPath'] + javac_args + [
+            [[
+                'javac',
+                '-XDcrFastClassPath',
+                '-XDcrClassPathUsageOut=' +
+                os.path.join(work_dir, 'trace.usage.txt'),
+            ] + javac_args + [
                 '-cp',
                 sample_jar,
                 '-d',

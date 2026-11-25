@@ -26,6 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.CharsetDecoder;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.DateTimeException;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -110,6 +112,7 @@ public class LazyJavacFileManager extends JavacFileManager {
     private static final byte[] DOT_HTML = ".html".getBytes(UTF_8);
 
     private final Object mInflaterLock = new Object();
+    private final Set<String> mUsedClassPathJars = new LinkedHashSet<>();
     private FSInfo mCachedFsInfo;
     private ClassPathIndex mClassPathIndex;
     private Inflater mSharedInflater;
@@ -127,12 +130,21 @@ public class LazyJavacFileManager extends JavacFileManager {
 
     private void invalidateClassPathIndex() {
         if (mClassPathIndex != null) {
+            mClassPathIndex.collectUsedJars(mUsedClassPathJars);
             try {
                 mClassPathIndex.close();
             } catch (IOException ignored) {
             }
             mClassPathIndex = null;
         }
+    }
+
+    /** Writes one line per classpath JAR actually used during compilation. */
+    void writeUsedClassPathJars(Path outputPath) throws IOException {
+        if (mClassPathIndex != null) {
+            mClassPathIndex.collectUsedJars(mUsedClassPathJars);
+        }
+        Files.write(outputPath, mUsedClassPathJars, UTF_8);
     }
 
     private ClassPathIndex getClassPathIndex() throws IOException {
@@ -351,10 +363,20 @@ public class LazyJavacFileManager extends JavacFileManager {
     /**
      * Synthetic non-output location used to delegate a single fallback classpath entry to super.
      */
-    private record FallbackLocation(int cpIndex) implements Location {
+    private static final class FallbackLocation implements Location {
+        final int mCpIndex;
+        // Null for directories (only JAR/archive paths are reported in usage output).
+        final Path mJarPath;
+        volatile boolean mUsed;
+
+        FallbackLocation(int cpIndex, Path jarPath) {
+            mCpIndex = cpIndex;
+            mJarPath = jarPath;
+        }
+
         @Override
         public String getName() {
-            return "LAZY_CP_FALLBACK_" + cpIndex;
+            return "LAZY_CP_FALLBACK_" + mCpIndex;
         }
 
         @Override
@@ -379,6 +401,7 @@ public class LazyJavacFileManager extends JavacFileManager {
     private final class ClassPathIndex implements Closeable {
         private final IndexedJar[] mJars;
         private final List<FallbackLocation> mFallbacks = new ArrayList<>();
+        private int mJarCount;
 
         // Open-addressing hash table mapping raw UTF-8 package bytes -> pkgId. Representative
         // bytes for pkgId are read from mPkgHead[pkgId] in mJars[mEntryJar[head]].mCenBytes.
@@ -422,13 +445,13 @@ public class LazyJavacFileManager extends JavacFileManager {
             byte[] scratch = new byte[TAIL_READ_SIZE];
             int[] jarCens = new int[256];
             int cpIndex = 0;
-            int jarCount = 0;
             for (Path path : paths) {
                 int curCp = cpIndex++;
                 if (!mCachedFsInfo.exists(path)) {
                     continue;
                 }
-                if (!mCachedFsInfo.isDirectory(path)) {
+                boolean isDir = mCachedFsInfo.isDirectory(path);
+                if (!isDir) {
                     String fileName = path.getFileName().toString();
                     if (fileName.endsWith(".jar") || fileName.endsWith(".zip")) {
                         Path canon = mCachedFsInfo.getCanonicalFile(path);
@@ -440,7 +463,7 @@ public class LazyJavacFileManager extends JavacFileManager {
                             }
                             int count = jar.collectEntries(multiReleaseValue != null, jarCens);
                             if (count >= 0) {
-                                int jarIdx = jarCount++;
+                                int jarIdx = mJarCount++;
                                 mJars[jarIdx] = jar;
                                 addJarEntries(jarIdx, jar.mCenBytes, jarCens, count);
                                 continue;
@@ -450,7 +473,7 @@ public class LazyJavacFileManager extends JavacFileManager {
                 }
                 // Delegate directories, multi-release JARs, ZIP64/comment/stub/corrupt archives,
                 // non-JAR archives, etc. to stock JavacFileManager.
-                FallbackLocation fb = new FallbackLocation(curCp);
+                FallbackLocation fb = new FallbackLocation(curCp, isDir ? null : path);
                 LazyJavacFileManager.super.setLocationFromPaths(fb, List.of(path));
                 mFallbacks.add(fb);
             }
@@ -598,14 +621,12 @@ public class LazyJavacFileManager extends JavacFileManager {
             while (e != -1 || fbIdx < fbCount) {
                 if (fbIdx < fbCount
                         && (e == -1
-                                || mFallbacks.get(fbIdx).cpIndex()
-                                        < mJars[mEntryJar[e]].mCpIndex)) {
+                                || mFallbacks.get(fbIdx).mCpIndex < mJars[mEntryJar[e]].mCpIndex)) {
+                    FallbackLocation fb = mFallbacks.get(fbIdx++);
                     for (JavaFileObject fo :
                             LazyJavacFileManager.super.list(
-                                    mFallbacks.get(fbIdx++),
-                                    packageName,
-                                    kinds,
-                                    /* recurse= */ false)) {
+                                    fb, packageName, kinds, /* recurse= */ false)) {
+                        fb.mUsed = true;
                         result.add(fo);
                     }
                     continue;
@@ -659,7 +680,8 @@ public class LazyJavacFileManager extends JavacFileManager {
                 for (JavaFileObject fo :
                         LazyJavacFileManager.super.list(
                                 fb, packageName, kinds, /* recurse= */ true)) {
-                    ordered.add(new OrderedFileObject(fb.cpIndex(), fo));
+                    fb.mUsed = true;
+                    ordered.add(new OrderedFileObject(fb.mCpIndex, fo));
                 }
             }
             ordered.sort(Comparator.comparingInt(a -> a.cpIndex));
@@ -681,10 +703,11 @@ public class LazyJavacFileManager extends JavacFileManager {
             while (e != -1 || fbIdx < fbCount) {
                 if (fbIdx < fbCount
                         && (e == -1
-                                || mFallbacks.get(fbIdx).cpIndex()
-                                        < mJars[mEntryJar[e]].mCpIndex)) {
-                    FileObject fo = fallbackLookup.lookup(mFallbacks.get(fbIdx++));
+                                || mFallbacks.get(fbIdx).mCpIndex < mJars[mEntryJar[e]].mCpIndex)) {
+                    FallbackLocation fb = mFallbacks.get(fbIdx++);
+                    FileObject fo = fallbackLookup.lookup(fb);
                     if (fo != null) {
+                        fb.mUsed = true;
                         return fo;
                     }
                     continue;
@@ -710,12 +733,23 @@ public class LazyJavacFileManager extends JavacFileManager {
             return null;
         }
 
+        void collectUsedJars(Set<String> out) {
+            for (int i = 0; i < mJarCount; i++) {
+                if (mJars[i].mUsed) {
+                    out.add(mJars[i].mUserPath.toString());
+                }
+            }
+            for (FallbackLocation fb : mFallbacks) {
+                if (fb.mUsed && fb.mJarPath != null) {
+                    out.add(fb.mJarPath.toString());
+                }
+            }
+        }
+
         @Override
         public void close() throws IOException {
-            for (IndexedJar jar : mJars) {
-                if (jar != null) {
-                    jar.close();
-                }
+            for (int i = 0; i < mJarCount; i++) {
+                mJars[i].close();
             }
             for (FallbackLocation fb : mFallbacks) {
                 try {
@@ -738,6 +772,7 @@ public class LazyJavacFileManager extends JavacFileManager {
         private final long mFileSize;
         private FileChannel mChan;
         private String mAbsUri;
+        volatile boolean mUsed;
 
         private IndexedJar(
                 int cpIndex, Path userPath, Path canonicalPath, byte[] cenBytes, long fileSize) {
@@ -883,6 +918,7 @@ public class LazyJavacFileManager extends JavacFileManager {
         }
 
         InputStream openEntry(int cenOffset, LazyJavacFileManager fm) throws IOException {
+            mUsed = true;
             byte[] cen = mCenBytes;
             long locOff = u4(cen, cenOffset + CENOFF);
             int nameLen = u2(cen, cenOffset + CENNAM);

@@ -240,7 +240,10 @@ def _build_native_image(error_prone_jar, nullaway_jar, plugin_jar,
         tracing_args_list=[
             _error_prone_args(
                 ['-XepAllDisabledChecksAsWarnings'] + nullaway_flags,
-                common_args + sample_args('trace_out'),
+                [
+                    '-XDcrClassPathUsageOut=' +
+                    os.path.join(work_dir, 'trace.usage.txt'),
+                ] + common_args + sample_args('trace_out'),
             ),
             _error_prone_args(
                 [
