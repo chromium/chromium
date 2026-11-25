@@ -28,3 +28,8 @@ export {EventEmitter} from '../utils/EventEmitter.js';
 export type {BidiTransport} from './BidiTransport.js';
 export {OutgoingMessage} from './OutgoingMessage.js';
 export type {BidiCommandParameterParser} from './BidiParser.js';
+export type {
+  AclConfig,
+  AclHandler,
+  UpdateAclHandler,
+} from './modules/session/AclManager.js';

@@ -17,7 +17,11 @@
  * @license
  */
 
-import {BidiServer, type BidiTransport} from '../bidiMapper/BidiMapper.js';
+import {
+  type AclHandler,
+  BidiServer,
+  type BidiTransport,
+} from '../bidiMapper/BidiMapper.js';
 import {CloseError, type CdpClient} from '../cdp/CdpClient.js';
 import {MapperCdpConnection} from '../cdp/CdpConnection.js';
 import {LogType} from '../utils/log.js';
@@ -38,6 +42,7 @@ declare global {
           bidiTransport?: BidiTransport,
           cdpTransport?: Transport,
           restrictedMode?: boolean,
+          aclHandler?: AclHandler,
         ) => Promise<BidiServer>)
       | null;
 
@@ -73,12 +78,14 @@ function getWindowCdpConnection(): MapperCdpConnection {
  * instances; the default WindowBidiTransport can only be used once.
  * @param cdpTransport Optional custom CDP transport for additional Mapper instances.
  * @param restrictedMode Optional flag requiring restricted sessions.
+ * @param aclHandler Optional embedder ACL handler for restricted sessions.
  */
 async function runMapperInstance(
   selfTargetId: string,
   bidiTransport: BidiTransport = windowBidiTransport,
   cdpTransport: Transport = windowCdpTransport,
   restrictedMode = false,
+  aclHandler?: AclHandler,
 ): Promise<BidiServer> {
   const usesWindowBidi = bidiTransport === windowBidiTransport;
   if (usesWindowBidi) {
@@ -133,6 +140,7 @@ async function runMapperInstance(
       new BidiParser(),
       log,
       restrictedMode === true,
+      aclHandler,
     );
   } catch (error) {
     if (usesWindowBidi) {
@@ -157,17 +165,20 @@ async function runMapperInstance(
  * instances; the default WindowBidiTransport can only be used once.
  * @param cdpTransport Optional custom CDP transport for additional Mapper instances.
  * @param restrictedMode Optional flag requiring restricted sessions.
+ * @param aclHandler Optional embedder ACL handler for restricted sessions.
  */
 window.runMapperInstance = async (
   selfTargetId,
   bidiTransport,
   cdpTransport,
   restrictedMode,
+  aclHandler,
 ) => {
   return await runMapperInstance(
     selfTargetId,
     bidiTransport,
     cdpTransport,
     restrictedMode,
+    aclHandler,
   );
 };

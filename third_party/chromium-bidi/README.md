@@ -114,8 +114,9 @@ command fails with `unsupported operation`. The command implements the proposal
   subscribe to any event, but get only the events the ACL allows when the event
   is sent. Events are not buffered in restricted sessions (buffer size is 0).
 - If the browser refuses part of the request, the result lists the refused
-  entries in `denied`, with an optional `reason`. Until the browser can decide
-  on requests, every request is allowed as is.
+  entries in `denied`, with an optional `reason`. The embedder can provide an
+  `aclHandler` (`{setAcl}`) to `runMapperInstance` to decide on requests; if
+  omitted, every request is allowed as is.
 - `goog:session.setAcl` commands are processed one at a time, in order. Other
   commands don't wait for them and are checked against the ACL in effect.
 

@@ -35,7 +35,7 @@ import {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.j
 import {NetworkStorage} from './modules/network/NetworkStorage.js';
 import {PreloadScriptStorage} from './modules/script/PreloadScriptStorage.js';
 import {RealmStorage} from './modules/script/RealmStorage.js';
-import {AclManager} from './modules/session/AclManager.js';
+import {type AclHandler, AclManager} from './modules/session/AclManager.js';
 import {
   EventManager,
   EventManagerEvents,
@@ -97,6 +97,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn,
     restrictedMode = false,
+    aclHandler?: AclHandler,
   ) {
     super();
     this.#logger = logger;
@@ -114,7 +115,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     // Shared by `EventManager` (filters events) and `CommandProcessor`
     // (checks commands and configures the ACL), so both see the same session
     // ACL.
-    const aclManager = new AclManager(this.#browsingContextStorage);
+    const aclManager = new AclManager(this.#browsingContextStorage, aclHandler);
     if (restrictedMode) {
       // Restricted mode requires enabling ACL.
       aclManager.enable();
@@ -244,7 +245,13 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn,
     restrictedMode = false,
+    aclHandler?: AclHandler,
   ): Promise<BidiServer> {
+    // We rely on the embedder to pass a valid `aclHandler` and only check
+    // the basic contract here.
+    if (aclHandler !== undefined && typeof aclHandler?.setAcl !== 'function') {
+      throw new TypeError('aclHandler.setAcl must be a function');
+    }
     const [defaultUserContextId, version] = await Promise.all([
       this.#getDefaultUserContextId(browserCdpClient),
       // Fetch the default User Agent to be used in `CdpTarget`. This allows to avoid
@@ -267,6 +274,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       parser,
       logger,
       restrictedMode,
+      aclHandler,
     );
 
     return server;

@@ -31,6 +31,7 @@ import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import {
   ACL_EXEMPT_COMMANDS,
+  type AclHandler,
   AclManager,
   SUPPORTED_ACL_COMMANDS,
   SUPPORTED_ACL_EVENTS,
@@ -998,7 +999,9 @@ describe('AclManager', () => {
       updateAclHandler = sinon
         .stub<Parameters<UpdateAclHandler>, ReturnType<UpdateAclHandler>>()
         .callsFake((acl) => Promise.resolve({acl}));
-      aclManager = new AclManager(browsingContextStorage, updateAclHandler);
+      aclManager = new AclManager(browsingContextStorage, {
+        setAcl: updateAclHandler,
+      });
       // ACL changes happen in restricted sessions, where the ACL is enabled.
       aclManager.enable();
     });
@@ -1010,6 +1013,21 @@ describe('AclManager', () => {
 
       // Nothing is refused, so there is no `denied`.
       assert.deepEqual(result, {acl: NAVIGATE_ACL});
+    });
+
+    it('preserves `this` binding when calling `aclHandler.setAcl`', async () => {
+      const handler: AclHandler & {grantedAcl: typeof GET_TREE_ACL} = {
+        grantedAcl: GET_TREE_ACL,
+        setAcl() {
+          return Promise.resolve({acl: this.grantedAcl});
+        },
+      };
+      aclManager = new AclManager(browsingContextStorage, handler);
+      aclManager.enable();
+
+      const result = await aclManager.updateAcl(NAVIGATE_ACL);
+
+      assert.deepEqual(result, {acl: {...GET_TREE_ACL, perNavigable: {}}});
     });
 
     it('passes the normalized ACL and the reason to the handler', async () => {
@@ -1048,7 +1066,9 @@ describe('AclManager', () => {
     });
 
     it('does not enable the ACL', async () => {
-      aclManager = new AclManager(browsingContextStorage, updateAclHandler);
+      aclManager = new AclManager(browsingContextStorage, {
+        setAcl: updateAclHandler,
+      });
 
       await aclManager.updateAcl(NAVIGATE_ACL);
 
@@ -1121,8 +1141,10 @@ describe('AclManager', () => {
               'network.addIntercept',
             ],
           },
-          // Unknown navigables are dropped.
+          // Unrequested top-level navigables are allowed; unknown ones are
+          // dropped.
           perNavigable: {
+            [TOP_LEVEL_CONTEXT_2]: {commands: ['browsingContext.reload']},
             [UNKNOWN_CONTEXT]: {commands: ['input.performActions']},
           },
         },
@@ -1137,7 +1159,12 @@ describe('AclManager', () => {
             commands: ['browsingContext.getTree', 'browsingContext.close'],
             events: [],
           },
-          perNavigable: {},
+          perNavigable: {
+            [TOP_LEVEL_CONTEXT_2]: {
+              commands: ['browsingContext.reload'],
+              events: [],
+            },
+          },
         },
       });
       assert.deepEqual(aclManager.getAcl(), result.acl);
@@ -1160,6 +1187,44 @@ describe('AclManager', () => {
         acl: {...GET_TREE_ACL, perNavigable: {}},
         denied,
       });
+    });
+
+    it('returns only defined SetAclResult fields from the handler decision', async () => {
+      for (const denied of [undefined, null]) {
+        updateAclHandler.resolves({
+          acl: GET_TREE_ACL,
+          denied,
+          extra: 'ignored',
+        } as unknown as GoogSession.SetAclResult);
+
+        const withoutDenied = await aclManager.updateAcl(GET_TREE_ACL);
+
+        assert.deepEqual(withoutDenied, {
+          acl: {...GET_TREE_ACL, perNavigable: {}},
+        });
+        assert.notProperty(withoutDenied, 'denied');
+        assert.notProperty(withoutDenied, 'extra');
+      }
+
+      updateAclHandler.resolves({
+        acl: GET_TREE_ACL,
+        denied: {
+          acl: {default: {commands: ['browsingContext.create']}},
+          reason: undefined,
+          extra: 'ignored',
+        },
+      } as unknown as GoogSession.SetAclResult);
+
+      const withoutReason = await aclManager.updateAcl(GET_TREE_ACL);
+
+      assert.deepEqual(withoutReason, {
+        acl: {...GET_TREE_ACL, perNavigable: {}},
+        denied: {
+          acl: {default: {commands: ['browsingContext.create']}},
+        },
+      });
+      assert.notProperty(withoutReason.denied, 'reason');
+      assert.notProperty(withoutReason.denied, 'extra');
     });
 
     it('fails without changing the ACL if the handler rejects', async () => {
@@ -1213,6 +1278,22 @@ describe('AclManager', () => {
         undefined,
       );
       assert.deepEqual(aclManager.getAcl(), emptyAcl);
+    });
+
+    it('wraps non-Error rejections from aclHandler.setAcl without changing the ACL', async () => {
+      await aclManager.updateAcl(NAVIGATE_ACL);
+      for (const rejection of ['cancelled', undefined]) {
+        updateAclHandler.callsFake(() => Promise.reject(rejection));
+        let error: unknown;
+        try {
+          await aclManager.updateAcl(GET_TREE_ACL);
+        } catch (err) {
+          error = err;
+        }
+        assert.instanceOf(error, Error);
+        assert.strictEqual((error as Error).message, String(rejection));
+        assert.deepEqual(aclManager.getAcl(), NAVIGATE_ACL);
+      }
     });
   });
 });

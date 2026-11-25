@@ -43,11 +43,22 @@ export type UpdateAclHandler = (
 ) => Promise<GoogSession.SetAclResult>;
 
 /**
- * Allows the requested ACL as is. Used until the embedder provides its own
- * handler.
+ * Embedder interface for controlling the session ACL in restricted sessions.
  */
-export const allowAllUpdateAclHandler: UpdateAclHandler = (requestedAcl) => {
-  return Promise.resolve({acl: requestedAcl});
+export interface AclHandler {
+  /**
+   * Called by `goog:session.setAcl` with the normalized desired ACL and
+   * optional untrusted client `reason`.
+   */
+  setAcl: UpdateAclHandler;
+}
+
+/**
+ * Allows the requested ACL as is. Used when the embedder does not provide its
+ * own ACL handler.
+ */
+const DEFAULT_ACL_HANDLER: AclHandler = {
+  setAcl: (requestedAcl) => Promise.resolve({acl: requestedAcl}),
 };
 
 /** ACL rules for a command's unvalidated `params`. */
@@ -182,7 +193,7 @@ export const SUPPORTED_ACL_EVENTS: ReadonlySet<string> = new Set<string>([
  */
 export class AclManager {
   readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #updateAclHandler: UpdateAclHandler;
+  readonly #aclHandler: AclHandler;
   readonly #updateAclMutex = new Mutex();
   #enabled = false;
   #defaultCommands = new Set<string>();
@@ -192,11 +203,10 @@ export class AclManager {
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
-    // TODO(crbug.com/586824814): let the embedder provide the handler.
-    updateAclHandler: UpdateAclHandler = allowAllUpdateAclHandler,
+    aclHandler: AclHandler = DEFAULT_ACL_HANDLER,
   ) {
     this.#browsingContextStorage = browsingContextStorage;
-    this.#updateAclHandler = updateAclHandler;
+    this.#aclHandler = aclHandler;
   }
 
   /**
@@ -210,11 +220,31 @@ export class AclManager {
   ): Promise<GoogSession.SetAclResult> {
     return await this.#updateAclMutex.run(async () => {
       // If the embedder fails, so does the request, and the ACL doesn't change.
-      const decision = await this.#updateAclHandler(
-        this.#normalizeAcl(requestedAcl),
-        reason,
-      );
-      return {...decision, acl: this.#setAcl(decision.acl)};
+      let decision: GoogSession.SetAclResult;
+      try {
+        decision = await this.#aclHandler.setAcl(
+          this.#normalizeAcl(requestedAcl),
+          reason,
+        );
+      } catch (error) {
+        if (error instanceof Error) {
+          throw error;
+        }
+        throw new Error(String(error), {cause: error});
+      }
+      let denied: GoogSession.SetAclResult['denied'];
+      if (decision.denied !== undefined && decision.denied !== null) {
+        denied =
+          decision.denied.reason === undefined ||
+          decision.denied.reason === null
+            ? {acl: decision.denied.acl}
+            : {acl: decision.denied.acl, reason: decision.denied.reason};
+      }
+      // `#setAcl` normalizes the embedder's response to drop navigables that
+      // may have closed while `setAcl` was pending, as well as any unsupported
+      // commands or events the embedder might include.
+      const acl = this.#setAcl(decision.acl);
+      return denied === undefined ? {acl} : {acl, denied};
     });
   }
 
