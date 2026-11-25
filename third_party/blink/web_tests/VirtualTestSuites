@@ -728,7 +728,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=DeclarativePerformanceObserver"],
-    "expires": "Nov 27, 2026"
+    "expires": "May 27, 2027"
   },
   {
     "prefix": "delay-async-when-lcp-in-html",
