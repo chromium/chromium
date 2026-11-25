@@ -9,7 +9,9 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
@@ -79,6 +81,27 @@ void RemoteClientCertStore::GetClientCerts(
     return;
   }
 
+  // TODO(crbug.com/582897560): Remove this PostTask workaround and
+  // DoGetClientCerts() once https://crrev.com/c/8856523 lands and sticks.
+  //
+  // Defer the Mojo call by one task on the current sequence. When `broker_` is
+  // obtained from IPC::ChannelProxy::GetRemoteAssociatedInterface() on the IPC
+  // thread of the channel, ThreadSafeChannelProxy posts GetAssociatedInterface
+  // to that sequence, whereas an immediate AssociatedRemote call on the same
+  // thread writes synchronously to the pipe and overtakes it - causing the peer
+  // to silently drop the message for an unknown endpoint ID. Posting preserves
+  // FIFO order behind the queued GetAssociatedInterface message, and WeakPtr
+  // cancellation preserves net::ClientCertStore's destruction contract.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RemoteClientCertStore::DoGetClientCerts,
+                     weak_factory_.GetWeakPtr(), std::move(cert_request_info),
+                     std::move(callback)));
+}
+
+void RemoteClientCertStore::DoGetClientCerts(
+    scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
+    ClientCertListCallback callback) {
   // Wrap the callback to return an empty list if the Mojo pipe disconnects
   // while the store is alive. If `this` is destroyed, `weak_factory_`
   // invalidates the WeakPtr so the callback is discarded without running,

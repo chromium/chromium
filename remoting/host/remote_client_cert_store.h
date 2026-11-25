@@ -39,6 +39,11 @@ class RemoteClientCertStore : public net::ClientCertStore {
       ClientCertListCallback callback) override;
 
  private:
+  // TODO(crbug.com/582897560): Remove once https://crrev.com/c/8856523 lands.
+  void DoGetClientCerts(
+      scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
+      ClientCertListCallback callback);
+
   void OnCertificatesReceived(
       scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
       ClientCertListCallback callback,
