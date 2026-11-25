@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <head>
   <meta charset="utf-8">
+  <script src="/common/reftest-wait.js"></script>
+  <script src="/dom/events/scrolling/scroll_support.js"></script>
   <style>
   .grid {
     display: inline-grid;
@@ -58,6 +60,15 @@
   // position matches the fill-reverse reversed end origin.
   document.getElementById('row-stack-scroll').scrollLeft = 1000000;
   document.getElementById('col-stack-scroll').scrollTop = 1000000;
+
+  document.documentElement.addEventListener('TestRendered', () => {
+    reftestPromise(async () => {
+      await Promise.all(
+          Array.from(document.querySelectorAll('.grid'),
+                     scroller => ensureOverlayScrollbarVisible(scroller)));
+      takeScreenshot();
+    });
+  });
 </script>
 
 </body>

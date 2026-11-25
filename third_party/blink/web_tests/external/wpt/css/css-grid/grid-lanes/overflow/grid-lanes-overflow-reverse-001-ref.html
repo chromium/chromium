@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <head>
   <meta charset="utf-8">
+  <script src="/common/reftest-wait.js"></script>
+  <script src="/dom/events/scrolling/scroll_support.js"></script>
   <style>
   .scroller {
     display: inline grid;
@@ -58,11 +60,20 @@
   <div style="width:60px; height:60px; background:goldenrod;">A</div>
 </div>
 
-</body>
 <script>
   document.getElementById('row-fill-reverse').scrollTo(20, 0);
   document.getElementById('column-fill-reverse').scrollTo(0, 20);
   document.getElementById('row-both-reverse').scrollTo(35, 35);
   document.getElementById('column-both-reverse').scrollTo(35, 35);
+
+  document.documentElement.addEventListener('TestRendered', () => {
+    reftestPromise(async () => {
+      await Promise.all(
+          Array.from(document.querySelectorAll('.scroller'),
+                     scroller => ensureOverlayScrollbarVisible(scroller)));
+      takeScreenshot();
+    });
+  });
 </script>
+</body>
 </html>

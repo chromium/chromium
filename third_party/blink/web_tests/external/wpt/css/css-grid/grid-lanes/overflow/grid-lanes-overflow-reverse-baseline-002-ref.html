@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="/fonts/ahem.css">
+  <script src="/common/reftest-wait.js"></script>
+  <script src="/dom/events/scrolling/scroll_support.js"></script>
   <style>
   .grid {
     display: grid;
@@ -40,9 +42,19 @@
   <div style="grid-row: 3; grid-column: 2; font-size: 12px; background: goldenrod;">D</div>
 </div>
 
-</body>
 <script>
   document.getElementById('first').scrollTop = 1000000;
   document.getElementById('last').scrollTop = 1000000;
+
+  document.documentElement.addEventListener('TestRendered', () => {
+    reftestPromise(async () => {
+      await document.fonts.ready;
+      await Promise.all(
+          Array.from(document.querySelectorAll('.grid'),
+                     scroller => ensureOverlayScrollbarVisible(scroller)));
+      takeScreenshot();
+    });
+  });
 </script>
+</body>
 </html>

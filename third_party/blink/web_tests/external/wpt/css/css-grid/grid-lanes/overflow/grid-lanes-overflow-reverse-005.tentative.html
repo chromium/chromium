@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <head>
   <meta charset="utf-8">
   <title>CSS Grid Lanes Test: scrolling with fill-reverse and mixed overflow values per axis</title>
@@ -7,6 +7,8 @@
   <link rel="help" href="https://drafts.csswg.org/css-grid-3">
   <link rel="help" href="https://drafts.csswg.org/css-overflow-3/#scrollable">
   <link rel="match" href="grid-lanes-overflow-reverse-005-ref.html">
+  <script src="/common/reftest-wait.js"></script>
+  <script src="/dom/events/scrolling/scroll_support.js"></script>
   <style>
   .grid-lanes {
     display: inline grid-lanes;
@@ -54,5 +56,15 @@
   <div class="d">D</div><div class="e">E</div><div class="f">F</div>
 </div>
 
+<script>
+  document.documentElement.addEventListener('TestRendered', () => {
+    reftestPromise(async () => {
+      await Promise.all(
+          Array.from(document.querySelectorAll('.grid-lanes'),
+                     scroller => ensureOverlayScrollbarVisible(scroller)));
+      takeScreenshot();
+    });
+  });
+</script>
 </body>
 </html>

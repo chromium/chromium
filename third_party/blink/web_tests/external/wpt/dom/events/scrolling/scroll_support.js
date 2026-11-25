@@ -218,11 +218,44 @@ async function waitForCompositorReady() {
 // show the scrollbar and then restores the initial scroll position.
 async function ensureOverlayScrollbarVisible(scroller =
                                                  document.scrollingElement) {
+  const isRoot = scroller == scroller.ownerDocument.scrollingElement;
+  const style = getComputedStyle(scroller);
+  const canHaveHorizontalScrollbar =
+      isRoot || style.overflowX == 'auto' || style.overflowX == 'scroll';
+  const canHaveVerticalScrollbar =
+      isRoot || style.overflowY == 'auto' || style.overflowY == 'scroll';
+  if (!canHaveHorizontalScrollbar && !canHaveVerticalScrollbar) {
+    return;
+  }
   await waitForCompositorReady();
   const initialLeft = scroller.scrollLeft;
   const initialTop = scroller.scrollTop;
-  scroller.scrollTo(initialLeft == 0 ? 1 : initialLeft - 1,
-                    initialTop == 0 ? 1 : initialTop - 1);
+  let targetLeft = !canHaveHorizontalScrollbar ?
+      initialLeft :
+      (initialLeft == 0 ?
+           1 :
+           (initialLeft < 0 ? initialLeft + 1 : initialLeft - 1));
+  let targetTop = !canHaveVerticalScrollbar ?
+      initialTop :
+      (initialTop == 0 ? 1 :
+                         (initialTop < 0 ? initialTop + 1 : initialTop - 1));
+  scroller.scrollTo(targetLeft, targetTop);
+  let retryNegative = false;
+  if (canHaveHorizontalScrollbar && initialLeft == 0 &&
+      scroller.scrollLeft == 0) {
+    targetLeft = -1;
+    retryNegative = true;
+  }
+  if (canHaveVerticalScrollbar && initialTop == 0 && scroller.scrollTop == 0) {
+    targetTop = -1;
+    retryNegative = true;
+  }
+  if (retryNegative) {
+    scroller.scrollTo(targetLeft, targetTop);
+  }
+  if (scroller.scrollLeft == initialLeft && scroller.scrollTop == initialTop) {
+    return;
+  }
   await waitForCompositorCommit();
   scroller.scrollTo(initialLeft, initialTop);
 }

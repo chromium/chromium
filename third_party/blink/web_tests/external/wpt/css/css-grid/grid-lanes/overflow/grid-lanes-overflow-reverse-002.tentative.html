@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <head>
   <meta charset="utf-8">
   <title>CSS Grid Lanes Test: track-reverse changes which edge overflows</title>
@@ -8,6 +8,8 @@
   <link rel="help" href="https://drafts.csswg.org/css-overflow-3/#scrollable">
   <link rel="match" href="grid-lanes-overflow-reverse-002-ref.html">
   <meta name="assert" content="This test verifies that track-reverse changes which edge the grid axis overflows in grid-lanes scroll containers.">
+  <script src="/common/reftest-wait.js"></script>
+  <script src="/dom/events/scrolling/scroll_support.js"></script>
   <style>
   .grid-lanes {
     display: inline grid-lanes;
@@ -96,5 +98,15 @@
   <div class="a" style="width:60px; height:40px;">A</div>
 </div>
 
+<script>
+  document.documentElement.addEventListener('TestRendered', () => {
+    reftestPromise(async () => {
+      await Promise.all(
+          Array.from(document.querySelectorAll('.grid-lanes'),
+                     scroller => ensureOverlayScrollbarVisible(scroller)));
+      takeScreenshot();
+    });
+  });
+</script>
 </body>
 </html>

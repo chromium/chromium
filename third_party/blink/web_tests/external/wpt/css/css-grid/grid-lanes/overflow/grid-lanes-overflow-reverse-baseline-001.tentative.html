@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <head>
   <meta charset="utf-8">
   <title>CSS Grid Lanes Test: column track-reverse overflow composes with baseline alignment</title>
@@ -8,6 +8,8 @@
   <link rel="help" href="https://drafts.csswg.org/css-overflow-3/#scrollable">
   <link rel="match" href="grid-lanes-overflow-reverse-baseline-001-ref.html">
   <link rel="stylesheet" href="/fonts/ahem.css">
+  <script src="/common/reftest-wait.js"></script>
+  <script src="/dom/events/scrolling/scroll_support.js"></script>
   <style>
   .grid-lanes {
     display: grid-lanes;
@@ -46,5 +48,16 @@
   <div style="grid-column: 3; width: 32px; font-size: 12px; background: tomato;">F</div>
 </div>
 
+<script>
+  document.documentElement.addEventListener('TestRendered', () => {
+    reftestPromise(async () => {
+      await document.fonts.ready;
+      await Promise.all(
+          Array.from(document.querySelectorAll('.grid-lanes'),
+                     scroller => ensureOverlayScrollbarVisible(scroller)));
+      takeScreenshot();
+    });
+  });
+</script>
 </body>
 </html>
