@@ -51,14 +51,15 @@ class CC_EXPORT ImageController {
   // |has_at_raster_images| is an output parameter.
 
   // |tracing_info| is used in tracing or UMA only.
-  void ConvertImagesToTasks(std::vector<DrawImage>* sync_decoded_images,
-                            std::vector<scoped_refptr<TileTask>>* tasks,
-                            bool* has_at_raster_images,
-                            const ImageDecodeCache::TracingInfo& tracing_info);
-  void UnrefImages(const std::vector<DrawImage>& images);
+  void ConvertImagesToTasks(
+      std::vector<DrawImageWithTarget>* sync_decoded_images,
+      std::vector<scoped_refptr<TileTask>>* tasks,
+      bool* has_at_raster_images,
+      const ImageDecodeCache::TracingInfo& tracing_info);
+  void UnrefImages(const std::vector<DrawImageWithTarget>& images);
   void ReduceMemoryUsage();
   std::vector<scoped_refptr<TileTask>> SetPredecodeImages(
-      std::vector<DrawImage> predecode_images,
+      std::vector<DrawImageWithTarget> predecode_images,
       const ImageDecodeCache::TracingInfo& tracing_info);
 
   // Virtual for testing.
@@ -69,9 +70,10 @@ class CC_EXPORT ImageController {
   // unlock this image. It is up to the caller to ensure that the image is later
   // unlocked using UnlockImageDecode.
   // Virtual for testing.
-  virtual ImageDecodeRequestId QueueImageDecode(const DrawImage& draw_image,
-                                                ImageDecodedCallback callback,
-                                                bool speculative);
+  virtual ImageDecodeRequestId QueueImageDecode(
+      const DrawImageWithTarget& draw_image,
+      ImageDecodedCallback callback,
+      bool speculative);
 
   // Signals that an external dependency of `task` has completed.
   void ExternalDependencyCompletedForTask(scoped_refptr<TileTask> task);
@@ -97,7 +99,7 @@ class CC_EXPORT ImageController {
   struct ImageDecodeRequest {
     ImageDecodeRequest();
     ImageDecodeRequest(ImageDecodeRequestId id,
-                       const DrawImage& draw_image,
+                       const DrawImageWithTarget& draw_image,
                        ImageDecodedCallback callback,
                        scoped_refptr<TileTask> task,
                        bool need_unref,
@@ -109,7 +111,7 @@ class CC_EXPORT ImageController {
     ImageDecodeRequest& operator=(ImageDecodeRequest&& other);
 
     ImageDecodeRequestId id;
-    DrawImage draw_image;
+    DrawImageWithTarget draw_image;
     ImageDecodedCallback callback;
     scoped_refptr<TileTask> task;
     bool need_unref;
@@ -164,10 +166,11 @@ class CC_EXPORT ImageController {
   // RAW_PTR_EXCLUSION: ImageDecodeCache is marked as not supported by raw_ptr.
   // See raw_ptr.h for more information.
   RAW_PTR_EXCLUSION ImageDecodeCache* cache_ = nullptr;
-  std::vector<DrawImage> predecode_locked_images_;
+  std::vector<DrawImageWithTarget> predecode_locked_images_;
 
   static ImageDecodeRequestId s_next_image_decode_queue_id_;
-  base::flat_map<ImageDecodeRequestId, DrawImage> requested_locked_images_;
+  base::flat_map<ImageDecodeRequestId, DrawImageWithTarget>
+      requested_locked_images_;
   size_t image_cache_max_limit_bytes_ = 0u;
 
   std::unique_ptr<WorkerState> worker_state_;

@@ -43,7 +43,7 @@ class CC_EXPORT DecodedImageTracker {
   // Request that the given image be decoded. This issues a callback upon
   // completion. The callback takes a bool indicating whether the decode was
   // successful or not.
-  void QueueImageDecode(const DrawImage& image,
+  void QueueImageDecode(const DrawImageWithTarget& image,
                         base::OnceCallback<void(bool)> callback,
                         bool speculative);
 
@@ -53,7 +53,7 @@ class CC_EXPORT DecodedImageTracker {
 
   // Notifies the tracker that images have been used, allowing it to
   // unlock them.
-  void OnImagesUsedInDraw(const std::vector<DrawImage>& draw_images);
+  void OnImagesUsedInDraw(const std::vector<DrawImageWithTarget>& draw_images);
 
   void SetSyncTreeFrameNumber(int frame_number);
 

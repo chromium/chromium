@@ -168,7 +168,7 @@ SoftwareImageDecodeCache::~SoftwareImageDecodeCache() {
 
 ImageDecodeCache::TaskResult SoftwareImageDecodeCache::GetTaskForImageAndRef(
     ClientId client_id,
-    const DrawImage& image,
+    const DrawImageWithTarget& image,
     const TracingInfo& tracing_info) {
   DCHECK_EQ(client_id, ImageDecodeCache::kDefaultClientId)
       << "SoftwareImageDecodeCache cannot be shared between multiple clients.";
@@ -179,7 +179,7 @@ ImageDecodeCache::TaskResult SoftwareImageDecodeCache::GetTaskForImageAndRef(
 ImageDecodeCache::TaskResult
 SoftwareImageDecodeCache::GetOutOfRasterDecodeTaskForImageAndRef(
     ClientId client_id,
-    const DrawImage& image,
+    const DrawImageWithTarget& image,
     bool speculative) {
   DCHECK_EQ(client_id, ImageDecodeCache::kDefaultClientId)
       << "SoftwareImageDecodeCache cannot be shared between multiple clients.";
@@ -189,7 +189,7 @@ SoftwareImageDecodeCache::GetOutOfRasterDecodeTaskForImageAndRef(
 
 ImageDecodeCache::TaskResult
 SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
-    const DrawImage& image,
+    const DrawImageWithTarget& image,
     const TracingInfo& tracing_info,
     TaskType task_type,
     bool speculative) {
@@ -293,7 +293,7 @@ void SoftwareImageDecodeCache::RemoveBudgetForImage(const CacheKey& key,
   entry->is_budgeted = false;
 }
 
-void SoftwareImageDecodeCache::UnrefImage(const DrawImage& image) {
+void SoftwareImageDecodeCache::UnrefImage(const DrawImageWithTarget& image) {
   const CacheKey& key = CacheKey::FromDrawImage(
       image, GetColorTypeForPaintImage(image.target_color_params(),
                                        image.paint_image()));
@@ -433,7 +433,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
           key.type() == CacheKey::kSubrectOriginal
               ? SkIRect::MakeWH(paint_image.width(), paint_image.height())
               : gfx::RectToSkIRect(key.src_rect());
-      DrawImage candidate_draw_image(
+      DrawImageWithTarget candidate_draw_image(
           paint_image, false, src_rect, PaintFlags::FilterQuality::kNone,
           SkM44(), key.frame_key().frame_index(), key.target_color_params());
       candidate_key.emplace(CacheKey::FromDrawImage(
@@ -550,7 +550,7 @@ SoftwareImageDecodeCache::FindCachedCandidate(const CacheKey& key,
 }
 
 bool SoftwareImageDecodeCache::UseCacheForDrawImage(
-    const DrawImage& draw_image) const {
+    const DrawImageWithTarget& draw_image) const {
   PaintImage paint_image = draw_image.paint_image();
 
   // Software cache doesn't support using texture backed images.
@@ -583,7 +583,7 @@ ImageDecodeCache::ClientId SoftwareImageDecodeCache::GenerateClientId() {
 }
 
 DecodedDrawImage SoftwareImageDecodeCache::GetDecodedImageForDraw(
-    const DrawImage& draw_image) {
+    const DrawImageWithTarget& draw_image) {
   DCHECK(UseCacheForDrawImage(draw_image));
 
   base::AutoLock hold(lock_);
@@ -624,7 +624,7 @@ DecodedDrawImage SoftwareImageDecodeCache::GetDecodedImageForDrawInternal(
 }
 
 void SoftwareImageDecodeCache::DrawWithImageFinished(
-    const DrawImage& image,
+    const DrawImageWithTarget& image,
     const DecodedDrawImage& decoded_image) {
   DCHECK(UseCacheForDrawImage(image));
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),

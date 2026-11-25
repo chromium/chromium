@@ -40,7 +40,7 @@ const float kMemoryRatioToSubrect = 0.5f;
 // Tracing ID sequence for use in CacheEntry.
 base::AtomicSequenceNumber g_next_tracing_id_;
 
-gfx::Rect GetSrcRect(const DrawImage& image) {
+gfx::Rect GetSrcRect(const DrawImageWithTarget& image) {
   const SkIRect& src_rect = image.src_rect();
   int x = std::max(0, src_rect.x());
   int y = std::max(0, src_rect.y());
@@ -296,8 +296,9 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
 // CacheKey --------------------------------------------------------------------
 // static
 SoftwareImageDecodeCacheUtils::CacheKey
-SoftwareImageDecodeCacheUtils::CacheKey::FromDrawImage(const DrawImage& image,
-                                                       SkColorType color_type) {
+SoftwareImageDecodeCacheUtils::CacheKey::FromDrawImage(
+    const DrawImageWithTarget& image,
+    SkColorType color_type) {
   DCHECK(!image.paint_image().IsTextureBacked());
 
   const auto& paint_image = image.paint_image();

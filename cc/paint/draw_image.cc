@@ -55,36 +55,14 @@ DrawImage::DrawImage(PaintImage image,
   matrix_is_decomposable_ = ExtractScale(matrix, &scale_);
 }
 
-DrawImage::DrawImage(PaintImage image,
-                     bool use_dark_mode,
-                     const SkIRect& src_rect,
-                     PaintFlags::FilterQuality filter_quality,
-                     const SkM44& matrix,
-                     size_t frame_index,
-                     const TargetColorParams& target_color_params)
-    : paint_image_(std::move(image)),
-      use_dark_mode_(use_dark_mode),
-      src_rect_(src_rect),
-      filter_quality_(filter_quality),
-      frame_index_(frame_index) {
-  SetTargetColorParams(target_color_params);
-  matrix_is_decomposable_ = ExtractScale(matrix, &scale_);
-}
-
-DrawImage::DrawImage(const DrawImage& other,
-                     float scale_adjustment,
-                     size_t frame_index,
-                     const TargetColorParams& target_color_params)
+DrawImage::DrawImage(const DrawImage& other, float scale_adjustment)
     : paint_image_(other.paint_image_),
       use_dark_mode_(other.use_dark_mode_),
       src_rect_(other.src_rect_),
       filter_quality_(other.filter_quality_),
       scale_(SkSize::Make(other.scale_.width() * scale_adjustment,
                           other.scale_.height() * scale_adjustment)),
-      matrix_is_decomposable_(other.matrix_is_decomposable_),
-      frame_index_(frame_index) {
-  SetTargetColorParams(target_color_params);
-}
+      matrix_is_decomposable_(other.matrix_is_decomposable_) {}
 
 DrawImage::DrawImage(const DrawImage& other) = default;
 DrawImage::DrawImage(DrawImage&& other) = default;
@@ -98,18 +76,61 @@ bool DrawImage::IsSameForTesting(const DrawImage& other) const {
          use_dark_mode_ == other.use_dark_mode_ &&
          src_rect_ == other.src_rect_ &&
          filter_quality_ == other.filter_quality_ && scale_ == other.scale_ &&
-         matrix_is_decomposable_ == other.matrix_is_decomposable_ &&
+         matrix_is_decomposable_ == other.matrix_is_decomposable_;
+}
+
+DrawImageWithTarget::DrawImageWithTarget() = default;
+
+DrawImageWithTarget::DrawImageWithTarget(
+    PaintImage image,
+    bool use_dark_mode,
+    const SkIRect& src_rect,
+    PaintFlags::FilterQuality filter_quality,
+    const SkM44& matrix,
+    size_t frame_index,
+    const TargetColorParams& target_color_params)
+    : draw_image_(std::move(image),
+                  use_dark_mode,
+                  src_rect,
+                  filter_quality,
+                  matrix),
+      frame_index_(frame_index) {
+  SetTargetColorParams(target_color_params);
+}
+
+DrawImageWithTarget::DrawImageWithTarget(
+    const DrawImage& other,
+    float scale_adjustment,
+    size_t frame_index,
+    const TargetColorParams& target_color_params)
+    : draw_image_(other, scale_adjustment), frame_index_(frame_index) {
+  SetTargetColorParams(target_color_params);
+}
+
+DrawImageWithTarget::DrawImageWithTarget(const DrawImageWithTarget& other) =
+    default;
+DrawImageWithTarget::DrawImageWithTarget(DrawImageWithTarget&& other) = default;
+DrawImageWithTarget::~DrawImageWithTarget() = default;
+
+DrawImageWithTarget& DrawImageWithTarget::operator=(
+    DrawImageWithTarget&& other) = default;
+DrawImageWithTarget& DrawImageWithTarget::operator=(
+    const DrawImageWithTarget& other) = default;
+
+bool DrawImageWithTarget::IsSameForTesting(
+    const DrawImageWithTarget& other) const {
+  return draw_image_.IsSameForTesting(other.draw_image_) &&  // IN-TEST
          target_color_params_ == other.target_color_params_;
 }
 
-void DrawImage::SetTargetColorParams(
+void DrawImageWithTarget::SetTargetColorParams(
     const TargetColorParams& target_color_params) {
   target_color_params_ = target_color_params;
-  if (paint_image_.GetReinterpretAsSRGB()) {
+  if (draw_image_.paint_image().GetReinterpretAsSRGB()) {
     // If `paint_image_` is to be reinterpreted as sRGB, then the target color
     // space (used by decode) is invalid (which indicates that the color profile
     // is to be ignored).
-    target_color_params_->color_space = gfx::ColorSpace();
+    target_color_params_.color_space = gfx::ColorSpace();
   }
 }
 

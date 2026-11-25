@@ -266,8 +266,9 @@ void CheckerImageTracker::DidFinishImageDecode(
   client_->NeedsInvalidationForCheckerImagedTiles();
 }
 
-bool CheckerImageTracker::ShouldCheckerImage(const DrawImage& draw_image,
-                                             WhichTree tree) {
+bool CheckerImageTracker::ShouldCheckerImage(
+    const DrawImageWithTarget& draw_image,
+    WhichTree tree) {
   const PaintImage& image = draw_image.paint_image();
   PaintImage::Id image_id = image.stable_id();
   TRACE_EVENT1("cc.debug", "CheckerImageTracker::ShouldCheckerImage",
@@ -352,9 +353,10 @@ bool CheckerImageTracker::ShouldCheckerImage(const DrawImage& draw_image,
   return it->second.policy == DecodePolicy::ASYNC;
 }
 
-void CheckerImageTracker::UpdateDecodeState(const DrawImage& draw_image,
-                                            PaintImage::Id paint_image_id,
-                                            DecodeState* decode_state) {
+void CheckerImageTracker::UpdateDecodeState(
+    const DrawImageWithTarget& draw_image,
+    PaintImage::Id paint_image_id,
+    DecodeState* decode_state) {
   // If the policy is not async then either we decoded this image already or
   // we decided not to ever checker it.
   if (decode_state->policy != DecodePolicy::ASYNC)
@@ -396,7 +398,7 @@ void CheckerImageTracker::ScheduleNextImageDecode() {
   if (image_decode_queue_.front().type > decode_priority_allowed_)
     return;
 
-  DrawImage draw_image;
+  DrawImageWithTarget draw_image;
   while (!image_decode_queue_.empty()) {
     auto candidate = std::move(image_decode_queue_.front().paint_image);
     image_decode_queue_.erase(image_decode_queue_.begin());
@@ -411,7 +413,7 @@ void CheckerImageTracker::ScheduleNextImageDecode() {
     if (it->second.policy != DecodePolicy::ASYNC)
       continue;
 
-    draw_image = DrawImage(
+    draw_image = DrawImageWithTarget(
         candidate, it->second.use_dark_mode,
         SkIRect::MakeWH(candidate.width(), candidate.height()),
         it->second.filter_quality,

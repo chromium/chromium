@@ -125,7 +125,7 @@ class CC_EXPORT ImageDecodeCache {
   // This is called by the tile manager (on the compositor thread) when creating
   // a raster task.
   virtual TaskResult GetTaskForImageAndRef(ClientId client_id,
-                                           const DrawImage& image,
+                                           const DrawImageWithTarget& image,
                                            const TracingInfo& tracing_info) = 0;
   // Similar to GetTaskForImageAndRef (including the |client_id|), except that
   // it returns tasks that are not meant to be run as part of raster. That is,
@@ -134,12 +134,12 @@ class CC_EXPORT ImageDecodeCache {
   // worker thread which may not have the right GPU context for upload.
   virtual TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
       ClientId client_id,
-      const DrawImage& image,
+      const DrawImageWithTarget& image,
       bool speculative = false) = 0;
 
   // Unrefs an image. When the tile is finished, this should be called for every
   // GetTaskForImageAndRef call that returned true.
-  virtual void UnrefImage(const DrawImage& image) = 0;
+  virtual void UnrefImage(const DrawImageWithTarget& image) = 0;
 
   // Returns a decoded draw image. This may cause a decode if the image was not
   // predecoded.
@@ -150,10 +150,11 @@ class CC_EXPORT ImageDecodeCache {
   // TODO(khushalsagar/vmpstr): Since the cache knows if it's a video frame, it
   // should discard any frames from the same source not in use in the
   // compositor.
-  virtual DecodedDrawImage GetDecodedImageForDraw(const DrawImage& image) = 0;
+  virtual DecodedDrawImage GetDecodedImageForDraw(
+      const DrawImageWithTarget& image) = 0;
   // Unrefs an image. This should be called for every GetDecodedImageForDraw
   // when the draw with the image is finished.
-  virtual void DrawWithImageFinished(const DrawImage& image,
+  virtual void DrawWithImageFinished(const DrawImageWithTarget& image,
                                      const DecodedDrawImage& decoded_image) = 0;
 
   // This function informs the cache that now is a good time to clean up
@@ -178,7 +179,7 @@ class CC_EXPORT ImageDecodeCache {
   // Returns true if the cache should be used for |image|. In certain cases the
   // image can directly be used for raster (for instance bitmaps in a software
   // draw).
-  virtual bool UseCacheForDrawImage(const DrawImage& image) const = 0;
+  virtual bool UseCacheForDrawImage(const DrawImageWithTarget& image) const = 0;
 
   // Should be called periodically to record statistics about cache use and
   // performance.

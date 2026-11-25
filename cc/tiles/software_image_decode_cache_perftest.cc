@@ -56,7 +56,7 @@ class SoftwareImageDecodeCachePerfTest : public testing::Test {
         std::make_pair(1.f, 1.f), std::make_pair(0.5f, 0.5f),
         std::make_pair(2.f, 2.f), std::make_pair(0.5f, 1.5f)};
 
-    std::vector<DrawImage> images;
+    std::vector<DrawImageWithTarget> images;
     for (auto& quality : qualities) {
       for (auto& rect_subrect : image_rect_subrect) {
         auto& rect = rect_subrect.first;

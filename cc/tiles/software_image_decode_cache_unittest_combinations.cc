@@ -43,10 +43,10 @@ class BaseTest : public testing::Test {
     cache_.reset();
   }
 
-  DrawImage CreateDrawImageForScale(
+  DrawImageWithTarget CreateDrawImageForScale(
       float scale,
       const SkIRect src_rect = SkIRect::MakeEmpty()) {
-    return DrawImage(
+    return DrawImageWithTarget(
         paint_image(), false,
         src_rect.isEmpty()
             ? SkIRect::MakeWH(paint_image().width(), paint_image().height())
@@ -69,14 +69,15 @@ class BaseTest : public testing::Test {
   };
 
   virtual std::unique_ptr<SoftwareImageDecodeCache> CreateCache() = 0;
-  virtual CacheEntryResult GenerateCacheEntry(const DrawImage& image) = 0;
+  virtual CacheEntryResult GenerateCacheEntry(
+      const DrawImageWithTarget& image) = 0;
   virtual PaintImage CreatePaintImage(const gfx::Size& size) = 0;
   virtual TargetColorParams GetTargetColorParams() const = 0;
   gfx::ColorSpace GetColorSpace() const {
     return GetTargetColorParams().color_space;
   }
   virtual void VerifyEntryExists(int line,
-                                 const DrawImage& draw_image,
+                                 const DrawImageWithTarget& draw_image,
                                  const gfx::Size& expected_size,
                                  bool expect_color_converted = true) = 0;
 
@@ -114,12 +115,13 @@ class RGBA_F16Cache : public virtual BaseTest {
 
 class AtRaster : public virtual BaseTest {
  protected:
-  CacheEntryResult GenerateCacheEntry(const DrawImage& image) override {
+  CacheEntryResult GenerateCacheEntry(
+      const DrawImageWithTarget& image) override {
     // At raster doesn't generate cache entries.
     return {false, false};
   }
   void VerifyEntryExists(int line,
-                         const DrawImage& draw_image,
+                         const DrawImageWithTarget& draw_image,
                          const gfx::Size& expected_size,
                          bool expect_color_converted = true) override {
     auto decoded = cache().GetDecodedImageForDraw(draw_image);
@@ -132,7 +134,8 @@ class AtRaster : public virtual BaseTest {
 
 class Predecode : public virtual BaseTest {
  protected:
-  CacheEntryResult GenerateCacheEntry(const DrawImage& image) override {
+  CacheEntryResult GenerateCacheEntry(
+      const DrawImageWithTarget& image) override {
     auto task_result = cache().GetTaskForImageAndRef(
         cache_client_id(), image, ImageDecodeCache::TracingInfo());
     CacheEntryResult result = {!!task_result.task, task_result.need_unref};
@@ -143,7 +146,7 @@ class Predecode : public virtual BaseTest {
   }
 
   void VerifyEntryExists(int line,
-                         const DrawImage& draw_image,
+                         const DrawImageWithTarget& draw_image,
                          const gfx::Size& expected_size,
                          bool expect_color_converted = true) override {
     auto decoded = cache().GetDecodedImageForDraw(draw_image);

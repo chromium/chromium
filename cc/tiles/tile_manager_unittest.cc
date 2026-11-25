@@ -72,13 +72,15 @@ using testing::StrictMock;
 namespace cc {
 namespace {
 
-DrawImage DrawImageForDecoding(const PaintImage& paint_image,
-                               const TargetColorParams& color_params) {
-  return DrawImage(paint_image,
-                   /*use_dark_mode=*/false,
-                   SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-                   PaintFlags::FilterQuality::kNone, SkM44(),
-                   PaintImage::kDefaultFrameIndex, color_params);
+DrawImageWithTarget DrawImageForDecoding(
+    const PaintImage& paint_image,
+    const TargetColorParams& color_params) {
+  return DrawImageWithTarget(
+      paint_image,
+      /*use_dark_mode=*/false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      PaintFlags::FilterQuality::kNone, SkM44(), PaintImage::kDefaultFrameIndex,
+      color_params);
 }
 
 // A version of simple task runner that lets the user control if all tasks

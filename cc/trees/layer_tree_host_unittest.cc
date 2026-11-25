@@ -9047,10 +9047,9 @@ class LayerTreeHostTestQueueImageDecode : public LayerTreeHostTest {
       return;
     first_ = false;
 
-    image_ =
-        DrawImage(CreateDiscardablePaintImage(gfx::Size(400, 400)), false,
-                  SkIRect::MakeWH(400, 400), PaintFlags::FilterQuality::kNone,
-                  SkM44(), PaintImage::kDefaultFrameIndex, TargetColorParams());
+    image_ = DrawImage(CreateDiscardablePaintImage(gfx::Size(400, 400)), false,
+                       SkIRect::MakeWH(400, 400),
+                       PaintFlags::FilterQuality::kNone, SkM44());
     auto callback = base::BindRepeating(
         &LayerTreeHostTestQueueImageDecode::ImageDecodeFinished,
         base::Unretained(this));
@@ -9066,14 +9065,18 @@ class LayerTreeHostTestQueueImageDecode : public LayerTreeHostTest {
       return;
     EXPECT_FALSE(
         impl->tile_manager()->checker_image_tracker().ShouldCheckerImage(
-            image_, WhichTree::PENDING_TREE));
+            DrawImageWithTarget(image_, 1.f, PaintImage::kDefaultFrameIndex,
+                                TargetColorParams()),
+            WhichTree::PENDING_TREE));
   }
 
   void CommitCompleteOnThread(LayerTreeHostImpl* impl) override {
     one_commit_done_ = true;
     EXPECT_FALSE(
         impl->tile_manager()->checker_image_tracker().ShouldCheckerImage(
-            image_, WhichTree::PENDING_TREE));
+            DrawImageWithTarget(image_, 1.f, PaintImage::kDefaultFrameIndex,
+                                TargetColorParams()),
+            WhichTree::PENDING_TREE));
   }
 
   void ImageDecodeFinished(bool decode_succeeded) {

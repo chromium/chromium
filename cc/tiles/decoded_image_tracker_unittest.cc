@@ -29,7 +29,7 @@ class TestImageController : public ImageController {
     locked_ids_.erase(it);
   }
 
-  ImageDecodeRequestId QueueImageDecode(const DrawImage& image,
+  ImageDecodeRequestId QueueImageDecode(const DrawImageWithTarget& image,
                                         ImageDecodedCallback callback,
                                         bool speculative) override {
     auto id = next_id_++;
@@ -40,7 +40,7 @@ class TestImageController : public ImageController {
     return id;
   }
 
-  bool IsDrawImageLocked(const DrawImage& image) {
+  bool IsDrawImageLocked(const DrawImageWithTarget& image) {
     SoftwareImageDecodeCache::CacheKey key =
         SoftwareImageDecodeCache::CacheKey::FromDrawImage(
             image, kRGBA_8888_SkColorType);
@@ -66,13 +66,15 @@ class DecodedImageTrackerTest : public testing::Test {
         task_runner_->GetMockTickClock(), task_runner_);
   }
 
-  DrawImage DrawImageForDecoding(const PaintImage& paint_image,
-                                 const TargetColorParams& color_params) const {
-    return DrawImage(paint_image,
-                     /*use_dark_mode=*/false,
-                     SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-                     PaintFlags::FilterQuality::kNone, SkM44(),
-                     PaintImage::kDefaultFrameIndex, color_params);
+  DrawImageWithTarget DrawImageForDecoding(
+      const PaintImage& paint_image,
+      const TargetColorParams& color_params) const {
+    return DrawImageWithTarget(
+        paint_image,
+        /*use_dark_mode=*/false,
+        SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+        PaintFlags::FilterQuality::kNone, SkM44(),
+        PaintImage::kDefaultFrameIndex, color_params);
   }
 
   TestImageController* image_controller() { return &image_controller_; }
@@ -117,15 +119,15 @@ TEST_F(DecodedImageTrackerTest, Colorspace) {
   // space differs then that image is not locked. Note that we use the high
   // filter quality here, since it shouldn't matter and the checks should
   // succeed anyway.
-  DrawImage locked_draw_image(paint_image, false, SkIRect::MakeWH(1, 1),
-                              PaintFlags::FilterQuality::kHigh, SkM44(),
-                              PaintImage::kDefaultFrameIndex,
-                              target_color_params);
+  DrawImageWithTarget locked_draw_image(
+      paint_image, false, SkIRect::MakeWH(1, 1),
+      PaintFlags::FilterQuality::kHigh, SkM44(), PaintImage::kDefaultFrameIndex,
+      target_color_params);
   EXPECT_TRUE(image_controller()->IsDrawImageLocked(locked_draw_image));
-  DrawImage srgb_draw_image(paint_image, false, SkIRect::MakeWH(1, 1),
-                            PaintFlags::FilterQuality::kHigh, SkM44(),
-                            PaintImage::kDefaultFrameIndex,
-                            srgb_target_color_params);
+  DrawImageWithTarget srgb_draw_image(paint_image, false, SkIRect::MakeWH(1, 1),
+                                      PaintFlags::FilterQuality::kHigh, SkM44(),
+                                      PaintImage::kDefaultFrameIndex,
+                                      srgb_target_color_params);
   EXPECT_FALSE(image_controller()->IsDrawImageLocked(srgb_draw_image));
 }
 
@@ -233,12 +235,12 @@ TEST_F(DecodedImageTrackerTest, ImageUsedInDraw) {
   EXPECT_EQ(2u, image_controller()->num_locked_images());
 
   // Create dummy draw images for each:
-  DrawImage draw_image_1(paint_image_1, false, SkIRect::MakeWH(1, 1),
-                         PaintFlags::FilterQuality::kHigh, SkM44(), 0,
-                         target_color_params);
-  DrawImage draw_image_2(paint_image_2, false, SkIRect::MakeWH(1, 1),
-                         PaintFlags::FilterQuality::kHigh, SkM44(), 0,
-                         target_color_params);
+  DrawImageWithTarget draw_image_1(paint_image_1, false, SkIRect::MakeWH(1, 1),
+                                   PaintFlags::FilterQuality::kHigh, SkM44(), 0,
+                                   target_color_params);
+  DrawImageWithTarget draw_image_2(paint_image_2, false, SkIRect::MakeWH(1, 1),
+                                   PaintFlags::FilterQuality::kHigh, SkM44(), 0,
+                                   target_color_params);
 
   // Both should be in the cache:
   EXPECT_TRUE(image_controller()->IsDrawImageLocked(draw_image_1));

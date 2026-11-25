@@ -51,7 +51,7 @@ class ImageTrackingDecodeCache : public cc::StubDecodeCache {
   ~ImageTrackingDecodeCache() override { EXPECT_EQ(num_locked_images_, 0); }
 
   cc::DecodedDrawImage GetDecodedImageForDraw(
-      const cc::DrawImage& image) override {
+      const cc::DrawImageWithTarget& image) override {
     EXPECT_FALSE(disallow_cache_use_);
 
     ++num_locked_images_;
@@ -70,20 +70,20 @@ class ImageTrackingDecodeCache : public cc::StubDecodeCache {
   void set_disallow_cache_use(bool disallow) { disallow_cache_use_ = disallow; }
 
   void DrawWithImageFinished(
-      const cc::DrawImage& image,
+      const cc::DrawImageWithTarget& image,
       const cc::DecodedDrawImage& decoded_image) override {
     EXPECT_FALSE(disallow_cache_use_);
     num_locked_images_--;
   }
 
-  const Vector<cc::DrawImage>& decoded_images() const {
+  const Vector<cc::DrawImageWithTarget>& decoded_images() const {
     return decoded_images_;
   }
   int num_locked_images() const { return num_locked_images_; }
   int max_locked_images() const { return max_locked_images_; }
 
  private:
-  Vector<cc::DrawImage> decoded_images_;
+  Vector<cc::DrawImageWithTarget> decoded_images_;
   int num_locked_images_ = 0;
   int max_locked_images_ = 0;
   bool budget_exceeded_ = false;

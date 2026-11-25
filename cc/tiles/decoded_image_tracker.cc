@@ -55,7 +55,7 @@ DecodedImageTracker::~DecodedImageTracker() {
 }
 
 void DecodedImageTracker::QueueImageDecode(
-    const DrawImage& image,
+    const DrawImageWithTarget& image,
     base::OnceCallback<void(bool)> callback,
     bool speculative) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
@@ -77,9 +77,10 @@ void DecodedImageTracker::UnlockAllImages() {
 }
 
 void DecodedImageTracker::OnImagesUsedInDraw(
-    const std::vector<DrawImage>& draw_images) {
-  for (const DrawImage& draw_image : draw_images)
+    const std::vector<DrawImageWithTarget>& draw_images) {
+  for (const DrawImageWithTarget& draw_image : draw_images) {
     locked_images_.erase(draw_image.paint_image().stable_id());
+  }
 }
 
 void DecodedImageTracker::SetSyncTreeFrameNumber(int frame_number) {

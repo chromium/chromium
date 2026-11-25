@@ -94,8 +94,8 @@ TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
   for (float scale = 1.f; scale <= 5.f; scale += 0.5f) {
     std::vector<const DrawImage*> images =
         image_map->GetDiscardableImagesInRect(gfx::Rect(130, 0, 128, 128));
-    DrawImage image(*images[0], scale, PaintImage::kDefaultFrameIndex,
-                    TargetColorParams());
+    DrawImageWithTarget image(*images[0], scale, PaintImage::kDefaultFrameIndex,
+                              TargetColorParams());
     EXPECT_EQ(1u, images.size());
     EXPECT_FLOAT_EQ(scale, image.scale().width());
     EXPECT_FLOAT_EQ(scale, image.scale().height());

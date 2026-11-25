@@ -131,22 +131,24 @@ class CC_EXPORT GpuImageDecodeCache
   // upload task to upload the image if an existing image does not exist.
   // See |GetTaskForImageAndRefInternal| to learn about the |client_id|.
   TaskResult GetTaskForImageAndRef(ClientId client_id,
-                                   const DrawImage& image,
+                                   const DrawImageWithTarget& image,
                                    const TracingInfo& tracing_info) override;
   // See |GetTaskForImageAndRefInternal| to learn about the |client_id|.
-  TaskResult GetOutOfRasterDecodeTaskForImageAndRef(ClientId client_id,
-                                                    const DrawImage& image,
-                                                    bool speculative) override;
-  void UnrefImage(const DrawImage& image) override;
-  DecodedDrawImage GetDecodedImageForDraw(const DrawImage& draw_image) override;
-  void DrawWithImageFinished(const DrawImage& image,
+  TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
+      ClientId client_id,
+      const DrawImageWithTarget& image,
+      bool speculative) override;
+  void UnrefImage(const DrawImageWithTarget& image) override;
+  DecodedDrawImage GetDecodedImageForDraw(
+      const DrawImageWithTarget& draw_image) override;
+  void DrawWithImageFinished(const DrawImageWithTarget& image,
                              const DecodedDrawImage& decoded_image) override;
   void ReduceCacheUsage() override;
   void SetShouldAggressivelyFreeResources(
       bool aggressively_free_resources) override;
   void ClearCache() override;
   size_t GetMaximumMemoryLimitBytes() const override;
-  bool UseCacheForDrawImage(const DrawImage& image) const override;
+  bool UseCacheForDrawImage(const DrawImageWithTarget& image) const override;
   void RecordStats() override;
 
   // MemoryDumpProvider overrides.
@@ -154,14 +156,15 @@ class CC_EXPORT GpuImageDecodeCache
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
   // Called by Decode / Upload tasks.
-  void DecodeImageInTask(const DrawImage& image);
-  void UploadImageInTask(const DrawImage& image);
+  void DecodeImageInTask(const DrawImageWithTarget& image);
+  void UploadImageInTask(const DrawImageWithTarget& image);
 
   // Called by Decode / Upload tasks when tasks are finished.
-  void OnImageDecodeTaskCompleted(const DrawImage& image,
+  void OnImageDecodeTaskCompleted(const DrawImageWithTarget& image,
                                   TaskType task_type,
                                   ClientId client_id);
-  void OnImageUploadTaskCompleted(const DrawImage& image, ClientId client_id);
+  void OnImageUploadTaskCompleted(const DrawImageWithTarget& image,
+                                  ClientId client_id);
 
   bool SupportsColorSpaceConversion() const;
 
@@ -183,18 +186,19 @@ class CC_EXPORT GpuImageDecodeCache
     base::AutoLock locker(lock_);
     return in_use_cache_.size();
   }
-  size_t GetDrawImageSizeForTesting(const DrawImage& image);
-  void SetImageDecodingFailedForTesting(const DrawImage& image);
-  bool DiscardableIsLockedForTesting(const DrawImage& image);
-  bool IsInInUseCacheForTesting(const DrawImage& image) const;
-  bool IsInPersistentCacheForTesting(const DrawImage& image) const;
-  sk_sp<SkImage> GetSWImageDecodeForTesting(const DrawImage& image);
-  size_t GetDarkModeImageCacheSizeForTesting(const DrawImage& draw_image);
+  size_t GetDrawImageSizeForTesting(const DrawImageWithTarget& image);
+  void SetImageDecodingFailedForTesting(const DrawImageWithTarget& image);
+  bool DiscardableIsLockedForTesting(const DrawImageWithTarget& image);
+  bool IsInInUseCacheForTesting(const DrawImageWithTarget& image) const;
+  bool IsInPersistentCacheForTesting(const DrawImageWithTarget& image) const;
+  sk_sp<SkImage> GetSWImageDecodeForTesting(const DrawImageWithTarget& image);
+  size_t GetDarkModeImageCacheSizeForTesting(
+      const DrawImageWithTarget& draw_image);
   size_t paint_image_entries_count_for_testing() const {
     base::AutoLock locker(lock_);
     return paint_image_entries_.size();
   }
-  bool NeedsDarkModeFilterForTesting(const DrawImage& draw_image);
+  bool NeedsDarkModeFilterForTesting(const DrawImageWithTarget& draw_image);
 
   bool HasPendingPurgeTaskForTesting() const {
     base::AutoLock locker(lock_);
@@ -206,7 +210,7 @@ class CC_EXPORT GpuImageDecodeCache
   }
 
   // Updating the |last_use| field of the associated |ImageData|.
-  void TouchCacheEntryForTesting(const DrawImage& draw_image)
+  void TouchCacheEntryForTesting(const DrawImageWithTarget& draw_image)
       LOCKS_EXCLUDED(lock_);
 
   bool AcquireContextLockForTesting();
@@ -478,7 +482,7 @@ class CC_EXPORT GpuImageDecodeCache
   // the |in_use_cache_|.
   struct InUseCacheKeyHash;
   struct InUseCacheKey {
-    InUseCacheKey(const DrawImage& draw_image, int mip_level);
+    InUseCacheKey(const DrawImageWithTarget& draw_image, int mip_level);
     int mip_level() const { return upload_scale_mip_level; }
     bool operator==(const InUseCacheKey& other) const;
 
@@ -502,16 +506,17 @@ class CC_EXPORT GpuImageDecodeCache
   // Calculate the mip level to upload-scale the image to before uploading. We
   // use mip levels rather than exact scales to increase re-use of scaled
   // images.
-  int CalculateUploadScaleMipLevel(const DrawImage& draw_image,
+  int CalculateUploadScaleMipLevel(const DrawImageWithTarget& draw_image,
                                    AuxImage aux_image) const;
 
-  InUseCacheKey InUseCacheKeyFromDrawImage(const DrawImage& draw_image) const;
+  InUseCacheKey InUseCacheKeyFromDrawImage(
+      const DrawImageWithTarget& draw_image) const;
 
   // Similar to GetTaskForImageAndRef, but gets the dependent decode task
   // rather than the upload task, if necessary.
   scoped_refptr<TileTask> GetImageDecodeTaskAndRef(
       ClientId client_id,
-      const DrawImage& image,
+      const DrawImageWithTarget& image,
       const TracingInfo& tracing_info,
       TaskType task_type) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -521,27 +526,27 @@ class CC_EXPORT GpuImageDecodeCache
   // which ran their task first will execute the task. All the other clients
   // will have their tasks executed as no-op.
   TaskResult GetTaskForImageAndRefInternal(ClientId client_id,
-                                           const DrawImage& image,
+                                           const DrawImageWithTarget& image,
                                            const TracingInfo& tracing_info,
                                            TaskType task_type,
                                            bool speculative);
 
-  void RefImageDecode(const DrawImage& draw_image,
+  void RefImageDecode(const DrawImageWithTarget& draw_image,
                       const InUseCacheKey& cache_key)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void UnrefImageDecode(const DrawImage& draw_image,
+  void UnrefImageDecode(const DrawImageWithTarget& draw_image,
                         const InUseCacheKey& cache_key)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void RefImage(const DrawImage& draw_image, const InUseCacheKey& cache_key)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void UnrefImageInternal(const DrawImage& draw_image,
+  void RefImage(const DrawImageWithTarget& draw_image,
+                const InUseCacheKey& cache_key) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void UnrefImageInternal(const DrawImageWithTarget& draw_image,
                           const InUseCacheKey& cache_key)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Called any time the ownership of an object changed. This includes changes
   // to ref-count or to orphaned status.
-  void OwnershipChanged(const DrawImage& draw_image, ImageData* image_data)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void OwnershipChanged(const DrawImageWithTarget& draw_image,
+                        ImageData* image_data) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Ensures that the working set can hold an element of |required_size|,
   // freeing unreferenced cache entries to make room.
@@ -550,34 +555,35 @@ class CC_EXPORT GpuImageDecodeCache
   bool ExceedsCacheLimits() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void ReduceCacheUsageLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  bool NeedsDarkModeFilter(const DrawImage& draw_image, ImageData* image_data);
+  bool NeedsDarkModeFilter(const DrawImageWithTarget& draw_image,
+                           ImageData* image_data);
   void DecodeImageAndGenerateDarkModeFilterIfNecessary(
-      const DrawImage& draw_image,
+      const DrawImageWithTarget& draw_image,
       ImageData* image_data) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void DecodeImageIfNecessary(const DrawImage& draw_image,
+  void DecodeImageIfNecessary(const DrawImageWithTarget& draw_image,
                               ImageData* image_data,
                               bool needs_decode_for_dark_mode)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void GenerateDarkModeFilter(const DrawImage& draw_image,
+  void GenerateDarkModeFilter(const DrawImageWithTarget& draw_image,
                               ImageData* image_data)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   scoped_refptr<GpuImageDecodeCache::ImageData> CreateImageData(
-      const DrawImage& image,
+      const DrawImageWithTarget& image,
       bool speculative_decode);
-  void WillAddCacheEntry(const DrawImage& draw_image)
+  void WillAddCacheEntry(const DrawImageWithTarget& draw_image)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns the SkImageInfo for the resulting image and the mip level for
   // upload.
   std::tuple<SkImageInfo, int> CreateImageInfoForDrawImage(
-      const DrawImage& draw_image,
+      const DrawImageWithTarget& draw_image,
       AuxImage aux_image) const;
 
   // Finds the ImageData that should be used for the given DrawImage. Looks
   // first in the |in_use_cache_|, and then in the |persistent_cache_|.
   ImageData* GetImageDataForDrawImage(
-      const DrawImage& image,
+      const DrawImageWithTarget& image,
       const InUseCacheKey& key,
       bool record_speculative_decode_stats = false)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -585,7 +591,7 @@ class CC_EXPORT GpuImageDecodeCache
   // Returns true if the given ImageData can be used to draw the specified
   // DrawImage.
   bool IsCompatible(const ImageData* image_data,
-                    const DrawImage& draw_image) const;
+                    const DrawImageWithTarget& draw_image) const;
 
   // Helper to delete an image and remove it from the cache. Ensures that
   // the image is unlocked and Skia cleanup is handled on the right thread.
@@ -601,11 +607,11 @@ class CC_EXPORT GpuImageDecodeCache
   // image and return false.
   enum class HaveContextLock { kYes, kNo };
   bool TryLockImage(HaveContextLock have_context_lock,
-                    const DrawImage& draw_image,
+                    const DrawImageWithTarget& draw_image,
                     ImageData* data) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Requires that the |context_| lock be held when calling.
-  void UploadImageIfNecessary(const DrawImage& draw_image,
+  void UploadImageIfNecessary(const DrawImageWithTarget& draw_image,
                               ImageData* image_data)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -616,14 +622,15 @@ class CC_EXPORT GpuImageDecodeCache
 
   void CheckContextLockAcquiredIfNecessary();
 
-  sk_sp<SkColorSpace> ColorSpaceForImageDecode(const DrawImage& image) const;
+  sk_sp<SkColorSpace> ColorSpaceForImageDecode(
+      const DrawImageWithTarget& image) const;
 
   // |persistent_cache_| represents the long-lived cache, keeping a certain
   // budget of ImageDatas alive even when their ref count reaches zero.
   using PersistentCache = base::HashingLRUCache<PaintImage::FrameKey,
                                                 scoped_refptr<ImageData>,
                                                 PaintImage::FrameKeyHash>;
-  void AddToPersistentCache(const DrawImage& draw_image,
+  void AddToPersistentCache(const DrawImageWithTarget& draw_image,
                             scoped_refptr<ImageData> data)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   template <typename Iterator>

@@ -42,15 +42,16 @@ class CC_EXPORT SoftwareImageDecodeCache
   // |client_id| is not used by the SoftwareImageDecodeCache for both of these
   // tasks.
   TaskResult GetTaskForImageAndRef(ClientId client_id,
-                                   const DrawImage& image,
+                                   const DrawImageWithTarget& image,
                                    const TracingInfo& tracing_info) override;
   TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
       ClientId client_id,
-      const DrawImage& image,
+      const DrawImageWithTarget& image,
       bool speculative = false) override;
-  void UnrefImage(const DrawImage& image) override;
-  DecodedDrawImage GetDecodedImageForDraw(const DrawImage& image) override;
-  void DrawWithImageFinished(const DrawImage& image,
+  void UnrefImage(const DrawImageWithTarget& image) override;
+  DecodedDrawImage GetDecodedImageForDraw(
+      const DrawImageWithTarget& image) override;
+  void DrawWithImageFinished(const DrawImageWithTarget& image,
                              const DecodedDrawImage& decoded_image) override;
   void ReduceCacheUsage() override;
   // Software doesn't keep outstanding images pinned, so this is a no-op.
@@ -58,7 +59,7 @@ class CC_EXPORT SoftwareImageDecodeCache
       bool aggressively_free_resources) override {}
   void ClearCache() override;
   size_t GetMaximumMemoryLimitBytes() const override;
-  bool UseCacheForDrawImage(const DrawImage& image) const override;
+  bool UseCacheForDrawImage(const DrawImageWithTarget& image) const override;
   void RecordStats() override {}
   ClientId GenerateClientId() override;
 
@@ -115,7 +116,7 @@ class CC_EXPORT SoftwareImageDecodeCache
 
   // Helper method to get the different tasks. Note that this should be used as
   // if it was public (ie, all of the locks need to be properly acquired).
-  TaskResult GetTaskForImageAndRefInternal(const DrawImage& image,
+  TaskResult GetTaskForImageAndRefInternal(const DrawImageWithTarget& image,
                                            const TracingInfo& tracing_info,
                                            TaskType type,
                                            bool speculative)

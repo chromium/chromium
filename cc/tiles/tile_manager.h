@@ -230,7 +230,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
     return decoded_image_tracker_;
   }
 
-  const std::vector<DrawImage>& decode_tasks_for_testing(Tile::Id id) {
+  const std::vector<DrawImageWithTarget>& decode_tasks_for_testing(
+      Tile::Id id) {
     return scheduled_draw_images_[id];
   }
 
@@ -294,7 +295,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
     std::vector<PrioritizedTile> tiles_to_process_for_images;
     // A vector of additional images to be decoded for prepaint, but that
     // are not necessarily associated with any tile.
-    std::vector<DrawImage> extra_prepaint_images;
+    std::vector<DrawImageWithTarget> extra_prepaint_images;
     CheckerImageTracker::ImageDecodeQueue checker_image_decode_queue;
     // True if a tile that is required for draw had its state changed (e.g.
     // resource freed or solid color set) while assigning gpu memory. The
@@ -356,7 +357,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   void PartitionImagesForCheckering(
       const PrioritizedTile& prioritized_tile,
       const TargetColorParams& target_color_params,
-      std::vector<DrawImage>* sync_decoded_images,
+      std::vector<DrawImageWithTarget>* sync_decoded_images,
       std::vector<PaintImage>* checkered_images,
       const gfx::Rect* invalidated_rect,
       scoped_refptr<AnimatedImageFrameIndexMap> image_to_frame_index = nullptr);
@@ -439,7 +440,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   // CheckPendingGpuWorkAndIssueSignals.
   bool pending_tile_requirements_dirty_ = false;
 
-  absl::flat_hash_map<Tile::Id, std::vector<DrawImage>> scheduled_draw_images_;
+  absl::flat_hash_map<Tile::Id, std::vector<DrawImageWithTarget>>
+      scheduled_draw_images_;
   std::vector<scoped_refptr<TileTask>> locked_image_tasks_;
 
   // Number of tiles with a checker-imaged resource or active raster tasks which

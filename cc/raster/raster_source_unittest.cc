@@ -233,8 +233,8 @@ TEST(RasterSourceTest, PixelRefIteratorDiscardableRefsOneTile) {
     std::vector<const DrawImage*> images =
         image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256));
     ASSERT_EQ(1u, images.size());
-    DrawImage image(*images[0], 1.f, PaintImage::kDefaultFrameIndex,
-                    target_color_params);
+    DrawImageWithTarget image(*images[0], 1.f, PaintImage::kDefaultFrameIndex,
+                              target_color_params);
     EXPECT_TRUE(
         discardable_image[0][0].IsSameForTesting(images[0]->paint_image()));
     EXPECT_EQ(target_color_params.color_space, image.target_color_space());
@@ -246,8 +246,8 @@ TEST(RasterSourceTest, PixelRefIteratorDiscardableRefsOneTile) {
     std::vector<const DrawImage*> images =
         image_map->GetDiscardableImagesInRect(gfx::Rect(260, 260, 256, 256));
     ASSERT_EQ(1u, images.size());
-    DrawImage image(*images[0], 1.f, PaintImage::kDefaultFrameIndex,
-                    target_color_params);
+    DrawImageWithTarget image(*images[0], 1.f, PaintImage::kDefaultFrameIndex,
+                              target_color_params);
     EXPECT_TRUE(
         discardable_image[1][1].IsSameForTesting(images[0]->paint_image()));
     EXPECT_EQ(target_color_params.color_space, image.target_color_space());

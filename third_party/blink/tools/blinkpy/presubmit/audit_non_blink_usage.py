@@ -612,6 +612,7 @@ _CONFIG = [
             'cc::DeferredPropertyKey',
             'cc::DeferredPropertyType',
             'cc::DrawImage',
+            'cc::DrawImageWithTarget',
             'cc::DrawLooper',
             'cc::InspectablePaintRecorder',
             'cc::InspectableRecordPaintCanvas',

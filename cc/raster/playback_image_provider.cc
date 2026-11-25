@@ -11,7 +11,7 @@
 
 namespace cc {
 namespace {
-void UnrefImageFromCache(DrawImage draw_image,
+void UnrefImageFromCache(DrawImageWithTarget draw_image,
                          ImageDecodeCache* cache,
                          DecodedDrawImage decoded_draw_image) {
   cache->DrawWithImageFinished(draw_image, decoded_draw_image);
@@ -60,7 +60,8 @@ ImageProvider::ScopedResult PlaybackImageProvider::GetRasterContent(
     }
   }
 
-  DrawImage adjusted_image(draw_image, 1.f, frame_index, target_color_params_);
+  DrawImageWithTarget adjusted_image(draw_image, 1.f, frame_index,
+                                     target_color_params_);
   if (!cache_->UseCacheForDrawImage(adjusted_image)) {
     if (settings_->raster_mode == RasterMode::kGpu) {
       return ScopedResult(DecodedDrawImage(paint_image.GetMailbox(),

@@ -48,7 +48,7 @@ class SoftwareImageDecodeCacheUtils {
     //                    and scale it.
     enum ProcessingType { kOriginal, kSubrectOriginal, kSubrectAndScale };
 
-    static CacheKey FromDrawImage(const DrawImage& image,
+    static CacheKey FromDrawImage(const DrawImageWithTarget& image,
                                   SkColorType color_type);
 
     CacheKey(const CacheKey& other);

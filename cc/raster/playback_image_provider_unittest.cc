@@ -41,7 +41,7 @@ class MockDecodeCache : public StubDecodeCache {
   ~MockDecodeCache() override { EXPECT_EQ(refed_image_count_, 0); }
 
   DecodedDrawImage GetDecodedImageForDraw(
-      const DrawImage& draw_image) override {
+      const DrawImageWithTarget& draw_image) override {
     last_image_ = draw_image;
     images_decoded_++;
     refed_image_count_++;
@@ -49,13 +49,13 @@ class MockDecodeCache : public StubDecodeCache {
   }
 
   void DrawWithImageFinished(
-      const DrawImage& draw_image,
+      const DrawImageWithTarget& draw_image,
       const DecodedDrawImage& decoded_draw_image) override {
     refed_image_count_--;
     EXPECT_GE(refed_image_count_, 0);
   }
 
-  bool UseCacheForDrawImage(const DrawImage& image) const override {
+  bool UseCacheForDrawImage(const DrawImageWithTarget& image) const override {
     return use_cache_for_draw_image_;
   }
 
@@ -64,13 +64,13 @@ class MockDecodeCache : public StubDecodeCache {
   }
   int refed_image_count() const { return refed_image_count_; }
   int images_decoded() const { return images_decoded_; }
-  const DrawImage& last_image() { return last_image_; }
+  const DrawImageWithTarget& last_image() { return last_image_; }
 
  private:
   int refed_image_count_ = 0;
   int images_decoded_ = 0;
   bool use_cache_for_draw_image_ = true;
-  DrawImage last_image_;
+  DrawImageWithTarget last_image_;
 };
 
 TEST(PlaybackImageProviderTest, SkipsAllImages) {

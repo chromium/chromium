@@ -37,7 +37,7 @@ class TestableCache : public StubDecodeCache {
   ~TestableCache() override { EXPECT_EQ(number_of_refs_, 0); }
 
   TaskResult GetTaskForImageAndRef(uint32_t client_id,
-                                   const DrawImage& image,
+                                   const DrawImageWithTarget& image,
                                    const TracingInfo& tracing_info) override {
     // Return false for large images to mimic "won't fit in memory"
     // behavior.
@@ -52,13 +52,14 @@ class TestableCache : public StubDecodeCache {
       return TaskResult(task_to_use_);
     return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false);
   }
-  TaskResult GetOutOfRasterDecodeTaskForImageAndRef(uint32_t client_id,
-                                                    const DrawImage& image,
-                                                    bool speculative) override {
+  TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
+      uint32_t client_id,
+      const DrawImageWithTarget& image,
+      bool speculative) override {
     return GetTaskForImageAndRef(client_id, image, TracingInfo());
   }
 
-  void UnrefImage(const DrawImage& image) override {
+  void UnrefImage(const DrawImageWithTarget& image) override {
     ASSERT_GT(number_of_refs_, 0);
     --number_of_refs_;
   }
@@ -176,17 +177,20 @@ class BlockingTask : public TileTask {
 // to allow the worker thread to do its work.
 constexpr int kDefaultTimeoutSeconds = 10;
 
-DrawImage CreateDiscardableDrawImage(gfx::Size size) {
-  return DrawImage(CreateDiscardablePaintImage(size), false,
-                   SkIRect::MakeWH(size.width(), size.height()),
-                   PaintFlags::FilterQuality::kNone, SkM44(),
-                   PaintImage::kDefaultFrameIndex, TargetColorParams());
+DrawImageWithTarget CreateDiscardableDrawImage(gfx::Size size) {
+  return DrawImageWithTarget(CreateDiscardablePaintImage(size), false,
+                             SkIRect::MakeWH(size.width(), size.height()),
+                             PaintFlags::FilterQuality::kNone, SkM44(),
+                             PaintImage::kDefaultFrameIndex,
+                             TargetColorParams());
 }
 
-DrawImage CreateBitmapDrawImage(gfx::Size size) {
-  return DrawImage(CreateBitmapImage(size), false,
-                   SkIRect::MakeWH(size.width(), size.height()),
-                   PaintFlags::FilterQuality::kNone, SkM44());
+DrawImageWithTarget CreateBitmapDrawImage(gfx::Size size) {
+  return DrawImageWithTarget(CreateBitmapImage(size), false,
+                             SkIRect::MakeWH(size.width(), size.height()),
+                             PaintFlags::FilterQuality::kNone, SkM44(),
+                             PaintImage::kDefaultFrameIndex,
+                             TargetColorParams());
 }
 
 class ImageControllerTest : public testing::Test {
@@ -214,7 +218,7 @@ class ImageControllerTest : public testing::Test {
   base::SequencedTaskRunner* task_runner() { return task_runner_.get(); }
   ImageController* controller() { return controller_.get(); }
   TestableCache* cache() { return &cache_; }
-  const DrawImage& image() const { return image_; }
+  const DrawImageWithTarget& image() const { return image_; }
 
   // Timeout callback, which errors and exits the runloop.
   void Timeout(base::RunLoop* run_loop) {
@@ -256,13 +260,13 @@ class ImageControllerTest : public testing::Test {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   TestableCache cache_;
   std::unique_ptr<ImageController> controller_;
-  DrawImage image_;
+  DrawImageWithTarget image_;
 
   base::WeakPtrFactory<ImageControllerTest> weak_ptr_factory_{this};
 };
 
 TEST_F(ImageControllerTest, NullControllerUnrefsImages) {
-  std::vector<DrawImage> images(10);
+  std::vector<DrawImageWithTarget> images(10);
   ImageDecodeCache::TracingInfo tracing_info;
 
   ASSERT_EQ(10u, images.size());
@@ -296,7 +300,7 @@ TEST_F(ImageControllerTest, QueueImageDecodeNonLazy) {
   base::RunLoop run_loop;
   DecodeClient decode_client;
 
-  DrawImage image = CreateBitmapDrawImage(gfx::Size(1, 1));
+  DrawImageWithTarget image = CreateBitmapDrawImage(gfx::Size(1, 1));
 
   ImageController::ImageDecodeRequestId expected_id =
       controller()->QueueImageDecode(
@@ -315,7 +319,7 @@ TEST_F(ImageControllerTest, QueueImageDecodeTooLarge) {
   base::RunLoop run_loop;
   DecodeClient decode_client;
 
-  DrawImage image = CreateDiscardableDrawImage(gfx::Size(2000, 2000));
+  DrawImageWithTarget image = CreateDiscardableDrawImage(gfx::Size(2000, 2000));
   ImageController::ImageDecodeRequestId expected_id =
       controller()->QueueImageDecode(
           image,
@@ -334,7 +338,7 @@ TEST_F(ImageControllerTest, QueueImageDecodeTooLargeResolves) {
   base::RunLoop run_loop;
   DecodeClient decode_client;
 
-  DrawImage image = CreateDiscardableDrawImage(gfx::Size(2000, 2000));
+  DrawImageWithTarget image = CreateDiscardableDrawImage(gfx::Size(2000, 2000));
   ImageController::ImageDecodeRequestId expected_id =
       controller()->QueueImageDecode(
           image,
@@ -641,8 +645,8 @@ TEST_F(ImageControllerTest, QueueImageDecodeLazyCancelImmediately) {
 
   // Create two images so that there is always one that is queued up and
   // not run yet.  This prevents raciness in this test.
-  DrawImage image1 = CreateDiscardableDrawImage(gfx::Size(1, 1));
-  DrawImage image2 = CreateDiscardableDrawImage(gfx::Size(1, 1));
+  DrawImageWithTarget image1 = CreateDiscardableDrawImage(gfx::Size(1, 1));
+  DrawImageWithTarget image2 = CreateDiscardableDrawImage(gfx::Size(1, 1));
 
   ImageController::ImageDecodeRequestId expected_id1 =
       controller()->QueueImageDecode(
@@ -688,8 +692,8 @@ TEST_F(ImageControllerTest, QueueImageDecodeNonLazyCancelImmediately) {
 
   // Create two images so that there is always one that is queued up and
   // not run yet.  This prevents raciness in this test.
-  DrawImage image1 = CreateBitmapDrawImage(gfx::Size(1, 1));
-  DrawImage image2 = CreateBitmapDrawImage(gfx::Size(1, 1));
+  DrawImageWithTarget image1 = CreateBitmapDrawImage(gfx::Size(1, 1));
+  DrawImageWithTarget image2 = CreateBitmapDrawImage(gfx::Size(1, 1));
 
   ImageController::ImageDecodeRequestId expected_id1 =
       controller()->QueueImageDecode(

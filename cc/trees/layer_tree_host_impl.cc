@@ -4416,7 +4416,7 @@ void LayerTreeHostImpl::QueueImageDecode(int request_id,
       paint_image.GetKeyForFrame(PaintImage::kDefaultFrameIndex).ToString());
   // Optimistically specify the current raster color space, since we assume that
   // it won't change.
-  DrawImage image_copy(
+  DrawImageWithTarget image_copy(
       image, /*scale_adjustment=*/1.0,
       /*frame_index=*/PaintImage::kDefaultFrameIndex,
       GetTargetColorParams(paint_image.GetContentColorUsage()));

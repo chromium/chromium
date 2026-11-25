@@ -99,9 +99,9 @@ class DiscardableImageMapTest : public testing::Test {
         gfx::ColorSpace::CreateXYZD50());
     std::vector<const DrawImage*> draw_image_ptrs =
         image_map.GetDiscardableImagesInRect(rect);
-    std::vector<DrawImage> draw_images;
+    std::vector<DrawImageWithTarget> draw_images;
     for (const auto* image : draw_image_ptrs)
-      draw_images.push_back(DrawImage(
+      draw_images.push_back(DrawImageWithTarget(
           *image, 1.f, PaintImage::kDefaultFrameIndex, target_color_params));
     std::vector<PositionScaleDrawImage> position_draw_images;
     std::vector<const DrawImage*> results;
@@ -798,12 +798,9 @@ TEST_F(DiscardableImageMapTest, GathersAnimatedImages) {
       image_map->GetDiscardableImagesInRect(visible_rect);
   ASSERT_EQ(images.size(), 3u);
   EXPECT_TRUE(images[0]->paint_image().IsSameForTesting(static_image));
-  EXPECT_EQ(images[0]->frame_index(), PaintImage::kDefaultFrameIndex);
   EXPECT_TRUE(images[1]->paint_image().IsSameForTesting(animated_loop_none));
-  EXPECT_EQ(images[1]->frame_index(), PaintImage::kDefaultFrameIndex);
   EXPECT_TRUE(
       images[2]->paint_image().IsSameForTesting(animation_loop_infinite));
-  EXPECT_EQ(images[2]->frame_index(), PaintImage::kDefaultFrameIndex);
 }
 
 TEST_F(DiscardableImageMapTest, AnimatedImageMetadataReflectsCurrentState) {

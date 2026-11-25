@@ -233,7 +233,7 @@ void ImageController::SetImageDecodeCache(ImageDecodeCache* cache) {
   }
 
   if (!cache) {
-    SetPredecodeImages(std::vector<DrawImage>(),
+    SetPredecodeImages(std::vector<DrawImageWithTarget>(),
                        ImageDecodeCache::TracingInfo());
     StopWorkerTasks();
     image_cache_max_limit_bytes_ = 0u;
@@ -251,7 +251,7 @@ void ImageController::SetImageDecodeCache(ImageDecodeCache* cache) {
 }
 
 void ImageController::ConvertImagesToTasks(
-    std::vector<DrawImage>* sync_decoded_images,
+    std::vector<DrawImageWithTarget>* sync_decoded_images,
     std::vector<scoped_refptr<TileTask>>* tasks,
     bool* has_at_raster_images,
     const ImageDecodeCache::TracingInfo& tracing_info) {
@@ -291,7 +291,8 @@ void ImageController::ConvertImagesToTasks(
   }
 }
 
-void ImageController::UnrefImages(const std::vector<DrawImage>& images) {
+void ImageController::UnrefImages(
+    const std::vector<DrawImageWithTarget>& images) {
   for (auto& image : images)
     cache_->UnrefImage(image);
 }
@@ -302,7 +303,7 @@ void ImageController::ReduceMemoryUsage() {
 }
 
 std::vector<scoped_refptr<TileTask>> ImageController::SetPredecodeImages(
-    std::vector<DrawImage> images,
+    std::vector<DrawImageWithTarget> images,
     const ImageDecodeCache::TracingInfo& tracing_info) {
   std::vector<scoped_refptr<TileTask>> new_tasks;
   // The images here are in a pre-decode area: we decode them in advance, but
@@ -318,7 +319,7 @@ std::vector<scoped_refptr<TileTask>> ImageController::SetPredecodeImages(
 }
 
 ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
-    const DrawImage& draw_image,
+    const DrawImageWithTarget& draw_image,
     ImageDecodedCallback callback,
     bool speculative) {
   // We must not receive any image requests if we have no worker.
@@ -561,7 +562,7 @@ void ImageController::ScheduleImageDecodeOnWorkerIfNeeded() {
 ImageController::ImageDecodeRequest::ImageDecodeRequest() = default;
 ImageController::ImageDecodeRequest::ImageDecodeRequest(
     ImageDecodeRequestId id,
-    const DrawImage& draw_image,
+    const DrawImageWithTarget& draw_image,
     ImageDecodedCallback callback,
     scoped_refptr<TileTask> task,
     bool need_unref,

@@ -1137,7 +1137,7 @@ bool TileManager::FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(
 void TileManager::PartitionImagesForCheckering(
     const PrioritizedTile& prioritized_tile,
     const TargetColorParams& target_color_params,
-    std::vector<DrawImage>* sync_decoded_images,
+    std::vector<DrawImageWithTarget>* sync_decoded_images,
     std::vector<PaintImage>* checkered_images,
     const gfx::Rect* invalidated_rect,
     scoped_refptr<AnimatedImageFrameIndexMap> image_to_frame_index) {
@@ -1158,8 +1158,9 @@ void TileManager::PartitionImagesForCheckering(
     if (image_to_frame_index)
       (*image_to_frame_index)[image.stable_id()] = frame_index;
 
-    DrawImage draw_image(*original_draw_image, tile->contents_scale_key(),
-                         frame_index, target_color_params);
+    DrawImageWithTarget draw_image(*original_draw_image,
+                                   tile->contents_scale_key(), frame_index,
+                                   target_color_params);
     if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree))
       checkered_images->push_back(draw_image.paint_image());
     else
@@ -1180,8 +1181,9 @@ void TileManager::AddCheckeredImagesToDecodeQueue(
   for (const auto* original_draw_image : images_in_tile) {
     size_t frame_index = client_->GetFrameIndexForImage(
         original_draw_image->paint_image(), tree);
-    DrawImage draw_image(*original_draw_image, tile->contents_scale_key(),
-                         frame_index, target_color_params);
+    DrawImageWithTarget draw_image(*original_draw_image,
+                                   tile->contents_scale_key(), frame_index,
+                                   target_color_params);
     if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree)) {
       image_decode_queue->emplace_back(draw_image.paint_image(), decode_type);
     }
@@ -1269,14 +1271,14 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
 
   const std::vector<PrioritizedTile>& tiles_to_process_for_images =
       work_to_schedule.tiles_to_process_for_images;
-  std::vector<DrawImage> new_locked_images;
+  std::vector<DrawImageWithTarget> new_locked_images;
   for (const PrioritizedTile& prioritized_tile : tiles_to_process_for_images) {
     auto content_color_usage =
         GetContentColorUsageForPrioritizedTile(prioritized_tile);
     const auto target_color_params =
         client_->GetTargetColorParams(content_color_usage);
 
-    std::vector<DrawImage> sync_decoded_images;
+    std::vector<DrawImageWithTarget> sync_decoded_images;
     std::vector<PaintImage> checkered_images;
     PartitionImagesForCheckering(prioritized_tile, target_color_params,
                                  &sync_decoded_images, &checkered_images,
@@ -1459,7 +1461,7 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   // |scheduled_draw_images_| since the tile might have been destroyed by the
   // time the raster task finishes.
   TileTask::Vector decode_tasks;
-  std::vector<DrawImage>& sync_decoded_images =
+  std::vector<DrawImageWithTarget>& sync_decoded_images =
       scheduled_draw_images_[tile->id()];
   sync_decoded_images.clear();
   std::vector<PaintImage> checkered_images;
@@ -1903,7 +1905,7 @@ void TileManager::CheckIfMoreTilesNeedToBePrepared() {
   // If we're not in SMOOTHNESS_TAKES_PRIORITY  mode, we should unlock all
   // images since we're technically going idle here at least for this frame.
   if (global_state_.tree_priority != SMOOTHNESS_TAKES_PRIORITY) {
-    image_controller_.SetPredecodeImages(std::vector<DrawImage>(),
+    image_controller_.SetPredecodeImages(std::vector<DrawImageWithTarget>(),
                                          ImageDecodeCache::TracingInfo());
     locked_image_tasks_.clear();
   }

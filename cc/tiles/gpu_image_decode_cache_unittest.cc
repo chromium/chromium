@@ -301,7 +301,7 @@ class GpuImageDecodeCacheTest
     return TargetColorParams(DefaultColorSpace());
   }
 
-  DrawImage CreateDrawImageInternal(
+  DrawImageWithTarget CreateDrawImageInternal(
       const PaintImage& paint_image,
       const SkM44& matrix = SkM44(),
       gfx::ColorSpace* color_space = nullptr,
@@ -321,11 +321,12 @@ class GpuImageDecodeCacheTest
     if (color_space)
       target_color_params.color_space = *color_space;
 
-    return DrawImage(paint_image, use_dark_mode, *src_rect, filter_quality,
-                     matrix, frame_index, target_color_params);
+    return DrawImageWithTarget(paint_image, use_dark_mode, *src_rect,
+                               filter_quality, matrix, frame_index,
+                               target_color_params);
   }
 
-  DrawImage CreateDrawImageWithDarkModeInternal(
+  DrawImageWithTarget CreateDrawImageWithDarkModeInternal(
       const PaintImage& paint_image,
       const SkM44& matrix = SkM44(),
       gfx::ColorSpace* color_space = nullptr,
@@ -341,7 +342,7 @@ class GpuImageDecodeCacheTest
 
   void GetImageAndDrawFinishedForDarkMode(
       GpuImageDecodeCache* cache,
-      const DrawImage& draw_image,
+      const DrawImageWithTarget& draw_image,
       FakeRasterDarkModeFilter* dark_mode_filter) {
     DCHECK(cache);
     DCHECK(dark_mode_filter);
@@ -417,7 +418,7 @@ class GpuImageDecodeCacheTest
 
   void CompareAllPlanesToMippedVersions(
       GpuImageDecodeCache* cache,
-      const DrawImage& draw_image,
+      const DrawImageWithTarget& draw_image,
       const std::optional<uint32_t> transfer_cache_id,
       bool should_have_mips) {
     for (size_t i = 0; i < kNumYUVPlanes; ++i) {
@@ -439,7 +440,7 @@ class GpuImageDecodeCacheTest
 
   void VerifyUploadedPlaneSizes(
       GpuImageDecodeCache* cache,
-      const DrawImage& draw_image,
+      const DrawImageWithTarget& draw_image,
       const std::optional<uint32_t> transfer_cache_id,
       const SkISize plane_sizes[SkYUVAInfo::kMaxPlanes],
       SkYUVAPixmapInfo::DataType expected_type =
@@ -488,14 +489,14 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSameImage) {
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
 
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
   EXPECT_TRUE(result.task);
 
-  DrawImage another_draw_image =
+  DrawImageWithTarget another_draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
   ImageDecodeCache::TaskResult another_result = cache->GetTaskForImageAndRef(
       client_id, another_draw_image, ImageDecodeCache::TracingInfo());
@@ -517,7 +518,7 @@ TEST_P(GpuImageDecodeCacheTest, GetRasterTaskBeforeStandAloneTaskSameImage) {
   const uint32_t client_id = cache->GenerateClientId();
 
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
 
   ImageDecodeCache::TaskResult raster_result = cache->GetTaskForImageAndRef(
@@ -555,7 +556,7 @@ TEST_P(GpuImageDecodeCacheTest, GetStandAloneTaskBeforeRasterTaskSameImage) {
   const uint32_t client_id = cache->GenerateClientId();
 
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
 
   ImageDecodeCache::TaskResult stand_alone_result =
@@ -596,7 +597,7 @@ TEST_P(GpuImageDecodeCacheTest,
   const uint32_t client_id = cache->GenerateClientId();
 
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
 
   ImageDecodeCache::TaskResult stand_alone_result =
@@ -643,7 +644,7 @@ TEST_P(GpuImageDecodeCacheTest, ExternalDependentRasterTaskCanceled) {
   const uint32_t client_id = cache->GenerateClientId();
 
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
 
   ImageDecodeCache::TaskResult stand_alone_result =
@@ -726,7 +727,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSameImageDifferentClients) {
             .set_decoding_mode(PaintImage::DecodingMode::kUnspecified)
             .TakePaintImage();
 
-    DrawImage draw_image =
+    DrawImageWithTarget draw_image =
         CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
     EXPECT_EQ(draw_image.frame_index(), PaintImage::kDefaultFrameIndex);
     ImageDecodeCache::TaskResult result1 = cache->GetTaskForImageAndRef(
@@ -742,7 +743,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSameImageDifferentClients) {
     // Ensure each client gets own task.
     EXPECT_NE(result1.task, result2.task);
 
-    DrawImage draw_image2 =
+    DrawImageWithTarget draw_image2 =
         CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
     EXPECT_EQ(draw_image2.frame_index(), PaintImage::kDefaultFrameIndex);
     ImageDecodeCache::TaskResult another_result = cache->GetTaskForImageAndRef(
@@ -750,7 +751,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSameImageDifferentClients) {
     EXPECT_TRUE(another_result.need_unref);
     EXPECT_TRUE(result1.task.get() == another_result.task.get());
 
-    DrawImage draw_image3 =
+    DrawImageWithTarget draw_image3 =
         CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
     EXPECT_EQ(draw_image3.frame_index(), PaintImage::kDefaultFrameIndex);
     ImageDecodeCache::TaskResult another_result2 = cache->GetTaskForImageAndRef(
@@ -830,7 +831,7 @@ TEST_P(GpuImageDecodeCacheTest, DoesNotCreateATaskForAlreadyUploadedImage) {
           .set_decoding_mode(PaintImage::DecodingMode::kUnspecified)
           .TakePaintImage();
 
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
   EXPECT_EQ(draw_image.frame_index(), PaintImage::kDefaultFrameIndex);
   ImageDecodeCache::TaskResult result1 = cache->GetTaskForImageAndRef(
@@ -844,7 +845,7 @@ TEST_P(GpuImageDecodeCacheTest, DoesNotCreateATaskForAlreadyUploadedImage) {
   TestTileTaskRunner::ScheduleTask(result1.task.get());
   TestTileTaskRunner::RunTask(result1.task.get());
 
-  DrawImage another_draw_image =
+  DrawImageWithTarget another_draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
   EXPECT_EQ(another_draw_image.frame_index(), PaintImage::kDefaultFrameIndex);
   ImageDecodeCache::TaskResult result2 = cache->GetTaskForImageAndRef(
@@ -874,7 +875,7 @@ TEST_P(GpuImageDecodeCacheTest, DoesNotCreateATaskForAlreadyUploadedImage2) {
           .set_decoding_mode(PaintImage::DecodingMode::kUnspecified)
           .TakePaintImage();
 
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
   EXPECT_EQ(draw_image.frame_index(), PaintImage::kDefaultFrameIndex);
   // Get upload/decode task.
@@ -886,7 +887,7 @@ TEST_P(GpuImageDecodeCacheTest, DoesNotCreateATaskForAlreadyUploadedImage2) {
   EXPECT_EQ(result1.task->dependencies().size(), 1u);
 
   // Get stand-alone decode task.
-  DrawImage another_draw_image =
+  DrawImageWithTarget another_draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
   EXPECT_EQ(another_draw_image.frame_index(), PaintImage::kDefaultFrameIndex);
   ImageDecodeCache::TaskResult result2 =
@@ -907,7 +908,7 @@ TEST_P(GpuImageDecodeCacheTest, DoesNotCreateATaskForAlreadyUploadedImage2) {
   TestTileTaskRunner::ScheduleTask(result1.task.get());
   TestTileTaskRunner::RunTask(result1.task.get());
 
-  DrawImage yet_another_draw_image =
+  DrawImageWithTarget yet_another_draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
   EXPECT_EQ(yet_another_draw_image.frame_index(),
             PaintImage::kDefaultFrameIndex);
@@ -933,7 +934,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSmallerScale) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -944,7 +945,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSmallerScale) {
   EXPECT_EQ(result.task->dependencies().size(), 1u);
   EXPECT_TRUE(result.task->dependencies()[0]);
 
-  DrawImage another_draw_image =
+  DrawImageWithTarget another_draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult another_result = cache->GetTaskForImageAndRef(
       client_id, another_draw_image, ImageDecodeCache::TracingInfo());
@@ -970,13 +971,13 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageLowerQuality) {
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
   SkM44 matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
-  DrawImage draw_image = CreateDrawImageInternal(image, matrix);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image, matrix);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
   EXPECT_TRUE(result.task);
 
-  DrawImage another_draw_image =
+  DrawImageWithTarget another_draw_image =
       CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
                               PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult another_result = cache->GetTaskForImageAndRef(
@@ -996,7 +997,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageDifferentImage) {
   const uint32_t client_id = cache->GenerateClientId();
 
   PaintImage first_image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage first_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget first_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult first_result = cache->GetTaskForImageAndRef(
       client_id, first_draw_image, ImageDecodeCache::TracingInfo());
@@ -1004,7 +1005,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageDifferentImage) {
   EXPECT_TRUE(first_result.task);
 
   PaintImage second_image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage second_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget second_draw_image = CreateDrawImageInternal(
       second_image, CreateMatrix(SkSize::Make(0.25f, 0.25f)));
   ImageDecodeCache::TaskResult second_result = cache->GetTaskForImageAndRef(
       client_id, second_draw_image, ImageDecodeCache::TracingInfo());
@@ -1026,7 +1027,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageLargerScale) {
   const uint32_t client_id = cache->GenerateClientId();
 
   PaintImage first_image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage first_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget first_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult first_result = cache->GetTaskForImageAndRef(
       client_id, first_draw_image, ImageDecodeCache::TracingInfo());
@@ -1038,14 +1039,14 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageLargerScale) {
 
   cache->UnrefImage(first_draw_image);
 
-  DrawImage second_draw_image = CreateDrawImageInternal(first_image);
+  DrawImageWithTarget second_draw_image = CreateDrawImageInternal(first_image);
   ImageDecodeCache::TaskResult second_result = cache->GetTaskForImageAndRef(
       client_id, second_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(second_result.need_unref);
   EXPECT_TRUE(second_result.task);
   EXPECT_TRUE(first_result.task.get() != second_result.task.get());
 
-  DrawImage third_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget third_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult third_result = cache->GetTaskForImageAndRef(
       client_id, third_draw_image, ImageDecodeCache::TracingInfo());
@@ -1063,21 +1064,21 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageLargerScaleNoReuse) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage first_image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage first_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget first_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult first_result = cache->GetTaskForImageAndRef(
       client_id, first_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(first_result.need_unref);
   EXPECT_TRUE(first_result.task);
 
-  DrawImage second_draw_image = CreateDrawImageInternal(first_image);
+  DrawImageWithTarget second_draw_image = CreateDrawImageInternal(first_image);
   ImageDecodeCache::TaskResult second_result = cache->GetTaskForImageAndRef(
       client_id, second_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(second_result.need_unref);
   EXPECT_TRUE(second_result.task);
   EXPECT_TRUE(first_result.task.get() != second_result.task.get());
 
-  DrawImage third_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget third_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult third_result = cache->GetTaskForImageAndRef(
       client_id, third_draw_image, ImageDecodeCache::TracingInfo());
@@ -1099,7 +1100,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageHigherQuality) {
   const uint32_t client_id = cache->GenerateClientId();
   SkM44 matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
   PaintImage first_image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage first_draw_image =
+  DrawImageWithTarget first_draw_image =
       CreateDrawImageInternal(first_image, matrix, nullptr /* color_space */,
                               PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult first_result = cache->GetTaskForImageAndRef(
@@ -1112,7 +1113,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageHigherQuality) {
 
   cache->UnrefImage(first_draw_image);
 
-  DrawImage second_draw_image =
+  DrawImageWithTarget second_draw_image =
       CreateDrawImageInternal(first_image, matrix, nullptr /* color_space */,
                               PaintFlags::FilterQuality::kMedium);
   ImageDecodeCache::TaskResult second_result = cache->GetTaskForImageAndRef(
@@ -1130,7 +1131,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageAlreadyDecodedAndLocked) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1168,7 +1169,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageAlreadyDecodedNotLocked) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1206,7 +1207,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageAlreadyUploaded) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1233,7 +1234,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageCanceledGetsNewTask) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1272,7 +1273,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageCanceledWhileReffedGetsNewTask) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1315,7 +1316,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageUploadCanceledButDecodeRun) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1340,7 +1341,7 @@ TEST_P(GpuImageDecodeCacheTest, NoTaskForImageAlreadyFailedDecoding) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1366,7 +1367,7 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDraw) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1410,7 +1411,7 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToHdr) {
                          .TakePaintImage();
 
   constexpr float kCustomWhiteLevel = 200.f;
-  DrawImage draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), &color_space,
       PaintFlags::FilterQuality::kMedium, nullptr,
       PaintImage::kDefaultFrameIndex, kCustomWhiteLevel);
@@ -1466,19 +1467,19 @@ TEST_P(GpuImageDecodeCacheTest, PreserveImagePrecision) {
                                bool preserve_image_precision) {
     TargetColorParams target_color_params = DefaultTargetColorParams();
     target_color_params.preserve_image_precision = preserve_image_precision;
-    return DrawImage(image, false,
-                     SkIRect::MakeWH(image.width(), image.height()),
-                     PaintFlags::FilterQuality::kMedium,
-                     CreateMatrix(SkSize::Make(1.f, 1.f)),
-                     PaintImage::kDefaultFrameIndex, target_color_params);
+    return DrawImageWithTarget(
+        image, false, SkIRect::MakeWH(image.width(), image.height()),
+        PaintFlags::FilterQuality::kMedium,
+        CreateMatrix(SkSize::Make(1.f, 1.f)), PaintImage::kDefaultFrameIndex,
+        target_color_params);
   };
-  DrawImage f16_reduce =
+  DrawImageWithTarget f16_reduce =
       create_draw_image(f16_image, /*preserve_image_precision=*/false);
-  DrawImage f16_preserve =
+  DrawImageWithTarget f16_preserve =
       create_draw_image(f16_image, /*preserve_image_precision=*/true);
-  DrawImage n32_reduce =
+  DrawImageWithTarget n32_reduce =
       create_draw_image(n32_image, /*preserve_image_precision=*/false);
-  DrawImage n32_preserve =
+  DrawImageWithTarget n32_preserve =
       create_draw_image(n32_image, /*preserve_image_precision=*/true);
 
   // Images are stored using the cache's SkColorType, unless the target
@@ -1583,7 +1584,7 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToSdr) {
                          .TakePaintImage();
 
   auto raster_color_space = gfx::ColorSpace::CreateSRGB();
-  DrawImage draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), &raster_color_space);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1622,7 +1623,7 @@ TEST_P(GpuImageDecodeCacheTest, GetLargeDecodedImageForDraw) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreateLargePaintImageForSoftwareFallback();
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.0f, 1.0f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1653,7 +1654,7 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawAtRasterDecode) {
   cache->SetWorkingSetLimitsForTesting(0 /* max_bytes */, 0 /* max_items */);
 
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.0f, 1.0f)));
 
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
@@ -1684,7 +1685,7 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawLargerScale) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), nullptr /* color_space */,
       PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
@@ -1695,7 +1696,7 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawLargerScale) {
   TestTileTaskRunner::ProcessTask(result.task->dependencies()[0].get());
   TestTileTaskRunner::ProcessTask(result.task.get());
 
-  DrawImage larger_draw_image =
+  DrawImageWithTarget larger_draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
   ImageDecodeCache::TaskResult larger_result = cache->GetTaskForImageAndRef(
       client_id, larger_draw_image, ImageDecodeCache::TracingInfo());
@@ -1736,7 +1737,7 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawHigherQuality) {
   const uint32_t client_id = cache->GenerateClientId();
   SkM44 matrix = CreateMatrix(SkSize::Make(0.5f, 0.5f));
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
                               PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
@@ -1747,7 +1748,8 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawHigherQuality) {
   TestTileTaskRunner::ProcessTask(result.task->dependencies()[0].get());
   TestTileTaskRunner::ProcessTask(result.task.get());
 
-  DrawImage higher_quality_draw_image = CreateDrawImageInternal(image, matrix);
+  DrawImageWithTarget higher_quality_draw_image =
+      CreateDrawImageInternal(image, matrix);
   ImageDecodeCache::TaskResult hq_result = cache->GetTaskForImageAndRef(
       client_id, higher_quality_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(hq_result.need_unref);
@@ -1785,7 +1787,7 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawNegative) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(-0.5f, 0.5f)));
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1821,7 +1823,7 @@ TEST_P(GpuImageDecodeCacheTest, GetLargeScaledDecodedImageForDraw) {
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageForFallbackToRGB(
       gfx::Size(GetLargeImageSize().width(), GetLargeImageSize().height() * 2));
-  DrawImage draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), nullptr /* color_space */,
       PaintFlags::FilterQuality::kHigh);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
@@ -1861,7 +1863,7 @@ TEST_P(GpuImageDecodeCacheTest, AtRasterUsedDirectlyIfSpaceAllows) {
   cache->SetWorkingSetLimitsForTesting(0 /* max_bytes */, 0 /* max_items */);
 
   PaintImage image = CreatePaintImageInternal(test_image_size);
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
 
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -1899,7 +1901,7 @@ TEST_P(GpuImageDecodeCacheTest,
   cache->SetWorkingSetLimitsForTesting(0 /* max_bytes */, 0 /* max_items */);
 
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
 
   // Must hold context lock before calling GetDecodedImageForDraw /
@@ -1933,7 +1935,7 @@ TEST_P(GpuImageDecodeCacheTest,
   cache->SetWorkingSetLimitsForTesting(0 /* max_bytes */, 0 /* max_items */);
 
   PaintImage image = CreateLargePaintImageForSoftwareFallback();
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
 
   // Must hold context lock before calling GetDecodedImageForDraw /
   // DrawWithImageFinished.
@@ -1962,7 +1964,7 @@ TEST_P(GpuImageDecodeCacheTest, ZeroSizedImagesAreSkipped) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.f, 0.f)));
 
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
@@ -1985,7 +1987,7 @@ TEST_P(GpuImageDecodeCacheTest, NonOverlappingSrcRectImagesAreSkipped) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image(
+  DrawImageWithTarget draw_image(
       image, false,
       SkIRect::MakeXYWH(image.width() + 1, image.height() + 1, image.width(),
                         image.height()),
@@ -2013,7 +2015,7 @@ TEST_P(GpuImageDecodeCacheTest, CanceledTasksDoNotCountAgainstBudget) {
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
   SkIRect src_rect = SkIRect::MakeXYWH(0, 0, image.width(), image.height());
-  DrawImage draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(1.f, 1.f)), nullptr /* color_space */,
       PaintFlags::FilterQuality::kMedium, &src_rect);
 
@@ -2036,7 +2038,7 @@ TEST_P(GpuImageDecodeCacheTest, ShouldAggressivelyFreeResources) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   {
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
@@ -2094,7 +2096,7 @@ TEST_P(GpuImageDecodeCacheTest, OrphanedImagesFreeOnReachingZeroRefs) {
   const uint32_t client_id = cache->GenerateClientId();
   // Create a downscaled image.
   PaintImage first_image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage first_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget first_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult first_result = cache->GetTaskForImageAndRef(
       client_id, first_draw_image, ImageDecodeCache::TracingInfo());
@@ -2107,7 +2109,7 @@ TEST_P(GpuImageDecodeCacheTest, OrphanedImagesFreeOnReachingZeroRefs) {
 
   // Create a larger version of |first_image|, this should immediately free the
   // memory used by |first_image| for the smaller scale.
-  DrawImage second_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget second_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(1.0f, 1.0f)));
   ImageDecodeCache::TaskResult second_result = cache->GetTaskForImageAndRef(
       client_id, second_draw_image, ImageDecodeCache::TracingInfo());
@@ -2136,7 +2138,7 @@ TEST_P(GpuImageDecodeCacheTest, OrphanedZeroRefImagesImmediatelyDeleted) {
   const uint32_t client_id = cache->GenerateClientId();
   // Create a downscaled image.
   PaintImage first_image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage first_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget first_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult first_result = cache->GetTaskForImageAndRef(
       client_id, first_draw_image, ImageDecodeCache::TracingInfo());
@@ -2153,7 +2155,7 @@ TEST_P(GpuImageDecodeCacheTest, OrphanedZeroRefImagesImmediatelyDeleted) {
 
   // Create a larger version of |first_image|, this should immediately free the
   // memory used by |first_image| for the smaller scale.
-  DrawImage second_draw_image = CreateDrawImageInternal(first_image);
+  DrawImageWithTarget second_draw_image = CreateDrawImageInternal(first_image);
   ImageDecodeCache::TaskResult second_result = cache->GetTaskForImageAndRef(
       client_id, second_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(second_result.need_unref);
@@ -2177,7 +2179,7 @@ TEST_P(GpuImageDecodeCacheTest, QualityCappedAtMedium) {
   SkM44 matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
 
   // Create an image with kLow_FilterQuality.
-  DrawImage low_draw_image =
+  DrawImageWithTarget low_draw_image =
       CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
                               PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult low_result = cache->GetTaskForImageAndRef(
@@ -2187,7 +2189,7 @@ TEST_P(GpuImageDecodeCacheTest, QualityCappedAtMedium) {
 
   // Get the same image at PaintFlags::FilterQuality::kMedium. We can't re-use
   // low, so we should get a new task/ref.
-  DrawImage medium_draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget medium_draw_image = CreateDrawImageInternal(image);
   ImageDecodeCache::TaskResult medium_result = cache->GetTaskForImageAndRef(
       client_id, medium_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(medium_result.need_unref);
@@ -2196,7 +2198,7 @@ TEST_P(GpuImageDecodeCacheTest, QualityCappedAtMedium) {
 
   // Get the same image at PaintFlags::FilterQuality::kHigh. We should re-use
   // medium.
-  DrawImage high_quality_draw_image =
+  DrawImageWithTarget high_quality_draw_image =
       CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
                               PaintFlags::FilterQuality::kHigh);
   ImageDecodeCache::TaskResult high_quality_result =
@@ -2222,7 +2224,7 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawMipUsageChange) {
   const uint32_t client_id = cache->GenerateClientId();
   // Create an image decode task and cache entry that does not need mips.
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -2242,7 +2244,7 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawMipUsageChange) {
       context_provider());
 
   // Do an at-raster decode of the above image that *does* require mips.
-  DrawImage draw_image_mips =
+  DrawImageWithTarget draw_image_mips =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.6f, 0.6f)));
   DecodedDrawImage decoded_draw_image =
       EnsureImageBacked(cache->GetDecodedImageForDraw(draw_image_mips));
@@ -2254,7 +2256,7 @@ TEST_P(GpuImageDecodeCacheTest, OutOfRasterDecodeTask) {
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
   SkM44 matrix = CreateMatrix(SkSize::Make(1.0f, 1.0f));
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
                               PaintFlags::FilterQuality::kLow);
 
@@ -2291,7 +2293,7 @@ TEST_P(GpuImageDecodeCacheTest, OutOfRasterDecodeTaskMultipleClients) {
             .TakePaintImage();
 
     SkM44 matrix = CreateMatrix(SkSize::Make(1.0f, 1.0f));
-    DrawImage draw_image =
+    DrawImageWithTarget draw_image =
         CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
                                 PaintFlags::FilterQuality::kLow);
 
@@ -2302,7 +2304,7 @@ TEST_P(GpuImageDecodeCacheTest, OutOfRasterDecodeTaskMultipleClients) {
     EXPECT_TRUE(result1.task);
     EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image));
 
-    DrawImage draw_image2 =
+    DrawImageWithTarget draw_image2 =
         CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
                                 PaintFlags::FilterQuality::kLow);
     ImageDecodeCache::TaskResult result2 =
@@ -2352,7 +2354,7 @@ TEST_P(GpuImageDecodeCacheTest,
           .TakePaintImage();
 
   SkM44 matrix = CreateMatrix(SkSize::Make(1.0f, 1.0f));
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
                               PaintFlags::FilterQuality::kLow);
 
@@ -2366,7 +2368,7 @@ TEST_P(GpuImageDecodeCacheTest,
   TestTileTaskRunner::ScheduleTask(result1.task.get());
   TestTileTaskRunner::RunTask(result1.task.get());
 
-  DrawImage draw_image2 =
+  DrawImageWithTarget draw_image2 =
       CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
                               PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult result2 =
@@ -2394,7 +2396,7 @@ TEST_P(GpuImageDecodeCacheTest, ZeroCacheNormalWorkingSet) {
   // Add an image to the cache-> Due to normal working set, this should produce
   // a task and a ref.
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -2440,10 +2442,10 @@ TEST_P(GpuImageDecodeCacheTest, SmallCacheNormalWorkingSet) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
 
   PaintImage image2 = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image2(
+  DrawImageWithTarget draw_image2(
       image2, false, SkIRect::MakeWH(image2.width(), image2.height()),
       PaintFlags::FilterQuality::kMedium,
       CreateMatrix(SkSize::Make(1.0f, 1.0f)), PaintImage::kDefaultFrameIndex,
@@ -2519,7 +2521,7 @@ TEST_P(GpuImageDecodeCacheTest, ClearCache) {
   const uint32_t client_id = cache->GenerateClientId();
   for (int i = 0; i < 10; ++i) {
     PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-    DrawImage draw_image = CreateDrawImageInternal(image);
+    DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         client_id, draw_image, ImageDecodeCache::TracingInfo());
     EXPECT_TRUE(result.need_unref);
@@ -2544,7 +2546,7 @@ TEST_P(GpuImageDecodeCacheTest, ClearCacheInUse) {
   const uint32_t client_id = cache->GenerateClientId();
   // Create an image but keep it reffed so it can't be immediately freed.
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -2576,14 +2578,14 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageDifferentColorSpace) {
   gfx::ColorSpace color_space_b = gfx::ColorSpace::CreateXYZD50();
 
   PaintImage first_image = CreatePaintImageInternal(gfx::Size(100, 100));
-  DrawImage first_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget first_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &color_space_a);
   ImageDecodeCache::TaskResult first_result = cache->GetTaskForImageAndRef(
       client_id, first_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(first_result.need_unref);
   EXPECT_TRUE(first_result.task);
 
-  DrawImage second_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget second_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &color_space_b);
   ImageDecodeCache::TaskResult second_result = cache->GetTaskForImageAndRef(
       client_id, second_draw_image, ImageDecodeCache::TracingInfo());
@@ -2591,7 +2593,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageDifferentColorSpace) {
   EXPECT_TRUE(second_result.task);
   EXPECT_TRUE(first_result.task.get() != second_result.task.get());
 
-  DrawImage third_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget third_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &color_space_a);
   ImageDecodeCache::TaskResult third_result = cache->GetTaskForImageAndRef(
       client_id, third_draw_image, ImageDecodeCache::TracingInfo());
@@ -2613,7 +2615,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForLargeImageNonSRGBColorSpace) {
   const uint32_t client_id = cache->GenerateClientId();
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateXYZD50();
   PaintImage image = CreateLargePaintImageForSoftwareFallback();
-  DrawImage draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &color_space);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -2656,7 +2658,7 @@ TEST_P(GpuImageDecodeCacheTest, CacheDecodesExpectedFrames) {
       context_provider());
 
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
-  DrawImage draw_image(
+  DrawImageWithTarget draw_image(
       image, false, SkIRect::MakeWH(image.width(), image.height()), quality,
       CreateMatrix(SkSize::Make(1.0f, 1.0f)), 1u, DefaultTargetColorParams());
   auto decoded_image =
@@ -2670,7 +2672,8 @@ TEST_P(GpuImageDecodeCacheTest, CacheDecodesExpectedFrames) {
   // Scaled.
   TargetColorParams target_color_params;
   target_color_params.color_space = draw_image.target_color_space();
-  DrawImage scaled_draw_image(draw_image, 0.5f, 2u, target_color_params);
+  DrawImageWithTarget scaled_draw_image(draw_image.draw_image(), 0.5f, 2u,
+                                        target_color_params);
   decoded_image =
       EnsureImageBacked(cache->GetDecodedImageForDraw(scaled_draw_image));
   ASSERT_TRUE(decoded_image.image());
@@ -2684,7 +2687,7 @@ TEST_P(GpuImageDecodeCacheTest, CacheDecodesExpectedFrames) {
   const int32_t subset_height = 5;
   ASSERT_LT(subset_width, test_image_size.width());
   ASSERT_LT(subset_height, test_image_size.height());
-  DrawImage subset_draw_image(
+  DrawImageWithTarget subset_draw_image(
       image, false, SkIRect::MakeWH(subset_width, subset_height), quality,
       CreateMatrix(SkSize::Make(1.0f, 1.0f)), 3u, DefaultTargetColorParams());
   decoded_image =
@@ -2701,7 +2704,7 @@ TEST_P(GpuImageDecodeCacheTest, OrphanedDataCancelledWhileReplaced) {
   const uint32_t client_id = cache->GenerateClientId();
   // Create a downscaled image.
   PaintImage first_image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage first_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget first_draw_image = CreateDrawImageInternal(
       first_image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   ImageDecodeCache::TaskResult first_result = cache->GetTaskForImageAndRef(
       client_id, first_draw_image, ImageDecodeCache::TracingInfo());
@@ -2713,7 +2716,7 @@ TEST_P(GpuImageDecodeCacheTest, OrphanedDataCancelledWhileReplaced) {
 
   // Create a larger version of |first_image|, this should immediately free
   // the memory used by |first_image| for the smaller scale.
-  DrawImage second_draw_image = CreateDrawImageInternal(first_image);
+  DrawImageWithTarget second_draw_image = CreateDrawImageInternal(first_image);
   ImageDecodeCache::TaskResult second_result = cache->GetTaskForImageAndRef(
       client_id, second_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(second_result.need_unref);
@@ -2750,7 +2753,7 @@ TEST_P(GpuImageDecodeCacheTest, AlreadyBudgetedImagesAreNotAtRaster) {
   const gfx::Size test_image_size = GetNormalImageSize();
 
   PaintImage image = CreatePaintImageInternal(test_image_size);
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
   const size_t bytes_for_test_image =
       GetBytesNeededForSingleImage(test_image_size);
 
@@ -2794,7 +2797,7 @@ TEST_P(GpuImageDecodeCacheTest, ImageBudgetingByCount) {
   cache->SetWorkingSetLimitsForTesting(
       bytes_for_test_image * 100 /* max_bytes */, 1u /* max_items */);
   PaintImage image = CreatePaintImageInternal(test_image_size);
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
 
   // The image counts against our budget.
   viz::RasterContextProvider::ScopedRasterContextLock context_lock(
@@ -2807,7 +2810,8 @@ TEST_P(GpuImageDecodeCacheTest, ImageBudgetingByCount) {
   // Try another image, it shouldn't be budgeted and should be at-raster.
   PaintImage second_paint_image =
       CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage second_draw_image = CreateDrawImageInternal(second_paint_image);
+  DrawImageWithTarget second_draw_image =
+      CreateDrawImageInternal(second_paint_image);
 
   // Should be at raster.
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
@@ -2830,7 +2834,7 @@ TEST_P(GpuImageDecodeCacheTest, ImageBudgetingBySize) {
   const gfx::Size test_image_size = GetNormalImageSize();
 
   PaintImage image = CreatePaintImageInternal(test_image_size);
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
 
   const size_t bytes_for_test_image =
       GetBytesNeededForSingleImage(test_image_size);
@@ -2850,7 +2854,8 @@ TEST_P(GpuImageDecodeCacheTest, ImageBudgetingBySize) {
 
   // Try another image, it shouldn't be budgeted and should be at-raster.
   PaintImage test_paint_image = CreatePaintImageInternal(test_image_size);
-  DrawImage second_draw_image = CreateDrawImageInternal(test_paint_image);
+  DrawImageWithTarget second_draw_image =
+      CreateDrawImageInternal(test_paint_image);
 
   // Should be at raster.
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
@@ -2877,7 +2882,7 @@ TEST_P(GpuImageDecodeCacheTest,
 
   PaintImage image =
       CreateLargePaintImageForSoftwareFallback(image_color_space);
-  DrawImage draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &color_space);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -2919,7 +2924,7 @@ TEST_P(GpuImageDecodeCacheTest,
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateDisplayP3D65();
 
   PaintImage image = CreatePaintImageInternal(gfx::Size(11, 12));
-  DrawImage draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &color_space);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -2964,7 +2969,7 @@ TEST_P(GpuImageDecodeCacheTest, NonLazyImageUploadNoScale) {
   auto cache = CreateCache();
 
   PaintImage image = CreateBitmapImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
   viz::RasterContextProvider::ScopedRasterContextLock context_lock(
       context_provider());
   DecodedDrawImage decoded_draw_image =
@@ -2986,7 +2991,7 @@ TEST_P(GpuImageDecodeCacheTest, NonLazyImageUploadTaskHasNoDeps) {
   const uint32_t client_id = cache->GenerateClientId();
 
   PaintImage image = CreateBitmapImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
   auto result = cache->GetTaskForImageAndRef(client_id, draw_image,
                                              ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -3006,7 +3011,7 @@ TEST_P(GpuImageDecodeCacheTest, NonLazyImageUploadTaskCancelled) {
   const uint32_t client_id = cache->GenerateClientId();
 
   PaintImage image = CreateBitmapImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
   auto result = cache->GetTaskForImageAndRef(client_id, draw_image,
                                              ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -3030,14 +3035,14 @@ TEST_P(GpuImageDecodeCacheTest,
   const uint32_t client_id2 = cache->GenerateClientId();
 
   PaintImage image = CreateBitmapImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
   auto result = cache->GetTaskForImageAndRef(client_id, draw_image,
                                              ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
   EXPECT_TRUE(result.task);
   EXPECT_TRUE(result.task->dependencies().empty());
 
-  DrawImage draw_image2 = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image2 = CreateDrawImageInternal(image);
   auto result2 = cache->GetTaskForImageAndRef(client_id2, draw_image2,
                                               ImageDecodeCache::TracingInfo());
 
@@ -3064,7 +3069,7 @@ TEST_P(GpuImageDecodeCacheTest, NonLazyImageLargeImageNotColorConverted) {
 
   PaintImage image = CreateBitmapImageInternal(GetLargeImageSize());
   gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateDisplayP3D65();
-  DrawImage draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &target_color_space);
   viz::RasterContextProvider::ScopedRasterContextLock context_lock(
       context_provider());
@@ -3085,7 +3090,7 @@ TEST_P(GpuImageDecodeCacheTest, NonLazyImageUploadDownscaled) {
   auto cache = CreateCache();
 
   PaintImage image = CreateBitmapImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
   viz::RasterContextProvider::ScopedRasterContextLock context_lock(
       context_provider());
@@ -3102,13 +3107,13 @@ TEST_P(GpuImageDecodeCacheTest, KeepOnlyLast2ContentIds) {
   viz::RasterContextProvider::ScopedRasterContextLock context_lock(
       context_provider());
   const PaintImage::Id paint_image_id = PaintImage::GetNextId();
-  std::vector<DrawImage> draw_images;
+  std::vector<DrawImageWithTarget> draw_images;
   std::vector<DecodedDrawImage> decoded_draw_images;
 
   for (int i = 0; i < 10; ++i) {
     PaintImage image = CreatePaintImageInternal(
         GetNormalImageSize(), SkColorSpace::MakeSRGB(), paint_image_id);
-    DrawImage draw_image =
+    DrawImageWithTarget draw_image =
         CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(cache->GetDecodedImageForDraw(draw_image));
@@ -3159,7 +3164,7 @@ TEST_P(GpuImageDecodeCacheTest, DecodeToScale) {
                                .set_paint_image_generator(generator)
                                .TakePaintImage();
 
-  DrawImage draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(
       paint_image, CreateMatrix(SkSize::Make(0.5, 0.5)));
   DecodedDrawImage decoded_image =
       EnsureImageBacked(cache->GetDecodedImageForDraw(draw_image));
@@ -3203,7 +3208,7 @@ TEST_P(GpuImageDecodeCacheTest, DecodeToScaleNoneQuality) {
                                .set_paint_image_generator(generator)
                                .TakePaintImage();
 
-  DrawImage draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(
       paint_image, CreateMatrix(SkSize::Make(0.5, 0.5)),
       nullptr /* color_space */, PaintFlags::FilterQuality::kNone);
   DecodedDrawImage decoded_image =
@@ -3231,7 +3236,7 @@ TEST_P(GpuImageDecodeCacheTest, BasicMips) {
     const uint32_t client_id = cache->GenerateClientId();
 
     PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-    DrawImage draw_image = CreateDrawImageInternal(
+    DrawImageWithTarget draw_image = CreateDrawImageInternal(
         image, CreateMatrix(scale), &color_space, filter_quality);
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -3299,7 +3304,7 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedSubsequentDraw) {
 
   // Create an image with no scaling. It will not have mips.
   {
-    DrawImage draw_image = CreateDrawImageInternal(image);
+    DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         client_id, draw_image, ImageDecodeCache::TracingInfo());
     EXPECT_TRUE(result.need_unref);
@@ -3345,7 +3350,7 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedSubsequentDraw) {
   // no new task (re-uses the existing image), but mips should have been
   // added.
   {
-    DrawImage draw_image =
+    DrawImageWithTarget draw_image =
         CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.6f, 0.6f)));
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -3390,14 +3395,14 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedWhileOriginalInUse) {
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
 
   struct Decode {
-    DrawImage image;
+    DrawImageWithTarget image;
     DecodedDrawImage decoded_image;
   };
   std::vector<Decode> images_to_unlock;
 
   // Create an image with no scaling. It will not have mips.
   {
-    DrawImage draw_image = CreateDrawImageInternal(image);
+    DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         client_id, draw_image, ImageDecodeCache::TracingInfo());
     EXPECT_TRUE(result.need_unref);
@@ -3437,7 +3442,7 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedWhileOriginalInUse) {
 
   // Second decode with mips.
   {
-    DrawImage draw_image =
+    DrawImageWithTarget draw_image =
         CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.6f, 0.6f)));
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -3511,7 +3516,7 @@ TEST_P(GpuImageDecodeCacheTest,
     SkSize requires_decode_at_original_scale = SkSize::Make(0.8f, 0.8f);
 
     PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-    DrawImage draw_image(
+    DrawImageWithTarget draw_image(
         image, false, SkIRect::MakeWH(image.width(), image.height()),
         filter_quality, CreateMatrix(requires_decode_at_original_scale),
         PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
@@ -3607,7 +3612,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     TargetColorParams target_color_params;
     target_color_params.color_space = target_cs;
 
-    DrawImage draw_image(
+    DrawImageWithTarget draw_image(
         image, false, SkIRect::MakeWH(image.width(), image.height()),
         filter_quality, CreateMatrix(requires_decode_at_original_scale),
         PaintImage::kDefaultFrameIndex, target_color_params);
@@ -3809,7 +3814,7 @@ TEST_P(GpuImageDecodeCacheTest, ScaledYUVDecodeScaledDrawCorrectlyMipsPlanes) {
 
         gfx::Size image_size = GetNormalImageSize();
         PaintImage image = CreatePaintImageInternal(image_size);
-        DrawImage draw_image(
+        DrawImageWithTarget draw_image(
             image, false, SkIRect::MakeWH(image.width(), image.height()),
             filter_quality, CreateMatrix(scaled_size),
             PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
@@ -3912,7 +3917,8 @@ TEST_P(GpuImageDecodeCacheTest, GetBorderlineLargeDecodedImageForDraw) {
 
   PaintImage almost_too_large_image =
       CreatePaintImageInternal(gfx::Size(max_texture_size_, max_texture_size_));
-  DrawImage draw_image = CreateDrawImageInternal(almost_too_large_image);
+  DrawImageWithTarget draw_image =
+      CreateDrawImageInternal(almost_too_large_image);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
 
@@ -3944,7 +3950,7 @@ TEST_P(GpuImageDecodeCacheTest, OutOfRasterDecodeForBitmaps) {
   const uint32_t client_id = cache->GenerateClientId();
 
   PaintImage image = CreateBitmapImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
   ImageDecodeCache::TaskResult result =
       cache->GetOutOfRasterDecodeTaskForImageAndRef(client_id, draw_image,
                                                     /*speculative*/ false);
@@ -3964,7 +3970,7 @@ TEST_P(GpuImageDecodeCacheTest, DarkModeDecodedDrawImage) {
   auto cache = CreateCache(kGpuMemoryLimitBytes, dark_mode_filter.get());
   const uint32_t client_id = cache->GenerateClientId();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageWithDarkModeInternal(image);
+  DrawImageWithTarget draw_image = CreateDrawImageWithDarkModeInternal(image);
 
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -3988,7 +3994,8 @@ TEST_P(GpuImageDecodeCacheTest, DarkModeImageCacheSize) {
   PaintImage image2 = CreatePaintImageInternal(gfx::Size(50, 50));
 
   // DrawImage with full src rect for image1.
-  DrawImage draw_image11 = CreateDrawImageWithDarkModeInternal(image1);
+  DrawImageWithTarget draw_image11 =
+      CreateDrawImageWithDarkModeInternal(image1);
   EXPECT_EQ(cache->GetDarkModeImageCacheSizeForTesting(draw_image11), 0u);
   ImageDecodeCache::TaskResult result11 = cache->GetTaskForImageAndRef(
       client_id, draw_image11, ImageDecodeCache::TracingInfo());
@@ -4005,7 +4012,7 @@ TEST_P(GpuImageDecodeCacheTest, DarkModeImageCacheSize) {
 
   // Another draw image with smaller src rect for image1.
   SkIRect src = SkIRect::MakeWH(10, 10);
-  DrawImage draw_image12 = CreateDrawImageWithDarkModeInternal(
+  DrawImageWithTarget draw_image12 = CreateDrawImageWithDarkModeInternal(
       image1, SkM44(), nullptr, PaintFlags::FilterQuality::kMedium, &src);
   ImageDecodeCache::TaskResult result12 = cache->GetTaskForImageAndRef(
       client_id, draw_image12, ImageDecodeCache::TracingInfo());
@@ -4014,7 +4021,8 @@ TEST_P(GpuImageDecodeCacheTest, DarkModeImageCacheSize) {
   EXPECT_EQ(cache->GetDarkModeImageCacheSizeForTesting(draw_image12), 2u);
 
   // Another draw image with full src rect for image1.
-  DrawImage draw_image13 = CreateDrawImageWithDarkModeInternal(image1);
+  DrawImageWithTarget draw_image13 =
+      CreateDrawImageWithDarkModeInternal(image1);
   ImageDecodeCache::TaskResult result13 = cache->GetTaskForImageAndRef(
       client_id, draw_image13, ImageDecodeCache::TracingInfo());
   GetImageAndDrawFinishedForDarkMode(cache.get(), draw_image13,
@@ -4022,7 +4030,8 @@ TEST_P(GpuImageDecodeCacheTest, DarkModeImageCacheSize) {
   EXPECT_EQ(cache->GetDarkModeImageCacheSizeForTesting(draw_image13), 2u);
 
   // DrawImage with full src rect for image2.
-  DrawImage draw_image21 = CreateDrawImageWithDarkModeInternal(image2);
+  DrawImageWithTarget draw_image21 =
+      CreateDrawImageWithDarkModeInternal(image2);
   EXPECT_EQ(cache->GetDarkModeImageCacheSizeForTesting(draw_image21), 0u);
   ImageDecodeCache::TaskResult result21 = cache->GetTaskForImageAndRef(
       client_id, draw_image21, ImageDecodeCache::TracingInfo());
@@ -4043,8 +4052,9 @@ TEST_P(GpuImageDecodeCacheTest, DarkModeImageCacheSize) {
 
 TEST_P(GpuImageDecodeCacheTest, DarkModeNeedsDarkModeFilter) {
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image_without_dark_mode = CreateDrawImageInternal(image);
-  DrawImage draw_image_with_dark_mode =
+  DrawImageWithTarget draw_image_without_dark_mode =
+      CreateDrawImageInternal(image);
+  DrawImageWithTarget draw_image_with_dark_mode =
       CreateDrawImageWithDarkModeInternal(image);
 
   std::unique_ptr<FakeRasterDarkModeFilter> dark_mode_filter =
@@ -4085,7 +4095,7 @@ TEST_P(GpuImageDecodeCacheTest, ClippedAndScaledDrawImageRemovesCacheEntry) {
   cache->SetWorkingSetLimitsForTesting(0 /* max_bytes */, 0 /* max_items */);
 
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
+  DrawImageWithTarget draw_image =
       CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
 
   // Must hold context lock before calling GetDecodedImageForDraw /
@@ -4104,7 +4114,7 @@ TEST_P(GpuImageDecodeCacheTest, ClippedAndScaledDrawImageRemovesCacheEntry) {
 
   // Get task for clipped and scaled image.
   auto clipped_rect = SkIRect::MakeWH(image.width() * 0.9f, image.height());
-  DrawImage clipped_draw_image = CreateDrawImageInternal(
+  DrawImageWithTarget clipped_draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), nullptr,
       PaintFlags::FilterQuality::kMedium, &clipped_rect);
   ImageDecodeCache::TaskResult clipped_result = cache->GetTaskForImageAndRef(
@@ -4167,7 +4177,7 @@ class GpuImageDecodeCachePurgeOnTimerTest : public GpuImageDecodeCacheTest {
   void CreateAndUnrefImage(unsigned n = 1) {
     while (n--) {
       PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-      DrawImage draw_image = CreateDrawImageInternal(image);
+      DrawImageWithTarget draw_image = CreateDrawImageInternal(image);
       ImageDecodeCache::TaskResult result = cache_->GetTaskForImageAndRef(
           client_id_, draw_image, ImageDecodeCache::TracingInfo());
       EXPECT_TRUE(result.need_unref);
@@ -4367,7 +4377,7 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoCache) {
           CreatePaintImageInternal(GetNormalImageSize()))
           .set_no_cache(true)
           .TakePaintImage();
-  DrawImage draw_image = CreateDrawImageInternal(image_no_cache);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(image_no_cache);
 
   ImageDecodeCache::TaskResult result = cache_->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
@@ -4495,7 +4505,7 @@ TEST_P(GpuImageDecodeCacheTest, GainmapImage) {
             .TakePaintImage();
   }
 
-  DrawImage draw_image = CreateDrawImageInternal(paint_image);
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(paint_image);
   ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
       client_id, draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -4583,7 +4593,7 @@ TEST_P(GpuImageDecodeCacheTest, GainmapDecodePreservesRawSamples) {
                                  .set_gainmap_paint_image_generator(
                                      gainmap_generator, SkGainmapInfo())
                                  .TakePaintImage();
-    DrawImage draw_image = CreateDrawImageInternal(paint_image);
+    DrawImageWithTarget draw_image = CreateDrawImageInternal(paint_image);
     auto cache = CreateCache();
     const uint32_t client_id = cache->GenerateClientId();
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
@@ -4663,7 +4673,7 @@ TEST_P(GpuImageDecodeCacheTest, GainmapImageFailsDecode) {
               .TakePaintImage();
     }
 
-    DrawImage draw_image = CreateDrawImageInternal(paint_image);
+    DrawImageWithTarget draw_image = CreateDrawImageInternal(paint_image);
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         client_id, draw_image, ImageDecodeCache::TracingInfo());
     EXPECT_TRUE(result.need_unref);

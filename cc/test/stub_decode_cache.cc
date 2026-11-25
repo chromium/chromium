@@ -8,20 +8,21 @@ namespace cc {
 
 ImageDecodeCache::TaskResult StubDecodeCache::GetTaskForImageAndRef(
     ClientId client_id,
-    const DrawImage& image,
+    const DrawImageWithTarget& image,
     const TracingInfo& tracing_info) {
   return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false);
 }
 
 ImageDecodeCache::TaskResult
-StubDecodeCache::GetOutOfRasterDecodeTaskForImageAndRef(ClientId client_id,
-                                                        const DrawImage& image,
-                                                        bool speculative) {
+StubDecodeCache::GetOutOfRasterDecodeTaskForImageAndRef(
+    ClientId client_id,
+    const DrawImageWithTarget& image,
+    bool speculative) {
   return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false);
 }
 
 DecodedDrawImage StubDecodeCache::GetDecodedImageForDraw(
-    const DrawImage& image) {
+    const DrawImageWithTarget& image) {
   return DecodedDrawImage();
 }
 
@@ -29,7 +30,8 @@ size_t StubDecodeCache::GetMaximumMemoryLimitBytes() const {
   return 0u;
 }
 
-bool StubDecodeCache::UseCacheForDrawImage(const DrawImage& image) const {
+bool StubDecodeCache::UseCacheForDrawImage(
+    const DrawImageWithTarget& image) const {
   return true;
 }
 

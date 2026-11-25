@@ -15,21 +15,23 @@ class StubDecodeCache : public ImageDecodeCache {
   ~StubDecodeCache() override = default;
 
   TaskResult GetTaskForImageAndRef(ClientId client_id,
-                                   const DrawImage& image,
+                                   const DrawImageWithTarget& image,
                                    const TracingInfo& tracing_info) override;
-  TaskResult GetOutOfRasterDecodeTaskForImageAndRef(ClientId client_id,
-                                                    const DrawImage& image,
-                                                    bool speculative) override;
-  void UnrefImage(const DrawImage& image) override {}
-  DecodedDrawImage GetDecodedImageForDraw(const DrawImage& image) override;
-  void DrawWithImageFinished(const DrawImage& image,
+  TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
+      ClientId client_id,
+      const DrawImageWithTarget& image,
+      bool speculative) override;
+  void UnrefImage(const DrawImageWithTarget& image) override {}
+  DecodedDrawImage GetDecodedImageForDraw(
+      const DrawImageWithTarget& image) override;
+  void DrawWithImageFinished(const DrawImageWithTarget& image,
                              const DecodedDrawImage& decoded_image) override {}
   void ReduceCacheUsage() override {}
   void SetShouldAggressivelyFreeResources(
       bool aggressively_free_resources) override {}
   void ClearCache() override {}
   size_t GetMaximumMemoryLimitBytes() const override;
-  bool UseCacheForDrawImage(const DrawImage& image) const override;
+  bool UseCacheForDrawImage(const DrawImageWithTarget& image) const override;
   void RecordStats() override {}
 };
 

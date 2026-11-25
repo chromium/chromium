@@ -64,7 +64,7 @@ class CC_EXPORT CheckerImageTracker {
 
   // Returns true if the decode for |image| will be deferred to the image decode
   // service and it should be be skipped during raster.
-  bool ShouldCheckerImage(const DrawImage& image, WhichTree tree);
+  bool ShouldCheckerImage(const DrawImageWithTarget& image, WhichTree tree);
 
   // Provides a prioritized queue of images to decode.
   using ImageDecodeQueue = std::vector<ImageDecodeRequest>;
@@ -135,8 +135,8 @@ class CC_EXPORT CheckerImageTracker {
     SYNC
   };
 
-  // Contains the information to construct a DrawImage from PaintImage when
-  // queuing the image decode.
+  // Contains the information to construct a DrawImageWithTarget from PaintImage
+  // when queuing the image decode.
   struct DecodeState {
     DecodePolicy policy = DecodePolicy::SYNC;
     bool use_dark_mode = false;
@@ -170,7 +170,7 @@ class CC_EXPORT CheckerImageTracker {
   // Called when the next request in the |image_decode_queue_| should be
   // scheduled with the image decode service.
   void ScheduleNextImageDecode();
-  void UpdateDecodeState(const DrawImage& draw_image,
+  void UpdateDecodeState(const DrawImageWithTarget& draw_image,
                          PaintImage::Id paint_image_id,
                          DecodeState* decode_state);
 

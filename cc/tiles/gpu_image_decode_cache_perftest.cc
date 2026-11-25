@@ -88,7 +88,7 @@ TEST_F(GpuImageDecodeCachePerfTest, DecodeWithColorConversion) {
   timer_.Reset();
   auto gfx_size = GetNormalImageSize();
   do {
-    DrawImage image(
+    DrawImageWithTarget image(
         PaintImageBuilder::WithDefault()
             .set_id(PaintImage::GetNextId())
             .set_image(CreateImage(gfx_size.width(), gfx_size.height()),
@@ -113,7 +113,7 @@ TEST_F(GpuImageDecodeCachePerfTest, DecodeWithMips) {
   auto gfx_size = GetNormalImageSize();
   timer_.Reset();
   do {
-    DrawImage image(
+    DrawImageWithTarget image(
         PaintImageBuilder::WithDefault()
             .set_id(PaintImage::GetNextId())
             .set_image(CreateImage(gfx_size.width(), gfx_size.height()),
@@ -136,7 +136,7 @@ TEST_F(GpuImageDecodeCachePerfTest, DecodeWithMips) {
 TEST_F(GpuImageDecodeCachePerfTest, AcquireExistingImages) {
   timer_.Reset();
   auto gfx_size = GetNormalImageSize();
-  DrawImage image(
+  DrawImageWithTarget image(
       PaintImageBuilder::WithDefault()
           .set_id(PaintImage::GetNextId())
           .set_image(CreateImage(gfx_size.width(), gfx_size.height()),
