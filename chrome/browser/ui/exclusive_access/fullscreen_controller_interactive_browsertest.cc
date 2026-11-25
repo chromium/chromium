@@ -2160,7 +2160,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 // window server's async handling of the fullscreen window state may transition
 // the window into fullscreen on the actual (non-mocked) display bounds before
 // or after the window bounds checks, yielding flaky results.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/589859481): Disabled on Mac.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SeparateDisplayAndSwap SeparateDisplayAndSwap
 #else
 #define MAYBE_SeparateDisplayAndSwap DISABLED_SeparateDisplayAndSwap
