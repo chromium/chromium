@@ -7,7 +7,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
-class TabSearchFocusTest : public WebUIMochaBrowserTest {
+class TabSearchFocusTest : public WebUIMochaFocusTest {
  protected:
   TabSearchFocusTest() { set_test_loader_host(chrome::kChromeUITabSearchHost); }
 };
@@ -19,4 +19,8 @@ class TabSearchFocusTest : public WebUIMochaBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(TabSearchFocusTest, MAYBE_App) {
   RunTest("tab_search/tab_search_page_focus_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchFocusTest, Item) {
+  RunTest("tab_search/tab_search_item_test.js", "mocha.run()");
 }

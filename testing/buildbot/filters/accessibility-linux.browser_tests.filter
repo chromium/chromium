@@ -181,10 +181,6 @@
 # Flaky on Linux: crbug.com/483092912
 -TabRestoreTest.RestoreGroupWithUnloadHandlerRejected
 
-# Flaky on most bots: crbug.com/483855026
--TabSearchTest.Item
--TabSearchTest.Item__TabSearchItemTest_CloseButtonPresence
-
 # Flaky on Linux: crbug.com/483903191
 -TranslateBubbleViewBrowserTest.OpeningFindBarClosesTranslateBubble
 
