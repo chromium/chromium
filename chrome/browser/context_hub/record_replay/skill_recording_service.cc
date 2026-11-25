@@ -16,9 +16,15 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/context_hub/record_replay/record_replay_mes_client.h"
 #include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 #include "chrome/browser/context_hub/record_replay/skill_audio_capturer.h"
@@ -28,6 +34,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
@@ -36,31 +43,6 @@
 
 namespace context_hub {
 namespace {
-
-constexpr int32_t kMaxScreenshotWidth = 1280;
-constexpr int32_t kMaxScreenshotHeight = 1280;
-constexpr size_t kMaxRecordedUrlLength = 500;
-
-GURL SanitizeRecordedUrl(const GURL& url) {
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-    return GURL();
-  }
-  GURL::Replacements replacements;
-  replacements.ClearUsername();
-  replacements.ClearPassword();
-  replacements.ClearQuery();
-  replacements.ClearRef();
-  GURL sanitized = url.ReplaceComponents(replacements);
-  if (sanitized.spec().size() > kMaxRecordedUrlLength) {
-    GURL::Replacements clear_path;
-    clear_path.ClearPath();
-    sanitized = sanitized.ReplaceComponents(clear_path);
-    if (sanitized.spec().size() > kMaxRecordedUrlLength) {
-      return GURL();
-    }
-  }
-  return sanitized;
-}
 
 BrowserWindowInterface* GetLastActiveBrowser(Profile& profile) {
   ProfileBrowserCollection* collection =
@@ -153,6 +135,8 @@ void SkillRecordingService::CaptureAction(
   content::WebContents* web_contents = tab_observer_->web_contents();
   action.current_url = SanitizeRecordedUrl(web_contents->GetLastCommittedURL());
 
+  constexpr int32_t kMaxScreenshotWidth = 1280;
+  constexpr int32_t kMaxScreenshotHeight = 1280;
   page_content_annotations::ScreenshotOptions::ScreenshotCollectionOptions
       collection_options;
   collection_options.max_width = kMaxScreenshotWidth;

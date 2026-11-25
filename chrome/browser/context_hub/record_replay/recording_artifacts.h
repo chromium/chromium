@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/time/time.h"
@@ -14,6 +15,26 @@
 #include "url/gurl.h"
 
 namespace context_hub {
+
+// Maximum UTF-8 byte length of a sanitized recorded URL spec.
+inline constexpr size_t kMaxRecordedUrlBytes = 500;
+
+// Maximum UTF-8 byte length for untrusted webpage strings (accessible element
+// names and tab titles) embedded in recorded action descriptions.
+inline constexpr size_t kMaxRecordedTextBytes = 200;
+
+// Sanitizes `url` for recording by rejecting non-HTTP/HTTPS URLs, stripping
+// credentials, query parameters, and fragments, and bounding length to
+// `kMaxRecordedUrlBytes`. Returns an empty `GURL` if `url` should not be
+// recorded.
+GURL SanitizeRecordedUrl(const GURL& url);
+
+// Normalizes `text` into valid single-line UTF-8 with collapsed whitespace,
+// strips non-whitespace control, bidi, zero-width/format, variation-selector,
+// and Unicode tag characters, and bounds its length to `max_bytes` (appending
+// "..." when truncated, or omitting "..." when `max_bytes <= 3`).
+std::string SanitizeRecordedText(std::string_view text,
+                                 size_t max_bytes = kMaxRecordedTextBytes);
 
 // Represents a single user action captured during a skill recording session.
 struct RecordedAction {
@@ -28,7 +49,7 @@ struct RecordedAction {
 
   // The category of user interaction that occurred.
   browser::context_hub::mojom::SkillRecordingActionType type;
-  // A human-readable summary of the action (e.g., click coordinates).
+  // A human-readable summary of the action (e.g., "Clicked on 'Submit'").
   std::string description;
   // Time elapsed since the start of the recording session when the action
   // occurred.

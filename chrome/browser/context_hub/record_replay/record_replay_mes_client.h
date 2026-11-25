@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 
 namespace optimization_guide {
 class ModelQualityLogEntry;
@@ -27,8 +28,6 @@ class ContextHubRequest;
 
 namespace context_hub {
 
-struct RecordingArtifacts;
-
 // Client for executing Model Execution Service (MES) for Record and Replay.
 // Instances are not thread-safe and must be created, called, and destroyed on
 // the same sequence.
@@ -38,6 +37,16 @@ class RecordReplayMesClient {
   // Actions beyond this limit still have their text metadata included in the
   // prompt without attaching image bytes.
   static constexpr size_t kMaxAttachedScreenshots = 100;
+
+  // Maximum UTF-8 byte length of a sanitized action description included in an
+  // MES prompt. Allows `kMaxRecordedUrlBytes` plus action-type prefixes (e.g.,
+  // `"Switched to tab: "`).
+  static constexpr size_t kMaxActionDescriptionBytes =
+      kMaxRecordedUrlBytes + 40;
+
+  // Maximum UTF-8 byte length of a sanitized voice transcript segment included
+  // in an MES prompt.
+  static constexpr size_t kMaxTranscriptTextBytes = 1000;
 
   // `model_executor` must be non-null and must outlive `this`.
   explicit RecordReplayMesClient(
@@ -50,11 +59,11 @@ class RecordReplayMesClient {
       base::OnceCallback<void(std::optional<std::string> skill_instructions)>;
 
   // Generates skill instructions from the recorded session `artifacts` via MES.
-  // Asynchronously resolves `callback` with `std::nullopt` if `artifacts` is
-  // empty, if another skill generation request is already in flight, or if
-  // model execution fails. Note that `callback` is resolved synchronously with
-  // `std::nullopt` if an in-flight request is cancelled via
-  // `CancelPendingRequest()` or `~RecordReplayMesClient()`.
+  // Asynchronously resolves `callback` with `std::nullopt` if `artifacts` has
+  // no recordable actions or transcripts, if another skill generation request
+  // is already in flight, or if model execution fails. Note that `callback` is
+  // resolved synchronously with `std::nullopt` if an in-flight request is
+  // cancelled via `CancelPendingRequest()` or `~RecordReplayMesClient()`.
   void GenerateSkillFromRecording(const RecordingArtifacts& artifacts,
                                   GenerateSkillCallback callback);
 
@@ -63,7 +72,8 @@ class RecordReplayMesClient {
   void CancelPendingRequest();
 
  private:
-  void OnMesRequestBuilt(optimization_guide::proto::ContextHubRequest request);
+  void OnMesRequestBuilt(
+      std::optional<optimization_guide::proto::ContextHubRequest> request);
 
   void OnModelExecutionComplete(
       optimization_guide::OptimizationGuideModelExecutionResult result,
