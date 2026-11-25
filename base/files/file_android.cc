@@ -18,15 +18,16 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/types/expected_macros.h"
 
+namespace base {
+
 namespace {
 
 struct OpenContentUriResult {
   int fd;
-  base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor;
+  android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor;
 };
 
-std::string_view AccessModeToJavaMode(base::AndroidDocumentAccessMode access) {
-  using base::AndroidDocumentAccessMode;
+std::string_view AccessModeToJavaMode(AndroidDocumentAccessMode access) {
   switch (access) {
     case AndroidDocumentAccessMode::kRead:
       return "r";
@@ -42,41 +43,36 @@ std::string_view AccessModeToJavaMode(base::AndroidDocumentAccessMode access) {
   NOTREACHED();
 }
 
-base::expected<OpenContentUriResult, base::File::Error>
-OpenContentUriWithModeAndGetFd(const base::FilePath& path,
-                               std::string_view mode) {
+expected<OpenContentUriResult, File::Error> OpenContentUriWithModeAndGetFd(
+    const FilePath& path,
+    std::string_view mode) {
   CHECK(path.IsContentUri());
 
-  ASSIGN_OR_RETURN(base::android::ScopedJavaLocalRef<jobject> pfd,
-                   base::internal::OpenContentUriWithExplicitMode(path, mode));
+  ASSIGN_OR_RETURN(android::ScopedJavaLocalRef<jobject> pfd,
+                   internal::OpenContentUriWithExplicitMode(path, mode));
 
-  int fd = base::internal::ContentUriGetFd(pfd);
+  int fd = internal::ContentUriGetFd(pfd);
   if (fd < 0) {
-    base::internal::ContentUriClose(pfd);
-    return base::unexpected(base::File::Error::FILE_ERROR_FAILED);
+    internal::ContentUriClose(pfd);
+    return unexpected(File::Error::FILE_ERROR_FAILED);
   }
-  return OpenContentUriResult{fd,
-                              base::android::ScopedJavaGlobalRef<jobject>(pfd)};
+  return OpenContentUriResult{fd, android::ScopedJavaGlobalRef<jobject>(pfd)};
 }
 
-std::optional<base::files_internal::VirtualDocumentPath> ParseVirtualPath(
-    const base::FilePath& path) {
+std::optional<files_internal::VirtualDocumentPath> ParseVirtualPath(
+    const FilePath& path) {
   if (!path.IsVirtualDocumentPath()) {
     return std::nullopt;
   }
-  return base::files_internal::VirtualDocumentPath::Parse(path.value());
+  return files_internal::VirtualDocumentPath::Parse(path.value());
 }
 
 }  // namespace
 
-namespace base {
-
-File::File(
-    FilePath path,
-    ScopedPlatformFile platform_file,
-    base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor,
-    bool async)
-    : File(std::move(platform_file), async) {
+File::File(FilePath path,
+           ScopedPlatformFile platform_file,
+           android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor)
+    : File(std::move(platform_file)) {
   path_ = std::move(path);
   java_parcel_file_descriptor_ = std::move(java_parcel_file_descriptor);
 }
@@ -111,8 +107,7 @@ expected<FilePath, File::Error> CreateAndroidDocument(
 }
 
 File OpenAndroidDocument(const FilePath& content_uri,
-                         AndroidDocumentAccessMode access,
-                         bool async) {
+                         AndroidDocumentAccessMode access) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   if (!content_uri.IsContentUri()) {
     return File(File::FILE_ERROR_INVALID_OPERATION);
@@ -124,19 +119,19 @@ File OpenAndroidDocument(const FilePath& content_uri,
   }
 
   return File(content_uri, ScopedPlatformFile(result->fd),
-              std::move(result->java_parcel_file_descriptor), async);
+              std::move(result->java_parcel_file_descriptor));
 }
 
 namespace files_internal {
 
 OpenAndroidFileResult::OpenAndroidFileResult(
-    base::FilePath content_uri,
+    FilePath content_uri,
     int fd,
-    base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor,
+    android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor,
     bool created)
-    : content_uri(content_uri),
+    : content_uri(std::move(content_uri)),
       fd(fd),
-      java_parcel_file_descriptor(java_parcel_file_descriptor),
+      java_parcel_file_descriptor(std::move(java_parcel_file_descriptor)),
       created(created) {}
 
 OpenAndroidFileResult::OpenAndroidFileResult(OpenAndroidFileResult&&) = default;
@@ -145,17 +140,17 @@ OpenAndroidFileResult& OpenAndroidFileResult::operator=(
 
 OpenAndroidFileResult::~OpenAndroidFileResult() = default;
 
-base::expected<OpenAndroidFileResult, base::File::Error> OpenAndroidFile(
-    const base::FilePath& path,
+expected<OpenAndroidFileResult, File::Error> OpenAndroidFile(
+    const FilePath& path,
     uint32_t flags) {
   CHECK(path.IsContentUri() || path.IsVirtualDocumentPath());
 
   // Validate before any provider call so rejected flags never create,
   // truncate or delete anything.
   std::optional<std::string> mode =
-      base::internal::TranslateOpenFlagsToJavaMode(flags);
+      internal::TranslateOpenFlagsToJavaMode(flags);
   if (!mode) {
-    return base::unexpected(File::FILE_ERROR_INVALID_OPERATION);
+    return unexpected(File::FILE_ERROR_INVALID_OPERATION);
   }
 
   FilePath content_uri = path;
@@ -170,7 +165,7 @@ base::expected<OpenAndroidFileResult, base::File::Error> OpenAndroidFile(
       ASSIGN_OR_RETURN(content_uri, CreateAndroidDocument(
                                         path, kUnknownAndroidDocumentMimeType));
     } else {
-      return base::unexpected(resolved.error());
+      return unexpected(resolved.error());
     }
   }
 

@@ -31,8 +31,7 @@ namespace base {
 class File;
 enum class AndroidDocumentAccessMode;
 BASE_EXPORT File OpenAndroidDocument(const FilePath& content_uri,
-                                     AndroidDocumentAccessMode access,
-                                     bool async);
+                                     AndroidDocumentAccessMode access);
 #endif
 
 using stat_wrapper_t = struct stat;
@@ -434,13 +433,11 @@ class BASE_EXPORT File {
 
 #if BUILDFLAG(IS_ANDROID)
   friend BASE_EXPORT File OpenAndroidDocument(const FilePath& content_uri,
-                                              AndroidDocumentAccessMode access,
-                                              bool async);
+                                              AndroidDocumentAccessMode access);
 
   File(FilePath path,
        ScopedPlatformFile platform_file,
-       base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor,
-       bool async);
+       base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor);
 
   // Keeps the Java ParcelFileDescriptor alive when `this` wraps a file from an
   // Android content provider (i.e. a content URI). Close() is called on the

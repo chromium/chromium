@@ -412,10 +412,9 @@ TEST(FileTest, OpenAndroidDocument) {
   }
 
   {
-    File file = OpenAndroidDocument(
-        content_uri, AndroidDocumentAccessMode::kReadWrite, /*async=*/true);
+    File file =
+        OpenAndroidDocument(content_uri, AndroidDocumentAccessMode::kReadWrite);
     ASSERT_TRUE(file.IsValid());
-    EXPECT_TRUE(file.async());
     ASSERT_TRUE(file.WriteAndCheck(2, as_byte_span(std::string_view("ab"))));
   }
   std::string contents;
