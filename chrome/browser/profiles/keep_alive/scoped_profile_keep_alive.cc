@@ -52,7 +52,9 @@ ScopedProfileKeepAlive::ScopedProfileKeepAlive(Profile* profile,
 }
 
 ScopedProfileKeepAlive::~ScopedProfileKeepAlive() {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  // TODO(crbug.com/589109388): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
     // Decrementing the refcount won't cause Profile destruction in this
     // configuration, so we don't need to post a task.
