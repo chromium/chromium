@@ -49,16 +49,16 @@ TEST_F(DefaultPageModeTableViewControllerTest, TestCheckmarkAtLoad) {
   // Force the tableView to be built.
   ASSERT_TRUE([controller view]);
 
-  UITableViewCellAccessoryType first_accesory =
+  UITableViewCellAccessoryType first_accessory =
       [controller.tableViewModel
           itemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]]
           .accessoryType;
-  EXPECT_EQ(UITableViewCellAccessoryNone, first_accesory);
-  UITableViewCellAccessoryType second_accesory =
+  EXPECT_EQ(UITableViewCellAccessoryNone, first_accessory);
+  UITableViewCellAccessoryType second_accessory =
       [controller.tableViewModel
           itemAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]]
           .accessoryType;
-  EXPECT_EQ(UITableViewCellAccessoryCheckmark, second_accesory);
+  EXPECT_EQ(UITableViewCellAccessoryCheckmark, second_accessory);
 }
 
 // Tests that the checkmark gets correctly updated.

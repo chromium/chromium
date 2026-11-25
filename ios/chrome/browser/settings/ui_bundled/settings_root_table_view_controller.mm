@@ -28,7 +28,7 @@ const CGFloat kDefaultHeaderFooterHeight = 10;
 // Estimated height of the header/footer, used to speed the constraints.
 const CGFloat kEstimatedHeaderFooterHeight = 50;
 
-enum SavedBarButtomItemPositionEnum {
+enum SavedBarButtonItemPositionEnum {
   kUndefinedBarButtonItemPosition,
   kLeftBarButtonItemPosition,
   kRightBarButtonItemPosition
@@ -53,7 +53,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 // Position of the saved button.
 @property(nonatomic, assign)
-    SavedBarButtomItemPositionEnum savedBarButtonItemPosition;
+    SavedBarButtonItemPositionEnum savedBarButtonItemPosition;
 
 @end
 

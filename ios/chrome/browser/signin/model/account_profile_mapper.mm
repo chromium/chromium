@@ -361,7 +361,7 @@ class AccountProfileMapper::Assigner
       SystemIdentityManager* system_identity_manager,
       ProfileManagerIOS* profile_manager,
       PrefService* local_pref_service,
-      IdentitiesOnDeviceChangedCallback identitites_on_device_changed_cb,
+      IdentitiesOnDeviceChangedCallback identities_on_device_changed_cb,
       MappingUpdatedCallback mapping_updated_cb,
       IdentityUpdatedCallback identity_updated_cb,
       IdentityRefreshTokenUpdatedCallback identity_refresh_token_updated_cb,
@@ -529,7 +529,7 @@ class AccountProfileMapper::Assigner
   // using the ProfileManagerIOS.
   __weak id<ChangeProfileCommands> handler_;
 
-  IdentitiesOnDeviceChangedCallback identitites_on_device_changed_cb_;
+  IdentitiesOnDeviceChangedCallback identities_on_device_changed_cb_;
   MappingUpdatedCallback mapping_updated_cb_;
   IdentityUpdatedCallback identity_updated_cb_;
   IdentityRefreshTokenUpdatedCallback identity_refresh_token_updated_cb_;
@@ -570,7 +570,7 @@ AccountProfileMapper::Assigner::Assigner(
     SystemIdentityManager* system_identity_manager,
     ProfileManagerIOS* profile_manager,
     PrefService* local_pref_service,
-    IdentitiesOnDeviceChangedCallback identitites_on_device_changed_cb,
+    IdentitiesOnDeviceChangedCallback identities_on_device_changed_cb,
     MappingUpdatedCallback mapping_updated_cb,
     IdentityUpdatedCallback identity_updated_cb,
     IdentityRefreshTokenUpdatedCallback identity_refresh_token_updated_cb,
@@ -579,7 +579,7 @@ AccountProfileMapper::Assigner::Assigner(
     : system_identity_manager_(system_identity_manager),
       profile_manager_(profile_manager),
       local_pref_service_(local_pref_service),
-      identitites_on_device_changed_cb_(identitites_on_device_changed_cb),
+      identities_on_device_changed_cb_(identities_on_device_changed_cb),
       mapping_updated_cb_(mapping_updated_cb),
       identity_updated_cb_(identity_updated_cb),
       identity_refresh_token_updated_cb_(identity_refresh_token_updated_cb),
@@ -740,7 +740,7 @@ void AccountProfileMapper::Assigner::
 void AccountProfileMapper::Assigner::OnIdentityListChanged() {
   // Send notification about on-device identities first, before sending
   // per-profile ones.
-  identitites_on_device_changed_cb_.Run();
+  identities_on_device_changed_cb_.Run();
 
   // Assign identities to profiles, if they're not assigned yet.
   UpdateIdentityProfileMappings();

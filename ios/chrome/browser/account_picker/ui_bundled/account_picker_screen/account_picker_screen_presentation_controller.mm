@@ -166,7 +166,7 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
 - (void)preferredContentSizeDidChangeForAccountPickerScreenViewController {
   [self containerViewDidLayoutSubviews];
 }
-#pragma mark - Tap recogniser
+#pragma mark - Tap recognizer
 
 - (void)backgroundTapped:(UITapGestureRecognizer*)gestureRecognizer {
   [self.actionDelegate

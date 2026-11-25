@@ -56,7 +56,7 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithBadPattern) {
 // the given email. The wildcard character '*' matches zero or more arbitrary
 // characters. The escape character is '\', so to match actual '*' or '\'
 // characters, put a '\' in front of them.
-TEST_F(PatternAccountRestrictionTest, PatternMatchChunck) {
+TEST_F(PatternAccountRestrictionTest, PatternMatchChunk) {
   auto pattern = PatternFromString("*gmail.com");
   EXPECT_EQ(pattern->Match(email1), true);
   EXPECT_EQ(pattern->Match(email2), false);

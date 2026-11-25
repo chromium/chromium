@@ -429,10 +429,10 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithEmptyCookieStore) {
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
   ASSERT_TRUE(completion_handler_);
 
-  NSHTTPURLResponse* http_url_reponse =
+  NSHTTPURLResponse* http_url_response =
       CreateHTTPURLResponse(200, @[ GetCookie1(), GetCookie2() ]);
   completion_handler_([@"Test" dataUsingEncoding:NSUTF8StringEncoding],
-                      http_url_reponse, nil);
+                      http_url_response, nil);
   EXPECT_TRUE(delegate_->GetFetchCompleteCalled());
   EXPECT_EQ(delegate_->GetURL(), GetFetchGURL());
   EXPECT_EQ(delegate_->GetNetError(), net::OK);
@@ -457,9 +457,9 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithCookieStore) {
 
   ASSERT_TRUE(completion_handler_);
 
-  NSHTTPURLResponse* http_url_reponse =
+  NSHTTPURLResponse* http_url_response =
       CreateHTTPURLResponse(200, @[ GetCookie2() ]);
-  completion_handler_(nil, http_url_reponse, nil);
+  completion_handler_(nil, http_url_response, nil);
   EXPECT_TRUE(delegate_->GetFetchCompleteCalled());
   EXPECT_EQ(delegate_->GetURL(), GetFetchGURL());
   EXPECT_EQ(delegate_->GetNetError(), net::OK);
@@ -492,9 +492,9 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithRedirect) {
                          newRequest:redirected_url_request
                   completionHandler:completion_handler];
   EXPECT_TRUE(completion_handler_called);
-  NSHTTPURLResponse* http_url_reponse =
+  NSHTTPURLResponse* http_url_response =
       CreateHTTPURLResponse(200, @[ GetCookie2() ]);
-  completion_handler_(nil, http_url_reponse, nil);
+  completion_handler_(nil, http_url_response, nil);
   EXPECT_TRUE(delegate_->GetFetchCompleteCalled());
   EXPECT_EQ(delegate_->GetURL(), GetFetchGURL());
   EXPECT_EQ(delegate_->GetNetError(), net::OK);
@@ -525,9 +525,9 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithError) {
   ASSERT_FALSE(url_session_configuration_.HTTPCookieStorage.cookies.count);
   ASSERT_TRUE(completion_handler_);
 
-  NSHTTPURLResponse* http_url_reponse =
+  NSHTTPURLResponse* http_url_response =
       CreateHTTPURLResponse(501, @[ GetCookie1(), GetCookie2() ]);
-  completion_handler_(nil, http_url_reponse,
+  completion_handler_(nil, http_url_response,
                       [NSError errorWithDomain:@"test" code:1 userInfo:nil]);
   EXPECT_TRUE(delegate_->GetFetchCompleteCalled());
   EXPECT_EQ(delegate_->GetURL(), GetFetchGURL());

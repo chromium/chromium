@@ -67,7 +67,7 @@
 }
 
 - (void)stop {
-  [self dimissAlertCoordinator];
+  [self dismissAlertCoordinator];
   [self.mediator disconnect];
 }
 
@@ -103,7 +103,7 @@
                                                    message:alertMessage];
   [_alertCoordinator addItemWithTitle:cancelTitle
                                action:^{
-                                 [weakSelf dimissAlertCoordinator];
+                                 [weakSelf dismissAlertCoordinator];
                                }
                                 style:UIAlertActionStyleCancel];
   [_alertCoordinator
@@ -113,7 +113,7 @@
                                 openURL:[NSURL URLWithString:settingURL]
                                 options:{}
                       completionHandler:nil];
-                  [weakSelf dimissAlertCoordinator];
+                  [weakSelf dismissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
@@ -121,7 +121,7 @@
 
 #pragma mark - Private
 
-- (void)dimissAlertCoordinator {
+- (void)dismissAlertCoordinator {
   [_alertCoordinator stop];
   _alertCoordinator = nil;
 }

@@ -68,10 +68,10 @@ TEST_F(SigninPromoViewTest, AccessibilityLabelSigninPromoViewStyleStandard) {
   SigninPromoView* view =
       [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   [currentWindow.rootViewController.view addSubview:view];
-  UIButtonConfiguration* buttonConfigutation = view.primaryButton.configuration;
+  UIButtonConfiguration* buttonConfiguration = view.primaryButton.configuration;
   NSString* primaryButtonTitle = @"Primary Button Title";
-  buttonConfigutation.title = primaryButtonTitle;
-  view.primaryButton.configuration = buttonConfigutation;
+  buttonConfiguration.title = primaryButtonTitle;
+  view.primaryButton.configuration = buttonConfiguration;
   NSString* promoText = @"This is the promo text.";
   view.textLabel.text = promoText;
   view.promoViewStyle = SigninPromoViewStyleStandard;
@@ -88,10 +88,10 @@ TEST_F(SigninPromoViewTest, AccessibilityLabelSigninPromoViewStyleCompact) {
   SigninPromoView* view =
       [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   [currentWindow.rootViewController.view addSubview:view];
-  UIButtonConfiguration* buttonConfigutation = view.primaryButton.configuration;
+  UIButtonConfiguration* buttonConfiguration = view.primaryButton.configuration;
   NSString* primaryButtonTitle = @"Primary Button Title";
-  buttonConfigutation.title = primaryButtonTitle;
-  view.primaryButton.configuration = buttonConfigutation;
+  buttonConfiguration.title = primaryButtonTitle;
+  view.primaryButton.configuration = buttonConfiguration;
   NSString* promoText = @"This is the promo text.";
   view.textLabel.text = promoText;
   view.promoViewStyle = SigninPromoViewStyleCompact;
@@ -108,10 +108,10 @@ TEST_F(SigninPromoViewTest, AccessibilityLabelSigninPromoViewStyleOnlyButton) {
   SigninPromoView* view =
       [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   [currentWindow.rootViewController.view addSubview:view];
-  UIButtonConfiguration* buttonConfigutation = view.primaryButton.configuration;
+  UIButtonConfiguration* buttonConfiguration = view.primaryButton.configuration;
   NSString* primaryButtonTitle = @"Primary Button Title";
-  buttonConfigutation.title = primaryButtonTitle;
-  view.primaryButton.configuration = buttonConfigutation;
+  buttonConfiguration.title = primaryButtonTitle;
+  view.primaryButton.configuration = buttonConfiguration;
   NSString* promoText = @"This is the promo text.";
   view.textLabel.text = promoText;
   view.promoViewStyle = SigninPromoViewStyleOnlyButton;
