@@ -210,9 +210,19 @@ void DataProtectionTabHelper::DidFinishNavigation(
   // state to the committed state.
   if (navigation_context->HasCommitted()) {
     // This navigation is now committed.
+    // If a real-time lookup is still in flight (`watermark_text` is
+    // `std::nullopt`), keep the active watermark across the same-document
+    // navigations until the verdict arrives.
+    std::string watermark_text;
+    if (pending_navigation_.watermark_text.has_value()) {
+      watermark_text = pending_navigation_.watermark_text.value();
+    } else if (navigation_context->IsSameDocument() &&
+               IsEnableEnterpriseWatermarkingIOS()) {
+      watermark_text = GetWatermarkText();
+    }
     committed_navigation_.navigation_id = nav_id;
     SetCommittedProtectionState(pending_navigation_.protection_state,
-                                pending_navigation_.watermark_text);
+                                watermark_text);
   }
 
   // Reset pending state now that the navigation has finished.
@@ -232,7 +242,7 @@ void DataProtectionTabHelper::PerformChecks(const GURL& url,
     CHECK(!std::holds_alternative<Enabled>(navigation.protection_state));
   }
 
-  navigation.watermark_text.clear();
+  navigation.watermark_text = "";
   if (SkipUrl(url)) {
     // Force a committed state update if we are checking the committed
     // navigation.
@@ -281,7 +291,7 @@ void DataProtectionTabHelper::EvaluateRealTimePolicy(
 
   SetProtectionState(navigation,
                      ComputeNextStateOnLookupStart(navigation.protection_state),
-                     "");
+                     std::nullopt);
 
   GetLookupService()->DoLookup(
       GetRealTimeLookupService(), url,
@@ -340,12 +350,13 @@ void DataProtectionTabHelper::OnRealTimeLookupResult(
 void DataProtectionTabHelper::SetProtectionState(
     NavigationState& navigation,
     ProtectionState state,
-    const std::string& watermark_text) {
+    std::optional<std::string> watermark_text) {
   if (&navigation == &committed_navigation_) {
-    SetCommittedProtectionState(state, watermark_text);
+    SetCommittedProtectionState(state,
+                                watermark_text.value_or(GetWatermarkText()));
   } else {
     navigation.protection_state = state;
-    navigation.watermark_text = watermark_text;
+    navigation.watermark_text = std::move(watermark_text);
   }
 }
 

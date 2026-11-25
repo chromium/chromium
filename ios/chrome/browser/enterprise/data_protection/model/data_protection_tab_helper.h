@@ -91,7 +91,7 @@ class DataProtectionTabHelper
 
   // Returns the current watermark text for the tab.
   const std::string& GetWatermarkText() const {
-    return committed_navigation_.watermark_text;
+    return committed_navigation_.watermark_text.value();
   }
 
   // Applies `watermark_text` to the committed page for testing, as if it came
@@ -127,7 +127,10 @@ class DataProtectionTabHelper
 
     std::optional<int64_t> navigation_id;
     ProtectionState protection_state = Disabled{};
-    std::string watermark_text;
+
+    // Retrieved watermark text, or `std::nullopt` while a real-time URL lookup
+    // is in flight on `pending_navigation_`.
+    std::optional<std::string> watermark_text = std::string();
   };
 
   // Initiates policy checks for the initial URL (the one visible when the
@@ -154,7 +157,7 @@ class DataProtectionTabHelper
   // Updates the protection state for the given `navigation`.
   void SetProtectionState(NavigationState& navigation,
                           ProtectionState state,
-                          const std::string& watermark_text);
+                          std::optional<std::string> watermark_text);
 
   // Updates the tab's screenshot protection state and notifies observers
   // if the overall protection (IsScreenshotProtectionEnabled()) changes.

@@ -928,3 +928,153 @@ TEST_F(DataProtectionTabHelperTest, DisableScreenshotsPolicyKillSwitchOff) {
   SetDisableScreenshotsPolicy(true);
   EXPECT_FALSE(tab_helper()->IsScreenshotProtectionEnabled());
 }
+
+// Tests that same-document navigations keep the existing watermark while the
+// real-time lookup is pending, and update/clear it once the verdict arrives.
+TEST_F(DataProtectionTabHelperTest, SameDocumentNavigationPreservesWatermark) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state_.get(), OverlayModality::kWatermark);
+
+  // Initial cross-document navigation to a watermarked URL.
+  auto initial_context =
+      CreateNavigationContext(GURL("https://protected.com/page1"));
+  tab_helper()->DidStartNavigation(web_state_.get(), initial_context.get());
+  tab_helper()->DidFinishNavigation(web_state_.get(), initial_context.get());
+  EXPECT_TRUE(observer_.Wait());
+
+  auto initial_response = std::make_unique<safe_browsing::RTLookupResponse>();
+  auto* initial_rule = initial_response->add_threat_info()
+                           ->mutable_matched_url_navigation_rule();
+  initial_rule->set_block_screenshot(true);
+  initial_rule->mutable_watermark_message()->set_watermark_message(
+      "Initial Watermark");
+  fake_rt_lookup_service_->RunResponseCallback(std::move(initial_response));
+
+  ASSERT_EQ(queue->size(), 1u);
+  OverlayRequest* first_request = queue->GetRequest(0);
+  EXPECT_THAT(tab_helper()->GetWatermarkText(),
+              ::testing::HasSubstr("Initial Watermark"));
+
+  // Synchronous same-document navigation (e.g. pushState) to a second route.
+  auto same_doc_context =
+      CreateNavigationContext(GURL("https://protected.com/page2"));
+  same_doc_context->SetIsSameDocument(true);
+  tab_helper()->DidStartNavigation(web_state_.get(), same_doc_context.get());
+  tab_helper()->DidFinishNavigation(web_state_.get(), same_doc_context.get());
+
+  // Watermark and overlay request must stay intact while the lookup is pending.
+  ASSERT_EQ(queue->size(), 1u);
+  EXPECT_EQ(queue->GetRequest(0), first_request);
+  EXPECT_THAT(tab_helper()->GetWatermarkText(),
+              ::testing::HasSubstr("Initial Watermark"));
+  EXPECT_THAT(observer_.watermark_text(),
+              ::testing::HasSubstr("Initial Watermark"));
+
+  // Complete lookup with no watermark (unprotected SPA route); watermark
+  // clears.
+  auto unprotected_response =
+      std::make_unique<safe_browsing::RTLookupResponse>();
+  unprotected_response->add_threat_info()
+      ->mutable_matched_url_navigation_rule()
+      ->set_block_screenshot(false);
+  fake_rt_lookup_service_->RunResponseCallback(std::move(unprotected_response));
+
+  EXPECT_FALSE(observer_.Wait());
+  EXPECT_EQ(queue->size(), 0u);
+  EXPECT_TRUE(tab_helper()->GetWatermarkText().empty());
+  EXPECT_TRUE(observer_.watermark_text().empty());
+}
+
+// Tests that same-document navigations clear the previous watermark if the
+// real-time lookup for the new URL fails (matching Desktop and cross-document
+// lookup failure behavior).
+TEST_F(DataProtectionTabHelperTest,
+       SameDocumentNavigationLookupFailureClearsWatermark) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state_.get(), OverlayModality::kWatermark);
+
+  auto initial_context =
+      CreateNavigationContext(GURL("https://protected.com/page1"));
+  tab_helper()->DidStartNavigation(web_state_.get(), initial_context.get());
+  tab_helper()->DidFinishNavigation(web_state_.get(), initial_context.get());
+  EXPECT_TRUE(observer_.Wait());
+
+  auto initial_response = std::make_unique<safe_browsing::RTLookupResponse>();
+  auto* initial_rule = initial_response->add_threat_info()
+                           ->mutable_matched_url_navigation_rule();
+  initial_rule->set_block_screenshot(true);
+  initial_rule->mutable_watermark_message()->set_watermark_message(
+      "Initial Watermark");
+  fake_rt_lookup_service_->RunResponseCallback(std::move(initial_response));
+  ASSERT_EQ(queue->size(), 1u);
+
+  // Same-document navigation whose real-time lookup fails.
+  auto same_doc_context =
+      CreateNavigationContext(GURL("https://protected.com/page2"));
+  same_doc_context->SetIsSameDocument(true);
+  tab_helper()->DidStartNavigation(web_state_.get(), same_doc_context.get());
+  tab_helper()->DidFinishNavigation(web_state_.get(), same_doc_context.get());
+
+  // Preserved while lookup is pending.
+  EXPECT_EQ(queue->size(), 1u);
+
+  // Cleared once the lookup for the new URL fails.
+  fake_rt_lookup_service_->set_is_rt_lookup_successful(false);
+  fake_rt_lookup_service_->RunResponseCallback(nullptr);
+
+  EXPECT_EQ(queue->size(), 0u);
+  EXPECT_TRUE(tab_helper()->GetWatermarkText().empty());
+  EXPECT_TRUE(observer_.watermark_text().empty());
+}
+
+// Tests that if a prior navigation's lookup completes while an asynchronous
+// same-document navigation is between DidStartNavigation and
+// DidFinishNavigation, committing the same-document navigation preserves the
+// newly arrived watermark rather than overwriting it with a stale empty state.
+TEST_F(DataProtectionTabHelperTest,
+       SameDocumentAsyncCommitUsesLatestCommittedWatermark) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state_.get(), OverlayModality::kWatermark);
+
+  // Initial navigation commits while its lookup (#1) is still in flight.
+  auto initial_context =
+      CreateNavigationContext(GURL("https://protected.com/page1"));
+  tab_helper()->DidStartNavigation(web_state_.get(), initial_context.get());
+  tab_helper()->DidFinishNavigation(web_state_.get(), initial_context.get());
+  EXPECT_TRUE(observer_.Wait());
+  EXPECT_TRUE(tab_helper()->GetWatermarkText().empty());
+
+  // Start an async same-document navigation (e.g. back/forward #fragment)
+  // before lookup #1 completes.
+  auto same_doc_context =
+      CreateNavigationContext(GURL("https://protected.com/page1#section"));
+  same_doc_context->SetIsSameDocument(true);
+  tab_helper()->DidStartNavigation(web_state_.get(), same_doc_context.get());
+
+  // Lookup #1 arrives before `same_doc_context` finishes committing.
+  auto initial_response = std::make_unique<safe_browsing::RTLookupResponse>();
+  auto* initial_rule = initial_response->add_threat_info()
+                           ->mutable_matched_url_navigation_rule();
+  initial_rule->set_block_screenshot(true);
+  initial_rule->mutable_watermark_message()->set_watermark_message(
+      "Initial Watermark");
+  fake_rt_lookup_service_->RunResponseCallback(std::move(initial_response));
+  ASSERT_EQ(queue->size(), 1u);
+  EXPECT_THAT(tab_helper()->GetWatermarkText(),
+              ::testing::HasSubstr("Initial Watermark"));
+
+  // Finish committing `same_doc_context` while lookup #2 is still pending; the
+  // newly arrived watermark from lookup #1 must be preserved.
+  tab_helper()->DidFinishNavigation(web_state_.get(), same_doc_context.get());
+  EXPECT_EQ(queue->size(), 1u);
+  EXPECT_THAT(tab_helper()->GetWatermarkText(),
+              ::testing::HasSubstr("Initial Watermark"));
+}
