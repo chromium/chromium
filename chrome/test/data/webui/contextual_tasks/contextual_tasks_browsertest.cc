@@ -334,6 +334,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_ErrorScrim) {
           "runMochaSuite('ContextualTasksComposeboxForkErrorScrimTest')");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, InternalsApp) {
+  RunTest("contextual_tasks/internals_app_test.js", "mocha.run();");
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 class ContextualTasksExtensionBrowserTestBase
     : public ContextualTasksBrowserTest {

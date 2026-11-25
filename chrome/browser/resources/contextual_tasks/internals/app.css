@@ -206,7 +206,18 @@ tbody tr:hover {
 .debug-section {
   display: flex;
   flex-direction: column;
+  gap: 14px;
+}
+
+.overrides-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 16px;
+}
+
+.overrides-header h2 {
+  margin-bottom: 0;
 }
 
 .debug-row {
@@ -215,8 +226,9 @@ tbody tr:hover {
   gap: 16px;
 }
 
-.debug-row > span:first-child {
-  width: 200px;
+.debug-label {
+  width: 140px;
+  flex-shrink: 0;
   font-size: 13px;
   color: var(--cr-secondary-text-color);
   font-weight: 500;
@@ -228,15 +240,151 @@ tbody tr:hover {
   --cr-input-error-display: none;
 }
 
-.current-host-display {
+.inline-button {
+  margin-top: 0;
+  flex-shrink: 0;
+}
+
+.param-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.param-key-input {
+  flex: 0 1 220px;
+}
+
+.param-value-input {
+  flex: 1;
+}
+
+.param-equals {
+  font-family: monospace;
+  font-size: 14px;
+  color: var(--cr-secondary-text-color);
+  flex-shrink: 0;
+}
+
+.override-error {
+  padding-left: 156px;
+  font-size: 12px;
+  color: rgb(197, 34, 31);
+}
+
+.param-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-left: 156px;
+}
+
+.param-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px 3px 10px;
+  border-radius: 9999px;
+  font-family: monospace;
+  font-size: 12px;
+  background-color: rgba(26, 115, 232, 0.08);
+  border: 1px solid rgba(26, 115, 232, 0.3);
+  color: var(--cr-primary-text-color);
+}
+
+.param-chip:hover {
+  border-color: var(--cr-link-color);
+}
+
+.param-chip-edit {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.param-chip-key {
+  font-weight: 600;
+}
+
+.param-chip-sep {
+  color: var(--cr-secondary-text-color);
+}
+
+.param-chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--cr-secondary-text-color);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.param-chip-remove:hover {
+  background-color: rgba(234, 67, 53, 0.14);
+  color: rgb(197, 34, 31);
+}
+
+.effective-url-row {
+  padding-top: 12px;
+  border-top: 1px solid var(--cr-separator-color);
+}
+
+.effective-url-display {
   flex: 1;
   font-family: monospace;
   font-size: 13px;
   padding: 8px 12px;
   background-color: var(--cr-hover-background-color);
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid var(--cr-separator-color);
   word-break: break-all;
+}
+
+.url-muted {
+  color: var(--cr-secondary-text-color);
+}
+
+.url-host-override {
+  color: var(--cr-link-color);
+  font-weight: 600;
+}
+
+.url-params-override {
+  color: rgb(24, 128, 56);
+  font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+  .override-error,
+  .param-chip-remove:hover {
+    color: rgb(242, 139, 130);
+  }
+
+  .param-chip {
+    background-color: rgba(138, 180, 248, 0.14);
+    border-color: rgba(138, 180, 248, 0.35);
+  }
+
+  .param-chip-remove:hover {
+    background-color: rgba(242, 139, 130, 0.18);
+  }
+
+  .url-params-override {
+    color: rgb(129, 201, 149);
+  }
 }
 
 /* Eligibility Tab */

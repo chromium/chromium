@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_textarea/cr_textarea.js';
 import '/strings.m.js';
 import './session_state_tab.js';
 
+import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {isMac} from '//resources/js/platform.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -85,6 +86,14 @@ export interface ContextualTasksInternalsAppElement {
     tabSelectionModeSelect: HTMLSelectElement,
     minModelScoreSlider: CrSliderElement,
     sessionStateTab: ContextualTasksSessionStateTabElement,
+    forcedHostInput: CrInputElement,
+    setForcedHostButton: HTMLElement,
+    clearForcedHostButton: HTMLElement,
+    resetAllOverridesButton: HTMLElement,
+    paramKeyInput: CrInputElement,
+    paramValueInput: CrInputElement,
+    addForcedParamButton: HTMLElement,
+    effectiveUrlDisplay: HTMLElement,
   };
 }
 
@@ -111,6 +120,11 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
       eventLogMessages_: {type: Array},
       forcedHost_: {type: String},
       currentHost_: {type: String},
+      forcedHostError_: {type: String},
+      paramKey_: {type: String},
+      paramValue_: {type: String},
+      currentParams_: {type: Object},
+      forcedParamsError_: {type: String},
       eligibilityState_: {type: Object},
     };
   }
@@ -123,6 +137,11 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
   protected accessor eventLogMessages_: EventLogMessage[] = [];
   protected accessor forcedHost_: string = '';
   protected accessor currentHost_: string = '';
+  protected accessor forcedHostError_: string = '';
+  protected accessor paramKey_: string = '';
+  protected accessor paramValue_: string = '';
+  private accessor currentParams_: {[key: string]: string} = {};
+  protected accessor forcedParamsError_: string = '';
   protected accessor eligibilityState_: EligibilityState|null = null;
 
   private proxy_: BrowserProxy = browserProxyFactory.getInstance();
@@ -203,13 +222,42 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
       // Create a URL object to extract just the host part for display.
       // If the URL is invalid, display an error message.
       const parsedUrl = URL.parse(fullUrl);
-      this.currentHost_ = parsedUrl ?
-          parsedUrl.host :
-          `Error: Invalid URL provided (${fullUrl})`;
+      if (parsedUrl) {
+        this.currentHost_ = parsedUrl.host;
+        this.forcedHostError_ = '';
+      } else {
+        this.currentHost_ = '';
+        this.forcedHostError_ = `Error: Invalid URL provided (${fullUrl})`;
+      }
     } else {
       // Reset the current host if the forced host is empty.
       this.currentHost_ = '';
     }
+  }
+
+  protected getForcedParamEntries_(): Array<[string, string]> {
+    return Object.entries(this.currentParams_)
+        .sort(([a], [b]) => a.localeCompare(b));
+  }
+
+  protected getEffectiveHost_(): string {
+    return this.currentHost_ || 'www.google.com';
+  }
+
+  protected getEffectiveHostClass_(): string {
+    return this.currentHost_ ? 'url-host-override' : 'url-muted';
+  }
+
+  protected getForcedParamsSuffix_(): string {
+    const entries = this.getForcedParamEntries_();
+    if (entries.length === 0) {
+      return '';
+    }
+    const searchParams = new URLSearchParams();
+    for (const [key, value] of entries) {
+      searchParams.set(key, value);
+    }
+    return `&${searchParams.toString()}`;
   }
 
   protected onTabSelectionModeChange_() {
@@ -228,17 +276,30 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
 
   protected onForcedHostValueChanged_(e: CustomEvent<{value: string}>) {
     this.forcedHost_ = e.detail.value;
+    this.forcedHostError_ = '';
+  }
+
+  protected onForcedHostKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      this.onSetForcedHostClick_();
+    }
   }
 
   protected async onSetForcedHostClick_() {
     const rawInput = this.forcedHost_.trim();
+    if (!rawInput) {
+      await this.onResetForcedHostClick_();
+      return;
+    }
+
     const urlToParse =
         rawInput.includes('://') ? rawInput : `https://${rawInput}`;
     const url = URL.parse(urlToParse);
 
     // Check if the current URL is valid.
     if (!url) {
-      this.currentHost_ = `Error: Invalid URL provided (${this.forcedHost_})`;
+      this.forcedHostError_ =
+          `Error: Invalid URL provided (${this.forcedHost_})`;
       return;
     }
 
@@ -247,7 +308,7 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
     if (!url.hostname.endsWith('.google.com') &&
         !url.hostname.endsWith('.googlers.com') &&
         url.hostname !== 'google.com' && url.hostname !== 'googlers.com') {
-      this.currentHost_ =
+      this.forcedHostError_ =
           `Error: URL must be a Google domain (.google.com or .googlers.com)`;
       return;
     }
@@ -256,19 +317,98 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
     if (url.port) {
       const portNum = Number(url.port);
       if (!Number.isInteger(portNum) || portNum < 1 || portNum > 65535) {
-        this.currentHost_ = `Error: Invalid port (${url.port})`;
+        this.forcedHostError_ = `Error: Invalid port (${url.port})`;
         return;
       }
     }
 
+    this.forcedHostError_ = '';
     await this.proxy_.handler.setForcedEmbeddedPageHost(url.href);
     await this.refreshCurrentHost_();
   }
 
   protected async onResetForcedHostClick_() {
     this.forcedHost_ = '';
+    this.forcedHostError_ = '';
     await this.proxy_.handler.setForcedEmbeddedPageHost('');
     await this.refreshCurrentHost_();
+  }
+
+  protected onParamKeyValueChanged_(e: CustomEvent<{value: string}>) {
+    this.paramKey_ = e.detail.value;
+    this.forcedParamsError_ = '';
+  }
+
+  protected onParamValueChanged_(e: CustomEvent<{value: string}>) {
+    this.paramValue_ = e.detail.value;
+    this.forcedParamsError_ = '';
+  }
+
+  protected onParamInputKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      this.onAddForcedParamClick_();
+    }
+  }
+
+  protected async onAddForcedParamClick_() {
+    const rawKey = this.paramKey_.trim();
+    const rawValue = this.paramValue_.trim();
+
+    if (!rawKey) {
+      this.forcedParamsError_ = 'Error: Enter a parameter key.';
+      return;
+    }
+
+    const nextParams: {[key: string]: string} = {
+      ...this.currentParams_,
+      [rawKey]: rawValue,
+    };
+    this.paramKey_ = '';
+    this.paramValue_ = '';
+    this.forcedParamsError_ = '';
+    this.saveForcedParams_(nextParams);
+    await this.updateComplete;
+    this.$.paramKeyInput.focusInput();
+  }
+
+  protected async onEditForcedParamClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const key = target.dataset['key'];
+    if (!key) {
+      return;
+    }
+    this.paramKey_ = key;
+    this.paramValue_ = target.dataset['value'] ?? '';
+    this.forcedParamsError_ = '';
+    await this.updateComplete;
+    this.$.paramValueInput.select();
+  }
+
+  protected onRemoveForcedParamClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const key = target.dataset['key'];
+    if (!key) {
+      return;
+    }
+    const nextParams: {[key: string]: string} = {...this.currentParams_};
+    delete nextParams[key];
+    this.forcedParamsError_ = '';
+    this.saveForcedParams_(nextParams);
+  }
+
+  protected async onResetAllOverridesClick_() {
+    this.forcedHost_ = '';
+    this.forcedHostError_ = '';
+    this.paramKey_ = '';
+    this.paramValue_ = '';
+    this.forcedParamsError_ = '';
+    this.saveForcedParams_({});
+    await this.proxy_.handler.setForcedEmbeddedPageHost('');
+    await this.refreshCurrentHost_();
+  }
+
+  private saveForcedParams_(params: {[key: string]: string}) {
+    this.currentParams_ = params;
   }
 
   protected async onSubmitClick_() {

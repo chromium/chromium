@@ -92,29 +92,89 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
   <div slot="tab">Debugging</div>
   <div slot="panel">
     <div class="card debug-section">
-      <h2>Host Override Settings</h2>
+      <div class="overrides-header">
+        <h2>Side Panel URL Overrides</h2>
+        <cr-button id="resetAllOverridesButton"
+            @click="${this.onResetAllOverridesClick_}">
+          Reset All
+        </cr-button>
+      </div>
       <div class="debug-row">
-        <span>Forced Embedded Page Host: </span>
+        <span class="debug-label">Forced Host:</span>
         <cr-input id="forcedHostInput" label=""
-            placeholder="e.g. https://example.c.googlers.com"
+            placeholder="e.g. gws-prod.corp.google.com"
             .value="${this.forcedHost_}"
-            @value-changed="${this.onForcedHostValueChanged_}">
+            @value-changed="${this.onForcedHostValueChanged_}"
+            @keydown="${this.onForcedHostKeydown_}">
         </cr-input>
-        <cr-button class="action-button" style="margin-top: 0;"
+        <cr-button id="setForcedHostButton" class="action-button inline-button"
             @click="${this.onSetForcedHostClick_}">
           Set Host
         </cr-button>
-        <cr-button class="action-button" style="margin-top: 0;"
+        <cr-button id="clearForcedHostButton" class="inline-button"
+            ?hidden="${!this.currentHost_}"
             @click="${this.onResetForcedHostClick_}">
-          Reset
+          Clear
         </cr-button>
       </div>
-      <div class="debug-row" style="margin-top: 8px;">
-        <span>
-          Currently set host: </span>
-        <span class="current-host-display">
-          ${this.currentHost_ || 'None'}
-        </span>
+      ${this.forcedHostError_ ? html`
+        <div class="override-error">${this.forcedHostError_}</div>
+      ` : ''}
+      <div class="debug-row">
+        <span class="debug-label">Forced Params:</span>
+        <div class="param-inputs">
+          <cr-input id="paramKeyInput" class="param-key-input" label=""
+              placeholder="key" .value="${this.paramKey_}"
+              @value-changed="${this.onParamKeyValueChanged_}"
+              @keydown="${this.onParamInputKeydown_}">
+          </cr-input>
+          <span class="param-equals">=</span>
+          <cr-input id="paramValueInput" class="param-value-input" label=""
+              placeholder="value" .value="${this.paramValue_}"
+              @value-changed="${this.onParamValueChanged_}"
+              @keydown="${this.onParamInputKeydown_}">
+          </cr-input>
+        </div>
+        <cr-button id="addForcedParamButton" class="action-button inline-button"
+            @click="${this.onAddForcedParamClick_}">
+          Add
+        </cr-button>
+      </div>
+      ${this.forcedParamsError_ ? html`
+        <div class="override-error">${this.forcedParamsError_}</div>
+      ` : ''}
+      ${this.getForcedParamEntries_().length > 0 ? html`
+        <div class="param-chips-row">
+          ${this.getForcedParamEntries_().map(([key, value]) => html`
+            <span class="param-chip">
+              <button type="button" class="param-chip-edit"
+                  title="Click to edit" data-key="${key}" data-value="${value}"
+                  @click="${this.onEditForcedParamClick_}">
+                <span class="param-chip-key">${key}</span><!--
+                --><span class="param-chip-sep">=</span><!--
+                --><span class="param-chip-val">${value}</span>
+              </button>
+              <button type="button" class="param-chip-remove"
+                  aria-label="Remove ${key}" title="Remove ${key}"
+                  data-key="${key}" @click="${this.onRemoveForcedParamClick_}">
+                &times;
+              </button>
+            </span>
+          `)}
+        </div>
+      ` : ''}
+      <div class="debug-row effective-url-row">
+        <span class="debug-label">Effective URL:</span>
+        <div id="effectiveUrlDisplay" class="effective-url-display"><!--
+          --><span class="url-muted">https://</span><!--
+          --><span class="${this.getEffectiveHostClass_()}"
+              .textContent="${this.getEffectiveHost_()}">
+          </span><!--
+          --><span class="url-muted">/search?...</span><!--
+          --><span class="url-params-override"
+              .textContent="${this.getForcedParamsSuffix_()}">
+          </span><!--
+        --></div>
       </div>
     </div>
   </div>
