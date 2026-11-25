@@ -232,10 +232,6 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTextfieldSelectionForeground] = {kSelectedTextForeground};
   mixer[ui::kColorThrobber] = {GetFgColor("spinner")};
   mixer[ui::kColorThrobberPreconnect] = {GetFgColor("spinner:disabled")};
-  mixer[ui::kColorToggleButtonTrackOff] = {
-      GetBgColor("button.text-button.toggle")};
-  mixer[ui::kColorToggleButtonTrackOn] = {
-      GetBgColor("button.text-button.toggle:checked")};
   mixer[ui::kColorTooltipBackground] = {
       GetBgColorFromStyleContext(tooltip_context)};
   mixer[ui::kColorTooltipForeground] = {GtkStyleContextGetColor(

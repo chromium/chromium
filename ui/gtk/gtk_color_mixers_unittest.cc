@@ -200,4 +200,21 @@ TEST_F(GtkColorMixersTest, MaterialColorsFollowAccent) {
   }
 }
 
+// Regression test for crbug.com/40777195: the toggle track came from GTK's
+// toggle button background while the thumb kept its Material color, so in
+// Adwaita-dark the "on" thumb almost disappeared into the track.
+TEST_F(GtkColorMixersTest, ToggleButtonThumbVisibleOnTrack) {
+  for (bool dark : {false, true}) {
+    SCOPED_TRACE(dark ? "dark" : "light");
+    UseAdwaita(dark);
+    auto provider = CreateProvider(dark ? ColorMode::kDark : ColorMode::kLight);
+    const SkColor track = provider->GetColor(ui::kColorToggleButtonTrackOn);
+    const SkColor thumb = color_utils::GetResultingPaintColor(
+        provider->GetColor(ui::kColorToggleButtonThumbOn), track);
+    EXPECT_GE(color_utils::GetContrastRatio(thumb, track),
+              color_utils::kMinimumVisibleContrastRatio)
+        << ui::SkColorName(thumb) << " on " << ui::SkColorName(track);
+  }
+}
+
 }  // namespace gtk
