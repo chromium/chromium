@@ -3136,7 +3136,7 @@
   {
     "name": "disable-feedback-for-ineligible-users",
     "owners": [ "jlebel@google.com", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "disable-grid-tab-switcher",
@@ -5223,7 +5223,7 @@
   {
     "name": "feedback-entry-points-require-can-submit-feedback-capability",
     "owners": [ "jlebel@google.com", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "fetch-device-authorization-keys",
