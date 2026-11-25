@@ -2600,6 +2600,19 @@ fitur encoding konten <ph name="ZSTANDARD_SHORTNAME" /> akan dinonaktifkan.</tra
 <translation id="2521581787935130926">Tampilkan pintasan aplikasi di bilah bookmark</translation>
 <translation id="2522304491589804974">Mengonfigurasi daftar penginstalan ekstensi yang diizinkan</translation>
 <translation id="2523511232831599126">Aktifkan pintasan aksesibilitas di layar login</translation>
+<translation id="2524400223625951315">Menentukan perilaku untuk ekstensi yang diinstal otomatis dalam Mode Terisolasi.
+
+Kebijakan ini berlaku untuk ekstensi yang dikonfigurasi melalui <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> atau dengan <ph name="INSTALLATION_MODE_FIELD" /> yang disetel ke <ph name="FORCE_INSTALLED_VALUE" /> di <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. Ekstensi yang dikonfigurasi dengan <ph name="INSTALLATION_MODE_FIELD" /> yang disetel ke <ph name="NORMAL_INSTALLED_VALUE" /> dikontrol oleh <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" />.
+
+Jika disetel ke 0 (selalu diaktifkan) atau tidak disetel, ekstensi yang diinstal otomatis akan selalu diaktifkan dalam Mode Terisolasi dan tidak dapat dinonaktifkan oleh pengguna.
+
+Jika disetel ke 1 (diaktifkan secara default), ekstensi yang diinstal otomatis akan diaktifkan secara default dalam Mode Terisolasi dan dapat dinonaktifkan oleh pengguna. Pilihan pengguna akan lebih diprioritaskan selama kebijakan tetap disetel ke 1. Di luar Mode Terisolasi, pengguna tetap tidak dapat menonaktifkan ekstensi yang diinstal otomatis.
+
+Ekstensi yang menyetel <ph name="INCOGNITO_MANIFEST_KEY" /> ke <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> dalam manifesnya tidak dapat berjalan dalam Mode Terisolasi, terlepas dari kebijakan ini.
+
+Kebijakan ini hanya berlaku jika <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> diaktifkan.
+
+Kebijakan ini memerlukan lisensi <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> agar dapat diterapkan.</translation>
 <translation id="252742292004421898">Mengizinkan Direct Sockets API di situs ini</translation>
 <translation id="2528762900096510743">Aktifkan Layanan Logout Otomatis</translation>
 <translation id="2529880111512635313">Mengonfigurasi daftar aplikasi dan ekstensi yang diinstal otomatis</translation>
@@ -4112,6 +4125,7 @@ Metode ini akan dihapus di Chrome 145, dan sebaiknya Anda menggunakan metode req
 
       Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut, jika disetel, atau izin akan mengikuti setelan default browser dan memungkinkan pengguna memilih izin ini untuk setiap situs.</translation>
 <translation id="3435796032110614169">Mengizinkan histori tugas pencetakan untuk dihapus</translation>
+<translation id="3435849940943480491">Ekstensi yang diinstal otomatis selalu diaktifkan dalam Mode Terisolasi dan tidak dapat dinonaktifkan</translation>
 <translation id="3436217793443508863">Durasi waktu tanpa input pengguna sebelum layar terkunci saat menggunakan baterai, dalam milidetik.</translation>
 <translation id="3437391374720747482">Pilih metode pertukaran kunci yang memenuhi persyaratan CNSA 2.0</translation>
 <translation id="3437924696598384725">Izinkan pengguna mengelola koneksi VPN</translation>
@@ -6518,6 +6532,7 @@ Penonaktifan decoding video dengan akselerasi hardware tidak disarankan karena a
 <translation id="4927797103413916381">Jika <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> tidak Dinonaktifkan, menyetel <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> ke Aktif atau tidak menyetelnya akan mencegah situs dengan elemen menyesatkan terbuka di jendela atau tab baru.
 
        Jika <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> atau <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> disetel ke Nonaktif, situs dengan elemen menyesatkan akan terbuka di jendela dan tab baru.</translation>
+<translation id="4928435626872799127">Mengontrol perilaku ekstensi yang diinstal otomatis dalam Mode Terisolasi</translation>
 <translation id="4929721861648439998">Mengaktifkan fitur aksesibilitas audio mono di layar login.
 
           Dengan fitur ini, Anda dapat mengalihkan mode perangkat dari audio stereo default ke audio mono.
@@ -10186,6 +10201,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="7054840304131108563">Nonaktifkan fitur aksesibilitas perender</translation>
 <translation id="7055022222176591388">Larang <ph name="FLASH_PLUGIN_NAME" /> yang sudah tidak berlaku</translation>
 <translation id="7056040036973126753">Data Keandalan Domain dapat dikirim ke Google bergantung pada kebijakan Metrik Pengguna Chrome (UMA)</translation>
+<translation id="7057522375529097624">Ekstensi yang diinstal otomatis diaktifkan secara default dalam Mode Terisolasi dan dapat dinonaktifkan</translation>
 <translation id="7062803946218028349">Izinkan pengaktifan Phone Hub</translation>
 <translation id="7063646777978847358">Kebijakan ini mengontrol apakah permintaan pengambilan latar belakang dari Service Worker dibatasi. Jika fitur yang mendownload file di latar belakang terpengaruh, kebijakan ini mungkin relevan.
 

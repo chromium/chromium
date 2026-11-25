@@ -2371,6 +2371,19 @@ URL スタイルの指定子:
 <translation id="2521581787935130926">ブックマーク バーでアプリのショートカットを表示する</translation>
 <translation id="2522304491589804974">拡張機能インストールの許可リストを設定する</translation>
 <translation id="2523511232831599126">ログイン画面でユーザー補助のショートカットを有効にする</translation>
+<translation id="2524400223625951315">自動インストールされた拡張機能のアイソレート モードでの動作を指定します。
+
+このポリシーは、<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> を使用して設定された拡張機能、または <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> で <ph name="INSTALLATION_MODE_FIELD" /> が <ph name="FORCE_INSTALLED_VALUE" /> に設定されている拡張機能に適用されます。<ph name="INSTALLATION_MODE_FIELD" /> が <ph name="NORMAL_INSTALLED_VALUE" /> に設定されている拡張機能は、<ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" /> で管理します。
+
+0（常に有効）に設定するか未設定のままにした場合、自動インストールされた拡張機能はアイソレート モードで常に有効になり、ユーザーが無効にすることはできません。
+
+1（デフォルトで有効）に設定した場合、自動インストールされた拡張機能はアイソレート モードでデフォルトで有効になり、ユーザーは無効にすることができます。ポリシーが 1 に設定されている間は、ユーザーの選択内容が優先されます。アイソレート モード以外でも、ユーザーは自動インストールされた拡張機能を無効にすることはできません。
+
+マニフェストで <ph name="INCOGNITO_MANIFEST_KEY" /> が <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> に設定されている拡張機能は、このポリシーに関係なく、アイソレート モードで実行できません。
+
+このポリシーは、<ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> が有効になっている場合にのみ適用されます。
+
+このポリシーを適用するには、<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> ライセンスが必要です。</translation>
 <translation id="252742292004421898">Direct Sockets API を許可するサイトを指定する</translation>
 <translation id="2528762900096510743">自動ログアウト サービスを有効にする</translation>
 <translation id="2529880111512635313">自動インストールするアプリと拡張機能のリストの設定</translation>
@@ -3796,6 +3809,7 @@ Microsoft Outlook カードには、追加の管理者設定が必要です。Ch
 
       このポリシーでサイトを指定しない場合は、<ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> のポリシーが適用されます。このポリシーでサイトを指定した場合は、ブラウザのデフォルトの権限設定が適用され、ユーザーはサイトごとに権限を選択できます。</translation>
 <translation id="3435796032110614169">印刷ジョブの履歴の削除を許可します</translation>
+<translation id="3435849940943480491">自動インストールされた拡張機能をアイソレート モードで常に有効にする（無効にすることは不可能）</translation>
 <translation id="3436217793443508863">バッテリーでの使用中、ユーザー入力が行われなくなってから画面をロックするまでの時間（ミリ秒）</translation>
 <translation id="3437391374720747482">CNSA 2.0 の要件を満たす鍵交換方式を優先する</translation>
 <translation id="3437924696598384725">ユーザーに VPN 接続の管理を許可する</translation>
@@ -6116,6 +6130,7 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
 <translation id="4927797103413916381"><ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> が無効に設定されていない場合に、<ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> を有効に設定するか未設定のままにすると、不正なコンテンツを提供するサイトで新しいウィンドウやタブが開かれなくなります。
 
        <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> が無効に設定されているか、<ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> を無効に設定した場合は、不正なコンテンツを提供するサイトで新しいウィンドウやタブが開かれます。</translation>
+<translation id="4928435626872799127">自動インストールされた拡張機能のアイソレート モードでの動作を制御する</translation>
 <translation id="4929721861648439998">ログイン画面でモノラル音声ユーザー補助機能を有効にします。
 
           この機能では、デバイスモードをデフォルトのステレオ音声からモノラル音声に切り替えることができます。
@@ -9419,6 +9434,7 @@ SkyVault ユーザーのみ、つまり LocalUserFilesAllowed が false の場�
 <translation id="7054840304131108563">レンダラ ユーザー補助機能を無効にする</translation>
 <translation id="7055022222176591388">古い <ph name="FLASH_PLUGIN_NAME" /> を許可しない</translation>
 <translation id="7056040036973126753">Chrome のユーザーに関する指標（UMA）のポリシーに基づき、必要に応じて Google にドメインの信頼性データを送信する</translation>
+<translation id="7057522375529097624">自動インストールされた拡張機能をアイソレート モードでデフォルトで有効にする（無効にすることは可能）</translation>
 <translation id="7062803946218028349">スマートフォン ハブの有効化を許可する</translation>
 <translation id="7063646777978847358">このポリシーでは、Service Worker からのバックグラウンド フェッチ リクエストを制限するかどうかを管理します。バックグラウンドでファイルをダウンロードする機能が影響を受ける場合は、このポリシーが関連している可能性があります。
 
