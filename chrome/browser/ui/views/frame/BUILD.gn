@@ -468,6 +468,7 @@ source_set("base_tab_strip_region_view") {
     "//chrome/browser/ui/views",
     "//chrome/browser/ui/views/tabs/common",
     "//chrome/browser/ui/views/tabs/common:impl",
+    "//chrome/browser/ui/views/tabs/dragging",
     "//components/tab_groups",
     "//content/public/browser",
     "//ui/base/clipboard",

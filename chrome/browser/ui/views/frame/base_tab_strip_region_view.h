@@ -48,7 +48,6 @@ class BaseTabStripRegionView : public TabStripRegionView {
     return tab_strip_controller_.get();
   }
 
-  TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen) override;
   virtual gfx::Rect GetTabStripDraggableBounds() const = 0;
 
   // TabStripRegionView:
@@ -67,6 +66,7 @@ class BaseTabStripRegionView : public TabStripRegionView {
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id) override {}
   TabDragContext* GetDragContext() override;
+  TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen) override;
   std::optional<BrowserRootView::DropIndex> GetDropIndex(
       const ui::DropTargetEvent& event) override;
   BrowserRootView::DropTarget* GetDropTarget(

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -518,6 +519,41 @@ IN_PROC_BROWSER_TEST_P(BaseTabStripRegionViewBrowserTest, SwitchModes) {
     return target_pinned->children().size() == 2 &&
            target_unpinned->children().size() == 4;
   }));
+}
+
+IN_PROC_BROWSER_TEST_P(BaseTabStripRegionViewBrowserTest,
+                       GetTabDragTargetVerticalMagnetism) {
+  AppendTab();
+  views::test::RunScheduledLayout(
+      BrowserView::GetBrowserViewForBrowser(browser()));
+
+  const gfx::Rect bounds = region_view()->GetTabStripDraggableBounds();
+  ASSERT_FALSE(bounds.IsEmpty());
+  const int x = bounds.CenterPoint().x();
+
+  if (is_horizontal()) {
+    // Horizontal orientation allows dragging up to kVerticalDetachMagnetism
+    // above or below the draggable bounds.
+    const int kMagnetism = TabDragController::kVerticalDetachMagnetism;
+    EXPECT_NE(nullptr, region_view()->GetTabDragTarget(
+                           gfx::Point(x, bounds.y() - kMagnetism)));
+    EXPECT_EQ(nullptr, region_view()->GetTabDragTarget(
+                           gfx::Point(x, bounds.y() - kMagnetism - 1)));
+    EXPECT_NE(nullptr, region_view()->GetTabDragTarget(
+                           gfx::Point(x, bounds.bottom() + kMagnetism - 1)));
+    EXPECT_EQ(nullptr, region_view()->GetTabDragTarget(
+                           gfx::Point(x, bounds.bottom() + kMagnetism)));
+  } else {
+    // Vertical orientation requires the point to be strictly within bounds.
+    EXPECT_NE(nullptr,
+              region_view()->GetTabDragTarget(gfx::Point(x, bounds.y())));
+    EXPECT_EQ(nullptr,
+              region_view()->GetTabDragTarget(gfx::Point(x, bounds.y() - 1)));
+    EXPECT_NE(nullptr, region_view()->GetTabDragTarget(
+                           gfx::Point(x, bounds.bottom() - 1)));
+    EXPECT_EQ(nullptr,
+              region_view()->GetTabDragTarget(gfx::Point(x, bounds.bottom())));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

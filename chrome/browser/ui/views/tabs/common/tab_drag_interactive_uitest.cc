@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/model/display_override.h"
@@ -2594,6 +2595,47 @@ IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest,
               display::Screen::Get()->GetCursorScreenPoint()));
         }
       }),
+      ReleaseMouseAsync(), WaitForState(kDragStatePoller, false));
+}
+
+IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest, VerticalDetachMagnetism) {
+  tabs::TabInterface* original_tab_0 = nullptr;
+  int target_x = 0;
+  auto move_below_strip = [this, &target_x](int vertical_offset) {
+    return MoveMouseTo(base::BindLambdaForTesting([this, &target_x,
+                                                   vertical_offset]() {
+      const gfx::Rect draggable_bounds =
+          GetTabStripRegionView()->GetTabStripDraggableBounds();
+      return gfx::Point(target_x, draggable_bounds.bottom() + vertical_offset);
+    }));
+  };
+
+  RunTestSequence(
+      Do([this, &original_tab_0, &target_x]() {
+        chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                         /*foreground=*/false);
+        chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                         /*foreground=*/false);
+        views::test::RunScheduledLayout(&GetBrowserView());
+        original_tab_0 = browser()->GetTabStripModel()->GetTabAtIndex(0);
+        target_x = GetTabViewAt(1)->GetBoundsInScreen().CenterPoint().x();
+      }),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      PollState(kDragStatePoller, GetDragActive()),
+      StartDragTabByOffset(0, gfx::Vector2d(TrailingStep() * 15, 0)),
+      WaitForState(kDragStatePoller, true),
+      // Dragging within the vertical detach magnetism keeps the tab attached
+      // and reorders it within the tab strip.
+      move_below_strip(TabDragController::kVerticalDetachMagnetism - 1),
+      RunScheduledLayout(), Do([this, &original_tab_0]() {
+        EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+        EXPECT_TRUE(TabDragController::IsActive());
+        EXPECT_EQ(1,
+                  browser()->GetTabStripModel()->GetIndexOfTab(original_tab_0));
+      }),
+      // Dragging past the vertical detach magnetism detaches into a new window.
+      move_below_strip(TabDragController::kVerticalDetachMagnetism),
+      WaitForState(kBrowserCountPoller, 2u), WaitForDetachedWindowVisible(),
       ReleaseMouseAsync(), WaitForState(kDragStatePoller, false));
 }
 

@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_observer.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
@@ -41,6 +42,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -333,6 +335,34 @@ TabDragContext* BaseTabStripRegionView::GetDragContext() {
   return drag_handler_ ? drag_handler_->GetDragContext() : nullptr;
 }
 
+TabDragTarget* BaseTabStripRegionView::GetTabDragTarget(
+    const gfx::Point& point_in_screen) {
+  if (!drag_handler_) {
+    return nullptr;
+  }
+  gfx::Rect tab_strip_draggable_bounds = GetTabStripDraggableBounds();
+  if (tab_strip_draggable_bounds.IsEmpty()) {
+    return nullptr;
+  }
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    // Apply vertical detach magnetism in the horizontal orientation so dragging
+    // slightly above or below the strip doesn't immediately detach.
+    tab_strip_draggable_bounds.Outset(
+        gfx::Outsets::VH(TabDragController::kVerticalDetachMagnetism, 0));
+  }
+  if (!tab_strip_draggable_bounds.Contains(point_in_screen)) {
+    return nullptr;
+  }
+
+  // Note: if the drag has not attached to this tab strip yet, it doesn't matter
+  // which container is used because the first drag loop iteration just attaches
+  // it.
+  if (drag_handler_->IsDraggingPinnedTabs()) {
+    return &GetPinnedTabsContainer()->GetTabDragTarget(point_in_screen);
+  }
+  return &GetUnpinnedTabsContainer()->GetTabDragTarget(point_in_screen);
+}
+
 std::optional<BrowserRootView::DropIndex> BaseTabStripRegionView::GetDropIndex(
     const ui::DropTargetEvent& event) {
   // Check pinned tabs.
@@ -492,25 +522,6 @@ gfx::Rect BaseTabStripRegionView::GetLinkDropBoundsForTesting(
     const BrowserRootView::DropIndex& drop_index,
     DropArrow::Direction* direction) {
   return GetLinkDropBounds(drop_index, direction);  // IN-TEST
-}
-
-TabDragTarget* BaseTabStripRegionView::GetTabDragTarget(
-    const gfx::Point& point_in_screen) {
-  if (!drag_handler_) {
-    return nullptr;
-  }
-  gfx::Rect tab_strip_draggable_bounds = GetTabStripDraggableBounds();
-  if (!tab_strip_draggable_bounds.Contains(point_in_screen)) {
-    return nullptr;
-  }
-
-  // Note: if the drag has not attached to this tab strip yet, it doesn't matter
-  // which container is used because the first drag loop iteration just attaches
-  // it.
-  if (drag_handler_->IsDraggingPinnedTabs()) {
-    return &GetPinnedTabsContainer()->GetTabDragTarget(point_in_screen);
-  }
-  return &GetUnpinnedTabsContainer()->GetTabDragTarget(point_in_screen);
 }
 
 views::View* BaseTabStripRegionView::SetTabStripView(
