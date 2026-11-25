@@ -670,6 +670,9 @@
   <message name="IDS_GLIC_SELECTION_ASK_GOOGLE_PLACEHOLDER" desc="Placeholder text in the selection overlay prompt input box when Google Search is the active endpoint.">
     Ask Google
   </message>
+  <message name="IDS_GLIC_SELECTION_SWITCH_PROVIDER_TOOLTIP" desc="Tooltip and accessibility label/description for the provider icon and prompt input box in the selection overlay explaining how to switch providers. '(Tab)' refers to the keyboard Tab key, not a browser tab.">
+    Switch provider (Tab)
+  </message>
   <message name="IDS_GLIC_SELECTION_FETCHING_PAGE_CONTENT" desc="Tooltip for the disabled arrow button in the selection prompt box while Chrome is still getting the page content to send with the prompt.">
     Fetching the page content
   </message>

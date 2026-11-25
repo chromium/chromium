@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
@@ -35,6 +37,7 @@
 #include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/lens/google_search_prompt_endpoint.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/selection/features.h"
@@ -2413,6 +2416,85 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
           "  input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', "
           "bubbles: true}));"
           "}"));
+}
+
+namespace {
+
+class SelectionOverlayInteractiveTestWithGoogleSearch
+    : public SelectionOverlayInteractiveTestWithPrompt {
+ public:
+  SelectionOverlayInteractiveTestWithGoogleSearch() {
+    feature_list_.InitAndEnableFeature(lens::kSmartSelectionGoogleSearch);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithGoogleSearch,
+                       TabKeyCyclesEndpointsAndRetainsFocusInInput) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+      ui::test::PollingStateObserver<
+          std::optional<::selection::mojom::PromptEndpointId>>,
+      kActiveEndpointId);
+  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
+                                       "glic-selection-overlay"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
+                        "el => document.hasFocus() && "
+                        "el.shadowRoot.activeElement === "
+                        "el.shadowRoot.querySelector('#promptInput') && "
+                        "el.promptEndpoints.length === 2"),
+      CheckResult(
+          [this]() {
+            return GetController()->GetActivePromptEndpointIdForTesting();
+          },
+          ::selection::mojom::PromptEndpointId::kGemini),
+      ExecuteJsAt(kOverlayWebContentsId, kSelectionOverlay,
+                  "el => { "
+                  "el.shadowRoot.querySelector('#promptInput').value = "
+                  "'test prompt'; }"),
+      PollState(
+          kActiveEndpointId,
+          [this]() -> std::optional<::selection::mojom::PromptEndpointId> {
+            return GetController()
+                       ? GetController()->GetActivePromptEndpointIdForTesting()
+                       : std::nullopt;
+          }),
+      SendKeyPress(kOverlayWebContentsId, ui::VKEY_TAB),
+      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
+                        "el => document.hasFocus() && "
+                        "el.activeEndpointIndex === 1 && "
+                        "el.shadowRoot.activeElement === "
+                        "el.shadowRoot.querySelector('#promptInput') && "
+                        "el.shadowRoot.querySelector('#promptInput').value "
+                        "=== 'test prompt'"),
+      WaitForState(kActiveEndpointId,
+                   std::make_optional(
+                       ::selection::mojom::PromptEndpointId::kGoogleSearch)),
+      SendKeyPress(kOverlayWebContentsId, ui::VKEY_TAB, ui::EF_SHIFT_DOWN),
+      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
+                        "el => document.hasFocus() && "
+                        "el.activeEndpointIndex === 0 && "
+                        "el.shadowRoot.activeElement === "
+                        "el.shadowRoot.querySelector('#promptInput') && "
+                        "el.shadowRoot.querySelector('#promptInput').value "
+                        "=== 'test prompt'"),
+      WaitForState(
+          kActiveEndpointId,
+          std::make_optional(::selection::mojom::PromptEndpointId::kGemini)));
 }
 
 // A session the side panel started stays up after a prompt is submitted: the

@@ -323,19 +323,54 @@
   width: 320px;
 }
 
-.sparkle-icon {
+.endpoint-icon {
   align-items: center;
+  border-radius: 50%;
   display: flex;
   flex-shrink: 0;
-  height: 20px;
+  height: 28px;
   justify-content: center;
-  margin-right: 8px;
-  width: 20px;
+  margin-inline: -4px 4px;
+  width: 28px;
 }
 
-.sparkle-icon img {
+.endpoint-icon[interactive] {
+  cursor: pointer;
+}
+
+.endpoint-icon[interactive]:hover {
+  background-color: var(--cr-hover-on-subtle-background-color);
+}
+
+.endpoint-icon-image {
   height: 100%;
   width: 100%;
+}
+
+.endpoint-icon-image.gemini {
+  background: url('/spark.svg') center / 20px no-repeat;
+}
+
+/* <if expr="_google_chrome"> */
+.endpoint-icon-image.google-search {
+  background: url('/google_search.svg') center / 20px no-repeat;
+}
+/* </if> */
+/* <if expr="not _google_chrome"> */
+.endpoint-icon-image.google-search {
+  background-color: var(--cr-fallback-color-on-surface-subtle);
+  mask: url('/google_search.svg') center / 16px no-repeat;
+}
+/* </if> */
+
+.visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 
 #promptInput {

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 
 #include "base/feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
@@ -25,6 +26,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 
@@ -62,6 +64,7 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
       {"sendFeedback", IDS_LENS_SEND_FEEDBACK},
       {"askGemini", IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL},
       {"askGeminiMore", IDS_GLIC_SELECTION_ASK_GEMINI_MORE},
+      {"switchProviderTooltip", IDS_GLIC_SELECTION_SWITCH_PROVIDER_TOOLTIP},
       {"submitPrompt", IDS_GLIC_SELECTION_SUBMIT_PROMPT},
       {"fetchingPageContent", IDS_GLIC_SELECTION_FETCHING_PAGE_CONTENT},
       {"sharingDisclaimer", IDS_GLIC_SELECTION_SHARING_DISCLAIMER},
@@ -115,6 +118,13 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableMultiRegionSelection", true);
   html_source->AddResourcePath("glic_region_selection_cursor_icon.svg",
                                IDR_GLIC_REGION_SELECTION_CURSOR_ICON);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  html_source->AddResourcePath("google_search.svg",
+                               IDR_SEARCHBOX_ICONS_GOOGLE_G_SVG);
+#else
+  html_source->AddResourcePath("google_search.svg",
+                               IDR_SEARCHBOX_ICONS_SEARCH_CR23_SVG);
+#endif
   html_source->AddBoolean(
       "lineSelection",
       base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine));

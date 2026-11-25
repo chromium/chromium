@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {GlicSelectionOverlayElement} from './glic_selection_overlay.js';
 
@@ -62,12 +62,26 @@ ${this.enableSelectionOverlayPrompt || this.enableSelectionOverlayPromptBox ?
       <div class="searchbox-row">
         <div class="searchbox-pill" @click="${this.onSearchboxPillClick}"
             @pointerdown="${this.onPromptPointerdown}">
-          <div class="sparkle-icon">
-            <img src="/spark.svg">
+          <div id="endpointIcon" class="endpoint-icon"
+              ?interactive="${this.hasMultipleEndpoints()}"
+              role="${this.hasMultipleEndpoints() ? 'button' : nothing}"
+              aria-label="${this.getEndpointSwitchTitle() || nothing}"
+              aria-hidden="${this.hasMultipleEndpoints() ? nothing : 'true'}"
+              title="${this.getEndpointSwitchTitle() || nothing}"
+              @click="${this.onEndpointIconClick}">
+            <div
+                class="endpoint-icon-image
+                ${this.getActiveEndpointIconClass()}">
+            </div>
           </div>
-          <input id="promptInput" type="text" placeholder="$i18n{askGemini}"
-              aria-label="$i18n{askGemini}" @input="${this.onPromptInput}"
-              @keydown="${this.onInputKeydown}" autocomplete="off">
+          <input id="promptInput" type="text"
+              placeholder="${this.getActiveEndpointPlaceholder()}"
+              aria-label="${this.getActiveEndpointPlaceholder()}"
+              aria-description="${this.getEndpointSwitchTitle() || nothing}"
+              aria-keyshortcuts="${
+                  this.hasMultipleEndpoints() ? 'Tab Shift+Tab' : nothing}"
+              @input="${this.onPromptInput}" @keydown="${this.onInputKeydown}"
+              autocomplete="off">
           <cr-icon-button id="submitPromptButton"
               ?hidden="${!this.hasPromptText}"
               ?disabled="${!this.pageContextReceived}"
@@ -75,6 +89,10 @@ ${this.enableSelectionOverlayPrompt || this.enableSelectionOverlayPromptBox ?
               aria-label="$i18n{submitPrompt}"
               @click="${this.onSubmitPromptClick}">
           </cr-icon-button>
+          <div id="endpointLiveRegion" class="visually-hidden"
+              aria-live="polite" aria-atomic="true">
+            ${this.endpointLiveAnnouncement}
+          </div>
         </div>
         ${this.enableSelectionOverlayDogfoodFeedback ? html`
           <cr-button id="dogfoodFeedbackButton" class="dogfood-feedback-button"
@@ -92,7 +110,8 @@ ${this.enableSelectionOverlayPrompt || this.enableSelectionOverlayPromptBox ?
         @pointerdown="${this.onPromptPointerdown}">
       ${this.suggestedActions.map((item, index) => html`
         <cr-button class="action-chip" data-index="${index}"
-            @click="${this.onSuggestedActionClick}">
+            @click="${this.onSuggestedActionClick}"
+            @keydown="${this.onActionChipKeydown}">
           ${this.getActionIconClass(item.icon) ? html`
             <div slot="prefix-icon"
                 class="chip-icon ${this.getActionIconClass(item.icon)}">

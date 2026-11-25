@@ -7,8 +7,8 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import {GenericAssociatedInterface, GenericAssociatedInterfaceRemote} from '//resources/mojo/mojo/public/mojom/base/generic_pending_associated_receiver.mojom-webui.js';
 import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import {browserProxyFactory, ScreenshotBitmapBrowserProxyImpl, SelectionOverlayBaseHandler, SelectionOverlayBaseHandlerImpl, SelectionOverlayPageHandlerRemote, SuggestedActionIcon} from 'chrome-untrusted://glic/selection_overlay.js';
-import type {GlicSelectionOverlayElement, InlineFulfillmentHostElement, SelectionOverlayPageRemote, SuggestedAction, SuggestedActionsListenerRemote} from 'chrome-untrusted://glic/selection_overlay.js';
+import {browserProxyFactory, PromptEndpointId, ScreenshotBitmapBrowserProxyImpl, SelectionOverlayBaseHandler, SelectionOverlayBaseHandlerImpl, SelectionOverlayPageHandlerRemote, SuggestedActionIcon} from 'chrome-untrusted://glic/selection_overlay.js';
+import type {GlicSelectionOverlayElement, InlineFulfillmentHostElement, PromptEndpointInfo, SelectionOverlayPageRemote, SuggestedAction, SuggestedActionsListenerRemote} from 'chrome-untrusted://glic/selection_overlay.js';
 import {assertEquals, assertFalse, assertLE, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
@@ -113,21 +113,21 @@ suite('GlicSelectionOverlay', () => {
     assertEquals(0, handler.getCallCount('dismissOverlay'));
   });
 
-  test('ClickingSparkleIconFocusesPromptInput', () => {
-    const sparkleIcon =
-        overlay.shadowRoot.querySelector<HTMLElement>('.sparkle-icon')!;
+  test('ClickingEndpointIconFocusesPromptInput', () => {
+    const endpointIcon =
+        overlay.shadowRoot.querySelector<HTMLElement>('#endpointIcon')!;
     const input =
         overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
-    assertTrue(!!sparkleIcon);
+    assertTrue(!!endpointIcon);
     assertTrue(!!input);
 
     input.blur();
     assertNotEquals(input, overlay.shadowRoot.activeElement);
 
-    sparkleIcon.dispatchEvent(
+    endpointIcon.dispatchEvent(
         new PointerEvent('pointerdown', {bubbles: true, composed: true}));
     assertTrue(overlay.showFloatingPrompt);
-    sparkleIcon.click();
+    endpointIcon.click();
 
     assertEquals(input, overlay.shadowRoot.activeElement);
     assertEquals(0, handler.getCallCount('dismissOverlay'));
@@ -187,6 +187,417 @@ suite('GlicSelectionOverlay', () => {
         new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
     assertEquals(1, handler.getCallCount('submitPrompt'));
     assertEquals('Explain this region', handler.getArgs('submitPrompt')[0]);
+  });
+
+  function twoEndpoints(): PromptEndpointInfo[] {
+    return [
+      {
+        id: PromptEndpointId.kGemini,
+        name: 'Gemini',
+        placeholder: 'Ask Gemini',
+      },
+      {
+        id: PromptEndpointId.kGoogleSearch,
+        name: 'Google Search',
+        placeholder: 'Ask Google',
+      },
+    ];
+  }
+
+  async function setEndpoints(
+      endpoints: PromptEndpointInfo[], defaultId: PromptEndpointId) {
+    page.setPromptEndpoints(endpoints, defaultId);
+    await page.$.flushForTesting();
+    await overlay.updateComplete;
+  }
+
+  test('SetPromptEndpointsRespectsLastUsedDefault', async () => {
+    const input =
+        overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
+    const endpointIcon =
+        overlay.shadowRoot.querySelector<HTMLElement>('#endpointIcon')!;
+    const endpointIconImage =
+        endpointIcon.querySelector<HTMLElement>('.endpoint-icon-image')!;
+    assertFalse(endpointIcon.hasAttribute('interactive'));
+    assertFalse(endpointIcon.hasAttribute('title'));
+    assertFalse(endpointIcon.hasAttribute('aria-label'));
+    assertFalse(input.hasAttribute('aria-description'));
+    assertTrue(endpointIconImage.classList.contains('gemini'));
+
+    await setEndpoints(twoEndpoints(), PromptEndpointId.kGoogleSearch);
+
+    const tooltip = loadTimeData.getString('switchProviderTooltip');
+    assertEquals('Ask Google', input.placeholder);
+    assertEquals('Ask Google', input.getAttribute('aria-label'));
+    assertEquals(tooltip, input.getAttribute('aria-description'));
+    assertTrue(endpointIcon.hasAttribute('interactive'));
+    assertEquals(tooltip, endpointIcon.getAttribute('title'));
+    assertEquals(tooltip, endpointIcon.getAttribute('aria-label'));
+    assertTrue(endpointIconImage.classList.contains('google-search'));
+    assertFalse(endpointIconImage.classList.contains('gemini'));
+  });
+
+  test('TabAndShiftTabCycleEndpointsRequerySuggestionsAndSubmit', async () => {
+    await receivePageContext();
+    await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
+
+    const input =
+        overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
+    input.focus();
+    input.value = 'What is this?';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    await overlay.updateComplete;
+
+    // IME composition Tab must not hijack candidate selection.
+    const composingTab = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
+      isComposing: true,
+    });
+    input.dispatchEvent(composingTab);
+    assertFalse(composingTab.defaultPrevented);
+    assertEquals('Ask Gemini', input.placeholder);
+
+    // Modified Tab (Ctrl/Alt/Meta) must not hijack browser shortcuts.
+    for (const modifier of ['ctrlKey', 'altKey', 'metaKey'] as const) {
+      const modifiedTab = new KeyboardEvent('keydown', {
+        key: 'Tab',
+        [modifier]: true,
+        bubbles: true,
+        cancelable: true,
+      });
+      input.dispatchEvent(modifiedTab);
+      assertFalse(modifiedTab.defaultPrevented);
+      assertEquals('Ask Gemini', input.placeholder);
+    }
+
+    const initialSuggestionCalls = handler.getCallCount('getSuggestedActions');
+
+    // Tab cycles forward: Gemini -> Google Search.
+    const tabEvent = new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true});
+    input.dispatchEvent(tabEvent);
+    await overlay.updateComplete;
+    assertTrue(tabEvent.defaultPrevented);
+    assertEquals('Ask Google', input.placeholder);
+    assertEquals('What is this?', input.value);
+    assertEquals(
+        'Google Search',
+        overlay.shadowRoot.querySelector('#endpointLiveRegion')
+            ?.textContent?.trim());
+    assertEquals(1, handler.getCallCount('setActivePromptEndpoint'));
+    assertEquals(
+        PromptEndpointId.kGoogleSearch,
+        handler.getArgs('setActivePromptEndpoint')[0]);
+    assertEquals(
+        initialSuggestionCalls + 1,
+        handler.getCallCount('getSuggestedActions'));
+
+    // Shift+Tab cycles backward: Google Search -> Gemini -> Google Search.
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown',
+        {key: 'Tab', shiftKey: true, bubbles: true, cancelable: true}));
+    await overlay.updateComplete;
+    assertEquals('Ask Gemini', input.placeholder);
+    assertEquals(
+        PromptEndpointId.kGemini,
+        handler.getArgs('setActivePromptEndpoint').at(-1));
+
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown',
+        {key: 'Tab', shiftKey: true, bubbles: true, cancelable: true}));
+    await overlay.updateComplete;
+    assertEquals('Ask Google', input.placeholder);
+    assertEquals(
+        PromptEndpointId.kGoogleSearch,
+        handler.getArgs('setActivePromptEndpoint').at(-1));
+
+    // Tab wraps back to Gemini, then Tab to Google Search and submit.
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true}));
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true}));
+    await overlay.updateComplete;
+    assertEquals('Ask Google', input.placeholder);
+    assertEquals(
+        PromptEndpointId.kGoogleSearch,
+        handler.getArgs('setActivePromptEndpoint').at(-1));
+
+    input.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+    assertEquals(1, handler.getCallCount('submitPrompt'));
+    assertEquals('What is this?', handler.getArgs('submitPrompt')[0]);
+  });
+
+  test('ClickingEndpointIconCyclesEndpointsAndFocusesInput', async () => {
+    await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
+    const endpointIcon =
+        overlay.shadowRoot.querySelector<HTMLElement>('#endpointIcon')!;
+    const input =
+        overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
+    let focusCalls = 0;
+    const origFocus = input.focus.bind(input);
+    input.focus = (options?: FocusOptions) => {
+      focusCalls++;
+      origFocus(options);
+    };
+
+    endpointIcon.click();
+    await overlay.updateComplete;
+    assertEquals('Ask Google', input.placeholder);
+    assertEquals(1, handler.getCallCount('setActivePromptEndpoint'));
+    assertEquals(
+        PromptEndpointId.kGoogleSearch,
+        handler.getArgs('setActivePromptEndpoint')[0]);
+    assertEquals(1, focusCalls);
+
+    endpointIcon.click();
+    await overlay.updateComplete;
+    assertEquals('Ask Gemini', input.placeholder);
+    assertEquals(2, handler.getCallCount('setActivePromptEndpoint'));
+    assertEquals(
+        PromptEndpointId.kGemini,
+        handler.getArgs('setActivePromptEndpoint')[1]);
+    assertEquals(2, focusCalls);
+  });
+
+  test('TabAndShiftTabCycleDirectionWithThreeEndpoints', async () => {
+    const threeEndpoints: PromptEndpointInfo[] = [
+      ...twoEndpoints(),
+      {
+        id: PromptEndpointId.kGemini,
+        name: 'Third Endpoint',
+        placeholder: 'Ask Third',
+      },
+    ];
+    await setEndpoints(threeEndpoints, PromptEndpointId.kGemini);
+
+    const input =
+        overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
+    input.focus();
+    assertEquals('Ask Gemini', input.placeholder);
+
+    // Forward cycling: 0 -> 1 -> 2 -> 0.
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true}));
+    await overlay.updateComplete;
+    assertEquals('Ask Google', input.placeholder);
+
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true}));
+    await overlay.updateComplete;
+    assertEquals('Ask Third', input.placeholder);
+
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true}));
+    await overlay.updateComplete;
+    assertEquals('Ask Gemini', input.placeholder);
+
+    // Backward cycling: 0 -> 2 -> 1 -> 0.
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown',
+        {key: 'Tab', shiftKey: true, bubbles: true, cancelable: true}));
+    await overlay.updateComplete;
+    assertEquals('Ask Third', input.placeholder);
+
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown',
+        {key: 'Tab', shiftKey: true, bubbles: true, cancelable: true}));
+    await overlay.updateComplete;
+    assertEquals('Ask Google', input.placeholder);
+
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown',
+        {key: 'Tab', shiftKey: true, bubbles: true, cancelable: true}));
+    await overlay.updateComplete;
+    assertEquals('Ask Gemini', input.placeholder);
+  });
+
+  test('SetPromptEndpointsUpdatesLiveRegionWithoutStealingFocus', async () => {
+    // Give the overlay a real selection so `floatingPromptResizeObserver_`
+    // keeps `showFloatingPrompt` true across async frames (`flushForTesting`).
+    page.setPostRegionSelections([{
+      id: REGION_ID,
+      shape: {rect: {x: 0.5, y: 0.5, width: 0.2, height: 0.2}},
+    }]);
+    await page.$.flushForTesting();
+    await waitAfterNextRender(overlay);
+    assertTrue(overlay.showFloatingPrompt);
+
+    await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
+
+    const liveRegion =
+        overlay.shadowRoot.querySelector<HTMLElement>('#endpointLiveRegion')!;
+    const input =
+        overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
+    assertEquals('', liveRegion.textContent?.trim());
+
+    // Switch to Google Search via Tab -> announces "Google Search".
+    input.focus();
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true}));
+    await overlay.updateComplete;
+    assertEquals('Google Search', liveRegion.textContent?.trim());
+
+    // Populate and focus an action chip after the `Tab`-triggered refetch
+    // clears `suggestedActions`, then simulate `AdoptSession()` pinning
+    // endpoints back to Gemini. Live region should announce "Gemini" and focus
+    // must remain on the chip.
+    overlay.suggestedActions = [createSuggestedAction('1', 'First chip')];
+    await overlay.updateComplete;
+    await waitAfterNextRender(overlay);
+    assertTrue(overlay.showFloatingPrompt);
+    const chip = overlay.shadowRoot.querySelector<HTMLElement>('.action-chip')!;
+    chip.focus();
+    assertEquals(chip, overlay.shadowRoot.activeElement);
+    await setEndpoints([twoEndpoints()[0]!], PromptEndpointId.kGemini);
+    assertEquals('Gemini', liveRegion.textContent?.trim());
+    assertEquals(chip, overlay.shadowRoot.activeElement);
+
+    // Re-sending endpoints with the same active endpoint clears stale text so
+    // the next cycle announcement is not suppressed.
+    await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
+    assertEquals('', liveRegion.textContent?.trim());
+    assertEquals(chip, overlay.shadowRoot.activeElement);
+
+    input.focus();
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true}));
+    await overlay.updateComplete;
+    assertEquals('Google Search', liveRegion.textContent?.trim());
+  });
+
+  test('ArrowKeysNavigateBetweenInputAndActionChips', async () => {
+    overlay.suggestedActions = [
+      createSuggestedAction('1', 'First chip'),
+      createSuggestedAction('2', 'Second chip'),
+    ];
+    overlay.promptAboveSelection = false;
+    await overlay.updateComplete;
+
+    const input =
+        overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
+    const chips = Array.from(
+        overlay.shadowRoot.querySelectorAll<HTMLElement>('.action-chip'));
+    input.focus();
+    assertEquals(input, overlay.shadowRoot.activeElement);
+
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowDown', bubbles: true, cancelable: true}));
+    assertEquals(chips[0], overlay.shadowRoot.activeElement);
+
+    chips[0]!.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowDown', bubbles: true, cancelable: true}));
+    assertEquals(chips[1], overlay.shadowRoot.activeElement);
+
+    chips[1]!.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowUp', bubbles: true, cancelable: true}));
+    assertEquals(chips[0], overlay.shadowRoot.activeElement);
+
+    chips[0]!.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowUp', bubbles: true, cancelable: true}));
+    assertEquals(input, overlay.shadowRoot.activeElement);
+
+    // Modifier keys on arrow events must not hijack text selection / shortcuts.
+    for (const modifier of ['shiftKey', 'ctrlKey', 'altKey', 'metaKey'] as
+         const) {
+      const event = new KeyboardEvent('keydown', {
+        key: 'ArrowDown',
+        [modifier]: true,
+        bubbles: true,
+        cancelable: true,
+      });
+      input.dispatchEvent(event);
+      assertFalse(event.defaultPrevented);
+      assertEquals(input, overlay.shadowRoot.activeElement);
+    }
+
+    // When the prompt box is positioned above the selection, arrow directions
+    // flip (ArrowUp moves from input into chips; ArrowDown moves back).
+    overlay.promptAboveSelection = true;
+    await overlay.updateComplete;
+    input.focus();
+
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowUp', bubbles: true, cancelable: true}));
+    assertEquals(chips[0], overlay.shadowRoot.activeElement);
+
+    chips[0]!.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowUp', bubbles: true, cancelable: true}));
+    assertEquals(chips[1], overlay.shadowRoot.activeElement);
+
+    chips[1]!.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowDown', bubbles: true, cancelable: true}));
+    assertEquals(chips[0], overlay.shadowRoot.activeElement);
+
+    chips[0]!.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowDown', bubbles: true, cancelable: true}));
+    assertEquals(input, overlay.shadowRoot.activeElement);
+
+    // Modifier keys on arrow events targeting action chips must be ignored.
+    chips[0]!.focus();
+    for (const modifier of ['shiftKey', 'ctrlKey', 'altKey', 'metaKey'] as
+         const) {
+      const event = new KeyboardEvent('keydown', {
+        key: 'ArrowDown',
+        [modifier]: true,
+        bubbles: true,
+        cancelable: true,
+      });
+      chips[0]!.dispatchEvent(event);
+      assertFalse(event.defaultPrevented);
+      assertEquals(chips[0], overlay.shadowRoot.activeElement);
+    }
+
+    // Escape on an action chip dismisses the overlay.
+    chips[0]!.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Escape', bubbles: true, cancelable: true}));
+    assertEquals(1, handler.getCallCount('dismissOverlay'));
+  });
+
+  test('ArrowKeysIgnoredOnActionChipsWithoutPromptBox', async () => {
+    overlay.enableSelectionOverlayPromptBox = false;
+    overlay.enableSelectionOverlayPrompt = true;
+    overlay.suggestedActions = [
+      createSuggestedAction('1', 'First chip'),
+      createSuggestedAction('2', 'Second chip'),
+    ];
+    overlay.promptAboveSelection = false;
+    await overlay.updateComplete;
+
+    const chips = Array.from(
+        overlay.shadowRoot.querySelectorAll<HTMLElement>('.action-chip'));
+    chips[0]!.focus();
+    const upEvent = new KeyboardEvent(
+        'keydown', {key: 'ArrowUp', bubbles: true, cancelable: true});
+    chips[0]!.dispatchEvent(upEvent);
+    assertFalse(upEvent.defaultPrevented);
+    assertEquals(chips[0], overlay.shadowRoot.activeElement);
+  });
+
+  test('SingleEndpointTabDoesNotPreventDefault', async () => {
+    await setEndpoints([twoEndpoints()[0]!], PromptEndpointId.kGemini);
+    const input =
+        overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
+    const endpointIcon =
+        overlay.shadowRoot.querySelector<HTMLElement>('#endpointIcon')!;
+    assertEquals('true', endpointIcon.getAttribute('aria-hidden'));
+    assertFalse(endpointIcon.hasAttribute('role'));
+    assertFalse(endpointIcon.hasAttribute('title'));
+    assertFalse(input.hasAttribute('aria-description'));
+    assertFalse(input.hasAttribute('aria-keyshortcuts'));
+
+    input.focus();
+    const tabEvent = new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true});
+    input.dispatchEvent(tabEvent);
+    assertFalse(tabEvent.defaultPrevented);
+
+    await setEndpoints(twoEndpoints(), PromptEndpointId.kGoogleSearch);
+    assertEquals('button', endpointIcon.getAttribute('role'));
+    assertFalse(endpointIcon.hasAttribute('aria-hidden'));
+    assertEquals('Tab Shift+Tab', input.getAttribute('aria-keyshortcuts'));
   });
 
   test('SuggestionsOrderBelowAndAboveInputBox', async () => {

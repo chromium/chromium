@@ -46,6 +46,7 @@ source_set("selection") {
     ":wiggle_detector",
     ":wiggle_detector_factory",
     "//base",
+    "//build:branding_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/actor",
     "//chrome/browser/content_settings:content_settings_factory",
@@ -90,6 +91,7 @@ source_set("selection") {
     "//ui/base/mojom:ui_base_types",
     "//ui/gfx/geometry",
     "//ui/views",
+    "//ui/webui/resources:resources_grit",
   ]
 }
 
@@ -149,6 +151,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/public:provider_features",
     "//chrome/browser/glic/test_support",
+    "//chrome/browser/lens:google_search_prompt_endpoint",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:browser_element_identifiers",

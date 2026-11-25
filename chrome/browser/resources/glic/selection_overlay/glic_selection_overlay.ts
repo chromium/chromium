@@ -22,6 +22,7 @@ import type {RegionSelectionElement} from '/lens/region_selection.js';
 import {SelectionOverlayBaseLitElement} from '/lens/selection_overlay_base_lit.js';
 import {DragFeature, GestureState} from '/lens/selection_utils.js';
 
+import {PromptEndpointId} from './action.mojom-webui.js';
 import {getCss} from './glic_selection_overlay.css.js';
 import {getHtml} from './glic_selection_overlay.html.js';
 import type {InlineFulfillmentHostElement} from './inline_fulfillment_host.js';
@@ -30,7 +31,7 @@ import {                                   //
   SuggestedActionIcon,                     //
   SuggestedActionsListenerCallbackRouter,  //
 } from './selection_overlay.mojom-webui.js';
-import type {InteractionOptions, SuggestedAction} from './selection_overlay.mojom-webui.js';
+import type {InteractionOptions, PromptEndpointInfo, SuggestedAction} from './selection_overlay.mojom-webui.js';
 import type {SelectionOverlayBaseHandlerImpl} from './selection_overlay_base_handler_impl.js';
 
 const GLIC_BORDER_GLOW_COLORS: string[] = [
@@ -92,6 +93,9 @@ export class GlicSelectionOverlayElement extends
       hasPromptText: {type: Boolean},
       sidePanelOpen: {type: Boolean, reflect: true},
       pageContextReceived: {type: Boolean},
+      promptEndpoints: {type: Array},
+      activeEndpointIndex: {type: Number},
+      endpointLiveAnnouncement: {type: String},
     };
   }
 
@@ -125,6 +129,10 @@ export class GlicSelectionOverlayElement extends
   // Whether the browser has the page content. Until then a prompt can't be
   // submitted.
   accessor pageContextReceived: boolean = false;
+  // Ordered list of eligible prompt endpoints configured by the browser.
+  accessor promptEndpoints: PromptEndpointInfo[] = [];
+  accessor activeEndpointIndex: number = 0;
+  accessor endpointLiveAnnouncement: string = '';
   // The platform's usual page scrollbar width, which is part of the
   // screenshot. The chips keep their margin from it.
   private readonly pageScrollbarWidth_: number =
@@ -141,6 +149,20 @@ export class GlicSelectionOverlayElement extends
         (options: InteractionOptions) => {
           this.hideHandles = options.hideHandles;
           this.skipIntroAnimation = options.skipIntroAnimation;
+        }));
+    this.listenerIds.push(handlerImpl.addSetPromptEndpointsListener(
+        (endpoints: PromptEndpointInfo[],
+         defaultEndpointId: PromptEndpointId) => {
+          const prevActiveId = this.getActiveEndpoint_()?.id ?? null;
+          this.promptEndpoints = endpoints;
+          const defaultIdx =
+              endpoints.findIndex(e => e.id === defaultEndpointId);
+          this.activeEndpointIndex = defaultIdx >= 0 ? defaultIdx : 0;
+          const nextActive = this.getActiveEndpoint_();
+          this.endpointLiveAnnouncement = prevActiveId !== null && nextActive &&
+                  nextActive.id !== prevActiveId ?
+              nextActive.name :
+              '';
         }));
     this.listenerIds.push(
         handlerImpl.addSetSidePanelOpenListener((open: boolean) => {
@@ -791,12 +813,122 @@ export class GlicSelectionOverlayElement extends
     this.hasPromptText = input.value.trim().length > 0;
   }
 
+  protected hasMultipleEndpoints(): boolean {
+    return this.promptEndpoints.length > 1;
+  }
+
+  private getActiveEndpoint_(): PromptEndpointInfo|undefined {
+    return this.promptEndpoints[this.activeEndpointIndex] ??
+        this.promptEndpoints[0];
+  }
+
+  protected getActiveEndpointPlaceholder(): string {
+    return this.getActiveEndpoint_()?.placeholder ??
+        loadTimeData.getString('askGemini');
+  }
+
+  protected getActiveEndpointIconClass(): string {
+    switch (this.getActiveEndpoint_()?.id) {
+      case PromptEndpointId.kGoogleSearch:
+        return 'google-search';
+      case PromptEndpointId.kGemini:
+      default:
+        return 'gemini';
+    }
+  }
+
+  protected getEndpointSwitchTitle(): string {
+    return this.hasMultipleEndpoints() ?
+        loadTimeData.getString('switchProviderTooltip') :
+        '';
+  }
+
+  private cycleEndpoint_(delta: number) {
+    if (!this.hasMultipleEndpoints()) {
+      return;
+    }
+    const count = this.promptEndpoints.length;
+    this.activeEndpointIndex =
+        (this.activeEndpointIndex + delta + count) % count;
+    const activeEndpoint = this.getActiveEndpoint_();
+    if (!activeEndpoint) {
+      return;
+    }
+    this.endpointLiveAnnouncement = activeEndpoint.name;
+    (this.baseHandler as SelectionOverlayBaseHandlerImpl)
+        .setActivePromptEndpoint(activeEndpoint.id);
+    this.fetchSuggestedActions();
+  }
+
+  protected onEndpointIconClick() {
+    this.cycleEndpoint_(1);
+  }
+
+  private hasModifierKey_(event: KeyboardEvent, allowShift: boolean = false):
+      boolean {
+    return (!allowShift && event.shiftKey) || event.ctrlKey || event.altKey ||
+        event.metaKey;
+  }
+
   protected onInputKeydown(event: KeyboardEvent) {
+    if (event.isComposing) {
+      return;
+    }
+    if (event.key === 'Tab' &&
+        !this.hasModifierKey_(event, /*allowShift=*/ true) &&
+        this.hasMultipleEndpoints()) {
+      event.preventDefault();
+      this.cycleEndpoint_(event.shiftKey ? -1 : 1);
+      return;
+    }
     if (event.key === 'Enter') {
       this.submitPromptInput_();
-    } else if (event.key === 'Escape') {
+      return;
+    }
+    if (event.key === 'Escape') {
       (this.baseHandler as SelectionOverlayBaseHandlerImpl)
           .dismissOverlay(DismissOverlayReason.kCloseButton);
+      return;
+    }
+    const moveIntoChipsKey =
+        this.promptAboveSelection ? 'ArrowUp' : 'ArrowDown';
+    if (event.key === moveIntoChipsKey && !this.hasModifierKey_(event)) {
+      const firstChip =
+          this.shadowRoot.querySelector<HTMLElement>('.action-chip');
+      if (firstChip) {
+        event.preventDefault();
+        firstChip.focus();
+      }
+    }
+  }
+
+  protected onActionChipKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      (this.baseHandler as SelectionOverlayBaseHandlerImpl)
+          .dismissOverlay(DismissOverlayReason.kCloseButton);
+      return;
+    }
+    if (!this.enableSelectionOverlayPromptBox || this.hasModifierKey_(event)) {
+      return;
+    }
+    const chips = Array.from(
+        this.shadowRoot.querySelectorAll<HTMLElement>('.action-chip'));
+    const index = Number((event.currentTarget as HTMLElement).dataset['index']);
+    const awayFromInputKey =
+        this.promptAboveSelection ? 'ArrowUp' : 'ArrowDown';
+    const towardInputKey = this.promptAboveSelection ? 'ArrowDown' : 'ArrowUp';
+    if (event.key === awayFromInputKey) {
+      if (index + 1 < chips.length) {
+        event.preventDefault();
+        chips[index + 1]!.focus();
+      }
+    } else if (event.key === towardInputKey) {
+      event.preventDefault();
+      if (index > 0) {
+        chips[index - 1]!.focus();
+      } else {
+        this.focusPromptInput_();
+      }
     }
   }
 
