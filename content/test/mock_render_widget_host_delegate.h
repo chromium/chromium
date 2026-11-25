@@ -43,6 +43,12 @@ class MockRenderWidgetHostDelegate
   }
   void set_widget_host(RenderWidgetHostImpl* rwh) { rwh_ = rwh; }
   void set_is_fullscreen(bool is_fullscreen) { is_fullscreen_ = is_fullscreen; }
+  void set_base_background_color(std::optional<SkColor> color) {
+    base_background_color_ = color;
+  }
+  void set_color_mode(ui::ColorProviderKey::ColorMode mode) {
+    color_mode_ = mode;
+  }
   void set_focused_widget(RenderWidgetHostImpl* focused_widget) {
     focused_widget_ = focused_widget;
   }
@@ -91,6 +97,8 @@ class MockRenderWidgetHostDelegate
   bool IsWidgetForPrimaryMainFrame(
       RenderWidgetHostImpl* render_widget_host) override;
   bool IsFullscreen() override;
+  std::optional<SkColor> GetBaseBackgroundColor() override;
+  ui::ColorProviderKey::ColorMode GetColorMode() const override;
   RenderViewHostDelegateView* GetDelegateView() override;
   VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() override;
   gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
@@ -110,6 +118,9 @@ class MockRenderWidgetHostDelegate
   mojo::Remote<gfx::mojom::DelegatedInkPointRenderer>
       delegated_ink_point_renderer_;
   bool is_fullscreen_ = false;
+  std::optional<SkColor> base_background_color_;
+  ui::ColorProviderKey::ColorMode color_mode_ =
+      ui::ColorProviderKey::ColorMode::kLight;
   TextInputManager text_input_manager_;
   raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> focused_widget_ = nullptr;
   std::optional<raw_ptr<RenderWidgetHostImpl>> primary_main_frame_widget_;

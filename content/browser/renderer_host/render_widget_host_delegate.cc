@@ -95,6 +95,14 @@ bool RenderWidgetHostDelegate::IsFullscreen() {
   return false;
 }
 
+std::optional<SkColor> RenderWidgetHostDelegate::GetBaseBackgroundColor() {
+  return std::nullopt;
+}
+
+ui::ColorProviderKey::ColorMode RenderWidgetHostDelegate::GetColorMode() const {
+  return ui::ColorProviderKey::ColorMode::kLight;
+}
+
 bool RenderWidgetHostDelegate::ShouldShowStaleContentOnEviction() {
   return false;
 }

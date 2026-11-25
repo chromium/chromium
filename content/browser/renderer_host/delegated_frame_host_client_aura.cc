@@ -4,11 +4,13 @@
 
 #include "content/browser/renderer_host/delegated_frame_host_client_aura.h"
 
+#include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/compositor/layer.h"
 
 namespace content {
@@ -30,16 +32,38 @@ bool DelegatedFrameHostClientAura::DelegatedFrameHostIsVisible() const {
 }
 
 SkColor DelegatedFrameHostClientAura::DelegatedFrameHostGetGutterColor() const {
+  RenderWidgetHostDelegate* const delegate =
+      render_widget_host_view_->host()
+          ? render_widget_host_view_->host()->delegate()
+          : nullptr;
   // When making an element on the page fullscreen the element's background
   // may not match the page's, so use black as the gutter color to avoid
   // flashes of brighter colors during the transition.
-  if (render_widget_host_view_->host() &&
-      render_widget_host_view_->host()->delegate() &&
-      render_widget_host_view_->host()->delegate()->IsFullscreen()) {
+  if (delegate && delegate->IsFullscreen()) {
     return SK_ColorBLACK;
   }
-  if (render_widget_host_view_->GetBackgroundColor())
+  // The CSS background color is the ground truth once the renderer has
+  // reported it.
+  if (render_widget_host_view_->GetBackgroundColor()) {
     return *render_widget_host_view_->GetBackgroundColor();
+  }
+  // Per-tab base background color the embedder cached for this view (e.g.
+  // the Chrome theme's tab background). Embedders may set a transparent
+  // base color (e.g. WebUI overlays), and the gutter must stay opaque.
+  if (delegate) {
+    if (const auto base = delegate->GetBaseBackgroundColor();
+        base && SkColorGetA(*base) == SK_AlphaOPAQUE) {
+      return *base;
+    }
+  }
+  // Opaque fallback aligned with the view's color mode (honors per-profile
+  // and Incognito themes). A transparent gutter lets pop-up frames show
+  // through their parent window (crbug.com/347669724, crbug.com/438138028),
+  // so the result must stay opaque.
+  if (delegate &&
+      delegate->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark) {
+    return SK_ColorBLACK;
+  }
   return SK_ColorWHITE;
 }
 

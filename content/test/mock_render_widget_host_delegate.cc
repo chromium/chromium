@@ -101,6 +101,15 @@ bool MockRenderWidgetHostDelegate::IsFullscreen() {
   return is_fullscreen_;
 }
 
+std::optional<SkColor> MockRenderWidgetHostDelegate::GetBaseBackgroundColor() {
+  return base_background_color_;
+}
+
+ui::ColorProviderKey::ColorMode MockRenderWidgetHostDelegate::GetColorMode()
+    const {
+  return color_mode_;
+}
+
 RenderViewHostDelegateView* MockRenderWidgetHostDelegate::GetDelegateView() {
   return &rvh_delegate_view_;
 }

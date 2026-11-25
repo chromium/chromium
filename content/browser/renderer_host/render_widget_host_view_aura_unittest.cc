@@ -1146,6 +1146,44 @@ class RenderWidgetHostViewAuraShutdownTest
 
 // Checks that a popup is positioned correctly relative to its parent using
 // screen coordinates.
+TEST_F(RenderWidgetHostViewAuraTest, GutterColorFollowsPreferredColorScheme) {
+  InitViewForFrame(nullptr);
+  ASSERT_FALSE(view_->GetBackgroundColor().has_value());
+
+  DelegatedFrameHostClientAura aura_client(view_);
+  DelegatedFrameHostClient* client = &aura_client;
+
+  // Dark view color mode must not flash white before the first paint.
+  render_widget_host_delegate()->set_color_mode(
+      ui::ColorProviderKey::ColorMode::kDark);
+  EXPECT_EQ(SK_ColorBLACK, client->DelegatedFrameHostGetGutterColor());
+
+  // Light view color mode keeps the historical white fallback.
+  render_widget_host_delegate()->set_color_mode(
+      ui::ColorProviderKey::ColorMode::kLight);
+  EXPECT_EQ(SK_ColorWHITE, client->DelegatedFrameHostGetGutterColor());
+
+  // Fallback must stay opaque so a pop-up window never shows the frame
+  // behind it (crbug.com/40581308).
+  EXPECT_EQ(SK_AlphaOPAQUE,
+            SkColorGetA(client->DelegatedFrameHostGetGutterColor()));
+
+  // An opaque per-tab base background color set by the embedder (e.g. the
+  // Chrome theme) wins over the color-mode fallback.
+  constexpr SkColor kTabBase = SkColorSetRGB(0x33, 0x66, 0x99);
+  render_widget_host_delegate()->set_base_background_color(kTabBase);
+  EXPECT_EQ(kTabBase, client->DelegatedFrameHostGetGutterColor());
+
+  // A transparent base background color (e.g. a WebUI overlay) must not
+  // leak through the gutter; the opaque color-mode fallback is used.
+  render_widget_host_delegate()->set_base_background_color(SK_ColorTRANSPARENT);
+  EXPECT_EQ(SK_ColorWHITE, client->DelegatedFrameHostGetGutterColor());
+  EXPECT_EQ(SK_AlphaOPAQUE,
+            SkColorGetA(client->DelegatedFrameHostGetGutterColor()));
+
+  render_widget_host_delegate()->set_base_background_color(std::nullopt);
+}
+
 TEST_F(RenderWidgetHostViewAuraTest, PositionChildPopup) {
   parent_view_->SetBounds(gfx::Rect(10, 10, 800, 600));
   gfx::Rect bounds_in_screen = parent_view_->GetViewBounds();

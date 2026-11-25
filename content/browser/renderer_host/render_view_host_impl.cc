@@ -576,7 +576,10 @@ bool RenderViewHostImpl::CreateRenderView(
   params->never_composited = delegate_->IsNeverComposited();
   params->window_was_opened_by_another_window =
       window_was_opened_by_another_window;
-  params->base_background_color = delegate_->GetBaseBackgroundColor();
+  params->base_background_color =
+      GetWidget()->delegate()
+          ? GetWidget()->delegate()->GetBaseBackgroundColor()
+          : std::nullopt;
   if (auto* parent_rfh = frame_tree_node->GetParentOrOuterDocument()) {
     url::Origin outermost_origin =
         parent_rfh->GetOutermostMainFrame()->GetLastCommittedOrigin();

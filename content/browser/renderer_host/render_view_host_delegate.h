@@ -7,12 +7,9 @@
 
 #include <stdint.h>
 
-#include <optional>
-
 #include "base/process/kill.h"
 #include "net/base/load_states.h"
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 namespace web_pref {
@@ -105,11 +102,6 @@ class RenderViewHostDelegate {
 
   // Returns true if the render view is rendering a guest.
   virtual bool IsGuest();
-
-  // Called on `blink::WebView` creation to get the initial base background
-  // color for this `blink::WebView`. Nullopt means a color is not set, and the
-  // blink default color should be used.
-  virtual std::optional<SkColor> GetBaseBackgroundColor();
 
   virtual const base::Location& GetCreatorLocation() = 0;
 

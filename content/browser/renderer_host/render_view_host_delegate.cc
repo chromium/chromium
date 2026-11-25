@@ -18,8 +18,5 @@ bool RenderViewHostDelegate::IsGuest() {
   return false;
 }
 
-std::optional<SkColor> RenderViewHostDelegate::GetBaseBackgroundColor() {
-  return std::nullopt;
-}
 
 }  // namespace content

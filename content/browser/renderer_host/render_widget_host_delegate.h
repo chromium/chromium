@@ -25,8 +25,10 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/application_context.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/gfx/native_ui_types.h"
@@ -235,6 +237,17 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   // Returns whether the associated tab is in fullscreen mode.
   virtual bool IsFullscreen();
+
+  // Returns the per-page base background color last set by the embedder
+  // (see `WebContents::SetPageBaseBackgroundColor()`), if any. Nullopt means
+  // the blink default should be used. May be transparent (e.g. WebUI
+  // overlays and bubbles); callers that require opacity must check it.
+  virtual std::optional<SkColor> GetBaseBackgroundColor();
+
+  // Returns the color mode (light/dark) associated with this widget's view,
+  // honoring per-profile or Incognito themes rather than the process-wide
+  // web NativeTheme.
+  virtual ui::ColorProviderKey::ColorMode GetColorMode() const;
 
   // Returns true if the widget's frame content needs to be stored before
   // eviction and displayed until a new frame is generated. If false, a white
