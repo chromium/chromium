@@ -22,6 +22,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -258,7 +259,7 @@ AttributeInstance::~AttributeInstance() = default;
 
 std::u16string AttributeInstance::GetInfo(
     std::optional<FieldType> unnormalized_field_type,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::optional_ref<const AutofillFormatString> format_string) const {
   FieldType field_type = GetNormalizedFieldType(unnormalized_field_type);
   std::optional<AutofillFormatString> compatible_format_string =
@@ -269,13 +270,13 @@ std::u16string AttributeInstance::GetInfo(
 
   return std::visit(
       absl::Overload{[&](const CountryInfo& country) {
-                       return country.GetCountryName(app_locale);
+                       return country.GetCountryName(app_locale.tag_string());
                      },
                      [&](const DateInfo& date) {
                        if (compatible_format_string &&
                            compatible_format_string->type ==
                                FormatString_Type_ICU_DATE) {
-                         return date.GetIcuDate(app_locale);
+                         return date.GetIcuDate(app_locale.tag_string());
                        }
                        return date.GetDate(compatible_format_string
                                                ? compatible_format_string->value
@@ -354,7 +355,7 @@ personal_context::proto::TypedValue AttributeInstance::GetTypedValue() const {
 void AttributeInstance::SetInfo(
     std::optional<FieldType> unnormalized_field_type,
     const std::u16string& value,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::optional_ref<const AutofillFormatString> format_string,
     VerificationStatus status) {
   FieldType field_type = GetNormalizedFieldType(unnormalized_field_type);
@@ -364,7 +365,8 @@ void AttributeInstance::SetInfo(
             // We assume that the given `value` is either a valid country code
             // or a valid country name localized to the provided `app_locale`.
             if (!country.SetCountryFromCountryCode(value) &&
-                !country.SetCountryFromCountryName(value, app_locale)) {
+                !country.SetCountryFromCountryName(value,
+                                                   app_locale.tag_string())) {
               // In case `value` turns out to be neither of the two options
               // mentioned above, we reset the country value to indicate
               // failure.
@@ -383,8 +385,8 @@ void AttributeInstance::SetInfo(
             if (!name.GetSupportedTypes().contains(field_type)) {
               return;
             }
-            name.SetInfoWithVerificationStatus(field_type, value, app_locale,
-                                               status);
+            name.SetInfoWithVerificationStatus(field_type, value,
+                                               app_locale.tag_string(), status);
           },
           [&](const StateInfo&) { SetRawInfo(field_type, value, status); },
           [&](std::u16string&) { SetRawInfo(field_type, value, status); }},
@@ -487,7 +489,8 @@ std::ostream& operator<<(std::ostream& os,
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a) {
   os << a.type() << ": " << '"'
-     << a.GetInfo(a.type().field_type(), /*app_locale=*/"en-US",
+     << a.GetInfo(a.type().field_type(),
+                  /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
                   /*format_string=*/std::nullopt)
      << '"';
   return os;

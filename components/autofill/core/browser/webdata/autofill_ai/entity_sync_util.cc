@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -76,7 +77,7 @@ void SetDateInSpecifics(const EntityInstance& entity,
   auto get_component = [&](std::u16string_view fmt) -> std::optional<int> {
     std::u16string val = attribute->GetInfo(
         attribute->type().field_type(),
-        /*app_locale=*/"",
+        /*app_locale=*/base::i18n::GetKnownLanguageTag("und"),
         AutofillFormatString(std::u16string(fmt), FormatString_Type_DATE));
 
     int component;

@@ -52,7 +52,7 @@ std::u16string GetInfo(const EntityInstance& entity,
   if (!attribute) {
     return std::u16string();
   }
-  std::u16string value = attribute->GetCompleteInfo(app_locale.tag_string());
+  std::u16string value = attribute->GetCompleteInfo(app_locale);
   return obfuscate_sensitive_types && type.is_obfuscated()
              ? GetObfuscatedValue(value, /*visible_suffix_length=*/4)
              : value;
@@ -106,8 +106,8 @@ std::pair<std::u16string, DenseSet<AttributeType>> GetValueAndTypesForLabel(
       return {u"", {type}};
     }
     AutofillFormatString format_string(u"", FormatString_Type_ICU_DATE);
-    std::u16string value = attribute->GetInfo(
-        type.field_type(), app_locale.tag_string(), format_string);
+    std::u16string value =
+        attribute->GetInfo(type.field_type(), app_locale, format_string);
     return {obfuscate_sensitive_types
                 ? GetObfuscatedValue(value, /*visible_suffix_length=*/4)
                 : value,

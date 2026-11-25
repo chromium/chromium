@@ -7,8 +7,8 @@
 #include <variant>
 
 #include "base/android/jni_string.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_process.h"
 #include "components/autofill/android/main_autofill_jni_headers/AttributeInstance_jni.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -64,17 +64,19 @@ AttributeInstanceAndroid::AttributeInstanceAndroid(
       verification_status(attribute_instance.GetVerificationStatus(
           attribute_instance.type().field_type())) {
   if (attribute_type.data_type == AttributeType::DataType::kDate) {
-    const std::string& app_locale = g_browser_process->GetApplicationLocale();
+    // The app locale is irrelevant for retrieving numeric date components.
+    constexpr base::i18n::LanguageTag kUndLocale =
+        base::i18n::GetKnownLanguageTag("und");
     std::optional<FieldType> field_type =
         attribute_instance.type().field_type();
     const std::u16string day = attribute_instance.GetInfo(
-        field_type, app_locale,
+        field_type, kUndLocale,
         AutofillFormatString(u"D", FormatString_Type_DATE));
     const std::u16string month = attribute_instance.GetInfo(
-        field_type, app_locale,
+        field_type, kUndLocale,
         AutofillFormatString(u"M", FormatString_Type_DATE));
     const std::u16string year = attribute_instance.GetInfo(
-        field_type, app_locale,
+        field_type, kUndLocale,
         AutofillFormatString(u"YYYY", FormatString_Type_DATE));
     value = AttributeInstanceAndroidDateType{
         .day = day, .month = month, .year = year};
@@ -92,18 +94,20 @@ AttributeInstanceAndroid::~AttributeInstanceAndroid() = default;
 AttributeInstance AttributeInstanceAndroid::ToAttributeInstance() const {
   AttributeInstance instance(attribute_type.ToAttributeType());
   if (std::holds_alternative<AttributeInstanceAndroidDateType>(value)) {
-    const std::string& app_locale = g_browser_process->GetApplicationLocale();
+    // The app locale is irrelevant for setting numeric date components.
+    constexpr base::i18n::LanguageTag kUndLocale =
+        base::i18n::GetKnownLanguageTag("und");
     std::optional<FieldType> field_type =
         attribute_type.ToAttributeType().field_type();
     const AttributeInstanceAndroidDateType& date_value =
         std::get<AttributeInstanceAndroidDateType>(value);
-    instance.SetInfo(field_type, date_value.day, app_locale,
+    instance.SetInfo(field_type, date_value.day, kUndLocale,
                      AutofillFormatString(u"D", FormatString_Type_DATE),
                      verification_status);
-    instance.SetInfo(field_type, date_value.month, app_locale,
+    instance.SetInfo(field_type, date_value.month, kUndLocale,
                      AutofillFormatString(u"M", FormatString_Type_DATE),
                      verification_status);
-    instance.SetInfo(field_type, date_value.year, app_locale,
+    instance.SetInfo(field_type, date_value.year, kUndLocale,
                      AutofillFormatString(u"YYYY", FormatString_Type_DATE),
                      verification_status);
   } else {

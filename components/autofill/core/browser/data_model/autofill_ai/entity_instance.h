@@ -36,6 +36,10 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace sync_pb {
 class AutofillValuableSpecifics;
 }
@@ -96,7 +100,8 @@ class AttributeInstance final {
   // instance, formatted according to the given `app_locale`.
   //
   // For more control over the return value, see GetInfo().
-  std::u16string GetCompleteInfo(std::string_view app_locale) const {
+  std::u16string GetCompleteInfo(
+      const base::i18n::LanguageTag& app_locale) const {
     return GetInfo(std::nullopt, app_locale, std::nullopt);
   }
 
@@ -125,7 +130,7 @@ class AttributeInstance final {
   // - `f.format_string()` for `format_string`.
   std::u16string GetInfo(
       std::optional<FieldType> field_type,
-      std::string_view app_locale,
+      const base::i18n::LanguageTag& app_locale,
       base::optional_ref<const AutofillFormatString> format_string) const;
 
   // Same as `GetInfo` but returns the value as stored with no formatting
@@ -167,7 +172,7 @@ class AttributeInstance final {
   // See AutofillField::format_string() for the grammar of format strings.
   void SetInfo(std::optional<FieldType> field_type,
                const std::u16string& value,
-               std::string_view app_locale,
+               const base::i18n::LanguageTag& app_locale,
                base::optional_ref<const AutofillFormatString> format_string,
                VerificationStatus status);
 

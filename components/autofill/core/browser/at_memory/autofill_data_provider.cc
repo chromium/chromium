@@ -153,7 +153,7 @@ double CalculateRankingScore(int64_t use_count, base::Time use_date) {
 // entity, optionally excluding a specific `excluded_type`.
 std::vector<EntryMetadata> GetMetadataFromEntityAttributes(
     const EntityInstance& entity,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     AttributeType excluded_type) {
   std::vector<EntryMetadata> metadata;
   metadata.reserve(entity.attributes().size());
@@ -180,7 +180,7 @@ MemorySearchResult CreateMemorySearchResultForEntity(
     const EntityInstance& entity,
     AttributeType primary_attribute_type,
     std::u16string value,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   if (primary_attribute_type.is_obfuscated()) {
     value = GetObfuscatedValue(value, kVisibleSuffixLength);
   }
@@ -285,7 +285,7 @@ std::vector<MemorySearchResult> FetchDataFromAddressProfiles(
 std::vector<MemorySearchResult> FetchAutofillAiAttributeData(
     const EntityDataManager* entity_data_manager,
     AttributeType attribute_type,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::optional_ref<const RawValueQuery> query) {
   std::vector<MemorySearchResult> entries;
   if (!entity_data_manager) {
@@ -481,9 +481,7 @@ std::vector<MemorySearchResult> AutofillDataProvider::GetAutofillData(
                 ToAttributeType(memory_data_type)) {
           type_entries = FetchAutofillAiAttributeData(
               entity_data_manager_, *attribute_type,
-              personal_data_manager_->address_data_manager()
-                  .app_locale()
-                  .tag_string(),
+              personal_data_manager_->address_data_manager().app_locale(),
               query);
         }
         break;

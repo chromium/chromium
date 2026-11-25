@@ -63,7 +63,7 @@ NSArray<TableViewTextEditItem*>* CreateItemsFromEntity(
       value =
           base::SysNSStringToUTF16([dateFormatter stringFromDate:dateValue]);
     } else {
-      value = attribute.GetCompleteInfo(app_locale.tag_string());
+      value = attribute.GetCompleteInfo(app_locale);
     }
 
     if (attribute.masked()) {

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/autofill/android/attribute_type_android.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -38,7 +39,8 @@ class AttributeInstanceAndroidTest
 TEST_P(AttributeInstanceAndroidTest, DoubleConversion) {
   const AttributeInstanceTestParams& params = GetParam();
   AttributeInstance attribute = AttributeInstance(params.attribute_type);
-  attribute.SetInfo(params.field_type, params.value, "en-US",
+  attribute.SetInfo(params.field_type, params.value,
+                    base::i18n::GetKnownLanguageTag("en-US"),
                     params.format_string, VerificationStatus::kNoStatus);
   if (params.attribute_type == AttributeType(kPassportName)) {
     attribute.FinalizeInfo();

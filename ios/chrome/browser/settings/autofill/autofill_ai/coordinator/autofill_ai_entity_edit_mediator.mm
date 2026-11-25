@@ -251,7 +251,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
       autofill::AttributeInstance attrInstance(attrType);
       attrInstance.SetInfo(attrType.field_type(),
                            base::SysNSStringToUTF16(editItem.textFieldValue),
-                           _appLocale->tag_string(), std::nullopt,
+                           *_appLocale, std::nullopt,
                            autofill::VerificationStatus::kNoStatus);
       attrInstance.FinalizeInfo();
       updatedAttributes.insert(std::move(attrInstance));
@@ -262,7 +262,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
       autofill::AttributeInstance attrInstance(attrType);
       attrInstance.SetInfo(attrType.field_type(),
                            base::SysNSStringToUTF16(countryItem.detailText),
-                           _appLocale->tag_string(), std::nullopt,
+                           *_appLocale, std::nullopt,
                            autofill::VerificationStatus::kNoStatus);
       attrInstance.FinalizeInfo();
       updatedAttributes.insert(std::move(attrInstance));
@@ -277,8 +277,8 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
         value_to_save = AttributeValueFromNSDate(dateItem.dateValue);
       }
 
-      attrInstance.SetInfo(attrType.field_type(), value_to_save,
-                           _appLocale->tag_string(), GetAttributeFormatString(),
+      attrInstance.SetInfo(attrType.field_type(), value_to_save, *_appLocale,
+                           GetAttributeFormatString(),
                            autofill::VerificationStatus::kNoStatus);
       attrInstance.FinalizeInfo();
       updatedAttributes.insert(std::move(attrInstance));

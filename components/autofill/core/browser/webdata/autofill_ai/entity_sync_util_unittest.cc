@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -41,7 +42,8 @@ std::string GetDateValue(const EntityInstance& entity,
   AttributeType attribute_type(attribute_type_name);
   return base::UTF16ToUTF8(
       entity.attribute(attribute_type)
-          ->GetInfo(attribute_type.field_type(), "en_US",
+          ->GetInfo(attribute_type.field_type(),
+                    base::i18n::GetKnownLanguageTag("en-US"),
                     AutofillFormatString(format, FormatString_Type_DATE)));
 }
 

@@ -8,6 +8,7 @@
 #include "base/check_deref.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
@@ -213,12 +214,13 @@ std::optional<EntityInstance> FakeWalletPassAccessManager::RunUpsertCallback(
     AttributeInstance masked_attr = attr;
     const std::optional<FieldType> field_type = masked_attr.type().field_type();
     const std::u16string full_value = masked_attr.GetInfo(
-        field_type, "en-US", /*format_string=*/std::nullopt);
+        field_type, base::i18n::GetKnownLanguageTag("en-US"),
+        /*format_string=*/std::nullopt);
     const size_t masked_length = std::min<size_t>(full_value.size(), 4);
     masked_attr.SetInfo(
         masked_attr.type().field_type(),
         /*value=*/full_value.substr(full_value.size() - masked_length),
-        /*app_locale=*/"en-US",
+        /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
         /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
 
     masked_attr.mark_as_masked({});

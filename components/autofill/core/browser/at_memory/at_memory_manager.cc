@@ -240,7 +240,6 @@ std::optional<std::u16string> GetAttributeFillValue(
   }
 
   auto [form, autofill_field] = manager.FindFormAndField(form_id, field_id);
-  const std::string app_locale(manager.client().GetAppLocale().tag_string());
   // Using `GetFillingValueAndTypeForEntity` is preferred when the field is
   // known because it handles field-specific requirements such as state/country
   // normalization, dates, and truncation for length limits.
@@ -253,7 +252,7 @@ std::optional<std::u16string> GetAttributeFillValue(
         manager.client().GetAddressNormalizer());
     return value_and_type.value;
   }
-  return attribute->GetCompleteInfo(app_locale);
+  return attribute->GetCompleteInfo(manager.client().GetAppLocale());
 }
 
 bool ShouldEraseMemorySearchResult(MemoryDataType type,

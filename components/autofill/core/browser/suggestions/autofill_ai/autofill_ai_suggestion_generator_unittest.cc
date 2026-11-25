@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -73,7 +74,8 @@ using ::testing::ResultOf;
 using ::testing::Return;
 using ::testing::SafeMatcherCast;
 
-constexpr char kAppLocaleUS[] = "en-US";
+constexpr base::i18n::LanguageTag kAppLocaleUS =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 Matcher<const Suggestion&> HasMainText(const std::u16string& text) {
   return ResultOf(

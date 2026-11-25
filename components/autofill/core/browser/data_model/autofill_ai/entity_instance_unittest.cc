@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/with_feature_override.h"
@@ -35,10 +36,13 @@ using ::testing::SizeIs;
 
 using enum AttributeTypeName;
 
-constexpr char kAppLocaleUS[] = "en-US";
+constexpr base::i18n::LanguageTag kAppLocaleUS =
+    base::i18n::GetKnownLanguageTag("en-US");
+constexpr base::i18n::LanguageTag kUndLocale =
+    base::i18n::GetKnownLanguageTag("und");
 
 struct GetInfoParams {
-  std::string app_locale = "";
+  base::i18n::LanguageTag app_locale = kUndLocale;
   std::optional<AutofillFormatString> format_string;
 };
 
@@ -214,13 +218,15 @@ TEST_F(AutofillEntityInstanceTest, Attributes) {
 TEST_F(AutofillEntityInstanceTest, Attributes_NormalizedType) {
   AttributeInstance passport_name((AttributeType(kPassportName)));
   passport_name.SetInfo(NAME_FULL, u"John Doe",
-                        /*app_locale=*/"", /*format_string=*/std::nullopt,
+                        /*app_locale=*/kUndLocale,
+                        /*format_string=*/std::nullopt,
                         VerificationStatus::kObserved);
   passport_name.FinalizeInfo();
 
   AttributeInstance passport_number((AttributeType(kPassportNumber)));
   passport_number.SetInfo(PASSPORT_NUMBER, u"LR0123456",
-                          /*app_locale=*/"", /*format_string=*/std::nullopt,
+                          /*app_locale=*/kUndLocale,
+                          /*format_string=*/std::nullopt,
                           VerificationStatus::kObserved);
 
   EXPECT_EQ(GetInfo(passport_name, NAME_FULL), u"John Doe");
@@ -238,7 +244,8 @@ TEST_F(AutofillEntityInstanceTest, Attributes_NormalizedType) {
 TEST_F(AutofillEntityInstanceTest, Attributes_CountryLocalization) {
   AttributeInstance passport_country((AttributeType(kPassportCountry)));
   passport_country.SetInfo(PASSPORT_ISSUING_COUNTRY, u"SE",
-                           /*app_locale=*/"", /*format_string=*/std::nullopt,
+                           /*app_locale=*/kUndLocale,
+                           /*format_string=*/std::nullopt,
                            VerificationStatus::kObserved);
 
   EXPECT_EQ(GetInfo(passport_country, PASSPORT_ISSUING_COUNTRY,
@@ -252,12 +259,13 @@ TEST_F(AutofillEntityInstanceTest, Attributes_CountryLocalization) {
       u"Sweden");
 
   EXPECT_EQ(GetInfo(passport_country, PASSPORT_ISSUING_COUNTRY,
-                    {.app_locale = "de-DE"}),
+                    {.app_locale = base::i18n::GetKnownLanguageTag("de-DE")}),
             u"Schweden");
-  EXPECT_EQ(
-      GetInfo(passport_country, ADDRESS_HOME_COUNTRY, {.app_locale = "de-DE"}),
-      u"Schweden");
-  EXPECT_EQ(GetInfo(passport_country, UNKNOWN_TYPE, {.app_locale = "de-DE"}),
+  EXPECT_EQ(GetInfo(passport_country, ADDRESS_HOME_COUNTRY,
+                    {.app_locale = base::i18n::GetKnownLanguageTag("de-DE")}),
+            u"Schweden");
+  EXPECT_EQ(GetInfo(passport_country, UNKNOWN_TYPE,
+                    {.app_locale = base::i18n::GetKnownLanguageTag("de-DE")}),
             u"Schweden");
 }
 
@@ -265,7 +273,8 @@ TEST_F(AutofillEntityInstanceTest, Attributes_CountryLocalization) {
 TEST_F(AutofillEntityInstanceTest, Attributes_StructuredName) {
   AttributeInstance passport_name((AttributeType(kPassportName)));
   passport_name.SetInfo(NAME_FULL, u"Some Name",
-                        /*app_locale=*/"", /*format_string=*/std::nullopt,
+                        /*app_locale=*/kUndLocale,
+                        /*format_string=*/std::nullopt,
                         VerificationStatus::kObserved);
   passport_name.FinalizeInfo();
 
@@ -291,7 +300,8 @@ TEST_F(AutofillEntityInstanceTest, Attributes_IdentificationNumbers) {
   {
     AttributeInstance passport_number((AttributeType(kPassportNumber)));
     passport_number.SetInfo(PASSPORT_NUMBER, u"LR0123456",
-                            /*app_locale=*/"", /*format_string=*/std::nullopt,
+                            /*app_locale=*/kUndLocale,
+                            /*format_string=*/std::nullopt,
                             VerificationStatus::kObserved);
     EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER), u"LR0123456");
     EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
@@ -316,7 +326,7 @@ TEST_F(AutofillEntityInstanceTest, Attributes_IdentificationNumbers) {
     // A non-identification-number attribute must ignore the affix format
     // string.
     AttributeInstance vehicle_make((AttributeType(kVehicleMake)));
-    vehicle_make.SetInfo(VEHICLE_MAKE, u"Mercedes", /*app_locale=*/"",
+    vehicle_make.SetInfo(VEHICLE_MAKE, u"Mercedes", /*app_locale=*/kUndLocale,
                          /*format_string=*/std::nullopt,
                          VerificationStatus::kObserved);
     EXPECT_EQ(GetInfo(vehicle_make, VEHICLE_MAKE,
@@ -345,7 +355,7 @@ TEST_F(AutofillEntityInstanceTest, Attributes_Date) {
 
   AttributeInstance passport_name((AttributeType(kPassportIssueDate)));
   passport_name.SetInfo(PASSPORT_ISSUE_DATE, u"2001-02-03",
-                        /*app_locale=*/"", from_date(u"YYYY-MM-DD"),
+                        /*app_locale=*/kUndLocale, from_date(u"YYYY-MM-DD"),
                         VerificationStatus::kNoStatus);
 
   EXPECT_EQ(GetInfo(passport_name, PASSPORT_ISSUE_DATE), u"2001-02-03");
@@ -353,7 +363,7 @@ TEST_F(AutofillEntityInstanceTest, Attributes_Date) {
                     {.format_string = from_date(u"DD/MM/YYYY")}),
             u"03/02/2001");
   EXPECT_EQ(GetInfo(passport_name, PASSPORT_ISSUE_DATE,
-                    {.app_locale = "en_US",
+                    {.app_locale = kAppLocaleUS,
                      .format_string = from_icu_date(u"MMM d")}),
             u"Feb 3");
   // Incompatible format strings must be ignored and fall back to YYYY-MM-DD.
@@ -381,7 +391,7 @@ TEST_F(AutofillEntityInstanceTest, AttributesFlightFormat) {
     AttributeInstance flight_number(
         (AttributeType(kFlightReservationFlightNumber)));
     flight_number.SetInfo(
-        FLIGHT_RESERVATION_FLIGHT_NUMBER, u"LH89", /*app_locale*/ "",
+        FLIGHT_RESERVATION_FLIGHT_NUMBER, u"LH89", /*app_locale=*/kUndLocale,
         /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
     EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER),
               u"LH89");
@@ -406,7 +416,7 @@ TEST_F(AutofillEntityInstanceTest, AttributesFlightFormat) {
   {
     // A non-flight attribute must ignore the format string.
     AttributeInstance vehicle_make((AttributeType(kVehicleMake)));
-    vehicle_make.SetInfo(VEHICLE_MAKE, u"Mercedes", /*app_locale=*/"",
+    vehicle_make.SetInfo(VEHICLE_MAKE, u"Mercedes", /*app_locale=*/kUndLocale,
                          /*format_string=*/std::nullopt,
                          VerificationStatus::kObserved);
     EXPECT_EQ(GetInfo(vehicle_make, FLIGHT_RESERVATION_FLIGHT_NUMBER,
@@ -423,7 +433,7 @@ TEST_F(AutofillEntityInstanceTest, Attributes_SetInfoWithIcuDate_CheckFails) {
   EXPECT_DEATH_IF_SUPPORTED(
       attribute.SetInfo(
           FLIGHT_RESERVATION_DEPARTURE_DATE, u"2025-01-01",
-          /*app_locale=*/"", /*format_string=*/
+          /*app_locale=*/kUndLocale, /*format_string=*/
           AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_ICU_DATE),
           VerificationStatus::kObserved),
       "");
@@ -476,8 +486,8 @@ TEST_F(
   const AttributeInstance& old_attribute = result.mergeable_attributes[0];
   base::optional_ref<const AttributeInstance> new_attribute =
       new_entity.attribute(AttributeType(kPassportExpirationDate));
-  EXPECT_EQ(old_attribute.GetCompleteInfo(/*app_locale=*/""),
-            new_attribute->GetCompleteInfo(/*app_locale=*/""));
+  EXPECT_EQ(old_attribute.GetCompleteInfo(/*app_locale=*/kUndLocale),
+            new_attribute->GetCompleteInfo(/*app_locale=*/kUndLocale));
   EXPECT_FALSE(result.is_subset);
 }
 
@@ -645,11 +655,11 @@ TEST_F(AutofillEntityInstanceTest, FormatFlightDepartureDate) {
   AttributeType type(kFlightReservationDepartureDate);
   AttributeInstance attribute(type);
   attribute.SetInfo(FLIGHT_RESERVATION_DEPARTURE_DATE, u"2025-01-01",
-                    /*app_locale=*/"", /*format_string=*/
+                    /*app_locale=*/kUndLocale, /*format_string=*/
                     AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
                     VerificationStatus::kObserved);
   EXPECT_EQ(GetInfo(attribute, FLIGHT_RESERVATION_DEPARTURE_DATE,
-                    {.app_locale = "en_US",
+                    {.app_locale = kAppLocaleUS,
                      .format_string = AutofillFormatString(
                          u"MMM d", FormatString_Type_ICU_DATE)}),
             u"Jan 1");
@@ -674,7 +684,7 @@ TEST_F(AutofillEntityInstanceTest, GetTypedValue_Country) {
   AttributeType type(kPassportCountry);
   AttributeInstance attribute(type);
   attribute.SetInfo(PASSPORT_ISSUING_COUNTRY, u"United States",
-                    /*app_locale=*/"en_US",
+                    /*app_locale=*/kAppLocaleUS,
                     /*format_string=*/std::nullopt,
                     VerificationStatus::kObserved);
   personal_context::proto::TypedValue val = attribute.GetTypedValue();
@@ -687,7 +697,7 @@ TEST_F(AutofillEntityInstanceTest, GetTypedValue_Date) {
   AttributeType type(kFlightReservationDepartureDate);
   AttributeInstance attribute(type);
   attribute.SetInfo(FLIGHT_RESERVATION_DEPARTURE_DATE, u"2025-01-01",
-                    /*app_locale=*/"en_US",
+                    /*app_locale=*/kAppLocaleUS,
                     AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
                     VerificationStatus::kObserved);
   personal_context::proto::TypedValue val = attribute.GetTypedValue();
@@ -702,7 +712,7 @@ TEST_F(AutofillEntityInstanceTest, GetTypedValue_Date) {
 TEST_F(AutofillEntityInstanceTest, GetTypedValue_Unset) {
   AttributeType type(kPassportNumber);
   AttributeInstance attribute(type);
-  attribute.SetInfo(PASSPORT_NUMBER, u"12345", /*app_locale=*/"en_US",
+  attribute.SetInfo(PASSPORT_NUMBER, u"12345", /*app_locale=*/kAppLocaleUS,
                     /*format_string=*/std::nullopt,
                     VerificationStatus::kObserved);
   personal_context::proto::TypedValue val = attribute.GetTypedValue();

@@ -8,6 +8,7 @@
 #include <string>
 #include <variant>
 
+#include "base/i18n/language_tag.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -31,7 +32,7 @@ struct PassportEntityOptionsT {
   std::string_view nickname = "Passie";
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
-  std::string_view app_locale = "en-US";
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("en-US");
   EntityRecordTypeRepresentation record_type =
       EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
@@ -61,7 +62,7 @@ struct DriversLicenseOptionsT {
   std::string_view nickname = "License";
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
-  std::string_view app_locale = "en-US";
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("en-US");
   EntityRecordTypeRepresentation record_type =
       EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
@@ -89,7 +90,7 @@ struct VehicleOptionsT {
   std::string_view nickname = "Vehicle";
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
-  std::string_view app_locale = "en-US";
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("en-US");
   EntityRecordTypeRepresentation record_type =
       EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
@@ -112,7 +113,7 @@ struct NationalIdCardOptionsT {
   const char16_t* expiry_date = u"2030-12-01";
   std::string_view guid = "00000000-0000-4000-8000-300000000000";
   std::string_view nickname = "IdCard";
-  std::string_view app_locale = "en-US";
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("en-US");
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   EntityRecordTypeRepresentation record_type =
@@ -133,7 +134,7 @@ struct KnownTravelerNumberOptionsT {
   const char16_t* expiration_date = u"2030-12-01";
   std::string_view guid = "00000000-0000-4000-8000-400000000000";
   std::string_view nickname = "Known Traveler Number";
-  std::string_view app_locale = "en-US";
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("en-US");
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   EntityRecordTypeRepresentation record_type =
@@ -156,7 +157,7 @@ struct RedressNumberOptionsT {
   const char16_t* number = u"7654321";
   std::string_view guid = "00000000-0000-4000-8000-500000000000";
   std::string_view nickname = "RedressNumber";
-  std::string_view app_locale = "en-US";
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("en-US");
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   EntityRecordTypeRepresentation record_type =
@@ -182,7 +183,7 @@ struct FlightReservationOptionsT {
   base::TimeDelta departure_time_zone_offset = base::TimeDelta();
   std::string_view guid = "00000000-0000-4000-8000-500000000000";
   std::string_view nickname = "FlightReservation";
-  std::string_view app_locale = "en-US";
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("en-US");
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   EntityRecordTypeRepresentation record_type =
@@ -209,7 +210,7 @@ struct OrderOptionsT {
   const char16_t* product_names = u"Product A, Product B";
   std::string_view guid = "00000000-0000-4000-8000-600000000000";
   std::string_view nickname = "Order";
-  std::string_view app_locale = "en-US";
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("en-US");
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   EntityRecordTypeRepresentation record_type =
@@ -235,7 +236,7 @@ struct ShipmentOptionsT {
   const char16_t* product_names = u"Product 1, Product 2";
   std::string_view guid = "00000000-0000-4000-8000-700000000000";
   std::string_view nickname = "Shipment";
-  std::string_view app_locale = "en-US";
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("en-US");
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   EntityRecordTypeRepresentation record_type =
@@ -257,7 +258,7 @@ struct EntityOptionsT {
   std::string_view nickname = "Mine";
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
-  std::string_view app_locale = "en-US";
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("en-US");
   EntityRecordTypeRepresentation record_type =
       EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
@@ -308,7 +309,7 @@ MATCHER_P2(HasAttributeWithValue, attribute_type_name, value_matcher, "") {
     return false;
   }
   const std::u16string actual_value =
-      attribute->GetCompleteInfo(/*app_locale=*/"");
+      attribute->GetCompleteInfo(base::i18n::GetKnownLanguageTag("und"));
   ::testing::StringMatchResultListener inner_listener;
   const bool match = ::testing::ExplainMatchResult(
       value_matcher, actual_value, &inner_listener);

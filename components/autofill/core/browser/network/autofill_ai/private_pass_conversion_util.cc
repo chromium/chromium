@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -76,13 +77,18 @@ class AttributeSetter {
       return std::nullopt;
     }
     // Note that for retrieving date components the app locale doesn't matter.
+    constexpr base::i18n::LanguageTag kUndLocale =
+        base::i18n::GetKnownLanguageTag("und");
     std::optional<FieldType> date_type = attribute->type().field_type();
-    std::u16string day = attribute->GetInfo(
-        date_type, "", AutofillFormatString(u"D", FormatString_Type_DATE));
-    std::u16string month = attribute->GetInfo(
-        date_type, "", AutofillFormatString(u"M", FormatString_Type_DATE));
+    std::u16string day =
+        attribute->GetInfo(date_type, kUndLocale,
+                           AutofillFormatString(u"D", FormatString_Type_DATE));
+    std::u16string month =
+        attribute->GetInfo(date_type, kUndLocale,
+                           AutofillFormatString(u"M", FormatString_Type_DATE));
     std::u16string year = attribute->GetInfo(
-        date_type, "", AutofillFormatString(u"YYYY", FormatString_Type_DATE));
+        date_type, kUndLocale,
+        AutofillFormatString(u"YYYY", FormatString_Type_DATE));
     return ParseDate(day, month, year);
   }
 

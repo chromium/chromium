@@ -23,6 +23,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -141,7 +142,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     base::span<const std::unique_ptr<AutofillField>> fields,
     const AutofillClient& client) {
   const GeoIpCountryCode& country_code = client.GetVariationConfigCountryCode();
-  const std::string_view app_locale = client.GetAppLocale().tag_string();
+  const base::i18n::LanguageTag& app_locale = client.GetAppLocale();
 
   std::map<Section,
            std::map<EntityType, std::map<AttributeType, AttributeInstance>>>
@@ -272,7 +273,7 @@ std::optional<std::u16string> MaybeGetLocalizedDate(
     // The app_locale is irrelevant for dates.
     bool success = base::StringToInt(
         attribute.GetInfo(
-            field_type, /*app_locale=*/"",
+            field_type, /*app_locale=*/base::i18n::GetKnownLanguageTag("und"),
             AutofillFormatString(std::move(format), FormatString_Type_DATE)),
         &part);
     return success ? part : 0;

@@ -264,9 +264,8 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
       for (FieldType field_type : attribute.type().field_subtypes()) {
-        bool is_empty =
-            normalization::HasOnlySkippableCharacters(attribute.GetInfo(
-                field_type, app_locale.tag_string(), std::nullopt));
+        bool is_empty = normalization::HasOnlySkippableCharacters(
+            attribute.GetInfo(field_type, app_locale, std::nullopt));
         if (!is_empty) {
           types.insert(field_type);
         }
@@ -394,8 +393,8 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
       }
       for (const FieldType field_type : attribute.type().field_subtypes()) {
         const std::u16string& value_on_file =
-            normalization::NormalizeForComparison(attribute.GetInfo(
-                field_type, app_locale.tag_string(), std::nullopt));
+            normalization::NormalizeForComparison(
+                attribute.GetInfo(field_type, app_locale, std::nullopt));
         if (value_on_file.empty()) {
           continue;
         }
@@ -430,9 +429,8 @@ void FindAndSetPossibleDateFieldTypesAndFormatStrings(
           continue;
         }
         data_util::Date date;
-        if (data_util::ParseDate(
-                attribute.GetCompleteInfo(app_locale.tag_string()),
-                u"YYYY-MM-DD", date)) {
+        if (data_util::ParseDate(attribute.GetCompleteInfo(app_locale),
+                                 u"YYYY-MM-DD", date)) {
           auto get_date = [](const auto& p) { return p.first; };
           for (auto& [same_date, pt] :
                std::ranges::equal_range(dates, date, {}, get_date)) {

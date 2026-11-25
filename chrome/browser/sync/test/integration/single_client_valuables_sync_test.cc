@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/test/protobuf_matchers.h"
@@ -68,9 +69,10 @@ EntityInstance GetServerVehicleEntityInstanceWithRandomGuid(
 autofill::AttributeInstance MakeAttribute(AttributeTypeName type_name,
                                           std::u16string_view value) {
   autofill::AttributeInstance attribute((autofill::AttributeType(type_name)));
-  attribute.SetInfo(
-      attribute.type().field_type(), std::u16string(value), "en-US",
-      /*format_string=*/std::nullopt, autofill::VerificationStatus::kNoStatus);
+  attribute.SetInfo(attribute.type().field_type(), std::u16string(value),
+                    base::i18n::GetKnownLanguageTag("en-US"),
+                    /*format_string=*/std::nullopt,
+                    autofill::VerificationStatus::kNoStatus);
   return attribute;
 }
 

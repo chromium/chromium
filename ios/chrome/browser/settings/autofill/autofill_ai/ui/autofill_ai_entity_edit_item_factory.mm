@@ -134,8 +134,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Extracts the standard string value for non-date attributes.
 - (NSString*)valueFromAttributeInstance:(const AttributeInstance&)attribute {
-  std::u16string value_u16 = attribute.GetInfo(
-      attribute.type().field_type(), _locale->tag_string(), std::nullopt);
+  std::u16string value_u16 =
+      attribute.GetInfo(attribute.type().field_type(), *_locale, std::nullopt);
   if ([self shouldObfuscateAttribute:attribute] && !value_u16.empty()) {
     return base::SysUTF16ToNSString(
         GetObfuscatedValue(value_u16, /*visible_suffix_length=*/4));

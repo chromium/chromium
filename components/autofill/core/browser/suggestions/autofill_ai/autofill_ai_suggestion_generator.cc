@@ -370,7 +370,7 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
       }
       std::u16string attribute_value =
           attribute->GetInfo(field->Type().GetAutofillAiType(entity->type()),
-                             app_locale.tag_string(), field->format_string());
+                             app_locale, field->format_string());
       if (attribute_value.empty()) {
         continue;
       }
@@ -488,8 +488,8 @@ bool EntityShouldProduceSuggestion(
     return false;
   }
   std::u16string trigger_value = trigger_attribute->GetInfo(
-      trigger_field.field->Type().GetAutofillAiType(entity.type()),
-      app_locale.tag_string(), trigger_field.field->format_string());
+      trigger_field.field->Type().GetAutofillAiType(entity.type()), app_locale,
+      trigger_field.field->format_string());
   if (trigger_value.empty()) {
     return false;
   }
@@ -523,7 +523,7 @@ bool CanFillSomeField(const EntityInstance& entity,
         return attribute &&
                !attribute
                     ->GetInfo(f.field->Type().GetAutofillAiType(entity.type()),
-                              app_locale.tag_string(), f.field->format_string())
+                              app_locale, f.field->format_string())
                     .empty();
       });
 }
@@ -760,7 +760,7 @@ Suggestion GetSuggestionForEntity(
   std::u16string main_text = trigger_attribute.GetInfo(
       trigger_field.field->Type().GetAutofillAiType(
           trigger_attribute.type().entity_type()),
-      app_locale.tag_string(), trigger_field.field->format_string());
+      app_locale, trigger_field.field->format_string());
   if (trigger_attribute.type().is_obfuscated()) {
     main_text = GetObfuscatedValue(main_text, /*visible_suffix_length=*/4);
   }
@@ -1172,8 +1172,7 @@ std::optional<Suggestion> CreateDomainFallbackSuggestion(
 
     std::u16string trigger_value = trigger_attribute->GetInfo(
         trigger_field_with_type->field->Type().GetAutofillAiType(entity.type()),
-        client.GetAppLocale().tag_string(),
-        trigger_field_with_type->field->format_string());
+        client.GetAppLocale(), trigger_field_with_type->field->format_string());
     if (!trigger_value.empty()) {
       fallback_entities.push_back(&entity);
     }

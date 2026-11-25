@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 
 #include "base/containers/flat_set.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/gmock_callback_support.h"
@@ -128,7 +129,7 @@ auto HasType(SuggestionType expected_type) {
 
 auto HasAttributeWithValue(AttributeType attribute_type,
                            std::u16string value,
-                           const std::string& app_locale) {
+                           const base::i18n::LanguageTag& app_locale) {
   return Truly([=](const EntityInstance& entity) {
     if (entity.type() != attribute_type.entity_type()) {
       return false;
@@ -142,13 +143,14 @@ auto HasAttributeWithValue(AttributeType attribute_type,
 auto PassportWithNumber(std::u16string number) {
   return HasAttributeWithValue(
       AttributeType(AttributeTypeName::kPassportNumber), std::move(number),
-      /*app_locale=*/"");
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("und"));
 }
 
 auto VehicleWithLicensePlate(std::u16string license_plate) {
   return HasAttributeWithValue(
       AttributeType(AttributeTypeName::kVehiclePlateNumber),
-      std::move(license_plate), /*app_locale=*/"");
+      std::move(license_plate),
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("und"));
 }
 
 Matcher<EntityInstance> HasRecordType(EntityInstance::RecordType record_type) {
@@ -235,16 +237,19 @@ class AutofillAiManagerTest
   }
   void TearDown() override { DestroyAutofillClient(); }
 
-  std::u16string GetValueFromEntity(const EntityInstance entity,
-                                    AttributeType attribute,
-                                    const std::string& app_locale = "") {
+  std::u16string GetValueFromEntity(
+      const EntityInstance entity,
+      AttributeType attribute,
+      const base::i18n::LanguageTag& app_locale =
+          base::i18n::GetKnownLanguageTag("und")) {
     return entity.attribute(attribute)->GetCompleteInfo(app_locale);
   }
 
   std::u16string GetValueFromEntityForAttributeTypeName(
       const EntityInstance entity,
       AttributeTypeName type,
-      const std::string& app_locale) {
+      const base::i18n::LanguageTag& app_locale =
+          base::i18n::GetKnownLanguageTag("und")) {
     AttributeType attribute_type = AttributeType(type);
     base::optional_ref<const AttributeInstance> instance =
         entity.attribute(attribute_type);
@@ -614,16 +619,19 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
     return form;
   }
 
-  std::u16string GetValueFromEntity(const EntityInstance entity,
-                                    AttributeType attribute,
-                                    const std::string& app_locale = "") {
+  std::u16string GetValueFromEntity(
+      const EntityInstance entity,
+      AttributeType attribute,
+      const base::i18n::LanguageTag& app_locale =
+          base::i18n::GetKnownLanguageTag("und")) {
     return entity.attribute(attribute)->GetCompleteInfo(app_locale);
   }
 
   std::u16string GetValueFromEntityForAttributeTypeName(
       const EntityInstance entity,
       AttributeTypeName type,
-      const std::string& app_locale) {
+      const base::i18n::LanguageTag& app_locale =
+          base::i18n::GetKnownLanguageTag("und")) {
     AttributeType attribute_type = AttributeType(type);
     base::optional_ref<const AttributeInstance> instance =
         entity.attribute(attribute_type);
@@ -1358,14 +1366,14 @@ TEST_F(AutofillAiManagerImportFormTest,
   ASSERT_EQ(saved_entities.size(), 1u);
   const EntityInstance& saved_entity = *saved_entities.begin();
   EXPECT_EQ(saved_entity, MaskEntityInstance(*new_entity));
-  EXPECT_EQ(
-      GetValueFromEntityForAttributeTypeName(
-          saved_entity, AttributeTypeName::kPassportName, /*app_locale=*/""),
-      u"Jon Doe");
-  EXPECT_EQ(
-      GetValueFromEntityForAttributeTypeName(
-          saved_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""),
-      u"4321");
+  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
+                saved_entity, AttributeTypeName::kPassportName,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und")),
+            u"Jon Doe");
+  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
+                saved_entity, AttributeTypeName::kPassportNumber,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und")),
+            u"4321");
 }
 
 TEST_F(AutofillAiManagerImportFormTest,
@@ -1462,14 +1470,14 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
     saved_entity = *(saved_entities.begin() + 1);
   }
   EXPECT_EQ(saved_entity, MaskEntityInstance(*entity));
-  EXPECT_EQ(
-      GetValueFromEntityForAttributeTypeName(
-          saved_entity, AttributeTypeName::kPassportName, /*app_locale=*/""),
-      u"Jon Doe");
-  EXPECT_EQ(
-      GetValueFromEntityForAttributeTypeName(
-          saved_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""),
-      u"4321");
+  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
+                saved_entity, AttributeTypeName::kPassportName,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und")),
+            u"Jon Doe");
+  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
+                saved_entity, AttributeTypeName::kPassportNumber,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und")),
+            u"4321");
 }
 
 TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAcceptEdits) {
@@ -1783,7 +1791,7 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_NewInfo) {
   // The new expiry date information should be added accordingly.
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
                 saved_entity, AttributeTypeName::kPassportExpirationDate,
-                /*app_locale=*/""),
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und")),
             u"2020-02-01");
 }
 
@@ -1947,7 +1955,7 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_UpdateInfo) {
   // The expiry date information should be updated accordingly.
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
                 saved_entity, AttributeTypeName::kPassportExpirationDate,
-                /*app_locale=*/""),
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und")),
             u"2020-02-01");
 }
 
@@ -2643,7 +2651,8 @@ TEST_F(AutofillAiManagerWalletReminderNoticeTest,
   form->field(0)->set_value(kDefaultVehicleOwner);
   form->field(1)->set_value(kDefaultLicensePlate);
   form->field(2)->set_value(GetValueFromEntityForAttributeTypeName(
-      passport_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""));
+      passport_entity, AttributeTypeName::kPassportNumber,
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("und")));
 
   // Fill vehicle on field 0, then personal context on field 2.
   ShowAndAcceptSuggestion(vehicle_entity, *form, *form->field(0));
@@ -2670,7 +2679,8 @@ TEST_F(
   std::unique_ptr<FormStructure> form =
       CreateFormStructure({PASSPORT_NUMBER, NAME_FULL, VEHICLE_LICENSE_PLATE});
   form->field(0)->set_value(GetValueFromEntityForAttributeTypeName(
-      passport_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""));
+      passport_entity, AttributeTypeName::kPassportNumber,
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("und")));
   form->field(1)->set_value(kDefaultVehicleOwner);
   form->field(2)->set_value(kDefaultLicensePlate);
 

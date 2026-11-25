@@ -96,11 +96,11 @@ std::vector<std::string> GetAttributeStrikeKeys(
         base::ToVector(types, [&](AttributeType attribute_type) {
           base::optional_ref<const AttributeInstance> attribute =
               entity.attribute(attribute_type);
-          return std::pair(std::string(attribute_type.name_as_string()),
-                           attribute
-                               ? base::UTF16ToUTF8(attribute->GetCompleteInfo(
-                                     app_locale.tag_string()))
-                               : std::string());
+          return std::pair(
+              std::string(attribute_type.name_as_string()),
+              attribute
+                  ? base::UTF16ToUTF8(attribute->GetCompleteInfo(app_locale))
+                  : std::string());
         });
 
     // We sort the keys to ensure they remain stable even if the ordering in

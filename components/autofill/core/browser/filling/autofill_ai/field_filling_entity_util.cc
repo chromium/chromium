@@ -107,7 +107,7 @@ std::optional<SelectOption> GetValueForDateSelect(
                       uint32_t max =
                           std::numeric_limits<uint32_t>::max()) -> uint32_t {
     std::u16string s = attribute.GetInfo(
-        type, app_locale.tag_string(),
+        type, app_locale,
         AutofillFormatString(std::move(format_string), FormatString_Type_DATE));
     unsigned int i = 0;
     return base::StringToUint(s, &i) && min <= i && i <= max
@@ -141,7 +141,7 @@ std::u16string GetValueForInput(const AttributeInstance& attribute,
   // PHONE_HOME_WHOLE_NUMBER classification from regular autofill
   // prediction logic.
   std::u16string value =
-      attribute.GetInfo(type, app_locale.tag_string(), field.format_string());
+      attribute.GetInfo(type, app_locale, field.format_string());
   switch (type) {
     case DRIVERS_LICENSE_REGION:
     case VEHICLE_PLATE_STATE:
@@ -362,7 +362,7 @@ bool WillFillSensitiveAttributes(const EntityInstance& entity,
                attribute->type().is_obfuscated() &&
                !attribute
                     ->GetInfo(f.field->Type().GetAutofillAiType(entity.type()),
-                              app_locale.tag_string(), f.field->format_string())
+                              app_locale, f.field->format_string())
                     .empty();
       });
 }

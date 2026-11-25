@@ -72,7 +72,7 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
     if (std::optional<std::u16string> date = MaybeGetLocalizedDate(attribute)) {
       return *date;
     } else {
-      return attribute.GetCompleteInfo(app_locale.tag_string());
+      return attribute.GetCompleteInfo(app_locale);
     }
   };
 
@@ -94,9 +94,9 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
         // We compare their suffixes instead.
         if (old_entity_attribute->masked()) {
           std::u16string old_value =
-              old_entity_attribute->GetCompleteInfo(app_locale.tag_string());
+              old_entity_attribute->GetCompleteInfo(app_locale);
           std::u16string new_value =
-              new_entity_attribute.GetCompleteInfo(app_locale.tag_string());
+              new_entity_attribute.GetCompleteInfo(app_locale);
           size_t suffix_length = std::min(old_value.size(), new_value.size());
           return old_value.substr(old_value.size() - suffix_length) ==
                          new_value.substr(new_value.size() - suffix_length)
@@ -108,10 +108,10 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
                    new_entity_attribute.type().field_subtypes(),
                    [&](FieldType type) {
                      return old_entity_attribute->GetInfo(
-                                type, app_locale.tag_string(),
+                                type, app_locale,
                                 /*format_string=*/std::nullopt) ==
                             new_entity_attribute.GetInfo(
-                                type, app_locale.tag_string(),
+                                type, app_locale,
                                 /*format_string=*/std::nullopt);
                    })
                    ? EntityAttributeUpdateType::kNewEntityAttributeUnchanged

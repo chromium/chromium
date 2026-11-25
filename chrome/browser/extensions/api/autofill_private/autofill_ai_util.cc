@@ -171,17 +171,17 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
 
       attribute_instance.SetInfo(
           attribute_instance.type().field_type(),
-          base::UTF8ToUTF16(date->month), app_locale.tag_string(),
+          base::UTF8ToUTF16(date->month), app_locale,
           AutofillFormatString(u"M", autofill::FormatString_Type_DATE),
           autofill::VerificationStatus::kUserVerified);
       attribute_instance.SetInfo(
           attribute_instance.type().field_type(), base::UTF8ToUTF16(date->day),
-          app_locale.tag_string(),
+          app_locale,
           AutofillFormatString(u"D", autofill::FormatString_Type_DATE),
           autofill::VerificationStatus::kUserVerified);
       attribute_instance.SetInfo(
           attribute_instance.type().field_type(), base::UTF8ToUTF16(date->year),
-          app_locale.tag_string(),
+          app_locale,
           AutofillFormatString(u"YYYY", autofill::FormatString_Type_DATE),
           autofill::VerificationStatus::kUserVerified);
     } else {
@@ -265,16 +265,16 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
       date_value.SetByDottedPath(
           "month",
           base::UTF16ToUTF8(attribute_instance.GetInfo(
-              field_type, app_locale.tag_string(),
+              field_type, app_locale,
               AutofillFormatString(u"M", autofill::FormatString_Type_DATE))));
       date_value.SetByDottedPath(
           "day",
           base::UTF16ToUTF8(attribute_instance.GetInfo(
-              field_type, app_locale.tag_string(),
+              field_type, app_locale,
               AutofillFormatString(u"D", autofill::FormatString_Type_DATE))));
       date_value.SetByDottedPath(
           "year", base::UTF16ToUTF8(attribute_instance.GetInfo(
-                      field_type, app_locale.tag_string(),
+                      field_type, app_locale,
                       AutofillFormatString(u"YYYY",
                                            autofill::FormatString_Type_DATE))));
       autofill_private::AttributeInstance::Value::Populate(
@@ -283,7 +283,7 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     } else {
       autofill_private::AttributeInstance::Value::Populate(
           base::Value(base::UTF16ToUTF8(
-              attribute_instance.GetCompleteInfo(app_locale.tag_string()))),
+              attribute_instance.GetCompleteInfo(app_locale))),
           private_api_attribute_instances.back().value);
     }
   }
