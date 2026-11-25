@@ -4,32 +4,28 @@
 
 #include "third_party/blink/renderer/core/scheduler/task_attribution_tracker_impl.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_info_impl.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_task_state.h"
 #include "third_party/blink/renderer/core/scheduler/web_scheduling_task_state.h"
-#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
-#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "v8/include/v8-isolate.h"
 #include "v8/include/v8-promise.h"
-
-namespace blink {
-class ScriptToolContext;
-}
 
 namespace blink::scheduler {
 
@@ -119,29 +115,23 @@ std::unique_ptr<TaskAttributionTracker> TaskAttributionTrackerImpl::Create(
 TaskAttributionTrackerImpl::TaskAttributionTrackerImpl(v8::Isolate* isolate)
     : isolate_(isolate) {
   CHECK(isolate_);
-  if (base::FeatureList::IsEnabled(
-          features::kTaskAttributionTraceMicrotaskTaskState)) {
-    // Register a tracing state observer unless we're running in a test without
-    // a task runner. Also note that setting the promise hook must be done on
-    // the main thread, since otherwise the `isolate_` might not be the current
-    // isolate, so we need to use an async observer.
-    if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
-      trace_event::AddTraceSessionObserver(this);
-    }
-    // If tracing was already enabled, we won't get a callback, so check if we
-    // need to register the promise hook.
-    if (IsTracingCategoryEnabled()) {
-      isolate_->SetPromiseHook(TaskAttributionPromiseHook);
-    }
+  // Register a tracing state observer unless we're running in a test without
+  // a task runner. Setting the promise hook must happen on the isolate's
+  // thread, so `trace_event::AddTraceSessionObserver()` is used to receive
+  // notifications on the registering sequence.
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    trace_event::AddTraceSessionObserver(this);
+  }
+  // If tracing was already enabled, we won't get a callback, so check if we
+  // need to register the promise hook.
+  if (IsTracingCategoryEnabled()) {
+    isolate_->SetPromiseHook(TaskAttributionPromiseHook);
   }
 }
 
 TaskAttributionTrackerImpl::~TaskAttributionTrackerImpl() {
-  if (base::FeatureList::IsEnabled(
-          features::kTaskAttributionTraceMicrotaskTaskState)) {
-    // Note that it's safe to remove a non-existent observer.
-    trace_event::RemoveTraceSessionObserver(this);
-  }
+  // Note that it's safe to remove a non-existent observer.
+  trace_event::RemoveTraceSessionObserver(this);
 }
 
 scheduler::TaskAttributionInfo* TaskAttributionTrackerImpl::CurrentTaskState()

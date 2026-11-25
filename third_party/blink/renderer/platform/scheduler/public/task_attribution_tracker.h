@@ -8,10 +8,8 @@
 #include <optional>
 #include <utility>
 
-#include "base/functional/function_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -106,13 +104,10 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
    public:
     explicit MicrotaskTraceScope(v8::Isolate* isolate) {
-      if (base::FeatureList::IsEnabled(
-              features::kTaskAttributionTraceMicrotaskTaskState)) {
-        if (IsMainThread() && IsTracingCategoryEnabled()) {
-          tracker_ = From(isolate);
-          if (tracker_) {
-            tracker_->BeginMicrotaskTrace();
-          }
+      if (IsMainThread() && IsTracingCategoryEnabled()) {
+        tracker_ = From(isolate);
+        if (tracker_) {
+          tracker_->BeginMicrotaskTrace();
         }
       }
     }

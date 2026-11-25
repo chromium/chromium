@@ -5,23 +5,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 class SoftNavigationContext;
 class ScriptToolContext;
 class ResourceTimingContext;
+class TaskAttributionTaskState;
 class WebSchedulingTaskState;
 }  // namespace blink
 
@@ -109,8 +109,6 @@ class CORE_EXPORT TaskAttributionTrackerImpl
   raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_;
 
   bool should_override_top_level_check_ = false;
-
-  base::WeakPtrFactory<TaskAttributionTrackerImpl> weak_factory_{this};
 };
 
 }  // namespace blink::scheduler
