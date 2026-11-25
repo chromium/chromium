@@ -81,6 +81,7 @@
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_performance_watcher_factory.h"
+#include "net/socket/socket_tag.h"
 #include "net/socket/udp_client_socket.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
@@ -2398,6 +2399,7 @@ int QuicSessionPool::CreateSessionAsync(
   const bool is_startup_check_socket = ConfigureEmulatedConnectIfEnabled(
       socket.get(), key.session_key().target_network(), network);
   DatagramClientSocket* socket_ptr = socket.get();
+  const SocketTag socket_tag = key.session_key().socket_tag();
   ConnectAndConfigureCallback connect_and_configure_callback = base::BindOnce(
       [](CompletionOnceCallback cb, int rv,
          std::optional<QuicSocketConfigStep> /*error_step*/) {
@@ -2425,8 +2427,7 @@ int QuicSessionPool::CreateSessionAsync(
                             // network that should be used due to connection
                             // migration via ConnectAndConfigureSocket. Instead,
                             // rely on the new parameter in `CreateSocket`.
-                            network, key.session_key().socket_tag(),
-                            is_startup_check_socket);
+                            network, socket_tag, is_startup_check_socket);
   return ERR_IO_PENDING;
 }
 
