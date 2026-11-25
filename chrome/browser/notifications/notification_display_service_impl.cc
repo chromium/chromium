@@ -149,7 +149,9 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
     const std::optional<bool>& is_suspicious,
     base::OnceClosure on_completed_cb) {
   NotificationHandler* handler = GetNotificationHandler(notification_type);
-  CHECK(handler, base::NotFatalUntil::M161);
+  // TODO(crbug.com/586355582): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(handler);
   if (!handler) {
     LOG(ERROR) << "Unable to find a handler for "
                << static_cast<int>(notification_type);
