@@ -180,6 +180,10 @@ enum class PresentedState {
   _stopped = YES;
   [_mediator disconnect];
   _mediator = nil;
+  // Defensive: `-bookmarkBrowserDismissed` below already stops the "Set a
+  // reminder" UI when the bookmark browser is presented. Make sure it never
+  // outlives this coordinator in any other state.
+  [self stopReminderNotificationsCoordinator];
   switch (self.currentPresentedState) {
     case PresentedState::BOOKMARK_BROWSER:
       [self bookmarkBrowserDismissed];
@@ -376,6 +380,10 @@ enum class PresentedState {
   if (self.currentPresentedState != PresentedState::BOOKMARK_BROWSER) {
     return;
   }
+  // The "Set a reminder" UI is presented on top of the bookmark browser. Its
+  // coordinator is not notified when the bookmark browser goes away
+  // (programmatically or by swipe), so stop it explicitly.
+  [self stopReminderNotificationsCoordinator];
   CHECK(self.bookmarkNavigationController, base::NotFatalUntil::M152)
       << [self description];
   for (UIViewController* controller in self.bookmarkNavigationController
@@ -558,7 +566,7 @@ enum class PresentedState {
   CHECK(node && node->is_url());
   CHECK(self.bookmarkNavigationController);
 
-  CHECK(!_reminderNotificationsCoordinator);
+  [self stopReminderNotificationsCoordinator];
   _reminderNotificationsCoordinator = [[ReminderNotificationsCoordinator alloc]
       initWithBaseViewController:self.bookmarkNavigationController
                          browser:self.browser];
@@ -571,9 +579,7 @@ enum class PresentedState {
 - (void)reminderNotificationsCoordinatorWantsToBeDismissed:
     (ReminderNotificationsCoordinator*)coordinator {
   CHECK_EQ(coordinator, _reminderNotificationsCoordinator);
-  [_reminderNotificationsCoordinator stop];
-  _reminderNotificationsCoordinator.delegate = nil;
-  _reminderNotificationsCoordinator = nil;
+  [self stopReminderNotificationsCoordinator];
 }
 
 #pragma mark - BookmarksCommands
@@ -649,6 +655,13 @@ enum class PresentedState {
 }
 
 #pragma mark - Private
+
+// Stops `_reminderNotificationsCoordinator`, if any.
+- (void)stopReminderNotificationsCoordinator {
+  _reminderNotificationsCoordinator.delegate = nil;
+  [_reminderNotificationsCoordinator stop];
+  _reminderNotificationsCoordinator = nil;
+}
 
 // Stops `self.folderChooserCoordinator` and sets `currentPresentedState` to
 // `NONE.

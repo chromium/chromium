@@ -111,15 +111,20 @@ source_set("home") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "bookmarks_home_view_controller_unittest.mm" ]
+  sources = [
+    "bookmarks_coordinator_unittest.mm",
+    "bookmarks_home_view_controller_unittest.mm",
+  ]
   deps = [
     "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//components/send_tab_to_self:features",
     "//ios/chrome/browser/bookmarks/folder_chooser/coordinator",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/bookmarks/ui_bundled/home",
     "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/reminder_notifications/coordinator",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/model/browser",
@@ -127,6 +132,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
     "//third_party/ocmock",
   ]
 }

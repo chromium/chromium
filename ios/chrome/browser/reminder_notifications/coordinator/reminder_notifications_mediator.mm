@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/json/values_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
@@ -18,7 +19,7 @@ const char kReminderNotificationsCreationTimeKey[] = "creation_time";
 
 @implementation ReminderNotificationsMediator {
   // The `PrefService` used to store reminder data.
-  raw_ptr<PrefService, DanglingUntriaged> _profilePrefs;
+  raw_ptr<PrefService> _profilePrefs;
 }
 
 - (instancetype)initWithProfilePrefService:(PrefService*)profilePrefs {
