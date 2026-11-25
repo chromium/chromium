@@ -313,6 +313,8 @@ class AutofillAiManagerTest
     return edm().GetEntityInstances();
   }
 
+  void WaitForWebDataIdle() { webdata_helper_.WaitUntilIdle(); }
+
   EntityDataManager& edm() { return *autofill_client().GetEntityDataManager(); }
   AutofillAiManager& manager() { return *manager_; }
   TestStrikeDatabase& strike_database() { return strike_database_; }
@@ -856,10 +858,13 @@ TEST_F(AutofillAiManagerPersonalContextSaveTest,
                 AttributeType(AttributeTypeName::kPassportExpirationDate),
                 u"2026-01-01")));
 
-  // Once saved to Wallet, the personal context entity is deduplicated.
-  ASSERT_TRUE(
-      base::test::RunUntil([&] { return GetEntityInstances().size() == 1u; }));
-  base::span<const EntityInstance> saved = GetEntityInstances();
+  // Wait for the DB write first so `RunUntil()` only polls in-memory state
+  // while `ThreadPool` deduplicates the personal context entity, avoiding
+  // nested `RunLoop`s inside `RunUntil()`'s idle callback.
+  WaitForWebDataIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return edm().GetEntityInstances().size() == 1u; }));
+  base::span<const EntityInstance> saved = edm().GetEntityInstances();
   EXPECT_EQ(saved[0].record_type(), EntityInstance::RecordType::kServerWallet);
 }
 
@@ -884,9 +889,13 @@ TEST_F(AutofillAiManagerPersonalContextSaveTest,
 
   EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 
-  ASSERT_TRUE(
-      base::test::RunUntil([&] { return GetEntityInstances().size() == 1u; }));
-  base::span<const EntityInstance> saved = GetEntityInstances();
+  // Wait for the DB write first so `RunUntil()` only polls in-memory state
+  // while `ThreadPool` deduplicates the personal context entity, avoiding
+  // nested `RunLoop`s inside `RunUntil()`'s idle callback.
+  WaitForWebDataIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return edm().GetEntityInstances().size() == 1u; }));
+  base::span<const EntityInstance> saved = edm().GetEntityInstances();
   EXPECT_EQ(saved[0].record_type(), EntityInstance::RecordType::kLocal);
   EXPECT_NE(saved[0].guid(), masked_passport().guid());
   EXPECT_THAT(
