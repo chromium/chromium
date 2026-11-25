@@ -1580,19 +1580,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Navigation.MainFrame.RendererInitiated.InitiatorFramePresentAtStart"
-    enum="BooleanPresent" expires_after="2023-10-01">
-  <owner>yaoxia@chromium.org</owner>
-  <owner>cammie@chromium.org</owner>
-  <summary>
-    Whether the initiator frame is present when a renderer-initiated primary
-    main frame navigation has started. Recorded for each renderer-initiated
-    primary main frame navigation when the navigation has started (i.e. during
-    WebContentsObserver::DidStartNavigation()).
-  </summary>
-</histogram>
-
 <histogram name="Navigation.MainFrame.SiteEngagementLevel"
     enum="SiteEngagementLevel" expires_after="2026-01-18">
   <owner>meacer@chromium.org</owner>
