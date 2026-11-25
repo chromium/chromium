@@ -168,10 +168,14 @@ class TestActionSwitchTabs(sghitb.TestAction):
     if not tab.browser.supports_tab_control:
       test_instance.fail('Browser must support tab control')
     dummy_tab = tab.browser.tabs.New()
-    dummy_tab.Activate()
-    # Wait for 2 seconds so that the new tab becomes visible.
-    dummy_tab.action_runner.Wait(2)
-    tab.Activate()
+    try:
+      dummy_tab.Activate()
+      sghitb.TestActionWaitForContinue(SHORT_GLOBAL_TIMEOUT).Run(
+        test_case, tab_data, loop_state, test_instance
+      )
+      tab.Activate()
+    finally:
+      dummy_tab.Close()
 
 
 class TestActionSwitchTabsAndCopyImage(sghitb.TestAction):

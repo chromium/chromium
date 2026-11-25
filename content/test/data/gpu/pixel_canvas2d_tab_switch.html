@@ -9,35 +9,79 @@
 }
 </style>
 <script>
+let g_initialFramesBeforeReady = 2;
 let g_swapsBeforeAck = 15;
 let g_canvas;
 let g_c2d;
+let g_ready = false;
+let g_hasHidden = false;
+let g_waitingForFinish = false;
+let g_finished = false;
 
-function waitForFinish()
-{
+// We manually send heartbeats during the requestAnimationFrame loops because
+// the test harness only auto-wraps WebGL context methods, and there are no
+// function calls here that can be easily wrapped without affecting tests whose
+// requestAnimationFrame loops continue running after test completion.
+// TODO(crbug.com/590200901): Remove this once requestAnimationFrame is properly
+// wrapped with heartbeats.
+function sendHeartbeat() {
+  if (!g_finished && window.wrapper) {
+    window.wrapper.sendHeartbeatThrottled();
+  }
+}
+
+function waitForInitialComposite() {
+  if (g_finished) {
+    return;
+  }
+  if (g_initialFramesBeforeReady == 0) {
+    g_ready = true;
+    sendResult("READY");
+  } else {
+    sendHeartbeat();
+    g_initialFramesBeforeReady--;
+    window.requestAnimationFrame(waitForInitialComposite);
+  }
+}
+
+function waitForFinish() {
+  if (g_finished) {
+    return;
+  }
   if (g_swapsBeforeAck == 0) {
+    g_finished = true;
     sendResult("SUCCESS");
   } else {
+    sendHeartbeat();
     g_swapsBeforeAck--;
     window.requestAnimationFrame(waitForFinish);
   }
 }
 
 function handleVisibilityChange() {
-  if (document.visibilityState == "visible")
-    waitForFinish();
+  if (g_finished || !g_ready) {
+    return;
+  }
+  if (document.visibilityState == "visible") {
+    if (g_hasHidden && !g_waitingForFinish) {
+      g_waitingForFinish = true;
+      waitForFinish();
+    }
+  } else if (!g_hasHidden) {
+    g_hasHidden = true;
+    sendResult("CONTINUE");
+  }
 }
 
 function sendResult(status) {
-  if (domAutomationController) {
+  if (window.domAutomationController) {
     domAutomationController.send(status);
   } else {
     console.log(status);
   }
 }
 
-function main()
-{
+function main() {
   document.addEventListener("visibilitychange", handleVisibilityChange, false);
   g_canvas = document.getElementById("c");
   g_c2d = g_canvas.getContext("2d");
@@ -49,7 +93,7 @@ function main()
   g_c2d.fillRect(0, 0, 50, 50);
   g_c2d.fillStyle = "blue";
   g_c2d.fillRect(50, 50, 50, 50);
-  sendResult("READY");
+  waitForInitialComposite();
 }
 </script>
 </head>

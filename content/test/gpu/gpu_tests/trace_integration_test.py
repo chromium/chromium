@@ -96,6 +96,9 @@ basic_test_harness_script = r"""
     let lmsg = msg.toLowerCase();
     if (lmsg == "ready") {
       domAutomationController._readyForActions = true;
+    } else if (lmsg == "continue") {
+      // Nothing to do, _proceed is already set above and the test is still
+      // running.
     } else {
       domAutomationController._finished = true;
       if (lmsg == "success") {

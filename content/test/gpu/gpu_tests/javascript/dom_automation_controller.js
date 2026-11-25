@@ -20,16 +20,18 @@ function evalInIframe(statement) {
 
 if (inIframe) {
   const wrappedFunctions = [
-      // These were originally copied from the WebGL conformance tests since
-      // they implemented a similar heartbeat mechanism first, so some of these
-      // are likely unnecessary. However, the tests are happy, so they are
-      // kept as-is for now.
-      'getUniform',
-      'getUniformLocation',
-      'uniform1i',
-      'uniform1iv',
-      'clientWaitSync',
-      'getSyncParameter',
+    // These were originally copied from the WebGL conformance tests since
+    // they implemented a similar heartbeat mechanism first, so some of these
+    // are likely unnecessary. However, the tests are happy, so they are
+    // kept as-is for now.
+    'getError',
+    'getUniform',
+    'getUniformLocation',
+    'uniform1i',
+    'uniform1iv',
+    'clientWaitSync',
+    'getSyncParameter',
+    'readPixels',
   ];
   for (const funcName of wrappedFunctions) {
     wrapFunctionInHeartbeat(WebGLRenderingContext.prototype, funcName);

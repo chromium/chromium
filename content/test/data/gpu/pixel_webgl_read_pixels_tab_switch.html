@@ -9,20 +9,82 @@
 }
 </style>
 <script>
+let g_initialFramesBeforeReady = 2;
 let g_swapsBeforeAck = 15;
 let g_canvas;
 let g_gl;
+let g_ready = false;
+let g_hasHidden = false;
+let g_waitingForFinish = false;
+let g_finished = false;
+
+function logMessage(msg) {
+  if (window.domAutomationController && domAutomationController.log) {
+    domAutomationController.log(msg);
+  } else {
+    console.log(msg);
+  }
+}
 
 function sendResult(status) {
-  if (domAutomationController) {
+  if (window.domAutomationController) {
     domAutomationController.send(status);
   } else {
     console.log(status);
   }
 }
 
+function failTest(reason) {
+  if (g_finished) {
+    return;
+  }
+  g_finished = true;
+  logMessage(reason);
+  sendResult("FAILURE");
+}
+
+function checkGlError(context) {
+  if (!g_gl) {
+    failTest("Missing WebGL context " + context);
+    return false;
+  }
+  if (g_gl.isContextLost()) {
+    failTest("WebGL context lost " + context);
+    return false;
+  }
+  let err = g_gl.getError();
+  if (err != g_gl.NO_ERROR) {
+    failTest("GL error 0x" + err.toString(16) + " " + context);
+    return false;
+  }
+  return true;
+}
+
+function waitForInitialComposite() {
+  if (g_finished) {
+    return;
+  }
+  if (!checkGlError("before READY")) {
+    return;
+  }
+  if (g_initialFramesBeforeReady == 0) {
+    g_ready = true;
+    sendResult("READY");
+  } else {
+    g_initialFramesBeforeReady--;
+    window.requestAnimationFrame(waitForInitialComposite);
+  }
+}
+
 function waitForFinish() {
+  if (g_finished) {
+    return;
+  }
+  if (!checkGlError("during waitForFinish")) {
+    return;
+  }
   if (g_swapsBeforeAck == 0) {
+    g_finished = true;
     sendResult("SUCCESS");
   } else {
     g_swapsBeforeAck--;
@@ -31,13 +93,27 @@ function waitForFinish() {
 }
 
 function handleVisibilityChange() {
+  if (g_finished || !g_ready) {
+    return;
+  }
   if (document.visibilityState == "visible") {
-    waitForFinish();
-  } else {
+    if (g_hasHidden && !g_waitingForFinish) {
+      g_waitingForFinish = true;
+      waitForFinish();
+    }
+  } else if (!g_hasHidden) {
+    g_hasHidden = true;
+    if (!checkGlError("before readPixels")) {
+      return;
+    }
     // Read pixels will cause drawing buffer to be cleared, but it shouldn't
     // cause it to be recomposited after the tab switches back.
     let pixels = new Uint8Array(4);
     g_gl.readPixels(0, 0, 1, 1, g_gl.RGBA, g_gl.UNSIGNED_BYTE, pixels);
+    if (!checkGlError("after readPixels")) {
+      return;
+    }
+    sendResult("CONTINUE");
   }
 }
 
@@ -45,7 +121,14 @@ function main() {
   document.addEventListener("visibilitychange", handleVisibilityChange, false);
 
   g_canvas = document.getElementById("c");
+  g_canvas.addEventListener("webglcontextlost", () => {
+    failTest("WebGL context lost");
+  }, false);
   g_gl = g_canvas.getContext("webgl");
+  if (!g_gl) {
+    failTest("Unable to create WebGL context");
+    return;
+  }
 
   let width = g_canvas.width;
   let height = g_canvas.height;
@@ -63,7 +146,10 @@ function main() {
   g_gl.clearColor(0, 0, 1, 1);
   g_gl.clear(g_gl.COLOR_BUFFER_BIT);
 
-  sendResult("READY");
+  if (!checkGlError("after initial clear")) {
+    return;
+  }
+  waitForInitialComposite();
 }
 </script>
 </head>
