@@ -17,6 +17,13 @@ function InitialWebUISurfaceSyncParams() {
     # empty line
 }
 
+function TopChromeWebUIPrerenderingParams() {
+  join / \
+    TopChromeWebUIPrerenderingAtStartup/false \
+    TopChromeWebUIPrerenderingUnbound/true \
+    # empty line
+}
+
 function WebiumMetricsMappingParams() {
   join "" \
     "config/CjsKOUV2ZW50TGF0ZW5jeS5HZXN0dXJlU2Nyb2xsVXBkYXRlLlRvdWNoc2Ny" \
@@ -32,6 +39,7 @@ function WebUIReloadButtonParams() {
     WebUIReloadButtonKeepVisibleUntilPaint/true \
     WebUIReloadButtonPrewarmWebUI/true \
     WebUIReloadButtonPrewarmWebUIPreNavigate/true \
+    WebUIReloadButtonProfilePrewarming/true \
     WebUIReloadButtonRestartUnresponsive/true \
     WebUIReloadButtonRestartUnresponsiveRenderersTimeout/5s \
     # empty line
@@ -41,18 +49,23 @@ function WebUIReloadButtonParams() {
 # LINT.IfChange(WebUIToolbarEnableFeatures)
 join , \
   BypassOutdatedSurfaceActivation \
+  DeferBackgroundTabLoadsWhileVisiblePageLoads \
   DeferHistoryBackendInit \
   DeferLayoutDuringBrowserStartup \
   DeferSessionStorageScavengingOnStartup \
   DeferSpellcheckInitialization \
   GpuPersistentCacheAsyncInitialize \
+  GtkCacheNavButtonIcons \
   GtkPrefetchNavButtonIcons \
   InitialWebUI \
+  InitialWebUIChromeOptimizations \
   InitialWebUISurfaceSync:$(InitialWebUISurfaceSyncParams) \
   InitialWebUIWithoutExtensions \
   InitialWebUIWithoutSpellCheckForNtp \
   InitialWebUIWithoutTranslateForNtp \
   LazyKeyedServiceInstantiation \
+  MacDeferInputContextUntilFirstPaint \
+  MacPumpTasksBeforeFinishLaunching \
   OmniboxAimPopupDeferCreation \
   OmniboxWebUIPopupDeferCreation \
   OnlyUseWindowResizeHelperOnResize \
@@ -63,6 +76,7 @@ join , \
   PrioritizeWebUINavigationURLLoader \
   SendGPUChannelEarly \
   SkipIPCChannelPausingForNonGuests \
+  TopChromeWebUIPrerendering:$(TopChromeWebUIPrerenderingParams) \
   TopChromeWebUISharedRenderer \
   WebUIBackForwardButton \
   WebUIBundledCodeCache \
@@ -70,6 +84,7 @@ join , \
   WebUIHomeButton \
   WebUIReloadButton:$(WebUIReloadButtonParams) \
   WebUISplitTabsButton \
+  WebUISyncDataPipeWrite \
   WebUIToolbarFrameEvictionOptOut \
   WebiumMetricsMapping:$(WebiumMetricsMappingParams) \
   # empty line
