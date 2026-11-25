@@ -1280,6 +1280,21 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     }
   }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  if (update_state.should_clear_extra_announcement_nodes &&
+      extra_announcement_nodes_) {
+    // Notify observers and record both generated IDs for deletion before
+    // OnAtomicUpdateStarting so platform wrappers are erased before reset.
+    AXNode& assertive_node = extra_announcement_nodes_->AssertiveNode();
+    AXNode& polite_node = extra_announcement_nodes_->PoliteNode();
+    observers_.Notify(&AXTreeObserver::OnNodeWillBeDeleted, this,
+                      &assertive_node);
+    observers_.Notify(&AXTreeObserver::OnNodeWillBeDeleted, this, &polite_node);
+    update_state.deleting_node_ids.insert(assertive_node.id());
+    update_state.deleting_node_ids.insert(polite_node.id());
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
   // Notify observers of nodes that are about to change their ignored state or
   // their data. This must be done before applying any updates to the tree. This
   // is iterating in reverse order so that we only notify once per node id, and
@@ -1356,6 +1371,15 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   std::vector<AXTreeObserver::Change> changes;
   {
     ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(*this);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    // Reset extra announcement nodes before node_id_to_clear or UpdateNode can
+    // free the previous root, keeping their parent pointers valid throughout.
+    if (update_state.should_clear_extra_announcement_nodes &&
+        extra_announcement_nodes_) {
+      extra_announcement_nodes_.reset();
+    }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
     // Update the tree data. Do not call `UpdateDataForTesting` since this
     // method should be used only for testing, but importantly, we want to defer
@@ -1547,7 +1571,6 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
         }
       }
     }
-
   }  // tree_update_in_progress.
 
   if (!update_state.node_data_changed_ids.empty()) {
@@ -1616,12 +1639,6 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
 
   observers_.Notify(&AXTreeObserver::OnAtomicUpdateFinished, this,
                     root_->id() != old_root_id, changes);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  if (update_state.should_clear_extra_announcement_nodes) {
-    ClearExtraAnnouncementNodes();
-  }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if AX_FAIL_FAST_BUILD()
   CheckTreeConsistency(update);
@@ -1786,11 +1803,19 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
   // Populate |update_state| with all of the changes that will be performed
   // on the tree during the update.
   int number_of_inline_textboxes = 0;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  bool root_in_update = false;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   for (const AXNodeData& new_data : update_state->pending_tree_update->nodes) {
     if (new_data.id == kInvalidAXNodeID) {
       RecordError(*update_state, "Node ID is invalid.");
       return false;
     }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    if (root_ && new_data.id == root_->id()) {
+      root_in_update = true;
+    }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     bool is_new_root =
         update_state->root_will_be_created && new_data.id == update.root_id;
     if (!ComputePendingChangesToNode(new_data, is_new_root, update_state)) {
@@ -1813,6 +1838,19 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
   }
 
   update_state->pending_update_status = AXTreePendingStructureStatus::kComplete;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  // Compute after pending_update_status is kComplete because
+  // GetPendingDestroyNodeCount() checks that pending structure analysis ended.
+  // Latch unconditionally so extra announcement nodes created during
+  // pre-mutation observer callbacks are still cleared before the old root is
+  // freed.
+  if (!root_ || update_state->root_will_be_created || root_in_update ||
+      update_state->GetPendingDestroyNodeCount(root_->id()) > 0) {
+    update_state->should_clear_extra_announcement_nodes = true;
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
   return true;
 }
 
@@ -2639,14 +2677,6 @@ bool AXTree::CreateNewChildVector(
     AXTreeUpdateState* update_state) {
   CHECK(GetTreeUpdateInProgressState(), base::NotFatalUntil::M163);
   bool success = true;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  // If the root node has children added, clear the extra announcement nodes,
-  // which should always have their indices as the last two children of the root
-  // node. They will be recreated if needed, and given the correct indices.
-  if (node == root() && extra_announcement_nodes_) {
-    update_state->should_clear_extra_announcement_nodes = true;
-  }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   new_children->reserve(new_child_ids.size());
   size_t i = 0;
   for (AXNodeID child_id : new_child_ids) {
