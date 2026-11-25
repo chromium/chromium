@@ -1462,5 +1462,31 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimOnInlineBox) {
   }
 }
 
+TEST_F(InlineLayoutAlgorithmTest, LeadingFloatWithRuby) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container">
+      <div id="f0" style="float: left; width: 20px; height: 20px"></div><ruby><div id="f" style="float: left; width: 50px; height: 50px"></div><rt></rt></ruby><div id="h" style="float: left; width: 100px; height: 100px"></div>text
+    </div>
+  )HTML");
+  const LayoutBox* f0 = GetLayoutBoxByElementId("f0");
+  const LayoutBox* f = GetLayoutBoxByElementId("f");
+  const LayoutBox* h = GetLayoutBoxByElementId("h");
+  ASSERT_TRUE(f0);
+  ASSERT_TRUE(f);
+  ASSERT_TRUE(h);
+  EXPECT_EQ(f0->StitchedSize(), PhysicalSize(20, 20));
+  EXPECT_EQ(f->StitchedSize(), PhysicalSize(50, 50));
+  EXPECT_EQ(h->StitchedSize(), PhysicalSize(100, 100));
+
+  // Test `f0` and `h` are placed in the `container` IFC.
+  const LayoutBlockFlow* container =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
+  for (const LayoutBox* target : {f0, h}) {
+    InlineCursor cursor(*container);
+    cursor.MoveTo(*target);
+    EXPECT_TRUE(cursor);
+  }
+}
+
 }  // namespace
 }  // namespace blink

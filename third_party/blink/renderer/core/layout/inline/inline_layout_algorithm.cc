@@ -1746,8 +1746,12 @@ InlineLayoutAlgorithm::DoesRemainderFitInLineWithoutEllipsis(
 void InlineLayoutAlgorithm::PositionLeadingFloats(
     ExclusionSpace& exclusion_space,
     LeadingFloats& leading_floats) {
-  if (GetBreakToken() && GetBreakToken()->IsInParallelBlockFlow()) {
-    // Bail, and let the line breaker deal with any kind of parallel flow.
+  if (GetBreakToken() &&
+      (GetBreakToken()->IsInParallelBlockFlow() ||
+       (RuntimeEnabledFeatures::RubySkipLeadingFloatsEnabled() &&
+        GetBreakToken()->RubyData()))) {
+    // Bail, and let the line breaker deal with any kind of parallel flow or
+    // ruby continuation.
     return;
   }
 
@@ -1757,9 +1761,13 @@ void InlineLayoutAlgorithm::PositionLeadingFloats(
   for (; index < items.size(); ++index) {
     const InlineItem& item = *items[index];
 
-    // Abort if we've found something non-empty.
-    if (!item.IsEmptyItem())
+    // Abort if we've found something non-empty, or a ruby column (which may
+    // be handled by a sub-LineBreaker with empty LeadingFloats).
+    if (!item.IsEmptyItem() ||
+        (RuntimeEnabledFeatures::RubySkipLeadingFloatsEnabled() &&
+         item.Type() == InlineItem::kOpenRubyColumn)) {
       break;
+    }
 
     if (item.Type() != InlineItem::kFloating) {
       continue;
@@ -1787,7 +1795,7 @@ void InlineLayoutAlgorithm::PositionLeadingFloats(
       }
     }
 
-    leading_floats.Add(positioned_float, parallel_break_token);
+    leading_floats.Add(index, positioned_float, parallel_break_token);
   }
 
   leading_floats.SetHandledIndex(index);

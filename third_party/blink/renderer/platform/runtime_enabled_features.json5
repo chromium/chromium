@@ -5990,6 +5990,13 @@
       status: "stable",
     },
     {
+      // Prevents PositionLeadingFloats from positioning floats inside ruby
+      // columns, and verifies leading float item indices match in
+      // LineBreaker::HandleFloat. https://crbug.com/589800513
+      name: "RubySkipLeadingFloats",
+      status: "stable",
+    },
+    {
       // Allows a soft wrap after a preserved space (e.g. `white-space:
       // pre-wrap`) that is followed by a <ruby>, by ignoring the bidi
       // controls of ruby columns when checking break opportunities.
