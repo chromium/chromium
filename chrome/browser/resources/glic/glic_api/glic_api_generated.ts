@@ -1634,6 +1634,15 @@ export declare interface TabData {
   lightweightPageFeatures?: LightweightPageFeature[];
 }
 
+// Pre-consent Action First FRE suggestions for a tab.
+export declare interface ActionFirstSuggestions {
+  // ID of the tab these suggestions apply to.
+  tabId: string;
+  // Ordered chip IDs from the pre-reviewed chip catalog (e.g. "FACT_CHECK").
+  // Empty means the client should show generic chips.
+  chipIds: string[];
+}
+
 // Information about the annotated page content.
 export declare interface AnnotatedPageData {
   // Proto for AnnotatedPageContent.

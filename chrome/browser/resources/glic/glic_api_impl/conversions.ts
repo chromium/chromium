@@ -21,14 +21,15 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
-import type {                                                    //
-             AdditionalContext as AdditionalContextMojo,         //
-             AdditionalContextPart as AdditionalContextPartMojo, //
-             AnnotatedPageData as AnnotatedPageDataMojo,         //
-             CaptureRegionResult as CaptureRegionResultMojo,     //
-             ConversationInfo as ConversationInfoMojo,           //
-             CounterAbuseVerdict as CounterAbuseVerdictMojo,     //
-             CreateTabOptions as CreateTabOptionsMojo,           //
+import type {                                                      //
+             ActionFirstSuggestions as ActionFirstSuggestionsMojo, //
+             AdditionalContext as AdditionalContextMojo,           //
+             AdditionalContextPart as AdditionalContextPartMojo,   //
+             AnnotatedPageData as AnnotatedPageDataMojo,           //
+             CaptureRegionResult as CaptureRegionResultMojo,       //
+             ConversationInfo as ConversationInfoMojo,             //
+             CounterAbuseVerdict as CounterAbuseVerdictMojo,       //
+             CreateTabOptions as CreateTabOptionsMojo,             //
              DataTransferActionsBlockedNotice as DataTransferActionsBlockedNoticeMojo, //
              DriveFileSelection as DriveFileSelectionMojo,                   //
              DrivePickerOptions as DrivePickerOptionsMojo,                   //
@@ -68,6 +69,7 @@ import {                                                             //
   WebClientMode as WebClientModeMojo,                                //
 } from '../glic.mojom-webui.js';
 import type {                                                   //
+             ActionFirstSuggestions,                            //
              AdditionalContext,                                 //
              AdditionalContextPart,                             //
              AnnotatedPageData,                                 //
@@ -897,4 +899,15 @@ export function drivePickerOptionsFromClient(
   return {
     accountId: options?.accountId ?? '',
   };
+}
+
+export function actionFirstSuggestionsToClient(
+    suggestions: ActionFirstSuggestionsMojo|null): ActionFirstSuggestions|
+    undefined {
+  if (!suggestions) {
+    return undefined;
+  }
+  return replaceProperties(suggestions, {
+    tabId: idToClient(suggestions.tabId),
+  });
 }

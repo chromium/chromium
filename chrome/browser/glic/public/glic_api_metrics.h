@@ -128,6 +128,7 @@ enum class GlicHostApiRequestId {
   kSetGuestUrlQueryParam = 114,
   kSwitchAssistant = 115,
   kShowDrivePicker = 116,
+  kSubscribeToActionFirstSuggestions = 117,
 };
 // LINT.ThenChange(
 // //tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType,

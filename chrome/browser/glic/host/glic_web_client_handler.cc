@@ -106,6 +106,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/base_window.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
@@ -1729,6 +1730,23 @@ class GlicWebClientHandler
     glic_service_->provider_spec().GetFreStore().CompleteOnboarding(profile_);
   }
 
+  void SubscribeToActionFirstSuggestions(
+      mojo::PendingRemote<mojom::ActionFirstSuggestionsHandler> handler)
+      override {
+    LogApiRequest(GlicHostApiRequestId::kSubscribeToActionFirstSuggestions);
+    if (!base::FeatureList::IsEnabled(features::kGlicActionFirstSuggestions)) {
+      receiver_.ReportBadMessage(
+          "SubscribeToActionFirstSuggestions cannot be called without "
+          "GlicActionFirstSuggestions enabled.");
+      return;
+    }
+    mojo::RemoteSetElementId id =
+        action_first_suggestions_handlers_.Add(std::move(handler));
+    // Tabs are not evaluated yet, so there are never any suggestions.
+    action_first_suggestions_handlers_.Get(id)->OnActionFirstSuggestionsChanged(
+        nullptr);
+  }
+
   // GlicInstanceCoordinator::StateObserver implementation.
   void PanelStateChanged(const glic::mojom::PanelState& panel_state) override {
     web_client_->NotifyPanelStateChange(panel_state.Clone());
@@ -1976,6 +1994,7 @@ class GlicWebClientHandler
     local_state_pref_change_registrar_.Reset();
     panel_state_subscription_ = {};
     focus_changed_subscription_ = {};
+    action_first_suggestions_handlers_.Clear();
     pinned_tabs_changed_subscription_ = {};
     pinned_tab_data_changed_subscription_ = {};
     web_actuation_pref_subscription_ = {};
@@ -2134,6 +2153,8 @@ class GlicWebClientHandler
   base::CallbackListSubscription pinned_tab_data_changed_subscription_;
   base::CallbackListSubscription tab_data_changed_subscription_;
   base::CallbackListSubscription focus_data_changed_subscription_;
+  mojo::RemoteSet<mojom::ActionFirstSuggestionsHandler>
+      action_first_suggestions_handlers_;
   base::CallbackListSubscription focused_browser_changed_subscription_;
   base::CallbackListSubscription active_browser_changed_subscription_;
   base::CallbackListSubscription actor_task_state_changed_subscription_;

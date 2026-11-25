@@ -865,6 +865,30 @@ TEST_F(GuestUtilMultiInstanceTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_ActionFirstSuggestionsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicActionFirstSuggestions);
+
+  TestingProfile* profile = CreateTestingProfile();
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_FALSE(state->enable_action_first_suggestions);
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_ActionFirstSuggestionsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicActionFirstSuggestions);
+
+  TestingProfile* profile = CreateTestingProfile();
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_TRUE(state->enable_action_first_suggestions);
+}
+
 TEST_F(GuestUtilTest, IsOriginAllowedGlicApiWildcardMatching) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(

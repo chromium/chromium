@@ -3239,6 +3239,27 @@ class ApiTests extends ApiTestFixtureBase {
       assertTrue(false, 'Unexpected testParams');
     }
   }
+
+  async testActionFirstSuggestionsUndefinedWhenFeatureDisabled() {
+    assertUndefined(this.host.getActionFirstSuggestions);
+  }
+
+  async testGetActionFirstSuggestions() {
+    assertDefined(this.host.getActionFirstSuggestions);
+    const observable = this.host.getActionFirstSuggestions();
+    // Subscribing makes Chrome send the current value, which is undefined.
+    const first = observeSequence(observable);
+    assertUndefined(await first.next());
+    // A second subscriber shares the subscription.
+    const second = observeSequence(observable);
+    assertUndefined(await second.next());
+
+    // Once everyone unsubscribes, a new subscriber waits for a fresh value.
+    first.unsubscribe();
+    second.unsubscribe();
+    const third = observeSequence(observable);
+    assertUndefined(await third.next());
+  }
 }
 
 class DaisyChainApiTests extends ApiTestFixtureBase {

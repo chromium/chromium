@@ -678,6 +678,26 @@ class GlicApiTestWithDefaultTabContextDisabled : public GlicApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class GlicApiTestWithActionFirstSuggestionsDisabled : public GlicApiTest {
+ public:
+  GlicApiTestWithActionFirstSuggestionsDisabled() {
+    feature_list_.InitWithFeatures({}, {features::kGlicActionFirstSuggestions});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class GlicApiTestWithActionFirstSuggestionsEnabled : public GlicApiTest {
+ public:
+  GlicApiTestWithActionFirstSuggestionsEnabled() {
+    feature_list_.InitWithFeatures({features::kGlicActionFirstSuggestions}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class GlicApiTestWithBlankInstanceDelay : public GlicApiTest {
  public:
   GlicApiTestWithBlankInstanceDelay() {
@@ -6138,6 +6158,18 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSetGuestUrlQueryParam) {
   ExecuteJsTest({.params = base::Value("verify_cleared")});
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithActionFirstSuggestionsDisabled,
+                       testActionFirstSuggestionsUndefinedWhenFeatureDisabled) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithActionFirstSuggestionsEnabled,
+                       testGetActionFirstSuggestions) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 // Runs each test against consumer Gemini, with and without NoWebview, and
 // against Gemini Enterprise in Chrome (GEiC).
 auto DefaultTestParamSet() {
@@ -6260,6 +6292,16 @@ INSTANTIATE_TEST_SUITE_P(,
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithDefaultTabContextDisabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithActionFirstSuggestionsDisabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithActionFirstSuggestionsEnabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 

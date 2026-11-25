@@ -228,6 +228,8 @@ std::string_view ToString(GlicHostApiRequestId request_id) {
       return "SwitchAssistant";
     case GlicHostApiRequestId::kShowDrivePicker:
       return "ShowDrivePicker";
+    case GlicHostApiRequestId::kSubscribeToActionFirstSuggestions:
+      return "SubscribeToActionFirstSuggestions";
   }
   return "";
 }

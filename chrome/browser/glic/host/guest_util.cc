@@ -1266,6 +1266,8 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
   if (state->enable_client_storage && glic_service) {
     state->client_storage = glic_service->client_data_storage().GetAll();
   }
+  state->enable_action_first_suggestions =
+      base::FeatureList::IsEnabled(features::kGlicActionFirstSuggestions);
 }
 
 double GetZoomFactor(PrefService* pref_service) {

@@ -117,6 +117,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ShowManageSkillsUi"/>
   <variant name="ShowProfilePicker"/>
   <variant name="StopActorTask"/>
+  <variant name="SubscribeToActionFirstSuggestions"/>
   <variant name="SubscribeToCaptureRegion"/>
   <variant name="SubscribeToPageMetadata"/>
   <variant name="SubscribeToPinCandidates"/>

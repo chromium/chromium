@@ -31,6 +31,7 @@
 
 /// BEGIN_GENERATED - DO NOT MODIFY BELOW
 import * as generated from './glic_api_generated.js';
+export import ActionFirstSuggestions = generated.ActionFirstSuggestions;
 export import ActivateTabOptions = generated.ActivateTabOptions;
 export import AdditionalContext = generated.AdditionalContext;
 export import AnnotatedPageData = generated.AnnotatedPageData;
@@ -1501,6 +1502,18 @@ export declare interface GlicBrowserHost {
    */
   switchAssistant?
       (options: SwitchAssistantOptions): Promise<SwitchAssistantResponse>;
+
+  /**
+   * Returns an observable of pre-consent Action First FRE suggestions for the
+   * tab the panel targets. Chrome only evaluates tabs while this has
+   * subscribers. An undefined value means there are no suggestions for the
+   * current tab, because it is not evaluated yet or not eligible. Empty
+   * `chipIds` means the client should show generic chips.
+   *
+   * This method is undefined if the browser does not support it.
+   */
+  getActionFirstSuggestions?
+      (): ObservableValue<ActionFirstSuggestions|undefined>;
 }
 
 /**

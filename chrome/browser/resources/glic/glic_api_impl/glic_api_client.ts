@@ -9,6 +9,7 @@ import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
 import {                                               //
+  ActionFirstSuggestionsHandlerReceiver,               //
   AssistantTarget as AssistantTargetMojo,              //
   CaptureRegionObserverReceiver,                       //
   PinCandidatesObserverReceiver,                       //
@@ -43,6 +44,7 @@ import type {                                                          //
 } from '../glic.mojom-webui.js';
 import {CaptureRegionErrorReason, ClientCapabilities, HostCapability, ResponseStopCause} from '../glic_api/glic_api.js';
 import type {                                  //
+             ActionFirstSuggestions,           //
              ActivateTabOptions,               //
              AdditionalContext,                //
              CaptureRegionParams,              //
@@ -100,6 +102,7 @@ import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js'
 import {GlicBrowserHostActor} from './actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from './annotation/annotation_client.js';
 import {                                     //
+  actionFirstSuggestionsToClient,            //
   additionalContextToClient,                 //
   bitmapN32ToRGBAImage,                      //
   captureRegionResultToClient,               //
@@ -230,6 +233,30 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   private cachedUserProfile?: Promise<UserProfileInfo>;
   private enableCachedGetUserProfileInfo?: boolean;
   pinnedTabs = ObservableValueImpl.withNoValue<TabData[]>();
+  private actionFirstSuggestionsReceiver?:
+      ActionFirstSuggestionsHandlerReceiver;
+  private actionFirstSuggestions =
+      ObservableValueImpl.withNoValue<ActionFirstSuggestions|undefined>(
+          (isActive: boolean) => {
+            // Closing the pipe ends the subscription in Chrome.
+            this.actionFirstSuggestionsReceiver?.$.close();
+            this.actionFirstSuggestionsReceiver = undefined;
+            if (!isActive) {
+              // New subscribers should wait for a fresh value.
+              this.actionFirstSuggestions.reset();
+              return;
+            }
+            this.actionFirstSuggestionsReceiver =
+                new ActionFirstSuggestionsHandlerReceiver({
+                  onActionFirstSuggestionsChanged: (suggestions) => {
+                    this.actionFirstSuggestions.assignAndSignal(
+                        actionFirstSuggestionsToClient(suggestions));
+                  },
+                });
+            this.handler.subscribeToActionFirstSuggestions(
+                this.actionFirstSuggestionsReceiver.$
+                    .bindNewPipeAndPassRemote());
+          });
   pinCandidates: PinCandidatesObservable|undefined;
   captureRegionObservable?: CaptureRegionObservable;
   private cachedPinnedTabs: TabData[]|undefined = undefined;
@@ -392,6 +419,9 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
       this.clientStorage.initialize(state.clientStorage);
     } else {
       this.getClientStorage = undefined;
+    }
+    if (!state.enableActionFirstSuggestions) {
+      this.getActionFirstSuggestions = undefined;
     }
 
     // Set the method to undefined since it's gated behind a mojo
@@ -1072,6 +1102,11 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
 
   getClientStorage?(): GlicClientStorage {
     return this.clientStorage;
+  }
+
+  getActionFirstSuggestions?
+      (): ObservableValue<ActionFirstSuggestions|undefined> {
+    return this.actionFirstSuggestions;
   }
 
   getGeicClient(): GeicBrowserHost {

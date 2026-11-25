@@ -273,6 +273,10 @@ BASE_DECLARE_FEATURE(kGlicNativeFreAndroid);
 
 BASE_DECLARE_FEATURE(kGlicActionFirstFRE);
 
+// Enables pre-consent Action First FRE chip selection for the tab the panel
+// targets.
+BASE_DECLARE_FEATURE(kGlicActionFirstSuggestions);
+
 BASE_DECLARE_FEATURE(kGlicWarmOnNudge);
 
 BASE_DECLARE_FEATURE(kGlicWarmOnIph);
