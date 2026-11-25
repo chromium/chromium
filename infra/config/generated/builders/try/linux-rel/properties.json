@@ -19,6 +19,7 @@
             "builder_spec": {
               "builder_group": "chromium.gpu",
               "execution_mode": "COMPILE_AND_TEST",
+              "gn_check_generated": true,
               "legacy_chromium_config": {
                 "apply_configs": [
                   "mb"
@@ -47,6 +48,7 @@
             "builder_spec": {
               "builder_group": "chromium.linux",
               "execution_mode": "COMPILE_AND_TEST",
+              "gn_check_generated": true,
               "legacy_chromium_config": {
                 "apply_configs": [
                   "mb"
