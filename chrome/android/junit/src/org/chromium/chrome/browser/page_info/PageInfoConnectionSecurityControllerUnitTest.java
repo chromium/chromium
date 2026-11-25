@@ -5,12 +5,15 @@
 package org.chromium.chrome.browser.page_info;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
@@ -25,9 +28,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.components.page_info.CertificateViewer;
 import org.chromium.components.page_info.ConnectionSecurityView;
 import org.chromium.components.page_info.PageInfoConnectionSecurityController;
 import org.chromium.components.page_info.PageInfoConnectionSecurityController.NativeConnectionSecurityControllerAndroid;
@@ -309,5 +314,59 @@ public class PageInfoConnectionSecurityControllerUnitTest {
         assertEquals(View.GONE, summary.getVisibility());
         assertEquals(View.VISIBLE, details.getVisibility());
         assertEquals("You're viewing a preview of this page", details.getText().toString());
+    }
+
+    @Test
+    public void testCertificateViewer_dismiss() {
+        CertificateViewer viewer = new CertificateViewer(mContext);
+        assertNull(viewer.getDialogForTesting());
+        viewer.dismiss();
+
+        viewer.showCertificateChain(new byte[][] {{1}});
+        Dialog dialog = viewer.getDialogForTesting();
+        assertNotNull(dialog);
+        assertTrue(dialog.isShowing());
+
+        viewer.dismiss();
+        assertFalse(dialog.isShowing());
+        assertNull(viewer.getDialogForTesting());
+    }
+
+    @Test
+    public void testOnSubpageRemoved_dismissesCertificateViewer() {
+        ShadowDialog.reset();
+        mController.setSecurityDescription(
+                0, 0, "Summary", "Details", false, new byte[][] {{1}}, false, new byte[0][], null);
+        View subpageView = mController.createViewForSubpage(null);
+
+        View certButton = subpageView.findViewById(R.id.certificate_details_button);
+        assertNotNull(certButton);
+        assertTrue(certButton.performClick());
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertNotNull(dialog);
+        assertTrue(dialog.isShowing());
+
+        mController.onSubpageRemoved();
+        assertFalse(dialog.isShowing());
+    }
+
+    @Test
+    public void testDestroy_dismissesCertificateViewer() {
+        ShadowDialog.reset();
+        mController.showSecurityInfo();
+        mController.setSecurityDescription(
+                0, 0, "Summary", "Details", false, new byte[][] {{1}}, false, new byte[0][], null);
+
+        View certButton = mView.findViewById(R.id.certificate_details_button);
+        assertNotNull(certButton);
+        assertTrue(certButton.performClick());
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertNotNull(dialog);
+        assertTrue(dialog.isShowing());
+
+        mController.destroy();
+        assertFalse(dialog.isShowing());
     }
 }

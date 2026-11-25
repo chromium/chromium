@@ -85,7 +85,10 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
 
     @Override
     public void onSubpageRemoved() {
-        mActiveView = null;
+        if (mActiveView != null) {
+            mActiveView.dismissCertificateViewer();
+            mActiveView = null;
+        }
     }
 
     private void loadIdentityInfo() {
@@ -206,6 +209,11 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
     }
 
     public void destroy() {
+        mView.dismissCertificateViewer();
+        if (mActiveView != null) {
+            mActiveView.dismissCertificateViewer();
+            mActiveView = null;
+        }
         if (mNativeConnectionSecurityController == null) return;
         mNativeConnectionSecurityController.destroy();
         mNativeConnectionSecurityController = null;

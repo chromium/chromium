@@ -137,6 +137,18 @@ public class CertificateViewer implements OnItemSelectedListener {
         mDialog.show();
     }
 
+    /** Dismisses the certificate viewer dialog if it is currently showing. */
+    public void dismiss() {
+        if (mDialog != null && mDialog.isShowing()) {
+            mDialog.dismiss();
+        }
+        mDialog = null;
+    }
+
+    public @Nullable Dialog getDialogForTesting() {
+        return mDialog;
+    }
+
     private void addCertificate(byte[] derData, List<String> titles) {
         try {
             if (mCertificateFactory == null) {

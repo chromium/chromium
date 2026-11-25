@@ -231,6 +231,7 @@ public class ConnectionInfoView implements OnClickListener {
 
     /** Called when the embedding view is removed. */
     public void onDismiss() {
+        mCertificateViewer.dismiss();
         // Guard against double-free: onDismiss() can be called more than once if the dialog is
         // dismissed while a WebContentsObserver callback (e.g. webContentsDestroyed) also triggers
         // dismissal. Zero the pointer before calling destroy to prevent re-entrant calls.

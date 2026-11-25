@@ -176,6 +176,11 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
         }
     }
 
+    /** Dismisses the certificate viewer dialog if it is currently showing. */
+    public void dismissCertificateViewer() {
+        mCertificateViewer.dismiss();
+    }
+
     private void showConnectionSecurityInfo() {
         try {
             Intent i = Intent.parseUri(HELP_URL, Intent.URI_INTENT_SCHEME);
