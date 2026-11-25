@@ -8785,3 +8785,6 @@ crbug.com/589988269 [ Win10.20h2 ] external/wpt/svg/path/arc-tiny-radii.html [ F
 crbug.com/584728940 [ Linux Release ] http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Crash Pass ]
 crbug.com/339680580 [ Mac ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Failure Pass ]
 crbug.com/339680580 [ Win10.20h2 ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Failure Pass ]
+
+# Flaky on Mac-26 CI builders
+crbug.com/585965057 [ Mac ] http/tests/inspector-protocol/emulation/prerender-emulation-overrides-cleared.js [ Failure Pass ]
