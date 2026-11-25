@@ -1971,9 +1971,10 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.PageLanguage" enum="LanguageName"
-    expires_after="2027-09-14">
+    expires_after="2027-11-23">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
+  <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The language of a web page where image labels were requested, as detected by
@@ -1982,9 +1983,10 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.RequestLanguage" enum="LanguageName"
-    expires_after="2027-06-01">
+    expires_after="2027-11-23">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
+  <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The language that was requested for image descriptions, based on the page
@@ -1994,15 +1996,18 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.{Result}By{Dimension}"
-    units="pixels" expires_after="2027-06-01">
+    units="pixels" expires_after="2027-11-23">
   <owner>dtseng@chromium.org</owner>
+  <owner>rhalavati@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Counts the number of images that got a certain result from automatic image
-    labeling (empty, error, or success), as a function of the function of one of
-    the image's dimensions - either the min or the max dimension. Warning: this
-    histogram was expired from 2026-02-01 to 2026-04-22, data might be missing.
+    labeling (empty, error, or success), as a function of one of the image's
+    dimensions - either the min or the max dimension. Prior to M160, Empty was
+    never recorded; responses whose annotations were all blank or filtered out
+    were recorded under Success. Warning: this histogram was expired from
+    2026-02-01 to 2026-04-22, data might be missing.
   </summary>
   <token key="Result">
     <variant name="Empty"/>
@@ -2016,15 +2021,17 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.{Result}By{Length}"
-    units="characters" expires_after="2027-06-01">
+    units="characters" expires_after="2027-11-23">
   <owner>dtseng@chromium.org</owner>
+  <owner>rhalavati@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Counts the number of images that got a certain result from automatic image
-    labeling (empty, error, or success), as a function of the function of the
-    length of the characters in the image's name - either the original name, or
-    the name after removing stopwords.
+    labeling (empty, error, or success), as a function of the length of the
+    characters in the image's name - either the original name, or the name after
+    removing stopwords. Prior to M160, Empty was never recorded; responses whose
+    annotations were all blank or filtered out were recorded under Success.
   </summary>
   <token key="Result">
     <variant name="Empty"/>

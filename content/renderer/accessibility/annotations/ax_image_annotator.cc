@@ -4,6 +4,7 @@
 
 #include "content/renderer/accessibility/annotations/ax_image_annotator.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -15,6 +16,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -198,6 +200,61 @@ bool FindExactlyOneInnerImageInMaxDepthThree(WebAXObject obj,
                                              WebAXObject* inner_image) {
   DCHECK(inner_image);
   return SearchForExactlyOneInnerImage(obj, inner_image, /* max_depth = */ 3);
+}
+
+enum class AnnotationResultType {
+  kError,
+  kEmpty,
+  kSuccess,
+};
+
+// Records image name length and dimension histograms for an image annotation
+// outcome (error, empty, or success).
+void RecordAnnotationResultHistograms(const blink::WebAXObject& image,
+                                      int name_length,
+                                      int non_stop_length,
+                                      AnnotationResultType result_type) {
+  blink::WebAXObject offset_container;
+  gfx::RectF bounds;
+  gfx::Transform container_transform;
+  bool clips_children = false;
+  image.GetRelativeBounds(offset_container, bounds, container_transform,
+                          &clips_children);
+  const int min_dimension =
+      static_cast<int>(std::min(bounds.width(), bounds.height()));
+  const int max_dimension =
+      static_cast<int>(std::max(bounds.width(), bounds.height()));
+
+  std::string_view prefix;
+  switch (result_type) {
+    case AnnotationResultType::kError:
+      prefix = "Accessibility.ImageLabels.ErrorBy";
+      break;
+    case AnnotationResultType::kEmpty:
+      prefix = "Accessibility.ImageLabels.EmptyBy";
+      break;
+    case AnnotationResultType::kSuccess:
+      prefix = "Accessibility.ImageLabels.SuccessBy";
+      break;
+  }
+
+  base::UmaHistogramCounts100(base::StrCat({prefix, "NameLength"}),
+                              name_length);
+  base::UmaHistogramCounts100(base::StrCat({prefix, "NonStopNameLength"}),
+                              non_stop_length);
+  base::UmaHistogramCounts1000(base::StrCat({prefix, "MaxDimension"}),
+                               max_dimension);
+  base::UmaHistogramCounts1000(base::StrCat({prefix, "MinDimension"}),
+                               min_dimension);
+}
+
+// Trims trailing ASCII whitespace and punctuation from `text`.
+std::string_view TrimTrailingWhitespaceAndPunctuation(std::string_view text) {
+  while (!text.empty() && (base::IsAsciiWhitespace(text.back()) ||
+                           base::IsAsciiPunctuation(text.back()))) {
+    text.remove_suffix(1);
+  }
+  return text;
 }
 
 }  // namespace
@@ -716,59 +773,14 @@ void AXImageAnnotator::OnImageAnnotated(
     return;
   }
 
-  // Get the image size as minimum and maximum dimension.
-  blink::WebAXObject offset_container;
-  gfx::RectF bounds;
-  gfx::Transform container_transform;
-  bool clips_children = false;
-  image.GetRelativeBounds(offset_container, bounds, container_transform,
-                          &clips_children);
-  int min_dimension =
-      static_cast<int>(std::min(bounds.width(), bounds.height()));
-  int max_dimension =
-      static_cast<int>(std::max(bounds.width(), bounds.height()));
-
-  // Collect some histograms on the number of characters in the
-  // image name, and also the image name after removing stopwords,
-  // and also the minimum and maximum dimension,
-  // as a function of whether the retrieved image label was
-  // a success, an error, or empty.
   ax::mojom::NameFrom name_from;
   std::vector<blink::WebAXObject> name_objects;
   blink::WebString web_name = image.GetName(name_from, name_objects);
   int non_stop_length = GetLengthAfterRemovingStopwords(web_name.Utf8());
 
   if (result->is_error_code()) {
-    base::UmaHistogramCounts100("Accessibility.ImageLabels.ErrorByNameLength",
-                                web_name.length());
-    base::UmaHistogramCounts100(
-        "Accessibility.ImageLabels.ErrorByNonStopNameLength", non_stop_length);
-    base::UmaHistogramCounts1000(
-        "Accessibility.ImageLabels.ErrorByMaxDimension", max_dimension);
-    base::UmaHistogramCounts1000(
-        "Accessibility.ImageLabels.ErrorByMinDimension", min_dimension);
-  } else if (!result->is_annotations()) {
-    base::UmaHistogramCounts100("Accessibility.ImageLabels.EmptyByNameLength",
-                                web_name.length());
-    base::UmaHistogramCounts100(
-        "Accessibility.ImageLabels.EmptyByNonStopNameLength", non_stop_length);
-    base::UmaHistogramCounts1000(
-        "Accessibility.ImageLabels.EmptyByMaxDimension", max_dimension);
-    base::UmaHistogramCounts1000(
-        "Accessibility.ImageLabels.EmptyByMinDimension", min_dimension);
-  } else {
-    base::UmaHistogramCounts100("Accessibility.ImageLabels.SuccessByNameLength",
-                                web_name.length());
-    base::UmaHistogramCounts100(
-        "Accessibility.ImageLabels.SuccessByNonStopNameLength",
-        non_stop_length);
-    base::UmaHistogramCounts1000(
-        "Accessibility.ImageLabels.SuccessByMaxDimension", max_dimension);
-    base::UmaHistogramCounts1000(
-        "Accessibility.ImageLabels.SuccessByMinDimension", min_dimension);
-  }
-
-  if (result->is_error_code()) {
+    RecordAnnotationResultHistograms(image, web_name.length(), non_stop_length,
+                                     AnnotationResultType::kError);
     DLOG(WARNING) << "Image annotation error.";
     switch (result->get_error_code()) {
       case image_annotation::mojom::AnnotateImageError::kCanceled:
@@ -793,12 +805,8 @@ void AXImageAnnotator::OnImageAnnotated(
     return;
   }
 
-  if (!result->is_annotations()) {
-    DLOG(WARNING) << "No image annotation results.";
-    image_info.set_status(ax::mojom::ImageAnnotationStatus::kAnnotationEmpty);
-    MarkDirty(image);
-    return;
-  }
+  // AnnotateImageResult is a 2-arm union (error_code or annotations).
+  CHECK(result->is_annotations());
 
   bool has_ocr = false;
   bool has_description = false;
@@ -808,12 +816,10 @@ void AXImageAnnotator::OnImageAnnotated(
     int message_id = 0;
     switch (annotation->type) {
       case image_annotation::mojom::AnnotationType::kOcr:
-        has_ocr = true;
         message_id = IDS_AX_IMAGE_ANNOTATION_OCR_CONTEXT;
         break;
       case image_annotation::mojom::AnnotationType::kCaption:
       case image_annotation::mojom::AnnotationType::kLabel:
-        has_description = true;
         message_id = IDS_AX_IMAGE_ANNOTATION_DESCRIPTION_CONTEXT;
         break;
       case image_annotation::mojom::AnnotationType::kIcon: {
@@ -834,38 +840,47 @@ void AXImageAnnotator::OnImageAnnotated(
     if (message_id == 0)
       continue;
 
-    int last_meaningful_char = annotation->text.length() - 1;
-    while (last_meaningful_char >= 0) {
-      bool is_whitespace_or_punct =
-          base::IsAsciiWhitespace(annotation->text[last_meaningful_char]) ||
-          base::IsAsciiPunctuation(annotation->text[last_meaningful_char]);
-      if (!is_whitespace_or_punct) {
-        break;
-      }
-      last_meaningful_char--;
+    std::string_view text =
+        TrimTrailingWhitespaceAndPunctuation(annotation->text);
+    if (text.empty()) {
+      continue;
     }
 
-    if (annotation->text.empty() || last_meaningful_char < 0)
-      continue;
+    // Record UKM flags only after confirming non-empty text survives trimming
+    // so blank OCR or description entries do not inflate UKM counts.
+    if (annotation->type == image_annotation::mojom::AnnotationType::kOcr) {
+      has_ocr = true;
+    } else if (annotation->type ==
+                   image_annotation::mojom::AnnotationType::kCaption ||
+               annotation->type ==
+                   image_annotation::mojom::AnnotationType::kLabel) {
+      has_description = true;
+    }
 
-    std::string text = annotation->text.substr(0, last_meaningful_char + 1);
     if (GetContentClient()) {
       contextualized_strings.push_back(
           base::UTF16ToUTF8(GetContentClient()->GetLocalizedString(
               message_id, base::UTF8ToUTF16(text))));
     } else {
-      contextualized_strings.push_back(text);
+      contextualized_strings.emplace_back(text);
     }
   }
 
+  // Classify the response as Empty vs. Success only after building
+  // `contextualized_strings` so responses with only blank or filtered
+  // annotations are recorded under `EmptyBy*` instead of `SuccessBy*`.
   if (contextualized_strings.empty()) {
+    RecordAnnotationResultHistograms(image, web_name.length(), non_stop_length,
+                                     AnnotationResultType::kEmpty);
     image_info.set_status(ax::mojom::ImageAnnotationStatus::kAnnotationEmpty);
     MarkDirty(image);
     return;
   }
 
-  blink::WebString name = image.GetName(name_from, name_objects);
-  bool has_existing_label = !name.IsEmpty();
+  RecordAnnotationResultHistograms(image, web_name.length(), non_stop_length,
+                                   AnnotationResultType::kSuccess);
+
+  bool has_existing_label = !web_name.IsEmpty();
 
   ukm::builders::Accessibility_ImageDescriptions(
       render_accessibility_->GetMainDocument().GetUkmSourceId())

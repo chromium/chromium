@@ -5,7 +5,9 @@
 #include "content/renderer/accessibility/annotations/ax_image_annotator.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -13,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/renderer/render_frame.h"
@@ -24,7 +27,11 @@
 #include "content/renderer/accessibility/render_accessibility_manager.h"
 #include "content/renderer/render_frame_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 #include "third_party/blink/public/web/web_ax_context.h"
@@ -153,6 +160,8 @@ class MockImageAnnotationService : public image_annotation::mojom::Annotator {
     run_loop.Run();
   }
 
+  void FlushForTesting() { receivers_.FlushForTesting(); }
+
   // Tests should not delete entries in these lists.
   std::vector<std::string> image_ids_;
   std::vector<mojo::Remote<image_annotation::mojom::ImageProcessor>>
@@ -167,6 +176,24 @@ class MockImageAnnotationService : public image_annotation::mojom::Annotator {
   size_t expected_call_count_ = 0;
   base::OnceClosure quit_on_expected_calls_;
   mojo::ReceiverSet<image_annotation::mojom::Annotator> receivers_;
+};
+
+class TestMojoUkmRecorder : public ukm::MojoUkmRecorder {
+ public:
+  explicit TestMojoUkmRecorder(ukm::mojom::UkmRecorderFactory& factory)
+      : MojoUkmRecorder(factory) {}
+  ~TestMojoUkmRecorder() override = default;
+
+  void AddEntry(ukm::mojom::UkmEntryPtr entry) override {
+    entries_.push_back(std::move(entry));
+  }
+
+  const std::vector<ukm::mojom::UkmEntryPtr>& entries() const {
+    return entries_;
+  }
+
+ private:
+  std::vector<ukm::mojom::UkmEntryPtr> entries_;
 };
 
 }  // namespace
@@ -186,6 +213,14 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
     annotator->BindAnnotatorForTesting(service.GetRemote());
     render_accessibility->ax_annotators_manager_for_testing()
         ->AddAnnotatorForTesting(std::move(annotator));
+  }
+
+  TestMojoUkmRecorder* InstallTestUkmRecorder() {
+    std::ignore = ukm_factory_.BindNewPipeAndPassReceiver();
+    auto recorder = std::make_unique<TestMojoUkmRecorder>(*ukm_factory_);
+    TestMojoUkmRecorder* recorder_ptr = recorder.get();
+    GetRenderAccessibilityImpl()->ukm_recorder_ = std::move(recorder);
+    return recorder_ptr;
   }
 
   void SetUp() override {
@@ -219,6 +254,7 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
 
  private:
   MockImageAnnotationService mock_annotator_service_;
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> ukm_factory_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator;
 };
 
@@ -510,6 +546,159 @@ TEST_F(AXImageAnnotatorTest, OnImageAnnotatedImageHiddenBeforeReply) {
       GetMainFrame()->GetDocument().GetElementById("A"));
   ASSERT_FALSE(image_obj.IsDetached());
   EXPECT_FALSE(image_obj.IsIncludedInTree());
+}
+
+// Verifies that OnImageAnnotated records `ErrorBy*` on service errors and
+// classifies blank or punctuation-only annotation lists under `EmptyBy*`
+// (rather than `SuccessBy*`) without emitting UKM entries.
+TEST_F(AXImageAnnotatorTest, OnImageAnnotatedErrorAndEmptyResultHistograms) {
+  TestMojoUkmRecorder* ukm_recorder = InstallTestUkmRecorder();
+  base::HistogramTester histogram_tester;
+
+  LoadHTMLAndRefreshAccessibilityTree(base::StringPrintf(
+                                          R"HTML(
+      <body>
+        <img id="err_img" src="%s" style="width: 200px; height: 150px;">
+        <img id="empty_img" src="%s" style="width: 200px; height: 150px;">
+      </body>
+      )HTML",
+                                          kImage1, kImage2)
+                                          .c_str());
+  mock_annotator_service().WaitForCalls(2u);
+  ASSERT_EQ(2u, mock_annotator_service().callbacks_.size());
+
+  std::move(mock_annotator_service().callbacks_[0])
+      .Run(image_annotation::mojom::AnnotateImageResult::NewErrorCode(
+          image_annotation::mojom::AnnotateImageError::kFailure));
+  mock_annotator_service().FlushForTesting();
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ImageLabels.ErrorByMaxDimension", 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ImageLabels.EmptyByMaxDimension", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ImageLabels.SuccessByMaxDimension", 0);
+  EXPECT_EQ(0u, ukm_recorder->entries().size());
+
+  std::vector<image_annotation::mojom::AnnotationPtr> empty_annotations;
+  empty_annotations.push_back(image_annotation::mojom::Annotation::New(
+      image_annotation::mojom::AnnotationType::kOcr, 1.0, ""));
+  empty_annotations.push_back(image_annotation::mojom::Annotation::New(
+      image_annotation::mojom::AnnotationType::kCaption, 0.9, " ...! "));
+  std::move(mock_annotator_service().callbacks_[1])
+      .Run(image_annotation::mojom::AnnotateImageResult::NewAnnotations(
+          std::move(empty_annotations)));
+  mock_annotator_service().FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ImageLabels.EmptyByMaxDimension", 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ImageLabels.EmptyByMinDimension", 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ImageLabels.EmptyByNameLength", 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ImageLabels.EmptyByNonStopNameLength", 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ImageLabels.SuccessByMaxDimension", 0);
+  EXPECT_EQ(0u, ukm_recorder->entries().size());
+}
+
+// Verifies that blank `kOcr` entries ("") alongside a valid caption or icon
+// do not set UKM `OCR = 1`.
+TEST_F(AXImageAnnotatorTest, OnImageAnnotatedBlankOcrDoesNotSetUkmOcrFlag) {
+  using UkmBuilder = ukm::builders::Accessibility_ImageDescriptions;
+  TestMojoUkmRecorder* ukm_recorder = InstallTestUkmRecorder();
+  base::HistogramTester histogram_tester;
+
+  LoadHTMLAndRefreshAccessibilityTree(base::StringPrintf(
+                                          R"HTML(
+      <body>
+        <img id="caption_img" src="%s" style="width: 200px; height: 150px;">
+        <img id="icon_img" src="%s" aria-label="+"
+            style="width: 200px; height: 150px;">
+      </body>
+      )HTML",
+                                          kImage1, kImage2)
+                                          .c_str());
+  mock_annotator_service().WaitForCalls(2u);
+  ASSERT_EQ(2u, mock_annotator_service().callbacks_.size());
+
+  std::vector<image_annotation::mojom::AnnotationPtr> caption_annotations;
+  caption_annotations.push_back(image_annotation::mojom::Annotation::New(
+      image_annotation::mojom::AnnotationType::kOcr, 1.0, ""));
+  caption_annotations.push_back(image_annotation::mojom::Annotation::New(
+      image_annotation::mojom::AnnotationType::kCaption, 0.92,
+      "A scenic trail."));
+  std::move(mock_annotator_service().callbacks_[0])
+      .Run(image_annotation::mojom::AnnotateImageResult::NewAnnotations(
+          std::move(caption_annotations)));
+  mock_annotator_service().FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ImageLabels.SuccessByMaxDimension", 1);
+  ASSERT_EQ(1u, ukm_recorder->entries().size());
+  EXPECT_EQ(UkmBuilder::kEntryNameHash, ukm_recorder->entries()[0]->event_hash);
+  EXPECT_EQ(0,
+            ukm_recorder->entries()[0]->metrics.at(UkmBuilder::kOCRNameHash));
+  EXPECT_EQ(1, ukm_recorder->entries()[0]->metrics.at(
+                   UkmBuilder::kDescriptionNameHash));
+  EXPECT_EQ(0, ukm_recorder->entries()[0]->metrics.at(
+                   UkmBuilder::kImageAlreadyHasLabelNameHash));
+
+  std::vector<image_annotation::mojom::AnnotationPtr> icon_annotations;
+  icon_annotations.push_back(image_annotation::mojom::Annotation::New(
+      image_annotation::mojom::AnnotationType::kOcr, 1.0, ""));
+  icon_annotations.push_back(image_annotation::mojom::Annotation::New(
+      image_annotation::mojom::AnnotationType::kIcon, 0.95, "ICON_PLUS"));
+  std::move(mock_annotator_service().callbacks_[1])
+      .Run(image_annotation::mojom::AnnotateImageResult::NewAnnotations(
+          std::move(icon_annotations)));
+  mock_annotator_service().FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ImageLabels.SuccessByMaxDimension", 2);
+  ASSERT_EQ(2u, ukm_recorder->entries().size());
+  EXPECT_EQ(0,
+            ukm_recorder->entries()[1]->metrics.at(UkmBuilder::kOCRNameHash));
+  EXPECT_EQ(0, ukm_recorder->entries()[1]->metrics.at(
+                   UkmBuilder::kDescriptionNameHash));
+  EXPECT_EQ(1, ukm_recorder->entries()[1]->metrics.at(
+                   UkmBuilder::kImageAlreadyHasLabelNameHash));
+}
+
+// Verifies that non-empty `kOcr` text sets UKM `OCR = 1` and `Description = 0`.
+TEST_F(AXImageAnnotatorTest, OnImageAnnotatedNonEmptyOcrSetsUkmOcrFlag) {
+  using UkmBuilder = ukm::builders::Accessibility_ImageDescriptions;
+  TestMojoUkmRecorder* ukm_recorder = InstallTestUkmRecorder();
+  base::HistogramTester histogram_tester;
+
+  LoadHTMLAndRefreshAccessibilityTree(base::StringPrintf(R"HTML(
+      <body>
+        <p>Test document</p>
+        <img id="ocr_img" src="%s" style="width: 200px; height: 150px;">
+      </body>
+      )HTML",
+                                                         kImage1)
+                                          .c_str());
+  mock_annotator_service().WaitForCalls(1u);
+  ASSERT_EQ(1u, mock_annotator_service().callbacks_.size());
+
+  std::vector<image_annotation::mojom::AnnotationPtr> ocr_annotations;
+  ocr_annotations.push_back(image_annotation::mojom::Annotation::New(
+      image_annotation::mojom::AnnotationType::kOcr, 0.95, "EXIT 42"));
+  std::move(mock_annotator_service().callbacks_[0])
+      .Run(image_annotation::mojom::AnnotateImageResult::NewAnnotations(
+          std::move(ocr_annotations)));
+  mock_annotator_service().FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ImageLabels.SuccessByMaxDimension", 1);
+  ASSERT_EQ(1u, ukm_recorder->entries().size());
+  EXPECT_EQ(1,
+            ukm_recorder->entries()[0]->metrics.at(UkmBuilder::kOCRNameHash));
+  EXPECT_EQ(0, ukm_recorder->entries()[0]->metrics.at(
+                   UkmBuilder::kDescriptionNameHash));
+  EXPECT_EQ(0, ukm_recorder->entries()[0]->metrics.at(
+                   UkmBuilder::kImageAlreadyHasLabelNameHash));
 }
 
 }  // namespace content
