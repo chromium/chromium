@@ -164,7 +164,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/AutofillNameFixFlowBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillNameFixFlowPrompt.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillSaveCardPromptBase.java",
-  "java/src/org/chromium/chrome/browser/autofill/AutofillSheetUiController.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillSheetUiControllerFactory.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillSnackbarController.java",
   "java/src/org/chromium/chrome/browser/autofill/CardUnmaskBridge.java",
