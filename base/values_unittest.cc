@@ -21,7 +21,6 @@
 #include <vector>
 
 #include "base/bits.h"
-#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1648,15 +1647,13 @@ TEST(ValuesTest, BinaryValue) {
   ASSERT_EQ(original_buffer, binary.GetBlob().data());
   ASSERT_EQ(15U, binary.GetBlob().size());
 
-  std::array<char, 42> stack_buffer;
+  std::array<uint8_t, 42> stack_buffer;
   std::fill(stack_buffer.begin(), stack_buffer.end(), '!');
   binary = Value(Value::BlobStorage(stack_buffer.begin(), stack_buffer.end()));
   ASSERT_TRUE(binary.GetBlob().data());
-  ASSERT_NE(stack_buffer.data(),
-            reinterpret_cast<const char*>(binary.GetBlob().data()));
+  ASSERT_NE(stack_buffer.data(), binary.GetBlob().data());
   ASSERT_EQ(42U, binary.GetBlob().size());
-  ASSERT_EQ(0, UNSAFE_TODO(memcmp(stack_buffer.data(), binary.GetBlob().data(),
-                                  binary.GetBlob().size())));
+  ASSERT_EQ(stack_buffer, binary.GetBlob());
 }
 
 TEST(ValuesTest, StringValue) {
