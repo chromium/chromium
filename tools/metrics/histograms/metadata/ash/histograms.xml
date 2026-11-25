@@ -3651,7 +3651,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.DNDStateOnFocusEnd"
-    enum="DNDStateOnFocusEndType" expires_after="2026-11-20">
+    enum="DNDStateOnFocusEndType" expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -3683,7 +3683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.MusicPausedSessionCount" units="count"
-    expires_after="2026-11-20">
+    expires_after="2027-11-20">
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>hongyulong@chromium.org</owner>
@@ -3695,7 +3695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.PercentOfSessionCompleted.{SessionDurationType}"
-    units="%" expires_after="2026-11-20">
+    units="%" expires_after="2027-11-20">
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>hongyulong@chromium.org</owner>
@@ -3714,7 +3714,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.PlaylistChosen" enum="FocusModePlaylistChosen"
-    expires_after="2026-11-20">
+    expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -3723,7 +3723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.PlaylistsDuringSession" units="count"
-    expires_after="2026-11-20">
+    expires_after="2027-11-20">
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>hongyulong@chromium.org</owner>
@@ -3735,7 +3735,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.PlaylistTypesSelectedDuringSession"
-    enum="PlaylistTypesSelectedDuringSessionType" expires_after="2026-11-20">
+    enum="PlaylistTypesSelectedDuringSessionType" expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -3756,7 +3756,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.SoundscapeLatency" units="ms"
-    expires_after="2026-11-20">
+    expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -3769,7 +3769,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.ExistingMediaPlaying"
-    enum="Boolean" expires_after="2026-11-20">
+    enum="Boolean" expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -3791,7 +3791,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.TaskState"
-    enum="FocusModeStartedWithTaskState" expires_after="2026-11-20">
+    enum="FocusModeStartedWithTaskState" expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -3813,7 +3813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.TasksCompleted" units="count"
-    expires_after="2026-11-20">
+    expires_after="2027-11-20">
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>hongyulong@chromium.org</owner>
@@ -3836,7 +3836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.TimeAdded.{TimeAddedType}" units="minutes"
-    expires_after="2026-11-20">
+    expires_after="2027-11-20">
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>hongyulong@chromium.org</owner>
@@ -3855,7 +3855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.YouTubeMusicLatency" units="ms"
-    expires_after="2026-11-20">
+    expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
