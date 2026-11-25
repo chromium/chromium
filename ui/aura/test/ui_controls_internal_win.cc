@@ -2,32 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/test/ui_controls_internal_win.h"
+#include "ui/aura/test/ui_controls_internal_win.h"
 
 #include <windows.h>
 
 #include <commctrl.h>
+#include <stdint.h>
 
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <memory>
 #include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/win_util.h"
+#include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/client/drag_drop_client_observer.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/win/event_creation_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/win/screen_win.h"
@@ -40,6 +52,17 @@
 
 namespace {
 
+// Marks synthetic mouse moves injected by `SendDragUnblockNudge()` via
+// `dwExtraInfo` so `InputDispatcher` ignores them when waiting for
+// test-initiated moves.
+constexpr ULONG_PTR kDragUnblockNudgeExtraInfo = 0x4E554447;  // 'NUDG'
+
+// Last screen position (in physical pixels) sent via SendMouseMoveImpl().
+// Preferred by SendDragUnblockNudge() over ::GetCursorPos() when populated so
+// that hardware cursor jitter on bots cannot desynchronize the nudge
+// coordinates from the most recent test-injected mouse position.
+std::optional<gfx::Point> g_last_sent_mouse_location;
+
 bool IsKeyEvent(WPARAM message_type) {
   return message_type == WM_KEYDOWN || message_type == WM_KEYUP;
 }
@@ -51,15 +74,37 @@ bool AreMouseLocationsWithinAPixel(const gfx::Point& a, const gfx::Point& b) {
   return std::abs(offset.x()) + std::abs(offset.y()) < 2;
 }
 
-// Last screen position (in physical pixels) sent via SendMouseMoveImpl().
-// Used by QueueDragUnblockNudge() instead of ::GetCursorPos() so that hardware
-// cursor jitter on bots cannot desynchronize the nudge coordinates from the
-// most recent test-injected mouse position.
-std::optional<gfx::Point> g_last_sent_mouse_location;
+// Builds an absolute virtual-desktop `INPUT_MOUSE` move event for `point` (in
+// physical screen pixels) tagged with `kDragUnblockNudgeExtraInfo` so
+// `InputDispatcher` ignores the synthetic nudge without exposing a test-only
+// `dwExtraInfo` parameter on `ui::SendMouseEvent()`.
+INPUT CreateDragUnblockMouseMoveInput(const gfx::Point& point) {
+  const int screen_left = ::GetSystemMetrics(SM_XVIRTUALSCREEN);
+  const int screen_top = ::GetSystemMetrics(SM_YVIRTUALSCREEN);
+  const int screen_width = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
+  const int screen_height = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
-}  // namespace
+  // Clamp `point` to the virtual screen bounds and map it into ::SendInput()'s
+  // [0, 65535] normalized virtual-desktop coordinate space, matching the
+  // rounding in `ui::SendMouseEvent()`.
+  const int screen_x =
+      std::clamp(point.x(), screen_left, screen_left + screen_width - 1);
+  const int screen_y =
+      std::clamp(point.y(), screen_top, screen_top + screen_height - 1);
 
-namespace ui_controls::internal {
+  constexpr double kNormalizedScreenSize = 65536.0;
+  INPUT input = {.type = INPUT_MOUSE};
+  input.mi.dx = static_cast<LONG>(
+      std::max(1.0, std::ceil((screen_x - screen_left) *
+                              (kNormalizedScreenSize / screen_width))));
+  input.mi.dy = static_cast<LONG>(
+      std::max(1.0, std::ceil((screen_y - screen_top) *
+                              (kNormalizedScreenSize / screen_height))));
+  input.mi.dwFlags =
+      MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK | MOUSEEVENTF_ABSOLUTE;
+  input.mi.dwExtraInfo = kDragUnblockNudgeExtraInfo;
+  return input;
+}
 
 // Queues an extra mouse event so that a modal drag loop has something to
 // consume when it starts.
@@ -72,19 +117,25 @@ namespace ui_controls::internal {
 // requires an input event to already be in the queue when the modal loop
 // starts.
 //
-// The events are tagged with MouseEventExtraInfo::kDragUnblockNudge so that
+// The events are tagged with `kDragUnblockNudgeExtraInfo` so that
 // InputDispatcher ignores them. Otherwise, if the drag loop does not consume
 // both events before dispatching kMsgHaveWork, the remaining event may be
 // dispatched after the next InputDispatcher is created and mistaken for the
 // move it waits for.
-void QueueDragUnblockNudge() {
-  if (!g_last_sent_mouse_location.has_value()) {
-    LOG(ERROR) << "ui_controls: no prior mouse move recorded before queueing "
-                  "a drag unblock nudge. The modal drag loop will not be "
-                  "unblocked and the test will likely hang.";
-    return;
+void SendDragUnblockNudge() {
+  gfx::Point cursor_pos;
+  if (g_last_sent_mouse_location.has_value()) {
+    cursor_pos = *g_last_sent_mouse_location;
+  } else {
+    POINT os_cursor_pos = {};
+    if (!::GetCursorPos(&os_cursor_pos)) {
+      LOG(ERROR) << "ui_controls: ::GetCursorPos() failed while queueing a "
+                    "drag unblock nudge. The modal drag loop will not be "
+                    "unblocked and the test will likely hang.";
+      return;
+    }
+    cursor_pos = gfx::Point(os_cursor_pos);
   }
-  const gfx::Point cursor_pos = *g_last_sent_mouse_location;
 
   display::win::ScreenWin* screen = display::win::GetScreenWin();
   CHECK(screen);
@@ -113,20 +164,130 @@ void QueueDragUnblockNudge() {
     return;
   }
 
-  constexpr int kFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK;
-  if (!ui::SendMouseEvent(nudge_pos, kFlags,
-                          ui::MouseEventExtraInfo::kDragUnblockNudge) ||
-      !ui::SendMouseEvent(cursor_pos, kFlags,
-                          ui::MouseEventExtraInfo::kDragUnblockNudge)) {
+  INPUT nudge = CreateDragUnblockMouseMoveInput(nudge_pos);
+  INPUT restore = CreateDragUnblockMouseMoveInput(cursor_pos);
+  if (::SendInput(1, &nudge, sizeof(INPUT)) != 1 ||
+      ::SendInput(1, &restore, sizeof(INPUT)) != 1) {
     LOG(ERROR) << "ui_controls: ::SendInput() failed while queueing a drag "
                   "unblock nudge. The modal drag loop will not be unblocked "
                   "and the test will likely hang.";
   }
 }
 
-}  // namespace ui_controls::internal
+class RootWindowDragObserver : public aura::WindowObserver,
+                               public aura::client::DragDropClientObserver {
+ public:
+  using Map = base::flat_map<const aura::Window*,
+                             std::unique_ptr<RootWindowDragObserver>>;
 
-namespace {
+  RootWindowDragObserver(aura::Window* root_window, Map* map) : map_(map) {
+    window_observation_.Observe(root_window);
+    ObserveClient(aura::client::GetDragDropClient(root_window));
+  }
+
+  RootWindowDragObserver(const RootWindowDragObserver&) = delete;
+  RootWindowDragObserver& operator=(const RootWindowDragObserver&) = delete;
+
+  ~RootWindowDragObserver() override { ObserveClient(nullptr); }
+
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    if (key == aura::client::kRootWindowDragDropClientKey) {
+      ObserveClient(aura::client::GetDragDropClient(window));
+    }
+  }
+
+  void OnWindowDestroying(aura::Window* window) override {
+    ObserveClient(nullptr);
+    window_observation_.Reset();
+    Map* map = map_;
+    map_ = nullptr;
+    map->erase(window);
+  }
+
+  // aura::client::DragDropClientObserver:
+  void OnDragStarted() override { SendDragUnblockNudge(); }
+
+  void OnDragDropClientDestroying() override { ObserveClient(nullptr); }
+
+ private:
+  void ObserveClient(aura::client::DragDropClient* client) {
+    if (client_ == client) {
+      return;
+    }
+    if (client_) {
+      client_->RemoveObserver(this);
+    }
+    client_ = client;
+    if (client_) {
+      client_->AddObserver(this);
+    }
+  }
+
+  raw_ptr<Map> map_;
+  raw_ptr<aura::client::DragDropClient> client_ = nullptr;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+};
+
+class DragDropEnvObserver : public aura::EnvObserver {
+ public:
+  DragDropEnvObserver() = default;
+  DragDropEnvObserver(const DragDropEnvObserver&) = delete;
+  DragDropEnvObserver& operator=(const DragDropEnvObserver&) = delete;
+  ~DragDropEnvObserver() override = default;
+
+  void EnsureObserving() {
+    if (!aura::Env::HasInstance()) {
+      return;
+    }
+    aura::Env* env = aura::Env::GetInstance();
+    if (env_observation_.IsObservingSource(env)) {
+      return;
+    }
+    observers_.clear();
+    env_observation_.Reset();
+    env_observation_.Observe(env);
+    for (aura::WindowTreeHost* host : env->window_tree_hosts()) {
+      ObserveRootWindow(host->window());
+    }
+  }
+
+  // aura::EnvObserver:
+  void OnHostInitialized(aura::WindowTreeHost* host) override {
+    ObserveRootWindow(host->window());
+  }
+
+  void OnHostDestroyed(aura::WindowTreeHost* host) override {
+    observers_.erase(host->window());
+  }
+
+  void OnWillDestroyEnv() override {
+    observers_.clear();
+    env_observation_.Reset();
+  }
+
+ private:
+  void ObserveRootWindow(aura::Window* root) {
+    if (!root) {
+      return;
+    }
+    auto [it, inserted] = observers_.try_emplace(root);
+    if (inserted) {
+      it->second = std::make_unique<RootWindowDragObserver>(root, &observers_);
+    }
+  }
+
+  RootWindowDragObserver::Map observers_;
+  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
+};
+
+void ObserveDragDropClients() {
+  static base::NoDestructor<DragDropEnvObserver> env_observer;
+  env_observer->EnsureObserving();
+}
 
 // InputDispatcher ------------------------------------------------------------
 
@@ -385,10 +546,9 @@ void InputDispatcher::DispatchedMessage(
     const MOUSEHOOKSTRUCT* mouse_hook_struct) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Ignore the events injected by QueueDragUnblockNudge(); they never
+  // Ignore the events injected by SendDragUnblockNudge(); they never
   // correspond to the input a test is waiting for.
-  if (mouse_hook_struct->dwExtraInfo ==
-      static_cast<ULONG_PTR>(ui::MouseEventExtraInfo::kDragUnblockNudge)) {
+  if (mouse_hook_struct->dwExtraInfo == kDragUnblockNudgeExtraInfo) {
     return;
   }
 
@@ -407,7 +567,7 @@ void InputDispatcher::DispatchedMessage(
         POINT cursor_pos = {};
         if (::GetCursorPos(&cursor_pos) &&
             AreMouseLocationsWithinAPixel(expected_mouse_location_,
-                                   gfx::Point(cursor_pos))) {
+                                          gfx::Point(cursor_pos))) {
           return;
         }
 
@@ -443,8 +603,9 @@ void InputDispatcher::MatchingMessageProcessed(bool definitively_done) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Guard against re-entrancy.
-  if (flushing_messages_)
+  if (flushing_messages_) {
     return;
+  }
 
   if (IsKeyEvent(message_waiting_for_)) {
     --num_key_events_awaited_;
@@ -563,9 +724,7 @@ void WindowMessageObserver::RegisterObserver() {
                       reinterpret_cast<DWORD_PTR>(this));
 }
 
-void WindowMessageObserver::ProcessMessage(HWND hwnd,
-                                           UINT msg,
-                                           UINT_PTR id) {
+void WindowMessageObserver::ProcessMessage(HWND hwnd, UINT msg, UINT_PTR id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (msg == message_waiting_for_) {
@@ -668,11 +827,13 @@ void AppendKeyboardInput(ui::KeyboardCode key,
     // When KEYEVENTF_SCANCODE is used, ki.wVk is ignored, so we do not need to
     // clear it.
     key_input.ki.dwFlags = KEYEVENTF_SCANCODE;
-    if ((key_input.ki.wScan & 0xFF00) != 0)
+    if ((key_input.ki.wScan & 0xFF00) != 0) {
       key_input.ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
+    }
   }
-  if (key_up)
+  if (key_up) {
     key_input.ki.dwFlags |= KEYEVENTF_KEYUP;
+  }
   input->push_back(key_input);
 }
 
@@ -791,14 +952,17 @@ bool SendKeyPressReleaseImpl(HWND window,
                              int accelerator_state,
                              KeyEventType wait_for,
                              base::OnceClosure task) {
+  ObserveDragDropClients();
+
   // SendInput only works as we expect it if one of our windows is the
   // foreground window already.
   HWND target_window = (::GetActiveWindow() &&
-                        ::GetWindow(::GetActiveWindow(), GW_OWNER) == window) ?
-                       ::GetActiveWindow() :
-                       window;
-  if (window && ::GetForegroundWindow() != target_window)
+                        ::GetWindow(::GetActiveWindow(), GW_OWNER) == window)
+                           ? ::GetActiveWindow()
+                           : window;
+  if (window && ::GetForegroundWindow() != target_window) {
     return false;
+  }
 
   // If a pop-up menu is open, it won't receive events sent using SendInput.
   // Check for a pop-up menu using its window class (#32768) and if one
@@ -810,8 +974,9 @@ bool SendKeyPressReleaseImpl(HWND window,
     ::SendMessage(popup_menu, WM_KEYDOWN, w_param, l_param);
     ::SendMessage(popup_menu, WM_KEYUP, w_param, l_param);
 
-    if (task)
+    if (task) {
       InputDispatcher::CreateForKeyEvent(std::move(task), wait_for, 1);
+    }
     return true;
   }
 
@@ -822,21 +987,25 @@ bool SendKeyPressReleaseImpl(HWND window,
   AppendKeyboardInput(key, true, &input);
   AppendAcceleratorInputs(accelerator_state, true, &input);
 
-  if (input.size() > std::numeric_limits<UINT>::max())
+  if (input.size() > std::numeric_limits<UINT>::max()) {
     return false;
+  }
 
   if (::SendInput(static_cast<UINT>(input.size()), input.data(),
                   sizeof(INPUT)) != input.size()) {
     return false;
   }
 
-  if (task)
+  if (task) {
     InputDispatcher::CreateForKeyEvent(std::move(task), wait_for,
                                        input.size() / 2);
+  }
   return true;
 }
 
 bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
+  ObserveDragDropClients();
+
   gfx::Point screen_point =
       display::win::GetScreenWin()->DIPToScreenPoint({screen_x, screen_y});
 
@@ -883,9 +1052,10 @@ bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
   }
   g_last_sent_mouse_location = screen_point;
 
-  if (task)
+  if (task) {
     InputDispatcher::CreateForMouseMove(std::move(task),
                                         {screen_point.x(), screen_point.y()});
+  }
   return true;
 }
 
@@ -893,6 +1063,10 @@ bool SendMouseEventsImpl(MouseButton type,
                          int button_state,
                          base::OnceClosure task,
                          int accelerator_state) {
+  if (button_state & DOWN) {
+    ObserveDragDropClients();
+  }
+
   DWORD down_flags = 0;
   DWORD up_flags = 0;
   UINT last_event;
@@ -931,20 +1105,24 @@ bool SendMouseEventsImpl(MouseButton type,
     AppendAcceleratorInputs(accelerator_state, true, &input);
   }
 
-  if (input.size() > std::numeric_limits<UINT>::max())
+  if (input.size() > std::numeric_limits<UINT>::max()) {
     return false;
+  }
 
   if (::SendInput(static_cast<UINT>(input.size()), input.data(),
                   sizeof(INPUT)) != input.size()) {
     return false;
   }
 
-  if (task)
+  if (task) {
     InputDispatcher::CreateForMouseEvent(std::move(task), last_event);
+  }
   return true;
 }
 
 bool SendTouchEventsImpl(int action, int num, int x, int y) {
+  ObserveDragDropClients();
+
   const int kTouchesLengthCap = 16;
   CHECK_LE(num, kTouchesLengthCap, base::NotFatalUntil::M163);
 
@@ -960,8 +1138,9 @@ bool SendTouchEventsImpl(int action, int num, int x, int y) {
   using InjectTouchInputFn = BOOL(WINAPI*)(UINT32, POINTER_TOUCH_INFO*);
   static const auto inject_touch_input = reinterpret_cast<InjectTouchInputFn>(
       base::win::GetUser32FunctionPointer("InjectTouchInput"));
-  if (!inject_touch_input)
+  if (!inject_touch_input) {
     return false;
+  }
 
   std::array<POINTER_TOUCH_INFO, kTouchesLengthCap> pointer_touch_info = {};
   for (int i = 0; i < num; i++) {

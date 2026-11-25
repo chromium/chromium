@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_TEST_UI_CONTROLS_INTERNAL_WIN_H_
-#define UI_BASE_TEST_UI_CONTROLS_INTERNAL_WIN_H_
+#ifndef UI_AURA_TEST_UI_CONTROLS_INTERNAL_WIN_H_
+#define UI_AURA_TEST_UI_CONTROLS_INTERNAL_WIN_H_
 
 #include "base/functional/callback_forward.h"
 #include "ui/base/test/ui_controls.h"
@@ -25,9 +25,8 @@ bool SendMouseEventsImpl(MouseButton type,
                          base::OnceClosure task,
                          int accelerator_state);
 bool SendTouchEventsImpl(int action, int num, int x, int y);
-void QueueDragUnblockNudge();
 
 }  // namespace internal
 }  // namespace ui_controls
 
-#endif  // UI_BASE_TEST_UI_CONTROLS_INTERNAL_WIN_H_
+#endif  // UI_AURA_TEST_UI_CONTROLS_INTERNAL_WIN_H_

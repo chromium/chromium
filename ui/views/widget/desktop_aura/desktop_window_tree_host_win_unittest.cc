@@ -39,6 +39,7 @@
 #include "ui/accessibility/platform/ax_system_caret_win.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/window.h"
@@ -655,9 +656,14 @@ TEST_F(DesktopWindowTreeHostWinTest, RejectDragDuringWindowMoveSuppression) {
       aura::client::GetDragDropClient(root_window);
   ASSERT_TRUE(client);
 
-  bool drag_started = false;
-  DesktopDragDropClientWin::SetOnDragStartedCallbackForTesting(
-      base::BindLambdaForTesting([&] { drag_started = true; }));
+  struct DragStartObserver : aura::client::DragDropClientObserver {
+    void OnDragStarted() override { drag_started = true; }
+    bool drag_started = false;
+  } drag_observer;
+  base::ScopedObservation<aura::client::DragDropClient,
+                          aura::client::DragDropClientObserver>
+      drag_observation(&drag_observer);
+  drag_observation.Observe(client);
 
   EXPECT_FALSE(IsDataDragSuppressed());
   {
@@ -671,13 +677,10 @@ TEST_F(DesktopWindowTreeHostWinTest, RejectDragDuringWindowMoveSuppression) {
                   std::move(data), root_window, widget.GetNativeWindow(),
                   gfx::Point(10, 10), ui::DragDropTypes::DRAG_COPY,
                   ui::mojom::DragEventSource::kMouse));
-    EXPECT_FALSE(drag_started);
+    EXPECT_FALSE(drag_observer.drag_started);
     EXPECT_FALSE(client->IsDragDropInProgress());
   }
   EXPECT_FALSE(IsDataDragSuppressed());
-
-  DesktopDragDropClientWin::SetOnDragStartedCallbackForTesting(
-      base::RepeatingClosure());
 }
 
 // Overlapping suppression scopes (e.g. a click-hold and a move loop) may be

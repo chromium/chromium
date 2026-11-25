@@ -18,6 +18,8 @@ class Vector2d;
 }
 
 namespace ui {
+template <typename T>
+struct ClassProperty;
 class OSExchangeData;
 }
 
@@ -67,6 +69,9 @@ class AURA_EXPORT DragDropClient {
 AURA_EXPORT void SetDragDropClient(Window* root_window,
                                    DragDropClient* client);
 AURA_EXPORT DragDropClient* GetDragDropClient(Window* root_window);
+
+AURA_EXPORT extern const ui::ClassProperty<DragDropClient*>* const
+    kRootWindowDragDropClientKey;
 
 }  // namespace client
 }  // namespace aura

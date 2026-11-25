@@ -811,13 +811,6 @@ static_library("test_support") {
     ]
   }
 
-  if (is_win) {
-    sources += [
-      "test/ui_controls_internal_win.cc",
-      "test/ui_controls_internal_win.h",
-    ]
-  }
-
   if (!is_ios) {
     sources += [
       "accelerators/test_accelerator_target.cc",

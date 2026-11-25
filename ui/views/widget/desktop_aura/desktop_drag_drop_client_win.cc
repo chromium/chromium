@@ -13,10 +13,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
-#include "base/notimplemented.h"
 #include "base/scoped_observation.h"
 #include "base/threading/hang_watcher.h"
+#include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/window_observer.h"
@@ -35,11 +34,6 @@
 namespace views {
 
 namespace {
-
-base::RepeatingClosure& GetOnDragStartedCallback() {
-  static base::NoDestructor<base::RepeatingClosure> callback;
-  return *callback;
-}
 
 class SourceWindowObserver : public aura::WindowObserver {
  public:
@@ -97,6 +91,8 @@ DesktopDragDropClientWin::DesktopDragDropClientWin(
 }
 
 DesktopDragDropClientWin::~DesktopDragDropClientWin() {
+  observers_.Notify(
+      &aura::client::DragDropClientObserver::OnDragDropClientDestroying);
   if (g_is_dragging) {
     DragCancel();
   }
@@ -161,9 +157,7 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
   // drag. (http://crbug.com/806174)
   base::HangWatcher::InvalidateActiveExpectations();
 
-  if (auto& callback = GetOnDragStartedCallback()) {
-    callback.Run();
-  }
+  observers_.Notify(&aura::client::DragDropClientObserver::OnDragStarted);
 
   HRESULT result = ::DoDragDrop(
       ui::OSExchangeDataProviderWin::GetIDataObject(*data.get()),
@@ -205,18 +199,12 @@ bool DesktopDragDropClientWin::IsDragDropInProgress() {
 
 void DesktopDragDropClientWin::AddObserver(
     aura::client::DragDropClientObserver* observer) {
-  NOTIMPLEMENTED();
+  observers_.AddObserver(observer);
 }
 
 void DesktopDragDropClientWin::RemoveObserver(
     aura::client::DragDropClientObserver* observer) {
-  NOTIMPLEMENTED();
-}
-
-// static
-void DesktopDragDropClientWin::SetOnDragStartedCallbackForTesting(
-    base::RepeatingClosure callback) {
-  GetOnDragStartedCallback() = std::move(callback);
+  observers_.RemoveObserver(observer);
 }
 
 void DesktopDragDropClientWin::OnNativeWidgetDestroying(HWND window) {

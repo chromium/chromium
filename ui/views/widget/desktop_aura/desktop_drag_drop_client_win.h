@@ -9,11 +9,11 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/views/views_export.h"
 
@@ -67,9 +67,6 @@ class VIEWS_EXPORT DesktopDragDropClientWin
   void AddObserver(aura::client::DragDropClientObserver* observer) override;
   void RemoveObserver(aura::client::DragDropClientObserver* observer) override;
 
-  static void SetOnDragStartedCallbackForTesting(
-      base::RepeatingClosure callback);
-
   void OnNativeWidgetDestroying(HWND window);
 
   base::WeakPtr<DesktopDragDropClientWin> GetWeakPtr() {
@@ -85,6 +82,9 @@ class VIEWS_EXPORT DesktopDragDropClientWin
   // DesktopWindowTreeHost is being destroyed. So desktop_host_ should outlive
   // |this|.
   raw_ptr<DesktopWindowTreeHostWin> desktop_host_ = nullptr;
+
+  base::ObserverList<aura::client::DragDropClientObserver>::Unchecked
+      observers_;
 
   base::WeakPtrFactory<DesktopDragDropClientWin> weak_factory_{this};
 };
