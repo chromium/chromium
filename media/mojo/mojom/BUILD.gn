@@ -388,6 +388,7 @@ mojom("mojom") {
             mojom = "media.mojom.MediaFoundationCdmData"
             cpp = "::std::unique_ptr<::media::MediaFoundationCdmData>"
             move_only = true
+            nullable_is_same_type = true
           },
         ]
         traits_headers = [ "media_foundation_cdm_data_mojom_traits.h" ]

@@ -15,6 +15,17 @@ namespace mojo {
 template <>
 struct StructTraits<media::mojom::MediaFoundationCdmDataDataView,
                     std::unique_ptr<media::MediaFoundationCdmData>> {
+  // The CDM data is null when the browser process failed to provide it.
+  static bool IsNull(
+      const std::unique_ptr<media::MediaFoundationCdmData>& input) {
+    return !input;
+  }
+
+  static void SetToNull(
+      std::unique_ptr<media::MediaFoundationCdmData>* output) {
+    output->reset();
+  }
+
   static const base::UnguessableToken& origin_id(
       const std::unique_ptr<media::MediaFoundationCdmData>& input) {
     return input->origin_id;

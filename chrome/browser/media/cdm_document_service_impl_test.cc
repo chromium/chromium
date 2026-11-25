@@ -176,6 +176,24 @@ TEST_F(CdmDocumentServiceImplTest, GetSameOriginId) {
   ASSERT_EQ(origin_id1, origin_id3);
 }
 
+// Verify that a failure to prepare the CDM store for an origin is reported as
+// null CDM data. This used to crash when sending the reply, because the Mojo
+// response did not allow null.
+TEST_F(CdmDocumentServiceImplTest, GetMediaFoundationCdmDataFailure) {
+  NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
+  auto data = GetMediaFoundationCdmData();
+  ASSERT_TRUE(data);
+
+  // Replace the per-origin directory with a regular file, so that the next
+  // request fails to create the directory.
+  const base::FilePath origin_path =
+      data->cdm_store_path_root.AppendASCII(data->origin_id.ToString());
+  ASSERT_TRUE(base::DeletePathRecursively(origin_path));
+  ASSERT_TRUE(base::WriteFile(origin_path, ""));
+
+  EXPECT_FALSE(GetMediaFoundationCdmData());
+}
+
 // Check that obsolete client tokens are cleanly stripped by
 // MigrateObsoleteProfilePrefs() while other origin data is preserved.
 TEST_F(CdmDocumentServiceImplTest, MigrateObsoleteClientToken) {

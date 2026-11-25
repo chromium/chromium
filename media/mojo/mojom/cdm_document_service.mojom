@@ -59,10 +59,10 @@ interface CdmDocumentService {
   GetStorageId(uint32 version) => (uint32 version, array<uint8> storage_id);
 
   // Gets the Media FoundationCDM data for the origin associated with the CDM.
-  // - `media_foundation_cdm_data`: The CDM data for the origin associated with
-  //                                the CDM.
+  // - `cdm_data`: The CDM data for the origin associated with the CDM, or null
+  //               if the browser process failed to get or prepare it.
   [EnableIf=is_win]
-  GetMediaFoundationCdmData() => (MediaFoundationCdmData cdm_data);
+  GetMediaFoundationCdmData() => (MediaFoundationCdmData? cdm_data);
 
   // Reports a CDM event, which can facilitate metrics reporting or fallback
   // logic.  For error events, the `hresult` provides more details about the
