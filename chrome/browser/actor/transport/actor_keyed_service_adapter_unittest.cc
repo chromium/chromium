@@ -274,10 +274,9 @@ TEST_F(ActorKeyedServiceAdapterTest, StartTaskReportsHeadedForTabTarget) {
             proto::TargetSurface::HEADED);
 }
 
-// ActorTask::AddActorSurface() rejects a surface that another task owns, so
-// the second task has no surface and its response has no mode.
-TEST_F(ActorKeyedServiceAdapterTest,
-       StartTaskReportsNoModeWhenAnotherTaskOwnsSurface) {
+// StartTask() fails without creating a task, and the owner task keeps the
+// surface.
+TEST_F(ActorKeyedServiceAdapterTest, StartTaskFailsWhenAnotherTaskOwnsSurface) {
   ScopedHeadlessActorSurface headless =
       actor_service_->CreateHeadlessActorSurface();
   const ActorSurfaceHandle actor_surface_handle =
@@ -297,13 +296,12 @@ TEST_F(ActorKeyedServiceAdapterTest,
   adapter_.StartTask(request, future.GetCallback());
 
   const auto& [task_id, response] = future.Get();
-  EXPECT_EQ(response.status(), proto::StartTaskResponse::STATUS_OK);
-  ASSERT_EQ(response.bound_surfaces_size(), 1);
-  EXPECT_EQ(response.bound_surfaces(0).execution_mode(),
-            proto::TargetSurface::EXECUTION_MODE_UNSPECIFIED);
-  ActorTask* task = actor_service_->GetTask(task_id);
-  ASSERT_TRUE(task);
-  EXPECT_FALSE(task->HasActorSurface(actor_surface_handle));
+  EXPECT_FALSE(task_id);
+  EXPECT_EQ(response.status(),
+            proto::StartTaskResponse::STATUS_TARGET_TAB_OWNED_BY_ANOTHER_TASK);
+  EXPECT_TRUE(response.bound_surfaces().empty());
+  EXPECT_EQ(actor_service_->GetActiveTasksCount(), 1u);
+  EXPECT_TRUE(owner_task->HasActorSurface(actor_surface_handle));
 }
 
 TEST_F(ActorKeyedServiceAdapterTest,

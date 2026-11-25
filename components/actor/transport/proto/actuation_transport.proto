@@ -145,6 +145,8 @@ message StartTaskResponse {
     // ServerToBrowserPayload.task_id is already in use by an active or
     // starting task in the session.
     STATUS_DUPLICATE_TASK_ID = 4;
+    // Another task already owns the target surface.
+    STATUS_TARGET_TAB_OWNED_BY_ANOTHER_TASK = 5;
   }
 
   // Outcome of the task initialization request.

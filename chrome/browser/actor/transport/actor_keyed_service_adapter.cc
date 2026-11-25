@@ -242,6 +242,20 @@ void PopulateBrowserObservations(
   }
 }
 
+// Returns STATUS_OK if `actor_surface_handle` names a registered surface that
+// no task owns, or the failure status otherwise.
+proto::StartTaskResponse::Status ValidateExistingSurface(
+    ActorKeyedService& actor_service,
+    ActorSurfaceHandle actor_surface_handle) {
+  if (!actor_service.GetSurfaceRegistry().Get(actor_surface_handle)) {
+    return proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND;
+  }
+  if (actor_service.GetTaskFromActorSurface(actor_surface_handle)) {
+    return proto::StartTaskResponse::STATUS_TARGET_TAB_OWNED_BY_ANOTHER_TASK;
+  }
+  return proto::StartTaskResponse::STATUS_OK;
+}
+
 }  // namespace
 
 ActorKeyedServiceAdapter::ActorKeyedServiceAdapter(
@@ -275,14 +289,15 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
     if (surface.tab_id() == 0 &&
         surface.execution_mode() == proto::TargetSurface::HEADLESS) {
       options.execution_mode = proto::TargetSurface::HEADLESS;
-    } else if (actor_service_->GetSurfaceRegistry().Get(
-                   ActorSurfaceHandle::FromRawValue(surface.tab_id()))) {
-      options.webui_task_options->actuation_tab_id = surface.tab_id();
     } else {
-      response.set_status(
-          proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND);
-      std::move(callback).Run(TaskId(), std::move(response));
-      return;
+      const proto::StartTaskResponse::Status status = ValidateExistingSurface(
+          *actor_service_, ActorSurfaceHandle::FromRawValue(surface.tab_id()));
+      if (status != proto::StartTaskResponse::STATUS_OK) {
+        response.set_status(status);
+        std::move(callback).Run(TaskId(), std::move(response));
+        return;
+      }
+      options.webui_task_options->actuation_tab_id = surface.tab_id();
     }
   }
 
@@ -304,15 +319,22 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
     // A new task's last actuated surface is the surface it bound at creation:
     // the surface in `tab_id` or a new headless surface.
     const ActorSurfaceHandle bound_handle = task->GetLastActuatedActorSurface();
+    const ActorSurface* bound_actor_surface =
+        actor_service_->GetSurfaceRegistry().Get(bound_handle);
+    if (!bound_actor_surface) {
+      actor_service_->StopTask(task_id,
+                               ActorTask::StoppedReason::kChromeFailure);
+      response.set_status(
+          proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND);
+      std::move(callback).Run(TaskId(), std::move(response));
+      return;
+    }
     proto::StartTaskResponse::BoundSurface* bound_surface =
         response.add_bound_surfaces();
     bound_surface->set_tab_id(bound_handle.raw_value());
-    if (const ActorSurface* bound_actor_surface =
-            actor_service_->GetSurfaceRegistry().Get(bound_handle)) {
-      bound_surface->set_execution_mode(bound_actor_surface->IsTab()
-                                            ? proto::TargetSurface::HEADED
-                                            : proto::TargetSurface::HEADLESS);
-    }
+    bound_surface->set_execution_mode(bound_actor_surface->IsTab()
+                                          ? proto::TargetSurface::HEADED
+                                          : proto::TargetSurface::HEADLESS);
   }
 
   response.set_status(proto::StartTaskResponse::STATUS_OK);
