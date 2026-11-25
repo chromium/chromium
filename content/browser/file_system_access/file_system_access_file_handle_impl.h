@@ -222,6 +222,8 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
 #endif  // BUILDFLAG(IS_MAC)
 
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
+  // Returns `HandleType::kFile` for file handles.
+  HandleType GetHandleType() const override;
 
   base::WeakPtrFactory<FileSystemAccessFileHandleImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
