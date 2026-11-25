@@ -1071,7 +1071,13 @@ void WebTransport::CreateStream(
     }
     quic::WebTransportStream* const stream =
         session->OpenOutgoingBidirectionalStream();
-    DCHECK(stream);
+    if (!stream) {
+      // `OpenOutgoingBidirectionalStream()` can still return nullptr even when
+      // `CanOpenNextOutgoingBidirectionalStream()` is true (for example, after
+      // receiving an HTTP/3 GOAWAY frame).
+      std::move(callback).Run(false, 0);
+      return;
+    }
     if (priority) {
       stream->SetPriority(ToStreamPriority(*priority));
     }
@@ -1093,7 +1099,13 @@ void WebTransport::CreateStream(
 
   quic::WebTransportStream* const stream =
       session->OpenOutgoingUnidirectionalStream();
-  DCHECK(stream);
+  if (!stream) {
+    // `webtransport::Session::OpenOutgoingUnidirectionalStream()` is allowed to
+    // return nullptr even when `CanOpenNextOutgoingUnidirectionalStream()` is
+    // true.
+    std::move(callback).Run(false, 0);
+    return;
+  }
   if (priority) {
     stream->SetPriority(ToStreamPriority(*priority));
   }

@@ -36,6 +36,10 @@
 #include "net/quic/web_transport_client.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_source_x509.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_session.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_dispatcher.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/web_transport_interface.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_backend.h"
@@ -662,6 +666,17 @@ class WebTransportTest : public testing::TestWithParam<std::string_view> {
   const NetworkContext& network_context() const { return *network_context_; }
   NetworkContext& mutable_network_context() { return *network_context_; }
   net::RecordingNetLogObserver& net_log_observer() { return net_log_observer_; }
+
+  void SendServerHttp3GoAway() {
+    size_t session_count = 0;
+    http_server_->dispatcher()->PerformActionOnActiveSessions(
+        [&session_count](quic::QuicSession* session) {
+          ++session_count;
+          static_cast<quic::QuicSpdySession*>(session)->SendHttp3GoAway(
+              quic::QUIC_PEER_GOING_AWAY, "test goaway");
+        });
+    ASSERT_EQ(session_count, 1u);
+  }
 
   void RunPendingTasks() {
     base::RunLoop run_loop;
@@ -2082,6 +2097,97 @@ TEST_F(WebTransportTest, SessionDraining) {
       /*writable=*/{}, /*priority=*/nullptr,
       post_draining_stream_creation_future.GetCallback());
   EXPECT_TRUE(post_draining_stream_creation_future.Get<0>());
+}
+
+TEST_F(WebTransportTest, CreateBidirectionalStreamAfterHttp3GoAway) {
+  base::test::TestFuture<void> handshake_future;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      handshake_future.GetCallback());
+
+  CreateWebTransport(GetURL("/echo"), origin(), std::move(handshake_client));
+
+  ASSERT_TRUE(handshake_future.Wait());
+  ASSERT_TRUE(test_handshake_client.has_seen_connection_establishment());
+
+  TestClient client(test_handshake_client.PassClientReceiver());
+  mojo::Remote<mojom::WebTransport> transport_remote(
+      test_handshake_client.PassTransport());
+
+  // Verify bidirectional stream creation succeeds before GOAWAY.
+  mojo::ScopedDataPipeConsumerHandle pre_goaway_readable_for_outgoing;
+  mojo::ScopedDataPipeProducerHandle pre_goaway_writable_for_outgoing;
+  mojo::ScopedDataPipeConsumerHandle pre_goaway_readable_for_incoming;
+  mojo::ScopedDataPipeProducerHandle pre_goaway_writable_for_incoming;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(/*options=*/nullptr,
+                                 pre_goaway_writable_for_outgoing,
+                                 pre_goaway_readable_for_outgoing));
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(/*options=*/nullptr,
+                                 pre_goaway_writable_for_incoming,
+                                 pre_goaway_readable_for_incoming));
+  base::test::TestFuture<bool, uint32_t> pre_goaway_stream_future;
+  transport_remote->CreateStream(std::move(pre_goaway_readable_for_outgoing),
+                                 std::move(pre_goaway_writable_for_incoming),
+                                 /*priority=*/nullptr,
+                                 pre_goaway_stream_future.GetCallback());
+  ASSERT_TRUE(pre_goaway_stream_future.Get<0>());
+
+  // Have the server send an HTTP/3 GOAWAY frame while keeping the WebTransport
+  // session open, and wait until the client processes it.
+  ASSERT_NO_FATAL_FAILURE(SendServerHttp3GoAway());
+  client.WaitUntilDraining();
+  EXPECT_TRUE(client.has_seen_draining());
+  EXPECT_FALSE(client.has_seen_closed());
+  EXPECT_FALSE(client.has_seen_mojo_connection_error());
+
+  // After an HTTP/3 GOAWAY, `CanOpenNextOutgoingBidirectionalStream()` can
+  // still return true while `OpenOutgoingBidirectionalStream()` returns
+  // nullptr. Verify `CreateStream()` fails cleanly rather than dereferencing
+  // nullptr, both with default and explicit stream priority.
+  for (bool with_priority : {false, true}) {
+    SCOPED_TRACE(with_priority ? "with priority" : "default priority");
+    mojo::ScopedDataPipeConsumerHandle readable_for_outgoing;
+    mojo::ScopedDataPipeProducerHandle writable_for_outgoing;
+    mojo::ScopedDataPipeConsumerHandle readable_for_incoming;
+    mojo::ScopedDataPipeProducerHandle writable_for_incoming;
+    ASSERT_EQ(MOJO_RESULT_OK,
+              mojo::CreateDataPipe(/*options=*/nullptr, writable_for_outgoing,
+                                   readable_for_outgoing));
+    ASSERT_EQ(MOJO_RESULT_OK,
+              mojo::CreateDataPipe(/*options=*/nullptr, writable_for_incoming,
+                                   readable_for_incoming));
+
+    mojom::WebTransportStreamPriorityPtr priority;
+    if (with_priority) {
+      priority = mojom::WebTransportStreamPriority::New(
+          /*send_group_id=*/1u, /*send_order=*/10);
+    }
+
+    base::test::TestFuture<bool, uint32_t> stream_creation_future;
+    transport_remote->CreateStream(
+        std::move(readable_for_outgoing), std::move(writable_for_incoming),
+        std::move(priority), stream_creation_future.GetCallback());
+    auto [stream_created, stream_id] = stream_creation_future.Take();
+    EXPECT_FALSE(stream_created);
+    EXPECT_EQ(stream_id, 0u);
+  }
+
+  // Unidirectional stream creation should remain functional and the session
+  // should still be alive without a Mojo disconnect.
+  mojo::ScopedDataPipeConsumerHandle uni_readable;
+  mojo::ScopedDataPipeProducerHandle uni_writable;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(/*options=*/nullptr,
+                                                 uni_writable, uni_readable));
+  base::test::TestFuture<bool, uint32_t> uni_stream_creation_future;
+  transport_remote->CreateStream(std::move(uni_readable), /*writable=*/{},
+                                 /*priority=*/nullptr,
+                                 uni_stream_creation_future.GetCallback());
+  EXPECT_TRUE(uni_stream_creation_future.Get<0>());
+  EXPECT_FALSE(client.has_seen_mojo_connection_error());
+  EXPECT_EQ(1u, network_context().NumOpenWebTransports());
 }
 
 TEST_F(WebTransportTest, PendingDrainingDispatchOnConnection) {
