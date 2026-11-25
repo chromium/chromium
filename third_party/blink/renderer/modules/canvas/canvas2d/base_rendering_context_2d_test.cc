@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
+#include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -72,6 +73,7 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
+#include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -139,6 +141,7 @@ class TestRenderingContext2D final
   }
   using BaseRenderingContext2D::ConfigureRecorder;
   using BaseRenderingContext2D::CreateSharedImagePool;
+  using BaseRenderingContext2D::CreateSharedImagePoolForSoftwareCompositor;
   using BaseRenderingContext2D::CreateSoftwareSurface;
   using BaseRenderingContext2D::FlushCanvasInternal;
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
@@ -813,6 +816,173 @@ TEST_F(BaseRenderingContext2DSharedImageTest,
   test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
       GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
   EXPECT_EQ(context->Snapshot(), nullptr);
+}
+
+TEST_F(BaseRenderingContext2DSharedImageTest,
+       LostExportedResourceIsReplacedOnDraw) {
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kGPU);
+  ASSERT_TRUE(context->IsBackingValid());
+
+  auto resource1 = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  ASSERT_TRUE(resource1);
+  auto shared_image1 = resource1->GetSharedImageForTesting();
+
+  // Report `resource1` as lost and drop the sole external ref so the context
+  // holds the only remaining ref to the resource.
+  resource1->EndDisplayCompositorAccess(gpu::SyncToken(), /*is_lost=*/true);
+  resource1.reset();
+  EXPECT_FALSE(context->HasUnusedResourcesForTesting());
+
+  // The next draw must still replace the lost target buffer rather than
+  // reusing it in place, and must not recycle the lost resource into the pool.
+  context->fillRect(0, 0, 1, 1);
+  auto resource2 = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  ASSERT_TRUE(resource2);
+  EXPECT_NE(resource2->GetSharedImageForTesting(), shared_image1);
+  EXPECT_FALSE(context->HasUnusedResourcesForTesting());
+}
+
+TEST_F(BaseRenderingContext2DSharedImageTest,
+       LostExportedResourcePreventsSecondExportFromRecycling) {
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kGPU);
+  ASSERT_TRUE(context->IsBackingValid());
+
+  // Export the same frame twice without drawing in between so both exports
+  // share the underlying resource.
+  auto resource1a = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  auto resource1b = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  ASSERT_TRUE(resource1a);
+  ASSERT_TRUE(resource1b);
+  ASSERT_EQ(resource1a->GetSharedImageForTesting(),
+            resource1b->GetSharedImageForTesting());
+
+  // Draw to trigger copy-on-write so `resource1a` and `resource1b` are the
+  // only remaining refs to the original resource.
+  context->fillRect(0, 0, 1, 1);
+  context->FlushCanvasForTesting();
+
+  // Lose `resource1a`, then release `resource1b` cleanly as the final ref.
+  // The original resource must not be recycled.
+  resource1a->EndDisplayCompositorAccess(gpu::SyncToken(), /*is_lost=*/true);
+  resource1a.reset();
+  EXPECT_FALSE(context->HasUnusedResourcesForTesting());
+
+  resource1b->EndDisplayCompositorAccess(gpu::SyncToken(), /*is_lost=*/false);
+  resource1b.reset();
+  EXPECT_FALSE(context->HasUnusedResourcesForTesting());
+}
+
+TEST_F(BaseRenderingContext2DSharedImageTest,
+       LostExportedResourcePreventsSnapshotFromRecycling) {
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kGPU);
+  ASSERT_TRUE(context->IsBackingValid());
+
+  // Create a snapshot and an exported resource sharing the same underlying
+  // resource.
+  auto snapshot = context->PaintRenderingResultsToSnapshot(kBackBuffer);
+  auto resource = context->PaintRenderingResultsToResource(kBackBuffer,
+                                                           FlushReason::kOther);
+  ASSERT_TRUE(snapshot);
+  ASSERT_TRUE(resource);
+  ASSERT_EQ(snapshot->GetSharedImage(), resource->GetSharedImageForTesting());
+
+  // Draw to trigger copy-on-write so `snapshot` and `resource` are the only
+  // remaining refs to the original resource.
+  context->fillRect(0, 0, 1, 1);
+  context->FlushCanvasForTesting();
+
+  // Lose `resource` while `snapshot` still holds a ref, then drop `snapshot`
+  // as the final ref (whose MailboxRef release callback runs with
+  // `is_lost=false`). The resource must not be recycled.
+  resource->EndDisplayCompositorAccess(gpu::SyncToken(), /*is_lost=*/true);
+  resource.reset();
+  EXPECT_FALSE(context->HasUnusedResourcesForTesting());
+
+  snapshot.reset();
+  EXPECT_FALSE(context->HasUnusedResourcesForTesting());
+}
+
+TEST_F(BaseRenderingContext2DSharedImageTest,
+       LostExportedResourceIsReplacedOnUnacceleratedOverlayDraw) {
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kCPU);
+  ASSERT_TRUE(context->IsBackingValid());
+  EXPECT_FALSE(context->Is2DCanvasAccelerated());
+
+  auto resource1 = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  ASSERT_TRUE(resource1);
+  auto shared_image1 = resource1->GetSharedImageForTesting();
+
+  // Report `resource1` as lost and drop the sole external ref so the context
+  // holds the only remaining ref to the resource.
+  resource1->EndDisplayCompositorAccess(gpu::SyncToken(), /*is_lost=*/true);
+  resource1.reset();
+  EXPECT_FALSE(context->HasUnusedResourcesForTesting());
+
+  // The next draw and export must replace the lost resource in
+  // `EndWriteAccess()` even though the context holds the only ref.
+  context->fillRect(0, 0, 1, 1);
+  auto resource2 = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  ASSERT_TRUE(resource2);
+  EXPECT_NE(resource2->GetSharedImageForTesting(), shared_image1);
+  EXPECT_FALSE(context->HasUnusedResourcesForTesting());
+}
+
+TEST(BaseRenderingContext2DTest,
+     SoftwareCompositorLostExportedResourceIsNotRecycled) {
+  test::TaskEnvironment task_environment;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
+  platform->SetGpuCompositingDisabled(true);
+  SharedGpuContext::SetSharedImageInterfaceProviderForTesting(
+      TestWebGraphicsSharedImageInterfaceProvider::Create());
+
+  {
+    V8TestingScope scope;
+    constexpr gfx::Size kSize(10, 10);
+    auto* context = MakeGarbageCollected<TestRenderingContext2D>(
+        scope, CanvasContextCreationAttributesCore(), kSize);
+    context->CreateSharedImagePoolForSoftwareCompositor();
+    ASSERT_TRUE(context->IsBackingValid());
+    EXPECT_FALSE(context->Is2DCanvasAccelerated());
+
+    // A cleanly released software-compositor export is recycled into the pool.
+    auto resource1 = context->PaintRenderingResultsToResource(
+        kBackBuffer, FlushReason::kOther);
+    ASSERT_TRUE(resource1);
+    auto shared_image1 = resource1->GetSharedImageForTesting();
+    resource1->EndDisplayCompositorAccess(gpu::SyncToken(), /*is_lost=*/false);
+    resource1.reset();
+    EXPECT_TRUE(context->HasUnusedResourcesForTesting());
+
+    // Next export reuses the recycled resource.
+    auto resource2 = context->PaintRenderingResultsToResource(
+        kBackBuffer, FlushReason::kOther);
+    ASSERT_TRUE(resource2);
+    EXPECT_EQ(resource2->GetSharedImageForTesting(), shared_image1);
+    EXPECT_FALSE(context->HasUnusedResourcesForTesting());
+
+    // Reporting the export as lost prevents recycling and forces a fresh
+    // resource on the next export.
+    resource2->EndDisplayCompositorAccess(gpu::SyncToken(), /*is_lost=*/true);
+    resource2.reset();
+    EXPECT_FALSE(context->HasUnusedResourcesForTesting());
+
+    auto resource3 = context->PaintRenderingResultsToResource(
+        kBackBuffer, FlushReason::kOther);
+    ASSERT_TRUE(resource3);
+    EXPECT_NE(resource3->GetSharedImageForTesting(), shared_image1);
+  }
+
+  SharedGpuContext::Reset();
 }
 
 // Tests that consecutive software snapshots reuse `PaintImage::ContentId` and

@@ -51,6 +51,8 @@ class PLATFORM_EXPORT SharedGpuContext {
   using ContextProviderFactory =
       base::RepeatingCallback<std::unique_ptr<WebGraphicsContext3DProvider>()>;
   static void SetContextProviderFactoryForTesting(ContextProviderFactory);
+  static void SetSharedImageInterfaceProviderForTesting(
+      std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>);
   // Resets the global instance including the |context_provider_factory_| and
   // dropping the context. Should be called at the end of a test that uses this
   // to not interfere with the next test and when terminating web workers.

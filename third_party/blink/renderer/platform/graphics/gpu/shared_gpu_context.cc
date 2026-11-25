@@ -230,6 +230,16 @@ void SharedGpuContext::SetContextProviderFactoryForTesting(
 }
 
 // static
+void SharedGpuContext::SetSharedImageInterfaceProviderForTesting(
+    std::unique_ptr<WebGraphicsSharedImageInterfaceProvider> provider) {
+  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  DCHECK(!this_ptr->shared_image_interface_provider_)
+      << this_ptr->shared_image_interface_provider_.get();
+
+  this_ptr->shared_image_interface_provider_ = std::move(provider);
+}
+
+// static
 void SharedGpuContext::Reset() {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
   this_ptr->is_gpu_compositing_disabled_ = false;
