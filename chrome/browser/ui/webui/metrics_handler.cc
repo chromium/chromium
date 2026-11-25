@@ -81,7 +81,9 @@ void MetricsHandler::HandleRecordTime(const base::ListValue& args) {
   const std::string& histogram_name = args[0].GetString();
   double value = args[1].GetDouble();
 
-  CHECK_GE(value, 0, base::NotFatalUntil::M162);
+  // TODO(crbug.com/587151683): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK_GE(value, 0);
 
   base::UmaHistogramTimes(histogram_name, base::Milliseconds(value));
 }
