@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -39,10 +40,12 @@ using ::testing::ReturnRef;
 
 namespace {
 
-constexpr char kUIDismissalReasonGeneralMetric[] =
+constexpr std::string_view kUIDismissalReasonGeneralMetric =
     "PasswordManager.UIDismissalReason";
 
-constexpr char kSiteOrigin[] = "http://example.com/login/";
+constexpr std::string_view kSiteOrigin = "http://example.com/login/";
+constexpr std::string_view kUserActionMetric =
+    "PasswordManager.PasswordManagementBubble.UserAction";
 
 password_manager::PasswordForm CreateTestForm(int index = 1) {
   password_manager::PasswordForm form;
@@ -166,16 +169,54 @@ TEST_F(ManagePasswordsBubbleControllerTest, OnManageClicked) {
       NavigateToPasswordManagerSettingsPage(
           password_manager::ManagePasswordsReferrer::kManagePasswordsBubble));
 
+  base::HistogramTester histogram_tester;
   controller()->OnManageClicked(
       password_manager::ManagePasswordsReferrer::kManagePasswordsBubble);
-
-  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(
+      kUserActionMetric,
+      password_manager::metrics_util::PasswordManagementBubbleInteractions::
+          kManagePasswordsButtonClicked,
+      1);
 
   DestroyController();
 
   histogram_tester.ExpectUniqueSample(
       kUIDismissalReasonGeneralMetric,
       password_manager::metrics_util::CLICKED_MANAGE, 1);
+}
+
+TEST_F(ManagePasswordsBubbleControllerTest, OnManagePasswordClicked) {
+  Init();
+  controller()->set_details_bubble_credential(CreateTestForm());
+
+  EXPECT_CALL(*delegate(), NavigateToPasswordDetailsPageInPasswordManager);
+
+  base::HistogramTester histogram_tester;
+  controller()->OnManagePasswordClicked(
+      password_manager::ManagePasswordsReferrer::kManagePasswordDetailsBubble);
+  histogram_tester.ExpectUniqueSample(
+      kUserActionMetric,
+      password_manager::metrics_util::PasswordManagementBubbleInteractions::
+          kManagePasswordButtonClicked,
+      1);
+}
+
+TEST_F(ManagePasswordsBubbleControllerTest,
+       OnGooglePasswordManagerLinkClicked) {
+  Init();
+
+  EXPECT_CALL(
+      *delegate(),
+      NavigateToPasswordManagerSettingsPage(
+          password_manager::ManagePasswordsReferrer::kManagePasswordsBubble));
+
+  base::HistogramTester histogram_tester;
+  controller()->OnGooglePasswordManagerLinkClicked();
+  histogram_tester.ExpectUniqueSample(
+      kUserActionMetric,
+      password_manager::metrics_util::PasswordManagementBubbleInteractions::
+          kGooglePasswordManagerLinkClicked,
+      1);
 }
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnLocalCredentials) {
@@ -353,7 +394,7 @@ TEST_F(ManagePasswordsBubbleControllerTest, OpenMoveBubble) {
   EXPECT_CALL(*delegate(), ShowMovePasswordBubble(details_bubble_form));
   controller()->OnMovePasswordLinkClicked();
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordManagementBubble.UserAction",
+      kUserActionMetric,
       password_manager::metrics_util::PasswordManagementBubbleInteractions::
           kMovePasswordLinkClicked,
       1);

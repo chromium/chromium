@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -39,7 +38,6 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
-using password_manager::metrics_util::PasswordManagementBubbleInteractions;
 
 ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
                                          views::BubbleAnchor anchor_view)
@@ -165,11 +163,6 @@ ManagePasswordsView::CreatePasswordListView() {
                 password_manager::ManagePasswordsReferrer::
                     kManagePasswordsBubble);
             view->CloseBubble();
-            // TODO(b/329572483): move this logging to the controller.
-            password_manager::metrics_util::
-                LogUserInteractionsInPasswordManagementBubble(
-                    PasswordManagementBubbleInteractions::
-                        kManagePasswordsButtonClicked);
           },
           base::Unretained(this)),
       controller_.IsAccountStorageActive());
@@ -215,26 +208,17 @@ ManagePasswordsView::CreatePasswordDetailsView() {
                 password_manager::ManagePasswordsReferrer::
                     kManagePasswordDetailsBubble);
             view->CloseBubble();
-            // TODO(b/329572483): move this logging to the controller.
-            password_manager::metrics_util::
-                LogUserInteractionsInPasswordManagementBubble(
-                    PasswordManagementBubbleInteractions::
-                        kManagePasswordButtonClicked);
           },
           base::Unretained(this)));
 }
 
 std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
+  // `controller_` is owned by this view, which is destroyed together with the
+  // footer as part of the same bubble, so the callback can't run after
+  // `controller_` is gone.
   base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
-      [](ManagePasswordsView* dialog) {
-        dialog->controller_.OnGooglePasswordManagerLinkClicked();
-        // TODO(b/329572483): move this logging to the controller.
-        password_manager::metrics_util::
-            LogUserInteractionsInPasswordManagementBubble(
-                PasswordManagementBubbleInteractions::
-                    kGooglePasswordManagerLinkClicked);
-      },
-      base::Unretained(this));
+      &ManagePasswordsBubbleController::OnGooglePasswordManagerLinkClicked,
+      base::Unretained(&controller_));
 
   switch (controller_.GetPasswordSyncState()) {
     case ManagePasswordsBubbleController::SyncState::kNotActive:

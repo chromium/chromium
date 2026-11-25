@@ -118,6 +118,8 @@ std::u16string ManagePasswordsBubbleController::GetTitle() const {
 void ManagePasswordsBubbleController::OnManageClicked(
     password_manager::ManagePasswordsReferrer referrer) {
   dismissal_reason_ = metrics_util::CLICKED_MANAGE;
+  metrics_util::LogUserInteractionsInPasswordManagementBubble(
+      PasswordManagementBubbleInteractions::kManagePasswordsButtonClicked);
   if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(referrer);
   }
@@ -127,6 +129,8 @@ void ManagePasswordsBubbleController::OnManagePasswordClicked(
     password_manager::ManagePasswordsReferrer referrer) {
   CHECK(details_bubble_credential_.has_value());
   dismissal_reason_ = metrics_util::CLICKED_MANAGE_PASSWORD;
+  metrics_util::LogUserInteractionsInPasswordManagementBubble(
+      PasswordManagementBubbleInteractions::kManagePasswordButtonClicked);
   if (delegate_) {
     std::vector<password_manager::CredentialUIEntry::DomainInfo>
         affiliated_domains = password_manager::CredentialUIEntry(
@@ -168,6 +172,8 @@ ManagePasswordsBubbleController::GetPasswordSyncState() const {
 }
 
 void ManagePasswordsBubbleController::OnGooglePasswordManagerLinkClicked() {
+  metrics_util::LogUserInteractionsInPasswordManagementBubble(
+      PasswordManagementBubbleInteractions::kGooglePasswordManagerLinkClicked);
   if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(
         password_manager::ManagePasswordsReferrer::kManagePasswordsBubble);
