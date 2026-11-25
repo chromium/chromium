@@ -12,8 +12,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.AttachedSurfaceControl;
 import android.view.Surface;
@@ -23,6 +25,7 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.window.InputTransferToken;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.GuardedBy;
 import androidx.core.graphics.Insets;
 
@@ -107,6 +110,7 @@ public class CompositorView extends FrameLayout
 
     private @Nullable View mRootView;
     private boolean mPreloadedResources;
+    private boolean mHasTempBackground;
     private final Object mDrawingFinishedCallbackLock = new Object();
 
     @GuardedBy("mDrawingFinishedCallbackLock")
@@ -201,6 +205,7 @@ public class CompositorView extends FrameLayout
         // Cover the black surface before it has valid content.  Set this placeholder view to
         // visible, but don't yet make SurfaceView visible, in order to delay
         // surfaceCreate/surfaceChanged calls until the native library is loaded.
+        mHasTempBackground = true;
         setBackgroundColor(ChromeColors.getPrimaryBackgroundColor(getContext(), false));
         super.setVisibility(View.VISIBLE);
 
@@ -957,13 +962,40 @@ public class CompositorView extends FrameLayout
         mCompositorSurfaceManager.setWillNotDraw(willNotDraw);
     }
 
+    /**
+     * Refreshes the temporary placeholder background color from the current context theme if it is
+     * still active. Intended for pre-inflated view hierarchies after their theme is rebased onto an
+     * activity context.
+     */
+    public void refreshTempBackgroundColor() {
+        updateTempBackgroundColor(ChromeColors.getPrimaryBackgroundColor(getContext(), false));
+    }
+
+    /**
+     * Updates the temporary placeholder background color while it is still active.
+     *
+     * @param color The background color to apply; {@link Color#TRANSPARENT} is ignored.
+     */
+    public void updateTempBackgroundColor(@ColorInt int color) {
+        if (!mHasTempBackground || getBackground() == null || color == Color.TRANSPARENT) {
+            return;
+        }
+        // Use setBackground() with a fresh ColorDrawable instead of setBackgroundColor(), because
+        // View#setBackgroundColor() mutates an existing ColorDrawable in place without calling
+        // setBackgroundDrawable() to notify and invalidate both child SurfaceViews.
+        setBackground(new ColorDrawable(color));
+    }
+
     @Override
-    public void setBackgroundDrawable(Drawable background) {
+    public void setBackgroundDrawable(@Nullable Drawable background) {
         // We override setBackgroundDrawable since that's the common entry point from all the
         // setBackground* calls in View.  We still call to setBackground on the SurfaceView because
         // SetBackgroundDrawable is deprecated, and the semantics are the same I think.
         super.setBackgroundDrawable(background);
         mCompositorSurfaceManager.setBackgroundDrawable(background);
+        if (background == null) {
+            mHasTempBackground = false;
+        }
     }
 
     @Override

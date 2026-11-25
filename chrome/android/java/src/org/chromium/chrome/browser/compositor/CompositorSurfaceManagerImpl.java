@@ -371,7 +371,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
     }
 
     @Override
-    public void setBackgroundDrawable(Drawable background) {
+    public void setBackgroundDrawable(@Nullable Drawable background) {
         mTranslucent.surfaceView.setBackgroundDrawable(background);
         mOpaque.surfaceView.setBackgroundDrawable(background);
     }

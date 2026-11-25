@@ -58,7 +58,7 @@ public interface CompositorSurfaceManager {
     void recreateSurface();
 
     /** Update the background drawable on all surfaces. */
-    void setBackgroundDrawable(Drawable background);
+    void setBackgroundDrawable(@Nullable Drawable background);
 
     /** Set |willNotDraw| on all surfaces. */
     void setWillNotDraw(boolean willNotDraw);

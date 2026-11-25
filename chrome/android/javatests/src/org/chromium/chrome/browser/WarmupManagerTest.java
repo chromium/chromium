@@ -9,6 +9,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
+import android.view.ContextThemeWrapper;
+import android.widget.FrameLayout;
 
 import androidx.annotation.StringDef;
 import androidx.test.annotation.UiThreadTest;
@@ -37,6 +41,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WarmupManager.SpareTabFinalStatus;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
@@ -53,6 +58,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
@@ -251,6 +257,47 @@ public class WarmupManagerTest {
         int toolbarId = R.layout.new_custom_tab_toolbar;
         mWarmupManager.initializeViewHierarchy(mContext, layoutId, toolbarId);
         Assert.assertTrue(mWarmupManager.hasViewHierarchyWithToolbar(layoutId, mContext));
+    }
+
+    /** Checks that transferring a pre-inflated view hierarchy updates the compositor background. */
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testTransferViewHierarchyRefreshesCompositorBackground() {
+        Configuration lightConfig = new Configuration(mContext.getResources().getConfiguration());
+        lightConfig.uiMode =
+                (lightConfig.uiMode & ~Configuration.UI_MODE_NIGHT_MASK)
+                        | Configuration.UI_MODE_NIGHT_NO;
+        Context lightContext =
+                new ContextThemeWrapper(
+                        mContext.createConfigurationContext(lightConfig),
+                        ActivityUtils.getThemeId());
+
+        Configuration darkConfig = new Configuration(lightConfig);
+        darkConfig.uiMode =
+                (darkConfig.uiMode & ~Configuration.UI_MODE_NIGHT_MASK)
+                        | Configuration.UI_MODE_NIGHT_YES;
+        Context darkContext =
+                new ContextThemeWrapper(
+                        mContext.createConfigurationContext(darkConfig),
+                        ActivityUtils.getThemeId());
+
+        int lightBg = ChromeColors.getPrimaryBackgroundColor(lightContext, false);
+        int darkBg = ChromeColors.getPrimaryBackgroundColor(darkContext, false);
+        assertNotEquals(lightBg, darkBg);
+
+        int layoutId = R.layout.custom_tabs_control_container;
+        int toolbarId = R.layout.new_custom_tab_toolbar;
+        mWarmupManager.initializeViewHierarchy(lightContext, layoutId, toolbarId);
+
+        FrameLayout destination = new FrameLayout(darkContext);
+        mWarmupManager.transferViewHierarchyTo(destination);
+
+        CompositorViewHolder viewHolder = destination.findViewById(R.id.compositor_view_holder);
+        Assert.assertNotNull(viewHolder);
+        ColorDrawable bgDrawable = (ColorDrawable) viewHolder.getCompositorView().getBackground();
+        Assert.assertNotNull(bgDrawable);
+        assertEquals(darkBg, bgDrawable.getColor());
     }
 
     /**

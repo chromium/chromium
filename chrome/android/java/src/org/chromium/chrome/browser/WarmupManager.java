@@ -44,6 +44,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.MainLayoutSwitcher;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -472,6 +473,12 @@ public class WarmupManager {
                 ResourcesCompat.clearCachesForTheme(theme);
                 rebasedThemes.add(theme);
             }
+        }
+        // Re-resolve the placeholder background color now that the theme has been rebased onto the
+        // target activity context.
+        View compositorViewHolder = contentView.findViewById(R.id.compositor_view_holder);
+        if (compositorViewHolder instanceof CompositorViewHolder viewHolder) {
+            viewHolder.getCompositorView().refreshTempBackgroundColor();
         }
     }
 

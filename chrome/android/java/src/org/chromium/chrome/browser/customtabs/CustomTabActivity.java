@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFac
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.PopupBoundsAdjuster;
@@ -191,6 +192,18 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
 
         var intentDataProvider = assumeNonNull(getIntentDataProvider());
+        int initialBackgroundColor =
+                intentDataProvider.getColorProvider().getInitialBackgroundColor();
+        if (intentDataProvider.isTrustedIntent()
+                && initialBackgroundColor != Color.TRANSPARENT
+                && !intentDataProvider.hasTranslucentBackgroundColor()) {
+            CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
+            if (compositorViewHolder != null) {
+                compositorViewHolder
+                        .getCompositorView()
+                        .updateTempBackgroundColor(initialBackgroundColor);
+            }
+        }
         int toolbarColor = intentDataProvider.getColorProvider().getToolbarColor();
         // Not setting the task title and icon or setting them to null (pre-Android T) will preserve
         // the client app's title and icon.
