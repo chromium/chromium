@@ -1534,6 +1534,7 @@ using segmentation_platform::TipIdentifier;
                     didFinishWithAccept:(BOOL)didAccept {
   [_tipsNTPCustomizationCoordinator stop];
   _tipsNTPCustomizationCoordinator = nil;
+  [self notifyTipInteracted:TipIdentifier::kNTPCustomization];
   base::UmaHistogramEnumeration(
       kTipsNTPCustomizationPromoActionHistogram,
       didAccept ? IOSTipsNTPCustomizationPromoAction::kAccepted
@@ -1612,7 +1613,8 @@ using segmentation_platform::TipIdentifier;
 }
 
 // Records the common Tips card interaction metrics and notifies the card
-// registry at most once per card impression.
+// registry at most once per card impression. The registry notification is
+// deferred for the actionable NTP customization tip.
 - (void)recordTipInteractionIfNeeded:(segmentation_platform::TipIdentifier)tip {
   if (_hasRecordedTipInteraction) {
     return;
@@ -1621,14 +1623,27 @@ using segmentation_platform::TipIdentifier;
   base::UmaHistogramEnumeration(kTipsMagicStackModuleTappedTypeHistogram, tip);
   [self.NTPActionsDelegate tipsOpened];
 
-  std::optional<std::string_view> name = OutputLabelForTipIdentifier(tip);
-  if (name.has_value()) {
-    segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetHomeCardRegistryForProfile(self.profile);
-    CHECK(registry);
-    registry->NotifyCardInteracted(std::string(name.value()).c_str());
+  // The actionable NTP customization tip is marked as interacted when its promo
+  // finishes, so that it is shown again if the app is terminated before then.
+  if (tip == TipIdentifier::kNTPCustomization &&
+      segmentation_platform::features::
+          IsMagicStackNTPCustomizationTipIosActionableEnabled()) {
+    return;
   }
+  [self notifyTipInteracted:tip];
+}
+
+// Marks `tip` as interacted, so that it is no longer shown in the Magic Stack.
+- (void)notifyTipInteracted:(TipIdentifier)tip {
+  std::optional<std::string_view> name = OutputLabelForTipIdentifier(tip);
+  if (!name.has_value()) {
+    return;
+  }
+  segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetHomeCardRegistryForProfile(self.profile);
+  CHECK(registry);
+  registry->NotifyCardInteracted(name.value());
 }
 
 @end

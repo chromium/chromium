@@ -69,6 +69,9 @@
 
 namespace {
 
+constexpr char kNTPCustomizationTipInteractedPref[] =
+    "ephemeral_pref_interacted.ntp_customization_ephemeral_module_interacted";
+
 constexpr char kPriceTrackingPromoCounterPref[] =
     "ephemeral_pref_counter.price_tracking_promo_counter";
 
@@ -86,10 +89,17 @@ constexpr char kPriceTrackingPromoCounterPref[] =
 class ContentSuggestionsCoordinatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {segmentation_platform::features::kMagicStackNTPThemeTipIos,
-         segmentation_platform::features::kMagicStackTipsNotificationTipIos},
-        {});
+    // Tips must be enabled before the profile is built: the Home card registry
+    // only registers cards enabled at its creation.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{segmentation_platform::features::kMagicStackNTPThemeTipIos, {}},
+         {segmentation_platform::features::kMagicStackTipsNotificationTipIos,
+          {}},
+         {segmentation_platform::features::kMagicStackNTPCustomizationTipIos,
+          {{segmentation_platform::features::
+                kMagicStackNTPCustomizationTipIosActionableParam,
+            IsNTPCustomizationTipActionable() ? "true" : "false"}}}},
+        /*disabled_features=*/{});
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -153,6 +163,9 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
   }
 
  protected:
+  // Returns whether the NTP customization tip uses the actionable variation.
+  virtual bool IsNTPCustomizationTipActionable() const { return true; }
+
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -367,7 +380,8 @@ TEST_F(ContentSuggestionsCoordinatorTest,
 }
 
 // Tests that `-tipsNTPCustomizationCoordinator:didFinishWithAccept:` logs
-// `kTipsNTPCustomizationPromoActionHistogram` for both accept and cancel.
+// `kTipsNTPCustomizationPromoActionHistogram` and marks the tip as interacted
+// for both accept and cancel.
 TEST_F(ContentSuggestionsCoordinatorTest,
        TestTipsNTPCustomizationCoordinatorLogsPromoAction) {
   base::HistogramTester histogram_tester;
@@ -380,12 +394,54 @@ TEST_F(ContentSuggestionsCoordinatorTest,
   histogram_tester.ExpectBucketCount(
       kTipsNTPCustomizationPromoActionHistogram,
       IOSTipsNTPCustomizationPromoAction::kAccepted, 1);
+  EXPECT_TRUE(
+      profile_->GetPrefs()->GetBoolean(kNTPCustomizationTipInteractedPref));
 
+  profile_->GetPrefs()->SetBoolean(kNTPCustomizationTipInteractedPref, false);
   [coordinator_ tipsNTPCustomizationCoordinator:nil didFinishWithAccept:NO];
   histogram_tester.ExpectBucketCount(
       kTipsNTPCustomizationPromoActionHistogram,
       IOSTipsNTPCustomizationPromoAction::kCancelled, 1);
+  EXPECT_TRUE(
+      profile_->GetPrefs()->GetBoolean(kNTPCustomizationTipInteractedPref));
   EXPECT_OCMOCK_VERIFY(mockDelegate);
+}
+
+// Tests that the actionable NTP customization tip logs the tap metrics when
+// selected, but is marked as interacted only when its promo finishes.
+TEST_F(ContentSuggestionsCoordinatorTest,
+       TestNTPCustomizationTipInteractionDeferredUntilPromoFinished) {
+  base::HistogramTester histogram_tester;
+  OCMExpect([coordinator_.NTPActionsDelegate tipsOpened]);
+  [coordinator_
+      didSelectTip:segmentation_platform::TipIdentifier::kNTPCustomization];
+  histogram_tester.ExpectUniqueSample(
+      kTipsMagicStackModuleTappedTypeHistogram,
+      segmentation_platform::TipIdentifier::kNTPCustomization, 1);
+  EXPECT_OCMOCK_VERIFY((id)coordinator_.NTPActionsDelegate);
+  EXPECT_FALSE(
+      profile_->GetPrefs()->GetBoolean(kNTPCustomizationTipInteractedPref));
+
+  [coordinator_ tipsNTPCustomizationCoordinator:nil didFinishWithAccept:NO];
+  EXPECT_TRUE(
+      profile_->GetPrefs()->GetBoolean(kNTPCustomizationTipInteractedPref));
+}
+
+// Test fixture with the NTP customization tip configured as non-actionable.
+class ContentSuggestionsCoordinatorNonActionableNTPCustomizationTest
+    : public ContentSuggestionsCoordinatorTest {
+ protected:
+  bool IsNTPCustomizationTipActionable() const override { return false; }
+};
+
+// Tests that the non-actionable NTP customization tip, which opens the
+// customization menu directly, is marked as interacted when selected.
+TEST_F(ContentSuggestionsCoordinatorNonActionableNTPCustomizationTest,
+       TestNonActionableNTPCustomizationTipMarkedInteractedOnSelection) {
+  [coordinator_
+      didSelectTip:segmentation_platform::TipIdentifier::kNTPCustomization];
+  EXPECT_TRUE(
+      profile_->GetPrefs()->GetBoolean(kNTPCustomizationTipInteractedPref));
 }
 
 // Tests that changing the content size of MostVisitedTilesCollectionView
