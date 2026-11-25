@@ -571,23 +571,28 @@ if (!is_robolectric && enable_java_templates) {
       rtxt_path = _rtxt_out_path
     }
 
-    _assetres_deps = []
-    if (defined(invoker.deps)) {
-      foreach(_dep, invoker.deps) {
-        _dep_label = get_label_info(_dep, "label_no_toolchain")
-        if (filter_include([ _dep_label ], java_resource_patterns) != []) {
-          _assetres_deps += [ _dep ]
-        } else if (filter_include([ _dep_label ], java_library_patterns) !=
-                   []) {
-          _assetres_deps += [ "${_dep_label}__assetres" ]
+    python_action(target_name) {
+      forward_variables_from(invoker, [ "visibility" ])
+      public_deps = [ invoker.generating_target ]
+      deps = []
+      if (defined(invoker.deps)) {
+        foreach(_dep, invoker.deps) {
+          _dep_label = get_label_info(_dep, "label_no_toolchain")
+          if (filter_include([ _dep_label ], java_resource_patterns) != []) {
+            deps += [ _dep ]
+          } else if (filter_include([ _dep_label ], java_library_patterns) !=
+                     []) {
+            deps += [ "${_dep_label}__assetres" ]
+          }
         }
       }
-    }
-
-    _prepare_target_name = "${target_name}__prepare"
-
-    python_action(_prepare_target_name) {
-      public_deps = [ invoker.generating_target ]
+      metadata = {
+        # Consumed by generate_r_java() to collect this target's R.txt, depend
+        # on this action, and walk only its resource/library deps.
+        android_resources_rtxt = [ rebase_path(_rtxt_out_path, root_build_dir) ]
+        android_resources_rtxt_deps = [ ":$target_name" ]
+        android_resources_walk_keys = deps
+      }
       inputs = [
         android_sdk_tools_bundle_aapt2,
         invoker.generated_resources_zip,
@@ -607,26 +612,6 @@ if (!is_robolectric && enable_java_templates) {
         "--r-text-out",
         rebase_path(_rtxt_out_path, root_build_dir),
       ]
-    }
-
-    group(target_name) {
-      forward_variables_from(invoker, [ "visibility" ])
-      public_deps = [ ":$_prepare_target_name" ]
-      deps = _assetres_deps
-      if (!disable_android_lint) {
-        deps += [ invoker.generating_target ]
-      }
-      metadata = {
-        # Consumed by generate_r_java() and resource, manifest, lint, asset,
-        # and size-info walks.
-        android_resources_rtxt = [ rebase_path(_rtxt_out_path, root_build_dir) ]
-        android_resources_rtxt_deps = [ ":$_prepare_target_name" ]
-        android_resources_walk_keys = _assetres_deps
-        android_assetres_walk_keys = _assetres_deps
-        if (!disable_android_lint) {
-          android_lint_resource_deps = [ invoker.generating_target ]
-        }
-      }
     }
   }
 
@@ -934,38 +919,27 @@ if (!is_robolectric && enable_java_templates) {
                _android_sdk_dep,
              ] + _assetres_deps + _non_java_deps
 
-      _non_java_and_public_deps = _non_java_deps
+      _manifest_deps = _non_java_deps
       if (defined(public_deps)) {
-        _non_java_and_public_deps += public_deps
+        _manifest_deps += public_deps
       }
       metadata = {
-        # Consumed by generate_r_java() and resource, manifest, lint, asset,
-        # and size-info walks.
+        # Consumed by generate_r_java() to collect this target's R.txt, depend
+        # on its __prepare action, and walk only its resource/library deps.
         android_resources_rtxt = [ rebase_path(_rtxt_out_path, root_build_dir) ]
         android_resources_rtxt_deps = [ ":$_prepare_target_name" ]
         android_resources_walk_keys = _assetres_deps
-        android_assetres_walk_keys = _assetres_deps
-
-        # Emit lint resource deps only when a first-party resource file is
-        # generated (under root_build_dir, so rebasing does not start with
-        # "../").
-        if (!disable_android_lint && _chromium_code &&
-            _non_java_and_public_deps != [] && _resource_files != [] &&
-            filter_exclude(rebase_path(_resource_files, root_build_dir),
-                           [ "../*" ]) != []) {
-          android_lint_resource_deps = _non_java_and_public_deps
-        }
 
         # Emit deps only if any mergeable manifest is generated (under
         # root_build_dir).
-        if (_non_java_and_public_deps != [] &&
+        if (_manifest_deps != [] &&
             defined(invoker.mergeable_android_manifests) &&
             filter_exclude(rebase_path(invoker.mergeable_android_manifests,
                                        root_build_dir),
                            [ "../*" ]) != []) {
           # Consumed by merge_manifests() so it depends on targets generating
           # mergeable_android_manifests.
-          mergeable_android_manifest_deps = _non_java_and_public_deps
+          mergeable_android_manifest_deps = _manifest_deps
         }
       }
     }
@@ -1009,7 +983,7 @@ if (!is_robolectric && enable_java_templates) {
   #   renaming_destinations = [ "renamed/asset2.png" ]
   # }
   template("android_assets") {
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _build_config = "$target_gen_dir/$target_name.build_config.json"
 
@@ -1057,58 +1031,31 @@ if (!is_robolectric && enable_java_templates) {
     # Use an action in order to mark sources as "inputs" to a GN target so that
     # GN will fail if the appropriate deps do not exist, and so that "gn refs"
     # will know about the sources.
-    _asset_walk_deps = []
-    _non_asset_deps = []
-    if (defined(invoker.deps)) {
-      foreach(_dep, invoker.deps) {
-        _dep_label = get_label_info(_dep, "label_no_toolchain")
-        if (filter_include([ _dep_label ], java_resource_patterns) != []) {
-          _asset_walk_deps += [ _dep ]
-        } else {
-          _non_asset_deps += [ _dep ]
-        }
-      }
-    }
     _all_sources = _sources + _renaming_sources
     if (_all_sources != []) {
-      _validate_target_name = "${target_name}__validate"
-      _pak_check_paths = _all_sources
-      if (_renaming_sources != []) {
-        _pak_check_paths += invoker.renaming_destinations
-      }
-      _has_pak_assets = filter_include(_pak_check_paths, [ "*.pak*" ]) != []
+      action(target_name) {
+        forward_variables_from(invoker, [ "deps" ])
+        metadata = {
+          # Consumed by generate_r_java() to stop its R.txt metadata walk from
+          # descending into asset deps.
+          android_resources_walk_keys = []
+        }
 
-      action(_validate_target_name) {
-        deps = _non_asset_deps
         script = "//build/android/gyp/validate_inputs.py"
         inputs = _all_sources
-        outputs = [ "$target_gen_dir/${invoker.target_name}.stamp" ]
+        outputs = [ "$target_gen_dir/$target_name.stamp" ]
         args = [
                  "--stamp",
                  rebase_path(outputs[0], root_build_dir),
                ] + rebase_path(_all_sources, root_build_dir)
       }
-    }
-
-    group(target_name) {
-      forward_variables_from(invoker, [ "visibility" ])
-      if (defined(_validate_target_name)) {
-        public_deps = [ ":$_validate_target_name" ]
-        deps = _asset_walk_deps
-      } else {
-        deps = _asset_walk_deps + _non_asset_deps
-      }
-      metadata = {
-        # Consumed by generate_r_java() to stop R.txt walks at android_assets().
-        android_resources_walk_keys = []
-
-        # Consumed by resource, manifest, lint, asset, and size-info walks.
-        android_assetres_walk_keys = _asset_walk_deps
-        if (defined(_validate_target_name)) {
-          android_assets_deps = [ ":$_validate_target_name" ]
-          if (_has_pak_assets) {
-            android_pak_assets_deps = [ ":$_validate_target_name" ]
-          }
+    } else {
+      group(target_name) {
+        forward_variables_from(invoker, [ "deps" ])
+        metadata = {
+          # Consumed by generate_r_java() to stop its R.txt metadata walk from
+          # descending into asset deps.
+          android_resources_walk_keys = []
         }
       }
     }
@@ -1251,11 +1198,9 @@ if (!is_robolectric && enable_java_templates) {
           }
           deps += _assetres_deps
           metadata = {
-            # Consumed by generate_r_java() and resource, manifest, lint,
-            # asset, and size-info walks. Must precede `deps += _other_deps` so
-            # non-Java targets without walk barriers are not walked.
+            # Consumed by generate_r_java(). Must precede `deps += _other_deps`
+            # so non-Java targets without walk barriers are not walked.
             android_resources_walk_keys = deps
-            android_assetres_walk_keys = deps
             if (_has_generated_manifest_deps) {
               # Consumed by merge_manifests() so it depends on targets
               # generating mergeable_android_manifests.
@@ -1286,11 +1231,9 @@ if (!is_robolectric && enable_java_templates) {
       if (is_cronet_for_aosp_build || _is_resource_group) {
         metadata = {
           if (_is_resource_group) {
-            # Consumed by generate_r_java() and resource, manifest, lint,
-            # asset, and size-info walks when this resource-named java_group()
-            # is walked directly rather than via __assetres.
+            # Consumed by generate_r_java() when this resource-named
+            # java_group() is walked directly rather than via __assetres.
             android_resources_walk_keys = [ ":${target_name}__assetres" ]
-            android_assetres_walk_keys = [ ":${target_name}__assetres" ]
           }
           if (is_cronet_for_aosp_build) {
             java_library_deps = []
@@ -1412,6 +1355,7 @@ if (!is_robolectric && enable_java_templates) {
       _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
       _manifest_build_config =
           "$target_gen_dir/$target_name.manifest.build_config.json"
+      _non_java_deps = filter_exclude(_invoker_deps, java_target_patterns)
       _java_assetres_deps = [ ":${_java_binary_target_name}__assetres" ]
 
       # A package name or a manifest is required to have resources. This is
@@ -1452,10 +1396,8 @@ if (!is_robolectric && enable_java_templates) {
       _compile_resources_target_name = "${target_name}__compile_resources"
 
       compile_resources(_compile_resources_target_name) {
-        deps = [ ":$_merge_manifest_target_name" ]
-
-        # Walk __assetres to depend only on android_resources __prepare actions.
-        resources_walk_deps = _java_assetres_deps
+        deps = _non_java_deps + _java_assetres_deps +
+               [ ":$_merge_manifest_target_name" ]
         build_config_dep = ":$_build_config_target_name"
         build_config = _res_build_config
         if (defined(_package_name)) {
@@ -2615,7 +2557,6 @@ if (!is_robolectric && enable_java_templates) {
     }
 
     not_needed([
-                 "_non_java_deps",
                  "_rebased_build_config",
                  "_use_chromium_linker",
                ])
@@ -2788,10 +2729,7 @@ if (!is_robolectric && enable_java_templates) {
 
       build_config = _res_build_config
       build_config_dep = ":$_build_config_target"
-      deps = []
-
-      # Walk __assetres to depend only on android_resources __prepare actions.
-      resources_walk_deps = _java_assetres_deps
+      deps = _java_assetres_deps + _non_java_deps
 
       if (defined(invoker.apk_under_test)) {
         # Set the arsc package name to match the apk_under_test package name
@@ -3379,6 +3317,9 @@ if (!is_robolectric && enable_java_templates) {
         ]
         if (defined(invoker.lint_suppressions_dep)) {
           deps += [ invoker.lint_suppressions_dep ]
+        }
+        if (defined(invoker.asset_deps)) {
+          deps += invoker.asset_deps
         }
       }
     } else {
