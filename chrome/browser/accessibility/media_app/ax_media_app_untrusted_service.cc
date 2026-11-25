@@ -1208,7 +1208,9 @@ bool AXMediaAppUntrustedService::IsOcrServiceEnabled() const {
   switch (ocr_status_) {
     case OcrStatus::kUninitialized:
     case OcrStatus::kInitializationFailed:
-      CHECK(!ocr_ || !ocr_->is_ready(), base::NotFatalUntil::M161);
+      // TODO(crbug.com/589738325): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(!ocr_ || !ocr_->is_ready());
       return false;
     case OcrStatus::kInProgressWithNoTextExtractedYet:
     case OcrStatus::kInProgressWithTextExtracted:
