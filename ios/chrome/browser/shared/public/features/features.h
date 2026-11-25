@@ -625,12 +625,6 @@ BASE_DECLARE_FEATURE(kAIMEligibilityRefreshNTPModules);
 // Returns true if the AIMEligibilityRefreshNTPModules feature is enabled.
 bool IsAIMEligibilityRefreshNTPModulesEnabled();
 
-// Enables the AtMemoryContextMenuEntryPoint feature.
-BASE_DECLARE_FEATURE(kAtMemoryContextMenuEntryPoint);
-
-// Returns true if the AtMemoryContextMenuEntryPoint feature is enabled.
-bool IsAtMemoryContextMenuEntryPointEnabled();
-
 // Feature flag to enable the Assistant Container.
 BASE_DECLARE_FEATURE(kAssistantContainer);
 

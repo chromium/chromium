@@ -784,12 +784,6 @@ bool IsAIMEligibilityRefreshNTPModulesEnabled() {
   return base::FeatureList::IsEnabled(kAIMEligibilityRefreshNTPModules);
 }
 
-BASE_FEATURE(kAtMemoryContextMenuEntryPoint, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAtMemoryContextMenuEntryPointEnabled() {
-  return base::FeatureList::IsEnabled(kAtMemoryContextMenuEntryPoint);
-}
-
 BASE_FEATURE(kAssistantContainer, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kAssistantContainerParam[] = "kAssistantContainerParam";
