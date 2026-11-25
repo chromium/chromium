@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -63,6 +64,7 @@
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
@@ -678,6 +680,17 @@ void ShowOffersAndLoyaltyCards(BrowserWindowInterface* bwi) {
   base::RecordAction(UserMetricsAction("Options_ShowOffersAndLoyaltyCards"));
   ShowSettingsSubPage(bwi, kOffersAndLoyaltyCardsSubPage);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void ShowManageProfile(BrowserWindowInterface* browser) {
+  if (switches::IsManageProfileDialogEnabled()) {
+    SigninViewController::From(browser)->ShowModalProfileCustomizationDialog(
+        ProfileCustomizationStyle::kEditProfile);
+    return;
+  }
+  ShowSettingsSubPage(browser, kManageProfileSubPage);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void ShowEnterpriseManagementPageInTabbedBrowser(
     BrowserWindowInterface* browser) {

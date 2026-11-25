@@ -104,6 +104,9 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_tab_helper.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1444,15 +1447,50 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// The param is whether kReplaceManageProfileWithDialog is enabled.
+class BrowserCommandControllerCustomizeChromeBrowserTest
+    : public BrowserCommandControllerBrowserTestRefreshOnly,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowserCommandControllerCustomizeChromeBrowserTest() {
+    feature_list_.InitWithFeatureState(
+        switches::kReplaceManageProfileWithDialog, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Opens the edit profile dialog if kReplaceManageProfileWithDialog is enabled,
+// and chrome://settings/manageProfile otherwise.
+IN_PROC_BROWSER_TEST_P(BrowserCommandControllerCustomizeChromeBrowserTest,
                        ExecuteProfileMenuCustomizeChrome) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_CUSTOMIZE_CHROME));
+  if (GetParam()) {
+    SigninViewController* controller = SigninViewController::From(browser());
+    ASSERT_TRUE(controller->ShowsModalDialog());
+    EXPECT_EQ(
+        GetProfileCustomizationStyle(
+            controller->GetModalDialogWebContentsForTesting()->GetVisibleURL()),
+        ProfileCustomizationStyle::kEditProfile);
+    controller->CloseModalSignin();
+    return;
+  }
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(),
+  EXPECT_EQ(web_contents->GetVisibleURL().possibly_invalid_spec(),
             "chrome://settings/manageProfile");
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         BrowserCommandControllerCustomizeChromeBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Dialog" : "SettingsPage";
+                         });
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteProfileMenuManageGoogleAccount) {

@@ -4536,7 +4536,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::ShowSettingsSubPage(bwi, chrome::kManageProfileSubPage);
+                chrome::ShowManageProfile(bwi);
               },
               bwi),
           kActionCustomizeChrome, IDS_CUSTOMIZE_CHROME, IDS_CUSTOMIZE_CHROME,

@@ -15,6 +15,7 @@ import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/lens/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
+import("//components/signin/features.gni")
 import("//content/browser/devtools/features.gni")
 import("//content/public/common/features.gni")
 import("//crypto/features.gni")
@@ -1689,6 +1690,7 @@ if (!is_android) {
       "//chrome/browser/ui/waap:window_creation",
       "//chrome/browser/ui/webui/bookmarks",
       "//chrome/browser/ui/webui/settings",
+      "//chrome/browser/ui/webui/signin:signin_utils",
       "//chrome/browser/ui/window_feature_controller",
       "//chrome/browser/user_education",
       "//chrome/common",
@@ -1773,6 +1775,7 @@ if (!is_android) {
       ":browser_tabstrip",
       ":browser_ui_prefs",
       ":browser_window_header",
+      ":chrome_pages",
       ":confirm_bubble",
       ":managed_ui",
       ":sad_tab",
@@ -1813,6 +1816,7 @@ if (!is_android) {
       "//chrome/browser/ui/fullscreen",
       "//chrome/browser/ui/performance_controls/test_support",
       "//chrome/browser/ui/search",
+      "//chrome/browser/ui/signin",
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/saved_tab_groups:test_support",
@@ -1820,6 +1824,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/site_data",
       "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/ui/webui/management",
+      "//chrome/browser/ui/webui/signin:signin_utils",
       "//chrome/browser/ui/window_feature_controller",
       "//chrome/browser/ui/window_metadata",
       "//chrome/browser/ui/zoom",
@@ -1865,6 +1870,10 @@ if (!is_android) {
       sources += [ "overscroll_pref_manager_browsertest.cc" ]
     }
 
+    if (enable_dice_support) {
+      sources += [ "chrome_pages_browsertest.cc" ]
+    }
+
     if (is_chromeos) {
       sources += [
         "browser_finder_chromeos_browsertest.cc",
@@ -1872,7 +1881,6 @@ if (!is_android) {
         "settings_window_manager_browsertest_chromeos.cc",
       ]
       deps += [
-        ":chrome_pages",
         ":settings_window_manager_chromeos",
         "//chrome/browser/ash/boca/on_task",
         "//chrome/browser/ash/policy/core:test_support",

@@ -514,7 +514,10 @@ void ProfileMenuView::OnEditProfileButtonClicked() {
   if (!perform_menu_actions()) {
     return;
   }
-  chrome::ShowSettingsSubPage(&browser(), chrome::kManageProfileSubPage);
+  // Closing the menu may delete `this`.
+  BrowserWindowInterface* browser_ptr = &browser();
+  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  chrome::ShowManageProfile(browser_ptr);
 }
 
 void ProfileMenuView::OnYourSavedInfoSettingsButtonClicked() {

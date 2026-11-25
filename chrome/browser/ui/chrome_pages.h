@@ -151,6 +151,15 @@ void ShowIdentityDocs(BrowserWindowInterface* bwi);
 void ShowTravel(BrowserWindowInterface* bwi);
 void ShowOffersAndLoyaltyCards(BrowserWindowInterface* bwi);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Shows the UI to edit the profile name, avatar and theme color: the profile
+// customization dialog if `switches::IsManageProfileDialogEnabled()`, or
+// chrome://settings/manageProfile otherwise.
+// TODO(crbug.com/585482119): Move next to the dialog once the settings page is
+// removed.
+void ShowManageProfile(BrowserWindowInterface* browser);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 // Shows all recent shared tab group activities.
 void ShowSharedTabGroupActivity(Profile* profile);
 
