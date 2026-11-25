@@ -39,6 +39,47 @@ namespace {
 // inspect the continuous Media.CodecOutputBuffer.ReleaseInterval.* histogram.
 constexpr base::TimeDelta kSubVsyncReleaseThreshold = base::Milliseconds(8);
 
+// Probes per window (codec creation, Flush(), or non-empty format change).
+// Sampling a few frames catches transient startup/reconfiguration failures
+// without adding per-frame JNI overhead during steady playback.
+constexpr int kOutputFrameProbeCount = 3;
+
+// Lifetime probe cap per codec instance. Bounds total JNI overhead and prevents
+// decoders that emit frequent same-size format changes or repeated flushes from
+// skewing UMA distributions.
+constexpr int kMaxOutputFrameProbesPerCodec = 15;
+
+// Whether an OutputFrame's buffer could replace the Surface path for a frame
+// with `visible_rect`. Checks intrinsic properties before size and GPU usage
+// so protected or BLOB buffers (which have height 1) are attributed accurately.
+// Missing COMPOSER_OVERLAY is not a failure: the buffer can still be
+// GPU-composited, and callers inspect output_frame_desc() for overlay support.
+OutputFrameStatus ValidateOutputFrame(const AHardwareBuffer_Desc& desc,
+                                      const gfx::Rect& visible_rect) {
+  if (desc.usage & AHARDWAREBUFFER_USAGE_PROTECTED_CONTENT) {
+    return OutputFrameStatus::kProtectedBuffer;
+  }
+  if (desc.format == AHARDWAREBUFFER_FORMAT_BLOB) {
+    return OutputFrameStatus::kUnsupportedFormat;
+  }
+  if (!base::IsValueInRangeForNumericType<int>(desc.width) ||
+      !base::IsValueInRangeForNumericType<int>(desc.height)) {
+    return OutputFrameStatus::kInvalidSize;
+  }
+  // The visible rect, crop offsets included, must fit in [0, width) x
+  // [0, height).
+  const gfx::Rect buffer_rect(base::checked_cast<int>(desc.width),
+                              base::checked_cast<int>(desc.height));
+  if (buffer_rect.IsEmpty() || visible_rect.IsEmpty() ||
+      !buffer_rect.Contains(visible_rect)) {
+    return OutputFrameStatus::kInvalidSize;
+  }
+  if (!(desc.usage & AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE)) {
+    return OutputFrameStatus::kNotGpuSampleable;
+  }
+  return OutputFrameStatus::kOk;
+}
+
 }  // namespace
 
 BASE_FEATURE(kFallbackToMediaFormatCodedSizeOnTV,
@@ -54,7 +95,8 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
   CodecWrapperImpl(CodecSurfacePair codec_surface_pair,
                    CodecWrapper::OutputReleasedCB output_buffer_release_cb,
                    const gfx::Size& initial_expected_size,
-                   std::optional<gfx::Size> coded_size_alignment);
+                   std::optional<gfx::Size> coded_size_alignment,
+                   OutputFrameMode output_frame_mode);
   CodecWrapperImpl(const CodecWrapperImpl&) = delete;
   CodecWrapperImpl& operator=(const CodecWrapperImpl&) = delete;
 
@@ -99,6 +141,8 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
   ~CodecWrapperImpl();
 
   void DiscardOutputBuffers_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void ProbeOutputFrame_Locked(int index, CodecOutputBuffer& buffer)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // |lock_| protects access to all member variables.
   mutable base::Lock lock_;
@@ -148,6 +192,11 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
 
   // The alignment to use for width, height when guessing coded size.
   const std::optional<gfx::Size> coded_size_alignment_;
+
+  const OutputFrameMode output_frame_mode_;
+  int probe_frames_left_ GUARDED_BY(lock_) = kOutputFrameProbeCount;
+  int total_probes_left_ GUARDED_BY(lock_) = kMaxOutputFrameProbesPerCodec;
+  bool awaiting_first_output_frame_of_format_ GUARDED_BY(lock_) = true;
 };
 
 CodecOutputBuffer::CodecOutputBuffer(
@@ -240,13 +289,15 @@ CodecWrapperImpl::CodecWrapperImpl(
     CodecSurfacePair codec_surface_pair,
     CodecWrapper::OutputReleasedCB output_buffer_release_cb,
     const gfx::Size& initial_expected_size,
-    std::optional<gfx::Size> coded_size_alignment)
+    std::optional<gfx::Size> coded_size_alignment,
+    OutputFrameMode output_frame_mode)
     : codec_(std::move(codec_surface_pair.first)),
       surface_bundle_(std::move(codec_surface_pair.second)),
       media_format_output_size_(initial_expected_size),
       visible_rect_(initial_expected_size),
       output_buffer_release_cb_(std::move(output_buffer_release_cb)),
-      coded_size_alignment_(coded_size_alignment) {
+      coded_size_alignment_(coded_size_alignment),
+      output_frame_mode_(output_frame_mode) {
   CHECK(codec_);
   CHECK(surface_bundle_);
   DVLOG(2) << __func__;
@@ -314,6 +365,9 @@ bool CodecWrapperImpl::Flush() {
   }
   state_ = State::kFlushed;
   elided_eos_pending_ = false;
+  // Re-probe after a flush (within total_probes_left_), since Flush() can
+  // reset codec buffer state, without marking the format as new.
+  probe_frames_left_ = kOutputFrameProbeCount;
   return true;
 }
 
@@ -414,10 +468,11 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
   // OUTPUT_FORMAT_CHANGED and OUTPUT_BUFFERS_CHANGED statuses to our caller.
   for (int attempt = 0; attempt < 3; ++attempt) {
     int index = -1;
-    size_t unused;
+    size_t unused = 0;
+    size_t size = 0;
     bool eos = false;
     MediaCodecResult result =
-        codec_->DequeueOutputBuffer(base::TimeDelta(), &index, &unused, &unused,
+        codec_->DequeueOutputBuffer(base::TimeDelta(), &index, &unused, &size,
                                     presentation_time, &eos, nullptr);
     switch (result.code()) {
       case MediaCodecResult::Codes::kOk: {
@@ -438,6 +493,14 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
         *codec_buffer = base::WrapUnique(new CodecOutputBuffer(
             this, buffer_id, media_format_output_size_, visible_rect_,
             color_space_, coded_size_alignment_));
+        // Probe only non-empty buffers (empty buffers have no AHardwareBuffer)
+        // while both the current window and per-codec lifetime budgets remain.
+        const bool has_probe_budget =
+            probe_frames_left_ > 0 && total_probes_left_ > 0;
+        if (output_frame_mode_ == OutputFrameMode::kProbe && has_probe_budget &&
+            size > 0) {
+          ProbeOutputFrame_Locked(index, **codec_buffer);
+        }
         return DequeueStatus::Codes::kOk;
       }
       case MediaCodecResult::Codes::kTryAgainLater: {
@@ -467,6 +530,8 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
         if (!temp_size.IsEmpty()) {
           media_format_output_size_ = temp_size;
           visible_rect_ = visible_rect;
+          probe_frames_left_ = kOutputFrameProbeCount;
+          awaiting_first_output_frame_of_format_ = true;
         }
 
         bool error = codec_->GetOutputColorSpace(&color_space_) ==
@@ -498,6 +563,37 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
   state_ = State::kError;
   return {DequeueStatus::Codes::kError,
           "Failed to dequeue after multiple attempts."};
+}
+
+void CodecWrapperImpl::ProbeOutputFrame_Locked(int index,
+                                               CodecOutputBuffer& buffer) {
+  lock_.AssertAcquired();
+  --probe_frames_left_;
+  --total_probes_left_;
+
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  auto result = codec_->GetOutputFrame(index);
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Media.Android.MediaCodec.OutputFrame.GetOutputFrameTime",
+      base::TimeTicks::Now() - start_time, base::Microseconds(1),
+      base::Seconds(1), 50);
+
+  OutputFrameStatus status = OutputFrameStatus::kOk;
+  if (!result.has_value()) {
+    status = result.error();
+  } else if (!result->is_valid()) {
+    status = OutputFrameStatus::kJniFailure;
+  } else {
+    const AHardwareBuffer_Desc desc = result->Describe();
+    buffer.output_frame_desc_ = desc;
+    buffer.is_first_output_frame_of_format_ =
+        awaiting_first_output_frame_of_format_;
+    awaiting_first_output_frame_of_format_ = false;
+    status = ValidateOutputFrame(desc, visible_rect_);
+  }
+  buffer.output_frame_status_ = status;
+  // |result| drops the AHardwareBuffer reference here. The codec buffer is
+  // released later, as for any other buffer.
 }
 
 bool CodecWrapperImpl::SetSurface(
@@ -581,12 +677,14 @@ bool CodecWrapperImpl::ReleaseCodecOutputBuffer(int64_t id, bool render) {
 CodecWrapper::CodecWrapper(CodecSurfacePair codec_surface_pair,
                            OutputReleasedCB output_buffer_release_cb,
                            const gfx::Size& initial_expected_size,
-                           std::optional<gfx::Size> coded_size_alignment)
+                           std::optional<gfx::Size> coded_size_alignment,
+                           OutputFrameMode output_frame_mode)
     : impl_(base::MakeRefCounted<CodecWrapperImpl>(
           std::move(codec_surface_pair),
           std::move(output_buffer_release_cb),
           initial_expected_size,
-          coded_size_alignment)) {}
+          coded_size_alignment,
+          output_frame_mode)) {}
 
 CodecWrapper::~CodecWrapper() {
   // The codec must have already been taken.
@@ -645,6 +743,13 @@ scoped_refptr<CodecSurfaceBundle> CodecWrapper::SurfaceBundle() {
 
 size_t CodecWrapper::GetUnreleasedOutputBufferCount() const {
   return impl_->GetUnreleasedOutputBufferCount();
+}
+
+// static
+OutputFrameStatus CodecWrapper::ValidateOutputFrameDescForTesting(
+    const AHardwareBuffer_Desc& desc,
+    const gfx::Rect& visible_rect) {
+  return ValidateOutputFrame(desc, visible_rect);
 }
 
 }  // namespace media

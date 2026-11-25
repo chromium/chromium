@@ -927,6 +927,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Android.MediaCodec.OutputFrame.GetOutputFrameTime"
+    units="microseconds" expires_after="2027-09-01">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Time spent in a single MediaCodec.getOutputFrame() call (including JNI) in
+    the GPU process. Recorded on each probed output buffer (the first 3
+    non-empty buffers after codec creation, Flush(), and each non-empty output
+    format change, capped at 15 calls per codec, when
+    Media.Android.MediaCodec.OutputFrame.Eligibility is Eligible), for both
+    successful and failed calls. Only recorded on clients with high-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="Media.Android.MediaCodec.OutputFrame.Status.{VideoCodec}"
     enum="MediaCodecOutputFrameStatus" expires_after="2027-09-01">
   <owner>philyan@chromium.org</owner>

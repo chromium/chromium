@@ -5,10 +5,12 @@
 #ifndef MEDIA_GPU_ANDROID_CODEC_WRAPPER_H_
 #define MEDIA_GPU_ANDROID_CODEC_WRAPPER_H_
 
+#include <android/hardware_buffer.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -28,6 +30,18 @@ class CodecWrapperImpl;
 
 using CodecSurfacePair = std::pair<std::unique_ptr<MediaCodecBridge>,
                                    scoped_refptr<CodecSurfaceBundle>>;
+
+// How a CodecWrapper uses MediaCodec.getOutputFrame() (block model output).
+// Future modes will enable live OutputFrame rendering.
+enum class OutputFrameMode {
+  // Never calls getOutputFrame().
+  kOff,
+  // Calls getOutputFrame() for the first few non-empty buffers after codec
+  // creation, Flush(), and each non-empty output format change (up to a
+  // per-codec lifetime cap), keeps the result on the CodecOutputBuffer, and
+  // drops the AHardwareBuffer. Buffers are released exactly as in kOff.
+  kProbe,
+};
 
 // A MediaCodec output buffer that can be released on any thread. Releasing a
 // CodecOutputBuffer implicitly discards all CodecOutputBuffers that
@@ -73,6 +87,21 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   // Color space of the image.
   const MediaFormatColorSpace& color_space() const { return color_space_; }
 
+  // Set if getOutputFrame() was called for this buffer.
+  std::optional<OutputFrameStatus> output_frame_status() const {
+    return output_frame_status_;
+  }
+  // Set if that call returned a buffer, even one that was then rejected.
+  const std::optional<AHardwareBuffer_Desc>& output_frame_desc() const {
+    return output_frame_desc_;
+  }
+  // True on the first buffer with an output_frame_desc() after codec creation
+  // and each non-empty output format change (not reset by Flush()), so callers
+  // can report format properties once per format.
+  bool is_first_output_frame_of_format() const {
+    return is_first_output_frame_of_format_;
+  }
+
   // Note that you can't use the first ctor, since CodecWrapperImpl isn't
   // defined here.  Use the second, and it'll be nullptr.
   template <typename... Args>
@@ -110,6 +139,10 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
 
   // The alignment to use for width, height when guessing coded size.
   const std::optional<gfx::Size> coded_size_alignment_;
+
+  std::optional<OutputFrameStatus> output_frame_status_;
+  std::optional<AHardwareBuffer_Desc> output_frame_desc_;
+  bool is_first_output_frame_of_format_ = false;
 };
 
 // This wraps a MediaCodecBridge and provides higher level features and tracks
@@ -138,7 +171,8 @@ class MEDIA_GPU_EXPORT CodecWrapper {
   CodecWrapper(CodecSurfacePair codec_surface_pair,
                OutputReleasedCB output_buffer_release_cb,
                const gfx::Size& initial_expected_size,
-               std::optional<gfx::Size> coded_size_alignment);
+               std::optional<gfx::Size> coded_size_alignment,
+               OutputFrameMode output_frame_mode = OutputFrameMode::kOff);
 
   CodecWrapper(const CodecWrapper&) = delete;
   CodecWrapper& operator=(const CodecWrapper&) = delete;
@@ -201,6 +235,10 @@ class MEDIA_GPU_EXPORT CodecWrapper {
       std::unique_ptr<CodecOutputBuffer>* codec_buffer);
 
   size_t GetUnreleasedOutputBufferCount() const;
+
+  static OutputFrameStatus ValidateOutputFrameDescForTesting(
+      const AHardwareBuffer_Desc& desc,
+      const gfx::Rect& visible_rect);
 
  private:
   scoped_refptr<CodecWrapperImpl> impl_;

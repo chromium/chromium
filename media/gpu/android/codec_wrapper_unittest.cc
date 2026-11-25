@@ -4,12 +4,21 @@
 
 #include "media/gpu/android/codec_wrapper.h"
 
-#include <memory>
+#include <android/hardware_buffer.h>
+#include <stddef.h>
+#include <stdint.h>
 
+#include <limits>
+#include <memory>
+#include <optional>
+#include <utility>
+
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -17,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_format_color_space.h"
 #include "media/base/android/mock_android_overlay.h"
@@ -25,6 +35,8 @@
 #include "media/base/subsample_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 using testing::_;
 using testing::DoAll;
@@ -521,6 +533,533 @@ TEST_F(CodecWrapperTest, RecordsSubVsyncReleaseHistogramsForOverlay) {
   histogram_tester.ExpectUniqueTimeSample(
       "Media.CodecOutputBuffer.ReleaseInterval.Overlay", base::Milliseconds(2),
       1);
+}
+
+namespace {
+
+constexpr char kGetOutputFrameTimeHistogram[] =
+    "Media.Android.MediaCodec.OutputFrame.GetOutputFrameTime";
+
+using OutputFrameResult =
+    base::expected<base::android::ScopedHardwareBufferHandle,
+                   OutputFrameStatus>;
+
+// Minimum usage that passes CodecWrapper validation; leaving out
+// COMPOSER_OVERLAY lets allocation succeed on more devices.
+constexpr uint64_t kDefaultTestAhbUsage =
+    AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
+
+// Allocates an R8G8B8A8_UNORM AHB. Returns an invalid handle if allocation
+// fails; the test then calls GTEST_SKIP().
+base::android::ScopedHardwareBufferHandle CreateTestAhb(
+    const gfx::Size& size,
+    uint64_t usage = kDefaultTestAhbUsage) {
+  if (size.IsEmpty()) {
+    return base::android::ScopedHardwareBufferHandle();
+  }
+  AHardwareBuffer_Desc desc = {};
+  desc.width = base::checked_cast<uint32_t>(size.width());
+  desc.height = base::checked_cast<uint32_t>(size.height());
+  desc.layers = 1;
+  desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+  desc.usage = usage;
+  AHardwareBuffer* buffer = nullptr;
+  if (AHardwareBuffer_allocate(&desc, &buffer) != 0 || !buffer) {
+    return base::android::ScopedHardwareBufferHandle();
+  }
+  return base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+}
+
+AHardwareBuffer_Desc MakeValidAhbDesc(uint32_t width = 640,
+                                      uint32_t height = 480) {
+  AHardwareBuffer_Desc desc = {};
+  desc.width = width;
+  desc.height = height;
+  desc.layers = 1;
+  desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+  desc.usage = kDefaultTestAhbUsage;
+  return desc;
+}
+
+bool CanAllocateAhb(const gfx::Size& size,
+                    uint64_t usage = kDefaultTestAhbUsage) {
+  return CreateTestAhb(size, usage).is_valid();
+}
+
+// Actions for MediaCodecBridge::GetOutputFrame(). Lambdas rather than
+// Return(), because the result is move-only.
+auto ReturnStatus(OutputFrameStatus status) {
+  return
+      [status](int) -> OutputFrameResult { return base::unexpected(status); };
+}
+
+auto ReturnNewAhb(const gfx::Size& size,
+                  uint64_t usage = kDefaultTestAhbUsage) {
+  return [size, usage](int) -> OutputFrameResult {
+    return CreateTestAhb(size, usage);
+  };
+}
+
+}  // namespace
+
+TEST(ValidateOutputFrameDescTest, ChecksAllRejectionReasonsAndPrecedence) {
+  constexpr gfx::Rect kVisibleRect(10, 20, 64, 48);  // right=74, bottom=68.
+
+  // Valid descriptor without COMPOSER_OVERLAY still passes.
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(
+                MakeValidAhbDesc(74, 68), kVisibleRect),
+            OutputFrameStatus::kOk);
+
+  // Empty buffer or empty visible rect.
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(
+                MakeValidAhbDesc(0, 68), kVisibleRect),
+            OutputFrameStatus::kInvalidSize);
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(
+                MakeValidAhbDesc(74, 0), kVisibleRect),
+            OutputFrameStatus::kInvalidSize);
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(
+                MakeValidAhbDesc(74, 68), gfx::Rect()),
+            OutputFrameStatus::kInvalidSize);
+
+  // Dimensions exceeding INT_MAX.
+  const uint32_t kOverIntMax =
+      static_cast<uint32_t>(std::numeric_limits<int>::max()) + 1u;
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(
+                MakeValidAhbDesc(kOverIntMax, 68), kVisibleRect),
+            OutputFrameStatus::kInvalidSize);
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(
+                MakeValidAhbDesc(74, kOverIntMax), kVisibleRect),
+            OutputFrameStatus::kInvalidSize);
+
+  // Negative crop origins and undersized buffer boundaries.
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(
+                MakeValidAhbDesc(74, 68), gfx::Rect(-1, 0, 64, 48)),
+            OutputFrameStatus::kInvalidSize);
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(
+                MakeValidAhbDesc(74, 68), gfx::Rect(0, -1, 64, 48)),
+            OutputFrameStatus::kInvalidSize);
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(
+                MakeValidAhbDesc(73, 68), kVisibleRect),
+            OutputFrameStatus::kInvalidSize);
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(
+                MakeValidAhbDesc(74, 67), kVisibleRect),
+            OutputFrameStatus::kInvalidSize);
+
+  // Missing GPU_SAMPLED_IMAGE.
+  AHardwareBuffer_Desc cpu_only = MakeValidAhbDesc(74, 68);
+  cpu_only.usage = AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN;
+  EXPECT_EQ(
+      CodecWrapper::ValidateOutputFrameDescForTesting(cpu_only, kVisibleRect),
+      OutputFrameStatus::kNotGpuSampleable);
+
+  // BLOB buffers have height 1 and no GPU_SAMPLED_IMAGE; BLOB must win over
+  // size and usage checks.
+  AHardwareBuffer_Desc blob = MakeValidAhbDesc(4096, 1);
+  blob.format = AHARDWAREBUFFER_FORMAT_BLOB;
+  blob.usage = AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN;
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(blob, kVisibleRect),
+            OutputFrameStatus::kUnsupportedFormat);
+
+  // Protected content takes precedence over BLOB, size, and missing GPU usage.
+  AHardwareBuffer_Desc protected_blob = MakeValidAhbDesc(1, 1);
+  protected_blob.format = AHARDWAREBUFFER_FORMAT_BLOB;
+  protected_blob.usage = AHARDWAREBUFFER_USAGE_PROTECTED_CONTENT;
+  EXPECT_EQ(CodecWrapper::ValidateOutputFrameDescForTesting(protected_blob,
+                                                            kVisibleRect),
+            OutputFrameStatus::kProtectedBuffer);
+}
+
+class CodecWrapperOutputFrameTest : public CodecWrapperTest {
+ public:
+  CodecWrapperOutputFrameTest() {
+    // Each dequeue returns a new buffer with the next index, or a format
+    // change if one is pending.
+    ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
+        .WillByDefault([this](base::TimeDelta, int* index, size_t* offset,
+                              size_t* size, base::TimeDelta*, bool*,
+                              bool*) -> MediaCodecResult {
+          if (format_change_pending_) {
+            format_change_pending_ = false;
+            return MediaCodecResult::Codes::kOutputFormatChanged;
+          }
+          *index = next_output_index_++;
+          *offset = 0;
+          *size = next_output_size_;
+          return OkStatus();
+        });
+    ON_CALL(*codec_, GetOutputSizeAndCropRect(_, _))
+        .WillByDefault(DoAll(SetArgReferee<0>(kInitialCodedSize),
+                             SetArgReferee<1>(gfx::Rect(kInitialCodedSize)),
+                             Return(OkStatus())));
+  }
+
+  // Replaces |wrapper_| with one that uses |mode| and the same codec.
+  void CreateWrapper(OutputFrameMode mode) {
+    CodecSurfacePair pair = wrapper_->TakeCodecSurfacePair();
+    wrapper_ = std::make_unique<CodecWrapper>(
+        std::move(pair), output_buffer_release_cb_.Get(), kInitialCodedSize,
+        kCodedSizeAlignment, mode);
+  }
+
+  // Makes every GetOutputFrame() call return a new AHB.
+  void ReturnOutputFrames(const gfx::Size& size,
+                          uint64_t usage = kDefaultTestAhbUsage) {
+    ON_CALL(*codec_, GetOutputFrame(_))
+        .WillByDefault(ReturnNewAhb(size, usage));
+  }
+
+  std::unique_ptr<CodecOutputBuffer> DequeueBufferOfSize(size_t size) {
+    next_output_size_ = size;
+    std::unique_ptr<CodecOutputBuffer> buffer = DequeueCodecOutputBuffer();
+    next_output_size_ = 1;
+    return buffer;
+  }
+
+  // Dequeues 3 probed OK buffers matching `expected_size`, then verifies the
+  // 4th buffer is unprobed.
+  void ExpectProbeWindow(const gfx::Size& expected_size,
+                         bool expect_first_of_format) {
+    for (int i = 0; i < 3; ++i) {
+      SCOPED_TRACE(i);
+      std::unique_ptr<CodecOutputBuffer> buffer = DequeueCodecOutputBuffer();
+      ASSERT_TRUE(buffer);
+      EXPECT_EQ(buffer->output_frame_status(), OutputFrameStatus::kOk);
+      ASSERT_TRUE(buffer->output_frame_desc().has_value());
+      EXPECT_EQ(buffer->output_frame_desc()->width,
+                static_cast<uint32_t>(expected_size.width()));
+      EXPECT_EQ(buffer->output_frame_desc()->height,
+                static_cast<uint32_t>(expected_size.height()));
+      EXPECT_EQ(buffer->is_first_output_frame_of_format(),
+                expect_first_of_format && i == 0);
+    }
+
+    std::unique_ptr<CodecOutputBuffer> fourth = DequeueCodecOutputBuffer();
+    ASSERT_TRUE(fourth);
+    EXPECT_FALSE(fourth->output_frame_status().has_value());
+    EXPECT_FALSE(fourth->output_frame_desc().has_value());
+    EXPECT_FALSE(fourth->is_first_output_frame_of_format());
+  }
+
+ protected:
+  // Start away from 0 so MediaCodec indices differ from CodecWrapper buffer
+  // IDs.
+  int next_output_index_ = 10;
+  size_t next_output_size_ = 1;
+  bool format_change_pending_ = false;
+};
+
+TEST_F(CodecWrapperOutputFrameTest, ModeOffNeverCallsGetOutputFrame) {
+  base::HistogramTester histograms;
+  EXPECT_CALL(*codec_, GetOutputFrame(_)).Times(0);
+
+  std::unique_ptr<CodecOutputBuffer> buffer = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(buffer);
+  EXPECT_FALSE(buffer->output_frame_status().has_value());
+  EXPECT_FALSE(buffer->output_frame_desc().has_value());
+  EXPECT_FALSE(buffer->is_first_output_frame_of_format());
+  histograms.ExpectTotalCount(kGetOutputFrameTimeHistogram, 0);
+}
+
+TEST_F(CodecWrapperOutputFrameTest, ProbesFirstBuffersOfEachFormat) {
+  constexpr gfx::Size kNewSize(320, 240);
+  if (!CanAllocateAhb(kInitialCodedSize) || !CanAllocateAhb(kNewSize)) {
+    GTEST_SKIP() << "AHardwareBuffer allocation is not supported";
+  }
+  CreateWrapper(OutputFrameMode::kProbe);
+  ReturnOutputFrames(kInitialCodedSize);
+  EXPECT_CALL(*codec_, GetOutputFrame(_)).Times(6);
+
+  ExpectProbeWindow(kInitialCodedSize, /*expect_first_of_format=*/true);
+
+  // A real format change resets the probe budget and first-of-format tracking.
+  format_change_pending_ = true;
+  EXPECT_CALL(*codec_, GetOutputSizeAndCropRect(_, _))
+      .WillOnce(DoAll(SetArgReferee<0>(kNewSize),
+                      SetArgReferee<1>(gfx::Rect(kNewSize)),
+                      Return(OkStatus())));
+  ReturnOutputFrames(kNewSize);
+  ExpectProbeWindow(kNewSize, /*expect_first_of_format=*/true);
+}
+
+TEST_F(CodecWrapperOutputFrameTest,
+       EmptySizeFormatChangeBlipDoesNotResetProbe) {
+  if (!CanAllocateAhb(kInitialCodedSize)) {
+    GTEST_SKIP() << "AHardwareBuffer allocation is not supported";
+  }
+  CreateWrapper(OutputFrameMode::kProbe);
+  ReturnOutputFrames(kInitialCodedSize);
+  EXPECT_CALL(*codec_, GetOutputFrame(_)).Times(3);
+
+  // First buffer consumes one probe and clears first-of-format tracking.
+  std::unique_ptr<CodecOutputBuffer> first = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(first);
+  EXPECT_EQ(first->output_frame_status(), OutputFrameStatus::kOk);
+  EXPECT_TRUE(first->is_first_output_frame_of_format());
+
+  // Transient 0x0 format change blip (crbug.com/1207682) mid-window must
+  // neither refill the probe budget nor re-arm first-of-format tracking.
+  format_change_pending_ = true;
+  EXPECT_CALL(*codec_, GetOutputSizeAndCropRect(_, _))
+      .WillOnce(DoAll(SetArgReferee<0>(gfx::Size()),
+                      SetArgReferee<1>(gfx::Rect()), Return(OkStatus())));
+  for (int i = 0; i < 2; ++i) {
+    std::unique_ptr<CodecOutputBuffer> buffer = DequeueCodecOutputBuffer();
+    ASSERT_TRUE(buffer);
+    EXPECT_EQ(buffer->output_frame_status(), OutputFrameStatus::kOk);
+    EXPECT_FALSE(buffer->is_first_output_frame_of_format());
+  }
+
+  // Budget is spent after 3 total probes (not refilled by the blip).
+  std::unique_ptr<CodecOutputBuffer> fourth = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(fourth);
+  EXPECT_FALSE(fourth->output_frame_status().has_value());
+
+  // A 0x0 blip once the budget is spent also does not restart probing.
+  format_change_pending_ = true;
+  EXPECT_CALL(*codec_, GetOutputSizeAndCropRect(_, _))
+      .WillOnce(DoAll(SetArgReferee<0>(gfx::Size()),
+                      SetArgReferee<1>(gfx::Rect()), Return(OkStatus())));
+  std::unique_ptr<CodecOutputBuffer> after_second_blip =
+      DequeueCodecOutputBuffer();
+  ASSERT_TRUE(after_second_blip);
+  EXPECT_FALSE(after_second_blip->output_frame_status().has_value());
+}
+
+TEST_F(CodecWrapperOutputFrameTest,
+       FlushRefillsProbeBudgetWithoutResettingFormat) {
+  if (!CanAllocateAhb(kInitialCodedSize)) {
+    GTEST_SKIP() << "AHardwareBuffer allocation is not supported";
+  }
+  CreateWrapper(OutputFrameMode::kProbe);
+  ReturnOutputFrames(kInitialCodedSize);
+  EXPECT_CALL(*codec_, GetOutputFrame(_)).Times(6);
+
+  ExpectProbeWindow(kInitialCodedSize, /*expect_first_of_format=*/true);
+
+  // Flush() refills the probe budget without re-marking the format as new.
+  ASSERT_TRUE(wrapper_->Flush());
+  ExpectProbeWindow(kInitialCodedSize, /*expect_first_of_format=*/false);
+}
+
+TEST_F(CodecWrapperOutputFrameTest, EmptyAndEosBuffersAreNotProbed) {
+  CreateWrapper(OutputFrameMode::kProbe);
+  EXPECT_CALL(*codec_, GetOutputFrame(_)).Times(0);
+
+  std::unique_ptr<CodecOutputBuffer> empty_buffer = DequeueBufferOfSize(0);
+  ASSERT_TRUE(empty_buffer);
+  EXPECT_FALSE(empty_buffer->output_frame_status().has_value());
+  EXPECT_FALSE(empty_buffer->output_frame_desc().has_value());
+
+  codec_->ProduceOneOutput(MockMediaCodecBridge::kEos);
+  bool eos = false;
+  std::unique_ptr<CodecOutputBuffer> eos_buffer;
+  ASSERT_TRUE(
+      wrapper_->DequeueOutputBuffer(nullptr, &eos, &eos_buffer).is_ok());
+  EXPECT_TRUE(eos);
+  EXPECT_FALSE(eos_buffer);
+
+  // Neither the empty buffer nor EOS spent any of the 3 probes; failed calls
+  // still consume probe budget without setting a desc or first-of-format.
+  testing::Mock::VerifyAndClearExpectations(codec_);
+  EXPECT_CALL(*codec_, GetOutputFrame(_))
+      .Times(3)
+      .WillRepeatedly(ReturnStatus(OutputFrameStatus::kNoHardwareBuffer));
+  for (int i = 0; i < 3; ++i) {
+    std::unique_ptr<CodecOutputBuffer> buffer = DequeueCodecOutputBuffer();
+    ASSERT_TRUE(buffer);
+    EXPECT_EQ(buffer->output_frame_status(),
+              OutputFrameStatus::kNoHardwareBuffer);
+    EXPECT_FALSE(buffer->output_frame_desc().has_value());
+    EXPECT_FALSE(buffer->is_first_output_frame_of_format());
+  }
+  std::unique_ptr<CodecOutputBuffer> fourth = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(fourth);
+  EXPECT_FALSE(fourth->output_frame_status().has_value());
+}
+
+TEST_F(CodecWrapperOutputFrameTest, CapsTotalProbesPerCodecInstance) {
+  CreateWrapper(OutputFrameMode::kProbe);
+  EXPECT_CALL(*codec_, GetOutputFrame(_))
+      .Times(15)
+      .WillRepeatedly(ReturnStatus(OutputFrameStatus::kNoHardwareBuffer));
+
+  // Consume all 15 lifetime probes across 5 windows (initial + 4 flushes).
+  for (int window = 0; window < 5; ++window) {
+    if (window > 0) {
+      ASSERT_TRUE(wrapper_->Flush());
+    }
+    for (int i = 0; i < 3; ++i) {
+      std::unique_ptr<CodecOutputBuffer> buffer = DequeueCodecOutputBuffer();
+      ASSERT_TRUE(buffer);
+      EXPECT_EQ(buffer->output_frame_status(),
+                OutputFrameStatus::kNoHardwareBuffer);
+    }
+  }
+
+  // Once the per-codec cap is reached, neither Flush() nor a non-empty format
+  // change probes again.
+  ASSERT_TRUE(wrapper_->Flush());
+  std::unique_ptr<CodecOutputBuffer> after_flush = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(after_flush);
+  EXPECT_FALSE(after_flush->output_frame_status().has_value());
+  EXPECT_FALSE(after_flush->is_first_output_frame_of_format());
+
+  format_change_pending_ = true;
+  std::unique_ptr<CodecOutputBuffer> after_format_change =
+      DequeueCodecOutputBuffer();
+  ASSERT_TRUE(after_format_change);
+  EXPECT_FALSE(after_format_change->output_frame_status().has_value());
+  EXPECT_FALSE(after_format_change->is_first_output_frame_of_format());
+}
+
+TEST_F(CodecWrapperOutputFrameTest,
+       FirstOutputFrameOfFormatWaitsForFirstBufferWithDesc) {
+  if (!CanAllocateAhb(kInitialCodedSize)) {
+    GTEST_SKIP() << "AHardwareBuffer allocation is not supported";
+  }
+  CreateWrapper(OutputFrameMode::kProbe);
+  EXPECT_CALL(*codec_, GetOutputFrame(_))
+      .WillOnce(ReturnStatus(OutputFrameStatus::kNoHardwareBuffer))
+      .WillOnce(ReturnNewAhb(kInitialCodedSize))
+      .WillOnce(ReturnNewAhb(kInitialCodedSize));
+
+  std::unique_ptr<CodecOutputBuffer> first = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(first);
+  EXPECT_EQ(first->output_frame_status(), OutputFrameStatus::kNoHardwareBuffer);
+  EXPECT_FALSE(first->output_frame_desc().has_value());
+  EXPECT_FALSE(first->is_first_output_frame_of_format());
+
+  std::unique_ptr<CodecOutputBuffer> second = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(second);
+  EXPECT_EQ(second->output_frame_status(), OutputFrameStatus::kOk);
+  EXPECT_TRUE(second->output_frame_desc().has_value());
+  EXPECT_TRUE(second->is_first_output_frame_of_format());
+
+  std::unique_ptr<CodecOutputBuffer> third = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(third);
+  EXPECT_EQ(third->output_frame_status(), OutputFrameStatus::kOk);
+  EXPECT_TRUE(third->output_frame_desc().has_value());
+  EXPECT_FALSE(third->is_first_output_frame_of_format());
+}
+
+TEST_F(CodecWrapperOutputFrameTest, NotGpuSampleableBufferIsRejected) {
+  constexpr uint64_t kCpuOnlyUsage = AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN;
+  if (!CanAllocateAhb(kInitialCodedSize, kCpuOnlyUsage)) {
+    GTEST_SKIP() << "CPU-only AHardwareBuffer allocation is not supported";
+  }
+  CreateWrapper(OutputFrameMode::kProbe);
+  ReturnOutputFrames(kInitialCodedSize, kCpuOnlyUsage);
+
+  std::unique_ptr<CodecOutputBuffer> first = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(first);
+  EXPECT_EQ(first->output_frame_status(), OutputFrameStatus::kNotGpuSampleable);
+  ASSERT_TRUE(first->output_frame_desc().has_value());
+  EXPECT_EQ(first->output_frame_desc()->width,
+            static_cast<uint32_t>(kInitialCodedSize.width()));
+  EXPECT_TRUE(first->is_first_output_frame_of_format());
+
+  // A rejected buffer with a desc still counts as the first of its format.
+  std::unique_ptr<CodecOutputBuffer> second = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(second);
+  EXPECT_EQ(second->output_frame_status(),
+            OutputFrameStatus::kNotGpuSampleable);
+  EXPECT_FALSE(second->is_first_output_frame_of_format());
+}
+
+TEST_F(CodecWrapperOutputFrameTest, BufferMustCoverVisibleRectAndOffset) {
+  constexpr gfx::Rect kVisibleRect(10, 20, 64, 48);
+  constexpr gfx::Size kFormatOutputSize(80, 80);
+  // Visible rect right=74, bottom=68.
+  constexpr gfx::Size kTooNarrow(kVisibleRect.right() - 1,
+                                 kVisibleRect.bottom());
+  constexpr gfx::Size kTooShort(kVisibleRect.right(),
+                                kVisibleRect.bottom() - 1);
+  constexpr gfx::Size kExactFit(kVisibleRect.right(), kVisibleRect.bottom());
+  if (!CanAllocateAhb(kTooNarrow) || !CanAllocateAhb(kTooShort) ||
+      !CanAllocateAhb(kExactFit)) {
+    GTEST_SKIP() << "AHardwareBuffer allocation is not supported";
+  }
+  CreateWrapper(OutputFrameMode::kProbe);
+  format_change_pending_ = true;
+  EXPECT_CALL(*codec_, GetOutputSizeAndCropRect(_, _))
+      .WillOnce(DoAll(SetArgReferee<0>(kFormatOutputSize),
+                      SetArgReferee<1>(kVisibleRect), Return(OkStatus())));
+  EXPECT_CALL(*codec_, GetOutputFrame(_))
+      .WillOnce(ReturnNewAhb(kTooNarrow))
+      .WillOnce(ReturnNewAhb(kTooShort))
+      .WillOnce(ReturnNewAhb(kExactFit));
+
+  std::unique_ptr<CodecOutputBuffer> narrow = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(narrow);
+  EXPECT_EQ(narrow->output_frame_status(), OutputFrameStatus::kInvalidSize);
+  EXPECT_TRUE(narrow->output_frame_desc().has_value());
+
+  std::unique_ptr<CodecOutputBuffer> short_buf = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(short_buf);
+  EXPECT_EQ(short_buf->output_frame_status(), OutputFrameStatus::kInvalidSize);
+  EXPECT_TRUE(short_buf->output_frame_desc().has_value());
+
+  std::unique_ptr<CodecOutputBuffer> exact = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(exact);
+  EXPECT_EQ(exact->output_frame_status(), OutputFrameStatus::kOk);
+  EXPECT_TRUE(exact->output_frame_desc().has_value());
+}
+
+TEST_F(CodecWrapperOutputFrameTest, OkWithoutBufferCountsAsJniFailure) {
+  CreateWrapper(OutputFrameMode::kProbe);
+  // Verify MediaCodec's index (10), not CodecWrapper's buffer ID (0), is
+  // forwarded to GetOutputFrame().
+  EXPECT_CALL(*codec_, GetOutputFrame(10))
+      .WillOnce([](int) -> OutputFrameResult {
+        return base::ok(base::android::ScopedHardwareBufferHandle());
+      });
+
+  std::unique_ptr<CodecOutputBuffer> buffer = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(buffer);
+  EXPECT_EQ(buffer->output_frame_status(), OutputFrameStatus::kJniFailure);
+  EXPECT_FALSE(buffer->output_frame_desc().has_value());
+  EXPECT_FALSE(buffer->is_first_output_frame_of_format());
+}
+
+TEST_F(CodecWrapperOutputFrameTest, ProbedBufferIsReleasedAsUsual) {
+  if (!CanAllocateAhb(kInitialCodedSize)) {
+    GTEST_SKIP() << "AHardwareBuffer allocation is not supported";
+  }
+  CreateWrapper(OutputFrameMode::kProbe);
+  ReturnOutputFrames(kInitialCodedSize);
+
+  testing::InSequence seq;
+  EXPECT_CALL(*codec_, ReleaseOutputBuffer(10, true));
+  EXPECT_CALL(*codec_, ReleaseOutputBuffer(11, false));
+
+  std::unique_ptr<CodecOutputBuffer> rendered = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(rendered);
+  EXPECT_EQ(rendered->output_frame_status(), OutputFrameStatus::kOk);
+  EXPECT_TRUE(rendered->ReleaseToSurface());
+  rendered.reset();
+
+  std::unique_ptr<CodecOutputBuffer> dropped = DequeueCodecOutputBuffer();
+  ASSERT_TRUE(dropped);
+  EXPECT_EQ(dropped->output_frame_status(), OutputFrameStatus::kOk);
+  dropped.reset();
+}
+
+TEST_F(CodecWrapperOutputFrameTest, RecordsGetOutputFrameTimePerCall) {
+  constexpr base::TimeDelta kCallDuration = base::Microseconds(250);
+  CreateWrapper(OutputFrameMode::kProbe);
+  base::HistogramTester histograms;
+  EXPECT_CALL(*codec_, GetOutputFrame(_))
+      .Times(3)
+      .WillRepeatedly([this, kCallDuration](int) -> OutputFrameResult {
+        task_environment_.AdvanceClock(kCallDuration);
+        return base::unexpected(OutputFrameStatus::kNoHardwareBuffer);
+      });
+
+  for (int i = 0; i < 4; ++i) {
+    ASSERT_TRUE(DequeueCodecOutputBuffer());
+  }
+  histograms.ExpectUniqueSample(kGetOutputFrameTimeHistogram,
+                                kCallDuration.InMicroseconds(), 3);
 }
 
 }  // namespace media
