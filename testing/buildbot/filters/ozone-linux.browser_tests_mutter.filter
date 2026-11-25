@@ -7,7 +7,6 @@
 -All/GetDisplayMediaHiDpiBrowserTest.Capture/3840x2160
 
 -All/SoftNavigationTest.LayoutShift/*
--BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
 -LayoutInstabilityTest.*
 -All/WebAppBrowserTest.PWASizeIsCorrectlyRestored/*
 -All/WebAppBrowserTest.SetBounds/*
