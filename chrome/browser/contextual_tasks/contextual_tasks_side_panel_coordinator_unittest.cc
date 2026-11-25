@@ -3769,6 +3769,37 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 }
 #endif
 
+// A same-document navigation changes the active tab's URL without changing the
+// page or, necessarily, the title (e.g. a search results page switching to or
+// from AI Mode), so it has to refresh the contextual task UI on its own.
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       SameDocumentNavigationOnActiveTabUpdatesContextualTaskUI) {
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+
+  tabs::TabInterface* tab = tab_list_->GetActiveTab();
+  content::WebContents* tab_contents = tab->GetContents();
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{
+          sessions::SessionTabHelper::IdForTab(tab_contents)}));
+  content::WebContentsTester::For(tab_contents)
+      ->NavigateAndCommit(GURL("https://www.google.com/search?q=cats"));
+  // Starts observing the active tab's WebContents.
+  coordinator_->OnActiveTabChanged(*tab_list_, tab);
+  ASSERT_TRUE(mock_panel_host_->GetWebContents());
+  testing::Mock::VerifyAndClearExpectations(mock_controller_.get());
+
+  EXPECT_CALL(*mock_controller_, SetLastActiveTask(task.GetTaskId()));
+  content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://www.google.com/search?q=cats&udm=50"),
+      tab_contents->GetPrimaryMainFrame())
+      ->CommitSameDocument();
+}
+
 TEST_F(
     ContextualTasksSidePanelCoordinatorTest,
     GetRecentThreads_OrdersActiveFirstThenByRecencyAndSkipsZeroStateAndCapsAtFive) {

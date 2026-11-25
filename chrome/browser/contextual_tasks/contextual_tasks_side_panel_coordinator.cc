@@ -1493,6 +1493,12 @@ void ContextualTasksSidePanelCoordinator::DidFinishNavigation(
     RecordUserActionAndHistogram(
         "ContextualTasks.ActiveTab.UserAction.LinkClicked");
   }
+
+  // Same-document navigations change the URL without triggering
+  // `PrimaryPageChanged()`, and may not change the title either.
+  if (navigation_handle->IsSameDocument()) {
+    UpdateContextualTaskUI();
+  }
 }
 
 void ContextualTasksSidePanelCoordinator::PrimaryPageChanged(
