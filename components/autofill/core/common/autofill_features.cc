@@ -242,6 +242,12 @@ BASE_FEATURE(kAutofillAiPrivateInferenceNoticeBottomSheet,
 // TODO(crbug.com/468236932): Remove once feature is launched.
 DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kAutofillAiReauthRequired);
 
+// If enabled, offers to save confirmed personal context entities on form
+// submission using the whole verified entity rather than only the submitted
+// form values.
+BASE_FEATURE(kAutofillAiSaveConfirmedPersonalContextEntities,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, a HaTS survey is shown after the save prompt for a walletable
 // entity was interacted with.
 BASE_FEATURE(kAutofillAiSavePromptSurvey, base::FEATURE_DISABLED_BY_DEFAULT);

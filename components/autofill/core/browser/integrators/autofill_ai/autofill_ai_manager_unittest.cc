@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -23,8 +24,10 @@
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -53,6 +56,8 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -62,6 +67,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/wallet/core/common/wallet_features.h"
@@ -129,7 +135,8 @@ auto HasType(SuggestionType expected_type) {
 
 auto HasAttributeWithValue(AttributeType attribute_type,
                            std::u16string value,
-                           const base::i18n::LanguageTag& app_locale) {
+                           const base::i18n::LanguageTag& app_locale =
+                               base::i18n::GetKnownLanguageTag("en-US")) {
   return Truly([=](const EntityInstance& entity) {
     if (entity.type() != attribute_type.entity_type()) {
       return false;
@@ -184,6 +191,11 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void, CloseEntityImportBubble, (), (override));
   MOCK_METHOD(void, ShowAutofillAiLocalSaveNotification, (), (override));
   MOCK_METHOD(void, ShowAutofillAiPreFetchFailureNotification, (), (override));
+  MOCK_METHOD(PersonalContextEntityMetadataManager*,
+              GetPersonalContextEntityMetadataManager,
+              (),
+              (override));
+
   MockWalletPassAccessManager* GetWalletPassAccessManager() override {
     return &wallet_pass_access_manager_;
   }
@@ -704,6 +716,299 @@ TEST_F(AutofillAiManagerImportFormTest,
 
   EXPECT_FALSE(
       manager().OnFormSubmitted(*form_not_edited, /*ukm_source_id=*/{}));
+}
+
+class AutofillAiManagerPersonalContextSaveTest
+    : public AutofillAiManagerImportFormTest {
+ public:
+  AutofillAiManagerPersonalContextSaveTest() {
+    std::unique_ptr<PersonalContextEntityMetadataSyncBridge> bridge =
+        CreateTestPersonalContextEntityMetadataSyncBridge();
+    EXPECT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
+    entity_metadata_manager_ =
+        std::make_unique<PersonalContextEntityMetadataManager>(
+            std::move(bridge));
+    ON_CALL(autofill_client(), GetPersonalContextEntityMetadataManager)
+        .WillByDefault(Return(entity_metadata_manager_.get()));
+
+    masked_passport_ = MaskEntityInstance(test::GetPassportEntityInstance({
+        .name = u"Jon Doe",
+        .number = u"12345678",
+        .country = u"United States",
+        .expiry_date = u"2026-01-01",
+        .issue_date = u"2020-01-01",
+        .record_type = EntityInstance::RecordType::kPersonalContext,
+        .are_attributes_read_only = EntityInstance::AreAttributesReadOnly(true),
+    }));
+    edm().SetPersonalContextEntitiesForTesting({*masked_passport_});
+  }
+
+  PersonalContextEntityMetadataManager& entity_metadata_manager() {
+    return *entity_metadata_manager_;
+  }
+  const EntityInstance& masked_passport() const { return *masked_passport_; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillAiSaveConfirmedPersonalContextEntities};
+  std::unique_ptr<PersonalContextEntityMetadataManager>
+      entity_metadata_manager_;
+  std::optional<EntityInstance> masked_passport_;
+};
+
+// Tests that an unconfirmed personal context entity is not offered for save
+// when submitted without edits.
+TEST_F(AutofillAiManagerPersonalContextSaveTest,
+       UnconfirmedEntity_Unedited_DoesNotOfferSave) {
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({NAME_FULL, PASSPORT_NUMBER}, kDefaultUrl);
+  form->field(0)->set_value(u"Jon Doe");
+  form->field(1)->set_value(u"12345678");
+
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble).Times(0);
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+// Tests that editing an unconfirmed personal context entity offers to save only
+// the data filled in the form, not unsubmitted attributes from the personal
+// context entity.
+TEST_F(AutofillAiManagerPersonalContextSaveTest,
+       UnconfirmedEntity_Edited_OffersOnlyFormData) {
+  std::unique_ptr<FormStructure> form = CreateFormStructure(
+      {NAME_FULL, PASSPORT_NUMBER, PASSPORT_EXPIRATION_DATE}, kDefaultUrl);
+  form->field(0)->set_value(u"Jon Doe");
+  form->field(1)->set_value(u"12345678");
+  form->field(2)->set_value(u"2030-01-01");
+  form->field(2)->set_format_string_unless_overruled(
+      AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
+      AutofillFormatStringSource::kServer);
+
+  std::optional<EntityInstance> offered_entity;
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble)
+      .WillOnce(DoAll(
+          SaveArg<0>(&offered_entity),
+          RunOnceCallback<4>(kDeclineBubble, std::nullopt, kDeclineUIContext)));
+
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(offered_entity.has_value());
+  EXPECT_THAT(
+      *offered_entity,
+      AllOf(HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kPassportName), u"Jon Doe"),
+            PassportWithNumber(u"12345678"),
+            HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kPassportExpirationDate),
+                u"2030-01-01")));
+  EXPECT_FALSE(
+      offered_entity
+          ->attribute(AttributeType(AttributeTypeName::kPassportCountry))
+          .has_value());
+  EXPECT_FALSE(
+      offered_entity
+          ->attribute(AttributeType(AttributeTypeName::kPassportIssueDate))
+          .has_value());
+}
+
+// Tests that submitting a form filled from a confirmed personal context entity
+// without edits offers to save the whole verified entity (reconstructing the
+// masked attribute from the form field and keeping unsubmitted unmasked
+// attributes) and uploads it to Wallet on acceptance.
+TEST_F(AutofillAiManagerPersonalContextSaveTest,
+       ConfirmedEntity_Unedited_OffersWholeVerifiedEntityAndSavesToWallet) {
+  ASSERT_TRUE(entity_metadata_manager().ConfirmEntity(masked_passport()));
+
+  // The form only contains Name and Number (omitting Country, Issue date, and
+  // Expiration date).
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({NAME_FULL, PASSPORT_NUMBER}, kDefaultUrl);
+  form->field(0)->set_value(u"Jon Doe");
+  form->field(1)->set_value(u"12345678");
+
+  std::optional<EntityInstance> offered_entity;
+  EXPECT_CALL(autofill_client(),
+              ShowEntityImportBubble(_, Eq(std::nullopt),
+                                     /*save_is_synchronous=*/false, _, _))
+      .WillOnce(DoAll(
+          SaveArg<0>(&offered_entity),
+          RunOnceCallback<4>(kAcceptBubble, std::nullopt, kAcceptUIContext)));
+  EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance)
+      .WillOnce(WithArgs<0, 2>(ReplyWithMaskedEntity()));
+
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(offered_entity.has_value());
+  EXPECT_EQ(offered_entity->record_type(),
+            EntityInstance::RecordType::kServerWallet);
+  EXPECT_FALSE(offered_entity->are_attributes_read_only());
+  EXPECT_FALSE(offered_entity->IsMaskedEntity());
+  EXPECT_NE(offered_entity->guid(), masked_passport().guid());
+  EXPECT_THAT(
+      *offered_entity,
+      AllOf(HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kPassportName), u"Jon Doe"),
+            PassportWithNumber(u"12345678"),
+            HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kPassportCountry),
+                u"United States"),
+            HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kPassportIssueDate),
+                u"2020-01-01"),
+            HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kPassportExpirationDate),
+                u"2026-01-01")));
+
+  // Once saved to Wallet, the personal context entity is deduplicated.
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return GetEntityInstances().size() == 1u; }));
+  base::span<const EntityInstance> saved = GetEntityInstances();
+  EXPECT_EQ(saved[0].record_type(), EntityInstance::RecordType::kServerWallet);
+}
+
+// Tests that when Wallet saving is disabled, accepting the save prompt for a
+// confirmed personal context entity saves the whole verified entity locally.
+TEST_F(AutofillAiManagerPersonalContextSaveTest,
+       ConfirmedEntity_Unedited_SavesWholeEntityLocallyWhenWalletDisabled) {
+  autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPayments, false);
+  ASSERT_TRUE(entity_metadata_manager().ConfirmEntity(masked_passport()));
+
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({NAME_FULL, PASSPORT_NUMBER}, kDefaultUrl);
+  form->field(0)->set_value(u"Jon Doe");
+  form->field(1)->set_value(u"12345678");
+
+  EXPECT_CALL(autofill_client(),
+              ShowEntityImportBubble(_, Eq(std::nullopt),
+                                     /*save_is_synchronous=*/true, _, _))
+      .WillOnce(
+          RunOnceCallback<4>(kAcceptBubble, std::nullopt, kAcceptUIContext));
+
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return GetEntityInstances().size() == 1u; }));
+  base::span<const EntityInstance> saved = GetEntityInstances();
+  EXPECT_EQ(saved[0].record_type(), EntityInstance::RecordType::kLocal);
+  EXPECT_NE(saved[0].guid(), masked_passport().guid());
+  EXPECT_THAT(
+      saved[0],
+      AllOf(HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kPassportName), u"Jon Doe"),
+            PassportWithNumber(u"12345678"),
+            HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kPassportCountry),
+                u"United States"),
+            HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kPassportIssueDate),
+                u"2020-01-01"),
+            HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kPassportExpirationDate),
+                u"2026-01-01")));
+}
+
+// Tests that when a confirmed personal context entity is edited in the form
+// before submission, Chrome offers to save only the filled form values rather
+// than backfilling unsubmitted attributes from the personal context entity.
+TEST_F(AutofillAiManagerPersonalContextSaveTest,
+       ConfirmedEntity_Edited_OffersOnlyFormData) {
+  ASSERT_TRUE(entity_metadata_manager().ConfirmEntity(masked_passport()));
+
+  std::unique_ptr<FormStructure> form = CreateFormStructure(
+      {NAME_FULL, PASSPORT_NUMBER, PASSPORT_EXPIRATION_DATE}, kDefaultUrl);
+  form->field(0)->set_value(u"Jonathan Doe");
+  form->field(1)->set_value(u"12345678");
+  form->field(2)->set_value(u"2030-01-01");
+  form->field(2)->set_format_string_unless_overruled(
+      AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
+      AutofillFormatStringSource::kServer);
+
+  std::optional<EntityInstance> offered_entity;
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble)
+      .WillOnce(DoAll(
+          SaveArg<0>(&offered_entity),
+          RunOnceCallback<4>(kDeclineBubble, std::nullopt, kDeclineUIContext)));
+
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(offered_entity.has_value());
+  EXPECT_THAT(
+      *offered_entity,
+      AllOf(
+          HasAttributeWithValue(AttributeType(AttributeTypeName::kPassportName),
+                                u"Jonathan Doe"),
+          PassportWithNumber(u"12345678"),
+          HasAttributeWithValue(
+              AttributeType(AttributeTypeName::kPassportExpirationDate),
+              u"2030-01-01")));
+  EXPECT_FALSE(
+      offered_entity
+          ->attribute(AttributeType(AttributeTypeName::kPassportCountry))
+          .has_value());
+  EXPECT_FALSE(
+      offered_entity
+          ->attribute(AttributeType(AttributeTypeName::kPassportIssueDate))
+          .has_value());
+}
+
+// Tests that if a confirmed personal context entity has a masked attribute that
+// was not filled in the submitted form, that remaining masked attribute is
+// stripped from the offered entity while unmasked attributes are retained.
+TEST_F(AutofillAiManagerPersonalContextSaveTest,
+       ConfirmedEntity_StripsRemainingMaskedAttributesNotInForm) {
+  EntityInstance base_license =
+      MaskEntityInstance(test::GetDriversLicenseEntityInstance({
+          .name = u"Jon Doe",
+          .region = u"California",
+          .number = u"87654321",
+          .expiration_date = u"2028-01-01",
+          .issue_date = u"2020-01-01",
+          .record_type = EntityInstance::RecordType::kPersonalContext,
+          .are_attributes_read_only =
+              EntityInstance::AreAttributesReadOnly(true),
+      }));
+  // `MaskEntityInstance()` only masks schema-obfuscated attributes (`Number`),
+  // so mark a second attribute as masked to simulate an unsubmitted masked
+  // attribute.
+  AttributeInstance masked_issue_date = *base_license.attribute(
+      AttributeType(AttributeTypeName::kDriversLicenseIssueDate));
+  test_api(masked_issue_date).mark_as_masked();
+  EntityInstance license_with_extra_masked_attribute =
+      base_license.CopyWithUpdatedAttribute(std::move(masked_issue_date));
+  edm().SetPersonalContextEntitiesForTesting(
+      {license_with_extra_masked_attribute});
+  ASSERT_TRUE(entity_metadata_manager().ConfirmEntity(
+      license_with_extra_masked_attribute));
+
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({NAME_FULL, DRIVERS_LICENSE_NUMBER}, kDefaultUrl);
+  form->field(0)->set_value(u"Jon Doe");
+  form->field(1)->set_value(u"87654321");
+
+  std::optional<EntityInstance> offered_entity;
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble)
+      .WillOnce(DoAll(
+          SaveArg<0>(&offered_entity),
+          RunOnceCallback<4>(kDeclineBubble, std::nullopt, kDeclineUIContext)));
+
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(offered_entity.has_value());
+  EXPECT_FALSE(offered_entity->IsMaskedEntity());
+  EXPECT_THAT(
+      *offered_entity,
+      AllOf(HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kDriversLicenseName),
+                u"Jon Doe"),
+            HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kDriversLicenseNumber),
+                u"87654321"),
+            HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kDriversLicenseState),
+                u"California"),
+            HasAttributeWithValue(
+                AttributeType(AttributeTypeName::kDriversLicenseExpirationDate),
+                u"2028-01-01")));
+  EXPECT_FALSE(offered_entity
+                   ->attribute(AttributeType(
+                       AttributeTypeName::kDriversLicenseIssueDate))
+                   .has_value());
 }
 
 // Tests that save prompts are only shown three times per url and entity type.

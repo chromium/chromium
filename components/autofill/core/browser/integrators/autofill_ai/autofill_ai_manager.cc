@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -166,6 +167,105 @@ EntityInstance GetMergedEntity(
                         base::Time::Now(), saved_entity.use_count(),
                         base::Time::Now(), std::move(record_type_data),
                         EntityInstance::AreAttributesReadOnly(false),
+                        /*frecency_override=*/"");
+}
+
+// Returns true if `entity` is a masked personal context entity that the user
+// has explicitly confirmed during verification.
+bool IsConfirmedPersonalContextEntity(
+    const PersonalContextEntityMetadataManager& metadata_manager,
+    const EntityInstance& entity) {
+  return entity.record_type() == EntityInstance::RecordType::kPersonalContext &&
+         entity.IsMaskedEntity() && metadata_manager.IsConfirmed(entity);
+}
+
+// Returns true if `observed_entity` is already covered by an existing entity in
+// `saved_entities` (with identical or additional fields) and should not trigger
+// a save prompt:
+// - Don't save if a local or Wallet entity already has all submitted fields.
+// - Don't save if an unconfirmed personal context entity already has all
+//   submitted fields (unless another personal context entity with all submitted
+//   fields was confirmed).
+bool IsAlreadyCoveredBySavedEntity(
+    base::span<const EntityInstance> saved_entities,
+    base::span<const std::optional<EntityInstance::EntityMergeability>>
+        mergeabilities,
+    bool has_confirmed_pcontext_superset) {
+  for (const auto [mergeability, saved_entity] :
+       std::views::zip(mergeabilities, saved_entities)) {
+    if (!mergeability || !mergeability->is_subset) {
+      continue;
+    }
+    switch (saved_entity.record_type()) {
+      case EntityInstance::RecordType::kLocal:
+      case EntityInstance::RecordType::kServerWallet:
+        return true;
+      case EntityInstance::RecordType::kPersonalContext:
+        if (!has_confirmed_pcontext_superset) {
+          return true;
+        }
+        break;
+    }
+  }
+  return false;
+}
+
+// Returns the first confirmed personal context entity in `saved_entities` whose
+// corresponding entry in `mergeabilities` indicates that the observed entity is
+// an unedited subset of it, or `std::nullopt` if none exists (or if saving
+// confirmed personal context entities is disabled).
+base::optional_ref<const EntityInstance>
+FindSupersetConfirmedPersonalContextEntity(
+    const AutofillClient& client,
+    base::span<const EntityInstance> saved_entities,
+    base::span<const std::optional<EntityInstance::EntityMergeability>>
+        mergeabilities) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAiSaveConfirmedPersonalContextEntities)) {
+    return std::nullopt;
+  }
+  const PersonalContextEntityMetadataManager* metadata_manager =
+      client.GetPersonalContextEntityMetadataManager();
+  if (!metadata_manager) {
+    return std::nullopt;
+  }
+  for (const auto [mergeability, saved_entity] :
+       std::views::zip(mergeabilities, saved_entities)) {
+    // Only match unedited subsets (`mergeability->is_subset`); if the user
+    // edited the form, only the filled form values should be offered for
+    // saving.
+    if (mergeability && mergeability->is_subset &&
+        IsConfirmedPersonalContextEntity(*metadata_manager, saved_entity)) {
+      return saved_entity;
+    }
+  }
+  return std::nullopt;
+}
+
+// Constructs a save candidate from `observed_entity` and `pcontext_entity`,
+// keeping the unmasked values submitted in `observed_entity`, backfilling
+// unsubmitted unmasked attributes from `pcontext_entity`, and omitting any
+// remaining masked attributes.
+EntityInstance GetMergedPersonalContextEntity(
+    const EntityInstance& observed_entity,
+    const EntityInstance& pcontext_entity) {
+  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+      new_attributes(observed_entity.attributes().begin(),
+                     observed_entity.attributes().end());
+  // Seed `new_attributes` from `observed_entity` first so unmasked form values
+  // take precedence over `pcontext_entity`, and skip any remaining `masked()`
+  // attributes since truncated masks cannot be saved as a user-owned entity.
+  for (const AttributeInstance& attribute : pcontext_entity.attributes()) {
+    if (!attribute.masked()) {
+      new_attributes.insert(attribute);
+    }
+  }
+  return EntityInstance(observed_entity.type(), std::move(new_attributes),
+                        observed_entity.guid(), observed_entity.nickname(),
+                        observed_entity.date_modified(),
+                        observed_entity.use_count(), observed_entity.use_date(),
+                        observed_entity.record_type_data(),
+                        observed_entity.are_attributes_read_only(),
                         /*frecency_override=*/"");
 }
 
@@ -930,13 +1030,12 @@ AutofillAiManager::GetSavePromptCandidates(
   std::vector<EntityImportPromptCandidate> save_candidates;
   for (const auto [observed_entity, mergeabilities] :
        std::views::zip(observed_entities, entities_mergeabilities)) {
-    // Discard `observed_entity` if it is a subset of some saved entity.
-    if (std::ranges::any_of(
-            mergeabilities,
-            [](const std::optional<EntityInstance::EntityMergeability>&
-                   mergeability) {
-              return mergeability && mergeability->is_subset;
-            })) {
+    base::optional_ref<const EntityInstance> confirmed_pcontext_entity =
+        FindSupersetConfirmedPersonalContextEntity(*client_, saved_entities,
+                                                   mergeabilities);
+    if (IsAlreadyCoveredBySavedEntity(saved_entities, mergeabilities,
+                                      /*has_confirmed_pcontext_superset=*/
+                                      confirmed_pcontext_entity.has_value())) {
       continue;
     }
     // If `observed_entity` is not mergeable with any non-readonly saved entity,
@@ -960,10 +1059,17 @@ AutofillAiManager::GetSavePromptCandidates(
         }
       }
     }
-    if (!has_non_readonly_mergeable_entity &&
-        !IsSaveBlockedByStrikeDatabase(form.source_url(), observed_entity)) {
-      save_candidates.emplace_back(
-          AutofillClient::AutofillAiImportPromptType::kSave, observed_entity);
+    if (!has_non_readonly_mergeable_entity) {
+      EntityInstance candidate_entity =
+          confirmed_pcontext_entity
+              ? GetMergedPersonalContextEntity(observed_entity,
+                                               *confirmed_pcontext_entity)
+              : observed_entity;
+      if (!IsSaveBlockedByStrikeDatabase(form.source_url(), candidate_entity)) {
+        save_candidates.emplace_back(
+            AutofillClient::AutofillAiImportPromptType::kSave,
+            std::move(candidate_entity));
+      }
     }
   }
   return save_candidates;
