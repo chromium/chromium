@@ -84,6 +84,9 @@ OnDeviceTranslationErrorReason ToOnDeviceTranslationErrorReason(
       return OnDeviceTranslationErrorReason::kCreateTranslatorOffline;
     case Error::kDataSaverEnabled:
       return OnDeviceTranslationErrorReason::kCreateTranslatorDataSaverEnabled;
+    case Error::kMeteredConnectionBlocked:
+      return OnDeviceTranslationErrorReason::
+          kCreateTranslatorMeteredConnectionBlocked;
     case Error::kUnsupportedDevice:
       return OnDeviceTranslationErrorReason::kCreateTranslatorUnsupportedDevice;
   }

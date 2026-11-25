@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -29,6 +30,7 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/crx_file/id_util.h"
+#include "components/on_device_translation/features.h"
 #include "components/on_device_translation/public/paths.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -263,6 +265,18 @@ TEST_F(RegisterTranslateKitComponentTest, VerifyInstallationDefaultEmpty) {
 
   // An empty directory lacks all required files.
   EXPECT_FALSE(policy.VerifyInstallation(manifest(), install_dir()));
+}
+
+TEST_F(RegisterTranslateKitComponentTest, AllowUpdatesOnMeteredConnections) {
+  TranslateKitComponentInstallerPolicy policy(pref_service(),
+                                              base::DoNothing());
+  const ComponentInstallerPolicy& base_policy = policy;
+  EXPECT_TRUE(base_policy.AllowUpdatesOnMeteredConnections());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      on_device_translation::kTranslationAPIBlockDownloadsOnMeteredNetwork);
+  EXPECT_FALSE(base_policy.AllowUpdatesOnMeteredConnections());
 }
 
 }  // namespace component_updater

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -113,6 +114,12 @@ bool TranslateKitComponentInstallerPolicy::
 
 bool TranslateKitComponentInstallerPolicy::RequiresNetworkEncryption() const {
   return false;
+}
+
+bool TranslateKitComponentInstallerPolicy::AllowUpdatesOnMeteredConnections()
+    const {
+  return !base::FeatureList::IsEnabled(
+      on_device_translation::kTranslationAPIBlockDownloadsOnMeteredNetwork);
 }
 
 update_client::CrxInstaller::Result

@@ -52,6 +52,7 @@ class TranslateKitComponentInstallerPolicy : public ComponentInstallerPolicy {
                           const base::FilePath& install_dir) const override;
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
+  bool AllowUpdatesOnMeteredConnections() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
       const base::DictValue& manifest,
       const base::FilePath& install_dir) override;

@@ -365,6 +365,16 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
                                               InstallError::kDataSaverEnabled);
   EXPECT_EQ(data_saver_future.Get().error(),
             CreateTranslatorError::kDataSaverEnabled);
+
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      metered_future;
+  service_controller_->CreateTranslator("en", "es",
+                                        metered_future.GetCallback());
+  fake_installer_->FailLanguagePackInstallNow(
+      LanguagePackKey::kEn_Es, InstallError::kMeteredConnectionBlocked);
+  EXPECT_EQ(metered_future.Get().error(),
+            CreateTranslatorError::kMeteredConnectionBlocked);
 }
 
 TEST_F(OnDeviceTranslationServiceControllerTest,

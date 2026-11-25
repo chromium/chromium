@@ -350,6 +350,9 @@ blink::mojom::CreateTranslatorError GetBlinkCreateTranslateError(
         kExceedsLanguagePackCountLimitation:
       return blink::mojom::CreateTranslatorError::
           kExceedsLanguagePackCountLimitation;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kMeteredConnectionBlocked:
+      return blink::mojom::CreateTranslatorError::kMeteredConnectionBlocked;
   }
 }
 

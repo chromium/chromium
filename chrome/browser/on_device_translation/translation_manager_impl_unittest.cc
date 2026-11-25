@@ -194,6 +194,8 @@ TEST_F(TranslationManagerImplTest, RecordsCreateTranslatorError) {
           {ControllerError::kDataSaverEnabled, BlinkError::kDataSaverEnabled},
           {ControllerError::kExceedsLanguagePackCountLimitation,
            BlinkError::kExceedsLanguagePackCountLimitation},
+          {ControllerError::kMeteredConnectionBlocked,
+           BlinkError::kMeteredConnectionBlocked},
       });
 
   base::HistogramTester histogram_tester;

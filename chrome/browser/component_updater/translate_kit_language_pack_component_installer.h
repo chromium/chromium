@@ -46,6 +46,7 @@ class TranslateKitLanguagePackComponentInstallerPolicy
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   bool AllowCachedCopies() const override;
+  bool AllowUpdatesOnMeteredConnections() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
       const base::DictValue& manifest,
       const base::FilePath& install_dir) override;

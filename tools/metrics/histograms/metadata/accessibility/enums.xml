@@ -2194,6 +2194,7 @@ Unknown properties are collapsed to zero. -->
   <int value="20" label="CreateTranslator: Data Saver enabled"/>
   <int value="21"
       label="CreateTranslator: Exceeded language pack count limitation"/>
+  <int value="22" label="CreateTranslator: Metered connection blocked"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/live_caption/translation_dispatcher_on_device.h:OnDeviceTranslationErrorReason) -->

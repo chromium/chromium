@@ -46,7 +46,8 @@ enum class OnDeviceTranslationErrorReason {
   kCreateTranslatorUnsupportedDevice = 19,
   kCreateTranslatorDataSaverEnabled = 20,
   kCreateTranslatorExceedsLanguagePackCountLimitation = 21,
-  kMaxValue = kCreateTranslatorExceedsLanguagePackCountLimitation,
+  kCreateTranslatorMeteredConnectionBlocked = 22,
+  kMaxValue = kCreateTranslatorMeteredConnectionBlocked,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:OnDeviceTranslationErrorReason)
 

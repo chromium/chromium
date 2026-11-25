@@ -64,6 +64,9 @@ String ConvertCreateTranslatorErrorToDebugString(CreateTranslatorError error) {
     case CreateTranslatorError::kExceedsLanguagePackCountLimitation:
       return "The number of installed translation language packs exceeded the "
              "limitation.";
+    case CreateTranslatorError::kMeteredConnectionBlocked:
+      return "The translation model must be downloaded, but downloads on "
+             "metered connections are disabled.";
   }
 }
 

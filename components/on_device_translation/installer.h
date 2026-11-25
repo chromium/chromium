@@ -29,6 +29,8 @@ enum class InstallError {
   kOffline,
   // Data Saver is enabled, so the download didn't start.
   kDataSaverEnabled,
+  // The connection is metered and metered downloads are blocked.
+  kMeteredConnectionBlocked,
 };
 
 // This is a singleton interface, the actual instance should be obtained through

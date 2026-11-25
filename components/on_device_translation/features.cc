@@ -93,6 +93,9 @@ const base::FeatureParam<int> kTranslationAPIMaxInstalledLanguagePacks{
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
+BASE_FEATURE(kTranslationAPIBlockDownloadsOnMeteredNetwork,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAutoDownloadTranslateLanguagePacks,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

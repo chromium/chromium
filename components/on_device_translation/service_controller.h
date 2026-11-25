@@ -48,6 +48,7 @@ class OnDeviceTranslationController {
     kOffline,
     kDataSaverEnabled,
     kExceedsLanguagePackCountLimitation,
+    kMeteredConnectionBlocked,
     kUnsupportedDevice,
   };
 

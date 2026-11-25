@@ -442,6 +442,10 @@ void OnDeviceTranslationInstallerImpl::OnLibraryOnlineChecked(bool online) {
     FailLibraryInstall(InstallError::kOffline);
     return;
   }
+  if (IsMeteredDownloadBlocked()) {
+    FailLibraryInstall(InstallError::kMeteredConnectionBlocked);
+    return;
+  }
   library_install_in_progress_ = true;
   library_source_->Install();
 }
@@ -486,6 +490,11 @@ void OnDeviceTranslationInstallerImpl::OnLanguagePackOnlineChecked(
   if (data_saver::IsDataSaverEnabled()) {
     notifier_->NotifyLanguagePackInstallFailed(language_pack,
                                                InstallError::kDataSaverEnabled);
+    return;
+  }
+  if (IsMeteredDownloadBlocked()) {
+    notifier_->NotifyLanguagePackInstallFailed(
+        language_pack, InstallError::kMeteredConnectionBlocked);
     return;
   }
   DownloadLanguagePack(language_pack);

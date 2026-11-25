@@ -139,6 +139,19 @@ TEST_F(TranslateKitLanguagePackComponentTest, AllowCachedCopies) {
 }
 
 TEST_F(TranslateKitLanguagePackComponentTest,
+       AllowUpdatesOnMeteredConnections) {
+  TranslateKitLanguagePackComponentInstallerPolicy policy(
+      pref_service(), on_device_translation::LanguagePackKey::kEn_Es,
+      base::DoNothing());
+  EXPECT_TRUE(policy.AllowUpdatesOnMeteredConnections());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      on_device_translation::kTranslationAPIBlockDownloadsOnMeteredNetwork);
+  EXPECT_FALSE(policy.AllowUpdatesOnMeteredConnections());
+}
+
+TEST_F(TranslateKitLanguagePackComponentTest,
        RegisterComponentsForUpdateRecordsInstalledPackCount) {
   auto service = std::make_unique<MockComponentUpdateService>();
   EXPECT_CALL(*service, GetComponentIDs()).Times(testing::AnyNumber());

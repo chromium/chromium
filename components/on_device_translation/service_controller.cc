@@ -116,6 +116,9 @@ OnDeviceTranslationController::CreateTranslatorError ToCreateTranslatorError(
     case InstallError::kDataSaverEnabled:
       return OnDeviceTranslationController::CreateTranslatorError::
           kDataSaverEnabled;
+    case InstallError::kMeteredConnectionBlocked:
+      return OnDeviceTranslationController::CreateTranslatorError::
+          kMeteredConnectionBlocked;
   }
 }
 

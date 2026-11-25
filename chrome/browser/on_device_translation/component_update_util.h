@@ -17,6 +17,10 @@ class ComponentUpdateService;
 
 namespace on_device_translation {
 
+// Returns true when downloads are blocked by the metered-network killswitch
+// and the current connection is metered.
+bool IsMeteredDownloadBlocked();
+
 // Returns why an on-demand update of the component `component_id` left the
 // component unusable, or nullopt if it did not. Call this when the update
 // finished with `error`. `is_installed` says whether a version of the

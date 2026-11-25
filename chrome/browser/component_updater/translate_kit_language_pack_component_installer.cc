@@ -106,6 +106,12 @@ bool TranslateKitLanguagePackComponentInstallerPolicy::AllowCachedCopies()
   return false;
 }
 
+bool TranslateKitLanguagePackComponentInstallerPolicy::
+    AllowUpdatesOnMeteredConnections() const {
+  return !base::FeatureList::IsEnabled(
+      on_device_translation::kTranslationAPIBlockDownloadsOnMeteredNetwork);
+}
+
 update_client::CrxInstaller::Result
 TranslateKitLanguagePackComponentInstallerPolicy::OnCustomInstall(
     const base::DictValue& manifest,

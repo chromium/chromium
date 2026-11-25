@@ -57,6 +57,10 @@ extern const base::FeatureParam<size_t> kTranslationAPIMinPhysicalMemoryMB;
 // download. 0 or less disables the cap.
 extern const base::FeatureParam<int> kTranslationAPIMaxInstalledLanguagePacks;
 
+// Blocks TranslateKit library and language pack downloads and updates on
+// metered network connections when enabled.
+BASE_DECLARE_FEATURE(kTranslationAPIBlockDownloadsOnMeteredNetwork);
+
 // Enables automatic download of language packs for on-device translation.
 BASE_DECLARE_FEATURE(kAutoDownloadTranslateLanguagePacks);
 

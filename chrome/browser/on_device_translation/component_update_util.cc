@@ -4,11 +4,21 @@
 
 #include "chrome/browser/on_device_translation/component_update_util.h"
 
+#include "base/feature_list.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/on_device_translation/features.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
+#include "net/base/network_change_notifier.h"
 
 namespace on_device_translation {
+
+bool IsMeteredDownloadBlocked() {
+  return base::FeatureList::IsEnabled(
+             kTranslationAPIBlockDownloadsOnMeteredNetwork) &&
+         net::NetworkChangeNotifier::GetConnectionCost() ==
+             net::NetworkChangeNotifier::CONNECTION_COST_METERED;
+}
 
 std::optional<InstallError> GetOnDemandUpdateError(
     component_updater::ComponentUpdateService* cus,
@@ -43,6 +53,15 @@ std::optional<InstallError> GetOnDemandUpdateError(
           item.error_code ==
               static_cast<int>(update_client::CrxDownloaderError::DISK_FULL)) {
         return InstallError::kNotEnoughDiskSpace;
+      }
+      if (IsMeteredDownloadBlocked() &&
+          item.error_category == update_client::ErrorCategory::kService &&
+          (item.error_code ==
+               static_cast<int>(update_client::ServiceError::CANCELLED) ||
+           item.error_code ==
+               static_cast<int>(
+                   update_client::ServiceError::UPDATE_DISABLED))) {
+        return InstallError::kMeteredConnectionBlocked;
       }
       return InstallError::kFailed;
     case update_client::ComponentState::kUpToDate:

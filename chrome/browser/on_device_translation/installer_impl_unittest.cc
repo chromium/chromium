@@ -25,6 +25,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
@@ -46,6 +47,7 @@
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_change_notifier.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -668,6 +670,163 @@ TEST_F(OnDeviceTranslationInstallerTest,
   EXPECT_CALL(observer,
               OnLanguagePackInstallFailed(LanguagePackKey::kEn_Ja,
                                           InstallError::kDataSaverEnabled))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+      LanguagePackKey::kEn_Ja);
+  run_loop.Run();
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+}
+
+// Tests that the metered-network killswitch blocks library installs on metered
+// connections without blocking metered connections by default.
+TEST_F(OnDeviceTranslationInstallerTest, InitFailsWhenMeteredDownloadsBlocked) {
+  net::test::ScopedMockNetworkChangeNotifier mock_network_change_notifier;
+  mock_network_change_notifier.mock_network_change_notifier()
+      ->SetConnectionCost(net::NetworkChangeNotifier::CONNECTION_COST_METERED);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kTranslationAPIBlockDownloadsOnMeteredNetwork);
+
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate).Times(0);
+  testing::NiceMock<MockObserver> observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer,
+              OnLibraryInstallFailed(InstallError::kMeteredConnectionBlocked))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  OnDeviceTranslationInstaller::GetInstance()->Init(base::DoNothing());
+  run_loop.Run();
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+}
+
+// Tests that the metered-network killswitch blocks language pack downloads on
+// metered connections and allows them when the feature is disabled.
+TEST_F(OnDeviceTranslationInstallerTest,
+       InstallLanguagePackRespectsMeteredKillswitch) {
+  net::test::ScopedMockNetworkChangeNotifier mock_network_change_notifier;
+  mock_network_change_notifier.mock_network_change_notifier()
+      ->SetConnectionCost(net::NetworkChangeNotifier::CONNECTION_COST_METERED);
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        kTranslationAPIBlockDownloadsOnMeteredNetwork);
+
+    EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate).Times(0);
+    testing::NiceMock<MockObserver> observer;
+    OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnLanguagePackInstallFailed(
+                              LanguagePackKey::kEn_Ja,
+                              InstallError::kMeteredConnectionBlocked))
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
+    OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+        LanguagePackKey::kEn_Ja);
+    run_loop.Run();
+    EXPECT_TRUE(OnDeviceTranslationInstaller::GetInstance()
+                    ->RegisteredLanguagePacks()
+                    .empty());
+    OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+  }
+
+  // When disabled by default, metered downloads proceed.
+  CreateFakeLanguagePackInstallation(install_dir_.GetPath(),
+                                     {LanguagePackKey::kEn_Ja});
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(update_client::Error::NONE));
+  FakeObserver observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+  OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+      LanguagePackKey::kEn_Ja);
+  observer.WaitForNotification();
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+}
+
+// Tests that cancelling an in-flight download after switching to a metered
+// connection maps CANCELLED and UPDATE_DISABLED to kMeteredConnectionBlocked
+// when the killswitch is enabled, and to kFailed when unmetered.
+TEST_F(OnDeviceTranslationInstallerTest,
+       MidDownloadMeteredCancelMapsToMeteredError) {
+  CreateFakeInstallation(install_dir_.GetPath());
+  net::test::ScopedMockNetworkChangeNotifier mock_network_change_notifier;
+  auto* mock_cus = static_cast<
+      testing::NiceMock<component_updater::MockComponentUpdateService>*>(
+      TestingBrowserProcess::GetGlobal()->component_updater());
+  const std::string pack_id = crx_file::id_util::GenerateIdFromHash(
+      GetLanguagePackComponentConfig(LanguagePackKey::kEn_Ja).public_key_sha);
+  update_client::ServiceError current_error =
+      update_client::ServiceError::CANCELLED;
+  net::NetworkChangeNotifier::ConnectionCost cost_during_update =
+      net::NetworkChangeNotifier::CONNECTION_COST_METERED;
+
+  EXPECT_CALL(*mock_cus, GetComponentDetails)
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*mock_cus, GetComponentDetails(pack_id, _))
+      .WillRepeatedly([&current_error](const std::string& id,
+                                       component_updater::CrxUpdateItem* item) {
+        item->id = id;
+        item->state = update_client::ComponentState::kUpdateError;
+        item->error_category = update_client::ErrorCategory::kService;
+        item->error_code = static_cast<int>(current_error);
+        return true;
+      });
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(update_client::Error::NONE));
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(pack_id, _, _))
+      .WillRepeatedly([&mock_network_change_notifier, &cost_during_update](
+                          const std::string&,
+                          component_updater::OnDemandUpdater::Priority,
+                          component_updater::Callback callback) {
+        mock_network_change_notifier.mock_network_change_notifier()
+            ->SetConnectionCost(cost_during_update);
+        std::move(callback).Run(update_client::Error::NONE);
+      });
+  {
+    base::RunLoop run_loop;
+    OnDeviceTranslationInstaller::GetInstance()->Init(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kTranslationAPIBlockDownloadsOnMeteredNetwork);
+
+  for (const auto service_error : {
+           update_client::ServiceError::CANCELLED,
+           update_client::ServiceError::UPDATE_DISABLED,
+       }) {
+    current_error = service_error;
+    cost_during_update = net::NetworkChangeNotifier::CONNECTION_COST_METERED;
+    mock_network_change_notifier.mock_network_change_notifier()
+        ->SetConnectionCost(
+            net::NetworkChangeNotifier::CONNECTION_COST_UNMETERED);
+    testing::NiceMock<MockObserver> observer;
+    OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnLanguagePackInstallFailed(
+                              LanguagePackKey::kEn_Ja,
+                              InstallError::kMeteredConnectionBlocked))
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
+    OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+        LanguagePackKey::kEn_Ja);
+    run_loop.Run();
+    OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+  }
+
+  // On an unmetered connection, ServiceError::CANCELLED still maps to kFailed.
+  current_error = update_client::ServiceError::CANCELLED;
+  cost_during_update = net::NetworkChangeNotifier::CONNECTION_COST_UNMETERED;
+  mock_network_change_notifier.mock_network_change_notifier()
+      ->SetConnectionCost(
+          net::NetworkChangeNotifier::CONNECTION_COST_UNMETERED);
+  testing::NiceMock<MockObserver> observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnLanguagePackInstallFailed(LanguagePackKey::kEn_Ja,
+                                                    InstallError::kFailed))
       .WillOnce([&run_loop]() { run_loop.Quit(); });
   OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
       LanguagePackKey::kEn_Ja);
