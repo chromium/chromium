@@ -185,17 +185,16 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
 
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
+        // Do not let test inputs, including the link click, be ignored.
+        runOnUiThreadBlocking(() -> mAccountSelection.getMediator().setComponentShowTime(-1000));
         if (mRpMode == RpMode.ACTIVE) {
             // Active mode only shows the disclosure text on the request permission dialog, which
             // the continue button opens.
             runOnUiThreadBlocking(
-                    () -> {
-                        // Do not let test inputs be ignored.
-                        mAccountSelection.getMediator().setComponentShowTime(-1000);
-                        contentView
-                                .findViewById(R.id.account_selection_continue_btn)
-                                .performClick();
-                    });
+                    () ->
+                            contentView
+                                    .findViewById(R.id.account_selection_continue_btn)
+                                    .performClick());
         }
         TextView consent = contentView.findViewById(R.id.user_data_sharing_consent);
         if (consent == null) {

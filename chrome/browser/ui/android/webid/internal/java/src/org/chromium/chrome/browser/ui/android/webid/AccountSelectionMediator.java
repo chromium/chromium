@@ -1707,14 +1707,14 @@ class AccountSelectionMediator {
             idpPrivacyPolicyUrl = idpMetadata.getPrivacyPolicyUrl();
             idpTermsOfServiceUrl = idpMetadata.getTermsOfServiceUrl();
             idpAccountManagementClickCallback =
-                    createIdpLinkClickCallback(
+                    createLinkClickCallback(
                             IdentityRequestDialogLinkType.IDP_ACCOUNT_MANAGEMENT,
                             idpAccountManagementUrl);
             idpPrivacyPolicyClickCallback =
-                    createIdpLinkClickCallback(
+                    createLinkClickCallback(
                             IdentityRequestDialogLinkType.IDP_PRIVACY_POLICY, idpPrivacyPolicyUrl);
             idpTermsOfServiceClickCallback =
-                    createIdpLinkClickCallback(
+                    createLinkClickCallback(
                             IdentityRequestDialogLinkType.IDP_TERMS_OF_SERVICE,
                             idpTermsOfServiceUrl);
         }
@@ -1723,18 +1723,12 @@ class AccountSelectionMediator {
                         identityProvider.getIdpForDisplay(),
                         metadata.getTermsOfServiceUrl(),
                         metadata.getPrivacyPolicyUrl(),
-                        (Context context) -> {
-                            showUrl(
-                                    context,
-                                    IdentityRequestDialogLinkType.TERMS_OF_SERVICE,
-                                    metadata.getTermsOfServiceUrl());
-                        },
-                        (Context context) -> {
-                            showUrl(
-                                    context,
-                                    IdentityRequestDialogLinkType.PRIVACY_POLICY,
-                                    metadata.getPrivacyPolicyUrl());
-                        },
+                        createLinkClickCallback(
+                                IdentityRequestDialogLinkType.TERMS_OF_SERVICE,
+                                metadata.getTermsOfServiceUrl()),
+                        createLinkClickCallback(
+                                IdentityRequestDialogLinkType.PRIVACY_POLICY,
+                                metadata.getPrivacyPolicyUrl()),
                         idpAccountManagementUrl,
                         idpPrivacyPolicyUrl,
                         idpTermsOfServiceUrl,
@@ -1750,10 +1744,10 @@ class AccountSelectionMediator {
     }
 
     /**
-     * Returns a click callback for the identity provider's link of type {@code linkType}, which
-     * opens {@code url} unless the click comes too soon after the sheet is shown.
+     * Returns a click callback for the link of type {@code linkType}, which opens {@code url}
+     * unless the click comes too soon after the sheet is shown.
      */
-    private Consumer<Context> createIdpLinkClickCallback(
+    private Consumer<Context> createLinkClickCallback(
             @IdentityRequestDialogLinkType int linkType, GURL url) {
         return (Context context) -> {
             if (!shouldInputBeProcessed()) return;

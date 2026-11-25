@@ -19,6 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ACCOUNT;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.CLOSE_ON_CLICK_LISTENER;
@@ -34,6 +35,8 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.SET_FOCUS_VIEW_CALLBACK;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -48,12 +51,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
@@ -79,6 +84,8 @@ import org.chromium.url.GURL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Controller tests verify that the Account Selection delegate modifies the model. This class is
@@ -572,6 +579,84 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 "Incorrect provider ETLD+1",
                 mTestEtldPlusOne2,
                 dataSharingProperties.mIdpForDisplay);
+    }
+
+    /**
+     * Tests that each of the RP's links in the disclosure text opens its URL in a Custom Tab and
+     * records its histogram.
+     */
+    @Test
+    // Opening a Custom Tab checks `CCTDontOverrideIntentMimeType`, so it needs a test value.
+    @EnableFeatures(ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE)
+    public void testClickRpLinks() {
+        DataSharingConsentProperties.Properties properties = showDataSharingConsent();
+        // Do not let test inputs be ignored.
+        mMediator.setComponentShowTime(-1000);
+
+        checkClickRpLink(
+                properties.mPrivacyPolicyClickCallback,
+                mTestUrlPrivacyPolicy,
+                "Blink.FedCm.SignUp.PrivacyPolicyClicked");
+        checkClickRpLink(
+                properties.mTermsOfServiceClickCallback,
+                mTestUrlTermsOfService,
+                "Blink.FedCm.SignUp.TermsOfServiceClicked");
+    }
+
+    /**
+     * Tests that the RP's links in the disclosure text ignore a click that comes too soon after the
+     * sheet is shown, e.g. the second tap of a double tap, like the sheet's buttons.
+     */
+    @Test
+    public void testRpLinksIgnoreEarlyClick() {
+        DataSharingConsentProperties.Properties properties = showDataSharingConsent();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Blink.FedCm.SignUp.PrivacyPolicyClicked")
+                        .expectNoRecords("Blink.FedCm.SignUp.TermsOfServiceClicked")
+                        .build();
+
+        properties.mPrivacyPolicyClickCallback.accept(mContext);
+        properties.mTermsOfServiceClickCallback.accept(mContext);
+
+        assertNull(shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity());
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Shows the disclosure text for a new account and returns its properties. In passive mode, the
+     * single-account sheet shows it. In active mode, the request permission dialog shows it, right
+     * away for an account that the user just signed in to.
+     */
+    private DataSharingConsentProperties.Properties showDataSharingConsent() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        List<Account> newAccounts =
+                mRpMode == RpMode.ACTIVE ? mNewAccountsSingleNewAccount : Collections.emptyList();
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount),
+                Arrays.asList(mIdpData),
+                newAccounts);
+        assertEquals(
+                mRpMode == RpMode.ACTIVE ? HeaderType.REQUEST_PERMISSION_MODAL : HeaderType.SIGN_IN,
+                mModel.get(ItemProperties.HEADER).get(TYPE));
+        return mModel.get(ItemProperties.DATA_SHARING_CONSENT)
+                .get(DataSharingConsentProperties.PROPERTIES);
+    }
+
+    /**
+     * Clicks one of the RP's links through {@code clickCallback}, and checks that it opens {@code
+     * url} in a Custom Tab and records {@code expectedHistogram}.
+     */
+    private void checkClickRpLink(
+            Consumer<Context> clickCallback, GURL url, String expectedHistogram) {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(expectedHistogram, true);
+        clickCallback.accept(mContext);
+        Intent intent = shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
+        assertEquals(url.getSpec(), intent.getDataString());
+        histogramWatcher.assertExpected();
     }
 
     @Test

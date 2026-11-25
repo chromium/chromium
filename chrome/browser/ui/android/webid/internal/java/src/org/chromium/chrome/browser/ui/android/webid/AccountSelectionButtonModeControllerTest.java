@@ -1261,8 +1261,9 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     }
 
     /**
-     * Tests that the request permission dialog shown for a passive mode request ignores a click
-     * right after it is shown, e.g. the second tap of a double tap on the passive mode sheet.
+     * Tests that the request permission dialog shown for a passive mode request ignores clicks on
+     * its links and its continue button right after it is shown, e.g. the second tap of a double
+     * tap on the passive mode sheet.
      */
     @Test
     @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
@@ -1272,12 +1273,14 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Blink.FedCm.SignUp.IdpAccountManagementClicked")
+                        .expectNoRecords("Blink.FedCm.SignUp.PrivacyPolicyClicked")
                         .build();
         DataSharingConsentProperties.Properties consentProperties =
                 mModel.get(ItemProperties.DATA_SHARING_CONSENT)
                         .get(DataSharingConsentProperties.PROPERTIES);
         assertNotNull(consentProperties.mIdpAccountManagementClickCallback);
         consentProperties.mIdpAccountManagementClickCallback.accept(mContext);
+        consentProperties.mPrivacyPolicyClickCallback.accept(mContext);
         assertNull(shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity());
         histogramWatcher.assertExpected();
 
