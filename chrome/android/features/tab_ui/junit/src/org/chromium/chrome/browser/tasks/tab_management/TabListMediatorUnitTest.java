@@ -8239,6 +8239,23 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testDataProvider_PrepareHiding_SkipsTabModelObservers() {
+        setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        mMediator.resetWithListOfTabs(
+                List.of(tab3), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB3_ID)));
+        verify(tab3).addObserver(mTabObserverCaptor.capture());
+
+        mMediator.prepareHiding();
+
+        // With a provider, only per-tab observers were added, so only those are removed.
+        verify(tab3).removeObserver(mTabObserverCaptor.getValue());
+        verify(mTabModel, never()).removeObserver(any());
+        verify(mTabModel, never()).removeTabGroupObserver(any());
+    }
+
+    @Test
     public void testDataProvider_CloseTabOfAnotherModel_ClosesThroughItsModel() {
         setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
         Tab otherModelTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);

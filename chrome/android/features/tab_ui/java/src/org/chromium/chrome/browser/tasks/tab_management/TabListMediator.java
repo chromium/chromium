@@ -1233,7 +1233,8 @@ public class TabListMediator implements TabListNotificationHandler {
         mTrackingTabs = tabs != null;
         TabModel tabModel = mCurrentTabModelSupplier.get();
         if (tabs == null) {
-            removeObservers(tabModel);
+            removeTabObservers();
+            removeTabModelObservers(tabModel);
         }
 
         if (dataProvider != null) {
@@ -1369,7 +1370,8 @@ public class TabListMediator implements TabListNotificationHandler {
             mPendingQuickMode = false;
             dataProvider.stop();
         }
-        removeObservers(mCurrentTabModelSupplier.get());
+        removeTabObservers();
+        removeTabModelObservers(mCurrentTabModelSupplier.get());
         mTrackingTabs = false;
     }
 
@@ -1644,7 +1646,8 @@ public class TabListMediator implements TabListNotificationHandler {
         if (mListObserver != null) {
             mModelList.removeObserver(mListObserver);
         }
-        removeObservers(mCurrentTabModelSupplier.get());
+        removeTabObservers();
+        removeTabModelObservers(mCurrentTabModelSupplier.get());
         TabListDataProvider dataProvider = mTabListConfig.dataProvider;
         if (dataProvider != null) {
             dataProvider.removeObserver(mTabListDataObserver);
@@ -2708,7 +2711,8 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     private void onTabModelChanged(@Nullable TabModel newTabModel, @Nullable TabModel oldTabModel) {
-        removeObservers(oldTabModel);
+        removeTabObservers();
+        removeTabModelObservers(oldTabModel);
 
         // The observers will be bound to the newFilter's when the model is reset for with tabs for
         // that filter for the first time. Doing this on the first reset after changing models
@@ -2753,6 +2757,7 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
+    // TODO(crbug.com/562590772): Remove once all surfaces use TabListDataProvider.
     private void addObservers(TabModel tabModel, List<Tab> tabs) {
         if (mTabListConfig.dataProvider != null) return;
 
@@ -2774,15 +2779,22 @@ public class TabListMediator implements TabListNotificationHandler {
         mObserverManager.addTabGroupObserver(tabModel);
     }
 
-    private void removeObservers(@Nullable TabModel tabModel) {
-        if (tabModel == null) return;
-        // Observers are added when tabs are shown via addObserversForTab(). Remove them from every
-        // observed tab, which can come from TabModels other than this one when a provider is set.
+    /**
+     * Removes the observers that {@link #addObserversForTab} added, from every observed tab. These
+     * can come from TabModels other than the current one when a provider is set.
+     */
+    private void removeTabObservers() {
         // The observer manager returns a copy since removeObserversForTab() mutates the observed
         // set.
         for (Tab tab : mObserverManager.getObservedTabs()) {
             removeObserversForTab(tab);
         }
+    }
+
+    /** Removes the {@code tabModel} observers that {@link #addObservers} added. */
+    // TODO(crbug.com/562590772): Remove once all surfaces use TabListDataProvider.
+    private void removeTabModelObservers(@Nullable TabModel tabModel) {
+        if (tabModel == null || mTabListConfig.dataProvider != null) return;
         tabModel.removeObserver(mTabModelObserver);
         mObserverManager.removeTabGroupObserver(tabModel);
     }
@@ -2810,7 +2822,7 @@ public class TabListMediator implements TabListNotificationHandler {
         mPendingQuickMode = false;
         TabModel tabModel = mCurrentTabModelSupplier.get();
         if (!mTrackingTabs || tabModel == null) return;
-        removeObservers(tabModel);
+        removeTabObservers();
 
         boolean itemsUnchanged = mModelList.matchesItems(items);
         if (!itemsUnchanged) {
