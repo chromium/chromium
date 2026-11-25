@@ -6,15 +6,14 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/login_detection/login_detection_keyed_service.h"
-#include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_prefs.h"
 #include "chrome/browser/login_detection/login_detection_type.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/site_isolation_policy.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -43,8 +42,10 @@ class IdentityProviderMetrics {
 namespace {
 
 PrefService* GetPrefs(content::WebContents* web_contents) {
-  return Profile::FromBrowserContext(web_contents->GetBrowserContext())
-      ->GetPrefs();
+  PrefService* pref_service =
+      user_prefs::UserPrefs::Get(web_contents->GetBrowserContext());
+  CHECK(pref_service);
+  return pref_service;
 }
 
 void RecordLoginDetectionMetrics(LoginDetectionType type,
@@ -80,8 +81,9 @@ void LoginDetectionTabHelper::MaybeCreateForWebContents(
       web_contents->GetBrowserContext()->IsOffTheRecord()) {
     return;
   }
-  if (!IsLoginDetectionFeatureEnabled())
+  if (!IsLoginDetectionFeatureEnabled()) {
     return;
+  }
   LoginDetectionTabHelper::CreateForWebContents(
       web_contents, std::move(federated_login_callback));
 }
@@ -103,16 +105,20 @@ LoginDetectionTabHelper::~LoginDetectionTabHelper() = default;
 void LoginDetectionTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   CHECK(navigation_handle, base::NotFatalUntil::M161);
-  if (!navigation_handle->IsInPrimaryMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
-  if (!navigation_handle->HasCommitted())
+  }
+  if (!navigation_handle->HasCommitted()) {
     return;
-  if (navigation_handle->IsSameDocument())
+  }
+  if (navigation_handle->IsSameDocument()) {
     return;
+  }
 
   GURL url = navigation_handle->GetURL();
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
   GURL prev_navigation_url;
   if (auto* prev_navigation =

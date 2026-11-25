@@ -4,31 +4,27 @@
 
 #include "chrome/browser/login_detection/login_detection_keyed_service.h"
 
+#include "base/check.h"
 #include "chrome/browser/login_detection/login_detection_prefs.h"
-#include "chrome/browser/login_detection/login_detection_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/site_isolation/site_isolation_policy.h"
-#include "content/public/browser/child_process_security_policy.h"
-#include "url/gurl.h"
-#include "url/origin.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 
 namespace login_detection {
 
-bool OriginComparator::operator()(const std::string& a,
-                                  const std::string& b) const {
-  return url::Origin::Create(GURL(a)) < url::Origin::Create(GURL(b));
-}
-
-LoginDetectionKeyedService::LoginDetectionKeyedService(Profile* profile)
-    : profile_(profile) {
+LoginDetectionKeyedService::LoginDetectionKeyedService(
+    content::BrowserContext* browser_context) {
+  CHECK(browser_context);
   // Apply site isolation to logged-in sites that had previously been saved by
   // login detection. Needs to be called before any navigations happen in
-  // `profile`.
+  // `browser_context`.
   //
   // TODO(alexmos): Move this initialization to components/site_isolation once
   // login detection is moved into its own component.
+  PrefService* pref_service = user_prefs::UserPrefs::Get(browser_context);
+  CHECK(pref_service);
   site_isolation::SiteIsolationPolicy::IsolateStoredOAuthSites(
-      profile, prefs::GetOAuthSignedInSites(profile->GetPrefs()));
+      browser_context, prefs::GetOAuthSignedInSites(pref_service));
 }
 
 LoginDetectionKeyedService::~LoginDetectionKeyedService() = default;

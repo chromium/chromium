@@ -5,10 +5,17 @@
 #ifndef CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_KEYED_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_KEYED_SERVICE_FACTORY_H_
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
+class KeyedService;
 class Profile;
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace login_detection {
 
@@ -25,6 +32,11 @@ class LoginDetectionKeyedServiceFactory : public ProfileKeyedServiceFactory {
 
   // Gets the LazyInstance that owns all LoginDetectionKeyedService(s).
   static LoginDetectionKeyedServiceFactory* GetInstance();
+
+  LoginDetectionKeyedServiceFactory(const LoginDetectionKeyedServiceFactory&) =
+      delete;
+  LoginDetectionKeyedServiceFactory& operator=(
+      const LoginDetectionKeyedServiceFactory&) = delete;
 
  private:
   friend base::NoDestructor<LoginDetectionKeyedServiceFactory>;

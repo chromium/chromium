@@ -5,15 +5,22 @@
 #ifndef CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_PREFS_H_
 #define CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_PREFS_H_
 
+#include <vector>
+
 #include "url/gurl.h"
 #include "url/origin.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace login_detection {
+namespace login_detection::prefs {
 
-namespace prefs {
+// The pref name for storing the sites where the user has signed in via OAuth.
+// The effective TLD+1 is used to key the dictionary pref, and the value is the
+// latest time OAuth sign-in was detected for the site. Exposed so embedders
+// with segregated pref stores (e.g. Android WebView) can mark it persistent.
+inline constexpr char kOAuthSignedInSitesPref[] =
+    "login_detection.oauth_signed_in_origins";
 
 // Registers the prefs used by login detection.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -33,8 +40,6 @@ bool IsSiteInOAuthSignedInList(PrefService* pref_service, const GURL& url);
 // Note that entries in this list consist of sites (i.e., scheme and eTLD+1).
 std::vector<url::Origin> GetOAuthSignedInSites(PrefService* pref_service);
 
-}  // namespace prefs
-
-}  // namespace login_detection
+}  // namespace login_detection::prefs
 
 #endif  // CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_PREFS_H_

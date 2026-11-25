@@ -11,24 +11,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
-namespace login_detection {
-
-namespace {
-
-// The pref name for storing the sites where the user has signed in via OAuth.
-// The effective TLD+1 is used to key the dictionary pref, and the value is the
-// latest time OAuth sign-in was detected for the site. The sign-in time value
-// will be used to selectively clear this signed-in list, when browsing data is
-// cleared for a selected time duration. This signed-in sites list is capped to
-// an allowed maximum size, after which older sites based on sign-in time are
-// removed.
-// TODO(rajendrant): Record metrics for the number of sites in this pref.
-const char kOAuthSignedInSitesPref[] =
-    "login_detection.oauth_signed_in_origins";
-
-}  // namespace
-
-namespace prefs {
+namespace login_detection::prefs {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kOAuthSignedInSitesPref);
@@ -48,11 +31,13 @@ void SaveSiteToOAuthSignedInList(PrefService* pref_service, const GURL& url) {
   if (dict.size() > GetOauthLoggedInSitesMaxSize()) {
     std::vector<std::string> invalid_sites;
     for (auto site_entry : dict) {
-      if (!base::ValueToTime(site_entry.second))
+      if (!base::ValueToTime(site_entry.second)) {
         invalid_sites.push_back(site_entry.first);
+      }
     }
-    for (const auto& invalid_site : invalid_sites)
+    for (const auto& invalid_site : invalid_sites) {
       dict.Remove(invalid_site);
+    }
   }
 
   // Limit the dict to its allowed max size, by removing the site entries which
@@ -84,6 +69,4 @@ std::vector<url::Origin> GetOAuthSignedInSites(PrefService* pref_service) {
   return sites;
 }
 
-}  // namespace prefs
-
-}  // namespace login_detection
+}  // namespace login_detection::prefs

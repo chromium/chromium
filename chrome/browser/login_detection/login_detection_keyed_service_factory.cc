@@ -4,10 +4,13 @@
 
 #include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "content/public/browser/browser_context.h"
 
 namespace login_detection {
@@ -55,8 +58,7 @@ LoginDetectionKeyedServiceFactory::~LoginDetectionKeyedServiceFactory() =
 std::unique_ptr<KeyedService>
 LoginDetectionKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<LoginDetectionKeyedService>(
-      Profile::FromBrowserContext(context));
+  return std::make_unique<LoginDetectionKeyedService>(context);
 }
 
 bool LoginDetectionKeyedServiceFactory::ServiceIsCreatedWithBrowserContext()

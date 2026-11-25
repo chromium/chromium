@@ -20,17 +20,22 @@ source_set("login_detection") {
     "login_detection_util.cc",
     "oauth_login_detector.cc",
   ]
-  deps = [
+  public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
+    "//content/public/browser",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//ui/base/mojom",
+    "//url",
+  ]
+  deps = [
     "//components/prefs",
     "//components/site_isolation",
-    "//content/public/browser",
+    "//components/user_prefs",
     "//net",
-    "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
-    "//url",
+    "//ui/base",
   ]
 }
 
@@ -55,6 +60,8 @@ source_set("unit_tests") {
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
+    "//ui/base/mojom",
     "//url",
   ]
 }
