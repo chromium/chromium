@@ -6,6 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -17,11 +19,17 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_platform.h"
+#include "ui/display/display.h"
+#include "ui/display/headless/headless_screen_manager.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/switches.h"
@@ -294,4 +302,95 @@ IN_PROC_BROWSER_TEST_F(BrowserDesktopWindowTreeHostLinuxScreenTest,
   EXPECT_EQ(gfx::Rect(60, 70, 320, 240), popup_view->GetBounds());
 
   popup_view->browser_widget()->SetInvisibleFrameInsetsForTesting(std::nullopt);
+}
+
+// Exiting cross-screen fullscreen restores the window onto its original
+// display even when disconnecting and reconnecting a display on the left
+// shifted the original display's origin during fullscreen (crbug.com/40855258).
+IN_PROC_BROWSER_TEST_F(BrowserDesktopWindowTreeHostLinuxScreenTest,
+                       CrossScreenFullscreenExitAfterDisplayReconnect) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(url, GURL(),
+                                      ContentSettingsType::WINDOW_MANAGEMENT,
+                                      CONTENT_SETTING_ALLOW);
+
+  display::Screen* screen = display::Screen::Get();
+  auto* screen_manager = display::HeadlessScreenManager::Get();
+
+  // Configure Display B at (0, 0) and Display A at (1280, 0), and place the
+  // browser window on Display A.
+  display::Display display_a = screen->GetPrimaryDisplay();
+  display_a.set_bounds(gfx::Rect(1280, 0, 1280, 800));
+  display_a.set_work_area(display_a.bounds());
+  screen_manager->UpdateDisplay(display_a);
+  const display::Display display_b_spec(0, gfx::Rect(0, 0, 1280, 800));
+  int64_t display_b_id = screen_manager->AddDisplay(display_b_spec);
+
+  const auto insets = gfx::Insets::TLBR(19, 22, 25, 22);
+  browser_view()->browser_widget()->SetInvisibleFrameInsetsForTesting(insets);
+  browser_view()->SetBounds(gfx::Rect(1380, 80, 800, 600));
+  ASSERT_EQ(display_a.id(),
+            screen->GetDisplayMatching(browser_view()->GetBounds()).id());
+
+  // Disconnect Display B: Display A shifts to (0, 0) with a top panel work area
+  // inset, and the window manager shifts the window on Display A to match.
+  screen_manager->RemoveDisplay(display_b_id);
+  display_a.set_bounds(gfx::Rect(0, 0, 1280, 800));
+  display_a.set_work_area(gfx::Rect(0, 32, 1280, 768));
+  screen_manager->UpdateDisplay(display_a);
+  browser_view()->SetBounds(gfx::Rect(100, 80, 800, 600));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
+
+  // Enter fullscreen on Display A while Display B is disconnected.
+  {
+    ui_test_utils::FullscreenWaiter waiter(
+        browser(), {.tab_fullscreen = true, .display_id = display_a.id()});
+    fullscreen_controller->EnterFullscreenModeForTab(
+        web_contents->GetPrimaryMainFrame(), {display_a.id()});
+    waiter.Wait();
+  }
+
+  // Reconnect Display B at (0, 0): Display A shifts back to (1280, 0) and the
+  // fullscreen window remains on Display A.
+  display_b_id = screen_manager->AddDisplay(display_b_spec);
+  display_a.set_bounds(gfx::Rect(1280, 0, 1280, 800));
+  display_a.set_work_area(display_a.bounds());
+  screen_manager->UpdateDisplay(display_a);
+  browser_view()->GetWidget()->SetBounds(display_a.bounds());
+
+  // Move fullscreen to Display B, back to Display A, and exit fullscreen.
+  {
+    ui_test_utils::FullscreenWaiter waiter(
+        browser(), {.tab_fullscreen = true, .display_id = display_b_id});
+    fullscreen_controller->EnterFullscreenModeForTab(
+        web_contents->GetPrimaryMainFrame(), {display_b_id});
+    waiter.Wait();
+  }
+  {
+    ui_test_utils::FullscreenWaiter waiter(
+        browser(), {.tab_fullscreen = true, .display_id = display_a.id()});
+    fullscreen_controller->EnterFullscreenModeForTab(
+        web_contents->GetPrimaryMainFrame(), {display_a.id()});
+    waiter.Wait();
+  }
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(),
+                                           {.tab_fullscreen = false});
+    fullscreen_controller->ExitFullscreenModeForTab(web_contents);
+    waiter.Wait();
+  }
+
+  EXPECT_EQ(display_a.id(),
+            screen->GetDisplayMatching(browser_view()->GetBounds()).id());
+  EXPECT_EQ(gfx::Rect(1380, 80, 800, 600), browser_view()->GetBounds());
+
+  browser_view()->browser_widget()->SetInvisibleFrameInsetsForTesting(
+      std::nullopt);
 }

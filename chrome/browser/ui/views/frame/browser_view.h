@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -1343,10 +1344,19 @@ class BrowserView : public BrowserWindow,
           base::BindRepeating(&BrowserView::TouchModeChanged,
                               base::Unretained(this)));
 
-  // If the Window Placement experiment is enabled and fullscreen is requested
-  // on a particular display, this closure will be called after fullscreen is
-  // exited to restore the original pre-fullscreen bounds of the window.
-  base::OnceClosure restore_pre_fullscreen_bounds_callback_;
+#if BUILDFLAG(IS_LINUX)
+  // Captures the browser window's pre-fullscreen placement and origin display
+  // so cross-screen fullscreen transitions can restore the window onto its
+  // original display even if display origins shift while in fullscreen.
+  struct PreFullscreenState {
+    gfx::Rect bounds;
+    int64_t display_id;
+    gfx::Rect display_bounds;
+    bool was_maximized = false;
+    bool restore_on_exit = false;
+  };
+  std::optional<PreFullscreenState> pre_fullscreen_state_;
+#endif
 
   base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
       focus_manager_observation_{this};

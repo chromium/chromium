@@ -5504,22 +5504,54 @@ void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
 }
 
 void BrowserView::RequestFullscreen(bool fullscreen, int64_t display_id) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  // Request target display fullscreen from lower layers on supported platforms.
-  browser_widget_->SetFullscreen(fullscreen, display_id);
-#else   // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/40111909): Reimplement this at lower layers on all
-  // platforms.
-  if (fullscreen && display_id != display::kInvalidDisplayId) {
-    display::Screen* screen = display::Screen::Get();
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/40111909): Reimplement this at lower layers on Linux.
+  base::WeakPtr<BrowserView> weak_this = GetAsWeakPtr();
+  display::Screen* const screen = display::Screen::Get();
+  const bool was_fullscreen = IsFullscreen();
+
+  auto capture_pre_fullscreen_state = [&]() {
+    const bool was_maximized = IsMaximized();
+    // Use GetBounds(), rather than GetRestoredBounds(), when the window is not
+    // maximized, to restore snapped window bounds on fullscreen exit.
+    const gfx::Rect bounds = was_maximized ? GetRestoredBounds() : GetBounds();
+    int64_t origin_display_id = display::kInvalidDisplayId;
+    gfx::Rect origin_display_bounds;
+    if (screen) {
+      // `bounds` may not identify the window's display: Wayland reports a
+      // (0, 0) origin, and restored bounds may be stale while maximized.
+      const display::Display origin_display =
+          screen->GetDisplayNearestWindow(GetNativeWindow());
+      origin_display_id = origin_display.id();
+      origin_display_bounds = origin_display.bounds();
+    }
+    pre_fullscreen_state_ = PreFullscreenState{
+        .bounds = bounds,
+        .display_id = origin_display_id,
+        .display_bounds = origin_display_bounds,
+        .was_maximized = was_maximized,
+        .restore_on_exit = false,
+    };
+  };
+
+  // A minimized fullscreen window reports !IsFullscreen(), so keep the state
+  // captured when it first entered fullscreen.
+  if (fullscreen && !was_fullscreen && !IsMinimized()) {
+    capture_pre_fullscreen_state();
+  }
+
+  if (fullscreen && display_id != display::kInvalidDisplayId && screen) {
     display::Display display;
-    display::Display current_display =
+    const display::Display current_display =
         screen->GetDisplayNearestWindow(GetNativeWindow());
-    if (screen && screen->GetDisplayWithDisplayId(display_id, &display) &&
+    if (screen->GetDisplayWithDisplayId(display_id, &display) &&
         current_display.id() != display_id) {
       // Fullscreen windows must exit fullscreen to move to another display.
-      if (IsFullscreen()) {
+      if (was_fullscreen) {
         browser_widget_->SetFullscreen(false);
+        if (!weak_this) {
+          return;
+        }
 
         // Activate the window to give it input focus and bring it to the front
         // of the z-order. This prevents an inactive fullscreen window from
@@ -5527,55 +5559,83 @@ void BrowserView::RequestFullscreen(bool fullscreen, int64_t display_id) {
         // prevents an inactive fullscreen window and its exit bubble from being
         // occluded by the active window on Chrome OS.
         Activate();
+        if (!weak_this) {
+          return;
+        }
       }
 
-      const bool was_maximized = IsMaximized();
-      if (restore_pre_fullscreen_bounds_callback_.is_null()) {
-        // Use GetBounds(), rather than GetRestoredBounds(), when the window is
-        // not maximized, to restore snapped window bounds on fullscreen exit.
-        // TODO(crbug.com/40111909): Support lower-layer fullscreen-on-display.
-        const gfx::Rect bounds_to_restore =
-            was_maximized ? GetRestoredBounds() : GetBounds();
-        restore_pre_fullscreen_bounds_callback_ = base::BindOnce(
-            [](base::WeakPtr<BrowserView> view, const gfx::Rect& bounds,
-               bool maximize) {
-              if (view && view->browser_widget()) {
-                // Adjust restored bounds to be on-screen, in case the original
-                // screen was disconnected or repositioned during fullscreen.
-                // `bounds` excludes the invisible frame insets, so constrain
-                // it before converting it to widget bounds.
-                gfx::Rect widget_bounds = bounds;
-                const gfx::Rect work_area = display::Screen::Get()
-                                                ->GetDisplayMatching(bounds)
-                                                .work_area();
-                if (!work_area.IsEmpty()) {
-                  widget_bounds.AdjustToFit(work_area);
-                }
-                widget_bounds.Inset(
-                    -view->browser_widget()->GetInvisibleFrameInsets(
-                        /*restored=*/true));
-                view->browser_widget()->SetBounds(widget_bounds);
-                if (maximize) {
-                  view->Maximize();
-                }
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr(), bounds_to_restore, was_maximized);
+      if (!pre_fullscreen_state_) {
+        capture_pre_fullscreen_state();
       }
+      pre_fullscreen_state_->restore_on_exit = true;
 
       // Restore the window as needed, so it can be moved to the target display.
       // TODO(crbug.com/40111909): Support lower-layer fullscreen-on-display.
-      if (was_maximized) {
+      if (IsMaximized()) {
         Restore();
+        if (!weak_this) {
+          return;
+        }
       }
       SetBounds({display.work_area().origin(), GetBounds().size()});
+      if (!weak_this) {
+        return;
+      }
     }
   }
+
   browser_widget_->SetFullscreen(fullscreen);
-  if (!fullscreen && restore_pre_fullscreen_bounds_callback_) {
-    std::move(restore_pre_fullscreen_bounds_callback_).Run();
+  if (!weak_this) {
+    return;
   }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+
+  if (!fullscreen) {
+    std::optional<PreFullscreenState> state =
+        std::exchange(pre_fullscreen_state_, std::nullopt);
+    if (state && state->restore_on_exit && browser_widget_) {
+      // Translate the saved window bounds by any shift in the origin display's
+      // bounds (for example, when a display to the left was connected or
+      // disconnected during fullscreen), and clamp to the target display's work
+      // area. Use `bounds()` rather than `work_area()` for the origin delta so
+      // temporary panel insets (such as X11 `_NET_WORKAREA` when primary status
+      // changes) do not offset the restored position. `state->bounds` excludes
+      // invisible frame insets, so constrain it before converting to widget
+      // bounds.
+      gfx::Rect widget_bounds = state->bounds;
+      if (screen) {
+        display::Display target_display;
+        if (state->display_id != display::kInvalidDisplayId &&
+            screen->GetDisplayWithDisplayId(state->display_id,
+                                            &target_display)) {
+          // Skip the translation if `state->bounds` was not on the origin
+          // display (e.g. stale restored bounds, or Wayland).
+          if (state->display_bounds.Intersects(widget_bounds)) {
+            widget_bounds += target_display.bounds().OffsetFromOrigin() -
+                             state->display_bounds.OffsetFromOrigin();
+          }
+        } else {
+          target_display = screen->GetDisplayMatching(widget_bounds);
+        }
+        const gfx::Rect work_area = target_display.work_area();
+        if (!work_area.IsEmpty()) {
+          widget_bounds.AdjustToFit(work_area);
+        }
+      }
+      widget_bounds.Inset(
+          -browser_widget_->GetInvisibleFrameInsets(/*restored=*/true));
+      browser_widget_->SetBounds(widget_bounds);
+      if (!weak_this) {
+        return;
+      }
+      if (state->was_maximized) {
+        Maximize();
+      }
+    }
+  }
+#else   // BUILDFLAG(IS_LINUX)
+  // Request target display fullscreen from lower layers on other platforms.
+  browser_widget_->SetFullscreen(fullscreen, display_id);
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 void BrowserView::LoadAccelerators() {
