@@ -1,0 +1,31 @@
+Verifies that Network.*ExtraInfo events get assigned to the correct request hops in cross-origin redirects.
+
+requestIds count: 1
+requestWillBeSents: 3
+requestWillBeSentExtraInfos: 3
+responseReceiveds: 1
+responseReceivedExtraInfos: 3
+[
+  {
+    "url": "http://redirect-one.test:8000/inspector-protocol/network/resources/redirect-1.php",
+    "hasExtraRequestInfo": true,
+    "hasExtraResponseInfo": true,
+    "requestHostHeader": "redirect-one.test:8000",
+    "responseXDevToolsRedirectHeader": "1"
+  },
+  {
+    "url": "http://redirect-two.test:8000/inspector-protocol/network/resources/redirect-2.php",
+    "hasExtraRequestInfo": true,
+    "hasExtraResponseInfo": true,
+    "requestHostHeader": "redirect-two.test:8000",
+    "responseXDevToolsRedirectHeader": "2"
+  },
+  {
+    "url": "http://redirect-three.test:8000/inspector-protocol/network/resources/redirect-3.php",
+    "hasExtraRequestInfo": true,
+    "hasExtraResponseInfo": true,
+    "requestHostHeader": "redirect-three.test:8000",
+    "responseXDevToolsRedirectHeader": "3"
+  }
+]
+
