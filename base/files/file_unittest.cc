@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <array>
+#include <limits>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -21,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -35,6 +37,7 @@
 #if BUILDFLAG(IS_POSIX)
 #include <errno.h>
 #include <fcntl.h>
+#include <sys/mman.h>
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_WIN)
@@ -42,7 +45,6 @@
 
 #include "base/environment.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/gtest_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace base {
@@ -1334,5 +1336,40 @@ TEST(FileDeathTest, InvalidFlags) {
       "FLAG_WIN_NO_EXECUTE");
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_POSIX) && defined(ARCH_CPU_64_BITS) &&          \
+    !BUILDFLAG(IS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) &&   \
+    !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER) && \
+    !defined(THREAD_SANITIZER)
+TEST(FileDeathTest, OversizedSpan) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath file_path = temp_dir.GetPath().AppendASCII("oversized_span");
+  File file(file_path, File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE);
+  ASSERT_TRUE(file.IsValid());
+
+  constexpr size_t kOversized =
+      static_cast<size_t>(std::numeric_limits<int>::max()) + 1;
+  void* mapping =
+      mmap(nullptr, kOversized, PROT_NONE, MAP_PRIVATE | MAP_ANON, -1, 0);
+  if (mapping == MAP_FAILED) {
+    GTEST_SKIP();
+  }
+
+  // SAFETY: `mmap` reserved `kOversized` contiguous bytes at `mapping`; no
+  // standard container can reserve 2 GiB without committing memory.
+  span<uint8_t> data =
+      UNSAFE_BUFFERS(span(static_cast<uint8_t*>(mapping), kOversized));
+  EXPECT_CHECK_DEATH(file.Read(0, data));
+  EXPECT_CHECK_DEATH(file.ReadAtCurrentPos(data));
+  EXPECT_CHECK_DEATH(file.ReadNoBestEffort(0, data));
+  EXPECT_CHECK_DEATH(file.ReadAtCurrentPosNoBestEffort(data));
+  EXPECT_CHECK_DEATH(file.Write(0, data));
+  EXPECT_CHECK_DEATH(file.WriteAtCurrentPos(data));
+  EXPECT_CHECK_DEATH(file.WriteAtCurrentPosNoBestEffort(data));
+
+  munmap(mapping, kOversized);
+}
+#endif
 
 }  // namespace base

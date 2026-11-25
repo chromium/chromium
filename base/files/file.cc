@@ -11,7 +11,6 @@
 #include "base/files/file_tracing.h"
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -102,60 +101,16 @@ void File::Initialize(const FilePath& path, uint32_t flags) {
   DoInitialize(path, flags);
 }
 
-std::optional<size_t> File::Read(int64_t offset, span<uint8_t> data) {
-  span<char> chars = base::as_writable_chars(data);
-  int size = checked_cast<int>(chars.size());
-  // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
-  int result = UNSAFE_BUFFERS(Read(offset, chars.data(), size));
-  if (result < 0) {
-    return std::nullopt;
-  }
-  return checked_cast<size_t>(result);
-}
-
 bool File::ReadAndCheck(int64_t offset, span<uint8_t> data) {
   return Read(offset, data) == data.size();
-}
-
-std::optional<size_t> File::ReadAtCurrentPos(span<uint8_t> data) {
-  span<char> chars = base::as_writable_chars(data);
-  int size = checked_cast<int>(chars.size());
-  // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
-  int result = UNSAFE_BUFFERS(ReadAtCurrentPos(chars.data(), size));
-  if (result < 0) {
-    return std::nullopt;
-  }
-  return checked_cast<size_t>(result);
 }
 
 bool File::ReadAtCurrentPosAndCheck(span<uint8_t> data) {
   return ReadAtCurrentPos(data) == data.size();
 }
 
-std::optional<size_t> File::Write(int64_t offset, span<const uint8_t> data) {
-  span<const char> chars = base::as_chars(data);
-  int size = checked_cast<int>(chars.size());
-  // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
-  int result = UNSAFE_BUFFERS(Write(offset, chars.data(), size));
-  if (result < 0) {
-    return std::nullopt;
-  }
-  return checked_cast<size_t>(result);
-}
-
 bool File::WriteAndCheck(int64_t offset, span<const uint8_t> data) {
   return Write(offset, data) == data.size();
-}
-
-std::optional<size_t> File::WriteAtCurrentPos(span<const uint8_t> data) {
-  span<const char> chars = base::as_chars(data);
-  int size = checked_cast<int>(chars.size());
-  // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
-  int result = UNSAFE_BUFFERS(WriteAtCurrentPos(chars.data(), size));
-  if (result < 0) {
-    return std::nullopt;
-  }
-  return checked_cast<size_t>(result);
 }
 
 bool File::WriteAtCurrentPosAndCheck(span<const uint8_t> data) {

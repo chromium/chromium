@@ -21,6 +21,7 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include <atomic>
 #include <optional>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -28,6 +29,7 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include "base/files/file_tracing.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/utf_string_conversions.h"
@@ -79,13 +81,12 @@ Time TimeFromStatTimestamp(time_t seconds, int64_t nanoseconds) {
          Microseconds(nanoseconds / Time::kNanosecondsPerMicrosecond);
 }
 
-bool IsReadWriteRangeValid(int64_t offset, int size) {
-  if (size < 0 || !CheckAdd(offset, size - 1).IsValid() ||
-      !IsValueInRangeForNumericType<OffsetType>(offset + size - 1)) {
-    return false;
+bool IsReadWriteRangeValid(int64_t offset, size_t size) {
+  CheckedNumeric<OffsetType> end_offset = offset;
+  if (size > 0) {
+    end_offset += size - 1;
   }
-
-  return true;
+  return end_offset.IsValid();
 }
 
 // AIX doesn't provide the following system calls, so either simulate them or
@@ -282,65 +283,73 @@ int64_t File::Seek(Whence whence, int64_t offset) {
                    static_cast<int>(whence));
 }
 
-int File::Read(int64_t offset, char* data, int size) {
+std::optional<size_t> File::Read(int64_t offset, span<uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (!IsReadWriteRangeValid(offset, size)) {
-    return -1;
+  CHECK(IsValueInRangeForNumericType<int>(data.size()));
+  if (!IsReadWriteRangeValid(offset, data.size())) {
+    return std::nullopt;
   }
 
-  SCOPED_FILE_TRACE_WITH_SIZE("Read", size);
+  SCOPED_FILE_TRACE_WITH_SIZE("Read", static_cast<int64_t>(data.size()));
 
-  int bytes_read = 0;
-  long rv;
+  size_t bytes_read = 0;
+  ssize_t rv;
   do {
-    rv = HANDLE_EINTR(PReadFunc(file_.get(), data + bytes_read,
-                                static_cast<size_t>(size - bytes_read),
-                                static_cast<OffsetType>(offset + bytes_read)));
+    rv = HANDLE_EINTR(PReadFunc(
+        file_.get(), data.data(), data.size(),
+        static_cast<OffsetType>(offset + static_cast<int64_t>(bytes_read))));
     if (rv <= 0) {
       break;
     }
 
-    bytes_read += rv;
-  } while (bytes_read < size);
+    bytes_read += static_cast<size_t>(rv);
+    data = data.subspan(static_cast<size_t>(rv));
+  } while (!data.empty());
 
-  return bytes_read ? bytes_read : checked_cast<int>(rv);
+  if (bytes_read || rv == 0) {
+    return bytes_read;
+  }
+  return std::nullopt;
 }
 
-int File::ReadAtCurrentPos(char* data, int size) {
+std::optional<size_t> File::ReadAtCurrentPos(span<uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0) {
-    return -1;
-  }
+  CHECK(IsValueInRangeForNumericType<int>(data.size()));
 
-  SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPos", size);
+  SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPos",
+                              static_cast<int64_t>(data.size()));
 
-  int bytes_read = 0;
-  long rv;
+  size_t bytes_read = 0;
+  ssize_t rv;
   do {
-    rv = HANDLE_EINTR(read(file_.get(), data + bytes_read,
-                           static_cast<size_t>(size - bytes_read)));
+    rv = HANDLE_EINTR(read(file_.get(), data.data(), data.size()));
     if (rv <= 0) {
       break;
     }
 
-    bytes_read += rv;
-  } while (bytes_read < size);
+    bytes_read += static_cast<size_t>(rv);
+    data = data.subspan(static_cast<size_t>(rv));
+  } while (!data.empty());
 
-  return bytes_read ? bytes_read : checked_cast<int>(rv);
+  if (bytes_read || rv == 0) {
+    return bytes_read;
+  }
+  return std::nullopt;
 }
 
 std::optional<size_t> File::ReadNoBestEffort(int64_t offset,
                                              base::span<uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
+  CHECK(IsValueInRangeForNumericType<int>(data.size()));
   if (!IsValueInRangeForNumericType<off_t>(offset)) {
     return std::nullopt;
   }
 
   SCOPED_FILE_TRACE_WITH_SIZE("ReadNoBestEffort",
-                              base::checked_cast<int64_t>(data.size()));
+                              static_cast<int64_t>(data.size()));
   const ssize_t bytes_read = HANDLE_EINTR(
       pread(file_.get(), data.data(), data.size(), static_cast<off_t>(offset)));
   if (bytes_read < 0) {
@@ -353,9 +362,10 @@ std::optional<size_t> File::ReadAtCurrentPosNoBestEffort(
     base::span<uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
+  CHECK(IsValueInRangeForNumericType<int>(data.size()));
 
   SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPosNoBestEffort",
-                              base::checked_cast<int64_t>(data.size()));
+                              static_cast<int64_t>(data.size()));
   const ssize_t bytes_read =
       HANDLE_EINTR(read(file_.get(), data.data(), data.size()));
   if (bytes_read < 0) {
@@ -364,68 +374,75 @@ std::optional<size_t> File::ReadAtCurrentPosNoBestEffort(
   return checked_cast<size_t>(bytes_read);
 }
 
-int File::Write(int64_t offset, const char* data, int size) {
+std::optional<size_t> File::Write(int64_t offset, span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  DCHECK(IsValid());
+  CHECK(IsValueInRangeForNumericType<int>(data.size()));
 
   if (IsOpenAppend(file_.get())) {
-    return WriteAtCurrentPos(data, size);
+    return WriteAtCurrentPos(data);
   }
 
-  DCHECK(IsValid());
-  if (!IsReadWriteRangeValid(offset, size)) {
-    return -1;
+  if (!IsReadWriteRangeValid(offset, data.size())) {
+    return std::nullopt;
   }
 
-  SCOPED_FILE_TRACE_WITH_SIZE("Write", size);
+  SCOPED_FILE_TRACE_WITH_SIZE("Write", static_cast<int64_t>(data.size()));
 
-  int bytes_written = 0;
-  long rv;
+  size_t bytes_written = 0;
+  ssize_t rv;
   do {
-    rv = HANDLE_EINTR(
-        PWriteFunc(file_.get(), data + bytes_written,
-                   static_cast<size_t>(size - bytes_written),
-                   static_cast<OffsetType>(offset + bytes_written)));
+    rv = HANDLE_EINTR(PWriteFunc(
+        file_.get(), data.data(), data.size(),
+        static_cast<OffsetType>(offset + static_cast<int64_t>(bytes_written))));
     if (rv <= 0) {
       break;
     }
 
-    bytes_written += rv;
-  } while (bytes_written < size);
+    bytes_written += static_cast<size_t>(rv);
+    data = data.subspan(static_cast<size_t>(rv));
+  } while (!data.empty());
 
-  return bytes_written ? bytes_written : checked_cast<int>(rv);
+  if (bytes_written || rv == 0) {
+    return bytes_written;
+  }
+  return std::nullopt;
 }
 
-int File::WriteAtCurrentPos(const char* data, int size) {
+std::optional<size_t> File::WriteAtCurrentPos(span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0) {
-    return -1;
-  }
+  CHECK(IsValueInRangeForNumericType<int>(data.size()));
 
-  SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPos", size);
+  SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPos",
+                              static_cast<int64_t>(data.size()));
 
-  int bytes_written = 0;
-  long rv;
+  size_t bytes_written = 0;
+  ssize_t rv;
   do {
-    rv = HANDLE_EINTR(write(file_.get(), data + bytes_written,
-                            static_cast<size_t>(size - bytes_written)));
+    rv = HANDLE_EINTR(write(file_.get(), data.data(), data.size()));
     if (rv <= 0) {
       break;
     }
 
-    bytes_written += rv;
-  } while (bytes_written < size);
+    bytes_written += static_cast<size_t>(rv);
+    data = data.subspan(static_cast<size_t>(rv));
+  } while (!data.empty());
 
-  return bytes_written ? bytes_written : checked_cast<int>(rv);
+  if (bytes_written || rv == 0) {
+    return bytes_written;
+  }
+  return std::nullopt;
 }
 
 std::optional<size_t> File::WriteAtCurrentPosNoBestEffort(
     base::span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
+  CHECK(IsValueInRangeForNumericType<int>(data.size()));
 
   SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPosNoBestEffort",
-                              base::checked_cast<int64_t>(data.size()));
+                              static_cast<int64_t>(data.size()));
   const ssize_t bytes_written =
       HANDLE_EINTR(write(file_.get(), data.data(), data.size()));
   if (bytes_written < 0) {

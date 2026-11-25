@@ -19,6 +19,7 @@
 #include "base/immediate_crash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
 
@@ -67,12 +68,14 @@ int64_t File::Seek(Whence whence, int64_t offset) {
   return res.QuadPart;
 }
 
-int File::Read(int64_t offset, char* data, int size) {
+std::optional<size_t> File::Read(int64_t offset, span<uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
-  if (size < 0 || offset < 0) {
-    return -1;
+  CHECK(IsValueInRangeForNumericType<int>(data.size()));
+  DWORD size = static_cast<DWORD>(data.size());
+  if (offset < 0) {
+    return std::nullopt;
   }
 
   SCOPED_FILE_TRACE_WITH_SIZE("Read", size);
@@ -85,41 +88,34 @@ int File::Read(int64_t offset, char* data, int size) {
   overlapped.OffsetHigh = offset_li.HighPart;
 
   DWORD bytes_read;
-  if (::ReadFile(file_.get(), data, static_cast<DWORD>(size), &bytes_read,
-                 &overlapped)) {
-    // TODO(crbug.com/40227936): Change to return some type with a uint64_t size
-    // and eliminate this cast.
-    return checked_cast<int>(bytes_read);
+  if (::ReadFile(file_.get(), data.data(), size, &bytes_read, &overlapped)) {
+    return bytes_read;
   }
   if (ERROR_HANDLE_EOF == GetLastError()) {
     return 0;
   }
 
-  return -1;
+  return std::nullopt;
 }
 
-int File::ReadAtCurrentPos(char* data, int size) {
+std::optional<size_t> File::ReadAtCurrentPos(span<uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
-  if (size < 0) {
-    return -1;
-  }
+  CHECK(IsValueInRangeForNumericType<int>(data.size()));
+  DWORD size = static_cast<DWORD>(data.size());
 
   SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPos", size);
 
   DWORD bytes_read;
-  if (::ReadFile(file_.get(), data, static_cast<DWORD>(size), &bytes_read,
-                 NULL)) {
-    // TODO(crbug.com/40227936): Change to return some type with a uint64_t size
-    // and eliminate this cast.
-    return checked_cast<int>(bytes_read);
+  if (::ReadFile(file_.get(), data.data(), size, &bytes_read, nullptr)) {
+    return bytes_read;
   }
   if (ERROR_HANDLE_EOF == GetLastError()) {
     return 0;
   }
 
-  return -1;
+  return std::nullopt;
 }
 
 std::optional<size_t> File::ReadNoBestEffort(int64_t offset,
@@ -134,12 +130,14 @@ std::optional<size_t> File::ReadAtCurrentPosNoBestEffort(
   return ReadAtCurrentPos(data);
 }
 
-int File::Write(int64_t offset, const char* data, int size) {
+std::optional<size_t> File::Write(int64_t offset, span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
-  if (size < 0 || offset < 0) {
-    return -1;
+  CHECK(IsValueInRangeForNumericType<int>(data.size()));
+  DWORD size = static_cast<DWORD>(data.size());
+  if (offset < 0) {
+    return std::nullopt;
   }
 
   SCOPED_FILE_TRACE_WITH_SIZE("Write", size);
@@ -152,31 +150,29 @@ int File::Write(int64_t offset, const char* data, int size) {
   overlapped.OffsetHigh = offset_li.HighPart;
 
   DWORD bytes_written;
-  if (::WriteFile(file_.get(), data, static_cast<DWORD>(size), &bytes_written,
+  if (::WriteFile(file_.get(), data.data(), size, &bytes_written,
                   &overlapped)) {
-    return static_cast<int>(bytes_written);
+    return bytes_written;
   }
 
-  return -1;
+  return std::nullopt;
 }
 
-int File::WriteAtCurrentPos(const char* data, int size) {
+std::optional<size_t> File::WriteAtCurrentPos(span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
-  if (size < 0) {
-    return -1;
-  }
+  CHECK(IsValueInRangeForNumericType<int>(data.size()));
+  DWORD size = static_cast<DWORD>(data.size());
 
   SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPos", size);
 
   DWORD bytes_written;
-  if (::WriteFile(file_.get(), data, static_cast<DWORD>(size), &bytes_written,
-                  NULL)) {
-    return static_cast<int>(bytes_written);
+  if (::WriteFile(file_.get(), data.data(), size, &bytes_written, nullptr)) {
+    return bytes_written;
   }
 
-  return -1;
+  return std::nullopt;
 }
 
 std::optional<size_t> File::WriteAtCurrentPosNoBestEffort(
