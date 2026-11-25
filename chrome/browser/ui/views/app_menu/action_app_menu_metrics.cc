@@ -76,33 +76,42 @@ void ActionAppMenuMetrics::LogMenuAction(actions::BaseAction* base_action) {
     return;
   }
 
-  for (actions::BaseAction* parent = base_action->GetParent(); parent;
-       parent = parent->GetParent()) {
-    std::optional<actions::ActionId> parent_id =
-        parent->GetActionItem()->GetActionId();
-    if (parent_id == kActionBookmarksSubmenu) {
-      RecordAction(MENU_ACTION_BOOKMARK_OPEN, "OpenBookmark");
-      return;
+  auto try_log_from_ancestors = [this](actions::BaseAction* start) {
+    for (actions::BaseAction* parent = start->GetParent(); parent;
+         parent = parent->GetParent()) {
+      std::optional<actions::ActionId> parent_id =
+          parent->GetActionItem()->GetActionId();
+      if (parent_id == kActionBookmarksSubmenu) {
+        RecordAction(MENU_ACTION_BOOKMARK_OPEN, "OpenBookmark");
+        return true;
+      }
+      if (parent_id == kActionRecentTabsSubmenu) {
+        LogMenuActionWithId(kActionOpenRecentTab);
+        return true;
+      }
+      if (parent_id == kActionOtherDeviceTabsSubmenu) {
+        LogMenuActionWithId(kActionOpenOtherDeviceTab);
+        return true;
+      }
+      if (parent_id == kActionProfileSubmenu) {
+        RecordAction(MENU_ACTION_SWITCH_TO_ANOTHER_PROFILE,
+                     "SwitchToAnotherProfile");
+        return true;
+      }
+      if (parent_id == kActionSavedTabGroupsSubmenu) {
+        base::RecordAction(base::UserMetricsAction(
+            "TabGroups_SavedTabGroups_OpenedFromAppMenu"));
+        RecordTimeToAction();
+        return true;
+      }
     }
-    if (parent_id == kActionRecentTabsSubmenu) {
-      LogMenuActionWithId(kActionOpenRecentTab);
-      return;
-    }
-    if (parent_id == kActionOtherDeviceTabsSubmenu) {
-      LogMenuActionWithId(kActionOpenOtherDeviceTab);
-      return;
-    }
-    if (parent_id == kActionProfileSubmenu) {
-      RecordAction(MENU_ACTION_SWITCH_TO_ANOTHER_PROFILE,
-                   "SwitchToAnotherProfile");
-      return;
-    }
-    if (parent_id == kActionSavedTabGroupsSubmenu) {
-      base::RecordAction(base::UserMetricsAction(
-          "TabGroups_SavedTabGroups_OpenedFromAppMenu"));
-      RecordTimeToAction();
-      return;
-    }
+    return false;
+  };
+
+  // Search results wrap menu items in an IndirectActionItem under an ephemeral
+  // search container, so fall back to the underlying ActionItem's ancestors.
+  if (!try_log_from_ancestors(base_action) && base_action != action_ptr) {
+    try_log_from_ancestors(action_ptr);
   }
 }
 

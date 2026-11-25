@@ -3986,6 +3986,149 @@ TEST_F(ActionAppMenuWithSearchTest, FlatHeadersKeepDefaultMargin) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuWithSearchTest, DynamicSearchResultClickLogsMetrics) {
+  RecentTabsDynamicMenu recent_tabs_menu(&mock_window_interface_,
+                                         &mock_drag_and_drop_host_);
+
+  auto run_search_and_click =
+      [&](actions::ActionId submenu_id,
+          base::FunctionRef<void(actions::BaseAction*)> populate_submenu,
+          const std::u16string& query) {
+        base::MockCallback<base::RepeatingClosure> on_menu_closed;
+        ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+        actions::BaseAction* submenu = FindBaseAction(root_action_, submenu_id);
+        if (!submenu) {
+          submenu = AddChildBeforeFooter(
+              root_action_,
+              AppMenuActionItem::CreateIndirect(
+                  submenu_id, browser_actions_->root_action_item()));
+        }
+        ASSERT_NE(submenu, nullptr);
+        populate_submenu(submenu);
+
+        menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+        ASSERT_TRUE(menu.IsShowing());
+
+        AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+        ASSERT_NE(search_bar, nullptr);
+        search_bar->SetText(query);
+
+        views::MenuItemView* root = menu.root_menu_item_for_testing();
+        ASSERT_NE(root, nullptr);
+        views::MenuItemView* match = nullptr;
+        for (views::MenuItemView* item : root->GetSubmenu()->GetMenuItems()) {
+          if (item->title() == query) {
+            match = item;
+            break;
+          }
+        }
+        ASSERT_NE(match, nullptr) << "Missing search result for: " << query;
+
+        menu.ExecuteCommand(match->GetCommand(), /*mouse_event_flags=*/0);
+
+        EXPECT_CALL(on_menu_closed, Run()).Times(1);
+        menu.CloseMenu();
+      };
+
+  // Nested bookmark inside a folder under kActionBookmarksSubmenu.
+  {
+    base::HistogramTester histogram_tester;
+    run_search_and_click(
+        kActionBookmarksSubmenu,
+        [](actions::BaseAction* submenu) {
+          auto folder = actions::ActionItem::Builder().SetText(u"Work").Build();
+          folder->AddChild(actions::ActionItem::Builder()
+                               .SetText(u"Quarterly Roadmap")
+                               .Build());
+          submenu->AddChild(std::move(folder));
+        },
+        u"Quarterly Roadmap");
+    histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                       MENU_ACTION_BOOKMARK_OPEN, 1);
+    histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction.OpenBookmark",
+                                      1);
+    histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
+  }
+
+  // Local recent tab under kActionRecentTabsSubmenu.
+  {
+    base::HistogramTester histogram_tester;
+    run_search_and_click(
+        kActionRecentTabsSubmenu,
+        [&recent_tabs_menu](actions::BaseAction* submenu) {
+          RecentTabItem tab(RecentTabItem::Type::kTab, u"Closed Article");
+          tab.set_is_local(true);
+          tab.set_session_id(SessionID::FromSerializedValue(1));
+          tab.set_url(GURL("https://example.com/article"));
+          recent_tabs_menu.CreateRecentTabsActionForTesting(submenu,
+                                                            {std::move(tab)});
+        },
+        u"Closed Article");
+    histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                       MENU_ACTION_RECENT_TAB, 1);
+    histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction.OpenRecentTab",
+                                      1);
+    histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
+  }
+
+  // Synced tab from another device under kActionOtherDeviceTabsSubmenu.
+  {
+    base::HistogramTester histogram_tester;
+    run_search_and_click(
+        kActionOtherDeviceTabsSubmenu,
+        [&recent_tabs_menu](actions::BaseAction* submenu) {
+          RecentTabItem tab(RecentTabItem::Type::kTab, u"Phone Browser Tab");
+          tab.set_is_local(false);
+          tab.set_session_tag("phone_session");
+          tab.set_session_id(SessionID::FromSerializedValue(2));
+          tab.set_url(GURL("https://example.com/phone"));
+          recent_tabs_menu.CreateRecentTabsActionForTesting(submenu,
+                                                            {std::move(tab)});
+        },
+        u"Phone Browser Tab");
+    histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                       MENU_ACTION_OTHER_DEVICE_TAB, 1);
+    histogram_tester.ExpectTotalCount(
+        "WrenchMenu.TimeToAction.OpenOtherDeviceTab", 1);
+    histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
+  }
+
+  // Other profile under kActionProfileSubmenu.
+  {
+    base::HistogramTester histogram_tester;
+    run_search_and_click(
+        kActionProfileSubmenu,
+        [](actions::BaseAction* submenu) {
+          submenu->AddChild(
+              actions::ActionItem::Builder().SetText(u"Work Profile").Build());
+        },
+        u"Work Profile");
+    histogram_tester.ExpectBucketCount(
+        "WrenchMenu.MenuAction", MENU_ACTION_SWITCH_TO_ANOTHER_PROFILE, 1);
+    histogram_tester.ExpectTotalCount(
+        "WrenchMenu.TimeToAction.SwitchToAnotherProfile", 1);
+    histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
+  }
+
+  // Saved tab group under kActionSavedTabGroupsSubmenu.
+  {
+    base::HistogramTester histogram_tester;
+    base::UserActionTester user_action_tester;
+    run_search_and_click(
+        kActionSavedTabGroupsSubmenu,
+        [](actions::BaseAction* submenu) {
+          submenu->AddChild(
+              actions::ActionItem::Builder().SetText(u"Trip Planning").Build());
+        },
+        u"Trip Planning");
+    EXPECT_EQ(user_action_tester.GetActionCount(
+                  "TabGroups_SavedTabGroups_OpenedFromAppMenu"),
+              1);
+    histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
+  }
+}
+
 TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
