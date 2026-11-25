@@ -421,16 +421,29 @@ class AutocompleteMediator
     }
 
     /**
+     * Retrieve the default (first) omnibox suggestion, if available.
+     *
+     * @return The default suggestion, or {@code null} if unavailable.
+     */
+    @Nullable AutocompleteMatch getDefaultMatch() {
+        if (mAutocompleteResult == null) return null;
+        var suggestions = mAutocompleteResult.getSuggestionsList();
+        return suggestions.isEmpty() ? null : suggestions.get(0);
+    }
+
+    /**
      * Retrieve the omnibox suggestion at the specified index. The index represents the ordering in
      * the underlying model. The index does not represent visibility due to the current scroll
      * position of the list.
      *
      * @param matchIndex The index of the suggestion to fetch.
-     * @return The suggestion at the given index.
+     * @return The suggestion at the given index, or {@code null} if unavailable or out of bounds.
      */
-    public @Nullable AutocompleteMatch getSuggestionAt(int matchIndex) {
-        return mAutocompleteResult != null
-                ? mAutocompleteResult.getSuggestionsList().get(matchIndex)
+    @Nullable AutocompleteMatch getSuggestionAtForTest(int matchIndex) {
+        if (mAutocompleteResult == null) return null;
+        var suggestions = mAutocompleteResult.getSuggestionsList();
+        return (matchIndex >= 0 && matchIndex < suggestions.size())
+                ? suggestions.get(matchIndex)
                 : null;
     }
 
@@ -777,7 +790,7 @@ class AutocompleteMediator
         if (!isInInputSession()) return;
 
         if (suggestion.getTakeoverAction() != null) {
-            onOmniboxActionClicked(suggestion.getTakeoverAction(), matchIndex);
+            onOmniboxActionClicked(suggestion, suggestion.getTakeoverAction(), matchIndex);
             return;
         }
 
@@ -861,11 +874,9 @@ class AutocompleteMediator
     }
 
     @Override
-    public void onOmniboxActionClicked(OmniboxAction action, int position) {
-        var match = getSuggestionAt(position);
-        if (match != null) {
-            recordMetrics(match, action, position, action.disposition);
-        }
+    public void onOmniboxActionClicked(
+            AutocompleteMatch suggestion, OmniboxAction action, int position) {
+        recordMetrics(suggestion, action, position, action.disposition);
         if (action.execute(mOmniboxActionDelegate)) {
             finishInteraction();
         }
@@ -1670,7 +1681,7 @@ class AutocompleteMediator
                 && urlText.trim().equals(mUrlTextAfterSuggestionsReceived.trim())) {
             // Common case: the user typed something, received suggestions, then pressed enter.
             // This triggers the Default Match.
-            return getSuggestionAt(0);
+            return getDefaultMatch();
         } else {
             // Less common case: there are no valid omnibox suggestions. This can happen if the
             // user tapped the URL bar to dismiss the suggestions, then pressed enter. This can

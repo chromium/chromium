@@ -387,7 +387,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                                     action.accessibilityHint,
                                     null,
                                     () -> {
-                                        mSuggestionHost.onOmniboxActionClicked(action, position);
+                                        mSuggestionHost.onOmniboxActionClicked(
+                                                suggestion, action, position);
                                     })));
             // Only one action button is supported.
             return;

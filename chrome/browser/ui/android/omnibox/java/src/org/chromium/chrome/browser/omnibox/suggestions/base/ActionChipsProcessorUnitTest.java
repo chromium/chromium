@@ -92,13 +92,14 @@ public class ActionChipsProcessorUnitTest {
     }
 
     /** Create a suggestion with supplied OmniboxActions (if any) and populate model. */
-    private void populateModelForActions(OmniboxAction... actions) {
+    private AutocompleteMatch populateModelForActions(OmniboxAction... actions) {
         AutocompleteMatch match =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
                         .setActions(List.of(actions))
                         .build();
         mProcessor.populateModel(match, mModel, MATCH_POS);
         mActionModel = mModel.get(BaseSuggestionViewProperties.ACTION_CHIPS);
+        return match;
     }
 
     @Test
@@ -153,15 +154,15 @@ public class ActionChipsProcessorUnitTest {
                 actionWithHandleAndTextAppearance(2, R.style.TextAppearance_ChipText);
         OmniboxAction action3 =
                 actionWithHandleAndTextAppearance(3, R.style.TextAppearance_ChipText);
-        populateModelForActions(action1, action2, action3);
+        AutocompleteMatch match = populateModelForActions(action1, action2, action3);
 
         PropertyModel firstChip = mActionModel.get(0).model;
         firstChip.get(ChipProperties.CLICK_HANDLER).onResult(firstChip);
-        verify(mSuggestionHost).onOmniboxActionClicked(action1, MATCH_POS);
+        verify(mSuggestionHost).onOmniboxActionClicked(match, action1, MATCH_POS);
 
         PropertyModel thirdChip = mActionModel.get(2).model;
         thirdChip.get(ChipProperties.CLICK_HANDLER).onResult(thirdChip);
-        verify(mSuggestionHost).onOmniboxActionClicked(action3, MATCH_POS);
+        verify(mSuggestionHost).onOmniboxActionClicked(match, action3, MATCH_POS);
     }
 
     @Test
@@ -200,7 +201,7 @@ public class ActionChipsProcessorUnitTest {
                         "Play Chrome Dino game",
                         "Play Chrome Dino game accessibility",
                         OmniboxPedalId.PLAY_CHROME_DINO_GAME);
-        populateModelForActions(clearBrowsingDataPedal, dinoPedal);
+        AutocompleteMatch match = populateModelForActions(clearBrowsingDataPedal, dinoPedal);
 
         assertEquals(2, mActionModel.size());
 
@@ -211,12 +212,12 @@ public class ActionChipsProcessorUnitTest {
                 firstChip.get(ChipProperties.CONTENT_DESCRIPTION));
         assertEquals(OmniboxAction.DEFAULT_ICON.chipIconRes, firstChip.get(ChipProperties.ICON));
         firstChip.get(ChipProperties.CLICK_HANDLER).onResult(firstChip);
-        verify(mSuggestionHost).onOmniboxActionClicked(clearBrowsingDataPedal, MATCH_POS);
+        verify(mSuggestionHost).onOmniboxActionClicked(match, clearBrowsingDataPedal, MATCH_POS);
 
         PropertyModel secondChip = mActionModel.get(1).model;
         assertEquals("Play Chrome Dino game", secondChip.get(ChipProperties.TEXT));
         assertEquals(R.drawable.action_dino_game, secondChip.get(ChipProperties.ICON));
         secondChip.get(ChipProperties.CLICK_HANDLER).onResult(secondChip);
-        verify(mSuggestionHost).onOmniboxActionClicked(dinoPedal, MATCH_POS);
+        verify(mSuggestionHost).onOmniboxActionClicked(match, dinoPedal, MATCH_POS);
     }
 }

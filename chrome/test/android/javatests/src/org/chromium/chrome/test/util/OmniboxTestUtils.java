@@ -321,7 +321,7 @@ public class OmniboxTestUtils {
                         // Callers are responsible for ensuring the view type matches T.
                         @SuppressWarnings("unchecked")
                         T view = (T) dropdown.getDropdownItemViewForTest(i);
-                        AutocompleteMatch suggestion = mAutocomplete.getSuggestionAt(i);
+                        AutocompleteMatch suggestion = mAutocomplete.getSuggestionAtForTest(i);
                         if (filter.apply(info) && view != null && suggestion != null) {
                             result.set(
                                     new SuggestionInfo<>(

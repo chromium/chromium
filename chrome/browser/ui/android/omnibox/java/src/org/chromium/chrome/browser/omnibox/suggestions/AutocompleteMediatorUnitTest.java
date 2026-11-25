@@ -3857,7 +3857,7 @@ public class AutocompleteMediatorUnitTest {
                         "accessibility",
                         "keyword",
                         StarterPackId.TABS);
-        mMediator.onOmniboxActionClicked(siteSearchAction, 0);
+        mMediator.onOmniboxActionClicked(mSuggestionsList.get(0), siteSearchAction, 0);
         verify(mOmniboxActionDelegate)
                 .setSiteSearchData(
                         new SiteSearchData(
@@ -3873,7 +3873,35 @@ public class AutocompleteMediatorUnitTest {
                         "hint",
                         "accessibility",
                         OmniboxPedalId.LAUNCH_INCOGNITO);
-        mMediator.onOmniboxActionClicked(pedalAction, 0);
+        mMediator.onOmniboxActionClicked(mSuggestionsList.get(0), pedalAction, 0);
+        verify(mOmniboxActionDelegate).openIncognitoTab();
+        verify(mAutocompleteDelegate).clearOmniboxFocus();
+    }
+
+    @Test
+    public void getDefaultMatch_returnsNullWhenEmptyOrMissing() {
+        assertNull(mMediator.getDefaultMatch());
+        assertNull(mMediator.getSuggestionAtForTest(0));
+
+        mMediator.beginInput(createEmptySession());
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
+        assertEquals(mSuggestionsList.get(0), mMediator.getDefaultMatch());
+        assertNull(mMediator.getSuggestionAtForTest(-1));
+        assertNull(mMediator.getSuggestionAtForTest(mSuggestionsList.size()));
+    }
+
+    @Test
+    public void onOmniboxActionClicked_stalePositionDoesNotCrash() {
+        mMediator.beginInput(createEmptySession());
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
+        OmniboxPedal pedalAction =
+                new OmniboxPedal(
+                        /* nativeInstance= */ 2,
+                        "hint",
+                        "accessibility",
+                        OmniboxPedalId.LAUNCH_INCOGNITO);
+        mMediator.onOmniboxActionClicked(
+                mSuggestionsList.get(0), pedalAction, mSuggestionsList.size() + 1);
         verify(mOmniboxActionDelegate).openIncognitoTab();
         verify(mAutocompleteDelegate).clearOmniboxFocus();
     }

@@ -64,7 +64,7 @@ public class ActionChipsProcessor {
                             .with(ChipProperties.ENABLED, true)
                             .with(
                                     ChipProperties.CLICK_HANDLER,
-                                    m -> executeAction(action, position))
+                                    m -> executeAction(suggestion, action, position))
                             .with(
                                     ChipProperties.SELECT_HANDLER,
                                     isSelected ->
@@ -87,7 +87,7 @@ public class ActionChipsProcessor {
     }
 
     /** Invokes the action associated with the ActionChip. */
-    private void executeAction(OmniboxAction action, int position) {
-        mSuggestionHost.onOmniboxActionClicked(action, position);
+    private void executeAction(AutocompleteMatch suggestion, OmniboxAction action, int position) {
+        mSuggestionHost.onOmniboxActionClicked(suggestion, action, position);
     }
 }

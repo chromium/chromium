@@ -435,19 +435,17 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
      * position of the list.
      *
      * @param index The index of the suggestion to fetch.
-     * @return The suggestion at the given index.
+     * @return The suggestion at the given index, or {@code null} if unavailable or out of bounds.
      */
-    public @Nullable AutocompleteMatch getSuggestionAt(int index) {
-        return mMediator.getSuggestionAt(index);
+    public @Nullable AutocompleteMatch getSuggestionAtForTest(int index) {
+        return mMediator.getSuggestionAtForTest(index);
     }
 
     /** Triggers a prefetch for the default (first) autocomplete suggestion, if available. */
     public void prefetchDefaultMatch(long eventTime) {
-        if (getSuggestionCount() > 0) {
-            AutocompleteMatch suggestion = getSuggestionAt(0);
-            if (suggestion != null) {
-                mMediator.onSuggestionTouchDown(suggestion, 0, eventTime);
-            }
+        AutocompleteMatch suggestion = mMediator.getDefaultMatch();
+        if (suggestion != null) {
+            mMediator.onSuggestionTouchDown(suggestion, 0, eventTime);
         }
     }
 

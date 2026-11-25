@@ -41,10 +41,11 @@ public interface SuggestionHost {
     /**
      * Triggered when the user clicks one of the OmniboxActions attached to Suggestion.
      *
+     * @param suggestion The suggestion that the action is attached to.
      * @param action the action the user interacted with
      * @param position The position of the associated suggestion.
      */
-    void onOmniboxActionClicked(OmniboxAction action, int position);
+    void onOmniboxActionClicked(AutocompleteMatch suggestion, OmniboxAction action, int position);
 
     /**
      * Triggered when the user long presses the omnibox suggestion. A delete confirmation dialog
