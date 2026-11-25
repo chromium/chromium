@@ -4,15 +4,29 @@
 
 #include "components/optimization_guide/core/model_execution/android/model_broker_android.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <utility>
 
+#include "base/callback_list.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/current_thread.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/android/android_manifest.h"
 #include "components/optimization_guide/core/model_execution/configs/summarize_solution_config.h"
+#include "components/optimization_guide/core/model_execution/manifest_provider.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
@@ -25,8 +39,11 @@
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/feature_configs.pb.h"
+#include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
+#include "services/on_device_model/android/model_downloader_android.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
@@ -35,6 +52,19 @@ namespace {
 
 using BaseModelSpec = on_device_model::ModelDownloaderAndroid::BaseModelSpec;
 using ModelStatus = on_device_model::ModelDownloaderAndroid::ModelStatus;
+
+class FakeManifestProvider : public ManifestProvider {
+ public:
+  base::CallbackListSubscription ListenForManifestReady(
+      ReadyCallback callback) override {
+    return callbacks_.Add(std::move(callback));
+  }
+  void Notify(const base::FilePath& directory) { callbacks_.Notify(directory); }
+  bool HasSubscribers() const { return !callbacks_.empty(); }
+
+ private:
+  base::RepeatingCallbackList<void(base::FilePath)> callbacks_;
+};
 
 proto::OnDeviceModelExecutionFeatureConfig UnsafeFeatureConfig(
     mojom::OnDeviceFeature feature) {
@@ -431,7 +461,7 @@ TEST_F(ModelBrokerAndroidTest, FailedManifestLoadPreservesCurrentSolution) {
   auto original_client = subscriber.client()->GetWeakPtr();
 
   fake_broker_.broker().OnManifestLoaded(
-      base::unexpected(AndroidManifest::ParseError::kInvalidConfig));
+      base::unexpected(AndroidManifest::LoadResult::kParseFailed));
 
   // Verify the existing session still works.
   base::test::TestFuture<std::optional<uint32_t>> token_count;
@@ -737,6 +767,233 @@ TEST_F(ModelBrokerAndroidFeatureDisabledTest, FeatureDisabled) {
            mojom::ModelUnavailableReason::kNotSupported;
   });
   EXPECT_EQ(future.Get(), nullptr);
+}
+
+class ModelBrokerAndroidManifestTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(directory_.CreateUniqueTempDir());
+    auto provider = std::make_unique<FakeManifestProvider>();
+    provider_ = provider.get();
+    broker_ = std::make_unique<FakeModelBrokerAndroid>(
+        FakeModelBrokerAndroid::Options{}, std::move(provider));
+    broker_->java_helper().settings().SetDefaultStatusCheckResult(
+        on_device_model::ModelDownloaderAndroid::ModelStatus::kApiNotAvailable);
+  }
+
+  void TearDown() override {
+    provider_ = nullptr;
+    broker_.reset();
+  }
+
+  // Creates a valid Summarizer config with the given token limit.
+  proto::SolutionConfig MakeConfig(uint32_t limit) {
+    proto::SolutionConfig config = BuildAndroidSummarizeSolutionConfig();
+    config.mutable_feature()->mutable_input_config()->set_max_execute_tokens(
+        limit);
+    return config;
+  }
+
+  // Writes a component config and notifies the broker of its directory.
+  void DeliverManifest(uint32_t limit) {
+    proto::SolutionConfig config = MakeConfig(limit);
+    ASSERT_TRUE(base::WriteFile(
+        directory_.GetPath().Append(kAndroidSummarizerConfigFileName),
+        config.SerializeAsString()));
+    provider_->Notify(directory_.GetPath());
+  }
+
+  // The barrier runs after the replies for earlier loads finish.
+  bool WaitForManifestLoads() {
+    base::test::TestFuture<void> done;
+    broker_->broker().FlushManifestLoadsForTesting(done.GetCallback());
+    return done.Wait();
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::ScopedTempDir directory_;
+  raw_ptr<FakeManifestProvider> provider_ = nullptr;
+  std::unique_ptr<FakeModelBrokerAndroid> broker_;
+};
+
+TEST_F(ModelBrokerAndroidManifestTest, DisabledExecutionDoesNotSubscribe) {
+  // Override the fake broker's default enabled feature before constructing the
+  // real broker.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kOptimizationGuideModelExecution);
+
+  broker_->broker();
+
+  EXPECT_FALSE(provider_->HasSubscribers());
+  EXPECT_EQ(broker_->java_helper().GetStatusCheckerCount(), 0);
+}
+
+TEST_F(ModelBrokerAndroidManifestTest, DisabledComponentLoadingUsesBuiltin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAndroidModelConfigComponentLoading);
+
+  broker_->broker();
+  // Component loading is disabled, so the broker should have no subscription.
+  EXPECT_FALSE(provider_->HasSubscribers());
+
+  // Disabling component loading still allows on-device execution to proceed
+  // with the built-in configuration.
+  ModelBrokerClient client(broker_->BindAndPassRemote(), nullptr);
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+  client.CreateSession(mojom::OnDeviceFeature::kSummarize,
+                       SessionConfigParams{}, future.GetCallback());
+  auto session = future.Take();
+  ASSERT_TRUE(session);
+  EXPECT_EQ(session->GetTokenLimits().max_execute_tokens,
+            kAndroidMaxExecuteTokens);
+}
+
+TEST_F(ModelBrokerAndroidManifestTest, ConfigLoadsBeforeFirstUse) {
+  broker_->broker();
+  EXPECT_TRUE(provider_->HasSubscribers());
+  DeliverManifest(1234);
+  ASSERT_TRUE(WaitForManifestLoads());
+  EXPECT_EQ(broker_->java_helper().GetStatusCheckerCount(), 0);
+  ModelBrokerClient client(broker_->BindAndPassRemote(), nullptr);
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+  client.CreateSession(mojom::OnDeviceFeature::kSummarize,
+                       SessionConfigParams{}, future.GetCallback());
+  auto session = future.Take();
+  ASSERT_TRUE(session);
+  EXPECT_EQ(session->GetTokenLimits().max_execute_tokens, 1234u);
+}
+
+TEST_F(ModelBrokerAndroidManifestTest, LoadedConfigReplacesActiveSolution) {
+  ModelBrokerClient client(broker_->BindAndPassRemote(), nullptr);
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> initial;
+  client.CreateSession(mojom::OnDeviceFeature::kSummarize,
+                       SessionConfigParams{}, initial.GetCallback());
+  auto session = initial.Take();
+  ASSERT_TRUE(session);
+  auto& subscriber = client.GetSubscriber(mojom::OnDeviceFeature::kSummarize);
+  auto original = subscriber.client()->GetWeakPtr();
+  DeliverManifest(1234);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !original && subscriber.client() &&
+           subscriber.client()->token_limits().max_execute_tokens == 1234u;
+  }));
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> replacement;
+  client.CreateSession(mojom::OnDeviceFeature::kSummarize,
+                       SessionConfigParams{}, replacement.GetCallback());
+  auto new_session = replacement.Take();
+  ASSERT_TRUE(new_session);
+  EXPECT_EQ(new_session->GetTokenLimits().max_execute_tokens, 1234u);
+}
+
+TEST_F(ModelBrokerAndroidManifestTest, InvalidFilesPreserveAcceptedConfig) {
+  ModelBrokerClient client(broker_->BindAndPassRemote(), nullptr);
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> initial;
+  client.CreateSession(mojom::OnDeviceFeature::kSummarize,
+                       SessionConfigParams{}, initial.GetCallback());
+  ASSERT_TRUE(initial.Take());
+  auto& subscriber = client.GetSubscriber(mojom::OnDeviceFeature::kSummarize);
+  DeliverManifest(1234);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return subscriber.client() &&
+           subscriber.client()->token_limits().max_execute_tokens == 1234u;
+  }));
+  auto accepted_client = subscriber.client()->GetWeakPtr();
+  ASSERT_TRUE(accepted_client);
+
+  const base::FilePath path =
+      directory_.GetPath().Append(kAndroidSummarizerConfigFileName);
+  ASSERT_TRUE(base::WriteFile(path, "invalid protobuf"));
+  provider_->Notify(directory_.GetPath());
+  ASSERT_TRUE(WaitForManifestLoads());
+  EXPECT_TRUE(accepted_client);
+
+  proto::SolutionConfig config = MakeConfig(2345);
+  config.mutable_feature()->set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
+  ASSERT_TRUE(base::WriteFile(path, config.SerializeAsString()));
+  provider_->Notify(directory_.GetPath());
+  ASSERT_TRUE(WaitForManifestLoads());
+  EXPECT_TRUE(accepted_client);
+}
+
+TEST_F(ModelBrokerAndroidManifestTest, LoadsConfigsInNotificationOrder) {
+  base::ScopedTempDir first_directory;
+  base::ScopedTempDir second_directory;
+  ASSERT_TRUE(first_directory.CreateUniqueTempDir());
+  ASSERT_TRUE(second_directory.CreateUniqueTempDir());
+  ASSERT_TRUE(base::WriteFile(
+      first_directory.GetPath().Append(kAndroidSummarizerConfigFileName),
+      MakeConfig(1234).SerializeAsString()));
+  ASSERT_TRUE(base::WriteFile(
+      second_directory.GetPath().Append(kAndroidSummarizerConfigFileName),
+      MakeConfig(2345).SerializeAsString()));
+
+  broker_->broker();
+  provider_->Notify(first_directory.GetPath());
+  provider_->Notify(second_directory.GetPath());
+  ASSERT_TRUE(WaitForManifestLoads());
+
+  ModelBrokerClient client(broker_->BindAndPassRemote(), nullptr);
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+  client.CreateSession(mojom::OnDeviceFeature::kSummarize,
+                       SessionConfigParams{}, future.GetCallback());
+  auto session = future.Take();
+  ASSERT_TRUE(session);
+  EXPECT_EQ(session->GetTokenLimits().max_execute_tokens, 2345u);
+}
+
+TEST_F(ModelBrokerAndroidManifestTest, RecordsManifestLoadResults) {
+  constexpr char kHistogram[] =
+      "OptimizationGuide.ModelExecution.AndroidManifestLoadResult";
+  base::HistogramTester histograms;
+  base::ScopedTempDir missing_file;
+  base::ScopedTempDir invalid_proto;
+  base::ScopedTempDir missing_feature;
+  base::ScopedTempDir wrong_feature;
+  ASSERT_TRUE(missing_file.CreateUniqueTempDir());
+  ASSERT_TRUE(invalid_proto.CreateUniqueTempDir());
+  ASSERT_TRUE(missing_feature.CreateUniqueTempDir());
+  ASSERT_TRUE(wrong_feature.CreateUniqueTempDir());
+  ASSERT_TRUE(base::WriteFile(
+      invalid_proto.GetPath().Append(kAndroidSummarizerConfigFileName),
+      "invalid protobuf"));
+  ASSERT_TRUE(base::WriteFile(
+      missing_feature.GetPath().Append(kAndroidSummarizerConfigFileName), ""));
+  proto::SolutionConfig config = MakeConfig(2345);
+  config.mutable_feature()->set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
+  ASSERT_TRUE(base::WriteFile(
+      wrong_feature.GetPath().Append(kAndroidSummarizerConfigFileName),
+      config.SerializeAsString()));
+
+  broker_->broker();
+  // A valid config records a successful load.
+  DeliverManifest(1234);
+  // A missing file records a read failure.
+  provider_->Notify(missing_file.GetPath());
+  // An invalid proto records a parse failure.
+  provider_->Notify(invalid_proto.GetPath());
+  // A missing feature records a missing feature failure.
+  provider_->Notify(missing_feature.GetPath());
+  // A wrong feature records a feature mismatch failure.
+  provider_->Notify(wrong_feature.GetPath());
+  ASSERT_TRUE(WaitForManifestLoads());
+  histograms.ExpectBucketCount(
+      kHistogram, static_cast<int>(AndroidManifest::LoadResult::kSuccess), 1);
+  histograms.ExpectBucketCount(
+      kHistogram, static_cast<int>(AndroidManifest::LoadResult::kReadFailed),
+      1);
+  histograms.ExpectBucketCount(
+      kHistogram, static_cast<int>(AndroidManifest::LoadResult::kParseFailed),
+      1);
+  histograms.ExpectBucketCount(
+      kHistogram,
+      static_cast<int>(AndroidManifest::LoadResult::kMissingFeature), 1);
+  histograms.ExpectBucketCount(
+      kHistogram,
+      static_cast<int>(AndroidManifest::LoadResult::kFeatureMismatch), 1);
+  histograms.ExpectTotalCount(kHistogram, 5);
 }
 
 }  // namespace

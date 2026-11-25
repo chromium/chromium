@@ -10,18 +10,32 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/token.h"
+#include "base/types/expected.h"
 #include "build/branding_buildflags.h"
 #include "components/optimization_guide/core/model_execution/android/android_manifest.h"
+#include "components/optimization_guide/core/model_execution/manifest_provider.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "services/on_device_model/android/backend_model_impl_android.h"
 #include "services/on_device_model/android/downloader_params.mojom.h"
@@ -232,6 +246,10 @@ BASE_FEATURE(kAICorePrompt, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAICoreScamDetection, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 BASE_FEATURE(kAICoreTest, base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(crbug.com/584946010): Enable only after component configs are served
+// and validated.
+BASE_FEATURE(kAndroidModelConfigComponentLoading,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kRequirePersistentModeForScamDetection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
@@ -530,7 +548,9 @@ void ModelBrokerAndroid::SolutionFactory::OnAICoreModelStatusChecked(
   std::move(barrier_done_callback).Run();
 }
 
-ModelBrokerAndroid::ModelBrokerAndroid(PrefService& local_state)
+ModelBrokerAndroid::ModelBrokerAndroid(
+    PrefService& local_state,
+    std::unique_ptr<ManifestProvider> manifest_provider)
     : local_state_(local_state),
       usage_tracker_(&local_state),
       impl_(usage_tracker_,
@@ -538,22 +558,69 @@ ModelBrokerAndroid::ModelBrokerAndroid(PrefService& local_state)
                                 base::Unretained(this)),
             base::BindRepeating(
                 &ModelBrokerAndroid::AddModelDownloadProgressObserver,
-                base::Unretained(this))) {
+                base::Unretained(this))),
+      manifest_provider_(std::move(manifest_provider)) {
+  CHECK(manifest_provider_);
   impl_.SetFeatureConfigs(AndroidManifest::GetFeatureRoutingConfigs());
+  if (features::IsOnDeviceExecutionEnabled() &&
+      base::FeatureList::IsEnabled(
+          features::kAndroidModelConfigComponentLoading)) {
+    // TODO(crbug.com/585244210): Use BrokerInit's task runner to support
+    // priority increases for manifest loading.
+    manifest_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+    manifest_ready_subscription_ = manifest_provider_->ListenForManifestReady(
+        base::BindRepeating(&ModelBrokerAndroid::OnManifestReady,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 ModelBrokerAndroid::~ModelBrokerAndroid() = default;
 
+// TODO(crbug.com/585296921): Move manifest loading, fallback selection, and
+// policy handling into an AndroidManifestMonitor.
+void ModelBrokerAndroid::OnManifestReady(base::FilePath directory) {
+  manifest_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&AndroidManifest::Load, std::move(directory)),
+      base::BindOnce(&ModelBrokerAndroid::OnComponentManifestLoaded,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ModelBrokerAndroid::OnComponentManifestLoaded(
+    base::expected<proto::SolutionConfig, AndroidManifest::LoadResult> config) {
+  if (!config) {
+    // kSuccess is a histogram result, not a valid error, so error() should
+    // never return kSuccess.
+    CHECK_NE(config.error(), AndroidManifest::LoadResult::kSuccess);
+  }
+
+  // Propagate load errors without constructing an adapter.
+  base::expected<AndroidManifest, AndroidManifest::LoadResult> manifest =
+      std::move(config).transform([](proto::SolutionConfig loaded_config) {
+        AndroidManifest::ConfigMap configs;
+        configs.emplace(mojom::OnDeviceFeature::kSummarize,
+                        base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
+                            std::move(*loaded_config.mutable_feature())));
+        return AndroidManifest::CreateFromComponent(std::move(configs));
+      });
+
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.ModelExecution.AndroidManifestLoadResult",
+      manifest ? AndroidManifest::LoadResult::kSuccess : manifest.error());
+
+  OnManifestLoaded(std::move(manifest));
+}
+
 void ModelBrokerAndroid::OnManifestLoaded(
-    base::expected<AndroidManifest, AndroidManifest::ParseError> manifest) {
+    base::expected<AndroidManifest, AndroidManifest::LoadResult> manifest) {
   if (!manifest) {
-    // Ignore the manifest if it failed to parse.
-    // TODO(crbug.com/575550015): Handle manifest parse errors appropriately.
     return;
   }
 
   // Activating a different snapshot invalidates solutions whose snapshot IDs
   // no longer match. Store it even before first use, without initializing
   // AICore.
+  // TODO(crbug.com/585296918): Avoid invalidating solutions when manifest
+  // content is unchanged.
   manifest_ = std::move(*manifest);
   if (solution_factory_) {
     solution_factory_->UpdateSolutionProviders();
@@ -563,6 +630,20 @@ void ModelBrokerAndroid::OnManifestLoaded(
 bool ModelBrokerAndroid::IsManifestActive(
     const base::Token& manifest_id) const {
   return manifest_ && manifest_->id() == manifest_id;
+}
+
+void ModelBrokerAndroid::FlushManifestLoadsForTesting(
+    base::OnceClosure callback) {
+  if (!manifest_task_runner_) {
+    // Component loading is disabled, so there are no loads to wait for; run
+    // the callback immediately.
+    std::move(callback).Run();
+    return;
+  }
+  // The barrier runs after earlier loads, and its reply follows their replies
+  // on the broker sequence.
+  manifest_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                          std::move(callback));
 }
 
 void ModelBrokerAndroid::BindModelBroker(

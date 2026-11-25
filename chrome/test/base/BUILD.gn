@@ -501,6 +501,7 @@ source_set("testing_browser_process_impl") {
     "//chrome/browser/serial",
     "//chrome/browser/status_icons",
     "//components/application_locale_storage",
+    "//components/component_updater",
     "//components/embedder_support/origin_trials",
     "//components/metrics",
     "//components/network_time",
@@ -530,7 +531,6 @@ source_set("testing_browser_process_impl") {
       "//chrome/browser/speech",
       "//chrome/browser/usb",
       "//chrome/browser/web_applications/isolated_web_apps",
-      "//components/component_updater",
       "//components/keep_alive_registry",
     ]
     if (!is_chromeos) {

@@ -219,6 +219,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Failed with persistent error"/>
 </enum>
 
+<!-- LINT.IfChange(OptimizationGuideAndroidManifestLoadResult) -->
+
+<enum name="OptimizationGuideAndroidManifestLoadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="File read failed"/>
+  <int value="2" label="Config parse failed"/>
+  <int value="3" label="Missing model execution feature"/>
+  <int value="4" label="Unexpected model execution feature"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/android/android_manifest.h:LoadResult) -->
+
 <enum name="OptimizationGuideExecutionStatus">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>

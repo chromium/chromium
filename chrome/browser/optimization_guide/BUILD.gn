@@ -103,6 +103,7 @@ source_set("impl") {
       "//chrome/browser/commerce/price_tracking/android:price_tracking_notification_bridge",
       "//chrome/browser/optimization_guide/android:jni_headers",
       "//chrome/browser/optimization_guide/android:native",
+      "//components/optimization_guide/core:manifest_provider",
     ]
   } else {
     deps += [

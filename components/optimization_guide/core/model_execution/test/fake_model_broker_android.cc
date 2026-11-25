@@ -4,12 +4,29 @@
 
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker_android.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
+#include "components/optimization_guide/core/model_execution/manifest_provider.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/model_execution/test/fake_android_manifest_asset.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/android/model_downloader_android.h"
 
 namespace optimization_guide {
+namespace {
+
+class FakeManifestProvider : public ManifestProvider {
+ public:
+  base::CallbackListSubscription ListenForManifestReady(
+      ReadyCallback callback) override {
+    return {};
+  }
+};
+
+}  // namespace
 
 ScopedModelBrokerAndroidFeatureList::ScopedModelBrokerAndroidFeatureList() {
   feature_list_.InitWithFeaturesAndParameters(
@@ -18,6 +35,7 @@ ScopedModelBrokerAndroidFeatureList::ScopedModelBrokerAndroidFeatureList() {
           {features::kAICorePrompt, {}},
           {features::kAICoreScamDetection, {}},
           {features::kAICoreTest, {}},
+          {features::kAndroidModelConfigComponentLoading, {}},
       },
       {features::kRequirePersistentModeForScamDetection});
 }
@@ -25,8 +43,13 @@ ScopedModelBrokerAndroidFeatureList::ScopedModelBrokerAndroidFeatureList() {
 ScopedModelBrokerAndroidFeatureList::~ScopedModelBrokerAndroidFeatureList() =
     default;
 
-FakeModelBrokerAndroid::FakeModelBrokerAndroid(const Options& options)
-    : options_(options) {
+FakeModelBrokerAndroid::FakeModelBrokerAndroid(
+    const Options& options,
+    std::unique_ptr<ManifestProvider> manifest_provider)
+    : options_(options), manifest_provider_(std::move(manifest_provider)) {
+  if (!manifest_provider_) {
+    manifest_provider_ = std::make_unique<FakeManifestProvider>();
+  }
   model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
   java_helper_.SetMockAiCoreFactory();
   java_helper_.settings().SetDefaultStatusCheckResult(
@@ -62,7 +85,7 @@ void FakeModelBrokerAndroid::UpdateManifest(
 
 ModelBrokerAndroid& FakeModelBrokerAndroid::EnsureBroker() {
   if (!broker_) {
-    broker_.emplace(local_state_);
+    broker_.emplace(local_state_, std::move(manifest_provider_));
   }
   return *broker_;
 }

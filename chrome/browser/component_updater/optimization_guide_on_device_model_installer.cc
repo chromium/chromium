@@ -336,10 +336,13 @@ class ManifestConfigInstallerPolicy final : public ComponentInstallerPolicy {
   using ReadyCallback = optimization_guide::ManifestProvider::ReadyCallback;
 
  public:
-  explicit ManifestConfigInstallerPolicy(ReadyCallback on_ready_callback,
-                                         base::FilePath required_file_name)
+  ManifestConfigInstallerPolicy(ReadyCallback on_ready_callback,
+                                base::FilePath required_file_name,
+                                bool allow_updates_on_metered_connections)
       : on_ready_callback_(std::move(on_ready_callback)),
-        required_file_name_(std::move(required_file_name)) {}
+        required_file_name_(std::move(required_file_name)),
+        allow_updates_on_metered_connections_(
+            allow_updates_on_metered_connections) {}
 
   ManifestConfigInstallerPolicy(const ManifestConfigInstallerPolicy&) = delete;
   ManifestConfigInstallerPolicy& operator=(
@@ -369,9 +372,7 @@ class ManifestConfigInstallerPolicy final : public ComponentInstallerPolicy {
   }
 
   bool AllowUpdatesOnMeteredConnections() const override {
-    // Disables updates on metered connections because we can't actually
-    // download the new models that a new manifest might specify.
-    return false;
+    return allow_updates_on_metered_connections_;
   }
 
   bool VerifyInstallation(const base::DictValue& manifest,
@@ -409,15 +410,19 @@ class ManifestConfigInstallerPolicy final : public ComponentInstallerPolicy {
   // The file expected in the component installation directory. Verification
   // policy rejects the installation if this path does not exist.
   const base::FilePath required_file_name_;
+  const bool allow_updates_on_metered_connections_;
 };
 
 class ManifestProviderImpl final : public optimization_guide::ManifestProvider {
  public:
   ManifestProviderImpl(
       base::FilePath required_file_name,
+      bool allow_updates_on_metered_connections,
       base::TaskPriority task_priority,
       std::optional<OnDemandUpdater::Priority> on_demand_priority)
       : required_file_name_(std::move(required_file_name)),
+        allow_updates_on_metered_connections_(
+            allow_updates_on_metered_connections),
         task_priority_(task_priority),
         on_demand_priority_(on_demand_priority) {}
 
@@ -448,7 +453,7 @@ class ManifestProviderImpl final : public optimization_guide::ManifestProvider {
         std::make_unique<ManifestConfigInstallerPolicy>(
             base::BindRepeating(&ManifestProviderImpl::OnManifestReady,
                                 weak_ptr_factory_.GetWeakPtr()),
-            required_file_name_),
+            required_file_name_, allow_updates_on_metered_connections_),
         /*action_handler=*/nullptr, task_priority_);
     installer->Register(
         cus, base::BindOnce(
@@ -470,6 +475,7 @@ class ManifestProviderImpl final : public optimization_guide::ManifestProvider {
   }
 
   const base::FilePath required_file_name_;
+  const bool allow_updates_on_metered_connections_;
   const base::TaskPriority task_priority_;
   const std::optional<OnDemandUpdater::Priority> on_demand_priority_;
   bool manifest_registered_ = false;
@@ -662,6 +668,9 @@ class ManifestAssetManagerDelegateImpl final
   ManifestAssetManagerDelegateImpl()
       : manifest_provider_(
             base::FilePath(optimization_guide::kManifestFileName),
+            // Desktop cannot download the manifest's models over metered
+            // connections.
+            /*allow_updates_on_metered_connections=*/false,
             base::TaskPriority::USER_VISIBLE,
             OnDemandUpdater::Priority::FOREGROUND) {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -844,6 +853,18 @@ class ManifestAssetManagerDelegateImpl final
 std::unique_ptr<optimization_guide::ManifestAssetManagerDelegate>
 CreateManifestAssetManagerDelegate() {
   return std::make_unique<ManifestAssetManagerDelegateImpl>();
+}
+
+std::unique_ptr<optimization_guide::ManifestProvider> CreateManifestProvider(
+    base::FilePath required_file_name,
+    bool allow_updates_on_metered_connections) {
+  // Android uses this provider when USE_ON_DEVICE_MODEL_SERVICE is disabled,
+  // so the desktop asset manager does not register the same component ID.
+  // Registering both would replace the first policy.
+  return std::make_unique<ManifestProviderImpl>(
+      std::move(required_file_name), allow_updates_on_metered_connections,
+      base::TaskPriority::BEST_EFFORT,
+      /*on_demand_priority=*/std::nullopt);
 }
 
 }  // namespace component_updater

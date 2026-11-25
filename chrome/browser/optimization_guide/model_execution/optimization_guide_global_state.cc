@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -15,6 +16,7 @@
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -35,6 +37,11 @@
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/optimization_guide/core/model_execution/android/android_manifest.h"
+#include "components/optimization_guide/core/model_execution/manifest_provider.h"
+#endif
 
 namespace optimization_guide {
 
@@ -184,8 +191,13 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState(
 OptimizationGuideGlobalState::OptimizationGuideGlobalState() {
 
 #if BUILDFLAG(IS_ANDROID)
-  on_device_capability_ =
-      std::make_unique<ModelBrokerAndroid>(*g_browser_process->local_state());
+  on_device_capability_ = std::make_unique<ModelBrokerAndroid>(
+      *g_browser_process->local_state(),
+      component_updater::CreateManifestProvider(
+          base::FilePath(kAndroidSummarizerConfigFileName),
+          // Keep update disabled on metered connections until the component
+          // payload size is known and capable for metered connections.
+          /*allow_updates_on_metered_connections=*/false));
 #else   // !BUILDFLAG(IS_ANDROID)
   // Create a stub capability that can't do anything.
   on_device_capability_ = std::make_unique<OnDeviceCapability>();

@@ -1216,6 +1216,21 @@ chromium-metrics-reviews@google.com.
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
 
+<histogram name="OptimizationGuide.ModelExecution.AndroidManifestLoadResult"
+    enum="OptimizationGuideAndroidManifestLoadResult"
+    expires_after="2027-05-02">
+  <owner>holte@chromium.org</owner>
+  <owner>wittman@chromium.org</owner>
+  <owner>feich@microsoft.com</owner>
+  <summary>
+    Records the result of each completed Android component config load when
+    kAndroidModelConfigComponentLoading is enabled and the provider reports an
+    installed directory, including at startup and after updates. Success means
+    the config was read, parsed, and specifies the expected model execution
+    feature.
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.ModelExecution.ConnectLatency.{ModelExecutionFeature}"
     units="ms" expires_after="2027-04-30">

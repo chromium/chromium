@@ -10,6 +10,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/core/model_execution/android/model_broker_android.h"
+#include "components/optimization_guide/core/model_execution/manifest_provider.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/on_device_model/android/model_downloader_android.h"
@@ -41,7 +42,9 @@ class FakeModelBrokerAndroid {
     bool preinstall_base_model = true;
   };
 
-  explicit FakeModelBrokerAndroid(const Options& options);
+  explicit FakeModelBrokerAndroid(
+      const Options& options,
+      std::unique_ptr<ManifestProvider> manifest_provider = nullptr);
   ~FakeModelBrokerAndroid();
 
   mojo::PendingRemote<mojom::ModelBroker> BindAndPassRemote();
@@ -61,6 +64,7 @@ class FakeModelBrokerAndroid {
   ModelBrokerAndroid& EnsureBroker();
 
   Options options_;
+  std::unique_ptr<ManifestProvider> manifest_provider_;
   ScopedModelBrokerAndroidFeatureList feature_list_;
   TestingPrefServiceSimple local_state_;
   on_device_model::OnDeviceModelBridgeNativeUnitTestHelper java_helper_;

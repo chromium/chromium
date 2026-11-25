@@ -4,13 +4,22 @@
 
 #include "components/optimization_guide/core/model_execution/android/android_manifest.h"
 
+#include <string>
 #include <utility>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/configs/summarize_solution_config.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
+#include "components/optimization_guide/proto/manifest.pb.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/model_quality_metadata.pb.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,6 +86,114 @@ TEST(AndroidManifestTest, ComponentOverrideAppliesAllConfigs) {
   EXPECT_EQ(manifest.SelectConfig(mojom::OnDeviceFeature::kSummarize),
             summarize);
   EXPECT_EQ(manifest.SelectConfig(mojom::OnDeviceFeature::kTest), test);
+}
+
+TEST(AndroidManifestTest, LoadReportsMissingFileReadError) {
+  base::ScopedTempDir directory;
+  ASSERT_TRUE(directory.CreateUniqueTempDir());
+  base::expected<proto::SolutionConfig, AndroidManifest::LoadResult> result =
+      AndroidManifest::Load(directory.GetPath());
+  ASSERT_FALSE(result);
+  EXPECT_EQ(result.error(), AndroidManifest::LoadResult::kReadFailed);
+}
+
+TEST(AndroidManifestTest, LoadReportsEmptyDirectoryReadError) {
+  base::ScopedTempDir directory;
+  ASSERT_TRUE(directory.CreateUniqueTempDir());
+  ASSERT_TRUE(base::WriteFile(
+      directory.GetPath().Append(kAndroidSummarizerConfigFileName),
+      BuildAndroidSummarizeSolutionConfig().SerializeAsString()));
+
+  // Save the current working directory so it can be restored later.
+  base::FilePath original_directory;
+  ASSERT_TRUE(base::GetCurrentDirectory(&original_directory));
+  // Change the working directory to the temporary directory that contains the
+  // config.
+  ASSERT_TRUE(base::SetCurrentDirectory(directory.GetPath()));
+  // An empty directory must fail to load even when the working directory has a
+  // config.
+  auto result = AndroidManifest::Load(base::FilePath());
+  // Restore the working directory so it does not affect later tests.
+  ASSERT_TRUE(base::SetCurrentDirectory(original_directory));
+
+  ASSERT_FALSE(result);
+  EXPECT_EQ(result.error(), AndroidManifest::LoadResult::kReadFailed);
+}
+
+TEST(AndroidManifestTest, LoadReportsOversizedReadError) {
+  base::ScopedTempDir directory;
+  ASSERT_TRUE(directory.CreateUniqueTempDir());
+  const base::FilePath path =
+      directory.GetPath().Append(kAndroidSummarizerConfigFileName);
+  auto config = BuildAndroidSummarizeSolutionConfig();
+  config.mutable_feature()->mutable_input_config()->set_request_base_name(
+      std::string(1024 * 1024, 'x'));
+  ASSERT_TRUE(base::WriteFile(path, config.SerializeAsString()));
+
+  base::expected<proto::SolutionConfig, AndroidManifest::LoadResult> result =
+      AndroidManifest::Load(directory.GetPath());
+  ASSERT_FALSE(result);
+  EXPECT_EQ(result.error(), AndroidManifest::LoadResult::kReadFailed);
+}
+
+TEST(AndroidManifestTest, LoadReportsParseError) {
+  base::ScopedTempDir directory;
+  ASSERT_TRUE(directory.CreateUniqueTempDir());
+  const auto path =
+      directory.GetPath().Append(kAndroidSummarizerConfigFileName);
+  ASSERT_TRUE(base::WriteFile(path, "invalid protobuf"));
+  base::expected<proto::SolutionConfig, AndroidManifest::LoadResult> result =
+      AndroidManifest::Load(directory.GetPath());
+  ASSERT_FALSE(result);
+  EXPECT_EQ(result.error(), AndroidManifest::LoadResult::kParseFailed);
+}
+
+TEST(AndroidManifestTest, LoadReportsMissingFeatureError) {
+  base::ScopedTempDir directory;
+  ASSERT_TRUE(directory.CreateUniqueTempDir());
+  const base::FilePath path =
+      directory.GetPath().Append(kAndroidSummarizerConfigFileName);
+  // An empty protobuf and a config without a feature are both invalid.
+  ASSERT_TRUE(base::WriteFile(path, ""));
+  base::expected<proto::SolutionConfig, AndroidManifest::LoadResult> result =
+      AndroidManifest::Load(directory.GetPath());
+  ASSERT_FALSE(result);
+  EXPECT_EQ(result.error(), AndroidManifest::LoadResult::kMissingFeature);
+
+  proto::SolutionConfig config;
+  config.mutable_model_versions()->set_text_safety_model_version(1);
+  ASSERT_TRUE(base::WriteFile(path, config.SerializeAsString()));
+  result = AndroidManifest::Load(directory.GetPath());
+  ASSERT_FALSE(result);
+  EXPECT_EQ(result.error(), AndroidManifest::LoadResult::kMissingFeature);
+
+  config = BuildAndroidSummarizeSolutionConfig();
+  config.mutable_feature()->clear_feature();
+  ASSERT_TRUE(base::WriteFile(path, config.SerializeAsString()));
+  result = AndroidManifest::Load(directory.GetPath());
+  ASSERT_FALSE(result);
+  EXPECT_EQ(result.error(), AndroidManifest::LoadResult::kMissingFeature);
+}
+
+TEST(AndroidManifestTest, LoadReportsMismatchedFeatureError) {
+  base::ScopedTempDir directory;
+  ASSERT_TRUE(directory.CreateUniqueTempDir());
+  const base::FilePath path =
+      directory.GetPath().Append(kAndroidSummarizerConfigFileName);
+  auto config = BuildAndroidSummarizeSolutionConfig();
+  config.mutable_feature()->set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
+  ASSERT_TRUE(base::WriteFile(path, config.SerializeAsString()));
+  base::expected<proto::SolutionConfig, AndroidManifest::LoadResult> result =
+      AndroidManifest::Load(directory.GetPath());
+  ASSERT_FALSE(result);
+  EXPECT_EQ(result.error(), AndroidManifest::LoadResult::kFeatureMismatch);
+
+  config = BuildAndroidSummarizeSolutionConfig();
+  ASSERT_TRUE(base::WriteFile(path, config.SerializeAsString()));
+  result = AndroidManifest::Load(directory.GetPath());
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->feature().feature(),
+            proto::MODEL_EXECUTION_FEATURE_SUMMARIZE);
 }
 
 }  // namespace

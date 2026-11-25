@@ -43,6 +43,10 @@ class TestingBrowserProcessPlatformPart;
 class TestingPrefServiceSimple;
 class TestingProfileManager;
 
+namespace component_updater {
+class ComponentUpdateService;
+}  // namespace component_updater
+
 #if !BUILDFLAG(IS_CHROMEOS)
 namespace activity_reporter {
 class ActivityReporter;
@@ -249,10 +253,10 @@ class TestingBrowserProcess
   void SetShuttingDown(bool is_shutting_down);
   TestingBrowserProcessPlatformPart* GetTestPlatformPart();
   void SetStatusTray(std::unique_ptr<StatusTray> status_tray);
-#if !BUILDFLAG(IS_ANDROID)
   void SetComponentUpdater(
       std::unique_ptr<component_updater::ComponentUpdateService>
           component_updater);
+#if !BUILDFLAG(IS_ANDROID)
   void SetSpeechRecognitionSmallExpertModelInstaller(
       std::unique_ptr<speech::SpeechRecognitionSmallExpertModelInstaller>
           installer);
@@ -397,10 +401,10 @@ class TestingBrowserProcess
 #if !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<activity_reporter::ActivityReporter> activity_reporter_;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
-  std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
   std::unique_ptr<speech::SpeechRecognitionSmallExpertModelInstaller>
       speech_recognition_small_expert_model_installer_;
   BuildState build_state_;

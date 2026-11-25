@@ -12,9 +12,11 @@
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -29,6 +31,7 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager_delegate.h"
+#include "components/optimization_guide/core/model_execution/manifest_provider.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -555,6 +558,63 @@ TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
   EXPECT_EQ(registered_observer, nullptr);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+class ManifestProviderInstallationTest : public testing::TestWithParam<bool> {};
+
+TEST_P(ManifestProviderInstallationTest, VerifiesRequiredConfigFile) {
+  content::BrowserTaskEnvironment task_environment;
+  base::ScopedPathOverride user_path_override(DIR_COMPONENT_USER);
+  base::ScopedPathOverride preinstalled_path_override(
+      DIR_COMPONENT_PREINSTALLED);
+  base::FilePath root;
+  ASSERT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &root));
+  const base::FilePath install_dir =
+      root.AppendASCII("OptimizationGuideModelsManifest")
+          .AppendASCII("1.2.3.4");
+  ASSERT_TRUE(base::CreateDirectory(install_dir));
+  ASSERT_TRUE(base::WriteFile(install_dir.AppendASCII("manifest.json"),
+                              R"({"version":"1.2.3.4"})"));
+
+  const base::FilePath required_file(
+      FILE_PATH_LITERAL("android_summarizer_solution_config.binarypb"));
+  const bool has_required_file = GetParam();
+  if (has_required_file) {
+    ASSERT_TRUE(base::WriteFile(install_dir.Append(required_file), "config"));
+  }
+
+  auto service =
+      std::make_unique<testing::NiceMock<MockComponentUpdateService>>();
+  base::test::TestFuture<void> registered;
+  std::optional<base::Version> registered_version;
+  const bool allow_metered = true;
+  EXPECT_CALL(*service, RegisterComponent(testing::_))
+      .WillOnce([&](const ComponentRegistration& component) {
+        registered_version = component.version;
+        EXPECT_EQ(component.allow_updates_on_metered_connection, allow_metered);
+        registered.SetValue();
+        return true;
+      });
+  TestingBrowserProcess::GetGlobal()->SetComponentUpdater(std::move(service));
+  base::ScopedClosureRunner reset_service(base::BindOnce([] {
+    TestingBrowserProcess::GetGlobal()->SetComponentUpdater(nullptr);
+  }));
+  auto provider = CreateManifestProvider(required_file, allow_metered);
+  base::test::TestFuture<base::FilePath> ready;
+  base::CallbackListSubscription subscription =
+      provider->ListenForManifestReady(ready.GetRepeatingCallback());
+
+  ASSERT_TRUE(registered.Wait());
+  ASSERT_TRUE(registered_version);
+  if (has_required_file) {
+    EXPECT_EQ(*registered_version, base::Version("1.2.3.4"));
+    EXPECT_EQ(ready.Get(), install_dir);
+  } else {
+    EXPECT_EQ(*registered_version, base::Version("0.0.0.0"));
+    EXPECT_FALSE(ready.IsReady());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(, ManifestProviderInstallationTest, testing::Bool());
 
 }  // namespace
 }  // namespace component_updater

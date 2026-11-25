@@ -356,6 +356,7 @@ source_set("ondevice") {
         "model_execution/android/model_broker_android.h",
       ]
       deps += [
+        ":manifest_provider",
         "//build:branding_buildflags",
         "//components/optimization_guide/core/model_execution/configs:summarize_config",
         "//services/on_device_model:on_device_model_service",
@@ -663,6 +664,7 @@ if (build_with_model_execution) {
         "model_execution/test/fake_model_broker_android.cc",
         "model_execution/test/fake_model_broker_android.h",
       ]
+      public_deps += [ ":manifest_provider" ]
       deps += [
         "//services/on_device_model/android",
         "//services/on_device_model/android:test_support",
@@ -899,6 +901,7 @@ if (build_with_model_execution && !is_chrome_for_testing) {
         "model_execution/android/model_broker_android_unittest.cc",
       ]
       deps += [
+        ":manifest_provider",
         "//services/on_device_model/android",
         "//services/on_device_model/android:test_support",
       ]
