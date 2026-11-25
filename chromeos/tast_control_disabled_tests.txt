@@ -52,9 +52,6 @@ tast.featured.FieldTrialEarlyBoot.active_trial
 # https://crbug.com/460054243
 tast.inputs.VirtualKeyboardTypingUserMode.guest
 
-# b/451624782
-tast.secagentd.NetworkEvents.relaxed_udp@chromeos-betty-cfi-thin-lto-chrome
-
 # b/488388275
 tast.health.RunCameraFrameAnalysisRoutine
 
