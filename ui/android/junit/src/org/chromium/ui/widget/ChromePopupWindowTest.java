@@ -4,6 +4,7 @@
 
 package org.chromium.ui.widget;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +23,7 @@ import org.robolectric.util.ReflectionHelpers;
 import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.base.UiAndroidFeatures;
 
@@ -97,6 +99,34 @@ public final class ChromePopupWindowTest {
         assertTrue(dispatchUnhandledKey(decorView, ctrlT));
         assertFalse(rootPopup.isShowing());
         assertFalse(flyoutPopup.isShowing());
+    }
+
+    @Test
+    @DisableFeatures(UiAndroidFeatures.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS)
+    public void testDismissAllPopupsForTesting() {
+        ChromePopupWindow locationPopup = new ChromePopupWindow(mActivity);
+        locationPopup.setContentView(new FrameLayout(mActivity));
+        locationPopup.showAtLocation(mAnchorView, Gravity.NO_GRAVITY, 0, 0);
+
+        ChromePopupWindow dropdownPopup = new ChromePopupWindow(mActivity);
+        dropdownPopup.setContentView(new FrameLayout(mActivity));
+        dropdownPopup.showAsDropDown(mAnchorView);
+
+        ChromePopupWindow alreadyDismissedPopup = new ChromePopupWindow(mActivity);
+        alreadyDismissedPopup.setContentView(new FrameLayout(mActivity));
+        alreadyDismissedPopup.showAtLocation(mAnchorView, Gravity.NO_GRAVITY, 0, 0);
+        alreadyDismissedPopup.dismiss();
+
+        assertTrue(locationPopup.isShowing());
+        assertTrue(dropdownPopup.isShowing());
+        assertFalse(alreadyDismissedPopup.isShowing());
+
+        assertEquals(2, ChromePopupWindow.dismissAllPopupsForTesting());
+        assertEquals(0, ChromePopupWindow.dismissAllPopupsForTesting());
+
+        assertFalse(locationPopup.isShowing());
+        assertFalse(dropdownPopup.isShowing());
+        assertFalse(alreadyDismissedPopup.isShowing());
     }
 
     private static boolean dispatchUnhandledKey(View view, KeyEvent event) {

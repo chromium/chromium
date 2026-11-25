@@ -8,6 +8,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -26,6 +27,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.widget.ChromePopupWindow;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -38,6 +40,7 @@ import java.util.Collections;
  * within the same {@link Batch}.
  */
 public class BlankCTATabInitialStateRule implements TestRule {
+    private static final String TAG = "BlankCTATabRule";
     private static WeakReference<ChromeTabbedActivity> sActivity;
 
     private final ChromeTabbedActivityTestRule mActivityTestRule;
@@ -150,6 +153,13 @@ public class BlankCTATabInitialStateRule implements TestRule {
 
     private void resetDialogsAndKeyboardOnUiThread() {
         ThreadUtils.assertOnUiThread();
+        int dismissedPopups = ChromePopupWindow.dismissAllPopupsForTesting();
+        if (dismissedPopups > 0) {
+            Log.w(
+                    TAG,
+                    "Dismissed %d lingering ChromePopupWindow(s) during batched state reset.",
+                    dismissedPopups);
+        }
         ChromeTabbedActivity activity = getActivity();
         if (activity == null) return;
         if (activity.getWindow() != null && activity.getWindow().getDecorView() != null) {

@@ -15,6 +15,8 @@ import android.view.WindowManager;
 import android.widget.PopupWindow;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.UiAndroidFeatureList;
@@ -31,6 +33,10 @@ import java.util.List;
 @NullMarked
 public class ChromePopupWindow extends PopupWindow {
     private static final List<WeakReference<ChromePopupWindow>> sShowingPopups = new ArrayList<>();
+    // TODO(crbug.com/542609750): Unify sShowingPopupsForTesting with sShowingPopups once
+    // ANDROID_UNIFIED_KEYBOARD_SHORTCUTS launches and the flag is cleaned up.
+    private static final @Nullable List<WeakReference<ChromePopupWindow>> sShowingPopupsForTesting =
+            BuildConfig.IS_FOR_TEST ? new ArrayList<>() : null;
 
     private final Context mContext;
     private final View.OnUnhandledKeyEventListener mUnhandledKeyListener =
@@ -69,10 +75,7 @@ public class ChromePopupWindow extends PopupWindow {
     @Override
     public void showAtLocation(View parent, int gravity, int x, int y) {
         super.showAtLocation(parent, gravity, x, y);
-        if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled() && isShowing()) {
-            sShowingPopups.removeIf(ref -> ref.get() == null || ref.get() == this);
-            sShowingPopups.add(new WeakReference<>(this));
-        }
+        trackShowingPopup();
         if (mAllowOverlapCaptionBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             View contentView = getContentView();
             if (contentView != null) {
@@ -99,10 +102,7 @@ public class ChromePopupWindow extends PopupWindow {
     @Override
     public void showAsDropDown(View anchor, int xoff, int yoff, int gravity) {
         super.showAsDropDown(anchor, xoff, yoff, gravity);
-        if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled() && isShowing()) {
-            sShowingPopups.removeIf(ref -> ref.get() == null || ref.get() == this);
-            sShowingPopups.add(new WeakReference<>(this));
-        }
+        trackShowingPopup();
     }
 
     @Override
@@ -110,7 +110,52 @@ public class ChromePopupWindow extends PopupWindow {
         if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
             sShowingPopups.removeIf(ref -> ref.get() == null || ref.get() == this);
         }
+        if (sShowingPopupsForTesting != null) {
+            sShowingPopupsForTesting.removeIf(ref -> ref.get() == null || ref.get() == this);
+        }
         super.dismiss();
+    }
+
+    /**
+     * Dismisses all currently showing {@link ChromePopupWindow} instances.
+     *
+     * @return The number of showing popups dismissed.
+     */
+    public static int dismissAllPopupsForTesting() {
+        ThreadUtils.assertOnUiThread();
+        if (sShowingPopupsForTesting == null) return 0;
+        List<ChromePopupWindow> popupsToDismiss = new ArrayList<>();
+        for (WeakReference<ChromePopupWindow> ref : sShowingPopupsForTesting) {
+            ChromePopupWindow popup = ref.get();
+            if (popup != null && popup.isShowing()) {
+                popupsToDismiss.add(popup);
+            }
+        }
+        int dismissedCount = 0;
+        for (ChromePopupWindow popup : popupsToDismiss) {
+            if (popup.isShowing()) {
+                popup.dismiss();
+                dismissedCount++;
+            }
+        }
+        sShowingPopupsForTesting.removeIf(
+                ref -> {
+                    ChromePopupWindow popup = ref.get();
+                    return popup == null || !popup.isShowing();
+                });
+        return dismissedCount;
+    }
+
+    private void trackShowingPopup() {
+        if (!isShowing()) return;
+        if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+            sShowingPopups.removeIf(ref -> ref.get() == null || ref.get() == this);
+            sShowingPopups.add(new WeakReference<>(this));
+        }
+        if (sShowingPopupsForTesting != null) {
+            sShowingPopupsForTesting.removeIf(ref -> ref.get() == null || ref.get() == this);
+            sShowingPopupsForTesting.add(new WeakReference<>(this));
+        }
     }
 
     private boolean handleUnhandledKeyEvent(KeyEvent event) {

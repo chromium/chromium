@@ -179,6 +179,40 @@ public class BlankCTATabInitialStateRuleTest {
         }
     }
 
+    @Test
+    @MediumTest
+    public void testResetState_dismissesLingeringPopups() throws Throwable {
+        // Leave an AnchoredPopupWindow menu open across a batched state reset.
+        View actionMenuView =
+                mCtaTestRule
+                        .startOnBlankPage()
+                        .openTabSwitcherActionMenu()
+                        .appMenuListElement
+                        .value();
+        runInitialStateRule();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        assertFalse(
+                                "AnchoredPopupWindow menu should be dismissed during state reset",
+                                actionMenuView.isAttachedToWindow()));
+
+        // Leave AppMenu open across a batched state reset and verify subsequent Public Transit
+        // transitions work cleanly.
+        var appMenu = mCtaTestRule.startOnBlankPage().openRegularTabAppMenu();
+        View appMenuView = appMenu.menuListElement.value();
+        runInitialStateRule();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(
+                            "AppMenu should be dismissed during batched state reset",
+                            appMenu.getAppMenuCoordinator().getAppMenuHandler().isAppMenuShowing());
+                    assertFalse(
+                            "AppMenu view should be detached after batched state reset",
+                            appMenuView.isAttachedToWindow());
+                });
+        mCtaTestRule.startOnBlankPage().openRegularTabSwitcher();
+    }
+
     private void runInitialStateRule() throws Throwable {
         BlankCTATabInitialStateRule initialStateRule =
                 new BlankCTATabInitialStateRule(
