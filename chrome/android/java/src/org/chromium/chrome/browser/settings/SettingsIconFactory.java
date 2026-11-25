@@ -127,6 +127,9 @@ public final class SettingsIconFactory {
                             MainSettings.PREF_GLIC,
                             new RowIcon(R.drawable.ic_spark_outlined_24dp, IconColor.NEUTRAL)),
                     Map.entry(
+                            MainSettings.PREF_TTC,
+                            new RowIcon(R.drawable.ic_mic_white_24dp, IconColor.NEUTRAL)),
+                    Map.entry(
                             MainSettings.PREF_DEVELOPER,
                             new RowIcon(
                                     R.drawable.ic_settings_applications_24dp, IconColor.NEUTRAL)));

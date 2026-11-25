@@ -101,6 +101,7 @@ public final class SettingsIaArmHelper {
                         R.string.prefs_group_personalization,
                         List.of(
                                 MainSettings.PREF_GLIC,
+                                MainSettings.PREF_TTC,
                                 MainSettings.PREF_APPEARANCE,
                                 // Shown only until they move into appearance.
                                 MainSettings.PREF_ADDRESS_BAR,

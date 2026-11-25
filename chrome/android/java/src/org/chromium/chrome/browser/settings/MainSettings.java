@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.ttc.settings.TtcSettingsUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -138,6 +139,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_APPEARANCE = "appearance";
     public static final String PREF_DEFAULT_BROWSER = "default_browser";
     public static final String PREF_GLIC = "glic";
+    public static final String PREF_TTC = "ttc";
     public static final String PREF_ON_STARTUP = "on_startup";
     static final String PREF_ACCESSIBILITY = "accessibility";
     public static final String PREF_CONTENT_SETTINGS = "content_settings";
@@ -493,6 +495,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         cachePreferences();
         updateAutofillPreferences();
         updateGlicPreference();
+        updateTtcPreference();
 
         setManagedPreferenceDelegateForPreference(PREF_SEARCH_ENGINE);
 
@@ -945,6 +948,14 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
     }
 
+    private void updateTtcPreference() {
+        if (TtcSettingsUtils.shouldShowSettingsPage(getProfile())) {
+            addPreferenceIfAbsent(PREF_TTC);
+        } else {
+            removePreferenceIfPresent(PREF_TTC);
+        }
+    }
+
     private void updateAddressBarPreference() {
         if (shouldShowAddressBarPref(getContext())) {
             Preference addressBarPreference = addPreferenceIfAbsent(PREF_ADDRESS_BAR);
@@ -1151,6 +1162,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     }
                     if (!shouldShowGlicPreference(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_GLIC));
+                    }
+                    if (!TtcSettingsUtils.shouldShowSettingsPage(profile)) {
+                        indexData.removeEntry(getUniqueId(PREF_TTC));
                     }
                     if (!MultiWindowUtils.isOnStartupSettingsUiDesktopEnabled()) {
                         indexData.removeEntry(getUniqueId(PREF_ON_STARTUP));

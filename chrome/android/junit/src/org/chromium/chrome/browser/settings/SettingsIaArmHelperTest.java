@@ -139,6 +139,7 @@ public class SettingsIaArmHelperTest {
         assertEquals(
                 List.of(
                         MainSettings.PREF_GLIC,
+                        MainSettings.PREF_TTC,
                         MainSettings.PREF_APPEARANCE,
                         MainSettings.PREF_ADDRESS_BAR,
                         MainSettings.PREF_HOMEPAGE,

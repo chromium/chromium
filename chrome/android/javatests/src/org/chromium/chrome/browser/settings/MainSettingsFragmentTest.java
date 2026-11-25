@@ -127,6 +127,9 @@ import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.ttc.TtcKeyedService;
+import org.chromium.chrome.browser.ttc.TtcKeyedServiceFactory;
+import org.chromium.chrome.browser.ttc.settings.TtcSettings;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -1223,6 +1226,41 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    public void testTtcSettingsShownWhenTtcIsAvailable() {
+        FeatureOverrides.enable(ChromeFeatureList.TTC);
+        TtcKeyedService service = Mockito.mock(TtcKeyedService.class);
+        when(service.isEnabled()).thenReturn(true);
+        TtcKeyedServiceFactory.setForTesting(service);
+
+        startSettings();
+
+        assertSettingsExists(MainSettings.PREF_TTC, TtcSettings.class);
+
+        updateSearchIndex();
+        verify(mSearchIndexDataMock, never())
+                .removeEntry(
+                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(MainSettings.PREF_TTC));
+    }
+
+    @Test
+    @SmallTest
+    public void testTtcSettingsHiddenWhenTtcIsUnavailable() {
+        FeatureOverrides.disable(ChromeFeatureList.TTC);
+
+        startSettings();
+
+        Assert.assertNull(
+                "TTC settings should be hidden when TTC can't be used",
+                mMainSettings.findPreference(MainSettings.PREF_TTC));
+
+        updateSearchIndex();
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(MainSettings.PREF_TTC));
+    }
+
+    @Test
+    @SmallTest
     public void testNotificationSettings_launchesInNewTask() {
         Assume.assumeTrue(supportNotificationSettings());
         startSettings();
@@ -1548,6 +1586,16 @@ public class MainSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(clickablePref::performClick);
         verify(mTestTracker).notifyEvent(EventConstants.SETTINGS_ON_STARTUP_OPENED);
         assertEquals(titleWithoutNewLabel, clickablePref.getTitle().toString());
+    }
+
+    /** Runs the main settings search index update for dynamic rows on mSearchIndexDataMock. */
+    private void updateSearchIndex() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                                mSettingsTestRule.getActivity(),
+                                mSearchIndexDataMock,
+                                mMainSettings.getProfile()));
     }
 
     private void startSettings() {

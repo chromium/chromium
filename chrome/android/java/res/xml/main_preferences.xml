@@ -96,34 +96,39 @@ found in the LICENSE file.
         android:order="25"
         android:title="@string/glic_setting_label"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.chrome.browser.ttc.settings.TtcSettings"
+        android:key="ttc"
+        android:order="26"
+        android:title="@string/ttc_settings_title"/>
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.accessibility.AccessibilitySettings"
         android:key="accessibility"
-        android:order="26"
+        android:order="27"
         android:title="@string/prefs_accessibility"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SiteSettings"
         android:key="content_settings"
-        android:order="27"
+        android:order="28"
         android:title="@string/prefs_site_settings"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.language.settings.LanguageSettings"
         android:key="languages"
-        android:order="28"
+        android:order="29"
         android:title="@string/language_settings"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.download.settings.DownloadSettings"
         android:key="downloads"
-        android:order="29"
+        android:order="30"
         android:title="@string/menu_downloads"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.tracing.settings.DeveloperSettings"
         android:key="developer"
-        android:order="30"
+        android:order="31"
         android:title="Developer options"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.about_settings.AboutChromeSettings"
         android:key="about_chrome"
-        android:order="31"
+        android:order="32"
         android:title="@string/prefs_about_chrome"/>
 
 </PreferenceScreen>

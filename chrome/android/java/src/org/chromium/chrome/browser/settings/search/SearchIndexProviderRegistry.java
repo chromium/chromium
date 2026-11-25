@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSett
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
+import org.chromium.chrome.browser.ttc.settings.TtcSettings;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.settings.search.SearchIndexProvider;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectSettings;
@@ -91,6 +92,7 @@ public final class SearchIndexProviderRegistry {
                     AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     ContextualSearchSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     GlicSettings.SEARCH_INDEX_DATA_PROVIDER,
+                    TtcSettings.SEARCH_INDEX_DATA_PROVIDER,
                     DoNotTrackSettings.SEARCH_INDEX_DATA_PROVIDER,
                     UniversalOptOutSettings.SEARCH_INDEX_DATA_PROVIDER,
                     HomepageSettings.SEARCH_INDEX_DATA_PROVIDER,
