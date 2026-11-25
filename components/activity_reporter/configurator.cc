@@ -234,8 +234,13 @@ std::optional<bool> ActivityReporterConfigurator::IsMachineExternallyManaged()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   policy::PlatformManagementService* service =
       policy::PlatformManagementService::GetInstance();
+  // Use GetManagementAuthorityTrustworthinessForPolicyLoading() instead of
+  // GetManagementAuthorityTrustworthiness(): on Windows, the latter counts
+  // per-user Azure AD workplace joins (personal devices with a linked
+  // work/school account), whereas this reports machine-level management
+  // (device-level join). >= TRUSTED also excludes LOW-trust local policies.
   return service &&
-        service->GetManagementAuthorityTrustworthiness() >=
+         service->GetManagementAuthorityTrustworthinessForPolicyLoading() >=
              policy::ManagementAuthorityTrustworthiness::TRUSTED;
 }
 
