@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.AddressResolutionResult" enum="BooleanSuccess"
-    expires_after="2026-12-07">
+    expires_after="2027-06-07">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.DPI.AllValues" units="DPI"
-    expires_after="2027-01-06">
+    expires_after="2027-07-06">
   <owner>bmgordon@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -73,7 +73,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.DPI.Count" units="resolutions"
-    expires_after="2027-01-06">
+    expires_after="2027-07-06">
   <owner>bmgordon@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.DPI.{Type}" units="DPI"
-    expires_after="2027-01-06">
+    expires_after="2027-07-06">
   <owner>bmgordon@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.IppDeviceReachable" enum="BooleanSuccess"
-    expires_after="2027-01-25">
+    expires_after="2027-07-25">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.NearbyNetworkDiscoveredPrintersCount"
-    units="printers" expires_after="2026-12-06">
+    units="printers" expires_after="2027-06-06">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterSetupResult.SettingsDiscoveredPrinters"
-    enum="PrinterSetupResult" expires_after="2026-11-16">
+    enum="PrinterSetupResult" expires_after="2027-06-16">
   <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterStatusReasons"
-    enum="PrinterStatusReasons" expires_after="2027-01-29">
+    enum="PrinterStatusReasons" expires_after="2027-07-29">
   <owner>bmgordon@google.com</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.SavedPrintersCount" units="printers"
-    expires_after="2026-12-07">
+    expires_after="2027-06-07">
   <owner>bmgordon@google.com</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.SettingsUserAction"
-    enum="PrinterSettingsUserAction" expires_after="2027-01-06">
+    enum="PrinterSettingsUserAction" expires_after="2027-07-06">
   <owner>bmgordon@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -356,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.TotalNetworkPrintersCount2.SettingsOpened"
-    units="printers" expires_after="2026-12-07">
+    units="printers" expires_after="2027-06-07">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.UsbSetupSource" enum="UsbPrinterSetupSource"
-    expires_after="2026-12-07">
+    expires_after="2027-06-07">
   <owner>bmgordon@google.com</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -481,7 +481,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.GetDefaultPrinterNameTime" units="ms"
-    expires_after="2027-01-29">
+    expires_after="2027-07-29">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -517,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTime.LongTimes" units="ms"
-    expires_after="2027-01-29">
+    expires_after="2027-07-29">
   <owner>bmgordon@google.com</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTimeFirstPrint" units="ms"
-    expires_after="2027-01-29">
+    expires_after="2027-07-29">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -541,7 +541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTimeFirstPrint.LongTimes"
-    units="ms" expires_after="2027-01-29">
+    units="ms" expires_after="2027-07-29">
   <owner>bmgordon@google.com</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -614,7 +614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrinterStatus.{StatusReason}.PrintJobSuccess"
-    enum="BooleanSuccess" expires_after="2026-11-03">
+    enum="BooleanSuccess" expires_after="2027-06-03">
   <owner>bmgordon@google.com</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
