@@ -69,10 +69,11 @@ class HotkeyHoldWatcherTest : public views::ViewsTestBase {
   void StartWatching() {
     // Unretained is safe: `this` owns `watcher_`.
     watcher_ = std::make_unique<HotkeyHoldWatcher>(
-        browser_, tab_, *widget_, hotkey_,
-        base::BindOnce(&HotkeyHoldWatcherTest::OnFinished,
+        browser_, tab_, *widget_, hotkey_, kHoldThreshold,
+        base::BindOnce(&HotkeyHoldWatcherTest::OnHoldThresholdReached,
                        base::Unretained(this)),
-        kHoldThreshold);
+        base::BindOnce(&HotkeyHoldWatcherTest::OnFinished,
+                       base::Unretained(this)));
   }
 
   void ReachHoldThreshold() {
@@ -83,6 +84,13 @@ class HotkeyHoldWatcherTest : public views::ViewsTestBase {
     ASSERT_TRUE(watcher_);
     const ui::KeyEvent event(type, key_code, hotkey_.modifiers());
     watcher_->OnEvent(event);
+  }
+
+  void OnHoldThresholdReached() {
+    ++threshold_reached_count_;
+    if (destroy_on_threshold_reached_) {
+      watcher_.reset();
+    }
   }
 
   void OnFinished(Result result) {
@@ -105,6 +113,8 @@ class HotkeyHoldWatcherTest : public views::ViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   // Declared after the callback lists, which its subscriptions refer to.
   std::unique_ptr<HotkeyHoldWatcher> watcher_;
+  int threshold_reached_count_ = 0;
+  bool destroy_on_threshold_reached_ = false;
   std::optional<Result> result_;
 };
 
@@ -118,6 +128,31 @@ TEST_F(HotkeyHoldWatcherTest, HoldPastThresholdEntersPressAndHoldMode) {
   StartWatching();
   ReachHoldThreshold();
   EXPECT_TRUE(watcher_->is_press_and_hold_mode());
+}
+
+TEST_F(HotkeyHoldWatcherTest, ThresholdCallbackRunsOnceAtThreshold) {
+  StartWatching();
+  task_environment()->FastForwardBy(kHoldThreshold - base::Milliseconds(1));
+  EXPECT_EQ(threshold_reached_count_, 0);
+  task_environment()->FastForwardBy(base::Milliseconds(1));
+  EXPECT_EQ(threshold_reached_count_, 1);
+  task_environment()->FastForwardBy(kHoldThreshold);
+  EXPECT_EQ(threshold_reached_count_, 1);
+}
+
+TEST_F(HotkeyHoldWatcherTest, TapDoesNotRunThresholdCallback) {
+  StartWatching();
+  SendKeyEvent(ui::EventType::kKeyReleased, ui::VKEY_D);
+  task_environment()->FastForwardBy(kHoldThreshold);
+  EXPECT_EQ(threshold_reached_count_, 0);
+}
+
+TEST_F(HotkeyHoldWatcherTest, ThresholdCallbackMayDestroyWatcher) {
+  destroy_on_threshold_reached_ = true;
+  StartWatching();
+  ReachHoldThreshold();
+  EXPECT_FALSE(watcher_);
+  EXPECT_FALSE(result_);
 }
 
 TEST_F(HotkeyHoldWatcherTest, ReleaseBeforeThresholdIsTapped) {

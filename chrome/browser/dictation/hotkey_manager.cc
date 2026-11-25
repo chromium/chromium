@@ -144,19 +144,33 @@ void HotkeyManager::StartHoldWatcher() {
 
   // `base::Unretained(this)` is safe because `this` owns `hold_watcher_`.
   hold_watcher_ = std::make_unique<voice::HotkeyHoldWatcher>(
-      *browser, *tab, *widget, hold_accelerator,
-      base::BindOnce(&HotkeyManager::OnHotkeyHoldEnded, base::Unretained(this)),
-      hold_threshold);
+      *browser, *tab, *widget, hold_accelerator, hold_threshold,
+      base::BindOnce(&HotkeyManager::OnHoldThresholdReached,
+                     base::Unretained(this)),
+      base::BindOnce(&HotkeyManager::OnHotkeyHoldEnded,
+                     base::Unretained(this)));
+}
+
+void HotkeyManager::OnHoldThresholdReached() {
+  if (!service().PressAndHoldHotkeyHandler() || !listening_) {
+    hold_watcher_.reset();
+    UpdateGlobalRegistration();
+  }
 }
 
 void HotkeyManager::OnHotkeyHoldEnded(voice::HotkeyHoldWatcher::Result result) {
   hold_watcher_.reset();
   UpdateGlobalRegistration();
 
+  if (result == voice::HotkeyHoldWatcher::Result::kTapped) {
+    // TODO(b/540484578): Revisit taps behaviour when press-and-hold and toggle
+    // hotkeys are the same.
+    service().PressAndHoldHotkeyHandler();
+    return;
+  }
+
   const std::optional<DictationStreamEndTrigger> trigger =
       GetHoldEndTrigger(result);
-  // If `trigger` is nullopt, the key was released before the hold threshold,
-  // so Dictation stays active in toggle mode.
   if (!trigger.has_value()) {
     return;
   }
@@ -179,18 +193,22 @@ bool HotkeyManager::AcceleratorPressed(const ui::Accelerator& accelerator) {
   const ui::Accelerator hold_accelerator =
       GetDictationPressAndHoldHotkeyFromPrefs(profile_);
   if (!hold_accelerator.IsEmpty() && accelerator == hold_accelerator) {
-    // Construct `hold_watcher_` before triggering the session so that
-    // `UpdateGlobalRegistration()` sees `hold_watcher_` and defers registering
-    // the OS-wide global hotkey while the hold watcher is active.
+    if (listening_) {
+      // Already listening: toggle off (or switch to the new tab/window).
+      service().PressAndHoldHotkeyHandler();
+      if (listening_ && !hold_watcher_) {
+        StartHoldWatcher();
+        UpdateGlobalRegistration();
+      }
+      return true;
+    }
+    // Wait for `OnHoldThresholdReached()` (or `kTapped` on release) before
+    // starting Dictation. Construct `hold_watcher_` first so
+    // `UpdateGlobalRegistration()` defers the OS-wide hotkey while watching.
     StartHoldWatcher();
-    if (!service().PressAndHoldHotkeyHandler() || !listening_) {
-      hold_watcher_.reset();
-      UpdateGlobalRegistration();
-    } else if (!hold_watcher_) {
-      // If `PressAndHoldHotkeyHandler()` switched from a previous session in
-      // another window (which briefly transitioned through a non-listening
-      // state and cleared `hold_watcher_`), recreate it for the new session.
-      StartHoldWatcher();
+    if (!hold_watcher_) {
+      service().PressAndHoldHotkeyHandler();
+    } else {
       UpdateGlobalRegistration();
     }
     return true;

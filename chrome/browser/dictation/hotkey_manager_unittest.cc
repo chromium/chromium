@@ -247,8 +247,7 @@ TEST_F(DictationHotkeyManagerTest,
 
   CreateManager();
   // FocusManager registration is deduplicated to a single registration, and
-  // pressing the shared hotkey invokes PressAndHoldHotkeyHandler (which starts
-  // in toggle mode for the hold threshold before switching to press-and-hold).
+  // pressing the shared hotkey routes through the press-and-hold path.
   EXPECT_EQ(fake_registry_.registration_count(), 1);
 
   MockDictationKeyedService* mock_service =

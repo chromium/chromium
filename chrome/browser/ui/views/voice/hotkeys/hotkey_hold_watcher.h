@@ -48,13 +48,15 @@ class HotkeyHoldWatcher : public ui::EventObserver,
   };
   using CompletionCallback = base::OnceCallback<void(Result)>;
 
-  // `completion_callback` runs at most once, and may destroy `this`.
+  // `on_hold_threshold_reached`, if set, runs once the hotkey has been held for
+  // `hold_threshold`. Both callbacks run at most once, and may destroy `this`.
   HotkeyHoldWatcher(BrowserWindowInterface& browser,
                     tabs::TabInterface& tab,
                     views::Widget& browser_widget,
                     const ui::Accelerator& hotkey,
-                    CompletionCallback completion_callback,
-                    base::TimeDelta hold_threshold);
+                    base::TimeDelta hold_threshold,
+                    base::OnceClosure on_hold_threshold_reached,
+                    CompletionCallback completion_callback);
   HotkeyHoldWatcher(const HotkeyHoldWatcher&) = delete;
   HotkeyHoldWatcher& operator=(const HotkeyHoldWatcher&) = delete;
   ~HotkeyHoldWatcher() override;
@@ -85,6 +87,7 @@ class HotkeyHoldWatcher : public ui::EventObserver,
   void FinishAndDestroyThis(Result result);
 
   const ui::Accelerator hotkey_;
+  base::OnceClosure on_hold_threshold_reached_;
   CompletionCallback completion_callback_;
   bool is_press_and_hold_mode_ = false;
   base::OneShotTimer hold_threshold_timer_;

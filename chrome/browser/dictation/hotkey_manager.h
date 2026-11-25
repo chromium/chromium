@@ -103,6 +103,7 @@ class HotkeyManager : public ui::AcceleratorTarget {
   // press-and-hold hotkey. While active, defers OS-wide global hotkey
   // registration so local key-release events are not intercepted.
   void StartHoldWatcher();
+  void OnHoldThresholdReached();
   void OnHotkeyHoldEnded(voice::HotkeyHoldWatcher::Result result);
 
   // Returns the service for `profile_`. Looked up on use rather than in the

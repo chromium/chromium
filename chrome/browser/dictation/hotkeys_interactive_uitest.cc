@@ -228,9 +228,11 @@ IN_PROC_BROWSER_TEST_F(DictationHotkeysInteractiveUiTest,
     hotkeys.StartHold(),
     Do([this] {
       auto* service = DictationKeyedService::Get(profile());
-      ASSERT_NE(service->session_controller(), nullptr);
-      ASSERT_NE(service->session_controller()->attached_stream_provider(),
-                nullptr);
+      EXPECT_EQ(
+          service->session_controller()
+              ? service->session_controller()->attached_stream_provider()
+              : nullptr,
+          nullptr);
       ASSERT_NE(hold_watcher(), nullptr);
       EXPECT_EQ(
           hold_watcher()->hold_threshold_for_testing(),
@@ -239,10 +241,14 @@ IN_PROC_BROWSER_TEST_F(DictationHotkeysInteractiveUiTest,
           hold_watcher()->is_press_and_hold_mode());
     }),
 
-    // Holding past `kDictationPressAndHoldThreshold` switches to
+    // Holding past `kDictationPressAndHoldThreshold` starts Dictation in
     // press-and-hold mode, and releasing the key ends the stream.
     Sleep(kDictationPressAndHoldThreshold.Get()),
     Do([this] {
+      auto* service = DictationKeyedService::Get(profile());
+      ASSERT_NE(service->session_controller(), nullptr);
+      ASSERT_NE(service->session_controller()->attached_stream_provider(),
+                nullptr);
       ASSERT_NE(hold_watcher(), nullptr);
       EXPECT_TRUE(hold_watcher()->is_press_and_hold_mode());
     }),
@@ -317,14 +323,16 @@ IN_PROC_BROWSER_TEST_F(DictationHotkeysInteractiveUiTest,
       FocusTextarea();
     }),
 
-    // Hold PAST `kDictationSharedHotkeyPressAndHoldThreshold`: switches to
-    // press-and-hold mode and stops when the key or modifier is released.
+    // Hold PAST `kDictationSharedHotkeyPressAndHoldThreshold`: starts Dictation
+    // in press-and-hold mode and stops when the key or modifier is released.
     hotkeys.StartHold(),
     Do([this] {
       auto* service = DictationKeyedService::Get(profile());
-      ASSERT_NE(service->session_controller(), nullptr);
-      ASSERT_NE(service->session_controller()->attached_stream_provider(),
-                nullptr);
+      EXPECT_EQ(
+          service->session_controller()
+              ? service->session_controller()->attached_stream_provider()
+              : nullptr,
+          nullptr);
       ASSERT_NE(hold_watcher(), nullptr);
       EXPECT_EQ(
           hold_watcher()->hold_threshold_for_testing(),
@@ -333,6 +341,10 @@ IN_PROC_BROWSER_TEST_F(DictationHotkeysInteractiveUiTest,
 
     Sleep(kDictationSharedHotkeyPressAndHoldThreshold.Get()),
     Do([this] {
+      auto* service = DictationKeyedService::Get(profile());
+      ASSERT_NE(service->session_controller(), nullptr);
+      ASSERT_NE(service->session_controller()->attached_stream_provider(),
+                nullptr);
       ASSERT_NE(hold_watcher(), nullptr);
       EXPECT_TRUE(hold_watcher()->is_press_and_hold_mode());
     }),

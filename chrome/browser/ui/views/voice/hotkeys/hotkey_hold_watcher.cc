@@ -47,13 +47,17 @@ bool HotkeyHoldWatcher::IsChordKey(const ui::Accelerator& hotkey,
   return false;
 }
 
-HotkeyHoldWatcher::HotkeyHoldWatcher(BrowserWindowInterface& browser,
-                                     tabs::TabInterface& tab,
-                                     views::Widget& browser_widget,
-                                     const ui::Accelerator& hotkey,
-                                     CompletionCallback completion_callback,
-                                     base::TimeDelta hold_threshold)
-    : hotkey_(hotkey), completion_callback_(std::move(completion_callback)) {
+HotkeyHoldWatcher::HotkeyHoldWatcher(
+    BrowserWindowInterface& browser,
+    tabs::TabInterface& tab,
+    views::Widget& browser_widget,
+    const ui::Accelerator& hotkey,
+    base::TimeDelta hold_threshold,
+    base::OnceClosure on_hold_threshold_reached,
+    CompletionCallback completion_callback)
+    : hotkey_(hotkey),
+      on_hold_threshold_reached_(std::move(on_hold_threshold_reached)),
+      completion_callback_(std::move(completion_callback)) {
   CHECK(!hotkey_.IsEmpty());
   CHECK(completion_callback_);
   CHECK(browser_widget.GetNativeWindow());
@@ -84,6 +88,11 @@ HotkeyHoldWatcher::~HotkeyHoldWatcher() = default;
 
 void HotkeyHoldWatcher::OnHoldThresholdReached() {
   is_press_and_hold_mode_ = true;
+  if (on_hold_threshold_reached_) {
+    std::move(on_hold_threshold_reached_).Run();
+    // WARNING: `this` may be deleted by `on_hold_threshold_reached_`, do not
+    // add code below here.
+  }
 }
 
 void HotkeyHoldWatcher::OnEvent(const ui::Event& event) {
