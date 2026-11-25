@@ -202,7 +202,6 @@ source_set("character_property_data") {
     ":platform_export",
     "//third_party/blink/renderer/platform/heap",
     "//third_party/blink/renderer/platform/instrumentation",
-    "//third_party/harfbuzz",
     "//third_party/icu",
   ]
 }
@@ -254,7 +253,6 @@ source_set("font_rust_support") {
     "//third_party/blink/renderer/platform/loader",
     "//third_party/blink/renderer/platform/network",
     "//third_party/blink/renderer/platform/scheduler",
-    "//third_party/harfbuzz",
     "//third_party/icu",
   ]
 }
@@ -324,6 +322,7 @@ group("blink_platform_public_deps") {
     "//third_party/blink/renderer/platform/network:make_generated",
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/boringssl",
+    "//third_party/harfbuzz",
     "//third_party/libwebp",
     "//third_party/ots",
     "//third_party/woff2:woff2_dec",
@@ -858,6 +857,7 @@ component("platform") {
     "fonts/shaping/harfbuzz_font_data.h",
     "fonts/shaping/harfbuzz_shaper.cc",
     "fonts/shaping/harfbuzz_shaper.h",
+    "fonts/shaping/hb_shim.h",
     "fonts/shaping/ng_shape_cache.h",
     "fonts/shaping/run_segmenter.cc",
     "fonts/shaping/run_segmenter.h",
@@ -1918,14 +1918,13 @@ component("platform") {
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/ced",
     "//third_party/emoji-segmenter",
-    "//third_party/harfbuzz",
     "//third_party/highway:libhwy",
     "//third_party/icu",
     "//third_party/libgav1:libgav1_parser",
     "//third_party/libgav1:libgav1_utils_constants",
     "//third_party/libyuv",
     "//third_party/one_euro_filter",
-    "//third_party/rust/harfrust_capi/v0_16:lib",
+    "//third_party/rust/harfrust_capi",
     "//third_party/webrtc_overrides:webrtc_component",
     "//third_party/zlib/google:compression_utils",
     "//ui/base/cursor/mojom:cursor_type_blink",
@@ -2599,7 +2598,6 @@ source_set("blink_platform_unittests_sources") {
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/dawn/src/dawn/native",
     "//third_party/dawn/src/dawn/wire",
-    "//third_party/harfbuzz",
     "//third_party/libyuv",
     "//third_party/webrtc/api/task_queue:task_queue_test",
     "//third_party/webrtc_overrides:metronome_like_task_queue_test",
@@ -2735,7 +2733,6 @@ test("blink_platform_perftests") {
     "//services/network/public/cpp",
     "//testing/gtest",
     "//testing/perf",
-    "//third_party/harfbuzz",
   ]
 }
 

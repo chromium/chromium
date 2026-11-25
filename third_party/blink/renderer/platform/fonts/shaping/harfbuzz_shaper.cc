@@ -75,14 +75,6 @@ namespace blink {
 
 namespace {
 
-const char* const harfrust_shaper_list[] = {"harfrust"};
-const char* const ot_shaper_list[] = {"ot"};
-
-inline const char* const* ShapingBackend() {
-  return RuntimeEnabledFeatures::HarfRustShapingEnabled() ? harfrust_shaper_list
-                                                          : ot_shaper_list;
-}
-
 //
 // This class holds an `hb_buffer_t`.
 //
@@ -353,9 +345,9 @@ inline bool ShapeRange(hb_buffer_t* buffer,
                               : HarfBuzzFace::kNoVerticalLayout,
                           specified_size);
   face->SetVariationSelectorMode(variation_selector_mode);
-  hb_shape_full(hb_font, buffer,
-                FontFeatureRange::ToHarfBuzzData(argument_features.data()),
-                argument_features.size(), ShapingBackend());
+  hb_shape(hb_font, buffer,
+           FontFeatureRange::ToHarfBuzzData(argument_features.data()),
+           argument_features.size());
   if (!face->ShouldSubpixelPosition()) {
     RoundHarfBuzzBufferPositions(buffer);
   }
@@ -1258,7 +1250,7 @@ void HarfBuzzShaper::GetGlyphData(const SimpleFontData& font_data,
                     : HarfBuzzFace::kPrepareForVerticalLayout,
       platform_data.size());
   DCHECK(hb_font);
-  hb_shape_full(hb_font, hb_buffer, nullptr, 0, ShapingBackend());
+  hb_shape(hb_font, hb_buffer, nullptr, 0);
 
   // Create `GlyphDataList` from `hb_buffer`.
   wtf_size_t num_glyphs;

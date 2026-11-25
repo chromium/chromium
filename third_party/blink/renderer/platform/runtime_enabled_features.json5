@@ -3817,7 +3817,6 @@
     },
     {
       name: "HarfRustShaping",
-      status: "test",
     },
     {
       name: "HasUAVisualTransition",

@@ -1719,7 +1719,6 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/platform:font_rust_headers",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/fuzztest",
-    "//third_party/harfbuzz",
     "//third_party/libxml",
     "//third_party/libxslt",
     "//ui/accessibility:ax_base",
