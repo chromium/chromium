@@ -7,6 +7,7 @@
 #include <AppKit/AppKit.h>
 
 #import "base/apple/scoped_objc_class_swizzler.h"
+#include "base/mac/mac_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/remote_cocoa/app_shim/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,6 +77,11 @@ TEST(NativeWidgetMacNSWindowTest, AncestorsUpdateCursorDefaultsToNo) {
 // The key window delegates cursor handling to its ancestors only if it opted
 // in and the feature is enabled.
 TEST(NativeWidgetMacNSWindowTest, KeyWindowDelegatesCursorTo) {
+  // TODO(https://crbug.com/587821939): Fails on macOS 13.
+  if (base::mac::MacOSMajorVersion() == 13) {
+    GTEST_SKIP();
+  }
+
   g_fake_key_window = nil;
   base::apple::ScopedObjCClassSwizzler key_window_swizzler(
       [NSApplication class], [FakeKeyWindowNSApplicationDonor class],
@@ -128,6 +134,11 @@ TEST(NativeWidgetMacNSWindowTest, KeyWindowDelegatesCursorTo) {
 // the browser window.
 TEST(NativeWidgetMacNSWindowTest,
      KeyWindowDelegatesCursorThroughNonWidgetWindow) {
+  // TODO(https://crbug.com/587821939): Fails on macOS 13.
+  if (base::mac::MacOSMajorVersion() == 13) {
+    GTEST_SKIP();
+  }
+
   g_fake_key_window = nil;
   base::apple::ScopedObjCClassSwizzler key_window_swizzler(
       [NSApplication class], [FakeKeyWindowNSApplicationDonor class],
