@@ -351,7 +351,6 @@ std::string GetAudioMediaStreamDeviceName(
 void CreateMediaStreamCaptureIndicatorUI(
     content::WebContents* web_contents,
     const content::DesktopMediaID& media_id,
-    const GURL& security_origin,
     const blink::mojom::MediaStreamType video_type,
     bool capture_audio,
     bool display_notification,
@@ -362,8 +361,6 @@ void CreateMediaStreamCaptureIndicatorUI(
                             std::unique_ptr<content::MediaStreamUI>)>
         on_media_stream_capture_indicator_ui_created_callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-  // The origin that requested the capture, which capture policy applies to.
-  const url::Origin request_origin = url::Origin::Create(security_origin);
   std::unique_ptr<MediaStreamUI> notification_ui;
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kUserMediaScreenCapturing) &&
@@ -386,10 +383,11 @@ void CreateMediaStreamCaptureIndicatorUI(
       const bool app_preferred_current_tab =
           video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
-      notification_ui = TabSharingUI::Create(
-          capturer_id, media_id, application_title, app_preferred_current_tab,
-          TabSharingInfoBarDelegate::TabShareType::CAPTURE,
-          captured_surface_control_active, request_origin);
+      notification_ui =
+          TabSharingUI::Create(capturer_id, media_id, application_title,
+                               app_preferred_current_tab,
+                               TabSharingInfoBarDelegate::TabShareType::CAPTURE,
+                               captured_surface_control_active);
     } else {
       notification_ui = ScreenCaptureNotificationUI::Create(
           GetNotificationText(application_title, capture_audio, media_id.type),
@@ -403,7 +401,7 @@ void CreateMediaStreamCaptureIndicatorUI(
           ->GetMediaStreamCaptureIndicator()
           ->RegisterMediaStream(web_contents, devices,
                                 std::move(notification_ui), application_title,
-                                media_id, request_origin);
+                                media_id);
   std::move(on_media_stream_capture_indicator_ui_created_callback)
       .Run(std::move(devices), std::move(capture_indicator_ui));
 }
@@ -441,7 +439,7 @@ void OnAudioDeviceIdObtained(
             web_contents.get(), url::Origin::Create(security_origin), media_id);
   }
   CreateMediaStreamCaptureIndicatorUI(
-      web_contents.get(), media_id, security_origin, video_type,
+      web_contents.get(), media_id, video_type,
       /*capture_audio=*/audio_device_id.has_value(), display_notification,
       application_title, captured_surface_control_active, std::move(devices),
       std::move(on_media_stream_capture_indicator_ui_created_callback));
@@ -596,9 +594,8 @@ void GetDevicesForDesktopCapture(
   }
 
   CreateMediaStreamCaptureIndicatorUI(
-      web_contents, media_id, security_origin, video_type, capture_audio,
-      display_notification, application_title, captured_surface_control_active,
-      std::move(devices),
+      web_contents, media_id, video_type, capture_audio, display_notification,
+      application_title, captured_surface_control_active, std::move(devices),
       std::move(on_media_stream_capture_indicator_ui_created_callback));
 }
 

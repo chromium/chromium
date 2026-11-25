@@ -57,14 +57,12 @@ class TabSharingUIViews : public TabSharingUI,
 #endif
                           public content::WebContentsObserver {
  public:
-  // See TabSharingUI::Create() for |request_origin|.
   TabSharingUIViews(content::GlobalRenderFrameHostId capturer,
                     const content::DesktopMediaID& media_id,
                     const std::u16string& capturer_name,
                     bool app_preferred_current_tab,
                     TabSharingInfoBarDelegate::TabShareType capture_type,
-                    bool captured_surface_control_active,
-                    const std::optional<url::Origin>& request_origin);
+                    bool captured_surface_control_active);
   ~TabSharingUIViews() override;
 
   // MediaStreamUI:
@@ -219,9 +217,6 @@ class TabSharingUIViews : public TabSharingUI,
   std::map<content::WebContents*, std::unique_ptr<SameOriginObserver>>
       same_origin_observers_;
   const content::GlobalRenderFrameHostId capturer_;
-  // The origin on whose behalf the tab is captured, which capture policy
-  // applies to. This is the origin of the frame that requested the capture,
-  // which is not necessarily the origin of |capturer_|.
   const url::Origin capturer_origin_;
   const bool can_focus_capturer_;
   const bool capturer_restricted_to_same_origin_ = false;
