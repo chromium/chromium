@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/extensions/extension_side_panel_coordinator.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
@@ -26,6 +27,10 @@
 #include "ui/base/layout.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/base/models/image_model.h"
+#endif
 
 namespace extensions {
 
@@ -265,6 +270,10 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
           },
           weak_factory_.GetWeakPtr()),
       /*default_content_width_callback=*/base::NullCallback());
+#if BUILDFLAG(IS_ANDROID)
+  entry->SetProperty(kSidePanelIconKey,
+                     ui::ImageModel::FromImage(extension_icon_->image()));
+#endif
 
   scoped_entry_observation_.Observe(entry.get());
   // This is only called when no entry is registered for this key, so the
@@ -405,13 +414,21 @@ void ExtensionSidePanelCoordinator::NavigateIfNecessary() {
 }
 
 void ExtensionSidePanelCoordinator::LoadExtensionIcon() {
-  gfx::Image placeholder_icon = ExtensionIconPlaceholder::CreateImage(
-      extension_misc::EXTENSION_ICON_BITTY, extension_->name());
+  // The Android side panel header icon is 24dp (vs. 16dp on desktop), and
+  // Android's ImageSkia only preloads the 1x representation before scaling.
+#if BUILDFLAG(IS_ANDROID)
+  constexpr extension_misc::ExtensionIcons kIconSize =
+      extension_misc::EXTENSION_ICON_SMALLISH;
+#else
+  constexpr extension_misc::ExtensionIcons kIconSize =
+      extension_misc::EXTENSION_ICON_BITTY;
+#endif
+  gfx::Image placeholder_icon =
+      ExtensionIconPlaceholder::CreateImage(kIconSize, extension_->name());
 
   extension_icon_ = std::make_unique<IconImage>(
-      profile_, extension_, IconsInfo::GetIcons(extension_),
-      extension_misc::EXTENSION_ICON_BITTY, placeholder_icon.AsImageSkia(),
-      /*observer=*/nullptr);
+      profile_, extension_, IconsInfo::GetIcons(extension_), kIconSize,
+      placeholder_icon.AsImageSkia(), /*observer=*/nullptr);
 
   // Triggers actual image loading with all supported scale factors.
   // TODO(crbug.com/40910886): This is a temporary fix since the combobox and

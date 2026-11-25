@@ -263,6 +263,7 @@ source_set("impl") {
       "//chrome/browser/ui/android/tab_model",
       "//extensions/common",
       "//ui/android",
+      "//ui/base",
     ]
   }
   if (toolkit_views) {
@@ -542,7 +543,10 @@ if (is_android) {
   source_set("android_browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "reload_page_dialog_controller_android_browsertest.cc" ]
+    sources = [
+      "extension_side_panel_coordinator_android_browsertest.cc",
+      "reload_page_dialog_controller_android_browsertest.cc",
+    ]
     deps = [
       ":extensions",
       "//base",
@@ -550,14 +554,26 @@ if (is_android) {
       "//chrome/app:generated_resources",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
+      "//chrome/browser/flags:flags_android",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+      "//chrome/browser/ui/side_panel/android",
+      "//chrome/common/extensions",
       "//chrome/test/base:chrome_test_utils",
       "//components/messages/android",
       "//components/messages/android:test_support",
       "//content/test:test_support",
       "//extensions:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+      "//skia",
       "//testing/gmock",
+      "//testing/gtest",
       "//ui/base",
+      "//ui/gfx",
+      "//ui/gfx:test_support",
       "//url",
     ]
   }
