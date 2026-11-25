@@ -11,8 +11,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.os.Build;
-
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import android.view.View;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,8 +28,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -46,10 +43,6 @@ import org.chromium.ui.test.util.MockitoHelper;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
 public class AppSpecificHistoryIphControllerUnitTest {
-    @Rule
-    public ActivityScenarioRule<ChromeTabbedActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(ChromeTabbedActivity.class);
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private UserEducationHelper mUserEducationHelper;
@@ -65,7 +58,7 @@ public class AppSpecificHistoryIphControllerUnitTest {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE))
                 .thenReturn(true);
         TrackerFactory.setTrackerForTests(mTracker);
-        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mController = new AppSpecificHistoryIphController(mActivity, () -> mMockProfile);
         mController.setUserEducationHelperForTesting(mUserEducationHelper);
     }
@@ -78,14 +71,17 @@ public class AppSpecificHistoryIphControllerUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testShowsIphOnPageLoad() {
+        View anchorView = new View(mActivity);
+        anchorView.setId(R.id.search_menu_id);
+        mActivity.setContentView(anchorView);
         mController.maybeShowIph();
-        var captor = ArgumentCaptor.forClass(IphCommand.class);
+        ArgumentCaptor<IphCommand> captor = ArgumentCaptor.forClass(IphCommand.class);
         verify(mUserEducationHelper).requestShowIph(captor.capture());
-        var cmd = captor.getValue();
+        IphCommand cmd = captor.getValue();
         assertEquals(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE, cmd.featureName);
         assertEquals(R.string.history_iph_bubble_text, cmd.stringId);
         assertEquals(R.string.history_iph_bubble_text, cmd.accessibilityStringId);
-        assertEquals(mActivity.findViewById(R.id.menu_button_wrapper), cmd.anchorView);
+        assertEquals(anchorView, cmd.anchorView);
         assertEquals(HighlightShape.CIRCLE, cmd.highlightParams.getShape());
     }
 
