@@ -34,6 +34,8 @@ BASE_FEATURE(kNewTabPageEphemeralTheme, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAimButtonRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimAsMvtDebugReactivate, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #pragma mark - Feature parameters
 
 // Feature parameters for `kOverrideFeedSettings`.
@@ -168,6 +170,13 @@ bool AreNTPQuickActionsEnabled() {
     case AimButtonRefactorArm::kNoChips:
       return false;
   }
+}
+
+bool IsAimAsMvtDebugReactivateEnabled() {
+  if (GetAimButtonRefactorArm() != AimButtonRefactorArm::kAimAsMvt) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kAimAsMvtDebugReactivate);
 }
 
 bool IsImageGenerationQuickActionEnabled() {

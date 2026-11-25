@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_pinned_site_mutator.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -26,6 +28,11 @@ namespace {
 
 /// The identifier for the only section in the table.
 const NSInteger kSection = 0;
+
+/// Layout constants for the debug AIM reactivation button in the table footer.
+const CGFloat kReactivateButtonTopPadding = 16.0;
+const CGFloat kReactivateButtonVerticalInset = 10.0;
+const CGFloat kReactivateButtonHorizontalInset = 20.0;
 
 /// Identifier for items.
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
@@ -126,6 +133,7 @@ NSString* GetErrorMessage(PinnedSiteMutationResult result) {
              action:@selector(onApplyButtonTap)];
   [self loadModel];
   [self updateApplyButtonState];
+  [self updateFooter];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -278,6 +286,12 @@ NSString* GetErrorMessage(PinnedSiteMutationResult result) {
   [self dismissModal];
 }
 
+/// Handles the tap on the debug button to reactivate an unpinned AIM tile.
+- (void)onReactivateAIMButtonTap {
+  [self.mutator reactivateAIMTile];
+  [self dismissModal];
+}
+
 /// Enables or disables the top-right button that applies the changes. The
 /// button should only be enabled when there are valid inputs in the text
 /// fields.
@@ -288,30 +302,67 @@ NSString* GetErrorMessage(PinnedSiteMutationResult result) {
 
 /// Updates the footer of the table.
 - (void)updateFooter {
-  if (!_errorMessage) {
+  BOOL showReactivateButton = _action == PinnedSiteAction::kCreate &&
+                              IsAimAsMvtDebugReactivateEnabled();
+  if (!_errorMessage && !showReactivateButton) {
     self.tableView.tableFooterView = nil;
     return;
   }
-  /// Sets up the label.
-  UILabel* errorMessage = [[UILabel alloc] initWithFrame:CGRectZero];
-  errorMessage.text = _errorMessage;
-  errorMessage.textColor = [UIColor colorNamed:kRedColor];
-  errorMessage.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  errorMessage.numberOfLines = 0;
-  /// Sizes it correctly.
-  CGRect readableContentFrame = self.tableView.readableContentGuide.layoutFrame;
-  CGSize size = [errorMessage
-      sizeThatFits:CGSizeMake(readableContentFrame.size.width, CGFLOAT_MAX)];
-  errorMessage.frame =
-      CGRectMake(readableContentFrame.origin.x, 0, size.width, size.height);
-  UIView* footer = [[UIView alloc]
-      initWithFrame:CGRectMake(0, 0, self.tableView.bounds.size.width,
-                               size.height)];
-  [footer addSubview:errorMessage];
+  UIView* footer = [[UIView alloc] initWithFrame:CGRectZero];
+  CGFloat footerHeight = 0;
+  if (_errorMessage) {
+    /// Sets up the label.
+    UILabel* errorMessage = [[UILabel alloc] initWithFrame:CGRectZero];
+    errorMessage.text = _errorMessage;
+    errorMessage.textColor = [UIColor colorNamed:kRedColor];
+    errorMessage.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    errorMessage.numberOfLines = 0;
+    /// Sizes it correctly.
+    CGRect readableContentFrame =
+        self.tableView.readableContentGuide.layoutFrame;
+    CGSize size = [errorMessage
+        sizeThatFits:CGSizeMake(readableContentFrame.size.width, CGFLOAT_MAX)];
+    errorMessage.frame =
+        CGRectMake(readableContentFrame.origin.x, 0, size.width, size.height);
+    [footer addSubview:errorMessage];
+    footerHeight = size.height;
+  }
+  if (showReactivateButton) {
+    UIButtonConfiguration* config =
+        [UIButtonConfiguration filledButtonConfiguration];
+    config.image =
+        SymbolWithPointSize(SymbolMagnifyingglassSpark, kSymbolActionPointSize);
+    config.baseBackgroundColor = [UIColor colorNamed:kBlueColor];
+    config.baseForegroundColor = [UIColor colorNamed:kSolidButtonTextColor];
+    config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+    config.contentInsets = NSDirectionalEdgeInsetsMake(
+        kReactivateButtonVerticalInset, kReactivateButtonHorizontalInset,
+        kReactivateButtonVerticalInset, kReactivateButtonHorizontalInset);
+    UIButton* reactivateButton = [UIButton buttonWithConfiguration:config
+                                                     primaryAction:nil];
+    [reactivateButton addTarget:self
+                         action:@selector(onReactivateAIMButtonTap)
+               forControlEvents:UIControlEventTouchUpInside];
+    reactivateButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [footer addSubview:reactivateButton];
+    CGSize buttonSize = [reactivateButton sizeThatFits:CGSizeZero];
+    [NSLayoutConstraint activateConstraints:@[
+      [reactivateButton.centerXAnchor
+          constraintEqualToAnchor:footer.centerXAnchor],
+      [reactivateButton.topAnchor
+          constraintEqualToAnchor:footer.topAnchor
+                         constant:footerHeight + kReactivateButtonTopPadding],
+    ]];
+    footerHeight += kReactivateButtonTopPadding + buttonSize.height;
+  }
+  footer.frame =
+      CGRectMake(0, 0, self.tableView.bounds.size.width, footerHeight);
   self.tableView.tableFooterView = footer;
-  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                  footer);
+  if (_errorMessage) {
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                    footer);
+  }
 }
 
 /// Sets the error message.

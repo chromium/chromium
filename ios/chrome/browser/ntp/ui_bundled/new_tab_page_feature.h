@@ -96,6 +96,10 @@ bool IsNTPEphemeralThemeEnabled();
 // Enables the AimButtonRefactor feature.
 BASE_DECLARE_FEATURE(kAimButtonRefactor);
 
+// Debug flag to add a button in the Add Pinned Site form to reactivate an
+// unpinned AIM tile when `AimButtonRefactorArm::kAimAsMvt` is enabled.
+BASE_DECLARE_FEATURE(kAimAsMvtDebugReactivate);
+
 #pragma mark - Feature parameters
 
 // A parameter value for the feed's refresh threshold when the feed has already
@@ -164,6 +168,10 @@ AimButtonRefactorArm GetAimButtonRefactorArm();
 
 // Whether the NTP quick actions row is enabled.
 bool AreNTPQuickActionsEnabled();
+
+// Whether the debug button to reactivate an unpinned AIM MVT tile is enabled.
+// Always returns false unless `AimButtonRefactorArm::kAimAsMvt` is active.
+bool IsAimAsMvtDebugReactivateEnabled();
 
 // Whether the current AimButtonRefactor arm surfaces the image generation quick
 // action chip.

@@ -29,6 +29,10 @@ enum class PinnedSiteMutationResult {
                                        withTitle:(NSString*)title
                                              URL:(NSString*)newURL;
 
+/// Reactivates an unpinned virtual AIM tile at the front of the Most Visited
+/// Tiles if eligible and not suppressed by a pinned AIM zero-state URL.
+- (void)reactivateAIMTile;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_MOST_VISITED_TILES_UI_MOST_VISITED_TILES_PINNED_SITE_MUTATOR_H_

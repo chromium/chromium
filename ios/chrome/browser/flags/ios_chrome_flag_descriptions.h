@@ -69,6 +69,13 @@ inline constexpr char kAim3pEntrypointName[] = "AIM 3P entrypoint";
 inline constexpr char kAim3pEntrypointDescription[] =
     "Enables AIM entrypoint for third-party search engines that support it.";
 
+inline constexpr char kAimAsMvtDebugReactivateName[] =
+    "AIM as MVT Debug Reactivate";
+inline constexpr char kAimAsMvtDebugReactivateDescription[] =
+    "When enabled alongside the AIM as MVT arm of AimButtonRefactor, adds a "
+    "debug button to the Add Pinned Site form to reactivate an unpinned AIM "
+    "tile.";
+
 inline constexpr char kAimButtonRefactorName[] = "AIM Button Refactor";
 inline constexpr char kAimButtonRefactorDescription[] =
     "When enabled, the location and presentation of the AI Mode button on the "

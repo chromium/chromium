@@ -203,6 +203,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "aim-as-mvt-debug-reactivate",
+    "owners": [ "ericekey@google.com", "bling-pandamonium@google.com" ],
+    "expiry_milestone": 163
+  },
+  {
     "name": "aim-button-refactor",
     "owners": [ "ericekey@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 160

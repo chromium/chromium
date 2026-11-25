@@ -522,6 +522,28 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
   return PinnedSiteMutationResult::kSuccess;
 }
 
+- (void)reactivateAIMTile {
+  CHECK(IsAimAsMvtDebugReactivateEnabled());
+  if (!_aiModeButtonService->IsButtonAvailable()) {
+    return;
+  }
+  if (_prefService->GetInteger(prefs::kIosMostVisitedAiModeTileIndex) >= 0) {
+    return;
+  }
+  if (_lastMostVisitedTiles.has_value()) {
+    for (const ntp_tiles::NTPTile& tile : _lastMostVisitedTiles.value()) {
+      if (tile.source == TileSource::CUSTOM_LINKS &&
+          IsAimZeroStateURL(tile.url)) {
+        return;
+      }
+    }
+  }
+  _prefService->SetInteger(prefs::kIosMostVisitedAiModeTileIndex, 0);
+  if (_lastMostVisitedTiles.has_value()) {
+    [self buildMostVisitedItemsFromTiles:_lastMostVisitedTiles.value()];
+  }
+}
+
 #pragma mark - Private
 
 // Open the URL corresponding to the `item` in a new tab, `incognito` or not.

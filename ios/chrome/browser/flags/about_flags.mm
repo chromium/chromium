@@ -3203,6 +3203,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kGeminiModelQualityClientIDName,
      flag_descriptions::kGeminiModelQualityClientIDDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kGeminiModelQualityClientID)},
+    {"aim-as-mvt-debug-reactivate",
+     flag_descriptions::kAimAsMvtDebugReactivateName,
+     flag_descriptions::kAimAsMvtDebugReactivateDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAimAsMvtDebugReactivate)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
