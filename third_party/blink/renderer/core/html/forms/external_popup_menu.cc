@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -157,10 +158,11 @@ bool ExternalPopupMenu::ShowInternal() {
       rect_in_viewport = gfx::ScaleToRoundedRect(rect_in_viewport, 1 / dpr);
     }
 
+    // The compositor draws the emulated page scaled by `scale_for_emulation`,
+    // so the whole anchor rect (not just its origin) must be scaled to stay
+    // aligned with the select.
     gfx::Rect bounds =
-        gfx::Rect(rect_in_viewport.x() * scale_for_emulation,
-                  rect_in_viewport.y() * scale_for_emulation,
-                  rect_in_viewport.width(), rect_in_viewport.height());
+        gfx::ScaleToRoundedRect(rect_in_viewport, scale_for_emulation);
     local_frame_->GetLocalFrameHostRemote().ShowPopupMenu(
         receiver_.BindNewPipeAndPassRemote(execution_context->GetTaskRunner(
             TaskType::kInternalUserInteraction)),

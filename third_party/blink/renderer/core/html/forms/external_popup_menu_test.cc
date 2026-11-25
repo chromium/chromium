@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_popup_menu_info.h"
@@ -468,6 +469,49 @@ TEST_F(ExternalPopupMenuTest, PopupAccountsForDeviceScaleFactor) {
   // The test file has no body margins but 50px of padding.
   EXPECT_EQ(50, ShownBounds().x());
   EXPECT_EQ(50, ShownBounds().y());
+}
+
+TEST_F(ExternalPopupMenuTest, PopupAccountsForDeviceEmulationScale) {
+  frame_test_helpers::LoadHTMLString(
+      MainFrame(),
+      R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body { margin: 0; }
+          select {
+            position: fixed;
+            left: 100px;
+            top: 200px;
+            width: 60px;
+            height: 40px;
+          }
+        </style>
+        <select id=select><option>option</option></select>
+      )HTML",
+      url_test_helpers::ToKURL("http://www.test.com/"));
+
+  WebView()->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  // DevTools device mode scales the compositor output by `scale`, so the
+  // select's on-screen rect is its emulated rect scaled by `scale`.
+  constexpr float kEmulationScale = 0.5f;
+  DeviceEmulationParams params;
+  params.scale = kEmulationScale;
+  WebView()->EnableDeviceEmulation(params);
+  WebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
+
+  auto* select = To<HTMLSelectElement>(
+      MainFrame()->GetFrame()->GetDocument()->getElementById(
+          AtomicString("select")));
+  ASSERT_TRUE(select->GetLayoutObject());
+
+  select->ShowPopup();
+  WaitUntilShowedPopup();
+
+  EXPECT_EQ(gfx::Rect(50, 100, 30, 20), ShownBounds());
+
+  WebView()->DisableDeviceEmulation();
 }
 
 TEST_F(ExternalPopupMenuTest, DidAcceptIndex) {
