@@ -389,4 +389,106 @@ TEST(HTMLTokenizerTest, SimdScanNullInRawtextAndScript) {
   }
 }
 
+TEST(HTMLTokenizerTest, SimdScanQuotedAttributeValuesMatchesBaseline) {
+  test::TaskEnvironment task_environment;
+  std::string long_a(100, 'A');
+  std::string long_b(100, 'B');
+  std::string raw_8bit = "<img src=\"data:image/png;base64," + long_a +
+                         "&amp;" + long_b + "\r\n" + std::string(1, '\0') +
+                         long_a + "\" data-s='" + long_b + "&lt;" + long_a +
+                         "\n" + std::string(1, '\0') + long_b + "'>";
+  String str_8bit(base::as_byte_span(raw_8bit));
+  ASSERT_TRUE(str_8bit.Is8Bit());
+
+  std::string raw_16bit = "<a href=\"https://example.com/?q=" + long_a +
+                          "&amp;x=" + long_b + "😀\" title='" + long_b + "🎉" +
+                          long_a + "'>";
+  String str_16bit = String::FromUtf8(base::as_byte_span(raw_16bit));
+  ASSERT_FALSE(str_16bit.Is8Bit());
+
+  auto tokenize_attrs = [](const std::vector<String>& chunks,
+                           bool track_ranges) {
+    HTMLParserOptions options;
+    options.track_attributes_ranges = track_ranges;
+    HTMLTokenizer tokenizer(options);
+    SegmentedString input;
+    for (const String& chunk : chunks) {
+      input.Append(SegmentedString(chunk));
+    }
+    input.Append(
+        SegmentedString(String(base::span_from_ref(kEndOfFileMarker))));
+    input.Close();
+
+    using AttrRecord = std::tuple<String, String, bool>;
+    using RangeRecord = std::tuple<int, int, int, int>;
+    std::vector<AttrRecord> attrs;
+    std::vector<RangeRecord> ranges;
+    while (HTMLToken* token = tokenizer.NextToken(input)) {
+      const auto type = token->GetType();
+      if (type == HTMLToken::kStartTag) {
+        for (const auto& attr : token->Attributes()) {
+          String val = attr.Value();
+          attrs.emplace_back(attr.GetName().GetString(), val, val.Is8Bit());
+        }
+        if (track_ranges) {
+          for (const auto& range : tokenizer.attributes_ranges().attributes()) {
+            ranges.emplace_back(range.name_range.start, range.name_range.end,
+                                range.value_range.start, range.value_range.end);
+          }
+        }
+      }
+      if (track_ranges) {
+        tokenizer.attributes_ranges().Clear();
+      }
+      tokenizer.ClearToken();
+      if (type == HTMLToken::kEndOfFile) {
+        break;
+      }
+    }
+    return std::make_pair(std::move(attrs), std::move(ranges));
+  };
+
+  std::vector<std::vector<String>> cases = {
+      {str_8bit},
+      {StringView(str_8bit, 0, 120).ToString(),
+       StringView(str_8bit, 120).ToString()},
+      {str_16bit},
+      {StringView(str_16bit, 0, 110).ToString(),
+       StringView(str_16bit, 110).ToString()},
+      // Edge cases: no attributes, empty quoted values, EOF without closing
+      // quote, and CRLF split across chunk boundaries.
+      {String("<div></div>")},
+      {String("<div a=\"\" b=''></div>")},
+      {String(("<div a=\"" + long_a).c_str())},
+      {String(("<div a=\"" + long_a + "\r").c_str()),
+       String(("\n" + long_b + "\">").c_str())},
+  };
+  // SIMD stride boundary lengths (15, 16, 17, 18).
+  for (size_t len : {15u, 16u, 17u, 18u}) {
+    std::string payload(len, 'x');
+    cases.push_back(
+        {String(("<div a=\"" + payload + "\" b='" + payload + "'>").c_str())});
+    std::string payload_16 =
+        "<div a=\"" + payload + "😀\" b='" + payload + "🎉'>";
+    cases.push_back({String::FromUtf8(base::as_byte_span(payload_16))});
+  }
+
+  for (const auto& chunks : cases) {
+    for (bool track_ranges : {false, true}) {
+      auto baseline = [&]() {
+        base::test::ScopedFeatureList disabled;
+        disabled.InitAndDisableFeature(features::kHTMLTokenizerSimdScan);
+        return tokenize_attrs(chunks, track_ranges);
+      }();
+      for (const std::string& attr_param : {"true", "false"}) {
+        base::test::ScopedFeatureList enabled;
+        enabled.InitAndEnableFeatureWithParameters(
+            features::kHTMLTokenizerSimdScan,
+            {{"attribute_value", attr_param}, {"min_length", "16"}});
+        EXPECT_EQ(baseline, tokenize_attrs(chunks, track_ranges));
+      }
+    }
+  }
+}
+
 }  // namespace blink

@@ -238,6 +238,13 @@ class CORE_EXPORT HTMLTokenizer {
   // was consumed and appended to `token_`.
   bool TrySimdScanScriptOrRawtext(SegmentedString& source);
 
+  // Attempts to bulk-scan characters in quoted attribute value states using
+  // SIMD until `quote_char` ('"' or '\''), '&', '\n', '\r', or '\0'. Returns
+  // true if at least one character was consumed and appended to the current
+  // attribute value.
+  bool TrySimdScanQuotedAttributeValue(SegmentedString& source,
+                                       char quote_char);
+
   inline void ParseError();
 
   inline void BufferCharacter(UChar character) {
@@ -317,6 +324,7 @@ class CORE_EXPORT HTMLTokenizer {
   const bool truncated_markup_declaration_enabled_;
   [[maybe_unused]] const bool simd_scan_script_data_enabled_;
   [[maybe_unused]] const bool simd_scan_rawtext_enabled_;
+  [[maybe_unused]] const bool simd_scan_attribute_value_enabled_;
   [[maybe_unused]] const size_t simd_scan_min_length_;
   const HTMLParserOptions options_;
 

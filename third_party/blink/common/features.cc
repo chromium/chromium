@@ -857,6 +857,12 @@ BASE_FEATURE_PARAM(bool,
                    "rawtext",
                    true);
 
+BASE_FEATURE_PARAM(bool,
+                   kHTMLTokenizerSimdScanAttributeValue,
+                   &kHTMLTokenizerSimdScan,
+                   "attribute_value",
+                   true);
+
 BASE_FEATURE_PARAM(size_t,
                    kHTMLTokenizerSimdScanMinLength,
                    &kHTMLTokenizerSimdScan,

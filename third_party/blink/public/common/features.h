@@ -608,6 +608,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // Enables SIMD bulk scanning in kRAWTEXTState (e.g. inside <style>).
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                                kHTMLTokenizerSimdScanRawtext);
+// Enables SIMD bulk scanning in quoted attribute value states
+// (kAttributeValueDoubleQuotedState and kAttributeValueSingleQuotedState).
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kHTMLTokenizerSimdScanAttributeValue);
 // Minimum remaining length of the current input buffer (SegmentedSubstring)
 // required to enter the SIMD scanning fast path.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,

@@ -99,6 +99,12 @@ class HTMLToken {
     String Value() const { return value_.AsString(); }
 
     void AppendToValue(UChar c) { value_.AddChar(c); }
+    void AppendToValue(base::span<const LChar> span) {
+      value_.AppendSpan(span);
+    }
+    void AppendToValue(base::span<const UChar> span, UChar bitwise_or_chars) {
+      value_.AppendSpan(span, bitwise_or_chars);
+    }
 
    private:
     // TODO(chromium:1204030): Do a more rigorous study and select a
@@ -304,6 +310,18 @@ class HTMLToken {
     DCHECK(character);
     DCHECK(type_ == kStartTag || type_ == kEndTag);
     current_attribute_->AppendToValue(character);
+  }
+
+  ALWAYS_INLINE void AppendToAttributeValue(
+      base::span<const LChar> characters) {
+    DCHECK(type_ == kStartTag || type_ == kEndTag);
+    current_attribute_->AppendToValue(characters);
+  }
+
+  ALWAYS_INLINE void AppendToAttributeValue(base::span<const UChar> characters,
+                                            UChar bitwise_or_chars) {
+    DCHECK(type_ == kStartTag || type_ == kEndTag);
+    current_attribute_->AppendToValue(characters, bitwise_or_chars);
   }
 
   const AttributeList& Attributes() const {

@@ -178,6 +178,9 @@ HTMLTokenizer::HTMLTokenizer(const HTMLParserOptions& options,
           features::kHTMLTokenizerSimdScanScriptData.Get()),
       simd_scan_rawtext_enabled_(simd_scan_enabled &&
                                  features::kHTMLTokenizerSimdScanRawtext.Get()),
+      simd_scan_attribute_value_enabled_(
+          simd_scan_enabled &&
+          features::kHTMLTokenizerSimdScanAttributeValue.Get()),
       simd_scan_min_length_(
           simd_scan_enabled ? features::kHTMLTokenizerSimdScanMinLength.Get()
                             : 0),
@@ -189,85 +192,83 @@ HTMLTokenizer::HTMLTokenizer(const HTMLParserOptions& options,
 #if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
 namespace {
 
-HWY_ATTR size_t SimdScanScriptOrRawtext8(base::span<const LChar> span) {
+template <typename CharType, size_t N>
+HWY_ATTR size_t SimdScan(base::span<const CharType> span,
+                         const std::array<CharType, N>& stop_chars,
+                         UChar* bitwise_or_out = nullptr) {
+  static_assert(N > 0);
+  static_assert(sizeof(CharType) == 1 || sizeof(CharType) == 2);
+  if constexpr (sizeof(CharType) == 2) {
+    CHECK(bitwise_or_out);
+  }
   namespace hw = hwy::HWY_NAMESPACE;
-  const hw::FixedTag<uint8_t, 16> tag;
+  using LaneType = std::conditional_t<sizeof(CharType) == 1, uint8_t, uint16_t>;
+  constexpr size_t kLanes = 16 / sizeof(CharType);
+  const hw::FixedTag<LaneType, kLanes> tag;
   constexpr size_t kStride = hw::MaxLanes(tag);
-  const auto kLt = hw::Set(tag, static_cast<uint8_t>('<'));
-  const auto kLf = hw::Set(tag, static_cast<uint8_t>('\n'));
-  const auto kCr = hw::Set(tag, static_cast<uint8_t>('\r'));
-  const auto kNul = hw::Set(tag, static_cast<uint8_t>('\0'));
+
+  std::array<hw::Vec<decltype(tag)>, N> stop_vecs;
+  for (size_t i = 0; i < N; ++i) {
+    stop_vecs[i] = hw::Set(tag, static_cast<LaneType>(stop_chars[i]));
+  }
+
+  [[maybe_unused]] const auto kHighByteMask =
+      hw::Set(tag, static_cast<LaneType>(sizeof(CharType) == 2 ? 0xff00 : 0));
+  [[maybe_unused]] auto or_accum = hw::Zero(tag);
+  [[maybe_unused]] UChar scalar_or = 0;
 
   const size_t size = span.size();
   size_t pos = 0;
   for (; pos + kStride <= size; pos += kStride) {
-    // SAFETY: `pos + kStride <= size` guarantees `kStride` readable bytes.
-    const auto input = hw::LoadU(tag, UNSAFE_BUFFERS(span.data() + pos));
-    const auto mask = hw::Or(hw::Or(hw::Eq(input, kLt), hw::Eq(input, kLf)),
-                             hw::Or(hw::Eq(input, kCr), hw::Eq(input, kNul)));
-    if (const intptr_t index = hw::FindFirstTrue(tag, mask); index != -1) {
-      return pos + static_cast<size_t>(index);
-    }
-  }
-
-  for (; pos < size; ++pos) {
-    const LChar c = span[pos];
-    if (c == '<' || c == '\n' || c == '\r' || c == '\0') {
-      return pos;
-    }
-  }
-  return size;
-}
-
-HWY_ATTR size_t SimdScanScriptOrRawtext16(base::span<const UChar> span,
-                                          UChar& bitwise_or_out) {
-  namespace hw = hwy::HWY_NAMESPACE;
-  const hw::FixedTag<uint16_t, 8> tag;
-  constexpr size_t kStride = hw::MaxLanes(tag);
-  const auto kLt = hw::Set(tag, static_cast<uint16_t>('<'));
-  const auto kLf = hw::Set(tag, static_cast<uint16_t>('\n'));
-  const auto kCr = hw::Set(tag, static_cast<uint16_t>('\r'));
-  const auto kNul = hw::Set(tag, static_cast<uint16_t>('\0'));
-  const auto kHighByteMask = hw::Set(tag, static_cast<uint16_t>(0xff00));
-  auto or_accum = hw::Zero(tag);
-
-  const size_t size = span.size();
-  size_t pos = 0;
-  UChar scalar_or = 0;
-  for (; pos + kStride <= size; pos += kStride) {
-    // SAFETY: `pos + kStride <= size` guarantees `kStride` readable UChars.
-    const auto input = hw::LoadU(tag, reinterpret_cast<const uint16_t*>(
+    // SAFETY: `pos + kStride <= size` guarantees `kStride` readable elements.
+    const auto input = hw::LoadU(tag, reinterpret_cast<const LaneType*>(
                                           UNSAFE_BUFFERS(span.data() + pos)));
-    const auto mask = hw::Or(hw::Or(hw::Eq(input, kLt), hw::Eq(input, kLf)),
-                             hw::Or(hw::Eq(input, kCr), hw::Eq(input, kNul)));
+    auto mask = hw::Eq(input, stop_vecs[0]);
+    for (size_t i = 1; i < N; ++i) {
+      mask = hw::Or(mask, hw::Eq(input, stop_vecs[i]));
+    }
     if (const intptr_t index = hw::FindFirstTrue(tag, mask); index != -1) {
       const size_t hit = pos + static_cast<size_t>(index);
-      for (size_t i = pos; i < hit; ++i) {
-        scalar_or |= span[i];
+      if constexpr (sizeof(CharType) == 2) {
+        for (size_t i = pos; i < hit; ++i) {
+          scalar_or |= span[i];
+        }
+        if (!hw::AllTrue(
+                tag, hw::Eq(hw::And(or_accum, kHighByteMask), hw::Zero(tag)))) {
+          scalar_or |= 0x100;
+        }
+        *bitwise_or_out = scalar_or;
       }
-      if (!hw::AllTrue(
-              tag, hw::Eq(hw::And(or_accum, kHighByteMask), hw::Zero(tag)))) {
-        scalar_or |= 0x100;
-      }
-      bitwise_or_out = scalar_or;
       return hit;
     }
-    or_accum = hw::Or(or_accum, input);
+    if constexpr (sizeof(CharType) == 2) {
+      or_accum = hw::Or(or_accum, input);
+    }
   }
 
-  if (!hw::AllTrue(tag,
-                   hw::Eq(hw::And(or_accum, kHighByteMask), hw::Zero(tag)))) {
-    scalar_or |= 0x100;
+  if constexpr (sizeof(CharType) == 2) {
+    if (!hw::AllTrue(tag,
+                     hw::Eq(hw::And(or_accum, kHighByteMask), hw::Zero(tag)))) {
+      scalar_or |= 0x100;
+    }
   }
   for (; pos < size; ++pos) {
-    const UChar c = span[pos];
-    if (c == '<' || c == '\n' || c == '\r' || c == '\0') {
-      bitwise_or_out = scalar_or;
-      return pos;
+    const CharType c = span[pos];
+    for (size_t i = 0; i < N; ++i) {
+      if (c == stop_chars[i]) {
+        if constexpr (sizeof(CharType) == 2) {
+          *bitwise_or_out = scalar_or;
+        }
+        return pos;
+      }
     }
-    scalar_or |= c;
+    if constexpr (sizeof(CharType) == 2) {
+      scalar_or |= c;
+    }
   }
-  bitwise_or_out = scalar_or;
+  if constexpr (sizeof(CharType) == 2) {
+    *bitwise_or_out = scalar_or;
+  }
   return size;
 }
 
@@ -284,7 +285,7 @@ bool HTMLTokenizer::TrySimdScanScriptOrRawtext(SegmentedString& source) {
     if (remaining.size() < simd_scan_min_length_) {
       return false;
     }
-    const size_t count = SimdScanScriptOrRawtext8(remaining);
+    const size_t count = SimdScan<LChar, 4>(remaining, {'<', '\n', '\r', '\0'});
     if (count == 0) {
       return false;
     }
@@ -301,12 +302,51 @@ bool HTMLTokenizer::TrySimdScanScriptOrRawtext(SegmentedString& source) {
     return false;
   }
   UChar bitwise_or = 0;
-  const size_t count = SimdScanScriptOrRawtext16(remaining, bitwise_or);
+  const size_t count =
+      SimdScan<UChar, 4>(remaining, {'<', '\n', '\r', '\0'}, &bitwise_or);
   if (count == 0) {
     return false;
   }
   token_.EnsureIsCharacterToken();
   token_.AppendToCharacter(remaining.first(count), bitwise_or);
+  source.AdvancePastNonNewlinesInCurrentSubstring(
+      base::checked_cast<wtf_size_t>(count));
+  return true;
+}
+
+bool HTMLTokenizer::TrySimdScanQuotedAttributeValue(SegmentedString& source,
+                                                    char quote_char) {
+  DCHECK(!input_stream_preprocessor_.SkipNextNewLine());
+  if (source.IsCurrentSubstring8Bit()) {
+    const base::span<const LChar> remaining =
+        source.CurrentSubstringRemainingSpan8();
+    if (remaining.size() < simd_scan_min_length_) {
+      return false;
+    }
+    const size_t count = SimdScan<LChar, 5>(
+        remaining, {static_cast<LChar>(quote_char), '&', '\n', '\r', '\0'});
+    if (count == 0) {
+      return false;
+    }
+    token_.AppendToAttributeValue(remaining.first(count));
+    source.AdvancePastNonNewlinesInCurrentSubstring(
+        base::checked_cast<wtf_size_t>(count));
+    return true;
+  }
+
+  const base::span<const UChar> remaining =
+      source.CurrentSubstringRemainingSpan16();
+  if (remaining.size() < simd_scan_min_length_) {
+    return false;
+  }
+  UChar bitwise_or = 0;
+  const size_t count = SimdScan<UChar, 5>(
+      remaining, {static_cast<UChar>(quote_char), '&', '\n', '\r', '\0'},
+      &bitwise_or);
+  if (count == 0) {
+    return false;
+  }
+  token_.AppendToAttributeValue(remaining.first(count), bitwise_or);
   source.AdvancePastNonNewlinesInCurrentSubstring(
       base::checked_cast<wtf_size_t>(count));
   return true;
@@ -1147,6 +1187,16 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         }
         HTML_RECONSUME_IN(kDataState);
       } else {
+#if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
+        if (simd_scan_attribute_value_enabled_ && cc != '\n' &&
+            TrySimdScanQuotedAttributeValue(source, '"')) {
+          if (source.IsEmpty() ||
+              !input_stream_preprocessor_.Peek(source, cc)) {
+            return HaveBufferedCharacterToken();
+          }
+          goto kAttributeValueDoubleQuotedState;
+        }
+#endif
         token_.AppendToAttributeValue(cc);
         HTML_CONSUME(kAttributeValueDoubleQuotedState);
       }
@@ -1172,6 +1222,16 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         }
         HTML_RECONSUME_IN(kDataState);
       } else {
+#if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
+        if (simd_scan_attribute_value_enabled_ && cc != '\n' &&
+            TrySimdScanQuotedAttributeValue(source, '\'')) {
+          if (source.IsEmpty() ||
+              !input_stream_preprocessor_.Peek(source, cc)) {
+            return HaveBufferedCharacterToken();
+          }
+          goto kAttributeValueSingleQuotedState;
+        }
+#endif
         token_.AppendToAttributeValue(cc);
         HTML_CONSUME(kAttributeValueSingleQuotedState);
       }
