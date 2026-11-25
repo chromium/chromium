@@ -377,10 +377,7 @@ void Button::SetHotTracked(bool is_hot_tracked) {
   if (state_ != STATE_DISABLED) {
     SetState(is_hot_tracked ? STATE_HOVERED : STATE_NORMAL);
     if (show_ink_drop_when_hot_tracked_) {
-      InkDrop::Get(ink_drop_view_)
-          ->AnimateToState(is_hot_tracked ? views::InkDropState::ACTIVATED
-                                          : views::InkDropState::HIDDEN,
-                           nullptr);
+      InkDrop::Get(ink_drop_view_)->GetInkDrop()->SetHovered(is_hot_tracked);
     }
   }
 
