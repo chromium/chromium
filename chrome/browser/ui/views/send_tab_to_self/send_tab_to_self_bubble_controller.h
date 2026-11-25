@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_BUBBLE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
@@ -28,6 +31,7 @@ class ActionItem;
 }
 
 namespace views {
+class BubbleAnchor;
 class Widget;
 }
 
@@ -94,10 +98,17 @@ class SendTabToSelfBubbleController
   friend class content::WebContentsUserData<SendTabToSelfBubbleController>;
 
   Profile* GetProfile();
+  BrowserWindowInterface* FindBrowser();
   virtual std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason();
 
   // Prepares the anchor and initiates showing the bubble for a specific reason.
   void ShowBubbleImpl(EntryPointDisplayReason reason);
+
+  // Callback for `AvatarToolbarButtonInterface::RunWhenVisible()` that shows
+  // the promo bubble anchored to the avatar pill once visible.
+  void ShowBubbleWithAvatarAnchor(base::WeakPtr<BrowserWindowInterface> browser,
+                                  views::BubbleAnchor anchor,
+                                  base::ScopedClosureRunner keep_visible);
 
   // Callback for GetBubbleAnchorAsync() that creates and shows the bubble once
   // the anchor is ready.
@@ -107,6 +118,7 @@ class SendTabToSelfBubbleController
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -122,8 +134,12 @@ class SendTabToSelfBubbleController
   // Weak reference. Will be nullptr if no bubble is currently shown.
   raw_ptr<LocationBarBubbleDelegateView> send_tab_to_self_bubble_view_ =
       nullptr;
-  // True if the currently shown bubble is anchored to the avatar pill.
+  // True if the currently shown bubble was opened via the avatar-pill promo
+  // path (so it did not ephemerally pop out `kActionSendTabToSelf`).
   bool is_bubble_anchored_to_avatar_pill_ = false;
+  // Keeps the avatar toolbar button popped out while a promo bubble is
+  // anchored to it.
+  base::ScopedClosureRunner keep_avatar_anchor_visible_;
   // True if the cross-device sign-in QR code bubble is currently shown.
   bool is_qr_bubble_showing_ = false;
 
@@ -138,7 +154,14 @@ class SendTabToSelfBubbleController
   // sign-in.
   std::unique_ptr<TargetDeviceListWaiter> target_device_list_waiter_;
 
+  // General weak pointers (used by `AsWeakPtr()`, post-signin promo callbacks,
+  // and `OnQrBubbleClosed()`) that must outlive `HideBubble()`.
   base::WeakPtrFactory<SendTabToSelfBubbleController> weak_ptr_factory_{this};
+  // Dedicated exclusively to `AvatarToolbarButtonInterface::RunWhenVisible()`
+  // callbacks: `HasWeakPtrs()` indicates an avatar-anchor request is in flight,
+  // and `HideBubble()` invalidates this factory without breaking `AsWeakPtr()`.
+  base::WeakPtrFactory<SendTabToSelfBubbleController>
+      avatar_anchor_weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

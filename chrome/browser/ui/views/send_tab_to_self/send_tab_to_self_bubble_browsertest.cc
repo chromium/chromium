@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,12 +17,12 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
-#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -39,6 +40,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/view_class_properties.h"
 
@@ -184,6 +186,10 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
     if (!controller_->IsBubbleShown()) {
       PinnedActionTestAccessor::WaitForAnimation(browser());
     }
+    if (!controller_->IsBubbleShown()) {
+      ASSERT_TRUE(
+          base::test::RunUntil([&]() { return controller_->IsBubbleShown(); }));
+    }
   }
 
  protected:
@@ -286,6 +292,10 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
   // Clicking the button triggers the bubble and confirm it is shown.
   EXPECT_EQ(action_item->GetInvokeCount(), 0);
   accessor.Click();
+  if (!controller_->IsBubbleShown()) {
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return controller_->IsBubbleShown(); }));
+  }
   ASSERT_TRUE(controller_->IsBubbleShown());
   LocationBarBubbleDelegateView* bubble_delegate =
       controller_->send_tab_to_self_bubble_view();
@@ -293,7 +303,8 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
   bubble_delegate->set_close_on_deactivate(false);
   if (ShouldAnchorToAvatarPill()) {
     EXPECT_TRUE(bubble_delegate->IsSameAnchor(
-        AvatarToolbarButtonInterface::GetBubbleAnchor(*browser())));
+        views::BubbleAnchor(BrowserElements::From(browser())->GetElement(
+            kToolbarAvatarButtonElementId))));
   } else {
     EXPECT_TRUE(bubble_delegate->IsSameAnchor(accessor.GetBubbleAnchor()));
   }
@@ -325,7 +336,8 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
     EXPECT_FALSE(accessor.IsPoppedOut());
     EXPECT_FALSE(accessor.GetVisible());
     EXPECT_TRUE(bubble_delegate->IsSameAnchor(
-        AvatarToolbarButtonInterface::GetBubbleAnchor(*browser())));
+        views::BubbleAnchor(BrowserElements::From(browser())->GetElement(
+            kToolbarAvatarButtonElementId))));
   } else {
     // Confirm it is now popped out and anchored to the button.
     EXPECT_TRUE(accessor.IsPoppedOut());

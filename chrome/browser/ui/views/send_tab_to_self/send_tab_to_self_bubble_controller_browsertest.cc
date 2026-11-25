@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 
+#include "base/callback_list.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -21,16 +24,27 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/toolbar_controller_util.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -47,17 +61,24 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_device_info/remote_device_info.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/actions.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/test/widget_test_api.h"
 #include "ui/views/widget/widget.h"
@@ -199,11 +220,19 @@ class SendTabToSelfBubbleControllerBrowserTest : public SigninBrowserTestBase {
             browser()->GetProfile()));
   }
 
+  void WaitForBubbleShown(SendTabToSelfBubbleController* controller) {
+    if (!controller->IsBubbleShown()) {
+      ASSERT_TRUE(
+          base::test::RunUntil([&]() { return controller->IsBubbleShown(); }));
+    }
+  }
+
   void ShowToolbarBubble(SendTabToSelfBubbleController* controller) {
     controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
     if (!controller->IsBubbleShown()) {
       PinnedActionTestAccessor::WaitForAnimation(browser());
     }
+    ASSERT_NO_FATAL_FAILURE(WaitForBubbleShown(controller));
   }
 
  protected:
@@ -762,15 +791,15 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfAvatarPillSigninPromoBrowserTest,
       NavigateToUrlAndGetController(empty_url());
   ASSERT_TRUE(controller);
 
-  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
-  EXPECT_TRUE(controller->IsBubbleShown());
+  ASSERT_NO_FATAL_FAILURE(ShowToolbarBubble(controller));
   LocationBarBubbleDelegateView* bubble_view =
       controller->send_tab_to_self_bubble_view();
   ASSERT_TRUE(bubble_view);
   EXPECT_FALSE(accessor.IsPoppedOut());
   EXPECT_TRUE(action_item->GetIsShowingBubble());
   EXPECT_TRUE(bubble_view->IsSameAnchor(
-      AvatarToolbarButtonInterface::GetBubbleAnchor(*browser())));
+      views::BubbleAnchor(BrowserElements::From(browser())->GetElement(
+          kToolbarAvatarButtonElementId))));
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.TargetDeviceCount",
       GetParam() == EntryPointDisplayReason::kOfferReauth
@@ -808,8 +837,7 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfAvatarPillSigninPromoBrowserTest,
       NavigateToUrlAndGetController(empty_url());
   ASSERT_TRUE(controller);
 
-  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
-  EXPECT_TRUE(controller->IsBubbleShown());
+  ASSERT_NO_FATAL_FAILURE(ShowToolbarBubble(controller));
   LocationBarBubbleDelegateView* bubble_view =
       controller->send_tab_to_self_bubble_view();
   ASSERT_TRUE(bubble_view);
@@ -835,15 +863,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 class SendTabToSelfAvatarPillSigninPromoFlowBrowserTest
     : public SendTabToSelfBubbleControllerBrowserTest {
- public:
-  void SetUpOnMainThread() override {
-    SendTabToSelfBubbleControllerBrowserTest::SetUpOnMainThread();
-    // Ignore spurious window deactivation from parallel browser test shards so
-    // neither the promo bubble nor the asynchronously opened device picker
-    // bubble is closed before assertions run.
-    views::DisableActivationChangeHandlingForTests();
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_{
       kSendTabToSelfAnchorPromosToProfilePill};
@@ -854,6 +873,10 @@ class SendTabToSelfAvatarPillSigninPromoFlowBrowserTest
 // anchored to the toolbar button.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfAvatarPillSigninPromoFlowBrowserTest,
                        AcceptingSigninPromoResumesFlow) {
+  // Ignore spurious window deactivation from parallel browser test shards so
+  // neither the promo bubble nor the asynchronously opened device picker
+  // bubble is closed before assertions run.
+  views::DisableActivationChangeHandlingForTests();
   PinnedActionTestAccessor accessor(browser(), kActionSendTabToSelf);
   SetAccountsCookiesAndTokens({"user@gmail.com"});
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
@@ -865,14 +888,14 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfAvatarPillSigninPromoFlowBrowserTest,
       NavigateToUrlAndGetController(empty_url());
   ASSERT_TRUE(controller);
 
-  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
-  EXPECT_TRUE(controller->IsBubbleShown());
+  ASSERT_NO_FATAL_FAILURE(ShowToolbarBubble(controller));
   LocationBarBubbleDelegateView* promo_bubble =
       controller->send_tab_to_self_bubble_view();
   ASSERT_TRUE(promo_bubble);
   EXPECT_FALSE(accessor.IsPoppedOut());
   EXPECT_TRUE(promo_bubble->IsSameAnchor(
-      AvatarToolbarButtonInterface::GetBubbleAnchor(*browser())));
+      views::BubbleAnchor(BrowserElements::From(browser())->GetElement(
+          kToolbarAvatarButtonElementId))));
   views::Widget* promo_widget = promo_bubble->GetWidget();
   ASSERT_TRUE(promo_widget);
 
@@ -891,13 +914,432 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfAvatarPillSigninPromoFlowBrowserTest,
                                   ui::EF_LEFT_MOUSE_BUTTON,
                                   ui::EF_LEFT_MOUSE_BUTTON));
   promo_destroyed_waiter.Wait();
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return controller->IsBubbleShown(); }));
+  ASSERT_NO_FATAL_FAILURE(WaitForBubbleShown(controller));
 
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_NE(controller->send_tab_to_self_bubble_view(), nullptr);
   EXPECT_TRUE(accessor.IsPoppedOut());
+}
+
+// Verifies that in windows without an avatar toolbar button (such as popup
+// windows), the sign-in promo falls back to `ToolbarButtonProvider`'s fallback
+// anchor instead of crashing.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfAvatarPillSigninPromoFlowBrowserTest,
+                       PopupWindowWithoutAvatarButtonFallsBackToToolbarAnchor) {
+  GetStubSyncService()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferSignIn);
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserForPopup(browser()->GetProfile());
+  ASSERT_TRUE(popup_browser);
+  // Ignore spurious window deactivation from parallel browser test shards once
+  // the popup window has activated; suppressing activation before
+  // `CreateBrowserForPopup()` hangs `WaitForBrowserSetLastActive()` on Windows.
+  views::DisableActivationChangeHandlingForTests();
+  ToolbarButtonProvider* toolbar_button_provider =
+      ToolbarButtonProvider::From(popup_browser);
+  ASSERT_TRUE(toolbar_button_provider);
+  ASSERT_EQ(toolbar_button_provider->GetAvatarToolbarButtonInterface(),
+            nullptr);
+
+  content::WebContents* popup_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(popup_contents, empty_url()));
+  SendTabToSelfBubbleController* controller =
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(popup_contents);
+  ASSERT_TRUE(controller);
+
+  controller->ShowBubble(ShareEntryPoint::kContentMenu);
+  ASSERT_TRUE(controller->IsBubbleShown());
+  LocationBarBubbleDelegateView* promo_bubble =
+      controller->send_tab_to_self_bubble_view();
+  ASSERT_TRUE(promo_bubble);
+  EXPECT_TRUE(promo_bubble->IsSameAnchor(
+      toolbar_button_provider->GetBubbleAnchor(kActionSendTabToSelf)));
+
+  views::Widget* promo_widget = promo_bubble->GetWidget();
+  ASSERT_TRUE(promo_widget);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(promo_widget);
+  promo_widget->CloseNow();
+  destroyed_waiter.Wait();
+  EXPECT_FALSE(controller->IsBubbleShown());
+}
+
+class SendTabToSelfAvatarPillOverflowBrowserTestBase
+    : public SendTabToSelfBubbleControllerBrowserTest {
+ public:
+  explicit SendTabToSelfAvatarPillOverflowBrowserTestBase(
+      bool use_webui_toolbar)
+      : use_webui_toolbar_(use_webui_toolbar) {
+    if (use_webui_toolbar_) {
+      feature_list_.InitWithFeatures(
+          {kSendTabToSelfAnchorPromosToProfilePill, features::kInitialWebUI,
+           features::kWebUIToolbar,
+           features::kSkipIPCChannelPausingForNonGuests,
+           features::kWebUIInProcessResourceLoadingV2},
+          {});
+    } else {
+      // `InProcessBrowserTest::Initialize()` enables global overflow prevention
+      // by default for Views `ToolbarController`; disable it so toolbar
+      // buttons can overflow in Views mode.
+      ToolbarControllerUtil::SetPreventOverflowForTesting(false);
+      feature_list_.InitWithFeatures(
+          {kSendTabToSelfAnchorPromosToProfilePill},
+          {features::kInitialWebUI, features::kWebUIAvatarButton,
+           features::kWebUIToolbar});
+    }
+  }
+
+  ~SendTabToSelfAvatarPillOverflowBrowserTestBase() override {
+    if (!use_webui_toolbar_) {
+      // Restore `InProcessBrowserTest`'s default setting.
+      ToolbarControllerUtil::SetPreventOverflowForTesting(true);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    SendTabToSelfBubbleControllerBrowserTest::SetUpOnMainThread();
+    views::DisableActivationChangeHandlingForTests();
+    GetStubSyncService()->SetEntryPointDisplayReason(
+        EntryPointDisplayReason::kOfferSignIn);
+  }
+
+  bool WaitForAvatarElementVisibility(bool visible) {
+    return base::test::RunUntil([&]() {
+      return (BrowserElements::From(browser())->GetElement(
+                  kToolbarAvatarButtonElementId) != nullptr) == visible;
+    });
+  }
+
+  void WaitForWebUIToolbarReady() {
+    WaitForInitialWebUIToolbar(browser());
+
+    content::WebContents* tab_contents = GetActiveWebContents();
+    ASSERT_TRUE(tab_contents);
+    tab_contents->Focus();
+
+    WebUIToolbarWebView* webui_toolbar = GetWebUIToolbarWebView(browser());
+    ASSERT_TRUE(webui_toolbar);
+    content::WebContents* toolbar_web_contents =
+        webui_toolbar->GetWebViewForTesting()->GetWebContents();
+    ASSERT_TRUE(toolbar_web_contents);
+
+    // Wait for `lazy_load.js` upgrades and flush Mojo state before clearing
+    // `<readonly-omnibox>`'s startup range selection; leaving a non-collapsed
+    // selection active while Shadow DOM slots update triggers a `DCHECK` in
+    // `LayoutSelection` when a native toolbar bubble activates (b/586727469).
+    ASSERT_TRUE(content::ExecJs(toolbar_web_contents, R"((async () => {
+      await Promise.all([
+        customElements.whenDefined('avatar-button'),
+        customElements.whenDefined('location-bar'),
+        customElements.whenDefined('readonly-omnibox'),
+      ]);
+      const app = document.querySelector('toolbar-app');
+      await app.updateComplete;
+    })())"));
+
+    ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
+
+    ASSERT_TRUE(content::ExecJs(toolbar_web_contents, R"((async () => {
+      const app = document.querySelector('toolbar-app');
+      await app.updateComplete;
+      const omnibox = app.shadowRoot?.querySelector('location-bar')
+          ?.shadowRoot?.querySelector('readonly-omnibox');
+      if (omnibox) {
+        await omnibox.updateComplete;
+        const input = omnibox.shadowRoot?.querySelector('#textInput')
+            ?.inputElement;
+        if (input) {
+          input.setSelectionRange(0, 0);
+          input.blur();
+        }
+      }
+      let activeEl = document.activeElement;
+      while (activeEl?.shadowRoot?.activeElement) {
+        activeEl = activeEl.shadowRoot.activeElement;
+      }
+      activeEl?.blur();
+      document.getSelection()?.removeAllRanges();
+    })())"));
+    ASSERT_TRUE(FinishWebUIAnimations(toolbar_web_contents));
+    ASSERT_TRUE(WaitForAvatarElementVisibility(true));
+  }
+
+  void OverflowAvatarButton() {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    ASSERT_TRUE(browser_view);
+    if (use_webui_toolbar_) {
+      ASSERT_NO_FATAL_FAILURE(WaitForWebUIToolbarReady());
+      WebUIToolbarWebView* webui_toolbar = GetWebUIToolbarWebView(browser());
+      ASSERT_TRUE(webui_toolbar);
+      // Inject a non-shrinking spacer into `toolbar-app` to force responsive
+      // overflow without hitting OS minimum browser window widths.
+      const int spacer_width = browser_view->GetBounds().width();
+      ASSERT_EQ(true,
+                content::EvalJs(
+                    webui_toolbar->GetWebViewForTesting()->GetWebContents(),
+                    content::JsReplace(
+                        R"((() => {
+            const app = document.querySelector('toolbar-app');
+            let spacer = app.shadowRoot.querySelector('#test-spacer');
+            if (!spacer) {
+              spacer = document.createElement('div');
+              spacer.id = 'test-spacer';
+              spacer.style.flexShrink = '0';
+              app.shadowRoot.appendChild(spacer);
+            }
+            spacer.style.width = $1 + 'px';
+            app.layoutResponsiveControls();
+            return true;
+          })();)",
+                        spacer_width)));
+      ASSERT_TRUE(WaitForAvatarElementVisibility(false));
+      return;
+    }
+
+    ToolbarView* toolbar = browser_view->toolbar();
+    ASSERT_TRUE(toolbar);
+    constexpr gfx::Size kDummySize(34, 34);
+    int added_width = 0;
+    while (added_width <= toolbar->width()) {
+      auto dummy = std::make_unique<ToolbarButton>();
+      dummy->SetPreferredSize(kDummySize);
+      dummy->SetMinSize(kDummySize);
+      dummy->GetViewAccessibility().SetName(u"dummy");
+      dummy->SetVisible(true);
+      toolbar->AddChildView(std::move(dummy));
+      added_width += kDummySize.width();
+      views::test::RunScheduledLayout(browser_view);
+    }
+    ASSERT_EQ(BrowserElements::From(browser())->GetElement(
+                  kToolbarAvatarButtonElementId),
+              nullptr);
+  }
+
+ protected:
+  bool use_webui_toolbar() const { return use_webui_toolbar_; }
+
+ private:
+  const bool use_webui_toolbar_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class SendTabToSelfAvatarPillOverflowBrowserTest
+    : public SendTabToSelfAvatarPillOverflowBrowserTestBase,
+      public WithParamInterface<bool> {
+ public:
+  SendTabToSelfAvatarPillOverflowBrowserTest()
+      : SendTabToSelfAvatarPillOverflowBrowserTestBase(GetParam()) {}
+};
+
+// Verifies that when the avatar button is overflowed (in both Views and WebUI
+// toolbars), showing the Send Tab to Self promo pops out the avatar button,
+// anchors the promo bubble to `kToolbarAvatarButtonElementId` without popping
+// out `kActionSendTabToSelf`, and re-overflows the avatar button when closed.
+IN_PROC_BROWSER_TEST_P(SendTabToSelfAvatarPillOverflowBrowserTest,
+                       PopsOutOverflowedAvatarAndReoverflowsOnClose) {
+  SendTabToSelfBubbleController* controller =
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
+  ASSERT_NO_FATAL_FAILURE(OverflowAvatarButton());
+
+  PinnedActionTestAccessor accessor(browser(), kActionSendTabToSelf);
+  ASSERT_FALSE(accessor.IsPinnedOrPoppedOut());
+
+  ASSERT_NO_FATAL_FAILURE(ShowToolbarBubble(controller));
+
+  ui::TrackedElement* avatar_element =
+      BrowserElements::From(browser())->GetElement(
+          kToolbarAvatarButtonElementId);
+  ASSERT_TRUE(avatar_element);
+
+  LocationBarBubbleDelegateView* bubble_view =
+      controller->send_tab_to_self_bubble_view();
+  ASSERT_TRUE(bubble_view);
+  EXPECT_FALSE(accessor.IsPoppedOut());
+  EXPECT_TRUE(bubble_view->IsSameAnchor(views::BubbleAnchor(avatar_element)));
+
+  views::Widget* bubble_widget = bubble_view->GetWidget();
+  ASSERT_TRUE(bubble_widget);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  bubble_widget->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  destroyed_waiter.Wait();
+  if (!use_webui_toolbar()) {
+    views::test::RunScheduledLayout(
+        BrowserView::GetBrowserViewForBrowser(browser()));
+  }
+
+  EXPECT_FALSE(controller->IsBubbleShown());
+  EXPECT_TRUE(WaitForAvatarElementVisibility(false));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SendTabToSelfAvatarPillOverflowBrowserTest,
+                         Values(false, true),
+                         [](const TestParamInfo<bool>& info) {
+                           return info.param ? "WebUI" : "Views";
+                         });
+
+class SendTabToSelfAvatarPillWebUIOverflowBrowserTest
+    : public SendTabToSelfAvatarPillOverflowBrowserTestBase {
+ public:
+  SendTabToSelfAvatarPillWebUIOverflowBrowserTest()
+      : SendTabToSelfAvatarPillOverflowBrowserTestBase(
+            /*use_webui_toolbar=*/true) {}
+
+  void SetInnerAvatarButtonHidden(bool hidden) {
+    WebUIToolbarWebView* webui_toolbar = GetWebUIToolbarWebView(browser());
+    ASSERT_TRUE(webui_toolbar);
+    content::WebContents* toolbar_web_contents =
+        webui_toolbar->GetWebViewForTesting()->GetWebContents();
+    ASSERT_EQ(true,
+              content::EvalJs(toolbar_web_contents, content::JsReplace(
+                                                        R"((() => {
+          document.querySelector('toolbar-app')
+              .shadowRoot.querySelector('#avatar')
+              .shadowRoot.querySelector('#button').style.display = $1;
+          return true;
+        })();)",
+                                                        hidden ? "none" : "")));
+  }
+};
+
+// Verifies that navigating to a new page while async WebUI `RunWhenVisible()`
+// is pending cancels the pending promo so no bubble opens when the avatar
+// button finishes popping out, overflow prevention is released, and subsequent
+// `ShowBubble()` invocations succeed.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfAvatarPillWebUIOverflowBrowserTest,
+                       NavigationWhileAvatarPopOutPendingCancelsPromo) {
+  base::HistogramTester histogram_tester;
+  SendTabToSelfBubbleController* controller =
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
+  ASSERT_NO_FATAL_FAILURE(OverflowAvatarButton());
+
+  // Hold the inner WebUI avatar button hidden while `NavigateToURL()` spins a
+  // `RunLoop`, so `RunWhenVisible()` resolves deterministically after the
+  // cross-document navigation commits.
+  ASSERT_NO_FATAL_FAILURE(SetInnerAvatarButtonHidden(true));
+
+  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
+  // A duplicate `ShowBubble()` call with a different entry point while
+  // `RunWhenVisible()` is pending must return early without overwriting
+  // `entry_point_`, double-recording metrics, or acquiring a second lock.
+  controller->ShowBubble(ShareEntryPoint::kContentMenu);
+  EXPECT_FALSE(controller->IsBubbleShown());
+  EXPECT_EQ(controller->entry_point(), ShareEntryPoint::kToolbarIcon);
+  histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.InvokedEntryPoint",
+                                      ShareEntryPoint::kToolbarIcon, 1);
+
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), GURL("chrome://version")));
+  EXPECT_FALSE(controller->IsBubbleShown());
+  EXPECT_EQ(controller->entry_point(), std::nullopt);
+
+  base::RunLoop shown_loop;
+  base::CallbackListSubscription shown_subscription =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          kToolbarAvatarButtonElementId,
+          BrowserElements::From(browser())->GetContext(),
+          base::BindLambdaForTesting(
+              [&](ui::TrackedElement*) { shown_loop.Quit(); }));
+
+  ASSERT_NO_FATAL_FAILURE(SetInnerAvatarButtonHidden(false));
+
+  shown_loop.Run();
+  EXPECT_TRUE(WaitForAvatarElementVisibility(false));
+  EXPECT_FALSE(controller->IsBubbleShown());
+  EXPECT_EQ(controller->send_tab_to_self_bubble_view(), nullptr);
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.TargetDeviceCount",
+                                    0);
+
+  // Invoking `ShowBubble()` again on the navigated page should open the promo.
+  ASSERT_NO_FATAL_FAILURE(ShowToolbarBubble(controller));
+  views::Widget* bubble_widget =
+      controller->send_tab_to_self_bubble_view()->GetWidget();
+  ASSERT_TRUE(bubble_widget);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  bubble_widget->CloseNow();
+  destroyed_waiter.Wait();
+  EXPECT_TRUE(WaitForAvatarElementVisibility(false));
+}
+
+// Verifies that switching to another foreground tab while async WebUI
+// `RunWhenVisible()` is pending cancels the backgrounded tab's pending promo
+// and releases overflow prevention once pop-out completes.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfAvatarPillWebUIOverflowBrowserTest,
+                       TabSwitchWhileAvatarPopOutPendingCancelsPromo) {
+  base::HistogramTester histogram_tester;
+  SendTabToSelfBubbleController* controller =
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
+  ASSERT_NO_FATAL_FAILURE(OverflowAvatarButton());
+  ASSERT_NO_FATAL_FAILURE(SetInnerAvatarButtonHidden(true));
+
+  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
+  EXPECT_EQ(controller->entry_point(), ShareEntryPoint::kToolbarIcon);
+
+  chrome::AddTabAt(browser(), GURL("about:blank"), /*index=*/-1,
+                   /*foreground=*/true);
+  EXPECT_FALSE(controller->IsBubbleShown());
+  EXPECT_EQ(controller->entry_point(), std::nullopt);
+
+  base::RunLoop shown_loop;
+  base::CallbackListSubscription shown_subscription =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          kToolbarAvatarButtonElementId,
+          BrowserElements::From(browser())->GetContext(),
+          base::BindLambdaForTesting(
+              [&](ui::TrackedElement*) { shown_loop.Quit(); }));
+
+  ASSERT_NO_FATAL_FAILURE(SetInnerAvatarButtonHidden(false));
+
+  shown_loop.Run();
+  EXPECT_TRUE(WaitForAvatarElementVisibility(false));
+  EXPECT_FALSE(controller->IsBubbleShown());
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.TargetDeviceCount",
+                                    0);
+}
+
+// Verifies that if the user signs in while async WebUI `RunWhenVisible()` is
+// pending, `ShowBubbleWithAvatarAnchor()` re-checks the display reason and
+// aborts the stale sign-in promo cleanly without crashing or leaking overflow
+// prevention.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfAvatarPillWebUIOverflowBrowserTest,
+                       SignInWhileAvatarPopOutPendingCancelsPromo) {
+  base::HistogramTester histogram_tester;
+  SendTabToSelfBubbleController* controller =
+      NavigateToUrlAndGetController(empty_url());
+  ASSERT_TRUE(controller);
+  ASSERT_NO_FATAL_FAILURE(OverflowAvatarButton());
+  ASSERT_NO_FATAL_FAILURE(SetInnerAvatarButtonHidden(true));
+
+  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
+  EXPECT_EQ(controller->entry_point(), ShareEntryPoint::kToolbarIcon);
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  GetStubSyncService()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferFeature);
+
+  base::RunLoop shown_loop;
+  base::CallbackListSubscription shown_subscription =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          kToolbarAvatarButtonElementId,
+          BrowserElements::From(browser())->GetContext(),
+          base::BindLambdaForTesting(
+              [&](ui::TrackedElement*) { shown_loop.Quit(); }));
+
+  ASSERT_NO_FATAL_FAILURE(SetInnerAvatarButtonHidden(false));
+
+  shown_loop.Run();
+  EXPECT_TRUE(WaitForAvatarElementVisibility(false));
+  EXPECT_FALSE(controller->IsBubbleShown());
+  EXPECT_EQ(controller->entry_point(), std::nullopt);
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.TargetDeviceCount",
+                                    0);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

@@ -3,12 +3,16 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
@@ -17,9 +21,10 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -36,10 +41,13 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/remote_device_info.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -71,6 +79,10 @@ SendTabToSelfBubbleController::~SendTabToSelfBubbleController() {
 
 void SendTabToSelfBubbleController::HideBubble() {
   target_device_list_waiter_.reset();
+  if (avatar_anchor_weak_ptr_factory_.HasWeakPtrs()) {
+    avatar_anchor_weak_ptr_factory_.InvalidateWeakPtrs();
+    entry_point_ = std::nullopt;
+  }
   if (send_tab_to_self_bubble_view_ &&
       send_tab_to_self_bubble_view_->GetWidget()) {
     send_tab_to_self_bubble_view_->GetWidget()->Close();
@@ -78,8 +90,9 @@ void SendTabToSelfBubbleController::HideBubble() {
 }
 
 void SendTabToSelfBubbleController::ShowBubble(ShareEntryPoint entry_point) {
-  // Avoid re-creation if a bubble is already being shown for this controller.
-  if (IsBubbleShown()) {
+  // Avoid re-creation if a bubble is already being shown or waiting on the
+  // avatar button anchor for this controller.
+  if (IsBubbleShown() || avatar_anchor_weak_ptr_factory_.HasWeakPtrs()) {
     return;
   }
 
@@ -101,9 +114,7 @@ void SendTabToSelfBubbleController::ShowBubble(ShareEntryPoint entry_point) {
 
 void SendTabToSelfBubbleController::ShowBubbleImpl(
     EntryPointDisplayReason reason) {
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          &GetWebContents());
+  BrowserWindowInterface* browser = FindBrowser();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (ShouldShowNoTargetDeviceQrBubble(reason, browser)) {
@@ -126,7 +137,21 @@ void SendTabToSelfBubbleController::ShowBubbleImpl(
   if (browser) {
     browser_weak_ptr = browser->GetWeakPtr();
     if (ShouldAnchorBubbleToAvatarPill(reason)) {
-      anchor = AvatarToolbarButtonInterface::GetBubbleAnchor(*browser);
+      if (ToolbarButtonProvider* toolbar_button_provider =
+              ToolbarButtonProvider::From(browser)) {
+        if (AvatarToolbarButtonInterface* avatar_button =
+                toolbar_button_provider->GetAvatarToolbarButtonInterface()) {
+          avatar_button->RunWhenVisible(base::BindOnce(
+              &SendTabToSelfBubbleController::ShowBubbleWithAvatarAnchor,
+              avatar_anchor_weak_ptr_factory_.GetWeakPtr(), browser_weak_ptr));
+          return;
+        }
+        anchor = toolbar_button_provider->GetBubbleAnchor(kActionSendTabToSelf);
+      } else if (BrowserElements* browser_elements =
+                     BrowserElements::From(browser)) {
+        anchor = views::BubbleAnchor(
+            browser_elements->GetElement(kToolbarAvatarButtonElementId));
+      }
     } else if (PinnedToolbarActions* pinned_toolbar_actions =
                    BrowserWindow::FromBrowser(browser)
                        ->GetPinnedToolbarActions()) {
@@ -139,13 +164,51 @@ void SendTabToSelfBubbleController::ShowBubbleImpl(
                          weak_ptr_factory_.GetWeakPtr(), reason,
                          browser_weak_ptr));
       return;
-    } else {
-      anchor = ToolbarButtonProvider::From(browser)->GetBubbleAnchor(
-          kActionSendTabToSelf);
+    } else if (ToolbarButtonProvider* toolbar_button_provider =
+                   ToolbarButtonProvider::From(browser)) {
+      anchor = toolbar_button_provider->GetBubbleAnchor(kActionSendTabToSelf);
     }
   }
 
   ShowBubbleWithAnchor(reason, browser_weak_ptr, std::move(anchor));
+}
+
+void SendTabToSelfBubbleController::ShowBubbleWithAvatarAnchor(
+    base::WeakPtr<BrowserWindowInterface> browser,
+    views::BubbleAnchor anchor,
+    base::ScopedClosureRunner keep_visible) {
+  // While `RunWhenVisible()` was pending asynchronously, the browser may have
+  // closed, another bubble may have opened, or the tab may have hidden or moved
+  // to another window. Only clear `entry_point_` when no other bubble is
+  // active.
+  if (!browser || IsBubbleShown() || FindBrowser() != browser.get() ||
+      GetWebContents().GetVisibility() == content::Visibility::HIDDEN) {
+    if (!IsBubbleShown()) {
+      entry_point_ = std::nullopt;
+    }
+    return;
+  }
+
+  // Re-check the display reason in case the user signed in or sign-in became
+  // disallowed while waiting for the avatar button to pop out; constructing
+  // `SendTabToSelfSignInPromoBubbleView` after sign-in hits `NOTREACHED()`.
+  std::optional<EntryPointDisplayReason> current_reason =
+      GetEntryPointDisplayReason();
+  if (!current_reason || !ShouldAnchorBubbleToAvatarPill(*current_reason)) {
+    entry_point_ = std::nullopt;
+    return;
+  }
+
+  if (anchor.IsNull()) {
+    keep_visible.RunAndReset();
+    ShowBubbleWithAnchor(
+        *current_reason, browser,
+        base::unexpected(GetAnchorFailureReason::kAnchorNotFound));
+    return;
+  }
+
+  keep_avatar_anchor_visible_ = std::move(keep_visible);
+  ShowBubbleWithAnchor(*current_reason, browser, std::move(anchor));
 }
 
 void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
@@ -153,17 +216,21 @@ void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
     base::WeakPtr<BrowserWindowInterface> browser,
     BubbleAnchorResult anchor) {
   if (!anchor.has_value()) {
-    if (!browser) {
-      return;
-    }
-    // PinnedToolbarActions failed to find an anchor. Try ToolbarButtonProvider
-    // as it has fallback anchor logic.
-    auto new_anchor = ToolbarButtonProvider::From(browser.get())
-                          ->GetBubbleAnchor(kActionSendTabToSelf);
+    // `PinnedToolbarActions` or `AvatarToolbarButtonInterface` failed to find
+    // an anchor. Try `ToolbarButtonProvider` as it has fallback anchor logic.
+    ToolbarButtonProvider* toolbar_button_provider =
+        browser ? ToolbarButtonProvider::From(browser.get()) : nullptr;
+    views::BubbleAnchor new_anchor =
+        toolbar_button_provider
+            ? toolbar_button_provider->GetBubbleAnchor(kActionSendTabToSelf)
+            : views::BubbleAnchor();
     if (new_anchor.IsNull()) {
+      if (!IsBubbleShown()) {
+        entry_point_ = std::nullopt;
+      }
       return;
     }
-    anchor = new_anchor;
+    anchor = std::move(new_anchor);
   }
 
   size_t device_count = 0;
@@ -243,6 +310,12 @@ Profile* SendTabToSelfBubbleController::GetProfile() {
   return Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
 }
 
+BrowserWindowInterface* SendTabToSelfBubbleController::FindBrowser() {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(&GetWebContents());
+  return tab ? tab->GetBrowserWindowInterface() : nullptr;
+}
+
 std::optional<send_tab_to_self::EntryPointDisplayReason>
 SendTabToSelfBubbleController::GetEntryPointDisplayReason() {
   return send_tab_to_self::GetEntryPointDisplayReason(&GetWebContents());
@@ -278,6 +351,14 @@ void SendTabToSelfBubbleController::PrimaryPageChanged(content::Page& page) {
   HideBubble();
 }
 
+void SendTabToSelfBubbleController::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::HIDDEN &&
+      avatar_anchor_weak_ptr_factory_.HasWeakPtrs()) {
+    HideBubble();
+  }
+}
+
 void SendTabToSelfBubbleController::OnWidgetDestroying(views::Widget* widget) {
   widget_observation_.Reset();
   send_tab_to_self_bubble_view_ = nullptr;
@@ -288,11 +369,10 @@ void SendTabToSelfBubbleController::OnWidgetDestroying(views::Widget* widget) {
   }
   if (is_bubble_anchored_to_avatar_pill_) {
     is_bubble_anchored_to_avatar_pill_ = false;
+    keep_avatar_anchor_visible_.RunAndReset();
     return;
   }
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          &GetWebContents());
+  BrowserWindowInterface* browser = FindBrowser();
   if (browser) {
     // Runs while the widget is being destroyed, which happens as the window
     // goes away.
