@@ -267,7 +267,13 @@ TEST_P(PersistentCachePerftest, OpenClose) {
   ASSERT_EQ(success_count, kIterationCount);
 }
 
-TEST_P(PersistentCachePerftest, Insert) {
+// TODO(crbug.com/590560758): Timing out / crashing on Android CI.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Insert DISABLED_Insert
+#else
+#define MAYBE_Insert Insert
+#endif
+TEST_P(PersistentCachePerftest, MAYBE_Insert) {
   int kIterationCount = 1024;
 
   if (!IsWalMode() && HasExpensiveCommits()) {
@@ -290,7 +296,13 @@ TEST_P(PersistentCachePerftest, Insert) {
   ASSERT_EQ(success_count, kIterationCount);
 }
 
-TEST_P(PersistentCachePerftest, Find) {
+// TODO(crbug.com/590560758): Timing out / crashing on Android CI.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Find DISABLED_Find
+#else
+#define MAYBE_Find Find
+#endif
+TEST_P(PersistentCachePerftest, MAYBE_Find) {
   static constexpr int kIterationCount = 1024;
 
   // Open the cache in WAL mode and fill it.
@@ -329,7 +341,13 @@ TEST_P(PersistentCachePerftest, Find) {
   ASSERT_EQ(success_count, kIterationCount);
 }
 
-TEST_P(PersistentCachePerftest, WALPerformance) {
+// TODO(crbug.com/590560758): Timing out / crashing on Android CI.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WALPerformance DISABLED_WALPerformance
+#else
+#define MAYBE_WALPerformance WALPerformance
+#endif
+TEST_P(PersistentCachePerftest, MAYBE_WALPerformance) {
   if (!IsWalMode()) {
     GTEST_SKIP();
   }
