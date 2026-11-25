@@ -1333,6 +1333,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   void EnsureDefaultFramebuffer();
 
   void InitializeContext();
+  void UpdateDynamicBindings();
   void Destroy();
 
   // Validates that the value fits in the positive value of a int32_t to ensure

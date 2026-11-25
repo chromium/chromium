@@ -4672,8 +4672,6 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
   device_ = wgpu::Device::Acquire(reinterpret_cast<WGPUDevice>(wgpuDevice));
 
   // Create a GL Context.
-  // TODO(413078308): Request a WebGL compatibility context when requesting
-  // extensions is supported both for basic functionality and WebGL extensions.
   const auto context_attribs = std::to_array<EGLint>({
       // WebGL 1.0 is based on OpenGL ES 2.0, WebGL 2.0 on OpenGL ES 3.0.
       // ANGLE then rejects the ES3-only enums on WebGL 1.0 contexts.
@@ -4682,7 +4680,7 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
       EGL_CONTEXT_MINOR_VERSION,
       0,
       EGL_CONTEXT_WEBGL_COMPATIBILITY_ANGLE,
-      EGL_FALSE,
+      EGL_TRUE,
       EGL_CONTEXT_OPENGL_BACKWARDS_COMPATIBLE_ANGLE,
       EGL_FALSE,
       EGL_CONTEXT_CLIENT_ARRAYS_ENABLED_ANGLE,
@@ -4702,27 +4700,16 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
 
   // With the context created, we can load the GL entry points
   driver_.driver_gl.InitializeStaticBindings(get_proc_address);
+  UpdateDynamicBindings();
 
-  // Explicitly call GL functions instead of using GLFN. GLFN calls the ANGLE
-  // explicit context entry points which will not be loaded until
-  // InitializeDynamicBindings below.
-  const char* extensions_string = reinterpret_cast<const char*>(
-      driver_.driver_gl.fn.glGetStringFn(GL_EXTENSIONS));
-  gfx::ExtensionSet extensions = gfx::MakeExtensionSet(extensions_string);
-
-  gl::GLVersionInfo version(
-      reinterpret_cast<const char*>(
-          driver_.driver_gl.fn.glGetStringFn(GL_VERSION)),
-      reinterpret_cast<const char*>(
-          driver_.driver_gl.fn.glGetStringFn(GL_RENDERER)),
-      extensions);
-
-  // Load the extension entry points based on the version and extension string.
-  // TODO(413078308): Store the enabled extensions, update them after requesting
-  // new extensions.
-  driver_.driver_gl.InitializeDynamicBindings(get_proc_address, &version,
-                                              extensions);
-  LOG(ERROR) << "GL context extensions: " << extensions_string;
+  // In WebGL compatibility mode, requestable extensions start disabled.
+  // Request the ones Blink uses internally (EnsureDefaultFramebuffer imports
+  // the WebGPU swap buffer via GL_OES_EGL_image), then reload the dynamic
+  // bindings.
+  // TODO(413078308): Also call UpdateDynamicBindings() when getExtension()
+  // requests a WebGL extension.
+  GLFN(driver_, glRequestExtensionANGLE)("GL_OES_EGL_image");
+  UpdateDynamicBindings();
 
   // Just log all GL debug messages.
   // TODO(413078308): Forward debug messages to the JS console and use the
@@ -4744,8 +4731,7 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
   // The separate read and draw framebuffer bindings require ES3 or framebuffer
   // blit extensions
   supports_separate_framebuffer_targets_ =
-      driver_.driver_gl.ext.b_GL_ANGLE_framebuffer_blit ||
-      version.IsAtLeastGLES(3, 0);
+      driver_.driver_gl.ext.b_GL_ANGLE_framebuffer_blit || IsWebGL2();
 
   // Create the underlying WebGPUSwapBufferProvider. Usages are based on what
   // ANGLE needs to be able to use this for texturing and rendering.
@@ -4779,6 +4765,25 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
                             Host()->Size().height());
   GLFN(driver_, glScissor)(0, 0, Host()->Size().width(),
                            Host()->Size().height());
+}
+
+void WebGLRenderingContextWebGPUBase::UpdateDynamicBindings() {
+  // Explicitly call glGetStringFn on the first load: GLFN calls the ANGLE
+  // explicit context entry points, which are loaded by
+  // InitializeDynamicBindings below. Later calls use GLFN as another context
+  // may be current on the thread.
+  auto get_string = [&](GLenum name) {
+    const GLubyte* str = driver_.driver_gl.fn.glGetStringContextANGLEFn
+                             ? GLFN(driver_, glGetString)(name)
+                             : driver_.driver_gl.fn.glGetStringFn(name);
+    return reinterpret_cast<const char*>(str);
+  };
+  gfx::ExtensionSet extensions =
+      gfx::MakeExtensionSet(get_string(GL_EXTENSIONS));
+  gl::GLVersionInfo version(get_string(GL_VERSION), get_string(GL_RENDERER),
+                            extensions);
+  driver_.driver_gl.InitializeDynamicBindings(
+      driver_.driver_egl.fn.eglGetProcAddressFn, &version, extensions);
 }
 
 void WebGLRenderingContextWebGPUBase::Destroy() {
