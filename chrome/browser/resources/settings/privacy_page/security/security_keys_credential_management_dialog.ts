@@ -22,7 +22,7 @@ import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -275,7 +275,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
             this.i18n('securityKeysCredentialManagementConfirmDeleteTitle');
         break;
       default:
-        assertNotReached();
+        assertNotReachedCase(this.dialogPage_);
     }
   }
 
@@ -300,8 +300,10 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
       case CredentialManagementDialogPage.CONFIRM:
         this.deleteCredential_();
         break;
-      default:
+      case CredentialManagementDialogPage.INITIAL:
         assertNotReached();
+      default:
+        assertNotReachedCase(this.dialogPage_);
     }
   }
 
@@ -319,7 +321,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
         this.dialogPage_ = CredentialManagementDialogPage.CREDENTIALS;
         break;
       default:
-        assertNotReached();
+        assertNotReachedCase(this.dialogPage_);
     }
   }
 

@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -108,8 +109,10 @@ export class SettingsStartupUrlDialogElement extends CrLitElement {
         return loadTimeData.getString('onStartupInvalidUrl');
       case UrlInputError.TOO_LONG:
         return loadTimeData.getString('onStartupUrlTooLong');
-      default:
+      case UrlInputError.NONE:
         return '';
+      default:
+        assertNotReachedCase(this.error_);
     }
   }
 

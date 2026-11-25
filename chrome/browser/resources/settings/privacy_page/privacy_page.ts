@@ -21,7 +21,7 @@ import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/
 import {getCss as getCrSharedStyleCss} from 'chrome://resources/cr_elements/cr_shared_style_lit.css.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -198,7 +198,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case CookieControlsMode.BLOCK_THIRD_PARTY:
         return this.i18n('thirdPartyCookiesLinkRowSublabelDisabled');
       default:
-        assertNotReached();
+        assertNotReachedCase(this.cookieControlsModePref_.value);
     }
   }
 

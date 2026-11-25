@@ -25,7 +25,7 @@ import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -240,7 +240,7 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
         this.doneButtonVisible_ = false;
         break;
       default:
-        assertNotReached();
+        assertNotReachedCase(this.dialogPage_);
     }
     this.fire('bio-enroll-dialog-ready-for-testing');
   }
@@ -337,8 +337,11 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
         this.$.dialog.close();
         this.fire('bio-enroll-set-pin');
         break;
-      default:
+      case BioEnrollDialogPage.INITIAL:
+      case BioEnrollDialogPage.ENROLLMENTS:
         assertNotReached();
+      default:
+        assertNotReachedCase(this.dialogPage_);
     }
   }
 

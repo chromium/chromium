@@ -11,7 +11,7 @@ import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 import {getCss as getCrHiddenStyleCss} from '//resources/cr_elements/cr_hidden_style_lit.css.js';
 import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_types.js';
 import type {CrTooltipIconElement} from '//resources/cr_elements/policy/cr_tooltip_icon.js';
-import {assertNotReached} from '//resources/js/assert.js';
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -101,7 +101,7 @@ export class CrPolicyPrefIndicatorElement extends CrLitElement {
       case CrPolicyIndicatorType.CHILD_RESTRICTION:
         return 'cr20:family-link';
       default:
-        assertNotReached();
+        assertNotReachedCase(this.indicatorType);
     }
   }
 
@@ -124,14 +124,22 @@ export class CrPolicyPrefIndicatorElement extends CrLitElement {
         return name.length > 0 ?
             CrPolicyStrings.controlledSettingExtension!.replace('$1', name) :
             CrPolicyStrings.controlledSettingExtensionWithoutName!;
-      // <if expr="is_chromeos">
       case CrPolicyIndicatorType.PRIMARY_USER:
+        // <if expr="is_chromeos">
         return CrPolicyStrings.controlledSettingShared!.replace('$1', name);
+        // </if>
+        // <if expr="not is_chromeos">
+        return '';
+        // </if>
       case CrPolicyIndicatorType.OWNER:
+        // <if expr="is_chromeos">
         return name.length > 0 ?
             CrPolicyStrings.controlledSettingWithOwner!.replace('$1', name) :
             CrPolicyStrings.controlledSettingNoOwner!;
-      // </if>
+        // </if>
+        // <if expr="not is_chromeos">
+        return '';
+        // </if>
       case CrPolicyIndicatorType.USER_POLICY:
       case CrPolicyIndicatorType.DEVICE_POLICY:
         return CrPolicyStrings.controlledSettingPolicy!;
@@ -142,10 +150,11 @@ export class CrPolicyPrefIndicatorElement extends CrLitElement {
         return CrPolicyStrings.controlledSettingParent!;
       case CrPolicyIndicatorType.CHILD_RESTRICTION:
         return CrPolicyStrings.controlledSettingChildRestriction!;
+      case CrPolicyIndicatorType.NONE:
+        return '';
       default:
-        break;
+        assertNotReachedCase(type);
     }
-    return '';
   }
 
   /**
@@ -189,8 +198,11 @@ export class CrPolicyPrefIndicatorElement extends CrLitElement {
           return CrPolicyIndicatorType.PARENT;
         case chrome.settingsPrivate.ControlledBy.CHILD_RESTRICTION:
           return CrPolicyIndicatorType.CHILD_RESTRICTION;
-        default:
+        case chrome.settingsPrivate.ControlledBy.SAFE_BROWSING_OFF:
+        case undefined:
           break;
+        default:
+          assertNotReachedCase(controlledBy);
       }
     }
     if (enforcement === chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED) {

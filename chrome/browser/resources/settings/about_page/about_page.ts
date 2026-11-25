@@ -20,7 +20,9 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert} from 'chrome://resources/js/assert.js';
+// <if expr="not is_chromeos">
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
+// </if>
 // <if expr="_google_chrome">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 // </if>
@@ -277,7 +279,11 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
           });
         }
         return this.i18nAdvanced('aboutUpgradeUpdating');
-      default:
+      case UpdateStatus.DISABLED:
+      case UpdateStatus.DISABLED_BY_ADMIN:
+      case UpdateStatus.FAILED:
+      case UpdateStatus.FAILED_DOWNLOAD:
+      case UpdateStatus.FAILED_HTTP:
         let result = '';
         const message = this.currentUpdateStatusEvent_!.message;
         if (message) {
@@ -289,6 +295,8 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
         }
 
         return sanitizeInnerHtml(result, {tags: ['br', 'pre']});
+      default:
+        assertNotReachedCase(this.currentUpdateStatusEvent_!.status);
     }
   }
 
@@ -307,8 +315,15 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
         return 'cr:check-circle';
-      default:
+      case UpdateStatus.CHECKING:
+      case UpdateStatus.DISABLED:
+      case UpdateStatus.FAILED_DOWNLOAD:
+      case UpdateStatus.FAILED_HTTP:
+      case UpdateStatus.NEED_PERMISSION_TO_UPDATE:
+      case UpdateStatus.UPDATING:
         return '';
+      default:
+        assertNotReachedCase(this.currentUpdateStatusEvent_!.status);
     }
   }
 
@@ -324,8 +339,17 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
       case UpdateStatus.CHECKING:
       case UpdateStatus.UPDATING:
         return true;
-      default:
+      case UpdateStatus.DISABLED:
+      case UpdateStatus.DISABLED_BY_ADMIN:
+      case UpdateStatus.FAILED:
+      case UpdateStatus.FAILED_DOWNLOAD:
+      case UpdateStatus.FAILED_HTTP:
+      case UpdateStatus.NEARLY_UPDATED:
+      case UpdateStatus.NEED_PERMISSION_TO_UPDATE:
+      case UpdateStatus.UPDATED:
         return false;
+      default:
+        assertNotReachedCase(this.currentUpdateStatusEvent_!.status);
     }
     // </if>
     // <if expr="is_chromeos">

@@ -23,7 +23,7 @@ import type {ResolverOption, SecureDnsSetting, SecurityPageBrowserProxy} from '/
 import {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -132,7 +132,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
         toggleValue = false;
         break;
       default:
-        assertNotReached('Received unknown secure DNS mode');
+        assertNotReachedCase(setting.mode, 'Received unknown secure DNS mode');
     }
 
     this.updateManagementView_(setting, toggleValue);
@@ -201,7 +201,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
         PrefService.getInstance().setPrefValue('dns_over_https.templates', '');
         break;
       default:
-        assertNotReached('Received unknown secure DNS mode');
+        assertNotReachedCase(mode, 'Received unknown secure DNS mode');
     }
   }
 
@@ -268,9 +268,10 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
               loadTimeData.getString('secureDnsDisabledForParentalControl');
           break;
         default:
-          assertNotReached(
+          assertNotReachedCase(
+              setting.managementMode,
               'Received unknown secure DNS management mode ' +
-              setting.managementMode);
+                  setting.managementMode);
       }
     }
     PrefService.getInstance().setSyntheticPref(pref);
@@ -301,8 +302,10 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
           selectValue = index.toString();
         }
         break;
-      default:
+      case SecureDnsMode.OFF:
         assertNotReached(`Unexpected DNS mode ${mode}`);
+      default:
+        assertNotReachedCase(mode, `Unexpected DNS mode ${mode}`);
     }
 
     this.$.resolverSelect.value = selectValue;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {GlicAssistantSelection, GlicBrowserProxy, LoginPermission} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -76,7 +77,7 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
         this.setGlicFocusToggleShortcutResponse(response);
         break;
       default:
-        break;
+        assertNotReachedCase(shortcut);
     }
   }
 

@@ -26,8 +26,7 @@ export function getHtml(this: SettingsAutofillAiEntriesListElement) {
 <ul id="entries" class="list-frame vertical-list">
   ${this.entityInstances_.map((item, index) => html`
     <li class="list-item">
-      <div class="entity-type-icon"
-          ?hidden="${!this.typeNameToIconName_(item.type.typeName)}">
+      <div class="entity-type-icon">
         <cr-icon icon="${this.typeNameToIconName_(item.type.typeName)}">
         </cr-icon>
       </div>

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {CrTooltipElement, StorageAccessEmbeddingException, StorageAccessSiteException, ChooserException, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, SiteException, SiteGroup} from 'chrome://settings/lazy_load.js';
 import {ChooserType, ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import type {Route} from 'chrome://settings/settings.js';
@@ -237,8 +238,10 @@ export function getContentSettingsTypeFromChooserType(chooserType: ChooserType):
     case ChooserType.SMART_CARD_READERS_DEVICES:
       return ContentSettingsTypes.SMART_CARD_READERS;
     // </if>
-    default:
+    case ChooserType.NONE:
       return null;
+    default:
+      assertNotReachedCase(chooserType);
   }
 }
 

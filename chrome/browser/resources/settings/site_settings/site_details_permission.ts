@@ -15,7 +15,7 @@ import './md_select.css.js';
 import './site_details_permission_device_entry.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -471,8 +471,57 @@ export class SiteDetailsPermissionElement extends
               return 'siteSettingsMicrophoneBlockedByOs';
             case ContentSettingsTypes.GEOLOCATION:
               return 'siteSettingsLocationBlockedByOs';
-            default:
+            case ContentSettingsTypes.ADS:
+            case ContentSettingsTypes.ANTI_ABUSE:
+            case ContentSettingsTypes.AR:
+            case ContentSettingsTypes.AUTO_PICTURE_IN_PICTURE:
+            case ContentSettingsTypes.AUTOMATIC_DOWNLOADS:
+            case ContentSettingsTypes.AUTOMATIC_FULLSCREEN:
+            case ContentSettingsTypes.BACKGROUND_SYNC:
+            case ContentSettingsTypes.BLUETOOTH_DEVICES:
+            case ContentSettingsTypes.BLUETOOTH_SCANNING:
+            case ContentSettingsTypes.CAPTURED_SURFACE_CONTROL:
+            case ContentSettingsTypes.CLIPBOARD:
+            case ContentSettingsTypes.COOKIES:
+            case ContentSettingsTypes.FEDERATED_IDENTITY_API:
+            case ContentSettingsTypes.FILE_SYSTEM_WRITE:
+            case ContentSettingsTypes.HAND_TRACKING:
+            case ContentSettingsTypes.HID_DEVICES:
+            case ContentSettingsTypes.IDLE_DETECTION:
+            case ContentSettingsTypes.IMAGES:
+            case ContentSettingsTypes.INLINE_CUE_MENU:
+            case ContentSettingsTypes.JAVASCRIPT:
+            case ContentSettingsTypes.JAVASCRIPT_OPTIMIZER:
+            case ContentSettingsTypes.KEYBOARD_LOCK:
+            case ContentSettingsTypes.LOCAL_FONTS:
+            case ContentSettingsTypes.LOCAL_NETWORK:
+            case ContentSettingsTypes.LOOPBACK_NETWORK:
+            case ContentSettingsTypes.MIDI_DEVICES:
+            case ContentSettingsTypes.MIXEDSCRIPT:
+            case ContentSettingsTypes.NOTIFICATIONS:
+            case ContentSettingsTypes.OFFER_WRITING_HELP:
+            case ContentSettingsTypes.PAYMENT_HANDLER:
+            case ContentSettingsTypes.PDF_DOCUMENTS:
+            case ContentSettingsTypes.PERFORMANCE:
+            case ContentSettingsTypes.POINTER_LOCK:
+            case ContentSettingsTypes.POPUPS:
+            case ContentSettingsTypes.PROTECTED_CONTENT:
+            case ContentSettingsTypes.PROTOCOL_HANDLERS:
+            case ContentSettingsTypes.SENSORS:
+            case ContentSettingsTypes.SERIAL_PORTS:
+            case ContentSettingsTypes.SITE_DATA:
+            case ContentSettingsTypes.SMART_CARD_READERS:
+            case ContentSettingsTypes.SOUND:
+            case ContentSettingsTypes.STORAGE_ACCESS:
+            case ContentSettingsTypes.USB_DEVICES:
+            case ContentSettingsTypes.VR:
+            case ContentSettingsTypes.WEB_APP_INSTALLATION:
+            case ContentSettingsTypes.WEB_PRINTING:
+            case ContentSettingsTypes.WINDOW_MANAGEMENT:
+            case ContentSettingsTypes.ZOOM_LEVELS:
               return null;
+            default:
+              assertNotReachedCase(category);
           }
         })(this.category));
   }
@@ -507,18 +556,69 @@ export class SiteDetailsPermissionElement extends
         this.onSystemPermissionSettingsLinkClick_(me);
       });
       // Set the correct aria label describing the link target.
-      const settingsPageName: string|null = (() => {
-        switch (this.category) {
-          case ContentSettingsTypes.CAMERA:
-            return 'Camera';
-          case ContentSettingsTypes.MIC:
-            return 'Microphone';
-          case ContentSettingsTypes.GEOLOCATION:
-            return 'Location';
-          default:
-            return null;
-        }
-      })();
+      let settingsPageName: string|null = null;
+      switch (this.category) {
+        case ContentSettingsTypes.CAMERA:
+          settingsPageName = 'Camera';
+          break;
+        case ContentSettingsTypes.MIC:
+          settingsPageName = 'Microphone';
+          break;
+        case ContentSettingsTypes.GEOLOCATION:
+          settingsPageName = 'Location';
+          break;
+        case ContentSettingsTypes.ADS:
+        case ContentSettingsTypes.ANTI_ABUSE:
+        case ContentSettingsTypes.AR:
+        case ContentSettingsTypes.AUTO_PICTURE_IN_PICTURE:
+        case ContentSettingsTypes.AUTOMATIC_DOWNLOADS:
+        case ContentSettingsTypes.AUTOMATIC_FULLSCREEN:
+        case ContentSettingsTypes.BACKGROUND_SYNC:
+        case ContentSettingsTypes.BLUETOOTH_DEVICES:
+        case ContentSettingsTypes.BLUETOOTH_SCANNING:
+        case ContentSettingsTypes.CAPTURED_SURFACE_CONTROL:
+        case ContentSettingsTypes.CLIPBOARD:
+        case ContentSettingsTypes.COOKIES:
+        case ContentSettingsTypes.FEDERATED_IDENTITY_API:
+        case ContentSettingsTypes.FILE_SYSTEM_WRITE:
+        case ContentSettingsTypes.HAND_TRACKING:
+        case ContentSettingsTypes.HID_DEVICES:
+        case ContentSettingsTypes.IDLE_DETECTION:
+        case ContentSettingsTypes.IMAGES:
+        case ContentSettingsTypes.INLINE_CUE_MENU:
+        case ContentSettingsTypes.JAVASCRIPT:
+        case ContentSettingsTypes.JAVASCRIPT_OPTIMIZER:
+        case ContentSettingsTypes.KEYBOARD_LOCK:
+        case ContentSettingsTypes.LOCAL_FONTS:
+        case ContentSettingsTypes.LOCAL_NETWORK:
+        case ContentSettingsTypes.LOOPBACK_NETWORK:
+        case ContentSettingsTypes.MIDI_DEVICES:
+        case ContentSettingsTypes.MIXEDSCRIPT:
+        case ContentSettingsTypes.NOTIFICATIONS:
+        case ContentSettingsTypes.OFFER_WRITING_HELP:
+        case ContentSettingsTypes.PAYMENT_HANDLER:
+        case ContentSettingsTypes.PDF_DOCUMENTS:
+        case ContentSettingsTypes.PERFORMANCE:
+        case ContentSettingsTypes.POINTER_LOCK:
+        case ContentSettingsTypes.POPUPS:
+        case ContentSettingsTypes.PROTECTED_CONTENT:
+        case ContentSettingsTypes.PROTOCOL_HANDLERS:
+        case ContentSettingsTypes.SENSORS:
+        case ContentSettingsTypes.SERIAL_PORTS:
+        case ContentSettingsTypes.SITE_DATA:
+        case ContentSettingsTypes.SMART_CARD_READERS:
+        case ContentSettingsTypes.SOUND:
+        case ContentSettingsTypes.STORAGE_ACCESS:
+        case ContentSettingsTypes.USB_DEVICES:
+        case ContentSettingsTypes.VR:
+        case ContentSettingsTypes.WEB_APP_INSTALLATION:
+        case ContentSettingsTypes.WEB_PRINTING:
+        case ContentSettingsTypes.WINDOW_MANAGEMENT:
+        case ContentSettingsTypes.ZOOM_LEVELS:
+          break;
+        default:
+          assertNotReachedCase(this.category);
+      }
       if (settingsPageName) {
         element.setAttribute(
             'aria-label', `System Settings: ${settingsPageName}`);

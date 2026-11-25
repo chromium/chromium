@@ -20,6 +20,11 @@ import type {BrowserProxy as CustomizeColorSchemeModeBrowserProxy} from 'chrome:
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+// clang-format off
+// <if expr="is_linux">
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
+// </if>
+// clang-format on
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -586,9 +591,11 @@ export class SettingsAppearancePageElement extends
       case SystemTheme.QT:
         i18nId = 'qtTheme';
         break;
-      default:
+      case SystemTheme.DEFAULT:
         i18nId = 'classicTheme';
         break;
+      default:
+        assertNotReachedCase(this.systemTheme_);
     }
     this.themeSublabel_ = this.i18n(i18nId);
     // </if>

@@ -611,6 +611,21 @@ export class SettingsSyncAccountControlElement extends
     const routes = router.getRoutes();
     // </if>
     switch (this.syncStatus.statusAction) {
+      case StatusAction.ENTER_PASSPHRASE:
+        this.syncBrowserProxy_.showSyncPassphraseDialog();
+        break;
+      case StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE:
+        this.syncBrowserProxy_.showBookmarkLimitExceededHelp();
+        break;
+      // <if expr="is_chromeos">
+      case StatusAction.REAUTHENTICATE:
+      case StatusAction.UPGRADE_CLIENT:
+      case StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS:
+      case StatusAction.CONFIRM_SYNC_SETTINGS:
+      case StatusAction.NO_ACTION:
+      case undefined:
+        assertNotReached();
+      // </if>
       // <if expr="not is_chromeos">
       case StatusAction.REAUTHENTICATE:
         this.syncBrowserProxy_.startSignIn(this.accessPoint);
@@ -621,23 +636,14 @@ export class SettingsSyncAccountControlElement extends
       case StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS:
         this.syncBrowserProxy_.startKeyRetrieval();
         break;
-      // </if>
-      case StatusAction.ENTER_PASSPHRASE:
-        this.syncBrowserProxy_.showSyncPassphraseDialog();
-        break;
-      case StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE:
-        this.syncBrowserProxy_.showBookmarkLimitExceededHelp();
-        break;
-      // <if expr="not is_chromeos">
       case StatusAction.CONFIRM_SYNC_SETTINGS:
+      case StatusAction.NO_ACTION:
+      case undefined:
+        router.navigateTo(routes.SYNC);
+        break;
       // </if>
       default:
-        // <if expr="is_chromeos">
-        assertNotReached();
-        // </if>
-        // <if expr="not is_chromeos">
-        router.navigateTo(routes.SYNC);
-        // </if>
+        assertNotReachedCase(this.syncStatus.statusAction);
     }
   }
 

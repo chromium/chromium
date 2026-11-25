@@ -32,7 +32,7 @@ import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
@@ -667,7 +667,7 @@ export class SettingsContactInfoPageElement extends
       case chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL:
         return 'AccountNameEmail';
       default:
-        assertNotReached();
+        assertNotReachedCase(recordType);
     }
   }
 

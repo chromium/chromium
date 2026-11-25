@@ -15,7 +15,7 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {isUndoKeyboardEvent} from 'chrome://resources/js/util.js';
@@ -431,8 +431,10 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
           this.$.gotItButton.focus();
         };
         break;
-      default:
+      case null:
         assertNotReached();
+      default:
+        assertNotReachedCase(this.lastUserAction_);
     }
     this.lastUserAction_ = null;
     this.$.undoToast.hide();

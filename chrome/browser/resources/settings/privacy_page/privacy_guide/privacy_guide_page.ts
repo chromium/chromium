@@ -24,7 +24,7 @@ import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -64,8 +64,10 @@ function eligibilityToRecord(step: PrivacyGuideStep):
       return PrivacyGuideStepsEligibleAndReached.SAFE_BROWSING_ELIGIBLE;
     case PrivacyGuideStep.COMPLETION:
       return PrivacyGuideStepsEligibleAndReached.COMPLETION_ELIGIBLE;
-    default:
+    case PrivacyGuideStep.WELCOME:
       assertNotReached();
+    default:
+      assertNotReachedCase(step);
   }
 }
 

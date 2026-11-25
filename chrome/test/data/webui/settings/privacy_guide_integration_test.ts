@@ -5,6 +5,7 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
 import {PrivacyGuideStep} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideStepsEligibleAndReached, resetRouterForTesting, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
@@ -54,8 +55,13 @@ function shouldStepBeShown(
       return shouldShowSafeBrowsingCard();
     case PrivacyGuideStep.COOKIES:
       return shouldShowCookiesCard();
-    default:
+    case PrivacyGuideStep.WELCOME:
+    case PrivacyGuideStep.MSBB:
+    case PrivacyGuideStep.COMPLETION:
       assertNotReached('Unsupported step type is checking if should be shown.');
+    default:
+      assertNotReachedCase(
+          step, 'Unsupported step type is checking if should be shown.');
   }
 }
 
@@ -69,8 +75,13 @@ function setParametersForStep(
       return setParametersForSafeBrowsingStep(isEligible);
     case PrivacyGuideStep.COOKIES:
       return setParametersForCookiesStep(isEligible);
-    default:
+    case PrivacyGuideStep.WELCOME:
+    case PrivacyGuideStep.MSBB:
+    case PrivacyGuideStep.COMPLETION:
       assertNotReached('Unsupported step type is setting parameters.');
+    default:
+      assertNotReachedCase(
+          step, 'Unsupported step type is setting parameters.');
   }
 }
 

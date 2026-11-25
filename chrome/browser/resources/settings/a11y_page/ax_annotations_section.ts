@@ -15,7 +15,7 @@ import type {AxAnnotationsBrowserProxy} from '/shared/settings/a11y_page/ax_anno
 import {AxAnnotationsBrowserProxyImpl, ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -98,7 +98,7 @@ export class SettingsAxAnnotationsSectionElement extends
         // annotations.
         return this.i18n('mainNodeAnnotationsSubtitle');
       default:
-        assertNotReached();
+        assertNotReachedCase(this.screenAIStatus_);
     }
   }
 }

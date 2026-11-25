@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CardInfo} from './safety_hub_browser_proxy.js';
@@ -63,7 +63,7 @@ export class SettingsSafetyHubCardElement extends CrLitElement {
       case CardState.SAFE:
         return 'cr:check-circle';
       default:
-        assertNotReached();
+        assertNotReachedCase(this.data.state);
     }
   }
 
@@ -79,7 +79,7 @@ export class SettingsSafetyHubCardElement extends CrLitElement {
       case CardState.SAFE:
         return 'green';
       default:
-        assertNotReached();
+        assertNotReachedCase(this.data.state);
     }
   }
 }

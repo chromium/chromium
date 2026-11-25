@@ -9,6 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SiteDetailsPermissionElement} from 'chrome://settings/lazy_load.js';
 import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
@@ -345,7 +346,7 @@ suite('SiteDetailsPermission', function() {
       ContentSettingsTypes.CAMERA,
       ContentSettingsTypes.MIC,
       ContentSettingsTypes.GEOLOCATION,
-    ];
+    ] as const;
     for (const category of categoryList) {
       for (const disabled of [true, false]) {
         testElement.category = category;
@@ -380,7 +381,8 @@ suite('SiteDetailsPermission', function() {
                 case ContentSettingsTypes.GEOLOCATION:
                   return 'location';
                 default:
-                  throw new Error(`Unsupported category type: ${category}`);
+                  assertNotReachedCase(
+                      category, `Unsupported category type: ${category}`);
               }
             })() as string;
 

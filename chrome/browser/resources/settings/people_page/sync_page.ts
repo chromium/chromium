@@ -27,7 +27,7 @@ import './sync_account_control.js';
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -622,7 +622,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         }
         return;
       default:
-        assertNotReached();
+        assertNotReachedCase(pageStatus);
     }
   }
 
