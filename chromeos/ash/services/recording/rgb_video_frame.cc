@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "media/base/video_types.h"
 #include "third_party/skia/include/core/SkColorType.h"
 
 namespace recording {
@@ -19,6 +20,7 @@ namespace {
 // bitmap, and hence the bitmap is safe to access as long as the `video_frame`
 // is alive.
 SkBitmap WrapVideoFrameInBitmap(const media::VideoFrame& video_frame) {
+  CHECK_EQ(video_frame.format(), media::PIXEL_FORMAT_ARGB);
   const gfx::Size visible_size = video_frame.visible_rect().size();
   const SkImageInfo image_info = SkImageInfo::MakeN32(
       visible_size.width(), visible_size.height(), kPremul_SkAlphaType,

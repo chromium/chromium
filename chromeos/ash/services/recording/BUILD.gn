@@ -74,12 +74,22 @@ source_set("unit_tests") {
     "audio_stream_mixer_unittest.cc",
     "audio_stream_unittest.cc",
     "lzw_pixel_color_indices_writer_test.cc",
+    "recording_service_unittest.cc",
   ]
 
   deps = [
     ":recording",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/services/recording/public/mojom",
+    "//components/viz/common",
+    "//media",
+    "//media/capture/mojom:video_capture_buffer",
+    "//mojo/public/cpp/bindings",
+    "//services/viz/privileged/mojom/compositing",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
   ]
 }

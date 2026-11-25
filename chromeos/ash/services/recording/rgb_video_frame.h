@@ -68,6 +68,8 @@ static_assert(sizeof(RgbColor) == sizeof(SkPMColor));
 // platform (see above `RgbColor` members order).
 class RgbVideoFrame {
  public:
+  // Creates an instance from `video_frame`, whose pixel format must be
+  // `media::PIXEL_FORMAT_ARGB`.
   explicit RgbVideoFrame(const media::VideoFrame& video_frame);
   RgbVideoFrame(const SkBitmap& bitmap, base::TimeTicks frame_time);
   RgbVideoFrame(RgbVideoFrame&&);

@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -32,6 +33,7 @@
 #include "chromeos/ash/services/recording/webm_encoder_muxer.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/gfx/paint_canvas_video_renderer.h"
@@ -374,6 +376,17 @@ void RecordingService::OnFrameCaptured(
   // We ignore any subsequent frames after a failure.
   if (did_failure_occur_)
     return;
+
+  DCHECK(encoder_capabilities_);
+  const media::VideoPixelFormat supported_pixel_format =
+      encoder_capabilities_->GetSupportedPixelFormat();
+  if (info->pixel_format != supported_pixel_format) {
+    DLOG(ERROR) << "Dropping video frame with unexpected pixel format: "
+                << media::VideoPixelFormatToString(info->pixel_format)
+                << ", expected: "
+                << media::VideoPixelFormatToString(supported_pixel_format);
+    return;
+  }
 
   base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
   if (!mapping.IsValid()) {
