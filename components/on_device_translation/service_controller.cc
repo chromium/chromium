@@ -112,6 +112,9 @@ OnDeviceTranslationController::CreateTranslatorError ToCreateTranslatorError(
           kNotEnoughDiskSpace;
     case InstallError::kOffline:
       return OnDeviceTranslationController::CreateTranslatorError::kOffline;
+    case InstallError::kDataSaverEnabled:
+      return OnDeviceTranslationController::CreateTranslatorError::
+          kDataSaverEnabled;
   }
 }
 

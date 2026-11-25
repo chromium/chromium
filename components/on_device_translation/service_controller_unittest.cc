@@ -353,6 +353,16 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
   fake_installer_->FailLanguagePackInstallNow(LanguagePackKey::kEn_Es,
                                               InstallError::kOffline);
   EXPECT_EQ(pack_future.Get().error(), CreateTranslatorError::kOffline);
+
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      data_saver_future;
+  service_controller_->CreateTranslator("en", "es",
+                                        data_saver_future.GetCallback());
+  fake_installer_->FailLanguagePackInstallNow(LanguagePackKey::kEn_Es,
+                                              InstallError::kDataSaverEnabled);
+  EXPECT_EQ(data_saver_future.Get().error(),
+            CreateTranslatorError::kDataSaverEnabled);
 }
 
 TEST_F(OnDeviceTranslationServiceControllerTest,

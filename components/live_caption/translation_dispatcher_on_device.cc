@@ -79,6 +79,8 @@ OnDeviceTranslationErrorReason ToOnDeviceTranslationErrorReason(
           kCreateTranslatorNotEnoughDiskSpace;
     case Error::kOffline:
       return OnDeviceTranslationErrorReason::kCreateTranslatorOffline;
+    case Error::kDataSaverEnabled:
+      return OnDeviceTranslationErrorReason::kCreateTranslatorDataSaverEnabled;
     case Error::kUnsupportedDevice:
       return OnDeviceTranslationErrorReason::kCreateTranslatorUnsupportedDevice;
   }

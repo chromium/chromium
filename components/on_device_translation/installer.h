@@ -27,6 +27,8 @@ enum class InstallError {
 
   // The device is offline, so the download didn't start.
   kOffline,
+  // Data Saver is enabled, so the download didn't start.
+  kDataSaverEnabled,
 };
 
 // This is a singleton interface, the actual instance should be obtained through

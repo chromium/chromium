@@ -29,6 +29,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
+#include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/on_device_translation/library_source.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -128,6 +129,7 @@ class OnDeviceTranslationInstallerTest : public ::testing::Test {
     // Tests that go offline must not leak that into later tests.
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
+    data_saver::ResetIsDataSaverEnabledForTesting();
 #if BUILDFLAG(IS_CHROMEOS)
     fake_image_loader_client_ = nullptr;
     ash::ImageLoaderClient::Shutdown();
@@ -650,6 +652,26 @@ TEST_F(OnDeviceTranslationInstallerTest,
   OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
       LanguagePackKey::kEn_Ja);
   task_environment_.RunUntilIdle();
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+}
+
+// Tests that Data Saver blocks missing language pack downloads without starting
+// an on-demand update.
+TEST_F(OnDeviceTranslationInstallerTest,
+       InstallLanguagePackFailsWhenDataSaverEnabled) {
+  data_saver::OverrideIsDataSaverEnabledForTesting(true);
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate).Times(0);
+  testing::NiceMock<MockObserver> observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer,
+              OnLanguagePackInstallFailed(LanguagePackKey::kEn_Ja,
+                                          InstallError::kDataSaverEnabled))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+      LanguagePackKey::kEn_Ja);
+  run_loop.Run();
   OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
 }
 

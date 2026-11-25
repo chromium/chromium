@@ -122,6 +122,10 @@ enum CreateTranslatorError {
   // The translator cannot be created, because the translation library can't
   // be installed or run on this device.
   kUnsupportedDevice = 16,
+
+  // The translator cannot be created, because the translation model must be
+  // downloaded and Data Saver is enabled.
+  kDataSaverEnabled = 17,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/translate/enums.xml:TranslatorApiCreateTranslatorError)
 

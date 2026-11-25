@@ -343,6 +343,9 @@ blink::mojom::CreateTranslatorError GetBlinkCreateTranslateError(
     case OnDeviceTranslationController::CreateTranslatorError::
         kUnsupportedDevice:
       return blink::mojom::CreateTranslatorError::kUnsupportedDevice;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kDataSaverEnabled:
+      return blink::mojom::CreateTranslatorError::kDataSaverEnabled;
   }
 }
 

@@ -58,6 +58,9 @@ String ConvertCreateTranslatorErrorToDebugString(CreateTranslatorError error) {
              "offline.";
     case CreateTranslatorError::kUnsupportedDevice:
       return "Translation is not supported on this device.";
+    case CreateTranslatorError::kDataSaverEnabled:
+      return "The translation model must be downloaded, but Data Saver is "
+             "enabled.";
   }
 }
 

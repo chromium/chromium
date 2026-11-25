@@ -22,6 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
+#include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/on_device_translation/component_update_util.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
@@ -466,6 +467,11 @@ void OnDeviceTranslationInstallerImpl::OnLanguagePackOnlineChecked(
       notifier_->NotifyLanguagePackInstallFailed(language_pack,
                                                  InstallError::kOffline);
     }
+    return;
+  }
+  if (data_saver::IsDataSaverEnabled()) {
+    notifier_->NotifyLanguagePackInstallFailed(language_pack,
+                                               InstallError::kDataSaverEnabled);
     return;
   }
   DownloadLanguagePack(language_pack);
