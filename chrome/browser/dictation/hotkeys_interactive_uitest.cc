@@ -14,7 +14,6 @@
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
-#include "chrome/browser/dictation/hotkey_hold_watcher.h"
 #include "chrome/browser/dictation/hotkey_manager.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
 #include "chrome/browser/dictation/target.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/views/voice/hotkeys/hotkey_hold_watcher.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -67,7 +67,7 @@ class DictationHotkeysInteractiveUiTest
             // `FocusManager::ProcessAccelerator` without synthesizing a native
             // KeyUp event, so dispatch the release event if the hold watcher is
             // waiting for it.
-            if (HotkeyHoldWatcher* watcher = test_->hold_watcher()) {
+            if (voice::HotkeyHoldWatcher* watcher = test_->hold_watcher()) {
               ui::KeyEvent release_event(ui::EventType::kKeyReleased,
                                          toggle_.key_code(),
                                          toggle_.modifiers());
@@ -87,7 +87,7 @@ class DictationHotkeysInteractiveUiTest
 
     MultiStep EndHold() {
       return test_->Steps(test_->Do([this] {
-        HotkeyHoldWatcher* watcher = test_->hold_watcher();
+        voice::HotkeyHoldWatcher* watcher = test_->hold_watcher();
         ASSERT_NE(watcher, nullptr);
         ui::KeyEvent release_event(ui::EventType::kKeyReleased,
                                    hold_.key_code(), hold_.modifiers());
@@ -101,7 +101,7 @@ class DictationHotkeysInteractiveUiTest
     ui::Accelerator hold_;
   };
 
-  HotkeyHoldWatcher* hold_watcher() {
+  voice::HotkeyHoldWatcher* hold_watcher() {
     HotkeyManager* manager = dictation_service().hotkey_manager_for_testing();
     return manager ? manager->hold_watcher_for_testing() : nullptr;
   }

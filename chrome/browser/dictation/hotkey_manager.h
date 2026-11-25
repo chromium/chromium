@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_DICTATION_HOTKEY_MANAGER_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/dictation/session_state.h"
-#include "chrome/browser/dictation/stream_provider.h"
+#include "chrome/browser/ui/views/voice/hotkeys/hotkey_hold_watcher.h"
+#include "chrome/browser/ui/views/voice/hotkeys/hotkey_registration_delegate.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/accelerators/accelerator.h"
 
@@ -25,7 +25,6 @@ class GlobalAcceleratorListener;
 namespace dictation {
 
 class DictationKeyedService;
-class HotkeyHoldWatcher;
 class ScopedGlobalHotkey;
 
 // Returns the Dictation hotkey from prefs, or an empty accelerator if it is
@@ -52,31 +51,13 @@ bool IsListeningState(SessionState state);
 // the toggle hotkey OS-wide so that Dictation can be stopped from any window.
 class HotkeyManager : public ui::AcceleratorTarget {
  public:
-  // Interface for managing the lifetime of a registered hotkey.
-  // Implementations handle the specific registration/unregistration logic
-  // for their scope.
-  class ScopedHotkeyRegistration {
-   public:
-    virtual ~ScopedHotkeyRegistration() = default;
-  };
-
-  // Delegate for registering hotkeys. Allows for different registration
-  // mechanisms.
-  class RegistrationDelegate {
-   public:
-    virtual ~RegistrationDelegate() = default;
-    virtual std::unique_ptr<ScopedHotkeyRegistration>
-    CreateScopedHotkeyRegistration(Profile* profile,
-                                   ui::Accelerator accelerator,
-                                   HotkeyManager& hotkey_manager) = 0;
-  };
-
   // `is_listening` is the initial listening state (see
   // OnSessionStateChanged()); when true the OS-wide hotkey is registered
   // immediately.
-  HotkeyManager(Profile* profile,
-                std::unique_ptr<RegistrationDelegate> registration_delegate,
-                bool is_listening);
+  HotkeyManager(
+      Profile* profile,
+      std::unique_ptr<voice::HotkeyRegistrationDelegate> registration_delegate,
+      bool is_listening);
 
   HotkeyManager(const HotkeyManager&) = delete;
   HotkeyManager& operator=(const HotkeyManager&) = delete;
@@ -97,7 +78,9 @@ class HotkeyManager : public ui::AcceleratorTarget {
   void OnSessionStateChanged(SessionState state);
 
   bool is_hold_watcher_active() const { return hold_watcher_ != nullptr; }
-  HotkeyHoldWatcher* hold_watcher_for_testing() { return hold_watcher_.get(); }
+  voice::HotkeyHoldWatcher* hold_watcher_for_testing() {
+    return hold_watcher_.get();
+  }
 
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -120,7 +103,7 @@ class HotkeyManager : public ui::AcceleratorTarget {
   // press-and-hold hotkey. While active, defers OS-wide global hotkey
   // registration so local key-release events are not intercepted.
   void StartHoldWatcher();
-  void OnHotkeyHoldEnded(std::optional<DictationStreamEndTrigger> trigger);
+  void OnHotkeyHoldEnded(voice::HotkeyHoldWatcher::Result result);
 
   // Returns the service for `profile_`. Looked up on use rather than in the
   // constructor, since the service may create this during its own
@@ -128,14 +111,16 @@ class HotkeyManager : public ui::AcceleratorTarget {
   DictationKeyedService& service();
 
   raw_ptr<Profile> profile_;
-  std::unique_ptr<RegistrationDelegate> registration_delegate_;
+  std::unique_ptr<voice::HotkeyRegistrationDelegate> registration_delegate_;
 
   PrefChangeRegistrar pref_registrar_;
-  std::unique_ptr<ScopedHotkeyRegistration> toggle_hotkey_registration_;
-  std::unique_ptr<ScopedHotkeyRegistration> press_and_hold_hotkey_registration_;
+  std::unique_ptr<voice::HotkeyRegistrationDelegate::ScopedRegistration>
+      toggle_hotkey_registration_;
+  std::unique_ptr<voice::HotkeyRegistrationDelegate::ScopedRegistration>
+      press_and_hold_hotkey_registration_;
 
   bool listening_ = false;
-  std::unique_ptr<HotkeyHoldWatcher> hold_watcher_;
+  std::unique_ptr<voice::HotkeyHoldWatcher> hold_watcher_;
   std::unique_ptr<ScopedGlobalHotkey> global_hotkey_;
 };
 

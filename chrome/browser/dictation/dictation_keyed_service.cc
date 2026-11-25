@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/dictation/application_registration_delegate.h"
 #include "chrome/browser/dictation/connector_component_extension.h"
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
 #include "chrome/browser/dictation/features.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/voice/hotkeys/application_hotkey_registration_delegate.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -547,7 +547,9 @@ void DictationKeyedService::UpdateHotkeyManager() {
     hotkey_manager_.reset();
   } else if (!hotkey_manager_) {
     hotkey_manager_ = std::make_unique<HotkeyManager>(
-        profile_, std::make_unique<ApplicationRegistrationDelegate>(),
+        profile_,
+        std::make_unique<voice::ApplicationHotkeyRegistrationDelegate>(
+            *profile_),
         /*is_listening=*/session_ &&
             IsListeningState(session_->controller_.GetState()));
   }

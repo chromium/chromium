@@ -1,0 +1,70 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+# Hotkey building blocks shared by voice features, e.g. Dictation and TTC.
+source_set("hotkeys") {
+  public = [
+    "application_hotkey_registration_delegate.h",
+    "hotkey_hold_watcher.h",
+    "hotkey_pref_util.h",
+    "hotkey_registration_delegate.h",
+  ]
+  sources = [
+    "application_hotkey_registration_delegate.cc",
+    "hotkey_hold_watcher.cc",
+    "hotkey_pref_util.cc",
+  ]
+  public_deps = [
+    "//base",
+    "//components/tabs:public",
+    "//ui/base",
+    "//ui/events",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_hotkey_registry.cc",
+    "fake_hotkey_registry.h",
+  ]
+  public_deps = [
+    ":hotkeys",
+    "//base",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "hotkey_hold_watcher_unittest.cc",
+    "hotkey_pref_util_unittest.cc",
+  ]
+  deps = [
+    ":hotkeys",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window/test:test_support",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

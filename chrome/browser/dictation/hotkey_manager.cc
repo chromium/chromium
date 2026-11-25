@@ -4,7 +4,7 @@
 
 #include "chrome/browser/dictation/hotkey_manager.h"
 
-#include <string>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -12,44 +12,24 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
-#include "chrome/browser/dictation/hotkey_hold_watcher.h"
 #include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/scoped_global_hotkey.h"
 #include "chrome/browser/dictation/session_controller.h"
+#include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/voice/hotkeys/hotkey_pref_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/views/widget/widget.h"
 
 namespace dictation {
 
 namespace {
-
-ui::Accelerator ParseValidDictationAccelerator(
-    const std::string& accelerator_str) {
-  if (accelerator_str.empty()) {
-    return ui::Accelerator();
-  }
-
-  const ui::Accelerator accelerator =
-      ui::Command::StringToAccelerator(accelerator_str);
-
-  // StringToAccelerator() returns an empty accelerator when the pref can't be
-  // parsed, and it already requires parsed hotkeys to have a modifier. This is
-  // defense in depth: never register a modifier-less hotkey, which would
-  // swallow ordinary keystrokes.
-  if (ui::Accelerator::MaskOutKeyEventFlags(accelerator.modifiers()) == 0) {
-    return ui::Accelerator();
-  }
-
-  return accelerator;
-}
 
 ui::GlobalAcceleratorListener* g_global_listener_for_testing = nullptr;
 
@@ -59,11 +39,25 @@ ui::GlobalAcceleratorListener* GetGlobalListener() {
              : ui::GlobalAcceleratorListener::GetInstance();
 }
 
+// Returns the trigger to end the stream with when a hold ends with `result`,
+// or nullopt if Dictation stays active in toggle mode.
+std::optional<DictationStreamEndTrigger> GetHoldEndTrigger(
+    voice::HotkeyHoldWatcher::Result result) {
+  switch (result) {
+    case voice::HotkeyHoldWatcher::Result::kTapped:
+      return std::nullopt;
+    case voice::HotkeyHoldWatcher::Result::kReleased:
+      return DictationStreamEndTrigger::kHotkeyHoldReleased;
+    case voice::HotkeyHoldWatcher::Result::kAborted:
+      return DictationStreamEndTrigger::kHotkeyHoldAbort;
+  }
+}
+
 }  // namespace
 
 ui::Accelerator GetDictationHotkeyFromPrefs(Profile* profile) {
   CHECK(profile);
-  return ParseValidDictationAccelerator(
+  return voice::ParseHotkeyPref(
       profile->GetPrefs()->GetString(prefs::kVoiceTypingHotkey));
 }
 
@@ -72,7 +66,7 @@ ui::Accelerator GetDictationPressAndHoldHotkeyFromPrefs(Profile* profile) {
   if (!base::FeatureList::IsEnabled(kDictationPressAndHold)) {
     return ui::Accelerator();
   }
-  return ParseValidDictationAccelerator(
+  return voice::ParseHotkeyPref(
       profile->GetPrefs()->GetString(prefs::kVoiceTypingPressAndHoldHotkey));
 }
 
@@ -83,7 +77,7 @@ bool IsListeningState(SessionState state) {
 
 HotkeyManager::HotkeyManager(
     Profile* profile,
-    std::unique_ptr<RegistrationDelegate> registration_delegate,
+    std::unique_ptr<voice::HotkeyRegistrationDelegate> registration_delegate,
     bool is_listening)
     : profile_(profile),
       registration_delegate_(std::move(registration_delegate)),
@@ -149,17 +143,18 @@ void HotkeyManager::StartHoldWatcher() {
                        : kDictationPressAndHoldThreshold.Get();
 
   // `base::Unretained(this)` is safe because `this` owns `hold_watcher_`.
-  hold_watcher_ = std::make_unique<HotkeyHoldWatcher>(
+  hold_watcher_ = std::make_unique<voice::HotkeyHoldWatcher>(
       *browser, *tab, *widget, hold_accelerator,
       base::BindOnce(&HotkeyManager::OnHotkeyHoldEnded, base::Unretained(this)),
       hold_threshold);
 }
 
-void HotkeyManager::OnHotkeyHoldEnded(
-    std::optional<DictationStreamEndTrigger> trigger) {
+void HotkeyManager::OnHotkeyHoldEnded(voice::HotkeyHoldWatcher::Result result) {
   hold_watcher_.reset();
   UpdateGlobalRegistration();
 
+  const std::optional<DictationStreamEndTrigger> trigger =
+      GetHoldEndTrigger(result);
   // If `trigger` is nullopt, the key was released before the hold threshold,
   // so Dictation stays active in toggle mode.
   if (!trigger.has_value()) {
@@ -226,8 +221,7 @@ void HotkeyManager::UpdateHotkeyRegistrations() {
       GetDictationHotkeyFromPrefs(profile_);
   if (!toggle_accelerator.IsEmpty()) {
     toggle_hotkey_registration_ =
-        registration_delegate_->CreateScopedHotkeyRegistration(
-            profile_, toggle_accelerator, *this);
+        registration_delegate_->Register(toggle_accelerator, *this);
   }
 
   const ui::Accelerator hold_accelerator =
@@ -236,8 +230,7 @@ void HotkeyManager::UpdateHotkeyRegistrations() {
   // registers the accelerator on the FocusManager for `*this`.
   if (!hold_accelerator.IsEmpty() && hold_accelerator != toggle_accelerator) {
     press_and_hold_hotkey_registration_ =
-        registration_delegate_->CreateScopedHotkeyRegistration(
-            profile_, hold_accelerator, *this);
+        registration_delegate_->Register(hold_accelerator, *this);
   }
 }
 

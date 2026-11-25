@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DICTATION_HOTKEY_HOLD_WATCHER_H_
-#define CHROME_BROWSER_DICTATION_HOTKEY_HOLD_WATCHER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_VOICE_HOTKEYS_HOTKEY_HOLD_WATCHER_H_
+#define CHROME_BROWSER_UI_VIEWS_VOICE_HOTKEYS_HOTKEY_HOLD_WATCHER_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/dictation/stream_provider.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_observer.h"
@@ -27,25 +25,30 @@ class EventMonitor;
 class Widget;
 }  // namespace views
 
-namespace dictation {
+namespace voice {
 
-// Temporary, observe-only watcher created when Dictation is started via the
-// hotkey. For the first `hold_threshold` after press, releasing the key keeps
-// the stream active in toggle mode (`nullopt` trigger). Once held for at least
-// `hold_threshold`, the session switches to press-and-hold mode and releasing
-// the primary key or any modifier key ends the stream with
-// `kHotkeyHoldReleased`. Aborts (blur, tab switch, secondary key press) while
-// in press-and-hold mode end the stream with `kHotkeyHoldAbort`.
+// Temporary, observe-only watcher created when a voice feature is triggered by
+// a press-and-hold capable hotkey. Releasing the primary key or any modifier
+// key within `hold_threshold` of the press reports `Result::kTapped`. Once
+// held for at least `hold_threshold`, releasing it reports `Result::kReleased`,
+// and losing track of the hold (blur, tab switch, secondary key press) reports
+// `Result::kAborted`.
 class HotkeyHoldWatcher : public ui::EventObserver,
                           public views::WidgetObserver {
  public:
-  // `end_trigger` is `nullopt` if the key was released or the watch was aborted
-  // before `hold_threshold` (keeping Dictation active in toggle mode), or the
-  // trigger to end the stream with (`kHotkeyHoldReleased` or
-  // `kHotkeyHoldAbort`).
-  using CompletionCallback =
-      base::OnceCallback<void(std::optional<DictationStreamEndTrigger>)>;
+  enum class Result {
+    // The hotkey was released, or the watch was aborted, before
+    // `hold_threshold`.
+    kTapped,
+    // The hotkey was held for at least `hold_threshold`, then released.
+    kReleased,
+    // The hotkey was held for at least `hold_threshold`, then the watch was
+    // aborted, e.g. because the browser window became inactive.
+    kAborted,
+  };
+  using CompletionCallback = base::OnceCallback<void(Result)>;
 
+  // `completion_callback` runs at most once, and may destroy `this`.
   HotkeyHoldWatcher(BrowserWindowInterface& browser,
                     tabs::TabInterface& tab,
                     views::Widget& browser_widget,
@@ -79,8 +82,7 @@ class HotkeyHoldWatcher : public ui::EventObserver,
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
   void AbortAndDestroyThis();
-  void FinishAndDestroyThis(
-      std::optional<DictationStreamEndTrigger> end_trigger);
+  void FinishAndDestroyThis(Result result);
 
   const ui::Accelerator hotkey_;
   CompletionCallback completion_callback_;
@@ -96,6 +98,6 @@ class HotkeyHoldWatcher : public ui::EventObserver,
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
-}  // namespace dictation
+}  // namespace voice
 
-#endif  // CHROME_BROWSER_DICTATION_HOTKEY_HOLD_WATCHER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_VOICE_HOTKEYS_HOTKEY_HOLD_WATCHER_H_

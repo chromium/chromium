@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/dictation/hotkey_hold_watcher.h"
+#include "chrome/browser/ui/views/voice/hotkeys/hotkey_hold_watcher.h"
 
 #include <utility>
 
@@ -15,7 +15,7 @@
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget.h"
 
-namespace dictation {
+namespace voice {
 
 // static
 bool HotkeyHoldWatcher::IsChordKey(const ui::Accelerator& hotkey,
@@ -95,11 +95,11 @@ void HotkeyHoldWatcher::OnEvent(const ui::Event& event) {
   if (key_event.type() == ui::EventType::kKeyReleased) {
     if (IsChordKey(hotkey_, key_event.key_code())) {
       if (is_press_and_hold_mode_) {
-        FinishAndDestroyThis(DictationStreamEndTrigger::kHotkeyHoldReleased);
+        FinishAndDestroyThis(Result::kReleased);
         return;
       }
-      // Released before the hold threshold elapsed: stay in toggle mode.
-      FinishAndDestroyThis(std::nullopt);
+      // Released before the hold threshold elapsed.
+      FinishAndDestroyThis(Result::kTapped);
       return;
     }
     return;
@@ -139,22 +139,19 @@ void HotkeyHoldWatcher::OnTabWillDetach(
 }
 
 void HotkeyHoldWatcher::AbortAndDestroyThis() {
-  FinishAndDestroyThis(
-      is_press_and_hold_mode_
-          ? std::optional(DictationStreamEndTrigger::kHotkeyHoldAbort)
-          : std::nullopt);
+  FinishAndDestroyThis(is_press_and_hold_mode_ ? Result::kAborted
+                                               : Result::kTapped);
 }
 
-void HotkeyHoldWatcher::FinishAndDestroyThis(
-    std::optional<DictationStreamEndTrigger> end_trigger) {
+void HotkeyHoldWatcher::FinishAndDestroyThis(Result result) {
   if (!completion_callback_) {
     return;
   }
   hold_threshold_timer_.Stop();
   event_monitor_.reset();
-  std::move(completion_callback_).Run(end_trigger);
+  std::move(completion_callback_).Run(result);
   // WARNING: `this` is deleted by `completion_callback_`, do not add code below
   // here.
 }
 
-}  // namespace dictation
+}  // namespace voice

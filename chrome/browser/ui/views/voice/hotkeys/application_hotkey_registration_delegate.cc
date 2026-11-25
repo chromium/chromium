@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/dictation/application_registration_delegate.h"
+#include "chrome/browser/ui/views/voice/hotkeys/application_hotkey_registration_delegate.h"
 
+#include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -14,20 +15,21 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
+#include "ui/views/focus/focus_manager.h"
 
-namespace dictation {
+namespace voice {
 
 namespace {
 
-// Implementation of ScopedHotkeyRegistration specifically for application-wide
+// Implementation of ScopedRegistration specifically for application-wide
 // hotkeys tied to a profile. It registers and unregisters accelerators with the
 // FocusManager of all current and future BrowserViews belonging to the profile.
 class ApplicationScopedHotkeyRegistration
-    : public HotkeyManager::ScopedHotkeyRegistration,
+    : public HotkeyRegistrationDelegate::ScopedRegistration,
       public BrowserCollectionObserver {
  public:
-  ApplicationScopedHotkeyRegistration(ui::Accelerator accelerator,
-                                      HotkeyManager& hotkey_manager,
+  ApplicationScopedHotkeyRegistration(const ui::Accelerator& accelerator,
+                                      ui::AcceleratorTarget& target,
                                       ProfileBrowserCollection* collection);
 
   ApplicationScopedHotkeyRegistration(
@@ -45,19 +47,17 @@ class ApplicationScopedHotkeyRegistration
   void UnregisterAccelerator(BrowserWindowInterface* browser_window_interface);
 
   ui::Accelerator accelerator_;
-  raw_ref<HotkeyManager> hotkey_manager_;
+  raw_ref<ui::AcceleratorTarget> target_;
   raw_ptr<ProfileBrowserCollection> collection_;
   base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
 };
 
 ApplicationScopedHotkeyRegistration::ApplicationScopedHotkeyRegistration(
-    ui::Accelerator accelerator,
-    HotkeyManager& hotkey_manager,
+    const ui::Accelerator& accelerator,
+    ui::AcceleratorTarget& target,
     ProfileBrowserCollection* collection)
-    : accelerator_(accelerator),
-      hotkey_manager_(hotkey_manager),
-      collection_(collection) {
+    : accelerator_(accelerator), target_(target), collection_(collection) {
   CHECK(!accelerator_.IsEmpty());
   CHECK(collection_);
   collection_->ForEach(
@@ -89,7 +89,7 @@ void ApplicationScopedHotkeyRegistration::RegisterAccelerator(
           BrowserView::GetBrowserViewForBrowser(browser_window_interface)) {
     browser_view->GetFocusManager()->RegisterAccelerator(
         accelerator_, ui::AcceleratorManager::HandlerPriority::kNormalPriority,
-        &(*hotkey_manager_));
+        &(*target_));
   }
 }
 
@@ -98,24 +98,26 @@ void ApplicationScopedHotkeyRegistration::UnregisterAccelerator(
   if (auto* const browser_view =
           BrowserView::GetBrowserViewForBrowser(browser_window_interface)) {
     browser_view->GetFocusManager()->UnregisterAccelerator(accelerator_,
-                                                           &(*hotkey_manager_));
+                                                           &(*target_));
   }
 }
 
 }  // namespace
 
-ApplicationRegistrationDelegate::ApplicationRegistrationDelegate() = default;
+ApplicationHotkeyRegistrationDelegate::ApplicationHotkeyRegistrationDelegate(
+    Profile& profile)
+    : profile_(profile) {}
 
-ApplicationRegistrationDelegate::~ApplicationRegistrationDelegate() = default;
+ApplicationHotkeyRegistrationDelegate::
+    ~ApplicationHotkeyRegistrationDelegate() = default;
 
-std::unique_ptr<HotkeyManager::ScopedHotkeyRegistration>
-ApplicationRegistrationDelegate::CreateScopedHotkeyRegistration(
-    Profile* profile,
-    ui::Accelerator accelerator,
-    HotkeyManager& hotkey_manager) {
+std::unique_ptr<HotkeyRegistrationDelegate::ScopedRegistration>
+ApplicationHotkeyRegistrationDelegate::Register(
+    const ui::Accelerator& accelerator,
+    ui::AcceleratorTarget& target) {
   return std::make_unique<ApplicationScopedHotkeyRegistration>(
-      accelerator, hotkey_manager,
-      ProfileBrowserCollection::GetForProfile(profile));
+      accelerator, target,
+      ProfileBrowserCollection::GetForProfile(&profile_.get()));
 }
 
-}  // namespace dictation
+}  // namespace voice

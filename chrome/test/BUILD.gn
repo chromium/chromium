@@ -3088,6 +3088,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/ttc:unit_tests",
       "//chrome/browser/ui/views/user_education:unit_tests",
       "//chrome/browser/ui/views/voice:unit_tests",
+      "//chrome/browser/ui/views/voice/hotkeys:unit_tests",
       "//chrome/browser/ui/views/webauthn:unit_tests",
       "//chrome/browser/ui/views/webid:unit_tests",
       "//chrome/browser/ui/wallet:unit_tests",
