@@ -679,6 +679,46 @@ TEST_F(CreditCardFidoAuthenticatorTest,
   EXPECT_TRUE(fido_authenticator().IsUserOptedIn());
 }
 
+// Ensures the result of the WebAuthn prompt that creates the credential of an
+// enrollment during unmask is logged for that flow.
+TEST_F(CreditCardFidoAuthenticatorTest,
+       EnrollAndAuthenticateWithCreationOptions_LogsWebauthnResult) {
+  base::HistogramTester histogram_tester;
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+  fido_authenticator().EnrollAndAuthenticateWithCreationOptions(
+      card, requester().GetWeakPtr(),
+      GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId));
+
+  TestCreditCardFidoAuthenticator::MakeCredential(&fido_authenticator(),
+                                                  /*did_succeed=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.BetterAuth.WebauthnResult.EnrollmentDuringUnmask",
+      autofill_metrics::WebauthnResultMetric::kSuccess, 1);
+}
+
+// Ensures the result of the WebAuthn prompt of an enrollment during unmask
+// that signs with an existing credential is logged for that flow, and not as
+// the result of an authentication.
+TEST_F(CreditCardFidoAuthenticatorTest,
+       EnrollAndAuthenticateWithRequestOptions_LogsWebauthnResult) {
+  base::HistogramTester histogram_tester;
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+  fido_authenticator().EnrollAndAuthenticateWithRequestOptions(
+      card, requester().GetWeakPtr(),
+      GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
+                            kTestCredentialId));
+
+  TestCreditCardFidoAuthenticator::GetAssertion(&fido_authenticator(),
+                                                /*did_succeed=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.BetterAuth.WebauthnResult.EnrollmentDuringUnmask",
+      autofill_metrics::WebauthnResultMetric::kNotAllowedError, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.BetterAuth.WebauthnResult.ImmediateAuthentication", 0);
+}
+
 using FidoFailureType =
     CreditCardFidoAuthenticator::FidoAuthenticationResponse::FailureType;
 

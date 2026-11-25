@@ -310,9 +310,9 @@ void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
     case UnmaskAuthFlowType::kFido:
       form_event_logger().LogCardUnmaskAuthenticationPromptCompleted(
           unmask_auth_flow_type_);
-      if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
-        flow_type = ServerCardUnmaskFlowType::kFidoOnly;
-      }
+      flow_type = card_->record_type() == CreditCard::RecordType::kVirtualCard
+                      ? ServerCardUnmaskFlowType::kFidoOnly
+                      : GetServerCardFidoUnmaskFlowType();
       if (!card_->cvc().empty()) {
         autofill_metrics::LogCvcFilling(
             autofill_metrics::CvcFillingFlowType::kFido, card_->record_type());
@@ -1083,6 +1083,9 @@ void CreditCardAccessManager::OnMandatedFidoAuthenticationFailed(
       // browser ended it, e.g. because the page lost focus. WebAuthn reports an
       // authenticator that no longer has the credential like a cancellation,
       // so that also ends the unmasking.
+      autofill_metrics::LogServerCardUnmaskResult(
+          ServerCardUnmaskResult::kFlowCancelled,
+          PaymentsRpcCardType::kServerCard, GetServerCardFidoUnmaskFlowType());
       break;
     case FailureType::kVerificationDeclined:
     case FailureType::kGenericFailure:
@@ -1093,6 +1096,9 @@ void CreditCardAccessManager::OnMandatedFidoAuthenticationFailed(
     case FailureType::kVirtualCardRetrievalPermanentFailure: {
       // The user passed the WebAuthn prompt, but the server did not return the
       // card.
+      autofill_metrics::LogServerCardUnmaskResult(
+          ServerCardUnmaskResult::kAuthenticationError,
+          PaymentsRpcCardType::kServerCard, GetServerCardFidoUnmaskFlowType());
       const bool is_temporary_error =
           failure_type == FailureType::kGenericFailure ||
           failure_type == FailureType::kVirtualCardRetrievalTransientFailure;
@@ -1119,11 +1125,15 @@ void CreditCardAccessManager::FallBackToCvcAfterMandatedFidoFailure() {
   // enrolled, so it has nothing to undo, and force-disabling would only wipe
   // its CVC verifications. Like the other changes to the setting, the request
   // is not made from an off-the-record session.
-  if (server_controlled_reauth_flow_ ==
+  const bool should_force_disable =
+      server_controlled_reauth_flow_ ==
           ServerControlledReauthFlow::kFidoVerification &&
-      !autofill_client().IsOffTheRecord()) {
+      !autofill_client().IsOffTheRecord();
+  if (should_force_disable) {
     GetOrCreateFidoAuthenticator()->ForceDisableMandatoryReauth();
   }
+  autofill_metrics::LogServerControlledReauthUnrecoverableErrorRecovery(
+      should_force_disable);
   server_controlled_reauth_flow_ = ServerControlledReauthFlow::kNone;
   Authenticate(UnmaskAuthFlowType::kCvcFallbackFromFido);
 }
@@ -1568,6 +1578,23 @@ CreditCardAccessManager::GetServerControlledReauthFlow(
              : ServerControlledReauthFlow::
                    kFidoEnrollmentWithExistingCredential;
 #endif
+}
+
+ServerCardUnmaskFlowType
+CreditCardAccessManager::GetServerCardFidoUnmaskFlowType() const {
+  switch (server_controlled_reauth_flow_) {
+    case ServerControlledReauthFlow::kFidoVerification:
+      return ServerCardUnmaskFlowType::kFidoOnly;
+    case ServerControlledReauthFlow::kFidoEnrollmentWithNewCredential:
+    case ServerControlledReauthFlow::kFidoEnrollmentWithExistingCredential:
+      return ServerCardUnmaskFlowType::kFidoEnrollment;
+    case ServerControlledReauthFlow::kNone:
+    case ServerControlledReauthFlow::kCvc:
+      // FIDO authentication was not mandated: it followed a risk-based
+      // authentication or a CVC authentication.
+      return ServerCardUnmaskFlowType::kUnspecified;
+  }
+  NOTREACHED();
 }
 
 void CreditCardAccessManager::FetchMaskedServerCard() {

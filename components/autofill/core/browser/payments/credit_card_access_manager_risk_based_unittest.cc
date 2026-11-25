@@ -1346,6 +1346,13 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   histogram_tester.ExpectTotalCount(kRiskBasedTimedOutHistogram, 0);
 }
 
+constexpr char kFidoUnmaskResultHistogram[] =
+    "Autofill.ServerCardUnmask.ServerCard.Result.Fido";
+constexpr char kFidoEnrollmentUnmaskResultHistogram[] =
+    "Autofill.ServerCardUnmask.ServerCard.Result.FidoEnrollment";
+constexpr char kUnrecoverableErrorRecoveryHistogram[] =
+    "Autofill.ServerControlledReauth.UnrecoverableErrorRecovery";
+
 // Enables the features of CreditCardAccessManagerServerControlledReauthTest.
 // As a base class that precedes CreditCardAccessManagerTestBase, it enables
 // them before the TaskEnvironment of the latter starts its threads, which read
@@ -1394,6 +1401,26 @@ class CreditCardAccessManagerServerControlledReauthTest
         payments::PaymentsAutofillClient::UnmaskAuthMethod::kFido;
     payments_network_interface().SetFidoRequestOptionsInUnmaskDetails(
         kCredentialId, kGooglePaymentsRpid);
+  }
+
+  // Selects a card for which FIDO authentication is mandated on a device that
+  // is enrolled into FIDO authentication.
+  void FetchCardWithMandatedFidoVerification() {
+    const CreditCard* masked_server_card =
+        SetUpVerifiedCard(MandatoryReauthStatus::kEnabled);
+    SetUpPreflightCallForEnrolledDevice();
+    PrepareToFetchCreditCardAndWaitForCallbacks();
+    FetchCreditCard(masked_server_card);
+  }
+
+  // Selects a card for which FIDO authentication is mandated on a device that
+  // has to enroll into FIDO authentication by creating a credential.
+  void FetchCardWithMandatedFidoEnrollment() {
+    const CreditCard* masked_server_card =
+        SetUpVerifiedCard(MandatoryReauthStatus::kUnknown);
+    unmask_details().fido_creation_options = GetTestCreationOptions();
+    PrepareToFetchCreditCardAndWaitForCallbacks();
+    FetchCreditCard(masked_server_card);
   }
 
   payments::UnmaskDetails& unmask_details() {
@@ -2161,6 +2188,222 @@ TEST_F(CreditCardAccessManagerServerControlledReauthTest,
 
   EXPECT_FALSE(opt_change_request().has_value());
   EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvcFallbackFromFido);
+}
+
+// Ensures a card unmasked by a mandated FIDO authentication is logged as
+// unmasked with FIDO authentication only.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_FidoVerification_Unmasked) {
+  base::HistogramTester histogram_tester;
+  FetchCardWithMandatedFidoVerification();
+  TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
+                                                /*did_succeed=*/true);
+
+  ASSERT_TRUE(GetRealPanForFIDOAuth(PaymentsRpcResult::kSuccess, kTestNumber));
+
+  histogram_tester.ExpectUniqueSample(
+      kFidoUnmaskResultHistogram,
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
+}
+
+// Ensures a mandated FIDO authentication whose WebAuthn prompt the browser
+// ended is logged as a cancelled unmasking, without any recovery.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_FidoVerification_PromptEndedByBrowser) {
+  base::HistogramTester histogram_tester;
+  FetchCardWithMandatedFidoVerification();
+
+  TestCreditCardFidoAuthenticator::GetAssertionEndedByBrowser(
+      GetFIDOAuthenticator());
+
+  histogram_tester.ExpectUniqueSample(
+      kFidoUnmaskResultHistogram,
+      autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
+  histogram_tester.ExpectTotalCount(kUnrecoverableErrorRecoveryHistogram, 0);
+}
+
+// Ensures a mandated FIDO authentication that ended with NOT_ALLOWED_ERROR is
+// logged as a cancelled unmasking, without any recovery.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_FidoVerification_PromptNotAllowed) {
+  base::HistogramTester histogram_tester;
+  FetchCardWithMandatedFidoVerification();
+
+  TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
+                                                /*did_succeed=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      kFidoUnmaskResultHistogram,
+      autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
+  histogram_tester.ExpectTotalCount(kUnrecoverableErrorRecoveryHistogram, 0);
+}
+
+// Ensures a mandated FIDO authentication after which the server did not
+// return the card is logged as an authentication error.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_FidoVerification_ServerDeclines) {
+  base::HistogramTester histogram_tester;
+  FetchCardWithMandatedFidoVerification();
+  TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
+                                                /*did_succeed=*/true);
+
+  ASSERT_TRUE(GetRealPanForFIDOAuth(PaymentsRpcResult::kPermanentFailure, ""));
+
+  histogram_tester.ExpectUniqueSample(
+      kFidoUnmaskResultHistogram,
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationError, 1);
+}
+
+// Ensures a card unmasked by the request that enrolls the device into FIDO
+// authentication is logged with a flow type of its own.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_FidoEnrollment_Unmasked) {
+  base::HistogramTester histogram_tester;
+  FetchCardWithMandatedFidoEnrollment();
+  TestCreditCardFidoAuthenticator::MakeCredential(GetFIDOAuthenticator(),
+                                                  /*did_succeed=*/true);
+
+  ASSERT_TRUE(GetRealPanForFIDOAuth(PaymentsRpcResult::kSuccess, kTestNumber));
+
+  histogram_tester.ExpectUniqueSample(
+      kFidoEnrollmentUnmaskResultHistogram,
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
+  histogram_tester.ExpectTotalCount(kFidoUnmaskResultHistogram, 0);
+}
+
+// Ensures a mandated FIDO enrollment whose WebAuthn prompt the user cancelled
+// or did not pass is logged as a cancelled unmasking.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_FidoEnrollment_PromptFails) {
+  base::HistogramTester histogram_tester;
+  FetchCardWithMandatedFidoEnrollment();
+
+  TestCreditCardFidoAuthenticator::MakeCredential(GetFIDOAuthenticator(),
+                                                  /*did_succeed=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      kFidoEnrollmentUnmaskResultHistogram,
+      autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
+  histogram_tester.ExpectTotalCount(kUnrecoverableErrorRecoveryHistogram, 0);
+}
+
+// Ensures a mandated FIDO enrollment that the server did not accept is logged
+// as an authentication error.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_FidoEnrollment_ServerDeclines) {
+  base::HistogramTester histogram_tester;
+  FetchCardWithMandatedFidoEnrollment();
+  TestCreditCardFidoAuthenticator::MakeCredential(GetFIDOAuthenticator(),
+                                                  /*did_succeed=*/true);
+
+  ASSERT_TRUE(GetRealPanForFIDOAuth(PaymentsRpcResult::kPermanentFailure, ""));
+
+  histogram_tester.ExpectUniqueSample(
+      kFidoEnrollmentUnmaskResultHistogram,
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationError, 1);
+}
+
+// Ensures it is logged that the server was asked to stop mandating FIDO
+// authentication after the authenticator of an enrolled device could not be
+// used. The unmasking goes on with CVC authentication, so it has no result
+// yet.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_UnrecoverableAuthenticatorError_ForceDisableRequested) {
+  base::HistogramTester histogram_tester;
+  FetchCardWithMandatedFidoVerification();
+
+  TestCreditCardFidoAuthenticator::GetAssertionWithUnrecoverableError(
+      GetFIDOAuthenticator());
+
+  histogram_tester.ExpectUniqueSample(kUnrecoverableErrorRecoveryHistogram,
+                                      true, 1);
+  histogram_tester.ExpectTotalCount(kFidoUnmaskResultHistogram, 0);
+}
+
+// Ensures it is logged that the server was not asked to change anything after
+// the authenticator of an enrolled device could not be used in an
+// off-the-record session.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_UnrecoverableAuthenticatorError_OffTheRecord) {
+  base::HistogramTester histogram_tester;
+  autofill_client().set_is_off_the_record(true);
+  FetchCardWithMandatedFidoVerification();
+
+  TestCreditCardFidoAuthenticator::GetAssertionWithUnrecoverableError(
+      GetFIDOAuthenticator());
+
+  histogram_tester.ExpectUniqueSample(kUnrecoverableErrorRecoveryHistogram,
+                                      false, 1);
+}
+
+// Ensures it is logged that the server was not asked to change anything after
+// a device could not enroll because its authenticator could not be used. The
+// device is not enrolled into FIDO authentication, so the server does not
+// mandate it for this device and there is nothing to force-disable; doing so
+// would only wipe the CVC verifications of its cards. CVC authentication takes
+// over.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_UnrecoverableAuthenticatorError_OnEnrollment) {
+  base::HistogramTester histogram_tester;
+  FetchCardWithMandatedFidoEnrollment();
+
+  TestCreditCardFidoAuthenticator::MakeCredentialWithUnrecoverableError(
+      GetFIDOAuthenticator());
+
+  histogram_tester.ExpectUniqueSample(kUnrecoverableErrorRecoveryHistogram,
+                                      false, 1);
+  histogram_tester.ExpectTotalCount(kFidoEnrollmentUnmaskResultHistogram, 0);
+}
+
+// Ensures a mandated FIDO enrollment that signs with a credential the platform
+// enrolled on its own and that ended with NOT_ALLOWED_ERROR is logged as a
+// cancelled unmasking, without any recovery.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_FidoEnrollmentWithExistingCredential_NotAllowed) {
+  base::HistogramTester histogram_tester;
+  const CreditCard* masked_server_card =
+      SetUpVerifiedCard(MandatoryReauthStatus::kUnknown);
+  payments_network_interface().SetFidoRequestOptionsInUnmaskDetails(
+      kCredentialId, kGooglePaymentsRpid);
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+  FetchCreditCard(masked_server_card);
+
+  TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
+                                                /*did_succeed=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      kFidoEnrollmentUnmaskResultHistogram,
+      autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
+  histogram_tester.ExpectTotalCount(kUnrecoverableErrorRecoveryHistogram, 0);
+}
+
+// Ensures a card unmasked by a FIDO authentication that was not mandated,
+// because it follows a risk-based authentication, keeps being logged without
+// a flow type.
+TEST_F(CreditCardAccessManagerServerControlledReauthTest,
+       Metrics_FidoNotMandated) {
+  base::HistogramTester histogram_tester;
+  const CreditCard* masked_server_card = SetUpVerifiedCard(std::nullopt);
+  SetUpPreflightCallForEnrolledDevice();
+  SetCreditCardFIDOAuthEnabled(true);
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+  FetchCreditCard(masked_server_card);
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::
+                               kAuthenticationRequired)
+          .with_fido_request_options(GetTestRequestOptions())
+          .with_context_token("fake_context_token"));
+  TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
+                                                /*did_succeed=*/true);
+
+  ASSERT_TRUE(GetRealPanForFIDOAuth(PaymentsRpcResult::kSuccess, kTestNumber));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardUnmask.ServerCard.Result.UnspecifiedFlowType",
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
+  histogram_tester.ExpectTotalCount(kFidoUnmaskResultHistogram, 0);
 }
 
 // Ensures the way the setting required one card to be authenticated does not

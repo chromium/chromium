@@ -61,6 +61,9 @@ void LogServerCardUnmaskResult(
     case ServerCardUnmaskFlowType::kThreeDomainSecure:
       flow_type_suffix = ".ThreeDomainSecure";
       break;
+    case ServerCardUnmaskFlowType::kFidoEnrollment:
+      flow_type_suffix = ".FidoEnrollment";
+      break;
   }
 
   base::UmaHistogramEnumeration(

@@ -47,6 +47,7 @@ enum class WebauthnDialogCallbackType;
 namespace autofill_metrics {
 enum class CardVerificationStatus;
 class CreditCardFormEventLogger;
+enum class ServerCardUnmaskFlowType;
 }  // namespace autofill_metrics
 
 // TODO(crbug.com/40927041): Remove CVC from CachedServerCardInfo.
@@ -406,6 +407,12 @@ class CreditCardAccessManager
   // if risk-based authentication is available for `card_`.
   ServerControlledReauthFlow GetServerControlledReauthFlow(
       bool get_unmask_details_returned);
+
+  // Returns the flow type that the result of unmasking a masked server card
+  // with FIDO authentication is logged with. It is only specified for the FIDO
+  // authentications mandated by `server_controlled_reauth_flow_`.
+  autofill_metrics::ServerCardUnmaskFlowType GetServerCardFidoUnmaskFlowType()
+      const;
 
   // Helper function to fetch masked server cards.
   void FetchMaskedServerCard();

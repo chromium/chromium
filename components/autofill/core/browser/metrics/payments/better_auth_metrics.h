@@ -54,7 +54,10 @@ enum class WebauthnFlowEvent {
   // WebAuthn is prompted after being offered to opt-in from the settings
   // page.
   kSettingsPageOptIn = 3,
-  kMaxValue = kSettingsPageOptIn,
+  // WebAuthn is immediately prompted for unmasking on a device that is not
+  // enrolled into FIDO authentication, which the unmasking then enrolls.
+  kEnrollmentDuringUnmask = 4,
+  kMaxValue = kEnrollmentDuringUnmask,
 };
 
 // The parameters with which opt change was called.
@@ -185,6 +188,14 @@ void LogPreflightCallResponseReceivedOnCardSelection(
 // GetDetailsForGetRealPan preflight response for a masked server card.
 void LogServerControlledReauthCardVerificationStatus(
     CardVerificationStatus status);
+
+// Logs that a FIDO authentication mandated by server-controlled mandatory
+// re-authentication failed in a way that the authenticator of the device may
+// never get past, so CVC authentication took over. `force_disable_requested`
+// is whether the Payments server was asked to stop mandating FIDO
+// authentication for the device.
+void LogServerControlledReauthUnrecoverableErrorRecovery(
+    bool force_disable_requested);
 
 // Logs the existence of any user-perceived latency between selecting a Google
 // Payments server card and seeing a card unmask prompt.

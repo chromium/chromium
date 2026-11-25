@@ -854,9 +854,8 @@ void CreditCardFidoAuthenticator::LogWebauthnResult(
       event = autofill_metrics::WebauthnFlowEvent::kImmediateAuthentication;
       break;
     case Flow::kEnrollmentDuringUnmaskFlow:
-      // TODO(crbug.com/553156099): Log the result of the WebAuthn prompt of the
-      // enrollment during unmask flow.
-      return;
+      event = autofill_metrics::WebauthnFlowEvent::kEnrollmentDuringUnmask;
+      break;
     case Flow::kFollowupAfterCvcAuthFlow:
       event = autofill_metrics::WebauthnFlowEvent::kAuthenticationAfterCvc;
       break;

@@ -66,6 +66,13 @@ void LogServerControlledReauthCardVerificationStatus(
       "Autofill.ServerControlledReauth.CardVerificationStatus", status);
 }
 
+void LogServerControlledReauthUnrecoverableErrorRecovery(
+    bool force_disable_requested) {
+  base::UmaHistogramBoolean(
+      "Autofill.ServerControlledReauth.UnrecoverableErrorRecovery",
+      force_disable_requested);
+}
+
 void LogUserPerceivedLatencyOnCardSelection(PreflightCallEvent event,
                                             bool fido_auth_enabled) {
   std::string histogram_name =
@@ -141,6 +148,9 @@ void LogWebauthnResult(WebauthnFlowEvent event, WebauthnResultMetric metric) {
       break;
     case WebauthnFlowEvent::kCheckoutOptIn:
       histogram_name += "CheckoutOptIn";
+      break;
+    case WebauthnFlowEvent::kEnrollmentDuringUnmask:
+      histogram_name += "EnrollmentDuringUnmask";
       break;
     case WebauthnFlowEvent::kSettingsPageOptIn:
       // TODO(crbug.com/345008736): Remove logic related to the settings page

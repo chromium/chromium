@@ -368,6 +368,8 @@ chromium-metrics-reviews@google.com.
 <variants name="Autofill.ServerCardUnmaskFlowType">
   <variant name="DeviceUnlock" summary="Device unlock authentication"/>
   <variant name="Fido" summary="FIDO authentication only"/>
+  <variant name="FidoEnrollment"
+      summary="FIDO enrollment with the request that unmasks the card"/>
   <variant name="Otp" summary="OTP auth only"/>
   <variant name="OtpFallbackFromFido"
       summary="OTP fallback from FIDO authentication"/>
@@ -3691,6 +3693,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="AuthenticationAfterCVC" summary="WebAuthn after CVC"/>
     <variant name="CheckoutOptIn"
         summary="Registering for WebAuthn on checkout"/>
+    <variant name="EnrollmentDuringUnmask"
+        summary="Registering for WebAuthn while unmasking a card"/>
     <variant name="ImmediateAuthentication"
         summary="WebAuthn for card downstream"/>
   </token>
@@ -9411,6 +9415,23 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     authentication, or the preflight call timed out). Logged once per masked
     server card authentication attempt on FIDO-verifiable devices when
     card-on-device verification enforcement is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ServerControlledReauth.UnrecoverableErrorRecovery"
+    enum="BooleanRequested" expires_after="2027-04-30">
+  <owner>junhuihe@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logged when a FIDO authentication that server-controlled mandatory
+    re-authentication mandates for unmasking a server card fails in a way that
+    the platform authenticator of the device may never get past, after which
+    Chrome falls back to CVC authentication. That is any WebAuthn error except
+    the ones that say the user or the browser ended the prompt
+    (NOT_ALLOWED_ERROR, ABORT_ERROR, PENDING_REQUEST, NOT_FOCUSED), which end
+    the unmasking like a cancellation. Records whether Chrome also requested the
+    Payments server to stop mandating FIDO authentication for the device, which
+    it does for an enrolled device, unless the session is off the record.
   </summary>
 </histogram>
 

@@ -73,7 +73,10 @@ enum class ServerCardUnmaskFlowType {
   kDeviceUnlock = 5,
   // VCN 3DS auth was offered.
   kThreeDomainSecure = 6,
-  kMaxValue = kThreeDomainSecure,
+  // FIDO auth was mandated on a device that is not enrolled into FIDO auth, so
+  // the device was enrolled by the request that unmasks the card.
+  kFidoEnrollment = 7,
+  kMaxValue = kFidoEnrollment,
 };
 
 void LogServerCardUnmaskAttempt(
