@@ -25,7 +25,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TriState;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -43,18 +42,12 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.util.Collections;
@@ -511,32 +504,5 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     @Override
     public int getCurrentInstanceId() {
         return TabWindowManager.INVALID_WINDOW_ID;
-    }
-
-    @Override
-    public void cleanupSyncedTabGroupsIfOnlyInstance(TabModelSelector selector) {
-        // Should only happen in tests.
-        if (BuildConfig.IS_FOR_TEST && selector == null) return;
-
-        assert selector != null;
-
-        TabModelUtils.runOnTabStateInitialized(
-                selector,
-                (TabModelSelector initializedSelector) -> {
-                    if (mMultiWindowModeStateDispatcher.isMultiInstanceRunning()) return;
-                    cleanupSyncedTabGroups(initializedSelector);
-                });
-    }
-
-    protected void cleanupSyncedTabGroups(TabModelSelector selector) {
-        TabModel tabModel = selector.getModel(false);
-
-        Profile profile = tabModel.getProfile();
-        if (profile == null || !TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return;
-
-        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
-        if (tabGroupSyncService != null) {
-            TabGroupSyncUtils.unmapLocalIdsNotInTabModel(tabGroupSyncService, tabModel);
-        }
     }
 }

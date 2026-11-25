@@ -41,10 +41,7 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  sources = [
-    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImplUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerUtilsUnitTest.java",
-  ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImplUnitTest.java" ]
 
   deps = [
     ":java",

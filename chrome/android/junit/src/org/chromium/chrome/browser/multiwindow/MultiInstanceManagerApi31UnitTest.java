@@ -26,7 +26,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
@@ -2318,20 +2317,6 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.cleanupSyncedTabGroupsIfLastInstance();
         // Verify this is not called a second time.
         verify(mTabGroupSyncService).getAllGroupIds();
-    }
-
-    @Test
-    public void testCleanupSyncedTabGroupsIfOnlyInstance() {
-        mMultiInstanceManager.mTestBuildInstancesList = true;
-
-        allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true);
-        mMultiInstanceManager.cleanupSyncedTabGroupsIfOnlyInstance(mTabModelSelector);
-        verify(mTabGroupSyncService).getAllGroupIds();
-        reset(mTabGroupSyncService);
-
-        allocInstanceIndex(INSTANCE_ID_2, mTabbedActivityTask63, true);
-        mMultiInstanceManager.cleanupSyncedTabGroupsIfOnlyInstance(mTabModelSelector);
-        verifyNoInteractions(mTabGroupSyncService);
     }
 
     @Test

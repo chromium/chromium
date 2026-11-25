@@ -16,7 +16,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 
 import java.lang.annotation.Retention;
@@ -324,18 +323,6 @@ public abstract class MultiInstanceManager {
      * @param source The {@link CloseWindowAppSource} that reflects the source of instance closure.
      */
     public void closeWindows(List<Integer> instanceIds, @CloseWindowAppSource int source) {}
-
-    /**
-     * Intended to be called on initialization. If there's only one window at the moment that has
-     * tabs stored for it, we then know that any tabs and groups that sync knows of are not in other
-     * windows, and their local ids should be cleared out.
-     *
-     * @param selector The root entry point to tab model objects. Does not necessarily have to be
-     *     done initializing.
-     */
-    public void cleanupSyncedTabGroupsIfOnlyInstance(TabModelSelector selector) {
-        // Not implemented
-    }
 
     /**
      * Shows a message to notify the user that a new window cannot be created because {@link

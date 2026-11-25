@@ -57,13 +57,15 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -74,6 +76,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -1260,14 +1263,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                         .getTabModelSelectorById(info.iterator().next());
         if (selector == null) return;
 
-        cleanupSyncedTabGroups(selector);
-    }
+        TabModel tabModel = selector.getModel(false);
+        Profile profile = tabModel.getProfile();
+        if (profile == null || !TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return;
 
-    @Override
-    public void cleanupSyncedTabGroupsIfOnlyInstance(TabModelSelector selector) {
-        TabModelUtils.runOnTabStateInitialized(
-                selector,
-                (TabModelSelector initializedSelector) -> cleanupSyncedTabGroupsIfLastInstance());
+        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        if (tabGroupSyncService != null) {
+            TabGroupSyncUtils.unmapLocalIdsNotInTabModel(tabGroupSyncService, tabModel);
+        }
     }
 
     private int getMaxInstances() {
