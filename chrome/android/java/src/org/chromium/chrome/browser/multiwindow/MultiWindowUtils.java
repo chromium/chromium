@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -69,11 +70,13 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.MultiInstanceUtils;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -82,6 +85,7 @@ import org.chromium.ui.widget.Toast;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1708,6 +1712,100 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     /* package */ static boolean hasNoNormalTabs(int windowId) {
         return ChromeMultiInstancePersistentStore.readNormalTabCount(windowId) == 0;
+    }
+
+    /* package */ static boolean hasRestorableRegularTabs(int instanceId) {
+        int normalTabCount = ChromeMultiInstancePersistentStore.readNormalTabCount(instanceId);
+
+        if (normalTabCount > 1) return true;
+        if (normalTabCount == 0) return false;
+
+        String activeUrl = ChromeMultiInstancePersistentStore.readActiveTabUrl(instanceId);
+        return !UrlUtilities.isNtpUrl(UrlFormatter.fixupUrl(activeUrl));
+    }
+
+    /**
+     * Notifies the Recent Tabs UI of instance closures. This method is expected to be called upon
+     * initial reception of a user, system or app initiated signal to close instances.
+     *
+     * @param instanceIds The list of ids of the instances that were closed.
+     * @param isPermanentDeletion Whether the instances are permanently deleted.
+     */
+    /* package */ static void notifyInstancesClosed(
+            List<Integer> instanceIds, boolean isPermanentDeletion) {
+        // Note that instance state (for e.g. taskId) may not be updated if a live activity for the
+        // closed instance was finished, because activity destruction is asynchronous.
+        // We will create an InstanceInfo synchronously with adequate information about the closed
+        // instance, without relying on completion of an asynchronous activity destruction that may
+        // be initiated during this time.
+        List<InstanceInfo> instanceInfoList = new ArrayList<>();
+        for (int instanceId : instanceIds) {
+            // Do not update the Recent Tabs page if the closed window has no restorable regular
+            // tabs.
+            if (!hasRestorableRegularTabs(instanceId)) {
+                continue;
+            }
+            long lastAccessedTime =
+                    ChromeMultiInstancePersistentStore.readLastAccessedTime(instanceId);
+            long persistedClosureTime =
+                    ChromeMultiInstancePersistentStore.readClosureTime(instanceId);
+            long closureTime = persistedClosureTime;
+            if (!isPermanentDeletion) {
+                // Resolve fallback closureTime for non-permanent closures and skip instances
+                // without a valid timestamp.
+                closureTime = persistedClosureTime > 0 ? persistedClosureTime : lastAccessedTime;
+                if (closureTime <= 0) {
+                    continue;
+                }
+            }
+            InstanceInfo instanceInfo =
+                    new InstanceInfo(
+                            instanceId,
+                            /* taskId= */ INVALID_TASK_ID,
+                            InstanceInfo.Type.OTHER,
+                            assumeNonNull(
+                                    ChromeMultiInstancePersistentStore.readActiveTabUrl(
+                                            instanceId)),
+                            assumeNonNull(
+                                    ChromeMultiInstancePersistentStore.readActiveTabTitle(
+                                            instanceId)),
+                            ChromeMultiInstancePersistentStore.readCustomTitle(instanceId),
+                            ChromeMultiInstancePersistentStore.readNormalTabCount(instanceId),
+                            ChromeMultiInstancePersistentStore.readIncognitoTabCount(instanceId),
+                            ChromeMultiInstancePersistentStore.readIncognitoSelected(instanceId),
+                            lastAccessedTime,
+                            closureTime);
+            instanceInfoList.add(instanceInfo);
+        }
+
+        if (!instanceInfoList.isEmpty()) {
+            if (!isPermanentDeletion) {
+                sortRecentlyClosedInstances(instanceInfoList);
+            }
+            RecentlyClosedEntriesManagerTrackerFactory.getInstance()
+                    .onInstancesClosed(instanceInfoList, isPermanentDeletion);
+        }
+    }
+
+    /* package */ static void sortRecentlyClosedInstances(List<InstanceInfo> instances) {
+        instances.sort(
+                (info1, info2) ->
+                        compareRecentlyClosedTimestamps(
+                                info1.closureTime,
+                                info1.lastAccessedTime,
+                                info2.closureTime,
+                                info2.lastAccessedTime));
+    }
+
+    /* package */ static int compareRecentlyClosedTimestamps(
+            long closureTime1, long lastAccessedTime1, long closureTime2, long lastAccessedTime2) {
+        long resolvedClosureTime1 = closureTime1 > 0 ? closureTime1 : lastAccessedTime1;
+        long resolvedClosureTime2 = closureTime2 > 0 ? closureTime2 : lastAccessedTime2;
+        int closureComparison = Long.compare(resolvedClosureTime2, resolvedClosureTime1);
+        if (closureComparison != 0) {
+            return closureComparison;
+        }
+        return Long.compare(lastAccessedTime2, lastAccessedTime1);
     }
 
     /* package */ static Map<Integer, AppTask> getAppTasksById(Context context) {

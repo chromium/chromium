@@ -172,6 +172,40 @@ public class ChromeMultiInstancePersistentStoreUnitTest {
     }
 
     @Test
+    public void testWriteAndClearClosureTime() {
+        // Verify that writeClosureTime() is a no-op when the instance does not exist.
+        ChromeMultiInstancePersistentStore.writeClosureTime(
+                INSTANCE_ID_0, /* closureTime= */ 12345L);
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(INSTANCE_ID_0));
+        assertFalse(
+                ChromeMultiInstancePersistentStore.readAllInstanceIds().contains(INSTANCE_ID_0));
+
+        // Persist lastAccessedTime so hasInstance() is true, then write an explicit closureTime.
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(INSTANCE_ID_1);
+        long lastAccessedTime =
+                ChromeMultiInstancePersistentStore.readLastAccessedTime(INSTANCE_ID_1);
+        ChromeMultiInstancePersistentStore.writeClosureTime(
+                INSTANCE_ID_1, /* closureTime= */ 54321L);
+        assertEquals(54321L, ChromeMultiInstancePersistentStore.readClosureTime(INSTANCE_ID_1));
+
+        // Clear closureTime and verify that closureTime resets to 0 while lastAccessedTime is
+        // preserved, and repeated or missing clearClosureTime() calls are safe no-ops.
+        ChromeMultiInstancePersistentStore.clearClosureTime(INSTANCE_ID_1);
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(INSTANCE_ID_1));
+        assertEquals(
+                lastAccessedTime,
+                ChromeMultiInstancePersistentStore.readLastAccessedTime(INSTANCE_ID_1));
+        assertFalse(
+                ChromeMultiInstancePersistentStore.sData
+                        .getInstancesMap()
+                        .get(INSTANCE_ID_1)
+                        .hasClosureTime());
+        ChromeMultiInstancePersistentStore.clearClosureTime(INSTANCE_ID_1);
+        ChromeMultiInstancePersistentStore.clearClosureTime(INSTANCE_ID_0);
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(INSTANCE_ID_1));
+    }
+
+    @Test
     public void testReadTaskMap() {
         ChromeMultiInstancePersistentStore.writeLastAccessedTime(INSTANCE_ID_0);
         ChromeMultiInstancePersistentStore.writeLastAccessedTime(INSTANCE_ID_1);

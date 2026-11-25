@@ -73,10 +73,21 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
     }
 
     static void writeClosureTime(int instanceId) {
+        writeClosureTime(instanceId, TimeUtils.currentTimeMillis());
+    }
+
+    static void writeClosureTime(int instanceId, long closureTime) {
         if (!hasInstance(instanceId)) return;
-        long time = TimeUtils.currentTimeMillis();
         assert sData != null;
-        putInstance(instanceId, getInstanceFromProto(instanceId).setClosureTime(time));
+        putInstance(instanceId, getInstanceFromProto(instanceId).setClosureTime(closureTime));
+    }
+
+    static void clearClosureTime(int instanceId) {
+        assert sData != null;
+        InstanceData instance = sData.getInstancesMap().get(instanceId);
+        if (instance != null && instance.hasClosureTime()) {
+            putInstance(instanceId, instance.toBuilder().clearClosureTime());
+        }
     }
 
     static Map<Integer, Integer> readTaskMap() {

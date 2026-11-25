@@ -104,9 +104,11 @@ public class RecentlyClosedEntriesManagerUnitTest {
 
     @After
     public void teardown() {
-        ((RecentlyClosedEntriesManagerTrackerImpl)
-                        RecentlyClosedEntriesManagerTrackerFactory.getInstance())
-                .setOpenMostRecentTabEntryNext(false);
+        RecentlyClosedEntriesManagerTrackerImpl tracker =
+                (RecentlyClosedEntriesManagerTrackerImpl)
+                        RecentlyClosedEntriesManagerTrackerFactory.getInstance();
+        tracker.setOpenMostRecentTabEntryNext(false);
+        tracker.destroy(mRecentlyClosedEntriesManager);
     }
 
     @Test
@@ -831,6 +833,64 @@ public class RecentlyClosedEntriesManagerUnitTest {
     }
 
     @Test
+    public void testOnInstancesClosed_PermanentDeletion_PurgesZeroTimestampEntry() {
+        // Populate two closed windows via the tracker in descending closureTime order.
+        RecentlyClosedEntriesManagerTracker tracker =
+                RecentlyClosedEntriesManagerTrackerFactory.getInstance();
+        tracker.onInstancesClosed(
+                List.of(
+                        new InstanceInfo(
+                                /* instanceId= */ 2,
+                                /* taskId= */ MultiInstanceManager.INVALID_TASK_ID,
+                                InstanceInfo.Type.OTHER,
+                                /* url= */ "",
+                                /* title= */ "",
+                                /* customTitle= */ null,
+                                /* tabCount= */ 1,
+                                /* incognitoTabCount= */ 0,
+                                /* isIncognitoSelected= */ false,
+                                /* lastAccessedTime= */ 300,
+                                /* closureTime= */ 500),
+                        new InstanceInfo(
+                                /* instanceId= */ 1,
+                                /* taskId= */ MultiInstanceManager.INVALID_TASK_ID,
+                                InstanceInfo.Type.OTHER,
+                                /* url= */ "",
+                                /* title= */ "",
+                                /* customTitle= */ null,
+                                /* tabCount= */ 1,
+                                /* incognitoTabCount= */ 0,
+                                /* isIncognitoSelected= */ false,
+                                /* lastAccessedTime= */ 100,
+                                /* closureTime= */ 400)),
+                /* isPermanentDeletion= */ false);
+        assertEquals(2, mRecentlyClosedEntriesManager.getRecentlyClosedEntries().size());
+
+        // Permanently delete instance 2 when its InstanceInfo carries zero timestamps.
+        tracker.onInstancesClosed(
+                List.of(
+                        new InstanceInfo(
+                                /* instanceId= */ 2,
+                                /* taskId= */ MultiInstanceManager.INVALID_TASK_ID,
+                                InstanceInfo.Type.OTHER,
+                                /* url= */ "",
+                                /* title= */ "",
+                                /* customTitle= */ null,
+                                /* tabCount= */ 1,
+                                /* incognitoTabCount= */ 0,
+                                /* isIncognitoSelected= */ false,
+                                /* lastAccessedTime= */ 0,
+                                /* closureTime= */ 0)),
+                /* isPermanentDeletion= */ true);
+
+        // Verify instance 2 is still purged from mRecentlyClosedEntries while instance 1 remains.
+        List<RecentlyClosedEntry> entries =
+                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+        assertEquals(1, entries.size());
+        assertEquals(1, ((RecentlyClosedWindow) entries.get(0)).getInstanceId());
+    }
+
+    @Test
     public void testMergeRecentlyClosedEntriesWithWindow_TabTimestampZero_WindowNewerThanNextTab() {
         // Test merging when a tab has a timestamp of 0 and the window is newer than the next tab
         // with a valid timestamp. The window should be prioritized.
@@ -956,105 +1016,6 @@ public class RecentlyClosedEntriesManagerUnitTest {
     }
 
     @Test
-    public void testUpdateRecentlyClosedEntries_InstanceInfoListIsNotSorted() {
-        when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt())).thenReturn(null);
-        List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        instanceInfoList.add(
-                new InstanceInfo(
-                        /* instanceId= */ 2,
-                        /* taskId= */ -1,
-                        InstanceInfo.Type.OTHER,
-                        /* url= */ "",
-                        /* title= */ "",
-                        /* customTitle= */ null,
-                        /* tabCount= */ 0,
-                        /* incognitoTabCount= */ 0,
-                        /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 2));
-        instanceInfoList.add(
-                new InstanceInfo(
-                        /* instanceId= */ 1,
-                        /* taskId= */ -1,
-                        InstanceInfo.Type.OTHER,
-                        /* url= */ "",
-                        /* title= */ "",
-                        /* customTitle= */ null,
-                        /* tabCount= */ 0,
-                        /* incognitoTabCount= */ 0,
-                        /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 3));
-        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
-
-        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
-
-        List<RecentlyClosedEntry> entries =
-                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
-
-        assertEquals(2, entries.size());
-        assertTrue(
-                "Window entries are not sorted by most recent closure time.",
-                entries.get(0).getTimestamp() > entries.get(1).getTimestamp());
-    }
-
-    @Test
-    public void testUpdateRecentlyClosedEntries_InstanceClosureTimeUnavailable() {
-        when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt())).thenReturn(null);
-        List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        instanceInfoList.add(
-                new InstanceInfo(
-                        /* instanceId= */ 2,
-                        /* taskId= */ -1,
-                        InstanceInfo.Type.OTHER,
-                        /* url= */ "",
-                        /* title= */ "",
-                        /* customTitle= */ null,
-                        /* tabCount= */ 0,
-                        /* incognitoTabCount= */ 0,
-                        /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 2,
-                        /* closureTime= */ 0));
-        instanceInfoList.add(
-                new InstanceInfo(
-                        /* instanceId= */ 1,
-                        /* taskId= */ -1,
-                        InstanceInfo.Type.OTHER,
-                        /* url= */ "",
-                        /* title= */ "",
-                        /* customTitle= */ null,
-                        /* tabCount= */ 0,
-                        /* incognitoTabCount= */ 0,
-                        /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 3));
-        instanceInfoList.add(
-                new InstanceInfo(
-                        /* instanceId= */ 2,
-                        /* taskId= */ -1,
-                        InstanceInfo.Type.OTHER,
-                        /* url= */ "",
-                        /* title= */ "",
-                        /* customTitle= */ null,
-                        /* tabCount= */ 0,
-                        /* incognitoTabCount= */ 0,
-                        /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 1));
-        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
-
-        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
-
-        List<RecentlyClosedEntry> entries =
-                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
-
-        assertEquals(3, entries.size());
-        assertEquals(3, entries.get(0).getTimestamp());
-        assertEquals(2, entries.get(1).getTimestamp());
-        assertEquals(1, entries.get(2).getTimestamp());
-    }
-
-    @Test
     public void testGetRecentlyClosedWindowInternal() {
         // Set up test with a single closed window.
         createRecentlyClosedWindows(/* numOfWindows= */ 1);
@@ -1162,67 +1123,6 @@ public class RecentlyClosedEntriesManagerUnitTest {
                 });
     }
 
-    /**
-     * Creates a list of synthetic {@code SessionRecentlyClosedEntry} objects for testing purposes.
-     *
-     * <p>The entries are assigned mock session IDs and timestamps, which are incremented by 2 for
-     * each subsequent entry. The entries are added to the list in descending chronological order,
-     * with odd-numbered timestamps (1, 3, 5, etc.) to allow for easy interleaving with window
-     * entries. To easily test interleaving using the odd/even timestamp pattern, the number of
-     * session entries and window entries should be equal.
-     *
-     * @param numOfEntries The number of session entries to create.
-     */
-    private void createSessionRecentlyClosedEntries(int numOfEntries) {
-        List<RecentlyClosedEntry> sessionEntries = new ArrayList<>();
-        long timestamp = getDaysAgoMillis(/* numDaysAgo= */ 1) + 1;
-        int sessionId = 1;
-        for (int i = 0; i < numOfEntries; i++) {
-            sessionEntries.add(0, new SessionRecentlyClosedEntry(sessionId, timestamp));
-            sessionId += 2;
-            timestamp += 2;
-        }
-        when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt()))
-                .thenReturn(sessionEntries);
-    }
-
-    /**
-     * Creates a list of synthetic {@link InstanceInfo} objects that will be used to created as
-     * {@code RecentlyClosedWindow} for testing purpose.
-     *
-     * <p>The instances are assigned mock instance IDs and timestamps, which are incremented by 2
-     * for each subsequent entry. The entries are added to the list in descending chronological
-     * order, with even-numbered timestamp (2, 4, 6, etc.) to allow for easy interleaving with
-     * session entries. For easy testing of the interleaving using the odd/even timestamp pattern,
-     * the number of session entries and window entries should be equal.
-     *
-     * @param numOfWindows The number of window entries to create.
-     */
-    private void createRecentlyClosedWindows(int numOfWindows) {
-        List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        long closureTime = getDaysAgoMillis(/* numDaysAgo= */ 1) + 2;
-        int instanceId = 2;
-        for (int i = 0; i < numOfWindows; i++) {
-            InstanceInfo instanceInfo =
-                    new InstanceInfo(
-                            instanceId,
-                            /* taskId= */ 0,
-                            InstanceInfo.Type.OTHER,
-                            /* url= */ "",
-                            /* title= */ "",
-                            /* customTitle= */ null,
-                            /* tabCount= */ 0,
-                            /* incognitoTabCount= */ 0,
-                            /* isIncognitoSelected= */ false,
-                            /* lastAccessedTime= */ closureTime - 1,
-                            closureTime);
-            instanceInfoList.add(0, instanceInfo);
-            instanceId += 2;
-            closureTime += 2;
-        }
-        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
-    }
-
     @Test
     public void testFindRecentlyClosedEntry_BySessionId() {
         int sessionId = 42;
@@ -1292,10 +1192,6 @@ public class RecentlyClosedEntriesManagerUnitTest {
         assertEquals(window.getTitle(), resultWindow.getTitle());
         assertEquals(window.getActiveTabTitle(), resultWindow.getActiveTabTitle());
         assertEquals(window.getUrl(), resultWindow.getUrl());
-    }
-
-    private static long getDaysAgoMillis(int numDaysAgo) {
-        return TimeUtils.currentTimeMillis() - TimeUnit.DAYS.toMillis(numDaysAgo);
     }
 
     @Test
@@ -1407,5 +1303,51 @@ public class RecentlyClosedEntriesManagerUnitTest {
         assertEquals(20, tabs.get(1).getSessionId());
         assertEquals("https://normal2.com/", tabs.get(1).getUrl().getSpec());
         assertEquals("Active Tab Title", tabs.get(1).getTitle());
+    }
+
+    // Populates session entries in descending order at offsets +1, +3, +5, ... from 1 day ago to
+    // interleave with createRecentlyClosedWindows().
+    private void createSessionRecentlyClosedEntries(int numOfEntries) {
+        List<RecentlyClosedEntry> sessionEntries = new ArrayList<>();
+        long timestamp = getDaysAgoMillis(1) + 1;
+        int sessionId = 1;
+        for (int i = 0; i < numOfEntries; i++) {
+            sessionEntries.add(0, new SessionRecentlyClosedEntry(sessionId, timestamp));
+            sessionId += 2;
+            timestamp += 2;
+        }
+        when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt()))
+                .thenReturn(sessionEntries);
+    }
+
+    // Populates closed window entries in descending order at offsets +2, +4, +6, ... from 1 day ago
+    // to interleave with createSessionRecentlyClosedEntries().
+    private void createRecentlyClosedWindows(int numOfWindows) {
+        List<InstanceInfo> instanceInfoList = new ArrayList<>();
+        long closureTime = getDaysAgoMillis(1) + 2;
+        int instanceId = 2;
+        for (int i = 0; i < numOfWindows; i++) {
+            InstanceInfo instanceInfo =
+                    new InstanceInfo(
+                            instanceId,
+                            /* taskId= */ 0,
+                            InstanceInfo.Type.OTHER,
+                            /* url= */ "",
+                            /* title= */ "",
+                            /* customTitle= */ null,
+                            /* tabCount= */ 0,
+                            /* incognitoTabCount= */ 0,
+                            /* isIncognitoSelected= */ false,
+                            /* lastAccessedTime= */ closureTime - 1,
+                            closureTime);
+            instanceInfoList.add(0, instanceInfo);
+            instanceId += 2;
+            closureTime += 2;
+        }
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
+    }
+
+    private static long getDaysAgoMillis(int numDaysAgo) {
+        return TimeUtils.currentTimeMillis() - TimeUnit.DAYS.toMillis(numDaysAgo);
     }
 }

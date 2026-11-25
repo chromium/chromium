@@ -668,21 +668,16 @@ public class RecentlyClosedEntriesManager {
         List<RecentlyClosedWindow> recentlyClosedWindows = new ArrayList<>();
 
         for (InstanceInfo info : instanceInfoList) {
-            // Use lastAccessedTime as the closure time if a valid closureTime is not available.
-            long closureTime = info.closureTime > 0 ? info.closureTime : info.lastAccessedTime;
-            assert closureTime > 0 : "Expected a valid window closure time.";
+            assert info.closureTime > 0 : "Expected a valid window closure time.";
             recentlyClosedWindows.add(
                     new RecentlyClosedWindow(
-                            closureTime,
+                            info.closureTime,
                             info.instanceId,
                             info.url,
                             info.customTitle,
                             info.title,
                             info.tabCount));
         }
-
-        recentlyClosedWindows.sort(
-                (window1, window2) -> Long.compare(window2.getTimestamp(), window1.getTimestamp()));
         return recentlyClosedWindows;
     }
 

@@ -69,13 +69,11 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -275,7 +273,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             instanceType |= PersistedInstanceType.REGULAR;
         }
-        return getInstanceInfo(instanceType, /* includeDeleted= */ true);
+        List<InstanceInfo> instances = getInstanceInfo(instanceType, /* includeDeleted= */ true);
+        MultiWindowUtils.sortRecentlyClosedInstances(instances);
+        return instances;
     }
 
     private List<InstanceInfo> getInstanceInfo(
@@ -326,6 +326,16 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             }
 
             long lastAccessedTime = ChromeMultiInstancePersistentStore.readLastAccessedTime(i);
+            long persistedClosureTime = ChromeMultiInstancePersistentStore.readClosureTime(i);
+            long closureTime = persistedClosureTime;
+            if (includeDeleted) {
+                // Fall back to lastAccessedTime when closureTime is unavailable, and exclude
+                // instances without a valid timestamp.
+                closureTime = persistedClosureTime > 0 ? persistedClosureTime : lastAccessedTime;
+                if (closureTime <= 0) {
+                    continue;
+                }
+            }
             result.add(
                     new InstanceInfo(
                             i,
@@ -338,7 +348,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                             ChromeMultiInstancePersistentStore.readIncognitoTabCount(i),
                             ChromeMultiInstancePersistentStore.readIncognitoSelected(i),
                             lastAccessedTime,
-                            ChromeMultiInstancePersistentStore.readClosureTime(i)));
+                            closureTime));
         }
         return result;
     }
@@ -635,6 +645,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         ChromeMultiInstancePersistentStore.writeProfileType(instanceId, profileType);
         ChromeMultiInstancePersistentStore.writeMarkedForDeletion(
                 instanceId, /* markedForDeletion= */ false);
+        ChromeMultiInstancePersistentStore.clearClosureTime(instanceId);
         ChromeMultiInstancePersistentStore.writeIsRecoverable(instanceId, true);
         installTabModelObserver();
         Set<Integer> appTaskIds = MultiWindowUtils.getAllAppTaskIds(mActivity);
@@ -776,20 +787,16 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 RecentlyClosedEntriesManager.MAX_RECENTLY_CLOSED_TABS_AND_WINDOWS;
         if (numInactiveInstances > inactiveInstanceLimit
                 && mTabModelOrchestratorSupplier.get() != null) {
-            // Sort list by last closure time or last accessed time to ensure only the oldest
-            // inactive instances are closed.
+            // Sort list by last closure time (falling back to last accessed time, and breaking
+            // equal closure time ties by last accessed time) so only the oldest inactive instances
+            // are closed.
             inactiveInstances.sort(
-                    (id1, id2) -> {
-                        long time1 = ChromeMultiInstancePersistentStore.readClosureTime(id1);
-                        if (time1 <= 0) {
-                            time1 = ChromeMultiInstancePersistentStore.readLastAccessedTime(id1);
-                        }
-                        long time2 = ChromeMultiInstancePersistentStore.readClosureTime(id2);
-                        if (time2 <= 0) {
-                            time2 = ChromeMultiInstancePersistentStore.readLastAccessedTime(id2);
-                        }
-                        return Long.compare(time2, time1);
-                    });
+                    (id1, id2) ->
+                            MultiWindowUtils.compareRecentlyClosedTimestamps(
+                                    ChromeMultiInstancePersistentStore.readClosureTime(id1),
+                                    ChromeMultiInstancePersistentStore.readLastAccessedTime(id1),
+                                    ChromeMultiInstancePersistentStore.readClosureTime(id2),
+                                    ChromeMultiInstancePersistentStore.readLastAccessedTime(id2)));
             closeWindows(
                     inactiveInstances.subList(inactiveInstanceLimit, numInactiveInstances),
                     CloseWindowAppSource.RECENTLY_CLOSED_LIMIT_EXCEEDED);
@@ -928,7 +935,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             int taskId = ChromeMultiInstancePersistentStore.readTaskId(mInstanceId);
             closeWindow(mInstanceId, source, appTasksById.getOrDefault(taskId, null));
         }
-        notifyInstancesClosed(instanceIds, isPermanentClosureSource(source));
+        MultiWindowUtils.notifyInstancesClosed(instanceIds, isPermanentClosureSource(source));
     }
 
     private void closeWindow(
@@ -998,51 +1005,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     /**
-     * Notifies the Recent Tabs UI of instance closures. This method is expected to be called upon
-     * initial reception of a user, system or app initiated signal to close instances.
-     *
-     * @param instanceIds The list of ids of the instances that were closed.
-     * @param isPermanentDeletion Whether the instances are permanently deleted.
-     */
-    private void notifyInstancesClosed(List<Integer> instanceIds, boolean isPermanentDeletion) {
-        // Note that instance state (for e.g. taskId) may not be updated if a live activity for the
-        // closed instance was finished, because activity destruction is asynchronous.
-        // We will create an InstanceInfo synchronously with adequate information about the closed
-        // instance, without relying on completion of an asynchronous activity destruction that may
-        // be initiated during this time.
-        List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        for (int instanceId : instanceIds) {
-            // Do not update the Recent Tabs page if the closed window has no regular tabs.
-            if (!hasRestorableRegularTabs(instanceId)) {
-                continue;
-            }
-            InstanceInfo instanceInfo =
-                    new InstanceInfo(
-                            instanceId,
-                            /* taskId= */ INVALID_TASK_ID,
-                            InstanceInfo.Type.OTHER,
-                            assumeNonNull(
-                                    ChromeMultiInstancePersistentStore.readActiveTabUrl(
-                                            instanceId)),
-                            assumeNonNull(
-                                    ChromeMultiInstancePersistentStore.readActiveTabTitle(
-                                            instanceId)),
-                            ChromeMultiInstancePersistentStore.readCustomTitle(instanceId),
-                            ChromeMultiInstancePersistentStore.readNormalTabCount(instanceId),
-                            ChromeMultiInstancePersistentStore.readIncognitoTabCount(instanceId),
-                            ChromeMultiInstancePersistentStore.readIncognitoSelected(instanceId),
-                            ChromeMultiInstancePersistentStore.readLastAccessedTime(instanceId),
-                            ChromeMultiInstancePersistentStore.readClosureTime(instanceId));
-            instanceInfoList.add(instanceInfo);
-        }
-
-        if (!instanceInfoList.isEmpty()) {
-            RecentlyClosedEntriesManagerTrackerFactory.getInstance()
-                    .onInstancesClosed(instanceInfoList, isPermanentDeletion);
-        }
-    }
-
-    /**
      * Returns whether a window should be permanently deleted. If the closure is initiated by the
      * user, it usually means that the instance closure is a "soft closure" and should be preserved
      * for later restoration via surfaces (like Recent Tabs) or keyboard shortcuts.
@@ -1059,19 +1021,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 && source != CloseWindowAppSource.MENU;
     }
 
-    private static boolean hasRestorableRegularTabs(int instanceId) {
-        int normalTabCount = ChromeMultiInstancePersistentStore.readNormalTabCount(instanceId);
-
-        if (normalTabCount > 1) return true;
-        if (normalTabCount == 0) return false;
-
-        String activeUrl = ChromeMultiInstancePersistentStore.readActiveTabUrl(instanceId);
-        return !UrlUtilities.isNtpUrl(UrlFormatter.fixupUrl(activeUrl));
-    }
-
     private static boolean shouldPermanentlyDeleteWindow(
             int instanceId, @CloseWindowAppSource int source) {
-        return isPermanentClosureSource(source) || !hasRestorableRegularTabs(instanceId);
+        return isPermanentClosureSource(source)
+                || !MultiWindowUtils.hasRestorableRegularTabs(instanceId);
     }
 
     private Profile getProfile() {
@@ -1098,14 +1051,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // Tabs of activity destruction only if the activity is finishing, with the caveat that a
         // subsequent task kill will also not be reflected as an instance closure until the Recent
         // Tabs page is reopened.
-        boolean isPermanentDeletion = !hasRestorableRegularTabs(mInstanceId);
+        boolean isPermanentDeletion = !MultiWindowUtils.hasRestorableRegularTabs(mInstanceId);
         if (!isPermanentDeletion) {
             ChromeMultiInstancePersistentStore.writeClosureTime(mInstanceId);
         }
         if (!shouldKeepInstanceRecoverable(mInstanceId)) {
             ChromeMultiInstancePersistentStore.writeIsRecoverable(mInstanceId, false);
             // Notify Recent Tabs page that the instance is closing.
-            notifyInstancesClosed(Collections.singletonList(mInstanceId), isPermanentDeletion);
+            MultiWindowUtils.notifyInstancesClosed(
+                    Collections.singletonList(mInstanceId), isPermanentDeletion);
         }
 
         if (mInstanceId != INVALID_WINDOW_ID) {
@@ -1135,6 +1089,16 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // accurate instance state for the window that was truly accessed last.
         if (mInstanceId != INVALID_WINDOW_ID && isTopResumedActivity && !mActivity.isFinishing()) {
             ChromeMultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+        }
+    }
+
+    @Override
+    public void onStartWithNative() {
+        super.onStartWithNative();
+        // Clear any closure time written when the activity was previously stopped, since the
+        // activity is active again.
+        if (mInstanceId != INVALID_WINDOW_ID && !mActivity.isFinishing()) {
+            ChromeMultiInstancePersistentStore.clearClosureTime(mInstanceId);
         }
     }
 

@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -101,15 +102,26 @@ import java.util.Map;
         // these crashed windows may be confusing.
         if (hostActivity.isIncognitoWindow()) {
             Map<Integer, AppTask> appTasks = MultiWindowUtils.getAppTasksById(hostActivity);
+            long closureTime = TimeUtils.currentTimeMillis();
+            List<Integer> recentlyClosedWindowIds = new ArrayList<>();
             for (CrashRecoveryWindowInfo windowInfo : crashedWindows) {
                 int windowId = windowInfo.windowId;
                 if (windowId == hostActivity.getWindowId()) continue;
                 // Since recovery is cancelled, mark all windows as non-recoverable. Additionally,
                 // finish tasks for windows without any normal tabs to avoid keeping unusable tasks.
                 int taskId = ChromeMultiInstancePersistentStore.readTaskId(windowId);
-                cleanUpWindow(
-                        windowId,
-                        MultiWindowUtils.hasNoNormalTabs(windowId) ? appTasks.get(taskId) : null);
+                @Nullable AppTask task = appTasks.get(taskId);
+                cleanUpWindow(windowId, MultiWindowUtils.hasNoNormalTabs(windowId) ? task : null);
+                if (task == null && MultiWindowUtils.hasRestorableRegularTabs(windowId)) {
+                    // Soft-close regular windows without live OS tasks so they remain restorable
+                    // from Recent Tabs instead of staying orphaned active entries.
+                    ChromeMultiInstancePersistentStore.writeClosureTime(windowId, closureTime);
+                    recentlyClosedWindowIds.add(windowId);
+                }
+            }
+            if (!recentlyClosedWindowIds.isEmpty()) {
+                MultiWindowUtils.notifyInstancesClosed(
+                        recentlyClosedWindowIds, /* isPermanentDeletion= */ false);
             }
             return false;
         }
@@ -329,15 +341,28 @@ import java.util.Map;
                     public void onDismiss(
                             PropertyModel model, @DialogDismissalCause int dismissalCause) {
                         if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
-                            // When the recovery dialog is dismissed, cleanup recovery state for
-                            // non-recovered windows since this data will now be stale.
+                            // When the recovery dialog is dismissed without opting in, clean up
+                            // recovery state for all unrecovered windows and soft-close those with
+                            // restorable regular tabs so they remain restorable from Recent Tabs.
+                            long closureTime = TimeUtils.currentTimeMillis();
+                            List<Integer> recentlyClosedWindowIds = new ArrayList<>();
                             for (var windowList : List.of(mNonVisibleWindows, mVisibleWindows)) {
                                 for (CrashRecoveryWindowInfo windowInfo : windowList) {
                                     int windowId = windowInfo.windowId;
                                     int taskId =
                                             ChromeMultiInstancePersistentStore.readTaskId(windowId);
                                     cleanUpWindow(windowId, appTasks.get(taskId));
+                                    if (!MultiWindowUtils.hasRestorableRegularTabs(windowId)) {
+                                        continue;
+                                    }
+                                    ChromeMultiInstancePersistentStore.writeClosureTime(
+                                            windowId, closureTime);
+                                    recentlyClosedWindowIds.add(windowId);
                                 }
+                            }
+                            if (!recentlyClosedWindowIds.isEmpty()) {
+                                MultiWindowUtils.notifyInstancesClosed(
+                                        recentlyClosedWindowIds, /* isPermanentDeletion= */ false);
                             }
                             resetState();
                         }

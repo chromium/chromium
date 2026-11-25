@@ -247,7 +247,12 @@ public abstract class MultiInstanceManager {
     /**
      * @return A list of {@link InstanceInfo} structs for inactive instances, including currently
      *     unusable instances that are marked for deletion. This excludes {@link
-     *     PersistedInstanceType#OFF_THE_RECORD} type instances.
+     *     PersistedInstanceType#OFF_THE_RECORD} type instances. Returned {@link InstanceInfo}
+     *     entries have a valid resolved {@link InstanceInfo#closureTime} ({@code closureTime > 0},
+     *     falling back to {@link InstanceInfo#lastAccessedTime} when persisted {@code closureTime}
+     *     is unavailable and excluding instances where both are {@code <= 0}). Entries are sorted
+     *     by {@link InstanceInfo#closureTime} descending, breaking ties by {@link
+     *     InstanceInfo#lastAccessedTime} descending.
      */
     public List<InstanceInfo> getRecentlyClosedInstances() {
         return Collections.emptyList();

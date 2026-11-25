@@ -56,15 +56,11 @@ public final class RecentlyClosedEntriesManagerTrackerImpl
             List<InstanceInfo> instanceInfoList, boolean isPermanentDeletion) {
         List<RecentlyClosedWindow> windows = new ArrayList<>();
         for (InstanceInfo instanceInfo : instanceInfoList) {
-            // Use lastAccessedTime as the closure time if a valid closureTime is not available.
-            long closureTime =
-                    instanceInfo.closureTime > 0
-                            ? instanceInfo.closureTime
-                            : instanceInfo.lastAccessedTime;
-            assert isPermanentDeletion || closureTime > 0 : "Expected a valid window closure time.";
+            assert isPermanentDeletion || instanceInfo.closureTime > 0
+                    : "Expected a valid window closure time.";
             RecentlyClosedWindow window =
                     new RecentlyClosedWindow(
-                            closureTime,
+                            instanceInfo.closureTime,
                             instanceInfo.instanceId,
                             instanceInfo.url,
                             instanceInfo.customTitle,

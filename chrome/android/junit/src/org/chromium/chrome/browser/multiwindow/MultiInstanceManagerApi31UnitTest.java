@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
@@ -90,6 +91,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.InstanceData;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.MultiInstanceData;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.AllocatedIdInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
@@ -969,6 +971,145 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    public void testGetRecentlyClosedInstances_sortsByClosureTimeDescending() {
+        // Create three inactive regular instances alongside the current active instance and assign
+        // explicit closure times in a different order from both instance IDs and lastAccessedTime.
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        mFakeTimeTestRule.advanceMillis(10);
+        int id1 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57);
+        mFakeTimeTestRule.advanceMillis(10);
+        int id2 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58);
+        mFakeTimeTestRule.advanceMillis(10);
+        int id3 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask59);
+        removeTaskOnRecentsScreen(mActivityTask57);
+        removeTaskOnRecentsScreen(mActivityTask58);
+        removeTaskOnRecentsScreen(mActivityTask59);
+
+        long baseClosureTime = ChromeMultiInstancePersistentStore.readLastAccessedTime(id3);
+        long closureTime1 = baseClosureTime + 300L;
+        long closureTime2 = baseClosureTime + 500L;
+        long closureTime3 = baseClosureTime + 100L;
+        ChromeMultiInstancePersistentStore.writeClosureTime(id1, closureTime1);
+        ChromeMultiInstancePersistentStore.writeClosureTime(id2, closureTime2);
+        ChromeMultiInstancePersistentStore.writeClosureTime(id3, closureTime3);
+
+        // Verify that getRecentlyClosedInstances() sorts entries by closureTime descending.
+        List<InstanceInfo> closedInstances = mMultiInstanceManager.getRecentlyClosedInstances();
+        assertEquals(
+                List.of(id2, id1, id3),
+                closedInstances.stream().map(info -> info.instanceId).collect(Collectors.toList()));
+        assertEquals(closureTime2, closedInstances.get(0).closureTime);
+        assertEquals(closureTime1, closedInstances.get(1).closureTime);
+        assertEquals(closureTime3, closedInstances.get(2).closureTime);
+    }
+
+    @Test
+    public void testGetRecentlyClosedInstances_fallsBackToLastAccessedTimeWhenClosureTimeZero() {
+        // Create three inactive regular instances where only id1 has a persisted closureTime while
+        // id2 and id3 have closureTime == 0 and rely on lastAccessedTime fallback.
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        mFakeTimeTestRule.advanceMillis(100);
+        int id1 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57);
+        long lastAccessed1 = ChromeMultiInstancePersistentStore.readLastAccessedTime(id1);
+        mFakeTimeTestRule.advanceMillis(100);
+        int id2 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58);
+        long lastAccessed2 = ChromeMultiInstancePersistentStore.readLastAccessedTime(id2);
+        mFakeTimeTestRule.advanceMillis(100);
+        int id3 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask59);
+        long lastAccessed3 = ChromeMultiInstancePersistentStore.readLastAccessedTime(id3);
+        removeTaskOnRecentsScreen(mActivityTask57);
+        removeTaskOnRecentsScreen(mActivityTask58);
+        removeTaskOnRecentsScreen(mActivityTask59);
+
+        long explicitClosureTime1 = lastAccessed1 + 150L;
+        ChromeMultiInstancePersistentStore.writeClosureTime(id1, explicitClosureTime1);
+
+        // Verify that non-deleted getInstanceInfo() still exposes raw zero closureTime values.
+        List<InstanceInfo> rawInactive =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE);
+        assertTrue(
+                rawInactive.stream()
+                        .anyMatch(info -> info.instanceId == id2 && info.closureTime == 0));
+
+        // Verify that getRecentlyClosedInstances() resolves closureTime from lastAccessedTime when
+        // persisted closureTime is 0 and sorts by the resolved closureTime descending.
+        List<InstanceInfo> closedInstances = mMultiInstanceManager.getRecentlyClosedInstances();
+        assertEquals(
+                List.of(id3, id1, id2),
+                closedInstances.stream().map(info -> info.instanceId).collect(Collectors.toList()));
+        assertEquals(lastAccessed3, closedInstances.get(0).closureTime);
+        assertEquals(explicitClosureTime1, closedInstances.get(1).closureTime);
+        assertEquals(lastAccessed2, closedInstances.get(2).closureTime);
+    }
+
+    @Test
+    public void testGetRecentlyClosedInstances_skipsInstancesWithZeroClosureAndLastAccessedTimes() {
+        // Persist one valid inactive instance (lastAccessedTime > 0, closureTime == 0) and one
+        // restorable entry whose closureTime and lastAccessedTime are both 0 during early startup
+        // (before TabModelOrchestrator initialization defers expired-instance deletion).
+        int validId = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57);
+        removeTaskOnRecentsScreen(mActivityTask57);
+
+        int zeroTimestampsId = INSTANCE_ID_2;
+        putZeroTimestampInstance(zeroTimestampsId, URL2.getSpec());
+        assertEquals(0, ChromeMultiInstancePersistentStore.readLastAccessedTime(zeroTimestampsId));
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(zeroTimestampsId));
+
+        SettableMonotonicObservableSupplier<TabModelOrchestrator> uninitializedOrchestrator =
+                ObservableSuppliers.createMonotonic();
+        var earlyStartupManager =
+                new TestMultiInstanceManagerApi31(
+                        mCurrentActivity,
+                        uninitializedOrchestrator,
+                        mMultiWindowModeStateDispatcher,
+                        mActivityLifecycleDispatcher,
+                        mModalDialogManagerSupplier,
+                        mMenuOrKeyboardActionController,
+                        mDesktopWindowStateManagerSupplier);
+
+        // Verify that the zero-timestamp entry remains persisted yet is excluded from the returned
+        // recently closed instances list.
+        List<InstanceInfo> closedInstances = earlyStartupManager.getRecentlyClosedInstances();
+        assertTrue(
+                ChromeMultiInstancePersistentStore.readAllInstanceIds().contains(zeroTimestampsId));
+        assertEquals(1, closedInstances.size());
+        assertEquals(validId, closedInstances.get(0).instanceId);
+        assertTrue(closedInstances.get(0).closureTime > 0);
+    }
+
+    @Test
+    public void
+            testGetRecentlyClosedInstances_equalClosureTime_sortsByLastAccessedTimeDescending() {
+        // Create three inactive regular instances with ascending lastAccessedTime values and a
+        // shared batch closureTime.
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        mFakeTimeTestRule.advanceMillis(50);
+        int id1 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57);
+        mFakeTimeTestRule.advanceMillis(50);
+        int id2 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58);
+        mFakeTimeTestRule.advanceMillis(50);
+        int id3 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask59);
+        removeTaskOnRecentsScreen(mActivityTask57);
+        removeTaskOnRecentsScreen(mActivityTask58);
+        removeTaskOnRecentsScreen(mActivityTask59);
+
+        long sharedClosureTime =
+                ChromeMultiInstancePersistentStore.readLastAccessedTime(id3) + 500L;
+        ChromeMultiInstancePersistentStore.writeClosureTime(id1, sharedClosureTime);
+        ChromeMultiInstancePersistentStore.writeClosureTime(id2, sharedClosureTime);
+        ChromeMultiInstancePersistentStore.writeClosureTime(id3, sharedClosureTime);
+
+        // Verify that equal closureTime ties are broken by lastAccessedTime descending.
+        List<InstanceInfo> closedInstances = mMultiInstanceManager.getRecentlyClosedInstances();
+        assertEquals(
+                List.of(id3, id2, id1),
+                closedInstances.stream().map(info -> info.instanceId).collect(Collectors.toList()));
+    }
+
+    @Test
     public void testCloseWindows_OnInstancesClosedInvoked() {
         // Setup 3 instances.
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
@@ -1056,6 +1197,95 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify the window that contains only 1 NTP is permanently closed.
         assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+    }
+
+    @Test
+    public void
+            testCloseWindows_OnInstancesClosedInvoked_EqualClosureTimeBatchSortsByLastAccessedTimeAndSkipsZeroTimestamps() {
+        // Initialize three active regular windows with ascending lastAccessedTime values plus a
+        // restorable entry whose closureTime and lastAccessedTime are both 0.
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+        int id0 = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(id0, TASK_ID_56, SupportedProfileType.MIXED);
+        mFakeTimeTestRule.advanceMillis(50);
+        int id1 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57);
+        mFakeTimeTestRule.advanceMillis(50);
+        int id2 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58);
+
+        int zeroTimestampsId = 3;
+        putZeroTimestampInstance(zeroTimestampsId, URL3.getSpec());
+        assertEquals(2, ChromeMultiInstancePersistentStore.readNormalTabCount(zeroTimestampsId));
+        assertEquals(0, ChromeMultiInstancePersistentStore.readLastAccessedTime(zeroTimestampsId));
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(zeroTimestampsId));
+
+        // Soft-close all four windows in ascending ID order at a single shared timestamp.
+        mFakeTimeTestRule.advanceMillis(100);
+        mMultiInstanceManager.closeWindows(
+                List.of(id0, id1, id2, zeroTimestampsId), CloseWindowAppSource.WINDOW_MANAGER);
+
+        // Verify that #onInstancesClosed skips the zero-timestamp entry and orders the remaining
+        // batch by lastAccessedTime descending when closureTime values are equal.
+        verify(mRecentlyClosedTracker)
+                .onInstancesClosed(mInstanceInfoListCaptor.capture(), eq(false));
+        List<InstanceInfo> notified = mInstanceInfoListCaptor.getValue();
+        assertEquals(
+                List.of(id2, id1, id0),
+                notified.stream().map(info -> info.instanceId).collect(Collectors.toList()));
+        long expectedClosureTime = ChromeMultiInstancePersistentStore.readClosureTime(id2);
+        assertTrue(expectedClosureTime > 0);
+        for (InstanceInfo info : notified) {
+            assertEquals(expectedClosureTime, info.closureTime);
+        }
+    }
+
+    @Test
+    public void
+            testCloseWindows_OnInstancesClosedInvoked_DistinctClosureTimesSortedDescendingAndPermanentClosureHandled() {
+        // Initialize regular windows with ascending lastAccessedTime (id0 < id1 < id2), and
+        // advance fake time as each non-current window finishes so closureTime order is
+        // id1 < id2 < id0 (since current window id0 closes last).
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+        int id0 = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(id0, TASK_ID_56, SupportedProfileType.MIXED);
+        mFakeTimeTestRule.advanceMillis(50);
+        int id1 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57);
+        mFakeTimeTestRule.advanceMillis(50);
+        int id2 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58);
+        mFakeTimeTestRule.advanceMillis(50);
+        int id3 = allocInstanceIndex(PASSED_ID_INVALID, mActivityTask59);
+
+        List<Activity> timeAdvancingSink = spy(new ArrayList<>());
+        doAnswer(
+                        invocation -> {
+                            mFakeTimeTestRule.advanceMillis(10);
+                            return invocation.callRealMethod();
+                        })
+                .when(timeAdvancingSink)
+                .add(any());
+        mActivityTask57.mFinishedActivitiesSink = timeAdvancingSink;
+        mActivityTask58.mFinishedActivitiesSink = timeAdvancingSink;
+
+        mFakeTimeTestRule.advanceMillis(100);
+        mMultiInstanceManager.closeWindows(
+                List.of(id0, id1, id2), CloseWindowAppSource.WINDOW_MANAGER);
+
+        // Verify that #onInstancesClosed sorts by closureTime descending rather than input order
+        // or lastAccessedTime alone.
+        verify(mRecentlyClosedTracker)
+                .onInstancesClosed(mInstanceInfoListCaptor.capture(), eq(false));
+        List<InstanceInfo> notified = mInstanceInfoListCaptor.getValue();
+        assertEquals(
+                List.of(id0, id2, id1),
+                notified.stream().map(info -> info.instanceId).collect(Collectors.toList()));
+        assertTrue(notified.get(0).closureTime > notified.get(1).closureTime);
+        assertTrue(notified.get(1).closureTime > notified.get(2).closureTime);
+
+        // Permanently closing id3 removes its persisted state without emitting a non-permanent
+        // closure notification.
+        reset(mRecentlyClosedTracker);
+        mMultiInstanceManager.closeWindows(List.of(id3), CloseWindowAppSource.OTHER);
+        assertFalse(ChromeMultiInstancePersistentStore.readAllInstanceIds().contains(id3));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), eq(false));
     }
 
     @Test
@@ -1411,6 +1641,39 @@ public class MultiInstanceManagerApi31UnitTest {
                     "Instance " + (i + 100) + " should be among closed instances.",
                     closedInstances.contains(i + 100));
         }
+    }
+
+    @Test
+    public void
+            testGetInstanceInfo_closesInactiveInstancesExceedingLimit_equalClosureTimeTieBreak() {
+        // Create 30 inactive instances in ascending lastAccessedTime order (100 is oldest, 129 is
+        // most recent), then assign the exact same batch closureTime to all 30 instances.
+        for (int i = 0; i < 30; i++) {
+            int instanceId = i + 100;
+            MultiWindowTestUtils.createInstance(
+                    instanceId,
+                    "https://url" + instanceId + ".com",
+                    /* tabCount= */ 1,
+                    INVALID_TASK_ID);
+            mFakeTimeTestRule.advanceMillis(1);
+        }
+        long sharedClosureTime =
+                ChromeMultiInstancePersistentStore.readLastAccessedTime(/* instanceId= */ 129)
+                        + 1000L;
+        for (int i = 0; i < 30; i++) {
+            ChromeMultiInstancePersistentStore.writeClosureTime(i + 100, sharedClosureTime);
+        }
+
+        // Trigger inactive instance limit cleanup via getInstanceInfo().
+        mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
+
+        // Verify that equal-closureTime ties are broken by lastAccessedTime DESC so the 5 least
+        // recently accessed instances (100-104) are closed rather than the newest ones (125-129).
+        verify(mMultiInstanceManager)
+                .closeWindows(
+                        mIntegerListCaptor.capture(),
+                        eq(CloseWindowAppSource.RECENTLY_CLOSED_LIMIT_EXCEEDED));
+        assertEquals(List.of(104, 103, 102, 101, 100), mIntegerListCaptor.getValue());
     }
 
     @Test
@@ -2526,6 +2789,59 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    public void testOnStartWithNative_clearsClosureTimeForRestartedInstanceOnly() {
+        // Initialize two active instances and stop both so each persists a fallback closureTime.
+        var manager1 = createTestMultiInstanceManager(mActivityTask57);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        mMultiInstanceManager.initialize(
+                /* instanceId= */ 0, TASK_ID_56, SupportedProfileType.MIXED);
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        manager1.initialize(/* instanceId= */ 1, TASK_ID_57, SupportedProfileType.MIXED);
+
+        mFakeTimeTestRule.advanceMillis(100);
+        mMultiInstanceManager.onStopWithNative();
+        manager1.onStopWithNative();
+        long stoppedClosureTime0 =
+                ChromeMultiInstancePersistentStore.readClosureTime(/* instanceId= */ 0);
+        long stoppedClosureTime1 =
+                ChromeMultiInstancePersistentStore.readClosureTime(/* instanceId= */ 1);
+        assertTrue(stoppedClosureTime0 > 0);
+        assertTrue(stoppedClosureTime1 > 0);
+
+        // Restart instance 0 while leaving instance 1 stopped without restarting.
+        mMultiInstanceManager.onStartWithNative();
+
+        // Verify that the restarted instance clears closureTime while the stopped/unrestarted
+        // instance retains the closureTime written by onStopWithNative().
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(/* instanceId= */ 0));
+        assertEquals(
+                stoppedClosureTime1,
+                ChromeMultiInstancePersistentStore.readClosureTime(/* instanceId= */ 1));
+    }
+
+    @Test
+    public void testOnStartWithNative_whenFinishing_preservesClosureTime() {
+        // Initialize an instance, stop it to record closureTime, and mark its activity finishing.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        mMultiInstanceManager.initialize(
+                /* instanceId= */ 0, TASK_ID_56, SupportedProfileType.MIXED);
+        mFakeTimeTestRule.advanceMillis(100);
+        mMultiInstanceManager.onStopWithNative();
+        long stoppedClosureTime =
+                ChromeMultiInstancePersistentStore.readClosureTime(/* instanceId= */ 0);
+        assertTrue(stoppedClosureTime > 0);
+        mActivityTask56.finish();
+
+        // Simulate onStartWithNative() firing while the activity is finishing.
+        mMultiInstanceManager.onStartWithNative();
+
+        // Verify that closureTime is preserved when the activity is finishing.
+        assertEquals(
+                stoppedClosureTime,
+                ChromeMultiInstancePersistentStore.readClosureTime(/* instanceId= */ 0));
+    }
+
+    @Test
     public void testOnDestroy_notifiesInstancesClosed() {
         var manager1 = createTestMultiInstanceManager(mTabbedActivityTask62);
         var manager2 = createTestMultiInstanceManager(mTabbedActivityTask63);
@@ -2988,6 +3304,20 @@ public class MultiInstanceManagerApi31UnitTest {
                         .contains(MultiInstanceManager.INVALID_WINDOW_ID));
     }
 
+    @Test
+    public void testInitialize_clearsPriorClosureTime() {
+        // Allocate an instance that already has a persisted closureTime from a previous closure.
+        int instanceId = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        ChromeMultiInstancePersistentStore.writeClosureTime(instanceId, /* closureTime= */ 5000L);
+        assertEquals(5000L, ChromeMultiInstancePersistentStore.readClosureTime(instanceId));
+
+        // Initialize the manager for the restored instance.
+        mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
+
+        // Verify that initialize() clears the stale closureTime.
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(instanceId));
+    }
+
     private TestActivity createActivity(int taskId) {
         TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
         activity.mTaskId = taskId;
@@ -3024,5 +3354,19 @@ public class MultiInstanceManagerApi31UnitTest {
                 instanceId, /* normalTabCount= */ 1, /* incognitoTabCount= */ 0);
         MultiWindowUtils.setActivityByWindowIdForTesting(instanceId, activity);
         return manager;
+    }
+
+    private static void putZeroTimestampInstance(int instanceId, String activeTabUrl) {
+        ChromeMultiInstancePersistentStore.sData =
+                ChromeMultiInstancePersistentStore.sData.toBuilder()
+                        .putInstances(
+                                instanceId,
+                                InstanceData.newBuilder()
+                                        .setActiveTabUrl(activeTabUrl)
+                                        .setActiveTabTitle("")
+                                        .setProfileType(SupportedProfileType.REGULAR)
+                                        .setNormalTabCount(2)
+                                        .build())
+                        .build();
     }
 }

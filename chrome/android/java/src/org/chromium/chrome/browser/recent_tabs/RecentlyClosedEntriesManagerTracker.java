@@ -44,7 +44,11 @@ public interface RecentlyClosedEntriesManagerTracker {
      * Closure can be system-initiated (for e.g. low-memory kill), app-initiated (for e.g. instance
      * retention expiration) or user-initiated (for e.g. window manager closure).
      *
-     * @param instanceInfo The list of {@link InstanceInfo} for the closed instances.
+     * @param instanceInfo The list of {@link InstanceInfo} for the closed instances. When {@code
+     *     isPermanentDeletion} is {@code false}, entries must have a valid resolved {@link
+     *     InstanceInfo#closureTime} greater than 0 and be ordered by {@link
+     *     InstanceInfo#closureTime} descending, breaking ties by {@link
+     *     InstanceInfo#lastAccessedTime} descending.
      * @param isPermanentDeletion Whether the closed instance is permanently deleted.
      */
     void onInstancesClosed(List<InstanceInfo> instanceInfo, boolean isPermanentDeletion);

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
@@ -33,6 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -43,6 +45,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -59,6 +62,8 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntriesManagerTracker;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -91,8 +96,12 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     private static final int HOST_WINDOW_ID = 0;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private RecentlyClosedEntriesManagerTracker mRecentlyClosedTracker;
+
+    @Captor private ArgumentCaptor<List<InstanceInfo>> mClosedWindowsCaptor;
 
     private TestChromeTabbedActivity mHostActivity;
     private TabbedCrashRecoveryDelegate mDelegate;
@@ -105,6 +114,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         TabbedCrashRecoveryDelegate.setInstanceForTesting(null);
         ChromeMultiInstancePersistentStore.ensureInitialized();
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        RecentlyClosedEntriesManagerTrackerFactory.setInstanceForTesting(mRecentlyClosedTracker);
         mDelegate = TabbedCrashRecoveryDelegate.getInstance();
 
         mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic();
@@ -174,27 +184,28 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     @Test
     public void
             testMaybeShowCrashRecoveryDialog_singleWindowNotHostWithLiveTask_skipsRecoveryPrompt() {
-        // Setup: Clear host window from crashed windows.
+        // Simulate a single non-host crashed window that already has a live OS task.
         mCrashedWindows.clear();
         ChromeMultiInstancePersistentStore.resetForTesting();
         ChromeMultiInstancePersistentStore.ensureInitialized();
-        // Setup: Only 1 crashed window, and it is NOT the host window (say window 1).
-        setupCrashedWindow(1, /* isVisible= */ true);
-
-        // Setup: Window 1 has a live task.
+        setupCrashedWindow(/* windowId= */ 1, /* isVisible= */ true);
         setupPreRecoveryAppTasks(HOST_WINDOW_ID, 1);
-
         writeCrashExitReasonToPrefs();
 
-        // Act.
+        // Attempt to initialize metadata and show the crash recovery dialog.
         mDelegate.initializeCrashRecoveryMetadata();
         boolean shown =
                 mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
 
-        // Verify.
+        // Verify the prompt is skipped and window 1 stays active without being soft-closed.
         assertFalse(shown);
         verifyNoInteractions(mModalDialogManager);
+        verify(mPreRecoveryAppTasks.get(1), never()).finishAndRemoveTask();
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(1));
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(1));
+        assertEquals(1, ChromeMultiInstancePersistentStore.readTaskId(1));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), anyBoolean());
     }
 
     @Test
@@ -436,7 +447,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     @Test
     public void
             testMaybeShowCrashRecoveryDialog_allOtherWindowsHaveLiveTasks_skipsRecoveryPrompt() {
-        // Setup.
+        // Simulate non-multi-window mode where all non-host crashed windows already have live
+        // tasks.
         setupOtherCrashedWindows(
                 /* numNonVisibleWindows= */ 1,
                 /* numDefaultDisplayWindows= */ 1,
@@ -449,17 +461,26 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                         .expectIntRecord("Android.MultiWindow.CrashRecoveryWindowCount", 3)
                         .build();
 
-        // Act.
+        // Initialize crash recovery metadata and attempt to show the prompt.
         mDelegate.initializeCrashRecoveryMetadata();
         boolean shown =
                 mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
 
-        // Verify.
+        // Verify the dialog is skipped and live tasks remain active without soft-closure.
         assertFalse(shown);
         verifyNoInteractions(mModalDialogManager);
         initWatcher.assertExpected();
+        verify(mPreRecoveryAppTasks.get(1), never()).finishAndRemoveTask();
+        verify(mPreRecoveryAppTasks.get(2), never()).finishAndRemoveTask();
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(2));
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(1));
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(2));
+        assertEquals(1, ChromeMultiInstancePersistentStore.readTaskId(1));
+        assertEquals(2, ChromeMultiInstancePersistentStore.readTaskId(2));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), anyBoolean());
     }
 
     @Test
@@ -699,12 +720,11 @@ public class TabbedCrashRecoveryDelegateUnitTest {
 
     @Test
     public void testShowRecoveryDialog_userOptIn() {
-        // Setup: 1 host + 1 other window = 2 total crashed windows.
+        // Simulate 1 host window and 1 recoverable window without a live task so the dialog shows.
         setupOtherCrashedWindows(
                 /* numNonVisibleWindows= */ 0,
                 /* numDefaultDisplayWindows= */ 1,
                 /* numNonDefaultDisplayWindows= */ 0);
-        // windowId=1 does NOT have a task, so dialog will be shown.
         setupPreRecoveryAppTasks(HOST_WINDOW_ID);
         var userActionTester = new UserActionTester();
 
@@ -717,7 +737,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         PropertyModel model = modelCaptor.getValue();
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
 
-        // Verify: Positive button text is correctly set.
+        // Verify the positive button text and dialog-shown action are recorded.
         assertEquals(
                 mHostActivity.getString(R.string.crash_recovery_dialog_positive_button_text),
                 model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
@@ -727,16 +747,20 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                         .getActions()
                         .contains("Android.MultiWindow.CrashRecoveryDialogShown"));
 
-        // Act: Simulate positive button click.
+        // Click the positive button to opt into restoring crashed windows.
         controller.onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
+        controller.onDismiss(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
 
-        // Verify: Windows are restored.
+        // Verify windows are restored without soft-closing them into Recent Tabs.
         assertNotNull(Shadows.shadowOf(mHostActivity).getNextStartedActivity());
         assertTrue(
                 userActionTester.getActions().contains("Android.MultiWindow.CrashRecoveryOptIn"));
         verify(mModalDialogManager)
                 .dismissDialog(
                         any(PropertyModel.class), eq(DialogDismissalCause.POSITIVE_BUTTON_CLICKED));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(1));
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(1));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), anyBoolean());
 
         userActionTester.tearDown();
     }
@@ -777,12 +801,18 @@ public class TabbedCrashRecoveryDelegateUnitTest {
 
     @Test
     public void testShowRecoveryDialog_dismissalCleanup() {
-        // Setup: windowId=1 has NO task initially, so dialog is shown.
+        // Simulate 1 older non-visible crashed window without a live task (populated metadata) and
+        // 1 more recently accessed visible crashed window with a live task (unset active tab
+        // URL/title to verify empty string coalescing).
         setupOtherCrashedWindows(
-                /* numNonVisibleWindows= */ 0,
-                /* numDefaultDisplayWindows= */ 2,
-                /* numNonDefaultDisplayWindows= */ 0); // windows 1, 2.
-        setupPreRecoveryAppTasks(HOST_WINDOW_ID, 2); // window 2 has a task, window 1 doesn't.
+                /* numNonVisibleWindows= */ 1,
+                /* numDefaultDisplayWindows= */ 1,
+                /* numNonDefaultDisplayWindows= */ 0);
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(
+                /* instanceId= */ 1, "https://one.example.com");
+        ChromeMultiInstancePersistentStore.writeActiveTabTitle(/* instanceId= */ 1, "One");
+        ChromeMultiInstancePersistentStore.writeCustomTitle(/* instanceId= */ 1, "Custom One");
+        setupPreRecoveryAppTasks(HOST_WINDOW_ID, 2);
         var userActionTester = new UserActionTester();
 
         setupAndShowCrashRecoveryDialog();
@@ -797,16 +827,49 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                         .getActions()
                         .contains("Android.MultiWindow.CrashRecoveryDialogShown"));
 
-        // Act: Simulate dismissal (e.g., via back button).
+        // Dismiss the recovery dialog without opting in (e.g. via back button).
+        mFakeTimeTestRule.advanceMillis(100);
         controller.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
-        // Verify: State is cleaned up for window 1 and 2.
+        // Verify both non-visible and visible windows are batch soft-closed with one shared
+        // closureTime, without marking for deletion, and synced to Recent Tabs sorted by
+        // lastAccessedTime descending.
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(2));
+        long closureTime = ChromeMultiInstancePersistentStore.readClosureTime(1);
+        assertTrue(closureTime > 0);
+        assertEquals(closureTime, ChromeMultiInstancePersistentStore.readClosureTime(2));
 
-        // Window 2 had a live task, verify it was finished.
+        // Verify window 2's surviving OS task is finished and removed.
         AppTask liveTask2 = mPreRecoveryAppTasks.get(1);
         verify(liveTask2).finishAndRemoveTask();
+
+        verify(mRecentlyClosedTracker).onInstancesClosed(mClosedWindowsCaptor.capture(), eq(false));
+        List<InstanceInfo> closedWindows = mClosedWindowsCaptor.getValue();
+        assertEquals(2, closedWindows.size());
+
+        InstanceInfo info2 = closedWindows.get(0);
+        assertEquals(2, info2.instanceId);
+        assertEquals(MultiInstanceManager.INVALID_TASK_ID, info2.taskId);
+        assertEquals(InstanceInfo.Type.OTHER, info2.type);
+        assertEquals("", info2.url);
+        assertEquals("", info2.title);
+        assertNull(info2.customTitle);
+        assertEquals(1, info2.tabCount);
+        assertEquals(closureTime, info2.closureTime);
+
+        InstanceInfo info1 = closedWindows.get(1);
+        assertEquals(1, info1.instanceId);
+        assertEquals(MultiInstanceManager.INVALID_TASK_ID, info1.taskId);
+        assertEquals(InstanceInfo.Type.OTHER, info1.type);
+        assertEquals("https://one.example.com", info1.url);
+        assertEquals("One", info1.title);
+        assertEquals("Custom One", info1.customTitle);
+        assertEquals(1, info1.tabCount);
+        assertEquals(closureTime, info1.closureTime);
+        assertTrue(info2.lastAccessedTime > info1.lastAccessedTime);
 
         assertStateReset();
         userActionTester.tearDown();
@@ -814,9 +877,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
 
     @Test
     public void testShowRecoveryDialog_dismissalCleanup_withEmptyCrashedWindow() {
-        // Setup: windowId=1 has NO task initially, so dialog is shown (it is a regular, non-empty
-        // window).
-        // Setup: windowId=2 is empty (0 normal, 0 incognito tabs), and has a task.
+        // Simulate recoverable window 1 without a task and empty window 2 with a live task.
         setupCrashedWindow(
                 /* windowId= */ 1,
                 /* normalTabCount= */ 1,
@@ -829,40 +890,95 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                 /* incognitoTabCount= */ 0,
                 /* isVisible= */ true,
                 SupportedProfileType.REGULAR);
-        setupPreRecoveryAppTasks(
-                HOST_WINDOW_ID, 2); // HOST and window 2 have tasks, window 1 doesn't.
+        setupPreRecoveryAppTasks(HOST_WINDOW_ID, 2);
         var userActionTester = new UserActionTester();
 
-        // Act: call maybeShowCrashRecoveryDialog. This should show the dialog (because window 1 is
-        // recoverable).
-        // It will also immediately clean up window 2 (empty window).
+        // Show the crash recovery dialog, which immediately cleans up empty window 2.
         setupAndShowCrashRecoveryDialog();
 
-        // Verify: Window 2 task was finished during dialog presentation setup.
-        AppTask liveTask2 = mPreRecoveryAppTasks.get(1); // Index 1 is window 2.
+        // Verify empty window 2 had its task finished and recoverability cleared.
+        AppTask liveTask2 = mPreRecoveryAppTasks.get(1);
         verify(liveTask2).finishAndRemoveTask();
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
 
         ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManager).showDialog(modelCaptor.capture(), anyInt());
         PropertyModel model = modelCaptor.getValue();
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
 
-        // Act: Simulate dismissal of the dialog (Cancel).
+        // Dismiss the dialog without opting in.
         controller.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
-        // Verify: Window 1 (which was pending recovery) is marked non-recoverable.
+        // Verify only regular window 1 is soft-closed and reported to Recent Tabs, while window 2's
+        // task is not finished a second time.
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
-
-        // Verify: Window 2's task is NOT finished again (it was only finished once during setup).
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(1));
+        assertTrue(ChromeMultiInstancePersistentStore.readClosureTime(1) > 0);
         verify(liveTask2, times(1)).finishAndRemoveTask();
+
+        verify(mRecentlyClosedTracker).onInstancesClosed(mClosedWindowsCaptor.capture(), eq(false));
+        List<InstanceInfo> closedWindows = mClosedWindowsCaptor.getValue();
+        assertEquals(1, closedWindows.size());
+        assertEquals(1, closedWindows.get(0).instanceId);
 
         assertStateReset();
         userActionTester.tearDown();
     }
 
     @Test
+    public void testShowRecoveryDialog_dismissalCleanup_withSingleNtpCrashedWindow() {
+        // Simulate an older regular crashed window (1) and a more recently accessed single-NTP
+        // crashed window (2) with a live task.
+        setupCrashedWindow(
+                /* windowId= */ 1,
+                /* normalTabCount= */ 1,
+                /* incognitoTabCount= */ 0,
+                /* isVisible= */ true,
+                SupportedProfileType.REGULAR);
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(
+                /* instanceId= */ 1, "https://one.example.com");
+        setupCrashedWindow(
+                /* windowId= */ 2,
+                /* normalTabCount= */ 1,
+                /* incognitoTabCount= */ 0,
+                /* isVisible= */ true,
+                SupportedProfileType.REGULAR);
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(
+                /* instanceId= */ 2, "chrome-native://newtab/");
+        setupPreRecoveryAppTasks(HOST_WINDOW_ID, 2);
+
+        // Show the crash recovery dialog and verify single-NTP window 2 remains eligible for
+        // recovery until the user chooses whether to restore or dismiss.
+        setupAndShowCrashRecoveryDialog();
+        AppTask liveTask2 = mPreRecoveryAppTasks.get(1);
+        verify(liveTask2, never()).finishAndRemoveTask();
+        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
+
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManager).showDialog(modelCaptor.capture(), anyInt());
+        PropertyModel model = modelCaptor.getValue();
+        ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
+
+        // Dismiss the dialog without opting in and verify single-NTP window 2 is cleaned up
+        // without soft-closing while regular window 1 is soft-closed and reported to Recent Tabs.
+        controller.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
+        assertTrue(ChromeMultiInstancePersistentStore.readClosureTime(1) > 0);
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(2));
+        verify(liveTask2).finishAndRemoveTask();
+
+        verify(mRecentlyClosedTracker).onInstancesClosed(mClosedWindowsCaptor.capture(), eq(false));
+        List<InstanceInfo> closedWindows = mClosedWindowsCaptor.getValue();
+        assertEquals(1, closedWindows.size());
+        assertEquals(1, closedWindows.get(0).instanceId);
+
+        assertStateReset();
+    }
+
+    @Test
     public void testMaybeShowCrashRecoveryDialog_incognitoHost_cancelsRecovery() {
-        // Setup: Multiple crashed windows exist.
+        // Simulate an incognito host activity when two dead-task regular crashed windows exist.
         setupOtherCrashedWindows(
                 /* numNonVisibleWindows= */ 2,
                 /* numDefaultDisplayWindows= */ 0,
@@ -870,60 +986,191 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         writeCrashExitReasonToPrefs();
         mHostActivity.mIsIncognitoWindow = true;
 
-        // Act.
+        // Initialize crash recovery metadata and verify initial recoverability state.
         mDelegate.initializeCrashRecoveryMetadata();
-
-        // Verify initial state has recoverable windows.
         assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(HOST_WINDOW_ID));
         assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
         assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
 
+        mFakeTimeTestRule.advanceMillis(100);
         boolean shown =
                 mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
 
-        // Verify: Prompt is not shown, and recovery is cancelled (all crashed windows are marked
-        // non-recoverable).
+        // Verify the prompt is skipped and both dead-task regular windows are batch soft-closed
+        // and reported to Recent Tabs ordered by lastAccessedTime descending.
         assertFalse(shown);
         verifyNoInteractions(mModalDialogManager);
         assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(HOST_WINDOW_ID));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(HOST_WINDOW_ID));
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(2));
+        long closureTime = ChromeMultiInstancePersistentStore.readClosureTime(1);
+        assertTrue(closureTime > 0);
+        assertEquals(closureTime, ChromeMultiInstancePersistentStore.readClosureTime(2));
+
+        verify(mRecentlyClosedTracker).onInstancesClosed(mClosedWindowsCaptor.capture(), eq(false));
+        List<InstanceInfo> closedWindows = mClosedWindowsCaptor.getValue();
+        assertEquals(2, closedWindows.size());
+        assertEquals(2, closedWindows.get(0).instanceId);
+        assertEquals(1, closedWindows.get(1).instanceId);
+        assertTrue(closedWindows.get(0).lastAccessedTime > closedWindows.get(1).lastAccessedTime);
+    }
+
+    @Test
+    public void
+            testMaybeShowCrashRecoveryDialog_incognitoHost_preservesLiveTaskAndSoftClosesDeadTask() {
+        // Simulate an incognito host alongside a live-task regular window (1), a dead-task regular
+        // window with stale task mapping (2), and a live-task empty window (3).
+        setupCrashedWindow(
+                /* windowId= */ 1,
+                /* normalTabCount= */ 1,
+                /* incognitoTabCount= */ 0,
+                /* isVisible= */ true,
+                SupportedProfileType.REGULAR);
+        setupCrashedWindow(
+                /* windowId= */ 2,
+                /* normalTabCount= */ 2,
+                /* incognitoTabCount= */ 0,
+                /* isVisible= */ false,
+                SupportedProfileType.REGULAR);
+        ChromeMultiInstancePersistentStore.writeTaskId(/* instanceId= */ 2, /* taskId= */ 22);
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(
+                /* instanceId= */ 2, "https://two.example.com");
+        ChromeMultiInstancePersistentStore.writeActiveTabTitle(/* instanceId= */ 2, "Two");
+        setupCrashedWindow(
+                /* windowId= */ 3,
+                /* normalTabCount= */ 0,
+                /* incognitoTabCount= */ 0,
+                /* isVisible= */ true,
+                SupportedProfileType.REGULAR);
+        setupPreRecoveryAppTasks(HOST_WINDOW_ID, 1, 3);
+        writeCrashExitReasonToPrefs();
+        mHostActivity.mIsIncognitoWindow = true;
+
+        // Attempt to show the crash recovery dialog on the incognito host window.
+        mDelegate.initializeCrashRecoveryMetadata();
+        boolean shown =
+                mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
+
+        // Verify live-task regular window 1 remains active without finishing its OS task.
+        assertFalse(shown);
+        verifyNoInteractions(mModalDialogManager);
+        AppTask liveTask1 = mPreRecoveryAppTasks.get(1);
+        verify(liveTask1, never()).finishAndRemoveTask();
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(1));
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(1));
+        assertEquals(1, ChromeMultiInstancePersistentStore.readTaskId(1));
+
+        // Verify dead-task regular window 2 is soft-closed with a valid closure timestamp.
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(2));
+        long closureTime = ChromeMultiInstancePersistentStore.readClosureTime(2);
+        assertTrue(closureTime > 0);
+
+        // Verify empty window 3 has its live task finished and recoverability cleared.
+        AppTask liveTask3 = mPreRecoveryAppTasks.get(2);
+        verify(liveTask3).finishAndRemoveTask();
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(3));
+
+        // Verify Recent Tabs is notified exclusively for dead-task regular window 2.
+        verify(mRecentlyClosedTracker).onInstancesClosed(mClosedWindowsCaptor.capture(), eq(false));
+        List<InstanceInfo> closedWindows = mClosedWindowsCaptor.getValue();
+        assertEquals(1, closedWindows.size());
+        InstanceInfo closedInfo = closedWindows.get(0);
+        assertEquals(2, closedInfo.instanceId);
+        assertEquals(MultiInstanceManager.INVALID_TASK_ID, closedInfo.taskId);
+        assertEquals(InstanceInfo.Type.OTHER, closedInfo.type);
+        assertEquals("https://two.example.com", closedInfo.url);
+        assertEquals("Two", closedInfo.title);
+        assertEquals(2, closedInfo.tabCount);
+        assertEquals(closureTime, closedInfo.closureTime);
+    }
+
+    @Test
+    public void testMaybeShowCrashRecoveryDialog_incognitoHost_skipsSoftClosingSingleNtpWindows() {
+        // Simulate an incognito host alongside an older dead-task regular window (1), a newer
+        // dead-task single-NTP window (2), and a live-task single-NTP window (3).
+        setupCrashedWindow(
+                /* windowId= */ 1,
+                /* normalTabCount= */ 1,
+                /* incognitoTabCount= */ 0,
+                /* isVisible= */ false,
+                SupportedProfileType.REGULAR);
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(
+                /* instanceId= */ 1, "https://one.example.com");
+        setupCrashedWindow(
+                /* windowId= */ 2,
+                /* normalTabCount= */ 1,
+                /* incognitoTabCount= */ 0,
+                /* isVisible= */ true,
+                SupportedProfileType.REGULAR);
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(
+                /* instanceId= */ 2, "chrome-native://newtab/");
+        setupCrashedWindow(
+                /* windowId= */ 3,
+                /* normalTabCount= */ 1,
+                /* incognitoTabCount= */ 0,
+                /* isVisible= */ true,
+                SupportedProfileType.REGULAR);
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(
+                /* instanceId= */ 3, "chrome-native://newtab/");
+        setupPreRecoveryAppTasks(HOST_WINDOW_ID, 3);
+        writeCrashExitReasonToPrefs();
+        mHostActivity.mIsIncognitoWindow = true;
+
+        // Attempt to show the crash recovery dialog on the incognito host window.
+        mDelegate.initializeCrashRecoveryMetadata();
+        boolean shown =
+                mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
+
+        // Verify live-task single-NTP window 3 keeps its OS task, neither single-NTP window
+        // records closureTime, and only dead-task regular window 1 is soft-closed into Recent Tabs.
+        assertFalse(shown);
+        verifyNoInteractions(mModalDialogManager);
+        AppTask liveTask3 = mPreRecoveryAppTasks.get(1);
+        verify(liveTask3, never()).finishAndRemoveTask();
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(3));
+        assertTrue(ChromeMultiInstancePersistentStore.readClosureTime(1) > 0);
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(2));
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(3));
+
+        verify(mRecentlyClosedTracker).onInstancesClosed(mClosedWindowsCaptor.capture(), eq(false));
+        List<InstanceInfo> closedWindows = mClosedWindowsCaptor.getValue();
+        assertEquals(1, closedWindows.size());
+        assertEquals(1, closedWindows.get(0).instanceId);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testMaybeShowCrashRecoveryDialog_incognitoCrashedWindow_cleanedUp() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        // Setup: Host window (Id 0) is regular.
-        // Setup: Another crashed window (Id 1) is incognito-only (0 normal, 1 incognito tab).
+        // Simulate a regular host window and an incognito-only crashed window with a live task.
         setupCrashedWindow(
                 /* windowId= */ 1,
                 /* normalTabCount= */ 0,
                 /* incognitoTabCount= */ 1,
                 /* isVisible= */ true,
                 SupportedProfileType.OFF_THE_RECORD);
-
-        // Window 1 has a live task.
         setupPreRecoveryAppTasks(HOST_WINDOW_ID, 1);
-
         writeCrashExitReasonToPrefs();
 
-        // Act.
+        // Initialize metadata and attempt to show the crash recovery dialog.
         mDelegate.initializeCrashRecoveryMetadata();
         boolean shown =
                 mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
 
-        // Verify: Prompt is not shown because there are no regular crashed windows besides the
-        // host.
+        // Verify the prompt is skipped, the live task is finished, and recoverability is cleared.
         assertFalse(shown);
         verifyNoInteractions(mModalDialogManager);
-
-        // Verify: Window 1 task is finished.
         AppTask liveTask1 = mPreRecoveryAppTasks.get(1);
         verify(liveTask1).finishAndRemoveTask();
-
-        // Verify: Window 1 recoverable state is set to false.
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), anyBoolean());
         assertStateReset();
     }
 
@@ -932,142 +1179,152 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     public void
             testMaybeShowCrashRecoveryDialog_incognitoHostAndIncognitoCrashedWindow_cleanedUp() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        // Setup: Host window is incognito.
+        // Simulate an incognito host window and another incognito-only crashed window with a live
+        // task.
         mHostActivity.mIsIncognitoWindow = true;
         ChromeMultiInstancePersistentStore.writeProfileType(
                 HOST_WINDOW_ID, SupportedProfileType.OFF_THE_RECORD);
-
-        // Setup: Another crashed window (Id 1) is incognito-only.
         setupCrashedWindow(
                 /* windowId= */ 1,
                 /* normalTabCount= */ 0,
                 /* incognitoTabCount= */ 1,
                 /* isVisible= */ true,
                 SupportedProfileType.OFF_THE_RECORD);
-
-        // Window 1 has a live task.
         setupPreRecoveryAppTasks(HOST_WINDOW_ID, 1);
-
         writeCrashExitReasonToPrefs();
 
-        // Act.
+        // Initialize metadata and attempt to show the crash recovery dialog.
         mDelegate.initializeCrashRecoveryMetadata();
         boolean shown =
                 mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
 
-        // Verify: Prompt is not shown.
+        // Verify the prompt is skipped, the live task is finished, and recoverability is cleared.
         assertFalse(shown);
         verifyNoInteractions(mModalDialogManager);
-
-        // Verify: Window 1 task is finished and recoverable state set to false.
         AppTask liveTask1 = mPreRecoveryAppTasks.get(1);
         verify(liveTask1).finishAndRemoveTask();
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), anyBoolean());
         assertStateReset();
     }
 
     @Test
     public void testMaybeShowCrashRecoveryDialog_emptyCrashedWindow_cleanedUp() {
-        // Setup: Host window (Id 0) is regular.
-        // Setup: Another crashed window (Id 1) is regular, but empty (0 normal, 0 incognito tabs).
+        // Simulate a regular host window and an empty crashed window with a live task.
         setupCrashedWindow(
                 /* windowId= */ 1,
                 /* normalTabCount= */ 0,
                 /* incognitoTabCount= */ 0,
                 /* isVisible= */ true,
                 SupportedProfileType.REGULAR);
-
-        // Window 1 has a live task.
         setupPreRecoveryAppTasks(HOST_WINDOW_ID, 1);
-
         writeCrashExitReasonToPrefs();
 
-        // Act.
+        // Initialize metadata and attempt to show the crash recovery dialog.
         mDelegate.initializeCrashRecoveryMetadata();
         boolean shown =
                 mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
 
-        // Verify: Prompt is not shown because the only other window was empty and got cleaned up.
+        // Verify the prompt is skipped, the live task is finished, and recoverability is cleared.
         assertFalse(shown);
         verifyNoInteractions(mModalDialogManager);
-
-        // Verify: Window 1 task is finished.
         AppTask liveTask1 = mPreRecoveryAppTasks.get(1);
         verify(liveTask1).finishAndRemoveTask();
-
-        // Verify: Window 1 recoverable state is set to false.
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), anyBoolean());
         assertStateReset();
     }
 
     @Test
+    public void
+            testMaybeShowCrashRecoveryDialog_singleNtpCrashedWindow_triggersDialogAndRestores() {
+        // Simulate a regular host window and a dead-task single-NTP crashed window (e.g. a tab
+        // that may carry Back-stack navigation history).
+        setupCrashedWindow(
+                /* windowId= */ 1,
+                /* normalTabCount= */ 1,
+                /* incognitoTabCount= */ 0,
+                /* isVisible= */ true,
+                SupportedProfileType.REGULAR);
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(
+                /* instanceId= */ 1, "chrome-native://newtab/");
+        setupPreRecoveryAppTasks(HOST_WINDOW_ID);
+        writeCrashExitReasonToPrefs();
+
+        // Initialize metadata and verify the crash recovery dialog is shown for the single-NTP
+        // window.
+        mDelegate.initializeCrashRecoveryMetadata();
+        boolean shown =
+                mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
+        assertTrue(shown);
+        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManager).showDialog(modelCaptor.capture(), anyInt());
+        PropertyModel model = modelCaptor.getValue();
+        ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
+
+        // Opt in to restore and verify the single-NTP window is restored without soft-closing into
+        // Recent Tabs.
+        controller.onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
+        controller.onDismiss(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        assertRestoredWindowIntents(1);
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        assertEquals(0, ChromeMultiInstancePersistentStore.readClosureTime(1));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), anyBoolean());
+    }
+
+    @Test
     public void testMaybeShowCrashRecoveryDialog_mixedWindowWithIncognitoOnlyTabs_cleanedUp() {
-        // Setup: Host window (Id 0) is regular.
-        // Setup: Another crashed window (Id 1) is MIXED profile type, but only contains
-        // incognito tabs (0 normal, 2 incognito tabs).
+        // Simulate a MIXED-profile crashed window containing only incognito tabs and a live task.
         setupCrashedWindow(
                 /* windowId= */ 1,
                 /* normalTabCount= */ 0,
                 /* incognitoTabCount= */ 2,
                 /* isVisible= */ true,
                 SupportedProfileType.MIXED);
-
-        // Window 1 has a live task.
         setupPreRecoveryAppTasks(HOST_WINDOW_ID, 1);
-
         writeCrashExitReasonToPrefs();
 
-        // Act.
+        // Initialize metadata and attempt to show the crash recovery dialog.
         mDelegate.initializeCrashRecoveryMetadata();
         boolean shown =
                 mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
 
-        // Verify: Prompt is not shown because the only other window had incognito-only tabs and got
-        // cleaned up.
+        // Verify the prompt is skipped, the live task is finished, and recoverability is cleared.
         assertFalse(shown);
         verifyNoInteractions(mModalDialogManager);
-
-        // Verify: Window 1 task is finished.
         AppTask liveTask1 = mPreRecoveryAppTasks.get(1);
         verify(liveTask1).finishAndRemoveTask();
-
-        // Verify: Window 1 recoverable state is set to false.
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), anyBoolean());
     }
 
     @Test
     public void testMaybeShowCrashRecoveryDialog_emptyCrashedWindowInMultiWindowMode_cleanedUp() {
-        // Setup: Host window (Id 0) is regular.
-        // Host activity is in multi-window mode.
+        // Simulate multi-window mode with an empty crashed window holding a live task.
         Shadows.shadowOf(mHostActivity).setInMultiWindowMode(true);
-
-        // Setup: Another crashed window (Id 1) is regular, but empty (0 normal, 0 incognito tabs).
         setupCrashedWindow(
                 /* windowId= */ 1,
                 /* normalTabCount= */ 0,
                 /* incognitoTabCount= */ 0,
                 /* isVisible= */ true,
                 SupportedProfileType.REGULAR);
-
-        // Window 1 has a live task.
         setupPreRecoveryAppTasks(HOST_WINDOW_ID, 1);
-
         writeCrashExitReasonToPrefs();
 
-        // Act.
+        // Initialize metadata and attempt to show the crash recovery dialog.
         mDelegate.initializeCrashRecoveryMetadata();
         boolean shown =
                 mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
 
-        // Verify: Prompt is not shown because there are no recoverable windows, even though host is
-        // in multi-window mode.
+        // Verify the prompt is skipped, the live task is finished, and recoverability is cleared.
         assertFalse(shown);
         verifyNoInteractions(mModalDialogManager);
-
-        // Verify: Window 1 task is finished and recoverable state is set to false.
         AppTask liveTask1 = mPreRecoveryAppTasks.get(1);
         verify(liveTask1).finishAndRemoveTask();
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), anyBoolean());
         assertStateReset();
     }
 
@@ -1098,6 +1355,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
             int incognitoTabCount,
             boolean isVisible,
             @SupportedProfileType int profileType) {
+        mFakeTimeTestRule.advanceMillis(100);
         ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId);
         ChromeMultiInstancePersistentStore.writeTabCount(
                 windowId, normalTabCount, incognitoTabCount);
@@ -1119,7 +1377,9 @@ public class TabbedCrashRecoveryDelegateUnitTest {
             appTaskInfo.taskId = windowId;
             when(appTask.getTaskInfo()).thenReturn(appTaskInfo);
             mPreRecoveryAppTasks.add(appTask);
-            ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId);
+            if (!ChromeMultiInstancePersistentStore.hasInstance(windowId)) {
+                ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId);
+            }
             ChromeMultiInstancePersistentStore.writeTaskId(windowId, windowId);
         }
         ActivityManager activityManager =
