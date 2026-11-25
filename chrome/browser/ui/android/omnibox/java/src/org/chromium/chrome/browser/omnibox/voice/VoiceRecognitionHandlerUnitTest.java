@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
@@ -524,6 +525,7 @@ public class VoiceRecognitionHandlerUnitTest {
 
         verify(mOmniboxStub).beginInput(mInputCaptor.capture());
         assertEquals("partial query", mInputCaptor.getValue().getUserText());
+        assertEquals(TextSelection.SELECT_END, mInputCaptor.getValue().getSelection());
         verify(mOmniboxStub, never()).loadUrlFromVoice(any());
         verify(mOnCanceled, never()).run();
     }
