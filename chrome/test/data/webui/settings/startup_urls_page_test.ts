@@ -8,9 +8,9 @@ import 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {SettingsStartupUrlDialogElement, SettingsStartupUrlEntryElement, SettingsStartupUrlsPageElement, StartupPageInfo} from 'chrome://settings/settings.js';
-import {EDIT_STARTUP_URL_EVENT, PrefsBrowserProxy, PrefService, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {EDIT_STARTUP_URL_EVENT, loadTimeData, PrefsBrowserProxy, PrefService, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestStartupUrlsPageBrowserProxy} from './test_startup_urls_page_browser_proxy.js';
@@ -32,6 +32,10 @@ suite('StartupUrlDialog', function() {
   }
 
   setup(function() {
+    loadTimeData.overrideValues({
+      settingsRefresh2026: '',
+    });
+    document.documentElement.toggleAttribute('settings-refresh-2026', false);
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -40,6 +44,7 @@ suite('StartupUrlDialog', function() {
 
   teardown(function() {
     dialog.remove();
+    document.documentElement.toggleAttribute('settings-refresh-2026', false);
   });
 
   test('Initialization_Add', function() {
@@ -55,6 +60,8 @@ suite('StartupUrlDialog', function() {
     const inputElement = dialog.$.url;
     assertTrue(!!inputElement);
     assertEquals('', inputElement.value);
+    assertFalse(inputElement.classList.contains('stroked'));
+    assertFalse(dialog.$.cancel.classList.contains('tonal-button'));
   });
 
   test('Initialization_Edit', function() {
@@ -153,6 +160,41 @@ suite('StartupUrlDialog', function() {
     keyEventOn(inputElement, 'keypress', 13, undefined, 'Enter');
 
     await browserProxy.whenCalled('addStartupPage');
+  });
+
+  test('SettingsRefresh2026', async function() {
+    loadTimeData.overrideValues({
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
+    document.documentElement.toggleAttribute('settings-refresh-2026', true);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    dialog = document.createElement('settings-startup-url-dialog');
+    document.body.appendChild(dialog);
+    await microtasksFinished();
+
+    assertTrue(dialog.$.dialog.open);
+    assertTrue(dialog.$.url.classList.contains('stroked'));
+    assertTrue(dialog.$.cancel.classList.contains('tonal-button'));
+    assertFalse(isVisible(dialog.$.url.$.error));
+
+    // Entering an invalid URL reveals the error element.
+    dialog.$.url.value = 'invalid-url';
+    browserProxy.setUrlValidity(false);
+    await microtasksFinished();
+    pressSpace(dialog.$.url);
+
+    await browserProxy.whenCalled('validateStartupPage');
+    await microtasksFinished();
+    assertTrue(dialog.$.url.invalid);
+    assertTrue(isVisible(dialog.$.url.$.error));
+
+    // Clearing the input hides the error element again.
+    dialog.$.url.value = '';
+    await microtasksFinished();
+    pressSpace(dialog.$.url);
+    await microtasksFinished();
+    assertFalse(dialog.$.url.invalid);
+    assertFalse(isVisible(dialog.$.url.$.error));
   });
 });
 

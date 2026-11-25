@@ -11,7 +11,9 @@ export function getHtml(this: SettingsStartupUrlDialogElement) {
 <cr-dialog id="dialog" close-text="$i18n{close}">
   <div slot="title">${this.dialogTitle_}</div>
   <div slot="body">
-    <cr-input id="url" label="$i18n{onStartupSiteUrl}" .value="${this.url_}"
+    <cr-input id="url"
+        class="${this.settingsRefresh2026Enabled_ ? 'stroked' : ''}"
+        label="$i18n{onStartupSiteUrl}" .value="${this.url_}"
         @value-changed="${this.onUrlValueChanged_}" @input="${this.onInput_}"
         spellcheck="false" maxlength="${this.urlLimit_}"
         ?invalid="${this.hasError_()}" autofocus
@@ -19,8 +21,10 @@ export function getHtml(this: SettingsStartupUrlDialogElement) {
     </cr-input>
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" @click="${this.onCancelClick_}"
-        id="cancel">
+    <cr-button
+        class="cancel-button ${
+            this.settingsRefresh2026Enabled_ ? 'tonal-button' : ''}"
+        @click="${this.onCancelClick_}" id="cancel">
       $i18n{cancel}
     </cr-button>
     <cr-button id="actionButton" class="action-button"

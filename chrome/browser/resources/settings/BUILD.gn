@@ -714,6 +714,7 @@ build_webui("build") {
     "languages_page/languages_page_index.css",
     "languages_page/spell_check_page.css",
     "on_startup_page/on_startup_page.css",
+    "on_startup_page/startup_url_dialog.css",
     "on_startup_page/startup_url_entry.css",
     "on_startup_page/startup_urls_page.css",
     "people_page/account_page.css",

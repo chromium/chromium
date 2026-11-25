@@ -12,8 +12,8 @@ import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_in
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
+import {getCss} from './startup_url_dialog.css.js';
 import {getHtml} from './startup_url_dialog.html.js';
 import type {StartupPageInfo, StartupUrlsPageBrowserProxy} from './startup_urls_page_browser_proxy.js';
 import {StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
@@ -37,6 +37,7 @@ enum UrlInputError {
 export interface SettingsStartupUrlDialogElement {
   $: {
     actionButton: CrButtonElement,
+    cancel: CrButtonElement,
     dialog: CrDialogElement,
     url: CrInputElement,
   };
@@ -48,7 +49,7 @@ export class SettingsStartupUrlDialogElement extends CrLitElement {
   }
 
   static override get styles() {
-    return [getSettingsSharedCss()];
+    return getCss();
   }
 
   override render() {
@@ -72,6 +73,8 @@ export class SettingsStartupUrlDialogElement extends CrLitElement {
   accessor model: StartupPageInfo|null = null;
   protected accessor dialogTitle_: string = '';
   protected accessor actionButtonText_: string = '';
+  protected readonly settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
   private browserProxy_: StartupUrlsPageBrowserProxy =
       StartupUrlsPageBrowserProxyImpl.getInstance();
 
