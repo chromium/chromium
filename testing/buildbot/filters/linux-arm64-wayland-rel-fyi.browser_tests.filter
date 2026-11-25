@@ -21,9 +21,6 @@
 -All/WebAppBrowserTest.ManifestShortcut/*
 -All/WebAppWebDXManifestBrowserTest.UsageMeasured/*
 
-# TODO(https://crbug.com/582849700): Flaky on linux-arm64-wayland-rel-fyi.
--MultiContentsViewWebContentsReLayoutBrowserTest.EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes
-
 # TODO(https://crbug.com/576120782): Flaky on linux-arm64-wayland-rel-fyi.
 -PopupTest.ResizeToOnReloadDoesNotShiftOuterBounds
 

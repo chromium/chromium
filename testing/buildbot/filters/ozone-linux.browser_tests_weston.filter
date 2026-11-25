@@ -50,6 +50,3 @@
 
 # TODO(crbug.com/40799125): Flaky.
 -PageLoadMetricsBrowserTest.SoftNavigation
-
-# TODO(crbug.com/589603614): Chronically flaky RunLoop timeout on Ozone Wayland.
--MultiContentsViewWebContentsReLayoutBrowserTest.EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes
