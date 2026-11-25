@@ -9348,22 +9348,6 @@
             ]
         }
     ],
-    "FetchAccountCapabilitiesOnRestartIos": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FetchAccountCapabilitiesOnRestart",
-                        "SkipSsoAccountCapabilitiesCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "FetchErrorCategoryLogging": [
         {
             "platforms": [
