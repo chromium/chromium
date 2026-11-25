@@ -283,8 +283,9 @@ void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
 }
 
 void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
-  CHECK(url.is_valid() && url.SchemeIs(url::kHttpsScheme),
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/589264009): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(url.is_valid() && url.SchemeIs(url::kHttpsScheme));
 
   // Fetch the profile associated with ARC. This method should only be called
   // for a |url| which was installed via ARC, and so we want the web app that is
