@@ -281,6 +281,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2122601567107267586">Aplikacioni nuk mund të hapej</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, skeda e gozhduar duke ndarë përmbajtjen dhe e zgjedhur me shumë të tjera</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> është mbyllur</translation>
+<translation id="2133857665503360653">Riprovo <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Ikona "Menaxho"</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, skeda e zgjedhur në regjistrim</translation>
 <translation id="2141396931810938595">Bazuar në përdorimin tënd</translation>
@@ -448,6 +449,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2762000892062317888">pikërisht tani</translation>
 <translation id="276378135349383280">Shfaq Gemini në shiritin e poshtëm të veglave</translation>
 <translation id="276969039800130567">I identifikuar si <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Vendose në pauzë <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekonda të mbetura</translation>
 <translation id="2779651927720337254">dështoi</translation>
 <translation id="2781151931089541271">1 sekondë e mbetur</translation>
@@ -789,6 +791,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4121654769234887259">Nuk është nevoja ta kujtosh këtë fjalëkalim. Ai do të ruhet te "Menaxheri i fjalëkalimeve i Google" për <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Kyç skedat "e fshehta"</translation>
 <translation id="4132137475637520539">Lejo këdo që ka lidhjen të bashkohet</translation>
+<translation id="4132969033912447558">Vazhdo shkarkimin e <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, skeda e gozhduar e zgjedhur me shumë të tjera dhe në regjistrim</translation>
 <translation id="4137746084635924146">Gjuha aktuale e pajisjes</translation>
 <translation id="414128724510021958">Sajtet për desktop kërkohen si parazgjedhje</translation>
@@ -2035,6 +2038,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8676789164135894283">Verifikimet e identifikimit</translation>
 <translation id="867914734596684889">Shfaq ose fshih shiritin e faqeshënuesve</translation>
 <translation id="8683039184091909753">imazhi</translation>
+<translation id="8687103160920393343">Anulo <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, skeda e zgjedhur</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> ka nevojë për leje për t'u qasur te pajisjet për ndërveprim me përdoruesin (HID) për këtë sajt. Mund ta ndryshosh këtë cilësim më vonë te Cilësimet &gt; Aplikacionet &gt; Qasja e veçantë e aplikacioneve.</translation>
 <translation id="8696297579102085705">Dërgo te pajisja jote</translation>

@@ -281,6 +281,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2122601567107267586">Aplikacije ni bilo mogoče odpreti</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, večkrat izbrani pripeti zavihek za deljenje</translation>
 <translation id="213279576345780926">Zaprt zavihek: <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653">Vnovičen poskus datoteke <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Ikona za upravljanje</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, izbrani zavihek za snemanje</translation>
 <translation id="2141396931810938595">Na podlagi uporabe</translation>
@@ -448,6 +449,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2762000892062317888">pravkar</translation>
 <translation id="276378135349383280">Prikaz Geminija v spodnji orodni vrstici</translation>
 <translation id="276969039800130567">Prijavljen kot <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Začasna zaustavitev prenosa datoteke <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">Še <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">ni uspelo</translation>
 <translation id="2781151931089541271">Še 1 s</translation>
@@ -789,6 +791,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4121654769234887259">Tega gesla si vam ne bo treba zapomniti. Shranjeno bo v Google Upravitelju gesel za račun <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Zaklepanje anonimnih zavihkov</translation>
 <translation id="4132137475637520539">Pridruži se lahko kdor koli s povezavo</translation>
+<translation id="4132969033912447558">Nadaljuj prenos datoteke <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, večkrat izbrani pripeti zavihek za snemanje</translation>
 <translation id="4137746084635924146">Trenutni jezik naprave</translation>
 <translation id="414128724510021958">Namizna spletna mesta so privzeto zahtevana</translation>
@@ -2034,6 +2037,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8676789164135894283">Preverjanja prijave</translation>
 <translation id="867914734596684889">Prikaz ali skrivanje vrstice z zaznamki</translation>
 <translation id="8683039184091909753">slika</translation>
+<translation id="8687103160920393343">Prekliči prenos datoteke <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, izbrani zavihek</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> potrebuje dovoljenje za dostop do vnosnih naprav za to spletno mesto. To nastavitev lahko pozneje spremenite v Nastavitve &gt; Aplikacije &gt; Posebni dostop aplikacij.</translation>
 <translation id="8696297579102085705">Pošlji v napravo</translation>

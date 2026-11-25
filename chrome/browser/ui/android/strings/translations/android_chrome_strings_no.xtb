@@ -281,6 +281,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2122601567107267586">Kunne ikke åpne appen</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, flere valgte festede delingsfaner</translation>
 <translation id="213279576345780926">Lukket <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653">Prøv å laste ned <ph name="FILE_NAME" /> på nytt</translation>
 <translation id="2138283760993967204">Administrer-ikon</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, valgt opptaksfane</translation>
 <translation id="2141396931810938595">Basert på bruken din</translation>
@@ -448,6 +449,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2762000892062317888">akkurat nå</translation>
 <translation id="276378135349383280">Vis Gemini på bunnverktøylinjen</translation>
 <translation id="276969039800130567">Pålogget som <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Sett <ph name="FILE_NAME" /> på pause</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder igjen</translation>
 <translation id="2779651927720337254">mislyktes</translation>
 <translation id="2781151931089541271">1 sekund igjen</translation>
@@ -789,6 +791,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4121654769234887259">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Lås inkognitofanene dine</translation>
 <translation id="4132137475637520539">La alle som har linken, bli med</translation>
+<translation id="4132969033912447558">Fortsett å laste ned <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, flere valgte festede opptaksfaner</translation>
 <translation id="4137746084635924146">Nåværende enhetsspråk</translation>
 <translation id="414128724510021958">Nettsteder for datamaskiner blir forespurt som standard</translation>
@@ -2035,6 +2038,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8676789164135894283">Påloggingsbekreftelser</translation>
 <translation id="867914734596684889">Vis eller skjul bokmerkeraden</translation>
 <translation id="8683039184091909753">bilde</translation>
+<translation id="8687103160920393343">Avbryt <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" /> – valgt fane</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> trenger tilgang til HID-enheter (Human Interface Devices) for dette nettstedet. Du kan endre denne innstillingen senere i Innstillinger &gt; Apper &gt; Spesiell apptilgang.</translation>
 <translation id="8696297579102085705">Send til enheten din</translation>

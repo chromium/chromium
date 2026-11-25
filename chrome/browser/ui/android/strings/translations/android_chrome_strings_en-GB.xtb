@@ -281,6 +281,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2122601567107267586">Could not open app</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, multi-selected pinned sharing tab</translation>
 <translation id="213279576345780926">Closed <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653">Retry <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Manage icon</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, selected recording tab</translation>
 <translation id="2141396931810938595">Based on your usage</translation>
@@ -448,6 +449,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2762000892062317888">just now</translation>
 <translation id="276378135349383280">Show Gemini in the bottom toolbar</translation>
 <translation id="276969039800130567">Signed in as <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Pause <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> secs left</translation>
 <translation id="2779651927720337254">failed</translation>
 <translation id="2781151931089541271">1 sec left</translation>
@@ -789,6 +791,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4121654769234887259">You won't need to remember this password. It will be saved to Google Password Manager for <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Lock your Incognito tabs</translation>
 <translation id="4132137475637520539">Let anyone with the link join</translation>
+<translation id="4132969033912447558">Resume <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, multi-selected pinned recording tab</translation>
 <translation id="4137746084635924146">Current device language</translation>
 <translation id="414128724510021958">Desktop sites requested by default</translation>
@@ -2034,6 +2037,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8676789164135894283">Sign-in verifications</translation>
 <translation id="867914734596684889">Show or hide bookmarks bar</translation>
 <translation id="8683039184091909753">image</translation>
+<translation id="8687103160920393343">Cancel <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, selected tab</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> needs permission to access human interface devices (HIDs) for this site. You can change this setting later in Settings &gt; Apps &gt; Special app access.</translation>
 <translation id="8696297579102085705">Send to your device</translation>

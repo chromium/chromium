@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">အက်ပ်ကို ဖွင့်၍မရပါ</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် မျှဝေနေသောတဘ်</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> ပိတ်ထား၏</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> ကို ထပ်စမ်းရန်</translation>
 <translation id="2138283760993967204">စီမံရန် သင်္ကေတ</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />၊ ရွေးထားသည့် ရိုက်ကူးနေသောတဘ်</translation>
 <translation id="2141396931810938595">သင့်အသုံးပြုမှုကို အခြေခံသည်</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">ယခုလေးတင်</translation>
 <translation id="276378135349383280">အောက်ခြေကိရိယာဘား၌ Gemini ပြပါ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> သုံး၍ ၐင်ပါ။</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> ကို ခဏရပ်ရန်</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> စက္ကန့် ကျန်သည်</translation>
 <translation id="2779651927720337254">ဒေါင်းလုဒ် မပြီးဆုံးပါ</translation>
 <translation id="2781151931089541271">၁ စက္ကန့် ကျန်သည်</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">ဤစကားဝှက်ကို မှတ်ထားရန် မလိုပါ။ ၎င်းကို <ph name="USERNAME" /> အတွက် Google Password Manager တွင် သိမ်းပါမည်။</translation>
 <translation id="4128312955780560730">သင့်ရုပ်ဖျက်တဘ်များကို လော့ခ်ချခြင်း</translation>
 <translation id="4132137475637520539">လင့်ခ်ရှိသူတိုင်းအား ပါဝင်ခွင့်ပြုရန်</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> ကို ဆက်လုပ်ရန်</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် ရိုက်ကူးနေသောတဘ်</translation>
 <translation id="4137746084635924146">စက်၏ လက်ရှိဘာသာစကား</translation>
 <translation id="414128724510021958">မူရင်းသတ်မှတ်ချက်အရ ဒက်စ်တော့ဝဘ်ဆိုက်များ တောင်းဆိုထားသည်</translation>
@@ -2033,6 +2036,7 @@
 <translation id="8676789164135894283">လက်မှတ်ထိုးဝင်မှု စိစစ်ချက်များ</translation>
 <translation id="867914734596684889">လိပ်စာစာရင်းဘား ပြပါ (သို့) ဖျောက်ပါ</translation>
 <translation id="8683039184091909753">ပုံ</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> ကို မလုပ်တော့</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />၊ ရွေးထားသည့်တဘ်</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> သည် ဤဝဘ်ဆိုက်တွင် လူများအတွက် ကြားခံစက် (HID) များကို သုံးခွင့်လိုအပ်သည်။ ဤဆက်တင်ကို ဆက်တင်များ &gt; အက်ပ်များ &gt; အထူးအက်ပ်သုံးခွင့်တွင် နောက်မှပြောင်းနိုင်သည်။</translation>
 <translation id="8696297579102085705">သင့်စက်သို့ ပို့ရန်</translation>

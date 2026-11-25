@@ -280,6 +280,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2122601567107267586">App konnte nicht geöffnet werden</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, mehrfach ausgewählter, angepinnter Tab für die Freigabe</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> geschlossen</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> noch einmal herunterladen</translation>
 <translation id="2138283760993967204">Symbol „Verwalten“</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, ausgewählter Tab zum Aufzeichnen</translation>
 <translation id="2141396931810938595">Auf Grundlage deiner Nutzung</translation>
@@ -446,6 +447,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2762000892062317888">gerade eben</translation>
 <translation id="276378135349383280">Gemini in der unteren Symbolleiste anzeigen</translation>
 <translation id="276969039800130567">Angemeldet als <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="2770082596325051055">„<ph name="FILE_NAME" />“ pausieren</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> Sekunden übrig</translation>
 <translation id="2779651927720337254">fehlgeschlagen</translation>
 <translation id="2781151931089541271">1 Sekunde übrig</translation>
@@ -786,6 +788,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4121654769234887259">Du musst dir dieses Passwort nicht merken. Es wird im Google Passwortmanager für <ph name="USERNAME" /> gespeichert.</translation>
 <translation id="4128312955780560730">Inkognitotabs sperren</translation>
 <translation id="4132137475637520539">Alle Nutzer mit dem Link beitreten lassen</translation>
+<translation id="4132969033912447558">„<ph name="FILE_NAME" />“ fortsetzen</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, mehrfach ausgewählter, angepinnter Tab zum Aufzeichnen</translation>
 <translation id="4137746084635924146">Aktuelle Gerätesprache</translation>
 <translation id="414128724510021958">Desktopwebsites werden standardmäßig angefordert</translation>
@@ -2022,6 +2025,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8676789164135894283">Anmeldebestätigungen</translation>
 <translation id="867914734596684889">Lesezeichenleiste ein- oder ausblenden</translation>
 <translation id="8683039184091909753">Bild</translation>
+<translation id="8687103160920393343">„<ph name="FILE_NAME" />“ abbrechen</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ausgewählter Tab</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> benötigt für diese Website die Berechtigung, auf Human Interface Devices (HID) zuzugreifen. Du kannst dies später in den Einstellungen unter „Apps“ &gt; „Spezieller App-Zugriff“ ändern.</translation>
 <translation id="8696297579102085705">An mein Gerät senden</translation>

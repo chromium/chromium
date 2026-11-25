@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">ଆପ୍‌କୁ ଖୋଲି ହେଲା ନାହିଁ</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, ମଲ୍ଟିସିଲେକ୍ଟେଡ ପିନ କରାଯାଇଥିବା ସେୟାର କରୁଥିବା ଟାବ</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" />ବନ୍ଦ ହୋଇଯାଇଛି</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" />କୁ ଡାଉନଲୋଡ କରିବା ପାଇଁ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="2138283760993967204">ଆଇକନ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, ଚୟନିତ ରେକର୍ଡ କରୁଥିବା ଟାବ</translation>
 <translation id="2141396931810938595">ଆପଣଙ୍କ ବ୍ୟବହାର ଉପରେ ଆଧାର କରି</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">ଏହିକ୍ଷଣି</translation>
 <translation id="276378135349383280">ନିମ୍ନ ଟୁଲବାରରେ Gemini ଦେଖାନ୍ତୁ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ଭାବରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି।</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" />କୁ ବିରତ କରନ୍ତୁ</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ସେକେଣ୍ଡ ଅବଶିଷ୍ଟ ଅଛି</translation>
 <translation id="2779651927720337254">ବିଫଳ ହେଲା</translation>
 <translation id="2781151931089541271">1 ସେକେଣ୍ଡ ବାକି ଅଛି</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">ଆପଣଙ୍କୁ ଏହି ପାସୱାର୍ଡ ମନେ ରଖିବା ଆବଶ୍ୟକ ହେବ ନାହିଁ। <ph name="USERNAME" />ର Google Password Managerରେ ଏହା ସେଭ ହୋଇଯିବ।</translation>
 <translation id="4128312955780560730">ଆପଣଙ୍କ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକୁ ଲକ କରନ୍ତୁ</translation>
 <translation id="4132137475637520539">ଲିଙ୍କ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତିଙ୍କୁ ଏଥିରେ ଯୋଗ ଦେବାକୁ ଦିଅନ୍ତୁ</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" />କୁ ଡାଉନଲୋଡ କରିବା ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, ମଲ୍ଟିସିଲେକ୍ଟେଡ ପିନ ହୋଇଥିବା ରେକର୍ଡ କରୁଥିବା ଟାବ</translation>
 <translation id="4137746084635924146">ଡିଭାଇସର ବର୍ତ୍ତମାନର ଭାଷା</translation>
 <translation id="414128724510021958">ଡେସ୍କଟପ ସାଇଟଗୁଡ଼ିକ ଡିଫଲ୍ଟ ଭାବରେ ଅନୁରୋଧ କରାଯାଇଛି</translation>
@@ -2035,6 +2038,7 @@
 <translation id="8676789164135894283">ସାଇନ୍-ଇନ୍ ପାଇଁ ଯାଞ୍ଚକରଣ</translation>
 <translation id="867914734596684889">ବୁକମାର୍କ ବାରକୁ ଦେଖାନ୍ତୁ କିମ୍ବା ଲୁଚାନ୍ତୁ</translation>
 <translation id="8683039184091909753">ଛବି</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" />କୁ ବାତିଲ କରନ୍ତୁ</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ଚୟନିତ ଟାବ</translation>
 <translation id="8694622119922491927">ଏହି ସାଇଟ ପାଇଁ ହ୍ୟୁମାନ ଇଣ୍ଟରଫେସ ଡିଭାଇସ (HID)କୁ ଆକ୍ସେସ କରିବା ପାଇଁ <ph name="APP_NAME" /> ଅନୁମତି ଆବଶ୍ୟକ କରେ। ଆପଣ ପରେ ସେଟିଂସ &gt; ଆପ୍ସ &gt; ବିଶେଷ ଆପ ଆକ୍ସେସରେ ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="8696297579102085705">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପଠାନ୍ତୁ</translation>

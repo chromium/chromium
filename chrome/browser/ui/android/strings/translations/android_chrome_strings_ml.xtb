@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">ആപ്പ് തുറക്കാനായില്ല</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത, പിൻ ചെയ്ത, ഉള്ളടക്കം പങ്കിടുന്ന ടാബ്</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> അടച്ചു</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="2138283760993967204">'മാനേജ് ചെയ്യുക' ഐക്കൺ</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത, മീഡിയ റെക്കോർഡ് ചെയ്യുന്ന ടാബ്</translation>
 <translation id="2141396931810938595">നിങ്ങളുടെ ഉപയോഗം അടിസ്ഥാനമാക്കിയുള്ളത്</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">ഇപ്പോൾ</translation>
 <translation id="276378135349383280">താഴെ ടൂൾബാറിൽ Gemini കാണിക്കുക</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> എന്നായി സൈൻ ഇൻ ചെയ്‌തു.</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> സെക്കൻഡ് ശേഷിക്കുന്നു</translation>
 <translation id="2779651927720337254">പരാജയപ്പെട്ടു</translation>
 <translation id="2781151931089541271">ഒരു സെക്കൻഡ് ശേഷിക്കുന്നു</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">നിങ്ങൾ ഈ പാസ്‌വേഡ് ഓർമ്മിക്കേണ്ടതില്ല. <ph name="USERNAME" /> എന്നതിനുള്ള Google Password Manager-ൽ ഇത് സംരക്ഷിക്കും.</translation>
 <translation id="4128312955780560730">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യൂ</translation>
 <translation id="4132137475637520539">ലിങ്കുള്ള എല്ലാവരെയും ചേരാൻ അനുവദിക്കുക</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> പുനരാരംഭിക്കുക</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത, പിൻ ചെയ്ത, മീഡിയ റെക്കോർഡ് ചെയ്യുന്ന ടാബ്</translation>
 <translation id="4137746084635924146">നിലവിലെ ഉപകരണ ഭാഷ</translation>
 <translation id="414128724510021958">ഡിഫോൾട്ടായി അഭ്യർത്ഥിച്ച ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റുകൾ</translation>
@@ -2035,6 +2038,7 @@
 <translation id="8676789164135894283">സൈൻ ഇൻ പരിശോധിച്ചുറപ്പിക്കലുകൾ</translation>
 <translation id="867914734596684889">ബുക്ക്‌മാർക്ക് ബാർ കാണിക്കുക അല്ലെങ്കിൽ മറയ്ക്കുക</translation>
 <translation id="8683039184091909753">ചിത്രം</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> റദ്ദാക്കുക</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത ടാബ്</translation>
 <translation id="8694622119922491927">ഈ സൈറ്റിനായി, <ph name="APP_NAME" /> എന്നതിന് ഹ്യൂമൻ ഇന്റർഫേസ് ഉപകരണങ്ങൾ (HID-കൾ) ആക്‌സസ് ചെയ്യാനുള്ള അനുമതി ആവശ്യമാണ്. ക്രമീകരണം &gt; ആപ്പുകൾ &gt; പ്രത്യേക ആപ്പ് ആക്‌സസ് എന്നിങ്ങനെ പോയി നിങ്ങൾക്ക് ഈ ക്രമീകരണം പിന്നീട് മാറ്റാം.</translation>
 <translation id="8696297579102085705">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് അയയ്ക്കുക</translation>

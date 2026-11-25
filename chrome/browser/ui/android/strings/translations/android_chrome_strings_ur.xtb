@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">ایپ نہیں کھولی جا سکی</translation>
 <translation id="2128579426409352593">‫<ph name="TAB_TITLE" />، متعدد منتخب کردہ پن کردہ اشتراک کا ٹیب</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> کو بند کر دیا گیا</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> کو دوبارہ آزمائیں</translation>
 <translation id="2138283760993967204">آئیکن کا نظم کریں</translation>
 <translation id="2138632817776076519">‫<ph name="TAB_TITLE" />، منتخب کردہ ریکارڈنگ ٹیب</translation>
 <translation id="2141396931810938595">آپ کے استعمال کی بنیاد پر</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">ابھی ابھی</translation>
 <translation id="276378135349383280">‏‫Gemini کو نیچے والے ٹول بار میں دکھائیں</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> کے بطور سائن ان کردہ۔</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> موقوف کریں</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> سیکنڈ باقی</translation>
 <translation id="2779651927720337254">ناکام ہو گیا</translation>
 <translation id="2781151931089541271">1 سیکنڈ باقی</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">‏آپ کو یہ پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی۔ اسے Google پاس ورڈ مینیجر میں <ph name="USERNAME" /> کے لیے محفوظ کیا جائے گا۔</translation>
 <translation id="4128312955780560730">اپنے پوشیدگی ٹیبز کو مقفل کریں</translation>
 <translation id="4132137475637520539">لنک کے حامل کسی بھی شخص کو شامل ہونے کی اجازت دیں</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> دوبارہ شروع کریں</translation>
 <translation id="4136632885151622181">‫<ph name="TAB_TITLE" />، متعدد منتخب کردہ پن کردہ ریکارڈنگ ٹیب</translation>
 <translation id="4137746084635924146">آلہ کی موجودہ زبان</translation>
 <translation id="414128724510021958">بطور ڈیفالٹ درخواست کردہ ڈیسک ٹاپ سائٹس</translation>
@@ -2035,6 +2038,7 @@
 <translation id="8676789164135894283">سائن ان کی تصدیقیں</translation>
 <translation id="867914734596684889">بُک مارکس بار دکھائیں یا چھپائیں</translation>
 <translation id="8683039184091909753">تصویر</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> منسوخ کریں</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />، منتخب کردہ ٹیب</translation>
 <translation id="8694622119922491927">‏‫<ph name="APP_NAME" /> کو اس سائٹ کے لیے انسانی انٹرفیس آلات (HIDs) تک رسائی کی اجازت درکار ہے۔ آپ اس ترتیب کو بعد میں ترتیبات &gt; ایپس &gt; خصوصی ایپ تک رسائی میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="8696297579102085705">اپنے آلے پر بھیجیں</translation>

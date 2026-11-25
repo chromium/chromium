@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" जोड़ें?</translation>
 <translation id="2159915644201199628">इमेज को डीकोड नहीं किया जा सका: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">आपके माता-पिता ने इस एक्सटेंशन को अनुमति नहीं दी है</translation>
+<translation id="2207866393056347613">इससे एक्सटेंशन को सभी साइटों पर आपके डेटा का ऐक्सेस हमेशा के लिए मिलता है</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ने अतिरिक्त अनुमतियों का अनुरोध किया है.</translation>
 <translation id="2327492829706409234">ऐप्लिकेशन चालू करें</translation>
 <translation id="2350172092385603347">स्थानीय भाषा में लिखा गया है, लेकिन default_locale मेनिफ़ेस्ट में तय नहीं की गई थी.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">फिर से चालू करें</translation>
 <translation id="2743583586211388067">आपके संगठन की एक्सटेंशन रिस्क पॉलिसी के तहत, इस एक्सटेंशन का ऐक्सेस ब्लॉक कर दिया गया है.</translation>
 <translation id="2766161002040448006">माता-पिता से पूछें</translation>
+<translation id="2775557057525247505">सभी साइटें दिखाएं</translation>
 <translation id="2785530881066938471">सामग्री स्क्रिप्ट के लिए '<ph name="RELATIVE_PATH" />' फ़ाइल लोड नहीं कर सका. यह UTF-8 एनकोड नहीं है.</translation>
 <translation id="2850541429955027218">थीम जोड़ें</translation>
 <translation id="2883143988769190738">इस एक्सटेंशन को ये अनुमतियां चाहिए:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (क्रमांक <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> (क्रमांक <ph name="SERIAL_NUMBER" />) विक्रेता की ओर से <ph name="PRODUCT_NAME" /></translation>
 <translation id="3561217442734750519">निजी कुंजी के लिए इनपुट मान, एक मान्य पाथ होना चाहिए.</translation>
+<translation id="3769470010314114481">इससे एक्सटेंशन को साइट पर मौजूद आपके डेटा का ऐक्सेस कुछ समय के लिए मिलता है</translation>
 <translation id="3788401245189148511">यह निम्न कर सकता है:</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" ऐप्लिकेशन जोड़ा नहीं जा सका क्योंकि उसका "<ph name="INSTALLED_APP_NAME" />" से विरोध है.</translation>
 <translation id="388442998277590542">विकल्‍प पेज '<ph name="OPTIONS_PAGE" />' लोड नहीं कर सका.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">एक्‍सटेंशन चालू करें</translation>
 <translation id="3927932062596804919">अस्वीकार करें</translation>
 <translation id="3984413272403535372">एक्सटेंशन हस्ताक्षरित करते समय गड़बड़ी आई.</translation>
+<translation id="3990894032742690314">इससे, सूची में शामिल साइटों पर हमेशा ऐक्सेस मिलता है</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" को ठीक करें?</translation>
 <translation id="4061696872429826774">आपके कंप्यूटर पर किसी अन्य प्रोग्राम ने ऐसा एक्सटेंशन जोड़ा है जो Chromium के काम करने के तरीके को बदल सकता है.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">संक्षिप्त विवरण पेज '<ph name="ABOUT_PAGE" />' लोड नहीं हो सका.</translation>
 <translation id="424963718355121712">ऐप्लिकेशन को उस होस्ट से पेश किया जाना चाहिए, जिसे वे प्रभावित करते हैं</translation>
 <translation id="4306119971288449206">ऐप्लिकेशन को सामग्री-प्रकार "<ph name="CONTENT_TYPE" />" के साथ दिया जाना चाहिए</translation>
+<translation id="4307774243840254737">इससे, एक्सटेंशन को यहां दी गई साइटों पर मौजूद आपके डेटा का ऐक्सेस हमेशा के लिए मिलता है</translation>
 <translation id="4349181963619779233">इस वेबसाइट से एक्सटेंशन और ऐप्लिकेशन नहीं जोड़े जा सकते</translation>
 <translation id="4625078469366263107">ऐप्लिकेशन चालू करें</translation>
 <translation id="4633003931260532286">एक्‍सटेंशन के लिए "<ph name="IMPORT_NAME" />" को न्‍यूनतम "<ph name="IMPORT_VERSION" />" वर्शन का होना चाहिए, लेकिन केवल "<ph name="INSTALLED_VERSION" />" वर्शन ही इंस्‍टॉल किया गया है</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" का नवीनतम वर्शन अक्षम कर दिया गया है क्‍योंकि इसे ज़्यादा अनुमतियों की आवश्‍यकता है.</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" को चालू करें?</translation>
 <translation id="5356315618422219272">ऐप्‍स दृश्‍य: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">सिर्फ़ तब, जब आप एक्सटेंशन पर क्लिक करें</translation>
 <translation id="5405650547142096840">क्रोमियम से निकालें</translation>
 <translation id="5456409301717116725">एक्सटेंशन में कुंजी फ़ाइल ‘<ph name="KEY_PATH" />' शामिल है. संभवतः आप ऐसा नहीं करना चाहते हैं.</translation>
 <translation id="5485102783864353244">ऐप्लिकेशन जोड़ें</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">माइमहैंडलर: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">इस एक्सटेंशन ने स्वयं को बहुत जल्दी-जल्दी फिर से लोड किया.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> की ओर से अज्ञात <ph name="PRODUCT_ID" /> प्रॉडक्ट</translation>
+<translation id="7017635639223148413">सूची में शामिल साइटें</translation>
 <translation id="7068383018033524534">मेनिफ़ेस्ट फ़ाइल गलत है</translation>
 <translation id="7217838517480956708">इस मशीन का व्यवस्थापक चाहता है कि <ph name="EXTENSION_NAME" /> इंस्टॉल किया हुआ हो. इसे निकाला या संशोधित नहीं किया जा सकता.</translation>
 <translation id="7287143125007575591">एक्सेस मना कर दिया गया.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">सामने वाला कैमरा</translation>
 <translation id="8047248493720652249">यह एक्सटेंशन "<ph name="ATTEMPTED_FILENAME" />" डाउनलोड को नाम देने में विफल रहा, क्योंकि किसी अन्य एक्सटेंशन (<ph name="EXTENSION_NAME" />) ने एक भिन्न फ़ाइलनाम "<ph name="ACTUAL_FILENAME" />" तय कर लिया है.</translation>
 <translation id="8049705080247101012">Google ने <ph name="EXTENSION_NAME" /> को नुकसान पहुंचाने वाले के रूप में फ़्लैग किया है और इंस्टॉलेशन रोक दिया गया है</translation>
+<translation id="823691536304079791">अपना डेटा ऐक्सेस करें और उसमें बदलाव करें</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> की ओर से <ph name="PRODUCT_NAME" /></translation>
 <translation id="8353683614194668312">यह एक्सटेंशन:</translation>
 <translation id="8517576857589387417">मेनिफ़ेस्ट फ़ाइल नहीं मिल रही है या पढ़ने के लिए उपलब्ध नहीं है</translation>

@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">ಆ್ಯಪ್ ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆ ಮಾಡಿದ ಪಿನ್ ಮಾಡಿದ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ ಟ್ಯಾಬ್</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> ಮುಚ್ಚಲಾಗಿದೆ</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="2138283760993967204">ಐಕಾನ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, ಆಯ್ಕೆಮಾಡಿದ ರೆಕಾರ್ಡಿಂಗ್ ಟ್ಯಾಬ್</translation>
 <translation id="2141396931810938595">ನಿಮ್ಮ ಬಳಕೆಯನ್ನು ಆಧರಿಸಿ</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">ಈಗತಾನೇ</translation>
 <translation id="276378135349383280">ಕೆಳ ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿ Gemini ತೋರಿಸಿ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ಹೆಸರಿನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ.</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> ಅನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ಸೆಕೆಂಡುಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="2779651927720337254">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="2781151931089541271">1 ಸೆಕೆಂಡು ಉಳಿದಿದೆ</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್ ನೆನಪಿಟ್ಟುಕೊಳ್ಳುವ ಅಗತ್ಯವಿಲ್ಲ. ಅದನ್ನು <ph name="USERNAME" /> ನ Google Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="4128312955780560730">ನಿಮ್ಮ ಇನ್‌ಕಾಗ್ನಿಟೊ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="4132137475637520539">ಲಿಂಕ್ ಅನ್ನು ಹೊಂದಿರುವ ಯಾರಿಗಾದರೂ ಸೇರಿಕೊಳ್ಳಲು ಅವಕಾಶ ಮಾಡಿಕೊಡಿ</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆಮಾಡಿದ ಪಿನ್ ಮಾಡಿದ ರೆಕಾರ್ಡಿಂಗ್ ಟ್ಯಾಬ್</translation>
 <translation id="4137746084635924146">ಪ್ರಸ್ತುತ ಸಾಧನ ಭಾಷೆ</translation>
 <translation id="414128724510021958">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್‌ಗಳನ್ನು ಡಿಫಾಲ್ಟ್ ಆಗಿ ವಿನಂತಿಸಲಾಗಿದೆ</translation>
@@ -2034,6 +2037,7 @@
 <translation id="8676789164135894283">ಸೈನ್ ಇನ್ ದೃಢೀಕರಣಗಳು</translation>
 <translation id="867914734596684889">ಬುಕ್‌ಮಾರ್ಕ್‌ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ ಅಥವಾ ಮರೆಮಾಡಿ</translation>
 <translation id="8683039184091909753">ಚಿತ್ರ</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ಟ್ಯಾಬ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8694622119922491927">ಈ ಸೈಟ್‌ಗಾಗಿ ಮಾನವ ಇಂಟರ್‌ಫೇಸ್ ಸಾಧನಗಳನ್ನು (HID ಗಳು) ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು <ph name="APP_NAME" /> ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ. ನೀವು ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಂತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಆ್ಯಪ್‌ಗಳು &gt; ವಿಶೇಷ ಆ್ಯಪ್ ಆ್ಯಕ್ಸೆಸ್‌ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="8696297579102085705">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಿ</translation>

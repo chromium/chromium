@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">निष्क्रिय स्थिति डेटा</translation>
 <translation id="2058456167109518507">डिवाइस की पहचान हुई</translation>
 <translation id="2064048859448024834">वीडियो कैमरे में झलक दिखाई जा रही है</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 लिंक}one{# लिंक}other{# लिंक}}</translation>
 <translation id="2067220651560163985">तापमान को सेल्सियस में दिखाएं</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ने <ph name="PRINTER_NAME" /> की मदद से प्रिंट कर दिया है</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> को टॉगल करें. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> है</translation>

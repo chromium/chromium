@@ -852,6 +852,7 @@
 <translation id="1921544956190977703">ஆபத்தான இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றுக்கு எதிராக Chromeமின் வலிமையான பாதுகாப்பு உங்களிடம் உள்ளது</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">இந்தச் சாதனத்தில் மட்டும் "<ph name="NAME" />" சேமிக்கப்பட்டுள்ளது. உங்களின் பிற சாதனங்களில் பயன்படுத்த, அதை உங்கள் கணக்கில் சேமியுங்கள்.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">இதன் மூலம் திற:</translation>
 <translation id="1925017091976104802">ஒட்ட, <ph name="MODIFIER_KEY_DESCRIPTION" /> ஐ அழுத்தவும்</translation>
 <translation id="1925021887439448749">பிரத்தியேக இணைய முகவரியை உள்ளிடவும்</translation>
@@ -1401,6 +1402,7 @@
 <translation id="2528487766183344810">கிளையண்ட் சான்றிதழை எக்ஸ்போர்ட் செய்ய <ph name="TOKEN_NAME" /> ஐ அன்லாக் செய்யுங்கள்.</translation>
 <translation id="2532198298278778531">ChromeOS Flex அமைப்புகளில் பாதுகாப்பான DNSஸை நிர்வகித்தல்</translation>
 <translation id="253434972992662860">&amp;இடைநிறுத்து</translation>
+<translation id="2534439599863644240">சீரியல் போர்ட்</translation>
 <translation id="253498598929009420">உங்கள் திரையில் உள்ளவற்றை இந்தத் தளத்தால் பார்க்க முடியும்</translation>
 <translation id="253557089021624350">கீப்அலைவ் கவுண்ட்</translation>
 <translation id="2537395079978992874">பின்வரும் கோப்புகளையும் ஃபோல்டர்களையும் <ph name="ORIGIN" /> தளத்தால் பார்க்கவும் திருத்தவும் முடியும்</translation>

@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">無法開啟應用程式</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />，複選咗分享緊內容嘅固定分頁</translation>
 <translation id="213279576345780926">已關閉「<ph name="TAB_TITLE" />」</translation>
+<translation id="2133857665503360653">重試 <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">管理圖示</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />，揀咗錄緊媒體嘅分頁</translation>
 <translation id="2141396931810938595">根據使用情況</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">剛剛</translation>
 <translation id="276378135349383280">在底部工具列顯示 Gemini</translation>
 <translation id="276969039800130567">以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入。</translation>
+<translation id="2770082596325051055">暫停下載 <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">尚餘 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失敗</translation>
 <translation id="2781151931089541271">尚餘 1 秒</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">您不需記住此密碼。系統會將密碼儲存至 <ph name="USERNAME" /> 的「Google 密碼管理工具」。</translation>
 <translation id="4128312955780560730">鎖定無痕式分頁</translation>
 <translation id="4132137475637520539">讓任何擁有連結的使用者參加</translation>
+<translation id="4132969033912447558">繼續下載 <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />，複選咗錄緊媒體嘅固定分頁</translation>
 <translation id="4137746084635924146">目前的裝置語言</translation>
 <translation id="414128724510021958">已根據預設要求顯示桌面版網站</translation>
@@ -2035,6 +2038,7 @@
 <translation id="8676789164135894283">登入驗證</translation>
 <translation id="867914734596684889">顯示或隱藏「書籤列」</translation>
 <translation id="8683039184091909753">圖片</translation>
+<translation id="8687103160920393343">取消下載 <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，已選取的分頁</translation>
 <translation id="8694622119922491927">「<ph name="APP_NAME" />」需要取得權限，才能讓這個網站存取人體學介面裝置 (HID)。你可稍後前往 [設定] &gt; [應用程式] &gt; [特別應用程式權限] 變更此設定。</translation>
 <translation id="8696297579102085705">傳送至你的裝置</translation>

@@ -281,6 +281,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2122601567107267586">Ekki var hægt að opna forritið</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, margvalinn festur flipi í deilingu</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> lokað</translation>
+<translation id="2133857665503360653">Reyna aftur að sækja <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Stjórna tákni</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, valinn upptökuflipi</translation>
 <translation id="2141396931810938595">Miðað við notkun þína</translation>
@@ -448,6 +449,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2762000892062317888">rétt í þessu</translation>
 <translation id="276378135349383280">Sýna Gemini á neðstu tækjastiku</translation>
 <translation id="276969039800130567">Skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Gera hlé á <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sek. eftir</translation>
 <translation id="2779651927720337254">mistókst</translation>
 <translation id="2781151931089541271">Ein sek. eftir</translation>
@@ -789,6 +791,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4121654769234887259">Þú þarft ekki að muna þetta aðgangsorð. Það verður vistað í Google-aðgangsorðastjórnun fyrir <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Læstu huliðsflipunum þínum</translation>
 <translation id="4132137475637520539">Leyfa öllum með tengilinn að taka þátt</translation>
+<translation id="4132969033912447558">Halda áfram í <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, margvalinn festur upptökufllipi</translation>
 <translation id="4137746084635924146">Núverandi tungumál tækis</translation>
 <translation id="414128724510021958">Sjálfgefið beðið um tölvuvefsvæði</translation>
@@ -2035,6 +2038,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8676789164135894283">Innskráningarstaðfestingar</translation>
 <translation id="867914734596684889">Sýna eða fela bókamerkjastiku</translation>
 <translation id="8683039184091909753">mynd</translation>
+<translation id="8687103160920393343">Hætta við <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085">Valinn flipi: <ph name="TAB_TITLE" /></translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> þarf heimild til að fá aðgang að notandaviðmótstækjum (HID) fyrir þetta vefsvæði. Þú getur breytt þessari stillingu síðar í „Stillingar &gt; Forrit &gt; Sérstakur aðgangur forrita“.</translation>
 <translation id="8696297579102085705">Senda í tækið þitt</translation>

@@ -141,6 +141,7 @@
 <translation id="2295218613066132598">顯示 Chrome 網站捷徑</translation>
 <translation id="2301513536169703857">如要在你的所有裝置上取用密碼、書籤和其他資料，請登入 Chrome</translation>
 <translation id="2307973900865360088">保留在 Dock</translation>
+<translation id="2308558013860776484">分享 Chrome 以外內容的螢幕截圖，例如其他應用程式或檔案</translation>
 <translation id="2309047409763057870">這是以並行形式安裝的第二個 Google Chrome，因此無法設定為您的預設瀏覽器。</translation>
 <translation id="2345992953227471816">Chrome 發現以下擴充程式含有惡意軟件：</translation>
 <translation id="2358140144860869442">如要在你的所有裝置上取用閱讀清單及其他設定，請登入 Chrome</translation>
@@ -250,6 +251,7 @@
 <translation id="3294686910656423119">使用情況統計和當機報告</translation>
 <translation id="3327226547491422998">日後 Chrome 可詢問你是否要使用已儲存的資料自動填入表格</translation>
 <translation id="3352986031709923790">搜尋區域嘅右上角：距右側 <ph name="RIGHT" />%，距頂部 <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">網站和 Chrome 可使用直接在裝置上執行的 AI，提供摘要、校對、字幕等功能。這有別於「Chrome 版 Gemini」。<ph name="BEGIN_LINK" />進一步瞭解裝置內置 AI<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">部分 Chrome 功能和擴充程式設有捷徑。你可以選擇重新開啟。</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 將立即重新啟動}=1{Chrome 將於 1 秒後重新啟動}other{Chrome 將於 # 秒後重新啟動}}</translation>
 <translation id="3380249972812870825">如果要開啟 Chrome 版 Gemini，請㩒 <ph name="GLOBAL_HOTKEY" /></translation>
@@ -348,6 +350,7 @@
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
 <translation id="4434353761996769206">安裝程式錯誤：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">與 Chrome 版 Gemini 分享此文件即可撮要文件內容並提出後續問題</translation>
+<translation id="4440999670272408191">你可隨時移除這些模型。當網站或功能需要使用這些模型時，Chrome 可能會自動重新下載。</translation>
 <translation id="4450664632294415862">Chrome - 網絡登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在執行另一項操作，請稍後再試。</translation>
 <translation id="4493028449971051158">啟動錯誤：請以管理員身分執行安裝程式。</translation>
@@ -355,6 +358,7 @@
 <translation id="4501839397124711198">你可將「Google 搜尋」固定在側面板，以在瀏覽時提問</translation>
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
 <translation id="4580939929828762295">「Google 密碼管理工具」為你的安全護航</translation>
+<translation id="4589544932092381064">在 Windows 工作列顯示 Chrome 的搜尋功能，並啟用鍵盤快速鍵</translation>
 <translation id="459622048091363950">Chrome 獲得存取權後，網站便可向您要求存取權。</translation>
 <translation id="4598116752460667024">搵清單入面嘅任何程序。</translation>
 <translation id="4600710005438004015">由於 Chrome 無法更新至最新版本，因此您無法使用最新功能和安全性修正。</translation>
@@ -370,6 +374,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">使用 Chrome 的 V8 引擎加快網站速度，但 Chrome 防攻擊的能力會略為下降</translation>
 <translation id="4768676935374695498">使用「Google 智能鏡頭」搜尋此影片</translation>
+<translation id="4783580253728290203">關閉後，Chrome 會移除裝置內置 AI 模型，且不會再次下載。部分網站和 Chrome 功能可能無法運作。</translation>
 <translation id="479167709087336770">這會使用與「Google 搜尋」相同的的拼字檢查工具。您在瀏覽器輸入的文字將會傳送給 Google。您可以在設定中變更此行為。</translation>
 <translation id="4793679854893018356">瞭解 Chrome 如何保護使用者的網上安全</translation>
 <translation id="4803313124144656665">關閉 Chrome 中的「Google 搜尋」</translation>
@@ -455,6 +460,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">無法連線至互聯網。Proxy 伺服器需要驗證。</translation>
 <translation id="5709557627224531708">將 Chrome 設為預設瀏覽器</translation>
+<translation id="5715427327524421317">Chrome 會自動下載並更新這些 AI 模型</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{「進階保護功能」要求你重新啟動 Chrome 以套用更新。隔離視窗不會重開。}other{「進階保護功能」要求你重新啟動 Chrome 以套用更新。# 個隔離視窗不會重開。}}</translation>
 <translation id="5719246646468301581">Google Chrome 和 ChromeOS 附加服務條款</translation>
 <translation id="5736850870166430177">如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能</translation>
@@ -546,6 +552,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6491330562720922580">此二維碼用於在流動裝置下載 Chrome 瀏覽器</translation>
 <translation id="6493527311031785448">Google Chrome 正在嘗試<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome 已自動關閉</translation>
+<translation id="650039555447046671">Chrome 會從此裝置移除 AI 模型。部分網站和 Chrome 功能可能無法運作。</translation>
 <translation id="6506909944137591434">Chrome 需要相機權限，才能根據您身處的環境製作 3D 地圖</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 開發人員版</translation>
 <translation id="6520670145826811516">如要使用位置，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chrome 授予存取權</translation>
@@ -584,6 +591,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6877155553248388166">搜尋區域嘅右下角：距右側 <ph name="RIGHT" />%，距底部 <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">開啟「Chrome 搜尋」功能</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
+<translation id="6881997500528805781">使用裝置儲存空間。Chrome 會在 45 天後或儲存空間不足時移除未使用的 AI 模型</translation>
 <translation id="6885412569789873916">Chrome 測試版應用程式</translation>
 <translation id="6893363893008038481">從 Chrome 移除帳戶</translation>
 <translation id="6896758677409633944">複製</translation>

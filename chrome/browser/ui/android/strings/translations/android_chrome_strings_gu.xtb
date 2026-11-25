@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">ઍપ ખોલી ન શક્યાં</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું પિન કરેલું શેર કરતું ટૅબ</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> બંધ કર્યું છે</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> માટે ફરી પ્રયાસ કરો</translation>
 <translation id="2138283760993967204">'મેનેજ કરો' આઇકન</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, પસંદ કરેલું રેકોર્ડ કરતું ટૅબ</translation>
 <translation id="2141396931810938595">તમારા વપરાશ પર આધારિત</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">હમણાં જ</translation>
 <translation id="276378135349383280">સૌથી નીચેના ટૂલબારમાં Gemini બતાવો</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કરો.</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> થોભાવો</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> સેકંડ બાકી</translation>
 <translation id="2779651927720337254">નિષ્ફળ થયું</translation>
 <translation id="2781151931089541271">1 સેકંડ બાકી</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">તમારે આ પાસવર્ડ યાદ રાખવાની જરૂર રહેશે નહીં. તેને <ph name="USERNAME" /> માટેના Google Password Managerમાં સાચવવામાં આવશે.</translation>
 <translation id="4128312955780560730">તમારા છૂપા ટૅબ લૉક કરો</translation>
 <translation id="4132137475637520539">લિંક ધરાવતી કોઈપણ વ્યક્તિને જોડાવા દો</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> ફરી શરૂ કરો</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું પિન કરેલું, રેકોર્ડ કરતું ટૅબ</translation>
 <translation id="4137746084635924146">ડિવાઇસની હાલની ભાષા</translation>
 <translation id="414128724510021958">ડિફૉલ્ટ તરીકે વિનંતી કરાયેલી ડેસ્કટૉપ સાઇટ</translation>
@@ -2035,6 +2038,7 @@
 <translation id="8676789164135894283">સાઇન ઇન માટેની ચકાસણીઓ</translation>
 <translation id="867914734596684889">બુકમાર્ક બાર બતાવો અથવા છુપાવો</translation>
 <translation id="8683039184091909753">છબી</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> રદ કરો</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, પસંદ કરેલું ટૅબ</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" />ને આ સાઇટ માટે હ્યુમન ઇન્ટરફેસ ડિવાઇસ (HIDs) ઍક્સેસ કરવાની પરવાનગી જોઈએ છે. તમે આ સેટિંગને પછીથી સેટિંગ &gt; ઍપ &gt; ઍપના વિશિષ્ટ ઍક્સેસમાં જઈને બદલી શકો છો.</translation>
 <translation id="8696297579102085705">તમારા ડિવાઇસ પર મોકલો</translation>

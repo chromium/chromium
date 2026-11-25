@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">មិនអាច​បើក​កម្មវិធី​បានទេ</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, ផ្ទាំង​ដែលបាន​ខ្ទាស់ និងបាន​ជ្រើសរើស​ច្រើន​ដែលកំពុង​បង្ហាញ</translation>
 <translation id="213279576345780926">បានបិទ <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653">សាកល្បងទាញយក <ph name="FILE_NAME" /> ម្ដង​ទៀត</translation>
 <translation id="2138283760993967204">រូប​គ្រប់គ្រង</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, ផ្ទាំង​ដែលបាន​ជ្រើសរើស​ដែល​កំពុងថត</translation>
 <translation id="2141396931810938595">ផ្អែកលើការប្រើប្រាស់របស់អ្នក</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">អំបាញ់មិញនេះ</translation>
 <translation id="276378135349383280">បង្ហាញ Gemini ក្នុងរបារឧបករណ៍ខាងក្រោម</translation>
 <translation id="276969039800130567">បានចូលជា <ph name="USER_EMAIL_ADDRESS" />។</translation>
+<translation id="2770082596325051055">ផ្អាក <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">នៅសល់ <ph name="SECONDS" /> វិនាទីទៀត</translation>
 <translation id="2779651927720337254">បានបរាជ័យ</translation>
 <translation id="2781151931089541271">នៅសល់ 1 វិនាទីទៀត</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">អ្នកនឹង​មិនចាំបាច់​ចងចាំ​ពាក្យសម្ងាត់​នេះទេ។ ពាក្យសម្ងាត់នេះ​នឹងត្រូវបានរក្សាទុក​ទៅក្នុងកម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់សម្រាប់ <ph name="USERNAME" />។</translation>
 <translation id="4128312955780560730">ចាក់សោផ្ទាំងឯកជនរបស់អ្នក</translation>
 <translation id="4132137475637520539">អនុញ្ញាតឱ្យគ្រប់គ្នាដែលមានតំណចូលរួម</translation>
+<translation id="4132969033912447558">បន្ត <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, ផ្ទាំងដែល​បាន​ខ្ទាស់ និងបាន​ជ្រើសរើស​ច្រើន ដែលកំពុងថត</translation>
 <translation id="4137746084635924146">ភាសា​ឧបករណ៍​បច្ចុប្បន្ន</translation>
 <translation id="414128724510021958">គេហទំព័រកុំព្យូទ័រត្រូវបានស្នើសុំតាមលំនាំដើម</translation>
@@ -2035,6 +2038,7 @@
 <translation id="8676789164135894283">ការផ្ទៀងផ្ទាត់​ការចូលគណនី</translation>
 <translation id="867914734596684889">បង្ហាញ ឬ​លាក់​របារចំណាំ</translation>
 <translation id="8683039184091909753">រូបភាព</translation>
+<translation id="8687103160920393343">បោះបង់ <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ផ្ទាំង​ដែលបាន​ជ្រើសរើស</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> ត្រូវការការអនុញ្ញាតឱ្យចូលប្រើឧបករណ៍ផ្ទៃអន្តរកម្ម (HID) សម្រាប់គេហទំព័រនេះ។ អ្នកអាចផ្លាស់ប្ដូរការកំណត់នេះនៅពេលក្រោយនៅក្នុង ការកំណត់ &gt; កម្មវិធី &gt; ការចូលប្រើកម្មវិធីពិសេស។</translation>
 <translation id="8696297579102085705">ផ្ញើទៅឧបករណ៍របស់អ្នក</translation>

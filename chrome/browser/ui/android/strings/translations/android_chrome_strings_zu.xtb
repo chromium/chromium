@@ -281,6 +281,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="2122601567107267586">Ayikwazanga ukuvula uhlelo lokusebenza</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, Ithebhu Ephiniwe Yokwabelana Enokukhethwa Okuningi</translation>
 <translation id="213279576345780926">I-<ph name="TAB_TITLE" /> evaliwe</translation>
+<translation id="2133857665503360653">Phinda uzame i-<ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Lawula isithonjana</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, Ithebhu Yokurekhoda Ekhethiwe</translation>
 <translation id="2141396931810938595">Ngokusekelwe ekusebenziseni kwakho</translation>
@@ -448,6 +449,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="2762000892062317888">khona manje</translation>
 <translation id="276378135349383280">Bonisa iGemini kubha yamathuluzi</translation>
 <translation id="276969039800130567">Ingene ngemvume njengo-<ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Phumuza i-<ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> amasekhondi asele</translation>
 <translation id="2779651927720337254">yehlulekile</translation>
 <translation id="2781151931089541271">1 isekhondi elisele</translation>
@@ -789,6 +791,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="4121654769234887259">Ngeke kudingeke ukuba ukhumbule le phasiwedi. Izolondolozwa ku-Google Password Manager ye-<ph name="USERNAME" /></translation>
 <translation id="4128312955780560730">Khiya amathebhu akho e-Incognito</translation>
 <translation id="4132137475637520539">Vumela noma ubani onelinki ukujoyina</translation>
+<translation id="4132969033912447558">Qala kabusha i-<ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, Ithebhu Yokurekhoda Ephiniwe Enokukhethwa Okuningi</translation>
 <translation id="4137746084635924146">Ulimi lwedivayisi lwamanje</translation>
 <translation id="414128724510021958">Amasayithi edeskithophu acelwe ngokuzenzakalelayo</translation>
@@ -2035,6 +2038,7 @@ Ukuze ushintshe le sethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-Chrome
 <translation id="8676789164135894283">Iziqinisekiso zokungena ngemvume</translation>
 <translation id="867914734596684889">Bonisa noma fihla Ibha yamabhukhimakhi</translation>
 <translation id="8683039184091909753">isithombe</translation>
+<translation id="8687103160920393343">Khansela i-<ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Ithebhu Ekhethiwe</translation>
 <translation id="8694622119922491927">I-<ph name="APP_NAME" /> idinga imvume yokufinyelela amadivayisi esixhumi esibonakalayo somuntu (ama-HID) kuleli sayithi. Ungashintsha leli sethingi kamuva Kumasethingi &gt; Ama-app &gt; Ukufinyelela i-app ekhethekile.</translation>
 <translation id="8696297579102085705">Thumela kudivayisi yakho</translation>

@@ -53,6 +53,7 @@
 <translation id="1572572333538561328">검색 AI 모드 다시 열기</translation>
 <translation id="1574377791422810894">Chromium의 안전 도구</translation>
 <translation id="1594928384848033697">Chromium에서 비밀번호 관리자 데이터를 삭제하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
+<translation id="1599690375407103815">사용 중지하면 Chromium에서 온디바이스 AI 모델을 삭제하며 다시 다운로드하지 않습니다. 일부 사이트 및 Chromium 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="1625909126243026060">Chromium의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
 <translation id="1640672724030957280">다운로드 중...</translation>
@@ -67,6 +68,7 @@
 <translation id="1745121272106313518"><ph name="REMAINING_TIME" /> 후에 Chromium 다시 시작</translation>
 <translation id="1749104137266986751">HTTPS를 사용할 수 없는 경우, Chromium에서 경고 없이 안전하지 않은 연결을 사용합니다.</translation>
 <translation id="1774152462503052664">백그라운드에서 Chromium을 실행</translation>
+<translation id="1792680680989393197">언제든지 삭제할 수 있습니다. 사이트 또는 기능에 필요한 경우 Chromium에서 자동으로 다시 다운로드할 수 있습니다.</translation>
 <translation id="1793486931176048546">빠른 액세스를 위해 Windows 알림에서 <ph name="BEGIN_BOLD" />예<ph name="END_BOLD" /> 버튼을 클릭하여 Chromium을 태스크 바에 고정합니다.</translation>
 <translation id="1808667845054772817">Chromium 재설치</translation>
 <translation id="1820835682567584003">Chromium에서 <ph name="AUTHENTICATION_PURPOSE" />을(를) 시도하는 중입니다.</translation>
@@ -251,6 +253,7 @@
 <translation id="3751920144677881410">툴바의 '검색 측면 패널' 버튼에서 검색 측면 패널을 다시 열어 탐색 중에 질문할 수 있습니다.</translation>
 <translation id="3788675262216168505">Chromium 프로필 관리</translation>
 <translation id="3790262771324122253">Chromium에서 일부 다운로드를 차단하는 이유 알아보기</translation>
+<translation id="3793196697433239004">기기 저장용량을 사용합니다. Chromium은 45일이 경과하거나 저장용량이 부족할 때 사용하지 않는 AI 모델을 삭제합니다.</translation>
 <translation id="379589255253486813">검토가 필요한 경우 Chromium에서 알려드립니다</translation>
 <translation id="3802055581630249637">Chromium은 사용자가 방문할 가능성이 있는 페이지를 미리 로드하여 사용자가 방문할 때 페이지를 더 빠르게 로드합니다.</translation>
 <translation id="3810973564298564668">관리</translation>
@@ -332,6 +335,7 @@
 <translation id="4621240073146040695">업데이트가 거의 완료되었습니다. 업데이트를 완료하려면 Chromium을 다시 시작하세요.</translation>
 <translation id="4625064703209785397">Chromium의 V8 엔진으로 사이트 속도를 높이지만 Chromium이 공격에 약간 더 취약해집니다.</translation>
 <translation id="4626321472657185181">Chromium으로 검색 열기</translation>
+<translation id="4639628733881319833">다른 앱이나 파일과 같은 Chromium 외부 콘텐츠의 스크린샷을 공유하세요.</translation>
 <translation id="4654639495249754755">Chromium 프로필</translation>
 <translation id="4665829708273112819">경고: Chromium에서는 확장 프로그램에 인터넷 사용 기록이 저장될 수 있습니다. 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 옵션을 선택 해제하세요.</translation>
 <translation id="4673151026126227699">Chromium 사용 보고서도 공유하면 내가 방문한 URL이 해당 보고서에 포함됩니다.</translation>
@@ -389,6 +393,7 @@
 <translation id="5405650547142096840">Chromium에서 제거</translation>
 <translation id="5424544524441439284">성능은 감소하지만 Chromium의 공격에 대한 저항력이 강화됨</translation>
 <translation id="5427571867875391349">Chromium을 기본 브라우저로 설정</translation>
+<translation id="5435079900593041559">Windows 태스크 바에 Chromium으로 검색 표시 및 키보드 단축키 사용 설정</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium 베타</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}other{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}}</translation>
 <translation id="5473971139929175403">이 Linux 배포판에서 더 이상 Chromium을 지원하지 않으므로 Chromium이 올바르게 작동하지 않을 수 있습니다.</translation>
@@ -415,6 +420,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">이 언어로 Chromium 표시</translation>
 <translation id="569897634095159764">인터넷에 연결할 수 없습니다. 프록시 서버를 인증해야 합니다.</translation>
+<translation id="5755377560105094542">사이트와 Chromium에서는 요약, 교정, 자막 등의 기능에 기기에서 직접 실행되는 AI를 사용할 수 있습니다. 이는 Chromium의 Gemini와는 별개입니다. <ph name="BEGIN_LINK" />온디바이스 AI에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">툴바의 '검색 패널' 버튼에서 검색 패널을 다시 열어 탐색 중에 질문할 수 있습니다.</translation>
 <translation id="5768371961535086509">Chromium이 비활성 탭에서 메모리를 확보합니다. 이에 따라 활성 탭과 기타 앱에 더 많은 컴퓨터 리소스가 제공되고 Chromium의 빠른 속도가 유지됩니다. 비활성 탭으로 돌아가면 탭이 자동으로 다시 활성화됩니다. <ph name="BEGIN_LINK" />메모리 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">암호가 기억나지 않거나 이 설정을 변경하려면 계정의 Chromium 데이터를 <ph name="SETTINGS_LINK" />하세요.</translation>
@@ -471,6 +477,7 @@
 <translation id="6245734527075554892">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다.</translation>
 <translation id="6248213926982192922">Chromium을 기본 브라우저로 설정</translation>
 <translation id="6248988683584659830">설정 검색</translation>
+<translation id="6251986571402453005">Chromium에서 이러한 AI 모델을 자동으로 다운로드하고 업데이트합니다.</translation>
 <translation id="6268381023930128611">Chromium에서 로그아웃</translation>
 <translation id="6270547683008298381">이러한 탭은 추가 리소스를 사용하고 있습니다. 성능을 개선하려면 Chromium에서 이러한 탭을 비활성화하도록 허용하세요.</translation>
 <translation id="6281746429495226318">Chromium 프로필 맞춤설정</translation>
@@ -761,6 +768,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8981886272598860786">Chromium으로 검색하거나 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 맞춤설정합니다.</translation>
 <translation id="8988036198400390003">Chromium 프로필 관리</translation>
 <translation id="8993855408334954620">키보드를 사용하여 Chromium의 Gemini와 열려 있는 탭 사이를 이동할 수 있습니다.</translation>
+<translation id="9002987346523307190">Chromium에서 이 기기의 AI 모델을 삭제합니다. 일부 사이트 및 Chromium 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="9018218886431812662">설치 완료</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>
 <translation id="9035791714111278917">Mac 메뉴 바에 Chromium으로 검색 표시 및 키보드 단축키 사용 설정</translation>

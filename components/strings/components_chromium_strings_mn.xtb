@@ -24,6 +24,7 @@
 <translation id="4949828774841497663">Аппликейшн &gt; Системийн толхиргоо &gt; Сүлжээ рүү очиж,
           идэвхтэй сүлжээг сонгож, Дэлгэрэнгүй... товчин дээр товшиж, сонгосон байж болох
           аливаа проксигийн сонголтыг цуцална уу.</translation>
+<translation id="5228339820845278804">Сануулагч: Chromium-н аюулгүй байдлын шилдэг онцлогууд таны халаасанд байна</translation>
 <translation id="6480456350195404966">Та
           Chromium-н цэс &gt;
           <ph name="SETTINGS_TITLE" />
@@ -39,6 +40,7 @@
 <translation id="6613594504749178791">Таныг Chromium дахин эхлүүлэхэд өөрчлөлт идэвхжинэ.</translation>
 <translation id="691026815377248078">Үргэлжлүүлэн хослуулахын тулд Chromium-д Bluetooth-н 
  хандалт шаардлагатай. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">Chromium-н аюулгүй байдлын онцлогуудыг явж байх зуураа авахын тулд Chromium аппыг ашиглаарай</translation>
 <translation id="7681937895330411637">Chromium-г мөн <ph name="BEGIN_LINK_CHROMIUM" />Chromium-н<ph name="END_LINK_CHROMIUM" /> нээлттэй эх кодын төслөөр боломжтой болгосон.</translation>
 <translation id="7861509383340276692">Chromium цэс&gt; рүү орж
           <ph name="SETTINGS_TITLE" />

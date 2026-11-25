@@ -281,6 +281,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2122601567107267586">앱을 열 수 없음</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, 여러 개 선택되고 고정되고 공유 중인 탭</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> 닫음</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> 다시 시도</translation>
 <translation id="2138283760993967204">관리 아이콘</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, 선택되고 녹화 중인 탭</translation>
 <translation id="2141396931810938595">사용량 기준</translation>
@@ -448,6 +449,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2762000892062317888">방금 전</translation>
 <translation id="276378135349383280">하단 툴바에 Gemini 표시</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되었습니다.</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> 다운로드 일시중지</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" />초 남음</translation>
 <translation id="2779651927720337254">실패</translation>
 <translation id="2781151931089541271">1초 남음</translation>
@@ -789,6 +791,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4121654769234887259">비밀번호를 기억하지 않아도 됩니다. 비밀번호가 <ph name="USERNAME" />님의 Google 비밀번호 관리자에 저장됩니다</translation>
 <translation id="4128312955780560730">시크릿 탭 잠그기</translation>
 <translation id="4132137475637520539">링크가 있는 모든 사용자 참여 허용</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> 계속 다운로드</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, 여러 개 선택되고 고정되고 녹화 중인 탭</translation>
 <translation id="4137746084635924146">기기의 현재 언어</translation>
 <translation id="414128724510021958">기본적으로 요청되는 데스크톱 사이트</translation>
@@ -2035,6 +2038,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8676789164135894283">로그인 인증</translation>
 <translation id="867914734596684889">북마크바 표시 또는 숨기기</translation>
 <translation id="8683039184091909753">이미지</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> 다운로드 취소</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, 선택된 탭</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> 앱이 사이트에서 인간 인터페이스 장치(HID)에 액세스할 권한이 필요합니다. 나중에 설정 &gt; 앱 &gt; 특수 앱 액세스에서 이 설정을 변경할 수 있습니다.</translation>
 <translation id="8696297579102085705">기기로 보내기</translation>

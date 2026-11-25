@@ -843,6 +843,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1921544956190977703">Təhlükəli vebsaytlara, endirmələrə və artırmalara qarşı Chrome'un ən güclü təhlükəsizliyinə sahibsiniz</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">"<ph name="NAME" />" sadəcə bu cihazda yadda saxlanılıb. Onu digər cihazlarda istifadə etmək üçün hesabınızda yadda saxlayın.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Bununla açın</translation>
 <translation id="1925017091976104802">Əlavə etmək üçün <ph name="MODIFIER_KEY_DESCRIPTION" /> üzərinə basın</translation>
 <translation id="1925021887439448749">Fərdi veb ünvanı daxil edin</translation>
@@ -1393,6 +1394,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="2528487766183344810">Müştəri sertifikatını eksport etmək üçün <ph name="TOKEN_NAME" /> cihazını kiliddən çıxarın.</translation>
 <translation id="2532198298278778531">ChromeOS Flex ayarlarında güvənli DNS'i idarə edin</translation>
 <translation id="253434972992662860">Durdurun</translation>
+<translation id="2534439599863644240">Seriya portu</translation>
 <translation id="253498598929009420">Sayt ekrandakı kontenti görə biləcək</translation>
 <translation id="253557089021624350">İstifadə edilən artırma sayı</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> aşağıdakı fayl ilə qovluqlara baxa və redaktə edə bilər</translation>

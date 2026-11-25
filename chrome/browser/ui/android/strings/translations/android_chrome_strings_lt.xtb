@@ -281,6 +281,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2122601567107267586">Nepavyko atidaryti programos</translation>
 <translation id="2128579426409352593">„<ph name="TAB_TITLE" />“, kelis kartus pasirinktas prisegtas bendrinantis skirtukas</translation>
 <translation id="213279576345780926">„<ph name="TAB_TITLE" />“ uždaryta</translation>
+<translation id="2133857665503360653">Vėl bandyti atlikti veiksmą su <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Tvarkymo piktograma</translation>
 <translation id="2138632817776076519">„<ph name="TAB_TITLE" />“, pasirinktas įrašantis skirtukas</translation>
 <translation id="2141396931810938595">Pagal jūsų naudojimą</translation>
@@ -448,6 +449,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2762000892062317888">ką tik</translation>
 <translation id="276378135349383280">Rodyti „Gemini“ apatinėje įrankių juostoje</translation>
 <translation id="276969039800130567">Prisijungta kaip <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Pristabdyti <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">Liko <ph name="SECONDS" /> sek.</translation>
 <translation id="2779651927720337254">nepavyko</translation>
 <translation id="2781151931089541271">Liko 1 sek.</translation>
@@ -789,6 +791,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4121654769234887259">Jums nereikės prisiminti šio slaptažodžio. Jis bus išsaugotas „Google“ slaptažodžių tvarkyklėje kaip priskirtas el. pašto adresui <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Inkognito skirtukų užrakinimas</translation>
 <translation id="4132137475637520539">Leisti prisijungti visiems nuorodą turintiems žmonėms</translation>
+<translation id="4132969033912447558">Tęsti <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181">„<ph name="TAB_TITLE" />“, kelis kartus pasirinktas prisegtas įrašantis skirtukas</translation>
 <translation id="4137746084635924146">Dabartinės įrenginio kalba</translation>
 <translation id="414128724510021958">Svetainės kompiuteriams, kurių užklausos pateikiamos pagal numatytuosius nustatymus</translation>
@@ -2035,6 +2038,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8676789164135894283">Prisijungimo patvirtinimai</translation>
 <translation id="867914734596684889">Rodyti arba slėpti žymių juostą</translation>
 <translation id="8683039184091909753">vaizdas</translation>
+<translation id="8687103160920393343">Atšaukti <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085">„<ph name="TAB_TITLE" />“, pasirinktas skirtukas</translation>
 <translation id="8694622119922491927">„<ph name="APP_NAME" />“ reikia leidimo, kad galėtų pasiekti žmogaus sąsajos įrenginius (ŽSĮ) šioje svetainėje. Vėliau galite pakeisti šį nustatymą skiltyje „Nustatymai“ &gt; „Programos“ &gt; „Speciali prieiga prie programų“.</translation>
 <translation id="8696297579102085705">Siųsti į įrenginį</translation>

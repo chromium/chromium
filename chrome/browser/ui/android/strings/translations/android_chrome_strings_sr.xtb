@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">Отварање апликације није успело</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, вишеструко изабрана закачена картица за дељење</translation>
 <translation id="213279576345780926">Затворили сте картицу <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653">Поново отворите <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Икона Управљајте</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, изабрана картица за снимање</translation>
 <translation id="2141396931810938595">На основу коришћења</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">малопре</translation>
 <translation id="276378135349383280">Прикажи Gemini на траци с алаткама у дну</translation>
 <translation id="276969039800130567">Пријављени сте као <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Паузирајте фајл <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">Још <ph name="SECONDS" /> сек</translation>
 <translation id="2779651927720337254">није успело</translation>
 <translation id="2781151931089541271">Још 1 сек</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">Не морате да запамтите ову лозинку. Чува се у Google менаџеру лозинки за <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Закључајте картице без архивирања</translation>
 <translation id="4132137475637520539">Нека се придружи свако са линком</translation>
+<translation id="4132969033912447558">Наставите преузимање фајла <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, вишеструко изабрана закачена картица за снимање</translation>
 <translation id="4137746084635924146">Актуелни језик уређаја</translation>
 <translation id="414128724510021958">Верзије сајтова за рачунар које се подразумевано захтевају</translation>
@@ -2035,6 +2038,7 @@ Google налог можда има друге облике историје п�
 <translation id="8676789164135894283">Потврде пријављивања</translation>
 <translation id="867914734596684889">Прикажите или сакријте траку са обележивачима</translation>
 <translation id="8683039184091909753">слика</translation>
+<translation id="8687103160920393343">Откажите фајл <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, изабрана картица</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> тражи дозволу да приступи уређајима за људски интерфејс (HID-овима) за овај сајт. Ово подешавање можете да промените касније у Подешавања &gt; Апликације &gt; Посебан приступ апликацијама.</translation>
 <translation id="8696297579102085705">Пошаљи на уређај</translation>

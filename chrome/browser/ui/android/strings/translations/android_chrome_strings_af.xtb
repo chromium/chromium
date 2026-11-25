@@ -281,6 +281,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2122601567107267586">Kon nie app oopmaak nie</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, multigekose vasgespelde oortjie wat gedeel word</translation>
 <translation id="213279576345780926">Het <ph name="TAB_TITLE" /> toegemaak</translation>
+<translation id="2133857665503360653">Herprobeer <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Bestuur ikoon</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, gekose oortjie wat gedeel word</translation>
 <translation id="2141396931810938595">Gegrond op jou gebruik</translation>
@@ -448,6 +449,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2762000892062317888">sopas</translation>
 <translation id="276378135349383280">Wys Gemini in die onderste nutsbalk</translation>
 <translation id="276969039800130567">Aangemeld as <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Onderbreek <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekondes oor</translation>
 <translation id="2779651927720337254">misluk</translation>
 <translation id="2781151931089541271">1 sekonde oor</translation>
@@ -789,6 +791,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4121654769234887259">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal vir <ph name="USERNAME" /> in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="4128312955780560730">Sluit jou Incognito-oortjies</translation>
 <translation id="4132137475637520539">Laat enigiemand met die skakel aansluit</translation>
+<translation id="4132969033912447558">Hervat <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, multigekose vasgespelde oortjie wat opgeneem word</translation>
 <translation id="4137746084635924146">Huidige toesteltaal</translation>
 <translation id="414128724510021958">Rekenaarwerwe wat by verstek versoek is</translation>
@@ -2035,6 +2038,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8676789164135894283">Aanmeldingverifikasies</translation>
 <translation id="867914734596684889">Wys of versteek Boekmerkbalk</translation>
 <translation id="8683039184091909753">prent</translation>
+<translation id="8687103160920393343">Kanselleer <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, gekose oortjie</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> het toestemming nodig om toegang tot menskoppelvlaktoestelle (MKT’s) vir hierdie werf te kry. Jy kan hierdie instelling later verander in Instellings &gt; Apps &gt; Spesiale apptoegang.</translation>
 <translation id="8696297579102085705">Stuur na jou toestel toe</translation>

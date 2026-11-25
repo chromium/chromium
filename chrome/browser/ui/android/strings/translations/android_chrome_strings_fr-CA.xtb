@@ -281,6 +281,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2122601567107267586">Impossible d'ouvrir l'application</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, onglet épinglé et multisélectionné avec partage en cours</translation>
 <translation id="213279576345780926">Onglet <ph name="TAB_TITLE" /> fermé</translation>
+<translation id="2133857665503360653">Réessayer <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Icône Gérer</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, onglet sélectionné avec enregistrement en cours</translation>
 <translation id="2141396931810938595">En fonction de votre utilisation</translation>
@@ -448,6 +449,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2762000892062317888">à l'instant</translation>
 <translation id="276378135349383280">Afficher Gemini dans la barre d'outils inférieure</translation>
 <translation id="276969039800130567">Connecté en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Interrompre <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">Il reste <ph name="SECONDS" /> secondes</translation>
 <translation id="2779651927720337254">échec</translation>
 <translation id="2781151931089541271">Il reste 1 s</translation>
@@ -789,6 +791,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4121654769234887259">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google du compte <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Verrouiller vos onglets de navigation privée</translation>
 <translation id="4132137475637520539">Autoriser toute personne disposant du lien à se joindre</translation>
+<translation id="4132969033912447558">Reprendre l'activité de <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, onglet épinglé et multisélectionné avec enregistrement en cours</translation>
 <translation id="4137746084635924146">Langue actuelle de l'appareil</translation>
 <translation id="414128724510021958">Sites pour ordinateurs demandés par défaut</translation>
@@ -2035,6 +2038,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8676789164135894283">Vérifications de connexion</translation>
 <translation id="867914734596684889">Afficher ou masquer la barre de favoris</translation>
 <translation id="8683039184091909753">image</translation>
+<translation id="8687103160920393343">Annuler <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, onglet sélectionné</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> a besoin de votre autorisation pour accéder aux appareils d'interface humaine (HID) pour ce site. Vous pouvez modifier ce paramètre ultérieurement dans Paramètres &gt; Applis &gt; Accès spécial des applis.</translation>
 <translation id="8696297579102085705">Envoyer l'onglet à votre appareil</translation>

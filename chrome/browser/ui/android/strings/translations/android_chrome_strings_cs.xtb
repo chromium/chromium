@@ -281,6 +281,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2122601567107267586">Aplikaci nelze otevřít</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, jedna z několika vybraných připnutých sdílejících karet</translation>
 <translation id="213279576345780926">Karta <ph name="TAB_TITLE" /> byla zavřena.</translation>
+<translation id="2133857665503360653">Zkusit znovu otevřít soubor <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Ikona správy</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, vybraná nahrávající karta</translation>
 <translation id="2141396931810938595">Podle vašeho používání</translation>
@@ -448,6 +449,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2762000892062317888">právě teď</translation>
 <translation id="276378135349383280">Zobrazit Gemini na spodní liště</translation>
 <translation id="276969039800130567">Jste přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Pozastavit <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">Zbývá: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">nezdařilo se</translation>
 <translation id="2781151931089541271">Zbývá: 1 s</translation>
@@ -789,6 +791,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4121654769234887259">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google pro účet <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Zamkněte své anonymní karty</translation>
 <translation id="4132137475637520539">Připojit se může každý, kdo má odkaz</translation>
+<translation id="4132969033912447558">Obnovit <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, jedna z několika vybraných připnutých nahrávajících karet</translation>
 <translation id="4137746084635924146">Aktuální jazyk zařízení</translation>
 <translation id="414128724510021958">Ve výchozím nastavení jsou požadovány weby pro počítače</translation>
@@ -2035,6 +2038,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8676789164135894283">Ověření přihlášení</translation>
 <translation id="867914734596684889">Zobrazit nebo skrýt lištu záložek</translation>
 <translation id="8683039184091909753">obrázek</translation>
+<translation id="8687103160920393343">Zrušit <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, vybraná karta</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> pro tento web potřebuje oprávnění pro přístup k zařízením s lidským rozhraním (HID). Toto nastavení můžete později změnit v Nastavení &gt; Aplikace &gt; Speciální přístup aplikací.</translation>
 <translation id="8696297579102085705">Odeslat na vaše zařízení</translation>

@@ -70,6 +70,7 @@
 <translation id="1774152462503052664">Chromium-ыг арын орчинд ажиллуулах</translation>
 <translation id="1793486931176048546">Chromium-г ажлын хэсэгтээ бэхэлж, шуурхай хандахын тулд Windows-н мэдэгдэл дэх <ph name="BEGIN_BOLD" />Тийм<ph name="END_BOLD" /> дээр товшино уу</translation>
 <translation id="1808667845054772817">Chromium-ыг дахин суулгах</translation>
+<translation id="1814482312667514397">Утсан дээрээ Chromium аппыг ашиглан явж байх зуураа Chromium-н аюулгүй байдлын шилдэг онцлогуудыг аваарай</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> оролдож байна</translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> аль хэдийн нэвтэрсэн байна. Хөтчийн түүхээ тусад нь байлгахын тулд Chromium-д <ph name="USER_EMAIL_ADDRESS" />-р өөрийн профайлаар нэвтэрнэ үү. Та мөн <ph name="DEVICE" />-с өргөтгөл болон бусад зүйлээ авна.</translation>
 <translation id="183031085822326697">Та дараагийн удаа <ph name="DEVICE_TYPE" /> дээрээ Chromium-г нээхдээ Google Нууц үгний менежерийг ашиглах сануулга харна.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байсан}=1{1 HID төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байна}other{# HID төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байна}}</translation>
 <translation id="2401032172288869980">Chromium-д энэ сайтад зориулж камер болон микрофоны зөвшөөрөл шаардлагатай</translation>
 <translation id="2403703063067034158">Эхлэхэд алдаа гарлаа: одоогоор тохируулгын өөр нэг инстанс ажиллаж байна. Дараа дахин оролдоно уу.</translation>
+<translation id="241044568699443215"><ph name="DEVICE_TYPE" /> дээрээ Chromium аппыг ашиглан Chromium-н аюулгүй байдлын онцлогуудыг явж байх зуураа аваарай</translation>
 <translation id="2418322681019544463">Дурын аппаас холбоосыг Chromium-д нээж, хөтчийг ажлын хэсэгтээ хандах боломжтой байлгаарай</translation>
 <translation id="2425157128016763890">Шуурхай тойм авах, араас нь лавлах асуулт асуухаар энэ баримт бичгийг Chromium дахь Gemini-тай хуваалцахын тулд Хураангуйлах товчин дээр товшино уу</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium-н хэрэгслийн<ph name="END_LINK" /> тусламжтайгаар та аюулгүй үзэх болон хяналтыг гартаа байлгах боломжтой</translation>
@@ -740,6 +742,7 @@
 <translation id="8907580949721785412">Chromium нь нууц үгийг харуулахыг оролдож байна. Үүнийг зөвшөөрөхөөр бол  Windows нууц үгээ бичнэ үү.</translation>
 <translation id="8910309838319708610">Амжилттай! Та одоо Хайлтын ХОУ-ы горимоор үзэх явцдаа асуулт хялбархан асуух боломжтой</translation>
 <translation id="8932992523185907506">Chromium таны өгөгдмөл хөтөч биш болсон байна. Chromium-г өгөгдмөл хөтөч болгох уу?</translation>
+<translation id="8940844567350264767">Chromium-р Chromium-н аюулгүй байдлын шилдэг онцлогуудыг явж байх зуураа аваарай.</translation>
 <translation id="8941642502866065432">Chromium-г шинэчилж чадсангүй</translation>
 <translation id="8944232836376404813">Энэ үйлдэл:
           <ph name="LINE_BREAKS" />

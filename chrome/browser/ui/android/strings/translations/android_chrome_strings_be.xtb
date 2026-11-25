@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">Не ўдалося адкрыць праграму</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, замацаваная ўкладка, змесціва якой абагульваецца, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="213279576345780926">Закрыта ўкладка <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653">Паўтарыць спробу спампаваць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="2138283760993967204">Значок "Кіраваць"</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, выбраная ўкладка, на якой ідзе запіс</translation>
 <translation id="2141396931810938595">На падставе выкарыстання</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">толькі што</translation>
 <translation id="276378135349383280">Паказваць Gemini на ніжн. панэлі</translation>
 <translation id="276969039800130567">Вы ўвайшлі як <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Прыпыніць спампоўванне файла "<ph name="FILE_NAME" />"</translation>
 <translation id="2777555524387840389">Засталося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не выканана</translation>
 <translation id="2781151931089541271">Засталася 1 секунда</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">Вам не трэба запамінаць гэты пароль. Ён будзе захаваны ў Менеджары пароляў Google для ўліковага запісу <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Блакіруйце ўкладкі ў рэжыме інкогніта</translation>
 <translation id="4132137475637520539">Дазволіць далучацца ўсім, у каго ёсць спасылка</translation>
+<translation id="4132969033912447558">Узнавіць спампоўванне файла "<ph name="FILE_NAME" />"</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, замацаваная ўкладка, на якой ідзе запіс, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="4137746084635924146">Бягучая мова прылады</translation>
 <translation id="414128724510021958">Стандартна запытваюцца сайты для камп’ютараў</translation>
@@ -2035,6 +2038,7 @@
 <translation id="8676789164135894283">Спраўджанне ўваходу</translation>
 <translation id="867914734596684889">Паказаць або схаваць панэль закладак</translation>
 <translation id="8683039184091909753">відарыс</translation>
+<translation id="8687103160920393343">Скасаваць спампоўванне файла "<ph name="FILE_NAME" />"</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, выбраная ўкладка</translation>
 <translation id="8694622119922491927">Праграма "<ph name="APP_NAME" />" запытвае дазвол на доступ да чалавека-машыннага інтэрфейсу для гэтага сайта. Гэту наладу можна змяніць пазней у раздзеле "Налады &gt; Праграмы &gt; Спецыяльны доступ для праграм".</translation>
 <translation id="8696297579102085705">Адправіць на прыладу</translation>

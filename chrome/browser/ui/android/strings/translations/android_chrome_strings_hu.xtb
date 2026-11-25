@@ -281,6 +281,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2122601567107267586">Nem sikerült megnyitni az alkalmazást</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, több kiválasztott rögzített, tartalmat megosztó lap</translation>
 <translation id="213279576345780926">Bezárva: <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> újrapróbálása</translation>
 <translation id="2138283760993967204">Kezelés ikon</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, kiválasztott, felvételt készítő lap</translation>
 <translation id="2141396931810938595">A használata alapján</translation>
@@ -448,6 +449,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2762000892062317888">éppen most</translation>
 <translation id="276378135349383280">A Gemini megjelenítése az alsó eszköztáron</translation>
 <translation id="276969039800130567">Bejelentkezve a következőként: <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">A következő fájl letöltésének szüneteltetése: <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> másodperc van hátra</translation>
 <translation id="2779651927720337254">sikertelen</translation>
 <translation id="2781151931089541271">1 másodperc van hátra</translation>
@@ -789,6 +791,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4121654769234887259">Nem kell megjegyeznie a jelszót. A rendszer elmenti a fiókhoz (<ph name="USERNAME" />) tartozó Google Jelszókezelőbe.</translation>
 <translation id="4128312955780560730">Inkognitó lapok zárolása</translation>
 <translation id="4132137475637520539">A link birtokában bárki csatlakozhat</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> letöltésének folytatása</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, több kiválasztott rögzített, felvételt készítő lap</translation>
 <translation id="4137746084635924146">Eszköz jelenlegi nyelve</translation>
 <translation id="414128724510021958">Asztali webhelyek kérve alapértelmezés szerint</translation>
@@ -2035,6 +2038,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8676789164135894283">Bejelentkezési hitelesítések</translation>
 <translation id="867914734596684889">Könyvjelzősáv megjelenítése vagy elrejtése</translation>
 <translation id="8683039184091909753">kép</translation>
+<translation id="8687103160920393343">A következő fájl letöltésének megszakítása: <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, kiválasztott lap</translation>
 <translation id="8694622119922491927">A(z) <ph name="APP_NAME" /> engedélyt igényel ahhoz, hogy hozzáférjen a humán interfészeszközökhöz ennél a webhelynél. Ezt a beállítást később a Beállítások &gt; Alkalmazások &gt; Különleges alkalmazás-hozzáférés menüpontban módosíthatja.</translation>
 <translation id="8696297579102085705">Küldés az eszközére</translation>

@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">অ্যাপটি খোলা যায়নি</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া পিন করা শেয়ারিং ট্যাব</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> বন্ধ করা হয়েছে</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> আবার চেষ্টা করুন</translation>
 <translation id="2138283760993967204">আইকন ম্যানেজ করুন</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, বেছে নেওয়া রেকর্ডিং ট্যাব</translation>
 <translation id="2141396931810938595">আপনার ব্যবহারের উপর ভিত্তি করে</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">এখনই</translation>
 <translation id="276378135349383280">বটম টুলবারে Gemini দেখুন</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> রূপে প্রবেশ করেছেন৷</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> পজ করুন</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> সেকেন্ড বাকি আছে</translation>
 <translation id="2779651927720337254">করা যায়নি</translation>
 <translation id="2781151931089541271">১ সেকেন্ড বাকি আছে</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">আপনাকে এই পাসওয়ার্ড মনে রাখতে হবে না। <ph name="USERNAME" />-এর জন্য এটি Google Password Manager-এ সেভ হয়ে যাবে।</translation>
 <translation id="4128312955780560730">আপনার ছদ্মবেশী ট্যাব লক করুন</translation>
 <translation id="4132137475637520539">যেসব ব্যক্তির কাছে এই লিঙ্ক আছে, তাদের সবাইকে যোগ দেওয়ার অনুমতি দিন</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> আবার শুরু করুন</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া পিন করা রেকর্ডিং ট্যাব</translation>
 <translation id="4137746084635924146">ডিভাইসের বর্তমান ভাষা</translation>
 <translation id="414128724510021958">সাধারণত ডেস্কটপ সাইটগুলি অনুরোধ করা হয়েছে</translation>
@@ -2035,6 +2038,7 @@
 <translation id="8676789164135894283">সাইন-ইন করার ক্ষেত্রে যাচাইকরণ</translation>
 <translation id="867914734596684889">বুকমার্ক বার দেখুন বা লুকান</translation>
 <translation id="8683039184091909753">ছবি</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> বাতিল করুন</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, বেছে নেওয়া ট্যাব</translation>
 <translation id="8694622119922491927">এই সাইটের জন্য <ph name="APP_NAME" /> অ্যাপকে হিউম্যান ইন্টারফেস ডিভাইস (HID) অ্যাক্সেস করার অনুমতি দিতে হবে। আপনি পরে 'সেটিংস &gt; অ্যাপ &gt; বিশেষ অ্যাপ অ্যাক্সেস' বিকল্প থেকে এই সেটিংস পরিবর্তন করতে পারবেন।</translation>
 <translation id="8696297579102085705">আপনার ডিভাইসে পাঠান</translation>

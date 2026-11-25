@@ -281,6 +281,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2122601567107267586">L'aplicació no s'ha pogut obrir</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, pestanya de compartició fixada multiseleccionada</translation>
 <translation id="213279576345780926">Pestanya <ph name="TAB_TITLE" /> tancada</translation>
+<translation id="2133857665503360653">Torna a provar <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Icona Gestiona</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, pestanya de gravació seleccionada</translation>
 <translation id="2141396931810938595">Segons l'ús que en fas</translation>
@@ -448,6 +449,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2762000892062317888">ara mateix</translation>
 <translation id="276378135349383280">Mostra Gemini a la barra d'eines inferior</translation>
 <translation id="276969039800130567">Inici de sessió com a <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Posa en pausa <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">Queden <ph name="SECONDS" /> segons</translation>
 <translation id="2779651927720337254">ha fallat</translation>
 <translation id="2781151931089541271">Queda 1 segon</translation>
@@ -789,6 +791,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4121654769234887259">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes de Google per a <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Bloqueja les pestanyes d'incògnit</translation>
 <translation id="4132137475637520539">Permet que s'hi uneixi tothom que tingui l'enllaç</translation>
+<translation id="4132969033912447558">Reprèn <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, pestanya de gravació fixada multiseleccionada</translation>
 <translation id="4137746084635924146">Idioma actual del dispositiu</translation>
 <translation id="414128724510021958">Llocs web per a ordinadors sol·licitats de manera predeterminada</translation>
@@ -2035,6 +2038,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8676789164135894283">Verificacions d'inici de sessió</translation>
 <translation id="867914734596684889">Mostra o amaga la barra d'adreces d'interès</translation>
 <translation id="8683039184091909753">imatge</translation>
+<translation id="8687103160920393343">Cancel·la <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestanya seleccionada</translation>
 <translation id="8694622119922491927">Per visitar aquest lloc web, <ph name="APP_NAME" /> necessita permís per accedir als dispositius d'interfície humana (HID). Pots canviar aquesta opció de configuració més endavant a Configuració &gt; Aplicacions &gt; Accés especial d'aplicacions.</translation>
 <translation id="8696297579102085705">Envia al teu dispositiu</translation>

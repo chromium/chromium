@@ -281,6 +281,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2122601567107267586">Tidak dapat membuka apl</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, Tab Perkongsian Yang Tersemat Dengan Berbilang Pilihan</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> tertutup</translation>
+<translation id="2133857665503360653">Cuba semula <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Urus ikon</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, Tab Rakaman Yang Dipilih</translation>
 <translation id="2141396931810938595">Berdasarkan penggunaan anda</translation>
@@ -448,6 +449,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2762000892062317888">sebentar tadi</translation>
 <translation id="276378135349383280">Papar Gemini dlm bar alat bawah</translation>
 <translation id="276969039800130567">Log masuk sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Jeda <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> saat lagi</translation>
 <translation id="2779651927720337254">gagal</translation>
 <translation id="2781151931089541271">1 saat lagi</translation>
@@ -789,6 +791,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="4121654769234887259">Anda tidak perlu mengingati kata laluan ini. Kata laluan ini akan disimpan pada Google Password Manager untuk <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Kunci tab Inkognito anda</translation>
 <translation id="4132137475637520539">Benarkan sesiapa sahaja yang mempunyai pautan untuk menyertai kumpulan</translation>
+<translation id="4132969033912447558">Sambung semula <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, Tab Rakaman Yang Tersemat Dengan Berbilang Pilihan</translation>
 <translation id="4137746084635924146">Bahasa peranti semasa</translation>
 <translation id="414128724510021958">Laman desktop diminta secara lalai</translation>
@@ -2035,6 +2038,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8676789164135894283">Pengesahan log masuk</translation>
 <translation id="867914734596684889">Tunjukkan atau sembunyikan bar Penanda Halaman</translation>
 <translation id="8683039184091909753">imej</translation>
+<translation id="8687103160920393343">Batalkan <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Tab yang Dipilih</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> memerlukan kebenaran untuk mengakses peranti antara muka manusia (HID) untuk laman ini. Anda boleh menukar tetapan ini kemudian dalam Tetapan &gt; Apl &gt; Akses apl khas.</translation>
 <translation id="8696297579102085705">Hantar kepada peranti anda</translation>

@@ -281,6 +281,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2122601567107267586">Appen kunne ikke åbnes</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, fastgjort fane med multivalg, der deler indhold</translation>
 <translation id="213279576345780926">Lukkede <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653">Prøv at downloade <ph name="FILE_NAME" /> igen</translation>
 <translation id="2138283760993967204">Ikon for administration</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, valgt fane, der optager</translation>
 <translation id="2141396931810938595">Baseret på din brug</translation>
@@ -448,6 +449,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2762000892062317888">lige nu</translation>
 <translation id="276378135349383280">Vis Gemini på den nederste værktøjslinje</translation>
 <translation id="276969039800130567">Logget ind som <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Sæt <ph name="FILE_NAME" /> på pause</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder tilbage</translation>
 <translation id="2779651927720337254">mislykkedes</translation>
 <translation id="2781151931089541271">1 sekund tilbage</translation>
@@ -789,6 +791,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4121654769234887259">Du behøver ikke at huske denne adgangskode. Den gemmes i Google Adgangs­kode­admin­istrator for <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Lås dine inkognitofaner</translation>
 <translation id="4132137475637520539">Giv alle med linket mulighed for at deltage</translation>
+<translation id="4132969033912447558">Genoptag <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, fastgjort inkognitofane med multivalg, der optager</translation>
 <translation id="4137746084635924146">Aktuelt enhedssprog</translation>
 <translation id="414128724510021958">Der anmodes som standard om computerwebsites</translation>
@@ -2035,6 +2038,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8676789164135894283">Loginverificeringer</translation>
 <translation id="867914734596684889">Vis eller skjul bogmærkelinjen</translation>
 <translation id="8683039184091909753">billede</translation>
+<translation id="8687103160920393343">Annuller <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085">Valgt fane: <ph name="TAB_TITLE" /></translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> skal have tilladelse til at tilgå HID-enheder for dette website. Du kan ændre denne indstilling senere under Indstillinger &gt; Apps &gt; Særlig appadgang.</translation>
 <translation id="8696297579102085705">Send til din enhed</translation>

@@ -281,6 +281,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2122601567107267586">Tidak dapat membuka aplikasi</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, Beberapa Tab yang sedang Berbagi, Disematkan, dan Dipilih</translation>
 <translation id="213279576345780926">Menutup <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653">Coba download <ph name="FILE_NAME" /> lagi</translation>
 <translation id="2138283760993967204">Ikon Kelola</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, Tab yang Sedang Merekam dan Dipilih</translation>
 <translation id="2141396931810938595">Berdasarkan penggunaan Anda</translation>
@@ -448,6 +449,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2762000892062317888">baru saja</translation>
 <translation id="276378135349383280">Tampilkan Gemini di toolbar bawah</translation>
 <translation id="276969039800130567">Login sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Jeda <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> detik lagi</translation>
 <translation id="2779651927720337254">gagal</translation>
 <translation id="2781151931089541271">1 detik lagi</translation>
@@ -789,6 +791,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4121654769234887259">Anda tidak perlu mengingat sandi ini. Sandi akan disimpan ke Pengelola Sandi Google untuk <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Kunci tab Samaran Anda</translation>
 <translation id="4132137475637520539">Izinkan siapa saja yang memiliki link ini untuk bergabung</translation>
+<translation id="4132969033912447558">Lanjutkan <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, Beberapa Tab yang Sedang Merekam, Disematkan, dan Dipilih</translation>
 <translation id="4137746084635924146">Bahasa perangkat saat ini</translation>
 <translation id="414128724510021958">Situs desktop diminta secara default</translation>
@@ -2035,6 +2038,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8676789164135894283">Verifikasi login</translation>
 <translation id="867914734596684889">Tampilkan atau sembunyikan kolom Bookmark</translation>
 <translation id="8683039184091909753">gambar</translation>
+<translation id="8687103160920393343">Batalkan <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Tab yang Dipilih</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> memerlukan izin guna mengakses perangkat antarmuka manusia (HID) untuk situs ini. Anda dapat mengubah setelan ini nanti di Setelan &gt; Aplikasi &gt; Akses aplikasi khusus.</translation>
 <translation id="8696297579102085705">Kirim ke perangkat Anda</translation>

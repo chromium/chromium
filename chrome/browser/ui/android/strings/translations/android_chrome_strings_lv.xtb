@@ -281,6 +281,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2122601567107267586">Nevarēja atvērt lietotni</translation>
 <translation id="2128579426409352593">Cilne <ph name="TAB_TITLE" /> ir viena no vairākām atlasītām cilnēm; tās saturs tiek kopīgots</translation>
 <translation id="213279576345780926">Tika aizvērta cilne <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653">Mēģināt vēlreiz lejupielādēt failu “<ph name="FILE_NAME" />”</translation>
 <translation id="2138283760993967204">Pārvaldības ikona</translation>
 <translation id="2138632817776076519">Atlasīta cilne <ph name="TAB_TITLE" />, kurā notiek ierakstīšana</translation>
 <translation id="2141396931810938595">Pamatojoties uz jūsu lietojumu</translation>
@@ -448,6 +449,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2762000892062317888">tikko</translation>
 <translation id="276378135349383280">Rādīt Gemini apakšējā rīkjoslā</translation>
 <translation id="276969039800130567">Pierakstīts ar adresi <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Pārtraukt lejupielādi: <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">Atlikušas <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">neizdevās</translation>
 <translation id="2781151931089541271">Atlikusi 1 s</translation>
@@ -789,6 +791,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4121654769234887259">Jums nebūs jāatceras šī parole. Tā tiks saglabāta konta <ph name="USERNAME" /> Google paroļu pārvaldniekā.</translation>
 <translation id="4128312955780560730">Inkognito ciļņu bloķēšana</translation>
 <translation id="4132137475637520539">Ļaut pievienoties ikvienam, kam ir saite</translation>
+<translation id="4132969033912447558">Atsākt: <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181">Piespraustā cilne <ph name="TAB_TITLE" /> ir viena no vairākām atlasītām cilnēm; tajā notiek ierakstīšana</translation>
 <translation id="4137746084635924146">Pašreizējā ierīces valoda</translation>
 <translation id="414128724510021958">Pēc noklusējuma pieprasītās vietnes datoriem</translation>
@@ -2035,6 +2038,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8676789164135894283">Pierakstīšanās verifikācija</translation>
 <translation id="867914734596684889">Rādīt vai paslēpt grāmatzīmju joslu</translation>
 <translation id="8683039184091909753">attēls</translation>
+<translation id="8687103160920393343">Atcelt lejupielādi: <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085">“<ph name="TAB_TITLE" />”, atlasītā cilne</translation>
 <translation id="8694622119922491927">Lietotnei <ph name="APP_NAME" /> ir nepieciešama atļauja piekļūt cilvēka saskarnes ierīcēm (HID) šajā tīmekļa vietnē. Vēlāk šo iestatījumu varēsiet mainīt sadaļā Iestatījumi &gt; Lietotnes &gt; Īpaša piekļuve lietotnēm.</translation>
 <translation id="8696297579102085705">Nosūtīt uz jūsu ierīci</translation>

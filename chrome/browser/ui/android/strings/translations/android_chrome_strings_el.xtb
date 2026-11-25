@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">Δεν ήταν δυνατό το άνοιγμα της εφαρμογής</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα από πολλαπλή επιλογή που κοινοποιεί περιεχόμενο</translation>
 <translation id="213279576345780926">Η καρτέλα <ph name="TAB_TITLE" /> έκλεισε</translation>
+<translation id="2133857665503360653">Επανάληψη προσπάθειας για το αρχείο <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Εικονίδιο διαχείρισης</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, Επιλεγμένη καρτέλα που κάνει εγγραφή</translation>
 <translation id="2141396931810938595">Βάσει της χρήσης σας</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">μόλις τώρα</translation>
 <translation id="276378135349383280">Εμφάνιση Gemini στην κάτω γραμμή</translation>
 <translation id="276969039800130567">Συνδεδεμένος ως <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Παύση <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">Απομένουν <ph name="SECONDS" /> δευτερόλεπτα</translation>
 <translation id="2779651927720337254">απέτυχε</translation>
 <translation id="2781151931089541271">Απομένει 1 δευτερόλεπτο</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">Δεν θα χρειάζεται να θυμάστε αυτόν τον κωδικό πρόσβασης. Θα αποθηκευτεί στον Διαχειριστή κωδικών πρόσβασης Google για τον λογαριασμό <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Κλείδωμα καρτελών ανώνυμης περιήγησης</translation>
 <translation id="4132137475637520539">Να επιτρέπεται σε οποιονδήποτε διαθέτει τον σύνδεσμο να συμμετέχει</translation>
+<translation id="4132969033912447558">Συνέχιση <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα από πολλαπλή επιλογή που κάνει εγγραφή</translation>
 <translation id="4137746084635924146">Τρέχουσα γλώσσα συσκευής</translation>
 <translation id="414128724510021958">Ζητούνται από προεπιλογή ιστότοποι για υπολογιστή</translation>
@@ -2035,6 +2038,7 @@
 <translation id="8676789164135894283">Επαληθεύσεις σύνδεσης</translation>
 <translation id="867914734596684889">Εμφάνιση ή απόκρυψη γραμμής σελιδοδεικτών</translation>
 <translation id="8683039184091909753">εικόνα</translation>
+<translation id="8687103160920393343">Ακύρωση <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Επιλεγμένη καρτέλα</translation>
 <translation id="8694622119922491927">Η εφαρμογή <ph name="APP_NAME" /> χρειάζεται άδεια για να έχει πρόσβαση σε συσκευές ανθρώπινης διεπαφής (HID) για αυτόν τον ιστότοπο. Μπορείτε να αλλάξετε αυτή τη ρύθμιση αργότερα στην ενότητα Ρυθμίσεις &gt; Εφαρμογές &gt; Ειδική πρόσβαση εφαρμογής.</translation>
 <translation id="8696297579102085705">Αποστολή στη συσκευή σας</translation>

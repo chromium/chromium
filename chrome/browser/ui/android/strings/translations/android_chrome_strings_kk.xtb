@@ -281,6 +281,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2122601567107267586">Қолданбаны ашу мүмкін емес</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, бөлісудің көп рет таңдалған, бекітілген қойындысы</translation>
 <translation id="213279576345780926">Жабық <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> файлын қайталау</translation>
 <translation id="2138283760993967204">Басқару белгішесі</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, жазудың таңдалған қойындысы</translation>
 <translation id="2141396931810938595">Пайдалануыңызға негізделген ұсыныс</translation>
@@ -448,6 +449,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2762000892062317888">жаңа ғана</translation>
 <translation id="276378135349383280">Gemini: төменгі құралдар тақтасы</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ретінде кірген.</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> файлын кідірту</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> сек қалды</translation>
 <translation id="2779651927720337254">қате шықты</translation>
 <translation id="2781151931089541271">1 сек қалды</translation>
@@ -789,6 +791,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="4121654769234887259">Бұл құпия сөзді есте сақтаудың қажеті жоқ. Ол <ph name="USERNAME" /> аккаунтына арналған Google Password Manager қызметіне сақталады.</translation>
 <translation id="4128312955780560730">Инкогнито қойындыларын құлыптаңыз</translation>
 <translation id="4132137475637520539">Сілтемені алған кез келген адам қосыла алады</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> файлын жалғастыру</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, жазудың көп рет таңдалған, бекітілген қойындысы</translation>
 <translation id="4137746084635924146">Ағымдағы құрылғы тілі</translation>
 <translation id="414128724510021958">Компьютерге арналған әдепкісінше сұралған сайттар</translation>
@@ -2035,6 +2038,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8676789164135894283">Кіруді растау</translation>
 <translation id="867914734596684889">Бетбелгілер жолағын көрсету немесе жасыру</translation>
 <translation id="8683039184091909753">сурет</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> файлынан бас тарту</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, таңдалған қойынды</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> браузеріне бұл сайтта адам интерфейсі құрылғыларын (HID) пайдалану рұқсаты қажет. Бұл параметрді кейінірек "Параметрлер" &gt; "Қолданбалар" &gt; "Арнайы қолданба рұқсаты" бөлімінен өзгерте аласыз.</translation>
 <translation id="8696297579102085705">Құрылғыға жіберу</translation>

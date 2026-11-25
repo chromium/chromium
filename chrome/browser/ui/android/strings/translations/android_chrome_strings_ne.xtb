@@ -281,6 +281,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2122601567107267586">एप खोल्न सकिएन</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको पिन गरिएको सेयरिङ ट्याब</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बन्द भयो</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> फेरि खोली हेर्नुहोस्</translation>
 <translation id="2138283760993967204">व्यवस्थापन आइकन</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, चयन गरिएको रेकर्डिङ ट्याब</translation>
 <translation id="2141396931810938595">तपाईंको प्रयोगका आधारमा</translation>
@@ -448,6 +449,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2762000892062317888">भर्खरै</translation>
 <translation id="276378135349383280">पुछारको टुलबारमा Gemini देखाउनुहोस्</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> को रूपमा साइन इन गरिएको।</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> पज गर्नुहोस्</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकेन्ड बाँकी छ</translation>
 <translation id="2779651927720337254">डाउनलोड गर्न सकिएन</translation>
 <translation id="2781151931089541271">१ सेकेन्ड बाँकी छ</translation>
@@ -789,6 +791,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4121654769234887259">तपाईंले यो पासवर्ड याद गरिराख्नु पर्दैन। यो पासवर्ड <ph name="USERNAME" /> को Google पासवर्ड म्यानेजरमा सेभ गरिने छ।</translation>
 <translation id="4128312955780560730">आफ्ना इन्कोग्निटो ट्याबहरू लक गर्नुहोस्</translation>
 <translation id="4132137475637520539">यो लिंक भएका सबैलाई सामेल हुन दिनुहोस्</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> डाउनलोड गर्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको पिन गरिएको रेकर्डिङ ट्याब</translation>
 <translation id="4137746084635924146">डिभाइसमा हाल प्रयोग गरिएको भाषा</translation>
 <translation id="414128724510021958">डेस्कटप साइटहरू स्वतः अन गरिन्छन्</translation>
@@ -2034,6 +2037,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8676789164135894283">साइन इन गर्न कार्यको पुष्टिसम्बन्धी सूचना</translation>
 <translation id="867914734596684889">बुकमार्क बार देखाउनुहोस् वा लुकाउनुहोस्</translation>
 <translation id="8683039184091909753">फोटो</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> डाउनलोड गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, चयन गरिएको ट्याब</translation>
 <translation id="8694622119922491927">यो साइटका हकमा <ph name="APP_NAME" /> लाई ह्युमन इन्टरफेस डिभाइस (HID) एक्सेस गर्ने अनुमति दिनु पर्ने हुन्छ। तपाईं पछि "सेटिङ &gt; एपहरू &gt; एपको विशेष एक्सेस" मा गई यो सेटिङ परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="8696297579102085705">आफ्नो डिभाइसमा पठाउनुहोस्</translation>

@@ -281,6 +281,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2122601567107267586">Otvaranje aplikacije nije uspjelo</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, višestruko odabrana zakačena kartica za dijeljenje</translation>
 <translation id="213279576345780926">Zatvorena je kartica <ph name="TAB_TITLE" /></translation>
+<translation id="2133857665503360653">Ponovni pokušaj fajla <ph name="FILE_NAME" /></translation>
 <translation id="2138283760993967204">Ikona za upravljanje</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, odabrana kartica za snimanje</translation>
 <translation id="2141396931810938595">Zasnovano na vašem korištenju</translation>
@@ -448,6 +449,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2762000892062317888">maloprije</translation>
 <translation id="276378135349383280">Prikazuj Gemini na donjoj alatnoj traci</translation>
 <translation id="276969039800130567">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055">Pauziranje preuzimanja fajla <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">Preostalo je <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">neuspjelo</translation>
 <translation id="2781151931089541271">Preostala je 1 sek</translation>
@@ -789,6 +791,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4121654769234887259">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Google upravitelju lozinki za račun <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Zaključajte anonimne kartice</translation>
 <translation id="4132137475637520539">Omogući svima koji imaju link da se pridruže</translation>
+<translation id="4132969033912447558">Nastavljanje preuzimanja fajla <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, višestruko odabrana zakačena kartica za snimanje</translation>
 <translation id="4137746084635924146">Trenutni jezik uređaja</translation>
 <translation id="414128724510021958">Web lokacije za računar se zahtijevaju prema zadanim postavkama</translation>
@@ -2035,6 +2038,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8676789164135894283">Potvrde prijave</translation>
 <translation id="867914734596684889">Prikazivanje ili sakrivanje trake oznaka</translation>
 <translation id="8683039184091909753">slika</translation>
+<translation id="8687103160920393343">Otkazivanje preuzimanja fajla <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, odabrana kartica</translation>
 <translation id="8694622119922491927">Aplikaciji <ph name="APP_NAME" /> treba odobrenje za pristup uređajima s ljudskim interfejsom za ovu web lokaciju. Ovu postavku možete kasnije promijeniti u Postavkama &gt; Aplikacije &gt; Poseban pristup za aplikacije.</translation>
 <translation id="8696297579102085705">Pošaljite na uređaj</translation>

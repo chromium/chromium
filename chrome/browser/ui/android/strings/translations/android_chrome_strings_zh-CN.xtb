@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">无法打开此应用</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />，已选择的多个固定标签页之一，正在共享内容</translation>
 <translation id="213279576345780926">已关闭“<ph name="TAB_TITLE" />”</translation>
+<translation id="2133857665503360653">重新尝试下载“<ph name="FILE_NAME" />”文件</translation>
 <translation id="2138283760993967204">“管理”图标</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />，已选择的标签页，正在录制内容</translation>
 <translation id="2141396931810938595">根据您的使用情况</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">刚刚</translation>
 <translation id="276378135349383280">在底部工具栏中显示 Gemini</translation>
 <translation id="276969039800130567">您已用 <ph name="USER_EMAIL_ADDRESS" /> 的身份登录。</translation>
+<translation id="2770082596325051055">暂停下载 <ph name="FILE_NAME" /></translation>
 <translation id="2777555524387840389">还剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失败</translation>
 <translation id="2781151931089541271">还剩 1 秒</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">您不需要记住此密码。系统会将它保存到 <ph name="USERNAME" /> 的 Google 密码管理工具中。</translation>
 <translation id="4128312955780560730">锁定无痕式标签页</translation>
 <translation id="4132137475637520539">允许任何知道链接的人加入</translation>
+<translation id="4132969033912447558">继续下载 <ph name="FILE_NAME" /></translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />，已选择的多个固定标签页之一，正在录制内容</translation>
 <translation id="4137746084635924146">当前设备语言</translation>
 <translation id="414128724510021958">默认请求桌面版网站</translation>
@@ -2033,6 +2036,7 @@
 <translation id="8676789164135894283">登录验证</translation>
 <translation id="867914734596684889">显示或隐藏书签栏</translation>
 <translation id="8683039184091909753">图片</translation>
+<translation id="8687103160920393343">取消下载 <ph name="FILE_NAME" /></translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，所选的标签页</translation>
 <translation id="8694622119922491927">“<ph name="APP_NAME" />”需要获得相应权限，才能让此网站使用人机接口设备 (HID)。以后，您可以在“设置”&gt;“应用”&gt;“特殊应用权限”中更改此设置。</translation>
 <translation id="8696297579102085705">发送到设备</translation>

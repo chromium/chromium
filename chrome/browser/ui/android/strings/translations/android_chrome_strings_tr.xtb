@@ -281,6 +281,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2122601567107267586">Uygulama açılamadı</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, Paylaşım Yapan Birden Çok Seçili Sabit Sekme</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> kapatıldı</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> dosyasını indirmeyi tekrar dene</translation>
 <translation id="2138283760993967204">Yönet simgesi</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, Medya Kaydeden Seçili Sekme</translation>
 <translation id="2141396931810938595">Kullanımınıza göre</translation>
@@ -448,6 +449,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2762000892062317888">az önce</translation>
 <translation id="276378135349383280">Gemini'ı alt çubukta göster</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> olarak oturum açıldı.</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> dosyasını duraklat</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sn. kaldı</translation>
 <translation id="2779651927720337254">başarısız</translation>
 <translation id="2781151931089541271">1 sn. kaldı</translation>
@@ -789,6 +791,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4121654769234887259">Bu şifreyi hatırlamanız gerekmez. <ph name="USERNAME" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="4128312955780560730">Gizli sekmelerinizi kilitleyin</translation>
 <translation id="4132137475637520539">Bağlantıya sahip herkesin katılmasına izin ver</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> indirme işlemini devam ettir</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, Medya Kaydeden Birden Çok Seçili Sabit Sekme</translation>
 <translation id="4137746084635924146">Mevcut cihaz dili</translation>
 <translation id="414128724510021958">Masaüstü siteleri varsayılan olarak istenir</translation>
@@ -2035,6 +2038,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8676789164135894283">Oturum açma doğrulamaları</translation>
 <translation id="867914734596684889">Yer işaretleri çubuğunu göster veya gizle</translation>
 <translation id="8683039184091909753">resim</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> dosyasını iptal et</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Seçili sekme</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> uygulamasının bu sitede insan arabirim cihazlarına (HID) erişmesi için izin gerekiyor. Bu ayarı daha sonra Ayarlar &gt; Uygulamalar &gt; Özel uygulama erişimi bölümünden değiştirebilirsiniz.</translation>
 <translation id="8696297579102085705">Cihazıma Gönder</translation>

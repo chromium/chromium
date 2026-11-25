@@ -281,6 +281,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2122601567107267586">Kan app niet openen</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, meervoudig geselecteerd vastgezet tabblad voor content delen</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> gesloten</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> opnieuw proberen</translation>
 <translation id="2138283760993967204">Icoon Beheren</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, geselecteerd tabblad voor opname</translation>
 <translation id="2141396931810938595">Gebaseerd op je gebruik</translation>
@@ -448,6 +449,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2762000892062317888">zojuist</translation>
 <translation id="276378135349383280">Gemini tonen in onderste werkbalk</translation>
 <translation id="276969039800130567">Ingelogd als <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> onderbreken</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> seconden resterend</translation>
 <translation id="2779651927720337254">mislukt</translation>
 <translation id="2781151931089541271">1 seconde resterend</translation>
@@ -789,6 +791,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4121654769234887259">Je hoeft dit wachtwoord niet te onthouden. Het wordt opgeslagen in Google Wachtwoordmanager voor <ph name="USERNAME" />.</translation>
 <translation id="4128312955780560730">Je incognitotabbladen vergrendelen</translation>
 <translation id="4132137475637520539">Iedereen met de link toestaan om deel te nemen</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> hervatten</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, meervoudig geselecteerd vastgezet tabblad voor opname</translation>
 <translation id="4137746084635924146">Huidige apparaattaal</translation>
 <translation id="414128724510021958">Desktopsites standaard aangevraagd</translation>
@@ -2035,6 +2038,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8676789164135894283">Inlogverificaties</translation>
 <translation id="867914734596684889">Bookmarkbalk tonen of verbergen</translation>
 <translation id="8683039184091909753">afbeelding</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> annuleren</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, geselecteerd tabblad</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> heeft toegangsrechten voor Human Interface Devices (HID's) nodig voor deze site. Je kunt deze instelling later wijzigen via Instellingen &gt; Apps &gt; Speciale app-toegang.</translation>
 <translation id="8696297579102085705">Naar je apparaat sturen</translation>

@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">பயன்பாட்டைத் திறக்க முடியவில்லை</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, தேர்ந்தெடுத்தவற்றில் பின் செய்யப்பட்ட பகிரப்படுகின்ற பக்கம்</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> மூடப்பட்டது</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> ஐ மீண்டும் முயலும்</translation>
 <translation id="2138283760993967204">நிர்வகித்தல் ஐகான்</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, தேர்ந்தெடுக்கப்பட்ட ரெக்கார்டு செய்யப்படுகின்ற பக்கம்</translation>
 <translation id="2141396931810938595">உங்கள் உபயோகத்தின் அடிப்படையில்</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">சற்று முன்</translation>
 <translation id="276378135349383280">கீழ்ப்பட்டியில் Gemini காட்டு</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ஆக உள்நுழைந்துள்ளீர்கள்.</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" /> ஃபைலை இடைநிறுத்தும்</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> வினாடிகள் மீதமுள்ளன</translation>
 <translation id="2779651927720337254">தோல்வியுற்றது</translation>
 <translation id="2781151931089541271">1 வினாடி மீதமுள்ளது</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">இந்தக் கடவுச்சொல்லை நீங்கள் நினைவில் வைத்திருக்க வேண்டியதில்லை. <ph name="USERNAME" /> கணக்கின் Google Password Managerரில் இது சேமிக்கப்படும்.</translation>
 <translation id="4128312955780560730">மறைநிலைப் பக்கங்களைப் பூட்டுதல்</translation>
 <translation id="4132137475637520539">இணைப்பு உள்ள அனைவரும் சேரலாம்</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" /> ஃபைலை மீண்டும் பதிவிறக்கும்</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, தேர்ந்தெடுத்தவற்றில் பின் செய்யப்பட்ட ரெக்கார்டு செய்யப்படுகின்ற பக்கம்</translation>
 <translation id="4137746084635924146">சாதனத்தின் தற்போதைய மொழி</translation>
 <translation id="414128724510021958">இயல்பாகக் கோரப்பட்ட டெஸ்க்டாப் தளங்கள்</translation>
@@ -2035,6 +2038,7 @@
 <translation id="8676789164135894283">உள்நுழைவுச் சரிபார்ப்புகள்</translation>
 <translation id="867914734596684889">புக்மார்க்குகள் பட்டியைக் காட்டும் அல்லது மறைக்கும்</translation>
 <translation id="8683039184091909753">படம்</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" /> ஃபைலை ரத்துசெய்</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, தேர்ந்தெடுத்த பக்கம்</translation>
 <translation id="8694622119922491927">இந்தத் தளத்திற்கான மனித இடைமுகச் சாதனங்களை (HIDகள்) அணுக <ph name="APP_NAME" /> ஆப்ஸிற்கு அனுமதி தேவை. அமைப்புகள் &gt; ஆப்ஸ் &gt; சிறப்பு ஆப்ஸ் அணுகல் என்பதற்குச் சென்று இந்த அமைப்பை நீங்கள் பிறகு மாற்றிக்கொள்ளலாம்.</translation>
 <translation id="8696297579102085705">வேறு சாதனத்திற்கு அனுப்பு</translation>

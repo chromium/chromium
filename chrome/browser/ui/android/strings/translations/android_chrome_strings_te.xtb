@@ -281,6 +281,7 @@
 <translation id="2122601567107267586">యాప్‌ను తెరవడం సాధ్యపడలేదు</translation>
 <translation id="2128579426409352593"><ph name="TAB_TITLE" />, దాని కంటెంట్‌ను షేర్ చేసే మల్టీసెలెక్టెడ్ పిన్ చేసిన ట్యాబ్</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> మూసివేయబడింది</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> ఫైల్‌ను మళ్లీ ట్రై చేయండి</translation>
 <translation id="2138283760993967204">మేనేజ్ చిహ్నం</translation>
 <translation id="2138632817776076519">ఎంచుకున్న <ph name="TAB_TITLE" /> ట్యాబ్, మీడియాను రికార్డ్ చేస్తుంది</translation>
 <translation id="2141396931810938595">మీ వినియోగం ఆధారంగా</translation>
@@ -448,6 +449,7 @@
 <translation id="2762000892062317888">ఇప్పుడే</translation>
 <translation id="276378135349383280">కింద టూల్‌బార్‌లో Gemini చూడండి</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" />గా సైన్ ఇన్ చేశారు.</translation>
+<translation id="2770082596325051055"><ph name="FILE_NAME" />‌ను పాజ్ చేయండి</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> సెకన్లు మిగిలి ఉంది</translation>
 <translation id="2779651927720337254">విఫలమైంది</translation>
 <translation id="2781151931089541271">1 సెకను మిగిలి ఉంది</translation>
@@ -789,6 +791,7 @@
 <translation id="4121654769234887259">మీరు ఈ పాస్‌వర్డ్‌ను గుర్తుపెట్టుకోవాల్సిన అవసరం లేదు. ఇది <ph name="USERNAME" /> కోసం Google Password Managerకు సేవ్ చేయబడుతుంది.</translation>
 <translation id="4128312955780560730">మీ అజ్ఞాత ట్యాబ్‌లను లాక్ చేయండి</translation>
 <translation id="4132137475637520539">లింక్ ఉన్న ఎవరినైనా చేరడానికి వీలు కల్పించండి</translation>
+<translation id="4132969033912447558"><ph name="FILE_NAME" />‌ను కొనసాగించండి</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, మీడియాను రికార్డ్ చేసే మల్టీసెలెక్టెడ్ పిన్ చేసిన ట్యాబ్</translation>
 <translation id="4137746084635924146">ప్రస్తుత పరికర భాష</translation>
 <translation id="414128724510021958">డెస్క్‌టాప్ సైట్‌లు ఆటోమేటిక్‌గా రిక్వెస్ట్ చేయబడ్డాయి</translation>
@@ -2033,6 +2036,7 @@
 <translation id="8676789164135894283">సైన్ ఇన్ వెరిఫికేషన్‌లు</translation>
 <translation id="867914734596684889">బుక్‌మార్క్‌ల బార్‌ను చూడండి లేదా దాచండి</translation>
 <translation id="8683039184091909753">ఇమేజ్</translation>
+<translation id="8687103160920393343"><ph name="FILE_NAME" />‌ను రద్దు చేయండి</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ఎంచుకున్న ట్యాబ్</translation>
 <translation id="8694622119922491927">ఈ సైట్‌కు సంబంధించిన హ్యూమన్ ఇంటర్‌ఫేస్ డివైజ్‌లను (HIDలను) యాక్సెస్ చేయడానికి <ph name="APP_NAME" />‌కు అనుమతి అవసరం. తర్వాత ఎప్పుడైనా ఈ సెట్టింగ్‌ను, సెట్టింగ్‌లు &gt; యాప్‌లు &gt; ప్రత్యేక యాప్ యాక్సెస్‌లో మార్చుకోవచ్చు.</translation>
 <translation id="8696297579102085705">మీ పరికరానికి పంపండి</translation>

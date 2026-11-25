@@ -2526,6 +2526,19 @@ URL과 유사한 지정자:
 <translation id="2521581787935130926">북마크바에 앱 단축키 표시</translation>
 <translation id="2522304491589804974">확장 프로그램 설치 허용 목록 구성</translation>
 <translation id="2523511232831599126">로그인 화면에서 접근성 바로가기 사용 설정</translation>
+<translation id="2524400223625951315">강제 설치된 확장 프로그램의 보안 시크릿 모드 동작 방식을 지정합니다.
+
+이는 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 정책을 통해 구성되었거나 <ph name="EXTENSION_SETTINGS_POLICY_NAME" />에서 <ph name="INSTALLATION_MODE_FIELD" />이(가) <ph name="FORCE_INSTALLED_VALUE" />(으)로 설정된 확장 프로그램에 적용됩니다. <ph name="INSTALLATION_MODE_FIELD" />이(가) <ph name="NORMAL_INSTALLED_VALUE" />(으)로 설정되어 구성된 확장 프로그램은 <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" />에 의해 제어됩니다.
+
+0(항상 사용 설정됨)으로 설정되었거나 설정되지 않은 경우, 강제 설치된 확장 프로그램은 보안 시크릿 모드에서 항상 사용 설정되며 사용자가 사용 중지할 수 없습니다.
+
+1(기본적으로 사용 설정됨)로 설정된 경우, 강제 설치된 확장 프로그램은 보안 시크릿 모드에서 기본적으로 사용 설정되며 사용자가 사용 중지할 수 있습니다. 정책이 1로 설정되어 있는 경우에는 사용자의 선택이 우선 적용됩니다. 보안 시크릿 모드가 아닌 모드에서도 사용자는 강제 설치된 확장 프로그램을 사용 중지할 수 없습니다.
+
+매니페스트에서 <ph name="INCOGNITO_MANIFEST_KEY" />이(가) <ph name="INCOGNITO_NOT_ALLOWED_VALUE" />으(로) 설정된 확장 프로그램은 이 정책과 관계없이 보안 시크릿 모드에서 실행되지 않습니다.
+
+이 정책은 <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> 정책이 사용 설정된 경우에만 적용됩니다.
+
+이 정책을 적용하려면 <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> 라이선스가 필요합니다.</translation>
 <translation id="252742292004421898">이 사이트에서 Direct Sockets API 허용</translation>
 <translation id="2528762900096510743">자동 로그아웃 서비스 사용 설정</translation>
 <translation id="2529880111512635313">강제로 설치된 앱과 확장 프로그램 목록 구성</translation>
@@ -2670,6 +2683,23 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
        유효한 <ph name="URL_LABEL" /> 패턴에 관해 자세히 알아보려면 https://chromeenterprise.google/policies/url-patterns를 참고하세요. 와일드 카드(<ph name="WILDCARD_VALUE" />)를 사용할 수 있습니다.
 
        이전에는 이 정책이 Android에서 잘못 사용 설정되었으나 이 기능이 Android에서 완전히 지원된 적은 없습니다.</translation>
+<translation id="2585054570696570117">정책을 설정하면 기존 확장 프로그램 관련 정책으로 제어되는 설정을 포함해 <ph name="PRODUCT_NAME" />의 확장 프로그램 관리 설정을 제어할 수 있습니다.
+
+이 정책은 확장 프로그램 ID 또는 업데이트 URL을 특정 설정에만 매핑합니다. 특수 ID <ph name="DEFAULT_SCOPE" />에 기본 구성을 설정할 수 있으며, 정책에서 맞춤 구성이 설정되지 않은 모든 확장 프로그램에 기본 구성이 적용됩니다.
+
+이 정책은 기존 정책의 확장 프로그램별 구성보다 우선될 수 있습니다.
+
+<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 또는 <ph name="EXTENSION_SETTINGS_POLICY_NAME" />의 ID별 확장 프로그램 설정은 <ph name="DEFAULT_SCOPE" /> 기본값에서 'installation_mode' 및 'update_url'만 상속받습니다. 다른 속성은 상속받지 않습니다. 업데이트 URL이 있으면 구성은 확장 프로그램 매니페스트(http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy)에 규정된 정확한 업데이트 URL을 포함하는 확장 프로그램에 적용됩니다. 'override_update_url' 플래그가 true로 설정된 경우 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 정책 또는 이 정책의 'update_url' 필드에 지정된 'update' URL을 사용하여 확장 프로그램이 설치 및 업데이트됩니다. 'update_url'이 Chrome 웹 스토어 url인 경우 'override_update_url' 플래그가 무시됩니다.
+
+<ph name="PRODUCT_NAME" /> 버전 155~158에서 'debugger' 권한이 있는 확장 프로그램에 'runtime_blocked_hosts'를 적용하면 모든 타겟에서 'chrome.debugger.attach()'가 완전히 사용 중지될 수 있습니다(예: <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 정책에 따라 모든 변형이 사용 중지되는 경우).
+
+<ph name="PRODUCT_NAME" /> 버전 160부터 'blocked_permissions' 및 'allowed_permissions'에서도 확장 프로그램이 매니페스트 키에서 가져오는 내부 권한인 'searchProvider', 'homepage', 'startupPages'('chrome_settings_overrides'에서 가져옴, <ph name="MS_WIN_NAME" /> 및 <ph name="MAC_OS_NAME" />만 해당), 'newTabPageOverride'('chrome_url_overrides'에서 가져옴)를 허용합니다.
+
+<ph name="MS_WIN_NAME" /> 인스턴스의 경우 인스턴스가 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
+
+<ph name="MAC_OS_NAME" /> 인스턴스의 경우 인스턴스가 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
+
+참고: 이 정책은 확장 프로그램을 지원하는 플랫폼에만 적용됩니다.</translation>
 <translation id="2585535930727399201">엔터프라이즈 확장 프로그램은 chrome.systemLog API를 통해 시스템 로그 파일에 로그를 추가할 수 있습니다.
 
 정책을 사용 설정하면 로그가 시스템 로그 파일에 제한된 시간 동안 유지됩니다.
@@ -3997,6 +4027,7 @@ false로 설정된 경우 기존 및 신규 Crostini 컨테이너에 대한 루�
 
       사이트에 해당 정책을 설정하지 않으면 <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" />의 정책이 설정되어 있는 경우 사이트에 적용됩니다. 설정되어 있지 않다면 권한이 브라우저의 기본값을 따르고 사용자는 사이트별로 이 권한을 선택할 수 있습니다.</translation>
 <translation id="3435796032110614169">인쇄 작업 내역 삭제 허용</translation>
+<translation id="3435849940943480491">강제 설치된 확장 프로그램은 보안 시크릿 모드에서 항상 사용 설정되며 사용 중지할 수 없습니다</translation>
 <translation id="3436217793443508863">배터리 전원으로 구동될 때 사용자 입력이 없어서 화면이 잠기기까지 걸리는 시간(밀리초)입니다.</translation>
 <translation id="3437391374720747482">CNSA 2.0의 요구사항을 충족하는 키 교환 방식 선호</translation>
 <translation id="3437924696598384725">사용자가 VPN 연결을 관리할 수 있도록 허용합니다.</translation>
@@ -6390,6 +6421,7 @@ Chrome 114까지 이 정책을 적용하려면 <ph name="SYNC_DISABLED_POLICY_NA
 <translation id="4927797103413916381"><ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />가 사용 안함으로 설정된 경우 <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" />를 사용으로 설정하거나 설정하지 않으면 악의적 사용자 환경이 포함된 사이트에서 새 창 또는 탭을 열 수 없습니다.
 
        <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 또는 <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" />를 사용 안함으로 설정하면 악의적 사용자 환경이 포함된 사이트가 새 창 또는 탭을 열 수 있습니다.</translation>
+<translation id="4928435626872799127">강제 설치된 확장 프로그램의 보안 시크릿 모드 동작 방식을 제어합니다</translation>
 <translation id="4929721861648439998">로그인 화면에서 모노 오디오 접근성 기능을 사용 설정합니다.
 
           이 기능을 사용하면 기본 스테레오 오디오에서 모노 오디오로 기기 모드를 전환할 수 있습니다.
@@ -9935,6 +9967,7 @@ SkyVault 사용자에게만 적용됩니다. 즉, LocalUserFilesAllowed가 false
 <translation id="7054840304131108563">렌더러 접근성 기능 사용 중지</translation>
 <translation id="7055022222176591388">오래된 <ph name="FLASH_PLUGIN_NAME" /> 차단</translation>
 <translation id="7056040036973126753">Chrome 사용자 측정항목(UMA) 정책에 따라 도메인 안정성 데이터가 Google로 전송될 수 있음</translation>
+<translation id="7057522375529097624">강제 설치된 확장 프로그램은 보안 시크릿 모드에서 기본적으로 사용 설정되며 사용 중지할 수 있습니다.</translation>
 <translation id="7062803946218028349">휴대전화 허브를 켤 수 있게 허용</translation>
 <translation id="7063646777978847358">이 정책은 서비스 워커의 백그라운드 가져오기 요청의 제한 여부를 제어합니다. 백그라운드에서 파일을 다운로드하는 기능이 영향을 받는 경우 이 정책이 관련될 수 있습니다.
 
