@@ -635,7 +635,6 @@ void ManagePasswordsUIController::OnShowMoveToAccountBubble(
           kSuccessfulLoginWithProfileStorePassword);
   DestroyPopups();
   passwords_data_.OnPasswordMovable(std::move(form_to_move));
-  // TODO(crbug.com/40138077): Add smartness like OnPasswordSubmitted?
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
 }
