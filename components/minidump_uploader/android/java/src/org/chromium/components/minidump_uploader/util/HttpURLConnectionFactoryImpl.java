@@ -28,6 +28,7 @@ public class HttpURLConnectionFactoryImpl implements HttpURLConnectionFactory {
                       trigger: "During startup, if a crash occurred recently."
                       data: "Crash report, including a trace and device info."
                       destination: GOOGLE_OWNED_SERVICE
+                      legacy_api_url: "https://clients2.google.com/cr/report"
                     }
                     policy {
                       cookies_allowed: NO
