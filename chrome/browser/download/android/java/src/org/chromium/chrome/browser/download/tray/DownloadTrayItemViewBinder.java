@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperti
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -48,6 +49,14 @@ class DownloadTrayItemViewBinder {
         } else if (key == TITLE) {
             TextView title = view.findViewById(R.id.download_tray_item_title);
             title.setText(model.get(TITLE));
+            // The actions' labels include the title.
+            updateActionLabel(
+                    model, view, R.id.download_tray_item_primary_action, model.get(PRIMARY_ACTION));
+            updateActionLabel(
+                    model,
+                    view,
+                    R.id.download_tray_item_secondary_action,
+                    model.get(SECONDARY_ACTION));
         } else if (key == DESCRIPTION) {
             TextView description = view.findViewById(R.id.download_tray_item_description);
             description.setText(model.get(DESCRIPTION));
@@ -107,8 +116,6 @@ class DownloadTrayItemViewBinder {
     private static void bindActionButton(
             PropertyModel model, View row, @IdRes int buttonId, @Nullable ActionButton action) {
         ImageView button = row.findViewById(buttonId);
-        AccessibilityActionCompat a11yAction =
-                new AccessibilityActionCompat(buttonId, /* label= */ null);
         if (action == null) {
             // Keyboard focus on the button moves to the row rather than jump to the tray's top.
             if (button.isFocused()) {
@@ -116,23 +123,44 @@ class DownloadTrayItemViewBinder {
             }
             button.setVisibility(View.GONE);
             ViewCompat.replaceAccessibilityAction(
-                    row, a11yAction, /* label= */ null, /* command= */ null);
+                    row,
+                    new AccessibilityActionCompat(buttonId, /* label= */ null),
+                    /* label= */ null,
+                    /* command= */ null);
         } else {
             ContentId itemId = model.get(ITEM_ID);
-            String label = row.getContext().getString(action.mDescriptionRes);
             button.setVisibility(View.VISIBLE);
             button.setImageResource(action.mIconRes);
-            button.setContentDescription(label);
             button.setOnClickListener(_ -> action.mOnClick.onResult(itemId));
-            ViewCompat.replaceAccessibilityAction(
-                    row,
-                    a11yAction,
-                    label,
-                    (_, _) -> {
-                        action.mOnClick.onResult(itemId);
-                        return true;
-                    });
+            updateActionLabel(model, row, buttonId, action);
         }
+    }
+
+    /**
+     * Labels {@code action}'s button and its accessibility action on the row. As on desktop, the
+     * label names the download, to tell rows' actions apart.
+     */
+    private static void updateActionLabel(
+            PropertyModel model, View row, @IdRes int buttonId, @Nullable ActionButton action) {
+        if (action == null) {
+            return;
+        }
+        ContentId itemId = model.get(ITEM_ID);
+        CharSequence title = model.get(TITLE);
+        Context context = row.getContext();
+        String label =
+                TextUtils.isEmpty(title)
+                        ? context.getString(action.mDescriptionRes)
+                        : context.getString(action.mTitledDescriptionRes, title);
+        row.findViewById(buttonId).setContentDescription(label);
+        ViewCompat.replaceAccessibilityAction(
+                row,
+                new AccessibilityActionCompat(buttonId, /* label= */ null),
+                label,
+                (_, _) -> {
+                    action.mOnClick.onResult(itemId);
+                    return true;
+                });
     }
 
     /** Tells the row whether it has action buttons, and sets whether it takes keyboard focus. */

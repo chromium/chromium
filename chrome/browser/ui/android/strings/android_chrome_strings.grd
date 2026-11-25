@@ -2846,6 +2846,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DOWNLOAD_TRAY_FULL_HISTORY" desc="Label in the download tray for the button that opens a full list of download history.">
         Full download history
       </message>
+      <message name="IDS_DOWNLOAD_TRAY_ITEM_PAUSE_ACCESSIBILITY" desc="Accessibility label for the button in the download tray that pauses a download.">
+        Pause <ph name="FILE_NAME">%1$s<ex>report.pdf</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_TRAY_ITEM_RESUME_ACCESSIBILITY" desc="Accessibility label for the button in the download tray that resumes a paused download.">
+        Resume <ph name="FILE_NAME">%1$s<ex>report.pdf</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_TRAY_ITEM_RETRY_ACCESSIBILITY" desc="Accessibility label for the button in the download tray that retries a download that failed.">
+        Retry <ph name="FILE_NAME">%1$s<ex>report.pdf</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_TRAY_ITEM_CANCEL_ACCESSIBILITY" desc="Accessibility label for the button in the download tray that cancels a download.">
+        Cancel <ph name="FILE_NAME">%1$s<ex>report.pdf</ex></ph>
+      </message>
       <message name="IDS_DOWNLOAD_BUTTON_TOOLTIP_IN_PROGRESS_COUNT" desc="Tooltip and accessibility text for the download toolbar button, displayed when there are one or more downloads in progress. [ICU Syntax]">
         {COUNT, plural, =1 {# download in progress} other {# downloads in progress}}
       </message>

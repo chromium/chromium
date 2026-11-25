@@ -151,21 +151,25 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
                 new ActionButton(
                         R.drawable.ic_pause_white_24dp,
                         R.string.download_notification_pause_button,
+                        R.string.download_tray_item_pause_accessibility,
                         mModel::pauseDownload);
         mResumeAction =
                 new ActionButton(
                         R.drawable.ic_play_arrow_white_24dp,
                         R.string.download_notification_resume_button,
+                        R.string.download_tray_item_resume_accessibility,
                         mModel::resumeDownload);
         mRetryAction =
                 new ActionButton(
                         R.drawable.ic_refresh_24dp,
                         R.string.download_notification_resume_button,
+                        R.string.download_tray_item_retry_accessibility,
                         mModel::resumeDownload);
         mCancelAction =
                 new ActionButton(
                         R.drawable.material_ic_close_24dp,
                         R.string.download_notification_cancel_button,
+                        R.string.download_tray_item_cancel_accessibility,
                         mModel::cancelDownload);
         mModel.addObserver(this);
     }

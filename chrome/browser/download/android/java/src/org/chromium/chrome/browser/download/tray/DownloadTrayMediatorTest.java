@@ -177,10 +177,12 @@ public class DownloadTrayMediatorTest {
         return titles;
     }
 
-    private static void assertButton(ActionButton button, int iconRes, int labelRes) {
+    private static void assertButton(
+            ActionButton button, int iconRes, int labelRes, int titledLabelRes) {
         assertNotNull(button);
         assertEquals(iconRes, button.mIconRes);
         assertEquals(labelRes, button.mDescriptionRes);
+        assertEquals(titledLabelRes, button.mTitledDescriptionRes);
     }
 
     @Test
@@ -865,17 +867,20 @@ public class DownloadTrayMediatorTest {
         PropertyModel complete = rows.get(3).model;
         PropertyModel interrupted = rows.get(4).model;
         int resume = R.string.download_notification_resume_button;
+        int resumeWithTitle = R.string.download_tray_item_resume_accessibility;
 
         // Downloading, or waiting to: Pause and Cancel.
         for (PropertyModel row : List.of(running, pending)) {
             assertButton(
                     row.get(DownloadTrayItemProperties.PRIMARY_ACTION),
                     R.drawable.ic_pause_white_24dp,
-                    R.string.download_notification_pause_button);
+                    R.string.download_notification_pause_button,
+                    R.string.download_tray_item_pause_accessibility);
             assertButton(
                     row.get(DownloadTrayItemProperties.SECONDARY_ACTION),
                     R.drawable.material_ic_close_24dp,
-                    R.string.download_notification_cancel_button);
+                    R.string.download_notification_cancel_button,
+                    R.string.download_tray_item_cancel_accessibility);
         }
         // Rows share action button instances so PropertyModel equality avoids rebinding.
         assertSame(
@@ -893,14 +898,18 @@ public class DownloadTrayMediatorTest {
 
         // Paused: Resume and Cancel.
         ActionButton resumeButton = paused.get(DownloadTrayItemProperties.PRIMARY_ACTION);
-        assertButton(resumeButton, R.drawable.ic_play_arrow_white_24dp, resume);
+        assertButton(resumeButton, R.drawable.ic_play_arrow_white_24dp, resume, resumeWithTitle);
         resumeButton.mOnClick.onResult(paused.get(DownloadTrayItemProperties.ITEM_ID));
         verify(mProvider).resumeDownload(id("paused"));
         assertNotNull(paused.get(DownloadTrayItemProperties.SECONDARY_ACTION));
 
         // Interrupted: Retry, which resumes as on the Downloads page, and Cancel.
         ActionButton retryButton = interrupted.get(DownloadTrayItemProperties.PRIMARY_ACTION);
-        assertButton(retryButton, R.drawable.ic_refresh_24dp, resume);
+        assertButton(
+                retryButton,
+                R.drawable.ic_refresh_24dp,
+                resume,
+                R.string.download_tray_item_retry_accessibility);
         retryButton.mOnClick.onResult(interrupted.get(DownloadTrayItemProperties.ITEM_ID));
         verify(mProvider).resumeDownload(id("interrupted"));
         interrupted
@@ -923,7 +932,8 @@ public class DownloadTrayMediatorTest {
         assertButton(
                 running.get(DownloadTrayItemProperties.PRIMARY_ACTION),
                 R.drawable.ic_play_arrow_white_24dp,
-                resume);
+                resume,
+                resumeWithTitle);
         runningItem = runningItem.clone();
         runningItem.state = OfflineItemState.COMPLETE;
         mModel.onItemUpdated(runningItem, /* updateDelta= */ null);

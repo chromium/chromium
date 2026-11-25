@@ -200,15 +200,18 @@ public class DownloadTrayItemViewBinderTest {
                 new ActionButton(
                         R.drawable.ic_pause_white_24dp,
                         R.string.download_notification_pause_button,
+                        R.string.download_tray_item_pause_accessibility,
                         mOnPrimaryAction);
         ActionButton cancelAction =
                 new ActionButton(
                         R.drawable.material_ic_close_24dp,
                         R.string.download_notification_cancel_button,
+                        R.string.download_tray_item_cancel_accessibility,
                         mOnSecondaryAction);
         PropertyModel model =
                 new PropertyModel.Builder(DownloadTrayItemProperties.ALL_KEYS)
                         .with(DownloadTrayItemProperties.ITEM_ID, itemId)
+                        .with(DownloadTrayItemProperties.TITLE, "report.pdf")
                         .with(DownloadTrayItemProperties.ON_OPEN, null)
                         .with(DownloadTrayItemProperties.PRIMARY_ACTION, pauseAction)
                         .with(DownloadTrayItemProperties.SECONDARY_ACTION, cancelAction)
@@ -220,16 +223,24 @@ public class DownloadTrayItemViewBinderTest {
         String cancel = activity.getString(R.string.download_notification_cancel_button);
 
         // Each action has its button and, for screen readers, which can't reach a hidden button,
-        // an accessibility action on the row.
+        // an accessibility action on the row, both labelled with the title to tell rows apart.
         assertEquals(
                 R.drawable.ic_pause_white_24dp,
                 shadowOf(primary.getDrawable()).getCreatedFromResId());
         assertEquals(
                 R.drawable.material_ic_close_24dp,
                 shadowOf(secondary.getDrawable()).getCreatedFromResId());
+        assertEquals("Pause report.pdf", primary.getContentDescription().toString());
+        assertEquals("Cancel report.pdf", secondary.getContentDescription().toString());
+        assertEquals("Pause report.pdf", getAccessibilityActionLabel(primary.getId()));
+        assertEquals("Cancel report.pdf", getAccessibilityActionLabel(secondary.getId()));
+
+        // The labels follow a rename; with no title, they are the verb alone.
+        model.set(DownloadTrayItemProperties.TITLE, "renamed.pdf");
+        assertEquals("Pause renamed.pdf", primary.getContentDescription().toString());
+        assertEquals("Cancel renamed.pdf", getAccessibilityActionLabel(secondary.getId()));
+        model.set(DownloadTrayItemProperties.TITLE, "");
         assertEquals(pause, primary.getContentDescription().toString());
-        assertEquals(cancel, secondary.getContentDescription().toString());
-        assertEquals(pause, getAccessibilityActionLabel(primary.getId()));
         assertEquals(cancel, getAccessibilityActionLabel(secondary.getId()));
         primary.performClick();
         verify(mOnPrimaryAction).onResult(itemId);
@@ -261,6 +272,7 @@ public class DownloadTrayItemViewBinderTest {
         assertFalse(mView.isFocusable());
         model.set(DownloadTrayItemProperties.PRIMARY_ACTION, pauseAction);
         assertEquals(View.VISIBLE, primary.getVisibility());
+        assertEquals(pause, getAccessibilityActionLabel(primary.getId()));
     }
 
     @Test
@@ -270,11 +282,13 @@ public class DownloadTrayItemViewBinderTest {
                 new ActionButton(
                         R.drawable.ic_pause_white_24dp,
                         R.string.download_notification_pause_button,
+                        R.string.download_tray_item_pause_accessibility,
                         mOnPrimaryAction);
         ActionButton equalPauseAction =
                 new ActionButton(
                         R.drawable.ic_pause_white_24dp,
                         R.string.download_notification_pause_button,
+                        R.string.download_tray_item_pause_accessibility,
                         mOnPrimaryAction);
         assertEquals(pauseAction, equalPauseAction);
         assertEquals(pauseAction.hashCode(), equalPauseAction.hashCode());
@@ -283,12 +297,14 @@ public class DownloadTrayItemViewBinderTest {
                 new ActionButton(
                         R.drawable.ic_play_arrow_white_24dp,
                         R.string.download_notification_resume_button,
+                        R.string.download_tray_item_resume_accessibility,
                         mOnPrimaryAction));
         assertNotEquals(
                 pauseAction,
                 new ActionButton(
                         R.drawable.ic_pause_white_24dp,
                         R.string.download_notification_pause_button,
+                        R.string.download_tray_item_pause_accessibility,
                         mOnSecondaryAction));
 
         PropertyModel model =

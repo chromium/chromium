@@ -27,18 +27,21 @@ import java.util.Objects;
  */
 @NullMarked
 class DownloadTrayItemProperties {
-    /** A row action button's icon, accessibility label and callback. */
+    /** A row action button's icon, accessibility labels and callback. */
     static final class ActionButton {
         final @DrawableRes int mIconRes;
         final @StringRes int mDescriptionRes;
+        final @StringRes int mTitledDescriptionRes;
         final Callback<ContentId> mOnClick;
 
         ActionButton(
                 @DrawableRes int iconRes,
                 @StringRes int descriptionRes,
+                @StringRes int titledDescriptionRes,
                 Callback<ContentId> onClick) {
             mIconRes = iconRes;
             mDescriptionRes = descriptionRes;
+            mTitledDescriptionRes = titledDescriptionRes;
             mOnClick = onClick;
         }
 
@@ -48,12 +51,13 @@ class DownloadTrayItemProperties {
             if (!(obj instanceof ActionButton other)) return false;
             return mIconRes == other.mIconRes
                     && mDescriptionRes == other.mDescriptionRes
+                    && mTitledDescriptionRes == other.mTitledDescriptionRes
                     && Objects.equals(mOnClick, other.mOnClick);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(mIconRes, mDescriptionRes, mOnClick);
+            return Objects.hash(mIconRes, mDescriptionRes, mTitledDescriptionRes, mOnClick);
         }
     }
 
