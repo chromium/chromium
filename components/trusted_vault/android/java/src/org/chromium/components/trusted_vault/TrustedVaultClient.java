@@ -26,7 +26,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.GaiaId;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,20 +42,6 @@ public class TrustedVaultClient {
     /** Interface to downstream functionality. */
     public interface Backend {
         /**
-         * Reads and returns available encryption keys without involving any user action.
-         *
-         * <p>Deprecated: override {@link #fetchKeysAndVersions(CoreAccountInfo)} instead.
-         *
-         * @param accountInfo Account representing the user.
-         * @return a promise with known keys, if any, where the last one is the most recent.
-         */
-        // TODO(crbug.com/588274186): Remove fetchKeys() and make fetchKeysAndVersions() abstract
-        // once downstream GmsTrustedVaultClientBackend implements fetchKeysAndVersions().
-        default Promise<List<byte[]>> fetchKeys(CoreAccountInfo accountInfo) {
-            throw new UnsupportedOperationException();
-        }
-
-        /**
          * Reads and returns available encryption keys and their versions without involving any user
          * action.
          *
@@ -64,26 +49,7 @@ public class TrustedVaultClient {
          * @return a promise with known keys and versions, if any, where the last one is the most
          *     recent.
          */
-        default Promise<List<TrustedVaultKeyAndVersion>> fetchKeysAndVersions(
-                CoreAccountInfo accountInfo) {
-            Promise<List<TrustedVaultKeyAndVersion>> promise = new Promise<>();
-            fetchKeys(accountInfo)
-                    .then(
-                            keys -> {
-                                List<TrustedVaultKeyAndVersion> result =
-                                        new ArrayList<>(keys.size());
-                                for (byte[] key : keys) {
-                                    // TODO(crbug.com/588274186): Remove this temporary
-                                    // fallback (and fetchKeys()) once downstream
-                                    // GmsTrustedVaultClientBackend implements
-                                    // fetchKeysAndVersions().
-                                    result.add(new TrustedVaultKeyAndVersion(key, 0));
-                                }
-                                promise.fulfill(result);
-                            },
-                            promise::reject);
-            return promise;
-        }
+        Promise<List<TrustedVaultKeyAndVersion>> fetchKeysAndVersions(CoreAccountInfo accountInfo);
 
         /**
          * Stores encryption keys for the given account. Test-only on Android (where keys are

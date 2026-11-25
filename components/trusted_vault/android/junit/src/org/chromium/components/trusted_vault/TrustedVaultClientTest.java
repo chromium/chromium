@@ -4,13 +4,8 @@
 
 package org.chromium.components.trusted_vault;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import android.app.PendingIntent;
-import android.util.Pair;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,7 +19,6 @@ import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.TestAccounts;
 
 import java.util.Collections;
@@ -44,93 +38,6 @@ public class TrustedVaultClientTest {
     @Before
     public void setUp() {
         TrustedVaultClientJni.setInstanceForTesting(mNativesMock);
-    }
-
-    /**
-     * Backend implementing only legacy {@link TrustedVaultClient.Backend#fetchKeys} so the default
-     * {@link TrustedVaultClient.Backend#fetchKeysAndVersions} delegation is exercised.
-     */
-    private static class LegacyBackend implements TrustedVaultClient.Backend {
-        private final Promise<List<byte[]>> mFetchKeysPromise;
-
-        LegacyBackend(Promise<List<byte[]>> fetchKeysPromise) {
-            mFetchKeysPromise = fetchKeysPromise;
-        }
-
-        @Override
-        public Promise<List<byte[]>> fetchKeys(CoreAccountInfo accountInfo) {
-            return mFetchKeysPromise;
-        }
-
-        @Override
-        public Promise<PendingIntent> createKeyRetrievalIntent(CoreAccountInfo accountInfo) {
-            return Promise.rejected();
-        }
-
-        @Override
-        public Promise<Boolean> markLocalKeysAsStale(CoreAccountInfo accountInfo) {
-            return Promise.rejected();
-        }
-
-        @Override
-        public Promise<Boolean> getIsRecoverabilityDegraded(CoreAccountInfo accountInfo) {
-            return Promise.rejected();
-        }
-
-        @Override
-        public Promise<Void> addTrustedRecoveryMethod(
-                CoreAccountInfo accountInfo, byte[] publicKey, int methodTypeHint) {
-            return Promise.rejected();
-        }
-
-        @Override
-        public Promise<PendingIntent> createRecoverabilityDegradedIntent(
-                CoreAccountInfo accountInfo) {
-            return Promise.rejected();
-        }
-
-        @Override
-        public Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo) {
-            return Promise.rejected();
-        }
-
-        @Override
-        public Promise<Boolean> canEnroll(CoreAccountInfo accountInfo) {
-            return Promise.rejected();
-        }
-
-        @Override
-        public Promise<Pair<byte[], Integer>> enroll(CoreAccountInfo accountInfo) {
-            return Promise.rejected();
-        }
-    }
-
-    @Test
-    public void testDefaultFetchKeysAndVersions_Fulfilled() {
-        LegacyBackend backend =
-                new LegacyBackend(Promise.fulfilled(List.of(new byte[] {1, 2}, new byte[] {3, 4})));
-
-        Promise<List<TrustedVaultKeyAndVersion>> promise =
-                backend.fetchKeysAndVersions(TestAccounts.ACCOUNT1);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        assertTrue(promise.isFulfilled());
-        assertEquals(
-                List.of(
-                        new TrustedVaultKeyAndVersion(new byte[] {1, 2}, 0),
-                        new TrustedVaultKeyAndVersion(new byte[] {3, 4}, 0)),
-                promise.getResult());
-    }
-
-    @Test
-    public void testDefaultFetchKeysAndVersions_Rejected() {
-        LegacyBackend backend = new LegacyBackend(Promise.rejected());
-
-        Promise<List<TrustedVaultKeyAndVersion>> promise =
-                backend.fetchKeysAndVersions(TestAccounts.ACCOUNT1);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        assertTrue(promise.isRejected());
     }
 
     @Test
