@@ -23,6 +23,10 @@
 // receiving a user intervention request. Defaults to NO.
 @property(nonatomic, assign) BOOL autoConfirmInterventions;
 
+// When non-nil, automatically invokes the callback with this answer immediately
+// upon receiving a clarification request. Defaults to nil.
+@property(nonatomic, copy) NSString* autoClarificationAnswer;
+
 // When set to YES, automatically invokes the callback with the first
 // suggestion and `shouldStorePermission = NO`. Defaults to NO.
 @property(nonatomic, assign) BOOL autoSelectFirstSuggestion;
@@ -34,6 +38,10 @@
 // A callback invoked synchronously right after the user intervention callback
 // is executed.
 @property(nonatomic, copy) ProceduralBlock onUserInterventionCompleted;
+
+// A callback invoked synchronously right after the clarification callback is
+// executed.
+@property(nonatomic, copy) ProceduralBlock onClarificationCompleted;
 
 // Whether `requestUserInterventionWithTitle:...` was called.
 @property(nonatomic, readonly) BOOL requestConfirmationCalled;
@@ -79,6 +87,14 @@
 - (void)failNavigationConfirmationWithError:
     (actor::InterventionDelegateError)error;
 
+// The message received in the last
+// `actorTask:requestClarificationWithMessage:callback:` call, or nil if it was
+// never called.
+@property(nonatomic, readonly) NSString* clarificationMessage;
+
+// Whether an unhandled clarification callback is currently pending.
+@property(nonatomic, readonly) BOOL hasPendingClarification;
+
 // Resets `requestConfirmationCalled` to NO.
 - (void)resetRequestConfirmationCalled;
 
@@ -87,6 +103,12 @@
 
 // Invokes the stored user intervention callback with `error` and clears it.
 - (void)failUserInterventionWithError:(actor::InterventionDelegateError)error;
+
+// Invokes the stored clarification callback with `answer` and clears it.
+- (void)runClarificationCompletionWithAnswer:(NSString*)answer;
+
+// Invokes the stored clarification callback with `error` and clears it.
+- (void)failClarificationWithError:(actor::InterventionDelegateError)error;
 
 // Invokes the stored suggestion callback with `selectedSuggestion` and
 // `shouldStorePermission`. Clears the stored callback.

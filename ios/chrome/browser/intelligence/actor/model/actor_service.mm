@@ -473,7 +473,7 @@ void ActorService::DoInterruptTask(
 void ActorService::OnInterruptCompleted(
     ActorTaskId task_id,
     InterventionResultCallback<InterruptTaskResult> callback,
-    InterventionResult<InterruptResponse> result) {
+    InterventionResult<InterruptReply> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // `ActorTask` already posted `result`, so reply without `PostReply()`.
   // Check the task first so a stop beats a posted answer or delegate error.
@@ -488,21 +488,21 @@ void ActorService::OnInterruptCompleted(
   }
   web::WebState* web_state = GetFirstLiveControlledWebState(*task);
   if (!web_state) {
-    std::move(callback).Run(
-        InterruptTaskResult(result.value(), /*observation=*/nullptr));
+    std::move(callback).Run(InterruptTaskResult(std::move(result).value(),
+                                                /*observation=*/nullptr));
     return;
   }
   StartTabObservation(
       task_id, web_state,
       base::BindOnce(&ActorService::OnInterruptObservationComplete, weak_this_,
-                     task_id, web_state->GetUniqueIdentifier(), result.value(),
-                     std::move(callback)));
+                     task_id, web_state->GetUniqueIdentifier(),
+                     std::move(result).value(), std::move(callback)));
 }
 
 void ActorService::OnInterruptObservationComplete(
     ActorTaskId task_id,
     web::WebStateID web_state_id,
-    InterruptResponse response,
+    InterruptReply reply,
     InterventionResultCallback<InterruptTaskResult> callback,
     PageContextWrapperCallbackResponse page_context_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -511,9 +511,9 @@ void ActorService::OnInterruptObservationComplete(
     return;
   }
   std::move(callback).Run(InterruptTaskResult(
-      response, std::make_unique<TabObservationResponse>(
-                    web_state_id, std::move(page_context_response),
-                    /*web_state_exists=*/true)));
+      std::move(reply), std::make_unique<TabObservationResponse>(
+                            web_state_id, std::move(page_context_response),
+                            /*web_state_exists=*/true)));
 }
 
 void ActorService::DoPauseTask(ActorTaskId task_id) {

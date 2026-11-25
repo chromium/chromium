@@ -740,4 +740,11 @@ void TtcActuationHandler::OnTaskStopped(actor::ActorTaskId task_id) {
   callback(base::unexpected(actor::InterventionDelegateError::kUnsupported));
 }
 
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestClarificationWithMessage:(NSString*)message
+                           callback:(ActorClarificationCallback)callback {
+  CHECK(callback);
+  callback(base::unexpected(actor::InterventionDelegateError::kUnsupported));
+}
+
 @end

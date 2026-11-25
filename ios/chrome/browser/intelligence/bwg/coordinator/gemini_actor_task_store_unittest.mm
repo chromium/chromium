@@ -933,6 +933,23 @@ TEST_F(GeminiActorTaskStoreTest, ConfirmationInterruptShowsInterventionCard) {
   EXPECT_EQ(actor_service_->GetActiveTaskState(), kReflecting);
 }
 
+// Tests that a clarification interrupt is answered with `kDelegateUnsupported`
+// without showing an intervention, and that the task resumes.
+TEST_F(GeminiActorTaskStoreTest, ClarificationInterruptIsUnsupported) {
+  AttachAndRegister();
+  base::test::TestFuture<actor::InterventionResult<actor::InterruptTaskResult>>
+      result;
+  actor_service_->InterruptTask(
+      task_id_, actor::ClarificationInterrupt{.message = "Which size?"},
+      result.GetCallback());
+
+  ASSERT_FALSE(result.Get().has_value());
+  EXPECT_EQ(result.Get().error(),
+            actor::InterventionError::kDelegateUnsupported);
+  EXPECT_EQ(observer_.intervention, nil);
+  EXPECT_EQ(actor_service_->GetActiveTaskState(), kReflecting);
+}
+
 // Tests that pausing the task shows a card resuming the task, without adding a
 // worklog entry, and that tapping its button resumes the task.
 TEST_F(GeminiActorTaskStoreTest, PauseShowsResumeCard) {

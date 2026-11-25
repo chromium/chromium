@@ -17,10 +17,12 @@
 @property(nonatomic, readwrite) BOOL cancelSuggestionSelectionCalled;
 @property(nonatomic, readwrite) BOOL requestNavigationConfirmationCalled;
 @property(nonatomic, readwrite, copy) NSString* promptedNavigationDomain;
+@property(nonatomic, readwrite, copy) NSString* clarificationMessage;
 @end
 
 @implementation FakeActorTaskInterventionDelegate {
   ActorConfirmationCallback _confirmationCallback;
+  ActorClarificationCallback _clarificationCallback;
   ActorSuggestionSelectionCallback _selectSuggestionCallback;
   ActorNavigationConfirmationCallback _navigationConfirmationCallback;
 }
@@ -33,6 +35,10 @@
 
 - (BOOL)hasPendingUserIntervention {
   return _confirmationCallback != nil;
+}
+
+- (BOOL)hasPendingClarification {
+  return _clarificationCallback != nil;
 }
 
 - (void)runUserInterventionCompletion {
@@ -53,6 +59,28 @@
     callback(base::unexpected(error));
     if (self.onUserInterventionCompleted) {
       self.onUserInterventionCompleted();
+    }
+  }
+}
+
+- (void)runClarificationCompletionWithAnswer:(NSString*)answer {
+  ActorClarificationCallback callback = _clarificationCallback;
+  _clarificationCallback = nil;
+  if (callback) {
+    callback(answer);
+    if (self.onClarificationCompleted) {
+      self.onClarificationCompleted();
+    }
+  }
+}
+
+- (void)failClarificationWithError:(actor::InterventionDelegateError)error {
+  ActorClarificationCallback callback = _clarificationCallback;
+  _clarificationCallback = nil;
+  if (callback) {
+    callback(base::unexpected(error));
+    if (self.onClarificationCompleted) {
+      self.onClarificationCompleted();
     }
   }
 }
@@ -128,6 +156,17 @@
 
   if (self.autoConfirmInterventions) {
     [self runUserInterventionCompletion];
+  }
+}
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestClarificationWithMessage:(NSString*)message
+                           callback:(ActorClarificationCallback)callback {
+  self.clarificationMessage = message;
+  _clarificationCallback = [callback copy];
+
+  if (self.autoClarificationAnswer) {
+    [self runClarificationCompletionWithAnswer:self.autoClarificationAnswer];
   }
 }
 

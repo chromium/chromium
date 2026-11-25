@@ -112,8 +112,8 @@ InterventionError ToInterventionError(InterventionDelegateError error) {
 }
 
 // Posts `callback` with `result`, so that callers are never re-entered.
-void PostInterruptReply(InterventionResultCallback<InterruptResponse> callback,
-                        InterventionResult<InterruptResponse> result) {
+void PostInterruptReply(InterventionResultCallback<InterruptReply> callback,
+                        InterventionResult<InterruptReply> result) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
@@ -366,7 +366,7 @@ void ActorTask::Resume() {
   } else if (pending_interrupt_) {
     owes_pause_notice_ = false;
     PostInterruptReply(std::move(pending_interrupt_),
-                       InterruptResponse::kUserPaused);
+                       InterruptReply::UserPaused());
   }
   SetState(ActorTaskState::kReflecting);
 }
@@ -382,7 +382,7 @@ void ActorTask::SetInterventionDelegate(
 
 void ActorTask::Interrupt(
     const InterruptRequest& request,
-    InterventionResultCallback<InterruptResponse> on_response) {
+    InterventionResultCallback<InterruptReply> on_response) {
   if (IsCompleted() || HasPendingOperation()) {
     PostInterruptReply(std::move(on_response),
                        base::unexpected(InterventionError::kTaskRejected));
@@ -401,7 +401,7 @@ void ActorTask::Interrupt(
   }
   if (owes_pause_notice_) {
     owes_pause_notice_ = false;
-    PostInterruptReply(std::move(on_response), InterruptResponse::kUserPaused);
+    PostInterruptReply(std::move(on_response), InterruptReply::UserPaused());
     return;
   }
   std::visit(
@@ -467,7 +467,7 @@ void ActorTask::ExitWaitingOnUser(ActorTaskState resumed_state) {
 
 void ActorTask::InterruptFor(
     const ConfirmationInterrupt& confirmation,
-    InterventionResultCallback<InterruptResponse> on_response) {
+    InterventionResultCallback<InterruptReply> on_response) {
   if (confirmation.title.empty() || confirmation.button_text.empty() ||
       !intervention_delegate_) {
     PostInterruptReply(std::move(on_response),
@@ -502,16 +502,56 @@ void ActorTask::ShowInterruptConfirmation(
 
 void ActorTask::OnInterruptConfirmationResolved(
     InterventionDelegateResult<void> result) {
+  if (!result.has_value()) {
+    ResolveInterrupt(base::unexpected(ToInterventionError(result.error())));
+    return;
+  }
+  ResolveInterrupt(InterruptReply::Confirmed());
+}
+
+void ActorTask::InterruptFor(
+    const ClarificationInterrupt& clarification,
+    InterventionResultCallback<InterruptReply> on_response) {
+  if (clarification.message.empty() || !intervention_delegate_) {
+    PostInterruptReply(std::move(on_response),
+                       base::unexpected(InterventionError::kTaskRejected));
+    return;
+  }
+  EnterWaitingOnUser();
+  pending_interrupt_ = std::move(on_response);
+  ShowInterruptClarification(clarification);
+}
+
+void ActorTask::ShowInterruptClarification(
+    const ClarificationInterrupt& clarification) {
+  // Posted so that a delegate answering synchronously never re-enters the task.
+  ActorClarificationCallback callback =
+      base::CallbackToBlock(base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&ActorTask::OnInterruptClarificationResolved,
+                         operation_weak_ptr_factory_.GetWeakPtr())));
+  [intervention_delegate_ actorTask:task_id_
+      requestClarificationWithMessage:base::SysUTF8ToNSString(
+                                          clarification.message)
+                             callback:callback];
+}
+
+void ActorTask::OnInterruptClarificationResolved(
+    InterventionDelegateResult<NSString*> result) {
+  if (!result.has_value()) {
+    ResolveInterrupt(base::unexpected(ToInterventionError(result.error())));
+    return;
+  }
+  ResolveInterrupt(
+      InterruptReply::Answered(base::SysNSStringToUTF8(result.value())));
+}
+
+void ActorTask::ResolveInterrupt(InterventionResult<InterruptReply> result) {
   // Only `Stop()` and `Pause()` can move the task out of `kWaitingOnUser`
   // before the delegate replies, and both invalidate the weak pointer,
-  // cancelling this call.
+  // cancelling the delegate's callback.
   CHECK_EQ(state_, ActorTaskState::kWaitingOnUser);
   CHECK(pending_interrupt_);
-  InterventionResult<InterruptResponse> reply =
-      result.has_value()
-          ? InterventionResult<InterruptResponse>(InterruptResponse::kConfirmed)
-          : base::unexpected(ToInterventionError(result.error()));
-  PostInterruptReply(std::move(pending_interrupt_), std::move(reply));
+  PostInterruptReply(std::move(pending_interrupt_), std::move(result));
   ExitWaitingOnUser(ActorTaskState::kReflecting);
 }
 

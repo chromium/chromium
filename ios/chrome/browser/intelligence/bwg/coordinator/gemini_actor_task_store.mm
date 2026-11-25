@@ -435,6 +435,14 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   [self publishState];
 }
 
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestClarificationWithMessage:(NSString*)message
+                           callback:(ActorClarificationCallback)callback {
+  // TODO(crbug.com/567036896): Ask the user `message`.
+  CHECK(callback);
+  callback(base::unexpected(actor::InterventionDelegateError::kUnsupported));
+}
+
 #pragma mark - ActorTaskActionHandler
 
 - (void)resolveInterventionWithAction:(ActuationInterventionAction*)action {

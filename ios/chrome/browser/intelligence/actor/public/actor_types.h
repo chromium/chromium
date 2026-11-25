@@ -182,21 +182,60 @@ struct ConfirmationInterrupt {
   std::string button_text;
 };
 
+// Asks the user a question and waits for a typed answer.
+struct ClarificationInterrupt {
+  // Question asked to the user. Required.
+  std::string message;
+};
+
 // An interrupt; the alternative selects its type.
-using InterruptRequest = std::variant<ConfirmationInterrupt>;
+using InterruptRequest =
+    std::variant<ConfirmationInterrupt, ClarificationInterrupt>;
 
 // How the user answered an interrupt.
 enum class InterruptResponse {
   // The user confirmed a `ConfirmationInterrupt`.
   kConfirmed,
+  // The user answered a `ClarificationInterrupt`.
+  kAnswered,
   // The user paused the task since the last reply, so the interrupt went
   // unanswered.
   kUserPaused,
 };
 
+// Reply of a task to an interrupt.
+// TODO(crbug.com/590286157): Tie interrupt replies to each request kind.
+class InterruptReply {
+ public:
+  // Returns a reply for a confirmed `ConfirmationInterrupt`.
+  static InterruptReply Confirmed();
+  // Returns a reply for an answered `ClarificationInterrupt`. `answer` must
+  // be non-empty.
+  static InterruptReply Answered(std::string answer);
+  // Returns a reply indicating the user paused the task before answering.
+  static InterruptReply UserPaused();
+
+  InterruptReply(const InterruptReply&);
+  InterruptReply& operator=(const InterruptReply&);
+  InterruptReply(InterruptReply&&) noexcept;
+  InterruptReply& operator=(InterruptReply&&) noexcept;
+  ~InterruptReply();
+
+  // How the user answered.
+  InterruptResponse response() const { return response_; }
+  // Text typed by the user. Empty unless `response()` is `kAnswered`.
+  const std::string& answer() const { return answer_; }
+
+ private:
+  InterruptReply(InterruptResponse response, std::string answer);
+
+  InterruptResponse response_;
+  std::string answer_;
+};
+
 // Result of a successful `ActorService::InterruptTask()`.
 struct InterruptTaskResult {
-  InterruptTaskResult(InterruptResponse response,
+  InterruptTaskResult(InterruptReply reply,
                       std::unique_ptr<TabObservationResponse> observation);
   ~InterruptTaskResult();
   InterruptTaskResult(const InterruptTaskResult&) = delete;
@@ -205,7 +244,7 @@ struct InterruptTaskResult {
   InterruptTaskResult& operator=(InterruptTaskResult&&) noexcept;
 
   // How the user answered.
-  InterruptResponse response;
+  InterruptReply reply;
   // Observation of the task's tab once the user answered, or null if the task
   // controls no live tab.
   std::unique_ptr<TabObservationResponse> observation;

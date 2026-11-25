@@ -27,6 +27,10 @@ struct SuggestionSelection {
 using ActorConfirmationCallback =
     void (^)(actor::InterventionDelegateResult<void>);
 
+// Receives the user's non-empty answer to a clarification question.
+using ActorClarificationCallback =
+    void (^)(actor::InterventionDelegateResult<NSString*>);
+
 // Receives the user's choice in a suggestion selection prompt.
 using ActorSuggestionSelectionCallback =
     void (^)(actor::InterventionDelegateResult<actor::SuggestionSelection>);
@@ -39,7 +43,10 @@ using ActorNavigationConfirmationCallback =
 // The ActorTask intervention delegate protocol (1-to-1). Used for blocking
 // interventions (likely user facing prompts, but can be programmatic in
 // headless Actor mode). A delegate that cannot handle a request runs its
-// callback with `kUnsupported`.
+// callback with `kUnsupported`. Except for `selectFromSuggestions:` (cancelled
+// via `actorTaskDidCancelSuggestionSelection:`), prompts receive no cancel call
+// when the task pauses or stops; the delegate should dismiss them on task state
+// changes, and later answers are dropped.
 @protocol ActorTaskInterventionDelegate <NSObject>
 
 // Dismisses the prompt shown by `selectFromSuggestions:` for `taskID` without
@@ -73,6 +80,14 @@ using ActorNavigationConfirmationCallback =
     requestNavigationConfirmationForDomain:(NSString*)domain
                                   callback:(ActorNavigationConfirmationCallback)
                                                callback;
+
+// Asks the user `message` and waits for a typed answer. `callback` must be
+// non-nil and runs at most once: with the user's non-empty answer, or with an
+// error if the question cannot be asked. To abort, the user should stop the
+// execution.
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestClarificationWithMessage:(NSString*)message
+                           callback:(ActorClarificationCallback)callback;
 
 @end
 

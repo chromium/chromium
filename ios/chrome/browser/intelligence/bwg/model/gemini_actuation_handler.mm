@@ -200,11 +200,15 @@ GeminiActuationResponse* MakeObservedInterruptResponse(
 // Returns the response for an answered confirmation interrupt.
 GeminiActuationResponse* MakeConfirmationResponse(
     const actor::InterruptTaskResult& result) {
-  switch (result.response) {
+  switch (result.reply.response()) {
     case actor::InterruptResponse::kConfirmed:
       return MakeObservedInterruptResponse(actor::mojom::ActionResultCode::kOk,
                                            kConfirmationUserResponse,
                                            result.observation.get());
+    case actor::InterruptResponse::kAnswered:
+      // Only a `ClarificationInterrupt` is answered, and none is sent yet.
+      // TODO(crbug.com/567036896): Return the answer as the user response.
+      NOTREACHED();
     case actor::InterruptResponse::kUserPaused:
       return MakeObservedInterruptResponse(
           actor::mojom::ActionResultCode::kTaskPaused, /*userResponse=*/nil,

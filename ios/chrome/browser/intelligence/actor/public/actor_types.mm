@@ -6,6 +6,7 @@
 
 #import <utility>
 
+#import "base/check.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 
@@ -73,11 +74,33 @@ ConfirmationInterrupt& ConfirmationInterrupt::operator=(
     ConfirmationInterrupt&&) noexcept = default;
 ConfirmationInterrupt::~ConfirmationInterrupt() = default;
 
+// InterruptReply.
+InterruptReply InterruptReply::Confirmed() {
+  return InterruptReply(InterruptResponse::kConfirmed, std::string());
+}
+
+InterruptReply InterruptReply::Answered(std::string answer) {
+  CHECK(!answer.empty());
+  return InterruptReply(InterruptResponse::kAnswered, std::move(answer));
+}
+
+InterruptReply InterruptReply::UserPaused() {
+  return InterruptReply(InterruptResponse::kUserPaused, std::string());
+}
+
+InterruptReply::InterruptReply(InterruptResponse response, std::string answer)
+    : response_(response), answer_(std::move(answer)) {}
+InterruptReply::InterruptReply(const InterruptReply&) = default;
+InterruptReply& InterruptReply::operator=(const InterruptReply&) = default;
+InterruptReply::InterruptReply(InterruptReply&&) noexcept = default;
+InterruptReply& InterruptReply::operator=(InterruptReply&&) noexcept = default;
+InterruptReply::~InterruptReply() = default;
+
 // InterruptTaskResult.
 InterruptTaskResult::InterruptTaskResult(
-    InterruptResponse response,
+    InterruptReply reply,
     std::unique_ptr<TabObservationResponse> observation)
-    : response(response), observation(std::move(observation)) {}
+    : reply(std::move(reply)), observation(std::move(observation)) {}
 InterruptTaskResult::~InterruptTaskResult() = default;
 InterruptTaskResult::InterruptTaskResult(InterruptTaskResult&&) noexcept =
     default;

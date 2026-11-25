@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TASK_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TASK_H_
 
+#import <Foundation/Foundation.h>
+
 #import <memory>
 #import <optional>
 #import <string>
@@ -161,7 +163,7 @@ class ActorTask : public web::WebStateObserver,
   // - `kTaskWentAway` if it stops first, or
   // - the intervention delegate's error once the task has resumed.
   void Interrupt(const InterruptRequest& request,
-                 InterventionResultCallback<InterruptResponse> on_response);
+                 InterventionResultCallback<InterruptReply> on_response);
 
   // Interrupts the task while a tool waits on the user, without prompting.
   void InterruptForTool(base::PassKey<ActorEngine> pass_key);
@@ -328,13 +330,27 @@ class ActorTask : public web::WebStateObserver,
 
   // Handles `Interrupt()` for a `ConfirmationInterrupt`.
   void InterruptFor(const ConfirmationInterrupt& confirmation,
-                    InterventionResultCallback<InterruptResponse> on_response);
+                    InterventionResultCallback<InterruptReply> on_response);
 
   // Shows the `confirmation` prompt via the intervention delegate.
   void ShowInterruptConfirmation(const ConfirmationInterrupt& confirmation);
 
   // Handles the user confirming, or the delegate failing with an error.
   void OnInterruptConfirmationResolved(InterventionDelegateResult<void> result);
+
+  // Handles `Interrupt()` for a `ClarificationInterrupt`.
+  void InterruptFor(const ClarificationInterrupt& clarification,
+                    InterventionResultCallback<InterruptReply> on_response);
+
+  // Asks the `clarification` question via the intervention delegate.
+  void ShowInterruptClarification(const ClarificationInterrupt& clarification);
+
+  // Handles the user's answer, or the delegate failing with an error.
+  void OnInterruptClarificationResolved(
+      InterventionDelegateResult<NSString*> result);
+
+  // Replies to the pending interrupt with `result` and resumes the task.
+  void ResolveInterrupt(InterventionResult<InterruptReply> result);
 
   // Returns whether the task is in a state that can be paused.
   bool CanBePaused() const;
@@ -401,7 +417,7 @@ class ActorTask : public web::WebStateObserver,
   std::optional<PendingAct> pending_act_;
 
   // Reply of the pending `Interrupt()`, if any.
-  InterventionResultCallback<InterruptResponse> pending_interrupt_;
+  InterventionResultCallback<InterruptReply> pending_interrupt_;
 
   // Whether the user paused the task since the last reply. The next reply then
   // tells the caller the task was paused, as the pages may have changed.

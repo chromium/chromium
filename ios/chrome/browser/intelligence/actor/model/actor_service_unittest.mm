@@ -1713,7 +1713,8 @@ TEST_F(ActorServiceTest, SetTaskInterventionDelegateAndInterruptTask) {
   // Confirm the prompt.
   [delegate runUserInterventionCompletion];
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(InterruptResponse::kConfirmed, future.Get().value().response);
+  EXPECT_EQ(InterruptResponse::kConfirmed,
+            future.Get().value().reply.response());
   EXPECT_EQ(nullptr, future.Get().value().observation);
   EXPECT_EQ(task->GetState(), ActorTaskState::kReflecting);
 }
@@ -1743,12 +1744,45 @@ TEST_F(ActorServiceTest, InterruptTaskRepliesObservationOfTab) {
   [delegate runUserInterventionCompletion];
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(InterruptResponse::kConfirmed, future.Get().value().response);
+  EXPECT_EQ(InterruptResponse::kConfirmed,
+            future.Get().value().reply.response());
   ASSERT_NE(nullptr, future.Get().value().observation);
   EXPECT_EQ(fake_web_state_ptr->GetUniqueIdentifier(),
             future.Get().value().observation->tab_id);
 
   browser_list->RemoveBrowser(test_browser.get());
+}
+
+// Tests that an answered clarification replies the answer with an observation
+// of the task's tab.
+TEST_F(ActorServiceTest,
+       InterruptTaskRepliesClarificationAnswerWithObservation) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id = CreateTask(service);
+  web::FakeWebState web_state;
+  service->AddControlledWebState(task_id, &web_state);
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  service->SetTaskInterventionDelegate(task_id, delegate);
+
+  InterruptFuture future;
+  service->InterruptTask(task_id, ClarificationInterrupt{.message = "Size?"},
+                         future.GetCallback());
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return delegate.hasPendingClarification; }));
+  EXPECT_NSEQ(@"Size?", delegate.clarificationMessage);
+  EXPECT_EQ(ActorTaskState::kWaitingOnUser, service->GetActiveTaskState());
+
+  [delegate runClarificationCompletionWithAnswer:@"Medium"];
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(InterruptResponse::kAnswered,
+            future.Get().value().reply.response());
+  EXPECT_EQ("Medium", future.Get().value().reply.answer());
+  ASSERT_NE(nullptr, future.Get().value().observation);
+  EXPECT_EQ(web_state.GetUniqueIdentifier(),
+            future.Get().value().observation->tab_id);
 }
 
 // Tests that `PauseTask` queued after `PerformActions` pauses the acting task,
@@ -1935,7 +1969,8 @@ TEST_F(ActorServiceTest,
 
   [delegate runUserInterventionCompletion];
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(InterruptResponse::kConfirmed, future.Get().value().response);
+  EXPECT_EQ(InterruptResponse::kConfirmed,
+            future.Get().value().reply.response());
 
   service->RemoveTaskLifecycleObserver(observer);
 }
@@ -2028,7 +2063,8 @@ TEST_F(ActorServiceTest, InterruptTaskRejectedWhileAnotherIsPending) {
 
   [delegate runUserInterventionCompletion];
   ASSERT_TRUE(first.Get().has_value());
-  EXPECT_EQ(InterruptResponse::kConfirmed, first.Get().value().response);
+  EXPECT_EQ(InterruptResponse::kConfirmed,
+            first.Get().value().reply.response());
 }
 
 // Tests that a stop issued from the intervention delegate callback stops the

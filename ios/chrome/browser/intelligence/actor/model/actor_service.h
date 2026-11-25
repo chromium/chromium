@@ -286,9 +286,9 @@ class ActorService : public KeyedService {
   void OnInterruptCompleted(
       ActorTaskId task_id,
       InterventionResultCallback<InterruptTaskResult> callback,
-      InterventionResult<InterruptResponse> result);
+      InterventionResult<InterruptReply> result);
 
-  // Runs `callback` with `response` and the observation of the tab
+  // Runs `callback` with `reply` and the observation of the tab
   // `web_state_id`, or with `kTaskWentAway` if the task stopped meanwhile.
   // TODO(crbug.com/568338837): Move the interrupt observation into `ActorTask`.
   // Until then, a pause during the observation is answered on the next request
@@ -296,7 +296,7 @@ class ActorService : public KeyedService {
   void OnInterruptObservationComplete(
       ActorTaskId task_id,
       web::WebStateID web_state_id,
-      InterruptResponse response,
+      InterruptReply reply,
       InterventionResultCallback<InterruptTaskResult> callback,
       PageContextWrapperCallbackResponse page_context_response);
 

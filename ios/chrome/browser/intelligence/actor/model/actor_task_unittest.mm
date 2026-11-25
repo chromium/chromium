@@ -257,12 +257,11 @@ TaskSourceInfo TestSource() {
 
 // Receives the task state when an interrupt response runs, and the response.
 using ResponseFuture =
-    base::test::TestFuture<ActorTaskState,
-                           InterventionResult<InterruptResponse>>;
+    base::test::TestFuture<ActorTaskState, InterventionResult<InterruptReply>>;
 
 // Receives the terminal result of an interrupt.
 using InterruptFuture =
-    base::test::TestFuture<InterventionResult<InterruptResponse>>;
+    base::test::TestFuture<InterventionResult<InterruptReply>>;
 
 // Returns all raw log entries in the journal for testing.
 std::vector<mojom::JournalEntryPtr> GetLogsForTesting(
@@ -364,12 +363,17 @@ class ActorTaskTest : public PlatformTest {
     return confirmation;
   }
 
+  // Returns a request asking the user `message`.
+  static InterruptRequest MakeClarification(std::string_view message) {
+    return ClarificationInterrupt{.message = std::string(message)};
+  }
+
   // Returns an `on_response` that records the task state and response.
-  InterventionResultCallback<InterruptResponse> RecordStateOnResponse(
+  InterventionResultCallback<InterruptReply> RecordStateOnResponse(
       ResponseFuture& future) {
     return base::BindLambdaForTesting(
         [&future,
-         task = task_.get()](InterventionResult<InterruptResponse> result) {
+         task = task_.get()](InterventionResult<InterruptReply> result) {
           future.SetValue(task->GetState(), std::move(result));
         });
   }
@@ -1149,7 +1153,8 @@ TEST_F(ActorTaskTest, ActWhileInterruptPendingIsRejected) {
 
   [delegate runUserInterventionCompletion];
   ASSERT_TRUE(interrupt_result.Get().has_value());
-  EXPECT_EQ(InterruptResponse::kConfirmed, interrupt_result.Get().value());
+  EXPECT_EQ(InterruptResponse::kConfirmed,
+            interrupt_result.Get().value().response());
 
   std::vector<std::unique_ptr<ActorToolRequest>> actions;
   actions.push_back(MakeSuccessfulActorToolRequest());
@@ -1862,7 +1867,8 @@ TEST_F(ActorTaskTest, ResolveConfirmationResumesToReflecting) {
 
   EXPECT_EQ(response.Get<0>(), ActorTaskState::kReflecting);
   ASSERT_TRUE(response.Get<1>().has_value());
-  EXPECT_EQ(response.Get<1>().value(), InterruptResponse::kConfirmed);
+  EXPECT_EQ(response.Get<1>().value().response(),
+            InterruptResponse::kConfirmed);
 }
 
 // Tests that stopping an interrupted task transitions it to `kCancelled`,
@@ -1873,7 +1879,7 @@ TEST_F(ActorTaskTest, StopWhileInterruptedIgnoresSubsequentCompletion) {
   task_->SetInterventionDelegate(delegate);
 
   SetTaskState(ActorTaskState::kActing);
-  base::test::TestFuture<InterventionResult<InterruptResponse>> response;
+  base::test::TestFuture<InterventionResult<InterruptReply>> response;
   task_->Interrupt(MakeConfirmation("Please confirm"), response.GetCallback());
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return delegate.hasPendingUserIntervention; }));
@@ -2013,7 +2019,8 @@ TEST_F(ActorTaskTest, PauseWhileConfirmingRepliesUserPausedOnResume) {
   task_->Resume();
   EXPECT_EQ(ActorTaskState::kReflecting, response.Get<0>());
   ASSERT_TRUE(response.Get<1>().has_value());
-  EXPECT_EQ(InterruptResponse::kUserPaused, response.Get<1>().value());
+  EXPECT_EQ(InterruptResponse::kUserPaused,
+            response.Get<1>().value().response());
 }
 
 // Tests that an `Interrupt` received while paused is held without prompting,
@@ -2033,7 +2040,7 @@ TEST_F(ActorTaskTest, InterruptWhilePausedIsHeldUntilResume) {
 
   task_->Resume();
   ASSERT_TRUE(result.Get().has_value());
-  EXPECT_EQ(InterruptResponse::kUserPaused, result.Get().value());
+  EXPECT_EQ(InterruptResponse::kUserPaused, result.Get().value().response());
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 
   // The held reply carried the pause notice, so the next `Interrupt` prompts.
@@ -2142,7 +2149,8 @@ TEST_F(ActorTaskTest, InterruptAfterPauseAndResumeRepliesUserPausedOnce) {
   task_->Interrupt(MakeConfirmation("Please confirm"),
                    first_result.GetCallback());
   ASSERT_TRUE(first_result.Get().has_value());
-  EXPECT_EQ(InterruptResponse::kUserPaused, first_result.Get().value());
+  EXPECT_EQ(InterruptResponse::kUserPaused,
+            first_result.Get().value().response());
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 
   task_->Interrupt(MakeConfirmation("Please confirm"), base::DoNothing());
@@ -2232,6 +2240,89 @@ TEST_F(ActorTaskTest, InterruptPassesConfirmationSubtitle) {
   EXPECT_NSEQ(delegate.confirmationButtonText, @"Buy");
 }
 
+// Tests that interrupting an acting task for clarification transitions it to
+// `kWaitingOnUser` and asks the question via the intervention delegate.
+TEST_F(ActorTaskTest, InterruptWaitingUserClarificationFromActing) {
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  SetTaskState(ActorTaskState::kActing);
+
+  task_->Interrupt(MakeClarification("Which size?"), base::DoNothing());
+
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
+  EXPECT_TRUE(delegate.hasPendingClarification);
+  EXPECT_NSEQ(delegate.clarificationMessage, @"Which size?");
+  EXPECT_FALSE(delegate.requestConfirmationCalled);
+}
+
+// Tests that answering a clarification transitions the task back to
+// `kReflecting` and replies `kAnswered` with the answer.
+TEST_F(ActorTaskTest, AnswerClarificationRepliesAnswerAndResumesToReflecting) {
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  SetTaskState(ActorTaskState::kActing);
+  ResponseFuture response;
+  task_->Interrupt(MakeClarification("Which size?"),
+                   RecordStateOnResponse(response));
+  ASSERT_TRUE(delegate.hasPendingClarification);
+
+  [delegate runClarificationCompletionWithAnswer:@"Medium"];
+  // The answer is posted, never handled from within the delegate's call.
+  EXPECT_FALSE(response.IsReady());
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
+
+  EXPECT_EQ(response.Get<0>(), ActorTaskState::kReflecting);
+  ASSERT_TRUE(response.Get<1>().has_value());
+  EXPECT_EQ(response.Get<1>().value().response(), InterruptResponse::kAnswered);
+  EXPECT_EQ(response.Get<1>().value().answer(), "Medium");
+}
+
+// Tests that a clarification with an empty message, or without an intervention
+// delegate, is rejected and leaves the task running.
+TEST_F(ActorTaskTest, InvalidClarificationIsRejected) {
+  SetTaskState(ActorTaskState::kActing);
+  InterruptFuture without_delegate;
+  task_->Interrupt(MakeClarification("Which size?"),
+                   without_delegate.GetCallback());
+  ASSERT_FALSE(without_delegate.Get().has_value());
+  EXPECT_EQ(without_delegate.Get().error(), InterventionError::kTaskRejected);
+
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  InterruptFuture empty_message;
+  task_->Interrupt(MakeClarification(""), empty_message.GetCallback());
+  ASSERT_FALSE(empty_message.Get().has_value());
+  EXPECT_EQ(empty_message.Get().error(), InterventionError::kTaskRejected);
+  FlushCurrentSequence();
+
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kActing);
+  EXPECT_FALSE(delegate.hasPendingClarification);
+}
+
+// Tests that a clarification failed by the intervention delegate replies its
+// error once the task resumes to `kReflecting`.
+TEST_F(ActorTaskTest, ClarificationDelegateErrorRepliesErrorAndResumes) {
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  SetTaskState(ActorTaskState::kActing);
+  ResponseFuture response;
+  task_->Interrupt(MakeClarification("Which size?"),
+                   RecordStateOnResponse(response));
+  ASSERT_TRUE(delegate.hasPendingClarification);
+
+  [delegate failClarificationWithError:InterventionDelegateError::kUnsupported];
+  // The error is posted, never handled from within the delegate's call.
+  EXPECT_FALSE(response.IsReady());
+
+  EXPECT_EQ(response.Get<0>(), ActorTaskState::kReflecting);
+  ASSERT_FALSE(response.Get<1>().has_value());
+  EXPECT_EQ(response.Get<1>().error(), InterventionError::kDelegateUnsupported);
+}
+
 // Tests that a confirmation failed by the intervention delegate replies its
 // error once the task resumes to `kReflecting`.
 TEST_F(ActorTaskTest, ConfirmationDelegateErrorRepliesErrorAndResumes) {
@@ -2252,6 +2343,80 @@ TEST_F(ActorTaskTest, ConfirmationDelegateErrorRepliesErrorAndResumes) {
   EXPECT_EQ(response.Get<0>(), ActorTaskState::kReflecting);
   ASSERT_FALSE(response.Get<1>().has_value());
   EXPECT_EQ(response.Get<1>().error(), InterventionError::kDelegateUnsupported);
+}
+
+// Tests that pausing while a clarification is asked holds its reply, ignores a
+// late answer, and replies `kUserPaused` once the user resumes.
+TEST_F(ActorTaskTest, PauseWhileClarifyingRepliesUserPausedOnResume) {
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  SetTaskState(ActorTaskState::kActing);
+  ResponseFuture response;
+  task_->Interrupt(MakeClarification("Which size?"),
+                   RecordStateOnResponse(response));
+  ASSERT_TRUE(delegate.hasPendingClarification);
+
+  task_->Pause();
+  EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+
+  // An answer given after the pause is ignored.
+  [delegate runClarificationCompletionWithAnswer:@"Medium"];
+  FlushCurrentSequence();
+  EXPECT_FALSE(response.IsReady());
+  EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+
+  task_->Resume();
+  EXPECT_EQ(ActorTaskState::kReflecting, response.Get<0>());
+  ASSERT_TRUE(response.Get<1>().has_value());
+  EXPECT_EQ(InterruptResponse::kUserPaused,
+            response.Get<1>().value().response());
+  EXPECT_TRUE(response.Get<1>().value().answer().empty());
+}
+
+// Tests that stopping a task waiting on a clarification replies
+// `kTaskWentAway` and ignores a later answer.
+TEST_F(ActorTaskTest, StopWhileClarifyingIgnoresSubsequentAnswer) {
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  SetTaskState(ActorTaskState::kActing);
+  InterruptFuture result;
+  task_->Interrupt(MakeClarification("Which size?"), result.GetCallback());
+  ASSERT_TRUE(delegate.hasPendingClarification);
+
+  task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
+  ASSERT_FALSE(result.Get().has_value());
+  EXPECT_EQ(InterventionError::kTaskWentAway, result.Get().error());
+
+  [delegate runClarificationCompletionWithAnswer:@"Medium"];
+  FlushCurrentSequence();
+  EXPECT_EQ(ActorTaskState::kCancelled, task_->GetState());
+}
+
+// Tests that a clarification answered synchronously does not re-enter the
+// task, and later resumes it and replies.
+TEST_F(ActorTaskTest, InterruptWaitingUserClarificationSyncResolution) {
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  delegate.autoClarificationAnswer = @"Medium";
+  ActorTask* task = task_.get();
+  __block std::optional<ActorTaskState> state_after_completion;
+  delegate.onClarificationCompleted = ^{
+    state_after_completion = task->GetState();
+  };
+  task_->SetInterventionDelegate(delegate);
+
+  SetTaskState(ActorTaskState::kActing);
+  ResponseFuture response;
+  task_->Interrupt(MakeClarification("Which size?"),
+                   RecordStateOnResponse(response));
+
+  EXPECT_EQ(response.Get<0>(), ActorTaskState::kReflecting);
+  ASSERT_TRUE(response.Get<1>().has_value());
+  EXPECT_EQ(response.Get<1>().value().response(), InterruptResponse::kAnswered);
+  EXPECT_EQ(response.Get<1>().value().answer(), "Medium");
+  EXPECT_EQ(state_after_completion, ActorTaskState::kWaitingOnUser);
 }
 
 // Tests that a confirmation answered synchronously does not re-enter the task,
