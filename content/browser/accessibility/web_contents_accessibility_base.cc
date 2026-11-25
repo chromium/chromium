@@ -1138,6 +1138,23 @@ void WebContentsAccessibilityBase::HandleScrolledToAnchor(int32_t unique_id) {
   Java_WebContentsAccessibilityImpl_handleScrolledToAnchor(env, obj, unique_id);
 }
 
+void WebContentsAccessibilityBase::HandleDialogPaneOpened(int32_t unique_id) {
+  // Skip firing `HandlePaneOpened()` when this dialog is already active or was
+  // already announced as the most recently opened dialog.
+  if (unique_id == active_dialog_unique_id_ ||
+      unique_id == last_opened_dialog_unique_id_) {
+    return;
+  }
+  last_opened_dialog_unique_id_ = unique_id;
+  HandlePaneOpened(unique_id);
+}
+
+void WebContentsAccessibilityBase::ClearLastOpenedDialog(int32_t unique_id) {
+  if (last_opened_dialog_unique_id_ == unique_id) {
+    last_opened_dialog_unique_id_ = ui::kAXAndroidInvalidViewId;
+  }
+}
+
 void WebContentsAccessibilityBase::HandlePaneOpened(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
@@ -1402,6 +1419,8 @@ bool WebContentsAccessibilityBase::OnHoverEventNoRenderer(JNIEnv* env,
 }
 
 void WebContentsAccessibilityBase::HandleNavigate(int32_t root_id) {
+  active_dialog_unique_id_ = ui::kAXAndroidInvalidViewId;
+  last_opened_dialog_unique_id_ = ui::kAXAndroidInvalidViewId;
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (obj.is_null()) {
@@ -2852,11 +2871,16 @@ void WebContentsAccessibilityBase::MoveAccessibilityFocus(
     if (active_dialog_unique_id_ != ui::kAXAndroidInvalidViewId) {
       HandlePaneClosed(active_dialog_unique_id_);
     }
-    if (new_dialog_id != ui::kAXAndroidInvalidViewId) {
+    if (new_dialog_id != ui::kAXAndroidInvalidViewId &&
+        new_dialog_id != last_opened_dialog_unique_id_) {
       HandlePaneOpened(new_dialog_id);
     }
     active_dialog_unique_id_ = new_dialog_id;
   }
+  // Sync `last_opened_dialog_unique_id_` to the focus target's dialog. If a
+  // non-modal dialog appeared and focus then moves elsewhere, this resets
+  // deduplication so entering that dialog later still announces it.
+  last_opened_dialog_unique_id_ = new_dialog_id;
 
   node->manager()->SetAccessibilityFocus(*node);
 

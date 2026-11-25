@@ -1,0 +1,13 @@
+=== END INITIAL PAGE LOAD ===
+TYPE_VIEW_TEXT_SELECTION_CHANGED class_name=android.widget.EditText [0, 0] on class_name=android.widget.EditText
+TYPE_WINDOW_STATE_CHANGED [contentTypes=PANE_APPEARED] text=[] on [Dialog title] class_name=android.app.AlertDialog
+TYPE_VIEW_FOCUSED class_name=android.widget.EditText on class_name=android.widget.EditText
+TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.widget.EditText on class_name=android.widget.EditText
+TYPE_VIEW_TEXT_SELECTION_CHANGED class_name=android.webkit.WebView on class_name=android.webkit.WebView
+TYPE_VIEW_FOCUSED class_name=android.widget.Button on [Outside] class_name=android.widget.Button
+TYPE_WINDOW_STATE_CHANGED [contentTypes=PANE_DISAPPEARED] text=[]
+TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.widget.Button on [Outside] class_name=android.widget.Button
+TYPE_VIEW_TEXT_SELECTION_CHANGED class_name=android.widget.EditText [0, 0] on class_name=android.widget.EditText
+TYPE_WINDOW_STATE_CHANGED [contentTypes=PANE_APPEARED] text=[] on [Dialog title] class_name=android.app.AlertDialog
+TYPE_VIEW_FOCUSED class_name=android.widget.EditText on class_name=android.widget.EditText
+TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.widget.EditText on class_name=android.widget.EditText

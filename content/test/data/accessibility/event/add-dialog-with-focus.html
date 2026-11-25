@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <script>
+      const go_passes = [
+        () => {
+          document.getElementById("dialog").removeAttribute("hidden");
+          document.getElementById("dialog-focus-element").focus();
+        },
+        () => {
+          document.getElementById("dialog").setAttribute("hidden", "");
+          document.getElementById("outside").focus();
+        },
+        () => {
+          document.getElementById("dialog").removeAttribute("hidden");
+          document.getElementById("dialog-focus-element").focus();
+        },
+      ];
+
+      let current_pass = 0;
+      function go() {
+        go_passes[current_pass++].call();
+        return current_pass < go_passes.length;
+      }
+    </script>
+  </head>
+  <body>
+    <button id="outside">Outside</button>
+    <div id="dialog" role="dialog" aria-labelledby="dialog-label" hidden>
+      <h2 id="dialog-label">Dialog title</h2>
+      <p>Dialog content:</p>
+      <div>
+        <input type="text" id="dialog-focus-element">
+      </div>
+    </div>
+  </body>
+</html>

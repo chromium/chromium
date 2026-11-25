@@ -102,9 +102,12 @@ public class WebContentsAccessibilityEventsTest {
 
     /**
      * Perform a single test which will:
-     *      1. Open the given HTML file
-     *      2. Execute the given javascript method until the javascript method returns false
-     *      3. Read expectations file and compare with results
+     *
+     * <ol>
+     *   <li>Open the given HTML file
+     *   <li>Execute the given javascript method until the javascript method returns false
+     *   <li>Read expectations file and compare with results
+     * </ol>
      *
      * @param inputFile HTML test input file
      * @param expectationFile TXT expectations file
@@ -118,12 +121,33 @@ public class WebContentsAccessibilityEventsTest {
             String javascriptMethod,
             boolean shouldFilterTrivialEvents,
             boolean testServer) {
+        performTestWithJavascriptMethod(
+                inputFile,
+                expectationFile,
+                javascriptMethod,
+                shouldFilterTrivialEvents,
+                testServer,
+                /* shouldFocusOnPageLoad= */ false);
+    }
+
+    private void performTestWithJavascriptMethod(
+            String inputFile,
+            String expectationFile,
+            String javascriptMethod,
+            boolean shouldFilterTrivialEvents,
+            boolean testServer,
+            boolean shouldFocusOnPageLoad) {
         // Build page from given file and enable testing framework, set a tracker.
         mActivityTestRule.setupTestFromFile(
                 BASE_FILE_PATH + inputFile,
                 shouldFilterTrivialEvents,
                 testServer,
                 /* sendReadyForTestSignal= */ true);
+
+        if (shouldFocusOnPageLoad) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> mActivityTestRule.mWcax.setShouldFocusOnPageLoad(true));
+        }
 
         // Inject a separator comment to separate initial page-load events from JS events
         mActivityTestRule.addCommentToTracker("=== END INITIAL PAGE LOAD ===");
@@ -276,6 +300,18 @@ public class WebContentsAccessibilityEventsTest {
     public void test_addDialog_noInfo() {
         performTest("add-dialog-no-info.html", "add-dialog-no-info-expected-android.txt",
                 /* shouldFilterTrivialEvents= */ false);
+    }
+
+    @Test
+    @SmallTest
+    public void test_addDialog_withFocus() {
+        performTestWithJavascriptMethod(
+                "add-dialog-with-focus.html",
+                "add-dialog-with-focus-expected-android.txt",
+                "go()",
+                /* shouldFilterTrivialEvents= */ true,
+                /* testServer= */ false,
+                /* shouldFocusOnPageLoad= */ true);
     }
 
     @Test

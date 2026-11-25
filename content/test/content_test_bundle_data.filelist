@@ -3243,6 +3243,8 @@ data/accessibility/event/add-dialog-no-info-expected-mac.txt
 data/accessibility/event/add-dialog-no-info-expected-uia-win.txt
 data/accessibility/event/add-dialog-no-info-expected-win.txt
 data/accessibility/event/add-dialog-no-info.html
+data/accessibility/event/add-dialog-with-focus-expected-android.txt
+data/accessibility/event/add-dialog-with-focus.html
 data/accessibility/event/add-dialog.html
 data/accessibility/event/add-hidden-attribute-expected-android.txt
 data/accessibility/event/add-hidden-attribute-expected-auralinux.txt

@@ -454,6 +454,12 @@ class CONTENT_EXPORT WebContentsAccessibilityBase
   void HandleScrollPositionChanged(int32_t unique_id);
   void HandleSortDirectionChanged(int32_t unique_id);
   void HandleScrolledToAnchor(int32_t unique_id);
+  // Fires `HandlePaneOpened()` for a dialog (`kDialog` / `kAlertDialog`) unless
+  // it has already been announced as the active or most recently opened dialog.
+  void HandleDialogPaneOpened(int32_t unique_id);
+  // Clears `last_opened_dialog_unique_id_` if it matches `unique_id`, so a
+  // dialog that reopens with the same unique ID can announce again.
+  void ClearLastOpenedDialog(int32_t unique_id);
   virtual void HandlePaneOpened(int32_t unique_id);
   virtual void HandlePaneClosed(int32_t unique_id);
   // Dispatches events for atomic live region changes over the JNI Bridge.
@@ -673,6 +679,7 @@ class CONTENT_EXPORT WebContentsAccessibilityBase
   int32_t tooltip_showing_node_id_ = 0;
 
   int32_t active_dialog_unique_id_ = ui::kAXAndroidInvalidViewId;
+  int32_t last_opened_dialog_unique_id_ = ui::kAXAndroidInvalidViewId;
 
   bool should_announce_full_text_ = false;
 

@@ -539,7 +539,11 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       break;
     }
     case ui::AXEventGenerator::Event::ALERT: {
-      wcax->HandlePaneOpened(android_node->GetUniqueId());
+      if (ui::IsDialog(android_node->GetRole())) {
+        wcax->HandleDialogPaneOpened(android_node->GetUniqueId());
+      } else {
+        wcax->HandlePaneOpened(android_node->GetUniqueId());
+      }
       // ALERT events are only fired on the root node of the alert live region,
       // but verify that `node` is in fact an atomic live region root.
       if (node->data().IsAtomicLiveRegionRoot()) {
@@ -708,7 +712,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       // pane opened event is already handled for kAlertDialog by the ALERT
       // event.
       if (android_node->GetRole() == ax::mojom::Role::kDialog) {
-        wcax->HandlePaneOpened(android_node->GetUniqueId());
+        wcax->HandleDialogPaneOpened(android_node->GetUniqueId());
       }
       break;
     }
@@ -998,6 +1002,7 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateStarting(
           static_cast<BrowserAccessibilityAndroid*>(wrapper);
 
       ClearNodeInfoCacheForGivenId(android_node->GetUniqueId());
+      wcax->ClearLastOpenedDialog(android_node->GetUniqueId());
 
       // When a node will be deleted, clear its parent from the cache as well,
       // or the parent could erroneously report the cleared node as a child
@@ -1070,10 +1075,22 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
         BrowserAccessibilityAndroid::ResetLeafCache();
         ClearNodeInfoCacheForGivenId(wrapper->GetUniqueId());
         break;
+      case ui::AXEventGenerator::Event::IGNORED_CHANGED:
+        // Reset dialog deduplication when a dialog becomes ignored so showing
+        // it again with the same unique ID announces it.
+        if (wcax && wrapper->IsIgnored()) {
+          wcax->ClearLastOpenedDialog(wrapper->GetUniqueId());
+        }
+        break;
       case ui::AXEventGenerator::Event::NAME_CHANGED:
-      case ui::AXEventGenerator::Event::ROLE_CHANGED:
       case ui::AXEventGenerator::Event::STATE_CHANGED:
         wrapper->EraseLeafCacheDataForNode();
+        break;
+      case ui::AXEventGenerator::Event::ROLE_CHANGED:
+        wrapper->EraseLeafCacheDataForNode();
+        if (wcax && !ui::IsDialog(wrapper->GetRole())) {
+          wcax->ClearLastOpenedDialog(wrapper->GetUniqueId());
+        }
         break;
       default:
         break;

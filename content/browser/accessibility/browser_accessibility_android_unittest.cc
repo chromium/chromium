@@ -3159,6 +3159,167 @@ TEST_F(BrowserAccessibilityAndroidTest,
   wcax.MoveAccessibilityFocus(nullptr, ui::kAXAndroidInvalidViewId, inside_uid);
 }
 
+// Regression test for crbug.com/493881306. Opening a dialog and moving
+// accessibility focus inside it must not fire duplicate `HandlePaneOpened()`
+// events, while still preserving pane-closed events on exit and avoiding
+// spurious pane-closed events when focus moves outside a non-modal dialog.
+TEST_F(BrowserAccessibilityAndroidTest, TestDialogPaneOpenedDeduplication) {
+  ui::AXNodeData button_outside_1;
+  button_outside_1.id = 2;
+  button_outside_1.role = ax::mojom::Role::kButton;
+  button_outside_1.SetName("Outside Button 1");
+
+  ui::AXNodeData button_outside_2;
+  button_outside_2.id = 5;
+  button_outside_2.role = ax::mojom::Role::kButton;
+  button_outside_2.SetName("Outside Button 2");
+
+  ui::AXNodeData button_inside;
+  button_inside.id = 4;
+  button_inside.role = ax::mojom::Role::kButton;
+  button_inside.SetName("Inside Button");
+
+  ui::AXNodeData dialog_container;
+  dialog_container.id = 3;
+  dialog_container.role = ax::mojom::Role::kDialog;
+  dialog_container.SetName("Dialog Title");
+  dialog_container.child_ids = {button_inside.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {button_outside_1.id, button_outside_2.id,
+                    dialog_container.id};
+
+  auto* update = new ui::AXTreeUpdate(
+      MakeAXTreeUpdateForTesting(root, button_outside_1, button_outside_2,
+                                 dialog_container, button_inside));
+  MockWebContentsAccessibilityBase wcax(reinterpret_cast<intptr_t>(update));
+
+  BrowserAccessibilityAndroid* root_node =
+      wcax.GetAXFromUniqueIDForTesting(wcax.GetRootId(nullptr));
+  ASSERT_NE(nullptr, root_node);
+  ASSERT_EQ(3U, root_node->PlatformChildCount());
+
+  auto* outside_1_node =
+      static_cast<BrowserAccessibilityAndroid*>(root_node->PlatformGetChild(0));
+  auto* outside_2_node =
+      static_cast<BrowserAccessibilityAndroid*>(root_node->PlatformGetChild(1));
+  auto* dialog_node =
+      static_cast<BrowserAccessibilityAndroid*>(root_node->PlatformGetChild(2));
+  ASSERT_NE(nullptr, outside_1_node);
+  ASSERT_NE(nullptr, outside_2_node);
+  ASSERT_NE(nullptr, dialog_node);
+  auto* inside_node = static_cast<BrowserAccessibilityAndroid*>(
+      dialog_node->PlatformGetChild(0));
+  ASSERT_NE(nullptr, inside_node);
+
+  int32_t outside_1_uid = outside_1_node->GetUniqueId();
+  int32_t outside_2_uid = outside_2_node->GetUniqueId();
+  int32_t dialog_uid = dialog_node->GetUniqueId();
+  int32_t inside_uid = inside_node->GetUniqueId();
+
+  // Case 1: SUBTREE_CREATED/ALERT announces dialog, then focus moves inside.
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(wcax, HandlePaneOpened(dialog_uid)).Times(1);
+    EXPECT_CALL(wcax, HandlePaneClosed(dialog_uid)).Times(1);
+  }
+  wcax.HandleDialogPaneOpened(dialog_uid);
+  wcax.MoveAccessibilityFocus(nullptr, outside_1_uid, inside_uid);
+  wcax.MoveAccessibilityFocus(nullptr, inside_uid, outside_1_uid);
+  testing::Mock::VerifyAndClearExpectations(&wcax);
+
+  // Case 2: Focus moves inside first, then SUBTREE_CREATED/ALERT fires.
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(wcax, HandlePaneOpened(dialog_uid)).Times(1);
+    EXPECT_CALL(wcax, HandlePaneClosed(dialog_uid)).Times(1);
+  }
+  wcax.MoveAccessibilityFocus(nullptr, outside_1_uid, inside_uid);
+  wcax.HandleDialogPaneOpened(dialog_uid);
+  wcax.MoveAccessibilityFocus(nullptr, inside_uid, outside_1_uid);
+  testing::Mock::VerifyAndClearExpectations(&wcax);
+
+  // Case 3: Non-modal dialog opens, focus moves between outside buttons (no
+  // spurious close), then later enters the dialog (announces open).
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(wcax, HandlePaneOpened(dialog_uid)).Times(1);
+    EXPECT_CALL(wcax, HandlePaneOpened(dialog_uid)).Times(1);
+  }
+  EXPECT_CALL(wcax, HandlePaneClosed(testing::_)).Times(0);
+  wcax.HandleDialogPaneOpened(dialog_uid);
+  wcax.MoveAccessibilityFocus(nullptr, outside_1_uid, outside_2_uid);
+  wcax.MoveAccessibilityFocus(nullptr, outside_2_uid, inside_uid);
+  testing::Mock::VerifyAndClearExpectations(&wcax);
+
+  // Case 4: A dialog opens, becomes ignored or loses its dialog role while
+  // keeping the same unique ID, and then reopens with no focus move in
+  // between. Each reopen must still fire `HandlePaneOpened()` once.
+  {
+    testing::NiceMock<MockWebContentsAccessibilityBase> live_wcax;
+    test_browser_accessibility_delegate_->SetWebContentsAccessibility(
+        &live_wcax);
+
+    std::unique_ptr<ui::BrowserAccessibilityManager> manager(CreateManager(
+        MakeAXTreeUpdateForTesting(root, button_outside_1, button_outside_2,
+                                   dialog_container, button_inside)));
+    ASSERT_NE(nullptr, manager.get());
+    auto* live_dialog = static_cast<BrowserAccessibilityAndroid*>(
+        manager->GetFromID(dialog_container.id));
+    ASSERT_NE(nullptr, live_dialog);
+    int32_t live_dialog_uid = live_dialog->GetUniqueId();
+
+    EXPECT_CALL(live_wcax, HandlePaneOpened(live_dialog_uid)).Times(1);
+    live_wcax.HandleDialogPaneOpened(live_dialog_uid);
+    testing::Mock::VerifyAndClearExpectations(&live_wcax);
+
+    // Hide the dialog as ignored, then unignore it with the same unique ID.
+    {
+      EXPECT_CALL(live_wcax, HandlePaneOpened(testing::_)).Times(0);
+      ui::AXNodeData ignored_dialog = dialog_container;
+      ignored_dialog.AddState(ax::mojom::State::kIgnored);
+      ui::AXUpdatesAndEvents hide_update;
+      hide_update.updates.resize(1);
+      hide_update.updates[0].nodes = {ignored_dialog};
+      manager->OnAccessibilityEvents(hide_update);
+      testing::Mock::VerifyAndClearExpectations(&live_wcax);
+    }
+    {
+      EXPECT_CALL(live_wcax, HandlePaneOpened(live_dialog_uid)).Times(1);
+      ui::AXUpdatesAndEvents show_update;
+      show_update.updates.resize(1);
+      show_update.updates[0].nodes = {dialog_container};
+      manager->OnAccessibilityEvents(show_update);
+      testing::Mock::VerifyAndClearExpectations(&live_wcax);
+    }
+
+    // Remove the dialog role, then restore it as an alertdialog with the same
+    // unique ID.
+    {
+      EXPECT_CALL(live_wcax, HandlePaneOpened(testing::_)).Times(0);
+      ui::AXNodeData generic_container = dialog_container;
+      generic_container.role = ax::mojom::Role::kGenericContainer;
+      ui::AXUpdatesAndEvents clear_role_update;
+      clear_role_update.updates.resize(1);
+      clear_role_update.updates[0].nodes = {generic_container};
+      manager->OnAccessibilityEvents(clear_role_update);
+      testing::Mock::VerifyAndClearExpectations(&live_wcax);
+    }
+    {
+      EXPECT_CALL(live_wcax, HandlePaneOpened(live_dialog_uid)).Times(1);
+      ui::AXNodeData alert_dialog = dialog_container;
+      alert_dialog.role = ax::mojom::Role::kAlertDialog;
+      ui::AXUpdatesAndEvents restore_role_update;
+      restore_role_update.updates.resize(1);
+      restore_role_update.updates[0].nodes = {alert_dialog};
+      manager->OnAccessibilityEvents(restore_role_update);
+      testing::Mock::VerifyAndClearExpectations(&live_wcax);
+    }
+  }
+}
+
 // Regression test for crbug.com/433149078. A multiselectable listbox
 // can end up with extra non-selectable children (e.g. <span id="...">)
 // in its platform children. Those extra children must not inflate
