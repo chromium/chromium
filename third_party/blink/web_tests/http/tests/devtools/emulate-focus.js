@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
-
-import * as Common from 'devtools/core/common/common.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Main from 'devtools/entrypoints/main/main.js';
+import {TestRunner} from 'test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that focus emulation works.\n`);
   await dumpPageFocus();
 
   TestRunner.addResult('\nEmulating page focus');
-  Main.MainImpl.MainImpl.universeForTest.settings.moduleSetting('emulate-page-focus').set(true);
+  Main.MainImpl.MainImpl.universeForTest.settings
+      .resolve(SDK.SDKSettings.emulatePageFocusSettingDescriptor)
+      .set(true);
   await dumpPageFocus();
 
   TestRunner.addResult('\nDisabling focus emulation');
-  Main.MainImpl.MainImpl.universeForTest.settings.moduleSetting('emulate-page-focus').set(false);
+  Main.MainImpl.MainImpl.universeForTest.settings
+      .resolve(SDK.SDKSettings.emulatePageFocusSettingDescriptor)
+      .set(false);
   await dumpPageFocus();
 
 

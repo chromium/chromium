@@ -3,15 +3,18 @@
 // found in the LICENSE file.
 
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
-import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debugger.js';
 import * as Common from 'devtools/core/common/common.js';
+import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debugger.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as SettingsUI from 'devtools/ui/settings/settings.js';
 import {TestRunner} from 'test_runner';
 
 (async function() {
   await TestRunner.showPanel('sources');
 
-  Common.Settings.Settings.instance().moduleSetting('sidebar-position').set('right');
+  Common.Settings.Settings.instance()
+      .resolve(SettingsUI.MainSettings.sidebarPositionSettingDescriptor)
+      .set('right');
   await UI.ViewManager.ViewManager.instance().showView(
       'sources.event-listener-breakpoints');
   const eventListenerWidget = await UI.ViewManager.ViewManager.instance().view(

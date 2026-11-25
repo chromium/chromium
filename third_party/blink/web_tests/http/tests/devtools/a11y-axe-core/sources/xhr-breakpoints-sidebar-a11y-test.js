@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import * as Common from 'devtools/core/common/common.js';
-import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debugger.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as SettingsUI from 'devtools/ui/settings/settings.js';
+import {TestRunner} from 'test_runner';
 
 (async function() {
   await TestRunner.showPanel('sources');
@@ -14,7 +15,9 @@ import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debug
   // this rule causes false negatives due to axe not handling the shadow DOM properly
   const noRequiredParent = {'aria-required-parent': {enabled: false}};
 
-  Common.Settings.Settings.instance().moduleSetting('sidebar-position').set('right');
+  Common.Settings.Settings.instance()
+      .resolve(SettingsUI.MainSettings.sidebarPositionSettingDescriptor)
+      .set('right');
   await UI.ViewManager.ViewManager.instance().showView('sources.xhr-breakpoints');
   TestRunner.addResult('Adding XHR breakpoint.');
   const xhrBreakpointsPane = BrowserDebugger.XHRBreakpointsSidebarPane.XHRBreakpointsSidebarPane.instance();

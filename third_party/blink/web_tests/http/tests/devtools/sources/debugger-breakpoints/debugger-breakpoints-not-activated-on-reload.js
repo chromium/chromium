@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
-import {SourcesTestRunner} from 'sources_test_runner';
-
-import * as Common from 'devtools/core/common/common.js';
-import * as Sources from 'devtools/panels/sources/sources.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Main from 'devtools/entrypoints/main/main.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
+import {SourcesTestRunner} from 'sources_test_runner';
+import {TestRunner} from 'test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that breakpoints are not activated on page reload.Bug 41461\n`);
@@ -37,7 +36,9 @@ import * as Main from 'devtools/entrypoints/main/main.js';
 
   function step3() {
     TestRunner.addResult('Main resource was shown.');
-    if (!Main.MainImpl.MainImpl.universeForTest.settings.moduleSetting('breakpoints-active').get())
+    if (!Main.MainImpl.MainImpl.universeForTest.settings
+             .resolve(SDK.SDKSettings.breakpointsActiveSettingDescriptor)
+             .get())
       TestRunner.addResult('Breakpoints are deactivated.');
     else
       TestRunner.addResult('Error: breakpoints are activated.');

@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
-
-import * as Common from 'devtools/core/common/common.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Main from 'devtools/entrypoints/main/main.js';
+import {TestRunner} from 'test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that console is cleared via console.clear() method\n`);
@@ -44,13 +43,17 @@ import * as Main from 'devtools/entrypoints/main/main.js';
       await TestRunner.RuntimeAgent.invoke_evaluate({expression: 'log();'});
       TestRunner.addResult('=== Before clear ===');
       await ConsoleTestRunner.dumpConsoleMessages();
-      Main.MainImpl.MainImpl.universeForTest.settings.moduleSetting('preserve-console-log').set(true);
+      Main.MainImpl.MainImpl.universeForTest.settings
+          .resolve(SDK.SDKSettings.preserveConsoleLogSettingDescriptor)
+          .set(true);
 
       await TestRunner.RuntimeAgent.invoke_evaluate({expression: 'clearConsoleFromPage();'});
 
       TestRunner.addResult('=== After clear ===');
       await ConsoleTestRunner.dumpConsoleMessages();
-      Main.MainImpl.MainImpl.universeForTest.settings.moduleSetting('preserve-console-log').set(false);
+      Main.MainImpl.MainImpl.universeForTest.settings
+          .resolve(SDK.SDKSettings.preserveConsoleLogSettingDescriptor)
+          .set(false);
       next();
     }
   ]);

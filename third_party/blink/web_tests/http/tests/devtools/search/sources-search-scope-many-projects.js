@@ -12,7 +12,10 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as Persistence from 'devtools/models/persistence/persistence.js';
 
 (async function() {
-  Common.Settings.Settings.instance().moduleSetting('persistence-network-overrides-enabled').set(true);
+  Common.Settings.Settings.instance()
+      .resolve(Persistence.NetworkPersistenceManager
+                   .persistenceNetworkOverridesEnabledSettingDescriptor)
+      .set(true);
   TestRunner.addResult(`Tests that ScriptSearchScope sorts network and dirty results correctly.\n`);
   await TestRunner.showPanel('sources');
 
