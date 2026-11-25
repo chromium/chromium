@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
+
 import type {BrowserApi} from './browser_api.js';
 import type {OpenPdfParams, OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import type {Viewport} from './viewport.js';
@@ -177,8 +179,10 @@ export class PdfNavigatorImpl implements PdfNavigator {
         whenDone = this.paramsParser_.getViewportFromUrlParams(url.href).then(
             this.onViewportReceived_.bind(this));
         break;
-      default:
+      case WindowOpenDisposition.NEW_SPLIT_VIEW:
         break;
+      default:
+        assertNotReachedCase(disposition);
     }
 
     return whenDone;
@@ -285,6 +289,7 @@ export enum WindowOpenDisposition {
   NEW_BACKGROUND_TAB = 4,
   NEW_WINDOW = 6,
   SAVE_TO_DISK = 7,
+  NEW_SPLIT_VIEW = 12,
 }
 
 // Export on |window| such that scripts injected from pdf_extension_test.cc can

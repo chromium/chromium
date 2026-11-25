@@ -203,8 +203,16 @@ function convertNoErrorStatusToSaveToDriveState(status: SaveToDriveStatus):
       return SaveToDriveState.UPLOADING;
     case SaveToDriveStatus.UPLOAD_COMPLETED:
       return SaveToDriveState.SUCCESS;
-    default:
+    case SaveToDriveStatus.NOT_STARTED:
+    case SaveToDriveStatus.ACCOUNT_CHOOSER_SHOWN:
+    case SaveToDriveStatus.ACCOUNT_SELECTED:
+    case SaveToDriveStatus.ACCOUNT_ADD_SELECTED:
+    case SaveToDriveStatus.ACCOUNT_ADDED:
+    case SaveToDriveStatus.UPLOAD_RETRIED:
+    case SaveToDriveStatus.UPLOAD_FAILED:
       return SaveToDriveState.UNINITIALIZED;
+    default:
+      assertNotReachedCase(status);
   }
 }
 
@@ -226,7 +234,7 @@ function convertSaveToDriveProgressToSaveToDriveState(
     case SaveToDriveErrorType.PARENT_FOLDER_SELECTION_FAILED:
       return SaveToDriveState.UNKNOWN_ERROR;
     default:
-      assertNotReached();
+      assertNotReachedCase(progress.errorType);
   }
 }
 
@@ -238,8 +246,11 @@ function saveToDriveStateIsFinalState(state: SaveToDriveState): boolean {
     case SaveToDriveState.SESSION_TIMEOUT_ERROR:
     case SaveToDriveState.UNKNOWN_ERROR:
       return true;
-    default:
+    case SaveToDriveState.UNINITIALIZED:
+    case SaveToDriveState.UPLOADING:
       return false;
+    default:
+      assertNotReachedCase(state);
   }
 }
 // </if> enable_pdf_save_to_drive
@@ -725,7 +736,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case AnnotationMode.OFF:
         break;
       default:
-        assertNotReached();
+        assertNotReachedCase(this.annotationMode_);
     }
     // Record enter metrics if annotation mode is being changed to one of
     // the ink annotation modes.
@@ -742,7 +753,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case AnnotationMode.OFF:
         break;
       default:
-        assertNotReached();
+        assertNotReachedCase(newAnnotationMode);
     }
   }
   // </if>
@@ -1631,9 +1642,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         }
         break;
       default:
-        console.warn(
-            'Saving to Drive bubble action is not implemented yet.', e.detail);
-        break;
+        assertNotReachedCase(e.detail);
     }
   }
 

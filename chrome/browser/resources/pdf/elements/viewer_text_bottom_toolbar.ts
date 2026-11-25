@@ -9,7 +9,7 @@ import './viewer_bottom_toolbar_dropdown.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -80,7 +80,7 @@ export class ViewerTextBottomToolbarElement extends
       case TextAlignment.RIGHT:
         return 'pdf-ink:format-align-right';
       default:
-        assertNotReached();
+        assertNotReachedCase(this.currentAlignment_);
     }
   }
 

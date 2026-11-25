@@ -8,7 +8,7 @@ import './ink_size_selector.js';
 import './viewer_bottom_toolbar_dropdown.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -61,8 +61,10 @@ export class ViewerBottomToolbarElement extends ViewerBottomToolbarElementBase {
       case AnnotationBrushType.PEN:
         options = PEN_SIZES;
         break;
-      default:
+      case AnnotationBrushType.ERASER:
         assertNotReached();
+      default:
+        assertNotReachedCase(this.currentType);
     }
     assert(options);
 

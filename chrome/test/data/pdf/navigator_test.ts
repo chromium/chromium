@@ -4,7 +4,7 @@
 
 import type {NavigatorDelegate, PdfNavigator} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {OpenPdfParamsParser, PdfNavigatorImpl, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
@@ -71,8 +71,12 @@ async function doNavigationUrlTest(
         chrome.test.assertEq(
             0, navigatorDelegate.getCallCount('navigateInNewWindow'));
         break;
-      default:
+      case WindowOpenDisposition.NEW_FOREGROUND_TAB:
+      case WindowOpenDisposition.SAVE_TO_DISK:
+      case WindowOpenDisposition.NEW_SPLIT_VIEW:
         assertNotReached();
+      default:
+        assertNotReachedCase(disposition);
     }
     return;
   }
@@ -88,8 +92,12 @@ async function doNavigationUrlTest(
     case WindowOpenDisposition.NEW_WINDOW:
       actualUrl = await navigatorDelegate.whenCalled('navigateInNewWindow');
       break;
-    default:
+    case WindowOpenDisposition.NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition.SAVE_TO_DISK:
+    case WindowOpenDisposition.NEW_SPLIT_VIEW:
       break;
+    default:
+      assertNotReachedCase(disposition);
   }
 
   chrome.test.assertEq(expectedResultUrl, actualUrl);

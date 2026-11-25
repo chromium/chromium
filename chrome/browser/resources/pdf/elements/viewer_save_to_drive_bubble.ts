@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {isRTL} from 'chrome://resources/js/util.js';
@@ -143,8 +143,12 @@ export class ViewerSaveToDriveBubbleElement extends
       case SaveToDriveState.SESSION_TIMEOUT_ERROR:
         requestType = SaveToDriveBubbleRequestType.RETRY;
         break;
-      default:
+      case SaveToDriveState.UNINITIALIZED:
+      case SaveToDriveState.UNKNOWN_ERROR:
         assertNotReached(`Invalid bubble action: ${this.state}`);
+      default:
+        assertNotReachedCase(
+            this.state, `Invalid bubble action: ${this.state}`);
     }
     this.fire('save-to-drive-bubble-action', requestType);
     this.$.dialog.close();
@@ -250,7 +254,8 @@ export class ViewerSaveToDriveBubbleElement extends
             });
         break;
       default:
-        assertNotReached(`Invalid state for description: ${this.state}`);
+        assertNotReachedCase(
+            this.state, `Invalid state for description: ${this.state}`);
     }
   }
 
@@ -272,7 +277,8 @@ export class ViewerSaveToDriveBubbleElement extends
         this.dialogTitle_ = this.i18n('saveToDriveDialogErrorTitle');
         break;
       default:
-        assertNotReached(`Invalid state for dialog title: ${this.state}`);
+        assertNotReachedCase(
+            this.state, `Invalid state for dialog title: ${this.state}`);
     }
   }
 }

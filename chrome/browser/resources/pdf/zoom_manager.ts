@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
+
 import {ZoomBehavior} from './browser_api.js';
 
 
@@ -54,8 +56,10 @@ export abstract class ZoomManager {
             getViewportZoom, setBrowserZoomFunction, initialZoom);
       case ZoomBehavior.PROPAGATE_PARENT:
         return new EmbeddedZoomManager(getViewportZoom, initialZoom);
-      default:
+      case ZoomBehavior.NONE:
         return new InactiveZoomManager(getViewportZoom, initialZoom);
+      default:
+        assertNotReachedCase(zoomBehavior);
     }
   }
 

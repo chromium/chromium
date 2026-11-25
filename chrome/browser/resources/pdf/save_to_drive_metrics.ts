@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 
 import {SaveToDriveBubbleRequestType, SaveToDriveState} from './constants.js';
 import {record, recordEnumeration, UserAction} from './metrics.js';
@@ -119,7 +119,8 @@ export function recordSaveToDriveBubbleActionMetrics(
       recordSaveToDriveBubbleAction(SaveToDriveBubbleAction.CLOSE);
       break;
     default:
-      assertNotReached('Unknown save to Drive bubble action: ' + requestType);
+      assertNotReachedCase(
+          requestType, 'Unknown save to Drive bubble action: ' + requestType);
   }
 }
 
@@ -140,8 +141,12 @@ export function recordSaveToDriveBubbleRetryMetrics(
     case SaveRequestType.EDITED:
       recordSaveToDriveRetrySaveType(SaveToDriveSaveType.SAVE_EDITED);
       break;
-    default:
+    case SaveRequestType.SEARCHIFIED:
       assertNotReached(
+          'Unknown save request type for Save to Drive: ' + requestType);
+    default:
+      assertNotReachedCase(
+          requestType,
           'Unknown save request type for Save to Drive: ' + requestType);
   }
 }
@@ -174,10 +179,15 @@ export function recordShowSaveToDriveBubbleMetrics(
       recordSaveToDriveBubbleState(
           SaveToDriveBubbleState.SHOW_BUBBLE_UNKNOWN_ERROR_STATE);
       break;
-    default:
+    case SaveToDriveState.UNINITIALIZED:
       assertNotReached(
           'Unknown state for showing save to Drive bubble: ' +
           saveToDriveState);
+    default:
+      assertNotReachedCase(
+          saveToDriveState,
+          'Unknown state for showing save to Drive bubble: ' +
+              saveToDriveState);
   }
 }
 
@@ -200,8 +210,12 @@ export function recordSaveToDriveMetrics(
     case SaveRequestType.EDITED:
       recordSaveToDriveSaveType(SaveToDriveSaveType.SAVE_EDITED);
       break;
-    default:
+    case SaveRequestType.SEARCHIFIED:
       assertNotReached(
+          'Unknown save request type for Save to Drive: ' + requestType);
+    default:
+      assertNotReachedCase(
+          requestType,
           'Unknown save request type for Save to Drive: ' + requestType);
   }
 }
