@@ -24,9 +24,11 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.ProfileAttributesStorage;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
@@ -360,6 +362,16 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         // Retain the sign-in callback since pref commit callback will be called after sign-in is
         // considered completed and sign-in state is reset.
         final SignInCallback signInCallback = mSignInState.mCallback;
+        // Checked right before setting the primary account, as another profile may have signed in
+        // the account while this sign-in was in progress. This profile isn't signed in, so any
+        // profile with this primary account is another profile.
+        if (ChromeFeatureList.sAndroidMultiprofile.isEnabled()
+                && ProfileAttributesStorage.get()
+                        .isPrimaryAccountForAnyProfile(mSignInState.mCoreAccountInfo.getId())) {
+            // TODO(crbug.com/565219205): Tell the user why the sign-in failed.
+            abortSignIn();
+            return;
+        }
         @PrimaryAccountError
         int primaryAccountError =
                 mIdentityMutator.setPrimaryAccount(

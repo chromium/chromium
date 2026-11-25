@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin.services;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -39,10 +40,13 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.FakeProfileAttributesStorage;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileAttributesStorage;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -62,6 +66,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -137,6 +142,29 @@ public class SigninManagerImplTest {
 
         // The primary account is now present and consented to sign in.
         assertNotNull(mSigninTestRule.getPrimaryAccount());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testSigninAbortedIfAccountIsPrimaryAccountOfOtherProfile() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var storage = new FakeProfileAttributesStorage();
+                    storage.setPrimaryAccountIds(List.of(TestAccounts.ACCOUNT1.getId()));
+                    ProfileAttributesStorage.setInstanceForTesting(storage);
+                });
+
+        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mSigninManager.signin(
+                                TestAccounts.ACCOUNT1, SigninAccessPoint.WEB_SIGNIN, callback));
+
+        verify(callback).onSignInAborted();
+        verify(callback, never()).onSignInComplete();
+        assertNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
