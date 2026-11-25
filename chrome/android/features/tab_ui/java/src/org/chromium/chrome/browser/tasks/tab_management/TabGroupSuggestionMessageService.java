@@ -209,7 +209,10 @@ public class TabGroupSuggestionMessageService
             assert tab.getTabGroupId() != null;
             assert metricsService != null;
 
-            @WindowId int windowId = mTabWindowManager.findWindowIdForTabGroup(tab.getTabGroupId());
+            @WindowId
+            int windowId =
+                    mTabWindowManager.findWindowIdForTabGroup(
+                            TabGroupId.fromRawToken(tab.getTabGroupId()));
             metricsService.onSuggestionAccepted(
                     windowId, GTS_SUGGESTION, TabGroupId.fromRawToken(tab.getTabGroupId()));
         }

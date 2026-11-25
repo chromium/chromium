@@ -1347,7 +1347,8 @@ public class TabWindowManagerImplUnitTest {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID))).thenReturn(true);
         TabWindowManagerImpl tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
         tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
-        assertEquals(1, tabWindowManager.findWindowIdForTabGroup(GROUP_ID));
+        assertEquals(
+                1, tabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(GROUP_ID)));
     }
 
     @Test
@@ -1364,7 +1365,8 @@ public class TabWindowManagerImplUnitTest {
 
         TabWindowManagerImpl tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
         tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
-        assertEquals(1, tabWindowManager.findWindowIdForTabGroup(GROUP_ID));
+        assertEquals(
+                1, tabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(GROUP_ID)));
     }
 
     @Test
@@ -1381,12 +1383,16 @@ public class TabWindowManagerImplUnitTest {
 
         TabWindowManagerImpl tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
         tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
-        assertEquals(INVALID_WINDOW_ID, tabWindowManager.findWindowIdForTabGroup(GROUP_ID));
+        assertEquals(
+                INVALID_WINDOW_ID,
+                tabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(GROUP_ID)));
     }
 
     @Test
     public void testFindWindowIdForTabGroup_notFound() {
-        assertEquals(INVALID_WINDOW_ID, mSubject.findWindowIdForTabGroup(GROUP_ID));
+        assertEquals(
+                INVALID_WINDOW_ID,
+                mSubject.findWindowIdForTabGroup(TabGroupId.fromRawToken(GROUP_ID)));
     }
 
     @Test
@@ -1407,12 +1413,14 @@ public class TabWindowManagerImplUnitTest {
         assertEquals(
                 INVALID_WINDOW_ID,
                 tabWindowManager.findWindowIdForTabGroup(
-                        GROUP_ID, /* includeClosingGroups= */ false));
-        assertEquals(INVALID_WINDOW_ID, tabWindowManager.findWindowIdForTabGroup(GROUP_ID));
+                        TabGroupId.fromRawToken(GROUP_ID), /* includeClosingGroups= */ false));
+        assertEquals(
+                INVALID_WINDOW_ID,
+                tabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(GROUP_ID)));
         assertEquals(
                 1,
                 tabWindowManager.findWindowIdForTabGroup(
-                        GROUP_ID, /* includeClosingGroups= */ true));
+                        TabGroupId.fromRawToken(GROUP_ID), /* includeClosingGroups= */ true));
     }
 
     @Test

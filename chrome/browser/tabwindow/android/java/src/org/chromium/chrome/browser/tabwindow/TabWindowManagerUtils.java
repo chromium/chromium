@@ -32,7 +32,9 @@ public class TabWindowManagerUtils {
             TabWindowManager tabWindowManager,
             Token tabGroupId,
             boolean isIncognito) {
-        @WindowId int windowId = tabWindowManager.findWindowIdForTabGroup(tabGroupId);
+        @WindowId
+        int windowId =
+                tabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tabGroupId));
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return null;
         }
@@ -54,7 +56,9 @@ public class TabWindowManagerUtils {
      */
     public static @TabGroupColorId int getTabGroupColorInAnyWindow(
             TabWindowManager tabWindowManager, Token tabGroupId, boolean isIncognito) {
-        @WindowId int windowId = tabWindowManager.findWindowIdForTabGroup(tabGroupId);
+        @WindowId
+        int windowId =
+                tabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tabGroupId));
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) return TabGroupColorId.GREY;
         TabModelSelector tabModelSelector = tabWindowManager.getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return TabGroupColorId.GREY;

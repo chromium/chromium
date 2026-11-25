@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
@@ -124,7 +125,7 @@ public class ReparentingTabGroupTask {
                 TabWindowManagerSingleton.getInstance()
                         .getGroupedTabsByWindow(
                                 mTabGroupMetadata.sourceWindowId,
-                                mTabGroupMetadata.tabGroupId,
+                                TabGroupId.fromRawToken(mTabGroupMetadata.tabGroupId),
                                 mTabGroupMetadata.isIncognito);
         if (groupedTabs == null || groupedTabs.isEmpty()) return;
         mTabs = groupedTabs;

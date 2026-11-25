@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -397,7 +398,8 @@ public class ReparentingTaskUnitTest {
         final Token tabGroupId = new Token(123L, 456L);
         final TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
-        when(tabWindowManager.getGroupedTabsByWindow(sourceWindowId, tabGroupId, false))
+        when(tabWindowManager.getGroupedTabsByWindow(
+                        sourceWindowId, TabGroupId.fromRawToken(tabGroupId), false))
                 .thenReturn(List.of(mTab, tab2));
 
         final TabGroupMetadata metadata =
@@ -454,7 +456,8 @@ public class ReparentingTaskUnitTest {
         final Token tabGroupId = new Token(123L, 456L);
         final TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
-        when(tabWindowManager.getGroupedTabsByWindow(sourceWindowId, tabGroupId, false))
+        when(tabWindowManager.getGroupedTabsByWindow(
+                        sourceWindowId, TabGroupId.fromRawToken(tabGroupId), false))
                 .thenReturn(List.of(mTab, tab2));
 
         final TabGroupMetadata metadata =

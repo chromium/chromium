@@ -249,7 +249,7 @@ public class TabGroupUiUtils {
                 @WindowId
                 int windowId =
                         windowManager.findWindowIdForTabGroup(
-                                groupId,
+                                TabGroupId.fromRawToken(groupId),
                                 /* includeClosingGroups= */ isRemoteGroupOperationsEnabled());
                 if (windowId != TabWindowManager.INVALID_WINDOW_ID) {
                     TabModelSelector selector = windowManager.getTabModelSelectorById(windowId);
@@ -289,12 +289,14 @@ public class TabGroupUiUtils {
                 @WindowId
                 int windowId =
                         windowManager.findWindowIdForTabGroup(
-                                groupId,
+                                TabGroupId.fromRawToken(groupId),
                                 /* includeClosingGroups= */ isRemoteGroupOperationsEnabled());
                 if (windowId != TabWindowManager.INVALID_WINDOW_ID) {
                     List<Tab> windowTabs =
                             windowManager.getGroupedTabsByWindow(
-                                    windowId, groupId, currentTabModel.isIncognito());
+                                    windowId,
+                                    TabGroupId.fromRawToken(groupId),
+                                    currentTabModel.isIncognito());
                     if (windowTabs != null && !windowTabs.isEmpty()) {
                         return windowTabs;
                     }
@@ -387,7 +389,8 @@ public class TabGroupUiUtils {
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
         @WindowId
         int windowId =
-                windowManager.findWindowIdForTabGroup(groupId, /* includeClosingGroups= */ false);
+                windowManager.findWindowIdForTabGroup(
+                        TabGroupId.fromRawToken(groupId), /* includeClosingGroups= */ false);
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return false;
         }
@@ -407,7 +410,8 @@ public class TabGroupUiUtils {
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
         @WindowId
         int windowId =
-                windowManager.findWindowIdForTabGroup(groupId, /* includeClosingGroups= */ true);
+                windowManager.findWindowIdForTabGroup(
+                        TabGroupId.fromRawToken(groupId), /* includeClosingGroups= */ true);
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return false;
         }
@@ -443,7 +447,8 @@ public class TabGroupUiUtils {
         if (destinationGroup.syncId == null) {
             return TabWindowManagerSingleton.getInstance()
                             .findWindowIdForTabGroup(
-                                    destinationGroup.localId, /* includeClosingGroups= */ false)
+                                    TabGroupId.fromRawToken(destinationGroup.localId),
+                                    /* includeClosingGroups= */ false)
                     != TabWindowManager.INVALID_WINDOW_ID;
         }
         return true;
@@ -497,7 +502,8 @@ public class TabGroupUiUtils {
             return false;
         }
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
-        @WindowId int windowId = windowManager.findWindowIdForTabGroup(groupId);
+        @WindowId
+        int windowId = windowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(groupId));
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return false;
         }
@@ -786,7 +792,8 @@ public class TabGroupUiUtils {
         }
         Token localId = destinationGroup.localId;
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
-        @WindowId int windowId = windowManager.findWindowIdForTabGroup(localId);
+        @WindowId
+        int windowId = windowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(localId));
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return;
         }
@@ -876,7 +883,9 @@ public class TabGroupUiUtils {
             return false;
         }
         @WindowId
-        int windowId = TabWindowManagerSingleton.getInstance().findWindowIdForTabGroup(groupId);
+        int windowId =
+                TabWindowManagerSingleton.getInstance()
+                        .findWindowIdForTabGroup(TabGroupId.fromRawToken(groupId));
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return false;
         }

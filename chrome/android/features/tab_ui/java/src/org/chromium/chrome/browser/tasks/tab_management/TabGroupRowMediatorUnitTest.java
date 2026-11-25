@@ -360,8 +360,11 @@ public class TabGroupRowMediatorUnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
-        when(tabWindowManager.findWindowIdForTabGroup(eq(GROUP_ID1))).thenReturn(2);
-        when(tabWindowManager.findWindowIdForTabGroup(eq(GROUP_ID1), anyBoolean())).thenReturn(2);
+        when(tabWindowManager.findWindowIdForTabGroup(eq(TabGroupId.fromRawToken(GROUP_ID1))))
+                .thenReturn(2);
+        when(tabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(GROUP_ID1)), anyBoolean()))
+                .thenReturn(2);
         TabModelSelector otherSelector = mock(TabModelSelector.class);
         TabModel otherModel = mock(TabModel.class);
         when(tabWindowManager.getTabModelSelectorById(2)).thenReturn(otherSelector);
@@ -393,9 +396,10 @@ public class TabGroupRowMediatorUnitTest {
     private void setupOtherWindowGroupNotFound() {
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
-        when(tabWindowManager.findWindowIdForTabGroup(eq(GROUP_ID1)))
+        when(tabWindowManager.findWindowIdForTabGroup(eq(TabGroupId.fromRawToken(GROUP_ID1))))
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
-        when(tabWindowManager.findWindowIdForTabGroup(eq(GROUP_ID1), anyBoolean()))
+        when(tabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(GROUP_ID1)), anyBoolean()))
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(false);
 

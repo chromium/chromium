@@ -271,7 +271,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(mToken))).thenReturn(false);
-        when(mTabWindowManager.findWindowIdForTabGroup(mToken)).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(mToken)))
+                .thenReturn(2);
         TabModelSelector destSelector = mock(TabModelSelector.class);
         TabModel destTabModel = mock(TabModel.class);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(destSelector);
@@ -300,7 +301,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(mToken))).thenReturn(false);
-        when(mTabWindowManager.findWindowIdForTabGroup(mToken)).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(mToken)))
+                .thenReturn(2);
         TabModelSelector destSelector = mock(TabModelSelector.class);
         TabModel destTabModel = mock(TabModel.class);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(destSelector);

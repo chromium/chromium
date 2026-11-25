@@ -412,7 +412,8 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabOutsideOfGroup.getUrl()).thenReturn(EXAMPLE_URL);
         when(mNonUrlTab.getTabGroupId()).thenReturn(null);
         when(mNonUrlTab.getUrl()).thenReturn(CHROME_SCHEME_URL);
-        when(mTabWindowManager.findWindowIdForTabGroup(TAB_GROUP_ID)).thenReturn(INSTANCE_ID_1);
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(INSTANCE_ID_1);
         when(mTabWindowManager.getTabModelSelectorById(INSTANCE_ID_1))
                 .thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
@@ -1634,7 +1635,8 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabGroupSyncService.getAllGroupIds())
                 .thenReturn(new String[] {TAB_GROUP_ID_STRING, tabGroupId2.toString()});
         when(mTabGroupSyncService.getGroup(tabGroupId2.toString())).thenReturn(savedTabGroup2);
-        when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId2)).thenReturn(INSTANCE_ID_2);
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tabGroupId2)))
+                .thenReturn(INSTANCE_ID_2);
 
         TabModelSelector selectorWindow2 = Mockito.mock(TabModelSelector.class);
         TabModel tabModelWindow2 = Mockito.mock(TabModel.class);

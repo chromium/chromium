@@ -36,7 +36,8 @@ public class TabWindowManagerUtilsUnitTest {
     @Test
     public void testGetTabGroupTitleInAnyWindow() {
         Token tabGroupId = new Token(1, 1);
-        when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId)).thenReturn(1);
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tabGroupId)))
+                .thenReturn(1);
         when(mTabWindowManager.getTabModelSelectorById(1)).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
@@ -52,7 +53,7 @@ public class TabWindowManagerUtilsUnitTest {
     @Test
     public void testGetTabGroupTitleInAnyWindow_invalidWindowId() {
         Token tabGroupId = new Token(1, 1);
-        when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId))
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tabGroupId)))
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
 
         String title =
@@ -64,7 +65,8 @@ public class TabWindowManagerUtilsUnitTest {
     @Test
     public void testGetTabGroupTitleInAnyWindow_nullTabModelSelector() {
         Token tabGroupId = new Token(1, 1);
-        when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId)).thenReturn(1);
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tabGroupId)))
+                .thenReturn(1);
         when(mTabWindowManager.getTabModelSelectorById(1)).thenReturn(null);
 
         String title =
@@ -76,7 +78,8 @@ public class TabWindowManagerUtilsUnitTest {
     @Test
     public void testGetTabGroupColorInAnyWindow() {
         Token tabGroupId = new Token(1, 1);
-        when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId)).thenReturn(1);
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tabGroupId)))
+                .thenReturn(1);
         when(mTabWindowManager.getTabModelSelectorById(1)).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(tabGroupId)))
@@ -91,7 +94,7 @@ public class TabWindowManagerUtilsUnitTest {
     @Test
     public void testGetTabGroupColorInAnyWindow_invalidWindowId() {
         Token tabGroupId = new Token(1, 1);
-        when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId))
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tabGroupId)))
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
 
         int color =
@@ -103,7 +106,8 @@ public class TabWindowManagerUtilsUnitTest {
     @Test
     public void testGetTabGroupColorInAnyWindow_nullTabModelSelector() {
         Token tabGroupId = new Token(1, 1);
-        when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId)).thenReturn(1);
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tabGroupId)))
+                .thenReturn(1);
         when(mTabWindowManager.getTabModelSelectorById(1)).thenReturn(null);
 
         int color =

@@ -451,7 +451,8 @@ public class GroupWindowChecker {
         }
         @WindowId
         int windowId =
-                windowManager.findWindowIdForTabGroup(groupId, /* includeClosingGroups= */ true);
+                windowManager.findWindowIdForTabGroup(
+                        TabGroupId.fromRawToken(groupId), /* includeClosingGroups= */ true);
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return false;
         }

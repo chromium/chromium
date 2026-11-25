@@ -721,8 +721,11 @@ public class TabGroupItemBuilderUnitTest {
 
         // TabWindowManager has group2 in window 2.
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        when(mTabWindowManager.findWindowIdForTabGroup(eq(token2), anyBoolean())).thenReturn(2);
-        when(mTabWindowManager.getGroupedTabsByWindow(2, token2, false)).thenReturn(List.of(tab2));
+        when(mTabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(token2)), anyBoolean()))
+                .thenReturn(2);
+        when(mTabWindowManager.getGroupedTabsByWindow(2, TabGroupId.fromRawToken(token2), false))
+                .thenReturn(List.of(tab2));
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.STANDARD);
@@ -1168,7 +1171,9 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabModel.isIncognito()).thenReturn(false);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(token1)), anyBoolean()))
+                .thenReturn(2);
 
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.STANDARD);
         when(mModelWindow2.isIncognito()).thenReturn(false);
@@ -1250,7 +1255,9 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(token1)), anyBoolean()))
+                .thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token1)))
@@ -1295,7 +1302,9 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(token1)), anyBoolean()))
+                .thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token1)))
@@ -1347,7 +1356,9 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(token1)), anyBoolean()))
+                .thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
@@ -1392,7 +1403,9 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(token1)), anyBoolean()))
+                .thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
@@ -1530,7 +1543,9 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(token1)), anyBoolean()))
+                .thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
@@ -1914,8 +1929,10 @@ public class TabGroupItemBuilderUnitTest {
         Tab tabWindow2 =
                 createMockTab(201, "Another Tab", JUnitTestGURLs.URL_2, tokenWindow2, false);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        when(mTabWindowManager.findWindowIdForTabGroup(tokenWindow2)).thenReturn(2);
-        when(mTabWindowManager.findWindowIdForTabGroup(eq(tokenWindow2), anyBoolean()))
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tokenWindow2)))
+                .thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(tokenWindow2)), anyBoolean()))
                 .thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
@@ -2202,7 +2219,8 @@ public class TabGroupItemBuilderUnitTest {
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
         when(mTabWindowManager.getAllTabModelSelectors())
                 .thenReturn(List.of(mTabModelSelector, mSelectorWindow2));
-        when(mTabWindowManager.findWindowIdForTabGroup(eq(tokenWindow2), anyBoolean()))
+        when(mTabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(tokenWindow2)), anyBoolean()))
                 .thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
@@ -2456,8 +2474,10 @@ public class TabGroupItemBuilderUnitTest {
         Tab tabWindow2 =
                 createMockTab(201, "Another Tab", JUnitTestGURLs.URL_2, tokenAnother, false);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        when(mTabWindowManager.findWindowIdForTabGroup(tokenAnother)).thenReturn(2);
-        when(mTabWindowManager.findWindowIdForTabGroup(eq(tokenAnother), anyBoolean()))
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tokenAnother)))
+                .thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(tokenAnother)), anyBoolean()))
                 .thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
@@ -2543,8 +2563,10 @@ public class TabGroupItemBuilderUnitTest {
         Tab tabWindow2 =
                 createMockTab(201, "Another Tab", JUnitTestGURLs.URL_2, tokenWindow2, false);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        when(mTabWindowManager.findWindowIdForTabGroup(tokenWindow2)).thenReturn(2);
-        when(mTabWindowManager.findWindowIdForTabGroup(eq(tokenWindow2), anyBoolean()))
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tokenWindow2)))
+                .thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(
+                        eq(TabGroupId.fromRawToken(tokenWindow2)), anyBoolean()))
                 .thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);

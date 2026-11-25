@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabwindow;
 import android.app.Activity;
 import android.util.Pair;
 
-import org.chromium.base.Token;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -22,6 +21,7 @@ import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -195,7 +195,7 @@ public interface TabWindowManager {
      *     found.
      */
     @Nullable List<Tab> getGroupedTabsByWindow(
-            @WindowId int windowId, Token tabGroupId, boolean isIncognito);
+            @WindowId int windowId, TabGroupId tabGroupId, boolean isIncognito);
 
     /**
      * Finds the {@link TabModelSelector} bound to an Activity instance of a given id.
@@ -254,7 +254,7 @@ public interface TabWindowManager {
      * @param tabGroupId The group to look for.
      * @return The window id that holds the given tab group.
      */
-    default @WindowId int findWindowIdForTabGroup(Token tabGroupId) {
+    default @WindowId int findWindowIdForTabGroup(TabGroupId tabGroupId) {
         return findWindowIdForTabGroup(tabGroupId, /* includeClosingGroups= */ false);
     }
 
@@ -269,7 +269,7 @@ public interface TabWindowManager {
      *     found.
      */
     @WindowId
-    int findWindowIdForTabGroup(Token tabGroupId, boolean includeClosingGroups);
+    int findWindowIdForTabGroup(TabGroupId tabGroupId, boolean includeClosingGroups);
 
     /**
      * Registers a {@link TabModelSelector} for a Custom Tab.

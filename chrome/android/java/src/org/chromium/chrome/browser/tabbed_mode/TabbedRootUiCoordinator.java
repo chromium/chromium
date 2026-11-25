@@ -2488,7 +2488,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Override
             public @WindowId int findWindowIdForTabGroup(@Nullable Token tabGroupId) {
                 assert tabGroupId != null;
-                return TabWindowManagerSingleton.getInstance().findWindowIdForTabGroup(tabGroupId);
+                return TabWindowManagerSingleton.getInstance()
+                        .findWindowIdForTabGroup(TabGroupId.fromRawToken(tabGroupId));
             }
 
             @Override

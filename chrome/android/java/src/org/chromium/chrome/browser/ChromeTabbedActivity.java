@@ -2082,7 +2082,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         } else {
                             final @WindowId int windowId =
                                     TabWindowManagerSingleton.getInstance()
-                                            .findWindowIdForTabGroup(syncGroup.localId.tabGroupId);
+                                            .findWindowIdForTabGroup(
+                                                    TabGroupId.fromRawToken(
+                                                            syncGroup.localId.tabGroupId));
                             if (windowId == INVALID_WINDOW_ID) return;
 
                             MultiWindowUtils.launchIntentInMaybeClosedWindow(

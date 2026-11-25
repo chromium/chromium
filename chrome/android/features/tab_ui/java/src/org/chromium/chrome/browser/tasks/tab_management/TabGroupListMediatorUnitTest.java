@@ -237,7 +237,8 @@ public class TabGroupListMediatorUnitTest {
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
         Token token = new Token(2, 3);
-        when(tabWindowManager.findWindowIdForTabGroup(eq(token), eq(true))).thenReturn(1);
+        when(tabWindowManager.findWindowIdForTabGroup(eq(TabGroupId.fromRawToken(token)), eq(true)))
+                .thenReturn(1);
         SavedTabGroup group = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1, token);
         group.title = "Another Window Group";
         group.savedTabs = SyncedGroupTestHelper.tabsFromCount(1);
@@ -254,7 +255,8 @@ public class TabGroupListMediatorUnitTest {
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
         Token token = new Token(2, 3);
-        when(tabWindowManager.findWindowIdForTabGroup(eq(token), eq(true))).thenReturn(1);
+        when(tabWindowManager.findWindowIdForTabGroup(eq(TabGroupId.fromRawToken(token)), eq(true)))
+                .thenReturn(1);
         SavedTabGroup group = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1, token);
         group.title = "Another Window Group";
         group.savedTabs = SyncedGroupTestHelper.tabsFromCount(1);
@@ -272,7 +274,8 @@ public class TabGroupListMediatorUnitTest {
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
         Token token = new Token(2, 3);
-        when(tabWindowManager.findWindowIdForTabGroup(eq(token), eq(true))).thenReturn(1);
+        when(tabWindowManager.findWindowIdForTabGroup(eq(TabGroupId.fromRawToken(token)), eq(true)))
+                .thenReturn(1);
         SavedTabGroup group = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1, token);
         group.title = "Another Window Group";
         group.savedTabs = SyncedGroupTestHelper.tabsFromCount(1);

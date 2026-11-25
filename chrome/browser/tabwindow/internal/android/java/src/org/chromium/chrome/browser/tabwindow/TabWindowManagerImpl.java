@@ -596,13 +596,11 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     @Override
     public @Nullable List<Tab> getGroupedTabsByWindow(
-            @WindowId int windowId, Token tabGroupId, boolean isIncognito) {
+            @WindowId int windowId, TabGroupId tabGroupId, boolean isIncognito) {
         @Nullable TabModelSelector tabModelSelector = getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return null;
 
-        return tabModelSelector
-                .getModel(isIncognito)
-                .getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
+        return tabModelSelector.getModel(isIncognito).getTabsInGroup(tabGroupId);
     }
 
     private static boolean hasGroupInComprehensiveModel(TabModel tabModel, Token tabGroupId) {
@@ -851,7 +849,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
-    public @WindowId int findWindowIdForTabGroup(Token tabGroupId, boolean includeClosingGroups) {
+    public @WindowId int findWindowIdForTabGroup(
+            TabGroupId tabGroupId, boolean includeClosingGroups) {
         for (Map.Entry<TabModelSelector, @WindowId Integer> entry :
                 mSelectorsToWindowId.entrySet()) {
             TabModelSelector selector = entry.getKey();
@@ -863,10 +862,11 @@ public class TabWindowManagerImpl implements TabWindowManager {
                     continue;
                 }
                 if (TabGroupSyncUtils.isInCurrentWindow(
-                        tabModel, new LocalTabGroupId(tabGroupId))) {
+                        tabModel, new LocalTabGroupId(tabGroupId.getToken()))) {
                     return entry.getValue();
                 }
-                if (includeClosingGroups && hasGroupInComprehensiveModel(tabModel, tabGroupId)) {
+                if (includeClosingGroups
+                        && hasGroupInComprehensiveModel(tabModel, tabGroupId.getToken())) {
                     return entry.getValue();
                 }
             }

@@ -221,7 +221,8 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         List<Tab> tabs = List.of(mTab1, mTab2);
         Token tabGroupId = new Token(1L, 2L);
         when(mTab1.getTabGroupId()).thenReturn(tabGroupId);
-        when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId)).thenReturn(1);
+        when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(tabGroupId)))
+                .thenReturn(1);
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);

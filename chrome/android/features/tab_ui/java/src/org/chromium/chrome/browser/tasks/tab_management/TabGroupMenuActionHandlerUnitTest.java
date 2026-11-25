@@ -475,7 +475,8 @@ public class TabGroupMenuActionHandlerUnitTest {
                 .thenReturn(List.of(groupTab));
 
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
-        when(tabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(0);
+        when(tabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(0);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
 
         assertTrue(
