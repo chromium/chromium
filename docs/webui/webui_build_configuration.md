@@ -724,6 +724,44 @@ generate_mojo_manifest("my_mojo_manifest") {
 }
 ```
 
+### **generate_import_map**
+
+This rule injects a `<script type="importmap">` tag into a WebUI's entrypoint
+HTML file(s) and generates a matching `test_loader.html` in `out_folder`.
+
+#### **Arguments**
+```
+in_files: Required parameter. List of entrypoint `.html` files to inject the
+          import map into.
+in_folder: Optional parameter. Directory containing `in_files`. Defaults to `.`.
+out_folder: Optional parameter. Directory where the modified `in_files` and
+            `test_loader.html` will be written. Defaults to `target_gen_dir`.
+out_manifest: Optional parameter. Output path for a JSON manifest listing
+              `out_folder` as `base_dir` and the generated HTML files (including
+              `test_loader.html`) as `files`, suitable for passing to
+              `generate_grd()`'s `manifest_files`.
+manifest_files: Optional parameter. List of manifest files whose entries should
+                be added to the import map. Each `<import_path_prefix>/<file>`
+                (or `<file>`) entry is mapped to `<serve_path_prefix>/<file>`
+                when `serve_path_prefix` is set on the manifest entry, or to
+                `/<import_path_prefix>/<file>` (or `/<file>`) otherwise.
+```
+
+#### **Example**
+```python
+import("//ui/webui/resources/tools/generate_import_map.gni")
+
+generate_import_map("generate_import_map") {
+  in_files = [ "my_webui.html" ]
+  out_folder = "$target_gen_dir/html_with_importmap"
+  out_manifest = "$target_gen_dir/generate_import_map_manifest.json"
+  deps = [ "//chrome/browser/ui/webui/my_webui:mojo_bindings_webui" ]
+  manifest_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/my_webui/mojo_bindings_webui_manifest.json",
+  ]
+}
+```
+
 ### **build_webui**
 
 <!-- TODO(crbug.com/40230335): Elevate build_webui() to the top of this document
