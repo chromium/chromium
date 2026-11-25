@@ -1056,6 +1056,12 @@ constexpr FeatureEntry::FeatureParam
     kMobilePromoOnDesktopPriceTrackingNotification[] = {
         {kMobilePromoOnDesktopPromoTypeParam, "5"},
         {kMobilePromoOnDesktopNotificationParam, "true"}};
+constexpr FeatureEntry::FeatureParam kMobilePromoOnDesktopSafety[] = {
+    {kMobilePromoOnDesktopPromoTypeParam, "6"},
+    {kMobilePromoOnDesktopNotificationParam, "false"}};
+constexpr FeatureEntry::FeatureParam kMobilePromoOnDesktopSafetyNotification[] =
+    {{kMobilePromoOnDesktopPromoTypeParam, "6"},
+     {kMobilePromoOnDesktopNotificationParam, "true"}};
 
 constexpr FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
     {" - ESB", kMobilePromoOnDesktopESB, nullptr},
@@ -1077,6 +1083,13 @@ constexpr FeatureEntry::FeatureVariation
         {" - Price Tracking", kMobilePromoOnDesktopPriceTracking, nullptr},
         {" - Price Tracking with push notification",
          kMobilePromoOnDesktopPriceTrackingNotification, nullptr},
+};
+
+constexpr FeatureEntry::FeatureVariation
+    kMobilePromoOnDesktopWave2Variations[] = {
+        {" - Safety", kMobilePromoOnDesktopSafety, nullptr},
+        {" - Safety with push notification",
+         kMobilePromoOnDesktopSafetyNotification, nullptr},
 };
 
 constexpr FeatureEntry::FeatureParam kWalletApiPrivatePassesUrl[] = {
@@ -3207,6 +3220,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAimAsMvtDebugReactivateName,
      flag_descriptions::kAimAsMvtDebugReactivateDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAimAsMvtDebugReactivate)},
+    {"mobile-promo-on-desktop-with-reminder-wave-2",
+     flag_descriptions::kMobilePromoOnDesktopWave2Name,
+     flag_descriptions::kMobilePromoOnDesktopWave2Description, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kMobilePromoOnDesktopWithReminderWave2,
+                                    kMobilePromoOnDesktopWave2Variations,
+                                    "MobilePromoOnDesktopWithReminderWave2")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

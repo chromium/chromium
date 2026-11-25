@@ -1478,6 +1478,13 @@ inline constexpr char kMobilePromoOnDesktopWave1Description[] =
     "eligible users. This version highlights features not included in the "
     "existing mobile promos.";
 
+inline constexpr char kMobilePromoOnDesktopWave2Name[] =
+    "Mobile Promo On Desktop (Wave 2)";
+inline constexpr char kMobilePromoOnDesktopWave2Description[] =
+    "When enabled, shows a mobile promo with a reminder flow on desktop for "
+    "eligible users. This version highlights thematic areas as opposed to "
+    "specific features.";
+
 inline constexpr char kModelBasedPageClassificationName[] =
     "Model Based Page Classification";
 inline constexpr char kModelBasedPageClassificationDescription[] =
