@@ -1731,7 +1731,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       backing_representation =
           shared_image_representation_factory_->ProduceSkia(
               mailbox, context_state_.get(),
-              /*required_usages=*/{gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE});
+              /*required_usages=*/{gpu::SHARED_IMAGE_USAGE_DISPLAY_READ});
       CHECK(backing_representation);
 
       scoped_access = backing_representation->BeginScopedReadAccess(
