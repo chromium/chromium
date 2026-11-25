@@ -21,7 +21,7 @@
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
-#include "components/sync/test/mock_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -43,6 +43,7 @@ constexpr base::TimeDelta kTimeToLive = base::Seconds(10);
 namespace {
 
 using testing::IsNull;
+using testing::NiceMock;
 
 class MockSharingChannelSender : public SharingChannelSender {
  public:
@@ -80,6 +81,25 @@ class MockSharingChannelSender : public SharingChannelSender {
   MOCK_METHOD0(FailPendingMessages, void());
 };
 
+// Creates a valid FCM channel configuration for test ack messages.
+components_sharing_message::FCMChannelConfiguration CreateTestFcmChannel() {
+  components_sharing_message::FCMChannelConfiguration fcm_channel;
+  fcm_channel.set_sender_id_fcm_token("ack_fcm_token");
+  fcm_channel.set_sender_id_p256dh("ack_p256dh");
+  fcm_channel.set_sender_id_auth_secret("ack_auth_secret");
+  return fcm_channel;
+}
+
+// Creates a valid server channel configuration for test messages.
+components_sharing_message::ServerChannelConfiguration
+CreateTestServerChannel() {
+  components_sharing_message::ServerChannelConfiguration server_channel;
+  server_channel.set_configuration("test_configuration");
+  server_channel.set_p256dh("test_p256dh");
+  server_channel.set_auth_secret("test_auth_secret");
+  return server_channel;
+}
+
 syncer::DeviceInfo::SharingInfo CreateLocalSharingInfo() {
   return syncer::DeviceInfo::SharingInfo(
       {kSenderSenderIdFcmToken, kSenderSenderIdP256dh,
@@ -112,15 +132,15 @@ class SharingMessageSenderTest : public testing::Test {
  public:
   SharingMessageSenderTest() {
     auto mock_sharing_channel_sender =
-        std::make_unique<MockSharingChannelSender>(
+        std::make_unique<NiceMock<MockSharingChannelSender>>(
             fake_device_info_sync_service_.GetDeviceInfoTracker(),
             fake_device_info_sync_service_.GetLocalDeviceInfoProvider(),
-            &sync_service_);
+            &test_sync_service_);
     mock_sharing_channel_sender_ = mock_sharing_channel_sender.get();
     sharing_message_sender_ = std::make_unique<SharingMessageSender>(
         std::move(mock_sharing_channel_sender),
         fake_device_info_sync_service_.GetLocalDeviceInfoProvider(),
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        &test_sync_service_, base::SingleThreadTaskRunner::GetCurrentDefault());
     fake_device_info_sync_service_.GetLocalDeviceInfoProvider()
         ->GetMutableDeviceInfo()
         ->set_sharing_info(CreateLocalSharingInfo());
@@ -143,12 +163,50 @@ class SharingMessageSenderTest : public testing::Test {
                                              kReceiverDeviceName);
   }
 
+  // Verifies that outgoing device, server, and ack messages fail upfront with
+  // `kInternalError` without invoking the channel sender.
+  void ExpectImmediateSendFails() {
+    SharingTargetDeviceInfo device_info = SetupReceiverDevice();
+    EXPECT_CALL(*mock_sharing_channel_sender_, SendMessageToFcmTarget).Times(0);
+    EXPECT_CALL(*mock_sharing_channel_sender_, SendMessageToServerTarget)
+        .Times(0);
+
+    base::MockCallback<SharingMessageSender::ResponseCallback> device_callback;
+    EXPECT_CALL(device_callback, Run(SharingSendMessageResult::kInternalError,
+                                     /*response=*/IsNull()));
+    sharing_message_sender_->SendMessageToDevice(
+        device_info, kTimeToLive, components_sharing_message::SharingMessage(),
+        device_callback.Get());
+
+    base::MockCallback<SharingMessageSender::ResponseCallback> server_callback;
+    EXPECT_CALL(server_callback, Run(SharingSendMessageResult::kInternalError,
+                                     /*response=*/IsNull()));
+    sharing_message_sender_->SendMessageToServerTarget(
+        CreateTestServerChannel(), kTimeToLive,
+        components_sharing_message::SharingMessage(), server_callback.Get());
+
+    base::MockCallback<SharingMessageSender::SendAckCallback> fcm_ack_callback;
+    EXPECT_CALL(fcm_ack_callback,
+                Run(SharingSendMessageResult::kInternalError));
+    sharing_message_sender_->SendAckMessageToFcmTarget(
+        CreateTestFcmChannel(), "original_message_id", /*response=*/nullptr,
+        fcm_ack_callback.Get());
+
+    base::MockCallback<SharingMessageSender::SendAckCallback>
+        server_ack_callback;
+    EXPECT_CALL(server_ack_callback,
+                Run(SharingSendMessageResult::kInternalError));
+    sharing_message_sender_->SendAckMessageToServerTarget(
+        CreateTestServerChannel(), "original_message_id", /*response=*/nullptr,
+        server_ack_callback.Get());
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
-  syncer::MockSyncService sync_service_;
+  syncer::TestSyncService test_sync_service_;
 
   std::unique_ptr<SharingMessageSender> sharing_message_sender_;
   raw_ptr<MockSharingChannelSender> mock_sharing_channel_sender_;
@@ -572,11 +630,6 @@ TEST_F(SharingMessageSenderTest, SendAckMessageToFcmTarget) {
   base::HistogramTester histogram_tester;
   fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
 
-  components_sharing_message::FCMChannelConfiguration fcm_channel;
-  fcm_channel.set_sender_id_fcm_token("ack_fcm_token");
-  fcm_channel.set_sender_id_p256dh("ack_p256dh");
-  fcm_channel.set_sender_id_auth_secret("ack_auth_secret");
-
   components_sharing_message::SharingMessage actual_sent_message;
   EXPECT_CALL(*mock_sharing_channel_sender_,
               SendMessageToFcmTarget(testing::_, kSharingAckMessageTTL,
@@ -589,7 +642,7 @@ TEST_F(SharingMessageSenderTest, SendAckMessageToFcmTarget) {
 
   base::test::TestFuture<SharingSendMessageResult> result_future;
   sharing_message_sender_->SendAckMessageToFcmTarget(
-      fcm_channel, "original_message_id",
+      CreateTestFcmChannel(), "original_message_id",
       std::make_unique<components_sharing_message::ResponseMessage>(),
       result_future.GetCallback());
 
@@ -608,11 +661,6 @@ TEST_F(SharingMessageSenderTest, SendAckMessageToServerTarget) {
   base::HistogramTester histogram_tester;
   fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
 
-  components_sharing_message::ServerChannelConfiguration server_channel;
-  server_channel.set_configuration("test_configuration");
-  server_channel.set_p256dh("test_p256dh");
-  server_channel.set_auth_secret("test_auth_secret");
-
   components_sharing_message::SharingMessage actual_sent_message;
   EXPECT_CALL(*mock_sharing_channel_sender_, SendMessageToServerTarget)
       .WillOnce(testing::DoAll(
@@ -623,7 +671,7 @@ TEST_F(SharingMessageSenderTest, SendAckMessageToServerTarget) {
 
   base::test::TestFuture<SharingSendMessageResult> result_future;
   sharing_message_sender_->SendAckMessageToServerTarget(
-      server_channel, "original_message_id", /*response=*/nullptr,
+      CreateTestServerChannel(), "original_message_id", /*response=*/nullptr,
       result_future.GetCallback());
 
   EXPECT_EQ(SharingSendMessageResult::kSuccessful, result_future.Get());
@@ -632,4 +680,95 @@ TEST_F(SharingMessageSenderTest, SendAckMessageToServerTarget) {
             actual_sent_message.ack_message().original_message_id());
   EXPECT_FALSE(actual_sent_message.ack_message().has_response_message());
   histogram_tester.ExpectTotalCount("Sharing.SendMessageResult", 0);
+}
+
+// Tests that queued messages waiting on `LocalDeviceInfo` fail immediately when
+// Sync transitions to `DISABLED`.
+TEST_F(SharingMessageSenderTest, FailsPendingMessagesWhenSyncDisabled) {
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
+  SharingTargetDeviceInfo device_info = SetupReceiverDevice();
+
+  base::MockCallback<SharingMessageSender::ResponseCallback> device_callback;
+  sharing_message_sender_->SendMessageToDevice(
+      device_info, kTimeToLive, components_sharing_message::SharingMessage(),
+      device_callback.Get());
+
+  EXPECT_CALL(device_callback, Run(SharingSendMessageResult::kInternalError,
+                                   /*response=*/IsNull()));
+  test_sync_service_.SetSignedOut();
+  test_sync_service_.FireStateChanged();
+}
+
+// Tests that queued messages fail when Sync transitions to `PAUSED`.
+TEST_F(SharingMessageSenderTest, FailsPendingMessagesWhenSyncPaused) {
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
+  SharingTargetDeviceInfo device_info = SetupReceiverDevice();
+
+  base::MockCallback<SharingMessageSender::ResponseCallback> device_callback;
+  sharing_message_sender_->SendMessageToDevice(
+      device_info, kTimeToLive, components_sharing_message::SharingMessage(),
+      device_callback.Get());
+
+  EXPECT_CALL(device_callback, Run(SharingSendMessageResult::kInternalError,
+                                   /*response=*/IsNull()));
+  test_sync_service_.SetPersistentAuthError();
+  test_sync_service_.FireStateChanged();
+}
+
+// Tests that queued messages fail when Sync reaches `ACTIVE` with
+// `SHARING_MESSAGE` failed.
+TEST_F(SharingMessageSenderTest,
+       FailsPendingMessagesWhenSharingMessageDataTypeFails) {
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
+  SharingTargetDeviceInfo device_info = SetupReceiverDevice();
+
+  base::MockCallback<SharingMessageSender::ResponseCallback> device_callback;
+  sharing_message_sender_->SendMessageToDevice(
+      device_info, kTimeToLive, components_sharing_message::SharingMessage(),
+      device_callback.Get());
+
+  EXPECT_CALL(device_callback, Run(SharingSendMessageResult::kInternalError,
+                                   /*response=*/IsNull()));
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
+  test_sync_service_.FireStateChanged();
+}
+
+// Tests that sending fails upfront when Sync is `DISABLED`.
+TEST_F(SharingMessageSenderTest, FailsImmediatelyWhenSyncDisabled) {
+  test_sync_service_.SetSignedOut();
+  ExpectImmediateSendFails();
+}
+
+// Tests that sending fails upfront when Sync is `PAUSED`.
+TEST_F(SharingMessageSenderTest, FailsImmediatelyWhenSyncPaused) {
+  test_sync_service_.SetPersistentAuthError();
+  ExpectImmediateSendFails();
+}
+
+// Tests that sending fails upfront when Sync is `ACTIVE` with
+// `SHARING_MESSAGE` failed.
+TEST_F(SharingMessageSenderTest,
+       FailsImmediatelyWhenSharingMessageDataTypeFailed) {
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
+  ExpectImmediateSendFails();
+}
+
+// Tests that `OnSyncShutdown()` fails queued messages and causes subsequent
+// send attempts to fail immediately without dereferencing `sync_service_`.
+TEST_F(SharingMessageSenderTest,
+       OnSyncShutdown_FailsPendingMessagesAndSubsequentSends) {
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
+  SharingTargetDeviceInfo device_info = SetupReceiverDevice();
+
+  base::MockCallback<SharingMessageSender::ResponseCallback> device_callback;
+  sharing_message_sender_->SendMessageToDevice(
+      device_info, kTimeToLive, components_sharing_message::SharingMessage(),
+      device_callback.Get());
+
+  EXPECT_CALL(device_callback, Run(SharingSendMessageResult::kInternalError,
+                                   /*response=*/IsNull()));
+  test_sync_service_.Shutdown();
+  testing::Mock::VerifyAndClearExpectations(&device_callback);
+
+  ExpectImmediateSendFails();
 }

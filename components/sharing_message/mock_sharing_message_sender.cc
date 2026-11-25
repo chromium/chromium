@@ -10,6 +10,7 @@ MockSharingMessageSender::MockSharingMessageSender()
     : SharingMessageSender(
           /*channel_sender=*/nullptr,
           /*local_device_info_provider=*/nullptr,
-          /*task_ruunner=*/nullptr) {}
+          /*sync_service=*/nullptr,
+          /*task_runner=*/nullptr) {}
 
 MockSharingMessageSender::~MockSharingMessageSender() = default;

@@ -110,7 +110,8 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       web::GetUIThreadTaskRunner({});
   auto sharing_message_sender = std::make_unique<SharingMessageSender>(
-      std::move(channel_sender), local_device_info_provider, task_runner);
+      std::move(channel_sender), local_device_info_provider, sync_service,
+      task_runner);
 
   auto device_source = std::make_unique<SharingDeviceSourceSync>(
       sync_service, local_device_info_provider, device_info_tracker);

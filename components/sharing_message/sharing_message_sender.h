@@ -15,12 +15,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/sharing_message/pending_outgoing_message.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_target_device_info.h"
+#include "components/sync/service/sync_service_observer.h"
 
 namespace sharing_message {
 enum MessageType : int;
@@ -28,6 +30,7 @@ enum MessageType : int;
 
 namespace syncer {
 class LocalDeviceInfoProvider;
+class SyncService;
 }  // namespace syncer
 
 namespace sync_pb {
@@ -39,20 +42,25 @@ class SharingChannelSender;
 enum class SharingDevicePlatform;
 enum class SharingSendMessageResult;
 
-class SharingMessageSender {
+class SharingMessageSender : public syncer::SyncServiceObserver {
  public:
   using ResponseCallback = base::OnceCallback<void(
       SharingSendMessageResult,
       std::unique_ptr<components_sharing_message::ResponseMessage>)>;
   using SendAckCallback = base::OnceCallback<void(SharingSendMessageResult)>;
 
+  // `local_device_info_provider` and `sync_service` are retained and must
+  // outlive this object (`sync_service` is also observed and may be destroyed
+  // earlier if `OnSyncShutdown()` is called). Both must be non-null in
+  // production (may be null in tests).
   SharingMessageSender(
       std::unique_ptr<SharingChannelSender> channel_sender,
       syncer::LocalDeviceInfoProvider* local_device_info_provider,
+      syncer::SyncService* sync_service,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   SharingMessageSender(const SharingMessageSender&) = delete;
   SharingMessageSender& operator=(const SharingMessageSender&) = delete;
-  virtual ~SharingMessageSender();
+  ~SharingMessageSender() override;
 
   virtual base::OnceClosure SendMessageToDevice(
       const SharingTargetDeviceInfo& device,
@@ -93,6 +101,10 @@ class SharingMessageSender {
 
   // Fails all pending messages with `SharingSendMessageResult::kInternalError`.
   virtual void FailPendingMessages();
+
+  // syncer::SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // Returns SharingChannelSender for testing.
   SharingChannelSender* GetChannelSenderForTesting() const;
@@ -162,9 +174,12 @@ class SharingMessageSender {
   std::unique_ptr<SharingChannelSender> channel_sender_;
 
   raw_ptr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
+  raw_ptr<syncer::SyncService> sync_service_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
   // Subscription for `local_device_info_provider_` initialization when
   // outgoing messages are waiting to be sent.
   base::CallbackListSubscription local_device_info_ready_subscription_;

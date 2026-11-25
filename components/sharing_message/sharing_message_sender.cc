@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -21,6 +22,7 @@
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -64,10 +66,19 @@ SharingChannelSender::SendMessageCallback WrapSendAckCallback(
 SharingMessageSender::SharingMessageSender(
     std::unique_ptr<SharingChannelSender> channel_sender,
     syncer::LocalDeviceInfoProvider* local_device_info_provider,
+    syncer::SyncService* sync_service,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : channel_sender_(std::move(channel_sender)),
       local_device_info_provider_(local_device_info_provider),
-      task_runner_(task_runner) {}
+      sync_service_(sync_service),
+      task_runner_(std::move(task_runner)) {
+  // `sync_service_` can be null in tests (e.g. `MockSharingMessageSender`).
+  if (sync_service_) {
+    sync_service_observation_.Observe(sync_service_);
+  } else {
+    CHECK_IS_TEST();
+  }
+}
 
 SharingMessageSender::~SharingMessageSender() = default;
 
@@ -233,6 +244,18 @@ void SharingMessageSender::FailPendingMessages() {
   }
 }
 
+void SharingMessageSender::OnStateChanged(syncer::SyncService* sync_service) {
+  if (IsSyncDisabledForSharing(sync_service_)) {
+    FailPendingMessages();
+  }
+}
+
+void SharingMessageSender::OnSyncShutdown(syncer::SyncService* sync_service) {
+  FailPendingMessages();
+  sync_service_observation_.Reset();
+  sync_service_ = nullptr;
+}
+
 SharingChannelSender* SharingMessageSender::GetChannelSenderForTesting() const {
   return channel_sender_.get();
 }
@@ -280,6 +303,16 @@ base::OnceClosure SharingMessageSender::SendMessageToTarget(
       message_guid, CreateSentMessageMetadata(std::move(callback), message_type,
                                               trace_id, target));
   DCHECK(inserted);
+
+  // Fail immediately if Sync has shut down or is disabled/paused (e.g. a caller
+  // sends after sign-out or an incoming FCM message triggers a reply while Sync
+  // is unavailable) instead of queueing a message that cannot be delivered.
+  if (!sync_service_ || IsSyncDisabledForSharing(sync_service_)) {
+    InvokeSendMessageCallback(message_guid,
+                              SharingSendMessageResult::kInternalError,
+                              /*response=*/nullptr);
+    return base::NullCallback();
+  }
 
   if (!local_device_info_provider_->GetLocalDeviceInfo() &&
       !base::FeatureList::IsEnabled(
@@ -331,6 +364,13 @@ void SharingMessageSender::SendAckMessageToTarget(
     std::string original_message_id,
     std::unique_ptr<components_sharing_message::ResponseMessage> response,
     SendAckCallback callback) {
+  // Fail immediately if Sync has shut down or is disabled/paused (e.g. an
+  // incoming FCM message arrives while Sync is unavailable).
+  if (!sync_service_ || IsSyncDisabledForSharing(sync_service_)) {
+    std::move(callback).Run(SharingSendMessageResult::kInternalError);
+    return;
+  }
+
   DoSendMessage(PendingOutgoingMessage::CreatePendingAckMessage(
       CreateAckSharingMessage(std::move(original_message_id),
                               std::move(response)),
