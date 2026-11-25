@@ -8665,3 +8665,6 @@ crbug.com/569420237 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propa
 crbug.com/566469808 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-003.html [ Failure Pass ]
 
 crbug.com/526682330 external/wpt/digital-credentials/create.tentative.https.html [ Crash Pass Timeout ]
+
+# Gardener 2026-11-05
+crbug.com/566874115 [ Linux ] virtual/fedcm-delegation/external/wpt/fedcm/fedcm-delegation/evt-basic.https.html [ Failure Pass ]
