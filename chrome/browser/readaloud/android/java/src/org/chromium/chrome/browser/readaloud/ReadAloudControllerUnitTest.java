@@ -128,6 +128,7 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -285,6 +286,8 @@ public class ReadAloudControllerUnitTest {
         when(mPrefService.hasPrefPath("readaloud.playback_mode")).thenReturn(true);
         when(mPrefService.getInteger("readaloud.playback_mode"))
                 .thenReturn(PlaybackMode.UNSPECIFIED.getValue());
+        when(mPrefService.hasPrefPath("readaloud.opted_in")).thenReturn(true);
+        when(mPrefService.getBoolean("readaloud.opted_in")).thenReturn(true);
         when(mPrefService.getBoolean(Pref.LISTEN_TO_THIS_PAGE_ENABLED)).thenReturn(true);
         mTabModelSelector =
                 new MockTabModelSelector(
@@ -4719,6 +4722,94 @@ public class ReadAloudControllerUnitTest {
         assertEquals(
                 ImmutableList.of(PlaybackMode.OVERVIEW),
                 mController.getPlaybackModesForNewPlayback(OVERVIEW_ONLY_SUPPORTED, "en"));
+    }
+
+    @Test
+    @EnableFeatures({ReadAloudFeatures.READ_ALOUD_NATIVE})
+    public void testPlayTab_nativeEnabled_showsOptInWhenNotOptedIn_accept() {
+        ModalDialogManager modalDialogManager = Mockito.mock(ModalDialogManager.class);
+        when(mActivityWindowAndroid.getModalDialogManager()).thenReturn(modalDialogManager);
+        when(mPrefService.hasPrefPath("readaloud.opted_in")).thenReturn(false);
+
+        mController.destroy();
+        mController = createController();
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Callback<Boolean>> optInCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mPlayerCoordinator)
+                .showOptInDialog(eq(modalDialogManager), optInCallbackCaptor.capture());
+        verify(mPlayerCoordinator, never()).playTabRequested(any());
+
+        // Accept the Opt-in dialog.
+        optInCallbackCaptor.getValue().onResult(true);
+        resolvePromises();
+
+        verify(mPrefService).setBoolean(eq("readaloud.opted_in"), eq(true));
+        verify(mPlayerCoordinator).playTabRequested(any());
+    }
+
+    @Test
+    @EnableFeatures({ReadAloudFeatures.READ_ALOUD_NATIVE})
+    public void testPlayTab_nativeEnabled_showsOptInWhenNotOptedIn_decline() {
+        ModalDialogManager modalDialogManager = Mockito.mock(ModalDialogManager.class);
+        when(mActivityWindowAndroid.getModalDialogManager()).thenReturn(modalDialogManager);
+        when(mPrefService.hasPrefPath("readaloud.opted_in")).thenReturn(false);
+
+        mController.destroy();
+        mController = createController();
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Callback<Boolean>> optInCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mPlayerCoordinator)
+                .showOptInDialog(eq(modalDialogManager), optInCallbackCaptor.capture());
+
+        // Decline the Opt-in dialog.
+        optInCallbackCaptor.getValue().onResult(false);
+
+        verify(mPrefService, never()).setBoolean(eq("readaloud.opted_in"), eq(true));
+        verify(mPlayerCoordinator, never()).playTabRequested(any());
+    }
+
+    @Test
+    @EnableFeatures({ReadAloudFeatures.READ_ALOUD_NATIVE})
+    public void testPlayTab_nativeEnabled_optInAcceptedAfterTabClosed_dismissesPlayers() {
+        ModalDialogManager modalDialogManager = Mockito.mock(ModalDialogManager.class);
+        when(mActivityWindowAndroid.getModalDialogManager()).thenReturn(modalDialogManager);
+        when(mPrefService.hasPrefPath("readaloud.opted_in")).thenReturn(false);
+
+        mController.destroy();
+        mController = createController();
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Callback<Boolean>> optInCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mPlayerCoordinator)
+                .showOptInDialog(eq(modalDialogManager), optInCallbackCaptor.capture());
+
+        // Simulate the tab closing/destroying while the modal dialog is showing.
+        reset(mPlayerCoordinator);
+        mTab.destroy();
+
+        // Accept the Opt-in dialog after the tab was destroyed.
+        optInCallbackCaptor.getValue().onResult(true);
+
+        verify(mPrefService).setBoolean(eq("readaloud.opted_in"), eq(true));
+        verify(mPlayerCoordinator).dismissPlayers();
+        verify(mPlayerCoordinator, never()).playTabRequested(any());
     }
 
     private void requestAndStartPlayback() {

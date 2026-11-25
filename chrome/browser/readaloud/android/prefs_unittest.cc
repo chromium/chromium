@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +24,12 @@ class ReadAloudPrefsTest : public testing::Test {
  protected:
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
 };
+
+TEST_F(ReadAloudPrefsTest, OptedInDefaultFalse) {
+  EXPECT_FALSE(pref_service_->GetBoolean(prefs::kReadAloudOptedIn));
+  pref_service_->SetBoolean(prefs::kReadAloudOptedIn, true);
+  EXPECT_TRUE(pref_service_->GetBoolean(prefs::kReadAloudOptedIn));
+}
 
 TEST_F(ReadAloudPrefsTest, GetReliabilityLoggingId_NotAllowed) {
   // Return 0 if metrics_id is empty.

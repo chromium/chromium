@@ -2978,6 +2978,10 @@ inline constexpr char kReadAloudPlaybackMode[] = "readaloud.playback_mode";
 inline constexpr char kReadAloudHighlightingEnabled[] =
     "readaloud.highlighting_enabled";
 
+// Boolean that specifies whether the user has opted into sharing page content
+// and URLs with Google for Read Aloud audio playback.
+inline constexpr char kReadAloudOptedIn[] = "readaloud.opted_in";
+
 // Boolean that specifies whether the ListenToThisPageEnabled policy is true or
 // not.
 inline constexpr char kListenToThisPageEnabled[] =

@@ -6,6 +6,7 @@ package org.chromium.chrome.modules.readaloud;
 
 import android.app.Activity;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -27,6 +28,7 @@ import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 
@@ -166,6 +168,13 @@ public interface Player {
 
     /** Show the mini player, called when playback is requested. */
     default void playTabRequested(PlaybackMode playbackMode) {}
+
+    /**
+     * Show the expanded player in an idle/preview state and display the privacy opt-in modal
+     * dialog.
+     */
+    default void showOptInDialog(
+            ModalDialogManager modalDialogManager, Callback<Boolean> onOptInDecision) {}
 
     /**
      * Update players when playback is ready.

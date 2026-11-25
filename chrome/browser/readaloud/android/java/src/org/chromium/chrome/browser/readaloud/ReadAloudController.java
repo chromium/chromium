@@ -102,6 +102,7 @@ import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.time.Duration;
@@ -1216,6 +1217,41 @@ public class ReadAloudController
             return;
         }
 
+        if (ReadAloudFeatures.isNativeEnabled() && !ReadAloudPrefs.isOptedIn(getPrefService())) {
+            ModalDialogManager modalDialogManager = mActivityWindowAndroid.getModalDialogManager();
+            if (modalDialogManager != null) {
+                showOptInDialog(tab, entrypoint, modalDialogManager);
+            }
+            return;
+        }
+
+        playTabAfterOptIn(tab, entrypoint);
+    }
+
+    private void showOptInDialog(
+            Tab tab, @Entrypoint int entrypoint, ModalDialogManager modalDialogManager) {
+        maybeInitializePlaybackHooks();
+        Player playerCoordinator = assumeNonNull(mPlayerCoordinator);
+        playerCoordinator.showOptInDialog(
+                modalDialogManager,
+                (accepted) -> {
+                    if (mIsDestroyed) {
+                        return;
+                    }
+                    if (accepted) {
+                        ReadAloudPrefs.setOptedIn(getPrefService(), true);
+                        if (tab.isDestroyed()
+                                || tab.isClosing()
+                                || GURL.isEmptyOrInvalid(tab.getUrl())) {
+                            playerCoordinator.dismissPlayers();
+                            return;
+                        }
+                        playTabAfterOptIn(tab, entrypoint);
+                    }
+                });
+    }
+
+    private void playTabAfterOptIn(Tab tab, @Entrypoint int entrypoint) {
         // There may be a saved playback state if another ReadAloudController instance interrupted
         // this one. Restore it if the entrypoint is showing on the same tab, otherwise clear state.
         if (mStateToRestoreOnBringingToForeground != null) {

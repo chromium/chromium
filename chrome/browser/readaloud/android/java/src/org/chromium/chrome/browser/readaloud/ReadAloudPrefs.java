@@ -27,9 +27,11 @@ public class ReadAloudPrefs {
     private static final String SPEED_PATH = PREF_PATH_PREFIX + ".speed";
     private static final String PLAYBACK_MODE_PATH = PREF_PATH_PREFIX + ".playback_mode";
     static final String HIGHLIGHTING_ENABLED_PATH = PREF_PATH_PREFIX + ".highlighting_enabled";
+    static final String OPTED_IN_PATH = PREF_PATH_PREFIX + ".opted_in";
 
     private static final float DEFAULT_SPEED = 1f;
     private static final boolean DEFAULT_HIGHLIGHTING_ENABLED = true;
+    private static final boolean DEFAULT_OPTED_IN = false;
 
     private ReadAloudPrefs() {}
 
@@ -123,6 +125,28 @@ public class ReadAloudPrefs {
             ReadAloudMetrics.recordHighlightingEnabledChanged(enabled);
             prefs.setBoolean(HIGHLIGHTING_ENABLED_PATH, enabled);
         }
+    }
+
+    /**
+     * Get whether the user has opted into Read Aloud privacy notice.
+     *
+     * @param prefs PrefService for profile.
+     * @return True if opted in, false otherwise.
+     */
+    public static boolean isOptedIn(PrefService prefs) {
+        return prefs.hasPrefPath(OPTED_IN_PATH)
+                ? prefs.getBoolean(OPTED_IN_PATH)
+                : DEFAULT_OPTED_IN;
+    }
+
+    /**
+     * Set whether the user has opted into Read Aloud privacy notice.
+     *
+     * @param prefs PrefService for profile.
+     * @param optedIn True if the user opted in, false otherwise.
+     */
+    public static void setOptedIn(PrefService prefs, boolean optedIn) {
+        prefs.setBoolean(OPTED_IN_PATH, optedIn);
     }
 
     /**

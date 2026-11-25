@@ -27,12 +27,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -57,6 +59,10 @@ import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link PlayerCoordinator}. */
 @DisableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
@@ -398,5 +404,36 @@ public class PlayerCoordinatorUnitTest {
 
         verify(mExpandedPlayer).dismiss(true);
         verify(mMiniPlayer, never()).dismiss(anyBoolean());
+    }
+
+    @Test
+    public void testShowOptInDialog_declineDismissesPlayers() {
+        mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        doReturn(mActivity).when(mDelegate).getActivity();
+
+        ModalDialogManager modalDialogManager = Mockito.mock(ModalDialogManager.class);
+        @SuppressWarnings("unchecked")
+        Callback<Boolean> callback = Mockito.mock(Callback.class);
+
+        mPlayerCoordinator.showOptInDialog(modalDialogManager, callback);
+
+        verify(mMediator).setPlayback(eq(null));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.STOPPED));
+        verify(mExpandedPlayer).show();
+
+        ArgumentCaptor<PropertyModel> dialogModelCaptor =
+                ArgumentCaptor.forClass(PropertyModel.class);
+        verify(modalDialogManager)
+                .showDialog(
+                        dialogModelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+
+        PropertyModel dialogModel = dialogModelCaptor.getValue();
+        dialogModel
+                .get(ModalDialogProperties.CONTROLLER)
+                .onDismiss(dialogModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+
+        verify(mExpandedPlayer).dismiss();
+        verify(callback).onResult(eq(false));
     }
 }

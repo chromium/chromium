@@ -146,6 +146,23 @@ public class ReadAloudPrefsUnitTest {
     }
 
     @Test
+    public void testDefaultIsOptedIn() {
+        assertEquals(false, ReadAloudPrefs.isOptedIn(mPrefService));
+    }
+
+    @Test
+    public void testGetIsOptedIn() {
+        mPrefService.setBoolean("readaloud.opted_in", true);
+        assertEquals(true, ReadAloudPrefs.isOptedIn(mPrefService));
+    }
+
+    @Test
+    public void testSetIsOptedIn() {
+        ReadAloudPrefs.setOptedIn(mPrefService, true);
+        verify(mPrefService).setBoolean(eq("readaloud.opted_in"), eq(true));
+    }
+
+    @Test
     public void testSpeedChanged_Metric() {
         ReadAloudPrefs.setSpeed(mPrefService, 1.0f);
 

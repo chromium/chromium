@@ -10,8 +10,10 @@ import android.view.ViewStub;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
@@ -22,7 +24,9 @@ import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Class that controls and coordinates the mini and expanded player UI.
@@ -45,6 +49,7 @@ public class PlayerCoordinator implements Player {
     private boolean mRestoreMiniPlayer;
     private boolean mRestoreExpandedPlayer;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private @Nullable ReadAloudOptInDialogCoordinator mOptInDialogCoordinator;
 
     // TODO remove internal call and then remove this constructor
     public PlayerCoordinator(
@@ -118,6 +123,7 @@ public class PlayerCoordinator implements Player {
 
     @Override
     public void destroy() {
+        dismissOptInDialog();
         dismissPlayers();
         mMediator.destroy();
         mMiniPlayer.destroy();
@@ -133,6 +139,42 @@ public class PlayerCoordinator implements Player {
         mMediator.setPlaybackState(PlaybackListener.State.PLAYBACK_CREATION);
         if (!mExpandedPlayer.anySheetShowing()) {
             mMiniPlayer.show(/* animate= */ true);
+        }
+    }
+
+    @Override
+    public void showOptInDialog(
+            ModalDialogManager modalDialogManager, Callback<Boolean> onOptInDecision) {
+        dismissOptInDialog();
+        mMediator.setPlayback(null);
+        mMediator.setPlaybackState(PlaybackListener.State.STOPPED);
+        mExpandedPlayer.show();
+        Context contextForInflation =
+                BundleUtils.createContextForInflation(
+                        mDelegate.getActivity(), OnDemandModule.SPLIT_NAME);
+        mOptInDialogCoordinator =
+                new ReadAloudOptInDialogCoordinator(
+                        contextForInflation,
+                        modalDialogManager,
+                        (accepted) -> {
+                            mOptInDialogCoordinator = null;
+                            if (!accepted) {
+                                dismissPlayers();
+                                Toast.makeText(
+                                                contextForInflation,
+                                                R.string.readaloud_off_toast_message,
+                                                Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                            onOptInDecision.onResult(accepted);
+                        });
+        mOptInDialogCoordinator.show();
+    }
+
+    private void dismissOptInDialog() {
+        if (mOptInDialogCoordinator != null) {
+            mOptInDialogCoordinator.dismiss();
+            mOptInDialogCoordinator = null;
         }
     }
 
