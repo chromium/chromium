@@ -24,11 +24,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -48,6 +50,11 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.TopScalpPageLoadState;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -179,6 +186,31 @@ public class EdgeToEdgeControllerImpl
     private boolean mStatusIndicatorVisible;
     private @Nullable HomepageStateListener mHomepageStateListener;
 
+    private final SideUiObserver mSideUiObserver =
+            new SideUiObserver() {
+                @Override
+                public void onSideUiSpecsChangeStarted(
+                        SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+                    // Stop consuming the side display cutout before a SideUI slides in, so that it
+                    // never draws over the cutout. When a SideUI closes, wait for the change to
+                    // complete.
+                    if (hasReservedWidth(sideUiSpecs)) {
+                        setIsSideUiReservingWidth(true);
+                    }
+                }
+
+                @Override
+                public void onSideUiSpecsChangeCompleted(
+                        SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+                    setIsSideUiReservingWidth(hasReservedWidth(sideUiSpecs));
+                }
+            };
+    private @Nullable SideUiStateProvider mSideUiStateProvider;
+    private @Nullable CallbackController mSideUiCallbackController;
+
+    /** Whether any SideUI reserves width. If true, the side display cutout is not consumed. */
+    private boolean mIsSideUiReservingWidth;
+
     /**
      * Creates an implementation of the EdgeToEdgeController that will use the Android APIs to allow
      * drawing under the System Gesture Navigation Bar.
@@ -195,6 +227,8 @@ public class EdgeToEdgeControllerImpl
      * @param layoutManagerSupplier The supplier to {@link LayoutManager} for checking the active
      *     layout type.
      * @param fullscreenManager The {@link FullscreenManager} for checking the fullscreen state.
+     * @param sideUiStateProviderSupplier Supplies the {@link SideUiStateProvider}, or null if no
+     *     SideUI can show. The side display cutout is not consumed while a SideUI shows.
      */
     public EdgeToEdgeControllerImpl(
             Activity activity,
@@ -204,7 +238,8 @@ public class EdgeToEdgeControllerImpl
             EdgeToEdgeManager edgeToEdgeManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
-            FullscreenManager fullscreenManager) {
+            FullscreenManager fullscreenManager,
+            @Nullable OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mEdgeToEdgeManager = edgeToEdgeManager;
@@ -326,6 +361,20 @@ public class EdgeToEdgeControllerImpl
                     };
             NtpCustomizationConfigManager manager = NtpCustomizationConfigManager.getInstance();
             manager.addListener(mHomepageStateListener, activity, /* skipNotify= */ false);
+        }
+
+        if (sideUiStateProviderSupplier != null) {
+            // The supplier posts the callback if the provider is already available, so read the
+            // first state from the return value. The retrigger below applies it.
+            CallbackController callbackController = new CallbackController();
+            mSideUiCallbackController = callbackController;
+            SideUiStateProvider sideUiStateProvider =
+                    sideUiStateProviderSupplier.onAvailable(
+                            callbackController.makeCancelable(
+                                    this::onSideUiStateProviderAvailable));
+            if (sideUiStateProvider != null) {
+                observeSideUiStateProvider(sideUiStateProvider);
+            }
         }
 
         updateTopEdgeState(EdgeToEdgeUtils.tabSupportsTopEdgeToEdge(mCurrentTab));
@@ -1029,9 +1078,53 @@ public class EdgeToEdgeControllerImpl
         if (activeLayoutType != LayoutType.BROWSING) {
             return false;
         }
+        // Keep the pillarbox while a SideUI reserves width, so that it never draws over the cutout.
+        if (mIsSideUiReservingWidth) {
+            return false;
+        }
         // Only consume side cutouts on web pages opted into viewport-fit=cover (for non-native
         // tabs, mIsPageOptedIntoTopEdgeToEdge is true iff the page has viewport-fit=cover).
         return mCurrentTab != null && !mCurrentTab.isNativePage() && mIsPageOptedIntoTopEdgeToEdge;
+    }
+
+    /**
+     * Updates the side display cutout state. If it changed, pushes the new safe area insets and
+     * retriggers the window insets, so that the root view pillarbox is updated.
+     */
+    private void applySideDisplayCutoutChange() {
+        if (!updateSideDisplayCutoutState()) return;
+        pushSafeAreaInsetUpdate();
+        if (mInsetObserver != null) {
+            mInsetObserver.retriggerOnApplyWindowInsets();
+        }
+    }
+
+    private void onSideUiStateProviderAvailable(SideUiStateProvider sideUiStateProvider) {
+        // The constructor already observes a provider that was available at creation.
+        if (mSideUiStateProvider != null) return;
+        observeSideUiStateProvider(sideUiStateProvider);
+        applySideDisplayCutoutChange();
+    }
+
+    private void observeSideUiStateProvider(SideUiStateProvider sideUiStateProvider) {
+        mSideUiStateProvider = sideUiStateProvider;
+        sideUiStateProvider.addObserver(mSideUiObserver);
+        // If an animated open is in progress, the current specs are still the old ones, so the
+        // guard turns on only at onSideUiSpecsChangeCompleted(). This case is rare.
+        mIsSideUiReservingWidth = hasReservedWidth(sideUiStateProvider.getCurrentSideUiSpecs());
+    }
+
+    private void setIsSideUiReservingWidth(boolean isSideUiReservingWidth) {
+        if (mIsSideUiReservingWidth == isSideUiReservingWidth) return;
+        mIsSideUiReservingWidth = isSideUiReservingWidth;
+        applySideDisplayCutoutChange();
+    }
+
+    private static boolean hasReservedWidth(SideUiSpecs sideUiSpecs) {
+        for (@AnchorSide int side = 0; side < AnchorSide.NUM_ENTRIES; side++) {
+            if (sideUiSpecs.getReservedWidth(side) > 0) return true;
+        }
+        return false;
     }
 
     private boolean updateVisibilityRects(View rootView) {
@@ -1193,6 +1286,14 @@ public class EdgeToEdgeControllerImpl
     @CallSuper
     @Override
     public void destroy() {
+        if (mSideUiCallbackController != null) {
+            mSideUiCallbackController.destroy();
+            mSideUiCallbackController = null;
+        }
+        if (mSideUiStateProvider != null) {
+            mSideUiStateProvider.removeObserver(mSideUiObserver);
+            mSideUiStateProvider = null;
+        }
         if (mWebContentsObserver != null) {
             mWebContentsObserver.observe(null);
             mWebContentsObserver = null;

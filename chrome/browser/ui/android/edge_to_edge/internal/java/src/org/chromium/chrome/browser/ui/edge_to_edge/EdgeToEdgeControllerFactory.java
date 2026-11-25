@@ -11,6 +11,7 @@ import android.view.View;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
@@ -47,6 +49,9 @@ public class EdgeToEdgeControllerFactory {
      *     if the Toolbar is changing.
      * @param layoutManagerSupplier The supplier of {@link LayoutManager} for checking the active
      *     layout type.
+     * @param fullscreenManager The {@link FullscreenManager} for checking the fullscreen state.
+     * @param sideUiStateProviderSupplier Supplies the {@link SideUiStateProvider}, or null if no
+     *     SideUI can show.
      * @return An EdgeToEdgeController to control drawing under System Bars, or {@code null} if this
      *     version of Android does not support the APIs needed.
      */
@@ -57,7 +62,8 @@ public class EdgeToEdgeControllerFactory {
             EdgeToEdgeManager edgeToEdgeManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
-            FullscreenManager fullscreenManager) {
+            FullscreenManager fullscreenManager,
+            @Nullable OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         assert EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(activity)
                         || EdgeToEdgeUtils.isEdgelessTopInsetSupported(activity)
@@ -71,7 +77,8 @@ public class EdgeToEdgeControllerFactory {
                 edgeToEdgeManager,
                 browserControlsStateProvider,
                 layoutManagerSupplier,
-                fullscreenManager);
+                fullscreenManager,
+                sideUiStateProviderSupplier);
     }
 
     /**

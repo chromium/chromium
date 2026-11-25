@@ -57,11 +57,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowBuild;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -69,6 +72,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.ViewportFit;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -89,6 +93,14 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.Ineligibility
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.SupportedConfigurationSwitch;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.TopScalpPageLoadState;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -103,6 +115,8 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.Map;
 
 /**
  * Tests the EdgeToEdgeController code. Ideally this would include {@link EdgeToEdgeController},
@@ -135,6 +149,8 @@ public class EdgeToEdgeControllerTest {
             ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/false";
     private static final String EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E =
             ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true";
+    private static final Insets SIDE_DISPLAY_CUTOUT = Insets.of(40, 0, 50, 0);
+    private static final int SIDE_UI_WIDTH = 300;
 
     private static final WindowInsetsCompat SYSTEM_BARS_WINDOW_INSETS =
             new WindowInsetsCompat.Builder()
@@ -270,6 +286,9 @@ public class EdgeToEdgeControllerTest {
     @Mock private LayoutManager mLayoutManager;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private TopInsetProvider.Observer mTopInsetObserver;
+    @Mock private SideUiStateProvider mSideUiStateProvider;
+
+    @Captor private ArgumentCaptor<SideUiObserver> mSideUiObserverCaptor;
 
     private final View mView = new View(ContextUtils.getApplicationContext());
 
@@ -315,7 +334,8 @@ public class EdgeToEdgeControllerTest {
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         mLayoutManagerSupplier,
-                        mFullscreenManager);
+                        mFullscreenManager,
+                        /* sideUiStateProviderSupplier= */ null);
         verify(mEdgeToEdgeStateProvider, times(1)).acquireEdgeToEdgeToken();
         verify(mInsetObserver, times(1))
                 .addInsetsConsumer(any(), eq(InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL));
@@ -508,7 +528,8 @@ public class EdgeToEdgeControllerTest {
                                 mEdgeToEdgeManager,
                                 mBrowserControlsStateProvider,
                                 mLayoutManagerSupplier,
-                                mFullscreenManager);
+                                mFullscreenManager,
+                                /* sideUiStateProviderSupplier= */ null);
         assertNotNull(liveController);
         liveController.setIsOptedIntoBottomEdgeToEdgeForTesting(true);
         liveController.setIsDrawingToBottomEdgeForTesting(true);
@@ -1118,7 +1139,8 @@ public class EdgeToEdgeControllerTest {
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         mLayoutManagerSupplier,
-                        mFullscreenManager);
+                        mFullscreenManager,
+                        /* sideUiStateProviderSupplier= */ null);
         // The controller pads the root view itself when edge-to-edge everywhere is disabled.
         verify(mOsWrapper, times(1))
                 .setPadding(
@@ -2970,7 +2992,8 @@ public class EdgeToEdgeControllerTest {
                 mEdgeToEdgeManager,
                 mBrowserControlsStateProvider,
                 mLayoutManagerSupplier,
-                mFullscreenManager);
+                mFullscreenManager,
+                /* sideUiStateProviderSupplier= */ null);
         verify(mInsetObserver, atLeastOnce()).retriggerOnApplyWindowInsets();
     }
 
@@ -3396,6 +3419,283 @@ public class EdgeToEdgeControllerTest {
         assertEquals(sideDisplayCutout, result.getInsets(WindowInsetsCompat.Type.displayCutout()));
         assertLeftInsetForSafeArea(0);
         assertRightInsetForSafeArea(0);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_PreservedWhileSideUiReservesWidth() {
+        recreateControllerWithSideUiProvider(SIDE_UI_WIDTH);
+
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertLeftInsetForSafeArea(0);
+        assertRightInsetForSafeArea(0);
+        assertSideDisplayCutoutConsumed(false);
+
+        // The posted onAvailable() callback does not add the observer a second time.
+        ShadowLooper.idleMainLooper();
+        verify(mSideUiStateProvider).addObserver(any());
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_SideUiOpen_StopsConsumingOnStarted() {
+        SideUiObserver sideUiObserver = recreateControllerWithSideUiProvider(/* sideUiWidth= */ 0);
+        assertSideDisplayCutoutConsumed(true);
+
+        // The pillarbox comes back before the SideUI slides in.
+        UiUpdateRequest request = UiUpdateRequest.getRequestForTesting(false);
+        clearInvocations(mInsetObserver);
+        sideUiObserver.onSideUiSpecsChangeStarted(createSideUiSpecs(SIDE_UI_WIDTH), request);
+        verify(mInsetObserver, times(1)).retriggerOnApplyWindowInsets();
+        assertLeftInsetForSafeArea(0);
+        assertRightInsetForSafeArea(0);
+        assertSideDisplayCutoutConsumed(false);
+
+        // Completing the change does not retrigger again.
+        clearInvocations(mInsetObserver);
+        sideUiObserver.onSideUiSpecsChangeCompleted(createSideUiSpecs(SIDE_UI_WIDTH), request);
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+        assertSideDisplayCutoutConsumed(false);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_SideUiClose_ResumesOnCompleted() {
+        SideUiObserver sideUiObserver = recreateControllerWithSideUiProvider(SIDE_UI_WIDTH);
+        assertSideDisplayCutoutConsumed(false);
+
+        // The closing SideUI is still on screen, so the pillarbox stays.
+        UiUpdateRequest request = UiUpdateRequest.getRequestForTesting(false);
+        clearInvocations(mInsetObserver);
+        sideUiObserver.onSideUiSpecsChangeStarted(createSideUiSpecs(/* rightWidth= */ 0), request);
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+        verify(mInsetObserver, never()).updateSafeAreaInsetsForEdgeToEdge(any());
+        assertSideDisplayCutoutConsumed(false);
+
+        // The pillarbox goes away after the SideUI is gone.
+        clearInvocations(mInsetObserver);
+        sideUiObserver.onSideUiSpecsChangeCompleted(
+                createSideUiSpecs(/* rightWidth= */ 0), request);
+        verify(mInsetObserver, times(1)).retriggerOnApplyWindowInsets();
+        assertLeftInsetForSafeArea(SIDE_DISPLAY_CUTOUT.left);
+        assertRightInsetForSafeArea(SIDE_DISPLAY_CUTOUT.right);
+        assertSideDisplayCutoutConsumed(true);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_PreservedWhileLeftSideUiReservesWidth() {
+        // Today only Vertical Tabs anchors left, and it is tablet-only. This test guards the
+        // any-side contract.
+        recreateControllerWithSideUiProvider(/* leftWidth= */ SIDE_UI_WIDTH, /* rightWidth= */ 0);
+
+        assertLeftInsetForSafeArea(0);
+        assertRightInsetForSafeArea(0);
+        assertSideDisplayCutoutConsumed(false);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_SideUiClose_PreservedWhileOtherSideReservesWidth() {
+        SideUiObserver sideUiObserver =
+                recreateControllerWithSideUiProvider(
+                        /* leftWidth= */ SIDE_UI_WIDTH, /* rightWidth= */ SIDE_UI_WIDTH);
+        assertSideDisplayCutoutConsumed(false);
+
+        // The right SideUI closes, but the left SideUI still reserves width.
+        UiUpdateRequest request = UiUpdateRequest.getRequestForTesting(false);
+        SideUiSpecs leftOnlySpecs =
+                createSideUiSpecs(/* leftWidth= */ SIDE_UI_WIDTH, /* rightWidth= */ 0);
+        clearInvocations(mInsetObserver);
+        sideUiObserver.onSideUiSpecsChangeStarted(leftOnlySpecs, request);
+        sideUiObserver.onSideUiSpecsChangeCompleted(leftOnlySpecs, request);
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+        verify(mInsetObserver, never()).updateSafeAreaInsetsForEdgeToEdge(any());
+        assertSideDisplayCutoutConsumed(false);
+
+        // The pillarbox goes away after both SideUIs are gone.
+        SideUiSpecs noSideUiSpecs = createSideUiSpecs(/* leftWidth= */ 0, /* rightWidth= */ 0);
+        clearInvocations(mInsetObserver);
+        sideUiObserver.onSideUiSpecsChangeStarted(noSideUiSpecs, request);
+        sideUiObserver.onSideUiSpecsChangeCompleted(noSideUiSpecs, request);
+        verify(mInsetObserver, times(1)).retriggerOnApplyWindowInsets();
+        assertLeftInsetForSafeArea(SIDE_DISPLAY_CUTOUT.left);
+        assertRightInsetForSafeArea(SIDE_DISPLAY_CUTOUT.right);
+        assertSideDisplayCutoutConsumed(true);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_SideUiResize_NoRetriggerWhenUnchanged() {
+        SideUiObserver sideUiObserver = recreateControllerWithSideUiProvider(SIDE_UI_WIDTH);
+
+        UiUpdateRequest liveRequest =
+                UiUpdateRequest.getRequestForTesting(false, UpdateReason.RESIZE_LIVE);
+        UiUpdateRequest committedRequest =
+                UiUpdateRequest.getRequestForTesting(false, UpdateReason.RESIZE_COMMITTED);
+        SideUiSpecs liveSpecs = createSideUiSpecs(SIDE_UI_WIDTH + 50);
+        SideUiSpecs committedSpecs = createSideUiSpecs(SIDE_UI_WIDTH + 100);
+        clearInvocations(mInsetObserver);
+        sideUiObserver.onSideUiSpecsChangeStarted(liveSpecs, liveRequest);
+        sideUiObserver.onSideUiSpecsChangeCompleted(liveSpecs, liveRequest);
+        sideUiObserver.onSideUiSpecsChangeStarted(committedSpecs, committedRequest);
+        sideUiObserver.onSideUiSpecsChangeCompleted(committedSpecs, committedRequest);
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+        verify(mInsetObserver, never()).updateSafeAreaInsetsForEdgeToEdge(any());
+        assertSideDisplayCutoutConsumed(false);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_SideUiProviderArrivesLate() {
+        OneshotSupplierImpl<SideUiStateProvider> sideUiStateProviderSupplier =
+                new OneshotSupplierImpl<>();
+        recreateControllerForSideUi(sideUiStateProviderSupplier);
+        assertSideDisplayCutoutConsumed(true);
+
+        when(mSideUiStateProvider.getCurrentSideUiSpecs())
+                .thenReturn(createSideUiSpecs(SIDE_UI_WIDTH));
+        clearInvocations(mInsetObserver);
+        sideUiStateProviderSupplier.set(mSideUiStateProvider);
+        ShadowLooper.idleMainLooper();
+
+        verify(mSideUiStateProvider).addObserver(any());
+        verify(mInsetObserver, times(1)).retriggerOnApplyWindowInsets();
+        assertLeftInsetForSafeArea(0);
+        assertRightInsetForSafeArea(0);
+        assertSideDisplayCutoutConsumed(false);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_NullSideUiSupplier() {
+        recreateControllerForSideUi(/* sideUiStateProviderSupplier= */ null);
+
+        assertLeftInsetForSafeArea(SIDE_DISPLAY_CUTOUT.left);
+        assertRightInsetForSafeArea(SIDE_DISPLAY_CUTOUT.right);
+        assertSideDisplayCutoutConsumed(true);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testDestroy_RemovesSideUiObserver() {
+        SideUiObserver sideUiObserver = recreateControllerWithSideUiProvider(/* sideUiWidth= */ 0);
+
+        mEdgeToEdgeControllerImpl.destroy();
+        mEdgeToEdgeControllerImpl = null;
+        verify(mSideUiStateProvider).removeObserver(sideUiObserver);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testDestroy_IgnoresLateSideUiProvider() {
+        OneshotSupplierImpl<SideUiStateProvider> sideUiStateProviderSupplier =
+                new OneshotSupplierImpl<>();
+        recreateControllerForSideUi(sideUiStateProviderSupplier);
+
+        mEdgeToEdgeControllerImpl.destroy();
+        mEdgeToEdgeControllerImpl = null;
+        sideUiStateProviderSupplier.set(mSideUiStateProvider);
+        ShadowLooper.idleMainLooper();
+        verify(mSideUiStateProvider, never()).addObserver(any());
+    }
+
+    /** Returns specs with no SideUI on the left and a SideUI of {@code rightWidth} on the right. */
+    private static SideUiSpecs createSideUiSpecs(int rightWidth) {
+        return createSideUiSpecs(/* leftWidth= */ 0, rightWidth);
+    }
+
+    /**
+     * Returns specs with a left SideUI of {@code leftWidth} and a right SideUI of {@code
+     * rightWidth}. A width of 0 means that no SideUI shows on that side.
+     */
+    private static SideUiSpecs createSideUiSpecs(int leftWidth, int rightWidth) {
+        return new SideUiSpecs(
+                Map.of(
+                        AnchorSide.LEFT,
+                        createSideUiSize(leftWidth),
+                        AnchorSide.RIGHT,
+                        createSideUiSize(rightWidth)));
+    }
+
+    private static SideUiSize createSideUiSize(int width) {
+        return new SideUiSize(width, width > 0 ? HeightType.TOOLBAR : HeightType.NOT_APPLICABLE);
+    }
+
+    private static WindowInsetsCompat createInsetsWithSideDisplayCutout() {
+        return new WindowInsetsCompat.Builder(SYSTEM_BARS_WINDOW_INSETS)
+                .setInsets(WindowInsetsCompat.Type.displayCutout(), SIDE_DISPLAY_CUTOUT)
+                .build();
+    }
+
+    /**
+     * Recreates the controller with {@code sideUiStateProviderSupplier}. The window has {@link
+     * #SIDE_DISPLAY_CUTOUT}, and the current tab is a web page with viewport-fit=cover.
+     */
+    private void recreateControllerForSideUi(
+            @Nullable OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
+        WindowInsetsCompat insetsWithSideCutout = createInsetsWithSideDisplayCutout();
+        doAnswer(
+                        (inv) -> {
+                            mWindowInsetsListenerCaptor
+                                    .getValue()
+                                    .onApplyWindowInsets(mView, insetsWithSideCutout);
+                            return null;
+                        })
+                .when(mInsetObserver)
+                .retriggerOnApplyWindowInsets();
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+
+        mEdgeToEdgeControllerImpl.destroy();
+        mEdgeToEdgeControllerImpl =
+                new EdgeToEdgeControllerImpl(
+                        mActivity,
+                        mWindowAndroid,
+                        mTabProvider,
+                        mOsWrapper,
+                        mEdgeToEdgeManager,
+                        mBrowserControlsStateProvider,
+                        mLayoutManagerSupplier,
+                        mFullscreenManager,
+                        sideUiStateProviderSupplier);
+        mTabProvider.set(mTab);
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+    }
+
+    /**
+     * Recreates the controller with a {@link SideUiStateProvider} that is available at creation and
+     * has a SideUI of {@code sideUiWidth} on the right. Returns the observer that the controller
+     * added.
+     */
+    private SideUiObserver recreateControllerWithSideUiProvider(int sideUiWidth) {
+        return recreateControllerWithSideUiProvider(/* leftWidth= */ 0, sideUiWidth);
+    }
+
+    /**
+     * Recreates the controller with a {@link SideUiStateProvider} that is available at creation and
+     * has a left SideUI of {@code leftWidth} and a right SideUI of {@code rightWidth}. Returns the
+     * observer that the controller added.
+     */
+    private SideUiObserver recreateControllerWithSideUiProvider(int leftWidth, int rightWidth) {
+        when(mSideUiStateProvider.getCurrentSideUiSpecs())
+                .thenReturn(createSideUiSpecs(leftWidth, rightWidth));
+        OneshotSupplierImpl<SideUiStateProvider> sideUiStateProviderSupplier =
+                new OneshotSupplierImpl<>();
+        sideUiStateProviderSupplier.set(mSideUiStateProvider);
+        recreateControllerForSideUi(sideUiStateProviderSupplier);
+        verify(mSideUiStateProvider).addObserver(mSideUiObserverCaptor.capture());
+        return mSideUiObserverCaptor.getValue();
+    }
+
+    /** Checks whether the controller consumes the left and right display cutout. */
+    private void assertSideDisplayCutoutConsumed(boolean consumed) {
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(
+                        mView, createInsetsWithSideDisplayCutout());
+        assertEquals(
+                consumed ? Insets.NONE : SIDE_DISPLAY_CUTOUT,
+                result.getInsets(WindowInsetsCompat.Type.displayCutout()));
     }
 
     @Test

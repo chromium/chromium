@@ -5,6 +5,7 @@ include_rules = [
   "+cc/input/android/java/src/org/chromium/cc/input/OffsetTag.java",
   "+chrome/browser/android/lifecycle",
   "+chrome/browser/flags",
+  "+chrome/browser/ui/side_ui/public/android",
   "+chrome/test/android",
   "+components/browser_ui/display_cutout",
   "+ui/edge_to_edge",

@@ -2774,7 +2774,8 @@ public class RootUiCoordinator
                             mEdgeToEdgeManager,
                             mBrowserControlsManager,
                             mLayoutManagerSupplier,
-                            mFullscreenManager);
+                            mFullscreenManager,
+                            getSideUiStateProviderSupplier());
             mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
             // TODO(crbug.com/498302496): Pass mEdgeToEdgeController directly to downstream
             // consumers (e.g. ToolbarManager, NewTabAnimationLayout) instead of using
