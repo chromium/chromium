@@ -30,7 +30,7 @@
 #include "base/values.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/base/loggable.h"
-#include "remoting/host/linux/secure_file_reader.h"
+#include "remoting/base/secure_file_reader.h"
 
 namespace remoting {
 

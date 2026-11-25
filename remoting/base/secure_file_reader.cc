@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/linux/secure_file_reader.h"
+#include "remoting/base/secure_file_reader.h"
 
 #include <errno.h>
 #include <fcntl.h>

@@ -23,11 +23,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "remoting/base/secure_file_reader.h"
 #include "remoting/host/linux/auto_session_host_type.h"
 #include "remoting/host/linux/custom_host_type.h"
 #include "remoting/host/linux/gdm_managed_host_type.h"
 #include "remoting/host/linux/host_type_environment.h"
-#include "remoting/host/linux/secure_file_reader.h"
 #include "remoting/host/linux/session_routing_config.h"
 #include "remoting/host/linux/unit_session_host_type.h"
 

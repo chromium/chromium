@@ -9,17 +9,28 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <map>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/time/time.h"
+#include "base/values.h"
 #include "remoting/base/crash/crashpad_database_manager.h"
 #include "remoting/base/file_path_util_linux.h"
+#include "remoting/base/loggable.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/passwd_utils.h"
+#include "remoting/base/secure_file_reader.h"
 #include "remoting/base/username.h"
 #include "remoting/base/version.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
@@ -31,6 +42,68 @@ namespace {
 constexpr char kChromotingCrashpadHandler[] = "crashpad-handler";
 constexpr char kDefaultCrashpadUploadUrl[] =
     "https://clients2.google.com/cr/report";
+
+CrashpadLinux::Config ReadAndValidateConfigFile(const base::FilePath& path,
+                                                uid_t expected_owner_uid) {
+  CrashpadLinux::Config config;
+  auto contents =
+      ReadSecureFile(path, expected_owner_uid, kMaxCrashpadConfigBytes);
+  if (!contents.has_value()) {
+    LOG(ERROR) << "Ignoring Crashpad config at " << path << ": "
+               << contents.error();
+    return config;
+  }
+  if (!contents->has_value()) {
+    return config;
+  }
+
+  auto json = base::JSONReader::ReadAndReturnValueWithError(
+      **contents, base::JSON_PARSE_RFC);
+  if (!json.has_value()) {
+    LOG(ERROR) << "Failed to parse Crashpad config JSON in " << path << ": "
+               << json.error().message;
+    return config;
+  }
+  if (!json->is_dict()) {
+    LOG(ERROR) << "Crashpad config " << path
+               << " root JSON value is not a dictionary";
+    return config;
+  }
+  const base::DictValue& dict = json->GetDict();
+
+  if (const base::Value* url_val = dict.Find(kCrashpadUploadUrlKey)) {
+    if (!url_val->is_string()) {
+      LOG(ERROR) << "Ignoring non-string Crashpad " << kCrashpadUploadUrlKey
+                 << " in " << path
+                 << " (type=" << base::Value::GetTypeName(url_val->type())
+                 << ")";
+    } else if (IsValidCrashpadUploadUrlOverride(url_val->GetString())) {
+      config.upload_url = url_val->GetString();
+    } else {
+      LOG(ERROR) << "Ignoring invalid Crashpad " << kCrashpadUploadUrlKey
+                 << " in " << path;
+    }
+  }
+
+  if (const base::Value* rate_val = dict.Find(kCrashpadDisableRateLimitKey)) {
+    if (!rate_val->is_bool()) {
+      LOG(ERROR) << "Ignoring non-boolean Crashpad "
+                 << kCrashpadDisableRateLimitKey << " in " << path
+                 << " (type=" << base::Value::GetTypeName(rate_val->type())
+                 << ")";
+    } else {
+      config.disable_rate_limit = rate_val->GetBool();
+    }
+  }
+
+  for (const auto [key, value] : dict) {
+    if (key != kCrashpadUploadUrlKey && key != kCrashpadDisableRateLimitKey) {
+      LOG(WARNING) << "Unknown key in Crashpad config " << path << ": " << key;
+    }
+  }
+
+  return config;
+}
 
 bool SetupCrashpadDirectory() {
   if (getuid() != 0) {
@@ -105,11 +178,24 @@ bool CrashpadLinux::Initialize() {
   annotations["ver"] = REMOTING_VERSION_STRING;
   annotations["plat"] = std::string("Linux");
 
+  const Config config = ReadConfig();
+  const std::string upload_url =
+      config.upload_url.value_or(kDefaultCrashpadUploadUrl);
+  if (config.upload_url.has_value()) {
+    LOG(WARNING) << "Overriding Crashpad upload URL via " << GetConfigFilePath()
+                 << ": " << upload_url;
+  }
+
   std::vector<std::string> arguments;
   // Make sure Crashpad's generate_dump tool includes monitor-self annotations.
   // This creates a second crashpad instance that monitors the handler so it can
   // report crashes in the handler.
   arguments.push_back("--monitor-self-annotation=ptype=crashpad-handler");
+  if (config.disable_rate_limit) {
+    arguments.push_back("--no-rate-limit");
+    LOG(WARNING) << "Disabling Crashpad upload rate limit via "
+                 << GetConfigFilePath();
+  }
 
   base::FilePath handler_path;
   if (!GetCrashpadHandlerPath(&handler_path)) {
@@ -118,8 +204,8 @@ bool CrashpadLinux::Initialize() {
 
   crashpad::CrashpadClient client;
   if (!client.StartHandler(handler_path, GetCrashpadDatabasePath(),
-                           metrics_path, kDefaultCrashpadUploadUrl, annotations,
-                           arguments, false, false)) {
+                           metrics_path, upload_url, annotations, arguments,
+                           false, false)) {
     LOG(ERROR) << "Failed to start Crashpad handler.";
     return false;
   }
@@ -167,6 +253,24 @@ bool CrashpadLinux::GetHandlerSocket(base::ScopedFD& socket, pid_t& pid) {
 
   pid = raw_pid;
   return true;
+}
+
+// static
+base::FilePath CrashpadLinux::GetConfigFilePath() {
+  return GetMultiProcessHostGlobalConfigDir().Append(kCrashpadConfigFileName);
+}
+
+// static
+CrashpadLinux::Config CrashpadLinux::ReadConfig() {
+  return ReadAndValidateConfigFile(GetConfigFilePath(),
+                                   /*expected_owner_uid=*/0);
+}
+
+// static
+CrashpadLinux::Config CrashpadLinux::ReadConfigFileForTesting(
+    const base::FilePath& path,
+    uid_t expected_owner_uid) {
+  return ReadAndValidateConfigFile(path, expected_owner_uid);
 }
 
 // static

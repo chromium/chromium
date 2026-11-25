@@ -209,7 +209,6 @@ source_set("host_types") {
   ]
   public_deps = [ "//base" ]
   deps = [
-    ":secure_file_reader",
     ":session_routing_config",
     "//remoting/base:os_utils",
   ]
@@ -245,17 +244,6 @@ source_set("host_types_test_util") {
   ]
 }
 
-source_set("secure_file_reader") {
-  sources = [
-    "secure_file_reader.cc",
-    "secure_file_reader.h",
-  ]
-  deps = [
-    "//base",
-    "//remoting/base",
-  ]
-}
-
 source_set("session_routing_config") {
   sources = [
     "session_routing_config.cc",
@@ -267,7 +255,7 @@ source_set("session_routing_config") {
     "//remoting/base:errors",
   ]
   deps = [
-    ":secure_file_reader",
+    "//remoting/base:os_utils",
     "//remoting/signaling",
   ]
 }
@@ -437,7 +425,6 @@ static_library("platform_impls") {
     ":gvariant",
     ":pipewire_loader",
     ":remote_session_info_main_headers",
-    ":secure_file_reader",
     ":session_routing_config",
     ":utils",
     ":x11",
@@ -449,6 +436,7 @@ static_library("platform_impls") {
     "//remoting/base",
     "//remoting/base:errors",
     "//remoting/base:logging",
+    "//remoting/base:os_utils",
     "//remoting/base/crash:crashpad",
     "//remoting/host:client_session_control",
     "//remoting/host:clipboard",
@@ -568,7 +556,6 @@ source_set("unit_tests") {
     "pipewire_mouse_cursor_capturer_unittest.cc",
     "pulse_audio_capturer_unittest.cc",
     "remote_display_session_manager_unittest.cc",
-    "secure_file_reader_unittest.cc",
     "session_routing_config_unittest.cc",
     "systemd_utils_unittest.cc",
     "test_util.cc",
@@ -601,7 +588,6 @@ source_set("unit_tests") {
     ":host_types",
     ":host_types_test_util",
     ":platform_impls",
-    ":secure_file_reader",
     ":session_routing_config",
     ":utils",
     ":x11_display_utils",

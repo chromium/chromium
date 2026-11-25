@@ -30,7 +30,7 @@
 #include "remoting/base/errors.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/base/loggable.h"
-#include "remoting/host/linux/secure_file_reader.h"
+#include "remoting/base/secure_file_reader.h"
 #include "remoting/signaling/signaling_id_util.h"
 
 namespace remoting {

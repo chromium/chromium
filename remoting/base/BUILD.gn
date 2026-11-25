@@ -96,6 +96,13 @@ static_library("os_utils") {
       "file_path_util_linux.h",
     ]
   }
+
+  if (is_linux) {
+    sources += [
+      "secure_file_reader.cc",
+      "secure_file_reader.h",
+    ]
+  }
 }
 
 static_library("codec_utils") {
@@ -602,7 +609,10 @@ source_set("unit_tests") {
   }
 
   if (is_linux) {
-    sources += [ "crash/crashpad_linux_unittest.cc" ]
+    sources += [
+      "crash/crashpad_linux_unittest.cc",
+      "secure_file_reader_unittest.cc",
+    ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
