@@ -32,6 +32,7 @@ from run_bidi_server import (
 )
 from test_runner_utils import (
     get_default_chromedriver_bin,
+    get_default_port,
     get_repo_root,
     setup_runtime_env,
     strip_leading_dashes,
@@ -44,6 +45,11 @@ def main():
     )
     parser.add_argument("--gen-dir", default=None)
     parser.add_argument("--node-py", default=None)
+    parser.add_argument(
+        "--port",
+        default=get_default_port(),
+        help="Port of the WebDriver BiDi server",
+    )
     parser.add_argument("--browser-bin", default=os.environ.get("BROWSER_BIN"))
     parser.add_argument("--chromedriver-bin", default=get_default_chromedriver_bin())
     parser.add_argument(
@@ -172,6 +178,7 @@ def main():
     server = BiDiServerProcess(
         gen_dir=gen_dir,
         node_py=node_py,
+        port=args.port,
         browser_bin=browser_bin,
         chromedriver_bin=chromedriver_bin,
         verbose=False,
@@ -262,6 +269,8 @@ def main():
         env = os.environ.copy()
         env["PYTHONUNBUFFERED"] = "1"
         env["HEADLESS"] = headless
+        # The tests connect to the server on this port.
+        env["PORT"] = str(args.port)
         if browser_bin:
             env["BROWSER_BIN"] = browser_bin
         if chromedriver_bin:

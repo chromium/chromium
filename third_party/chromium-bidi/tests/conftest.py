@@ -44,6 +44,11 @@ logger = logging.getLogger(__name__)
 
 pytest_plugins = ["resultsink_reporter"]
 
+# Default port of the WebDriver BiDi server. The port is not in the set of
+# ports that Blink web tests reserve. Keep in sync with `DEFAULT_PORT` in
+# `tools/test_runner_utils.py`.
+DEFAULT_PORT = 8290
+
 GOOD_SSL_CERT_SPKI = "QQDsUATYj6FX2oHvQ5/cyDW9CutD2sp9z+qeLfNGHHw="
 
 # `session.new` starts a new browser. On slow CI bots this can take longer than
@@ -250,7 +255,7 @@ async def websocket(test_headless_mode, capabilities, current_test_name):
         """Return a websocket connection to the browser on localhost without an
         active BiDi session.
         """
-        port = os.getenv("PORT", 8080)
+        port = os.getenv("PORT") or DEFAULT_PORT
         url = f"ws://localhost:{port}/session"
         return await websockets.connect(url)
 

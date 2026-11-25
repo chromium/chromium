@@ -52,6 +52,23 @@ CANONICAL_TEST_ID_RE = re.compile(
 )
 
 
+# Default port of the WebDriver BiDi server (ChromeDriver) in tests.
+#
+# The port must not be in the set of ports that Blink web tests reserve, so
+# that both test suites can run on the same machine. Blink web tests use 8000,
+# 8001, 8080-8082, 8093, 8443-8447, 8880, 9000, 9001, 9444, 11000 and 11001.
+# See `SERVER_PORTS` in //third_party/blink/tools/blinkpy/web_tests/port/base.py
+# and //third_party/blink/tools/blinkpy/web_tests/servers/.
+#
+# Keep in sync with `DEFAULT_PORT` in `tests/conftest.py`.
+DEFAULT_PORT = 8290
+
+
+def get_default_port() -> str:
+    """Returns the `PORT` environment variable or the default server port."""
+    return os.environ.get("PORT") or str(DEFAULT_PORT)
+
+
 def get_repo_root() -> str:
     """Returns the root directory of the chromium-bidi repository."""
     return os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

@@ -250,11 +250,11 @@ Run the server:
 ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
 ```
 
-By default, the server runs on port `8080`. Use the `PORT=` environment variable or `--port=` argument to run it on another port:
+By default, the server runs on port `8290`. Blink web tests do not use this port. Use the `PORT=` environment variable or `--port=` argument to run it on another port:
 
 ```sh
-PORT=8081 ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
-./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi --port=8081
+PORT=8291 ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
+./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi --port=8291
 ```
 
 ## Running
@@ -386,10 +386,10 @@ Run a specific test using the `-k` filter:
 ../../out/Default/bin/run_webdriver_bidi_e2e_tests -- -k <TestName>
 ```
 
-Use the `PORT` environment variable to connect to another port:
+By default, the tests start the server on port `8290`. Use the `PORT` environment variable to use another port:
 
 ```sh
-PORT=8081 ../../out/Default/bin/run_webdriver_bidi_e2e_tests
+PORT=8291 ../../out/Default/bin/run_webdriver_bidi_e2e_tests
 ```
 
 Use `HEADLESS` to run the tests in headless (new or old) or headful modes.

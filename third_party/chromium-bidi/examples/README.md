@@ -21,7 +21,7 @@ The server (ChromeDriver with CDP-BiDi Mapper) can be built and run from `third_
 
 ```sh
 autoninja -C ../../out/Default third_party/chromium-bidi:default chrome/test/chromedriver:chromedriver_server
-./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
+./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi --port=8080
 ```
 
 ChromeDriver and EdgeDriver can be run by:

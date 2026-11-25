@@ -28,7 +28,12 @@ import sys
 import threading
 from typing import IO
 
-from test_runner_utils import get_default_chromedriver_bin, get_repo_root
+from test_runner_utils import (
+    DEFAULT_PORT,
+    get_default_chromedriver_bin,
+    get_default_port,
+    get_repo_root,
+)
 
 
 def resolve_binary_path(path: str | None) -> str | None:
@@ -70,7 +75,7 @@ class BiDiServerProcess:
         self,
         gen_dir: str | None = None,
         node_py: str | None = None,
-        port: str | int = 8080,
+        port: str | int = DEFAULT_PORT,
         browser_bin: str | None = None,
         chromedriver_bin: str | None = None,
         verbose: bool = True,
@@ -226,7 +231,7 @@ def main():
     parser = argparse.ArgumentParser(description="Runs the WebDriver BiDi server")
     parser.add_argument("--gen-dir", help="Path to gen directory")
     parser.add_argument("--node-py", help="Path to node.py")
-    parser.add_argument("--port", default=os.environ.get("PORT", "8080"))
+    parser.add_argument("--port", default=get_default_port())
     parser.add_argument("--browser-bin", default=os.environ.get("BROWSER_BIN"))
     parser.add_argument("--chromedriver-bin", default=get_default_chromedriver_bin())
     parser.add_argument("--verbose", action="store_true", default=True)
