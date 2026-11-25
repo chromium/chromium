@@ -1479,6 +1479,8 @@ class BrowsingHistoryHandlerChatLinkoutTest
     scoped_glic_bypass_.emplace();
     tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                          &mock_tab_);
+    // `GlicLinkoutHandler` refuses tabs of other profiles.
+    ON_CALL(mock_tab_, GetProfile()).WillByDefault(testing::Return(profile()));
     // Records the arguments of every `Invoke()` call in `captured_invokes_`.
     ON_CALL(*mock_glic_service(), Invoke(_))
         .WillByDefault([this](glic::GlicInvokeOptions options) {

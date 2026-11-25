@@ -19,6 +19,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace critical_actions {
 
 // Returns the destination linkout URL for a critical action of type
@@ -58,6 +62,24 @@ void OpenCriticalActionConversation(Profile* profile,
                                     std::string_view critical_action_id,
                                     OpenConversationSource source,
                                     OpenConversationCallback callback);
+
+// Same as `OpenCriticalActionConversation()`, but opens the conversation on
+// `tab`. If `tab` belongs to a profile other than `profile` (e.g. it is an
+// Incognito tab), no conversation is opened, the result is `kErrorInternal`
+// and a crash dump is reported without crashing. If `tab` is non-null but
+// destroyed before the lookup completes, no conversation is opened and the
+// result is `kErrorInternal`. If `tab` is null, the result is `kErrorInternal`,
+// except on Android (e.g. when called from HistoryActivity), where the
+// conversation is opened on the active tab of the most recently active tabbed
+// browser window of `profile`, or on a new tab in that window if it has none.
+// If `profile` has no tabbed browser window (e.g. app-specific History launched
+// while no tabbed Chrome window is open), no conversation is opened and the
+// result is `kErrorInternal`.
+void OpenCriticalActionConversationForTab(Profile* profile,
+                                          tabs::TabInterface* tab,
+                                          std::string_view critical_action_id,
+                                          OpenConversationSource source,
+                                          OpenConversationCallback callback);
 
 }  // namespace critical_actions
 

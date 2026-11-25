@@ -28,6 +28,13 @@ source_set("critical_actions") {
     "//net",
     "//url",
   ]
+
+  if (is_android) {
+    deps += [
+      "//chrome/browser/tab_list",
+      "//chrome/browser/ui/browser_window",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -35,12 +42,14 @@ source_set("unit_tests") {
   sources = [
     "critical_action_factory_unittest.cc",
     "critical_action_ui_utils_unittest.cc",
+    "glic_linkout_handler_unittest.cc",
   ]
 
   deps = [
     ":critical_actions",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/ui/passwords",
     "//chrome/common",
     "//chrome/test:test_support",
@@ -48,17 +57,22 @@ source_set("unit_tests") {
     "//chrome/test/base:testing_browser_process",
     "//components/critical_actions/core/browser",
     "//components/keyed_service/core",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
     "//content/test:test_support",
     "//net",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 
-  if (!is_android) {
-    sources += [ "glic_linkout_handler_unittest.cc" ]
+  if (is_android) {
     deps += [
-      "//chrome/browser/glic/test_support",
-      "//chrome/test/base:browser_with_test_window_test",
-      "//components/tabs:test_support",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/tab_list:test_support",
+      "//chrome/browser/ui/android",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//ui/base/unowned_user_data",
     ]
   }
 }

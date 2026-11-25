@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -25,6 +26,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -96,10 +98,15 @@ void FinishOpenConversation(OpenConversationSource source,
   std::move(callback).Run(result);
 }
 
-// Opens the conversation of the critical action `entry` retrieved from
-// `CriticalActionService`, if found, on `web_contents`.
+// Opens the conversation of a critical action entry, retrieved from
+// `CriticalActionService`, with the given Glic invocation source, and invokes
+// the trailing callback with the result.
+using OpenEntryCallback = base::OnceCallback<void(const CriticalActionEntry&,
+                                                  glic::mojom::InvocationSource,
+                                                  OpenConversationCallback)>;
+
 void OnCriticalActionRetrieved(OpenConversationSource source,
-                               base::WeakPtr<content::WebContents> web_contents,
+                               OpenEntryCallback open_entry,
                                OpenConversationCallback callback,
                                std::optional<CriticalActionEntry> entry) {
   if (!entry) {
@@ -117,9 +124,64 @@ void OnCriticalActionRetrieved(OpenConversationSource source,
     RecordOpenConversationHasAnchor(!entry->conversation_anchor_id.empty());
   }
 
+  std::move(open_entry)
+      .Run(
+          *entry, GetGlicInvocationSource(source),
+          base::BindOnce(&FinishOpenConversation, source, std::move(callback)));
+}
+
+// Looks up `critical_action_id` in `profile`'s `CriticalActionService` and, if
+// found, opens its conversation with `open_entry`. Shared by
+// `OpenCriticalActionConversation()` and
+// `OpenCriticalActionConversationForTab()`, which only differ in where the
+// conversation is opened.
+void LookUpAndOpenConversation(Profile* profile,
+                               std::string_view critical_action_id,
+                               OpenConversationSource source,
+                               OpenEntryCallback open_entry,
+                               OpenConversationCallback callback) {
+  if (critical_action_id.empty()) {
+    FinishOpenConversation(source, std::move(callback),
+                           OpenConversationResult::kErrorInvalidActionEntry);
+    return;
+  }
+
+  CriticalActionService* critical_action_service =
+      profile ? CriticalActionFactory::GetForProfile(profile) : nullptr;
+  if (!critical_action_service) {
+    FinishOpenConversation(source, std::move(callback),
+                           OpenConversationResult::kErrorInternal);
+    return;
+  }
+
+  critical_action_service->GetCriticalAction(
+      critical_action_id,
+      base::BindOnce(&OnCriticalActionRetrieved, source, std::move(open_entry),
+                     std::move(callback)));
+}
+
+void OpenEntryOnWebContents(base::WeakPtr<content::WebContents> web_contents,
+                            const CriticalActionEntry& entry,
+                            glic::mojom::InvocationSource invocation_source,
+                            OpenConversationCallback callback) {
   GlicLinkoutHandler::GetInstance()->OpenConversation(
-      web_contents.get(), *entry, GetGlicInvocationSource(source),
-      base::BindOnce(&FinishOpenConversation, source, std::move(callback)));
+      web_contents.get(), entry, invocation_source, std::move(callback));
+}
+
+void OpenEntryOnTab(base::WeakPtr<Profile> profile,
+                    bool tab_requested,
+                    base::WeakPtr<tabs::TabInterface> tab,
+                    const CriticalActionEntry& entry,
+                    glic::mojom::InvocationSource invocation_source,
+                    OpenConversationCallback callback) {
+  // Don't fall back to another tab if the caller's tab was destroyed during
+  // the lookup.
+  if (tab_requested && !tab) {
+    std::move(callback).Run(OpenConversationResult::kErrorInternal);
+    return;
+  }
+  GlicLinkoutHandler::GetInstance()->OpenConversation(
+      profile.get(), tab.get(), entry, invocation_source, std::move(callback));
 }
 
 std::string GetPasswordManagerLinkoutUrl(const GURL& url) {
@@ -198,26 +260,36 @@ void OpenCriticalActionConversation(Profile* profile,
     CHECK_EQ(Profile::FromBrowserContext(web_contents->GetBrowserContext()),
              profile);
   }
+  LookUpAndOpenConversation(
+      profile, critical_action_id, source,
+      base::BindOnce(&OpenEntryOnWebContents,
+                     web_contents ? web_contents->GetWeakPtr() : nullptr),
+      std::move(callback));
+}
 
-  if (critical_action_id.empty()) {
-    FinishOpenConversation(source, std::move(callback),
-                           OpenConversationResult::kErrorInvalidActionEntry);
-    return;
-  }
-
-  CriticalActionService* critical_action_service =
-      profile ? CriticalActionFactory::GetForProfile(profile) : nullptr;
-  if (!critical_action_service) {
+void OpenCriticalActionConversationForTab(Profile* profile,
+                                          tabs::TabInterface* tab,
+                                          std::string_view critical_action_id,
+                                          OpenConversationSource source,
+                                          OpenConversationCallback callback) {
+  // Unlike the WebContents variant's callers, which take the profile and the
+  // WebContents from the same WebUI, callers of this variant may get `tab` from
+  // a supplier that doesn't guarantee it belongs to `profile` (e.g. the Android
+  // history UI can hand over an Incognito tab). Refuse such a tab rather than
+  // open a conversation stored in `profile` in it, and report it, as it points
+  // to a caller bug.
+  if (profile && tab && tab->GetProfile() != profile) {
+    base::debug::DumpWithoutCrashing();
     FinishOpenConversation(source, std::move(callback),
                            OpenConversationResult::kErrorInternal);
     return;
   }
-
-  critical_action_service->GetCriticalAction(
-      critical_action_id,
-      base::BindOnce(&OnCriticalActionRetrieved, source,
-                     web_contents ? web_contents->GetWeakPtr() : nullptr,
-                     std::move(callback)));
+  LookUpAndOpenConversation(
+      profile, critical_action_id, source,
+      base::BindOnce(&OpenEntryOnTab, profile ? profile->GetWeakPtr() : nullptr,
+                     /*tab_requested=*/tab != nullptr,
+                     tab ? tab->GetWeakPtr() : nullptr),
+      std::move(callback));
 }
 
 }  // namespace critical_actions
