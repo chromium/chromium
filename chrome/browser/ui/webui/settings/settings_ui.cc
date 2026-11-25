@@ -697,10 +697,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("showAiPageAiFeatureSection",
                           show_ai_features_section);
 
+  bool show_batch_upload_promo =
+      SyncServiceFactory::GetForProfile(profile) != nullptr;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  html_source->AddBoolean("unoPhase2FollowUp", base::FeatureList::IsEnabled(
-                                                   syncer::kUnoPhase2FollowUp));
+  show_batch_upload_promo &=
+      base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp);
 #endif
+  html_source->AddBoolean("showBatchUploadPromo", show_batch_upload_promo);
 
   html_source->AddBoolean(
       "searchSettingsUpdate",

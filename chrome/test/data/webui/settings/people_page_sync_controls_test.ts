@@ -8,10 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsSyncControlsElement} from 'chrome://settings/lazy_load.js';
 import type {CrRadioButtonElement, CrToggleElement, SyncPrefs} from 'chrome://settings/settings.js';
-// <if expr="not is_chromeos">
-import {loadTimeData} from 'chrome://settings/settings.js';
-// </if>
-import {Router, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, Router, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -355,9 +352,7 @@ suite('SyncControlsAccountSettingsTest', function() {
     pluralStringProxy = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralStringProxy);
 
-    // <if expr="not is_chromeos">
-    loadTimeData.overrideValues({unoPhase2FollowUp: true});
-    // </if>
+    loadTimeData.overrideValues({showBatchUploadPromo: true});
     resetRouterForTesting();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -857,6 +852,78 @@ suite('SyncControlsAccountSettingsTest', function() {
     // Make sure the call to open the batch upload dialog is executed.
     assertEquals(
         1, batchUploadPromoHandler.getCallCount('onBatchUploadPromoClicked'));
+  });
+
+  test('BatchUploadPromoNotInitializedOffAccountRoute', async () => {
+    const localDataCount = 5;
+    batchUploadPromoHandler.setBatchUploadPromoLocalDataCount(localDataCount);
+    batchUploadPromoHandler.reset();
+
+    const router = Router.getInstance();
+    router.navigateTo(routes.PEOPLE);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    syncControls = document.createElement('settings-sync-controls');
+    document.body.appendChild(syncControls);
+    syncControls.syncStatus = {
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    await setupPrefs();
+    await microtasksFinished();
+
+    assertEquals(
+        0,
+        batchUploadPromoHandler.getCallCount(
+            'getBatchUploadPromoLocalDataCount'));
+    assertFalse(isChildVisible(syncControls, '#batchUploadPromo'));
+
+    // Navigating to the account settings page initializes the promo.
+    router.navigateTo(routes.ACCOUNT);
+    await batchUploadPromoHandler.whenCalled(
+        'getBatchUploadPromoLocalDataCount');
+    const pluralStringArgs =
+        await pluralStringProxy.whenCalled('getPluralString');
+    await microtasksFinished();
+
+    assertEquals(
+        1,
+        batchUploadPromoHandler.getCallCount(
+            'getBatchUploadPromoLocalDataCount'));
+    assertEquals(localDataCount, pluralStringArgs.itemCount);
+    assertTrue(isChildVisible(syncControls, '#batchUploadPromo'));
+
+    // Navigating away and back to the account settings page does not
+    // re-initialize the promo.
+    router.navigateTo(routes.PEOPLE);
+    await microtasksFinished();
+    router.navigateTo(routes.ACCOUNT);
+    await microtasksFinished();
+    assertEquals(
+        1,
+        batchUploadPromoHandler.getCallCount(
+            'getBatchUploadPromoLocalDataCount'));
+  });
+
+  test('BatchUploadPromoNotInitializedWhenDisabled', async () => {
+    loadTimeData.overrideValues({showBatchUploadPromo: false});
+    batchUploadPromoHandler.reset();
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    syncControls = document.createElement('settings-sync-controls');
+    document.body.appendChild(syncControls);
+    syncControls.syncStatus = {
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    await setupPrefs();
+    await microtasksFinished();
+
+    assertEquals(
+        0,
+        batchUploadPromoHandler.getCallCount(
+            'getBatchUploadPromoLocalDataCount'));
+    assertFalse(isChildVisible(syncControls, '#batchUploadPromo'));
   });
 });
 

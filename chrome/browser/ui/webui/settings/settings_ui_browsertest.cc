@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/webui/settings/search/mojom/settings_search.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -110,12 +111,20 @@ class SettingsUITestDisableSync : public SettingsUITest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Regression test for crbug.com/484893496.
-// This mainly intends to check that `CreateBatchUploadPromoHandler()` does not
-// crash when the sync service is null.
+// Regression test for crbug.com/484893496 and crbug.com/578427565.
+// Checks that opening Settings when SyncService is null does not crash or log
+// console errors (e.g. from an unbound BatchUploadPromoHandler Mojo pipe).
 IN_PROC_BROWSER_TEST_F(
     SettingsUITestDisableSync,
     CreateBatchUploadPromoHandlerWithoutSyncServiceDoesNotCrash) {
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::WebContentsConsoleObserver console_observer(web_contents);
+  console_observer.SetFilter(base::BindRepeating(
+      [](const content::WebContentsConsoleObserver::Message& message) {
+        return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
+      }));
+
   ASSERT_TRUE(
       NavigateToURL(browser(), GURL(base::StrCat({chrome::kChromeUISettingsURL,
                                                   chrome::kPeopleSubPage}))));
@@ -125,16 +134,37 @@ IN_PROC_BROWSER_TEST_F(
 
   // Wait for sync controls to load which would initialize the batch upload
   // service if the sync service was not null.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              R"((async () => {
+                           await customElements.whenDefined(
+                               'settings-sync-controls');
+                           await new Promise(r => setTimeout(r, 0));
+                         })())"));
+
+  EXPECT_FALSE(
+      content::EvalJs(
+          web_contents,
+          "import('chrome://resources/js/load_time_data.js').then(m => "
+          "m.loadTimeData.getBoolean('showBatchUploadPromo'))")
+          .ExtractBool());
+
+  // Also navigate to the account subpage where the batch upload promo is
+  // initialized, and verify no console errors or service creation occur.
   ASSERT_TRUE(
-      content::ExecJs(browser()->GetTabStripModel()->GetActiveWebContents(),
-                      R"((() => {
-                           return customElements.whenDefined(
-                              'settings-sync-controls');
+      NavigateToURL(browser(), GURL(base::StrCat({chrome::kChromeUISettingsURL,
+                                                  chrome::kAccountSubPage}))));
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              R"((async () => {
+                           await customElements.whenDefined(
+                               'settings-sync-controls');
+                           await new Promise(r => setTimeout(r, 0));
                          })())"));
 
   EXPECT_EQ(nullptr,
             BatchUploadServiceFactory::GetForProfile(browser()->GetProfile(),
                                                      /*create=*/false));
+  EXPECT_TRUE(console_observer.messages().empty())
+      << "Unexpected console error: " << console_observer.GetMessageAt(0);
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsUITest, GoogleSearchAiModeWorkspaceUrl) {

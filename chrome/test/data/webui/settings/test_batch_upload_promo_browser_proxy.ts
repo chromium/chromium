@@ -22,6 +22,7 @@ export class TestBatchUploadPromoHandler extends TestBrowserProxy implements
   }
 
   getBatchUploadPromoLocalDataCount(): Promise<{localDataCount: number}> {
+    this.methodCalled('getBatchUploadPromoLocalDataCount');
     return Promise.resolve(
         {localDataCount: this.batchUploadPromoLocalDataCount_});
   }

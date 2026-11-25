@@ -29,6 +29,7 @@ import {RouteObserverMixinLit} from '../router.js';
 
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
+import type {BrowserProxy as BatchUploadPromoBrowserProxy} from 'chrome://resources/js/batch_upload_promo.mojom-webui.js';
 import {browserProxyFactory as batchUploadPromoProxyFactory} from 'chrome://resources/js/batch_upload_promo.mojom-webui.js';
 
 // clang-format on
@@ -115,8 +116,9 @@ export class SettingsSyncControlsElement extends
   accessor showSyncDisabledInformation: boolean = false;
   protected accessor isAccountSettingsPage_: boolean = false;
   private readonly showBatchUploadPromo_: boolean =
-      !loadTimeData.valueExists('unoPhase2FollowUp') ||
-      loadTimeData.getBoolean('unoPhase2FollowUp');
+      loadTimeData.getBoolean('showBatchUploadPromo');
+  private batchUploadPromoProxy_: BatchUploadPromoBrowserProxy|null = null;
+  private batchUploadPromoListenerId_: number|null = null;
   protected accessor batchUploadPromoHTML_: TrustedHTML =
       window.trustedTypes!.emptyHTML;
 
@@ -126,19 +128,6 @@ export class SettingsSyncControlsElement extends
     this.addWebUiListener(
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
-    if (this.showBatchUploadPromo_) {
-      batchUploadPromoProxyFactory.getInstance()
-          .callbackRouter.onLocalDataCountChanged.addListener(
-              (localDataCount: number) => {
-                this.batchUploadPromoLocalDataCountChanged_(localDataCount);
-              });
-      batchUploadPromoProxyFactory.getInstance()
-          .handler.getBatchUploadPromoLocalDataCount()
-          .then(({localDataCount}) => {
-            this.batchUploadPromoLocalDataCountChanged_(localDataCount);
-          });
-    }
-
     const router = Router.getInstance();
     const currentRoute = router.getCurrentRoute();
     if (currentRoute === routes.SYNC_ADVANCED) {
@@ -147,6 +136,17 @@ export class SettingsSyncControlsElement extends
     if (currentRoute === routes.ACCOUNT) {
       this.isAccountSettingsPage_ = true;
       this.syncBrowserProxy_.didNavigateToAccountSettingsPage();
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.batchUploadPromoListenerId_ !== null) {
+      assert(this.batchUploadPromoProxy_);
+      this.batchUploadPromoProxy_.callbackRouter.removeListener(
+          this.batchUploadPromoListenerId_);
+      this.batchUploadPromoListenerId_ = null;
+      this.batchUploadPromoProxy_ = null;
     }
   }
 
@@ -176,9 +176,25 @@ export class SettingsSyncControlsElement extends
     this.syncPrefs = syncPrefs;
   }
 
+  private initBatchUploadPromo_() {
+    assert(this.showBatchUploadPromo_);
+    assert(this.batchUploadPromoListenerId_ === null);
+
+    this.batchUploadPromoProxy_ = batchUploadPromoProxyFactory.getInstance();
+    this.batchUploadPromoListenerId_ =
+        this.batchUploadPromoProxy_.callbackRouter.onLocalDataCountChanged
+            .addListener((localDataCount: number) => {
+              this.batchUploadPromoLocalDataCountChanged_(localDataCount);
+            });
+    this.batchUploadPromoProxy_.handler.getBatchUploadPromoLocalDataCount()
+        .then(({localDataCount}) => {
+          this.batchUploadPromoLocalDataCountChanged_(localDataCount);
+        });
+  }
+
   private async batchUploadPromoLocalDataCountChanged_(localDataCount: number):
       Promise<void> {
-    if (!this.showBatchUploadPromo_) {
+    if (!this.showBatchUploadPromo_ || !this.isConnected) {
       return;
     }
 
@@ -223,8 +239,8 @@ export class SettingsSyncControlsElement extends
       // Prevent navigation to href='#' and open the batch upload dialog
       // instead.
       event.preventDefault();
-      batchUploadPromoProxyFactory.getInstance()
-          .handler.onBatchUploadPromoClicked();
+      assert(this.batchUploadPromoProxy_);
+      this.batchUploadPromoProxy_.handler.onBatchUploadPromoClicked();
     }
   }
 
@@ -254,6 +270,10 @@ export class SettingsSyncControlsElement extends
 
     if (this.isAccountSettingsPage_ && oldRoute !== routes.ACCOUNT) {
       this.syncBrowserProxy_.didNavigateToAccountSettingsPage();
+      if (this.showBatchUploadPromo_ &&
+          this.batchUploadPromoListenerId_ === null) {
+        this.initBatchUploadPromo_();
+      }
     }
   }
 
