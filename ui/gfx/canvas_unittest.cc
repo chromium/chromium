@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect.h"
@@ -28,6 +29,8 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/text_elider.h"
 
 namespace gfx {
@@ -343,6 +346,64 @@ TEST_F(CanvasTest, DrawImageIntSnapsToDevicePixelsWithSnapOffset) {
             << "Mirrored mismatch at (" << x << ", " << y << ")";
       }
     }
+  }
+}
+
+TEST_F(CanvasTest, DrawImageIntDoesNotClipEdgesAtFractionalScale) {
+  ui::test::ScopedSetSupportedResourceScaleFactors
+      supported_scale_factors_override({ui::k100Percent, ui::k200Percent});
+
+  constexpr int kDipSize = 16;
+
+  class BorderedSquareSource : public ImageSkiaSource {
+   public:
+    ImageSkiaRep GetImageForScale(float scale) override {
+      const int size_px = static_cast<int>(kDipSize * scale);
+      SkBitmap bitmap;
+      bitmap.allocN32Pixels(size_px, size_px);
+      bitmap.eraseColor(SK_ColorWHITE);
+      // Paint a 1px blue border around the outer perimeter of the bitmap so
+      // any right/bottom edge clipping is immediately visible.
+      for (int i = 0; i < size_px; ++i) {
+        *bitmap.getAddr32(i, 0) = SkPreMultiplyColor(SK_ColorBLUE);
+        *bitmap.getAddr32(i, size_px - 1) = SkPreMultiplyColor(SK_ColorBLUE);
+        *bitmap.getAddr32(0, i) = SkPreMultiplyColor(SK_ColorBLUE);
+        *bitmap.getAddr32(size_px - 1, i) = SkPreMultiplyColor(SK_ColorBLUE);
+      }
+      return ImageSkiaRep(bitmap, scale);
+    }
+  };
+
+  ImageSkia image(std::make_unique<BorderedSquareSource>(),
+                  Size(kDipSize, kDipSize));
+
+  // Regression test for crbug.com/40277228: 16 * 1.75023 = 28.00368, which
+  // ScaleImageSkiaRep ceiled to 29x29 before DrawImageIntHelper drew into
+  // 28.00368x28.00368, clipping the entire right and bottom 1px border.
+  for (float scale : {1.75023f, 1.8f, 1.9f}) {
+    Canvas canvas(Size(20, 20), scale, /*is_opaque=*/true);
+    canvas.DrawColor(SK_ColorWHITE);
+    canvas.DrawImageInt(image, 0, 0, kDipSize, kDipSize, 0, 0, kDipSize,
+                        kDipSize, /*filter=*/true);
+
+    SkBitmap result = canvas.GetBitmap();
+    // Compute the last rasterized pixel of the drawn `image` rect rather than
+    // using `result.width() - 1` / `result.height() - 1`: the canvas is
+    // intentionally larger than `image` (20x20 DIP), and even a 16x16 DIP
+    // canvas allocates a ScaleToCeiledSize backing bitmap whose final pixel is
+    // unpainted when the fractional edge falls below the pixel center (e.g.
+    // 28.00368 < 28.5 at 1.75023x).
+    const int last_x = static_cast<int>(std::round(image.width() * scale)) - 1;
+    const int last_y = static_cast<int>(std::round(image.height() * scale)) - 1;
+
+    // Right and bottom edges must still retain strong blue from the border
+    // rather than being clipped to white.
+    SkColor right_edge = result.getColor(last_x, last_y / 2);
+    SkColor bottom_edge = result.getColor(last_x / 2, last_y);
+    EXPECT_GT(SkColorGetB(right_edge), SkColorGetR(right_edge))
+        << "Right border clipped at scale " << scale;
+    EXPECT_GT(SkColorGetB(bottom_edge), SkColorGetR(bottom_edge))
+        << "Bottom border clipped at scale " << scale;
   }
 }
 

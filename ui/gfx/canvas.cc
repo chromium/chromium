@@ -413,7 +413,8 @@ void Canvas::DrawImageInt(const ImageSkia& image,
                           int dest_h,
                           bool filter,
                           const cc::PaintFlags& flags) {
-  const ImageSkiaRep& image_rep = image.GetRepresentation(image_scale_);
+  const ImageSkiaRep& image_rep =
+      image.GetRepresentationWithoutRescale(image_scale_);
   if (image_rep.is_null())
     return;
   bool remove_image_scale = true;
