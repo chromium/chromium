@@ -4,22 +4,13 @@
 
 package org.chromium.build.location_rewriter;
 
+import org.chromium.bytecode.ByteCodeRewriter;
 import org.chromium.bytecode.ClassHierarchy;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Processes all the class files in a directory and replaces invocations of methods listed in {@link
@@ -35,42 +26,8 @@ public class LocationRewriter {
     }
 
     private void rewriteJarFile(File inputJar, File outputJar) throws IOException {
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(inputJar));
-                OutputStream outputStream =
-                        new BufferedOutputStream(new FileOutputStream(outputJar))) {
-            rewriteZipFile(inputStream, outputStream);
-        }
-    }
-
-    private void rewriteZipFile(InputStream inputStream, OutputStream outputStream)
-            throws IOException {
-        try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-                ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
-            ZipEntry entry;
-            while ((entry = zipInputStream.getNextEntry()) != null) {
-                rewriteZipEntry(zipInputStream, zipOutputStream, entry);
-            }
-            zipOutputStream.finish();
-        }
-    }
-
-    private void rewriteZipEntry(
-            ZipInputStream zipInputStream, ZipOutputStream zipOutputStream, ZipEntry entry)
-            throws IOException {
-        ZipEntry newEntry = new ZipEntry(entry.getName());
-        newEntry.setTime(entry.getTime());
-        zipOutputStream.putNextEntry(newEntry);
-
-        byte[] fileContents = zipInputStream.readAllBytes();
-        if (entry.getName().endsWith(".class")) {
-            fileContents = rewriteClassFile(fileContents);
-        }
-        zipOutputStream.write(fileContents, 0, fileContents.length);
-        zipOutputStream.closeEntry();
-    }
-
-    private byte[] rewriteClassFile(byte[] inputClassFileContents) {
-        return mRewriterImpl.rewrite(inputClassFileContents);
+        ByteCodeRewriter.rewriteJar(
+                inputJar, outputJar, (name, bytes) -> mRewriterImpl.rewrite(bytes));
     }
 
     public static void main(String[] args) {
@@ -84,9 +41,6 @@ public class LocationRewriter {
 
             File inputJar = new File(positionalArgs[0]);
             File outputJar = new File(positionalArgs[1]);
-            if (!inputJar.exists()) {
-                throw new FileNotFoundException("Input jar not found: " + inputJar.getPath());
-            }
 
             List<String> classPathJars = new ArrayList<>(parsed.classpath);
             classPathJars.add(positionalArgs[0]);

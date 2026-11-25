@@ -24,6 +24,9 @@ import common  # noqa: E402
 import graalvm  # noqa: E402
 
 _JAVA_SRC_DIR = 'build/android/bytecode/java'
+_STORED_ZIP_WRITER_SRC = (
+    'build/android/java/src/org/chromium/build/StoredZipWriter.java'
+)
 # Path within the checkout. Cannot be under build/android/bytecode, since the
 # 3pp recipe copies the package definition (this directory) there after
 # "checkout" runs, and fails if it already exists.
@@ -213,10 +216,14 @@ def _zip_dir(src_dir, dest_jar, *, extra_jars=(), manifest=None):
                     seen.add(name)
 
 
-def _read_jar_contents(jar_path):
+def _read_jar_contents(jar_path, *, require_stored=False):
     contents = {}
     with zipfile.ZipFile(jar_path) as z:
         for info in z.infolist():
+            if require_stored and info.compress_type != zipfile.ZIP_STORED:
+                raise RuntimeError(
+                    f'Expected STORED entry in {jar_path}: {info.filename}'
+                )
             if not info.is_dir():
                 contents[info.filename] = z.read(info)
     return contents
@@ -308,8 +315,8 @@ def _build_pgo_workloads(graal_home, stub_jar, app_jar, work_dir):
     pgo_dir = os.path.join(work_dir, 'pgo')
     os.makedirs(pgo_dir, exist_ok=True)
 
-    # Extract jdk.compiler classes to give ASM and ZipInputStream /
-    # ZipOutputStream a large corpus of real bytecode (~1,000 classes).
+    # Extract jdk.compiler classes to give ASM and ZipFile / StoredZipWriter
+    # a large corpus of real bytecode (~1,000 classes).
     mod_dir = os.path.join(pgo_dir, 'modules')
     common.run_cmd(
         [
@@ -435,7 +442,7 @@ def _build_pgo_workloads(graal_home, stub_jar, app_jar, work_dir):
 
 def do_latest():
     # common.main() appends a hash of loaded Python modules, version_deps
-    # (//build/android/bytecode/java/** and asm.jar), and
+    # (//build/android/bytecode/java/**, StoredZipWriter.java, and asm.jar), and
     # graalvm.version_strings (e.g. "1.<hash>"), so returning a constant
     # automatically triggers rebuilds whenever inputs or GraalVM change. Bump
     # manually only to force a rebuild without input changes.
@@ -450,6 +457,7 @@ def do_install(args):
     java_files = sorted(str(p) for p in java_dir.rglob('*.java'))
     if not java_files:
         raise RuntimeError(f'No .java files found under {java_dir}')
+    java_files.append(common.path_within_checkout(_STORED_ZIP_WRITER_SRC))
 
     asm_jar = common.path_within_checkout(_ASM_JAR)
     classes_dir = os.path.abspath('bytecode_classes')
@@ -516,8 +524,8 @@ def do_install(args):
         common.run_cmd(
             [binary_path, f'-Djava.home={graal_home}'] + native_args, env=env
         )
-        jvm_contents = _read_jar_contents(jvm_out)
-        native_contents = _read_jar_contents(native_out)
+        jvm_contents = _read_jar_contents(jvm_out, require_stored=True)
+        native_contents = _read_jar_contents(native_out, require_stored=True)
         if jvm_contents != native_contents:
             raise RuntimeError(
                 f'Smoke test mismatch between JVM and native binary for {name}'
@@ -534,10 +542,12 @@ def main():
         do_install=do_install,
         runtime_deps=[
             ('//' + _JAVA_SRC_DIR, _JAVA_CHECKOUT_SUBPATH),
+            '//' + _STORED_ZIP_WRITER_SRC,
             '//' + _ASM_JAR,
         ],
         version_deps=[
             '//' + _JAVA_SRC_DIR,
+            '//' + _STORED_ZIP_WRITER_SRC,
             '//' + _ASM_JAR,
         ],
         version_strings_func=graalvm.version_strings,

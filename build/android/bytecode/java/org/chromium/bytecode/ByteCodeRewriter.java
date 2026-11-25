@@ -8,20 +8,16 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import org.chromium.build.StoredZipWriter;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.function.BiFunction;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.ZipFile;
 
 /** Base class for scripts that perform bytecode modifications on a jar file. */
 public abstract class ByteCodeRewriter {
@@ -37,14 +33,38 @@ public abstract class ByteCodeRewriter {
     }
 
     public void rewrite(File inputJar, File outputJar) throws IOException {
+        rewriteJar(inputJar, outputJar, this::processClassEntry);
+    }
+
+    /**
+     * Rewrites {@code inputJar} into an uncompressed {@code outputJar}, passing each {@code .class}
+     * entry to {@code classRewriter} and reusing existing CRC32 values for unmodified entries.
+     */
+    public static void rewriteJar(
+            File inputJar, File outputJar, BiFunction<String, byte[], byte[]> classRewriter)
+            throws IOException {
         if (!inputJar.exists()) {
             throw new FileNotFoundException("Input jar not found: " + inputJar.getPath());
         }
 
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(inputJar));
-                OutputStream outputStream =
-                        new BufferedOutputStream(new FileOutputStream(outputJar))) {
-            processZip(inputStream, outputStream);
+        try (ZipFile zipFile = new ZipFile(inputJar);
+                StoredZipWriter writer = new StoredZipWriter(outputJar.toPath())) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                String entryName = entry.getName();
+                byte[] inputBytes = readZipEntryBytes(zipFile, entry);
+                byte[] outputBytes = inputBytes;
+                if (entryName.endsWith(CLASS_FILE_SUFFIX)) {
+                    outputBytes = classRewriter.apply(entryName, inputBytes);
+                }
+                if (outputBytes == inputBytes) {
+                    writer.writeEntry(entryName, outputBytes, entry.getCrc());
+                } else {
+                    writer.writeEntry(entryName, outputBytes);
+                }
+            }
+            writer.finish();
         }
     }
 
@@ -63,63 +83,35 @@ public abstract class ByteCodeRewriter {
     protected abstract ClassVisitor getClassVisitorForClass(
             String classPath, ClassVisitor delegate);
 
-    private void processZip(InputStream inputStream, OutputStream outputStream) {
-        try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-                ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
-            ZipEntry entry;
-            while ((entry = zipInputStream.getNextEntry()) != null) {
-                // Get the uncompressed contents of the current zip entry and wrap in an input
-                // stream. This is done because ZipInputStreams can't be reset so they can only be
-                // read once, and classes that don't need rewriting need to be read twice, first to
-                // parse and then to copy.
-                byte[] currentEntryBytes = zipInputStream.readAllBytes();
-                ByteArrayInputStream currentEntryInputStream =
-                        new ByteArrayInputStream(currentEntryBytes);
-                ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
-                boolean handled = processClassEntry(entry, currentEntryInputStream, outputBuffer);
-
-                ZipEntry newEntry = new ZipEntry(entry.getName());
-                newEntry.setTime(entry.getTime());
-                zipOutputStream.putNextEntry(newEntry);
-                if (handled) {
-                    zipOutputStream.write(outputBuffer.toByteArray(), 0, outputBuffer.size());
-                } else {
-                    // processClassEntry may have advanced currentEntryInputStream, so reset it to
-                    // copy zip entry contents unmodified.
-                    currentEntryInputStream.reset();
-                    currentEntryInputStream.transferTo(zipOutputStream);
-                }
-                zipOutputStream.closeEntry();
+    private static byte[] readZipEntryBytes(ZipFile zipFile, ZipEntry entry) throws IOException {
+        long size = entry.getSize();
+        try (InputStream is = zipFile.getInputStream(entry)) {
+            if (size >= 0 && size <= Integer.MAX_VALUE) {
+                return is.readNBytes((int) size);
             }
-
-            zipOutputStream.finish();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return is.readAllBytes();
         }
     }
 
-    private boolean processClassEntry(
-            ZipEntry entry, InputStream inputStream, OutputStream outputStream) {
-        if (!entry.getName().endsWith(CLASS_FILE_SUFFIX) || !shouldRewriteClass(entry.getName())) {
-            return false;
+    private byte[] processClassEntry(String entryName, byte[] entryBytes) {
+        if (!shouldRewriteClass(entryName)) {
+            return entryBytes;
         }
         try {
-            ClassReader reader = new ClassReader(inputStream);
+            ClassReader reader = new ClassReader(entryBytes);
             mClassHierarchy.registerClass(reader);
             if (!shouldRewriteClass(reader)) {
-                return false;
+                return entryBytes;
             }
             ClassWriter writer =
                     mClassHierarchy.createClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
-            ClassVisitor classVisitor = getClassVisitorForClass(entry.getName(), writer);
+            ClassVisitor classVisitor = getClassVisitorForClass(entryName, writer);
             reader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
 
             writer.visitEnd();
-            byte[] classData = writer.toByteArray();
-            outputStream.write(classData, 0, classData.length);
-            return true;
+            return writer.toByteArray();
         } catch (Throwable e) {
-            throw new RuntimeException("Failed when processing " + entry.getName(), e);
+            throw new RuntimeException("Failed when processing " + entryName, e);
         }
     }
 }

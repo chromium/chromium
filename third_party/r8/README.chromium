@@ -51,14 +51,14 @@ Local Modifications:
 
 Update Instructions:
 * For the custom r8/d8 jar:
-  * This is required only when Chrome{R,D}8.java changes.
+  * This is required only when Chrome{R,D}8.java or StoredZipWriter.java changes.
   * Uncomment the flag --skip-custom-d8 in internal_rules.gni to avoid depending
     on the previously built custom_d8.jar.
 autoninja -C out/Debug third_party/r8:custom_r8_java
 cp out/Debug/obj/third_party/r8/custom_r8_java.javac.jar third_party/r8/custom_r8.jar
 OR
-autoninja -C out/Debug third_party/r8:custom_d8_java
-cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d8.jar
+autoninja -C out/Debug third_party/r8:custom_d8
+cp out/Debug/obj/third_party/r8/custom_d8.jar third_party/r8/custom_d8.jar
 
 * For r8:
   * R8 is built daily and uploaded to CIPD.

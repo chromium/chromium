@@ -8,10 +8,21 @@ import("//build/config/android/rules.gni")
 # of edges in the build graph. This is a class that rarely changes.
 java_library("custom_d8_java") {
   sources = [ "java/src/org/chromium/build/ChromeD8.java" ]
+  deps = [ "//build/android:stored_zip_writer_java" ]
 
   # Avoid using java_prebuilt() to ensure all uses go through the checked-in
   # version.
   input_jars_paths = [ "cipd/lib/r8.jar" ]
+}
+
+dist_jar("custom_d8") {
+  output = "$target_out_dir/custom_d8.jar"
+  supports_android = false
+  direct_deps_only = true
+  deps = [
+    ":custom_d8_java",
+    "//build/android:stored_zip_writer_java",
+  ]
 }
 
 # The output jar for this target is copied and checked-in to minimize the number

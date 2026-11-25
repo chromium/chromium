@@ -40,12 +40,15 @@ _CHROME_D8_SRC = 'third_party/r8/java/src/org/chromium/build/ChromeD8.java'
 _CHROME_R8_SRC = 'third_party/r8/java/src/org/chromium/build/ChromeR8.java'
 _FLUSHING_RETRACE_SRC = (
     'build/android/stacktrace/java/org/chromium/build/FlushingReTrace.java')
+_STORED_ZIP_WRITER_SRC = (
+    'build/android/java/src/org/chromium/build/StoredZipWriter.java')
 # Path within the checkout. Cannot be under third_party/r8, since the 3pp recipe
 # copies the package definition (this directory) to .3pp/chromium/third_party/r8
 # after "checkout" runs, and fails if the directory already exists.
 _CHROME_D8_CHECKOUT_SUBPATH = 'r8_custom/ChromeD8.java'
 _CHROME_R8_CHECKOUT_SUBPATH = 'r8_custom/ChromeR8.java'
 _FLUSHING_RETRACE_CHECKOUT_SUBPATH = 'r8_custom/FlushingReTrace.java'
+_STORED_ZIP_WRITER_CHECKOUT_SUBPATH = 'r8_custom/StoredZipWriter.java'
 _CHROME_D8_MAIN_CLASS = 'org.chromium.build.ChromeD8'
 _CHROME_R8_MAIN_CLASS = 'org.chromium.build.ChromeR8'
 # Lowest min_sdk_version any Chromium target builds with; the globals dex must
@@ -498,6 +501,7 @@ def _build_native_binaries(r8_jar, bin_dir):
         common.path_within_checkout(_CHROME_D8_CHECKOUT_SUBPATH),
         common.path_within_checkout(_CHROME_R8_CHECKOUT_SUBPATH),
         common.path_within_checkout(_FLUSHING_RETRACE_CHECKOUT_SUBPATH),
+        common.path_within_checkout(_STORED_ZIP_WRITER_CHECKOUT_SUBPATH),
     ])
 
     # Inputs for the tracing agent, which records the reflection & resource
@@ -764,11 +768,14 @@ def main():
                     ('//' + _CHROME_R8_SRC, _CHROME_R8_CHECKOUT_SUBPATH),
                     ('//' + _FLUSHING_RETRACE_SRC,
                      _FLUSHING_RETRACE_CHECKOUT_SUBPATH),
+                    ('//' + _STORED_ZIP_WRITER_SRC,
+                     _STORED_ZIP_WRITER_CHECKOUT_SUBPATH),
                 ],
                 version_deps=[
                     '//' + _CHROME_D8_SRC,
                     '//' + _CHROME_R8_SRC,
                     '//' + _FLUSHING_RETRACE_SRC,
+                    '//' + _STORED_ZIP_WRITER_SRC,
                 ],
                 version_strings_func=graalvm.version_strings)
 

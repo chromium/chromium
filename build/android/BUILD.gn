@@ -76,6 +76,11 @@ if (enable_java_templates) {
     proguard_configs = [ "chromium_annotations.flags" ]
   }
 
+  java_library("stored_zip_writer_java") {
+    jacoco_never_instrument = true
+    sources = [ "java/src/org/chromium/build/StoredZipWriter.java" ]
+  }
+
   # Not all //build embedders pull in junit_binary deps that live in
   # //third_party.
   if (build_with_chromium) {

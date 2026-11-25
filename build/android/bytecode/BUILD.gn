@@ -26,7 +26,10 @@ java_library("bytecode_rewriter_java") {
     "java/org/chromium/bytecode/TraceEventAdderMethodAdapter.java",
     "java/org/chromium/bytecode/TypeUtils.java",
   ]
-  deps = [ "//third_party/android_deps:org_ow2_asm_asm_java" ]
+  deps = [
+    "//build/android:stored_zip_writer_java",
+    "//third_party/android_deps:org_ow2_asm_asm_java",
+  ]
 }
 
 dist_jar("bytecode_rewriter") {
