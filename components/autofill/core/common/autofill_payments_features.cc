@@ -266,12 +266,24 @@ BASE_FEATURE(kAutofillEnableWalletBrandingV2,
 // When enabled, direct offers synced via Google Wallet will be available for
 // autofill into merchant promo code fields during checkout.
 BASE_FEATURE(kAutofillEnableWalletDirectOffers,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // When enabled, an offer notification bubble will be shown for wallet
 // direct offers if any are available for the current merchant page.
 BASE_FEATURE(kAutofillEnableWalletDirectOffersNotificationBubble,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // When enabled, offers from the user's Gmail are synced via Google Wallet in
 // addition to direct offers.

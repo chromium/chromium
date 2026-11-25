@@ -670,6 +670,9 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_MissingIssuerName) {
 }
 
 TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableWalletDirectOffers);
   EXPECT_FALSE(bridge().IsEntityDataValid(
       *CreateEntityDataFromSpecifics(TestOfferSpecifics(kId1))));
 }

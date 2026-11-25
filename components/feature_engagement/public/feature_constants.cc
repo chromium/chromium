@@ -1097,9 +1097,14 @@ BASE_FEATURE(kIPHAutofillEnableLoyaltyCardsFeature,
 BASE_FEATURE(kIPHAutofillOmniboxPaymentChipFeature,
              "IPH_AutofillOmniboxPaymentChip",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// TODO(crbug.com/584827355): Revisit whether to show this IPH. When the promo
+// code field is outside the viewport, the bubble is anchored at the top left of
+// the page, because `AutofillFieldPromoViewImpl` shows it even if the field
+// bounds do not intersect the web contents bounds. Likely fix: don't show the
+// IPH if that intersection is empty.
 BASE_FEATURE(kIPHAutofillWalletDirectOffersFeature,
              "IPH_AutofillWalletDirectOffers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) ||
         // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)

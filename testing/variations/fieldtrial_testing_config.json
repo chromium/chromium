@@ -2372,28 +2372,6 @@
             ]
         }
     ],
-    "AutofillEnableWalletDirectOffers": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableWalletDirectOffers",
-                        "AutofillEnableWalletDirectOffersNotificationBubble"
-                    ],
-                    "disable_features": [
-                        "IPH_AutofillWalletDirectOffers"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillExtractShadowDomIframes": [
         {
             "platforms": [
