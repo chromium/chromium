@@ -27,7 +27,7 @@ export function getHtml(this: PasswordsImporterElement) {
 
 <!-- STORE_PICKER dialog -->
 ${this.isState_(DialogState.STORE_PICKER) ? html`
-  <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach no-cancel>
+  <cr-dialog id="dialog" show-on-attach no-cancel>
     <div slot="title" id="title">$i18n{importPasswords}</div>
     <div slot="body">
       <select class="md-select" id="storePicker" autofocus
@@ -60,7 +60,7 @@ ${this.isState_(DialogState.STORE_PICKER) ? html`
 
 <!-- ERROR dialog -->
 ${this.isState_(DialogState.ERROR) ? html`
-  <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach no-cancel>
+  <cr-dialog id="dialog" show-on-attach no-cancel>
     <div slot="title" id="title">$i18n{importPasswordsErrorTitle}</div>
     <div slot="body">
       ${this.isAccountStoreUser ? html`
@@ -99,7 +99,7 @@ ${this.isState_(DialogState.ERROR) ? html`
 
 <!-- SUCCESS dialog -->
 ${this.isState_(DialogState.SUCCESS) ? html`
-  <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach no-cancel>
+  <cr-dialog id="dialog" show-on-attach no-cancel>
     <div slot="title" id="title">${this.getSuccessDialogTitle_()}</div>
     <div slot="body">
       <div class="flex">
@@ -151,7 +151,7 @@ ${this.isState_(DialogState.SUCCESS) ? html`
 
 <!-- ALREADY_ACTIVE dialog -->
 ${this.isState_(DialogState.ALREADY_ACTIVE) ? html`
-  <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach no-cancel>
+  <cr-dialog id="dialog" show-on-attach no-cancel>
     <div slot="title" id="title">$i18n{importPasswords}</div>
     <div slot="body" class="flex-centered">
       <cr-icon id="infoIcon" icon="cr:info"></cr-icon>
@@ -168,7 +168,7 @@ ${this.isState_(DialogState.ALREADY_ACTIVE) ? html`
 
 <!-- CONFLICTS dialog -->
 ${this.isState_(DialogState.CONFLICTS) ? html`
-  <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach no-cancel>
+  <cr-dialog id="dialog" show-on-attach no-cancel>
     <div slot="title" id="title" class="flex-centered">
       <cr-icon id="conflictsWarningIcon" icon="cr:warning-filled"></cr-icon>
       <span>${this.conflictsDialogTitle_}</span>

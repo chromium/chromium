@@ -8,7 +8,7 @@ import type {SharePasswordLoadingDialogElement} from './share_password_loading_d
 
 export function getHtml(this: SharePasswordLoadingDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog close-text="$i18n{close}" show-on-attach>
+<cr-dialog show-on-attach>
   <share-password-dialog-header slot="title">
     ${this.dialogTitle}
   </share-password-dialog-header>

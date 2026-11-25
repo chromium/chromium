@@ -9,7 +9,7 @@ import type {SharePasswordConfirmationDialogElement} from './share_password_conf
 
 export function getHtml(this: SharePasswordConfirmationDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach no-cancel>
+<cr-dialog id="dialog" show-on-attach no-cancel>
   <div slot="title">
     <share-password-dialog-header id="header" aria-live="polite">
       ${this.getDialogTitle_()}

@@ -23,7 +23,7 @@ export function getHtml(this: PasswordsExporterElement) {
 </cr-link-row>
 
 ${this.showPasswordsExportErrorDialog_ ? html`
-  <cr-dialog id="dialogError" close-text="$i18n{close}" show-on-attach>
+  <cr-dialog id="dialogError" show-on-attach>
     <div slot="title" class="dialog-title">
       ${this.exportErrorMessage_}
     </div>

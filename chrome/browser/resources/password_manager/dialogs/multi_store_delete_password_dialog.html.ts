@@ -8,7 +8,7 @@ import type {MultiStoreDeletePasswordDialogElement} from './multi_store_delete_p
 
 export function getHtml(this: MultiStoreDeletePasswordDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" close-text="$i18n{close}">
+<cr-dialog id="dialog">
   <div slot="title" class="dialog-title">
     $i18n{deletePasswordDialogAccount}
   </div>

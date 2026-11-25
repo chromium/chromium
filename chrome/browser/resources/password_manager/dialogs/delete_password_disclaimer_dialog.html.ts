@@ -8,8 +8,7 @@ import type {DeletePasswordDisclaimerDialogElement} from './delete_password_disc
 
 export function getHtml(this: DeletePasswordDisclaimerDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate
-    ignore-enter-key>
+<cr-dialog id="dialog" ignore-popstate ignore-enter-key>
   <div slot="title" class="dialog-title">
     $i18n{deletePasswordConfirmationTitle}
   </div>

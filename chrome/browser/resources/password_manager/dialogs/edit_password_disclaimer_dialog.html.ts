@@ -8,7 +8,7 @@ import type {EditPasswordDisclaimerDialogElement} from './edit_password_disclaim
 
 export function getHtml(this: EditPasswordDisclaimerDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" close-text="$i18n{close}">
+<cr-dialog id="dialog">
   <div slot="title">${this.getDisclaimerTitle_()}</div>
   <div slot="body">${this.getDisclaimerDescription_()}</div>
   <div slot="button-container">

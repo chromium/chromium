@@ -8,8 +8,7 @@ import type {DeletePasskeyDialogElement} from './delete_passkey_dialog.js';
 
 export function getHtml(this: DeletePasskeyDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" close-text="$i18n{close}" ignore-enter-key
-    show-on-attach>
+<cr-dialog id="dialog" ignore-enter-key show-on-attach>
   <div slot="title" class="dialog-title">
     $i18n{deletePasskeyConfirmationTitle}
   </div>

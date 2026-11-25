@@ -8,8 +8,7 @@ import type {RemoveActorLoginPermissionDialogElement} from './remove_actor_login
 
 export function getHtml(this: RemoveActorLoginPermissionDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" close-text="$i18n{cancel}" ignore-popstate
-    ignore-enter-key>
+<cr-dialog id="dialog" ignore-popstate ignore-enter-key>
   <div slot="title" class="dialog-title">
     $i18n{removeActorLoginDialogTitle}
   </div>

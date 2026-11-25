@@ -8,7 +8,7 @@ import type {SharePasswordNoOtherFamilyMembersDialogElement} from './share_passw
 
 export function getHtml(this: SharePasswordNoOtherFamilyMembersDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+<cr-dialog id="dialog" show-on-attach>
   <div slot="title">
     <share-password-dialog-header id="header">
       ${this.dialogTitle}

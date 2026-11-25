@@ -8,7 +8,7 @@ import type {SharePasswordErrorDialogElement} from './share_password_error_dialo
 
 export function getHtml(this: SharePasswordErrorDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+<cr-dialog id="dialog" show-on-attach>
   <div slot="title">
     <share-password-dialog-header id="header" is-error>
       $i18n{sharePasswordErrorTitle}
