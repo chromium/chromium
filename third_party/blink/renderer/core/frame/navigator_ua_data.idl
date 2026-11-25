@@ -9,5 +9,5 @@
   [MeasureAs=NavigatorUAData_Mobile]  readonly attribute boolean mobile;
   [MeasureAs=NavigatorUAData_Platform] readonly attribute DOMString platform;
   [CallWith=ScriptState, MeasureAs=NavigatorUAData_GetHighEntropyValues] Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
-  [CallWith=ScriptState, MeasureAs=NavigatorUAData_toJSON] object toJSON();
+  [Affects=Nothing, CallWith=ScriptState, MeasureAs=NavigatorUAData_toJSON] object toJSON();
 };

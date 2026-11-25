@@ -11,8 +11,8 @@
     [CallWith=ScriptState] void reportError(any e);
 
     // base64 utility methods
-    [RaisesException] DOMString btoa(DOMString btoa);
-    [RaisesException] DOMString atob(DOMString atob);
+    [Affects=Nothing, RaisesException] DOMString btoa(DOMString btoa);
+    [Affects=Nothing, RaisesException] DOMString atob(DOMString atob);
 
     // microtask queuing
     void queueMicrotask(VoidFunction callback);

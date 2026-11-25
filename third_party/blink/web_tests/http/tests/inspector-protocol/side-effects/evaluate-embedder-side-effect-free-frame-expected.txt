@@ -1,0 +1,14 @@
+Tests that btoa(), atob(), and NavigatorUAData.toJSON() are side-effect-free.
+Expression `btoa('hello')`
+has side effect: false, expected: false
+Expression `atob('aGVsbG8=')`
+has side effect: false, expected: false
+Expression `navigator.userAgentData.toJSON()`
+has side effect: false, expected: false
+Expression `JSON.stringify(navigator.userAgentData)`
+has side effect: false, expected: false
+Expression `navigator.userAgentData.getHighEntropyValues(['architecture'])`
+has side effect: true, expected: true
+Expression `btoa({ toString() { window.pwned = 1; return 'hello'; } })`
+has side effect: true, expected: true
+
