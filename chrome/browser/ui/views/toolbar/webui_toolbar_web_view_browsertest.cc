@@ -219,6 +219,9 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/menu/menu_config.h"
+#include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/controls/styled_label.h"
@@ -227,6 +230,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/mouse_constants.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/menu_runner_test_api.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #include "ui/views/test/views_test_utils.h"
@@ -2600,6 +2604,45 @@ IN_PROC_BROWSER_TEST_F(WebUIAppMenuBrowserTest, CheckAppMenuFocusSync) {
 
   webui_toolbar_view->OnAppMenuFocusChanged(true);
   EXPECT_FALSE(app_menu_control->HasFocus());
+}
+
+// The command behind Alt+F and Alt+E shows the app menu as opened from the
+// keyboard, like the Views `AppMenuButton`.
+IN_PROC_BROWSER_TEST_F(WebUIAppMenuBrowserTest,
+                       ShowAppMenuCommandShowsMnemonics) {
+  if (!views::MenuConfig::instance().use_mnemonics) {
+    GTEST_SKIP() << "Mnemonics are not enabled on this platform";
+  }
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kToolbarAppMenuButtonElementId, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  ASSERT_TRUE(webui_toolbar_view);
+  AppMenuControl* app_menu_control = webui_toolbar_view->GetAppMenuControl();
+  ASSERT_TRUE(app_menu_control);
+
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_SHOW_APP_MENU));
+  ASSERT_TRUE(app_menu_control->IsMenuShowing());
+  views::MenuItemView* root_menu_item =
+      app_menu_control->GetRootMenuItemViewForTesting();
+  ASSERT_TRUE(root_menu_item);
+  EXPECT_TRUE(root_menu_item->ShouldShowMnemonics());
+
+  views::MenuController* menu_controller = root_menu_item->GetMenuController();
+  ASSERT_TRUE(menu_controller);
+  views::MenuItemView* selected = menu_controller->GetSelectedMenuItem();
+  ASSERT_TRUE(selected);
+  if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+    // A menu opened from the keyboard selects its first item.
+    EXPECT_EQ(selected->GetParentMenuItem(), root_menu_item);
+  } else {
+    EXPECT_EQ(selected, root_menu_item);
+  }
+
+  app_menu_control->CloseMenu();
 }
 
 // WebUIAppMenuButtonStateTest is disabled on ChromeOS because update and global

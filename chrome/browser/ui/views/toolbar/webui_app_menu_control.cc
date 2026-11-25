@@ -140,7 +140,10 @@ void WebUIAppMenuControl::CloseMenu() {
 }
 
 void WebUIAppMenuControl::ShowMenu() {
-  ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  // Like `AppMenuButton::ShowMenu()`, which activates the button as a key
+  // press, the menu is shown as opened from the keyboard.
+  ShowMenuWithFlags(views::MenuRunner::SHOULD_SHOW_MNEMONICS |
+                    views::MenuRunner::INVOKED_FROM_KEYBOARD);
 }
 
 void WebUIAppMenuControl::ShowMenuWithFlags(int run_types) {
