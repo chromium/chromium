@@ -186,6 +186,7 @@ public class HistoryManager
             mIsLargeFormFactorDevice = false;
             mSelectableListLayout = null;
             mRootView = getIncognitoHistoryPlaceholderView();
+            historyProvider.destroy();
             return;
         }
 

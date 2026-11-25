@@ -457,6 +457,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
         // History service is not keyed for Incognito profiles and {@link HistoryServiceFactory}
         // explicitly redirects to use regular profile for Incognito case.
+        if (sProviderForTests != null && historyProvider != sProviderForTests) {
+            historyProvider.destroy();
+        }
         mHistoryAdapter =
                 new HistoryAdapter(
                         this,
