@@ -22,11 +22,6 @@ void RecordProcessLifetime(std::string_view histogram_name,
                                 base::Days(1), 100);
 }
 
-void RecordShortProcessLifetime(std::string_view histogram_name,
-                                base::TimeDelta lifetime) {
-  base::UmaHistogramLongTimes(histogram_name, lifetime);
-}
-
 void OnRendererDestroyed(const ProcessNode* process_node,
                          base::TimeDelta lifetime) {
   RecordProcessLifetime("Renderer.ProcessLifetime3", lifetime);
@@ -90,6 +85,10 @@ void MetricsCollector::OnBeforeProcessNodeRemoved(
 
 
 void MetricsCollector::OnProcessDestroyed(const ProcessNode* process_node) {
+  if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
+    return;
+  }
+
   const base::TimeTicks now = base::TimeTicks::Now();
   base::TimeTicks launch_time = process_node->GetLaunchTime();
 
@@ -104,16 +103,7 @@ void MetricsCollector::OnProcessDestroyed(const ProcessNode* process_node) {
   }
 
   const base::TimeDelta lifetime = now - launch_time;
-
-  if (process_node->GetProcessType() == content::PROCESS_TYPE_RENDERER) {
-    OnRendererDestroyed(process_node, lifetime);
-  } else if (process_node->GetProcessType() == content::PROCESS_TYPE_UTILITY) {
-    // Utility processes are known to often have short lifetimes. There are
-    // exceptions like the network service that could be broken out later if the
-    // data suggests it's necessary.
-    RecordShortProcessLifetime("ChildProcess.ProcessLifetime.Utility",
-                               lifetime);
-  }
+  OnRendererDestroyed(process_node, lifetime);
 }
 
 }  // namespace performance_manager

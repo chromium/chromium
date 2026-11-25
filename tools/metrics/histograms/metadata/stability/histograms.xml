@@ -172,16 +172,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ChildProcess.ProcessLifetime.Utility" units="ms"
-    expires_after="2025-05-11">
-  <owner>olivierli@chromium.org</owner>
-  <owner>fdoray@chromium.org</owner>
-  <summary>
-    The time elapsed between the creation and destruction of a utility process.
-    Recorded when the process is recorded as destroyed in PerformanceManager.
-  </summary>
-</histogram>
-
 <histogram name="CrashExitCodes.Extension" enum="CrashExitCodes"
     expires_after="never">
 <!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
