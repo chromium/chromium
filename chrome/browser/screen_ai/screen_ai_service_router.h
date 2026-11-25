@@ -9,8 +9,8 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/screen_ai/screen_ai_service_handler_main_content_extraction.h"
-#include "chrome/browser/screen_ai/screen_ai_service_handler_ocr.h"
+#include "chrome/browser/screen_ai/main_content_extraction_service_handler.h"
+#include "chrome/browser/screen_ai/ocr_service_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
@@ -61,8 +61,8 @@ class ScreenAIServiceRouter : public KeyedService {
   // this object. In production it is a singleton that is never destroyed.
   const raw_ptr<ScreenAILibraryProvider> library_provider_;
 
-  std::unique_ptr<ScreenAIServiceHandlerOCR> ocr_handler_;
-  std::unique_ptr<ScreenAIServiceHandlerMainContentExtraction> mce_handler_;
+  std::unique_ptr<OcrServiceHandler> ocr_handler_;
+  std::unique_ptr<MainContentExtractionServiceHandler> mce_handler_;
 };
 
 }  // namespace screen_ai

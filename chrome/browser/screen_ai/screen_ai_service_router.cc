@@ -44,16 +44,14 @@ ScreenAIServiceHandlerBase* ScreenAIServiceRouter::GetHandler(Service service) {
   switch (service) {
     case Service::kMainContentExtraction:
       if (!mce_handler_) {
-        mce_handler_ =
-            std::make_unique<ScreenAIServiceHandlerMainContentExtraction>(
-                library_provider_);
+        mce_handler_ = std::make_unique<MainContentExtractionServiceHandler>(
+            library_provider_);
       }
       return mce_handler_.get();
 
     case Service::kOCR:
       if (!ocr_handler_) {
-        ocr_handler_ =
-            std::make_unique<ScreenAIServiceHandlerOCR>(library_provider_);
+        ocr_handler_ = std::make_unique<OcrServiceHandler>(library_provider_);
       }
       return ocr_handler_.get();
   }

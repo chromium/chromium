@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SCREEN_AI_SCREEN_AI_SERVICE_HANDLER_MAIN_CONTENT_EXTRACTION_H_
-#define CHROME_BROWSER_SCREEN_AI_SCREEN_AI_SERVICE_HANDLER_MAIN_CONTENT_EXTRACTION_H_
+#ifndef CHROME_BROWSER_SCREEN_AI_MAIN_CONTENT_EXTRACTION_SERVICE_HANDLER_H_
+#define CHROME_BROWSER_SCREEN_AI_MAIN_CONTENT_EXTRACTION_SERVICE_HANDLER_H_
 
 #include <optional>
 #include <set>
@@ -17,16 +17,15 @@
 
 namespace screen_ai {
 
-class ScreenAIServiceHandlerMainContentExtraction
-    : public ScreenAIServiceHandlerBase {
+class MainContentExtractionServiceHandler : public ScreenAIServiceHandlerBase {
  public:
-  explicit ScreenAIServiceHandlerMainContentExtraction(
+  explicit MainContentExtractionServiceHandler(
       ScreenAILibraryProvider* library_provider);
-  ScreenAIServiceHandlerMainContentExtraction(
-      const ScreenAIServiceHandlerMainContentExtraction&) = delete;
-  ScreenAIServiceHandlerMainContentExtraction& operator=(
-      const ScreenAIServiceHandlerMainContentExtraction&) = delete;
-  ~ScreenAIServiceHandlerMainContentExtraction() override;
+  MainContentExtractionServiceHandler(
+      const MainContentExtractionServiceHandler&) = delete;
+  MainContentExtractionServiceHandler& operator=(
+      const MainContentExtractionServiceHandler&) = delete;
+  ~MainContentExtractionServiceHandler() override;
 
   void BindService(
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor> receiver);
@@ -47,10 +46,10 @@ class ScreenAIServiceHandlerMainContentExtraction
 
   mojo::Remote<mojom::MainContentExtractionService> service_;
 
-  base::WeakPtrFactory<ScreenAIServiceHandlerMainContentExtraction>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<MainContentExtractionServiceHandler> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace screen_ai
 
-#endif  // CHROME_BROWSER_SCREEN_AI_SCREEN_AI_SERVICE_HANDLER_MAIN_CONTENT_EXTRACTION_H_
+#endif  // CHROME_BROWSER_SCREEN_AI_MAIN_CONTENT_EXTRACTION_SERVICE_HANDLER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/screen_ai/screen_ai_service_handler_main_content_extraction.h"
+#include "chrome/browser/screen_ai/main_content_extraction_service_handler.h"
 
 #include <utility>
 #include <vector>
@@ -40,28 +40,26 @@ const base::FilePath::CharType kMainContentExtractionFilesList[] =
 
 namespace screen_ai {
 
-ScreenAIServiceHandlerMainContentExtraction::
-    ScreenAIServiceHandlerMainContentExtraction(
-        ScreenAILibraryProvider* library_provider)
+MainContentExtractionServiceHandler::MainContentExtractionServiceHandler(
+    ScreenAILibraryProvider* library_provider)
     : ScreenAIServiceHandlerBase(library_provider) {}
-ScreenAIServiceHandlerMainContentExtraction::
-    ~ScreenAIServiceHandlerMainContentExtraction() = default;
+MainContentExtractionServiceHandler::~MainContentExtractionServiceHandler() =
+    default;
 
-std::string ScreenAIServiceHandlerMainContentExtraction::GetServiceName()
-    const {
+std::string MainContentExtractionServiceHandler::GetServiceName() const {
   return "MainContentExtraction";
 }
 
-bool ScreenAIServiceHandlerMainContentExtraction::IsConnectionBound() const {
+bool MainContentExtractionServiceHandler::IsConnectionBound() const {
   return service_.is_bound();
 }
-bool ScreenAIServiceHandlerMainContentExtraction::IsServiceEnabled() const {
+bool MainContentExtractionServiceHandler::IsServiceEnabled() const {
   return features::IsScreenAIMainContentExtractionEnabled();
 }
-void ScreenAIServiceHandlerMainContentExtraction::ResetConnection() {
+void MainContentExtractionServiceHandler::ResetConnection() {
   service_.reset();
 }
-void ScreenAIServiceHandlerMainContentExtraction::BindService(
+void MainContentExtractionServiceHandler::BindService(
     mojo::PendingReceiver<mojom::Screen2xMainContentExtractor> receiver) {
   InitializeServiceIfNeeded();
 
@@ -70,7 +68,7 @@ void ScreenAIServiceHandlerMainContentExtraction::BindService(
   }
 }
 
-void ScreenAIServiceHandlerMainContentExtraction::LoadModelFilesAndInitialize(
+void MainContentExtractionServiceHandler::LoadModelFilesAndInitialize(
     const base::FilePath& library_binary_path,
     base::TimeTicks request_start_time) {
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -78,21 +76,20 @@ void ScreenAIServiceHandlerMainContentExtraction::LoadModelFilesAndInitialize(
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ComponentFiles::Load, library_binary_path,
                      kMainContentExtractionFilesList),
-      base::BindOnce(
-          &ScreenAIServiceHandlerMainContentExtraction::InitializeService,
-          weak_ptr_factory_.GetWeakPtr(), request_start_time,
-          service_.BindNewPipeAndPassReceiver()));
+      base::BindOnce(&MainContentExtractionServiceHandler::InitializeService,
+                     weak_ptr_factory_.GetWeakPtr(), request_start_time,
+                     service_.BindNewPipeAndPassReceiver()));
   service_.reset_on_disconnect();
 }
 
-void ScreenAIServiceHandlerMainContentExtraction::InitializeService(
+void MainContentExtractionServiceHandler::InitializeService(
     base::TimeTicks request_start_time,
     mojo::PendingReceiver<mojom::MainContentExtractionService> receiver,
     std::unique_ptr<ComponentFiles> component_files) {
   if (component_files->model_files_.empty() ||
       !screen_ai_service_factory().is_bound()) {
-    ScreenAIServiceHandlerMainContentExtraction::SetLibraryLoadState(
-        request_start_time, false);
+    MainContentExtractionServiceHandler::SetLibraryLoadState(request_start_time,
+                                                             false);
     return;
   }
 
@@ -100,9 +97,8 @@ void ScreenAIServiceHandlerMainContentExtraction::InitializeService(
   screen_ai_service_factory()->InitializeMainContentExtraction(
       component_files->library_binary_path_,
       std::move(component_files->model_files_), std::move(receiver),
-      base::BindOnce(
-          &ScreenAIServiceHandlerMainContentExtraction::SetLibraryLoadState,
-          weak_ptr_factory_.GetWeakPtr(), request_start_time));
+      base::BindOnce(&MainContentExtractionServiceHandler::SetLibraryLoadState,
+                     weak_ptr_factory_.GetWeakPtr(), request_start_time));
 }
 
 }  // namespace screen_ai

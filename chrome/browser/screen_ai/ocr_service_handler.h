@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SCREEN_AI_SCREEN_AI_SERVICE_HANDLER_OCR_H_
-#define CHROME_BROWSER_SCREEN_AI_SCREEN_AI_SERVICE_HANDLER_OCR_H_
+#ifndef CHROME_BROWSER_SCREEN_AI_OCR_SERVICE_HANDLER_H_
+#define CHROME_BROWSER_SCREEN_AI_OCR_SERVICE_HANDLER_H_
 
 #include <optional>
 #include <set>
@@ -18,13 +18,12 @@
 
 namespace screen_ai {
 
-class ScreenAIServiceHandlerOCR : public ScreenAIServiceHandlerBase {
+class OcrServiceHandler : public ScreenAIServiceHandlerBase {
  public:
-  explicit ScreenAIServiceHandlerOCR(ScreenAILibraryProvider* library_provider);
-  ScreenAIServiceHandlerOCR(const ScreenAIServiceHandlerOCR&) = delete;
-  ScreenAIServiceHandlerOCR& operator=(const ScreenAIServiceHandlerOCR&) =
-      delete;
-  ~ScreenAIServiceHandlerOCR() override;
+  explicit OcrServiceHandler(ScreenAILibraryProvider* library_provider);
+  OcrServiceHandler(const OcrServiceHandler&) = delete;
+  OcrServiceHandler& operator=(const OcrServiceHandler&) = delete;
+  ~OcrServiceHandler() override;
 
   void BindService(mojo::PendingReceiver<mojom::ScreenAIAnnotator> receiver);
 
@@ -43,9 +42,9 @@ class ScreenAIServiceHandlerOCR : public ScreenAIServiceHandlerBase {
 
   mojo::Remote<mojom::OCRService> service_;
 
-  base::WeakPtrFactory<ScreenAIServiceHandlerOCR> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OcrServiceHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace screen_ai
 
-#endif  // CHROME_BROWSER_SCREEN_AI_SCREEN_AI_SERVICE_HANDLER_OCR_H_
+#endif  // CHROME_BROWSER_SCREEN_AI_OCR_SERVICE_HANDLER_H_

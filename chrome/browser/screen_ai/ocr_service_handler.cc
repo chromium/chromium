@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/screen_ai/screen_ai_service_handler_ocr.h"
+#include "chrome/browser/screen_ai/ocr_service_handler.h"
 
 #include <utility>
 #include <vector>
@@ -40,26 +40,25 @@ const base::FilePath::CharType kOcrFilesList[] =
 
 namespace screen_ai {
 
-ScreenAIServiceHandlerOCR::ScreenAIServiceHandlerOCR(
-    ScreenAILibraryProvider* library_provider)
+OcrServiceHandler::OcrServiceHandler(ScreenAILibraryProvider* library_provider)
     : ScreenAIServiceHandlerBase(library_provider) {}
-ScreenAIServiceHandlerOCR::~ScreenAIServiceHandlerOCR() = default;
+OcrServiceHandler::~OcrServiceHandler() = default;
 
-std::string ScreenAIServiceHandlerOCR::GetServiceName() const {
+std::string OcrServiceHandler::GetServiceName() const {
   return "OCR";
 }
 
-bool ScreenAIServiceHandlerOCR::IsConnectionBound() const {
+bool OcrServiceHandler::IsConnectionBound() const {
   return service_.is_bound();
 }
-bool ScreenAIServiceHandlerOCR::IsServiceEnabled() const {
+bool OcrServiceHandler::IsServiceEnabled() const {
   return features::IsScreenAIOCREnabled();
 }
-void ScreenAIServiceHandlerOCR::ResetConnection() {
+void OcrServiceHandler::ResetConnection() {
   service_.reset();
 }
 
-void ScreenAIServiceHandlerOCR::BindService(
+void OcrServiceHandler::BindService(
     mojo::PendingReceiver<mojom::ScreenAIAnnotator> receiver) {
   InitializeServiceIfNeeded();
 
@@ -68,26 +67,26 @@ void ScreenAIServiceHandlerOCR::BindService(
   }
 }
 
-void ScreenAIServiceHandlerOCR::LoadModelFilesAndInitialize(
+void OcrServiceHandler::LoadModelFilesAndInitialize(
     const base::FilePath& library_binary_path,
     base::TimeTicks request_start_time) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ComponentFiles::Load, library_binary_path, kOcrFilesList),
-      base::BindOnce(&ScreenAIServiceHandlerOCR::InitializeService,
+      base::BindOnce(&OcrServiceHandler::InitializeService,
                      weak_ptr_factory_.GetWeakPtr(), request_start_time,
                      service_.BindNewPipeAndPassReceiver()));
   service_.reset_on_disconnect();
 }
 
-void ScreenAIServiceHandlerOCR::InitializeService(
+void OcrServiceHandler::InitializeService(
     base::TimeTicks request_start_time,
     mojo::PendingReceiver<mojom::OCRService> receiver,
     std::unique_ptr<ComponentFiles> component_files) {
   if (component_files->model_files_.empty() ||
       !screen_ai_service_factory().is_bound()) {
-    ScreenAIServiceHandlerOCR::SetLibraryLoadState(request_start_time, false);
+    OcrServiceHandler::SetLibraryLoadState(request_start_time, false);
     return;
   }
 
@@ -95,7 +94,7 @@ void ScreenAIServiceHandlerOCR::InitializeService(
   screen_ai_service_factory()->InitializeOCR(
       component_files->library_binary_path_,
       std::move(component_files->model_files_), std::move(receiver),
-      base::BindOnce(&ScreenAIServiceHandlerOCR::SetLibraryLoadState,
+      base::BindOnce(&OcrServiceHandler::SetLibraryLoadState,
                      weak_ptr_factory_.GetWeakPtr(), request_start_time));
 }
 
