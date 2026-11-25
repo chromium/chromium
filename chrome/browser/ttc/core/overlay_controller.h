@@ -16,7 +16,7 @@
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/ui/views/voice/hotkeys/hotkey_registration_delegate.h"
+#include "chrome/browser/voice/hotkeys/hotkey_registration_delegate.h"
 
 class BrowserWindowInterface;
 class Profile;

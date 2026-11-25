@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/voice/hotkeys/application_hotkey_registration_delegate.h"
+#include "chrome/browser/voice/hotkeys/application_hotkey_registration_delegate.h"
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"

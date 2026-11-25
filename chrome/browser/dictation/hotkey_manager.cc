@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/voice/hotkeys/hotkey_pref_util.h"
+#include "chrome/browser/voice/hotkeys/hotkey_pref_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"

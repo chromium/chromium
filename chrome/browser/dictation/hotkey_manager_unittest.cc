@@ -12,7 +12,7 @@
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/voice/hotkeys/fake_hotkey_registry.h"
+#include "chrome/browser/voice/hotkeys/fake_hotkey_registry.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"

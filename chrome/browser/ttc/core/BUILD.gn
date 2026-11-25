@@ -251,7 +251,7 @@ source_set("impl") {
     ]
     public_deps += [
       "//chrome/browser/ui/views/ttc",
-      "//chrome/browser/ui/views/voice/hotkeys",
+      "//chrome/browser/voice/hotkeys",
     ]
     deps += [
       ":prefs",
@@ -417,7 +417,7 @@ source_set("unit_tests") {
     deps += [
       ":prefs",
       "//chrome/browser/ui/toasts/api:toasts",
-      "//chrome/browser/ui/views/voice/hotkeys:test_support",
+      "//chrome/browser/voice/hotkeys:test_support",
       "//components/prefs",
       "//ui/base",
       "//ui/events",
@@ -586,7 +586,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/ttc",
-      "//chrome/browser/ui/views/voice/hotkeys",
+      "//chrome/browser/voice/hotkeys",
       "//chrome/test:test_support",
       "//chrome/test/interaction",
       "//components/keyed_service/core",

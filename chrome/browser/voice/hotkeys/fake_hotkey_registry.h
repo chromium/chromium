@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_VOICE_HOTKEYS_FAKE_HOTKEY_REGISTRY_H_
-#define CHROME_BROWSER_UI_VIEWS_VOICE_HOTKEYS_FAKE_HOTKEY_REGISTRY_H_
+#ifndef CHROME_BROWSER_VOICE_HOTKEYS_FAKE_HOTKEY_REGISTRY_H_
+#define CHROME_BROWSER_VOICE_HOTKEYS_FAKE_HOTKEY_REGISTRY_H_
 
 #include <memory>
 #include <optional>
 
-#include "chrome/browser/ui/views/voice/hotkeys/hotkey_registration_delegate.h"
+#include "chrome/browser/voice/hotkeys/hotkey_registration_delegate.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace voice {
@@ -54,4 +54,4 @@ class FakeHotkeyRegistry {
 
 }  // namespace voice
 
-#endif  // CHROME_BROWSER_UI_VIEWS_VOICE_HOTKEYS_FAKE_HOTKEY_REGISTRY_H_
+#endif  // CHROME_BROWSER_VOICE_HOTKEYS_FAKE_HOTKEY_REGISTRY_H_

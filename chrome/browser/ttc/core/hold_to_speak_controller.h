@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ui/views/voice/hotkeys/hotkey_hold_watcher.h"
-#include "chrome/browser/ui/views/voice/hotkeys/hotkey_registration_delegate.h"
+#include "chrome/browser/voice/hotkeys/hotkey_hold_watcher.h"
+#include "chrome/browser/voice/hotkeys/hotkey_registration_delegate.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/accelerators/accelerator.h"
 
