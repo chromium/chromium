@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -298,15 +299,20 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
       std::move(options));
 
   if (!request.target_surfaces().empty()) {
-    // The task's initial surface is either the surface in `tab_id` or the
-    // headless surface that ActorKeyedService created for the task.
     ActorTask* task = actor_service_->GetTask(task_id);
     CHECK(task);
+    // A new task's last actuated surface is the surface it bound at creation:
+    // the surface in `tab_id` or a new headless surface.
+    const ActorSurfaceHandle bound_handle = task->GetLastActuatedActorSurface();
     proto::StartTaskResponse::BoundSurface* bound_surface =
         response.add_bound_surfaces();
-    bound_surface->set_tab_id(task->GetLastActuatedActorSurface().raw_value());
-    bound_surface->set_execution_mode(
-        request.target_surfaces(0).execution_mode());
+    bound_surface->set_tab_id(bound_handle.raw_value());
+    if (const ActorSurface* bound_actor_surface =
+            actor_service_->GetSurfaceRegistry().Get(bound_handle)) {
+      bound_surface->set_execution_mode(bound_actor_surface->IsTab()
+                                            ? proto::TargetSurface::HEADED
+                                            : proto::TargetSurface::HEADLESS);
+    }
   }
 
   response.set_status(proto::StartTaskResponse::STATUS_OK);
