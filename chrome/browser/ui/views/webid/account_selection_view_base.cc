@@ -7,10 +7,9 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/debug/dump_without_crashing.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/list_formatter.h"
 #include "base/i18n/message_formatter.h"
-#include "base/i18n/unicodestring.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,9 +24,6 @@
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
-#include "third_party/icu/source/common/unicode/unistr.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
-#include "third_party/icu/source/i18n/unicode/listformatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -71,29 +67,6 @@ int SelectDisclosureTextResourceId(const GURL& privacy_policy_url,
              : IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT;
 }
 
-std::u16string ListToString(base::span<std::u16string> items) {
-  std::vector<icu::UnicodeString> strings;
-  strings.reserve(items.size());
-  for (const auto& item : items) {
-    strings.emplace_back(item.data(), item.size());
-  }
-  UErrorCode error = U_ZERO_ERROR;
-  auto formatter = base::WrapUnique(icu::ListFormatter::createInstance(error));
-  if (U_FAILURE(error) || !formatter) {
-    // Verify that this doesn't happen in practice.
-    base::debug::DumpWithoutCrashing();
-    return std::u16string();
-  }
-  icu::UnicodeString formatted;
-  formatter->format(strings.data(), strings.size(), formatted, error);
-  if (U_FAILURE(error)) {
-    // Verify that this doesn't happen in practice.
-    base::debug::DumpWithoutCrashing();
-    return std::u16string();
-  }
-  return base::i18n::UnicodeStringToString16(formatted);
-}
-
 std::u16string GetPermissionFieldsString(
     const std::vector<content::IdentityRequestDialogDisclosureField>& fields) {
   std::vector<std::u16string> strings;
@@ -121,7 +94,9 @@ std::u16string GetPermissionFieldsString(
         break;
     }
   }
-  return ListToString(strings);
+  return base::i18n::IcuBridge::GetInstance()
+      .list_formatter()
+      ->FormatStandardList(strings);
 }
 
 class AccountImageView : public views::ImageView {

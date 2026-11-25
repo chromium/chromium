@@ -42,6 +42,7 @@ source_set("webid") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//chrome/browser/actor",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/net",
