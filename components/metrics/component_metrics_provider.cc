@@ -4,10 +4,13 @@
 
 #include "components/metrics/component_metrics_provider.h"
 
+#include <array>
+#include <compare>
 #include <string>
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/component_updater/component_updater_service.h"
@@ -32,6 +35,26 @@ uint32_t Trim(std::string_view fp) {
   return 0;
 }
 
+// Stores 32-char CRX IDs inline in .rodata to avoid dynamic ELF relocations.
+struct FixedCrxId {
+  // Needed for brace-init with literals.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  consteval FixedCrxId(const char (&s)[33]) {
+    base::span(chars).copy_from(std::string_view(s));
+  }
+
+  friend constexpr auto operator<=>(const FixedCrxId& lhs,
+                                    const FixedCrxId& rhs) {
+    return std::string_view(lhs.chars) <=> std::string_view(rhs.chars);
+  }
+  friend constexpr auto operator<=>(const FixedCrxId& lhs,
+                                    std::string_view rhs) {
+    return std::string_view(lhs.chars) <=> rhs;
+  }
+
+  std::array<char, 32> chars{};
+};
+
 }  // namespace
 
 ComponentMetricsProvider::ComponentMetricsProvider(
@@ -44,7 +67,7 @@ ComponentMetricsProvider::~ComponentMetricsProvider() = default;
 SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
     std::string_view app_id) {
   static constexpr auto kComponentMap = base::MakeFixedFlatMap<
-      std::string_view, SystemProfileProto_ComponentId>({
+      FixedCrxId, SystemProfileProto_ComponentId>({
       {"aagaghndoahmfdbmfnajfklaomcanlnh",
        SystemProfileProto_ComponentId_REAL_TIME_URL_CHECKS_ALLOWLIST},
       {"binbghhnflgglfabhjocbobkiignbgfh",
