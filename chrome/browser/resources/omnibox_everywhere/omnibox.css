@@ -200,7 +200,7 @@ cr-searchbox-input::part(searchbox-input)::selection {
 cr-searchbox-input::part(searchbox-input)::placeholder,
 #lensPlaceholder {
   color: var(--cr-composebox-input-placeholder-color,
-      var(--color-composebox-type-ahead));
+      var(--color-searchbox-placeholder));
   font-weight: 400;
 }
 
