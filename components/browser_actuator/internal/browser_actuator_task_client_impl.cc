@@ -19,6 +19,7 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "components/browser_actuator/internal/proto/task_ingress.pb.h"
+#include "components/browser_actuator/internal/task_ingress_transport_handler_factory.h"
 #include "components/browser_actuator/public/browser_actuator_task_client.h"
 #include "components/stream_transport/public/common.h"
 #include "components/stream_transport/public/payload_type_mapping.h"
@@ -70,6 +71,21 @@ PackedPayload PackFeaturePayload(BrowserActuatorTaskClient::UseCase use_case,
   return packed;
 }
 
+BrowserActuatorTaskClient::CompletionStatus ToClientStatus(
+    TaskCompletionStatus status) {
+  switch (status) {
+    case TASK_COMPLETION_STATUS_SUCCEEDED:
+      return BrowserActuatorTaskClient::CompletionStatus::kSucceeded;
+    case TASK_COMPLETION_STATUS_FAILED:
+    case TASK_COMPLETION_STATUS_UNSPECIFIED:
+      return BrowserActuatorTaskClient::CompletionStatus::kFailed;
+    case TASK_COMPLETION_STATUS_CANCELLED:
+      return BrowserActuatorTaskClient::CompletionStatus::kCancelled;
+    default:
+      return BrowserActuatorTaskClient::CompletionStatus::kFailed;
+  }
+}
+
 }  // namespace
 
 BrowserActuatorTaskClientImpl::BrowserActuatorTaskClientImpl(
@@ -81,10 +97,16 @@ BrowserActuatorTaskClientImpl::BrowserActuatorTaskClientImpl(
       transport_service_(transport_service) {
   CHECK(transport_service_);
   CHECK(device_id_provider_);
+  if (handler_factory_) {
+    handler_factory_->TrackClient(weak_ptr_factory_.GetWeakPtr());
+  }
 }
 
 BrowserActuatorTaskClientImpl::~BrowserActuatorTaskClientImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ != State::kDone) {
+    UnregisterSession();
+  }
   ClosePendingSession();
   CloseActiveSession();
 }
@@ -94,15 +116,17 @@ void BrowserActuatorTaskClientImpl::StartTask(
     const google::protobuf::MessageLite& payload,
     BrowserActuatorTaskClient::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(state_, State::kIdle);
+  CHECK(!start_task_called_);
+  start_task_called_ = true;
   CHECK(observer);
   observer_ = observer;
-  if (!transport_service_) {
+  if (!transport_service_ || !handler_factory_) {
     state_ = State::kDone;
     NotifyTaskCompleted(
         {CompletionStatus::kFailed, "Transport service is shut down"});
     return;
   }
+  CHECK_EQ(state_, State::kIdle);
   std::string client_id = device_id_provider_.Run();
   if (client_id.empty()) {
     state_ = State::kDone;
@@ -124,6 +148,10 @@ void BrowserActuatorTaskClientImpl::SendStartRequest(
   CHECK(transport_service_);
   state_ = State::kStarting;
   session_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  if (handler_factory_) {
+    handler_factory_->RegisterSessionClient(session_id_,
+                                            weak_ptr_factory_.GetWeakPtr());
+  }
   TaskIngressUpstreamPayload payload;
   StartTaskCommand* cmd = payload.mutable_start_task();
   cmd->set_use_case(ToProtoTaskUseCase(use_case));
@@ -154,6 +182,7 @@ void BrowserActuatorTaskClientImpl::OnSessionStarted(
     state_ = State::kAccepted;
   } else {
     state_ = State::kDone;
+    UnregisterSession();
     NotifyTaskCompleted(
         {CompletionStatus::kFailed, "Failed to start transport session"});
   }
@@ -165,9 +194,55 @@ void BrowserActuatorTaskClientImpl::Cancel() {
     return;
   }
   state_ = State::kDone;
+  UnregisterSession();
   ClosePendingSession();
   CloseActiveSession();
   NotifyTaskCompleted({CompletionStatus::kCancelled, ""});
+}
+
+void BrowserActuatorTaskClientImpl::OnTaskStartedEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == State::kAccepted) {
+    state_ = State::kRunning;
+    if (observer_) {
+      observer_->OnTaskStarted();
+    }
+  }
+}
+
+void BrowserActuatorTaskClientImpl::OnWorklogUpdateEvent(
+    std::string_view step_description) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == State::kRunning && observer_) {
+    observer_->OnWorklogUpdate(step_description);
+  }
+}
+
+void BrowserActuatorTaskClientImpl::OnTaskCompletedEvent(
+    TaskCompletionStatus status,
+    std::string_view error_message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ != State::kAccepted && state_ != State::kRunning) {
+    return;
+  }
+  state_ = State::kDone;
+  UnregisterSession();
+  CloseActiveSession();
+  if (BrowserActuatorTaskClient::Observer* obs =
+          std::exchange(observer_, nullptr)) {
+    obs->OnTaskCompleted({ToClientStatus(status), std::string(error_message)});
+  }
+}
+
+void BrowserActuatorTaskClientImpl::DetachForShutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  state_ = State::kDone;
+  observer_ = nullptr;
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  UnregisterSession();
+  ClosePendingSession();
+  CloseActiveSession();
+  transport_service_ = nullptr;
 }
 
 BrowserActuatorTaskClientImpl::State BrowserActuatorTaskClientImpl::state()
@@ -179,6 +254,13 @@ BrowserActuatorTaskClientImpl::State BrowserActuatorTaskClientImpl::state()
 const std::string& BrowserActuatorTaskClientImpl::session_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return session_id_;
+}
+
+void BrowserActuatorTaskClientImpl::UnregisterSession() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (handler_factory_ && !session_id_.empty()) {
+    handler_factory_->UnregisterSessionClient(session_id_);
+  }
 }
 
 void BrowserActuatorTaskClientImpl::ClosePendingSession() {

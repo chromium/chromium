@@ -6,6 +6,7 @@
 #define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_BROWSER_ACTUATOR_TASK_CLIENT_IMPL_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -13,6 +14,8 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
+#include "components/browser_actuator/internal/proto/task_ingress.pb.h"
+#include "components/browser_actuator/internal/task_ingress_transport_handler.h"
 #include "components/browser_actuator/public/browser_actuator_task_client.h"
 #include "components/stream_transport/public/common.h"
 
@@ -31,7 +34,8 @@ class TaskIngressTransportHandlerFactory;
 
 // Implementation of `BrowserActuatorTaskClient` managing task lifecycles on a
 // single UI sequence.
-class BrowserActuatorTaskClientImpl : public BrowserActuatorTaskClient {
+class BrowserActuatorTaskClientImpl : public BrowserActuatorTaskClient,
+                                      public TaskIngressEventDelegate {
  public:
   using DeviceIdProvider = base::RepeatingCallback<std::string()>;
 
@@ -41,11 +45,11 @@ class BrowserActuatorTaskClientImpl : public BrowserActuatorTaskClient {
   // independently of this client.
   using HandlerFactory = base::WeakPtr<TaskIngressTransportHandlerFactory>;
 
-  // `kRunning` transitions are wired in the follow-up downstream-events slice.
   enum class State { kIdle, kStarting, kAccepted, kRunning, kDone };
 
   // `transport_service` and `device_id_provider` must be non-null.
-  // `transport_service` must outlive active use of this client.
+  // `transport_service` must outlive active use until destruction or
+  // `DetachForShutdown()`.
   BrowserActuatorTaskClientImpl(
       stream_transport::TransportService* transport_service,
       HandlerFactory handler_factory,
@@ -62,6 +66,13 @@ class BrowserActuatorTaskClientImpl : public BrowserActuatorTaskClient {
                  BrowserActuatorTaskClient::Observer* observer) override;
   void Cancel() override;
 
+  // TaskIngressEventDelegate:
+  void OnTaskStartedEvent() override;
+  void OnWorklogUpdateEvent(std::string_view step_description) override;
+  void OnTaskCompletedEvent(TaskCompletionStatus status,
+                            std::string_view error_message) override;
+  void DetachForShutdown() override;
+
   State state() const;
   const std::string& session_id() const;
 
@@ -73,6 +84,7 @@ class BrowserActuatorTaskClientImpl : public BrowserActuatorTaskClient {
   void OnSessionStarted(
       base::expected<stream_transport::TransportSession*,
                      stream_transport::StartClientSessionError> res);
+  void UnregisterSession();
   void ClosePendingSession();
   void CloseActiveSession();
   void NotifyTaskCompleted(Result result);
@@ -81,13 +93,13 @@ class BrowserActuatorTaskClientImpl : public BrowserActuatorTaskClient {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Stored for session handler registration in subsequent changes.
   const HandlerFactory handler_factory_;
   const DeviceIdProvider device_id_provider_;
   raw_ptr<stream_transport::TransportService> transport_service_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   State state_ GUARDED_BY_CONTEXT(sequence_checker_) = State::kIdle;
+  bool start_task_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   std::string session_id_ GUARDED_BY_CONTEXT(sequence_checker_);
   raw_ptr<BrowserActuatorTaskClient::Observer> observer_
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;

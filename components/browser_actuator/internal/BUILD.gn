@@ -16,13 +16,14 @@ source_set("internal") {
   ]
 
   public_deps = [
+    ":transport_handler",
     "//base",
+    "//components/browser_actuator/internal/proto:task_ingress_proto",
     "//components/browser_actuator/public",
     "//components/stream_transport/public",
   ]
 
   deps = [
-    "//components/browser_actuator/internal/proto:task_ingress_proto",
     "//components/stream_transport/public:payload_type_mapping",
     "//components/stream_transport/public:service",
     "//third_party/protobuf:protobuf_lite",
@@ -43,7 +44,7 @@ source_set("transport_handler") {
     "task_ingress_transport_handler_factory.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//components/browser_actuator/internal/proto:task_ingress_proto",
     "//components/stream_transport/public",

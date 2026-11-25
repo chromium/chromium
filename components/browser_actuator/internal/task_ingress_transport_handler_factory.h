@@ -21,20 +21,20 @@ namespace browser_actuator {
 
 class TaskIngressEventDelegate;
 
-// Factory creating `TaskIngressTransportHandler` instances for registered
-// sessions. Owned directly by `BrowserActuatorServiceImpl`.
+// Routes downstream `PayloadType::kTaskIngress` sessions to their corresponding
+// `TaskIngressEventDelegate` (`BrowserActuatorTaskClientImpl`). Owned by the
+// profile's task client factory bound into `BrowserActuatorServiceImpl`.
 //
 // All methods must be called on the sequence that created this instance.
 class TaskIngressTransportHandlerFactory
     : public stream_transport::TransportHandlerFactory {
  public:
   TaskIngressTransportHandlerFactory();
-  ~TaskIngressTransportHandlerFactory() override;
-
   TaskIngressTransportHandlerFactory(
       const TaskIngressTransportHandlerFactory&) = delete;
   TaskIngressTransportHandlerFactory& operator=(
       const TaskIngressTransportHandlerFactory&) = delete;
+  ~TaskIngressTransportHandlerFactory() override;
 
   // stream_transport::TransportHandlerFactory:
   stream_transport::FactoryId GetFactoryId() const override;
@@ -43,28 +43,29 @@ class TaskIngressTransportHandlerFactory
   std::unique_ptr<stream_transport::TransportHandler> OnNewSession(
       stream_transport::TransportSession* session) override;
 
-  // Maps a session ID to a client event delegate for routing incoming sessions
-  // in `OnNewSession()`. Session registration does not track delegates for
-  // shutdown notifications; use `TrackClient()` to register delegates that
-  // require `DetachForShutdown()` cleanup on factory destruction.
+  // Binds `session_id` to `client` prior to initiating or accepting a session.
   void RegisterSessionClient(std::string_view session_id,
                              base::WeakPtr<TaskIngressEventDelegate> client);
+
+  // Removes the session binding when a task finishes, cancels, or fails.
   void UnregisterSessionClient(std::string_view session_id);
 
-  // Tracks a live client delegate to receive `DetachForShutdown()` when
-  // `DetachAllClients()` is called. Redundant registrations of the same
-  // delegate or expired pointers are safely ignored.
+  // Tracks live clients so `DetachAllClients()` can notify them on shutdown.
   void TrackClient(base::WeakPtr<TaskIngressEventDelegate> client);
+
+  // Detaches all tracked clients during profile service shutdown.
   void DetachAllClients();
 
   base::WeakPtr<TaskIngressTransportHandlerFactory> GetWeakPtr();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
   base::flat_map<std::string, base::WeakPtr<TaskIngressEventDelegate>>
       session_clients_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<base::WeakPtr<TaskIngressEventDelegate>> tracked_clients_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
   base::WeakPtrFactory<TaskIngressTransportHandlerFactory> weak_ptr_factory_{
       this};
 };
