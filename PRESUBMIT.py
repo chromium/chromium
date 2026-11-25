@@ -2733,6 +2733,44 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         treat_as_error=True,
         excluded_paths=(r'^ui/views/view\.(h|cc)$',),
     ),
+    # The old `base::Value` string getters. `Value::GetString()` is not listed:
+    # `base::Version::GetString()` and many other classes match the same
+    # pattern.
+    BanRule(
+        pattern=r'/(\.|->)FindString(ByDottedPath)?\(',
+        explanation=(
+            'base::DictValue::FindString() and FindStringByDottedPath() are',
+            'being replaced by FindStr() and FindStrByDottedPath(), which',
+            'return std::optional<std::string_view> (crbug.com/590146036).',
+        ),
+        treat_as_error=False,
+        excluded_paths=(
+            _THIRD_PARTY_EXCEPT_BLINK,
+            # `web::ScriptMessageDictValue` has a `FindString()` too.
+            r'^ios/web/js_messaging/',
+            r'^ios/.*java_script.*_feature\.mm$',
+        ),
+    ),
+    BanRule(
+        pattern=r'/(\.|->)GetIfString\(',
+        explanation=(
+            'base::Value::GetIfString() is being replaced by GetIfStr(), which',
+            'returns std::optional<std::string_view> (crbug.com/590146036).',
+        ),
+        treat_as_error=False,
+        excluded_paths=(
+            _THIRD_PARTY_EXCEPT_BLINK,
+            # `net::structured_headers::Item` has a `GetIfString()` too.
+            r'^chrome/browser/signin/bound_session_credentials/',
+            r'^content/browser/web_package/',
+            r'^content/browser/webid/',
+            r'^net/device_bound_sessions/.*_param\.cc$',
+            r'^net/http/',
+            r'^net/reporting/reporting_header_parser\.cc$',
+            r'^services/network/',
+            r'^third_party/blink/',
+        ),
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (

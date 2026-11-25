@@ -314,16 +314,21 @@ class BASE_EXPORT GSL_OWNER DictValue {
 
   // Similar to `Find()` above, but returns `std::nullopt`/`nullptr` if the type
   // of the entry does not match. `bool`, `int`, and `double` are returned in a
-  // wrapped `std::optional`; strings, `DictValue`, and `ListValue` are
-  // returned by pointer. Blobs are returned as a read-only
-  // `span<const uint8_t>` wrapped in a `std::optional`; the span is invalidated
-  // when the entry is modified or removed. Use `Set()` to replace a blob, or
-  // `Extract()` followed by `Value::TakeBlob()` to take ownership of it.
+  // wrapped `std::optional`; `DictValue` and `ListValue` are returned by
+  // pointer. Strings and blobs are returned as read-only views
+  // (`std::string_view` and `span<const uint8_t>`) wrapped in a
+  // `std::optional`. A view is invalidated when the entry is modified or
+  // removed, and a string view is not guaranteed to be NUL-terminated. Use
+  // `Set()` to replace a string or blob, or `Extract()` followed by
+  // `Value::TakeString()` / `Value::TakeBlob()` to take ownership of it.
   std::optional<bool> FindBool(std::string_view key) const;
   std::optional<int> FindInt(std::string_view key) const;
   // Returns a non-null value for both `Value::Type::DOUBLE` and
   // `Value::Type::INT`, converting the latter to a double.
   std::optional<double> FindDouble(std::string_view key) const;
+  std::optional<std::string_view> FindStr(std::string_view key) const
+      LIFETIME_BOUND;
+  // TODO(crbug.com/590146036): Remove once callers have moved to `FindStr()`.
   const std::string* FindString(std::string_view key) const LIFETIME_BOUND;
   std::string* FindString(std::string_view key) LIFETIME_BOUND;
   std::optional<span<const uint8_t>> FindBlob(std::string_view key) const
@@ -465,6 +470,10 @@ class BASE_EXPORT GSL_OWNER DictValue {
   // Returns a non-null value for both `Value::Type::DOUBLE` and
   // `Value::Type::INT`, converting the latter to a double.
   std::optional<double> FindDoubleByDottedPath(std::string_view path) const;
+  std::optional<std::string_view> FindStrByDottedPath(
+      std::string_view path) const LIFETIME_BOUND;
+  // TODO(crbug.com/590146036): Remove once callers have moved to
+  // `FindStrByDottedPath()`.
   const std::string* FindStringByDottedPath(std::string_view path) const
       LIFETIME_BOUND;
   std::string* FindStringByDottedPath(std::string_view path) LIFETIME_BOUND;
@@ -621,15 +630,15 @@ class BASE_EXPORT GSL_OWNER DictValue {
 //
 // `GetBool()`, GetInt()`, et cetera `CHECK()` that the `Value` has the correct
 // subtype before returning the contained value. `bool`, `int`, `double` are
-// returned by value. Binary blobs are returned as a read-only
-// `span<const uint8_t>`. `std::string`, `DictValue`, `ListValue` are returned
-// by reference.
+// returned by value. Strings and binary blobs are returned as read-only views:
+// `GetStr()` returns a `std::string_view` and `GetBlob()` a
+// `span<const uint8_t>`. `DictValue`, `ListValue` are returned by reference.
 //
 // `GetIfBool()`, `GetIfInt()`, et cetera return `std::nullopt`/`nullptr` if the
 // `Value` does not have the correct subtype; otherwise, returns the value
-// wrapped in an `std::optional` (for `bool`, `int`, `double`, and binary blobs
-// as `span<const uint8_t>`) or by pointer (for `std::string`, `DictValue`,
-// `ListValue`).
+// wrapped in an `std::optional` (for `bool`, `int`, `double`, strings as
+// `std::string_view`, and binary blobs as `span<const uint8_t>`) or by pointer
+// (for `DictValue`, `ListValue`).
 //
 // Note: both `GetDouble()` and `GetIfDouble()` still return a non-null result
 // when the subtype is `Value::Type::INT`. In that case, the stored value is
@@ -661,10 +670,11 @@ class BASE_EXPORT GSL_OWNER DictValue {
 // - `Merge()`: Merge another dictionary into this dictionary.
 // - `Find()`: Find a value by `std::string_view` key, returning nullptr if the
 //       key is not present.
-// - `FindBool()`, `FindInt()`, ...: Similar to `Find()`, but ensures that the
-//       `Value` also has the correct subtype. Same return semantics as
-//       `GetIfBool()`, `GetIfInt()`, et cetera, returning `std::nullopt` or
-//       `nullptr` if the key is not present or the value has the wrong subtype.
+// - `FindBool()`, `FindInt()`, `FindStr()`, ...: Similar to `Find()`, but
+//       ensures that the `Value` also has the correct subtype. Same return
+//       semantics as `GetIfBool()`, `GetIfInt()`, `GetIfStr()`, et cetera,
+//       returning `std::nullopt` or `nullptr` if the key is not present or the
+//       value has the wrong subtype.
 // - `Set()`: Associate a value with a `std::string_view` key. Accepts `Value`
 //       or any of the subtypes that `Value` can hold.
 // - `Remove()`: Remove the key from this dictionary, if present.
@@ -801,15 +811,18 @@ class BASE_EXPORT GSL_OWNER Value {
 
   // Returns the stored data if the type matches, or `std::nullopt`/`nullptr`
   // otherwise. `bool`, `int`, and `double` are returned in a wrapped
-  // `std::optional`; strings, `DictValue`, and `ListValue` are returned by
-  // pointer. Blobs are returned as a read-only `span<const uint8_t>` wrapped in
-  // a `std::optional`; the span is invalidated when this value is modified or
-  // destroyed.
+  // `std::optional`; `DictValue` and `ListValue` are returned by pointer.
+  // Strings and blobs are returned as read-only views (`std::string_view` and
+  // `span<const uint8_t>`) wrapped in a `std::optional`. A view is invalidated
+  // when this value is modified or destroyed, and a string view is not
+  // guaranteed to be NUL-terminated.
   std::optional<bool> GetIfBool() const;
   std::optional<int> GetIfInt() const;
   // Returns a non-null value for both `Value::Type::DOUBLE` and
   // `Value::Type::INT`, converting the latter to a double.
   std::optional<double> GetIfDouble() const;
+  std::optional<std::string_view> GetIfStr() const LIFETIME_BOUND;
+  // TODO(crbug.com/590146036): Remove once callers have moved to `GetIfStr()`.
   const std::string* GetIfString() const LIFETIME_BOUND;
   std::string* GetIfString() LIFETIME_BOUND;
   std::optional<span<const uint8_t>> GetIfBlob() const LIFETIME_BOUND;
@@ -819,15 +832,18 @@ class BASE_EXPORT GSL_OWNER Value {
   ListValue* GetIfList() LIFETIME_BOUND;
 
   // Similar to the `GetIf...()` variants above, but fails with a `CHECK()` on a
-  // type mismatch. `bool`, `int`, and `double` are returned by value; strings,
-  // `DictValue`, and `ListValue` are returned by reference. Blobs are returned
-  // as a read-only `span<const uint8_t>` that is invalidated when this value is
-  // modified or destroyed; use `TakeBlob()` to take ownership.
+  // type mismatch. `bool`, `int`, and `double` are returned by value;
+  // `DictValue` and `ListValue` are returned by reference. Strings and blobs
+  // are returned as read-only views (`std::string_view` and
+  // `span<const uint8_t>`) that are invalidated when this value is modified or
+  // destroyed; use `TakeString()` / `TakeBlob()` to take ownership.
   bool GetBool() const;
   int GetInt() const;
   // Returns a value for both `Value::Type::DOUBLE` and `Value::Type::INT`,
   // converting the latter to a double.
   double GetDouble() const;
+  std::string_view GetStr() const LIFETIME_BOUND;
+  // TODO(crbug.com/590146036): Remove once callers have moved to `GetStr()`.
   const std::string& GetString() const LIFETIME_BOUND;
   std::string& GetString() LIFETIME_BOUND;
   span<const uint8_t> GetBlob() const LIFETIME_BOUND;

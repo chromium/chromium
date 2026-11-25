@@ -247,6 +247,10 @@ std::optional<double> Value::GetIfDouble() const {
                                    : std::nullopt;
 }
 
+std::optional<std::string_view> Value::GetIfStr() const {
+  return is_string() ? std::make_optional(GetStr()) : std::nullopt;
+}
+
 const std::string* Value::GetIfString() const {
   return std::get_if<std::string>(&data_);
 }
@@ -291,6 +295,11 @@ double Value::GetDouble() const {
   }
   CHECK(is_int());
   return GetInt();
+}
+
+std::string_view Value::GetStr() const {
+  DCHECK(is_string());
+  return std::get<std::string>(data_);
 }
 
 const std::string& Value::GetString() const {
@@ -478,6 +487,11 @@ std::optional<int> DictValue::FindInt(std::string_view key) const {
 std::optional<double> DictValue::FindDouble(std::string_view key) const {
   const Value* v = Find(key);
   return v ? v->GetIfDouble() : std::nullopt;
+}
+
+std::optional<std::string_view> DictValue::FindStr(std::string_view key) const {
+  const Value* v = Find(key);
+  return v ? v->GetIfStr() : std::nullopt;
 }
 
 const std::string* DictValue::FindString(std::string_view key) const {
@@ -727,6 +741,12 @@ std::optional<double> DictValue::FindDoubleByDottedPath(
     std::string_view path) const {
   const Value* v = FindByDottedPath(path);
   return v ? v->GetIfDouble() : std::nullopt;
+}
+
+std::optional<std::string_view> DictValue::FindStrByDottedPath(
+    std::string_view path) const {
+  const Value* v = FindByDottedPath(path);
+  return v ? v->GetIfStr() : std::nullopt;
 }
 
 const std::string* DictValue::FindStringByDottedPath(

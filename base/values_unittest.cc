@@ -88,6 +88,7 @@ TEST(ValuesTest, EmptyValue) {
   EXPECT_EQ(std::nullopt, value.GetIfInt());
   EXPECT_EQ(std::nullopt, value.GetIfDouble());
   EXPECT_EQ(nullptr, value.GetIfString());
+  EXPECT_EQ(std::nullopt, value.GetIfStr());
   EXPECT_EQ(std::nullopt, value.GetIfBlob());
 }
 
@@ -244,6 +245,15 @@ TEST(ValuesTest, ConstructListFromValueList) {
   }
 }
 
+TEST(ValuesTest, GetStr) {
+  const Value value("foobar");
+  EXPECT_EQ(value.GetStr(), "foobar");
+  EXPECT_EQ(value.GetIfStr(), "foobar");
+
+  EXPECT_THAT(Value(std::string()).GetIfStr(), Optional(IsEmpty()));
+  EXPECT_EQ(Value(123).GetIfStr(), std::nullopt);
+}
+
 TEST(ValuesTest, HardenTests) {
   Value value;
   ASSERT_EQ(value.type(), Value::Type::NONE);
@@ -251,6 +261,7 @@ TEST(ValuesTest, HardenTests) {
   EXPECT_DEATH_IF_SUPPORTED(value.GetInt(), "");
   EXPECT_DEATH_IF_SUPPORTED(value.GetDouble(), "");
   EXPECT_DEATH_IF_SUPPORTED(value.GetString(), "");
+  EXPECT_DEATH_IF_SUPPORTED(value.GetStr(), "");
   EXPECT_DEATH_IF_SUPPORTED(value.GetBlob(), "");
 }
 
@@ -1071,6 +1082,42 @@ TEST(ValuesTest, MutableFindStringKey) {
   Value value(std::move(dict));
   Value expected_value(std::move(expected_dict));
   EXPECT_EQ(expected_value, value);
+}
+
+TEST(ValuesTest, FindStr) {
+  DictValue dict;
+  dict.Set("null", Value());
+  dict.Set("bool", false);
+  dict.Set("int", 0);
+  dict.Set("double", 0.0);
+  dict.Set("string", "foo");
+  dict.Set("empty_string", std::string());
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", ListValue());
+  dict.Set("dict", DictValue());
+
+  EXPECT_EQ(dict.FindStr("missing"), std::nullopt);
+  EXPECT_EQ(dict.FindStr("null"), std::nullopt);
+  EXPECT_EQ(dict.FindStr("bool"), std::nullopt);
+  EXPECT_EQ(dict.FindStr("int"), std::nullopt);
+  EXPECT_EQ(dict.FindStr("double"), std::nullopt);
+  EXPECT_EQ(dict.FindStr("string"), "foo");
+  EXPECT_THAT(dict.FindStr("empty_string"), Optional(IsEmpty()));
+  EXPECT_EQ(dict.FindStr("blob"), std::nullopt);
+  EXPECT_EQ(dict.FindStr("list"), std::nullopt);
+  EXPECT_EQ(dict.FindStr("dict"), std::nullopt);
+}
+
+TEST(ValuesTest, FindStrByDottedPath) {
+  DictValue dict;
+  dict.SetByDottedPath("foo.string", "bar");
+  dict.SetByDottedPath("foo.int", 0);
+
+  EXPECT_EQ(dict.FindStrByDottedPath("foo.string"), "bar");
+  EXPECT_EQ(dict.FindStrByDottedPath("foo.int"), std::nullopt);
+  EXPECT_EQ(dict.FindStrByDottedPath("foo.missing"), std::nullopt);
+  EXPECT_EQ(dict.FindStrByDottedPath("foo"), std::nullopt);
+  EXPECT_EQ(dict.FindStrByDottedPath("string"), std::nullopt);
 }
 
 TEST(ValuesTest, FindDictKey) {
