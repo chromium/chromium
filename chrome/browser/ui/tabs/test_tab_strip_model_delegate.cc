@@ -58,7 +58,8 @@ void TestTabStripModelDelegate::DuplicateSplit(split_tabs::SplitTabId split) {}
 
 void TestTabStripModelDelegate::MoveToExistingWindow(
     const std::vector<int>& indices,
-    int browser_index) {}
+    int browser_index,
+    std::optional<tab_groups::TabGroupId> group) {}
 
 bool TestTabStripModelDelegate::CanMoveTabsToWindow(
     const std::vector<int>& indices) {

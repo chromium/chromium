@@ -483,9 +483,11 @@ void MoveGroupToWindowImpl(BrowserWindowInterface* source,
   target->GetWindow()->Show();
 }
 
-void MoveTabsToWindowImpl(BrowserWindowInterface* source,
-                          BrowserWindowInterface* target,
-                          const std::vector<int>& tab_indices) {
+void MoveTabsToWindowImpl(
+    BrowserWindowInterface* source,
+    BrowserWindowInterface* target,
+    const std::vector<int>& tab_indices,
+    std::optional<tab_groups::TabGroupId> target_group = std::nullopt) {
   if (tab_indices.empty()) {
     return;
   }
@@ -505,30 +507,67 @@ void MoveTabsToWindowImpl(BrowserWindowInterface* source,
           ? source_model->GetActiveTab()
           : source_model->GetTabAtIndex(tab_indices[0]);
 
+  // Insert directly into `target_group` so that an ungrouped active tab does
+  // not end focus mode in `target`.
+  std::optional<tab_groups::TabGroupId> insertion_group;
+  if (target_group.has_value() && target_model->group_model() &&
+      target_model->group_model()->ContainsTabGroup(*target_group)) {
+    insertion_group = target_group;
+  }
+  const auto insertion_index = [&]() {
+    return insertion_group.has_value()
+               ? static_cast<int>(target_model->group_model()
+                                      ->GetTabGroup(*insertion_group)
+                                      ->ListTabs()
+                                      .end())
+               : target_model->count();
+  };
+
   for (auto& tab_or_collection :
        source_model->DetachTabsAndCollectionsForInsertion(tab_indices)) {
     if (auto tab =
             std::get_if<std::unique_ptr<DetachedTab>>(&tab_or_collection)) {
       bool active = active_tab == tab->get()->tab.get();
-      bool pinned = tab->get()->was_pinned_at_time_of_removal;
+      // Grouped tabs cannot be pinned.
+      bool pinned = !insertion_group.has_value() &&
+                    tab->get()->was_pinned_at_time_of_removal;
       int add_types = (active ? AddTabTypes::ADD_ACTIVE : 0) |
                       (pinned ? AddTabTypes::ADD_PINNED : 0);
-      target_model->InsertDetachedTabAt(target_model->count(),
-                                        std::move(tab->get()->tab), add_types);
+      target_model->InsertDetachedTabAt(insertion_index(),
+                                        std::move(tab->get()->tab), add_types,
+                                        insertion_group);
     } else if (auto collection =
                    std::get_if<std::unique_ptr<DetachedTabCollection>>(
                        &tab_or_collection)) {
       if (std::holds_alternative<std::unique_ptr<tabs::TabGroupTabCollection>>(
               collection->get()->collection_)) {
+        // Groups cannot nest, and flattening a whole group here would bypass
+        // saved-group deletion confirmation. Append this and later tabs to keep
+        // their order.
+        insertion_group.reset();
         target_model->InsertDetachedTabGroupAt(std::move(*collection),
                                                target_model->count());
       } else {
-        bool pinned = collection->get()->pinned_;
+        // Activate `active_tab` if it fell back to a tab in an inactive split.
+        if (!collection->get()->active_index_.has_value()) {
+          int index = 0;
+          for (tabs::TabInterface* split_tab :
+               *std::get<std::unique_ptr<tabs::SplitTabCollection>>(
+                   collection->get()->collection_)) {
+            if (split_tab == active_tab) {
+              collection->get()->active_index_ = index;
+              break;
+            }
+            ++index;
+          }
+        }
+        bool pinned =
+            !insertion_group.has_value() && collection->get()->pinned_;
         target_model->InsertDetachedSplitTabAt(
             std::move(*collection),
             pinned ? target_model->IndexOfFirstNonPinnedTab()
-                   : target_model->count(),
-            pinned);
+                   : insertion_index(),
+            pinned, insertion_group);
       }
     }
   }
@@ -1781,10 +1820,12 @@ bool CanDuplicateTabAt(const BrowserWindowInterface* browser, int index) {
   return contents;
 }
 
-void MoveTabsToExistingWindow(BrowserWindowInterface* source,
-                              BrowserWindowInterface* target,
-                              const std::vector<int>& tab_indices) {
-  MoveTabsToWindowImpl(source, target, tab_indices);
+void MoveTabsToExistingWindow(
+    BrowserWindowInterface* source,
+    BrowserWindowInterface* target,
+    const std::vector<int>& tab_indices,
+    std::optional<tab_groups::TabGroupId> target_group) {
+  MoveTabsToWindowImpl(source, target, tab_indices, target_group);
 }
 
 void MoveGroupToExistingWindow(BrowserWindowInterface* source,

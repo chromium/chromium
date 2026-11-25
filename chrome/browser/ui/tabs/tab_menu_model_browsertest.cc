@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
@@ -60,7 +62,9 @@
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/sync_device_info/remote_device_info.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -234,6 +238,128 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest,
 
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(0).has_value());
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(1).has_value());
+}
+
+class TabMenuModelFocusModeBrowserTest : public TabMenuModelBrowserTest {
+ public:
+  TabMenuModelFocusModeBrowserTest() {
+    focus_feature_list_.InitAndEnableFeature(features::kTabGroupsFocusing);
+  }
+
+ protected:
+  // Gives the first window a grouped tab followed by an ungrouped tab, focuses
+  // the group and returns its ID.
+  tab_groups::TabGroupId FocusNewGroupInFirstWindow() {
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+    TabStripModel* const model = browser()->GetTabStripModel();
+    const tab_groups::TabGroupId group = model->AddToNewGroup({0});
+    model->EnterFocusMode(group);
+    EXPECT_EQ(model->GetFocusedGroup(), std::make_optional(group));
+    return group;
+  }
+
+  // Creates a second window with `tab_count` ungrouped tabs.
+  BrowserWindowInterface* CreateSecondWindow(int tab_count) {
+    BrowserWindowInterface* const second_browser =
+        CreateBrowser(browser()->GetProfile());
+    for (int i = 1; i < tab_count; ++i) {
+      chrome::NewTab(second_browser, NewTabTypes::kNoUserAction);
+    }
+    EXPECT_EQ(second_browser->GetTabStripModel()->count(), tab_count);
+    return second_browser;
+  }
+
+  // Opens the context menu for the tab at `context_index` in `source` and
+  // chooses the only existing group offered by the "Add tab to group" submenu.
+  void AddToOnlyOfferedGroup(BrowserWindowInterface* source,
+                             int context_index) {
+    TabMenuModel menu(&delegate_, TabMenuModelDelegate::From(source),
+                      source->GetTabStripModel(), context_index);
+    const size_t submenu_index =
+        menu.GetIndexOfCommandId(TabStripModel::CommandAddToExistingGroup)
+            .value();
+    ui::MenuModel* const submenu = menu.GetSubmenuModelAt(submenu_index);
+    // "New group", a separator, then the group.
+    ASSERT_EQ(submenu->GetItemCount(), 3u);
+    submenu->ActivatedAt(2);
+  }
+
+ private:
+  base::test::ScopedFeatureList focus_feature_list_;
+};
+
+// Adding a tab from another window to a focused group puts the tab inside that
+// group, so the window that owns the group must stay in focus mode.
+IN_PROC_BROWSER_TEST_F(TabMenuModelFocusModeBrowserTest,
+                       AddToFocusedGroupInOtherWindowKeepsFocusMode) {
+  const tab_groups::TabGroupId group = FocusNewGroupInFirstWindow();
+  TabStripModel* const focused_model = browser()->GetTabStripModel();
+
+  BrowserWindowInterface* const second_browser = CreateSecondWindow(2);
+  TabStripModel* const source_model = second_browser->GetTabStripModel();
+  tabs::TabInterface* const moved_tab = source_model->GetTabAtIndex(0);
+
+  AddToOnlyOfferedGroup(second_browser, 0);
+
+  // The tab moved to the end of the group in the first window.
+  EXPECT_EQ(source_model->count(), 1);
+  ASSERT_EQ(focused_model->count(), 3);
+  EXPECT_EQ(focused_model->GetIndexOfTab(moved_tab), 1);
+  EXPECT_EQ(moved_tab->GetGroup(), std::make_optional(group));
+
+  // The first window is still focused on the group.
+  EXPECT_EQ(focused_model->GetFocusedGroup(), std::make_optional(group));
+}
+
+// Moving an active pinned tab from a focused source window into another
+// window's group via the context menu unpins it on insertion without exiting
+// focus mode in the source window.
+IN_PROC_BROWSER_TEST_F(
+    TabMenuModelFocusModeBrowserTest,
+    MoveActivePinnedTabFromFocusedWindowToOtherWindowGroupKeepsSourceFocusMode) {
+  // Target window: a group named "TargetGroup".
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  TabStripModel* const target_model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_b = target_model->AddToNewGroup({0});
+  target_model->ChangeTabGroupVisuals(
+      group_b, tab_groups::TabGroupVisualData(
+                   u"TargetGroup", tab_groups::TabGroupColorId::kBlue));
+
+  // Source window: pinned tab 0 (active), focused group `group_a` on tab 1,
+  // and an ungrouped tab 2.
+  BrowserWindowInterface* const source_browser = CreateSecondWindow(3);
+  TabStripModel* const source_model = source_browser->GetTabStripModel();
+  source_model->SetTabPinned(0, true);
+  const tab_groups::TabGroupId group_a = source_model->AddToNewGroup({1});
+  source_model->EnterFocusMode(group_a);
+  source_model->ActivateTabAt(0);
+  tabs::TabInterface* const moved_tab = source_model->GetTabAtIndex(0);
+  ASSERT_TRUE(moved_tab->IsPinned());
+  ASSERT_EQ(source_model->GetActiveTab(), moved_tab);
+  ASSERT_EQ(source_model->GetFocusedGroup(), std::make_optional(group_a));
+
+  // Open context menu on pinned tab 0 and add it to "TargetGroup".
+  TabMenuModel menu(&delegate_, TabMenuModelDelegate::From(source_browser),
+                    source_model, 0);
+  const size_t submenu_index =
+      menu.GetIndexOfCommandId(TabStripModel::CommandAddToExistingGroup)
+          .value();
+  ui::MenuModel* const submenu = menu.GetSubmenuModelAt(submenu_index);
+  std::optional<size_t> target_item_index;
+  for (size_t i = 0; i < submenu->GetItemCount(); ++i) {
+    if (submenu->GetLabelAt(i) == u"TargetGroup") {
+      target_item_index = i;
+      break;
+    }
+  }
+  ASSERT_TRUE(target_item_index.has_value());
+  submenu->ActivatedAt(*target_item_index);
+
+  // The tab moved unpinned into `group_b`, and the source window stayed in
+  // focus mode on `group_a`.
+  EXPECT_EQ(moved_tab->GetGroup(), std::make_optional(group_b));
+  EXPECT_FALSE(moved_tab->IsPinned());
+  EXPECT_EQ(source_model->GetFocusedGroup(), std::make_optional(group_a));
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, ActiveTabNotSplit) {

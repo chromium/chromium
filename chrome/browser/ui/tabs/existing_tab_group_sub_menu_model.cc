@@ -333,15 +333,8 @@ void ExistingTabGroupSubMenuModel::AddSelectedTabsToOpenGroup(
     return;
   }
 
-  // Unpin the tabs before moving from end
-  for (int i = static_cast<int>(tabs.size()) - 1; i >= 0; --i) {
-    tabs::TabInterface* tab = tabs[i].Get();
-    if (tab && tab->IsPinned()) {
-      model()->SetTabPinned(model()->GetIndexOfTab(tab), false);
-    }
-  }
-  // Unpinning can move tabs; populate `selected_indices` for
-  // MoveToExistingWindow.
+  // `MoveToExistingWindow` clears pinned state when inserting into `group`, so
+  // avoid unpinning in place on the source model.
   std::vector<int> selected_indices;
   for (tabs::TabHandle tab : tabs) {
     tabs::TabInterface* tab_ptr = tab.Get();
@@ -350,7 +343,7 @@ void ExistingTabGroupSubMenuModel::AddSelectedTabsToOpenGroup(
     }
   }
   model()->delegate()->MoveToExistingWindow(selected_indices,
-                                            browser_index.value());
+                                            browser_index.value(), group);
 
   TabStripModel* const found_model =
       browsers[browser_index.value()]->GetTabStripModel();

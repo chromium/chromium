@@ -54,8 +54,10 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   bool IsTabStripEditable() override;
   content::WebContents* DuplicateContentsAt(int index) override;
   void DuplicateSplit(split_tabs::SplitTabId split) override;
-  void MoveToExistingWindow(const std::vector<int>& indices,
-                            int browser_index) override;
+  void MoveToExistingWindow(
+      const std::vector<int>& indices,
+      int browser_index,
+      std::optional<tab_groups::TabGroupId> group) override;
   bool CanMoveTabsToWindow(const std::vector<int>& indices) override;
   void MoveTabsToNewWindow(const std::vector<int>& indices) override;
   void MoveGroupToNewWindow(const tab_groups::TabGroupId& group) override;

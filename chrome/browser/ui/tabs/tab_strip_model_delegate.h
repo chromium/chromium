@@ -115,9 +115,13 @@ class TabStripModelDelegate {
   // Duplicates a split tab.
   virtual void DuplicateSplit(split_tabs::SplitTabId split) = 0;
 
-  // Move the contents at the provided indices into the specified window.
-  virtual void MoveToExistingWindow(const std::vector<int>& indices,
-                                    int browser_index) = 0;
+  // Move the contents at the provided indices into the specified window. If
+  // `group` is a tab group in that window, the moved tabs are added to the end
+  // of it instead of to the end of the tab strip.
+  virtual void MoveToExistingWindow(
+      const std::vector<int>& indices,
+      int browser_index,
+      std::optional<tab_groups::TabGroupId> group) = 0;
 
   // Returns whether the contents at `indices` can be moved from the current
   // tabstrip to a different window.

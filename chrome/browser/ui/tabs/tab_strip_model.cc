@@ -871,6 +871,15 @@ gfx::Range TabStripModel::InsertDetachedSplitTabAt(
   CHECK(std::holds_alternative<std::unique_ptr<tabs::SplitTabCollection>>(
       split->collection_));
 
+  // If an active split is inserted outside the focused group (and is not a
+  // pinned split allowed in focus mode), drop focus mode so the active tab is
+  // visible and selection invariants hold.
+  const std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
+  if (split->active_index_.has_value() && focused_group.has_value() &&
+      group_id != focused_group && !pinned) {
+    ExitFocusModeImpl(TabGroupFocusExitReason::kActiveTabGroupOperation);
+  }
+
   std::unique_ptr<tabs::SplitTabCollection> split_collection_unique_ptr =
       std::move(std::get<std::unique_ptr<tabs::SplitTabCollection>>(
           split->collection_));
@@ -4052,7 +4061,8 @@ void TabStripModel::ExecuteAddToExistingWindowCommand(
     return;
   }
   delegate()->MoveToExistingWindow(
-      GetSortedIndicesForTabs(GetTabsForCommand(context_tab)), browser_index);
+      GetSortedIndicesForTabs(GetTabsForCommand(context_tab)), browser_index,
+      /*group=*/std::nullopt);
 }
 
 void TabStripModel::ExecuteAddToNewSplitCommand(

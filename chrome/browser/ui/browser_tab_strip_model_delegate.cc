@@ -195,7 +195,8 @@ void BrowserTabStripModelDelegate::DuplicateSplit(
 
 void BrowserTabStripModelDelegate::MoveToExistingWindow(
     const std::vector<int>& indices,
-    int browser_index) {
+    int browser_index,
+    std::optional<tab_groups::TabGroupId> group) {
   std::vector<BrowserWindowInterface*> existing_browsers =
       TabMenuModelDelegate::From(browser_)->GetOtherBrowserWindows(
           web_app::AppBrowserController::IsWebApp(browser_));
@@ -203,7 +204,7 @@ void BrowserTabStripModelDelegate::MoveToExistingWindow(
   if (static_cast<size_t>(browser_index) < existing_browser_count &&
       existing_browsers[browser_index]) {
     chrome::MoveTabsToExistingWindow(browser_, existing_browsers[browser_index],
-                                     indices);
+                                     indices, group);
   }
 }
 

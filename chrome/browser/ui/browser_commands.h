@@ -193,9 +193,11 @@ content::WebContents* DuplicateTabAt(BrowserWindowInterface* browser,
 void DuplicateSplit(BrowserWindowInterface* browser,
                     split_tabs::SplitTabId split);
 bool CanDuplicateTabAt(const BrowserWindowInterface* browser, int index);
-void MoveTabsToExistingWindow(BrowserWindowInterface* source,
-                              BrowserWindowInterface* target,
-                              const std::vector<int>& tab_indices);
+void MoveTabsToExistingWindow(
+    BrowserWindowInterface* source,
+    BrowserWindowInterface* target,
+    const std::vector<int>& tab_indices,
+    std::optional<tab_groups::TabGroupId> target_group = std::nullopt);
 void MoveGroupToExistingWindow(BrowserWindowInterface* source,
                                BrowserWindowInterface* target,
                                tab_groups::TabGroupId group);

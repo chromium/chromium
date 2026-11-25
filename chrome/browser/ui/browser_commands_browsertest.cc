@@ -1035,6 +1035,261 @@ IN_PROC_BROWSER_TEST_F(NonGroupFocusMoveToWindowTest,
   EXPECT_FALSE(model->group_model()->ContainsTabGroup(ephemeral_group.value()));
 }
 
+class FocusModeMoveToWindowTest : public BrowserCommandsTest {
+ public:
+  FocusModeMoveToWindowTest() {
+    focus_feature_list_.InitAndEnableFeature(features::kTabGroupsFocusing);
+  }
+
+ private:
+  base::test::ScopedFeatureList focus_feature_list_;
+};
+
+// Tabs moved into a group that is focused in the target window join the group
+// directly, so the target window stays in focus mode.
+IN_PROC_BROWSER_TEST_F(FocusModeMoveToWindowTest,
+                       MoveTabsToExistingWindow_IntoFocusedGroup) {
+  // Target browser: a focused group with one tab, then an ungrouped tab.
+  BrowserWindowInterface* const target_browser = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
+  ASSERT_TRUE(target_browser);
+  AddTabs(target_browser, 2);
+  TabStripModel* const target_model = target_browser->GetTabStripModel();
+  ASSERT_EQ(2, target_model->count());
+  const tab_groups::TabGroupId group = target_model->AddToNewGroup({0});
+  target_model->EnterFocusMode(group);
+  ASSERT_EQ(std::make_optional(group), target_model->GetFocusedGroup());
+
+  // Source browser: a tab, a split of two tabs, and a tab that stays behind.
+  AddTabs(3);
+  TabStripModel* const source_model = browser()->GetTabStripModel();
+  ASSERT_EQ(4, source_model->count());
+  source_model->ActivateTabAt(1);
+  source_model->AddToNewSplit(
+      {2},
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
+                                     1.0f),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tabs::TabInterface* const tab = source_model->GetTabAtIndex(0);
+  tabs::TabInterface* const split_start = source_model->GetTabAtIndex(1);
+  tabs::TabInterface* const split_end = source_model->GetTabAtIndex(2);
+
+  chrome::MoveTabsToExistingWindow(browser(), target_browser, {0, 1, 2}, group);
+
+  // The moved tabs are at the end of the group, in their original order.
+  ASSERT_EQ(1, source_model->count());
+  ASSERT_EQ(5, target_model->count());
+  EXPECT_EQ(1, target_model->GetIndexOfTab(tab));
+  EXPECT_EQ(2, target_model->GetIndexOfTab(split_start));
+  EXPECT_EQ(3, target_model->GetIndexOfTab(split_end));
+  CheckBrowserContainsTabGroupWithSize(target_browser, group, 4u);
+  EXPECT_EQ(std::make_optional(group), tab->GetGroup());
+  EXPECT_EQ(std::make_optional(group), split_start->GetGroup());
+  EXPECT_EQ(std::make_optional(group), split_end->GetGroup());
+  EXPECT_TRUE(split_start->IsSplit());
+  EXPECT_EQ(split_start->GetSplit(), split_end->GetSplit());
+
+  // The target window is still focused on the group.
+  EXPECT_EQ(std::make_optional(group), target_model->GetFocusedGroup());
+  EXPECT_TRUE(target_model->selection_model().Valid());
+}
+
+// Moving a whole group followed by an ungrouped tab appends the group as its
+// own group (ending focus mode) and appends the trailing tab ungrouped after
+// it to preserve order.
+IN_PROC_BROWSER_TEST_F(
+    FocusModeMoveToWindowTest,
+    MoveTabsToExistingWindow_WholeGroupAndTrailingTabExitsFocusMode) {
+  BrowserWindowInterface* const target_browser = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
+  ASSERT_TRUE(target_browser);
+  AddTabs(target_browser, 2);
+  TabStripModel* const target_model = target_browser->GetTabStripModel();
+  ASSERT_EQ(2, target_model->count());
+  const tab_groups::TabGroupId focused_group = target_model->AddToNewGroup({0});
+  target_model->EnterFocusMode(focused_group);
+  ASSERT_EQ(std::make_optional(focused_group), target_model->GetFocusedGroup());
+
+  // Source browser: a 1-tab group, a trailing ungrouped tab, and a tab that
+  // stays behind.
+  AddTabs(2);
+  TabStripModel* const source_model = browser()->GetTabStripModel();
+  ASSERT_EQ(3, source_model->count());
+  const tab_groups::TabGroupId source_group = source_model->AddToNewGroup({0});
+  tabs::TabInterface* const grouped_tab = source_model->GetTabAtIndex(0);
+  tabs::TabInterface* const trailing_tab = source_model->GetTabAtIndex(1);
+
+  chrome::MoveTabsToExistingWindow(browser(), target_browser, {0, 1},
+                                   focused_group);
+
+  ASSERT_EQ(1, source_model->count());
+  ASSERT_EQ(4, target_model->count());
+  CheckBrowserContainsTabGroupWithSize(target_browser, focused_group, 1u);
+  CheckBrowserContainsTabGroupWithSize(target_browser, source_group, 1u);
+  EXPECT_EQ(2, target_model->GetIndexOfTab(grouped_tab));
+  EXPECT_EQ(std::make_optional(source_group), grouped_tab->GetGroup());
+  EXPECT_EQ(3, target_model->GetIndexOfTab(trailing_tab));
+  EXPECT_EQ(std::nullopt, trailing_tab->GetGroup());
+  EXPECT_EQ(std::nullopt, target_model->GetFocusedGroup());
+  EXPECT_TRUE(target_model->selection_model().Valid());
+}
+
+// Moving an active split into a non-focused group in a focused target window
+// adds the tabs to that group, exits focus mode, and keeps selection valid.
+IN_PROC_BROWSER_TEST_F(
+    FocusModeMoveToWindowTest,
+    MoveTabsToExistingWindow_IntoNonFocusedGroupExitsFocusMode) {
+  BrowserWindowInterface* const target_browser = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
+  ASSERT_TRUE(target_browser);
+  AddTabs(target_browser, 2);
+  TabStripModel* const target_model = target_browser->GetTabStripModel();
+  ASSERT_EQ(2, target_model->count());
+  const tab_groups::TabGroupId focused_group = target_model->AddToNewGroup({0});
+  const tab_groups::TabGroupId other_group = target_model->AddToNewGroup({1});
+  target_model->EnterFocusMode(focused_group);
+  ASSERT_EQ(std::make_optional(focused_group), target_model->GetFocusedGroup());
+
+  // Source browser: an inactive tab, an active split of two tabs (so
+  // InsertDetachedSplitTabAt is the active insertion), and a tab that stays.
+  AddTabs(3);
+  TabStripModel* const source_model = browser()->GetTabStripModel();
+  ASSERT_EQ(4, source_model->count());
+  source_model->ActivateTabAt(1);
+  source_model->AddToNewSplit(
+      {2},
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
+                                     1.0f),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tabs::TabInterface* const tab = source_model->GetTabAtIndex(0);
+  tabs::TabInterface* const split_start = source_model->GetTabAtIndex(1);
+  tabs::TabInterface* const split_end = source_model->GetTabAtIndex(2);
+
+  chrome::MoveTabsToExistingWindow(browser(), target_browser, {0, 1, 2},
+                                   other_group);
+
+  ASSERT_EQ(1, source_model->count());
+  ASSERT_EQ(5, target_model->count());
+  CheckBrowserContainsTabGroupWithSize(target_browser, focused_group, 1u);
+  CheckBrowserContainsTabGroupWithSize(target_browser, other_group, 4u);
+  EXPECT_EQ(2, target_model->GetIndexOfTab(tab));
+  EXPECT_EQ(3, target_model->GetIndexOfTab(split_start));
+  EXPECT_EQ(4, target_model->GetIndexOfTab(split_end));
+  EXPECT_EQ(std::make_optional(other_group), tab->GetGroup());
+  EXPECT_EQ(std::make_optional(other_group), split_start->GetGroup());
+  EXPECT_EQ(std::make_optional(other_group), split_end->GetGroup());
+  EXPECT_TRUE(split_start->IsSplit());
+  EXPECT_EQ(split_start->GetSplit(), split_end->GetSplit());
+  EXPECT_EQ(std::nullopt, target_model->GetFocusedGroup());
+  EXPECT_TRUE(target_model->selection_model().Valid());
+}
+
+// Pinned tabs and pinned splits moved into a focused group are unpinned when
+// inserted into the group and keep the target window in focus mode.
+IN_PROC_BROWSER_TEST_F(FocusModeMoveToWindowTest,
+                       MoveTabsToExistingWindow_PinnedTabsIntoFocusedGroup) {
+  BrowserWindowInterface* const target_browser = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
+  ASSERT_TRUE(target_browser);
+  AddTabs(target_browser, 2);
+  TabStripModel* const target_model = target_browser->GetTabStripModel();
+  ASSERT_EQ(2, target_model->count());
+  const tab_groups::TabGroupId group = target_model->AddToNewGroup({0});
+  target_model->EnterFocusMode(group);
+  ASSERT_EQ(std::make_optional(group), target_model->GetFocusedGroup());
+
+  // Source browser: a pinned tab, a pinned split of two tabs, and an unpinned
+  // tab that stays behind.
+  AddTabs(3);
+  TabStripModel* const source_model = browser()->GetTabStripModel();
+  ASSERT_EQ(4, source_model->count());
+  source_model->SetTabPinned(0, true);
+  source_model->SetTabPinned(1, true);
+  source_model->SetTabPinned(2, true);
+  source_model->ActivateTabAt(1);
+  source_model->AddToNewSplit(
+      {2},
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
+                                     1.0f),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tabs::TabInterface* const pinned_tab = source_model->GetTabAtIndex(0);
+  tabs::TabInterface* const split_start = source_model->GetTabAtIndex(1);
+  tabs::TabInterface* const split_end = source_model->GetTabAtIndex(2);
+  ASSERT_TRUE(pinned_tab->IsPinned());
+  ASSERT_TRUE(split_start->IsPinned());
+  ASSERT_TRUE(split_end->IsPinned());
+
+  chrome::MoveTabsToExistingWindow(browser(), target_browser, {0, 1, 2}, group);
+
+  ASSERT_EQ(1, source_model->count());
+  ASSERT_EQ(5, target_model->count());
+  CheckBrowserContainsTabGroupWithSize(target_browser, group, 4u);
+  EXPECT_EQ(1, target_model->GetIndexOfTab(pinned_tab));
+  EXPECT_EQ(2, target_model->GetIndexOfTab(split_start));
+  EXPECT_EQ(3, target_model->GetIndexOfTab(split_end));
+  EXPECT_FALSE(pinned_tab->IsPinned());
+  EXPECT_FALSE(split_start->IsPinned());
+  EXPECT_FALSE(split_end->IsPinned());
+  EXPECT_EQ(std::make_optional(group), pinned_tab->GetGroup());
+  EXPECT_EQ(std::make_optional(group), split_start->GetGroup());
+  EXPECT_EQ(std::make_optional(group), split_end->GetGroup());
+  EXPECT_TRUE(split_start->IsSplit());
+  EXPECT_EQ(split_start->GetSplit(), split_end->GetSplit());
+  EXPECT_EQ(std::make_optional(group), target_model->GetFocusedGroup());
+  EXPECT_TRUE(target_model->selection_model().Valid());
+}
+
+// Moving an inactive split into a non-focused group in a focused target window
+// activates the moved split, exits focus mode, and keeps selection valid.
+IN_PROC_BROWSER_TEST_F(
+    FocusModeMoveToWindowTest,
+    MoveTabsToExistingWindow_InactiveSplitIntoNonFocusedGroupExitsFocusMode) {
+  BrowserWindowInterface* const target_browser = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
+  ASSERT_TRUE(target_browser);
+  AddTabs(target_browser, 2);
+  TabStripModel* const target_model = target_browser->GetTabStripModel();
+  ASSERT_EQ(2, target_model->count());
+  const tab_groups::TabGroupId focused_group = target_model->AddToNewGroup({0});
+  const tab_groups::TabGroupId other_group = target_model->AddToNewGroup({1});
+  target_model->EnterFocusMode(focused_group);
+  ASSERT_EQ(std::make_optional(focused_group), target_model->GetFocusedGroup());
+
+  // Source browser: an inactive split at {0, 1} and an active tab at 2.
+  AddTabs(2);
+  TabStripModel* const source_model = browser()->GetTabStripModel();
+  ASSERT_EQ(3, source_model->count());
+  source_model->ActivateTabAt(0);
+  source_model->AddToNewSplit(
+      {1},
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
+                                     1.0f),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  source_model->ActivateTabAt(2);
+  tabs::TabInterface* const split_start = source_model->GetTabAtIndex(0);
+  tabs::TabInterface* const split_end = source_model->GetTabAtIndex(1);
+
+  chrome::MoveTabsToExistingWindow(browser(), target_browser, {0, 1},
+                                   other_group);
+
+  ASSERT_EQ(1, source_model->count());
+  ASSERT_EQ(4, target_model->count());
+  CheckBrowserContainsTabGroupWithSize(target_browser, focused_group, 1u);
+  CheckBrowserContainsTabGroupWithSize(target_browser, other_group, 3u);
+  EXPECT_EQ(std::make_optional(other_group), split_start->GetGroup());
+  EXPECT_EQ(std::make_optional(other_group), split_end->GetGroup());
+  EXPECT_TRUE(split_start->IsSplit());
+  EXPECT_EQ(split_start->GetSplit(), split_end->GetSplit());
+  EXPECT_EQ(split_start, target_model->GetActiveTab());
+  EXPECT_EQ(std::nullopt, target_model->GetFocusedGroup());
+  EXPECT_TRUE(target_model->selection_model().Valid());
+}
+
 class BrowserCommandsIsolatedModeTest : public InProcessBrowserTest {
  private:
   enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
