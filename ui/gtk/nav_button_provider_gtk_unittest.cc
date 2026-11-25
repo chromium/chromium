@@ -472,6 +472,67 @@ TEST(NavButtonProviderGtkTest, LargerBackgroundIsScaledToFit) {
   }
 }
 
+// Regression test for crbug.com/40789407: at scale 2, a `-gtk-scaled()`
+// background (as Breeze GTK3 uses for its title button bitmaps) must use its 2x
+// image rather than the upscaled 1x image.
+TEST(NavButtonProviderGtkTest, ScaledBackgroundUsesHidpiImage) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath lodpi_path = temp_dir.GetPath().AppendASCII("1x.svg");
+  const base::FilePath hidpi_path = temp_dir.GetPath().AppendASCII("2x.svg");
+  ASSERT_TRUE(base::WriteFile(
+      lodpi_path,
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\">"
+      "<rect width=\"18\" height=\"18\" fill=\"#ff0000\"/></svg>"));
+  // A red square with a one pixel wide blue column, which is blurred if the
+  // image is drawn at 1x and upscaled.
+  ASSERT_TRUE(base::WriteFile(
+      hidpi_path,
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"36\" height=\"36\">"
+      "<rect width=\"36\" height=\"36\" fill=\"#ff0000\"/>"
+      "<rect x=\"18\" width=\"1\" height=\"36\" fill=\"#0000ff\"/></svg>"));
+
+  const std::string css =
+      "headerbar, headerbar.titlebar {"
+      "  min-height: 0;"
+      "  padding: 0;"
+      "  border: none;"
+      "}"
+      "headerbar button.titlebutton, headerbar button.titlebutton image {"
+      "  min-height: 0;"
+      "  min-width: 0;"
+      "  padding: 0;"
+      "  margin: 0;"
+      "  border: none;"
+      "  box-shadow: none;"
+      "  background: none;"
+      "}"
+      "headerbar button.titlebutton image {"
+      "  color: transparent;"
+      "}"
+      "headerbar button.titlebutton {"
+      "  min-height: 18px;"
+      "  min-width: 18px;"
+      "  background-image: -gtk-scaled(url(\"file://" +
+      lodpi_path.value() + "\"), url(\"file://" + hidpi_path.value() +
+      "\"));"
+      "}";
+  base::ScopedClosureRunner remove_css = AddGlobalCssForTesting(css);
+
+  NavButtonProviderGtk provider(ui::FrameType::kBrowser);
+  provider.RedrawImages(/*top_area_height=*/18, /*maximized=*/false,
+                        /*active=*/true);
+  const SkBitmap bitmap =
+      provider.GetImage(DisplayType::kClose, ButtonState::kNormal)
+          .GetRepresentation(2.0f)
+          .GetBitmap();
+  ASSERT_EQ(bitmap.width(), 36);
+  ASSERT_EQ(bitmap.height(), 36);
+  EXPECT_EQ(bitmap.getColor(18, 18), SK_ColorBLUE);
+  EXPECT_EQ(bitmap.getColor(17, 18), SK_ColorRED);
+  EXPECT_EQ(bitmap.getColor(19, 18), SK_ColorRED);
+}
+
 TEST(NavButtonProviderGtkTest,
      CachesIconsAcrossProvidersAndInvalidatesOnThemeChange) {
   if (GtkCheckVersion(4)) {

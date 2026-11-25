@@ -510,6 +510,10 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
                       "}");
     cairo_surface_t* surface =
         cairo_recording_surface_create(CAIRO_CONTENT_COLOR_ALPHA, nullptr);
+    // GTK3 caches the rasterized background image by its logical size only, so
+    // drawing it here at a lower device scale than the real render would make
+    // that render reuse the low-resolution copy.
+    cairo_surface_set_device_scale(surface, pixbuf_scale, pixbuf_scale);
     cairo_t* cr = cairo_create(surface);
     gtk_render_background(context, cr, 0, 0, button_size_.width(),
                           button_size_.height());
@@ -518,9 +522,11 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
     double y = 0;
     double width = 0;
     double height = 0;
+    // The extents are in device pixels.
     cairo_recording_surface_ink_extents(surface, &x, &y, &width, &height);
     cairo_surface_destroy(surface);
-    return width >= button_size_.width() || height >= button_size_.height();
+    return width >= pixbuf_scale * button_size_.width() ||
+           height >= pixbuf_scale * button_size_.height();
   }
 
   ui::FrameType frame_type_;
