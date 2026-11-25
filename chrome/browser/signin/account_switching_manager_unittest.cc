@@ -5,10 +5,12 @@
 #include "chrome/browser/signin/account_switching_manager.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/json/values_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -21,6 +23,8 @@
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -30,12 +34,15 @@
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/core/browser/test_account_preview_data_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/data_type.h"
@@ -52,512 +59,7 @@ namespace {
 
 class AccountSwitchingManagerTest : public testing::Test {
  public:
-  AccountSwitchingManagerTest() {
-    profile_ = std::make_unique<TestingProfile>();
-    manager_ = AccountSwitchingManagerFactory::GetForProfile(profile_.get());
-
-    // By default, stamp accounts A, B, and C as signed in 28+ days ago so
-    // individual tests can focus on the specific rule under test.
-    const base::Time past_grace_period =
-        base::Time::Now() -
-        AccountSwitchingManager::kPrimaryAccountSigninGracePeriod;
-    SigninPrefs(*profile_->GetPrefs())
-        .SetChromeLastSigninTime(account_a_, past_grace_period);
-    SigninPrefs(*profile_->GetPrefs())
-        .SetChromeLastSigninTime(account_b_, past_grace_period);
-    SigninPrefs(*profile_->GetPrefs())
-        .SetChromeLastSigninTime(account_c_, past_grace_period);
-  }
-
- protected:
-  struct FeatureInitializer {
-    FeatureInitializer() {
-      feature_list.InitWithFeatures(
-          {switches::kEnableAccountPreviewData,
-           switches::kEnableAccountPreviewSwitchingAccount},
-          {});
-    }
-    base::test::ScopedFeatureList feature_list;
-  } feature_initializer_;
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<AccountSwitchingManager> manager_;
-
-  const GaiaId account_a_ = GaiaId("gaia_a");
-  const GaiaId account_b_ = GaiaId("gaia_b");
-  const GaiaId account_c_ = GaiaId("gaia_c");
-  const GaiaId account_d_ = GaiaId("gaia_d");
-};
-
-TEST_F(AccountSwitchingManagerTest, InitiallyEligible) {
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-}
-
-TEST_F(AccountSwitchingManagerTest, InvalidAccountsBlocked) {
-  EXPECT_FALSE(manager_->CanShowPromo(GaiaId(), account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, GaiaId()));
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_a_));
-}
-
-TEST_F(AccountSwitchingManagerTest, PrimaryAccountSigninGracePeriod) {
-  // Missing sign-in timestamp blocks eligibility (fail closed).
-  EXPECT_FALSE(manager_->CanShowPromo(account_d_, account_b_));
-
-  // Stamping sign-in now starts a 28-day grace period.
-  SigninPrefs(*profile_->GetPrefs())
-      .SetChromeLastSigninTime(account_d_, base::Time::Now());
-  EXPECT_FALSE(manager_->CanShowPromo(account_d_, account_b_));
-
-  // Just before 28 days: still blocked.
-  task_environment_.FastForwardBy(
-      AccountSwitchingManager::kPrimaryAccountSigninGracePeriod -
-      base::Seconds(1));
-  EXPECT_FALSE(manager_->CanShowPromo(account_d_, account_b_));
-
-  // Exactly 28 days: eligible.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(manager_->CanShowPromo(account_d_, account_b_));
-
-  // Null timestamp (`"0"`) fails closed rather than treating epoch delta as
-  // elapsed.
-  SigninPrefs(*profile_->GetPrefs())
-      .SetChromeLastSigninTime(account_d_, base::Time());
-  EXPECT_FALSE(manager_->CanShowPromo(account_d_, account_b_));
-
-  // Future timestamp (clock skew) also fails closed within grace period.
-  SigninPrefs(*profile_->GetPrefs())
-      .SetChromeLastSigninTime(account_d_, base::Time::Now() + base::Days(1));
-  EXPECT_FALSE(manager_->CanShowPromo(account_d_, account_b_));
-}
-
-TEST_F(AccountSwitchingManagerTest, GlobalIgnoreCooldownAndCap) {
-  // Ignores 1 through 4 enforce a 7-day global cooldown and then recover.
-  for (int i = 0; i < AccountSwitchingManager::kMaxGlobalIgnores - 1; ++i) {
-    ASSERT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-    manager_->RecordPromoIgnored();
-
-    // Immediately blocked globally across all pairs.
-    EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-    EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_c_));
-
-    // Still blocked 1 second before the 7-day cooldown expires.
-    task_environment_.FastForwardBy(
-        AccountSwitchingManager::kGlobalIgnoreCooldown - base::Seconds(1));
-    EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-
-    // Eligible again once the 7-day cooldown expires.
-    task_environment_.FastForwardBy(base::Seconds(1));
-    EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-    EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
-  }
-
-  // 5th ignore hits the permanent global cap.
-  manager_->RecordPromoIgnored();
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_c_));
-
-  // Remains permanently blocked even well past the 7-day cooldown.
-  task_environment_.FastForwardBy(base::Days(365));
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_c_));
-}
-
-TEST_F(AccountSwitchingManagerTest, GlobalExplicitDismissalCooldown) {
-  manager_->RecordPromoExplicitlyDismissed(account_a_, account_b_);
-
-  // Blocked globally for 28 days across all pairs (including unrelated pairs).
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_c_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
-
-  // Just before 28 days: still blocked.
-  task_environment_.FastForwardBy(
-      AccountSwitchingManager::kGlobalExplicitDismissalCooldown -
-      base::Seconds(1));
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_c_));
-
-  // At 28 days: eligible again (pair dismissal count is only 1 < 2).
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
-}
-
-TEST_F(AccountSwitchingManagerTest, PairExplicitDismissalCapOfTwo) {
-  // First dismissal of `(A, B)`.
-  manager_->RecordPromoExplicitlyDismissed(account_a_, account_b_);
-  task_environment_.FastForwardBy(
-      AccountSwitchingManager::kGlobalExplicitDismissalCooldown);
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_TRUE(manager_->CanShowPromo(account_b_, account_a_));
-
-  // Second dismissal in the opposite direction `(B, A)` hits the shared
-  // per-pair cap of 2 for `{A, B}`.
-  manager_->RecordPromoExplicitlyDismissed(account_b_, account_a_);
-  task_environment_.FastForwardBy(
-      AccountSwitchingManager::kGlobalExplicitDismissalCooldown);
-
-  // `{A, B}` stays permanently blocked in both directions even after 365 days.
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
-  task_environment_.FastForwardBy(base::Days(365));
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
-
-  // Unrelated pairs remain eligible.
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
-  EXPECT_TRUE(manager_->CanShowPromo(account_c_, account_a_));
-}
-
-TEST_F(AccountSwitchingManagerTest, SymmetricPairSuppression) {
-  // Suppressing `{A, B}` blocks switching prompts in both directions while
-  // both accounts remain in the profile.
-  SigninPrefs(*profile_->GetPrefs())
-      .SetAccountSwitchingPromoSuppressedBySwitch(account_b_, account_a_);
-
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
-  // Other pairs remain eligible.
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
-
-  // Suppression persists indefinitely while both accounts remain.
-  task_environment_.FastForwardBy(base::Days(365));
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
-}
-
-TEST_F(AccountSwitchingManagerTest,
-       StartSwitchingBlocksOverlapAndRunsCallbackOnCompletion) {
-  ASSERT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-
-  base::MockOnceClosure first_callback;
-  EXPECT_CALL(first_callback, Run()).Times(0);
-  EXPECT_TRUE(
-      manager_->StartSwitching(account_a_, account_b_, first_callback.Get()));
-
-  // While switching is in progress, promos and overlapping switches are
-  // blocked, and the rejected call's callback is not invoked.
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_c_));
-
-  base::MockOnceClosure rejected_callback;
-  EXPECT_CALL(rejected_callback, Run()).Times(0);
-  EXPECT_FALSE(manager_->StartSwitching(account_a_, account_c_,
-                                        rejected_callback.Get()));
-
-  testing::Mock::VerifyAndClearExpectations(&first_callback);
-  EXPECT_CALL(first_callback, Run()).Times(1);
-  manager_->CompleteSwitchForTesting(/*success=*/true);
-
-  // Once finished, `{A, B}` is suppressed by the completed switch, while
-  // eligibility for other pairs and switching are restored (also works without
-  // a caller-provided callback).
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
-  EXPECT_TRUE(manager_->StartSwitching(account_a_, account_c_));
-  manager_->CompleteSwitchForTesting(/*success=*/true);
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_c_));
-  EXPECT_TRUE(manager_->CanShowPromo(account_b_, account_c_));
-}
-
-TEST_F(AccountSwitchingManagerTest,
-       SuccessfulSwitchSuppressesPairBidirectionally) {
-  const SigninPrefs signin_prefs(*profile_->GetPrefs());
-  ASSERT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
-      account_a_, account_b_));
-  ASSERT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-  ASSERT_TRUE(manager_->CanShowPromo(account_b_, account_a_));
-  ASSERT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
-
-  base::MockOnceClosure switch_callback;
-  EXPECT_CALL(switch_callback, Run()).Times(0);
-  ASSERT_TRUE(
-      manager_->StartSwitching(account_a_, account_b_, switch_callback.Get()));
-
-  // Suppression is not recorded until the switch actually finishes
-  // successfully.
-  EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
-      account_a_, account_b_));
-
-  testing::Mock::VerifyAndClearExpectations(&switch_callback);
-  EXPECT_CALL(switch_callback, Run()).Times(1);
-  manager_->CompleteSwitchForTesting(/*success=*/true);
-
-  EXPECT_TRUE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
-      account_a_, account_b_));
-  EXPECT_TRUE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
-      account_b_, account_a_));
-  EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
-      account_a_, account_c_));
-
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
-
-  // Suppression persists indefinitely across the 28-day window and beyond.
-  task_environment_.FastForwardBy(base::Days(365));
-  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
-}
-
-TEST_F(AccountSwitchingManagerTest, AbortedSwitchDoesNotSuppressPair) {
-  const SigninPrefs signin_prefs(*profile_->GetPrefs());
-  ASSERT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-
-  base::MockOnceClosure switch_callback;
-  EXPECT_CALL(switch_callback, Run()).Times(1);
-  ASSERT_TRUE(
-      manager_->StartSwitching(account_a_, account_b_, switch_callback.Get()));
-
-  manager_->CompleteSwitchForTesting(/*success=*/false);
-
-  EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
-      account_a_, account_b_));
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-  EXPECT_TRUE(manager_->CanShowPromo(account_b_, account_a_));
-}
-
-TEST_F(AccountSwitchingManagerTest,
-       PrefObserverStartingNextSwitchPreservesCallbacks) {
-  base::MockOnceClosure first_callback;
-  base::MockOnceClosure second_callback;
-  EXPECT_CALL(first_callback, Run()).Times(0);
-  EXPECT_CALL(second_callback, Run()).Times(0);
-
-  bool started_second_switch = false;
-  PrefChangeRegistrar registrar;
-  registrar.Init(profile_->GetPrefs());
-  SigninPrefs::ObserveSigninPrefsChanges(
-      registrar, base::BindLambdaForTesting([&]() {
-        if (!started_second_switch) {
-          started_second_switch = true;
-          EXPECT_TRUE(manager_->StartSwitching(account_a_, account_c_,
-                                               second_callback.Get()));
-        }
-      }));
-
-  ASSERT_TRUE(
-      manager_->StartSwitching(account_a_, account_b_, first_callback.Get()));
-
-  // Completing the first switch notifies the pref observer synchronously when
-  // recording pair suppression. Starting a follow-up switch in that observer
-  // must not overwrite or prematurely run either callback.
-  testing::Mock::VerifyAndClearExpectations(&first_callback);
-  EXPECT_CALL(first_callback, Run()).Times(1);
-  manager_->CompleteSwitchForTesting(/*success=*/true);
-  EXPECT_TRUE(started_second_switch);
-
-  testing::Mock::VerifyAndClearExpectations(&first_callback);
-  testing::Mock::VerifyAndClearExpectations(&second_callback);
-  EXPECT_CALL(second_callback, Run()).Times(1);
-  manager_->CompleteSwitchForTesting(/*success=*/true);
-}
-
-TEST_F(AccountSwitchingManagerTest,
-       StartSwitchingSafeAcrossProfileDestruction) {
-  // Verify `Shutdown()` cancels an in-progress switch without running the
-  // callback or suppressing the pair.
-  {
-    auto standalone_manager = std::make_unique<AccountSwitchingManager>(
-        profile_->GetPrefs(),
-        ChromeSigninClientFactory::GetForProfile(profile_.get()),
-        IdentityManagerFactory::GetForProfile(profile_.get()),
-        AccountPreviewDataServiceFactory::GetForProfile(profile_.get()));
-    base::MockOnceClosure shutdown_callback;
-    EXPECT_CALL(shutdown_callback, Run()).Times(0);
-    ASSERT_TRUE(standalone_manager->StartSwitching(account_a_, account_b_,
-                                                   shutdown_callback.Get()));
-    standalone_manager->Shutdown();
-    EXPECT_FALSE(
-        SigninPrefs(*profile_->GetPrefs())
-            .IsAccountSwitchingPromoSuppressedBySwitch(account_a_, account_b_));
-  }
-
-  // Verify destroying the manager directly while a switch is active also drops
-  // the callback without suppressing the pair.
-  {
-    auto standalone_manager = std::make_unique<AccountSwitchingManager>(
-        profile_->GetPrefs(),
-        ChromeSigninClientFactory::GetForProfile(profile_.get()),
-        IdentityManagerFactory::GetForProfile(profile_.get()),
-        AccountPreviewDataServiceFactory::GetForProfile(profile_.get()));
-    base::MockOnceClosure destroy_callback;
-    EXPECT_CALL(destroy_callback, Run()).Times(0);
-    ASSERT_TRUE(standalone_manager->StartSwitching(account_a_, account_b_,
-                                                   destroy_callback.Get()));
-    standalone_manager.reset();
-    EXPECT_FALSE(
-        SigninPrefs(*profile_->GetPrefs())
-            .IsAccountSwitchingPromoSuppressedBySwitch(account_a_, account_b_));
-  }
-
-  base::MockOnceClosure callback;
-  EXPECT_CALL(callback, Run()).Times(0);
-  ASSERT_TRUE(manager_->StartSwitching(account_a_, account_b_, callback.Get()));
-
-  manager_ = nullptr;
-  profile_.reset();
-}
-
-TEST_F(AccountSwitchingManagerTest,
-       StartSwitchingIgnoresPromoThrottlingAndEnforcesGuards) {
-  // Promo-display throttling (e.g. another window ignored the promo while an
-  // eligible promo is already shown) blocks `CanShowPromo()` without blocking
-  // an explicit `StartSwitching()`.
-  manager_->RecordPromoIgnored();
-  ASSERT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-
-  base::MockOnceClosure switch_callback;
-  EXPECT_CALL(switch_callback, Run()).Times(1);
-  EXPECT_TRUE(
-      manager_->StartSwitching(account_a_, account_b_, switch_callback.Get()));
-  manager_->CompleteSwitchForTesting(/*success=*/true);
-
-  // Pair suppression blocks `CanShowPromo()` without blocking explicit manual
-  // switching via `StartSwitching()`, even in the reverse direction.
-  ASSERT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
-  base::MockOnceClosure reverse_switch_callback;
-  EXPECT_CALL(reverse_switch_callback, Run()).Times(1);
-  EXPECT_TRUE(manager_->StartSwitching(account_b_, account_a_,
-                                       reverse_switch_callback.Get()));
-  manager_->CompleteSwitchForTesting(/*success=*/true);
-
-  // Structural guards (invalid accounts) still reject `StartSwitching()`.
-  base::MockOnceClosure rejected_callback;
-  EXPECT_CALL(rejected_callback, Run()).Times(0);
-  EXPECT_FALSE(
-      manager_->StartSwitching(GaiaId(), account_b_, rejected_callback.Get()));
-  EXPECT_FALSE(manager_->StartSwitching(account_a_, account_a_,
-                                        rejected_callback.Get()));
-}
-
-TEST_F(AccountSwitchingManagerTest,
-       ClockRollbackAndNullTimestampsDoNotWedgeCooldowns) {
-  {
-    ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kAccountSwitchingPromoState);
-    update->Set("last_ignored_time",
-                base::TimeToValue(base::Time::Now() + base::Days(30)));
-    update->Set("last_explicit_dismissal_time",
-                base::TimeToValue(base::Time::Now() + base::Days(30)));
-  }
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-
-  {
-    ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kAccountSwitchingPromoState);
-    update->Set("last_ignored_time", base::TimeToValue(base::Time()));
-    update->Set("last_explicit_dismissal_time",
-                base::TimeToValue(base::Time()));
-  }
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-}
-
-TEST_F(AccountSwitchingManagerTest,
-       DisabledFeatureFlagsBlockPromoAndSwitching) {
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        switches::kEnableAccountPreviewSwitchingAccount);
-    EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-    EXPECT_FALSE(manager_->StartSwitching(account_a_, account_b_));
-  }
-
-  // `kEnableAccountPreviewSwitchingAccount` has no effect if
-  // `kEnableAccountPreviewData` is disabled, even with `SkipCooldown`.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{switches::kEnableAccountPreviewSwitchingAccount,
-          {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
-            "true"}}}},
-        {switches::kEnableAccountPreviewData});
-    EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
-    EXPECT_FALSE(manager_->StartSwitching(account_a_, account_b_));
-
-    auto disabled_profile = std::make_unique<TestingProfile>();
-    EXPECT_EQ(
-        AccountSwitchingManagerFactory::GetForProfile(disabled_profile.get()),
-        nullptr);
-  }
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        switches::kEnableAccountPreviewSwitchingAccount);
-    auto disabled_profile = std::make_unique<TestingProfile>();
-    EXPECT_EQ(
-        AccountSwitchingManagerFactory::GetForProfile(disabled_profile.get()),
-        nullptr);
-  }
-}
-
-TEST_F(AccountSwitchingManagerTest, SwitchBackWindowPlaceholder) {
-  // Currently inactive pending b/585132769; must not prematurely block
-  // eligibility.
-  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
-}
-
-TEST_F(AccountSwitchingManagerTest,
-       SkipCooldownBypassesThrottlingButNotStructuralGuards) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      switches::kEnableAccountPreviewSwitchingAccount,
-      {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
-        "true"}});
-
-  // Trigger every throttling / cooldown / pair-suppression rule and leave
-  // Account D without `ChromeLastSigninTime`.
-  for (int i = 0; i < AccountSwitchingManager::kMaxGlobalIgnores; ++i) {
-    manager_->RecordPromoIgnored();
-  }
-  manager_->RecordPromoExplicitlyDismissed(account_d_, account_b_);
-  manager_->RecordPromoExplicitlyDismissed(account_d_, account_b_);
-  SigninPrefs(*profile_->GetPrefs())
-      .SetAccountSwitchingPromoSuppressedBySwitch(account_b_, account_d_);
-
-  EXPECT_TRUE(manager_->CanShowPromo(account_d_, account_b_));
-
-  // Invalid accounts are still blocked.
-  EXPECT_FALSE(manager_->CanShowPromo(account_d_, account_d_));
-  EXPECT_FALSE(manager_->CanShowPromo(GaiaId(), account_b_));
-
-  // Ongoing switch guard is still enforced.
-  EXPECT_TRUE(manager_->StartSwitching(account_d_, account_b_));
-  EXPECT_FALSE(manager_->CanShowPromo(account_d_, account_b_));
-  EXPECT_FALSE(manager_->StartSwitching(account_d_, account_b_));
-  manager_->CompleteSwitchForTesting(/*success=*/true);
-  EXPECT_TRUE(manager_->CanShowPromo(account_d_, account_b_));
-}
-
-TEST_F(AccountSwitchingManagerTest, RegularAndOffTheRecordProfiles) {
-  EXPECT_EQ(AccountSwitchingManagerFactory::GetForProfile(nullptr), nullptr);
-
-  // Regular profile gets a stable non-null instance and registered pref.
-  EXPECT_EQ(AccountSwitchingManagerFactory::GetForProfile(profile_.get()),
-            manager_);
-  EXPECT_NE(
-      profile_->GetPrefs()->FindPreference(prefs::kAccountSwitchingPromoState),
-      nullptr);
-
-  // Off-the-record (Incognito) and Guest profiles do not get an instance.
-  Profile* otr_profile =
-      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  EXPECT_EQ(AccountSwitchingManagerFactory::GetForProfile(otr_profile),
-            nullptr);
-
-  TestingProfile::Builder guest_builder;
-  guest_builder.SetGuestSession();
-  std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
-  EXPECT_EQ(AccountSwitchingManagerFactory::GetForProfile(guest_profile.get()),
-            nullptr);
-}
-
-class AccountSwitchingManagerEligibilityTest : public testing::Test {
- public:
-  AccountSwitchingManagerEligibilityTest() = default;
+  AccountSwitchingManagerTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
@@ -590,14 +92,22 @@ class AccountSwitchingManagerEligibilityTest : public testing::Test {
         identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
     third_account_ =
         identity_test_env()->MakeAccountAvailable("third@gmail.com");
+    fourth_account_ =
+        identity_test_env()->MakeAccountAvailable("fourth@gmail.com");
 
-    // Stamp the primary account as signed in 28+ days ago so tests start in an
-    // eligible baseline state.
-    SigninPrefs(*profile_->GetPrefs())
-        .SetChromeLastSigninTime(
-            primary_account_.GetGaiaId(),
-            base::Time::Now() -
-                AccountSwitchingManager::kPrimaryAccountSigninGracePeriod);
+    // Stamp accounts A, B, and C as signed in 28+ days ago so tests start in an
+    // eligible baseline state; leave `fourth_account_` unstamped for grace
+    // period tests.
+    const base::Time past_grace_period =
+        base::Time::Now() -
+        AccountSwitchingManager::kPrimaryAccountSigninGracePeriod;
+    SigninPrefs signin_prefs(*profile_->GetPrefs());
+    signin_prefs.SetChromeLastSigninTime(primary_account_.GetGaiaId(),
+                                         past_grace_period);
+    signin_prefs.SetChromeLastSigninTime(secondary_account_.GetGaiaId(),
+                                         past_grace_period);
+    signin_prefs.SetChromeLastSigninTime(third_account_.GetGaiaId(),
+                                         past_grace_period);
 
     // Record `primary_account_` on Profile 1's own attributes entry to mirror
     // real multi-profile state.
@@ -606,6 +116,8 @@ class AccountSwitchingManagerEligibilityTest : public testing::Test {
     profile_entry->SetAuthInfo(primary_account_.GetGaiaId(),
                                u"primary@gmail.com",
                                /*is_consented_primary_account=*/false);
+
+    SetCandidate(secondary_account_.GetGaiaId());
   }
 
   void TearDown() override {
@@ -639,6 +151,53 @@ class AccountSwitchingManagerEligibilityTest : public testing::Test {
     return pref;
   }
 
+  void SetCandidate(const GaiaId& gaia_id) {
+    preview_service_->SetPreferredAccountForSwitching(MakePreference(gaia_id));
+  }
+
+  void ClearCandidate() {
+    preview_service_->SetPreferredAccountForSwitching(std::nullopt);
+  }
+
+  void SwitchPrimaryAccountInProfile(const AccountInfo& new_primary,
+                                     bool stamp_past_grace_period = true) {
+    PrimaryAccountMutator* mutator =
+        identity_test_env()->identity_manager()->GetPrimaryAccountMutator();
+    ASSERT_NE(mutator, nullptr);
+    ASSERT_TRUE(mutator->RemovePrimaryAccountButKeepTokens(
+        signin_metrics::ProfileSignout::kSignoutForAccountSwitching));
+    ASSERT_EQ(mutator->SetPrimaryAccount(
+                  new_primary.GetAccountId(), ConsentLevel::kSignin,
+                  signin_metrics::AccessPoint::kStartPage),
+              PrimaryAccountMutator::PrimaryAccountError::kNoError);
+    ProfileAttributesEntry* profile_entry = GetProfileEntry(profile_);
+    ASSERT_NE(profile_entry, nullptr);
+    profile_entry->SetAuthInfo(new_primary.GetGaiaId(),
+                               base::UTF8ToUTF16(new_primary.GetEmail()),
+                               /*is_consented_primary_account=*/false);
+    if (stamp_past_grace_period) {
+      SigninPrefs(*profile_->GetPrefs())
+          .SetChromeLastSigninTime(
+              new_primary.GetGaiaId(),
+              base::Time::Now() -
+                  AccountSwitchingManager::kPrimaryAccountSigninGracePeriod);
+    }
+  }
+
+  void ShowAndResolvePromo(SigninInterceptionResult result) {
+    ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+    ASSERT_TRUE(manager_->IsPromoActiveForTesting());
+    manager_->ResolvePromoForTesting(result);
+    ASSERT_FALSE(manager_->IsPromoActiveForTesting());
+  }
+
+  void ShowAcceptAndCompleteSwitch(bool success) {
+    ShowAndResolvePromo(SigninInterceptionResult::kAccepted);
+    ASSERT_TRUE(manager_->IsSwitchInProgressForTesting());
+    manager_->CompleteSwitchForTesting(success);
+    ASSERT_FALSE(manager_->IsSwitchInProgressForTesting());
+  }
+
   struct FeatureInitializer {
     FeatureInitializer() {
       feature_list.InitWithFeatures(
@@ -657,35 +216,635 @@ class AccountSwitchingManagerEligibilityTest : public testing::Test {
   raw_ptr<TestingProfile> other_profile_ = nullptr;
   raw_ptr<TestAccountPreviewDataService> preview_service_ = nullptr;
   raw_ptr<AccountSwitchingManager> manager_ = nullptr;
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_;
 
   AccountInfo primary_account_;
   AccountInfo secondary_account_;
   AccountInfo third_account_;
+  AccountInfo fourth_account_;
 };
 
-TEST_F(AccountSwitchingManagerEligibilityTest,
-       TargetAccountSignedInOnOtherProfileBlocksPromoAndSwitching) {
-  const GaiaId primary_gaia = primary_account_.GetGaiaId();
-  const GaiaId secondary_gaia = secondary_account_.GetGaiaId();
-  const GaiaId third_gaia = third_account_.GetGaiaId();
+TEST_F(AccountSwitchingManagerTest, InitiallyEligibleAndShowPromo) {
+  EXPECT_TRUE(manager_->CanShowPromo());
 
-  EXPECT_TRUE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
+  // Null browser window does not activate the promo.
+  EXPECT_FALSE(manager_->ShowPromo(nullptr));
+  EXPECT_FALSE(manager_->IsPromoActiveForTesting());
+  EXPECT_TRUE(manager_->CanShowPromo());
 
-  // Sign `secondary_gaia` into `other_profile_` as primary.
+  EXPECT_TRUE(manager_->ShowPromo(&browser_window_));
+  EXPECT_TRUE(manager_->IsPromoActiveForTesting());
+  EXPECT_FALSE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest, PromoNotDisplayedDoesNotThrottle) {
+  ShowAndResolvePromo(SigninInterceptionResult::kNotDisplayed);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+  EXPECT_TRUE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest, PrimaryAccountSigninGracePeriod) {
+  // Missing sign-in timestamp blocks eligibility (fail closed).
+  SwitchPrimaryAccountInProfile(fourth_account_,
+                                /*stamp_past_grace_period=*/false);
+  SigninPrefs(*profile_->GetPrefs()).ClearAllChromeLastSigninTime();
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+
+  // Stamping sign-in now starts a 28-day grace period.
+  SigninPrefs(*profile_->GetPrefs())
+      .SetChromeLastSigninTime(fourth_account_.GetGaiaId(), base::Time::Now());
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Just before 28 days: still blocked.
+  task_environment_.AdvanceClock(
+      AccountSwitchingManager::kPrimaryAccountSigninGracePeriod -
+      base::Seconds(1));
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Exactly 28 days: eligible.
+  task_environment_.AdvanceClock(base::Seconds(1));
+  EXPECT_TRUE(manager_->CanShowPromo());
+
+  // Null timestamp (`"0"`) fails closed rather than treating epoch delta as
+  // elapsed.
+  SigninPrefs(*profile_->GetPrefs())
+      .SetChromeLastSigninTime(fourth_account_.GetGaiaId(), base::Time());
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Future timestamp (clock skew) also fails closed within grace period.
+  SigninPrefs(*profile_->GetPrefs())
+      .SetChromeLastSigninTime(fourth_account_.GetGaiaId(),
+                               base::Time::Now() + base::Days(1));
+  EXPECT_FALSE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest, GlobalIgnoreCooldownAndCap) {
+  // Ignores 1 through 4 (including `kDismissed`) enforce a 7-day global
+  // cooldown and then recover.
+  for (int i = 0; i < AccountSwitchingManager::kMaxGlobalIgnores - 1; ++i) {
+    ASSERT_TRUE(manager_->CanShowPromo());
+    ShowAndResolvePromo(i % 2 == 0 ? SigninInterceptionResult::kIgnored
+                                   : SigninInterceptionResult::kDismissed);
+
+    // Immediately blocked globally across all candidates.
+    EXPECT_FALSE(manager_->CanShowPromo());
+    SetCandidate(third_account_.GetGaiaId());
+    EXPECT_FALSE(manager_->CanShowPromo());
+
+    // Still blocked 1 second before the 7-day cooldown expires.
+    task_environment_.AdvanceClock(
+        AccountSwitchingManager::kGlobalIgnoreCooldown - base::Seconds(1));
+    EXPECT_FALSE(manager_->CanShowPromo());
+
+    // Eligible again once the 7-day cooldown expires.
+    task_environment_.AdvanceClock(base::Seconds(1));
+    EXPECT_TRUE(manager_->CanShowPromo());
+    SetCandidate(secondary_account_.GetGaiaId());
+    EXPECT_TRUE(manager_->CanShowPromo());
+  }
+
+  // 5th ignore hits the permanent global cap.
+  ShowAndResolvePromo(SigninInterceptionResult::kIgnored);
+  EXPECT_FALSE(manager_->CanShowPromo());
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Remains permanently blocked even well past the 7-day cooldown.
+  task_environment_.AdvanceClock(base::Days(365));
+  EXPECT_FALSE(manager_->CanShowPromo());
+  SetCandidate(secondary_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest, GlobalExplicitDismissalCooldown) {
+  ShowAndResolvePromo(SigninInterceptionResult::kDeclined);
+
+  // Blocked globally for 28 days across all candidates.
+  EXPECT_FALSE(manager_->CanShowPromo());
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Just before 28 days: still blocked.
+  task_environment_.AdvanceClock(
+      AccountSwitchingManager::kGlobalExplicitDismissalCooldown -
+      base::Seconds(1));
+  EXPECT_FALSE(manager_->CanShowPromo());
+  SetCandidate(secondary_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // At 28 days: eligible again (pair dismissal count is only 1 < 2).
+  task_environment_.AdvanceClock(base::Seconds(1));
+  EXPECT_TRUE(manager_->CanShowPromo());
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_TRUE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest, PairExplicitDismissalCapOfTwo) {
+  // First dismissal of `(A, B)`.
+  ShowAndResolvePromo(SigninInterceptionResult::kDeclined);
+  task_environment_.AdvanceClock(
+      AccountSwitchingManager::kGlobalExplicitDismissalCooldown);
+  EXPECT_TRUE(manager_->CanShowPromo());
+
+  // Second dismissal in the opposite direction `(B, A)` hits the shared
+  // per-pair cap of 2 for `{A, B}`.
+  SwitchPrimaryAccountInProfile(secondary_account_);
+  SetCandidate(primary_account_.GetGaiaId());
+  ASSERT_TRUE(manager_->CanShowPromo());
+  ShowAndResolvePromo(SigninInterceptionResult::kDeclined);
+  task_environment_.AdvanceClock(
+      AccountSwitchingManager::kGlobalExplicitDismissalCooldown);
+
+  // `{A, B}` stays permanently blocked in both directions even after 365 days.
+  EXPECT_FALSE(manager_->CanShowPromo());
+  SwitchPrimaryAccountInProfile(primary_account_);
+  SetCandidate(secondary_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  task_environment_.AdvanceClock(base::Days(365));
+  EXPECT_FALSE(manager_->CanShowPromo());
+  SwitchPrimaryAccountInProfile(secondary_account_);
+  SetCandidate(primary_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Unrelated pairs remain eligible.
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_TRUE(manager_->CanShowPromo());
+  SwitchPrimaryAccountInProfile(primary_account_);
+  EXPECT_TRUE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest, SymmetricPairSuppression) {
+  // Suppressing `{A, B}` blocks switching prompts in both directions while
+  // both accounts remain in the profile.
+  SigninPrefs(*profile_->GetPrefs())
+      .SetAccountSwitchingPromoSuppressedBySwitch(
+          secondary_account_.GetGaiaId(), primary_account_.GetGaiaId());
+
+  EXPECT_FALSE(manager_->CanShowPromo());
+  SwitchPrimaryAccountInProfile(secondary_account_);
+  SetCandidate(primary_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Other pairs remain eligible.
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_TRUE(manager_->CanShowPromo());
+
+  // Suppression persists indefinitely while both accounts remain.
+  task_environment_.AdvanceClock(base::Days(365));
+  SetCandidate(primary_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+  SwitchPrimaryAccountInProfile(primary_account_);
+  SetCandidate(secondary_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       ActivePromoAndSwitchBlockOverlapAndSuppressOnCompletion) {
+  ASSERT_TRUE(manager_->CanShowPromo());
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+  EXPECT_TRUE(manager_->IsPromoActiveForTesting());
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsPromoActiveForTesting());
+  EXPECT_TRUE(manager_->IsSwitchInProgressForTesting());
+
+  // While switching is in progress, promos are blocked across all candidates.
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+
+  manager_->CompleteSwitchForTesting(/*success=*/true);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+
+  // Once finished, `{A, B}` is suppressed in both directions while other pairs
+  // become eligible again.
+  SetCandidate(secondary_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+  SwitchPrimaryAccountInProfile(secondary_account_);
+  SetCandidate(primary_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  SwitchPrimaryAccountInProfile(primary_account_);
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_TRUE(manager_->CanShowPromo());
+  ShowAcceptAndCompleteSwitch(/*success=*/true);
+  EXPECT_FALSE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       SuccessfulSwitchSuppressesPairBidirectionally) {
+  const SigninPrefs signin_prefs(*profile_->GetPrefs());
+  ASSERT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      primary_account_.GetGaiaId(), secondary_account_.GetGaiaId()));
+
+  ShowAndResolvePromo(SigninInterceptionResult::kAccepted);
+  ASSERT_TRUE(manager_->IsSwitchInProgressForTesting());
+
+  // Suppression is not recorded until the switch actually finishes
+  // successfully.
+  EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      primary_account_.GetGaiaId(), secondary_account_.GetGaiaId()));
+
+  manager_->CompleteSwitchForTesting(/*success=*/true);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+
+  EXPECT_TRUE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      primary_account_.GetGaiaId(), secondary_account_.GetGaiaId()));
+  EXPECT_TRUE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      secondary_account_.GetGaiaId(), primary_account_.GetGaiaId()));
+  EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      primary_account_.GetGaiaId(), third_account_.GetGaiaId()));
+
+  // Suppression persists indefinitely across the 28-day window and beyond.
+  task_environment_.AdvanceClock(base::Days(365));
+  EXPECT_FALSE(manager_->CanShowPromo());
+  SwitchPrimaryAccountInProfile(secondary_account_);
+  SetCandidate(primary_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest, AbortedSwitchDoesNotSuppressPair) {
+  const SigninPrefs signin_prefs(*profile_->GetPrefs());
+
+  ShowAcceptAndCompleteSwitch(/*success=*/false);
+
+  EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      primary_account_.GetGaiaId(), secondary_account_.GetGaiaId()));
+  EXPECT_TRUE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       PrefObserverStartingNextSwitchOnCompletionIsSafe) {
+  bool started_second_switch = false;
+  PrefChangeRegistrar registrar;
+  registrar.Init(profile_->GetPrefs());
+  SigninPrefs::ObserveSigninPrefsChanges(
+      registrar, base::BindLambdaForTesting([&]() {
+        if (!started_second_switch) {
+          started_second_switch = true;
+          SetCandidate(third_account_.GetGaiaId());
+          ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+          manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+        }
+      }));
+
+  ShowAndResolvePromo(SigninInterceptionResult::kAccepted);
+  ASSERT_TRUE(manager_->IsSwitchInProgressForTesting());
+
+  // Completing the first switch notifies the pref observer synchronously when
+  // recording pair suppression. Starting a follow-up promo/switch in that
+  // observer must not be cleared or corrupted by the first completion.
+  manager_->CompleteSwitchForTesting(/*success=*/true);
+  EXPECT_TRUE(started_second_switch);
+  EXPECT_TRUE(manager_->IsSwitchInProgressForTesting());
+
+  manager_->CompleteSwitchForTesting(/*success=*/true);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+  EXPECT_TRUE(
+      SigninPrefs(*profile_->GetPrefs())
+          .IsAccountSwitchingPromoSuppressedBySwitch(
+              primary_account_.GetGaiaId(), third_account_.GetGaiaId()));
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       ShutdownAndDestructionSafeAcrossActivePromoOrSwitch) {
+  // Verify `Shutdown()` cancels an active promo without recording ignores,
+  // dismissals, or suppression.
+  {
+    auto standalone_manager = std::make_unique<AccountSwitchingManager>(
+        profile_->GetPrefs(),
+        ChromeSigninClientFactory::GetForProfile(profile_),
+        IdentityManagerFactory::GetForProfile(profile_),
+        AccountPreviewDataServiceFactory::GetForProfile(profile_));
+    ASSERT_TRUE(standalone_manager->ShowPromo(&browser_window_));
+    ASSERT_TRUE(standalone_manager->IsPromoActiveForTesting());
+    standalone_manager->Shutdown();
+    EXPECT_FALSE(standalone_manager->IsPromoActiveForTesting());
+    EXPECT_TRUE(manager_->CanShowPromo());
+  }
+
+  // Verify `Shutdown()` cancels an in-progress switch without suppressing the
+  // pair.
+  {
+    auto standalone_manager = std::make_unique<AccountSwitchingManager>(
+        profile_->GetPrefs(),
+        ChromeSigninClientFactory::GetForProfile(profile_),
+        IdentityManagerFactory::GetForProfile(profile_),
+        AccountPreviewDataServiceFactory::GetForProfile(profile_));
+    ASSERT_TRUE(standalone_manager->ShowPromo(&browser_window_));
+    standalone_manager->ResolvePromoForTesting(
+        SigninInterceptionResult::kAccepted);
+    ASSERT_TRUE(standalone_manager->IsSwitchInProgressForTesting());
+    standalone_manager->Shutdown();
+    EXPECT_FALSE(standalone_manager->IsSwitchInProgressForTesting());
+    EXPECT_FALSE(
+        SigninPrefs(*profile_->GetPrefs())
+            .IsAccountSwitchingPromoSuppressedBySwitch(
+                primary_account_.GetGaiaId(), secondary_account_.GetGaiaId()));
+  }
+
+  // Verify destroying the manager directly while a switch is active also leaves
+  // the pair unsuppressed.
+  {
+    auto standalone_manager = std::make_unique<AccountSwitchingManager>(
+        profile_->GetPrefs(),
+        ChromeSigninClientFactory::GetForProfile(profile_),
+        IdentityManagerFactory::GetForProfile(profile_),
+        AccountPreviewDataServiceFactory::GetForProfile(profile_));
+    ASSERT_TRUE(standalone_manager->ShowPromo(&browser_window_));
+    standalone_manager->ResolvePromoForTesting(
+        SigninInterceptionResult::kAccepted);
+    ASSERT_TRUE(standalone_manager->IsSwitchInProgressForTesting());
+    standalone_manager.reset();
+    EXPECT_FALSE(
+        SigninPrefs(*profile_->GetPrefs())
+            .IsAccountSwitchingPromoSuppressedBySwitch(
+                primary_account_.GetGaiaId(), secondary_account_.GetGaiaId()));
+  }
+
+  ShowAndResolvePromo(SigninInterceptionResult::kAccepted);
+  ASSERT_TRUE(manager_->IsSwitchInProgressForTesting());
+
+  manager_ = nullptr;
+  preview_service_ = nullptr;
+  identity_test_env_adaptor_.reset();
+  profile_ = nullptr;
+  profile_manager_.DeleteTestingProfile("Profile 1");
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       AcceptingOpenPromoRevalidatesEligibilityForShownPair) {
+  // Open promo for `(primary_account_, secondary_account_)`.
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+
+  // Promo throttling/cooldown updates while the promo is open do not block
+  // `kAccepted` for the valid pair.
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kAccountSwitchingPromoState);
+    update->Set("last_ignored_time", base::TimeToValue(base::Time::Now()));
+  }
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_TRUE(manager_->IsSwitchInProgressForTesting());
+  manager_->CompleteSwitchForTesting(/*success=*/true);
+
+  const SigninPrefs signin_prefs(*profile_->GetPrefs());
+  EXPECT_TRUE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      primary_account_.GetGaiaId(), secondary_account_.GetGaiaId()));
+
+  // Clear ignore cooldown and verify changing `AccountPreviewDataService` to a
+  // different candidate while `(primary_account_, third_account_)` is open
+  // rejects `kAccepted` without starting a switch.
+  task_environment_.AdvanceClock(
+      AccountSwitchingManager::kGlobalIgnoreCooldown);
+  SetCandidate(third_account_.GetGaiaId());
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+  SetCandidate(fourth_account_.GetGaiaId());
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+  EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+      primary_account_.GetGaiaId(), third_account_.GetGaiaId()));
+  SetCandidate(third_account_.GetGaiaId());
+
+  // Target account signed in on another profile while promo is open.
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
   ProfileAttributesEntry* other_entry = GetProfileEntry(other_profile_);
   ASSERT_NE(other_entry, nullptr);
-  other_entry->SetAuthInfo(secondary_gaia, u"secondary@gmail.com",
+  other_entry->SetAuthInfo(third_account_.GetGaiaId(), u"third@gmail.com",
+                           /*is_consented_primary_account=*/false);
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+  other_entry->SetAuthInfo(GaiaId(), std::u16string(),
                            /*is_consented_primary_account=*/false);
 
-  // Both promo eligibility and switching are blocked for `secondary_gaia`.
-  EXPECT_FALSE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
-  base::MockOnceClosure rejected_callback;
-  EXPECT_CALL(rejected_callback, Run()).Times(0);
-  EXPECT_FALSE(manager_->StartSwitching(primary_gaia, secondary_gaia,
-                                        rejected_callback.Get()));
+  // Target persistent refresh token error while promo is open.
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      third_account_.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      third_account_.GetAccountId(), GoogleServiceAuthError::AuthErrorNone());
+
+  // Target account becoming child while promo is open.
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+  identity_test_env()->UpdateAccountInfoForAccount(
+      AccountInfo::Builder(third_account_)
+          .SetIsChildAccount(Tribool::kTrue)
+          .Build());
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+  identity_test_env()->UpdateAccountInfoForAccount(
+      AccountInfo::Builder(third_account_)
+          .SetIsChildAccount(Tribool::kFalse)
+          .Build());
+
+  // Target refresh token removed while promo is open.
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+  identity_test_env()->RemoveRefreshTokenForAccount(
+      third_account_.GetAccountId());
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+  third_account_ = identity_test_env()->MakeAccountAvailable("third@gmail.com");
+
+  // Target account becoming managed while promo is open.
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+  identity_test_env()->UpdateAccountInfoForAccount(
+      AccountInfo::Builder(third_account_)
+          .SetHostedDomain("example.com")
+          .Build());
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+
+  // Switch candidate to `fourth_account_` for primary-account and pref guards.
+  SetCandidate(fourth_account_.GetGaiaId());
+
+  // Primary-account persistent error while promo is open.
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account_.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account_.GetAccountId(), GoogleServiceAuthError::AuthErrorNone());
+
+  // Primary account changed while promo is open.
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+  SwitchPrimaryAccountInProfile(fourth_account_);
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+  SwitchPrimaryAccountInProfile(primary_account_);
+
+  // Primary account cleared (signed out) while promo is open.
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+  identity_test_env()->ClearPrimaryAccount();
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+
+  // Restore signed-in state and verify `prefs::kSigninAllowed = false` blocks
+  // `kAccepted` while open.
+  primary_account_ = identity_test_env()->MakePrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  fourth_account_ =
+      identity_test_env()->MakeAccountAvailable("fourth@gmail.com");
+  task_environment_.AdvanceClock(
+      AccountSwitchingManager::kPrimaryAccountSigninGracePeriod);
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
+  profile_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       ClockRollbackAndNullTimestampsDoNotWedgeCooldowns) {
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kAccountSwitchingPromoState);
+    update->Set("last_ignored_time",
+                base::TimeToValue(base::Time::Now() + base::Days(30)));
+    update->Set("last_explicit_dismissal_time",
+                base::TimeToValue(base::Time::Now() + base::Days(30)));
+  }
+  EXPECT_TRUE(manager_->CanShowPromo());
+
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kAccountSwitchingPromoState);
+    update->Set("last_ignored_time", base::TimeToValue(base::Time()));
+    update->Set("last_explicit_dismissal_time",
+                base::TimeToValue(base::Time()));
+  }
+  EXPECT_TRUE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest, DisabledFeatureFlagsBlockPromo) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        switches::kEnableAccountPreviewSwitchingAccount);
+    EXPECT_FALSE(manager_->CanShowPromo());
+    EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+  }
+
+  // `kEnableAccountPreviewSwitchingAccount` has no effect if
+  // `kEnableAccountPreviewData` is disabled, even with `SkipCooldown`.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{switches::kEnableAccountPreviewSwitchingAccount,
+          {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
+            "true"}}}},
+        {switches::kEnableAccountPreviewData});
+    EXPECT_FALSE(manager_->CanShowPromo());
+    EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+
+    auto disabled_profile = std::make_unique<TestingProfile>();
+    EXPECT_EQ(
+        AccountSwitchingManagerFactory::GetForProfile(disabled_profile.get()),
+        nullptr);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        switches::kEnableAccountPreviewSwitchingAccount);
+    auto disabled_profile = std::make_unique<TestingProfile>();
+    EXPECT_EQ(
+        AccountSwitchingManagerFactory::GetForProfile(disabled_profile.get()),
+        nullptr);
+  }
+}
+
+TEST_F(AccountSwitchingManagerTest, SwitchBackWindowPlaceholder) {
+  // Currently inactive pending b/585132769; must not prematurely block
+  // eligibility.
+  EXPECT_TRUE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       SkipCooldownBypassesThrottlingButNotStructuralGuards) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      switches::kEnableAccountPreviewSwitchingAccount,
+      {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
+        "true"}});
+
+  // Trigger every throttling / cooldown / pair-suppression rule and switch to
+  // an account without `ChromeLastSigninTime`.
+  for (int i = 0; i < AccountSwitchingManager::kMaxGlobalIgnores; ++i) {
+    ShowAndResolvePromo(SigninInterceptionResult::kIgnored);
+  }
+  ShowAndResolvePromo(SigninInterceptionResult::kDeclined);
+  ShowAndResolvePromo(SigninInterceptionResult::kDeclined);
+  SigninPrefs(*profile_->GetPrefs())
+      .SetAccountSwitchingPromoSuppressedBySwitch(
+          secondary_account_.GetGaiaId(), fourth_account_.GetGaiaId());
+  SwitchPrimaryAccountInProfile(fourth_account_,
+                                /*stamp_past_grace_period=*/false);
+
+  EXPECT_TRUE(manager_->CanShowPromo());
+
+  // Ongoing switch guard is still enforced.
+  ShowAndResolvePromo(SigninInterceptionResult::kAccepted);
+  ASSERT_TRUE(manager_->IsSwitchInProgressForTesting());
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+  manager_->CompleteSwitchForTesting(/*success=*/true);
+  EXPECT_TRUE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest, RegularAndOffTheRecordProfiles) {
+  EXPECT_EQ(AccountSwitchingManagerFactory::GetForProfile(nullptr), nullptr);
+
+  // Regular profile gets a stable non-null instance and registered pref.
+  EXPECT_EQ(AccountSwitchingManagerFactory::GetForProfile(profile_), manager_);
+  EXPECT_NE(
+      profile_->GetPrefs()->FindPreference(prefs::kAccountSwitchingPromoState),
+      nullptr);
+
+  // Off-the-record (Incognito) and Guest profiles do not get an instance.
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_EQ(AccountSwitchingManagerFactory::GetForProfile(otr_profile),
+            nullptr);
+
+  TestingProfile::Builder guest_builder;
+  guest_builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
+  EXPECT_EQ(AccountSwitchingManagerFactory::GetForProfile(guest_profile.get()),
+            nullptr);
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       TargetAccountSignedInOnOtherProfileBlocksPromoAndSwitching) {
+  ASSERT_TRUE(manager_->CanShowPromo());
+
+  // Sign `secondary_account_` into `other_profile_` as primary.
+  ProfileAttributesEntry* other_entry = GetProfileEntry(other_profile_);
+  ASSERT_NE(other_entry, nullptr);
+  other_entry->SetAuthInfo(secondary_account_.GetGaiaId(),
+                           u"secondary@gmail.com",
+                           /*is_consented_primary_account=*/false);
+
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
 
   // Unrelated accounts not signed in on another profile remain eligible.
-  EXPECT_TRUE(manager_->CanShowPromo(primary_gaia, third_gaia));
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_TRUE(manager_->CanShowPromo());
+  SetCandidate(secondary_account_.GetGaiaId());
 
   // Even `SkipCooldown` does not bypass the multi-profile structural guard.
   {
@@ -694,140 +853,83 @@ TEST_F(AccountSwitchingManagerEligibilityTest,
         switches::kEnableAccountPreviewSwitchingAccount,
         {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
           "true"}});
-    EXPECT_FALSE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
-    EXPECT_FALSE(manager_->StartSwitching(primary_gaia, secondary_gaia));
+    EXPECT_FALSE(manager_->CanShowPromo());
+    EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
   }
 
   // Omitted ephemeral profiles are ignored by
   // `IsAccountSignedInOnOtherProfile`.
   other_entry->SetIsEphemeral(true);
   other_entry->SetIsOmitted(true);
-  EXPECT_TRUE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
+  EXPECT_TRUE(manager_->CanShowPromo());
   other_entry->SetIsOmitted(false);
   other_entry->SetIsEphemeral(false);
-  EXPECT_FALSE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
+  EXPECT_FALSE(manager_->CanShowPromo());
 
-  // Signing `secondary_gaia` out of `other_profile_` restores eligibility.
+  // Signing `secondary_account_` out of `other_profile_` restores eligibility.
   other_entry->SetAuthInfo(GaiaId(), std::u16string(),
                            /*is_consented_primary_account=*/false);
-  EXPECT_TRUE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
-}
+  ASSERT_TRUE(manager_->CanShowPromo());
 
-TEST_F(AccountSwitchingManagerEligibilityTest,
-       GetEligibleAccountForSwitchingReturnsValidCandidate) {
-  const auto pref = MakePreference(secondary_account_.GetGaiaId());
-  preview_service_->SetPreferredAccountForSwitching(pref);
-
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
-}
-
-TEST_F(
-    AccountSwitchingManagerEligibilityTest,
-    GetEligibleAccountForSwitchingFiltersStaleCandidateSignedInOnOtherProfile) {
-  const auto stale_pref = MakePreference(secondary_account_.GetGaiaId());
-  preview_service_->SetPreferredAccountForSwitching(stale_pref);
-  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), stale_pref);
-
-  // Simulate the user signing into `secondary_account_` as primary in another
-  // Chrome profile after `prefs::kAccountPreviewSwitchingPreference` was
-  // computed, leaving `AccountPreviewDataService` returning a stale candidate.
-  ProfileAttributesEntry* other_entry = GetProfileEntry(other_profile_);
-  ASSERT_NE(other_entry, nullptr);
+  // Signing `secondary_account_` into `other_profile_` while a promo is open
+  // also blocks switching on acceptance.
+  ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
   other_entry->SetAuthInfo(secondary_account_.GetGaiaId(),
                            u"secondary@gmail.com",
                            /*is_consented_primary_account=*/false);
-
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
-
-  // `SkipCooldown` must still filter out the stale multi-profile candidate.
-  {
-    base::test::ScopedFeatureList skip_cooldown_features;
-    skip_cooldown_features.InitAndEnableFeatureWithParameters(
-        switches::kEnableAccountPreviewSwitchingAccount,
-        {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
-          "true"}});
-    EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
-  }
-
-  // Omitting `other_profile_` or signing out restores eligibility.
-  other_entry->SetIsEphemeral(true);
-  other_entry->SetIsOmitted(true);
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), stale_pref);
-  other_entry->SetIsOmitted(false);
-  other_entry->SetIsEphemeral(false);
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
-
-  other_entry->SetAuthInfo(GaiaId(), std::u16string(),
-                           /*is_consented_primary_account=*/false);
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), stale_pref);
+  manager_->ResolvePromoForTesting(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
 }
 
-TEST_F(AccountSwitchingManagerEligibilityTest,
-       GetEligibleAccountForSwitchingFiltersStaleOrIneligibleState) {
-  // No candidate from `AccountPreviewDataService`.
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+TEST_F(AccountSwitchingManagerTest, FiltersMissingEmptyAndSelfCandidates) {
+  ClearCandidate();
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
 
   // Empty Gaia ID candidate is rejected.
-  preview_service_->SetPreferredAccountForSwitching(MakePreference(GaiaId()));
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+  SetCandidate(GaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
 
-  // Valid secondary candidate is eligible.
-  const auto valid_pref = MakePreference(secondary_account_.GetGaiaId());
-  preview_service_->SetPreferredAccountForSwitching(valid_pref);
-  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), valid_pref);
+  // Candidate matching the primary account is rejected.
+  SetCandidate(primary_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
 
-  // Disabled feature flag blocks eligibility.
-  {
-    base::test::ScopedFeatureList disabled_features;
-    disabled_features.InitAndDisableFeature(
-        switches::kEnableAccountPreviewSwitchingAccount);
-    EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
-  }
-
-  // Persistent refresh token error on the candidate filters it out.
-  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      secondary_account_.GetAccountId(),
-      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-              CREDENTIALS_REJECTED_BY_SERVER));
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
-
-  // Clearing the error restores eligibility.
-  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      secondary_account_.GetAccountId(),
-      GoogleServiceAuthError::AuthErrorNone());
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), valid_pref);
-
-  // Promo throttling / pair suppression and primary-account state are enforced
-  // separately by `CanShowPromo()`, not by `GetEligibleAccountForSwitching()`.
-  SigninPrefs(*profile_->GetPrefs())
-      .SetAccountSwitchingPromoSuppressedBySwitch(
-          secondary_account_.GetGaiaId(), primary_account_.GetGaiaId());
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), valid_pref);
-  EXPECT_FALSE(manager_->CanShowPromo(primary_account_.GetGaiaId(),
-                                      secondary_account_.GetGaiaId()));
+  // Valid secondary candidate restores eligibility.
+  SetCandidate(secondary_account_.GetGaiaId());
+  EXPECT_TRUE(manager_->CanShowPromo());
 }
 
-TEST_F(AccountSwitchingManagerEligibilityTest,
-       GetEligibleAccountForSwitchingFiltersManagedTargetAccount) {
-  const auto pref = MakePreference(secondary_account_.GetGaiaId());
-  preview_service_->SetPreferredAccountForSwitching(pref);
-  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
+TEST_F(AccountSwitchingManagerTest, FiltersManagedAndChildTargetAccounts) {
+  ASSERT_TRUE(manager_->CanShowPromo());
 
-  // Explicit managed hosted domain filters out the candidate.
+  // Child target account is filtered out.
+  identity_test_env()->UpdateAccountInfoForAccount(
+      AccountInfo::Builder(secondary_account_)
+          .SetIsChildAccount(Tribool::kTrue)
+          .Build());
+  EXPECT_FALSE(manager_->CanShowPromo());
+  identity_test_env()->UpdateAccountInfoForAccount(
+      AccountInfo::Builder(secondary_account_)
+          .SetIsChildAccount(Tribool::kFalse)
+          .Build());
+  ASSERT_TRUE(manager_->CanShowPromo());
+
+  // Managed target account is filtered out, while an unmanaged candidate
+  // remains eligible.
   identity_test_env()->UpdateAccountInfoForAccount(
       AccountInfo::Builder(secondary_account_)
           .SetHostedDomain("example.com")
           .Build());
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+  EXPECT_FALSE(manager_->CanShowPromo());
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_TRUE(manager_->CanShowPromo());
 
   // Unknown management status on a potentially enterprise domain fails closed.
   AccountInfo custom_account =
       identity_test_env()->MakeAccountAvailable("custom@company.com");
   ASSERT_EQ(custom_account.IsManaged(), Tribool::kUnknown);
-  const auto custom_pref = MakePreference(custom_account.GetGaiaId());
-  preview_service_->SetPreferredAccountForSwitching(custom_pref);
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+  SetCandidate(custom_account.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
 
   // Flex Org account (`IsManaged() == Tribool::kFalse` but
   // `IsMemberOfFlexOrg() == true`) also filters out the candidate.
@@ -837,65 +939,131 @@ TEST_F(AccountSwitchingManagerEligibilityTest,
   AccountCapabilitiesTestMutator(&custom_account)
       .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(custom_account);
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+  EXPECT_FALSE(manager_->CanShowPromo());
 
   // Confirmed consumer non-well-known account is eligible.
   AccountCapabilitiesTestMutator(&custom_account)
       .set_is_subject_to_enterprise_features(false);
   identity_test_env()->UpdateAccountInfoForAccount(custom_account);
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), custom_pref);
-}
+  EXPECT_TRUE(manager_->CanShowPromo());
 
-TEST_F(AccountSwitchingManagerEligibilityTest,
-       GetEligibleAccountForSwitchingFiltersChildTargetAccount) {
-  const auto pref = MakePreference(secondary_account_.GetGaiaId());
-  preview_service_->SetPreferredAccountForSwitching(pref);
-  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
+  // Managed, Flex Org, child, and unknown-enterprise-domain primary accounts
+  // are also filtered out.
+  SetCandidate(third_account_.GetGaiaId());
+  ASSERT_TRUE(manager_->CanShowPromo());
 
-  // Child target account is filtered out.
   identity_test_env()->UpdateAccountInfoForAccount(
-      AccountInfo::Builder(secondary_account_)
+      AccountInfo::Builder(primary_account_)
           .SetIsChildAccount(Tribool::kTrue)
           .Build());
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+  EXPECT_FALSE(manager_->CanShowPromo());
   identity_test_env()->UpdateAccountInfoForAccount(
-      AccountInfo::Builder(secondary_account_)
+      AccountInfo::Builder(primary_account_)
           .SetIsChildAccount(Tribool::kFalse)
           .Build());
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
+  ASSERT_TRUE(manager_->CanShowPromo());
+
+  primary_account_ =
+      AccountInfo::Builder(primary_account_)
+          .SetHostedDomain(signin::constants::kNoHostedDomainFound)
+          .Build();
+  AccountCapabilitiesTestMutator(&primary_account_)
+      .set_is_subject_to_enterprise_features(true);
+  identity_test_env()->UpdateAccountInfoForAccount(primary_account_);
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  AccountCapabilitiesTestMutator(&primary_account_)
+      .set_is_subject_to_enterprise_features(false);
+  identity_test_env()->UpdateAccountInfoForAccount(primary_account_);
+  ASSERT_TRUE(manager_->CanShowPromo());
+
+  identity_test_env()->UpdateAccountInfoForAccount(
+      AccountInfo::Builder(primary_account_)
+          .SetHostedDomain("example.com")
+          .Build());
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  AccountInfo custom_primary =
+      identity_test_env()->MakeAccountAvailable("primary_custom@company.com");
+  ASSERT_EQ(custom_primary.IsManaged(), Tribool::kUnknown);
+  SwitchPrimaryAccountInProfile(custom_primary);
+  EXPECT_FALSE(manager_->CanShowPromo());
 }
 
-TEST_F(AccountSwitchingManagerEligibilityTest,
-       GetEligibleAccountForSwitchingFiltersRemovedOrUnloadedAccounts) {
-  const auto pref = MakePreference(secondary_account_.GetGaiaId());
-  preview_service_->SetPreferredAccountForSwitching(pref);
-  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
+TEST_F(AccountSwitchingManagerTest,
+       FiltersRemovedUnloadedAndErrorRefreshTokens) {
+  ASSERT_TRUE(manager_->CanShowPromo());
+
+  // Persistent refresh token error on the candidate filters it out.
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      secondary_account_.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Clearing the error restores eligibility.
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      secondary_account_.GetAccountId(),
+      GoogleServiceAuthError::AuthErrorNone());
+  ASSERT_TRUE(manager_->CanShowPromo());
+
+  // Persistent refresh token error on the primary account also filters it out.
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account_.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+
+  // Clearing the primary account error restores eligibility.
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account_.GetAccountId(), GoogleServiceAuthError::AuthErrorNone());
+  ASSERT_TRUE(manager_->CanShowPromo());
 
   // Removing the candidate's refresh token filters out the stale candidate.
   identity_test_env()->RemoveRefreshTokenForAccount(
       secondary_account_.GetAccountId());
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+  EXPECT_FALSE(manager_->CanShowPromo());
 
   // Re-adding the candidate restores eligibility.
   secondary_account_ =
       identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
-  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
+  ASSERT_TRUE(manager_->CanShowPromo());
 
-  // Resetting refresh tokens to unloaded filters out the candidate.
+  // Removing the primary account's refresh token filters out the candidate,
+  // and restoring it recovers eligibility.
+  identity_test_env()->RemoveRefreshTokenForAccount(
+      primary_account_.GetAccountId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+  identity_test_env()->SetRefreshTokenForPrimaryAccount();
+  ASSERT_TRUE(manager_->CanShowPromo());
+
+  // Clearing the primary account filters out the candidate.
+  identity_test_env()->ClearPrimaryAccount();
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Re-signing in starts a fresh 28-day grace period; once elapsed, resetting
+  // refresh tokens to unloaded filters out the candidate.
+  primary_account_ = identity_test_env()->MakePrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  secondary_account_ =
+      identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
+  task_environment_.AdvanceClock(
+      AccountSwitchingManager::kPrimaryAccountSigninGracePeriod);
+  ASSERT_TRUE(manager_->CanShowPromo());
+
   identity_test_env()->ResetToAccountsNotYetLoadedFromDiskState();
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+  EXPECT_FALSE(manager_->CanShowPromo());
 }
 
-TEST_F(AccountSwitchingManagerEligibilityTest,
-       SigninDisallowedBlocksPromoAndSwitching) {
-  ASSERT_TRUE(manager_->CanShowPromo(primary_account_.GetGaiaId(),
-                                     secondary_account_.GetGaiaId()));
+TEST_F(AccountSwitchingManagerTest, SigninDisallowedBlocksPromo) {
+  ASSERT_TRUE(manager_->CanShowPromo());
 
   profile_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
-  EXPECT_FALSE(manager_->CanShowPromo(primary_account_.GetGaiaId(),
-                                      secondary_account_.GetGaiaId()));
-  EXPECT_FALSE(manager_->StartSwitching(primary_account_.GetGaiaId(),
-                                        secondary_account_.GetGaiaId()));
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
 
   // `SkipCooldown` must not bypass `prefs::kSigninAllowed`.
   base::test::ScopedFeatureList skip_cooldown_features;
@@ -903,16 +1071,26 @@ TEST_F(AccountSwitchingManagerEligibilityTest,
       switches::kEnableAccountPreviewSwitchingAccount,
       {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
         "true"}});
-  EXPECT_FALSE(manager_->CanShowPromo(primary_account_.GetGaiaId(),
-                                      secondary_account_.GetGaiaId()));
-  EXPECT_FALSE(manager_->StartSwitching(primary_account_.GetGaiaId(),
-                                        secondary_account_.GetGaiaId()));
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
 }
 
-TEST_F(AccountSwitchingManagerTest,
-       GetEligibleAccountForSwitchingReturnsNulloptWithoutPreviewService) {
+TEST(AccountSwitchingManagerStandaloneTest, ReturnsFalseWithoutPreviewService) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {switches::kEnableAccountPreviewData,
+       switches::kEnableAccountPreviewSwitchingAccount},
+      {});
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  testing::NiceMock<MockBrowserWindowInterface> browser_window;
+
   // Default `TestingProfile` does not instantiate `AccountPreviewDataService`.
-  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+  AccountSwitchingManager* manager =
+      AccountSwitchingManagerFactory::GetForProfile(&profile);
+  ASSERT_NE(manager, nullptr);
+  EXPECT_FALSE(manager->CanShowPromo());
+  EXPECT_FALSE(manager->ShowPromo(&browser_window));
 }
 
 }  // namespace

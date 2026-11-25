@@ -10,9 +10,9 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
+#include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
@@ -89,16 +90,118 @@ AccountSwitchingManager::AccountSwitchingManager(
 AccountSwitchingManager::~AccountSwitchingManager() = default;
 
 void AccountSwitchingManager::Shutdown() {
+  active_promo_.reset();
   active_switch_.reset();
+}
+
+bool AccountSwitchingManager::CanShowPromo() const {
+  return GetEligiblePromoPair().has_value();
+}
+
+bool AccountSwitchingManager::ShowPromo(
+    BrowserWindowInterface* browser_window) {
+  if (!browser_window) {
+    return false;
+  }
+
+  std::optional<AccountPair> promo_pair = GetEligiblePromoPair();
+  if (!promo_pair.has_value()) {
+    return false;
+  }
+
+  active_promo_ = std::move(*promo_pair);
+
+  // TODO(crbug.com/585131565): Trigger the Smart Account Switching prompt
+  // bubble via `SigninViewController::From(browser_window)` using a `WeakPtr`
+  // invalidated in `Shutdown()` bound to `OnPromoResult()`, and ensure
+  // never-shown bubble aborts report `SigninInterceptionResult::kNotDisplayed`.
+  return true;
+}
+
+void AccountSwitchingManager::OnPromoResult(SigninInterceptionResult result) {
+  CHECK(active_promo_.has_value());
+  AccountPair promo = std::move(*active_promo_);
+  active_promo_.reset();
+
+  switch (result) {
+    case SigninInterceptionResult::kAccepted:
+      StartSwitching(std::move(promo));
+      break;
+    case SigninInterceptionResult::kDeclined:
+      RecordPromoExplicitlyDismissed(promo);
+      break;
+    case SigninInterceptionResult::kIgnored:
+    case SigninInterceptionResult::kDismissed:
+      RecordPromoIgnored();
+      break;
+    case SigninInterceptionResult::kNotDisplayed:
+      break;
+    case SigninInterceptionResult::kAcceptedWithExistingProfile:
+      NOTREACHED();
+  }
+}
+
+void AccountSwitchingManager::ResolvePromoForTesting(
+    SigninInterceptionResult result) {
+  OnPromoResult(result);
+}
+
+void AccountSwitchingManager::CompleteSwitchForTesting(bool success) {
+  OnSwitchFinished(success);
+}
+
+bool AccountSwitchingManager::IsPromoActiveForTesting() const {
+  return active_promo_.has_value();
+}
+
+bool AccountSwitchingManager::IsSwitchInProgressForTesting() const {
+  return active_switch_.has_value();
+}
+
+std::optional<AccountSwitchingManager::AccountPair>
+AccountSwitchingManager::GetEligiblePromoPair(
+    bool check_promo_eligibility) const {
+  if ((check_promo_eligibility && active_promo_.has_value()) ||
+      !IsProfileEligibleForSwitching() ||
+      !identity_manager_->AreRefreshTokensLoaded()) {
+    return std::nullopt;
+  }
+
+  std::optional<CoreAccountInfo> primary_account = GetEligiblePrimaryAccount();
+  if (!primary_account.has_value()) {
+    return std::nullopt;
+  }
+
+  std::optional<AccountPreviewDataService::AccountPreviewPreference> candidate =
+      GetEligibleAccountForSwitching();
+  if (!candidate.has_value() || candidate->gaia_id == primary_account->gaia) {
+    return std::nullopt;
+  }
+
+  AccountPair pair{primary_account->gaia, candidate->gaia_id};
+  if (check_promo_eligibility && !CanShowPromoForPair(pair)) {
+    return std::nullopt;
+  }
+
+  return pair;
+}
+
+std::optional<CoreAccountInfo>
+AccountSwitchingManager::GetEligiblePrimaryAccount() const {
+  const CoreAccountInfo primary_account =
+      identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin);
+  if (primary_account.IsEmpty() || primary_account.gaia.empty() ||
+      !IsAccountEligible(
+          identity_manager_->FindExtendedAccountInfo(primary_account))) {
+    return std::nullopt;
+  }
+
+  return primary_account;
 }
 
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
 AccountSwitchingManager::GetEligibleAccountForSwitching() const {
-  if (!IsFeatureEnabled() || !account_preview_data_service_) {
-    return std::nullopt;
-  }
-
-  if (!identity_manager_->AreRefreshTokensLoaded()) {
+  if (!account_preview_data_service_) {
     return std::nullopt;
   }
 
@@ -110,27 +213,11 @@ AccountSwitchingManager::GetEligibleAccountForSwitching() const {
     return std::nullopt;
   }
 
-  // Validate prompt-time candidate freshness in `IdentityManager`: the target
-  // account must remain non-managed, non-child, and have a valid refresh token
-  // in this profile.
-  const AccountInfo target_account_info =
-      identity_manager_->FindExtendedAccountInfoByGaiaId(candidate->gaia_id);
-  if (target_account_info.IsEmpty() ||
-      !identity_manager_->HasAccountWithRefreshToken(
-          target_account_info.GetAccountId()) ||
-      identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-          target_account_info.GetAccountId()) ||
-      target_account_info.IsManaged() == Tribool::kTrue ||
-      target_account_info.IsMemberOfFlexOrg() ||
-      (target_account_info.IsManaged() == Tribool::kUnknown &&
-       AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
-           target_account_info.GetEmail())) ||
-      target_account_info.IsChildAccount() == Tribool::kTrue) {
+  if (!IsAccountEligible(identity_manager_->FindExtendedAccountInfoByGaiaId(
+          candidate->gaia_id))) {
     return std::nullopt;
   }
 
-  // Prompt-time multi-profile freshness check: never surface a candidate that
-  // has since been signed in as the primary account of another profile.
   if (signin_client_->IsAccountSignedInOnOtherProfile(candidate->gaia_id)) {
     return std::nullopt;
   }
@@ -138,12 +225,23 @@ AccountSwitchingManager::GetEligibleAccountForSwitching() const {
   return candidate;
 }
 
-bool AccountSwitchingManager::CanShowPromo(const GaiaId& primary_gaia_id,
-                                           const GaiaId& target_gaia_id) const {
-  if (!CanStartSwitching(primary_gaia_id, target_gaia_id)) {
-    return false;
-  }
+bool AccountSwitchingManager::IsAccountEligible(
+    const AccountInfo& account_info) const {
+  return !account_info.IsEmpty() &&
+         identity_manager_->HasAccountWithRefreshToken(
+             account_info.GetAccountId()) &&
+         !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+             account_info.GetAccountId()) &&
+         account_info.IsManaged() != Tribool::kTrue &&
+         !account_info.IsMemberOfFlexOrg() &&
+         !(account_info.IsManaged() == Tribool::kUnknown &&
+           AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+               account_info.GetEmail())) &&
+         account_info.IsChildAccount() != Tribool::kTrue;
+}
 
+bool AccountSwitchingManager::CanShowPromoForPair(
+    const AccountPair& pair) const {
   if (switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.Get()) {
     return true;
   }
@@ -153,7 +251,7 @@ bool AccountSwitchingManager::CanShowPromo(const GaiaId& primary_gaia_id,
 
   // 28-day primary-account sign-in/switch grace period.
   std::optional<base::Time> last_signin_time =
-      signin_prefs.GetChromeLastSigninTime(primary_gaia_id);
+      signin_prefs.GetChromeLastSigninTime(pair.primary_gaia_id);
   if (!last_signin_time.has_value() || last_signin_time->is_null() ||
       now - *last_signin_time < kPrimaryAccountSigninGracePeriod) {
     return false;
@@ -178,14 +276,14 @@ bool AccountSwitchingManager::CanShowPromo(const GaiaId& primary_gaia_id,
     return false;
   }
 
-  // Bi-directional per-pair `{primary_gaia_id, target_gaia_id}` suppression
-  // rules in `SigninPrefs`.
-  if (signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(primary_gaia_id,
-                                                             target_gaia_id)) {
+  // Bi-directional per-pair suppression rules in `SigninPrefs`.
+  if (signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
+          pair.primary_gaia_id, pair.target_gaia_id)) {
     return false;
   }
   if (signin_prefs.GetAccountSwitchingPromoExplicitDismissalCount(
-          primary_gaia_id, target_gaia_id) >= kMaxPairExplicitDismissals) {
+          pair.primary_gaia_id, pair.target_gaia_id) >=
+      kMaxPairExplicitDismissals) {
     return false;
   }
 
@@ -204,32 +302,39 @@ void AccountSwitchingManager::RecordPromoIgnored() {
 }
 
 void AccountSwitchingManager::RecordPromoExplicitlyDismissed(
-    const GaiaId& primary_gaia_id,
-    const GaiaId& target_gaia_id) {
-  CHECK(!primary_gaia_id.empty());
-  CHECK(!target_gaia_id.empty());
-  CHECK_NE(primary_gaia_id, target_gaia_id);
-
+    const AccountPair& pair) {
   ScopedDictPrefUpdate update(*prefs_, prefs::kAccountSwitchingPromoState);
   update->Set(kLastExplicitDismissalTimeKey,
               base::TimeToValue(base::Time::Now()));
 
-  // Stored bi-directionally in `SigninPrefs` for
-  // `{primary_gaia_id, target_gaia_id}`.
   SigninPrefs(*prefs_).IncrementAccountSwitchingPromoExplicitDismissalCount(
-      primary_gaia_id, target_gaia_id);
+      pair.primary_gaia_id, pair.target_gaia_id);
 }
 
-bool AccountSwitchingManager::StartSwitching(
-    const GaiaId& primary_gaia_id,
-    const GaiaId& target_gaia_id,
-    base::OnceClosure on_switch_finished) {
-  if (!CanStartSwitching(primary_gaia_id, target_gaia_id)) {
+bool AccountSwitchingManager::IsProfileEligibleForSwitching() const {
+  if (!IsFeatureEnabled()) {
+    return false;
+  }
+  if (!prefs_->GetBoolean(prefs::kSigninAllowed)) {
+    return false;
+  }
+  return !active_switch_.has_value() && !IsSwitchBackWindowActive();
+}
+
+bool AccountSwitchingManager::IsSwitchBackWindowActive() const {
+  // TODO(crbug.com/585132769): Query the 7-day Profile Menu switch-back row
+  // pref state in `prefs_` once implemented.
+  return false;
+}
+
+bool AccountSwitchingManager::StartSwitching(AccountPair pair) {
+  std::optional<AccountPair> eligible_pair =
+      GetEligiblePromoPair(/*check_promo_eligibility=*/false);
+  if (!eligible_pair.has_value() || *eligible_pair != pair) {
     return false;
   }
 
-  active_switch_ = ActiveSwitch{primary_gaia_id, target_gaia_id,
-                                std::move(on_switch_finished)};
+  active_switch_ = std::move(pair);
 
   // TODO(crbug.com/585132231): Persist profile-level post-acceptance
   // suppression or post-new-profile-creation cooldown once product confirms
@@ -242,43 +347,9 @@ bool AccountSwitchingManager::StartSwitching(
   return true;
 }
 
-void AccountSwitchingManager::CompleteSwitchForTesting(bool success) {
-  OnSwitchFinished(success);
-}
-
-bool AccountSwitchingManager::CanStartSwitching(
-    const GaiaId& primary_gaia_id,
-    const GaiaId& target_gaia_id) const {
-  if (!IsFeatureEnabled()) {
-    return false;
-  }
-  if (!prefs_->GetBoolean(prefs::kSigninAllowed)) {
-    return false;
-  }
-  if (primary_gaia_id.empty() || target_gaia_id.empty() ||
-      primary_gaia_id == target_gaia_id) {
-    return false;
-  }
-  // Prompt-time / switch-time multi-profile freshness check: never promote or
-  // switch to an account already signed in as primary on another profile.
-  if (signin_client_->IsAccountSignedInOnOtherProfile(target_gaia_id)) {
-    return false;
-  }
-  // In-progress switch and active 7-day switch-back grace window guards prevent
-  // overlapping switches or inconsistent switch-back state and are never
-  // bypassed by `SkipCooldown`.
-  return !active_switch_.has_value() && !IsSwitchBackWindowActive();
-}
-
-bool AccountSwitchingManager::IsSwitchBackWindowActive() const {
-  // TODO(crbug.com/585132769): Query the 7-day Profile Menu switch-back row
-  // pref state in `prefs_` once implemented.
-  return false;
-}
-
 void AccountSwitchingManager::OnSwitchFinished(bool success) {
   CHECK(active_switch_.has_value());
-  ActiveSwitch completed_switch = std::move(*active_switch_);
+  AccountPair completed_switch = std::move(*active_switch_);
   active_switch_.reset();
 
   if (success) {
@@ -287,10 +358,6 @@ void AccountSwitchingManager::OnSwitchFinished(bool success) {
     // while both accounts remain in the profile.
     SigninPrefs(*prefs_).SetAccountSwitchingPromoSuppressedBySwitch(
         completed_switch.primary_gaia_id, completed_switch.target_gaia_id);
-  }
-
-  if (completed_switch.on_finished_callback) {
-    std::move(completed_switch.on_finished_callback).Run();
   }
 }
 
