@@ -9,8 +9,13 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
+
+// Enables attributing Linux FDO notifications from installed web apps to the
+// web app's desktop entry, name, and icon.
+BASE_DECLARE_FEATURE(kLinuxWebAppNotificationAttribution);
 
 class NotificationPlatformBridgeLinuxImpl;
 

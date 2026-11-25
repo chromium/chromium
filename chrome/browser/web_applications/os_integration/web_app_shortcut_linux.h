@@ -74,6 +74,13 @@ void CreateDesktopShortcut(const ShortcutInfo& shortcut_info,
 base::FilePath GetAppDesktopShortcutFilename(const base::FilePath& profile_path,
                                              const std::string& app_id);
 
+// Returns the desktop entry ID (without ".desktop") of the installed
+// applications menu launcher for web app `app_id` in `profile_path`, or an
+// empty string if none is installed. Blocks on file IO.
+std::string GetInstalledAppDesktopEntryId(base::Environment* env,
+                                          const base::FilePath& profile_path,
+                                          const std::string& app_id);
+
 // Returns the set of locations in which shortcuts are installed for the
 // extension with |extension_id| in |profile_path|.
 // This searches the file system for .desktop files in appropriate locations. A

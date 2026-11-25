@@ -9,25 +9,41 @@
 #include <array>
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
+#include "base/environment.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_test_util.h"
+#include "chrome/browser/shell_integration_linux.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_linux.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/notifications/notification_operation.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -40,6 +56,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia.h"
@@ -93,7 +110,9 @@ ScopedGObject<GSettings> CreateMemorySettings(const char* schema_id) {
 
 class NotificationBuilder {
  public:
-  explicit NotificationBuilder(const std::string& id)
+  explicit NotificationBuilder(const std::string& id,
+                               const message_center::NotifierId& notifier_id =
+                                   message_center::NotifierId(GURL()))
       : notification_(message_center::NOTIFICATION_TYPE_SIMPLE,
                       id,
                       std::u16string(),
@@ -101,7 +120,7 @@ class NotificationBuilder {
                       ui::ImageModel(),
                       std::u16string(),
                       GURL(),
-                      message_center::NotifierId(GURL()),
+                      notifier_id,
                       message_center::RichNotificationData(),
                       new message_center::NotificationDelegate()) {
     notification_.set_settings_button_handler(SettingsButtonHandler::DELEGATE);
@@ -197,9 +216,11 @@ struct NotificationRequest {
     std::string label;
   };
 
+  std::string app_name;
   uint32_t replaces_id = 0;
   std::string summary;
   std::string body;
+  std::string desktop_entry;
   std::string kde_origin_name;
   std::vector<Action> actions;
   int32_t expire_timeout = 0;
@@ -280,7 +301,7 @@ NotificationRequest ParseRequest(dbus::MethodCall* method_call) {
 
   dbus::MessageReader reader(method_call);
   std::string str;
-  EXPECT_TRUE(reader.PopString(&str));                  // app_name
+  EXPECT_TRUE(reader.PopString(&request.app_name));     // app_name
   EXPECT_TRUE(reader.PopUint32(&request.replaces_id));  // replaces_id
   EXPECT_TRUE(reader.PopString(&request.app_icon));     // app_icon
   EXPECT_TRUE(reader.PopString(&request.summary));      // summary
@@ -313,6 +334,9 @@ NotificationRequest ParseRequest(dbus::MethodCall* method_call) {
         request.silent = suppress_sound;
       } else if (str == "urgency") {
         EXPECT_TRUE(dict_entry_reader.PopVariantOfByte(&request.urgency));
+      } else if (str == "desktop-entry") {
+        EXPECT_TRUE(
+            dict_entry_reader.PopVariantOfString(&request.desktop_entry));
       } else if (str == "x-kde-origin-name") {
         std::string x_kde_origin_name;
         EXPECT_TRUE(dict_entry_reader.PopVariantOfString(&x_kde_origin_name));
@@ -969,6 +993,17 @@ class NotificationPlatformBridgeLinuxTest : public testing::Test {
   }
 
  protected:
+  webapps::AppId InstallTestWebApp(Profile* target_profile,
+                                   const std::string& name,
+                                   const GURL& start_url) {
+    web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress;
+    if (!web_app::WebAppProvider::GetForWebApps(target_profile)
+             ->is_registry_ready()) {
+      web_app::test::AwaitStartWebAppProviderAndSubsystems(target_profile);
+    }
+    return web_app::test::InstallDummyWebApp(target_profile, name, start_url);
+  }
+
   void CreateNotificationBridgeLinux(
       const TestParams& test_params,
       GSettings* notification_settings = nullptr) {
@@ -2753,4 +2788,265 @@ TEST_F(NotificationPlatformBridgeLinuxTest, PortalAddNotificationError) {
                      }));
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(displayed_notifications.empty());
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest, WebAppDesktopEntry) {
+  const std::string web_app_id =
+      InstallTestWebApp(profile(), "Alpha PWA", GURL("https://alpha.example/"));
+
+  base::ScopedTempDir data_home;
+  ASSERT_TRUE(data_home.CreateUniqueTempDir());
+  base::ScopedEnvironmentVariableOverride data_home_override(
+      "XDG_DATA_HOME", data_home.GetPath().value());
+  base::ScopedEnvironmentVariableOverride data_dirs_override(
+      "XDG_DATA_DIRS", data_home.GetPath().Append("nonexistent").value());
+  base::ScopedEnvironmentVariableOverride snap_override("SNAP");
+
+  const std::string expected_desktop_id =
+      shell_integration_linux::GetXdgAppIdForWebApp(web_app_id,
+                                                    profile()->GetPath());
+  const base::FilePath applications =
+      data_home.GetPath().Append("applications");
+  ASSERT_TRUE(base::CreateDirectory(applications));
+  ASSERT_TRUE(
+      base::WriteFile(applications.Append(expected_desktop_id + ".desktop"),
+                      "[Desktop Entry]\nType=Application\nName=Alpha PWA\n"));
+
+  CreateNotificationBridgeLinux(TestParams());
+  message_center::NotifierId notifier_id(GURL("https://alpha.example"),
+                                         u"Alpha PWA", web_app_id);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1", notifier_id)
+          .SetIcon(gfx::test::CreateImage(64, 64))
+          .GetResult(),
+      nullptr);
+  content::RunAllTasksUntilIdle();
+
+  const auto& requests = fake_notification_proxy_->requests();
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ(expected_desktop_id, requests[0].desktop_entry);
+  EXPECT_EQ("Alpha PWA", requests[0].app_name);
+  EXPECT_EQ("", requests[0].app_icon);
+  EXPECT_TRUE(base::EndsWith(requests[0].image_path, "/icon.png"));
+  EXPECT_FALSE(base::PathExists(
+      base::FilePath(requests[0].image_path).DirName().Append("logo.png")));
+
+  // Disabling the kill switch restores browser attribution.
+  base::test::ScopedFeatureList disabled_feature;
+  disabled_feature.InitAndDisableFeature(kLinuxWebAppNotificationAttribution);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("2", notifier_id)
+          .SetIcon(gfx::test::CreateImage(64, 64))
+          .GetResult(),
+      nullptr);
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_EQ(2u, requests.size());
+  EXPECT_NE(expected_desktop_id, requests[1].desktop_entry);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), requests[1].app_name);
+  EXPECT_TRUE(base::EndsWith(requests[1].app_icon, "/logo.png"));
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       WebAppWithoutInstalledDesktopEntryFallsBackToBrowser) {
+  const std::string web_app_id = InstallTestWebApp(
+      profile(), "Uninstalled PWA", GURL("https://alpha.example/"));
+
+  base::ScopedTempDir data_home;
+  ASSERT_TRUE(data_home.CreateUniqueTempDir());
+  base::ScopedEnvironmentVariableOverride data_home_override(
+      "XDG_DATA_HOME", data_home.GetPath().value());
+  base::ScopedEnvironmentVariableOverride data_dirs_override(
+      "XDG_DATA_DIRS", data_home.GetPath().Append("nonexistent").value());
+  base::ScopedEnvironmentVariableOverride snap_override("SNAP");
+
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  const std::string browser_desktop_id =
+      base::FilePath(chrome::GetDesktopName(env.get()))
+          .RemoveFinalExtension()
+          .value();
+
+  CreateNotificationBridgeLinux(TestParams());
+  message_center::NotifierId notifier_id(GURL("https://alpha.example"),
+                                         u"Uninstalled PWA", web_app_id);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1", notifier_id)
+          .SetIcon(gfx::test::CreateImage(64, 64))
+          .GetResult(),
+      nullptr);
+  content::RunAllTasksUntilIdle();
+
+  const auto& requests = fake_notification_proxy_->requests();
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ(browser_desktop_id, requests[0].desktop_entry);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), requests[0].app_name);
+  EXPECT_TRUE(base::EndsWith(requests[0].app_icon, "/logo.png"));
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest, WebAppPortalDesktopEntry) {
+  const std::string web_app_id = InstallTestWebApp(
+      profile(), "Portal PWA", GURL("https://portal.example/"));
+
+  base::ScopedTempDir data_home;
+  ASSERT_TRUE(data_home.CreateUniqueTempDir());
+  base::ScopedEnvironmentVariableOverride data_home_override(
+      "XDG_DATA_HOME", data_home.GetPath().value());
+  base::ScopedEnvironmentVariableOverride data_dirs_override(
+      "XDG_DATA_DIRS", data_home.GetPath().Append("nonexistent").value());
+  base::ScopedEnvironmentVariableOverride snap_override("SNAP");
+
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  const base::FilePath shortcut_filename =
+      web_app::GetAppDesktopShortcutFilename(profile()->GetPath(), web_app_id);
+  const base::FilePath portal_desktop_file(
+      web_app::internals::GetPortalDesktopFileId(env.get(), shortcut_filename));
+  const std::string expected_desktop_id =
+      portal_desktop_file.RemoveFinalExtension().value();
+
+  const base::FilePath applications =
+      data_home.GetPath().Append("applications");
+  ASSERT_TRUE(base::CreateDirectory(applications));
+  ASSERT_TRUE(
+      base::WriteFile(applications.Append(portal_desktop_file),
+                      "[Desktop Entry]\nType=Application\nName=Portal PWA\n"));
+
+  CreateNotificationBridgeLinux(TestParams());
+  message_center::NotifierId notifier_id(GURL("https://portal.example"),
+                                         u"Portal PWA", web_app_id);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1", notifier_id).GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+
+  const auto& requests = fake_notification_proxy_->requests();
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ(expected_desktop_id, requests[0].desktop_entry);
+  EXPECT_EQ("Portal PWA", requests[0].app_name);
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest, PerProfileDesktopEntry) {
+  base::test::ScopedFeatureList feature_list(features::kLinuxPerProfileAppId);
+  base::ScopedTempDir config_home;
+  ASSERT_TRUE(config_home.CreateUniqueTempDir());
+  base::ScopedEnvironmentVariableOverride config_override(
+      "CHROME_CONFIG_HOME", config_home.GetPath().value());
+
+  base::FilePath user_data_dir;
+  ASSERT_TRUE(chrome::GetDefaultUserDataDirectory(&user_data_dir));
+  const base::FilePath profile_1_path = user_data_dir.Append("Profile 1");
+  ASSERT_TRUE(base::CreateDirectory(profile_1_path));
+
+  TestingProfile::Builder profile_builder;
+  profile_builder.SetPath(profile_1_path);
+  std::unique_ptr<TestingProfile> profile_1 = profile_builder.Build();
+
+  const std::string expected_desktop_id =
+      shell_integration_linux::GetPerProfileDesktopId(profile_1_path);
+  ASSERT_FALSE(expected_desktop_id.empty());
+  shell_integration_linux::SetPerProfileDesktopEntryInstalled(profile_1_path,
+                                                              true);
+  base::ScopedClosureRunner reset_per_profile_desktop_entry(base::BindOnce(
+      &shell_integration_linux::SetPerProfileDesktopEntryInstalled,
+      profile_1_path, false));
+
+  // An installed web app's desktop entry takes precedence.
+  const std::string web_app_id = InstallTestWebApp(
+      profile_1.get(), "Alpha PWA", GURL("https://alpha.example/"));
+  base::ScopedTempDir data_home;
+  ASSERT_TRUE(data_home.CreateUniqueTempDir());
+  base::ScopedEnvironmentVariableOverride data_home_override(
+      "XDG_DATA_HOME", data_home.GetPath().value());
+  base::ScopedEnvironmentVariableOverride data_dirs_override(
+      "XDG_DATA_DIRS", data_home.GetPath().Append("nonexistent").value());
+  base::ScopedEnvironmentVariableOverride snap_override("SNAP");
+  const std::string web_app_desktop_id =
+      shell_integration_linux::GetXdgAppIdForWebApp(web_app_id, profile_1_path);
+  const base::FilePath applications =
+      data_home.GetPath().Append("applications");
+  ASSERT_TRUE(base::CreateDirectory(applications));
+  ASSERT_TRUE(base::WriteFile(
+      applications.Append(web_app_desktop_id + ".desktop"), "[Desktop Entry]"));
+
+  CreateNotificationBridgeLinux(TestParams());
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile_1.get(),
+      NotificationBuilder("1").GetResult(), nullptr);
+  message_center::NotifierId notifier_id(GURL("https://alpha.example"),
+                                         u"Alpha PWA", web_app_id);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile_1.get(),
+      NotificationBuilder("2", notifier_id).GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+
+  const auto& requests = fake_notification_proxy_->requests();
+  ASSERT_EQ(2u, requests.size());
+  EXPECT_EQ(expected_desktop_id, requests[0].desktop_entry);
+  EXPECT_EQ("", requests[0].app_icon);
+  EXPECT_EQ(web_app_desktop_id, requests[1].desktop_entry);
+  EXPECT_EQ("Alpha PWA", requests[1].app_name);
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest, WebAppNameFromRegistrar) {
+  const std::string web_app_id = InstallTestWebApp(
+      profile(), "Registry PWA", GURL("https://registry.example/"));
+  auto hidden_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://hidden.example/"));
+  hidden_info->title = u"Hidden PWA";
+  const std::string hidden_app_id =
+      web_app::test::InstallWebAppWithoutOsIntegration(profile(),
+                                                       std::move(hidden_info));
+
+  base::ScopedTempDir data_home;
+  ASSERT_TRUE(data_home.CreateUniqueTempDir());
+  base::ScopedEnvironmentVariableOverride data_home_override(
+      "XDG_DATA_HOME", data_home.GetPath().value());
+  base::ScopedEnvironmentVariableOverride data_dirs_override(
+      "XDG_DATA_DIRS", data_home.GetPath().Append("nonexistent").value());
+  base::ScopedEnvironmentVariableOverride snap_override("SNAP");
+  const std::string web_app_desktop_id =
+      shell_integration_linux::GetXdgAppIdForWebApp(web_app_id,
+                                                    profile()->GetPath());
+  const std::string hidden_desktop_id =
+      shell_integration_linux::GetXdgAppIdForWebApp(hidden_app_id,
+                                                    profile()->GetPath());
+  const base::FilePath applications =
+      data_home.GetPath().Append("applications");
+  ASSERT_TRUE(base::CreateDirectory(applications));
+  ASSERT_TRUE(base::WriteFile(
+      applications.Append(web_app_desktop_id + ".desktop"), "[Desktop Entry]"));
+  ASSERT_TRUE(base::WriteFile(
+      applications.Append(hidden_desktop_id + ".desktop"), "[Desktop Entry]"));
+
+  CreateNotificationBridgeLinux(TestParams());
+  // Production web app notifications have no `NotifierId::title`.
+  message_center::NotifierId notifier_id(GURL("https://registry.example/"),
+                                         std::nullopt, web_app_id);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1", notifier_id).GetResult(), nullptr);
+  // Incognito notifications are not attributed to the web app.
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT,
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      NotificationBuilder("2", notifier_id).GetResult(), nullptr);
+  // Apps without OS notification support (e.g. non-OS-integrated or migrating)
+  // fall back to the browser.
+  message_center::NotifierId hidden_notifier_id(GURL("https://hidden.example/"),
+                                                u"Hidden PWA", hidden_app_id);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("3", hidden_notifier_id).GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+
+  const auto& requests = fake_notification_proxy_->requests();
+  ASSERT_EQ(3u, requests.size());
+  EXPECT_EQ(web_app_desktop_id, requests[0].desktop_entry);
+  EXPECT_EQ("Registry PWA", requests[0].app_name);
+  EXPECT_NE(web_app_desktop_id, requests[1].desktop_entry);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), requests[1].app_name);
+  EXPECT_NE(hidden_desktop_id, requests[2].desktop_entry);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), requests[2].app_name);
 }

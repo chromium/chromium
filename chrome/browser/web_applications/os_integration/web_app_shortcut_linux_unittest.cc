@@ -21,6 +21,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/webapps/common/web_app_id.h"
@@ -1242,6 +1244,50 @@ TEST_P(WebAppShortcutLinuxTest, DeleteDesktopShortcutsRemovesPortalLauncher) {
 
   EXPECT_TRUE(DeleteDesktopShortcutsForTest(GetProfilePath(), GetAppId()));
   EXPECT_THAT(uninstalled, testing::Contains(portal_id));
+}
+
+TEST_P(WebAppShortcutLinuxTest, GetInstalledAppDesktopEntryId) {
+  base::Environment* env = OsIntegrationTestOverrideImpl::Get()->environment();
+  ASSERT_TRUE(base::CreateDirectory(GetApplicationsPath()));
+
+  // Empty profile path or empty/prefix-only app ID.
+  EXPECT_EQ("",
+            GetInstalledAppDesktopEntryId(env, base::FilePath(), GetAppId()));
+  EXPECT_EQ("", GetInstalledAppDesktopEntryId(env, GetProfilePath(), ""));
+  EXPECT_EQ(
+      "", GetInstalledAppDesktopEntryId(env, GetProfilePath(), kCrxAppPrefix));
+
+  // No file exists.
+  EXPECT_EQ("",
+            GetInstalledAppDesktopEntryId(env, GetProfilePath(), GetAppId()));
+
+  // A file for another profile basename does not match.
+  const base::FilePath other_profile_file =
+      GetAppDesktopShortcutFilename(base::FilePath("Profile 2"), GetAppId());
+  ASSERT_TRUE(base::WriteFile(GetApplicationsPath().Append(other_profile_file),
+                              "[Desktop Entry]\n"));
+  EXPECT_EQ("",
+            GetInstalledAppDesktopEntryId(env, GetProfilePath(), GetAppId()));
+
+  // Only the portal file exists.
+  const base::FilePath shortcut_file(GetTemplateFilename());
+  const base::FilePath portal_file(
+      internals::GetPortalDesktopFileId(env, shortcut_file));
+  ASSERT_NE(portal_file, shortcut_file);
+  ASSERT_TRUE(base::WriteFile(GetApplicationsPath().Append(portal_file),
+                              "[Desktop Entry]\n"));
+  EXPECT_EQ(portal_file.RemoveFinalExtension().value(),
+            GetInstalledAppDesktopEntryId(env, GetProfilePath(), GetAppId()));
+
+  // CHROME_WEB_APP_DESKTOP_ID_PREFIX is set and only the unprefixed file
+  // exists.
+  ASSERT_TRUE(base::DeleteFile(GetApplicationsPath().Append(portal_file)));
+  base::ScopedEnvironmentVariableOverride prefix_override(
+      "CHROME_WEB_APP_DESKTOP_ID_PREFIX", "org.example.");
+  ASSERT_TRUE(base::WriteFile(GetApplicationsPath().Append(shortcut_file),
+                              "[Desktop Entry]\n"));
+  EXPECT_EQ(shortcut_file.RemoveFinalExtension().value(),
+            GetInstalledAppDesktopEntryId(env, GetProfilePath(), GetAppId()));
 }
 
 // The portal is only used in Flatpak. It doesn't support snaps, and isn't

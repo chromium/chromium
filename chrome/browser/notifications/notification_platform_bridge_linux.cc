@@ -54,9 +54,15 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_linux.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/notifications/notification_operation.h"
 #include "chrome/grit/branded_strings.h"
@@ -205,6 +211,9 @@ struct NotificationResources {
 
   // Sealed memfd holding icon PNG bytes used for Portal v2+ notifications.
   base::ScopedFD icon_fd;
+
+  // Desktop entry ID (without ".desktop") for an installed web app, if found.
+  std::string web_app_desktop_entry;
 };
 
 std::u16string CreateNotificationTitle(
@@ -388,8 +397,15 @@ bool WriteImageFile(scoped_refptr<base::RefCountedMemory> image,
 NotificationResources WriteNotificationResourceFiles(
     scoped_refptr<base::RefCountedMemory> logo,
     scoped_refptr<base::RefCountedMemory> icon,
-    scoped_refptr<base::RefCountedMemory> image) {
+    scoped_refptr<base::RefCountedMemory> image,
+    const base::FilePath& profile_path,
+    const std::string& web_app_id) {
   NotificationResources result;
+  if (!profile_path.empty() && !web_app_id.empty()) {
+    std::unique_ptr<base::Environment> env = base::Environment::Create();
+    result.web_app_desktop_entry = web_app::GetInstalledAppDesktopEntryId(
+        env.get(), profile_path, web_app_id);
+  }
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
     return result;
@@ -397,7 +413,9 @@ NotificationResources WriteNotificationResourceFiles(
 
   const base::FilePath dir_path = temp_dir.GetPath();
 
-  result.has_logo = WriteImageFile(logo, dir_path.Append("logo.png"));
+  if (result.web_app_desktop_entry.empty()) {
+    result.has_logo = WriteImageFile(logo, dir_path.Append("logo.png"));
+  }
   result.has_icon = WriteImageFile(icon, dir_path.Append("icon.png"));
   result.has_image = WriteImageFile(image, dir_path.Append("image.png"));
   if (result.has_icon) {
@@ -426,6 +444,9 @@ NotificationResources WriteNotificationResourceFiles(
 }
 
 }  // namespace
+
+BASE_FEATURE(kLinuxWebAppNotificationAttribution,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 std::unique_ptr<NotificationPlatformBridge>
@@ -521,6 +542,10 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
     gfx::Image product_logo;
     gfx::Image notification_image;
+    base::FilePath profile_path;
+    std::string web_app_id;
+    std::string web_app_name;
+    std::string per_profile_desktop_entry;
     if (!using_portal_) {
       product_logo =
           gfx::Image(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -531,18 +556,44 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         notification_image =
             ResizeImageToFdoMaxSize(copy_notification->image());
       }
+      if (base::FeatureList::IsEnabled(kLinuxWebAppNotificationAttribution) &&
+          !is_incognito &&
+          copy_notification->notifier_id().web_app_id.has_value() &&
+          !copy_notification->notifier_id().web_app_id->empty()) {
+        const std::string& candidate_web_app_id =
+            *copy_notification->notifier_id().web_app_id;
+        auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+        if (provider && provider->is_registry_ready() &&
+            provider->registrar_unsafe().AppMatches(
+                candidate_web_app_id,
+                web_app::WebAppFilter::SupportsOsNotifications())) {
+          profile_path = profile->GetPath();
+          web_app_id = candidate_web_app_id;
+          web_app_name =
+              provider->registrar_unsafe().GetAppShortName(web_app_id);
+          if (web_app_name.empty() &&
+              copy_notification->notifier_id().title.has_value()) {
+            web_app_name =
+                base::UTF16ToUTF8(*copy_notification->notifier_id().title);
+          }
+        }
+      }
+      per_profile_desktop_entry =
+          shell_integration_linux::GetInstalledPerProfileDesktopId(
+              profile->GetOriginalProfile()->GetPath());
     }
 
     file_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&WriteNotificationResourceFiles,
-                       product_logo.As1xPNGBytes(),
-                       notification_icon.As1xPNGBytes(),
-                       notification_image.As1xPNGBytes()),
+        base::BindOnce(
+            &WriteNotificationResourceFiles, product_logo.As1xPNGBytes(),
+            notification_icon.As1xPNGBytes(), notification_image.As1xPNGBytes(),
+            std::move(profile_path), std::move(web_app_id)),
         base::BindOnce(
             &NotificationPlatformBridgeLinuxImpl::OnFilesWrittenForDisplay,
             weak_factory_.GetWeakPtr(), notification_type, profile_id,
-            is_incognito, std::move(copy_notification)));
+            is_incognito, std::move(copy_notification), std::move(web_app_name),
+            std::move(per_profile_desktop_entry)));
   }
 
   void Close(Profile* profile, const std::string& notification_id) override {
@@ -705,6 +756,12 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
     // The number of buttons for the portal path.
     size_t portal_button_count = 0;
+
+    // Short name of the originating web app, if any.
+    std::string web_app_name;
+
+    // Installed per-profile desktop entry ID, if any.
+    std::string per_profile_desktop_entry;
 
     // Temporary resource files associated with the notification that
     // should be cleaned up when the notification is closed or on
@@ -966,6 +1023,8 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       const std::string& profile_id,
       bool is_incognito,
       std::unique_ptr<message_center::Notification> notification,
+      std::string web_app_name,
+      std::string per_profile_desktop_entry,
       NotificationResources files) {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
@@ -979,6 +1038,8 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
 
     data->files = std::move(files);
+    data->web_app_name = std::move(web_app_name);
+    data->per_profile_desktop_entry = std::move(per_profile_desktop_entry);
 
     if (using_portal_) {
       DisplayPortal(notification_type, profile_id, is_incognito,
@@ -1005,10 +1066,19 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     CHECK(!data->notify_request_id);
     CHECK(!data->queued);
 
-    std::string app_name(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME));
+    const bool has_web_app_desktop_entry =
+        !data->files.web_app_desktop_entry.empty();
+    // `app_name` may be blank, in which case servers fall back to the name in
+    // the web app's desktop entry.
+    std::string app_name = has_web_app_desktop_entry
+                               ? data->web_app_name
+                               : l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
 
+    // Let servers use the icon from the web app's or profile's desktop entry.
+    const bool has_custom_desktop_entry =
+        has_web_app_desktop_entry || !data->per_profile_desktop_entry.empty();
     std::string app_icon;
-    if (data->files.has_logo &&
+    if (!has_custom_desktop_entry && data->files.has_logo &&
         !(data->files.has_icon &&
           ShouldOmitAppIconForImagePath(server_name_))) {
       app_icon = "file://" + data->files.dir_path.Append("logo.png").value();
@@ -1140,15 +1210,22 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       hints.emplace("suppress-sound", dbus_utils::Variant::Wrap<"b">(true));
     }
 
-    std::unique_ptr<base::Environment> env = base::Environment::Create();
-    base::FilePath desktop_file(chrome::GetDesktopName(env.get()));
-    static const char kDesktopFileSuffix[] = ".desktop";
-    CHECK(base::EndsWith(desktop_file.value(), kDesktopFileSuffix,
-                         base::CompareCase::SENSITIVE),
-          base::NotFatalUntil::M161);
-    desktop_file = desktop_file.RemoveFinalExtension();
+    std::string desktop_entry;
+    if (has_web_app_desktop_entry) {
+      desktop_entry = data->files.web_app_desktop_entry;
+    } else if (!data->per_profile_desktop_entry.empty()) {
+      desktop_entry = data->per_profile_desktop_entry;
+    } else {
+      std::unique_ptr<base::Environment> env = base::Environment::Create();
+      base::FilePath desktop_file(chrome::GetDesktopName(env.get()));
+      static const char kDesktopFileSuffix[] = ".desktop";
+      CHECK(base::EndsWith(desktop_file.value(), kDesktopFileSuffix,
+                           base::CompareCase::SENSITIVE),
+            base::NotFatalUntil::M161);
+      desktop_entry = desktop_file.RemoveFinalExtension().value();
+    }
     hints.emplace("desktop-entry",
-                  dbus_utils::Variant::Wrap<"s">(desktop_file.value()));
+                  dbus_utils::Variant::Wrap<"s">(std::move(desktop_entry)));
 
     if (data->files.has_icon) {
       const base::FilePath icon_path = data->files.dir_path.Append("icon.png");

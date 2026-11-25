@@ -776,6 +776,39 @@ base::FilePath GetAppDesktopShortcutFilename(const base::FilePath& profile_path,
   return base::FilePath(shortcut_filename.append(".desktop"));
 }
 
+std::string GetInstalledAppDesktopEntryId(base::Environment* env,
+                                          const base::FilePath& profile_path,
+                                          const std::string& app_id) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  // `GetXdgAppIdForWebApp()` strips `kCrxAppPrefix` and CHECKs that the
+  // remainder is non-empty.
+  const std::string_view stripped_app_id =
+      base::RemovePrefix(app_id, kCrxAppPrefix).value_or(app_id);
+  if (profile_path.empty() || stripped_app_id.empty()) {
+    return std::string();
+  }
+  const base::FilePath shortcut_filename =
+      GetAppDesktopShortcutFilename(profile_path, std::string(stripped_app_id));
+  // The XDG app ID may carry CHROME_WEB_APP_DESKTOP_ID_PREFIX, while launchers
+  // installed directly or through the DynamicLauncher portal may not.
+  const base::FilePath candidates[] = {
+      base::FilePath(
+          shell_integration_linux::GetXdgAppIdForWebApp(app_id, profile_path) +
+          ".desktop"),
+      shortcut_filename,
+      base::FilePath(GetPortalDesktopFileId(env, shortcut_filename)),
+  };
+  std::string contents;
+  for (const base::FilePath& candidate : candidates) {
+    if (shell_integration_linux::GetExistingShortcutContents(env, candidate,
+                                                             &contents)) {
+      return candidate.RemoveFinalExtension().value();
+    }
+  }
+  return std::string();
+}
+
 base::FilePath GetAppIconShortcutFilename(const base::FilePath& profile_path,
                                           const std::string& app_id) {
   CHECK(!app_id.empty());
