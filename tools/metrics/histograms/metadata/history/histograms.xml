@@ -1765,7 +1765,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.SyncedJourneys.DatabaseOperationSuccess.{JourneysDbOperation}"
-    enum="BooleanSuccess" expires_after="2027-01-05">
+    enum="BooleanSuccess" expires_after="2027-11-24">
   <owner>hempjudith@google.com</owner>
   <owner>chrome-sequel-dev@google.com</owner>
   <summary>
@@ -1788,7 +1788,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.SyncedJourneys.Resolution.Result"
-    enum="SyncedJourneyResolutionResult" expires_after="2027-01-05">
+    enum="SyncedJourneyResolutionResult" expires_after="2027-11-24">
   <owner>hempjudith@google.com</owner>
   <owner>chrome-sequel-dev@google.com</owner>
   <summary>
