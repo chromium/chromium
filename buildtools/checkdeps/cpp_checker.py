@@ -10,6 +10,8 @@ import re
 import results
 from rules import Rule, MessageRule
 
+_BACKSLASH_RULE = MessageRule('Include paths may not include backslashes.')
+
 
 class CppChecker(object):
   EXTENSIONS = [
@@ -20,20 +22,67 @@ class CppChecker(object):
     '.mm',
   ]
 
-  # The maximum line length, this is to be efficient in the case of very long
-  # lines (which can't be #includes).
-  _MAX_LINE_LENGTH = 128
-
   # This regular expression will be used to extract filenames from include
   # statements.
   _EXTRACT_INCLUDE_PATH = re.compile(
     r'[ \t]*#[ \t]*(?:include|import)[ \t]*"(.*)"'
   )
 
+  # CheckFile() scans a whole file with one regex over its raw bytes instead
+  # of decoding it and matching line by line. For includes this is the bytes
+  # equivalent of stripping a line and applying _EXTRACT_INCLUDE_PATH: like
+  # `(.*)` there, the greedy `[^\r\n]*` captures up to the last '"' on the
+  # line. The regex also reports the directives needed to skip `#if 0` blocks;
+  # `#if` matches `#ifdef` and `#ifndef` too, which nest inside such a block.
+  _BYTES_IF0_OR_INCLUDE_RE = re.compile(
+    rb'^[ \t\v\f]*(?:'
+    rb'#(if 0|if|endif)'
+    rb'|#[ \t]*(?:include|import)[ \t]*"([^\r\n]*)"'
+    rb')',
+    re.MULTILINE,
+  )
+
   def __init__(self, verbose, resolve_dotdot=False, root_dir=''):
     self._verbose = verbose
     self._resolve_dotdot = resolve_dotdot
     self._root_dir = root_dir
+
+  def _CheckIncludePath(
+    self,
+    rules,
+    include_path,
+    dependee_path,
+    matched_specific,
+    fail_on_temp_allow=False,
+  ):
+    """Returns a DependencyViolation if |include_path| is not allowed.
+
+    |matched_specific| is rules.GetSpecificRulesForFile() for the dependee.
+    """
+    if '\\' in include_path:
+      return results.DependencyViolation(include_path, _BACKSLASH_RULE, rules)
+
+    if '/' not in include_path:
+      # Don't fail when no directory is specified. We may want to be more
+      # strict about this in the future.
+      if self._verbose:
+        print(' WARNING: include specified with no directory: ' + include_path)
+      return None
+
+    if self._resolve_dotdot and '../' in include_path:
+      dependee_dir = os.path.dirname(dependee_path)
+      include_path = os.path.join(dependee_dir, include_path)
+      include_path = os.path.relpath(include_path, self._root_dir)
+      # Normalize to use forward slashes, since all rules are specified
+      # in terms of forward slashes.
+      include_path = include_path.replace(os.path.sep, '/')
+
+    rule = rules.RuleApplyingToWithSpecific(include_path, matched_specific)
+    if rule.allow == Rule.DISALLOW or (
+      fail_on_temp_allow and rule.allow == Rule.TEMP_ALLOW
+    ):
+      return results.DependencyViolation(include_path, rule, rules)
+    return None
 
   def CheckLine(self, rules, line, dependee_path, fail_on_temp_allow=False):
     """Checks the given line with the given rule set.
@@ -49,63 +98,44 @@ class CppChecker(object):
       return False, None  # Not a match
 
     include_path = found_item.group(1)
-
-    if '\\' in include_path:
-      return True, results.DependencyViolation(
-        include_path,
-        MessageRule('Include paths may not include backslashes.'),
-        rules,
-      )
-
-    if '/' not in include_path:
-      # Don't fail when no directory is specified. We may want to be more
-      # strict about this in the future.
-      if self._verbose:
-        print(' WARNING: include specified with no directory: ' + include_path)
-      return True, None
-
-    if self._resolve_dotdot and '../' in include_path:
-      dependee_dir = os.path.dirname(dependee_path)
-      include_path = os.path.join(dependee_dir, include_path)
-      include_path = os.path.relpath(include_path, self._root_dir)
-      # Normalize to use forward slashes, since all rules are specified
-      # in terms of forward slashes.
-      include_path = include_path.replace(os.path.sep, '/')
-
-    rule = rules.RuleApplyingTo(include_path, dependee_path)
-    if rule.allow == Rule.DISALLOW or (
-      fail_on_temp_allow and rule.allow == Rule.TEMP_ALLOW
-    ):
-      return True, results.DependencyViolation(include_path, rule, rules)
-    return True, None
+    matched_specific = rules.GetSpecificRulesForFile(
+      os.path.basename(dependee_path)
+    )
+    violation = self._CheckIncludePath(
+      rules, include_path, dependee_path, matched_specific, fail_on_temp_allow
+    )
+    return True, violation
 
   def CheckFile(self, rules, filepath):
     if self._verbose:
       print('Checking: ' + filepath)
 
     dependee_status = results.DependeeStatus(filepath)
-    ret_val = ''  # We'll collect the error messages in here  # noqa: F841
-    last_include = 0
+    with open(filepath, 'rb') as f:
+      data = f.read()
 
-    with open(filepath, encoding='utf-8') as f:
-      in_if0 = 0
-      for line_num, line in enumerate(f):
-        line = line.strip()
+    if b'#' not in data:
+      return dependee_status
 
-        # Check to see if we're at / inside an #if 0 block
-        if line.startswith('#if 0'):
+    matched_specific = rules.GetSpecificRulesForFile(os.path.basename(filepath))
+
+    # Nesting depth of conditionals, counted from the outermost `#if 0`.
+    in_if0 = 0
+    for match in self._BYTES_IF0_OR_INCLUDE_RE.finditer(data):
+      directive = match.group(1)
+      if directive is not None:
+        if directive == b'if 0':
           in_if0 += 1
-          continue
-        if in_if0 > 0:
-          if line.startswith('#if'):
+        elif in_if0 > 0:
+          if directive == b'if':
             in_if0 += 1
-          elif line.startswith('#endif'):
+          elif directive == b'endif':
             in_if0 -= 1
-          continue
-
-        is_include, violation = self.CheckLine(rules, line, filepath)
-        if is_include:
-          last_include = line_num  # noqa: F841
+      elif in_if0 == 0:
+        include_path = match.group(2).decode('utf-8')
+        violation = self._CheckIncludePath(
+          rules, include_path, filepath, matched_specific
+        )
         if violation:
           dependee_status.AddViolation(violation)
 
