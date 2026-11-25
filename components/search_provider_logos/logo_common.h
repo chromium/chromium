@@ -132,6 +132,19 @@ struct LogoMetadata {
   MuralMetadata mural_metadata;
   MuralMetadata dark_mural_metadata;
 
+  // LOGO, INTERACTIVE: not used.
+  // SIMPLE, ANIMATED: URLs for the light and dark SuperG doodle icons, and
+  // URLs + dimensions for the light and dark small wordmark doodle images.
+  // May be empty / zero.
+  GURL super_g_url;
+  GURL dark_super_g_url;
+  GURL small_url;
+  int small_width_px = 0;
+  int small_height_px = 0;
+  GURL dark_small_url;
+  int dark_small_width_px = 0;
+  int dark_small_height_px = 0;
+
   // For use by LogoService ---------------------------------------------------
 
   // The URL from which the logo was downloaded (without the fingerprint param).
