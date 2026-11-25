@@ -716,6 +716,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
                                       ->GetPlatformRuntimeProperties()
                                       .supports_server_side_window_decorations;
   html_source->AddBoolean("showCustomChromeFrame", show_custom_chrome_frame);
+  html_source->AddBoolean("showQtThemeButton", ui::IsQtAvailable());
 #endif
 }
 

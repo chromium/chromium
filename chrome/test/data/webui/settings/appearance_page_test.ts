@@ -298,6 +298,23 @@ suite('AppearancePage', function() {
     button.click();
     return appearanceBrowserProxy.whenCalled('useGtkTheme');
   });
+
+  test('useQtThemeLinux', async () => {
+    // "USE QT" should be hidden when Qt can't be loaded.
+    loadTimeData.overrideValues({showQtThemeButton: false});
+    await createAppearancePage();
+    assertFalse(!!appearancePage.shadowRoot.querySelector('#useQt'));
+
+    loadTimeData.overrideValues({showQtThemeButton: true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await createAppearancePage();
+    const button =
+        appearancePage.shadowRoot.querySelector<HTMLElement>('#useQt');
+    assertTrue(!!button);
+
+    button.click();
+    return appearanceBrowserProxy.whenCalled('useQtTheme');
+  });
   // </if>
 
   // <if expr="not is_linux">

@@ -506,7 +506,8 @@ export class SettingsAppearancePageElement extends
   /** @return Whether to show the "USE QT" button. */
   protected showUseQt_(): boolean {
     const themeId = this.themeIdPref_?.value;
-    return (!!themeId || this.systemTheme_ !== SystemTheme.QT) &&
+    return loadTimeData.getBoolean('showQtThemeButton') &&
+        (!!themeId || this.systemTheme_ !== SystemTheme.QT) &&
         !this.appearanceBrowserProxy_.isChildAccount();
   }
 

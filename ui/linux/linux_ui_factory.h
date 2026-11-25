@@ -38,6 +38,12 @@ const std::vector<raw_ptr<LinuxUiTheme>>& GetLinuxUiThemes();
 COMPONENT_EXPORT(LINUX_UI_FACTORY)
 SystemTheme GetDefaultSystemTheme();
 
+// Returns whether the Qt shim library can be loaded, i.e. whether Chrome was
+// built with Qt support and the Qt libraries are installed. Unlike
+// GetLinuxUiTheme(SystemTheme::kQt), this does not initialize Qt.
+COMPONENT_EXPORT(LINUX_UI_FACTORY)
+bool IsQtAvailable();
+
 }  // namespace ui
 
 #endif  // UI_LINUX_LINUX_UI_FACTORY_H_

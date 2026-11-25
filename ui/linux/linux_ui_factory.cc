@@ -4,15 +4,19 @@
 
 #include "ui/linux/linux_ui_factory.h"
 
+#include <dlfcn.h>
+
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/environment.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "ui/base/buildflags.h"
@@ -202,6 +206,31 @@ SystemTheme GetDefaultSystemTheme() {
     case base::nix::DESKTOP_ENVIRONMENT_OTHER:
       return SystemTheme::kDefault;
   }
+}
+
+bool IsQtAvailable() {
+#if BUILDFLAG(USE_QT)
+  static const bool qt_available = [] {
+    base::FilePath path;
+    if (!base::PathService::Get(base::DIR_MODULE, &path)) {
+      return false;
+    }
+    // Loading the shim fails when the Qt libraries it links against are not
+    // installed. Don't initialize Qt here; that is done by GetQtUi() only when
+    // the Qt theme is actually used.
+    for (const char* shim : {"libqt5_shim.so", "libqt6_shim.so"}) {
+      if (void* handle = dlopen(path.Append(shim).value().c_str(),
+                                RTLD_LAZY | RTLD_LOCAL)) {
+        dlclose(handle);
+        return true;
+      }
+    }
+    return false;
+  }();
+  return qt_available;
+#else
+  return false;
+#endif
 }
 
 }  // namespace ui
