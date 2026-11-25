@@ -11,11 +11,12 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_profile.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/api/management/management_api.h"
@@ -278,23 +279,24 @@ TEST_F(SupervisedUserExtensionTest, ExtensionsStateAfterGellerization) {
   std::string id = extension->id();
   CheckEnabled(id);
 
-  // Now make the profile supervised.
-  profile()->AsTestingProfile()->SetIsSupervisedProfile();
+  // Now make the account supervised.
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      IdentityManagerFactory::GetForProfile(profile()));
 
-    // The extension should be disabled now pending custodian approval.
-    CheckDisabledForCustodianApproval(id);
+  // The extension should be disabled now pending custodian approval.
+  CheckDisabledForCustodianApproval(id);
 
-    // Grant parent approval.
-    supervised_user_extensions_delegate()->AddExtensionApproval(*extension);
+  // Grant parent approval.
+  supervised_user_extensions_delegate()->AddExtensionApproval(*extension);
 
-    // The extension should be enabled now.
-    CheckEnabled(id);
+  // The extension should be enabled now.
+  CheckEnabled(id);
 
-    // Remove parent approval.
-    supervised_user_extensions_delegate()->RemoveExtensionApproval(*extension);
+  // Remove parent approval.
+  supervised_user_extensions_delegate()->RemoveExtensionApproval(*extension);
 
-    // The extension should be disabled again now.
-    CheckDisabledForCustodianApproval(id);
+  // The extension should be disabled again now.
+  CheckDisabledForCustodianApproval(id);
 }
 
 // Tests that extensions that are disabled pending parent approval
@@ -310,12 +312,13 @@ TEST_F(SupervisedUserExtensionTest, ExtensionsStateAfterGraduation) {
   const Extension* extension = InstallCRX(path, install_state);
   ASSERT_TRUE(extension);
   std::string id = extension->id();
-    // This extension is a supervised user initiated install and should remain
-    // disabled.
-    CheckDisabledForCustodianApproval(id);
+  // This extension is a supervised user initiated install and should remain
+  // disabled.
+  CheckDisabledForCustodianApproval(id);
 
-  // Make the profile un-supervised.
-  profile()->AsTestingProfile()->SetIsSupervisedProfile(false);
+  // Make the account unsupervised.
+  supervised_user::SupervisedUserTestEnvironment::EnableRegularAccount(
+      IdentityManagerFactory::GetForProfile(profile()));
 
   // The extension should become enabled.
   CheckEnabled(id);
