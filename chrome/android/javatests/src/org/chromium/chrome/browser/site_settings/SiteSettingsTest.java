@@ -22,6 +22,7 @@ import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WI
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaDrm;
 
 import androidx.preference.Preference;
 import androidx.test.core.app.ApplicationProvider;
@@ -43,6 +44,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -89,6 +91,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
@@ -99,6 +102,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for global category switches, embargoed settings, and permissions in Site Settings. */
@@ -119,6 +123,9 @@ public class SiteSettingsTest {
         "anti_abuse_things_to_consider_header",
         "anti_abuse_things_to_consider_section_one"
     };
+
+    private static final UUID WIDEVINE_UUID =
+            UUID.fromString("edef8ba9-79d6-4ace-a3c8-27dcd51d21ed");
 
     /** Test case for site settings with a global toggle. */
     private static class TwoStatePermissionTestCaseWithToggle
@@ -255,6 +262,16 @@ public class SiteSettingsTest {
                 new PermissionUpdateWaiter(
                         expectGranted ? "Granted" : "Denied", mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(mPermissionUpdateWaiter));
+    }
+
+    private static void assumeWidevineSupported() {
+        boolean isSupported = false;
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            isSupported = MediaDrm.isCryptoSchemeSupported(WIDEVINE_UUID);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            // Broken or unavailable DRM HAL; treat Widevine as unsupported.
+        }
+        Assume.assumeTrue("Skipping test because Widevine DRM is not supported.", isSupported);
     }
 
     private void triggerEmbargoForOrigin(String url) throws TimeoutException {
@@ -1399,6 +1416,7 @@ public class SiteSettingsTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testProtectedContentDefaultOption() throws Exception {
+        assumeWidevineSupported();
         initializeUpdateWaiter(/* expectGranted= */ true);
         mPermissionTestRule.runNoPromptTest(
                 mPermissionUpdateWaiter,
@@ -1461,9 +1479,9 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisabledTest(
-            message = "https://crbug.com/40804306,https://crbug.com/40256198,crbug.com/40781540")
     public void testProtectedContentAllowThenBlock() throws Exception {
+        assumeWidevineSupported();
+
         initializeUpdateWaiter(/* expectGranted= */ true);
         mPermissionTestRule.runNoPromptTest(
                 mPermissionUpdateWaiter,
@@ -1472,16 +1490,18 @@ public class SiteSettingsTest {
                 0,
                 true);
 
-        SiteSettingsTestHelper.setGlobalTriStateToggleForCategory(
-                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.BLOCK);
+        SettingsActivity settingsActivity =
+                SiteSettingsTestHelper.setGlobalTriStateToggleForCategory(
+                        SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.BLOCK);
+        ApplicationTestUtils.finishActivity(settingsActivity);
 
         initializeUpdateWaiter(/* expectGranted= */ false);
-        mPermissionTestRule.runNoPromptTest(
-                mPermissionUpdateWaiter,
-                "/content/test/data/android/eme_permissions.html",
-                "requestEME()",
-                0,
-                true);
+        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab("requestEME()");
+        mPermissionUpdateWaiter.waitForNumUpdates(0);
+        Assert.assertFalse(
+                "Modal permission prompt shown when none expected",
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> PermissionDialogController.getInstance().isDialogShownForTest()));
     }
 
     @Test

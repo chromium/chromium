@@ -198,7 +198,7 @@ public class SiteSettingsTestHelper {
         return helper.getOnlyPayloadBlocking();
     }
 
-    public static void setGlobalTriStateToggleForCategory(
+    public static SettingsActivity setGlobalTriStateToggleForCategory(
             final @SiteSettingsCategory.Type int type, final int newValue) {
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(type);
@@ -212,6 +212,7 @@ public class SiteSettingsTestHelper {
                     preferences.onPreferenceChange(triStateToggle, newValue);
                 });
         settingsActivity.finish();
+        return settingsActivity;
     }
 
     /**
