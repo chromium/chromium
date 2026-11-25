@@ -27,7 +27,7 @@ import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createAutocompleteResult, createSearchMatch} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {createAutocompleteResult, createMatchKeywordModel, createSearchMatch} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -1167,9 +1167,9 @@ suite('OmniboxEverywhereOmniboxTest', () => {
   }
 
   test(
-      'Tab and Shift+Tab navigate across AIM, contextual entrypoint (+), ' +
-          'voice search, lens search, profile, and back to input when ' +
-          'dropdown is visible',
+      'Tab and Shift+Tab navigate across AIM, profile, contextual entrypoint ' +
+          '(+), voice search, lens search, and back to input when dropdown ' +
+          'is visible',
       async () => {
         await createOmniboxWithProfilePicker();
         const profileContainer = omnibox.$.profileIcon.$.profileContainer;
@@ -1198,80 +1198,86 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         await dispatchTab();
         assertEquals(
             SelectionLineState.kFocusedButtonAim, omnibox.selection.state);
-
-        // Tab 2 -> Contextual entrypoint (+) button.
-        await dispatchTab();
-        assertEquals(
-            SelectionLineState.kFocusedButtonContextEntrypoint,
-            omnibox.selection.state);
-        assertTrue(entrypoint.hasVirtualFocus);
-        assertFalse(voiceContainer.hasAttribute('has-virtual-focus'));
-        assertFalse(lensContainer.hasAttribute('has-virtual-focus'));
-
-        // Tab 3 -> Voice search (Mic) button.
-        await dispatchTab();
-        assertEquals(
-            SelectionLineState.kFocusedButtonVoiceSearch,
-            omnibox.selection.state);
-        assertFalse(entrypoint.hasVirtualFocus);
-        assertTrue(voiceContainer.hasAttribute('has-virtual-focus'));
-        assertFalse(lensContainer.hasAttribute('has-virtual-focus'));
-
-        // Tab 4 -> Lens search button.
-        await dispatchTab();
-        assertEquals(
-            SelectionLineState.kFocusedButtonLensSearch,
-            omnibox.selection.state);
-        assertFalse(entrypoint.hasVirtualFocus);
-        assertFalse(voiceContainer.hasAttribute('has-virtual-focus'));
-        assertTrue(lensContainer.hasAttribute('has-virtual-focus'));
         assertFalse(profileIcon.hasAttribute('has-virtual-focus'));
 
-        // Tab 5 -> Profile button, which renders last.
+        // Tab 2 -> Profile button, which ends the input row.
         await dispatchTab();
         assertEquals(
             SelectionLineState.kFocusedButtonProfile, omnibox.selection.state);
         assertTrue(profileIcon.hasAttribute('has-virtual-focus'));
         assertNotEquals('none', profileRing());
-        assertFalse(lensContainer.hasAttribute('has-virtual-focus'));
         assertEquals(
             'Chrome profile Test Profile test@example.com',
             omnibox.$.input.$.selectionAnnouncement.textContent);
+
+        // Tab 3 -> Contextual entrypoint (+) button.
+        await dispatchTab();
+        assertEquals(
+            SelectionLineState.kFocusedButtonContextEntrypoint,
+            omnibox.selection.state);
+        assertTrue(entrypoint.hasVirtualFocus);
+        assertFalse(profileIcon.hasAttribute('has-virtual-focus'));
+        assertEquals('none', profileRing());
+        assertFalse(voiceContainer.hasAttribute('has-virtual-focus'));
+        assertFalse(lensContainer.hasAttribute('has-virtual-focus'));
+
+        // Tab 4 -> Voice search (Mic) button.
+        await dispatchTab();
+        assertEquals(
+            SelectionLineState.kFocusedButtonVoiceSearch,
+            omnibox.selection.state);
+        assertFalse(entrypoint.hasVirtualFocus);
+        assertTrue(voiceContainer.hasAttribute('has-virtual-focus'));
+        assertFalse(lensContainer.hasAttribute('has-virtual-focus'));
+
+        // Tab 5 -> Lens search button.
+        await dispatchTab();
+        assertEquals(
+            SelectionLineState.kFocusedButtonLensSearch,
+            omnibox.selection.state);
+        assertFalse(entrypoint.hasVirtualFocus);
+        assertFalse(voiceContainer.hasAttribute('has-virtual-focus'));
+        assertTrue(lensContainer.hasAttribute('has-virtual-focus'));
 
         // Tab 6 -> Wraps back to default match / search input (line 0).
         await dispatchTab();
         assertEquals(0, omnibox.selection.line);
         assertEquals(SelectionLineState.kNormal, omnibox.selection.state);
-        assertFalse(profileIcon.hasAttribute('has-virtual-focus'));
-        assertEquals('none', profileRing());
+        assertFalse(lensContainer.hasAttribute('has-virtual-focus'));
 
-        // Shift+Tab 1 -> Back to Profile button.
-        await dispatchTab(/*shiftKey=*/ true);
-        assertEquals(
-            SelectionLineState.kFocusedButtonProfile, omnibox.selection.state);
-        assertTrue(profileIcon.hasAttribute('has-virtual-focus'));
-
-        // Shift+Tab 2 -> Back to Lens search button.
+        // Shift+Tab 1 -> Back to Lens search button.
         await dispatchTab(/*shiftKey=*/ true);
         assertEquals(
             SelectionLineState.kFocusedButtonLensSearch,
             omnibox.selection.state);
         assertTrue(lensContainer.hasAttribute('has-virtual-focus'));
-        assertFalse(profileIcon.hasAttribute('has-virtual-focus'));
 
-        // Shift+Tab 3 -> Back to Voice search (Mic) button.
+        // Shift+Tab 2 -> Back to Voice search (Mic) button.
         await dispatchTab(/*shiftKey=*/ true);
         assertEquals(
             SelectionLineState.kFocusedButtonVoiceSearch,
             omnibox.selection.state);
         assertTrue(voiceContainer.hasAttribute('has-virtual-focus'));
 
-        // Shift+Tab 4 -> Back to Contextual entrypoint (+) button.
+        // Shift+Tab 3 -> Back to Contextual entrypoint (+) button.
         await dispatchTab(/*shiftKey=*/ true);
         assertEquals(
             SelectionLineState.kFocusedButtonContextEntrypoint,
             omnibox.selection.state);
         assertTrue(entrypoint.hasVirtualFocus);
+
+        // Shift+Tab 4 -> Back to Profile button.
+        await dispatchTab(/*shiftKey=*/ true);
+        assertEquals(
+            SelectionLineState.kFocusedButtonProfile, omnibox.selection.state);
+        assertTrue(profileIcon.hasAttribute('has-virtual-focus'));
+        assertFalse(entrypoint.hasVirtualFocus);
+
+        // Shift+Tab 5 -> Back to AIM button.
+        await dispatchTab(/*shiftKey=*/ true);
+        assertEquals(
+            SelectionLineState.kFocusedButtonAim, omnibox.selection.state);
+        assertFalse(profileIcon.hasAttribute('has-virtual-focus'));
       });
 
   test(
@@ -1404,9 +1410,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       });
 
   test(
-      'profile button is the last available selection, only with the ' +
-          'profile picker',
-      async () => {
+      'profile button virtual focus placement and picker gating', async () => {
         const defaultMatch = createSearchMatch({allowedToBeDefaultMatch: true});
         const match = createSearchMatch();
         const getStates = (matches: AutocompleteMatch[]) =>
@@ -1419,19 +1423,66 @@ suite('OmniboxEverywhereOmniboxTest', () => {
                             ([, state]) => state ===
                                 SelectionLineState.kFocusedButtonProfile));
 
-        // Appended after Lens, matching the button's render order.
         await createOmniboxWithProfilePicker();
+        const profile = [-1, SelectionLineState.kFocusedButtonProfile];
+        const context =
+            [-1, SelectionLineState.kFocusedButtonContextEntrypoint];
+        const voice = [-1, SelectionLineState.kFocusedButtonVoiceSearch];
+        const lens = [-1, SelectionLineState.kFocusedButtonLensSearch];
+
+        // Ends the input row right after AI Mode, before dropdown suggestions.
         assertDeepEquals(
             [
               [0, SelectionLineState.kNormal],
               [0, SelectionLineState.kFocusedButtonAim],
+              profile,
               [1, SelectionLineState.kNormal],
-              [-1, SelectionLineState.kFocusedButtonContextEntrypoint],
-              [-1, SelectionLineState.kFocusedButtonVoiceSearch],
-              [-1, SelectionLineState.kFocusedButtonLensSearch],
-              [-1, SelectionLineState.kFocusedButtonProfile],
+              context,
+              voice,
+              lens,
             ],
             getStates([defaultMatch, match]));
+
+        // Moves after suggestions when AI Mode is not selectable (e.g.
+        // keyword chip), so the first Tab from the input still enters keyword
+        // mode.
+        const keywordMatch = createSearchMatch({
+          allowedToBeDefaultMatch: true,
+          keywordModel: createMatchKeywordModel({type: KeywordType.kChip}),
+        });
+        assertDeepEquals(
+            [
+              [0, SelectionLineState.kNormal],
+              [0, SelectionLineState.kKeywordMode],
+              [1, SelectionLineState.kNormal],
+              profile,
+              context,
+              voice,
+              lens,
+            ],
+            getStates([keywordMatch, match]));
+
+        // Falls back before mic when both AI Mode and `+` are absent.
+        testProxy.page.updateAimPopupEligibility(false);
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertDeepEquals(
+            [
+              [0, SelectionLineState.kNormal],
+              [1, SelectionLineState.kNormal],
+              profile,
+              voice,
+            ],
+            getStates([defaultMatch, match]));
+
+        // Re-enable AI Mode and verify the first Tab from the input still
+        // enters keyword mode rather than focusing the profile button.
+        testProxy.page.updateAimPopupEligibility(true);
+        await testProxy.page.$.flushForTesting();
+        await showDropdownWithVirtualFocus([keywordMatch, match]);
+        await dispatchTab();
+        assertEquals(SelectionLineState.kKeywordMode, omnibox.selection.state);
+        assertEquals(1, testProxy.handler.getCallCount('activateKeyword'));
       });
 
   test(

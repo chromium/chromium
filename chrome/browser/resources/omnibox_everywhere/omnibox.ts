@@ -477,6 +477,14 @@ export class OmniboxEverywhereOmniboxElement extends
     if (!result || available.length === 0) {
       return available;
     }
+    // The profile button is selectable only when it opens the profile menu.
+    if (this.$.profileIcon.isMenuEnabled) {
+      available.splice(this.getProfileSelectionIndex_(available), 0, {
+        line: -1,
+        state: SelectionLineState.kFocusedButtonProfile,
+        actionIndex: 0,
+      });
+    }
     if (this.showVoiceSearchButton_()) {
       available.push({
         line: -1,
@@ -491,16 +499,27 @@ export class OmniboxEverywhereOmniboxElement extends
         actionIndex: 0,
       });
     }
-    // The profile button is selectable only when it opens the profile menu.
-    // It renders last, so Tab reaches it last.
-    if (this.$.profileIcon.isMenuEnabled) {
-      available.push({
-        line: -1,
-        state: SelectionLineState.kFocusedButtonProfile,
-        actionIndex: 0,
-      });
-    }
     return available;
+  }
+
+  // Returns where the profile button goes in `available`, the selections from
+  // `SearchboxSelectionMixin.getAvailableSelections()`. It ends the input row,
+  // right after the AI Mode button. When AI Mode is not selectable (the button
+  // is hidden, or the mixin omits it so the first Tab reaches a keyword,
+  // action, instant keyword, or pedal), it goes after the suggestions instead,
+  // so it never takes that first Tab. Mic and Lens are appended after this, so
+  // the end of `available` is still before them.
+  private getProfileSelectionIndex_(available: OmniboxPopupSelection[]):
+      number {
+    const aimIndex = available.findIndex(
+        s => s.state === SelectionLineState.kFocusedButtonAim);
+    if (aimIndex >= 0) {
+      return aimIndex + 1;
+    }
+    const contextEntrypointIndex = available.findIndex(
+        s => s.state === SelectionLineState.kFocusedButtonContextEntrypoint);
+    return contextEntrypointIndex >= 0 ? contextEntrypointIndex :
+                                         available.length;
   }
 
   override getSelectionA11yLabel(
