@@ -4,13 +4,17 @@
 
 #import "ios/chrome/test/ios_chrome_unit_test_suite.h"
 
+#import <optional>
+
 #import "base/memory_coordinator/memory_pressure_source.h"
 #import "base/metrics/user_metrics.h"
 #import "base/path_service.h"
+#import "base/test/scoped_path_override.h"
 #import "base/test/test_simple_task_runner.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/profile/model/keyed_service_factories.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -40,6 +44,10 @@ class IOSChromeUnitTestSuiteInitializer
   void OnTestStart(const testing::TestInfo& test_info) override {
     ios::provider::Initialize();
 
+    // Isolate `ios::DIR_USER_DATA` so files such as the First Run sentinel
+    // cannot leak across tests or retries on a reused simulator.
+    user_data_dir_override_.emplace(ios::DIR_USER_DATA);
+
     memory_pressure_source_ = std::make_unique<base::MemoryPressureSource>();
 
     DCHECK(!GetApplicationContext());
@@ -50,12 +58,17 @@ class IOSChromeUnitTestSuiteInitializer
     DCHECK_EQ(GetApplicationContext(), application_context_.get());
     application_context_.reset();
 
+    // Clear cached First Run state before removing the temporary user data dir.
+    FirstRun::ClearStateForTesting();
+    user_data_dir_override_.reset();
+
     breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
 
     memory_pressure_source_.reset();
   }
 
  private:
+  std::optional<base::ScopedPathOverride> user_data_dir_override_;
   std::unique_ptr<ApplicationContext> application_context_;
   std::unique_ptr<base::MemoryPressureSource> memory_pressure_source_;
 };
