@@ -517,6 +517,9 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
   ReferrerChain returned_referrer_chain;
+  ReferrerChainEntry* entry = returned_referrer_chain.Add();
+  entry->set_url("http://example.test/");
+  entry->add_ip_addresses("1.2.3.4");
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
@@ -546,6 +549,10 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
         EXPECT_EQ("http://example.test/", request_proto.url());
         // ReferringAppInfo should not be populated for ESB.
         EXPECT_FALSE(request_proto.has_referring_app_info());
+        // Enterprise lookups retain server IPs even under standard protection.
+        ASSERT_EQ(1, request_proto.referrer_chain_size());
+        EXPECT_THAT(request_proto.referrer_chain(0).ip_addresses(),
+                    testing::ElementsAre("1.2.3.4"));
         request_validated = true;
       }));
 

@@ -107,6 +107,11 @@ bool FakeRealTimeUrlLookupService::CanSendPageLoadToken() const {
   return false;
 }
 
+bool FakeRealTimeUrlLookupService::CanIncludeIpAddressesInReferrerChain()
+    const {
+  return false;
+}
+
 std::optional<std::string> FakeRealTimeUrlLookupService::GetDMTokenString()
     const {
   return std::nullopt;

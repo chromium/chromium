@@ -103,6 +103,11 @@ bool RealTimeUrlLookupService::CanSendPageLoadToken() const {
   return true;
 }
 
+bool RealTimeUrlLookupService::CanIncludeIpAddressesInReferrerChain() const {
+  return pref_service_ && IsEnhancedProtectionEnabled(*pref_service_) &&
+         CanPerformFullURLLookup();
+}
+
 bool RealTimeUrlLookupService::CanIncludeSubframeUrlInReferrerChain() const {
   return IsEnhancedProtectionEnabled(*pref_service_) &&
          CanPerformFullURLLookup();

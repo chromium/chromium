@@ -283,10 +283,13 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // Removes URLs that were recorded before |min_allowed_timestamp|. If
   // |should_remove_subresource_url| is true, also removes subresource URLs.
+  // If `should_remove_ip_addresses` is true, clears `ip_addresses` on all
+  // entries.
   static void SanitizeReferrerChainEntries(
       ReferrerChain* referrer_chain,
       std::optional<base::Time> min_allowed_timestamp,
-      bool should_remove_subresource_url);
+      bool should_remove_subresource_url,
+      bool should_remove_ip_addresses);
 
   // Stores state for populating the request proto asynchronously.
   struct RequestProtoPopulatorState {
@@ -322,6 +325,10 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // Returns true if page load tokens can be attached to requests.
   virtual bool CanSendPageLoadToken() const = 0;
+
+  // Returns true if server IP addresses can be included in referrer chain
+  // entries (including via DNS resolution).
+  virtual bool CanIncludeIpAddressesInReferrerChain() const = 0;
 
   // Gets access token, called if |CanPerformFullURLLookupWithToken| returns
   // true.

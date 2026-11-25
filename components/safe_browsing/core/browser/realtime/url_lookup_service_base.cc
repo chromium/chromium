@@ -274,8 +274,12 @@ GURL RealTimeUrlLookupServiceBase::SanitizeURL(const GURL& url) {
 void RealTimeUrlLookupServiceBase::SanitizeReferrerChainEntries(
     ReferrerChain* referrer_chain,
     std::optional<base::Time> min_allowed_timestamp,
-    bool should_remove_subresource_url) {
+    bool should_remove_subresource_url,
+    bool should_remove_ip_addresses) {
   for (ReferrerChainEntry& entry : *referrer_chain) {
+    if (should_remove_ip_addresses) {
+      entry.clear_ip_addresses();
+    }
     // Remove URLs in the entry if the referrer chain is collected
     // before the min_timestamp.
     if (min_allowed_timestamp.has_value() &&
@@ -749,6 +753,8 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
   }
 
   *request->mutable_population() = get_user_population_callback_.Run();
+  const bool can_include_ip_addresses =
+      referrer_chain_provider_ && CanIncludeIpAddressesInReferrerChain();
   if (referrer_chain_provider_) {
     ReferrerChainProvider::AttributionResult attribution_result =
         referrer_chain_provider_->IdentifyReferrerChainByPendingEventURL(
@@ -769,7 +775,9 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
     SanitizeReferrerChainEntries(request->mutable_referrer_chain(),
                                  GetMinAllowedTimestampForReferrerChains(),
                                  /*should_remove_subresource_url=*/
-                                 !CanIncludeSubframeUrlInReferrerChain());
+                                 !CanIncludeSubframeUrlInReferrerChain(),
+                                 /*should_remove_ip_addresses=*/
+                                 !can_include_ip_addresses);
   }
 
   if (CanSendPageLoadToken() && cache_manager_) {
@@ -804,8 +812,8 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
                                         : network_context_getter_.Run();
 
   bool should_resolve_dns =
-      network_context && url.is_valid() && url.SchemeIsHTTPOrHTTPS() &&
-      request->referrer_chain_size() > 0 &&
+      can_include_ip_addresses && network_context && url.is_valid() &&
+      url.SchemeIsHTTPOrHTTPS() && request->referrer_chain_size() > 0 &&
       request->referrer_chain(0).ip_addresses_size() == 0 &&
       base::FeatureList::IsEnabled(kSafeBrowsingWaitForDnsForRealTimeLookup);
 

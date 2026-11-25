@@ -560,6 +560,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(RealTimeUrlLookupServiceStartFillingRequestProtoTest,
        StartFillingRequestProto) {
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::ENHANCED_PROTECTION);
   GURL url("http://example.com/");
 
   EXPECT_CALL(*referrer_chain_provider_,
@@ -599,7 +601,7 @@ TEST_P(RealTimeUrlLookupServiceStartFillingRequestProtoTest,
       EXPECT_EQ(/* full report */ 1, result->report_type());
     }
     EXPECT_EQ(RTLookupRequest::NAVIGATION, result->lookup_type());
-    EXPECT_EQ(ChromeUserPopulation::SAFE_BROWSING,
+    EXPECT_EQ(ChromeUserPopulation::ENHANCED_PROTECTION,
               result->population().user_population());
     EXPECT_EQ(1, result->frame_type());
 
@@ -618,9 +620,24 @@ TEST_P(RealTimeUrlLookupServiceStartFillingRequestProtoTest,
   ASSERT_TRUE(StartFillingRequestProto(GURL("chrome://settings"),
                                        /*is_sampled_report=*/false));
   EXPECT_EQ(mock_network_context_.resolve_host_called_count(), 0);
+
+  // MBB-only users should not resolve DNS even when the feature is enabled.
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::STANDARD_PROTECTION);
+  EnableMbb();
+  mock_network_context_.ResetRecordedCalls();
+  auto mbb_result = StartFillingRequestProto(url, /*is_sampled_report=*/false);
+  ASSERT_TRUE(mbb_result);
+  EXPECT_EQ(ChromeUserPopulation::SAFE_BROWSING,
+            mbb_result->population().user_population());
+  EXPECT_EQ(mock_network_context_.resolve_host_called_count(), 0);
+  ASSERT_EQ(mbb_result->referrer_chain_size(), 1);
+  EXPECT_EQ(mbb_result->referrer_chain(0).ip_addresses_size(), 0);
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, DnsResolutionFails) {
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::ENHANCED_PROTECTION);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kSafeBrowsingWaitForDnsForRealTimeLookup);
   mock_network_context_.set_simulated_error(net::ERR_NAME_NOT_RESOLVED);
@@ -649,6 +666,8 @@ TEST_F(RealTimeUrlLookupServiceTest, DnsResolutionFails) {
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, DnsResolutionTimesOut) {
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::ENHANCED_PROTECTION);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kSafeBrowsingWaitForDnsForRealTimeLookup);
   mock_network_context_.set_simulate_timeout(true);
@@ -677,6 +696,8 @@ TEST_F(RealTimeUrlLookupServiceTest, DnsResolutionTimesOut) {
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, DnsResolutionSkipped) {
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::ENHANCED_PROTECTION);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kSafeBrowsingWaitForDnsForRealTimeLookup);
   mock_network_context_.set_simulated_error(net::ERR_DNS_DIRECT_ONLY);
@@ -710,6 +731,7 @@ class RealTimeUrlLookupServiceWithDmToken : public RealTimeUrlLookupService {
   std::optional<std::string> GetDMTokenString() const override {
     return "dummy-dm-token";
   }
+  bool CanIncludeIpAddressesInReferrerChain() const override { return true; }
 };
 
 TEST_F(RealTimeUrlLookupServiceTest, LocalIpAndDnsResolutionCompletes) {
@@ -1548,12 +1570,14 @@ TEST_F(RealTimeUrlLookupServiceTest,
                                kTestSubframeReferrerUrl, kTestReferrerUrl,
                                navigation_time_msec)
           .get());
+  returned_referrer_chain.Mutable(0)->add_ip_addresses("1.2.3.4");
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestReferrerUrl, /*main_frame_url=*/"",
                                /*referrer_url=*/"",
                                /*referrer_main_frame_url=*/"",
                                navigation_time_msec)
           .get());
+  returned_referrer_chain.Mutable(1)->add_ip_addresses("5.6.7.8");
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(
                   url, /*user_gesture_count_limit=*/2, _))
@@ -1597,6 +1621,9 @@ TEST_F(RealTimeUrlLookupServiceTest,
         EXPECT_FALSE(request_proto.referrer_chain()
                          .Get(1)
                          .is_subframe_referrer_url_removed());
+        // Server IP addresses are stripped for MBB-only users.
+        EXPECT_EQ(0, request_proto.referrer_chain().Get(0).ip_addresses_size());
+        EXPECT_EQ(0, request_proto.referrer_chain().Get(1).ip_addresses_size());
 
         request_validated = true;
       }));
@@ -1633,12 +1660,14 @@ TEST_F(RealTimeUrlLookupServiceTest,
                                kTestSubframeReferrerUrl, kTestReferrerUrl,
                                navigation_time_msec)
           .get());
+  returned_referrer_chain.Mutable(0)->add_ip_addresses("1.2.3.4");
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestSubframeReferrerUrl, kTestReferrerUrl,
                                /*referrer_url=*/"",
                                /*referrer_main_frame_url=*/"",
                                navigation_time_msec)
           .get());
+  returned_referrer_chain.Mutable(1)->add_ip_addresses("5.6.7.8");
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(
                   url, /*user_gesture_count_limit=*/2, _))
@@ -1676,6 +1705,10 @@ TEST_F(RealTimeUrlLookupServiceTest,
                   request_proto.referrer_chain().Get(1).url());
         EXPECT_FALSE(
             request_proto.referrer_chain().Get(1).is_subframe_url_removed());
+        EXPECT_THAT(request_proto.referrer_chain().Get(0).ip_addresses(),
+                    testing::ElementsAre("1.2.3.4"));
+        EXPECT_THAT(request_proto.referrer_chain().Get(1).ip_addresses(),
+                    testing::ElementsAre("5.6.7.8"));
 
         request_validated = true;
       }));

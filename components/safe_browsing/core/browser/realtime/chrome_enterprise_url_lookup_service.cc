@@ -170,6 +170,11 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanSendPageLoadToken() const {
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::
+    CanIncludeIpAddressesInReferrerChain() const {
+  return true;
+}
+
+bool ChromeEnterpriseRealTimeUrlLookupService::
     CanIncludeSubframeUrlInReferrerChain() const {
   return false;
 }

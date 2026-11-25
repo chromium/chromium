@@ -54,6 +54,7 @@ class FakeRealTimeUrlLookupService
   bool CanPerformFullURLLookupWithToken() const override;
   int GetReferrerUserGestureLimit() const override;
   bool CanSendPageLoadToken() const override;
+  bool CanIncludeIpAddressesInReferrerChain() const override;
   std::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
   std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
