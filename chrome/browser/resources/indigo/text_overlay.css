@@ -176,6 +176,16 @@
   }
 }
 
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes wipe-in {
   from {
     clip-path: var(--indigo-wipe-in-start);
@@ -202,4 +212,25 @@
 
 div {
   text-align: center;
+}
+
+/* With reduced motion, the spark fades in together with the first step,
+ * without spinning or growing, and the steps cross-fade instead of wiping. */
+@media (prefers-reduced-motion: reduce) {
+  #icon {
+    animation-duration: var(--indigo-text-transition-duration);
+    animation-name: fade-in;
+  }
+
+  #steps > div.wipe-in {
+    animation-name: fade-in;
+  }
+
+  #steps > div.wipe-in:not(:first-child) {
+    animation-delay: 0s;
+  }
+
+  #steps > div.wipe-out {
+    animation-name: fade-out;
+  }
 }

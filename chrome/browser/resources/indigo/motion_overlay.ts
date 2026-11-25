@@ -74,6 +74,9 @@ export class IndigoMotionOverlayElement extends CrLitElement {
   private loadingTimeout_: number|null = null;
   private entryTimeout_: number|null = null;
   private textOverlayTimeout_: number|null = null;
+  // With reduced motion, the text overlay starts once the blur has fully faded
+  // in, instead of after TEXT_OVERLAY_START_DELAY_MS.
+  private startTextOverlayAfterBlur_: boolean = false;
   private motionCompleteTimeout_: number|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -108,6 +111,10 @@ export class IndigoMotionOverlayElement extends CrLitElement {
   protected onMaxBlurAnimationend_(e: AnimationEvent) {
     if (e.animationName === 'maxBlurFadeIn') {
       this.maxBlur_ = 'full';
+      if (this.startTextOverlayAfterBlur_) {
+        this.startTextOverlayAfterBlur_ = false;
+        this.$.textOverlay.startSequence();
+      }
     }
   }
 
@@ -129,10 +136,14 @@ export class IndigoMotionOverlayElement extends CrLitElement {
       this.showLoadingCircles_ = true;
     }, LOADING_CIRCLES_START_DELAY_MS);
 
-    this.textOverlayTimeout_ = window.setTimeout(() => {
-      this.textOverlayTimeout_ = null;
-      this.$.textOverlay.startSequence();
-    }, TEXT_OVERLAY_START_DELAY_MS);
+    this.startTextOverlayAfterBlur_ =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!this.startTextOverlayAfterBlur_) {
+      this.textOverlayTimeout_ = window.setTimeout(() => {
+        this.textOverlayTimeout_ = null;
+        this.$.textOverlay.startSequence();
+      }, TEXT_OVERLAY_START_DELAY_MS);
+    }
   }
 
   private startExitAnimation_() {
@@ -151,6 +162,7 @@ export class IndigoMotionOverlayElement extends CrLitElement {
       window.clearTimeout(this.textOverlayTimeout_);
       this.textOverlayTimeout_ = null;
     }
+    this.startTextOverlayAfterBlur_ = false;
 
     this.$.textOverlay.stopSequence();
 

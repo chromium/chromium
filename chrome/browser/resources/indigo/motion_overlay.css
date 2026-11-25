@@ -12,7 +12,8 @@
   --indigo-swipe-color-orange: rgb(255, 182, 131);
   --indigo-swipe-color-green: rgb(58, 182, 81);
   --indigo-swipe-color-blue: rgb(63, 128, 233);
-  --indigo-blur-layer-bg-color: rgba(229, 236, 242, 0.6);
+  --indigo-blur-layer-rgb: 229, 236, 242;
+  --indigo-blur-layer-bg-color: rgba(var(--indigo-blur-layer-rgb), 0.6);
   --indigo-loading-circle-dark-rgb: 41, 124, 241;
   --indigo-loading-circle-light-rgb: 183, 203, 255;
   --indigo-blur-min: 1vw;
@@ -140,6 +141,12 @@
 
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes blurFade-exit {
+  to {
+    opacity: 0;
   }
 }
 
@@ -283,6 +290,52 @@
         rgba(var(--indigo-loading-circle-light-rgb), 0) 60%);
   offset-path: ellipse(60% 20% at 50% 115%);
   offset-rotate: 0deg;
+}
+
+/* With reduced motion, nothing moves across the image: the swipe ellipses are
+ * hidden, the blur fades in and out as one layer instead of sweeping, and the
+ * loading glow stays at the middle of its swing. */
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    /* Tints the blur with some of the loading glow's blue. */
+    --indigo-blur-layer-bg-color: color-mix(in srgb,
+        rgba(var(--indigo-blur-layer-rgb), 0.6) 85%,
+        rgba(var(--indigo-loading-circle-dark-rgb), 0.6));
+    --indigo-blur-fade-duration: 700ms;
+  }
+
+  #swipeEllipse1,
+  #swipeEllipse2 {
+    display: none;
+  }
+
+  /* Only #maxBlurLayer is used, with the tint, so the full blur comes in at
+   * once instead of after #blurLayer's lighter blur. */
+  #blurLayer {
+    display: none;
+  }
+
+  #maxBlurLayer {
+    background-color: var(--indigo-blur-layer-bg-color);
+  }
+
+  :host([animation-state='entry']) #maxBlurLayer {
+    animation: maxBlurFadeIn var(--indigo-blur-fade-duration) ease-in-out
+                   forwards;
+  }
+
+  :host([animation-state='exit']) #maxBlurLayer {
+    animation: blurFade-exit var(--indigo-blur-fade-duration) ease-in-out
+                   forwards;
+    mask-image: none;
+  }
+
+  #loadingCircleDark,
+  #loadingCircleLight {
+    animation: none;
+    offset-distance: 25%;
+    transition-duration: var(--indigo-blur-fade-duration);
+  }
 }
 
 @media (max-width: 170px) {

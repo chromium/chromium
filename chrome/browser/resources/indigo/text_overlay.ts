@@ -36,6 +36,7 @@ export class IndigoTextOverlayElement extends CrLitElement {
     return {
       currentStep_: {type: Number},
       showIcon_: {type: Boolean},
+      reducedMotion_: {type: Boolean},
       sequenceId_: {type: Number},
       useLottie_: {type: Boolean},
     };
@@ -54,6 +55,9 @@ export class IndigoTextOverlayElement extends CrLitElement {
 
   protected accessor currentStep_: number = 0;
   protected accessor showIcon_: boolean = false;
+  // Whether the user prefers reduced motion, read once per sequence. If so, the
+  // spark stays still after its entry instead of being swapped for the Lottie.
+  protected accessor reducedMotion_: boolean = false;
   // A new id per sequence makes the template create a fresh spark and
   // cr-lottie, even if a sequence restarts while one is showing.
   protected accessor sequenceId_: number = 0;
@@ -71,26 +75,24 @@ export class IndigoTextOverlayElement extends CrLitElement {
     this.stopSequence();
 
     this.sequenceId_++;
+    this.reducedMotion_ =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.showIcon_ = true;
 
-    this.entryTimeout_ = window.setTimeout(() => {
-      this.currentStep_ = 1;
-      this.entryTimeout_ = null;
-
-      this.stepTimer_ = window.setInterval(() => {
-        if (this.currentStep_ < TOTAL_STEPS) {
-          this.currentStep_++;
-        } else {
-          this.clearStepTimer_();
-        }
-      }, STEP_INTERVAL_MS);
-    }, TEXT_ENTRY_DELAY_MS);
-
-    this.lottieTimeout_ = window.setTimeout(() => {
-      this.lottieTimeout_ = null;
-      this.lottieSwitchDue_ = true;
-      this.maybeSwitchToLottie_();
-    }, LOTTIE_SWITCH_DELAY_MS);
+    // With reduced motion, the steps show up together with the spark.
+    if (this.reducedMotion_) {
+      this.showSteps_();
+    } else {
+      this.entryTimeout_ = window.setTimeout(() => {
+        this.entryTimeout_ = null;
+        this.showSteps_();
+      }, TEXT_ENTRY_DELAY_MS);
+      this.lottieTimeout_ = window.setTimeout(() => {
+        this.lottieTimeout_ = null;
+        this.lottieSwitchDue_ = true;
+        this.maybeSwitchToLottie_();
+      }, LOTTIE_SWITCH_DELAY_MS);
+    }
   }
 
   stopSequence() {
@@ -123,6 +125,17 @@ export class IndigoTextOverlayElement extends CrLitElement {
     }
     lottie.setPlay(true);
     this.useLottie_ = true;
+  }
+
+  private showSteps_() {
+    this.currentStep_ = 1;
+    this.stepTimer_ = window.setInterval(() => {
+      if (this.currentStep_ < TOTAL_STEPS) {
+        this.currentStep_++;
+      } else {
+        this.clearStepTimer_();
+      }
+    }, STEP_INTERVAL_MS);
   }
 
   private clearStepTimer_() {

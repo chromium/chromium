@@ -12,10 +12,12 @@ export function getHtml(this: IndigoTextOverlayElement) {
   ${repeat(this.showIcon_ ? [this.sequenceId_] : [], item => item, () => html`
     <div id="iconStack" aria-hidden="true">
       <div id="icon" class="${this.useLottie_ ? 'hidden' : ''}"></div>
-      <cr-lottie id="lottie" class="${this.useLottie_ ? 'visible' : ''}"
-          animation-url="loading_indicator.json"
-          @cr-lottie-initialized="${this.onLottieCrLottieInitialized_}">
-      </cr-lottie>
+      ${!this.reducedMotion_ ? html`
+        <cr-lottie id="lottie" class="${this.useLottie_ ? 'visible' : ''}"
+            animation-url="loading_indicator.json"
+            @cr-lottie-initialized="${this.onLottieCrLottieInitialized_}">
+        </cr-lottie>
+      ` : ''}
     </div>
   `)}
   ${this.currentStep_ !== 0 ? html`

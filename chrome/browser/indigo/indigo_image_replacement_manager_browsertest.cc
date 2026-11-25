@@ -80,6 +80,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/gfx/switches.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -365,6 +366,8 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchPath("indigo-script", script_path_);
+    // Don't let the machine's reduced motion setting change the overlay.
+    command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
   }
 
   void SetUpOnMainThread() override {
@@ -646,6 +649,115 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
       overlay.stopSequence();
       await overlay.updateComplete;
       return swapped && !overlay.shadowRoot.querySelector('#iconStack');
+    })();
+  )js"));
+}
+
+class IndigoImageReplacementManagerReducedMotionBrowserTest
+    : public IndigoImageReplacementManagerBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IndigoImageReplacementManagerBrowserTest::SetUpCommandLine(command_line);
+    command_line->RemoveSwitch(switches::kForcePrefersNoReducedMotion);
+    command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
+  }
+};
+
+// Checks that with reduced motion the spark fades in and stays instead of
+// being swapped for the Lottie, the steps cross-fade instead of wiping, and the
+// overlay's blur fades while its swipe and loading glow don't move.
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerReducedMotionBrowserTest,
+                       StopsMovement) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
+
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+  // Reduced motion applies, no cr-lottie, the steps show right away, the spark
+  // and first step fade in, and moving to the next step cross-fades.
+  EXPECT_EQ("true,false,true,fade-in,fade-in,fade-out,0s",
+            content::EvalJs(subframe.get(), R"js(
+    (async () => {
+      await import('./text_overlay.js');
+      const overlay = document.createElement('indigo-text-overlay');
+      document.body.appendChild(overlay);
+      try {
+        overlay.startSequence();
+        await overlay.updateComplete;
+        const root = overlay.shadowRoot;
+        const icon = root.querySelector('#icon');
+        const firstStep = root.querySelector('#steps > div.wipe-in');
+        const result = [
+          matchMedia('(prefers-reduced-motion: reduce)').matches,
+          !!root.querySelector('#lottie'),
+          !!firstStep,
+          getComputedStyle(icon).animationName,
+          getComputedStyle(firstStep).animationName,
+        ];
+        // Moves to the next step without waiting for the step timer.
+        overlay.currentStep_ = 2;
+        await overlay.updateComplete;
+        result.push(
+            getComputedStyle(root.querySelector('#steps > div.wipe-out'))
+                .animationName,
+            getComputedStyle(root.querySelector('#steps > div.wipe-in'))
+                .animationDelay);
+        return result.join(',');
+      } finally {
+        overlay.remove();
+      }
+    })();
+  )js"));
+
+  // Only the max blur layer fades in, right away, and fades out without a sweep
+  // mask, and the swipe and loading glow don't move.
+  EXPECT_EQ("none,none,none,0s,blurFade-exit,none",
+            content::EvalJs(subframe.get(), R"js(
+    (async () => {
+      await import('./motion_overlay.js');
+      const motion = document.createElement('indigo-motion-overlay');
+      document.body.appendChild(motion);
+      try {
+        // The reduced motion blur fade only applies in the entry state.
+        motion.animationState = 'entry';
+        await motion.updateComplete;
+        const style =
+            id => getComputedStyle(motion.shadowRoot.getElementById(id));
+        const entry = [
+          style('swipeEllipse1').display,
+          style('loadingCircleDark').animationName,
+          style('blurLayer').display,
+          style('maxBlurLayer').animationDelay,
+        ];
+        motion.animationState = 'exit';
+        await motion.updateComplete;
+        const exit = [
+          style('maxBlurLayer').animationName,
+          style('maxBlurLayer').maskImage,
+        ];
+        return [...entry, ...exit].join(',');
+      } finally {
+        motion.remove();
+      }
     })();
   )js"));
 }
