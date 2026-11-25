@@ -54,6 +54,7 @@
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -85,6 +86,10 @@ std::vector<StructuredErrorReason> GetRecordedClientLoadErrors(
 }
 #endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
+// Serves /sorry/ like the production sorry server: the CAPTCHA challenge
+// document is an HTTP 429 response with a body. `/sorry/empty` is a bodiless
+// 429, which commits as an error page instead of a challenge document, and
+// `/sorry/forbidden` is a 403 with a body, which is not a challenge.
 std::unique_ptr<net::test_server::HttpResponse> SorryPageRequestHandler(
     const net::test_server::HttpRequest& request) {
   if (request.method != net::test_server::METHOD_GET ||
@@ -92,7 +97,13 @@ std::unique_ptr<net::test_server::HttpResponse> SorryPageRequestHandler(
     return nullptr;
   }
   auto result = std::make_unique<net::test_server::BasicHttpResponse>();
-  result->set_code(net::HttpStatusCode::HTTP_OK);
+  result->set_code(net::HTTP_TOO_MANY_REQUESTS);
+  if (request.relative_url == "/sorry/empty") {
+    return result;
+  }
+  if (request.relative_url == "/sorry/forbidden") {
+    result->set_code(net::HTTP_FORBIDDEN);
+  }
   result->set_content_type("text/html");
   result->set_content("<html><body>Sorry CAPTCHA</body></html>");
   return result;
@@ -1444,6 +1455,39 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
       manager.guest_contents(),
       embedded_https_test_server().GetURL("/status/500")));
   EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kError);
+
+  manager.ClearErrorState();
+
+  // A /sorry/ CAPTCHA challenge is served with HTTP 429 but is not a load
+  // error: the guest is shown so the user can solve it.
+  ASSERT_TRUE(content::NavigateToURL(
+      manager.guest_contents(),
+      embedded_https_test_server().GetURL("/sorry/index")));
+  EXPECT_EQ(manager.error_type(), std::nullopt);
+  EXPECT_EQ(manager.guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kGuestError);
+  EXPECT_EQ(manager.state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+
+  // A bodiless 429 on /sorry/ commits as an error page with nothing to solve,
+  // so it is still a load error.
+  EXPECT_FALSE(content::NavigateToURL(
+      manager.guest_contents(),
+      embedded_https_test_server().GetURL("/sorry/empty")));
+  EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kError);
+  EXPECT_EQ(manager.guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kLoading);
+
+  manager.ClearErrorState();
+
+  // Only the 429 challenge is exempt: any other 4xx on /sorry/ is still a load
+  // error, even though it commits a document with a body.
+  ASSERT_TRUE(content::NavigateToURL(
+      manager.guest_contents(),
+      embedded_https_test_server().GetURL("/sorry/forbidden")));
+  EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kError);
+  EXPECT_EQ(manager.guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kLoading);
 
   manager.ClearErrorState();
 

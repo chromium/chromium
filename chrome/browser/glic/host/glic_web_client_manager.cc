@@ -40,6 +40,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -710,11 +711,21 @@ void GlicWebClientManager::OnPrimaryNavigationFinished(
           : 0;
   mojom::GuestPageType page_type =
       GetGuestPageType(guest_main_frame->GetLastCommittedURL());
+  // The sorry server serves its CAPTCHA challenge (/sorry/) with HTTP 429.
+  // Keep kGuestError for that response so the guest is shown and the user can
+  // solve it; kHttpClientError would hide it behind the generic error panel,
+  // where "Retry" only reloads the same challenge. This is a heuristic: it
+  // matches a 429 that committed the server's own document on a /sorry/ path,
+  // not the challenge itself. Any other 4xx there is still a client error.
+  const bool is_sorry_429_document =
+      page_type == mojom::GuestPageType::kGuestError &&
+      http_response_code == net::HTTP_TOO_MANY_REQUESTS &&
+      !navigation_handle->IsErrorPage();
   if (is_security_interstitial) {
     page_type = mojom::GuestPageType::kSecurityInterstitial;
   } else if (http_response_code >= 500) {
     page_type = mojom::GuestPageType::kHttpServerError;
-  } else if (http_response_code >= 400) {
+  } else if (http_response_code >= 400 && !is_sorry_429_document) {
     page_type = mojom::GuestPageType::kHttpClientError;
   } else if (navigation_handle->IsErrorPage()) {
     page_type =

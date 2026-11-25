@@ -6,9 +6,13 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/process/kill.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -26,6 +30,8 @@
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -224,6 +230,54 @@ TEST_F(GlicWebClientManagerNavigationTest,
   manager.AttachGuestContents(web_contents());
   EXPECT_EQ(manager.ReasonForClientLoadTimeout(),
             ClientLoadErrorReason::kClientLoadTimeout);
+}
+
+// A committed HTTP >= 400 response overrides the URL-based `GuestPageType`,
+// except for the sorry server's CAPTCHA challenge: a /sorry/ document served
+// with exactly 429 stays `kGuestError` so the guest is shown and the user can
+// solve it. (A bodiless 429 commits as an error page instead, which the
+// no-webview browser tests cover.)
+TEST_F(GlicWebClientManagerNavigationTest,
+       SorryPageKeepsGuestErrorOnlyForHttp429) {
+  GlicWebClientManager manager;
+  manager.AttachGuestContents(web_contents());
+
+  // Commits `url` served with `status` and a non-empty body in the primary
+  // main frame and returns the resulting `last_committed_page_type()`. The
+  // body lets `HttpErrorNavigationThrottle` commit the server's document for
+  // HTTP >= 400 instead of an error page.
+  auto commit_with_status = [&](const GURL& url, std::string_view status) {
+    auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+        url, web_contents());
+    navigation->SetResponseHeaders(net::HttpResponseHeaders::TryToCreate(
+        base::StrCat({"HTTP/1.1 ", status, "\r\n\r\n"})));
+    constexpr std::string_view kBody = "<html><body>Sorry</body></html>";
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    CHECK_EQ(mojo::CreateDataPipe(/*capacity_num_bytes=*/uint32_t{0}, producer,
+                                  consumer),
+             MOJO_RESULT_OK);
+    size_t bytes_written = 0;
+    CHECK_EQ(producer->WriteData(base::as_byte_span(kBody),
+                                 MOJO_WRITE_DATA_FLAG_NONE, bytes_written),
+             MOJO_RESULT_OK);
+    CHECK_EQ(bytes_written, kBody.size());
+    navigation->SetResponseBody(std::move(consumer));
+    navigation->Commit();
+    return manager.last_committed_page_type();
+  };
+
+  const GURL sorry_url("https://gemini.google.com/sorry/index");
+  EXPECT_EQ(commit_with_status(sorry_url, "429 Too Many Requests"),
+            mojom::GuestPageType::kGuestError);
+  EXPECT_EQ(commit_with_status(sorry_url, "403 Forbidden"),
+            mojom::GuestPageType::kHttpClientError);
+  EXPECT_EQ(commit_with_status(sorry_url, "500 Internal Server Error"),
+            mojom::GuestPageType::kHttpServerError);
+  // The exemption is specific to /sorry/: a 429 elsewhere is a client error.
+  EXPECT_EQ(commit_with_status(GURL("https://gemini.google.com/app"),
+                               "429 Too Many Requests"),
+            mojom::GuestPageType::kHttpClientError);
 }
 
 TEST_F(GlicWebClientManagerNavigationTest,
