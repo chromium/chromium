@@ -122,6 +122,20 @@ void FakeOnDeviceTranslationInstaller::UnInstallLanguagePack(
   }
 }
 
+void FakeOnDeviceTranslationInstaller::CheckDownloadEligibility(
+    bool needs_library,
+    bool needs_language_packs,
+    base::OnceCallback<void(std::optional<InstallError>)> callback) {
+  const bool applies =
+      needs_language_packs ||
+      (needs_library &&
+       download_eligibility_error_ == InstallError::kMeteredConnectionBlocked);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                applies ? download_eligibility_error_
+                                        : std::optional<InstallError>()));
+}
+
 void FakeOnDeviceTranslationInstaller::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

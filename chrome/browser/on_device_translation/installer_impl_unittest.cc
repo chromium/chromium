@@ -29,6 +29,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 #include "chrome/browser/data_saver/data_saver.h"
@@ -1249,6 +1250,64 @@ TEST_F(OnDeviceTranslationInstallerTest,
       LanguagePackKey::kEn_Ja);
   run_loop.Run();
   OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+}
+
+// Tests that `CheckDownloadEligibility` reports Data Saver, metered-connection,
+// and low-disk blockers without emitting `FreeDiskSpaceAtInstall`.
+TEST_F(OnDeviceTranslationInstallerTest,
+       CheckDownloadEligibilityReportsBlockersWithoutRecordingUma) {
+  base::HistogramTester histogram_tester;
+  auto check = [](bool needs_library, bool needs_language_packs) {
+    base::test::TestFuture<std::optional<InstallError>> future;
+    OnDeviceTranslationInstaller::GetInstance()->CheckDownloadEligibility(
+        needs_library, needs_language_packs, future.GetCallback());
+    return future.Get();
+  };
+
+  // Data Saver blocks language pack downloads, not library-only downloads.
+  data_saver::OverrideIsDataSaverEnabledForTesting(true);
+  EXPECT_EQ(check(/*needs_library=*/false, /*needs_language_packs=*/true),
+            InstallError::kDataSaverEnabled);
+  EXPECT_EQ(check(/*needs_library=*/true, /*needs_language_packs=*/false),
+            std::nullopt);
+  data_saver::ResetIsDataSaverEnabledForTesting();
+
+  // Metered killswitch blocks both library and language pack downloads.
+  {
+    net::test::ScopedMockNetworkChangeNotifier mock_network_change_notifier;
+    mock_network_change_notifier.mock_network_change_notifier()
+        ->SetConnectionCost(
+            net::NetworkChangeNotifier::CONNECTION_COST_METERED);
+    base::test::ScopedFeatureList feature_list(
+        kTranslationAPIBlockDownloadsOnMeteredNetwork);
+    EXPECT_EQ(check(/*needs_library=*/true, /*needs_language_packs=*/false),
+              InstallError::kMeteredConnectionBlocked);
+    EXPECT_EQ(check(/*needs_library=*/false, /*needs_language_packs=*/true),
+              InstallError::kMeteredConnectionBlocked);
+  }
+
+  // Low disk space blocks language pack downloads without emitting install UMA.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kTranslationAPI,
+        {{"TranslationAPILanguagePackMinFreeDiskSpaceMB", "2000000000"}});
+    EXPECT_EQ(check(/*needs_library=*/false, /*needs_language_packs=*/true),
+              InstallError::kNotEnoughDiskSpace);
+  }
+
+  // Adequate disk space succeeds without emitting install UMA.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kTranslationAPI,
+        {{"TranslationAPILanguagePackMinFreeDiskSpaceMB", "1"}});
+    EXPECT_EQ(check(/*needs_library=*/false, /*needs_language_packs=*/true),
+              std::nullopt);
+  }
+
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.FreeDiskSpaceAtInstall", 0);
 }
 
 }  // namespace

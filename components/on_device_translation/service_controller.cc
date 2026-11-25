@@ -5,6 +5,7 @@
 #include "components/on_device_translation/service_controller.h"
 
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -119,6 +120,24 @@ OnDeviceTranslationController::CreateTranslatorError ToCreateTranslatorError(
     case InstallError::kMeteredConnectionBlocked:
       return OnDeviceTranslationController::CreateTranslatorError::
           kMeteredConnectionBlocked;
+  }
+}
+
+OnDeviceTranslationController::CanTranslateResult ToCanTranslateResult(
+    InstallError error) {
+  switch (error) {
+    case InstallError::kNotEnoughDiskSpace:
+      return OnDeviceTranslationController::CanTranslateResult::
+          kNoNotEnoughDiskSpace;
+    case InstallError::kDataSaverEnabled:
+      return OnDeviceTranslationController::CanTranslateResult::
+          kNoDataSaverEnabled;
+    case InstallError::kMeteredConnectionBlocked:
+      return OnDeviceTranslationController::CanTranslateResult::
+          kNoMeteredConnectionBlocked;
+    case InstallError::kFailed:
+    case InstallError::kOffline:
+      NOTREACHED();
   }
 }
 
@@ -360,13 +379,13 @@ void OnDeviceTranslationServiceController::CanTranslate(
                                                *best_fit_target_language);
   std::string source_lang = std::move(*best_fit_source_language);
   std::string target_lang = std::move(*best_fit_target_language);
-  std::move(callback).Run(CanTranslateImpl(source_lang, target_lang));
+  CanTranslateImpl(source_lang, target_lang, std::move(callback));
 }
 
-OnDeviceTranslationController::CanTranslateResult
-OnDeviceTranslationServiceController::CanTranslateImpl(
+void OnDeviceTranslationServiceController::CanTranslateImpl(
     const std::string& source_lang,
-    const std::string& target_lang) {
+    const std::string& target_lang,
+    CanTranslateCallback callback) {
   // Get information on the registration and install status of the language
   // packs required for translation.
   LanguagePackRequirements language_pack_requirements =
@@ -375,29 +394,46 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
   if (language_pack_requirements.required_packs.empty()) {
     // Empty `required_packs` means that the transltion for the specified
     // language pair is not supported.
-    return CanTranslateResult::kNoNotSupportedLanguage;
+    std::move(callback).Run(CanTranslateResult::kNoNotSupportedLanguage);
+    return;
   }
 
   if (!installer_->IsSupported()) {
-    return CanTranslateResult::kNoUnsupportedDevice;
+    std::move(callback).Run(CanTranslateResult::kNoUnsupportedDevice);
+    return;
   }
 
-  if (language_pack_requirements.required_not_installed_packs.empty()) {
-    // All required language packages are installed.
-    if (!installer_->IsInit()) {
-      // The TranslateKit library is not ready.
-      return CanTranslateResult::kAfterDownloadLibraryNotReady;
-    }
-    // Both the TranslateKit library and the language packs are ready.
-    return CanTranslateResult::kReadily;
+  const bool needs_library = !installer_->IsInit();
+  const bool needs_language_packs =
+      !language_pack_requirements.required_not_installed_packs.empty();
+
+  CanTranslateResult ready_or_download_result;
+  if (!needs_language_packs) {
+    ready_or_download_result =
+        needs_library ? CanTranslateResult::kAfterDownloadLibraryNotReady
+                      : CanTranslateResult::kReadily;
+  } else {
+    ready_or_download_result =
+        needs_library
+            ? CanTranslateResult::kAfterDownloadLibraryAndLanguagePackNotReady
+            : CanTranslateResult::kAfterDownloadLanguagePackNotReady;
   }
 
-  if (!installer_->IsInit()) {
-    // Both the TranslateKit library and the language packs are not ready.
-    return CanTranslateResult::kAfterDownloadLibraryAndLanguagePackNotReady;
+  if (!needs_library && !needs_language_packs) {
+    std::move(callback).Run(ready_or_download_result);
+    return;
   }
-  // The required language packs are not ready.
-  return CanTranslateResult::kAfterDownloadLanguagePackNotReady;
+
+  installer_->CheckDownloadEligibility(
+      needs_library, needs_language_packs,
+      base::BindOnce(
+          [](CanTranslateResult ready_or_download_result,
+             CanTranslateCallback callback, std::optional<InstallError> error) {
+            std::move(callback).Run(error.has_value()
+                                        ? ToCanTranslateResult(*error)
+                                        : ready_or_download_result);
+          },
+          ready_or_download_result, std::move(callback)));
 }
 
 void OnDeviceTranslationServiceController::OnLanguagePackInstalled(

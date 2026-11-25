@@ -6,6 +6,7 @@
 #define COMPONENTS_ON_DEVICE_TRANSLATION_TEST_FAKE_INSTALLER_H_
 
 #include <map>
+#include <optional>
 #include <set>
 
 #include "base/files/file_path.h"
@@ -34,10 +35,17 @@ class FakeOnDeviceTranslationInstaller : public OnDeviceTranslationInstaller {
   void Init(base::RepeatingClosure on_ready_callback) override;
   void InstallLanguagePack(LanguagePackKey language_pack) override;
   void UnInstallLanguagePack(LanguagePackKey language_pack) override;
+  void CheckDownloadEligibility(
+      bool needs_library,
+      bool needs_language_packs,
+      base::OnceCallback<void(std::optional<InstallError>)> callback) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
   void set_supported(bool supported) { supported_ = supported; }
+  void set_download_eligibility_error(std::optional<InstallError> error) {
+    download_eligibility_error_ = error;
+  }
   // Forces initialization to happen right away.
   void InitNow(base::RepeatingClosure on_ready_callback);
   // Forces installation to happen right away.
@@ -66,6 +74,7 @@ class FakeOnDeviceTranslationInstaller : public OnDeviceTranslationInstaller {
   bool supported_ = true;
   bool is_init_ = false;
   bool install_language_packs_automatically_ = true;
+  std::optional<InstallError> download_eligibility_error_;
   std::set<LanguagePackKey> installed_lang_packs_;
   std::set<LanguagePackKey> registered_lang_packs_;
   std::map<LanguagePackKey, base::FilePath> language_pack_paths_;

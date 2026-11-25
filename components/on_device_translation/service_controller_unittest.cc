@@ -4,8 +4,10 @@
 
 #include "components/on_device_translation/service_controller.h"
 
+#include <initializer_list>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -119,6 +121,16 @@ class OnDeviceTranslationServiceControllerTest : public testing::Test {
   }
 
  protected:
+  OnDeviceTranslationController::CanTranslateResult CanTranslate(
+      const std::string& source_lang,
+      const std::string& target_lang) {
+    base::test::TestFuture<OnDeviceTranslationController::CanTranslateResult>
+        future;
+    service_controller_->CanTranslate(source_lang, target_lang,
+                                      future.GetCallback());
+    return future.Get();
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeOnDeviceTranslationInstaller> fake_installer_;
   raw_ptr<MockServiceLauncher> mock_launcher_;
@@ -127,11 +139,9 @@ class OnDeviceTranslationServiceControllerTest : public testing::Test {
 
 TEST_F(OnDeviceTranslationServiceControllerTest,
        CanTranslateWithRegionalLanguageTags) {
-  base::test::TestFuture<OnDeviceTranslationController::CanTranslateResult>
-      future;
-  service_controller_->CanTranslate("en-US", "es-419", future.GetCallback());
-  EXPECT_EQ(future.Get(), OnDeviceTranslationController::CanTranslateResult::
-                              kAfterDownloadLibraryAndLanguagePackNotReady);
+  EXPECT_EQ(CanTranslate("en-US", "es-419"),
+            OnDeviceTranslationController::CanTranslateResult::
+                kAfterDownloadLibraryAndLanguagePackNotReady);
 }
 
 TEST_F(OnDeviceTranslationServiceControllerTest,
@@ -510,12 +520,8 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
   fake_installer_->set_supported(false);
   EXPECT_CALL(*mock_launcher_, Launch).Times(0);
 
-  base::test::TestFuture<OnDeviceTranslationController::CanTranslateResult>
-      can_translate_future;
-  service_controller_->CanTranslate("en", "es",
-                                    can_translate_future.GetCallback());
   EXPECT_EQ(
-      can_translate_future.Get(),
+      CanTranslate("en", "es"),
       OnDeviceTranslationController::CanTranslateResult::kNoUnsupportedDevice);
 
   base::test::TestFuture<base::expected<
@@ -656,6 +662,29 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
   EXPECT_CALL(*mock_launcher_, UpdateLanguagePacks).Times(0);
   fake_installer_->UnInstallLanguagePack(LanguagePackKey::kEn_Es);
   EXPECT_FALSE(service_controller_->IsServiceRunning());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       CanTranslateReflectsDownloadBlockers) {
+  using CanTranslateResult = OnDeviceTranslationController::CanTranslateResult;
+  fake_installer_->InitNow(base::DoNothing());
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Fr);
+
+  for (const auto& [install_error, expected_result] :
+       std::initializer_list<std::pair<InstallError, CanTranslateResult>>{
+           {InstallError::kNotEnoughDiskSpace,
+            CanTranslateResult::kNoNotEnoughDiskSpace},
+           {InstallError::kDataSaverEnabled,
+            CanTranslateResult::kNoDataSaverEnabled},
+           {InstallError::kMeteredConnectionBlocked,
+            CanTranslateResult::kNoMeteredConnectionBlocked},
+       }) {
+    fake_installer_->set_download_eligibility_error(install_error);
+    // Uninstalled pair reports the download blocker; installed pair needs no
+    // download and remains kReadily.
+    EXPECT_EQ(CanTranslate("en", "es"), expected_result);
+    EXPECT_EQ(CanTranslate("en", "fr"), CanTranslateResult::kReadily);
+  }
 }
 
 class ServiceControllerManagerTest : public testing::Test {

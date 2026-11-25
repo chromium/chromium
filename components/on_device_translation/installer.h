@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ON_DEVICE_TRANSLATION_INSTALLER_H_
 #define COMPONENTS_ON_DEVICE_TRANSLATION_INSTALLER_H_
 
+#include <optional>
 #include <set>
 
 #include "base/functional/callback.h"
@@ -99,6 +100,15 @@ class OnDeviceTranslationInstaller {
   virtual void InstallLanguagePack(LanguagePackKey language_pack) = 0;
   // Start uninstallation of a language pack.
   virtual void UnInstallLanguagePack(LanguagePackKey language_pack) = 0;
+  // Checks whether starting the requested downloads is currently blocked by
+  // Data Saver, metered-connection policy, or low disk space. Runs `callback`
+  // with `kDataSaverEnabled`, `kMeteredConnectionBlocked`,
+  // `kNotEnoughDiskSpace`, or `std::nullopt` when eligible (never `kFailed` or
+  // `kOffline`).
+  virtual void CheckDownloadEligibility(
+      bool needs_library,
+      bool needs_language_packs,
+      base::OnceCallback<void(std::optional<InstallError>)> callback) = 0;
 
   // Subscribes a new observer to be notified of events.
   virtual void AddObserver(Observer* observer) = 0;

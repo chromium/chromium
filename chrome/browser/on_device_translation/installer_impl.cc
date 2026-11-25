@@ -114,6 +114,16 @@ std::optional<base::ByteSize> GetAvailableDiskSpace() {
   return disk_space->available;
 }
 
+std::optional<InstallError> CheckSyncLanguagePackDownloadBlockers() {
+  if (data_saver::IsDataSaverEnabled()) {
+    return InstallError::kDataSaverEnabled;
+  }
+  if (IsMeteredDownloadBlocked()) {
+    return InstallError::kMeteredConnectionBlocked;
+  }
+  return std::nullopt;
+}
+
 std::optional<LanguagePackKey> FindLanguagePackKey(
     SupportedLanguage language1,
     SupportedLanguage language2) {
@@ -512,14 +522,9 @@ void OnDeviceTranslationInstallerImpl::InstallLanguagePack(
 void OnDeviceTranslationInstallerImpl::OnLanguagePackOnlineChecked(
     LanguagePackKey language_pack,
     bool online) {
-  std::optional<InstallError> error;
-  if (!online) {
-    error = InstallError::kOffline;
-  } else if (data_saver::IsDataSaverEnabled()) {
-    error = InstallError::kDataSaverEnabled;
-  } else if (IsMeteredDownloadBlocked()) {
-    error = InstallError::kMeteredConnectionBlocked;
-  }
+  std::optional<InstallError> error =
+      online ? CheckSyncLanguagePackDownloadBlockers()
+             : std::optional(InstallError::kOffline);
   if (error) {
     language_pack_checks_in_progress_.erase(language_pack);
     if (!InstalledLanguagePacks().contains(language_pack)) {
@@ -637,6 +642,49 @@ void OnDeviceTranslationInstallerImpl::UnInstallLanguagePack(
   component_updater::UninstallTranslateKitLanguagePackComponent(
       g_browser_process->component_updater(), g_browser_process->local_state(),
       language_pack);
+}
+
+void OnDeviceTranslationInstallerImpl::CheckDownloadEligibility(
+    bool needs_library,
+    bool needs_language_packs,
+    base::OnceCallback<void(std::optional<InstallError>)> callback) {
+  if (language_packs_from_command_line_.has_value()) {
+    needs_language_packs = false;
+  }
+  if (!needs_language_packs) {
+    std::move(callback).Run(
+        needs_library && IsMeteredDownloadBlocked()
+            ? std::optional(InstallError::kMeteredConnectionBlocked)
+            : std::nullopt);
+    return;
+  }
+  if (std::optional<InstallError> error =
+          CheckSyncLanguagePackDownloadBlockers()) {
+    std::move(callback).Run(*error);
+    return;
+  }
+  const size_t min_free_disk_space_mb =
+      kTranslationAPILanguagePackMinFreeDiskSpaceMB.Get();
+  if (min_free_disk_space_mb == 0) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GetAvailableDiskSpace),
+      base::BindOnce(
+          [](size_t min_free_disk_space_mb,
+             base::OnceCallback<void(std::optional<InstallError>)> callback,
+             std::optional<base::ByteSize> available) {
+            std::move(callback).Run(
+                available.has_value() &&
+                        available->InMiB() < min_free_disk_space_mb
+                    ? std::optional(InstallError::kNotEnoughDiskSpace)
+                    : std::nullopt);
+          },
+          min_free_disk_space_mb, std::move(callback)));
 }
 
 void OnDeviceTranslationInstallerImpl::AddObserver(Observer* observer) {

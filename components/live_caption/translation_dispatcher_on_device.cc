@@ -178,6 +178,23 @@ void TranslationDispatcherOnDevice::OnCanTranslate(
           std::move(callback),
           OnDeviceTranslationErrorReason::kCanTranslateUnsupportedDevice);
       return;
+    case OnDeviceTranslationController::CanTranslateResult::
+        kNoNotEnoughDiskSpace:
+      ResetCreationAndNotifyFailure(
+          std::move(callback),
+          OnDeviceTranslationErrorReason::kCanTranslateNotEnoughDiskSpace);
+      return;
+    case OnDeviceTranslationController::CanTranslateResult::kNoDataSaverEnabled:
+      ResetCreationAndNotifyFailure(
+          std::move(callback),
+          OnDeviceTranslationErrorReason::kCanTranslateDataSaverEnabled);
+      return;
+    case OnDeviceTranslationController::CanTranslateResult::
+        kNoMeteredConnectionBlocked:
+      ResetCreationAndNotifyFailure(std::move(callback),
+                                    OnDeviceTranslationErrorReason::
+                                        kCanTranslateMeteredConnectionBlocked);
+      return;
   }
 }
 

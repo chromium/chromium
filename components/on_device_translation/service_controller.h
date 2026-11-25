@@ -61,6 +61,9 @@ class OnDeviceTranslationController {
     kNoExceedsServiceCountLimitation,
     kNoServiceCrashed,
     kNoUnsupportedDevice,
+    kNoNotEnoughDiskSpace,
+    kNoDataSaverEnabled,
+    kNoMeteredConnectionBlocked,
   };
 
   using CreateTranslatorCallback = base::OnceCallback<void(
@@ -160,8 +163,9 @@ class OnDeviceTranslationServiceController
 
   // Checks if the translate service can do translation from `source_lang` to
   // `target_lang`.
-  CanTranslateResult CanTranslateImpl(const std::string& source_lang,
-                                      const std::string& target_lang);
+  void CanTranslateImpl(const std::string& source_lang,
+                        const std::string& target_lang,
+                        CanTranslateCallback callback);
 
   LanguagePackRequirements GetLanguagePackRequirements(
       const std::string& source_lang,

@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -26,10 +27,13 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/on_device_translation/service/service_launcher.h"
 #include "components/on_device_translation/service_controller.h"
 #include "components/on_device_translation/service_controller_manager.h"
+#include "components/on_device_translation/test/fake_installer.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -70,6 +74,19 @@ class FakeServiceControllerManager : public ServiceControllerManager {
     pending_callback_future_.SetValue(std::move(callback));
   }
 
+  void CanTranslate(
+      const url::Origin& origin,
+      const std::string& source_lang,
+      const std::string& target_lang,
+      OnDeviceTranslationController::CanTranslateCallback callback) override {
+    std::move(callback).Run(can_translate_result_);
+  }
+
+  void set_can_translate_result(
+      OnDeviceTranslationController::CanTranslateResult result) {
+    can_translate_result_ = result;
+  }
+
   OnDeviceTranslationController::CreateTranslatorCallback
   TakePendingCallback() {
     return pending_callback_future_.Take();
@@ -81,6 +98,8 @@ class FakeServiceControllerManager : public ServiceControllerManager {
 
  private:
   int create_translator_call_count_ = 0;
+  OnDeviceTranslationController::CanTranslateResult can_translate_result_ =
+      OnDeviceTranslationController::CanTranslateResult::kReadily;
   base::test::TestFuture<
       OnDeviceTranslationController::CreateTranslatorCallback>
       pending_callback_future_;
@@ -269,6 +288,39 @@ TEST_F(TranslationManagerImplTest, DoesNotRecordErrorOnEarlyPolicyRejection) {
             blink::mojom::CreateTranslatorError::kDisallowedByPolicy);
   EXPECT_EQ(controller_manager_->create_translator_call_count(), 0);
   histogram_tester.ExpectTotalCount(kCreateTranslatorErrorHistogram, 0);
+}
+
+TEST_F(TranslationManagerImplTest, MaskedReadilyResultReportsDownloadBlocker) {
+  using BlinkResult = blink::mojom::CanCreateTranslatorResult;
+  FakeOnDeviceTranslationInstaller fake_installer(base::FilePath{});
+  controller_manager_->set_can_translate_result(
+      OnDeviceTranslationController::CanTranslateResult::kReadily);
+
+  auto check_available = [this](const std::string& source,
+                                const std::string& target) {
+    base::test::TestFuture<BlinkResult> future;
+    manager_remote_->TranslationAvailable(
+        blink::mojom::TranslatorLanguageCode::New(source),
+        blink::mojom::TranslatorLanguageCode::New(target),
+        future.GetCallback());
+    return future.Get();
+  };
+
+  for (const auto& [install_error, expected_result] :
+       std::to_array<std::pair<InstallError, BlinkResult>>({
+           {InstallError::kNotEnoughDiskSpace,
+            BlinkResult::kNoNotEnoughDiskSpace},
+           {InstallError::kDataSaverEnabled, BlinkResult::kNoDataSaverEnabled},
+           {InstallError::kMeteredConnectionBlocked,
+            BlinkResult::kNoMeteredConnectionBlocked},
+       })) {
+    fake_installer.set_download_eligibility_error(install_error);
+    profile_.GetPrefs()->SetString(language::prefs::kAcceptLanguages, "en");
+    EXPECT_EQ(check_available("en", "fr"), expected_result);
+
+    profile_.GetPrefs()->SetString(language::prefs::kAcceptLanguages, "en,fr");
+    EXPECT_EQ(check_available("en", "fr"), BlinkResult::kReadily);
+  }
 }
 
 TEST(TranslationManagerImplBindingTest, BindingNotAllowedByDefault) {

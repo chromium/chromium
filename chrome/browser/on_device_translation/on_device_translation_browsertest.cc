@@ -184,6 +184,9 @@ std::string_view GetCanCreateTranslatorResultString(
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
     case CanCreateTranslatorResult::kNoInvalidStoragePartition:
     case CanCreateTranslatorResult::kNoUnsupportedDevice:
+    case CanCreateTranslatorResult::kNoNotEnoughDiskSpace:
+    case CanCreateTranslatorResult::kNoDataSaverEnabled:
+    case CanCreateTranslatorResult::kNoMeteredConnectionBlocked:
       return "unavailable";
   }
 }

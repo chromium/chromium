@@ -56,6 +56,18 @@ enum CanCreateTranslatorResult {
   // The translator cannot be created, because the translation library can't
   // be installed or run on this device.
   kNoUnsupportedDevice = 10,
+
+  // The translator cannot be created without a download, and there is not
+  // enough free disk space to download the translation model.
+  kNoNotEnoughDiskSpace = 11,
+
+  // The translator cannot be created without a download, and Data Saver is
+  // enabled.
+  kNoDataSaverEnabled = 12,
+
+  // The translator cannot be created without a download, and downloads on
+  // metered connections are disabled.
+  kNoMeteredConnectionBlocked = 13,
 };
 
 // The error of TranslationManager's CreateTranslator IPC.

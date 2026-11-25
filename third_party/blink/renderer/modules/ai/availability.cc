@@ -94,12 +94,19 @@ Availability HandleTranslatorAvailabilityCheckResult(
           execution_context, AIMetrics::AISessionType::kTranslator,
           mojom::blink::ModelAvailabilityCheckResult::
               kUnavailableUnsupportedLanguage);
+    case mojom::blink::CanCreateTranslatorResult::kNoNotEnoughDiskSpace:
+      return HandleModelAvailabilityCheckResult(
+          execution_context, AIMetrics::AISessionType::kTranslator,
+          mojom::blink::ModelAvailabilityCheckResult::
+              kUnavailableInsufficientDiskSpace);
     case mojom::blink::CanCreateTranslatorResult::kNoServiceCrashed:
     case mojom::blink::CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case mojom::blink::CanCreateTranslatorResult::
         kNoExceedsServiceCountLimitation:
     case mojom::blink::CanCreateTranslatorResult::kNoInvalidStoragePartition:
     case mojom::blink::CanCreateTranslatorResult::kNoUnsupportedDevice:
+    case mojom::blink::CanCreateTranslatorResult::kNoDataSaverEnabled:
+    case mojom::blink::CanCreateTranslatorResult::kNoMeteredConnectionBlocked:
       return HandleModelAvailabilityCheckResult(
           execution_context, AIMetrics::AISessionType::kTranslator,
           mojom::blink::ModelAvailabilityCheckResult::

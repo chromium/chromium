@@ -78,6 +78,14 @@ void TestInstallerAdapter::UnInstallLanguagePack(
       language_pack);
 }
 
+void TestInstallerAdapter::CheckDownloadEligibility(
+    bool needs_library,
+    bool needs_language_packs,
+    base::OnceCallback<void(std::optional<InstallError>)> callback) {
+  OnDeviceTranslationInstaller::GetInstance()->CheckDownloadEligibility(
+      needs_library, needs_language_packs, std::move(callback));
+}
+
 void TestInstallerAdapter::AddObserver(Observer* observer) {
   OnDeviceTranslationInstaller::GetInstance()->AddObserver(observer);
 }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_TEST_TEST_UTIL_H_
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_TEST_TEST_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -122,6 +123,10 @@ class TestInstallerAdapter : public OnDeviceTranslationInstaller {
   void Init(base::RepeatingClosure on_ready_callback) override;
   void InstallLanguagePack(LanguagePackKey language_pack) override;
   void UnInstallLanguagePack(LanguagePackKey language_pack) override;
+  void CheckDownloadEligibility(
+      bool needs_library,
+      bool needs_language_packs,
+      base::OnceCallback<void(std::optional<InstallError>)> callback) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 };

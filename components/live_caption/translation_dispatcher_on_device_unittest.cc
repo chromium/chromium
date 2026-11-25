@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/on_device_translation/service_controller.h"
 #include "components/on_device_translation/test/fake_installer.h"
@@ -251,6 +252,43 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationChineseTwPreserved) {
       std::move(on_translated_cb).Then(run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_EQ(translated_text_, "Hola mundo");
+}
+
+TEST_F(TranslationDispatcherOnDeviceTest,
+       RecordsDownloadBlockedCanTranslateErrors) {
+  using CanTranslateResult = OnDeviceTranslationController::CanTranslateResult;
+  const std::pair<CanTranslateResult, OnDeviceTranslationErrorReason> kCases[] =
+      {
+          {CanTranslateResult::kNoNotEnoughDiskSpace,
+           OnDeviceTranslationErrorReason::kCanTranslateNotEnoughDiskSpace},
+          {CanTranslateResult::kNoDataSaverEnabled,
+           OnDeviceTranslationErrorReason::kCanTranslateDataSaverEnabled},
+          {CanTranslateResult::kNoMeteredConnectionBlocked,
+           OnDeviceTranslationErrorReason::
+               kCanTranslateMeteredConnectionBlocked},
+      };
+
+  for (const auto& [result, expected_reason] : kCases) {
+    base::HistogramTester histogram_tester;
+    base::RunLoop run_loop;
+    auto mock_service_controller =
+        std::make_unique<MockOnDeviceTranslationServiceController>();
+    EXPECT_CALL(*mock_service_controller, CanTranslate("en-US", "es", _))
+        .WillOnce(base::test::RunOnceCallback<2>(result));
+    EXPECT_CALL(*mock_service_controller, CreateTranslator("en-US", "es", _))
+        .Times(0);
+    auto dispatcher =
+        CreateTranslationDispatcher(std::move(mock_service_controller));
+    dispatcher->GetTranslation(
+        "Hello world", "en-US", "es",
+        base::BindOnce(&TranslationDispatcherOnDeviceTest::OnTranslated,
+                       base::Unretained(this))
+            .Then(run_loop.QuitClosure()));
+    run_loop.Run();
+    histogram_tester.ExpectUniqueSample(
+        "Accessibility.LiveTranslate.OnDeviceTranslation.ErrorReason",
+        expected_reason, 1);
+  }
 }
 
 }  // namespace

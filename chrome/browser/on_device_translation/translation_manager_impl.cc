@@ -26,6 +26,7 @@
 #include "components/on_device_translation/component_manager.h"
 #include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
+#include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/metrics.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/pref_names.h"
@@ -88,6 +89,31 @@ blink::mojom::CanCreateTranslatorResult GetBlinkCanCreateTranslatorResult(
     case OnDeviceTranslationController::CanTranslateResult::
         kNoUnsupportedDevice:
       return blink::mojom::CanCreateTranslatorResult::kNoUnsupportedDevice;
+    case OnDeviceTranslationController::CanTranslateResult::
+        kNoNotEnoughDiskSpace:
+      return blink::mojom::CanCreateTranslatorResult::kNoNotEnoughDiskSpace;
+    case OnDeviceTranslationController::CanTranslateResult::kNoDataSaverEnabled:
+      return blink::mojom::CanCreateTranslatorResult::kNoDataSaverEnabled;
+    case OnDeviceTranslationController::CanTranslateResult::
+        kNoMeteredConnectionBlocked:
+      return blink::mojom::CanCreateTranslatorResult::
+          kNoMeteredConnectionBlocked;
+  }
+}
+
+blink::mojom::CanCreateTranslatorResult GetBlinkResultForEligibilityError(
+    InstallError error) {
+  switch (error) {
+    case InstallError::kNotEnoughDiskSpace:
+      return blink::mojom::CanCreateTranslatorResult::kNoNotEnoughDiskSpace;
+    case InstallError::kDataSaverEnabled:
+      return blink::mojom::CanCreateTranslatorResult::kNoDataSaverEnabled;
+    case InstallError::kMeteredConnectionBlocked:
+      return blink::mojom::CanCreateTranslatorResult::
+          kNoMeteredConnectionBlocked;
+    case InstallError::kFailed:
+    case InstallError::kOffline:
+      NOTREACHED();
   }
 }
 
@@ -97,10 +123,32 @@ void RunTranslationAvailableCallbackWithMasking(
     OnDeviceTranslationController::CanTranslateResult result) {
   blink::mojom::CanCreateTranslatorResult blink_result =
       GetBlinkCanCreateTranslatorResult(result);
-  if (result == OnDeviceTranslationController::CanTranslateResult::kReadily &&
-      mask_readily_result) {
-    blink_result =
-        CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired;
+  if (mask_readily_result &&
+      (result == OnDeviceTranslationController::CanTranslateResult::kReadily ||
+       result == OnDeviceTranslationController::CanTranslateResult::
+                     kAfterDownloadLibraryNotReady)) {
+    if (result == OnDeviceTranslationController::CanTranslateResult::kReadily) {
+      blink_result =
+          CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired;
+    }
+    // Check language-pack download eligibility so origins without a user
+    // gesture cannot distinguish installed packs from missing packs when
+    // downloads are blocked.
+    if (auto* installer = OnDeviceTranslationInstaller::GetInstance()) {
+      installer->CheckDownloadEligibility(
+          /*needs_library=*/false, /*needs_language_packs=*/true,
+          base::BindOnce(
+              [](blink::mojom::CanCreateTranslatorResult fallback_result,
+                 TranslationManagerImpl::TranslationAvailableCallback callback,
+                 std::optional<InstallError> error) {
+                std::move(callback).Run(
+                    error.has_value()
+                        ? GetBlinkResultForEligibilityError(*error)
+                        : fallback_result);
+              },
+              blink_result, std::move(callback)));
+      return;
+    }
   }
   std::move(callback).Run(blink_result);
 }

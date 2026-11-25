@@ -98,47 +98,59 @@ String ConvertCanCreateTranslatorResultToDebugString(
     case CanCreateTranslatorResult::kNoUnsupportedDevice:
       equivalent_error = CreateTranslatorError::kUnsupportedDevice;
       break;
+    case CanCreateTranslatorResult::kNoNotEnoughDiskSpace:
+      equivalent_error = CreateTranslatorError::kNotEnoughDiskSpace;
+      break;
+    case CanCreateTranslatorResult::kNoDataSaverEnabled:
+      equivalent_error = CreateTranslatorError::kDataSaverEnabled;
+      break;
+    case CanCreateTranslatorResult::kNoMeteredConnectionBlocked:
+      equivalent_error = CreateTranslatorError::kMeteredConnectionBlocked;
+      break;
   }
   return ConvertCreateTranslatorErrorToDebugString(equivalent_error);
 }
 
-bool RequiresUserActivation(CanCreateTranslatorResult result) {
-  switch (result) {
-    case CanCreateTranslatorResult::kAfterDownloadLibraryNotReady:
-    case CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady:
-    case CanCreateTranslatorResult::
-        kAfterDownloadLibraryAndLanguagePackNotReady:
-    case mojom::blink::CanCreateTranslatorResult::
-        kAfterDownloadTranslatorCreationRequired:
-      return true;
-    case CanCreateTranslatorResult::kReadily:
-    case CanCreateTranslatorResult::kNoNotSupportedLanguage:
-    case CanCreateTranslatorResult::kNoServiceCrashed:
-    case CanCreateTranslatorResult::kNoDisallowedByPolicy:
-    case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
-    case CanCreateTranslatorResult::kNoInvalidStoragePartition:
-    case CanCreateTranslatorResult::kNoUnsupportedDevice:
-      return false;
-  }
-}
+enum class AvailabilityAction {
+  kProceed,
+  kRequireUserActivation,
+  kRequireUserActivationOrRejectUnavailable,
+  kRejectUnavailable,
+};
 
-bool TranslatorIsUnavailable(CanCreateTranslatorResult result) {
+AvailabilityAction GetAvailabilityAction(CanCreateTranslatorResult result) {
   switch (result) {
     case CanCreateTranslatorResult::kReadily:
+      return AvailabilityAction::kProceed;
     case CanCreateTranslatorResult::kAfterDownloadLibraryNotReady:
     case CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady:
     case CanCreateTranslatorResult::
         kAfterDownloadLibraryAndLanguagePackNotReady:
     case CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired:
-      return false;
+      return AvailabilityAction::kRequireUserActivation;
+    case CanCreateTranslatorResult::kNoNotEnoughDiskSpace:
+    case CanCreateTranslatorResult::kNoDataSaverEnabled:
+    case CanCreateTranslatorResult::kNoMeteredConnectionBlocked:
+      return AvailabilityAction::kRequireUserActivationOrRejectUnavailable;
     case CanCreateTranslatorResult::kNoNotSupportedLanguage:
     case CanCreateTranslatorResult::kNoServiceCrashed:
     case CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
     case CanCreateTranslatorResult::kNoInvalidStoragePartition:
     case CanCreateTranslatorResult::kNoUnsupportedDevice:
-      return true;
+      return AvailabilityAction::kRejectUnavailable;
   }
+}
+
+void RejectUnavailable(ExecutionContext* context,
+                       ScriptPromiseResolver<Translator>* resolver,
+                       CanCreateTranslatorResult result) {
+  context->AddConsoleMessage(
+      mojom::blink::ConsoleMessageSource::kJavaScript,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      ConvertCanCreateTranslatorResultToDebugString(result));
+  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                   kExceptionMessageUnableToCreateTranslator);
 }
 
 }  // namespace
@@ -223,18 +235,17 @@ void CreateTranslatorClient::OnResult(
 
 void CreateTranslatorClient::OnGotAvailability(
     CanCreateTranslatorResult result) {
+  if (!GetResolver()) {
+    return;
+  }
   ScriptState* script_state = GetScriptState();
   ExecutionContext* context = GetExecutionContext();
   LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
 
-  if (TranslatorIsUnavailable(result)) {
-    GetExecutionContext()->AddConsoleMessage(
-        mojom::blink::ConsoleMessageSource::kJavaScript,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        ConvertCanCreateTranslatorResultToDebugString(result));
-    GetResolver()->RejectWithDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        kExceptionMessageUnableToCreateTranslator);
+  const AvailabilityAction action = GetAvailabilityAction(result);
+  if (action == AvailabilityAction::kRejectUnavailable) {
+    RejectUnavailable(context, GetResolver(), result);
+    Cleanup();
     return;
   }
 
@@ -244,11 +255,21 @@ void CreateTranslatorClient::OnGotAvailability(
   CHECK(window != nullptr || context->IsServiceWorkerGlobalScope());
 
   if (!context->IsServiceWorkerGlobalScope() &&
-      RequiresUserActivation(result) &&
+      action != AvailabilityAction::kProceed &&
       !LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
-    GetResolver()->RejectWithDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        kExceptionMessageUserActivationRequired);
+    if (action ==
+        AvailabilityAction::kRequireUserActivationOrRejectUnavailable) {
+      // Reject with `NotSupportedError` so installed masked pairs and missing
+      // pairs fail identically without a user gesture. With user activation,
+      // proceed to `CreateTranslator` so installed masked pairs open from disk
+      // and missing pairs record `CreateTranslatorError` in the browser.
+      RejectUnavailable(context, GetResolver(), result);
+    } else {
+      GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          kExceptionMessageUserActivationRequired);
+    }
+    Cleanup();
     return;
   }
   mojo::PendingRemote<mojom::blink::TranslationManagerCreateTranslatorClient>
