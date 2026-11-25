@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/headless_web_contents_manager.h"
@@ -328,7 +329,15 @@ TEST_F(ActorSurfaceRegistryTest, FromTabReturnsTabSurfaceHandle) {
   EXPECT_EQ(handle.GetTabHandle(), tab_handle());
 }
 
-TEST_F(ActorSurfaceRegistryTest, FromTabWithIndependentHandles) {
+// TODO(crbug.com/585643254): Fails in batched runs on Android because the
+// global handle counters can make the tab and surface raw values coincide.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FromTabWithIndependentHandles \
+  DISABLED_FromTabWithIndependentHandles
+#else
+#define MAYBE_FromTabWithIndependentHandles FromTabWithIndependentHandles
+#endif
+TEST_F(ActorSurfaceRegistryTest, MAYBE_FromTabWithIndependentHandles) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kUseTabHandleAsSurfaceHandle);
 
