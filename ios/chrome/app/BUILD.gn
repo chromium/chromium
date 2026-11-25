@@ -471,6 +471,13 @@ compile_entitlements("entitlements") {
   if (use_blink) {
     entitlements_templates += [ "//content/app/ios/appex/app.entitlements" ]
   }
+  if (ios_enable_memory_tagging) {
+    entitlements_templates += [ "resources/MemoryTagging.entitlements" ]
+    if (ios_memory_tagging_soft_mode) {
+      entitlements_templates +=
+          [ "resources/MemoryTagging+SoftMode.entitlements" ]
+    }
+  }
   substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
   output_name = "$target_gen_dir/$chromium_short_name.entitlements"
 }

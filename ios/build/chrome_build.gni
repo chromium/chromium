@@ -122,7 +122,20 @@ declare_args() {
 
   # Path to a PrivacyInfo.xcprivacy file to be included in app extensions.
   ios_app_extension_privacy_manifest = ""
+
+  # Enable hardware memory tagging (MTE) on supported devices via the
+  # com.apple.security.hardened-process.checked-allocations entitlement.
+  # This tags system allocator memory. To also tag PartitionAlloc memory, set
+  # enable_apple_mte = true and enable the PartitionAllocMemoryTagging feature.
+  ios_enable_memory_tagging = false
+
+  # Controls whether hardware memory tagging uses soft mode (generates a crash
+  # report on tag check faults without terminating the process).
+  ios_memory_tagging_soft_mode = false
 }
+
+assert(!ios_memory_tagging_soft_mode || ios_enable_memory_tagging,
+       "ios_memory_tagging_soft_mode requires ios_enable_memory_tagging")
 
 if (target_environment == "catalyst") {
   # Some extensions and background modes use APIs that are not available in
