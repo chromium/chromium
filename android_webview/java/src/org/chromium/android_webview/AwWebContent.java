@@ -31,6 +31,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.content_public.browser.NavigationHistory;
 
 import java.util.Map;
@@ -112,12 +113,19 @@ public class AwWebContent {
             AwContents.AwContentsClientFactory clientFactory) {
         ThreadUtils.assertOnUiThread();
         Context appContext = ContextUtils.getApplicationContext();
+        // Note we use a configuration context instead of an application context
+        // to avoid triggering
+        // StrictMode.VmPolicy.Builder#detectIncorrectContextUse() in the AwContents constructor,
+        // and wrap it so WebView resources remain accessible during AwContents construction.
+        Context configContext =
+                ClassLoaderContextWrapperFactory.get(
+                        appContext.createConfigurationContext(new Configuration()));
         AwWebContent destroyedAwWebContent = new AwWebContent(startupController);
         destroyedAwWebContent.mAwContents =
                 new AwContents(
                         browserContext,
-                        new FrameLayout(appContext),
-                        appContext,
+                        new FrameLayout(configContext),
+                        configContext,
                         new NullInternalAccessDelegate(),
                         (canvas, functor) -> {},
                         clientFactory);

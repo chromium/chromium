@@ -9,6 +9,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
+import android.content.Context;
+
 import androidx.test.filters.SmallTest;
 
 import com.android.webview.chromium.WebContentContextWrapper;
@@ -21,10 +23,17 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebContent;
 import org.chromium.android_webview.StartupController;
+import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -77,6 +86,39 @@ public class AwWebContentTest {
                     assertSame(webContent, WebContentContextWrapper.getWebContent(wrapper));
                     assertNull(WebContentContextWrapper.getWebContent(wrapper));
                 });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU})
+    public void testCreateDestroyedAwWebContent() {
+        StartupController startupController = new StartupController(/* delegate= */ null);
+        WeakReference<Context> contextRef =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            AwWebContent destroyed =
+                                    AwWebContent.createDestroyedAwWebContent(
+                                            startupController,
+                                            mActivityTestRule.getAwBrowserContext(),
+                                            awContents -> new TestAwContentsClient());
+                            AwContents awContents = destroyed.getAwContents();
+                            assertNotNull(awContents);
+                            Context context = awContents.getProvidedContext();
+                            assertNull(
+                                    "The destroyed AwWebContent is cached so it must not hold"
+                                            + " activity references.",
+                                    ContextUtils.activityFromContext(context));
+                            assertSame(
+                                    "Context must be wrapped for WebView resource lookup",
+                                    context,
+                                    ClassLoaderContextWrapperFactory.get(context));
+                            return new WeakReference<>(context);
+                        });
+
+        CriteriaHelper.pollUiThread(
+                () -> GarbageCollectionTestUtils.canBeGarbageCollected(contextRef),
+                "Destroyed AwWebContent context should be garbage collected.");
     }
 
     private void adopt(AwWebContent webContent) {
