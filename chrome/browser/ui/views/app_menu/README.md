@@ -59,6 +59,7 @@ Dynamic submenus are used for user data (such as bookmarks, history, tab groups,
 ### 4. Search (`AppMenuSearchController` & `AppMenuSearchItem`)
 * **`AppMenuSearchController` (`app_menu_search_controller.h`)**: Traverses the `kActionAppMenuRoot` hierarchy via `InitializeSearchIndex()`, extracting visible and enabled leaf actions with `DisplayType < DisplayType::kMaxSearchable` into a flat list of `AppMenuSearchItem`s.
 * Queries `FuzzyFinder` (`Search()`) and partitions matches into capped sections (**Actions**, **Bookmarks**, **Tab Groups**, **Recent Tabs**), returning an ephemeral `ActionItem` results tree wrapped in `IndirectActionItem`s with secondary breadcrumb labels. Each result row reapplies the presentation captured from the indexed menu row on its `AppMenuSearchItem` (title, `kIconOverrideKey`, `kIsCheckableKey`), so a row-specific property that should also show in search results must be carried through `AppMenuSearchItem` and `BuildSearchResultsTree()`.
+* Every results tree, including the "No results" one, ends with a divider and a **Search in settings** row. Invoking it calls `AppMenuSearchController::Delegate::OpenSettingsSearch()`, which `ActionAppMenu` implements by opening `chrome://settings/?search=<query>`.
 
 ### 5. Custom Views
 * **`AppMenuBlockView` / `AppMenuBlockButton`**: Horizontal row of equal-width rectangular buttons at the top of the menu.

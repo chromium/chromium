@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -107,6 +108,7 @@ class ActionAppMenu : public views::MenuDelegate,
   // AppMenuSearchController::Delegate:
   void ShowSearchResults(actions::ActionItem* results) override;
   void RestoreMenu() override;
+  void OpenSettingsSearch(std::u16string_view query) override;
 
   views::MenuItemView* root_menu_item_for_testing() { return root_; }
   AppMenuSearchBarView* search_bar_for_testing() { return search_bar_; }

@@ -115,6 +115,10 @@ void ActionAppMenuMetrics::LogMenuAction(actions::BaseAction* base_action) {
   }
 }
 
+void ActionAppMenuMetrics::LogSettingsSearch() {
+  RecordAction(MENU_ACTION_SEARCH_IN_SETTINGS, "SearchInSettings");
+}
+
 void ActionAppMenuMetrics::RecordMenuHeightPercentage(int menu_height,
                                                       int screen_height) {
   if (screen_height <= 0 || menu_height <= 0) {

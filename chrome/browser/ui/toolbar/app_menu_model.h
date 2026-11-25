@@ -148,6 +148,7 @@ enum AppMenuAction {
   MENU_ACTION_SCHEDULED_RESTART_DIALOG = 126,
   MENU_ACTION_OTHER_DEVICE_TAB = 127,
   MENU_ACTION_SHOW_OFFERS_AND_LOYALTY_CARDS = 128,
+  MENU_ACTION_SEARCH_IN_SETTINGS = 129,
   LIMIT_MENU_ACTION
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ui/enums.xml:WrenchMenuAction)

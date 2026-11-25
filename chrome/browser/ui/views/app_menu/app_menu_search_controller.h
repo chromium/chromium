@@ -44,6 +44,10 @@ class AppMenuSearchController {
 
     // Restores the normal menu rows below the search bar.
     virtual void RestoreMenu() = 0;
+
+    // Opens the settings page searching for `query`. Called when the "Search
+    // in settings" row at the bottom of the search results is invoked.
+    virtual void OpenSettingsSearch(std::u16string_view query) = 0;
   };
 
   // `search_bar` and `delegate` must outlive this controller.
@@ -149,9 +153,14 @@ class AppMenuSearchController {
 
   // Transforms categorized search results into an ephemeral ActionItem tree
   // organized by sections (Actions, Bookmarks, Recent Tabs, Tab Groups)
-  // wrapping matched items in IndirectActionItems, and returns its root.
+  // wrapping matched items in IndirectActionItems, and returns its root. The
+  // tree always ends with a row that searches settings for 'query'.
   std::unique_ptr<actions::ActionItem> BuildSearchResultsTree(
-      SearchResults results) const;
+      SearchResults results,
+      std::u16string_view query) const;
+
+  std::unique_ptr<actions::ActionItem> CreateSettingsSearchItem(
+      std::u16string_view query) const;
 
   // The root ActionItem of the app menu.
   raw_ptr<actions::ActionItem> menu_root_;

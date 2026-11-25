@@ -76,8 +76,10 @@
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -673,6 +675,45 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
     menu_control->CloseMenu();
     EXPECT_FALSE(menu_control->IsMenuShowing());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
+                       SettingsSearchRowOpensSettingsSearch) {
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
+  ASSERT_TRUE(action_menu);
+  views::MenuItemView* root = action_menu->root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // The query needs escaping both as a menu label and as a URL parameter.
+  action_menu->search_bar_for_testing()->SetText(u"  site & data  ");
+  views::MenuItemView* settings_search_item = FindMenuItemByTitle(
+      root, ui::EscapeMenuLabelAmpersands(l10n_util::GetStringFUTF16(
+                IDS_APP_MENU_SEARCH_IN_SETTINGS, u"site & data")));
+  ASSERT_TRUE(settings_search_item);
+  EXPECT_EQ(root->GetSubmenu()->GetMenuItems().back(), settings_search_item);
+
+  const GURL expected_url("chrome://settings/?search=site+%26+data");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+  navigation_observer.WatchExistingWebContents();
+  base::HistogramTester histogram_tester;
+  action_menu->ExecuteCommand(settings_search_item->GetCommand(),
+                              /*mouse_event_flags=*/0);
+  menu_control->CloseMenu();
+  navigation_observer.Wait();
+
+  EXPECT_EQ(browser()
+                ->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL(),
+            expected_url);
+  histogram_tester.ExpectUniqueSample("WrenchMenu.MenuAction",
+                                      MENU_ACTION_SEARCH_IN_SETTINGS, 1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction.SearchInSettings",
+                                    1);
 }
 
 class ActionAppMenuWithOtherDeviceTabsBrowserTest

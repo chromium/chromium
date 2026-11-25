@@ -47,10 +47,15 @@
 
 namespace {
 
+// Every search results tree ends with a divider and the "Search in settings"
+// row.
+constexpr size_t kSettingsSearchRowCount = 2;
+
 class MockDelegate : public AppMenuSearchController::Delegate {
  public:
   MOCK_METHOD(void, ShowSearchResults, (actions::ActionItem*), (override));
   MOCK_METHOD(void, RestoreMenu, (), (override));
+  MOCK_METHOD(void, OpenSettingsSearch, (std::u16string_view), (override));
 };
 
 class AppMenuSearchControllerTest
@@ -565,7 +570,7 @@ TEST_F(AppMenuSearchControllerTest, SearchResultsCategorizationAndCapping) {
   ASSERT_NE(results_root, nullptr);
 
   const auto& sections = results_root->GetChildren().children();
-  ASSERT_EQ(sections.size(), 8u);
+  ASSERT_EQ(sections.size(), 8u + kSettingsSearchRowCount);
 
   auto* bookmarks_section = sections[6]->GetActionItem();
   EXPECT_EQ(bookmarks_section->GetChildren().children().size(), 4u);
@@ -611,7 +616,7 @@ TEST_F(AppMenuSearchControllerTest, SearchResultsTreeCategoryHeaders) {
   ASSERT_NE(results_root, nullptr);
 
   const auto& children = results_root->GetChildren().children();
-  ASSERT_EQ(children.size(), 4u);
+  ASSERT_EQ(children.size(), 4u + kSettingsSearchRowCount);
 
   EXPECT_EQ(children[0]->GetActionItem()->GetText(), u"New Tab");
 
@@ -641,6 +646,88 @@ TEST_F(AppMenuSearchControllerTest, SearchResultsTreeCategoryHeaders) {
                  IDS_APP_MENU_SEARCH_TAB_GROUPS_HEADER, u"New Tab Group");
   verify_section(children[3]->GetActionItem(),
                  IDS_APP_MENU_SEARCH_RECENT_TABS_HEADER, u"New Recent Tab");
+}
+
+TEST_F(AppMenuSearchControllerTest,
+       SearchResultsTreeEndsWithSettingsSearchRow) {
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionNewTab)
+                           .SetText(u"New Tab")
+                           .Build());
+  controller_->InitializeSearchIndex();
+
+  const std::unique_ptr<actions::ActionItem> results_root =
+      controller_->Search(u"  New  ");
+  ASSERT_NE(results_root, nullptr);
+  const auto& rows = results_root->GetChildren().children();
+  ASSERT_EQ(rows.size(), 1u + kSettingsSearchRowCount);
+  EXPECT_EQ(rows[0]->GetActionItem()->GetText(), u"New Tab");
+
+  EXPECT_EQ(rows[1]->GetProperty(AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
+
+  actions::ActionItem* const settings_row = rows[2]->GetActionItem();
+  const std::u16string expected_text =
+      l10n_util::GetStringFUTF16(IDS_APP_MENU_SEARCH_IN_SETTINGS, u"New");
+  EXPECT_EQ(settings_row->GetText(), expected_text);
+  ASSERT_NE(settings_row->GetProperty(AppMenuActionItem::kTextOverrideKey),
+            nullptr);
+  EXPECT_EQ(*settings_row->GetProperty(AppMenuActionItem::kTextOverrideKey),
+            expected_text);
+  EXPECT_FALSE(settings_row->GetImage().IsEmpty());
+  EXPECT_TRUE(settings_row->GetEnabled());
+
+  EXPECT_CALL(delegate_, OpenSettingsSearch(std::u16string_view(u"New")));
+  settings_row->InvokeAction();
+}
+
+TEST_F(AppMenuSearchControllerTest, NoResultsShowsSettingsSearchRow) {
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionNewTab)
+                           .SetText(u"New Tab")
+                           .Build());
+  controller_->InitializeSearchIndex();
+
+  const std::unique_ptr<actions::ActionItem> results_root =
+      controller_->Search(u"zzzzzz");
+  ASSERT_NE(results_root, nullptr);
+  const auto& rows = results_root->GetChildren().children();
+  ASSERT_EQ(rows.size(), 1u + kSettingsSearchRowCount);
+  EXPECT_EQ(rows[0]->GetActionItem()->GetText(),
+            l10n_util::GetStringUTF16(IDS_SEARCH_NO_RESULTS));
+  EXPECT_FALSE(rows[0]->GetActionItem()->GetEnabled());
+  EXPECT_EQ(rows[1]->GetProperty(AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
+
+  actions::ActionItem* const settings_row = rows[2]->GetActionItem();
+  EXPECT_EQ(
+      settings_row->GetText(),
+      l10n_util::GetStringFUTF16(IDS_APP_MENU_SEARCH_IN_SETTINGS, u"zzzzzz"));
+  EXPECT_TRUE(settings_row->GetEnabled());
+
+  EXPECT_CALL(delegate_, OpenSettingsSearch(std::u16string_view(u"zzzzzz")));
+  settings_row->InvokeAction();
+}
+
+TEST_F(AppMenuSearchControllerTest, SettingsSearchRowEscapesAmpersands) {
+  controller_->InitializeSearchIndex();
+
+  const std::unique_ptr<actions::ActionItem> results_root =
+      controller_->Search(u"R&D");
+  ASSERT_NE(results_root, nullptr);
+  const auto& rows = results_root->GetChildren().children();
+  ASSERT_FALSE(rows.empty());
+  actions::ActionItem* const settings_row = rows.back()->GetActionItem();
+
+  // The label is shown with mnemonics enabled, so the literal '&' is escaped,
+  // while the query passed to the delegate is unescaped.
+  ASSERT_NE(settings_row->GetProperty(AppMenuActionItem::kTextOverrideKey),
+            nullptr);
+  EXPECT_EQ(
+      *settings_row->GetProperty(AppMenuActionItem::kTextOverrideKey),
+      l10n_util::GetStringFUTF16(IDS_APP_MENU_SEARCH_IN_SETTINGS, u"R&&D"));
+  EXPECT_CALL(delegate_, OpenSettingsSearch(std::u16string_view(u"R&D")));
+  settings_row->InvokeAction();
 }
 
 TEST_F(AppMenuSearchControllerTest,
@@ -693,7 +780,7 @@ TEST_F(AppMenuSearchControllerTest,
       controller_->Search(u"horizontal");
   ASSERT_NE(results_root, nullptr);
   const auto& rows = results_root->GetChildren().children();
-  ASSERT_EQ(rows.size(), 1u);
+  ASSERT_EQ(rows.size(), 1u + kSettingsSearchRowCount);
   const actions::BaseAction* const row = rows[0].get();
 
   ASSERT_NE(row->GetProperty(AppMenuActionItem::kTextOverrideKey), nullptr);
@@ -729,7 +816,7 @@ TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreePreservesCheckable) {
       controller_->Search(u"Always show");
   ASSERT_NE(results_root, nullptr);
   const auto& rows = results_root->GetChildren().children();
-  ASSERT_EQ(rows.size(), 2u);
+  ASSERT_EQ(rows.size(), 2u + kSettingsSearchRowCount);
 
   for (const auto& row : rows) {
     const bool is_checkable_row = row->GetActionItem()->GetActionId() ==
@@ -1110,7 +1197,7 @@ TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRanges) {
         controller_->Search(u"cognito");
     ASSERT_NE(results, nullptr);
     const auto& rows = results->GetChildren().children();
-    ASSERT_EQ(rows.size(), 1u);
+    ASSERT_EQ(rows.size(), 1u + kSettingsSearchRowCount);
     const std::vector<gfx::Range>* ranges =
         rows[0]->GetProperty(AppMenuActionItem::kHighlightRangesKey);
     ASSERT_NE(ranges, nullptr);
@@ -1137,7 +1224,7 @@ TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRanges) {
         controller_->Search(u"horizontal");
     ASSERT_NE(results, nullptr);
     const auto& rows = results->GetChildren().children();
-    ASSERT_EQ(rows.size(), 1u);
+    ASSERT_EQ(rows.size(), 1u + kSettingsSearchRowCount);
     const std::u16string* text_override =
         rows[0]->GetProperty(AppMenuActionItem::kTextOverrideKey);
     ASSERT_NE(text_override, nullptr);
@@ -1167,7 +1254,7 @@ TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRanges) {
         controller_->Search(u"private");
     ASSERT_NE(results, nullptr);
     const auto& rows = results->GetChildren().children();
-    ASSERT_EQ(rows.size(), 1u);
+    ASSERT_EQ(rows.size(), 1u + kSettingsSearchRowCount);
     EXPECT_EQ(rows[0]->GetProperty(AppMenuActionItem::kHighlightRangesKey),
               nullptr);
   }
@@ -1181,7 +1268,7 @@ TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRanges) {
     ASSERT_NE(highlighted_results, nullptr);
     const auto& highlighted_rows =
         highlighted_results->GetChildren().children();
-    ASSERT_EQ(highlighted_rows.size(), 1u);
+    ASSERT_EQ(highlighted_rows.size(), 1u + kSettingsSearchRowCount);
     ASSERT_NE(
         highlighted_rows[0]->GetProperty(AppMenuActionItem::kTextOverrideKey),
         nullptr);
@@ -1204,7 +1291,7 @@ TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRanges) {
     ASSERT_NE(unhighlighted_results, nullptr);
     const auto& unhighlighted_rows =
         unhighlighted_results->GetChildren().children();
-    ASSERT_EQ(unhighlighted_rows.size(), 1u);
+    ASSERT_EQ(unhighlighted_rows.size(), 1u + kSettingsSearchRowCount);
     ASSERT_NE(
         unhighlighted_rows[0]->GetProperty(AppMenuActionItem::kTextOverrideKey),
         nullptr);
@@ -1252,8 +1339,9 @@ class AppMenuSearchControllerScoringTest : public AppMenuSearchControllerTest {
     if (!results_root) {
       return titles;
     }
-    for (const auto& child : results_root->GetChildren().children()) {
-      titles.emplace_back(child->GetActionItem()->GetText());
+    const auto& children = results_root->GetChildren().children();
+    for (size_t i = 0; i + kSettingsSearchRowCount < children.size(); ++i) {
+      titles.emplace_back(children[i]->GetActionItem()->GetText());
     }
     return titles;
   }

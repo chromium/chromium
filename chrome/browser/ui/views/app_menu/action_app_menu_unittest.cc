@@ -3383,16 +3383,26 @@ TEST_F(ActionAppMenuWithSearchTest,
 
   search_bar->SetText(u"qzxjqzxj");
 
-  // A single "No results" row is the only scrollable row.
+  // A "No results" row, followed by a divider and the "Search in settings" row,
+  // are the only scrollable rows.
   EXPECT_EQ(search_row->parent(), search_row_parent);
   EXPECT_EQ(search_row_parent->GetIndexOf(search_row), search_row_index);
-  ASSERT_EQ(submenu->children().size(), 1u);
+  ASSERT_EQ(submenu->children().size(), 3u);
   auto* const no_results_item =
       views::AsViewClass<views::MenuItemView>(submenu->children()[0]);
   ASSERT_NE(no_results_item, nullptr);
   EXPECT_EQ(no_results_item->title(),
             l10n_util::GetStringUTF16(IDS_SEARCH_NO_RESULTS));
   EXPECT_FALSE(no_results_item->GetEnabled());
+  EXPECT_NE(views::AsViewClass<views::MenuSeparator>(submenu->children()[1]),
+            nullptr);
+  auto* const settings_search_item =
+      views::AsViewClass<views::MenuItemView>(submenu->children()[2]);
+  ASSERT_NE(settings_search_item, nullptr);
+  EXPECT_EQ(
+      settings_search_item->title(),
+      l10n_util::GetStringFUTF16(IDS_APP_MENU_SEARCH_IN_SETTINGS, u"qzxjqzxj"));
+  EXPECT_TRUE(settings_search_item->GetEnabled());
   EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
 
   const views::Separator* separator = GetSeparator(search_bar);
@@ -3850,7 +3860,8 @@ TEST_F(ActionAppMenuWithSearchTest, SearchResultsKeepMenuWidth) {
 
   // Results narrower than the normal rows don't shrink the menu.
   search_bar->SetText(u"qzxjqzxj");
-  ASSERT_EQ(submenu->children().size(), 1u);
+  // "No results", a divider and the "Search in settings" row.
+  ASSERT_EQ(submenu->children().size(), 3u);
   EXPECT_EQ(container->width(), menu_width);
   EXPECT_EQ(submenu->width(), submenu_width);
 

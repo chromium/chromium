@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/fuzzy_search/fuzzy_finder.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -31,6 +32,9 @@
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/text_utils.h"
 #include "url/gurl.h"
@@ -155,6 +159,13 @@ std::u16string ExtractItemTitle(actions::BaseAction* action) {
   return std::u16string(action->GetActionItem()->GetTooltipText());
 }
 
+void InvokeSettingsSearch(AppMenuSearchController::Delegate* delegate,
+                          const std::u16string& query,
+                          actions::ActionItem* item,
+                          actions::ActionInvocationContext context) {
+  delegate->OpenSettingsSearch(query);
+}
+
 }  // namespace
 
 AppMenuSearchController::SearchResults::SearchResults() = default;
@@ -208,7 +219,7 @@ std::unique_ptr<actions::ActionItem> AppMenuSearchController::Search(
   const std::vector<FuzzySearchResult> matches =
       fuzzy_finder_->FuzzyFind(trimmed_query, kMaxGlobalCandidates);
 
-  return BuildSearchResultsTree(ProcessSearchResults(matches));
+  return BuildSearchResultsTree(ProcessSearchResults(matches), trimmed_query);
 }
 
 void AppMenuSearchController::OnQueryChanged() {
@@ -404,9 +415,16 @@ AppMenuSearchController::ProcessSearchResults(
 }
 
 std::unique_ptr<actions::ActionItem>
-AppMenuSearchController::BuildSearchResultsTree(SearchResults results) const {
+AppMenuSearchController::BuildSearchResultsTree(
+    SearchResults results,
+    std::u16string_view query) const {
   std::unique_ptr<actions::ActionItem> root =
       actions::ActionItem::Builder().Build();
+
+  auto append_settings_search_item = [this, &root, query] {
+    root->AddChild(AppMenuActionItem::CreateDivider());
+    root->AddChild(CreateSettingsSearchItem(query));
+  };
 
   if (results.empty()) {
     root->AddChild(
@@ -414,6 +432,7 @@ AppMenuSearchController::BuildSearchResultsTree(SearchResults results) const {
             .SetText(l10n_util::GetStringUTF16(IDS_SEARCH_NO_RESULTS))
             .SetEnabled(false)
             .Build());
+    append_settings_search_item();
     return root;
   }
 
@@ -481,6 +500,32 @@ AppMenuSearchController::BuildSearchResultsTree(SearchResults results) const {
   append_section(
       l10n_util::GetStringUTF16(IDS_APP_MENU_SEARCH_RECENT_TABS_HEADER),
       results.recent_tabs);
+  append_settings_search_item();
 
   return root;
+}
+
+std::unique_ptr<actions::ActionItem>
+AppMenuSearchController::CreateSettingsSearchItem(
+    std::u16string_view query) const {
+  const std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_APP_MENU_SEARCH_IN_SETTINGS, std::u16string(query));
+  std::unique_ptr<actions::ActionItem> item =
+      actions::ActionItem::Builder(
+          // Unretained is safe: this row is part of the results tree owned by
+          // `this`, and `delegate_` outlives `this`.
+          base::BindRepeating(&InvokeSettingsSearch,
+                              base::Unretained(delegate_.get()),
+                              std::u16string(query)))
+          .SetText(text)
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kSettingsIcon
+                                                : kSettingsMenuOldIcon,
+              ui::kColorIcon))
+          .Build();
+  // The row's label is a menu label, so the query's ampersands must be escaped
+  // to be shown literally instead of being treated as mnemonics.
+  item->SetProperty(AppMenuActionItem::kTextOverrideKey,
+                    ui::EscapeMenuLabelAmpersands(text));
+  return item;
 }

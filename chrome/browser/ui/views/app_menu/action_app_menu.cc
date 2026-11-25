@@ -9,11 +9,15 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -704,6 +708,16 @@ void ActionAppMenu::RestoreMenu() {
   PopulateItemsBelowSearchBar();
   menu_width_lock_.RunAndReset();
   root_->ChildrenChanged();
+}
+
+void ActionAppMenu::OpenSettingsSearch(std::u16string_view query) {
+  metrics_.LogSettingsSearch();
+  // The settings page searches for the 'search' URL query parameter.
+  chrome::ShowSettingsSubPage(
+      browser_window_interface_,
+      base::StrCat(
+          {"?search=", base::EscapeQueryParamValue(base::UTF16ToUTF8(query),
+                                                   /*use_plus=*/true)}));
 }
 
 bool ActionAppMenu::ShouldDragActivateChildButtons() const {
