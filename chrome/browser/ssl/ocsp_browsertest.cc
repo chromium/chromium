@@ -11,11 +11,10 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -26,6 +25,7 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
@@ -45,7 +45,7 @@ static const char kOCSPTestCertPolicy[] = "1.3.6.1.4.1.11129.2.4.1";
 
 }  // namespace
 
-class OCSPBrowserTest : public InProcessBrowserTest,
+class OCSPBrowserTest : public PlatformBrowserTest,
                         public network::mojom::SSLConfigClient {
  public:
   OCSPBrowserTest() = default;
@@ -60,12 +60,12 @@ class OCSPBrowserTest : public InProcessBrowserTest,
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
 
-    InProcessBrowserTest::SetUp();
+    PlatformBrowserTest::SetUp();
     SSLErrorHandler::ResetConfigForTesting();
   }
 
   void TearDown() override {
-    InProcessBrowserTest::TearDown();
+    PlatformBrowserTest::TearDown();
 
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         std::nullopt);
@@ -129,11 +129,12 @@ class OCSPBrowserTest : public InProcessBrowserTest,
     net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
 
     server.SetSSLConfig(config);
-    server.AddDefaultHandlers(GetChromeTestDataDir());
+    server.AddDefaultHandlers(chrome_test_utils::GetChromeTestDataDir());
     ASSERT_TRUE(server.Start());
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), server.GetURL(hostname, "/ssl/google.html")));
+    content::NavigateToURLBlockUntilNavigationsComplete(
+        chrome_test_utils::GetActiveWebContents(this),
+        server.GetURL(hostname, "/ssl/google.html"), 1);
   }
 
   void DoConnection(
@@ -507,7 +508,9 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, TestHTTPSOCSPOldStapledButValidAIA) {
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+// The RequireOnlineRevocationChecksForLocalAnchors policy is not supported on
+// Android.
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) && !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, HardFailOnOCSPInvalid) {
   if (!ssl_test_util::SystemSupportsHardFailRevocationChecking()) {
     LOG(WARNING) << "Skipping test because system doesn't support hard fail "
@@ -709,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
   net::CertStatus cert_status = GetCurrentCertStatus();
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) && !BUILDFLAG(IS_ANDROID)
 
 class EVBrowserTest : public OCSPBrowserTest {
  public:
