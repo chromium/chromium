@@ -384,7 +384,8 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest,
       target_url);
 
   proto::TtcServerFrame tool_frame;
-  proto::ToolCall* tool_call = tool_frame.mutable_tool_call();
+  proto::ToolCall* tool_call =
+      tool_frame.mutable_tool_call_batch()->add_tool_calls();
   tool_call->set_call_id("call_1");
   tool_call->set_name(std::string(actor::OpenUrlToolRequest::kModelFacingName));
   tool_call->set_arguments_json(*base::WriteJson(

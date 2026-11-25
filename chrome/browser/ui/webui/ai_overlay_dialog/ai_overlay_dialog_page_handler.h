@@ -89,8 +89,6 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   void OnModelTurnStateUpdate(ModelTurnStateUpdate update,
                               int64_t generation_id) override;
   void OnUserTurnStateUpdate(UserTurnStateUpdate update) override;
-  void OnToolCall(const ToolRequest& tool_request,
-                  ToolResponseCallback response_callback) override;
   void OnToolCallBatch(std::vector<PendingToolCall> tool_calls) override;
   void OnJournalEvent(const ServerJournalEvent& journal_event) override;
 
@@ -109,6 +107,11 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   void OnUsePersonaChanged(bool use_persona) override;
 
  private:
+  // Runs the tool described by `tool_request` and replies to
+  // `response_callback` with its result.
+  void ExecuteTool(const ToolRequest& tool_request,
+                   ToolResponseCallback response_callback);
+
   void SendToolSetUpdate();
   void OnWebMcpToolInvoked(
       mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> keep_alive,

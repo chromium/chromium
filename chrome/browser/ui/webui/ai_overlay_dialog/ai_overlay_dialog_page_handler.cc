@@ -776,7 +776,7 @@ void AiOverlayDialogPageHandler::OnModelTurnStateUpdate(
 void AiOverlayDialogPageHandler::OnUserTurnStateUpdate(
     UserTurnStateUpdate update) {}
 
-void AiOverlayDialogPageHandler::OnToolCall(
+void AiOverlayDialogPageHandler::ExecuteTool(
     const ToolRequest& tool_request,
     ToolResponseCallback response_callback) {
   const std::string& name = tool_request.name;
@@ -1129,7 +1129,7 @@ void AiOverlayDialogPageHandler::OnToolCall(
 void AiOverlayDialogPageHandler::OnToolCallBatch(
     std::vector<PendingToolCall> tool_calls) {
   for (PendingToolCall& tool_call : tool_calls) {
-    OnToolCall(tool_call.request, std::move(tool_call.callback));
+    ExecuteTool(tool_call.request, std::move(tool_call.callback));
   }
 }
 

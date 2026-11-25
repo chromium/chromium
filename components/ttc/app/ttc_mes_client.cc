@@ -453,10 +453,6 @@ void TtcMesClient::HandleServerFrame(
 
   // TODO(b/576271717): A frame holds exactly one of these, so turn these `if`s
   // into a `switch` on `frame.frame_case()`.
-  if (frame.has_tool_call()) {
-    HandleToolCall(frame.tool_call());
-  }
-
   if (frame.has_tool_call_batch()) {
     HandleToolCallBatch(frame.tool_call_batch());
   }
@@ -504,22 +500,6 @@ void TtcMesClient::SendToolSetUpdate(const std::vector<ToolDefinition>& tools) {
   SendFrame(frame);
 }
 
-void TtcMesClient::HandleToolCall(
-    const optimization_guide::proto::ToolCall& tool_call) {
-  if (!observer_) {
-    return;
-  }
-  base::expected<ToolRequest, ToolResponse> tool_request =
-      ToToolRequest(tool_call);
-  if (!tool_request.has_value()) {
-    OnToolExecutionComplete(tool_call.call_id(), tool_call.name(),
-                            std::move(tool_request).error());
-    return;
-  }
-  observer_->OnToolCall(std::move(tool_request).value(),
-                        MakeToolResponseCallback(tool_call));
-}
-
 void TtcMesClient::HandleToolCallBatch(
     const optimization_guide::proto::ToolCallBatch& batch) {
   if (!observer_) {
@@ -545,19 +525,15 @@ void TtcMesClient::HandleToolCallBatch(
       aborted = true;
       continue;
     }
-    tool_calls.emplace_back(std::move(tool_request).value(),
-                            MakeToolResponseCallback(tool_call));
+    tool_calls.emplace_back(
+        std::move(tool_request).value(),
+        base::BindOnce(&TtcMesClient::OnToolExecutionComplete,
+                       weak_factory_.GetWeakPtr(), tool_call.call_id(),
+                       tool_call.name()));
   }
   if (!tool_calls.empty()) {
     observer_->OnToolCallBatch(std::move(tool_calls));
   }
-}
-
-ToolResponseCallback TtcMesClient::MakeToolResponseCallback(
-    const optimization_guide::proto::ToolCall& tool_call) {
-  return base::BindOnce(&TtcMesClient::OnToolExecutionComplete,
-                        weak_factory_.GetWeakPtr(), tool_call.call_id(),
-                        tool_call.name());
 }
 
 void TtcMesClient::OnToolExecutionComplete(const std::string& call_id,
@@ -784,15 +760,6 @@ void TtcMesClient::ReportServerFrameToDebugSink(
     case Frame::kTurnComplete:
       debug_sink_->OnServerFrame(DebugSink::TurnComplete());
       break;
-    case Frame::kToolCall: {
-      const auto& tool_call = frame.tool_call();
-      debug_sink_->OnServerFrame(DebugSink::ToolCall{
-          .call_id = tool_call.call_id(),
-          .name = tool_call.name(),
-          .arguments_json = tool_call.arguments_json(),
-      });
-      break;
-    }
     case Frame::kToolCallBatch:
       for (const auto& tool_call : frame.tool_call_batch().tool_calls()) {
         debug_sink_->OnServerFrame(DebugSink::ToolCall{
@@ -979,14 +946,6 @@ void TtcMesClient::LogServerFrame(
       event_name = "ServerContent";
       details.Add("input_transcription", content.input_transcription())
           .Add("output_transcription", content.output_transcription());
-      break;
-    }
-    case optimization_guide::proto::TtcServerFrame::kToolCall: {
-      event_name = "ToolCall";
-      const auto& call = frame.tool_call();
-      details.Add("name", call.name())
-          .Add("call_id", call.call_id())
-          .Add("arguments_json", call.arguments_json());
       break;
     }
     case optimization_guide::proto::TtcServerFrame::kToolCallBatch: {

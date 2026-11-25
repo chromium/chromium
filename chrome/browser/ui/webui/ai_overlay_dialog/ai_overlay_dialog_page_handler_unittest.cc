@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
 
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -43,6 +45,15 @@
 namespace ttc {
 
 namespace {
+
+// Passes `tool_request` to `handler` as a batch of one call.
+void RunToolCall(AiOverlayDialogPageHandler* handler,
+                 ToolRequest tool_request,
+                 ToolResponseCallback callback) {
+  std::vector<PendingToolCall> batch;
+  batch.emplace_back(std::move(tool_request), std::move(callback));
+  handler->OnToolCallBatch(std::move(batch));
+}
 
 class MockPage : public ai_overlay_dialog::mojom::Page {
  public:
@@ -350,10 +361,10 @@ TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_HandlesToolCall) {
   remember_request.arguments.Set("key", "test_key");
   remember_request.arguments.Set("value", "test_val");
   std::optional<ToolResponse> remember_response;
-  handler()->OnToolCall(remember_request,
-                        base::BindLambdaForTesting([&](ToolResponse resp) {
-                          remember_response = std::move(resp);
-                        }));
+  RunToolCall(handler(), std::move(remember_request),
+              base::BindLambdaForTesting([&](ToolResponse resp) {
+                remember_response = std::move(resp);
+              }));
   ASSERT_TRUE(remember_response.has_value());
   EXPECT_TRUE(remember_response->Ok());
   const std::vector<std::pair<std::string, std::string>> expected_notes = {
@@ -365,10 +376,10 @@ TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_HandlesToolCall) {
   forget_request.name = "forget_this";
   forget_request.arguments.Set("key", "test_key");
   std::optional<ToolResponse> forget_response;
-  handler()->OnToolCall(forget_request,
-                        base::BindLambdaForTesting([&](ToolResponse resp) {
-                          forget_response = std::move(resp);
-                        }));
+  RunToolCall(handler(), std::move(forget_request),
+              base::BindLambdaForTesting([&](ToolResponse resp) {
+                forget_response = std::move(resp);
+              }));
   ASSERT_TRUE(forget_response.has_value());
   EXPECT_TRUE(forget_response->Ok());
   EXPECT_TRUE(controller()->GetRememberedNotes().empty());
@@ -377,10 +388,10 @@ TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_HandlesToolCall) {
   ToolRequest close_request;
   close_request.name = "close_voice_interface";
   std::optional<ToolResponse> close_response;
-  handler()->OnToolCall(close_request,
-                        base::BindLambdaForTesting([&](ToolResponse resp) {
-                          close_response = std::move(resp);
-                        }));
+  RunToolCall(handler(), std::move(close_request),
+              base::BindLambdaForTesting([&](ToolResponse resp) {
+                close_response = std::move(resp);
+              }));
   ASSERT_TRUE(close_response.has_value());
   EXPECT_TRUE(close_response->Ok());
 

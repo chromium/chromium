@@ -407,26 +407,18 @@ void TtcConversation::OnTranscriptions(
   // Transcriptions will be forwarded to observers in a subsequent CL.
 }
 
-void TtcConversation::OnToolCall(const ttc::ToolRequest& tool_request,
-                                 ttc::ToolResponseCallback response_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LogToolCallReceived(tool_request.name);
-  if (delegate_) {
-    delegate_->OnToolCall(tool_request, std::move(response_callback));
-    return;
-  }
-  if (response_callback) {
-    std::move(response_callback)
-        .Run(ttc::ToolResponse::Error(
-            actor::mojom::ActionResultCode::kExecutorDestroyed));
-  }
-}
-
 void TtcConversation::OnToolCallBatch(
     std::vector<ttc::PendingToolCall> tool_calls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (ttc::PendingToolCall& tool_call : tool_calls) {
-    OnToolCall(tool_call.request, std::move(tool_call.callback));
+    LogToolCallReceived(tool_call.request.name);
+    if (delegate_) {
+      delegate_->OnToolCall(tool_call.request, std::move(tool_call.callback));
+      continue;
+    }
+    std::move(tool_call.callback)
+        .Run(ttc::ToolResponse::Error(
+            actor::mojom::ActionResultCode::kExecutorDestroyed));
   }
 }
 

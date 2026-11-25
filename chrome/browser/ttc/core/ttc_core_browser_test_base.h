@@ -9,6 +9,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/ttc/app/public/tool_types.h"
 
 class GURL;
 class Profile;
@@ -63,6 +64,11 @@ class TtcCoreBrowserTestBase : public PlatformBrowserTest {
   // The conversation belonging to the service's current session, or null if
   // there's no session or it has no conversation.
   MockConversation* conversation();
+
+  // Passes `tool_request` to `session_controller` as a batch of one call.
+  static void ProcessToolCall(SessionController* session_controller,
+                              ToolRequest tool_request,
+                              ToolResponseCallback callback);
 
  private:
   static std::unique_ptr<Conversation> MakeMockConversation(

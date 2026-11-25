@@ -290,12 +290,6 @@ void ConversationImpl::SendPlaybackStatusReport(
                                  generation_id);
 }
 
-void ConversationImpl::OnToolCall(const ToolRequest& tool_request,
-                                  ToolResponseCallback response_callback) {
-  session_controller_->ProcessToolCall(tool_request,
-                                       std::move(response_callback));
-}
-
 void ConversationImpl::OnToolCallBatch(
     std::vector<PendingToolCall> tool_calls) {
   session_controller_->ProcessToolCallBatch(std::move(tool_calls));

@@ -100,15 +100,10 @@ class SessionController {
   // Sets the server-assigned session ID for this session.
   virtual void SetSessionId(const std::string& session_id) = 0;
 
-  // Runs a tool (using parameters provided in `tool_request`) and calls
-  // `tool_response_callback` with the result (or an error).
-  virtual void ProcessToolCall(const ToolRequest& tool_request,
-                               ToolResponseCallback tool_response_callback) = 0;
-
   // Runs the tools in `tool_calls` in order, calling each call's callback with
   // its result (or an error). Once a call fails, the later ones aren't run and
-  // are answered with errors. The whole batch is rejected with errors if any
-  // earlier tool call hasn't finished yet. `tool_calls` must not be empty.
+  // are answered with errors. The whole batch is rejected with errors if an
+  // earlier batch hasn't finished yet. `tool_calls` must not be empty.
   virtual void ProcessToolCallBatch(
       std::vector<PendingToolCall> tool_calls) = 0;
 

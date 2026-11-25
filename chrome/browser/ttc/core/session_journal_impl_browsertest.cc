@@ -78,8 +78,8 @@ class TtcSessionJournalImplBrowserTest : public TtcCoreBrowserTestBase {
     request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam, url.spec());
     request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
     base::test::TestFuture<ToolResponse> future;
-    ttc_service().session_controller()->ProcessToolCall(request,
-                                                        future.GetCallback());
+    ProcessToolCall(ttc_service().session_controller(), std::move(request),
+                    future.GetCallback());
     return future.Take();
   }
 

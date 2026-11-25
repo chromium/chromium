@@ -259,18 +259,6 @@ Profile* SessionControllerImpl::GetProfile() {
   return service_->profile();
 }
 
-void SessionControllerImpl::ProcessToolCall(
-    const ToolRequest& tool_request,
-    ToolResponseCallback tool_response_callback) {
-  tool_controller_.ProcessToolCall(
-      tool_request,
-      // Unretained is safe: `tool_controller_` is owned by `this` and only runs
-      // the callback while it's alive.
-      base::BindOnce(&SessionControllerImpl::NotifyToolExecutionCompleted,
-                     base::Unretained(this), tool_request.Clone())
-          .Then(std::move(tool_response_callback)));
-}
-
 void SessionControllerImpl::ProcessToolCallBatch(
     std::vector<PendingToolCall> tool_calls) {
   for (PendingToolCall& tool_call : tool_calls) {

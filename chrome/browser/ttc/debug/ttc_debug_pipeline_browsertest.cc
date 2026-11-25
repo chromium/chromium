@@ -68,7 +68,7 @@ class TtcDebugPipelineBrowserTest : public AppBrowserTestBase {
                        const std::string& name,
                        const std::string& arguments_json) {
     optimization_guide::proto::TtcServerFrame frame;
-    auto* tool_call = frame.mutable_tool_call();
+    auto* tool_call = frame.mutable_tool_call_batch()->add_tool_calls();
     tool_call->set_call_id(call_id);
     tool_call->set_name(name);
     tool_call->set_arguments_json(arguments_json);

@@ -79,8 +79,6 @@ class SessionControllerImpl : public SessionController,
   DebugSink* GetDebugSink() override;
   void SetSessionLifecycle(SessionLifecycle lifecycle) override;
   void SetSessionId(const std::string& session_id) override;
-  void ProcessToolCall(const ToolRequest& tool_request,
-                       ToolResponseCallback tool_response_callback) override;
   void ProcessToolCallBatch(std::vector<PendingToolCall> tool_calls) override;
   std::vector<ToolDefinition> GetToolDefinitions() override;
   void UserAudioLevelUpdate(float audio_level) override;

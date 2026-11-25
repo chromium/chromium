@@ -177,19 +177,8 @@ bool ToolController::IsIdle() const {
   return !in_flight_tool_call_ && pending_tool_calls_.empty();
 }
 
-// The actor only runs one action at a time per task, so tool calls are run one
-// at a time in the order they're received: if a tool call is already
-// running, `tool_request` is queued until all earlier calls have finished.
-void ToolController::ProcessToolCall(const ToolRequest& tool_request,
-                                     ToolResponseCallback callback) {
-  if (IsIdle()) {
-    pending_tool_calls_.emplace_back(tool_request.Clone(), std::move(callback));
-    RunNextToolCall();
-    return;
-  }
-  EnqueueToolCall(PendingToolCall(tool_request.Clone(), std::move(callback)));
-}
-
+// The actor only runs one action at a time per task, so the calls in a batch
+// are queued and run one at a time, in order.
 void ToolController::ProcessToolCallBatch(
     std::vector<PendingToolCall> tool_calls) {
   CHECK(!tool_calls.empty());
@@ -206,22 +195,18 @@ void ToolController::ProcessToolCallBatch(
   }
 
   for (PendingToolCall& tool_call : tool_calls) {
-    EnqueueToolCall(std::move(tool_call));
+    session_controller_->GetJournal().Log(
+        "TtcToolCallQueued",
+        actor::JournalDetailsBuilder()
+            .Add("name", tool_call.request.name)
+            .Add("arguments",
+                 base::WriteJson(tool_call.request.arguments).value_or(""))
+            .Build());
+    pending_tool_calls_.push_back(std::move(tool_call));
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ToolController::RunNextToolCall,
                                 weak_factory_.GetWeakPtr()));
-}
-
-void ToolController::EnqueueToolCall(PendingToolCall tool_call) {
-  session_controller_->GetJournal().Log(
-      "TtcToolCallQueued",
-      actor::JournalDetailsBuilder()
-          .Add("name", tool_call.request.name)
-          .Add("arguments",
-               base::WriteJson(tool_call.request.arguments).value_or(""))
-          .Build());
-  pending_tool_calls_.push_back(std::move(tool_call));
 }
 
 void ToolController::RunNextToolCall() {
@@ -427,7 +412,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   CHECK(actor_service);
 
   // TODO(b/573150754): Add kClick, kType, and kSelectOption once MES supports
-  // rewriting dom_node_id for TOCTOU checks and ProcessToolCall() dispatches
+  // rewriting dom_node_id for TOCTOU checks and RunToolCall() dispatches
   // their registry names.
   static constexpr actor::ToolIdSet kSupportedToolIds = {
       actor::ToolId::kPerformSearch,    actor::ToolId::kGoBack,
@@ -471,7 +456,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
 
   // TODO(b/573150754): Remove legacy click_element, set_text, select_option,
   // and scroll_page definitions once MES supports rewriting dom_node_id for
-  // TOCTOU checks and ProcessToolCall() dispatches kClick, kType,
+  // TOCTOU checks and RunToolCall() dispatches kClick, kType,
   // kSelectOption, and kScrollPage.
   ToolDefinition click_element;
   click_element.name = "click_element";

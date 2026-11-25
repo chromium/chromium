@@ -88,8 +88,6 @@ class ConversationImpl : public Conversation,
   void OnModelTurnStateUpdate(ModelTurnStateUpdate update,
                               int64_t generation_id) override;
   void OnUserTurnStateUpdate(UserTurnStateUpdate update) override;
-  void OnToolCall(const ToolRequest& tool_request,
-                  ToolResponseCallback response_callback) override;
   void OnToolCallBatch(std::vector<PendingToolCall> tool_calls) override;
   void OnJournalEvent(const ServerJournalEvent& journal_event) override;
 

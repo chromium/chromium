@@ -65,16 +65,11 @@ class FakeObserver : public TtcBackend::Observer {
   void OnUserTurnStateUpdate(UserTurnStateUpdate update) override {
     user_turn_state_updates_.push_back(update);
   }
-  void OnToolCall(const ToolRequest& tool_request,
-                  ToolResponseCallback response_callback) override {
-    last_tool_call_id_ = tool_request.call_id;
-    tool_response_callback_ = std::move(response_callback);
-  }
   void OnToolCallBatch(std::vector<PendingToolCall> tool_calls) override {
     std::vector<std::string>& batch = tool_call_batches_.emplace_back();
     for (PendingToolCall& tool_call : tool_calls) {
       batch.push_back(tool_call.request.call_id);
-      batched_tool_response_callbacks_.push_back(std::move(tool_call.callback));
+      tool_response_callbacks_.push_back(std::move(tool_call.callback));
     }
   }
   void OnJournalEvent(const ServerJournalEvent& journal_event) override {}
@@ -84,18 +79,19 @@ class FakeObserver : public TtcBackend::Observer {
   int64_t last_sequence_number() const { return last_sequence_number_; }
   int closed_count() const { return closed_count_; }
   std::optional<ErrorCode> last_error() const { return last_error_; }
-  const std::string& last_tool_call_id() const { return last_tool_call_id_; }
   // The call IDs of each batch passed to `OnToolCallBatch()`.
   const std::vector<std::vector<std::string>>& tool_call_batches() const {
     return tool_call_batches_;
   }
+  // Returns the callback of the most recent call passed to
+  // `OnToolCallBatch()`.
   ToolResponseCallback TakeToolResponseCallback() {
-    return std::move(tool_response_callback_);
+    return std::move(tool_response_callbacks_.back());
   }
   // Returns the callback of the `index`th call passed to `OnToolCallBatch()`,
   // counting across batches.
-  ToolResponseCallback TakeBatchedToolResponseCallback(size_t index) {
-    return std::move(batched_tool_response_callbacks_.at(index));
+  ToolResponseCallback TakeToolResponseCallback(size_t index) {
+    return std::move(tool_response_callbacks_.at(index));
   }
   const std::vector<std::pair<ModelTurnStateUpdate, int64_t>>&
   model_turn_state_updates() const {
@@ -106,10 +102,8 @@ class FakeObserver : public TtcBackend::Observer {
   }
 
  private:
-  std::string last_tool_call_id_;
   std::vector<std::vector<std::string>> tool_call_batches_;
-  std::vector<ToolResponseCallback> batched_tool_response_callbacks_;
-  ToolResponseCallback tool_response_callback_;
+  std::vector<ToolResponseCallback> tool_response_callbacks_;
   int audio_output_count_ = 0;
   int closed_count_ = 0;
   std::vector<int16_t> last_samples_;
@@ -641,7 +635,7 @@ TEST_F(TtcMesClientTest, DebugSinkReportsFrameKinds) {
   client().HandleServerFrame(transcript);
 
   optimization_guide::proto::TtcServerFrame tool;
-  tool.mutable_tool_call()->set_name("open_tab");
+  tool.mutable_tool_call_batch()->add_tool_calls()->set_name("open_tab");
   client().HandleServerFrame(tool);
 
   optimization_guide::proto::TtcServerFrame done;
@@ -662,21 +656,25 @@ TEST_F(TtcMesClientTest, DebugSinkReportsFrameWithoutContentAsUnknown) {
   EXPECT_THAT(debug_sink_.frames, testing::ElementsAre("unknown"));
 }
 
-optimization_guide::proto::TtcServerFrame MakeToolCallFrame(
-    const std::string& call_id,
-    const std::string& arguments_json) {
+optimization_guide::proto::TtcServerFrame MakeToolCallBatchFrame(
+    const std::vector<std::pair<std::string, std::string>>&
+        call_ids_and_arguments) {
   optimization_guide::proto::TtcServerFrame frame;
-  auto* tool_call = frame.mutable_tool_call();
-  tool_call->set_name("navigate");
-  tool_call->set_call_id(call_id);
-  tool_call->set_arguments_json(arguments_json);
+  auto* batch = frame.mutable_tool_call_batch();
+  for (const auto& [call_id, arguments_json] : call_ids_and_arguments) {
+    auto* tool_call = batch->add_tool_calls();
+    tool_call->set_name("navigate");
+    tool_call->set_call_id(call_id);
+    tool_call->set_arguments_json(arguments_json);
+  }
   return frame;
 }
 
 TEST_F(TtcMesClientTest, ToolCallIdIsPropagatedAndReported) {
   client().HandleServerFrame(
-      MakeToolCallFrame("call-1", R"({"url":"https://a.test"})"));
-  EXPECT_EQ(observer_.last_tool_call_id(), "call-1");
+      MakeToolCallBatchFrame({{"call-1", R"({"url":"https://a.test"})"}}));
+  EXPECT_THAT(observer_.tool_call_batches(),
+              testing::ElementsAre(testing::ElementsAre("call-1")));
   ASSERT_EQ(debug_sink_.tool_events.size(), 1u);
   EXPECT_EQ(debug_sink_.tool_events[0],
             R"(received:call-1:navigate:{"url":"https://a.test"})");
@@ -689,7 +687,7 @@ TEST_F(TtcMesClientTest, ToolCallIdIsPropagatedAndReported) {
 
 // An image from the tool is sent alongside the JSON result.
 TEST_F(TtcMesClientTest, ToolResponseImageIsSent) {
-  client().HandleServerFrame(MakeToolCallFrame("call-1", "{}"));
+  client().HandleServerFrame(MakeToolCallBatchFrame({{"call-1", "{}"}}));
   base::DictValue result;
   result.Set("width", 2);
   observer_.TakeToolResponseCallback().Run(ToolResponse::Success(
@@ -707,7 +705,7 @@ TEST_F(TtcMesClientTest, ToolResponseImageIsSent) {
 }
 
 TEST_F(TtcMesClientTest, ToolResponseWithoutImageSendsNoImage) {
-  client().HandleServerFrame(MakeToolCallFrame("call-1", "{}"));
+  client().HandleServerFrame(MakeToolCallBatchFrame({{"call-1", "{}"}}));
   observer_.TakeToolResponseCallback().Run(ToolResponse::Success());
   EXPECT_FALSE(last_sent_frame().tool_response().has_visual_content());
   EXPECT_FALSE(debug_sink_.last_response_json.empty());
@@ -716,7 +714,7 @@ TEST_F(TtcMesClientTest, ToolResponseWithoutImageSendsNoImage) {
 }
 
 TEST_F(TtcMesClientTest, ToolResponseWithoutStatusIsSentAsOk) {
-  client().HandleServerFrame(MakeToolCallFrame("call-1", "{}"));
+  client().HandleServerFrame(MakeToolCallBatchFrame({{"call-1", "{}"}}));
   observer_.TakeToolResponseCallback().Run(
       ToolResponse::Success(base::DictValue().Set("width", 2)));
 
@@ -729,7 +727,7 @@ TEST_F(TtcMesClientTest, ToolResponseWithoutStatusIsSentAsOk) {
 // A tool's own status, such as get_pointer's "no_active_pointer", reaches the
 // server.
 TEST_F(TtcMesClientTest, ToolResponseKeepsStatusOfTool) {
-  client().HandleServerFrame(MakeToolCallFrame("call-1", "{}"));
+  client().HandleServerFrame(MakeToolCallBatchFrame({{"call-1", "{}"}}));
   observer_.TakeToolResponseCallback().Run(ToolResponse::Success(
       base::DictValue().Set("status", "no_active_pointer")));
 
@@ -741,7 +739,7 @@ TEST_F(TtcMesClientTest, ToolResponseKeepsStatusOfTool) {
 
 // The error response is the only report of the rejection.
 TEST_F(TtcMesClientTest, ToolCallWithInvalidJsonIsAnsweredWithError) {
-  client().HandleServerFrame(MakeToolCallFrame("call-2", "{not json"));
+  client().HandleServerFrame(MakeToolCallBatchFrame({{"call-2", "{not json"}}));
   EXPECT_THAT(debug_sink_.tool_events,
               testing::ElementsAre("received:call-2:navigate:{not json",
                                    "response:call-2"));
@@ -750,7 +748,7 @@ TEST_F(TtcMesClientTest, ToolCallWithInvalidJsonIsAnsweredWithError) {
 }
 
 TEST_F(TtcMesClientTest, ToolResponseAfterCloseIsOnlyReportedAsDropped) {
-  client().HandleServerFrame(MakeToolCallFrame("call-3", "{}"));
+  client().HandleServerFrame(MakeToolCallBatchFrame({{"call-3", "{}"}}));
   ToolResponseCallback callback = observer_.TakeToolResponseCallback();
   client().Close();
   std::move(callback).Run(ToolResponse::Success());
@@ -759,24 +757,9 @@ TEST_F(TtcMesClientTest, ToolResponseAfterCloseIsOnlyReportedAsDropped) {
   EXPECT_EQ(debug_sink_.dropped, 1);
 }
 
-optimization_guide::proto::TtcServerFrame MakeToolCallBatchFrame(
-    const std::vector<std::pair<std::string, std::string>>&
-        call_ids_and_arguments) {
-  optimization_guide::proto::TtcServerFrame frame;
-  auto* batch = frame.mutable_tool_call_batch();
-  for (const auto& [call_id, arguments_json] : call_ids_and_arguments) {
-    auto* tool_call = batch->add_tool_calls();
-    tool_call->set_name("navigate");
-    tool_call->set_call_id(call_id);
-    tool_call->set_arguments_json(arguments_json);
-  }
-  return frame;
-}
-
 // The calls in a batch are passed on together; running them is up to the
 // observer.
 TEST_F(TtcMesClientTest, ToolCallBatchIsPassedOnTogether) {
-  client().HandleServerFrame(MakeToolCallFrame("call-x", "{}"));
   client().HandleServerFrame(
       MakeToolCallBatchFrame({{"call-a", "{}"}, {"call-b", "{}"}}));
   client().HandleServerFrame(MakeToolCallBatchFrame({{"call-c", "{}"}}));
@@ -784,17 +767,15 @@ TEST_F(TtcMesClientTest, ToolCallBatchIsPassedOnTogether) {
   EXPECT_THAT(observer_.tool_call_batches(),
               testing::ElementsAre(testing::ElementsAre("call-a", "call-b"),
                                    testing::ElementsAre("call-c")));
-  EXPECT_EQ(observer_.last_tool_call_id(), "call-x");
   EXPECT_THAT(debug_sink_.tool_events,
-              testing::ElementsAre("received:call-x:navigate:{}",
-                                   "received:call-a:navigate:{}",
+              testing::ElementsAre("received:call-a:navigate:{}",
                                    "received:call-b:navigate:{}",
                                    "received:call-c:navigate:{}"));
 
   // Each call in a batch is answered with its own call ID.
-  observer_.TakeBatchedToolResponseCallback(1).Run(ToolResponse::Success());
+  observer_.TakeToolResponseCallback(1).Run(ToolResponse::Success());
   EXPECT_EQ(debug_sink_.tool_events.back(), "response:call-b");
-  observer_.TakeBatchedToolResponseCallback(0).Run(ToolResponse::Success());
+  observer_.TakeToolResponseCallback(0).Run(ToolResponse::Success());
   EXPECT_EQ(debug_sink_.tool_events.back(), "response:call-a");
 }
 
@@ -872,8 +853,8 @@ TEST_F(TtcMesClientTest, NullDebugSinkIsSafe) {
   frames.push_back(MakeAudioFrame(std::string("\x01", 1), /*seq=*/2));
   frames.emplace_back().mutable_interrupted();
   frames.emplace_back().mutable_turn_complete();
-  frames.push_back(MakeToolCallFrame("call-1", "{}"));
-  frames.push_back(MakeToolCallFrame("call-2", "{not json"));
+  frames.push_back(MakeToolCallBatchFrame({{"call-1", "{}"}}));
+  frames.push_back(MakeToolCallBatchFrame({{"call-2", "{not json"}}));
   frames.push_back(
       MakeServerErrorFrame(optimization_guide::proto::ServerErrorNotification::
                                ERROR_CODE_INTERNAL_BACKEND_ERROR));

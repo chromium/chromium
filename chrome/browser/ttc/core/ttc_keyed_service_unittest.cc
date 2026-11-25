@@ -5,6 +5,8 @@
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -204,7 +206,9 @@ TEST_F(TtcKeyedServiceUnitTest, TabToolWithoutTrackedContentsFails) {
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
   tool_request.name = "reload_page";
-  controller->ProcessToolCall(tool_request, future.GetCallback());
+  std::vector<PendingToolCall> batch;
+  batch.emplace_back(std::move(tool_request), future.GetCallback());
+  controller->ProcessToolCallBatch(std::move(batch));
 
   ToolResponse response = future.Take();
   ASSERT_FALSE(response.Ok());

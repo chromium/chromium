@@ -145,6 +145,24 @@ namespace {
     EXPECT_EQ((response).error().code, (expected_code)); \
   } while (0)
 
+// Makes the safety list load triggered by the next URL check block until
+// `allow_safety_check` is signaled. `started` is resolved once the load has
+// begun, i.e. once the URL check is in flight.
+void BlockSafetyListLoad(base::WaitableEvent& allow_safety_check,
+                         base::test::TestFuture<void>& started) {
+  actor::SafetyListManager::GetInstance()->SetLoadSafetyListsClosure(
+      base::BindOnce(
+          [](base::WaitableEvent* allow_safety_check,
+             base::OnceClosure started) -> std::optional<std::string> {
+            std::move(started).Run();
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+            allow_safety_check->Wait();
+            return "{}";
+          },
+          base::Unretained(&allow_safety_check),
+          started.GetSequenceBoundCallback()));
+}
+
 class ToolControllerBrowserTest : public TtcCoreBrowserTestBase {
  public:
   ToolControllerBrowserTest() = default;
@@ -193,8 +211,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, NavigateIsUnsupported) {
   tool_request.name = std::string(actor::NavigateToolRequest::kModelFacingName);
   tool_request.arguments.Set(actor::NavigateToolRequest::kUrlParam, url.spec());
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kToolUnknown);
@@ -232,8 +250,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PerformSearchCurrentTab) {
   tool_request.arguments.Set(actor::PerformSearchToolRequest::kQueryParam,
                              "kittens");
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
@@ -254,8 +272,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PerformSearchMissingQuery) {
   tool_request.name =
       std::string(actor::PerformSearchToolRequest::kModelFacingName);
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -296,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SiteBasedSearchCurrentSite) {
   tool_request.arguments.Set(actor::SiteBasedSearchToolRequest::kQueryParam,
                              "kittens");
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
@@ -316,8 +334,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SiteBasedSearchMissingQuery) {
   tool_request.name =
       std::string(actor::SiteBasedSearchToolRequest::kModelFacingName);
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -344,8 +362,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, CloseCurrentTab) {
   ToolRequest tool_request;
   tool_request.name = std::string(actor::CloseTabToolRequest::kModelFacingName);
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
 
@@ -380,8 +398,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
   tool_request.name = std::string(actor::CloseTabToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
   destroyed_observer.Wait();
@@ -409,8 +427,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GoBackAndGoForward) {
     ToolRequest tool_request;
     tool_request.name =
         std::string(actor::HistoryBackToolRequest::kModelFacingName);
-    session_controller->ProcessToolCall(std::move(tool_request),
-                                        future.GetCallback());
+    ProcessToolCall(session_controller, std::move(tool_request),
+                    future.GetCallback());
     EXPECT_TRUE(future.Take().Ok());
     EXPECT_EQ(web_contents()->GetLastCommittedURL(), first_url);
   }
@@ -420,8 +438,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GoBackAndGoForward) {
     ToolRequest tool_request;
     tool_request.name =
         std::string(actor::HistoryForwardToolRequest::kModelFacingName);
-    session_controller->ProcessToolCall(std::move(tool_request),
-                                        future.GetCallback());
+    ProcessToolCall(session_controller, std::move(tool_request),
+                    future.GetCallback());
     EXPECT_TRUE(future.Take().Ok());
     EXPECT_EQ(web_contents()->GetLastCommittedURL(), second_url);
   }
@@ -438,8 +456,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GoBackWithoutHistory) {
   tool_request.name =
       std::string(actor::HistoryBackToolRequest::kModelFacingName);
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -463,8 +481,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPage) {
   tool_request.name =
       std::string(actor::ReloadPageToolRequest::kModelFacingName);
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_TRUE(future.Take().Ok());
 
@@ -477,8 +495,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPage) {
 // renderer.
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPageOnCrashedTab) {
   ttc_service().StartSession();
-  auto* session_controller =
-      static_cast<SessionControllerImpl*>(ttc_service().session_controller());
+  auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
   const GURL url =
@@ -491,8 +508,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPageOnCrashedTab) {
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::ReloadPageToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_TRUE(future.Take().Ok());
   EXPECT_FALSE(web_contents()->IsCrashed());
@@ -507,8 +524,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPageOnCrashedTab) {
   ToolRequest second_tool_request;
   second_tool_request.name =
       std::string(actor::ReloadPageToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(second_tool_request),
-                                      second_future.GetCallback());
+  ProcessToolCall(session_controller, std::move(second_tool_request),
+                  second_future.GetCallback());
   EXPECT_TRUE(second_future.Take().Ok());
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
   EXPECT_FALSE(actor_service->GetActingActorTaskForWebContents(web_contents()));
@@ -537,8 +554,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SwitchTab) {
   tool_request.arguments.Set(actor::SwitchTabToolRequest::kQueryParam,
                              "Awesomeness");
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
@@ -557,8 +574,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SwitchTabInvalidArguments) {
       std::string(actor::SwitchTabToolRequest::kModelFacingName);
   tool_request.arguments.Set(actor::SwitchTabToolRequest::kQueryParam, "");
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -593,8 +610,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenKnownPage) {
   tool_request.arguments.Set(actor::OpenKnownPageToolRequest::kQueryParam,
                              "Awesomeness");
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
@@ -618,8 +635,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
       std::string(actor::OpenKnownPageToolRequest::kModelFacingName);
   tool_request.arguments.Set(actor::OpenKnownPageToolRequest::kQueryParam, "");
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -645,8 +662,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlInCurrentTab) {
                              target_url.spec());
   tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
@@ -674,8 +691,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlInNewTab) {
                              target_url.spec());
   tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, true);
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
@@ -704,8 +721,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, CreateTabOpensNewTabPage) {
   tool_request.name =
       std::string(actor::CreateTabToolRequest::kModelFacingName);
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
@@ -758,8 +775,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlInvalidArguments) {
                                  test_case.new_tab->Clone());
     }
 
-    session_controller->ProcessToolCall(std::move(tool_request),
-                                        future.GetCallback());
+    ProcessToolCall(session_controller, std::move(tool_request),
+                    future.GetCallback());
 
     ToolResponse response = future.Take();
     EXPECT_TOOL_ERROR(response,
@@ -785,8 +802,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, FindAndHighlight) {
   tool_request.arguments.Set(actor::FindAndHighlightToolRequest::kQueryParam,
                              "no title");
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_TRUE(future.Take().Ok());
 
@@ -814,8 +831,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   tool_request.arguments.Set(actor::FindAndHighlightToolRequest::kQueryParam,
                              "nonexistent text");
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(
@@ -834,8 +851,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   tool_request.name =
       std::string(actor::FindAndHighlightToolRequest::kModelFacingName);
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -867,8 +884,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PauseAndPlayVideo) {
     ToolRequest tool_request;
     tool_request.name =
         std::string(actor::PauseMediaToolRequest::kModelFacingName);
-    session_controller->ProcessToolCall(std::move(tool_request),
-                                        future.GetCallback());
+    ProcessToolCall(session_controller, std::move(tool_request),
+                    future.GetCallback());
     EXPECT_TRUE(future.Take().Ok());
     EXPECT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('pause')"));
   }
@@ -878,8 +895,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PauseAndPlayVideo) {
     ToolRequest tool_request;
     tool_request.name =
         std::string(actor::PlayMediaToolRequest::kModelFacingName);
-    session_controller->ProcessToolCall(std::move(tool_request),
-                                        future.GetCallback());
+    ProcessToolCall(session_controller, std::move(tool_request),
+                    future.GetCallback());
     EXPECT_TRUE(future.Take().Ok());
     EXPECT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('play')"));
   }
@@ -898,8 +915,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PlayVideoNoMedia) {
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::PlayMediaToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   ASSERT_FALSE(response.Ok());
@@ -939,8 +956,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SeekToTimestamp) {
       std::string(actor::SeekMediaToolRequest::kModelFacingName);
   tool_request.arguments.Set(actor::SeekMediaToolRequest::kTimecodeParam,
                              "0:01");
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_TRUE(future.Take().Ok());
   EXPECT_EQ(true, content::EvalJs(web_contents(), "waitForSeek(1.0)"));
@@ -963,8 +980,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
         std::string(actor::SeekMediaToolRequest::kModelFacingName);
     tool_request.arguments.Set(actor::SeekMediaToolRequest::kTimecodeParam,
                                timecode);
-    session_controller->ProcessToolCall(std::move(tool_request),
-                                        future.GetCallback());
+    ProcessToolCall(session_controller, std::move(tool_request),
+                    future.GetCallback());
 
     ToolResponse response = future.Take();
     EXPECT_TOOL_ERROR(response,
@@ -982,8 +999,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::SeekMediaToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -1077,8 +1094,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
       std::string(actor::TranslatePageToolRequest::kModelFacingName);
   tool_request.arguments.Set(
       actor::TranslatePageToolRequest::kTargetLanguageParam, "");
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
   EXPECT_TRUE(future.Take().Ok());
 
   ChromeTranslateClient* translate_client =
@@ -1108,8 +1125,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
       std::string(actor::TranslatePageToolRequest::kModelFacingName);
   tool_request.arguments.Set(
       actor::TranslatePageToolRequest::kTargetLanguageParam, "fr");
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
   EXPECT_TRUE(future.Take().Ok());
 
   ChromeTranslateClient* translate_client =
@@ -1132,8 +1149,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::TranslatePageToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -1157,8 +1174,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
   tool_request.arguments.Set(
       actor::TranslatePageToolRequest::kTargetLanguageParam,
       "unsupported-lang-xyz");
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(
@@ -1212,8 +1229,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerFullscreenBrowserTest,
     ToolRequest tool_request;
     tool_request.name =
         std::string(actor::EnterFullscreenToolRequest::kModelFacingName);
-    session_controller->ProcessToolCall(std::move(tool_request),
-                                        future.GetCallback());
+    ProcessToolCall(session_controller, std::move(tool_request),
+                    future.GetCallback());
     EXPECT_TRUE(future.Take().Ok());
     EXPECT_TRUE(base::test::RunUntil([&]() { return is_fullscreen(); }));
   }
@@ -1223,8 +1240,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerFullscreenBrowserTest,
     ToolRequest tool_request;
     tool_request.name =
         std::string(actor::ExitFullscreenToolRequest::kModelFacingName);
-    session_controller->ProcessToolCall(std::move(tool_request),
-                                        future.GetCallback());
+    ProcessToolCall(session_controller, std::move(tool_request),
+                    future.GetCallback());
     EXPECT_TRUE(future.Take().Ok());
     EXPECT_TRUE(base::test::RunUntil([&]() { return !is_fullscreen(); }));
   }
@@ -1255,149 +1272,11 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ClickElement) {
   tool_request.arguments.Set("node_id", base::DictValue()
                                             .Set("document_id", document_id)
                                             .Set("dom_node_id", *button_id));
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_TRUE(future.Take().Ok());
   EXPECT_EQ(true, content::EvalJs(web_contents(), "button_clicked"));
-}
-
-// The actor runs one action at a time, so tool calls received while another is
-// running must be queued rather than rejected.
-IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
-                       ConsecutiveToolCallsAreQueued) {
-  ttc_service().StartSession();
-  auto* session_controller = ttc_service().session_controller();
-  ASSERT_TRUE(session_controller);
-
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      embedded_https_test_server().GetURL(
-          "example.com", "/actor/page_with_clickable_element.html")));
-  ASSERT_TRUE(content::ExecJs(web_contents(), R"js(
-    window.click_count = 0;
-    document.getElementById('clickable').addEventListener(
-        'click', () => ++window.click_count);
-  )js"));
-
-  std::optional<int> button_id = content::GetDOMNodeId(
-      *web_contents()->GetPrimaryMainFrame(), "button#clickable");
-  ASSERT_TRUE(button_id);
-  std::string document_id =
-      optimization_guide::DocumentIdentifierUserData::
-          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
-              ->serialized_token();
-
-  auto make_click_request = [&]() {
-    ToolRequest tool_request;
-    tool_request.name = "click_element";
-    tool_request.arguments.Set("node_id", base::DictValue()
-                                              .Set("document_id", document_id)
-                                              .Set("dom_node_id", *button_id));
-    return tool_request;
-  };
-
-  // Issue all calls before any has finished, and check that they all run and
-  // finish in order.
-  std::vector<int> completion_order;
-  auto record = [&](int index, ToolResponseCallback callback) {
-    return base::BindOnce(
-        [](std::vector<int>* order, int index, ToolResponseCallback callback,
-           ToolResponse response) {
-          order->push_back(index);
-          std::move(callback).Run(std::move(response));
-        },
-        &completion_order, index, std::move(callback));
-  };
-
-  base::test::TestFuture<ToolResponse> first_future;
-  base::test::TestFuture<ToolResponse> second_future;
-  base::test::TestFuture<ToolResponse> third_future;
-  session_controller->ProcessToolCall(make_click_request(),
-                                      record(1, first_future.GetCallback()));
-  session_controller->ProcessToolCall(make_click_request(),
-                                      record(2, second_future.GetCallback()));
-  session_controller->ProcessToolCall(make_click_request(),
-                                      record(3, third_future.GetCallback()));
-
-  EXPECT_TRUE(first_future.Take().Ok());
-  EXPECT_TRUE(second_future.Take().Ok());
-  EXPECT_TRUE(third_future.Take().Ok());
-  EXPECT_EQ(completion_order, (std::vector<int>{1, 2, 3}));
-  // Every queued click actually ran.
-  EXPECT_EQ(3, content::EvalJs(web_contents(), "window.click_count"));
-}
-
-// Once a tool call fails, the calls queued behind it are answered with an error
-// without being run, since they may depend on it. Calls received afterwards
-// run as usual.
-IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
-                       FailedToolCallDropsQueuedCalls) {
-  ttc_service().StartSession();
-  auto* session_controller = ttc_service().session_controller();
-  ASSERT_TRUE(session_controller);
-
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      embedded_https_test_server().GetURL(
-          "example.com", "/actor/page_with_clickable_element.html")));
-  ASSERT_TRUE(content::ExecJs(web_contents(), R"js(
-    window.click_count = 0;
-    document.getElementById('clickable').addEventListener(
-        'click', () => ++window.click_count);
-  )js"));
-
-  std::optional<int> button_id = content::GetDOMNodeId(
-      *web_contents()->GetPrimaryMainFrame(), "button#clickable");
-  ASSERT_TRUE(button_id);
-  std::string document_id =
-      optimization_guide::DocumentIdentifierUserData::
-          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
-              ->serialized_token();
-
-  auto make_click_request = [&]() {
-    ToolRequest tool_request;
-    tool_request.name = "click_element";
-    tool_request.arguments.Set("node_id", base::DictValue()
-                                              .Set("document_id", document_id)
-                                              .Set("dom_node_id", *button_id));
-    return tool_request;
-  };
-
-  ToolRequest unsupported_request;
-  unsupported_request.name = "unsupported_tool";
-
-  base::test::TestFuture<ToolResponse> first_future;
-  base::test::TestFuture<ToolResponse> failing_future;
-  base::test::TestFuture<ToolResponse> third_future;
-  base::test::TestFuture<ToolResponse> fourth_future;
-  session_controller->ProcessToolCall(make_click_request(),
-                                      first_future.GetCallback());
-  session_controller->ProcessToolCall(std::move(unsupported_request),
-                                      failing_future.GetCallback());
-  session_controller->ProcessToolCall(make_click_request(),
-                                      third_future.GetCallback());
-  session_controller->ProcessToolCall(make_click_request(),
-                                      fourth_future.GetCallback());
-
-  EXPECT_TRUE(first_future.Take().Ok());
-  ToolResponse failing_response = failing_future.Take();
-  EXPECT_TOOL_ERROR(failing_response,
-                    actor::mojom::ActionResultCode::kToolUnknown);
-  for (auto* future : {&third_future, &fourth_future}) {
-    ToolResponse response = future->Take();
-    EXPECT_TOOL_ERROR(response,
-                      actor::mojom::ActionResultCode::kActionsCancelled);
-  }
-  // Only the click before the failure ran.
-  EXPECT_EQ(1, content::EvalJs(web_contents(), "window.click_count"));
-
-  // A call received after the failure runs.
-  base::test::TestFuture<ToolResponse> later_future;
-  session_controller->ProcessToolCall(make_click_request(),
-                                      later_future.GetCallback());
-  EXPECT_TRUE(later_future.Take().Ok());
-  EXPECT_EQ(2, content::EvalJs(web_contents(), "window.click_count"));
 }
 
 class ToolControllerBatchBrowserTest : public ToolControllerBrowserTest {
@@ -1581,26 +1460,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBatchBrowserTest,
   EXPECT_EQ(3, GetClickCount());
 }
 
-// A batch received while a single tool call is running is rejected too.
-IN_PROC_BROWSER_TEST_F(ToolControllerBatchBrowserTest,
-                       BatchRejectedWhileToolCallIsRunning) {
-  base::test::TestFuture<ToolResponse> running_future;
-  session_controller()->ProcessToolCall(MakeClickRequest(),
-                                        running_future.GetCallback());
-
-  base::test::TestFuture<ToolResponse> rejected_future;
-  std::vector<PendingToolCall> batch;
-  batch.emplace_back(MakeClickRequest(), rejected_future.GetCallback());
-  session_controller()->ProcessToolCallBatch(std::move(batch));
-
-  ASSERT_TRUE(rejected_future.IsReady());
-  EXPECT_FALSE(rejected_future.Take().Ok());
-  EXPECT_TRUE(running_future.Take().Ok());
-  EXPECT_EQ(1, GetClickCount());
-}
-
-// Stopping the session's task fails the running call, which drops the calls
-// queued behind it. The next tool call runs in a new actor task.
+// Stopping the session's task fails the running call, which drops the rest of
+// its batch. The next tool call runs in a new actor task.
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                        ToolCallAfterStoppedTaskRunsInNewTask) {
   ttc_service().StartSession();
@@ -1628,27 +1489,29 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   const GURL second_url =
       embedded_https_test_server().GetURL("example.com", "/title2.html");
 
+  content::TestNavigationManager first_navigation(web_contents(), first_url);
   base::test::TestFuture<ToolResponse> first_future;
   base::test::TestFuture<ToolResponse> second_future;
-  session_controller->ProcessToolCall(make_open_url_request(first_url),
-                                      first_future.GetCallback());
-  session_controller->ProcessToolCall(make_open_url_request(second_url),
-                                      second_future.GetCallback());
+  std::vector<PendingToolCall> batch;
+  batch.emplace_back(make_open_url_request(first_url),
+                     first_future.GetCallback());
+  batch.emplace_back(make_open_url_request(second_url),
+                     second_future.GetCallback());
+  session_controller->ProcessToolCallBatch(std::move(batch));
 
-  // Stop the task while the first call is running and the second is queued.
+  // Stop the task while the first call is acting and the second is queued.
+  ASSERT_TRUE(first_navigation.WaitForRequestStart());
   actor_service->StopTask(first_task_id,
                           actor::ActorTask::StoppedReason::kStoppedByUser);
 
-  // The task is stopped while the first call is acting, which fails it and
-  // drops the second.
   ToolResponse first_response = first_future.Take();
   EXPECT_TOOL_ERROR(first_response,
                     actor::mojom::ActionResultCode::kTaskWentAway);
   EXPECT_FALSE(second_future.Take().Ok());
 
   base::test::TestFuture<ToolResponse> third_future;
-  session_controller->ProcessToolCall(make_open_url_request(second_url),
-                                      third_future.GetCallback());
+  ProcessToolCall(session_controller, make_open_url_request(second_url),
+                  third_future.GetCallback());
   EXPECT_TRUE(third_future.Take().Ok());
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), second_url);
 
@@ -1704,8 +1567,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerSkipObservationDelayBrowserTest,
   tool_request.arguments.Set("node_id", base::DictValue()
                                             .Set("document_id", document_id)
                                             .Set("dom_node_id", *button_id));
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_TRUE(future.Take().Ok());
 }
@@ -1736,8 +1599,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerSkipObservationDelayBrowserTest,
   tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam,
                              target_url.spec());
   tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_TRUE(future.Take().Ok());
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
@@ -1751,8 +1614,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ClickElementMissingNodeId) {
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
   tool_request.name = "click_element";
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   ASSERT_FALSE(response.Ok());
@@ -1802,8 +1665,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   tool_request.arguments.Set("node_id", base::DictValue()
                                             .Set("document_id", old_document_id)
                                             .Set("dom_node_id", *button_id));
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_FALSE(future.Take().Ok());
   EXPECT_EQ(false, content::EvalJs(web_contents(), "button_clicked"));
@@ -1859,8 +1722,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerNavigationGatingBrowserTest,
   content::TestNavigationObserver navigation_observer(new_origin_url);
   navigation_observer.WatchExistingWebContents();
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
   ASSERT_TRUE(future.Take().Ok());
 
   // Wait for the navigation to finish (the click tool doesn't for TTC).
@@ -1894,8 +1757,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerNavigationGatingBrowserTest,
   tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam,
                              redirect_url.spec());
   tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   // Without a navigation confirmation, this fails with
   // kTriggeredNavigationBlocked.
@@ -1930,8 +1793,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SetText) {
                                             .Set("document_id", document_id)
                                             .Set("dom_node_id", *input_id));
   tool_request.arguments.Set(actor::TypeToolRequest::kTextParam, "new value");
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_TRUE(future.Take().Ok());
   EXPECT_EQ("new value",
@@ -1948,8 +1811,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SetTextMissingNodeId) {
   ToolRequest tool_request;
   tool_request.name = "set_text";
   tool_request.arguments.Set(actor::TypeToolRequest::kTextParam, "new value");
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   ASSERT_FALSE(response.Ok());
@@ -1968,8 +1831,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SetTextMissingText) {
   tool_request.arguments.Set(
       "node_id",
       base::DictValue().Set("document_id", "token").Set("dom_node_id", 1));
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   ASSERT_FALSE(response.Ok());
@@ -2020,8 +1883,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                                             .Set("document_id", old_document_id)
                                             .Set("dom_node_id", *input_id));
   tool_request.arguments.Set(actor::TypeToolRequest::kTextParam, "new value");
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_FALSE(future.Take().Ok());
   EXPECT_EQ("old value",
@@ -2057,8 +1920,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOption) {
                                             .Set("dom_node_id", *select_id));
   // TTC matches <option> elements by text rather than value.
   tool_request.arguments.Set("text", "omega");
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_TRUE(future.Take().Ok());
   EXPECT_EQ("last", content::EvalJs(web_contents(),
@@ -2078,8 +1941,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOptionMissingNodeId) {
   ToolRequest tool_request;
   tool_request.name = "select_option";
   tool_request.arguments.Set("text", "omega");
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   ASSERT_FALSE(response.Ok());
@@ -2098,8 +1961,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOptionMissingText) {
   tool_request.arguments.Set(
       "node_id",
       base::DictValue().Set("document_id", "token").Set("dom_node_id", 1));
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   ASSERT_FALSE(response.Ok());
@@ -2150,8 +2013,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                                             .Set("document_id", old_document_id)
                                             .Set("dom_node_id", *select_id));
   tool_request.arguments.Set("text", "omega");
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   EXPECT_FALSE(future.Take().Ok());
   EXPECT_EQ("alpha", content::EvalJs(web_contents(),
@@ -2212,8 +2075,8 @@ class ToolControllerScrollPageBrowserTest : public ToolControllerBrowserTest {
     ToolRequest tool_request;
     tool_request.name = "scroll_page";
     tool_request.arguments = std::move(arguments);
-    ttc_service().session_controller()->ProcessToolCall(std::move(tool_request),
-                                                        future.GetCallback());
+    ProcessToolCall(ttc_service().session_controller(), std::move(tool_request),
+                    future.GetCallback());
     return future.Take();
   }
 
@@ -2380,8 +2243,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshot) {
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::GetScreenshotToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   ASSERT_TRUE(response.Ok());
@@ -2415,8 +2278,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotDisallowedUrl) {
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::GetScreenshotToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -2443,8 +2306,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::GetScreenshotToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -2469,8 +2332,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::GetScreenshotToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(
@@ -2500,8 +2363,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam,
                              blocked_url.spec());
   tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(
@@ -2537,20 +2400,17 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   ui_test_utils::WaitForBrowserSetLastActive(browser());
 
   base::WaitableEvent allow_safety_check;
-  actor::SafetyListManager::GetInstance()->SetLoadSafetyListsClosure(
-      base::BindLambdaForTesting(
-          [&allow_safety_check]() -> std::optional<std::string> {
-            base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
-            allow_safety_check.Wait();
-            return "{}";
-          }));
+  base::test::TestFuture<void> safety_check_started;
+  BlockSafetyListLoad(allow_safety_check, safety_check_started);
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::GetScreenshotToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
+  // The batch runs asynchronously, so wait until the URL check has started.
+  ASSERT_TRUE(safety_check_started.Wait());
 
   CloseBrowserSynchronously(browser());
 
@@ -2576,20 +2436,18 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   content::WaitForCopyableViewInWebContents(web_contents());
 
   base::WaitableEvent allow_safety_check;
-  actor::SafetyListManager::GetInstance()->SetLoadSafetyListsClosure(
-      base::BindLambdaForTesting(
-          [&allow_safety_check]() -> std::optional<std::string> {
-            base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
-            allow_safety_check.Wait();
-            return "{}";
-          }));
+  base::test::TestFuture<void> safety_check_started;
+  BlockSafetyListLoad(allow_safety_check, safety_check_started);
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::GetScreenshotToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
+  // The tool call runs asynchronously, so wait until the URL check has
+  // started.
+  ASSERT_TRUE(safety_check_started.Wait());
 
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
@@ -2612,20 +2470,18 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotCrashedTab) {
   content::WaitForCopyableViewInWebContents(web_contents());
 
   base::WaitableEvent allow_safety_check;
-  actor::SafetyListManager::GetInstance()->SetLoadSafetyListsClosure(
-      base::BindLambdaForTesting(
-          [&allow_safety_check]() -> std::optional<std::string> {
-            base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
-            allow_safety_check.Wait();
-            return "{}";
-          }));
+  base::test::TestFuture<void> safety_check_started;
+  BlockSafetyListLoad(allow_safety_check, safety_check_started);
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::GetScreenshotToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
+  // The tool call runs asynchronously, so wait until the URL check has
+  // started.
+  ASSERT_TRUE(safety_check_started.Wait());
 
   // Use `CrashTab()` (`RESULT_CODE_KILLED`) rather than `Shutdown(0)`: on
   // Windows a zero exit code counts as a normal exit, so `IsCrashed()` would
@@ -2673,8 +2529,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   base::RunLoop tool_invoked;
   actor_task.GetExecutionEngine().set_tool_invoke_callback_for_testing(
       tool_invoked.QuitClosure());
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   // Wait for screenshot capture to start before finishing the navigation.
   tool_invoked.Run();
@@ -2725,8 +2581,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   session_actor_task()
       .GetExecutionEngine()
       .set_tool_invoke_callback_for_testing(tool_invoked.QuitClosure());
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   // Wait for screenshot capture to start before closing the tab.
   tool_invoked.Run();
@@ -2748,8 +2604,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   ToolRequest tool_request;
   tool_request.name =
       std::string(actor::PromptGeminiPanelToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -2767,8 +2623,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenGeminiPanelEmptyPrompt) {
       std::string(actor::PromptGeminiPanelToolRequest::kModelFacingName);
   tool_request.arguments.Set(actor::PromptGeminiPanelToolRequest::kPromptParam,
                              "");
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response,
@@ -2798,8 +2654,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGeminiPanelBrowserTest,
     tool_request.arguments.Set(
         actor::PromptGeminiPanelToolRequest::kPromptParam,
         "Generate an image of a cat");
-    session_controller->ProcessToolCall(std::move(tool_request),
-                                        future.GetCallback());
+    ProcessToolCall(session_controller, std::move(tool_request),
+                    future.GetCallback());
     EXPECT_TRUE(future.Take().Ok());
   }
 
@@ -2811,8 +2667,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGeminiPanelBrowserTest,
     ToolRequest tool_request;
     tool_request.name =
         std::string(actor::CloseGeminiPanelToolRequest::kModelFacingName);
-    session_controller->ProcessToolCall(std::move(tool_request),
-                                        future.GetCallback());
+    ProcessToolCall(session_controller, std::move(tool_request),
+                    future.GetCallback());
     EXPECT_TRUE(future.Take().Ok());
   }
 
@@ -2831,8 +2687,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ToolRequest tool_request;
   tool_request.name = "unsupported_tool";
 
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kToolUnknown);
@@ -3064,8 +2920,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
   tool_request.name = "close_voice_interface";
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
 
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
@@ -3114,8 +2970,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetPointerDisabledByDefault) {
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
   tool_request.name = "get_pointer";
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kToolUnknown);
 }
@@ -3160,7 +3016,7 @@ class ToolControllerGetPointerBrowserTest : public ToolControllerBrowserTest {
                       base::test::TestFuture<ToolResponse>& future) {
     ToolRequest tool_request;
     tool_request.name = "get_pointer";
-    controller.ProcessToolCall(std::move(tool_request), future.GetCallback());
+    ProcessToolCall(&controller, std::move(tool_request), future.GetCallback());
   }
 
   GURL PageWithText() {
@@ -3668,8 +3524,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                                  .spec());
   tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
   base::test::TestFuture<ToolResponse> future;
-  ttc_service().session_controller()->ProcessToolCall(std::move(tool_request),
-                                                      future.GetCallback());
+  ProcessToolCall(ttc_service().session_controller(), std::move(tool_request),
+                  future.GetCallback());
   ASSERT_TRUE(future.Take().Ok());
   ttc_service().EndSession();
   EXPECT_EQ(last_task_states[acting_task_id],
@@ -3704,8 +3560,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   tool_request.name = std::string(actor::OpenUrlToolRequest::kModelFacingName);
   tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam, url.spec());
   tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
+  ProcessToolCall(session_controller, std::move(tool_request),
+                  future.GetCallback());
   ASSERT_TRUE(future.Take().Ok());
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), url);
 
@@ -3816,8 +3672,8 @@ class ToolControllerWindowToolsBrowserTest : public ToolControllerBrowserTest {
     base::test::TestFuture<ToolResponse> future;
     ToolRequest tool_request;
     tool_request.name = std::string(name);
-    ttc_service().session_controller()->ProcessToolCall(std::move(tool_request),
-                                                        future.GetCallback());
+    ProcessToolCall(ttc_service().session_controller(), std::move(tool_request),
+                    future.GetCallback());
     return future.Take();
   }
 };

@@ -74,15 +74,10 @@ class FakeSessionController : public SessionController {
   void SetSessionId(const std::string& session_id) override {
     session_id_ = session_id;
   }
-  void ProcessToolCall(const ToolRequest& tool_request,
-                       ToolResponseCallback tool_response) override {
-    last_request_.name = tool_request.name;
-    last_request_.arguments = tool_request.arguments.Clone();
-    std::move(tool_response).Run(ToolResponse::Success());
-  }
   void ProcessToolCallBatch(std::vector<PendingToolCall> tool_calls) override {
     for (PendingToolCall& tool_call : tool_calls) {
-      ProcessToolCall(tool_call.request, std::move(tool_call.callback));
+      last_request_ = tool_call.request.Clone();
+      std::move(tool_call.callback).Run(ToolResponse::Success());
     }
   }
   std::vector<ToolDefinition> GetToolDefinitions() override {
@@ -343,10 +338,12 @@ TEST_F(ConversationImplTest, ToolCallForwardedToSessionController) {
   tool_request.arguments.Set("url", "abc");
 
   std::optional<ToolResponse> response;
-  conversation.OnToolCall(std::move(tool_request),
-                          base::BindLambdaForTesting([&](ToolResponse result) {
-                            response = std::move(result);
-                          }));
+  std::vector<PendingToolCall> batch;
+  batch.emplace_back(std::move(tool_request),
+                     base::BindLambdaForTesting([&](ToolResponse result) {
+                       response = std::move(result);
+                     }));
+  conversation.OnToolCallBatch(std::move(batch));
 
   // The request should have reached the SessionController (unchanged).
   EXPECT_EQ(session_controller_.last_request().name, "navigate");

@@ -5,6 +5,7 @@
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -115,6 +116,16 @@ MockConversation* TtcCoreBrowserTestBase::conversation() {
     return nullptr;
   }
   return static_cast<MockConversation*>(&session_controller->conversation());
+}
+
+// static
+void TtcCoreBrowserTestBase::ProcessToolCall(
+    SessionController* session_controller,
+    ToolRequest tool_request,
+    ToolResponseCallback callback) {
+  std::vector<PendingToolCall> batch;
+  batch.emplace_back(std::move(tool_request), std::move(callback));
+  session_controller->ProcessToolCallBatch(std::move(batch));
 }
 
 // static

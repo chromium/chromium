@@ -207,14 +207,11 @@ TEST_F(TtcSessionControllerImplTest,
 
   ToolRequest req;
   req.name = "unknown_tool";
-  bool callback_called = false;
-  controller.ProcessToolCall(req, base::BindOnce(
-                                      [](bool* called, ToolResponse response) {
-                                        *called = true;
-                                        EXPECT_FALSE(response.Ok());
-                                      },
-                                      &callback_called));
-  EXPECT_TRUE(callback_called);
+  base::test::TestFuture<ToolResponse> future;
+  std::vector<PendingToolCall> batch;
+  batch.emplace_back(std::move(req), future.GetCallback());
+  controller.ProcessToolCallBatch(std::move(batch));
+  EXPECT_FALSE(future.Take().Ok());
 
   controller.OnError(ErrorCode::kInternalBackendError);
   EXPECT_EQ(controller.GetSessionLifecycle(), SessionLifecycle::kFinished);

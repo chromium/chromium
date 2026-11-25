@@ -386,7 +386,9 @@ TEST_F(TtcConversationTest, TestBackendToolCallForwardsToDelegate) {
   base::test::TestFuture<ttc::ToolResponse> future;
   ttc::ToolRequest request{ttc::kToolGoBack, base::DictValue()};
 
-  mock_backend_->observer()->OnToolCall(request, future.GetCallback());
+  std::vector<ttc::PendingToolCall> batch;
+  batch.emplace_back(std::move(request), future.GetCallback());
+  mock_backend_->observer()->OnToolCallBatch(std::move(batch));
 
   ASSERT_TRUE(delegate_.last_tool_request().has_value());
   EXPECT_EQ(delegate_.last_tool_request()->name, ttc::kToolGoBack);
@@ -403,7 +405,9 @@ TEST_F(TtcConversationTest,
   base::test::TestFuture<ttc::ToolResponse> future;
   ttc::ToolRequest request{ttc::kToolGoBack, base::DictValue()};
 
-  mock_backend_->observer()->OnToolCall(request, future.GetCallback());
+  std::vector<ttc::PendingToolCall> batch;
+  batch.emplace_back(std::move(request), future.GetCallback());
+  mock_backend_->observer()->OnToolCallBatch(std::move(batch));
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());

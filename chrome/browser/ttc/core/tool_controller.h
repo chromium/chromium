@@ -39,13 +39,11 @@ class ToolController {
   explicit ToolController(SessionControllerImpl& session_controller);
   ~ToolController();
 
-  void ProcessToolCall(const ToolRequest& tool_request,
-                       ToolResponseCallback callback);
-
-  // Queues the calls in `tool_calls` to run in order, like consecutive
-  // `ProcessToolCall()` calls. If any tool call is still running or queued, the
-  // whole batch is rejected instead: each call is answered with a
-  // `kExecutorBusy` error without being run. `tool_calls` must not be empty.
+  // Queues the calls in `tool_calls` to run one at a time, in order. Once one
+  // fails, the rest are answered with an error instead of being run. If an
+  // earlier batch is still running, the whole batch is rejected instead: each
+  // call is answered with a `kExecutorBusy` error without being run.
+  // `tool_calls` must not be empty.
   void ProcessToolCallBatch(std::vector<PendingToolCall> tool_calls);
 
   // Returns the definitions of the tools this controller can execute, for
@@ -57,9 +55,6 @@ class ToolController {
 
   // Whether no tool call is running or queued.
   bool IsIdle() const;
-
-  // Adds `tool_call` to the back of `pending_tool_calls_`, without running it.
-  void EnqueueToolCall(PendingToolCall tool_call);
 
   // Moves the tool call at the front of `pending_tool_calls_`, which must not
   // be empty, into `in_flight_tool_call_` and runs it. No call may be in

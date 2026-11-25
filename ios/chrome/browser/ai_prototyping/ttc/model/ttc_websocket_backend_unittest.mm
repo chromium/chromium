@@ -72,10 +72,6 @@ class MockTtcBackendObserver : public ttc::TtcBackend::Observer {
               (ttc::UserTurnStateUpdate),
               (override));
   MOCK_METHOD(void,
-              OnToolCall,
-              (const ttc::ToolRequest&, ttc::ToolResponseCallback),
-              (override));
-  MOCK_METHOD(void,
               OnToolCallBatch,
               (std::vector<ttc::PendingToolCall>),
               (override));
