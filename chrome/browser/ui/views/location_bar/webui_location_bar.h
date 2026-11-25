@@ -74,6 +74,16 @@ class WebUILocationBar : public LocationBar,
   void OnThemeChanged();
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
       toolbar_ui_api::mojom::OmniboxActionPtr action);
+  // Updates whether a descendant of `<location-bar>` has DOM focus in the
+  // WebUI and recomputes effective `focus_within_` using Views focus.
+  void SetDomFocusWithin(bool focused);
+
+  // Synchronously restores `focus_within_` when the toolbar WebView regains
+  // Views focus via focus restore or a direct focus change (such as
+  // `ChromeWebContentsViewFocusHelper::RestoreFocus()` on a tab switch) while
+  // `dom_focus_within_` is true. Skips mouse clicks, tab traversal, active
+  // menus, and full-popup mode so the renderer reports post-interaction focus.
+  void RestoreFocusWithinIfDomFocused();
   void SetFocusWithin(bool focused);
   void OnToolbarFocused();
   void OnBlur();
@@ -199,6 +209,7 @@ class WebUILocationBar : public LocationBar,
   void OnMiddleClickPaste(base::TimeTicks event_timestamp, std::u16string text);
 
   friend class WebUILocationBarTest;
+  friend class WebUILocationBarViewsFocusTest;
   friend class WebUIPermissionChipTest;
 
   // Determines whether the location icon should be overridden while a chip is
@@ -251,6 +262,7 @@ class WebUILocationBar : public LocationBar,
       bool was_focused);
 
   views::FocusManager* GetFocusManager();
+  void UpdateFocusWithin();
 
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;
@@ -290,9 +302,15 @@ class WebUILocationBar : public LocationBar,
 
   bool is_initialized_ = false;
 
-  // Keeps track of whether any of our descendant elements has focus.
-  // Updated by SetFocusWithin, which is ultimately called via mojo from
-  // the HTML side.
+  // Whether a descendant of the WebUI `<location-bar>` element currently has
+  // DOM focus, as last reported via Mojo. Combined with Views focus on the
+  // toolbar WebView in `UpdateFocusWithin()` and
+  // `RestoreFocusWithinIfDomFocused()`.
+  bool dom_focus_within_ = false;
+
+  // Keeps track of whether any of our descendant elements effectively has focus
+  // (`dom_focus_within_` AND Views focus on the toolbar WebView, plus
+  // synchronous focus requests in `PropagateFocusRequest()`).
   bool focus_within_ = false;
 
   bool restore_focus_on_window_reactivation_ = false;

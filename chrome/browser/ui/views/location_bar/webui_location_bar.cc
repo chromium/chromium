@@ -88,6 +88,7 @@
 #include "ui/views/button_drag_utils.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -335,6 +336,47 @@ WebUILocationBar::OnOmniboxAction(
   UpdateLocationBarFlagsState();
   UpdateSelectedKeywordState();
   return result;
+}
+
+void WebUILocationBar::SetDomFocusWithin(bool focused) {
+  dom_focus_within_ = focused;
+  UpdateFocusWithin();
+}
+
+void WebUILocationBar::RestoreFocusWithinIfDomFocused() {
+  // Full-popup mode derives `IsFocusWithin()` from the omnibox edit model and
+  // handles reactivation in `OnToolbarFocused()`. Also skip while a Views menu
+  // is active (matching `OnToolbarFocused()`).
+  if (using_full_popup_ || views::MenuController::GetActiveInstance() ||
+      !dom_focus_within_) {
+    return;
+  }
+  const views::View* web_view =
+      toolbar_delegate_ ? toolbar_delegate_->GetInternalWebView() : nullptr;
+  if (!web_view || !web_view->HasFocus()) {
+    return;
+  }
+  // Only restore synchronously on `kFocusRestore` or `kDirectFocusChange` (the
+  // latter is required for `ChromeWebContentsViewFocusHelper::RestoreFocus()`,
+  // and also covers `IDC_FOCUS_TOOLBAR` via `ToolbarView::FocusToolbar()` ->
+  // `SetPaneFocus()`, after which `AdjustForToolbarFocus()` sends
+  // `kFirstFocusable` to update DOM focus). Native clicks (`kFocusNativeView`)
+  // and tab traversal (`kFocusTraversal`) may target another toolbar control,
+  // so let the renderer report post-interaction DOM focus instead.
+  if (const views::FocusManager* focus_manager = web_view->GetFocusManager()) {
+    const auto reason = focus_manager->focus_change_reason();
+    if (reason != views::FocusManager::FocusChangeReason::kFocusRestore &&
+        reason != views::FocusManager::FocusChangeReason::kDirectFocusChange) {
+      return;
+    }
+  }
+  SetFocusWithin(/*focused=*/true);
+}
+
+void WebUILocationBar::UpdateFocusWithin() {
+  const views::View* web_view =
+      toolbar_delegate_ ? toolbar_delegate_->GetInternalWebView() : nullptr;
+  SetFocusWithin(dom_focus_within_ && web_view && web_view->HasFocus());
 }
 
 void WebUILocationBar::SetFocusWithin(bool focused) {

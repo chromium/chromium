@@ -175,4 +175,71 @@ suite('LocationBarFocus', function() {
     lastFocused = uiHandler.getArgs('onLocationBarFocusWithinChanged').at(-1);
     assertEquals(false, lastFocused);
   });
+
+  async function focusAndResetHandler(): Promise<void> {
+    locationBar.locationBarState = initialState;
+    blurLocationBar();
+    await microtasksFinished();
+    focusLocationBar();
+    await microtasksFinished();
+    uiHandler.reset();
+  }
+
+  test('Document blur keeps DOM focus until DOM blur', async () => {
+    await focusAndResetHandler();
+
+    // Real page blur (`SetPageFocus(/*focused=*/false)`) dispatches `focusout`
+    // while keeping `shadowRoot.activeElement` set and making
+    // `document.hasFocus()` false (unlike focusing an `<iframe>`, which clears
+    // `activeElement`). Override `document.hasFocus` to catch regressions back
+    // to gating on it.
+    const originalHasFocus = document.hasFocus;
+    document.hasFocus = () => false;
+    try {
+      locationBar.$.omnibox.dispatchEvent(
+          new FocusEvent('focusout', {bubbles: true, composed: true}));
+      await microtasksFinished();
+    } finally {
+      document.hasFocus = originalHasFocus;
+    }
+
+    assertEquals(0, uiHandler.getCallCount('onLocationBarFocusWithinChanged'));
+
+    // Losing DOM focus afterward still reports false because DOM focus state
+    // stayed true across document blur.
+    blurLocationBar();
+    await microtasksFinished();
+    assertEquals(1, uiHandler.getCallCount('onLocationBarFocusWithinChanged'));
+    assertEquals(
+        false, uiHandler.getArgs('onLocationBarFocusWithinChanged').at(-1));
+  });
+
+  test('Window focus reports DOM focus lost while unfocused', async () => {
+    await focusAndResetHandler();
+
+    // Simulate Blink suppressing focusout when DOM focus moves out while the
+    // document is unfocused.
+    locationBar.addEventListener('focusout', e => {
+      e.stopImmediatePropagation();
+    }, {capture: true, once: true});
+    blurLocationBar();
+    await microtasksFinished();
+    assertEquals(0, uiHandler.getCallCount('onLocationBarFocusWithinChanged'));
+
+    window.dispatchEvent(new FocusEvent('focus'));
+    await microtasksFinished();
+    assertEquals(1, uiHandler.getCallCount('onLocationBarFocusWithinChanged'));
+    assertEquals(
+        false, uiHandler.getArgs('onLocationBarFocusWithinChanged').at(-1));
+  });
+
+  test('Window focus re-reports retained DOM focus', async () => {
+    await focusAndResetHandler();
+
+    window.dispatchEvent(new FocusEvent('focus'));
+    await microtasksFinished();
+    assertEquals(1, uiHandler.getCallCount('onLocationBarFocusWithinChanged'));
+    assertEquals(
+        true, uiHandler.getArgs('onLocationBarFocusWithinChanged').at(-1));
+  });
 });

@@ -111,6 +111,7 @@ export class LocationBarElement extends CrLitElement implements
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private focusState_: boolean = false;
   private contentRendered_: boolean = false;
+  private onWindowFocus_ = () => this.updateFocusWithin_(/*forceNotify=*/ true);
 
   override connectedCallback() {
     super.connectedCallback();
@@ -118,8 +119,15 @@ export class LocationBarElement extends CrLitElement implements
     // specifically want the events from child elements.
     this.addEventListener('focusin', this.onFocusin_.bind(this));
     this.addEventListener('focusout', this.onFocusout_.bind(this));
-    // We also need blur for document losing focus.
-    this.addEventListener('blur', this.onBlur_.bind(this));
+    // Blink suppresses focusin/focusout while the document is unfocused and
+    // dispatches window focus on regain. Re-check DOM focus then so a focus
+    // move while unfocused is still reported.
+    window.addEventListener('focus', this.onWindowFocus_);
+  }
+
+  override disconnectedCallback() {
+    window.removeEventListener('focus', this.onWindowFocus_);
+    super.disconnectedCallback();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>): void {
@@ -177,10 +185,6 @@ export class LocationBarElement extends CrLitElement implements
   }
 
   private onFocusout_() {
-    this.updateFocusWithin_();
-  }
-
-  private onBlur_() {
     this.updateFocusWithin_();
   }
 
@@ -253,10 +257,16 @@ export class LocationBarElement extends CrLitElement implements
     this.style.width = `${this.getMaxAvailableWidth()}px`;
   }
 
-  private updateFocusWithin_() {
-    const hasFocus =
-        document.hasFocus() && (this.shadowRoot.activeElement !== null);
-    if (hasFocus !== this.focusState_) {
+  private updateFocusWithin_(forceNotify: boolean = false) {
+    // Track only DOM focus within this shadow root; the browser side combines
+    // this with Views focus on the toolbar WebView, avoiding stale async Mojo
+    // blurs when the document loses focus. Force-notify `true` on `window`
+    // focus because C++ does not immediately restore `focus_within_` on all
+    // toolbar WebView focus gains (such as mouse clicks or keyboard traversal
+    // that may target another control), so we must re-send `true` if DOM focus
+    // was already inside `<location-bar>`.
+    const hasFocus = this.shadowRoot.activeElement !== null;
+    if (hasFocus !== this.focusState_ || (forceNotify && hasFocus)) {
       this.focusState_ = hasFocus;
       this.browserProxy_.toolbarUIHandler.onLocationBarFocusWithinChanged(
           hasFocus);

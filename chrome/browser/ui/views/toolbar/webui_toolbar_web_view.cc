@@ -407,6 +407,28 @@ class WebUIToolbarInternalWebView : public views::WebView {
 BEGIN_METADATA(WebUIToolbarInternalWebView)
 END_METADATA
 
+namespace {
+
+bool ShouldRestoreLocationBarFocusForTarget(
+    toolbar_ui_api::mojom::FocusRequestTarget target) {
+  switch (target) {
+    case toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar:
+    case toolbar_ui_api::mojom::FocusRequestTarget::kLocationBarUserInitiated:
+    case toolbar_ui_api::mojom::FocusRequestTarget::kSearch:
+      return true;
+    case toolbar_ui_api::mojom::FocusRequestTarget::kUnspecified:
+    // `kFirstFocusable` can land inside `<location-bar>` (e.g. when no
+    // preceding toolbar buttons are focusable), so wait for the renderer to
+    // report DOM focus after `focusFirst_()` runs.
+    case toolbar_ui_api::mojom::FocusRequestTarget::kFirstFocusable:
+    case toolbar_ui_api::mojom::FocusRequestTarget::kAppMenu:
+      return false;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 WebUIToolbarWebView::WebUIToolbarWebView(
     BrowserWindowInterface* browser,
     chrome::BrowserCommandController* controller,
@@ -1240,6 +1262,9 @@ void WebUIToolbarWebView::DidStartNavigation(
   if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
+  if (!navigation_handle->IsSameDocument() && location_bar_) {
+    location_bar_->SetDomFocusWithin(false);
+  }
   if (page_init_hold_for_testing_ == PageInitHoldState::kPageInitHeld) {
     page_init_hold_for_testing_ = PageInitHoldState::kAwaitingPageInit;
   }
@@ -1331,9 +1356,12 @@ void WebUIToolbarWebView::DidFirstVisuallyNonEmptyPaint() {
 
 void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
-  // The reported draggable area is stale once the renderer is gone; it is
-  // reported again once the WebUI is reloaded.
+  // The reported draggable area and DOM focus state are stale once the renderer
+  // is gone; they are reported again once the WebUI is reloaded.
   draggable_region_.reset();
+  if (location_bar_) {
+    location_bar_->SetDomFocusWithin(false);
+  }
   if (page_init_hold_for_testing_ == PageInitHoldState::kPageInitHeld) {
     page_init_hold_for_testing_ = PageInitHoldState::kAwaitingPageInit;
   }
@@ -1854,11 +1882,8 @@ void WebUIToolbarWebView::OnLhsChipsStateChanged(
 }
 
 void WebUIToolbarWebView::OnLocationBarFocusWithinChanged(bool focused) {
-  if (focused && (!web_view_ || !web_view_->HasFocus())) {
-    return;
-  }
   if (location_bar_) {
-    location_bar_->SetFocusWithin(focused);
+    location_bar_->SetDomFocusWithin(focused);
   }
 }
 
@@ -2049,7 +2074,9 @@ void WebUIToolbarWebView::OnPaneHasFocusChanged(bool) {
 }
 
 void WebUIToolbarWebView::OnInternalWebViewFocused() {
-  const bool had_pending_focus_request = pending_focus_request_.has_value();
+  const std::optional<toolbar_ui_api::mojom::FocusRequestTarget>
+      pending_target = pending_focus_request_;
+  const bool had_pending_focus_request = pending_target.has_value();
   MaybeFlushPendingFocusRequest();
   // Only notify `location_bar_` when `web_view_` gains focus outside of an
   // explicit `OnFocusRequested()` flow or pre-menu widget activation (e.g. when
@@ -2057,6 +2084,14 @@ void WebUIToolbarWebView::OnInternalWebViewFocused() {
   if (!had_pending_focus_request && !in_focus_request_ &&
       !activating_for_menu_ && location_bar_) {
     location_bar_->OnToolbarFocused();
+  }
+  // Restore effective focus-within now that `web_view_` holds Views focus,
+  // unless activating for a menu or explicitly directing focus to a
+  // non-location-bar toolbar target.
+  if (location_bar_ && !activating_for_menu_ &&
+      (!pending_target ||
+       ShouldRestoreLocationBarFocusForTarget(*pending_target))) {
+    location_bar_->RestoreFocusWithinIfDomFocused();
   }
 }
 

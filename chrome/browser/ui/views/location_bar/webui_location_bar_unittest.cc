@@ -7,8 +7,10 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/process/kill.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -17,15 +19,21 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -516,12 +524,12 @@ TEST_F(WebUILocationBarTest, SetFocusWithinDeduplication) {
 }
 
 TEST_F(WebUILocationBarTest,
-       OnLocationBarFocusWithinChangedIgnoredWhenWebViewNotFocused) {
+       OnLocationBarFocusWithinChangedDeferredUntilWebViewFocused) {
   // `toolbar_view_`'s web_view_ does not have focus.
   EXPECT_FALSE(location_bar_->IsFocusWithin());
 
-  // An async IPC indicating focus within should be ignored if web_view_ is not
-  // focused.
+  // Reporting DOM focus while web_view_ is not focused remembers it but keeps
+  // effective focus false until Views focus lands.
   toolbar_view_->OnLocationBarFocusWithinChanged(true);
   EXPECT_FALSE(location_bar_->IsFocusWithin());
 
@@ -529,5 +537,189 @@ TEST_F(WebUILocationBarTest,
   location_bar_->SetFocusWithin(true);
   EXPECT_TRUE(location_bar_->IsFocusWithin());
   toolbar_view_->OnLocationBarFocusWithinChanged(false);
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+}
+
+class WebUILocationBarViewsFocusTest : public ChromeViewsTestBase {
+ protected:
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    ON_CALL(mock_browser_, GetProfile())
+        .WillByDefault(testing::Return(profile_.get()));
+    ON_CALL(mock_browser_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(user_data_host_));
+
+    location_bar_model_ = std::make_unique<TestLocationBarModel>();
+    delegate_ = std::make_unique<TestLocationBarViewDelegate>(
+        location_bar_model_.get());
+
+    auto location_bar = std::make_unique<WebUILocationBar>(/*browser=*/nullptr,
+                                                           delegate_.get());
+    location_bar_ = location_bar.get();
+
+    auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
+        &mock_browser_, /*controller=*/nullptr, std::move(location_bar),
+        /*pane=*/nullptr);
+    toolbar_view_ = toolbar_view.get();
+    location_bar_->toolbar_delegate_ = toolbar_view_;
+
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    widget_->SetContentsView(std::move(toolbar_view));
+    widget_->Show();
+    widget_->Activate();
+  }
+
+  void TearDown() override {
+    location_bar_ = nullptr;
+    toolbar_view_ = nullptr;
+    widget_.reset();
+    delegate_.reset();
+    location_bar_model_.reset();
+    profile_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
+
+  void FocusToolbarWebView() {
+    toolbar_view_->GetWebViewForTesting()->RequestFocus();
+  }
+
+  void ClearViewsFocus() { widget_->GetFocusManager()->ClearFocus(); }
+
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  std::unique_ptr<TestingProfile> profile_;
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_top_chrome_webui_profile_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_;
+  ui::UnownedUserDataHost user_data_host_;
+  std::unique_ptr<TestLocationBarModel> location_bar_model_;
+  std::unique_ptr<TestLocationBarViewDelegate> delegate_;
+  std::unique_ptr<views::Widget> widget_;
+  raw_ptr<WebUIToolbarWebView> toolbar_view_ = nullptr;
+  raw_ptr<WebUILocationBar> location_bar_ = nullptr;
+};
+
+TEST_F(WebUILocationBarViewsFocusTest,
+       DomFocusRestoresSynchronouslyWhenViewsFocusReturns) {
+  TestLocationBarObserver observer;
+  base::ScopedObservation<LocationBar, LocationBar::Observer> observation(
+      &observer);
+  observation.Observe(location_bar_);
+
+  // Reporting DOM focus while the toolbar WebView lacks Views focus keeps
+  // effective focus false, but remembers DOM focus for when Views focus lands.
+  toolbar_view_->OnLocationBarFocusWithinChanged(true);
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(0, observer.focus_change_count());
+
+  FocusToolbarWebView();
+  EXPECT_TRUE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(1, observer.focus_change_count());
+
+  // Losing Views focus clears effective focus synchronously without clearing
+  // remembered DOM focus.
+  ClearViewsFocus();
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(2, observer.focus_change_count());
+
+  // Regaining Views focus restores effective focus synchronously without
+  // requiring another Mojo notification.
+  FocusToolbarWebView();
+  EXPECT_TRUE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(3, observer.focus_change_count());
+}
+
+TEST_F(WebUILocationBarViewsFocusTest, DomFocusClearedWhileWebViewUnfocused) {
+  FocusToolbarWebView();
+  toolbar_view_->OnLocationBarFocusWithinChanged(true);
+  EXPECT_TRUE(location_bar_->IsFocusWithin());
+
+  ClearViewsFocus();
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+
+  toolbar_view_->OnLocationBarFocusWithinChanged(false);
+  FocusToolbarWebView();
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+}
+
+TEST_F(WebUILocationBarViewsFocusTest,
+       NonLocationBarPendingTargetDoesNotRestoreFocusWithin) {
+  TestLocationBarObserver observer;
+  base::ScopedObservation<LocationBar, LocationBar::Observer> observation(
+      &observer);
+  observation.Observe(location_bar_);
+
+  toolbar_view_->OnLocationBarFocusWithinChanged(true);
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+
+  auto* control_delegate =
+      static_cast<WebUIToolbarControlDelegate*>(toolbar_view_.get());
+  control_delegate->OnFocusRequested(
+      toolbar_ui_api::mojom::FocusRequestTarget::kAppMenu);
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(0, observer.focus_change_count());
+
+  ClearViewsFocus();
+  control_delegate->OnFocusRequested(
+      toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar);
+  EXPECT_TRUE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(1, observer.focus_change_count());
+}
+
+TEST_F(WebUILocationBarViewsFocusTest,
+       NativeClickAndTabTraversalDoNotEagerlyRestoreFocusWithin) {
+  toolbar_view_->OnLocationBarFocusWithinChanged(true);
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+
+  auto* focus_manager = widget_->GetFocusManager();
+  auto* web_view = toolbar_view_->GetWebViewForTesting();
+
+  focus_manager->SetFocusedViewWithReason(
+      web_view, views::FocusManager::FocusChangeReason::kFocusNativeView);
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+
+  ClearViewsFocus();
+  focus_manager->SetFocusedViewWithReason(
+      web_view, views::FocusManager::FocusChangeReason::kFocusTraversal);
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+
+  ClearViewsFocus();
+  focus_manager->SetFocusedViewWithReason(
+      web_view, views::FocusManager::FocusChangeReason::kFocusRestore);
+  EXPECT_TRUE(location_bar_->IsFocusWithin());
+}
+
+TEST_F(WebUILocationBarViewsFocusTest,
+       OnInternalWebViewFocusedPreservesSynchronousFocusWithin) {
+  TestLocationBarObserver observer;
+  base::ScopedObservation<LocationBar, LocationBar::Observer> observation(
+      &observer);
+  observation.Observe(location_bar_);
+
+  FocusToolbarWebView();
+  location_bar_->SetFocusWithin(true);
+  EXPECT_TRUE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(1, observer.focus_change_count());
+
+  // Re-entering OnInternalWebViewFocused() (e.g. via WebView::SetUpNewMainFrame
+  // before async DOM focus arrives) must not downgrade synchronous
+  // focus_within_.
+  toolbar_view_->OnInternalWebViewFocused();
+  EXPECT_TRUE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(1, observer.focus_change_count());
+}
+
+TEST_F(WebUILocationBarViewsFocusTest,
+       RendererProcessGoneClearsDomFocusWithin) {
+  FocusToolbarWebView();
+  toolbar_view_->OnLocationBarFocusWithinChanged(true);
+  EXPECT_TRUE(location_bar_->IsFocusWithin());
+
+  ClearViewsFocus();
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+
+  static_cast<content::WebContentsObserver*>(toolbar_view_.get())
+      ->PrimaryMainFrameRenderProcessGone(
+          base::TERMINATION_STATUS_NORMAL_TERMINATION);
+  FocusToolbarWebView();
   EXPECT_FALSE(location_bar_->IsFocusWithin());
 }
