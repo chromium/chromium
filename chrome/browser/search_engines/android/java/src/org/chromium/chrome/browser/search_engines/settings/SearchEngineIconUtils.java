@@ -38,6 +38,7 @@ public class SearchEngineIconUtils {
                             'not have a favicon.'
                         data: 'Search engine URL and desired icon size.'
                         destination: GOOGLE_OWNED_SERVICE
+                        static_content: true
                         internal {
                             contacts {
                                 email: 'chrome-signin-team@google.com'
