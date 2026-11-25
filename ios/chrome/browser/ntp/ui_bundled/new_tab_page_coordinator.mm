@@ -2342,8 +2342,6 @@
     }
     // Check if feed is visible before reporting NTP visibility as the feed
     // needs to be visible in order to use for metrics.
-    // TODO(crbug.com/40871863) Move isFeedVisible check to the metrics
-    // recorder
     if ([self isFeedVisible]) {
       [self.feedMetricsRecorder recordNTPDidChangeVisibility:visible];
     }
