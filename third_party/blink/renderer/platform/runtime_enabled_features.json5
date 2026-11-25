@@ -3193,7 +3193,7 @@
     {
       name: "FedCmActiveModeMultipleIdentityProviders",
       depends_on: ["FedCmMultipleIdentityProviders"],
-      status: "experimental",
+      status: "test",
       base_feature: "none",
       public: true,
     },

@@ -324,6 +324,25 @@ bool RequestHandler::RequestToken(scoped_refptr<Request> req,
     return false;
   }
 
+  if (!IsActiveModeMultipleIdentityProvidersEnabled() &&
+      req_->rp_mode() == RpMode::kActive && req_->providers().size() > 1u) {
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Active mode is not currently supported with multiple identity "
+        "providers.");
+    // Delay rejection when the extra providers came from registered IdPs so
+    // the page cannot distinguish whether (or how many) IdPs are registered.
+    const size_t num_explicit_idps =
+        std::ranges::count_if(req_->providers(), [](const auto& provider) {
+          return !provider->config->from_idp_registration_api;
+        });
+    const bool should_delay_rejection = num_explicit_idps <= 1u;
+    CompleteRequestWithError(FederatedRequestResult::kError,
+                             /*token_status=*/std::nullopt,
+                             should_delay_rejection);
+    return should_delay_rejection;
+  }
+
   FederatedApiPermissionStatus permission_status = GetApiPermissionStatus();
 
   if (!CanBypassPermissionStatusCheck(req_->rp_mode(),

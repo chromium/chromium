@@ -335,6 +335,11 @@ static const RequestExpectations kExpectationSuccess{
     RequestTokenStatus::kSuccess, FederatedRequestResult::kSuccess,
     /*standalone_console_message=*/std::nullopt, kProviderUrlFull};
 
+static const RequestExpectations kExpectationActiveModeMultiIdpRejected{
+    RequestTokenStatus::kError, FederatedRequestResult::kError,
+    "Active mode is not currently supported with multiple identity providers.",
+    /*selected_idp_config_url=*/std::nullopt};
+
 static const RequestParameters kDefaultMultiIdpRequestParameters{
     std::vector<IdentityProviderParameters>{
         {kProviderUrlFull, kClientId, kNonce, /*login_hint=*/"",
@@ -2160,6 +2165,30 @@ class RequestHandlerTest : public RenderViewHostImplTestHarness {
     histogram_tester_.ExpectTotalCount(
         "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch",
         0);
+  }
+
+  RequestParameters MakeActiveRegisteredProviderParameters() {
+    RequestParameters parameters = kDefaultRequestParameters;
+    parameters.rp_mode = blink::mojom::RpMode::kActive;
+    parameters.identity_providers[0].provider = "";
+    parameters.identity_providers[0].from_idp_registration_api = true;
+    return parameters;
+  }
+
+  void ExpectActiveFlowMultiIdpRejected(const RequestParameters& parameters,
+                                        bool expect_delay) {
+    RunDontWaitForCallback(parameters, kConfigurationMultiIdpValid);
+    if (expect_delay) {
+      EXPECT_FALSE(request_helper_->was_callback_called());
+      WaitForCurrentRequest(/*should_fast_forward=*/true);
+    } else {
+      EXPECT_TRUE(request_helper_->was_callback_called());
+    }
+    CheckExpectations(kConfigurationMultiIdpValid,
+                      kExpectationActiveModeMultiIdpRejected);
+    EXPECT_FALSE(DidFetchAnyEndpoint());
+    EXPECT_FALSE(dialog_controller_state_.did_show_loading_dialog);
+    EXPECT_FALSE(did_show_accounts_dialog());
   }
 
  protected:
@@ -7352,6 +7381,10 @@ TEST_F(RequestHandlerTest, ActiveFlowShowsLoadingUI) {
 // Test that active flow with multiple IDPs shows loading dialog and accounts
 // dialog.
 TEST_F(RequestHandlerTest, ActiveFlowMultiIdpShowsLoadingAndAccountsUI) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
   RequestParameters parameters = kDefaultMultiIdpRequestParameters;
   parameters.rp_mode = blink::mojom::RpMode::kActive;
 
@@ -7368,6 +7401,10 @@ TEST_F(RequestHandlerTest, ActiveFlowMultiIdpShowsLoadingAndAccountsUI) {
 
 // Test active flow with multiple IDPs requires user activation.
 TEST_F(RequestHandlerTest, ActiveFlowMultiIdpRequiresUserActivation) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+
   RequestParameters parameters = kDefaultMultiIdpRequestParameters;
   parameters.rp_mode = blink::mojom::RpMode::kActive;
 
@@ -7412,30 +7449,169 @@ TEST_F(RequestHandlerTest, ActiveFlowMultiIdpLoggedOutIdpIsOffered) {
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 }
 
-// Test that when kFedCmActiveModeMultipleIdentityProviders is disabled, a
-// logged-out IDP in active mode with multiple IDPs is not offered in the
-// dialog.
-TEST_F(RequestHandlerTest,
-       ActiveFlowMultiIdpLoggedOutIdpNotOfferedWhenFlagDisabled) {
+// Test that when kFedCmActiveModeMultipleIdentityProviders is disabled, an
+// active-mode request with multiple IDPs is rejected immediately without
+// fetching or showing any UI.
+TEST_F(RequestHandlerTest, ActiveFlowMultiIdpRejectedWhenFlagDisabled) {
   base::test::ScopedFeatureList list;
   list.InitAndDisableFeature(
       features::kFedCmActiveModeMultipleIdentityProviders);
-
-  test_permission_delegate_
-      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
 
   RequestParameters parameters = kDefaultMultiIdpRequestParameters;
   parameters.rp_mode = blink::mojom::RpMode::kActive;
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
-  MockConfiguration config = kConfigurationMultiIdpValid;
-  config.accounts_dialog_action = AccountsDialogAction::kNone;
-  RunDontWaitForCallback(parameters, config);
+  ExpectActiveFlowMultiIdpRejected(parameters, /*expect_delay=*/false);
+}
 
-  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
-  EXPECT_EQ(num_show_accounts_dialog(), 1u);
-  EXPECT_THAT(displayed_idps(), ElementsAre("idp2.example"));
+// Test that when kFedCmActiveModeMultipleIdentityProviders is disabled, an
+// active-mode request using a single registered provider ("any") that expands
+// to multiple registered IDPs is rejected after a random delay without fetching
+// or showing UI.
+TEST_F(RequestHandlerTest,
+       ActiveFlowMultiIdpRegisteredProvidersRejectedWhenFlagDisabled) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures(
+      /*enabled_features=*/{features::kFedCmIdPRegistration},
+      /*disabled_features=*/{
+          features::kFedCmActiveModeMultipleIdentityProviders});
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  std::vector<GURL> registry = {GURL(kProviderUrlFull),
+                                GURL(kProviderTwoUrlFull)};
+  EXPECT_CALL(*test_permission_delegate_, GetRegisteredIdPs())
+      .WillOnce(Return(registry));
+
+  ExpectActiveFlowMultiIdpRejected(MakeActiveRegisteredProviderParameters(),
+                                   /*expect_delay=*/true);
+}
+
+// Test that when kFedCmActiveModeMultipleIdentityProviders is disabled, an
+// active-mode request combining one explicit provider and one registered
+// provider ("any") is rejected after a random delay when a registered IDP
+// exists.
+TEST_F(RequestHandlerTest,
+       ActiveFlowMultiIdpMixedExplicitAndRegisteredRejectedWithDelay) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures(
+      /*enabled_features=*/{features::kFedCmIdPRegistration},
+      /*disabled_features=*/{
+          features::kFedCmActiveModeMultipleIdentityProviders});
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  parameters.identity_providers[1].provider = "";
+  parameters.identity_providers[1].from_idp_registration_api = true;
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  std::vector<GURL> registry = {GURL(kProviderTwoUrlFull)};
+  EXPECT_CALL(*test_permission_delegate_, GetRegisteredIdPs())
+      .WillOnce(Return(registry));
+
+  ExpectActiveFlowMultiIdpRejected(parameters, /*expect_delay=*/true);
+}
+
+// Test that when kFedCmActiveModeMultipleIdentityProviders is disabled, an
+// active-mode request with two explicit providers plus a registered provider
+// ("any") is rejected immediately even when a registered IDP exists, since the
+// explicit providers alone exceed one.
+TEST_F(RequestHandlerTest,
+       ActiveFlowMultiIdpMultipleExplicitWithRegisteredRejectedImmediately) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures(
+      /*enabled_features=*/{features::kFedCmIdPRegistration},
+      /*disabled_features=*/{
+          features::kFedCmActiveModeMultipleIdentityProviders});
+
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+  IdentityProviderParameters registered_idp = parameters.identity_providers[0];
+  registered_idp.provider = "";
+  registered_idp.from_idp_registration_api = true;
+  parameters.identity_providers.push_back(registered_idp);
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  std::vector<GURL> registry = {GURL("https://idp3.example/fedcm.json")};
+  EXPECT_CALL(*test_permission_delegate_, GetRegisteredIdPs())
+      .WillOnce(Return(registry));
+
+  ExpectActiveFlowMultiIdpRejected(parameters, /*expect_delay=*/false);
+}
+
+// Test that when kFedCmActiveModeMultipleIdentityProviders is disabled, an
+// active-mode request with a single registered provider ("any") that expands to
+// one registered IDP still succeeds.
+TEST_F(RequestHandlerTest,
+       ActiveFlowSingleRegisteredProviderAllowedWhenMultiIdpFlagDisabled) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures(
+      /*enabled_features=*/{features::kFedCmIdPRegistration},
+      /*disabled_features=*/{
+          features::kFedCmActiveModeMultipleIdentityProviders});
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  std::vector<GURL> registry = {GURL(kProviderUrlFull)};
+  EXPECT_CALL(*test_permission_delegate_, GetRegisteredIdPs())
+      .WillOnce(Return(registry));
+
+  RunTest(MakeActiveRegisteredProviderParameters(), kExpectationSuccess,
+          kConfigurationValid);
+  EXPECT_TRUE(dialog_controller_state_.did_show_loading_dialog);
+  EXPECT_TRUE(did_show_accounts_dialog());
+}
+
+// Test that when kFedCmActiveModeMultipleIdentityProviders is disabled and a
+// passive request is already pending, a colliding active-mode "any" request
+// without user activation returns kErrorTooManyRequests even when multiple IDPs
+// are registered, so the registered-IdP count is not leaked via error type.
+TEST_F(RequestHandlerTest,
+       ActiveFlowMultiIdpRegisteredProvidersCollisionReturnsTooManyRequests) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures(
+      /*enabled_features=*/{features::kFedCmIdPRegistration},
+      /*disabled_features=*/{
+          features::kFedCmActiveModeMultipleIdentityProviders});
+
+  MockConfiguration passive_config = kConfigurationValid;
+  passive_config.accounts_dialog_action = AccountsDialogAction::kNone;
+
+  RunDontWaitForCallback(kDefaultRequestParameters, passive_config);
+  EXPECT_TRUE(did_show_accounts_dialog());
+
+  RequestPageData* page_data = GetPageData(main_test_rfh()->GetPage());
+  RequestHandler* pending_request_handler = page_data->PendingRequestHandler();
+  ASSERT_TRUE(pending_request_handler);
+
+  SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
+
+  std::vector<GURL> registry = {GURL(kProviderUrlFull),
+                                GURL(kProviderTwoUrlFull)};
+  EXPECT_CALL(*test_permission_delegate_, GetRegisteredIdPs())
+      .WillOnce(Return(registry));
+
+  auto active_request_helper = std::make_unique<RequestCallbackHelper>();
+  mojo::Remote<FederatedRequest> active_request_remote;
+  RunDontWaitForCallback(MakeActiveRegisteredProviderParameters(),
+                         kConfigurationMultiIdpValid,
+                         active_request_helper.get(), &active_request_remote);
+
+  RequestExpectations too_many_requests = {
+      RequestTokenStatus::kErrorTooManyRequests,
+      FederatedRequestResult::kTooManyRequests,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  CheckExpectations(kConfigurationMultiIdpValid, too_many_requests,
+                    active_request_helper.get());
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+  EXPECT_FALSE(request_helper_->was_callback_called());
+  EXPECT_EQ(page_data->PendingRequestHandler(), pending_request_handler);
 }
 
 // Test that in active mode with multiple IDPs, an IDP whose login status was
