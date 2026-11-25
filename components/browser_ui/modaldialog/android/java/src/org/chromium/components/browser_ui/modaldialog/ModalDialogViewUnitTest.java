@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.modaldialog;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.robolectric.Robolectric.buildActivity;
 
@@ -336,6 +337,52 @@ public class ModalDialogViewUnitTest {
                 "The scroll view should be hidden once it no longer holds the custom view.",
                 View.GONE,
                 mDialogView.findViewById(R.id.modal_dialog_scroll_view).getVisibility());
+    }
+
+    @Test
+    public void testWrapCustomViewInScrollable_NotFocusableWhenCustomViewFits() {
+        var shortCustomView = new FrameLayout(mActivity);
+        shortCustomView.setMinimumHeight(MIN_DIALOG_HEIGHT / 2);
+        var model =
+                mModelBuilder
+                        .with(ModalDialogProperties.CUSTOM_VIEW, shortCustomView)
+                        .with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true)
+                        .build();
+        PropertyModelChangeProcessor.create(model, mDialogView, new ModalDialogViewBinder());
+
+        var widthMeasureSpec = MeasureSpec.makeMeasureSpec(MIN_DIALOG_WIDTH, MeasureSpec.AT_MOST);
+        var heightMeasureSpec = MeasureSpec.makeMeasureSpec(MIN_DIALOG_HEIGHT, MeasureSpec.AT_MOST);
+        mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
+        mDialogView.layout(0, 0, mDialogView.getMeasuredWidth(), mDialogView.getMeasuredHeight());
+
+        View scrollView = mDialogView.findViewById(R.id.modal_dialog_scroll_view);
+        assertFalse(scrollView.canScrollVertically(-1));
+        assertFalse(scrollView.canScrollVertically(1));
+        assertFalse(scrollView.isFocusable());
+    }
+
+    @Test
+    public void testWrapCustomViewInScrollable_FocusableWhenCustomViewScrolls() {
+        var tallCustomView = new FrameLayout(mActivity);
+        tallCustomView.setMinimumHeight(MIN_DIALOG_HEIGHT * 2);
+        var model =
+                mModelBuilder
+                        .with(ModalDialogProperties.CUSTOM_VIEW, tallCustomView)
+                        .with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true)
+                        .build();
+        PropertyModelChangeProcessor.create(model, mDialogView, new ModalDialogViewBinder());
+
+        // ScrollView starts focusable. Clear it so the test fails if layout doesn't set it back.
+        View scrollView = mDialogView.findViewById(R.id.modal_dialog_scroll_view);
+        scrollView.setFocusable(false);
+
+        var widthMeasureSpec = MeasureSpec.makeMeasureSpec(MIN_DIALOG_WIDTH, MeasureSpec.AT_MOST);
+        var heightMeasureSpec = MeasureSpec.makeMeasureSpec(MIN_DIALOG_HEIGHT, MeasureSpec.AT_MOST);
+        mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
+        mDialogView.layout(0, 0, mDialogView.getMeasuredWidth(), mDialogView.getMeasuredHeight());
+
+        assertTrue(scrollView.canScrollVertically(1));
+        assertTrue(scrollView.isFocusable());
     }
 
     @Test
