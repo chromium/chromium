@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -156,19 +157,37 @@ class FallbackFontEntry {
       : font_path_(other.font_path_),
         ttc_index_(other.ttc_index_),
         font_params_(other.font_params_),
-        charset_(FcCharSetCopy(other.charset_)) {}
+        charset_(FcCharSetCopy(other.charset_)),
+        font_(other.font_) {}
 
   FallbackFontEntry& operator=(const FallbackFontEntry&) = delete;
 
   ~FallbackFontEntry() { FcCharSetDestroy(charset_); }
 
-  const base::FilePath& font_path() const { return font_path_; }
-  int ttc_index() const { return ttc_index_; }
-  FontRenderParams font_params() const { return font_params_; }
-
   // Returns whether the fallback font support the codepoint.
   bool HasGlyphForCharacter(UChar32 c) const {
     return FcCharSetHasChar(charset_, static_cast<FcChar32>(c));
+  }
+
+  // Returns the font for this entry, or nullopt if the font file can't be
+  // parsed. Building the font is expensive (e.g. it reads the family name from
+  // the font file), so it is built once and reused. A font updates its render
+  // params when the device scale factor or the subpixel rendering setting
+  // changes, so it is only reused while its render params are still the ones
+  // of this entry, as for a newly built font.
+  std::optional<Font> GetFont(int font_size) {
+    if (font_ && font_->GetFontRenderParams() == font_params_) {
+      DCHECK_EQ(font_->GetFontSize(), font_size);
+      return font_;
+    }
+    sk_sp<SkTypeface> typeface =
+        GetSkTypefaceFromPathAndIndex(font_path_, ttc_index_);
+    if (!typeface) {
+      return std::nullopt;
+    }
+    font_.emplace(
+        PlatformFont::CreateFromSkTypeface(typeface, font_size, font_params_));
+    return font_;
   }
 
  private:
@@ -181,6 +200,9 @@ class FallbackFontEntry {
 
   // Font code points coverage.
   raw_ptr<FcCharSet> charset_;
+
+  // The font returned by GetFont().
+  std::optional<Font> font_;
 };
 
 using FallbackFontEntries = std::vector<FallbackFontEntry>;
@@ -300,9 +322,9 @@ bool GetFallbackFont(const Font& font,
 
   // Try each font in the cache to find the one with the highest coverage.
   size_t fewest_missing_glyphs = text.length() + 1;
-  const FallbackFontEntry* prefered_entry = nullptr;
+  FallbackFontEntry* prefered_entry = nullptr;
 
-  for (const auto& entry : cache_entry->second) {
+  for (auto& entry : cache_entry->second) {
     // Validate that every character has a known glyph in the font.
     size_t missing_glyphs = 0;
     size_t matching_glyphs = 0;
@@ -331,17 +353,15 @@ bool GetFallbackFont(const Font& font,
   if (!prefered_entry)
     return false;
 
-  sk_sp<SkTypeface> typeface = GetSkTypefaceFromPathAndIndex(
-      prefered_entry->font_path(), prefered_entry->ttc_index());
+  std::optional<Font> fallback_font =
+      prefered_entry->GetFont(font.GetFontSize());
   // The file can't be parsed (e.g. corrupt). This font can't be used as a
   // fallback font.
-  if (!typeface)
+  if (!fallback_font) {
     return false;
+  }
 
-  Font fallback_font(PlatformFont::CreateFromSkTypeface(
-      typeface, font.GetFontSize(), prefered_entry->font_params()));
-
-  *result = fallback_font;
+  *result = *fallback_font;
   return true;
 }
 

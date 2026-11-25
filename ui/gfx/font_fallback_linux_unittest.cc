@@ -83,6 +83,18 @@ TEST_F(FontFallbackLinuxTest, GetFallbackFontCache) {
   EXPECT_EQ(0U, GetFallbackFontListCacheSizeForTesting());
 }
 
+// The font returned for a cached fallback font entry is built once and reused.
+TEST_F(FontFallbackLinuxTest, GetFallbackFontReusesFont) {
+  Font base_font;
+  Font fallback_font1;
+  ASSERT_TRUE(GetFallbackFont(base_font, kDefaultApplicationLocale, u"⻩",
+                              &fallback_font1));
+  Font fallback_font2;
+  ASSERT_TRUE(GetFallbackFont(base_font, kDefaultApplicationLocale, u"⻪",
+                              &fallback_font2));
+  EXPECT_EQ(fallback_font1.platform_font(), fallback_font2.platform_font());
+}
+
 TEST_F(FontFallbackLinuxTest, Fallbacks) {
   EXPECT_EQ(0U, GetFallbackFontListCacheSizeForTesting());
 
