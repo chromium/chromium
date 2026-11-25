@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -38,6 +39,10 @@ class HistoryMenuBridgeLifetimeTest;
 namespace favicon_base {
 struct FaviconImageResult;
 }
+
+// Killswitch for lazy submenu population and deferred title elision, tooltips,
+// and favicon loading in HistoryMenuBridge.
+BASE_DECLARE_FEATURE(kHistoryMenuOptimizations);
 
 // C++ bridge for the history menu; one per AppController (means there
 // is only one). This class observes various data sources, namely the
@@ -111,6 +116,13 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
     // the vector will be empty.
     std::vector<raw_ptr<HistoryItem, DanglingUntriaged>> tabs;
 
+    // True if this item owns a submenu (a closed window, group, or split).
+    bool has_submenu = false;
+
+    // True once the NSMenuItem's title has been elided and (for single-tab
+    // items) its tooltip and favicon request have been applied.
+    bool is_finalized = false;
+
    private:
     // Copying is explicitly allowed, but assignment is not.
     void operator=(const HistoryItem&);
@@ -158,6 +170,17 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   // Called by HistoryMenuCocoaController when the menu begins and ends
   // tracking, to block updates when it is open.
   void SetIsMenuOpen(bool flag);
+
+  // Returns whether `menu` is the root History menu.
+  bool IsHistoryMenu(NSMenu* menu);
+
+  // Populates a lazily built closed-window, group, or split submenu on demand.
+  // No-op if `menu` is already populated or is not a pending submenu.
+  void UpdateSubmenu(NSMenu* menu);
+
+  // Finalizes unfinalized items in `menu` (eliding titles, setting tooltips,
+  // and requesting favicons) when `menu` is opened interactively.
+  void OnMenuWillOpen(NSMenu* menu);
 
   // I wish I has a "friend @class" construct. These are used by the HMCC
   // to access model information when responding to actions.
@@ -262,6 +285,44 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   void FinishCreateMenu();
 
+  struct PendingTab {
+    PendingTab();
+    PendingTab(PendingTab&&);
+    PendingTab& operator=(PendingTab&&);
+    ~PendingTab();
+
+    std::u16string title;
+    GURL url;
+    SessionID session_id = SessionID::InvalidValue();
+  };
+
+  struct PendingSubmenu {
+    PendingSubmenu();
+    PendingSubmenu(PendingSubmenu&&);
+    PendingSubmenu& operator=(PendingSubmenu&&);
+    ~PendingSubmenu();
+
+    raw_ptr<HistoryItem> parent_item = nullptr;
+    std::vector<PendingTab> tabs;
+    int restore_string_id = 0;
+  };
+
+  // Adds the "Restore All" item and separator to `submenu`.
+  void AddRestoreItemToSubmenu(NSMenu* submenu,
+                               const HistoryItem& parent_item,
+                               int restore_string_id);
+
+  // Snapshots `tabs` so `submenu` can be populated lazily in `UpdateSubmenu()`.
+  void AddPendingSubmenu(
+      NSMenu* submenu,
+      HistoryItem* parent_item,
+      const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs,
+      int restore_string_id);
+
+  // Elides `item`'s menu title and, for single-tab items, sets its tooltip and
+  // requests its favicon if the profile is still alive.
+  void FinalizeMenuItem(HistoryItem* item);
+
   // Returns up to `max_count` results, deduplicating visits with the same host
   // and title, preferring more recent visits.
   static std::vector<history::URLResult> DeduplicateVisitsByHostAndTitle(
@@ -305,6 +366,11 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   // Mapping of NSMenuItems to HistoryItems.
   std::map<NSMenuItem*, std::unique_ptr<HistoryItem>> menu_item_map_;
 
+  // Closed-window, group, and split submenus awaiting lazy population.
+  // Declared after `menu_item_map_` so `PendingSubmenu::parent_item` is
+  // destroyed before the `HistoryItem`s it points to.
+  std::map<NSMenu*, PendingSubmenu> pending_submenus_;
+
   // Requests to re-create the menu are coalesced. |create_in_progress_| is true
   // when either waiting for the history service to return query results, or
   // when the menu is rebuilding. |need_recreate_| is true whenever a rebuild
@@ -315,6 +381,10 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   // In order to not jarringly refresh the menu while the user has it open,
   // updates are blocked while the menu is tracking.
   bool is_menu_open_ = false;
+
+  // True while the root History menu is open interactively (tracked by user
+  // input). Items inserted while this is true are finalized immediately.
+  bool is_menu_interactively_open_ = false;
 
   // The default favicon if a HistoryItem does not have one.
   NSImage* __strong default_favicon_;

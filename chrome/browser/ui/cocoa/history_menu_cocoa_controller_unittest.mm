@@ -128,6 +128,7 @@ TEST_F(HistoryMenuCocoaControllerTest, MenuCallbacksAfterBridgeDestroyed) {
   [ctrl clearBridge];
 
   // These should safely no-op when the bridge pointer is cleared.
+  [ctrl menuNeedsUpdate:menu];
   [ctrl menuWillOpen:menu];
   [ctrl menuDidClose:menu];
   NSMenuItem* item =

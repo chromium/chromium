@@ -21,6 +21,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#import "chrome/browser/ui/cocoa/history_menu_cocoa_controller.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
@@ -133,6 +134,20 @@ class MockBridge : public HistoryMenuBridge {
   NSMenu* __strong menu_;
 };
 
+void OpenMenuInteractively(NSMenu* tracking_menu,
+                           HistoryMenuCocoaController* controller,
+                           NSMenu* target_menu) {
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSMenuDidBeginTrackingNotification
+                    object:tracking_menu];
+  [controller menuNeedsUpdate:target_menu];
+  [controller menuWillOpen:target_menu];
+  [controller menuDidClose:target_menu];
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSMenuDidEndTrackingNotification
+                    object:tracking_menu];
+}
+
 class HistoryMenuBridgeTest : public CocoaTest {
  public:
   bool ShouldMenuItemBeVisible(NSMenuItem* item) {
@@ -220,6 +235,23 @@ class HistoryMenuBridgeTest : public CocoaTest {
     return bridge_->menu_item_map_;
   }
 
+  HistoryMenuCocoaController* controller() { return bridge_->controller_; }
+
+  bool is_menu_open() const { return bridge_->is_menu_open_; }
+
+  void DeliverVisitedHistory(const std::string& url,
+                             const std::u16string& title) {
+    if (!bridge_->history_service_) {
+      bridge_->history_service_ = HistoryServiceFactory::GetForProfile(
+          profile(), ServiceAccessType::EXPLICIT_ACCESS);
+    }
+    history::URLResult visited(GURL(url), base::Time::Now());
+    visited.set_title(title);
+    history::QueryResults results;
+    results.SetURLResults({std::move(visited)});
+    bridge_->OnVisitedHistoryResults(std::move(results));
+  }
+
  protected:
   std::unique_ptr<MockBridge> bridge_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
@@ -246,6 +278,10 @@ class HistoryMenuBridgeLifetimeTest : public testing::Test {
                            NSInteger tag,
                            NSInteger index) {
     bridge->AddItemToMenu(std::move(item), menu, tag, index);
+  }
+
+  HistoryMenuCocoaController* controller(HistoryMenuBridge* bridge) {
+    return bridge->controller_;
   }
 
  private:
@@ -342,6 +378,7 @@ TEST_F(HistoryMenuBridgeTest, AddItemToMenu) {
 
   AddItemToBridgeMenu(CreateItem(short_url), menu, 100, 0);
   AddItemToBridgeMenu(CreateItem(long_url), menu, 101, 1);
+  OpenMenuInteractively(bridge_->HistoryMenu(), controller(), menu);
 
   EXPECT_EQ(2, [menu numberOfItems]);
 
@@ -356,7 +393,7 @@ TEST_F(HistoryMenuBridgeTest, AddItemToMenu) {
   EXPECT_EQ(base::SysNSStringToUTF16(s), short_url);
 
   // Make sure a super-long title gets trimmed
-  s = [[menu itemAtIndex:0] title];
+  s = [[menu itemAtIndex:1] title];
   EXPECT_TRUE([s length] < long_url.length());
 
   // Confirm tooltips and confirm they are not trimmed (like the item
@@ -440,11 +477,17 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
   MockBridge::HistoryItem* hist2 = bridge_->HistoryItemForMenuItem(item2);
   EXPECT_TRUE(hist2);
   EXPECT_EQ(30, hist2->session_id.id());
-  EXPECT_EQ(2U, hist2->tabs.size());
   // Do not test full menu item title because it is localized. Just verify that
   // it contains the right number of tabs.
   EXPECT_TRUE([[item2 title] containsString:@"2"]);
   NSMenu* submenu1 = [item2 submenu];
+  if (base::FeatureList::IsEnabled(kHistoryMenuOptimizations)) {
+    EXPECT_EQ(0U, [[submenu1 itemArray] count]);
+    EXPECT_TRUE([submenu1 delegate]);
+    OpenMenuInteractively(bridge_->HistoryMenu(), controller(), submenu1);
+    EXPECT_FALSE([submenu1 delegate]);
+  }
+  EXPECT_EQ(2U, hist2->tabs.size());
   EXPECT_EQ(4U, [[submenu1 itemArray] count]);
   // Do not test Restore All Tabs because it is localized.
   EXPECT_TRUE([[submenu1 itemAtIndex:1] isSeparatorItem]);
@@ -463,11 +506,17 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
   MockBridge::HistoryItem* hist4 = bridge_->HistoryItemForMenuItem(item4);
   EXPECT_TRUE(hist4);
   EXPECT_EQ(50, hist4->session_id.id());
-  EXPECT_EQ(3U, hist4->tabs.size());
   // Do not test full menu item title because it is localized. Just verify that
   // it contains the right number of tabs.
   EXPECT_TRUE([[item4 title] containsString:@"3"]);
   NSMenu* submenu2 = [item4 submenu];
+  if (base::FeatureList::IsEnabled(kHistoryMenuOptimizations)) {
+    EXPECT_EQ(0U, [[submenu2 itemArray] count]);
+    EXPECT_TRUE([submenu2 delegate]);
+    OpenMenuInteractively(bridge_->HistoryMenu(), controller(), submenu2);
+    EXPECT_FALSE([submenu2 delegate]);
+  }
+  EXPECT_EQ(3U, hist4->tabs.size());
   EXPECT_EQ(5U, [[submenu2 itemArray] count]);
   // Do not test Restore All Tabs because it is localized.
   EXPECT_TRUE([[submenu2 itemAtIndex:1] isSeparatorItem]);
@@ -521,13 +570,17 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedGroups) {
   MockBridge::HistoryItem* hist1 = bridge_->HistoryItemForMenuItem(item1);
   EXPECT_TRUE(hist1);
   EXPECT_EQ(30, hist1->session_id.id());
-  EXPECT_EQ(2U, hist1->tabs.size());
   // Do not test full menu item title because it is localized. Just verify that
   // it contains the right number of tabs and no title.
   EXPECT_TRUE([[item1 title] containsString:@"2"]);
   EXPECT_FALSE([[item1 title] containsString:@"title"]);
 
   NSMenu* submenu1 = [item1 submenu];
+  if (base::FeatureList::IsEnabled(kHistoryMenuOptimizations)) {
+    EXPECT_EQ(0U, [[submenu1 itemArray] count]);
+    OpenMenuInteractively(bridge_->HistoryMenu(), controller(), submenu1);
+  }
+  EXPECT_EQ(2U, hist1->tabs.size());
   EXPECT_EQ(4U, [[submenu1 itemArray] count]);
   // Do not test Restore All Tabs because it is localized.
   EXPECT_TRUE([[submenu1 itemAtIndex:1] isSeparatorItem]);
@@ -545,13 +598,17 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedGroups) {
   MockBridge::HistoryItem* hist2 = bridge_->HistoryItemForMenuItem(item2);
   EXPECT_TRUE(hist2);
   EXPECT_EQ(50, hist2->session_id.id());
-  EXPECT_EQ(3U, hist2->tabs.size());
   // Do not test full menu item title because it is localized. Just verify that
   // it contains the right number of tabs and title.
   EXPECT_TRUE([[item2 title] containsString:@"3"]);
   EXPECT_TRUE([[item2 title] containsString:@"title"]);
 
   NSMenu* submenu2 = [item2 submenu];
+  if (base::FeatureList::IsEnabled(kHistoryMenuOptimizations)) {
+    EXPECT_EQ(0U, [[submenu2 itemArray] count]);
+    OpenMenuInteractively(bridge_->HistoryMenu(), controller(), submenu2);
+  }
+  EXPECT_EQ(3U, hist2->tabs.size());
   EXPECT_EQ(5U, [[submenu2 itemArray] count]);
   // Do not test Restore All Tabs because it is localized.
   EXPECT_TRUE([[submenu2 itemAtIndex:1] isSeparatorItem]);
@@ -589,11 +646,15 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedSplits) {
       bridge_->HistoryItemForMenuItem(parent_item);
   EXPECT_TRUE(hist_parent);
   EXPECT_EQ(30, hist_parent->session_id.id());
-  EXPECT_EQ(2U, hist_parent->tabs.size());
   EXPECT_NSEQ(@"Split View", [parent_item title]);
 
   // Verify the submenu containing the individual tabs
   NSMenu* submenu = [parent_item submenu];
+  if (base::FeatureList::IsEnabled(kHistoryMenuOptimizations)) {
+    EXPECT_EQ(0U, [[submenu itemArray] count]);
+    OpenMenuInteractively(bridge_->HistoryMenu(), controller(), submenu);
+  }
+  EXPECT_EQ(2U, hist_parent->tabs.size());
   EXPECT_EQ(4U,
             [[submenu itemArray] count]);  // Restore All + Separator + 2 Tabs
 
@@ -860,5 +921,252 @@ TEST_F(HistoryMenuBridgeLifetimeTest, EmptyTabRestoreService) {
   bridge.reset();
 }
 
+TEST_F(HistoryMenuBridgeTest, LazySubmenusAndDeferredFinalization) {
+  if (!base::FeatureList::IsEnabled(kHistoryMenuOptimizations)) {
+    GTEST_SKIP();
+  }
+
+  const std::string long_title(200, 'W');
+  const std::u16string long_title16(200, u'W');
+  NSString* raw_long_title = base::SysUTF8ToNSString(long_title);
+
+  NSMenu* menu = bridge_->HistoryMenu();
+  AddItemToMenu(menu, @"Recently Closed", nullptr,
+                HistoryMenuBridge::kRecentlyClosedTitle);
+  AddItemToMenu(menu, @"Recently Visited", nullptr,
+                HistoryMenuBridge::kVisitedTitle);
+
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile(), os_crypt_async_.get()));
+  auto entries{CreateSessionEntries({
+      CreateSessionTab(24, "https://example.com/top", long_title),
+      CreateSessionWindow(
+          30,
+          {
+              CreateSessionTab(31, "https://example.com/sub1", long_title),
+              CreateSessionTab(32, "https://example.com/sub2", long_title),
+          }),
+  })};
+  EXPECT_CALL(*trs.get(), entries()).WillOnce(testing::ReturnRef(entries));
+  bridge_->TabRestoreServiceChanged(trs.get());
+
+  DeliverVisitedHistory("https://example.com/visited", long_title16);
+
+  // Locate top-level tab, closed-window parent, and visited items.
+  NSMenuItem* top_tab_item = [menu itemAtIndex:1];
+  NSMenuItem* window_item = [menu itemAtIndex:2];
+  NSMenuItem* visited_item = [menu itemAtIndex:4];
+  NSMenu* submenu = [window_item submenu];
+  ASSERT_TRUE(submenu);
+
+  HistoryMenuBridge::HistoryItem* top_hist =
+      bridge_->HistoryItemForMenuItem(top_tab_item);
+  HistoryMenuBridge::HistoryItem* window_hist =
+      bridge_->HistoryItemForMenuItem(window_item);
+  HistoryMenuBridge::HistoryItem* visited_hist =
+      bridge_->HistoryItemForMenuItem(visited_item);
+  ASSERT_TRUE(top_hist);
+  ASSERT_TRUE(window_hist);
+  ASSERT_TRUE(visited_hist);
+
+  // Before opening: raw titles, no tooltips, no favicon loads, unbuilt submenu.
+  EXPECT_NSEQ(raw_long_title, [top_tab_item title]);
+  EXPECT_EQ(nil, [top_tab_item toolTip]);
+  EXPECT_FALSE(top_hist->icon_requested);
+  EXPECT_EQ(0, [submenu numberOfItems]);
+  EXPECT_TRUE([submenu delegate]);
+  EXPECT_NSEQ(raw_long_title, [visited_item title]);
+  EXPECT_EQ(nil, [visited_item toolTip]);
+  EXPECT_FALSE(visited_hist->icon_requested);
+
+  // Non-interactive accessibility walk populates submenu raw items without
+  // eliding titles, setting tooltips, or requesting favicons.
+  [controller() menuNeedsUpdate:menu];
+  [controller() menuWillOpen:menu];
+  [controller() menuDidClose:menu];
+  [[submenu delegate] menuNeedsUpdate:submenu];
+  [[submenu delegate] menuWillOpen:submenu];
+  [[submenu delegate] menuDidClose:submenu];
+
+  EXPECT_EQ(4, [submenu numberOfItems]);
+  EXPECT_TRUE([submenu delegate]);
+  EXPECT_NSEQ(raw_long_title, [[submenu itemAtIndex:2] title]);
+  EXPECT_EQ(nil, [[submenu itemAtIndex:2] toolTip]);
+  EXPECT_FALSE(top_hist->icon_requested);
+  EXPECT_FALSE(visited_hist->icon_requested);
+  EXPECT_FALSE(window_hist->tabs[0]->icon_requested);
+
+  // Interactive open of the root History menu finalizes only root items,
+  // leaving submenu items deferred.
+  OpenMenuInteractively(menu, controller(), menu);
+  EXPECT_LT([[top_tab_item title] length], [raw_long_title length]);
+  EXPECT_NE(nil, [top_tab_item toolTip]);
+  EXPECT_TRUE(top_hist->icon_requested);
+  EXPECT_LT([[visited_item title] length], [raw_long_title length]);
+  EXPECT_NE(nil, [visited_item toolTip]);
+  EXPECT_TRUE(visited_hist->icon_requested);
+  EXPECT_FALSE(window_hist->tabs[0]->icon_requested);
+  EXPECT_TRUE([submenu delegate]);
+
+  // Interactive open of the submenu finalizes its tab items and detaches its
+  // delegate.
+  OpenMenuInteractively(menu, controller(), submenu);
+  EXPECT_FALSE([submenu delegate]);
+  EXPECT_LT([[[submenu itemAtIndex:2] title] length], [raw_long_title length]);
+  EXPECT_NE(nil, [[submenu itemAtIndex:2] toolTip]);
+  EXPECT_TRUE(window_hist->tabs[0]->icon_requested);
+  EXPECT_LT([[[submenu itemAtIndex:3] title] length], [raw_long_title length]);
+  EXPECT_NE(nil, [[submenu itemAtIndex:3] toolTip]);
+  EXPECT_TRUE(window_hist->tabs[1]->icon_requested);
+}
+
+TEST_F(HistoryMenuBridgeTest, ItemsInsertedWhileMenuOpenAreFinalized) {
+  if (!base::FeatureList::IsEnabled(kHistoryMenuOptimizations)) {
+    GTEST_SKIP();
+  }
+
+  const std::string long_title(200, 'W');
+  const std::u16string long_title16(200, u'W');
+  NSString* raw_long_title = base::SysUTF8ToNSString(long_title);
+
+  NSMenu* menu = bridge_->HistoryMenu();
+  AddItemToMenu(menu, @"Recently Closed", nullptr,
+                HistoryMenuBridge::kRecentlyClosedTitle);
+  AddItemToMenu(menu, @"Recently Visited", nullptr,
+                HistoryMenuBridge::kVisitedTitle);
+
+  // Open the root History menu interactively and keep it open.
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSMenuDidBeginTrackingNotification
+                    object:menu];
+  [controller() menuNeedsUpdate:menu];
+  [controller() menuWillOpen:menu];
+
+  // Deliver updates while the menu is open.
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile(), os_crypt_async_.get()));
+  auto open_entries{CreateSessionEntries({
+      CreateSessionTab(24, "https://example.com/live-closed", long_title),
+  })};
+  auto closed_entries{CreateSessionEntries({
+      CreateSessionTab(25, "https://example.com/after-close", long_title),
+  })};
+  EXPECT_CALL(*trs.get(), entries())
+      .WillOnce(testing::ReturnRef(open_entries))
+      .WillOnce(testing::ReturnRef(closed_entries));
+  bridge_->TabRestoreServiceChanged(trs.get());
+
+  DeliverVisitedHistory("https://example.com/live-visited", long_title16);
+
+  NSMenuItem* closed_item = [menu itemAtIndex:1];
+  NSMenuItem* visited_item = [menu itemAtIndex:3];
+  EXPECT_LT([[closed_item title] length], [raw_long_title length]);
+  EXPECT_NE(nil, [closed_item toolTip]);
+  EXPECT_TRUE(bridge_->HistoryItemForMenuItem(closed_item)->icon_requested);
+  EXPECT_LT([[visited_item title] length], [raw_long_title length]);
+  EXPECT_NE(nil, [visited_item toolTip]);
+  EXPECT_TRUE(bridge_->HistoryItemForMenuItem(visited_item)->icon_requested);
+
+  // After closing, subsequent updates return to deferred finalization.
+  [controller() menuDidClose:menu];
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSMenuDidEndTrackingNotification
+                    object:menu];
+  bridge_->TabRestoreServiceChanged(trs.get());
+  NSMenuItem* deferred_item = [menu itemAtIndex:1];
+  EXPECT_NSEQ(raw_long_title, [deferred_item title]);
+  EXPECT_EQ(nil, [deferred_item toolTip]);
+  EXPECT_FALSE(bridge_->HistoryItemForMenuItem(deferred_item)->icon_requested);
+}
+
+TEST_F(HistoryMenuBridgeTest, SubmenuCloseDoesNotClearRootMenuOpenState) {
+  if (!base::FeatureList::IsEnabled(kHistoryMenuOptimizations)) {
+    GTEST_SKIP();
+  }
+
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile(), os_crypt_async_.get()));
+  auto entries{CreateSessionEntries({
+      CreateSessionWindow(30, {CreateSessionTab(31, "http://foo.com", "foo")}),
+  })};
+  EXPECT_CALL(*trs.get(), entries()).WillOnce(testing::ReturnRef(entries));
+  bridge_->TabRestoreServiceChanged(trs.get());
+
+  NSMenu* menu = bridge_->HistoryMenu();
+  NSMenu* submenu = [[menu itemAtIndex:0] submenu];
+  ASSERT_TRUE(submenu);
+
+  [controller() menuWillOpen:menu];
+  EXPECT_TRUE(is_menu_open());
+
+  [[submenu delegate] menuNeedsUpdate:submenu];
+  [[submenu delegate] menuWillOpen:submenu];
+  [[submenu delegate] menuDidClose:submenu];
+  EXPECT_TRUE(is_menu_open());
+
+  [controller() menuDidClose:menu];
+  EXPECT_FALSE(is_menu_open());
+}
+
+TEST_F(HistoryMenuBridgeLifetimeTest, UnbuiltSubmenuOpensAfterProfileShutdown) {
+  if (!base::FeatureList::IsEnabled(kHistoryMenuOptimizations)) {
+    GTEST_SKIP();
+  }
+
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(FaviconServiceFactory::GetInstance(),
+                                    FaviconServiceFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(
+      TabRestoreServiceFactory::GetInstance(),
+      TabRestoreServiceFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                                    HistoryServiceFactory::GetDefaultFactory());
+  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
+  std::ignore = AppController.sharedController;
+
+  auto bridge = std::make_unique<MockBridge>(profile.get());
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async =
+      os_crypt_async::GetTestOSCryptAsyncForTesting(true);
+  std::unique_ptr<MockTRS> trs(
+      new MockTRS(profile.get(), os_crypt_async.get()));
+  const std::string long_title(200, 'W');
+  auto entries{CreateSessionEntries({
+      CreateSessionWindow(
+          30,
+          {
+              CreateSessionTab(31, "https://example.com/after-shutdown",
+                               long_title),
+          }),
+  })};
+  EXPECT_CALL(*trs.get(), entries()).WillOnce(testing::ReturnRef(entries));
+  bridge->TabRestoreServiceChanged(trs.get());
+
+  NSMenu* menu = HistoryMenu(bridge.get());
+  NSMenuItem* window_item = [menu itemAtIndex:0];
+  NSMenu* submenu = [window_item submenu];
+  ASSERT_TRUE(submenu);
+  EXPECT_EQ(0, [submenu numberOfItems]);
+
+  // Destroy the Profile while the submenu is still unbuilt.
+  bridge->OnProfileWillBeDestroyed();
+  trs.reset();
+  profile.reset();
+  ASSERT_EQ(nullptr, bridge->profile());
+
+  // Interactively opening the submenu after profile teardown populates items
+  // from the snapshot, elides titles, sets tooltips, and does not request
+  // favicons from the destroyed profile.
+  OpenMenuInteractively(HistoryMenu(bridge.get()), controller(bridge.get()),
+                        submenu);
+  EXPECT_FALSE([submenu delegate]);
+  ASSERT_EQ(3, [submenu numberOfItems]);  // Restore All + Separator + 1 Tab
+  NSMenuItem* tab_item = [submenu itemAtIndex:2];
+  HistoryMenuBridge::HistoryItem* tab_hist =
+      bridge->HistoryItemForMenuItem(tab_item);
+  ASSERT_TRUE(tab_hist);
+  EXPECT_EQ(31, tab_hist->session_id.id());
+  EXPECT_LT([[tab_item title] length], long_title.length());
+  EXPECT_NE(nil, [tab_item toolTip]);
+  EXPECT_FALSE(tab_hist->icon_requested);
+
+  bridge.reset();
+}
 
 }  // namespace
