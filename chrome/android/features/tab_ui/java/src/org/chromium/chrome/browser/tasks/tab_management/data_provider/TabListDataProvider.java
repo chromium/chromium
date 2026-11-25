@@ -200,7 +200,7 @@ public abstract class TabListDataProvider {
     }
 
     /** Returns the tab to highlight in the list, or null if there is none. */
-    protected @Nullable Tab getSelectedTab() {
+    public @Nullable Tab getSelectedTab() {
         TabModel model = getHighlightTabModel();
         return model == null ? null : TabModelUtils.getCurrentTab(model);
     }
@@ -770,7 +770,8 @@ public abstract class TabListDataProvider {
     }
 
     /** Returns the loaded model that holds a tab with {@code tabId}, or null if none does. */
-    private @Nullable TabModel getTabModelForTabId(@TabId int tabId) {
+    public @Nullable TabModel getTabModelForTabId(@TabId int tabId) {
+        if (tabId == Tab.INVALID_TAB_ID) return null;
         for (TabModel model : mAttachedTabModels) {
             if (model.isTabStateInitialized() && model.getTabById(tabId) != null) return model;
         }

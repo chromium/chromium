@@ -91,7 +91,7 @@ public class FlatLayoutDelegateUnitTest {
     @Test
     public void testRecordTabSelection() {
         when(mMediator.getComponentId()).thenReturn(TabComponentId.TAB_GRID_DIALOG_FROM_STRIP);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mMediator.getTabById(TAB1_ID)).thenReturn(mTab1);
 
         var userActionTester = new UserActionTester();
         mDelegate.recordTabSelection(TAB1_ID);

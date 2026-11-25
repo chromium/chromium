@@ -99,7 +99,7 @@ public class NestedLayoutDelegateUnitTest {
     @Test
     public void testRecordTabSelection_Vertical_StandardTab() {
         when(mMediator.getComponentId()).thenReturn(TabComponentId.VERTICAL_TABS);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mMediator.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTab1.getIsPinned()).thenReturn(false);
 
         var userActionTester = new UserActionTester();
@@ -112,7 +112,7 @@ public class NestedLayoutDelegateUnitTest {
     @Test
     public void testRecordTabSelection_Vertical_PinnedTab() {
         when(mMediator.getComponentId()).thenReturn(TabComponentId.VERTICAL_TABS);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mMediator.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTab1.getIsPinned()).thenReturn(true);
 
         var userActionTester = new UserActionTester();

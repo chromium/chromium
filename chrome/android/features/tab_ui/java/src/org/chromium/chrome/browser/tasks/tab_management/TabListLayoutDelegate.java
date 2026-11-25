@@ -247,7 +247,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      * @param tabId The ID of the tab that was selected.
      */
     void recordTabSelection(int tabId) {
-        Tab tab = mMediator.getCurrentTabModelChecked().getTabById(tabId);
+        Tab tab = mMediator.getTabById(tabId);
         if (tab != null
                 && tab.getIsPinned()
                 && mMediator.getComponentId() == TabComponentId.VERTICAL_TABS) {

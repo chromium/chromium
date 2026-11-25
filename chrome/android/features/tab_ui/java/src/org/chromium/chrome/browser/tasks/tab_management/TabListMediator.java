@@ -798,11 +798,12 @@ public class TabListMediator implements TabListNotificationHandler {
                         int closingTabIndex = getIndexFromTabId(tabId);
                         if (closingTabIndex == TabModel.INVALID_TAB_INDEX) return;
 
-                        mTabListLayoutDelegate.prepareTabCloseAnimation(view, closingTabIndex);
-
-                        TabModel tabModel = getCurrentTabModelChecked();
+                        TabModel tabModel = getTabModelForTabId(tabId);
+                        if (tabModel == null) return;
                         Tab closingTab = tabModel.getTabById(tabId);
                         if (closingTab == null) return;
+
+                        mTabListLayoutDelegate.prepareTabCloseAnimation(view, closingTabIndex);
 
                         @TabClosingSource int tabClosingSource = mTabListConfig.tabClosingSource;
 
@@ -883,6 +884,9 @@ public class TabListMediator implements TabListNotificationHandler {
                         // swipe animation when closing the last tab. Avoid this issue by disabling
                         // the default item animation for the duration of the removal of the last
                         // tab. This is a framework issue. For more details see crbug.com/40223318.
+                        // TODO(crbug.com/587126481): With several TabModels, check whether this
+                        // is the last card in the list instead of counting one TabModel's tabs,
+                        // e.g. mModelList.getTabCardCountsBefore(mModelList.size()) <= 1.
                         TabModel tabModel = mCurrentTabModelSupplier.get();
 
                         boolean shouldDisableItemAnimations =
@@ -977,6 +981,26 @@ public class TabListMediator implements TabListNotificationHandler {
         TabListDataProvider dataProvider = mTabListConfig.dataProvider;
         if (dataProvider != null) return dataProvider.getTabById(tabId);
         return getCurrentTabModelChecked().getTabById(tabId);
+    }
+
+    /**
+     * Returns the TabModel that holds the tab with {@code tabId}, or null if none of the {@link
+     * TabListDataProvider}'s TabModels holds it. Returns the current TabModel without a provider.
+     */
+    private @Nullable TabModel getTabModelForTabId(@TabId int tabId) {
+        TabListDataProvider dataProvider = mTabListConfig.dataProvider;
+        if (dataProvider != null) return dataProvider.getTabModelForTabId(tabId);
+        return getCurrentTabModelChecked();
+    }
+
+    /**
+     * Returns the tab to highlight: the {@link TabListDataProvider}'s selected tab, so cards match
+     * its selection updates, or the current TabModel's current tab without a provider.
+     */
+    private @Nullable Tab getHighlightedTab() {
+        TabListDataProvider dataProvider = mTabListConfig.dataProvider;
+        if (dataProvider != null) return dataProvider.getSelectedTab();
+        return TabModelUtils.getCurrentTab(getCurrentTabModelChecked());
     }
 
     /**
@@ -1445,11 +1469,9 @@ public class TabListMediator implements TabListNotificationHandler {
                 (state == null || state.tabIndicator == TabIndicatorStatus.NONE) ? null : state);
     }
 
+    /** Returns whether {@code tab} is in a tab group, whichever TabModel holds it. */
     boolean isTabInTabGroup(Tab tab) {
-        TabModel tabModel = getCurrentTabModelChecked();
-        assert tabModel.isTabStateInitialized();
-
-        return tabModel.isTabInTabGroup(tab);
+        return tab.getTabGroupId() != null;
     }
 
     /** Returns the callback that hosts the logic for swipe and drag related actions. */
@@ -1830,7 +1852,8 @@ public class TabListMediator implements TabListNotificationHandler {
         if (mTabListItemOnClickListenerProvider != null) {
             mTabListItemOnClickListenerProvider.onTabSelecting(tabId);
         } else {
-            TabModel tabModel = getCurrentTabModelChecked();
+            TabModel tabModel = getTabModelForTabId(tabId);
+            if (tabModel == null) return;
             tabModel.setIndex(
                     TabModelUtils.getTabIndexById(tabModel, tabId), TabSelectionType.FROM_USER);
         }
@@ -1845,7 +1868,6 @@ public class TabListMediator implements TabListNotificationHandler {
             return selectionDelegate.isItemSelected(
                     TabListEditorItemSelectionId.createTabId(tab.getId()));
         } else {
-            TabModel tabModel = getCurrentTabModelChecked();
             // Check if the tab group card should show as selected. The click listener provider
             // can override this behavior.
             if (TabProperties.isTabGroupHeader(model)) {
@@ -1860,11 +1882,12 @@ public class TabListMediator implements TabListNotificationHandler {
                     }
 
                     // A tab group card is selected if the current tab belongs to this group.
-                    Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
+                    Tab currentTab = getHighlightedTab();
                     return currentTab != null && tabGroupId.equals(currentTab.getTabGroupId());
                 }
             }
-            return TabModelUtils.getCurrentTabId(tabModel) == tab.getId();
+            Tab currentTab = getHighlightedTab();
+            return currentTab != null && currentTab.getId() == tab.getId();
         }
     }
 
@@ -3503,7 +3526,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
     @VisibleForTesting
     @Nullable Callback<Boolean> getOnMaybeTabClosedCallback(int tabId) {
-        Tab tab = getCurrentTabModelChecked().getTabById(tabId);
+        Tab tab = getTabById(tabId);
         if (tab == null) return null;
 
         return (didClose) -> {
