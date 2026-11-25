@@ -31,6 +31,7 @@ class TsSectionPsi : public TsSection {
              base::span<const uint8_t> buf) override;
   void Flush() override;
   void Reset() override;
+  bool HasUnparsedSectionData() const override;
 
   // Parse the content of the PSI section.
   virtual bool ParsePsiSection(BitReader* bit_reader) = 0;

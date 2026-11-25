@@ -17,7 +17,21 @@
 #include "media/formats/mp2t/mp2t_common.h"
 #include "media/formats/mp2t/timestamp_unroller.h"
 
-static const int kPesStartCode = 0x000001;
+namespace {
+
+constexpr uint32_t kPesStartCode = 0x000001;
+
+// PES packet header sizes in bytes (ITU-T H.222.0 Table 2-21):
+// - 6 bytes: 3-byte packet_start_code_prefix + 1-byte stream_id +
+//   2-byte PES_packet_length.
+// - 3 bytes: 2 bytes of optional PES header flags +
+//   1-byte PES_header_data_length.
+constexpr size_t kPesStartCodeAndLengthSize = 6;
+constexpr size_t kPesOptionalHeaderFixedSize = 3;
+constexpr size_t kPesHeaderFixedSize =
+    kPesStartCodeAndLengthSize + kPesOptionalHeaderFixedSize;
+
+}  // namespace
 
 static bool IsTimestampSectionValid(int64_t timestamp_section) {
   // |pts_section| has 40 bits:
@@ -97,12 +111,46 @@ void TsSectionPes::Reset() {
   es_parser_->Reset();
 }
 
+bool TsSectionPes::HasUnparsedSectionData() const {
+  auto pes = pes_byte_queue_.Data();
+  if (pes.empty()) {
+    return !wait_for_pusi_;
+  }
+  if (pes.size() < kPesHeaderFixedSize) {
+    return true;
+  }
+
+  const size_t pes_packet_length =
+      (static_cast<size_t>(pes[4]) << 8) | static_cast<size_t>(pes[5]);
+  if (pes_packet_length != 0) {
+    return pes.size() < pes_packet_length + kPesStartCodeAndLengthSize;
+  }
+
+  // ISO/IEC 13818-1 only allows unbounded (`pes_packet_length == 0`) PES
+  // packets on video elementary streams (`stream_id` 0xE0..0xEF), which carry
+  // the 0x000001 start code prefix and the '10' optional PES header marker.
+  const uint32_t start_code_prefix = (static_cast<uint32_t>(pes[0]) << 16) |
+                                     (static_cast<uint32_t>(pes[1]) << 8) |
+                                     static_cast<uint32_t>(pes[2]);
+  const bool is_video_stream_id = (pes[3] & 0xf0) == 0xe0;
+  const bool has_optional_header_marker = (pes[6] & 0xc0) == 0x80;
+  if (start_code_prefix != kPesStartCode || !is_video_stream_id ||
+      !has_optional_header_marker) {
+    return true;
+  }
+
+  // Even an unbounded video PES packet must carry its complete PES header and
+  // at least 1 byte of ES payload within the segment that started it.
+  const size_t pes_header_data_length = pes[8];
+  return pes.size() <= kPesHeaderFixedSize + pes_header_data_length;
+}
+
 bool TsSectionPes::Emit(bool emit_for_unknown_size) {
   auto pes = pes_byte_queue_.Data();
 
   // A PES should be at least 6 bytes.
   // Wait for more data to come if not enough bytes.
-  if (pes.size() < 6) {
+  if (pes.size() < kPesStartCodeAndLengthSize) {
     return true;
   }
 
@@ -110,7 +158,8 @@ bool TsSectionPes::Emit(bool emit_for_unknown_size) {
   size_t pes_packet_length =
       (static_cast<size_t>(pes[4]) << 8) | (static_cast<size_t>(pes[5]));
   if ((pes_packet_length == 0 && !emit_for_unknown_size) ||
-      (pes_packet_length != 0 && pes.size() < pes_packet_length + 6)) {
+      (pes_packet_length != 0 &&
+       pes.size() < pes_packet_length + kPesStartCodeAndLengthSize)) {
     // Wait for more data to come either because:
     // - there are not enough bytes,
     // - or the PES size is unknown and the "force emit" flag is not set.
@@ -196,7 +245,7 @@ bool TsSectionPes::ParseInternal(base::span<const uint8_t> pes) {
   int es_size_int = pes_packet_length - 3 - pes_header_data_length;
   RCHECK(es_size_int >= 0);
   size_t es_size = base::checked_cast<size_t>(es_size_int);
-  uint32_t es_offset = 6 + 3 + pes_header_data_length;
+  uint32_t es_offset = kPesHeaderFixedSize + pes_header_data_length;
   RCHECK(es_offset + es_size <= pes.size());
 
   // Read the timing information section.

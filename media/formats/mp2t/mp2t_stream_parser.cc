@@ -133,6 +133,7 @@ class PidState {
   void Enable();
   void Disable();
   bool IsEnabled() const;
+  bool HasUnparsedSectionData() const;
 
   PidType pid_type() const { return pid_type_; }
 
@@ -205,6 +206,10 @@ void PidState::Disable() {
 
 bool PidState::IsEnabled() const {
   return enable_;
+}
+
+bool PidState::HasUnparsedSectionData() const {
+  return enable_ && section_parser_->HasUnparsedSectionData();
 }
 
 void PidState::ResetState() {
@@ -328,6 +333,18 @@ void Mp2tStreamParser::MarkEndOfStream() {
 }
 
 bool Mp2tStreamParser::GetGenerateTimestampsFlag() const {
+  return false;
+}
+
+bool Mp2tStreamParser::HasUnparsedData() const {
+  if (!ts_byte_queue_.Data().empty()) {
+    return true;
+  }
+  for (const auto& [_, pid_state] : pids_) {
+    if (pid_state->HasUnparsedSectionData()) {
+      return true;
+    }
+  }
   return false;
 }
 

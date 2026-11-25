@@ -35,6 +35,7 @@ class TsSectionPes : public TsSection {
              base::span<const uint8_t> buf) override;
   void Flush() override;
   void Reset() override;
+  bool HasUnparsedSectionData() const override;
 
  private:
   // Emit a reassembled PES packet.

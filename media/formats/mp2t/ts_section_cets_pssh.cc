@@ -58,5 +58,9 @@ void TsSectionCetsPssh::Reset() {
   // No state to clean up.
 }
 
+bool TsSectionCetsPssh::HasUnparsedSectionData() const {
+  return false;
+}
+
 }  // namespace mp2t
 }  // namespace media

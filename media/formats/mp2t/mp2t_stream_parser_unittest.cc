@@ -10,9 +10,11 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -36,6 +38,7 @@
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_decoder_config.h"
+#include "media/formats/mp2t/ts_packet.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -146,6 +149,43 @@ std::string DecryptBuffer(const StreamParserBuffer& buffer,
         has_pattern);
   }
   return result;
+}
+
+std::array<uint8_t, TsPacket::kPacketSize> MakeTsPacket(
+    uint16_t pid,
+    bool payload_unit_start_indicator,
+    uint8_t continuity_counter,
+    base::span<const uint8_t> payload) {
+  CHECK_LE(payload.size(), TsPacket::kPacketSize - 4);
+  std::array<uint8_t, TsPacket::kPacketSize> packet;
+  packet.fill(0xff);
+  packet[0] = 0x47;
+  packet[1] = (payload_unit_start_indicator ? 0x40 : 0x00) |
+              static_cast<uint8_t>((pid >> 8) & 0x1f);
+  packet[2] = static_cast<uint8_t>(pid & 0xff);
+
+  if (payload.empty()) {
+    packet[3] = 0x20 | (continuity_counter & 0x0f);
+    packet[4] = 183;
+    packet[5] = 0x00;
+    return packet;
+  }
+
+  if (payload.size() == TsPacket::kPacketSize - 4) {
+    packet[3] = 0x10 | (continuity_counter & 0x0f);
+    base::span(packet).subspan<4>().copy_from(payload);
+    return packet;
+  }
+
+  packet[3] = 0x30 | (continuity_counter & 0x0f);
+  const size_t adaptation_field_length =
+      TsPacket::kPacketSize - 5 - payload.size();
+  packet[4] = static_cast<uint8_t>(adaptation_field_length);
+  if (adaptation_field_length > 0) {
+    packet[5] = 0x00;
+  }
+  base::span(packet).last(payload.size()).copy_from(payload);
+  return packet;
 }
 
 }  // namespace
@@ -593,6 +633,118 @@ TEST_F(Mp2tStreamParserTest, MultipleSPSPPSBeforeSlice) {
   InitializeParser();
   ParseMpeg2TsFile("extra-nalu.ts", 2048);
   parser_->Flush();
+}
+
+TEST_F(Mp2tStreamParserTest, HasUnparsedData) {
+  InitializeParser();
+  scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear-1280x720.ts");
+  base::span<const uint8_t> ts_bytes(*buffer);
+
+  // Complete stream with explicit PES packet lengths.
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(ts_bytes, 2048));
+  EXPECT_FALSE(parser_->HasUnparsedData());
+
+  // Complete HLS stream ending with an unbounded (`pes_packet_length == 0`)
+  // video PES packet.
+  parser_->Flush();
+  scoped_refptr<DecoderBuffer> hls_buffer =
+      ReadTestDataFile("bear-1280x720-hls.ts");
+  base::span<const uint8_t> hls_bytes(*hls_buffer);
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(hls_bytes, 2048));
+  EXPECT_FALSE(parser_->HasUnparsedData());
+
+  // Sub-packet (< 188 bytes) append leaves partial TS packet bytes queued.
+  parser_->Flush();
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(ts_bytes.first(100u), 2048));
+  EXPECT_TRUE(parser_->HasUnparsedData());
+  parser_->Flush();
+  EXPECT_FALSE(parser_->HasUnparsedData());
+
+  // 188-byte-aligned PAT packet declaring a section_length (255) that spans
+  // into a continuation packet.
+  const uint8_t kSplitPatHeader[] = {0x00, 0x00, 0xb0, 0xff, 0x00, 0x01};
+  auto split_pat_pkt =
+      MakeTsPacket(/*pid=*/0x0000, /*pusi=*/true, /*cc=*/0, kSplitPatHeader);
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(split_pat_pkt, 2048));
+  EXPECT_TRUE(parser_->HasUnparsedData());
+  parser_->Flush();
+  EXPECT_FALSE(parser_->HasUnparsedData());
+
+  // 188-byte-aligned PAT packet carrying only a 1-byte pointer_field (`0x00`)
+  // after adaptation stuffing, leaving `psi_byte_queue_` empty while waiting
+  // for the section header in the next packet.
+  const uint8_t kPointerOnlyPayload[] = {0x00};
+  auto pointer_only_pat_pkt = MakeTsPacket(/*pid=*/0x0000, /*pusi=*/true,
+                                           /*cc=*/0, kPointerOnlyPayload);
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(pointer_only_pat_pkt, 2048));
+  EXPECT_TRUE(parser_->HasUnparsedData());
+  parser_->Flush();
+  EXPECT_FALSE(parser_->HasUnparsedData());
+
+  // In `bear-1280x720-hls.ts`, the first two TS packets are a complete PAT and
+  // PMT registering video PID 0x0101.
+  constexpr uint16_t kHlsVideoPid = 0x0101;
+  const base::span<const uint8_t> pat_and_pmt =
+      hls_bytes.first(2 * TsPacket::kPacketSize);
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(pat_and_pmt, 2048));
+  EXPECT_FALSE(parser_->HasUnparsedData());
+
+  // 188-byte-aligned PUSI=1 packet on video PID with an empty payload
+  // (adaptation-only) leaves the PES parser awaiting its header.
+  auto empty_pusi_pes_pkt = MakeTsPacket(kHlsVideoPid, /*pusi=*/true, /*cc=*/0,
+                                         base::span<const uint8_t>());
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(empty_pusi_pes_pkt, 2048));
+  EXPECT_TRUE(parser_->HasUnparsedData());
+  parser_->Flush();
+
+  // 188-byte-aligned truncated PES header (< 9 bytes) on video PID.
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(pat_and_pmt, 2048));
+  const uint8_t kTruncatedPesHeader[] = {0x00, 0x00, 0x01, 0xe0,
+                                         0x00, 0x00, 0x80, 0x80};
+  auto truncated_pes_pkt =
+      MakeTsPacket(kHlsVideoPid, /*pusi=*/true, /*cc=*/0, kTruncatedPesHeader);
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(truncated_pes_pkt, 2048));
+  EXPECT_TRUE(parser_->HasUnparsedData());
+  parser_->Flush();
+
+  // 188-byte-aligned unbounded PES header with `pes_header_data_length` (5)
+  // truncated mid-PTS.
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(pat_and_pmt, 2048));
+  const uint8_t kTruncatedPtsPesHeader[] = {0x00, 0x00, 0x01, 0xe0, 0x00,
+                                            0x00, 0x80, 0x80, 0x05, 0x21};
+  auto truncated_pts_pkt = MakeTsPacket(kHlsVideoPid, /*pusi=*/true, /*cc=*/0,
+                                        kTruncatedPtsPesHeader);
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(truncated_pts_pkt, 2048));
+  EXPECT_TRUE(parser_->HasUnparsedData());
+  parser_->Flush();
+
+  // 188-byte-aligned unbounded video PES header with 0 ES payload bytes.
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(pat_and_pmt, 2048));
+  const uint8_t kHeaderOnlyVideoPes[] = {0x00, 0x00, 0x01, 0xe0, 0x00,
+                                         0x00, 0x80, 0x00, 0x00};
+  auto header_only_pes_pkt =
+      MakeTsPacket(kHlsVideoPid, /*pusi=*/true, /*cc=*/0, kHeaderOnlyVideoPes);
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(header_only_pes_pkt, 2048));
+  EXPECT_TRUE(parser_->HasUnparsedData());
+  parser_->Flush();
+
+  // 188-byte-aligned unbounded PES packet with a non-video stream_id (0xbe).
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(pat_and_pmt, 2048));
+  const uint8_t kNonVideoUnboundedPes[] = {0x00, 0x00, 0x01, 0xbe, 0x00,
+                                           0x00, 0x80, 0x00, 0x00, 0xff};
+  auto non_video_pes_pkt = MakeTsPacket(kHlsVideoPid, /*pusi=*/true, /*cc=*/0,
+                                        kNonVideoUnboundedPes);
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(non_video_pes_pkt, 2048));
+  EXPECT_TRUE(parser_->HasUnparsedData());
+  parser_->Flush();
+
+  // 188-byte-aligned bounded PES packet truncated before `pes_packet_length`
+  // bytes arrive (first 4 TS packets of `bear-1280x720.ts`).
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(
+      ts_bytes.first(4 * TsPacket::kPacketSize), 2048));
+  EXPECT_TRUE(parser_->HasUnparsedData());
+  parser_->Flush();
+  EXPECT_FALSE(parser_->HasUnparsedData());
 }
 
 }  // namespace mp2t

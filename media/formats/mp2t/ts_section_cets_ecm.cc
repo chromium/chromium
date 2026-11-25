@@ -75,5 +75,9 @@ void TsSectionCetsEcm::Reset() {
   // No state to clean up.
 }
 
+bool TsSectionCetsEcm::HasUnparsedSectionData() const {
+  return false;
+}
+
 }  // namespace mp2t
 }  // namespace media

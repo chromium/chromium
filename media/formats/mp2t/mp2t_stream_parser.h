@@ -61,6 +61,7 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   [[nodiscard]] bool AppendToParseBuffer(
       base::span<const uint8_t> buf) override;
   [[nodiscard]] ParseStatus Parse(int max_pending_bytes_to_inspect) override;
+  bool HasUnparsedData() const override;
 
  private:
   struct BufferQueueWithConfig {

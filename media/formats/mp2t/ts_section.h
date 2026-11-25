@@ -34,6 +34,10 @@ class TsSection {
 
   // Reset the state of the parser to its initial state.
   virtual void Reset() = 0;
+
+  // Returns true if this section parser holds an incomplete PSI section or PES
+  // header/packet awaiting continuation packets.
+  virtual bool HasUnparsedSectionData() const = 0;
 };
 
 }  // namespace mp2t

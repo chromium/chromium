@@ -39,6 +39,7 @@ class TsSectionCetsEcm : public TsSection {
              base::span<const uint8_t> buf) override;
   void Flush() override;
   void Reset() override;
+  bool HasUnparsedSectionData() const override;
 
  private:
   RegisterNewKeyIdAndIvCB register_new_key_id_and_iv_cb_;

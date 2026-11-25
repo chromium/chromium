@@ -32,6 +32,7 @@ class TsSectionCetsPssh : public TsSection {
              base::span<const uint8_t> buf) override;
   void Flush() override;
   void Reset() override;
+  bool HasUnparsedSectionData() const override;
 
  private:
   const RegisterPsshBoxesCB register_pssh_boxes_cb_;

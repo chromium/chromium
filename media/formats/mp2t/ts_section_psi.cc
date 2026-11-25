@@ -121,6 +121,10 @@ void TsSectionPsi::Reset() {
   ResetPsiState();
 }
 
+bool TsSectionPsi::HasUnparsedSectionData() const {
+  return !wait_for_pusi_;
+}
+
 void TsSectionPsi::ResetPsiState() {
   wait_for_pusi_ = true;
   psi_byte_queue_.Reset();
