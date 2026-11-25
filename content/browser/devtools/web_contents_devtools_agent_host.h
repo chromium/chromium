@@ -86,6 +86,8 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   void WebContentsDestroyed() override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
+  void DidStopLoading() override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void FrameDeleted(FrameTreeNodeId frame_tree_node_id) override;
@@ -103,6 +105,13 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   // Sets `is_unloaded_` to ComputeIsUnloaded(), and notifies observers if the
   // value changes.
   void UpdateIsUnloaded();
+
+  // Returns true if the tab is unloaded (see ComputeIsUnloaded()), no load is
+  // in progress, and the renderer did not crash. The auto-attacher does not
+  // attach to the page of such a tab, and an attach does not load the tab.
+  bool HasNoPage();
+  // Sends the HasNoPage() state to the auto-attacher.
+  void UpdateHasNoPage();
 
   DevToolsAgentHostImpl* GetPrimaryFrameAgent();
   scoped_refptr<DevToolsAgentHost> GetOrCreatePrimaryFrameAgent();

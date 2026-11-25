@@ -651,75 +651,98 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_AutoAttachToUnloadedTab) {
   // Verify that two attachedToTarget tab target events are received.
   base::DictValue attached_tab1_notif = WaitForMatchingNotification(
       "Target.attachedToTarget", base::BindRepeating(is_tab_target));
-  const std::string& session_id1 =
+  base::DictValue attached_tab2_notif = WaitForMatchingNotification(
+      "Target.attachedToTarget", base::BindRepeating(is_tab_target));
+
+  // Ensure `attached_tab1_notif` is the unloaded background tab and
+  // `attached_tab2_notif` is the active tab.
+  if (const std::string* url =
+          attached_tab1_notif.FindStringByDottedPath("targetInfo.url");
+      url && *url == url2.spec()) {
+    std::swap(attached_tab1_notif, attached_tab2_notif);
+  }
+
+  const std::string session_id1 =
       *attached_tab1_notif.FindStringByDottedPath("sessionId");
   ASSERT_EQ("tab",
             *attached_tab1_notif.FindStringByDottedPath("targetInfo.type"));
+  // A tab that session restore did not load yet is unloaded.
+  EXPECT_THAT(attached_tab1_notif.FindStringByDottedPath("targetInfo.subtype"),
+              testing::Pointee(std::string("unloaded")));
+  EXPECT_THAT(attached_tab1_notif.FindStringByDottedPath("targetInfo.url"),
+              testing::Pointee(url1.spec()));
+
+  const std::string session_id2 =
+      *attached_tab2_notif.FindStringByDottedPath("sessionId");
+  ASSERT_EQ("tab",
+            *attached_tab2_notif.FindStringByDottedPath("targetInfo.type"));
+  EXPECT_EQ(nullptr,
+            attached_tab2_notif.FindStringByDottedPath("targetInfo.subtype"));
+  EXPECT_THAT(attached_tab2_notif.FindStringByDottedPath("targetInfo.url"),
+              testing::Pointee(url2.spec()));
+
+  // Attaching to the tab targets should not force the background tab to load.
+  EXPECT_FALSE(background_tab->GetPrimaryMainFrame()->IsRenderFrameLive());
 
   base::DictValue set_auto_attach_params_for_tab;
   set_auto_attach_params_for_tab.Set("autoAttach", true);
   set_auto_attach_params_for_tab.Set("waitForDebuggerOnStart", false);
   set_auto_attach_params_for_tab.Set("flatten", true);
   SendSessionCommand("Target.setAutoAttach",
-                     set_auto_attach_params_for_tab.Clone(), session_id1,
-                     false);
-
-  base::DictValue attached_tab2_notif = WaitForMatchingNotification(
-      "Target.attachedToTarget", base::BindRepeating(is_tab_target));
-  const std::string& session_id2 =
-      *attached_tab2_notif.FindStringByDottedPath("sessionId");
-  ASSERT_EQ("tab",
-            *attached_tab2_notif.FindStringByDottedPath("targetInfo.type"));
-
+                     set_auto_attach_params_for_tab.Clone(), session_id1, true);
   SendSessionCommand("Target.setAutoAttach",
                      std::move(set_auto_attach_params_for_tab), session_id2,
-                     false);
+                     true);
 
   auto is_page_target = [](const base::DictValue& params) {
     const std::string* type = params.FindStringByDottedPath("targetInfo.type");
     return type && *type == "page";
   };
 
-  // Verify two attachedToTarget events for page targets are received.
-  base::DictValue attached_page1_notif = WaitForMatchingNotification(
-      "Target.attachedToTarget", base::BindRepeating(is_page_target));
+  // Only the active tab should auto-attach a page target while the background
+  // tab remains unloaded.
   base::DictValue attached_page2_notif = WaitForMatchingNotification(
       "Target.attachedToTarget", base::BindRepeating(is_page_target));
-
-  // The notifications can arrive in any order. The active tab is eagerly
-  // loaded, so it should have a URL. The background tab may not.
-  if (const std::string* url =
-          attached_page1_notif.FindStringByDottedPath("targetInfo.url");
-      url && *url == url2.spec()) {
-    std::swap(attached_page1_notif, attached_page2_notif);
-  }
-  // The background tab's URL may not be available yet.
   ASSERT_THAT(attached_page2_notif.FindStringByDottedPath("targetInfo.url"),
               testing::Pointee(url2.spec()));
-
-  const std::string& page_session_id1 =
-      *attached_page1_notif.FindStringByDottedPath("sessionId");
-  ASSERT_EQ("page",
-            *attached_page1_notif.FindStringByDottedPath("targetInfo.type"));
-
-  const std::string& page_session_id2 =
+  const std::string page_session_id2 =
       *attached_page2_notif.FindStringByDottedPath("sessionId");
   ASSERT_EQ("page",
             *attached_page2_notif.FindStringByDottedPath("targetInfo.type"));
 
+  EXPECT_FALSE(background_tab->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_FALSE(
+      HasExistingNotificationMatching([&](const base::DictValue& notification) {
+        const std::string* method = notification.FindString("method");
+        const base::DictValue* params = notification.FindDict("params");
+        return method && *method == "Target.attachedToTarget" && params &&
+               is_page_target(*params);
+      }));
+
+  // Load the background tab and verify that it auto-attaches its page target.
+  background_tab->GetController().LoadIfNecessary();
+  ASSERT_TRUE(content::WaitForLoadStop(background_tab));
+  EXPECT_TRUE(background_tab->GetPrimaryMainFrame()->IsRenderFrameLive());
+
+  base::DictValue attached_page1_notif = WaitForMatchingNotification(
+      "Target.attachedToTarget", base::BindRepeating(is_page_target));
+  const std::string page_session_id1 =
+      *attached_page1_notif.FindStringByDottedPath("sessionId");
+  ASSERT_EQ("page",
+            *attached_page1_notif.FindStringByDottedPath("targetInfo.type"));
+
   // Send Runtime.evaluate to both page targets and verify script result is
   // received for both.
-  EXPECT_TRUE(background_tab->GetPrimaryMainFrame()->IsRenderFrameLive());
-  EXPECT_TRUE(active_tab->GetPrimaryMainFrame()->IsRenderFrameLive());
-
   base::DictValue evaluate_params;
   evaluate_params.Set("expression", "1 + 2");
   const base::DictValue* evaluate_result1 = SendSessionCommand(
       "Runtime.evaluate", evaluate_params.Clone(), page_session_id1, true);
+  ASSERT_TRUE(evaluate_result1);
   ASSERT_EQ(3, evaluate_result1->FindIntByDottedPath("result.value"));
 
   const base::DictValue* evaluate_result2 = SendSessionCommand(
       "Runtime.evaluate", std::move(evaluate_params), page_session_id2, true);
+  ASSERT_TRUE(evaluate_result2);
   ASSERT_EQ(3, evaluate_result2->FindIntByDottedPath("result.value"));
 }
 

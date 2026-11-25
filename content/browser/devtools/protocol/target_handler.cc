@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/containers/flat_map.h"
@@ -449,9 +450,10 @@ class TargetHandler::ResponseThrottle : public TargetHandler::Throttle {
 class TargetHandler::RequestThrottle : public TargetHandler::Throttle {
  public:
   RequestThrottle(base::WeakPtr<protocol::TargetHandler> target_handler,
+                  TargetAutoAttacher* auto_attacher,
                   NavigationThrottleRegistry& registry,
                   DevToolsAgentHost* throttled_agent_host)
-      : Throttle(target_handler, target_handler->auto_attacher_, registry) {
+      : Throttle(target_handler, auto_attacher, registry) {
     SetThrottledAgentHost(throttled_agent_host);
   }
   ~RequestThrottle() override = default;
@@ -538,7 +540,6 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
   }
 
   void Detach(bool host_closed) {
-    ResumeIfThrottled();
     handler_->frontend_->DetachedFromTarget(id_, agent_host_->GetId());
     if (flatten_protocol_) {
       handler_->root_session_->DetachChildSession(id_);
@@ -550,7 +551,18 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     handler_->UpdateAgentHostObserver();
     devtools_session_ = nullptr;
     agent_host_ = nullptr;
+    // Resume throttles only after removing `this` from `attached_sessions_`,
+    // because resuming a navigation can re-entrantly detach sessions.
+    // `throttle` is owned by the navigation and stays valid until Clear();
+    // because `this` is already removed from `auto_attached_sessions_`,
+    // Throttle::CleanupPointers() will not touch this destroyed session.
+    Throttle* throttle = std::exchange(throttle_, nullptr);
+    scoped_refptr<DevToolsThrottleHandle> worker_throttle =
+        std::move(worker_throttle_);
     handler_->attached_sessions_.erase(id_);
+    if (throttle) {
+      throttle->Clear();
+    }
   }
 
   bool IsWaitingForDebuggerOnStart() const {
@@ -564,6 +576,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     }
   }
 
+  bool HasThrottle() const { return throttle_ != nullptr; }
   void SetThrottle(Throttle* throttle) { throttle_ = throttle; }
   void SetWorkerThrottle(
       scoped_refptr<DevToolsThrottleHandle> worker_throttle) {
@@ -849,19 +862,26 @@ void TargetHandler::MaybeCreateAndAddNavigationThrottle(
   // If we got here for main frame, it must be either browser or tab target.
   // TODO(crbug.com/573156711): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
-  DCHECK(auto_attacher == auto_attacher_);
+  DCHECK(auto_attacher == auto_attacher_ ||
+         auto_attach_related_targets_.contains(auto_attacher));
   DevToolsAgentHost* host =
       RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
   TargetHandler::Session* waiting_session = FindWaitingSession(host);
   if (waiting_session) {
     // RFDTAHs created during auto-attach had no renderer allocated originally,
-    // and hence have messages paused, but with navigation we're supposed to
-    // have a live host, so we can send messages to renderer now.
-    CHECK(frame_tree_node->current_frame_host()->IsRenderFrameLive(),
-          base::NotFatalUntil::M159);
-    // Only resume sending messages to frame agents (i.e. skip for WebContents
-    // ones).
-    waiting_session->ResumeSendingMessagesToAgent();
+    // and hence have messages paused. When a live frame exists, resume sending
+    // messages to the renderer now. Unloaded tabs (such as restored or
+    // discarded tabs) may have no live renderer yet, so renderer-handled
+    // commands stay queued until a renderer attaches when the navigation
+    // commits; browser-handled commands (such as Network/Fetch overrides) still
+    // run immediately, and Runtime.runIfWaitingForDebugger immediately resumes
+    // the navigation throttle in the browser before being forwarded to the
+    // renderer for its response.
+    if (frame_tree_node->current_frame_host()->IsRenderFrameLive()) {
+      // Only resume sending messages to frame agents (i.e. skip for WebContents
+      // ones).
+      waiting_session->ResumeSendingMessagesToAgent();
+    }
   } else {
     // Currently, either RFDTAH or WCDTAH may be waiting for debugger (when
     // `waitForDebuggerOnStart` is honored for the Tab target, it is ignored
@@ -874,18 +894,30 @@ void TargetHandler::MaybeCreateAndAddNavigationThrottle(
       return;
     }
   }
-  // window.open() navigations are throttled on the renderer side and the main
-  // request will not be sent until runIfWaitingForDebugger is received from
-  // the client, so there is no need to throttle the navigation in the
-  // browser.
+  // Each waiting session tracks only one RequestThrottle. Both the browser and
+  // tab auto-attachers can call into the same TargetHandler for one navigation
+  // (e.g. via Target.autoAttachRelated), and a tab session can also see
+  // concurrent main-frame navigations (e.g. a prerender). Skip adding a second
+  // throttle so the first one is not overwritten and left permanently paused.
+  if (waiting_session->HasThrottle()) {
+    return;
+  }
+  // Initial window.open() navigations are throttled on the renderer side and
+  // the main request will not be sent until runIfWaitingForDebugger is received
+  // from the client, so there is no need to throttle the navigation in the
+  // browser. Browser-initiated navigations or subsequent navigations (such as
+  // reloading a discarded popup tab) have no renderer-side request pause and
+  // must be throttled here.
   //
   // New window navigations (such as ctrl+click) should be throttled before
   // the main request is sent to apply user agent and other overrides.
-  if (frame_tree_node->opener()) {
+  if (frame_tree_node->opener() &&
+      frame_tree_node->is_on_initial_empty_document() &&
+      navigation_handle->IsRendererInitiated()) {
     return;
   }
   registry.AddThrottle(std::make_unique<RequestThrottle>(
-      weak_factory_.GetWeakPtr(), registry, host));
+      weak_factory_.GetWeakPtr(), auto_attacher, registry, host));
 }
 
 TargetHandler::Session* TargetHandler::FindWaitingSession(

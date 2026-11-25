@@ -1584,6 +1584,10 @@ void CreateAndAddNavigationThrottles(NavigationThrottleRegistry& registry) {
     for (DevToolsAgentHostImpl* host : BrowserDevToolsAgentHost::Instances()) {
       host->auto_attacher()->CreateAndAddNavigationThrottles(registry);
     }
+    if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
+            WebContentsImpl::FromFrameTreeNode(frame_tree_node))) {
+      agent_host->auto_attacher()->CreateAndAddNavigationThrottles(registry);
+    }
   }
 }
 

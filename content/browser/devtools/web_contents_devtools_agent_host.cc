@@ -38,6 +38,17 @@ WebContentsDevToolsAgentHost* FindAgentHost(WebContents* wc) {
   return it == GetAgentHostInstances().end() ? nullptr : it->second;
 }
 
+// Returns true if the primary main frame has an active or committing
+// navigation. Unlike WebContents::HasUncommittedNavigationInPrimaryMainFrame(),
+// this ignores a speculative RenderFrameHost that has no pending commit
+// navigation (for example, during DidStopLoading() right before
+// FrameTreeNode::ResetNavigationRequest() discards the speculative RFH).
+bool HasActivePrimaryMainFrameNavigation(WebContents* wc) {
+  FrameTreeNode* root =
+      static_cast<WebContentsImpl*>(wc)->GetPrimaryFrameTree().root();
+  return root->navigation_request() || root->HasPendingCommitNavigation();
+}
+
 }  // namespace
 
 // static
@@ -54,7 +65,7 @@ scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetOrCreateForTab(
 class WebContentsDevToolsAgentHost::AutoAttacher
     : public protocol::TargetAutoAttacher {
  public:
-  AutoAttacher() = default;
+  explicit AutoAttacher(WebContentsDevToolsAgentHost* host) : host_(host) {}
 
   void UpdateChildFrameTrees(bool update_target_info) {
     if (!auto_attach())
@@ -79,17 +90,36 @@ class WebContentsDevToolsAgentHost::AutoAttacher
     UpdateAssociatedPages();
   }
 
+  // A tab without a page (see HasNoPage()) has no page target to attach to.
+  // When such a tab starts to load, attach to its page as a new target, so
+  // that clients can pause the load with `waitForDebuggerOnStart`.
+  void SetHasNoPage(bool has_no_page) {
+    if (has_no_page_ == has_no_page) {
+      return;
+    }
+    has_no_page_ = has_no_page;
+    if (web_contents_ && !web_contents_->IsBeingDestroyed()) {
+      UpdateAssociatedPages(
+          /*attach_primary_as_new=*/!has_no_page_ &&
+          HasActivePrimaryMainFrameNavigation(web_contents_));
+    }
+  }
+
  private:
   void UpdateAutoAttach(base::OnceClosure callback) override {
     if (web_contents_ && !web_contents_->IsBeingDestroyed()) {
+      // Refresh has_no_page_ in case the controller was restored after this
+      // host was created (FinishRestore() fires no WebContentsObserver event).
+      has_no_page_ = host_->HasNoPage();
       UpdateAssociatedPages();
     }
     protocol::TargetAutoAttacher::UpdateAutoAttach(std::move(callback));
   }
 
-  base::flat_set<scoped_refptr<DevToolsAgentHost>> UpdateAssociatedPages() {
+  base::flat_set<scoped_refptr<DevToolsAgentHost>> UpdateAssociatedPages(
+      bool attach_primary_as_new = false) {
     base::flat_set<scoped_refptr<DevToolsAgentHost>> hosts;
-    if (auto_attach() && web_contents_) {
+    if (auto_attach() && web_contents_ && !has_no_page_) {
       CHECK(!web_contents_->IsBeingDestroyed());
       auto* rfh = static_cast<RenderFrameHostImpl*>(
           web_contents_->GetPrimaryMainFrame());
@@ -100,6 +130,13 @@ class WebContentsDevToolsAgentHost::AutoAttacher
       if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
         hosts.insert(RenderFrameDevToolsAgentHost::GetOrCreateFor(
             rfh->frame_tree_node()));
+      }
+      if (attach_primary_as_new) {
+        if (DevToolsAgentHost* primary_host =
+                RenderFrameDevToolsAgentHost::GetFor(rfh->frame_tree_node());
+            primary_host && hosts.contains(primary_host)) {
+          DispatchAutoAttach(primary_host, wait_for_debugger_on_start());
+        }
       }
       // Include prerender targets from new-tab prerenders
       // (target_hint="_blank") that live in separate WebContents.
@@ -137,7 +174,9 @@ class WebContentsDevToolsAgentHost::AutoAttacher
     hosts.insert(RenderFrameDevToolsAgentHost::GetOrCreateFor(ftn));
   }
 
+  raw_ptr<WebContentsDevToolsAgentHost> host_;
   raw_ptr<WebContents> web_contents_ = nullptr;
+  bool has_no_page_ = false;
 };
 
 // static
@@ -183,7 +222,7 @@ void WebContentsDevToolsAgentHost::AddAllAgentHosts(
 
 WebContentsDevToolsAgentHost::WebContentsDevToolsAgentHost(WebContents* wc)
     : DevToolsAgentHostImpl(base::UnguessableToken::Create().ToString()),
-      auto_attacher_(std::make_unique<AutoAttacher>()) {
+      auto_attacher_(std::make_unique<AutoAttacher>(this)) {
   InnerAttach(wc);
   NotifyCreated();
 }
@@ -202,9 +241,12 @@ void WebContentsDevToolsAgentHost::InnerAttach(WebContents* wc) {
   const bool inserted =
       GetAgentHostInstances().insert(std::make_pair(wc, this)).second;
   CHECK(inserted);
-  auto_attacher_->SetWebContents(wc);
   Observe(wc);
   is_unloaded_ = ComputeIsUnloaded();
+  // Set this before the WebContents, so that the auto-attacher does not
+  // attach to the page of a tab without a page.
+  auto_attacher_->SetHasNoPage(HasNoPage());
+  auto_attacher_->SetWebContents(wc);
   // Once created, persist till underlying WC is detached, so that
   // the target id is retained.
   AddRef();
@@ -349,10 +391,22 @@ GURL WebContentsDevToolsAgentHost::GetFaviconURL() {
 }
 
 bool WebContentsDevToolsAgentHost::Activate() {
-  if (auto host = GetOrCreatePrimaryFrameAgent()) {
-    return host->Activate();
+  scoped_refptr<WebContentsDevToolsAgentHost> protect(this);
+  auto host = GetOrCreatePrimaryFrameAgent();
+  if (!host) {
+    return false;
   }
-  return false;
+  const bool activated = host->Activate();
+  // Activation does not always load a tab without a page, so load it here.
+  // The activation can start the load itself, so check the state again.
+  if (web_contents() && HasNoPage()) {
+    NavigationController& controller = web_contents()->GetController();
+    if (!controller.NeedsReload()) {
+      controller.SetNeedsReload();
+    }
+    controller.LoadIfNecessary();
+  }
+  return activated;
 }
 
 void WebContentsDevToolsAgentHost::Reload() {
@@ -425,6 +479,18 @@ void WebContentsDevToolsAgentHost::RenderFrameHostChanged(
   }
 }
 
+void WebContentsDevToolsAgentHost::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    UpdateHasNoPage();
+  }
+}
+
+void WebContentsDevToolsAgentHost::DidStopLoading() {
+  // A load of a tab without a page can stop before it commits.
+  UpdateHasNoPage();
+}
+
 void WebContentsDevToolsAgentHost::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   CHECK(web_contents());
@@ -460,20 +526,13 @@ DevToolsSession::Mode WebContentsDevToolsAgentHost::GetSessionMode() {
 }
 
 bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session) {
+  // Do not load a tab without a page. The auto-attacher does not attach to its
+  // page until the tab starts to load, and clients can load the tab with
+  // Target.activateTarget.
   auto* wc = web_contents();
   if (wc && !RenderFrameDevToolsAgentHost::ShouldAllowSession(
                 wc->GetPrimaryMainFrame(), session)) {
     return false;
-  }
-  // Force WebContents to render if it does not have a live renderer.
-  // This is a sign that the page is backgrounded and unloaded
-  // from memory usually when re-opening a saved browser session.
-  // We should not force a reload if there is already an uncommitted navigation,
-  // as this can re-enter the navigation controller and crash.
-  if (wc && !wc->GetPrimaryMainFrame()->IsRenderFrameLive() &&
-      !wc->HasUncommittedNavigationInPrimaryMainFrame()) {
-    wc->GetController().SetNeedsReload();
-    wc->GetController().LoadIfNecessary();
   }
 
   session->SetBrowserOnly(true);
@@ -518,13 +577,20 @@ WebContentsDevToolsAgentHost::RevalidateSessionAccess() {
 
 void WebContentsDevToolsAgentHost::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->HasCommitted()) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+  if (navigation_handle->HasCommitted()) {
     scoped_refptr<WebContentsDevToolsAgentHost> retain_this =
         RevalidateSessionAccess();
     // A new document replaces the unloaded page. A navigation that does not
-    // commit (for example, a 204 response) does not get here.
+    // commit (for example, a 204 response) does not clear the unloaded state.
     UpdateIsUnloaded();
+  } else {
+    // A navigation that stops before committing leaves the tab without a page.
+    // Update here as well as in DidStopLoading(), because DidStopLoading() does
+    // not fire if another frame is still loading.
+    UpdateHasNoPage();
   }
 }
 
@@ -552,14 +618,36 @@ bool WebContentsDevToolsAgentHost::ComputeIsUnloaded() {
 }
 
 void WebContentsDevToolsAgentHost::UpdateIsUnloaded() {
-  const bool is_unloaded = ComputeIsUnloaded();
-  if (is_unloaded == is_unloaded_) {
-    return;
-  }
   scoped_refptr<WebContentsDevToolsAgentHost> retain_this(this);
-  is_unloaded_ = is_unloaded;
+  const bool is_unloaded = ComputeIsUnloaded();
+  if (is_unloaded != is_unloaded_) {
+    is_unloaded_ = is_unloaded;
+    if (web_contents()) {
+      NotifyNavigated();
+    }
+  }
+  UpdateHasNoPage();
+}
+
+bool WebContentsDevToolsAgentHost::HasNoPage() {
+  WebContents* wc = web_contents();
+  if (!wc || wc->IsBeingDestroyed() ||
+      HasActivePrimaryMainFrameNavigation(wc)) {
+    return false;
+  }
+  if (!ComputeIsUnloaded()) {
+    return false;
+  }
+  // A crashed tab keeps its page target, so that clients can reload it. An
+  // in-place discard marks the document as discarded, also if the renderer
+  // process exits.
+  auto* rfh = static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
+  return rfh->document_associated_data().is_discarded() || !wc->IsCrashed();
+}
+
+void WebContentsDevToolsAgentHost::UpdateHasNoPage() {
   if (web_contents()) {
-    NotifyNavigated();
+    auto_attacher_->SetHasNoPage(HasNoPage());
   }
 }
 }  // namespace content

@@ -8,7 +8,9 @@
 
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/web_contents.h"
 
 namespace content {
 namespace protocol {
@@ -51,11 +53,16 @@ void InspectorHandler::TargetDetached(const std::string& reason) {
 }
 
 Response InspectorHandler::Enable() {
-  // When enabling before the first ever navigation, there is no renderer
-  // yet, but reporting a "crash" in this case would be a mistake.
+  // When enabling before the first ever navigation, or while an unloaded tab
+  // (that did not crash) is navigating to create a renderer, there is no
+  // renderer yet, but reporting a "crash" in this case would be a mistake.
   if (host_ && !host_->IsRenderFrameLive() &&
       !host_->frame_tree()->controller().IsInitialBlankNavigation()) {
-    TargetCrashed();
+    WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
+    const bool is_crashed = web_contents && web_contents->IsCrashed();
+    if (is_crashed || !host_->frame_tree_node()->HasNavigation()) {
+      TargetCrashed();
+    }
   }
   return Response::Success();
 }

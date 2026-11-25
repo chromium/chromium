@@ -108,8 +108,7 @@ IN_PROC_BROWSER_TEST_P(DevToolsTabDiscardTest, DiscardReportsUnloaded) {
   content::WebContents* old_contents = tab_strip_model->GetWebContentsAt(1);
 
   // Discover tab targets. This forces the creation of tab hosts for new
-  // WebContents. Do not attach to the tab target: an attach loads a tab
-  // without a live main frame.
+  // WebContents.
   AttachToBrowserTarget();
   base::DictValue discover_params;
   discover_params.Set("discover", true);
@@ -175,6 +174,92 @@ IN_PROC_BROWSER_TEST_P(DevToolsTabDiscardTest, DiscardReportsUnloaded) {
   observer.Wait();
   WaitForSubtypeChanged(new_target_id, "");
   EXPECT_EQ("", GetSubtype(new_target_id));
+}
+
+// Attaching to a discarded tab target (in-place or replacement) must not load
+// it or auto-attach a page target. Target.activateTarget loads the tab and
+// auto-attaches its page target.
+IN_PROC_BROWSER_TEST_P(DevToolsTabDiscardTest,
+                       AttachDoesNotLoadAndActivateLoads) {
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::kNewBackgroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(2, tab_strip_model->count());
+  content::WebContents* old_contents = tab_strip_model->GetWebContentsAt(1);
+
+  ASSERT_TRUE(
+      resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
+          old_contents)
+          ->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT));
+  content::WebContents* discarded_contents =
+      tab_strip_model->GetWebContentsAt(1);
+  if (IsInPlaceDiscard()) {
+    ASSERT_EQ(old_contents, discarded_contents);
+  } else {
+    ASSERT_NE(old_contents, discarded_contents);
+  }
+  ASSERT_TRUE(discarded_contents->WasDiscarded());
+
+  AttachToBrowserTarget();
+  base::DictValue discover_params;
+  discover_params.Set("discover", true);
+  discover_params.Set("filter", TabFilter());
+  ASSERT_TRUE(
+      SendCommandSync("Target.setDiscoverTargets", std::move(discover_params)));
+
+  const std::string target_id =
+      content::DevToolsAgentHost::GetOrCreateForTab(discarded_contents)
+          ->GetId();
+  base::DictValue attach_params;
+  attach_params.Set("targetId", target_id);
+  attach_params.Set("flatten", true);
+  const base::DictValue* attach_result =
+      SendCommandSync("Target.attachToTarget", std::move(attach_params));
+  ASSERT_TRUE(attach_result);
+  const std::string tab_session_id = *attach_result->FindString("sessionId");
+
+  ClearNotifications();
+  base::DictValue auto_attach_params;
+  auto_attach_params.Set("autoAttach", true);
+  auto_attach_params.Set("waitForDebuggerOnStart", false);
+  auto_attach_params.Set("flatten", true);
+  ASSERT_TRUE(SendSessionCommand("Target.setAutoAttach",
+                                 std::move(auto_attach_params), tab_session_id,
+                                 true));
+
+  auto is_page_attached = [](const base::DictValue& params) {
+    const std::string* type = params.FindStringByDottedPath("targetInfo.type");
+    return type && *type == "page";
+  };
+  // Target.getTargetInfo makes sure that the client received all events.
+  EXPECT_EQ(kUnloaded, GetSubtype(target_id));
+  EXPECT_FALSE(
+      HasExistingNotificationMatching([&](const base::DictValue& notification) {
+        const std::string* method = notification.FindString("method");
+        const base::DictValue* params = notification.FindDict("params");
+        return method && *method == "Target.attachedToTarget" && params &&
+               is_page_attached(*params);
+      }));
+  EXPECT_FALSE(discarded_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_FALSE(
+      discarded_contents->HasUncommittedNavigationInPrimaryMainFrame());
+
+  // Target.activateTarget loads the discarded tab and auto-attaches its page.
+  ClearNotifications();
+  content::TestNavigationObserver observer(discarded_contents, 1);
+  base::DictValue activate_params;
+  activate_params.Set("targetId", target_id);
+  ASSERT_TRUE(
+      SendCommandSync("Target.activateTarget", std::move(activate_params)));
+  WaitForMatchingNotification("Target.attachedToTarget",
+                              base::BindRepeating(is_page_attached));
+  observer.Wait();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+  EXPECT_TRUE(discarded_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  WaitForSubtypeChanged(target_id, "");
+  EXPECT_EQ("", GetSubtype(target_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
