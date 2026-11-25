@@ -420,3 +420,195 @@ describe('NetworkRequest authRequired challenges and headers', () => {
     assert.isUndefined(started.authChallenges);
   });
 });
+
+describe('NetworkRequest duplicate response headers and ExtraInfo', () => {
+  function setupRequest(interceptPhase?: Network.InterceptPhase): {
+    request: NetworkRequest;
+    eventManager: sinon.SinonStubbedInstance<EventManager>;
+  } {
+    const eventManager = sinon.createStubInstance(EventManager);
+    const networkStorage = sinon.createStubInstance(NetworkStorage);
+    networkStorage.getInterceptsForPhase.callsFake((_req, phase) =>
+      interceptPhase !== undefined && phase === interceptPhase
+        ? new Set(['intercept-1'])
+        : new Set(),
+    );
+    const cdpTarget = sinon.createStubInstance(CdpTarget);
+    Object.defineProperty(cdpTarget, 'cdpClient', {
+      value: {sendCommand: sinon.stub().resolves({})},
+    });
+    cdpTarget.isSubscribedTo.returns(true);
+
+    const request = new NetworkRequest(
+      REQUEST_ID,
+      eventManager,
+      networkStorage,
+      cdpTarget,
+      0,
+    );
+    request.onRequestWillBeSentEvent({
+      requestId: REQUEST_ID,
+      loaderId: 'loader-1',
+      documentURL: REQUEST_URL,
+      request: {
+        url: REQUEST_URL,
+        method: 'GET',
+        headers: {},
+        initialPriority: 'High',
+        referrerPolicy: 'no-referrer',
+      },
+      timestamp: 1,
+      wallTime: 1,
+      initiator: {type: 'other'},
+      redirectHasExtraInfo: false,
+      frameId: 'frame',
+    });
+    request.onRequestWillBeSentExtraInfoEvent({
+      requestId: REQUEST_ID,
+      associatedCookies: [],
+      headers: {},
+      connectTiming: {requestTime: 1},
+    });
+    return {request, eventManager};
+  }
+
+  async function resolveResponseStarted(
+    eventManager: sinon.SinonStubbedInstance<EventManager>,
+  ): Promise<Network.ResponseData> {
+    const startedCall = eventManager.registerPromiseEvent
+      .getCalls()
+      .find((call) => call.args[2] === 'network.responseStarted');
+    assert.isDefined(startedCall);
+    const eventEntry = startedCall!.args[0];
+    const resolvedStarted = await (typeof eventEntry === 'function'
+      ? eventEntry()
+      : eventEntry);
+    if (resolvedStarted.kind !== 'success') {
+      assert.fail('Expected success responseStarted event');
+    }
+    return (resolvedStarted.value.params as {response: Network.ResponseData})
+      .response;
+  }
+
+  it('waits for responseReceivedExtraInfo and splits duplicate response headers', async () => {
+    const {request, eventManager} = setupRequest();
+    const responseInfoHeaders = {'content-type': 'text/plain'};
+    request.onResponseReceivedEvent({
+      requestId: REQUEST_ID,
+      loaderId: 'loader-1',
+      timestamp: 2,
+      type: 'Document',
+      hasExtraInfo: true,
+      frameId: 'frame',
+      response: {
+        url: REQUEST_URL,
+        status: 200,
+        statusText: 'OK',
+        headers: responseInfoHeaders,
+        mimeType: 'text/plain',
+        connectionReused: false,
+        connectionId: 1,
+        encodedDataLength: 10,
+        securityState: 'insecure',
+        charset: '',
+      },
+    });
+
+    // `responseStarted` waits for `responseReceivedExtraInfo`.
+    assert.isFalse(
+      eventManager.registerPromiseEvent
+        .getCalls()
+        .some((call) => call.args[2] === 'network.responseStarted'),
+    );
+
+    request.onResponseReceivedExtraInfoEvent({
+      requestId: REQUEST_ID,
+      blockedCookies: [],
+      headers: {
+        'Content-Type': 'text/plain',
+        'Set-Cookie': 'a=b\nc=d',
+        'X-Custom': 'v1\nv2',
+      },
+      resourceIPAddressSpace: 'Loopback',
+      statusCode: 200,
+    });
+
+    const response = await resolveResponseStarted(eventManager);
+    assert.deepEqual(response.headers, [
+      {name: 'Content-Type', value: {type: 'string', value: 'text/plain'}},
+      {name: 'Set-Cookie', value: {type: 'string', value: 'a=b'}},
+      {name: 'Set-Cookie', value: {type: 'string', value: 'c=d'}},
+      {name: 'X-Custom', value: {type: 'string', value: 'v1'}},
+      {name: 'X-Custom', value: {type: 'string', value: 'v2'}},
+    ]);
+    assert.deepEqual(responseInfoHeaders, {'content-type': 'text/plain'});
+  });
+
+  it('uses Fetch.requestPaused responseHeaders when response info and extraInfo are absent', async () => {
+    const {request, eventManager} = setupRequest(
+      Network.InterceptPhase.ResponseStarted,
+    );
+    request.onRequestPaused({
+      ...pausedEvent,
+      responseStatusCode: 200,
+      responseStatusText: 'OK',
+      responseHeaders: [
+        {name: 'Set-Cookie', value: 'a=b'},
+        {name: 'Set-Cookie', value: 'c=d'},
+        {name: 'Content-Type', value: 'text/plain'},
+      ],
+    });
+
+    const response = await resolveResponseStarted(eventManager);
+    assert.deepEqual(response.headers, [
+      {name: 'Set-Cookie', value: {type: 'string', value: 'a=b'}},
+      {name: 'Set-Cookie', value: {type: 'string', value: 'c=d'}},
+      {name: 'Content-Type', value: {type: 'string', value: 'text/plain'}},
+    ]);
+  });
+
+  it('emits responseStarted immediately for disk-cached responses and ignores stale extraInfo headers', async () => {
+    const {request, eventManager} = setupRequest();
+    request.onResponseReceivedEvent({
+      requestId: REQUEST_ID,
+      loaderId: 'loader-1',
+      timestamp: 2,
+      type: 'Document',
+      hasExtraInfo: true,
+      frameId: 'frame',
+      response: {
+        url: REQUEST_URL,
+        status: 200,
+        statusText: 'OK',
+        headers: {'Content-Type': 'text/plain'},
+        mimeType: 'text/plain',
+        fromDiskCache: true,
+        connectionReused: false,
+        connectionId: 1,
+        encodedDataLength: 0,
+        securityState: 'insecure',
+        charset: '',
+      },
+    });
+    // `responseStarted` is queued immediately without waiting for `extraInfo`.
+    const immediateCall = eventManager.registerPromiseEvent
+      .getCalls()
+      .find((call) => call.args[2] === 'network.responseStarted');
+    assert.isDefined(immediateCall);
+
+    // A stale `extraInfo` event arriving before serialization is ignored.
+    request.onResponseReceivedExtraInfoEvent({
+      requestId: REQUEST_ID,
+      blockedCookies: [],
+      headers: {'X-Stale': 'stale'},
+      resourceIPAddressSpace: 'Loopback',
+      statusCode: 304,
+    });
+
+    const response = await resolveResponseStarted(eventManager);
+    assert.strictEqual(response.status, 200);
+    assert.deepEqual(response.headers, [
+      {name: 'Content-Type', value: {type: 'string', value: 'text/plain'}},
+    ]);
+  });
+});

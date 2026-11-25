@@ -351,7 +351,7 @@ class LocalHttpServer:
         self,
         content: str | bytes | Iterable[bytes] | Callable[[], str] | None = None,
         content_type: str = "text/html",
-        headers: dict[str, str] | None = None,
+        headers: dict[str, str] | list[tuple[str, str]] | None = None,
     ) -> str:
         """
         Returns a URL that serves a 200 response.

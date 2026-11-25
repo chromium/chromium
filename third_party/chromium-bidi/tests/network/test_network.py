@@ -1073,3 +1073,59 @@ async def test_network_before_request_sent_event_redirects_with_data_collectors(
             }
         ),
     ]
+
+
+@pytest.mark.asyncio
+async def test_network_duplicate_response_headers(
+    websocket, context_id, local_server_http
+):
+    url = local_server_http.url_200(
+        "ok",
+        content_type="text/plain",
+        headers=[
+            ("Set-Cookie", "a=b"),
+            ("Set-Cookie", "c=d"),
+            ("X-Custom", "v1"),
+            ("X-Custom", "v2"),
+        ],
+    )
+    await subscribe(
+        websocket,
+        ["network.responseStarted", "network.responseCompleted"],
+        [context_id],
+    )
+
+    # Do not use `execute_command` here. It drops the events that arrive before
+    # the command response.
+    command_id = await send_JSON_command(
+        websocket,
+        {
+            "method": "browsingContext.navigate",
+            "params": {"url": url, "wait": "complete", "context": context_id},
+        },
+    )
+
+    events = {}
+    command_completed = False
+    while len(events) < 2 or not command_completed:
+        message = await read_JSON_message(websocket)
+        if message.get("id") == command_id:
+            assert message["type"] == "success"
+            command_completed = True
+        elif (
+            message.get("method")
+            in ("network.responseStarted", "network.responseCompleted")
+            and message["params"]["request"]["url"] == url
+        ):
+            events[message["method"]] = message
+
+    for event in events.values():
+        headers = event["params"]["response"]["headers"]
+        set_cookies = [
+            h["value"]["value"] for h in headers if h["name"].lower() == "set-cookie"
+        ]
+        custom = [
+            h["value"]["value"] for h in headers if h["name"].lower() == "x-custom"
+        ]
+        assert set_cookies == ["a=b", "c=d"]
+        assert custom == ["v1", "v2"]
