@@ -1,2 +1,3 @@
 per-file system_info_handler.*=kbr@chromium.org
 per-file fedcm_handler.*=file://content/browser/webid/OWNERS
+per-file smart_card_*=file://third_party/blink/renderer/modules/smart_card/OWNERS
