@@ -19,6 +19,8 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "build/buildflag.h"
+#include "third_party/blink/renderer/platform/fonts/buildflags.h"
 
 namespace blink::hb_shim {
 
@@ -133,11 +135,15 @@ struct LanguageImpl;
 using Language = const LanguageImpl*;
 inline constexpr Language kLanguageInvalid = nullptr;
 
-// TODO(crbug.com/427409139): Wire to
-// RuntimeEnabledFeatures::HarfRustShapingEnabled() once all Blink font and
-// shaping call sites are migrated to hb_shim.
 ALWAYS_INLINE bool IsHarfRustEnabled() {
+#if BUILDFLAG(ENABLE_HARFRUST)
+  // TODO(crbug.com/427409139): Wire to
+  // RuntimeEnabledFeatures::HarfRustShapingEnabled() once all Blink font and
+  // shaping call sites are migrated to hb_shim.
   return false;
+#else
+  return false;
+#endif
 }
 
 template <typename T>
@@ -163,15 +169,18 @@ struct HandleTraits;
     ALWAYS_INLINE static Tag* FromHr(Hr* p) {                                  \
       return reinterpret_cast<Tag*>(p);                                        \
     }                                                                          \
-    ALWAYS_INLINE static void Destroy(Tag* p, bool is_harfrust) {              \
+    ALWAYS_INLINE static void Destroy(Tag* p,                                  \
+                                      [[maybe_unused]] bool is_harfrust) {     \
       if (!p) {                                                                \
         return;                                                                \
       }                                                                        \
-      if (is_harfrust) {                                                       \
-        HrDestroy(ToHr(p));                                                    \
-      } else {                                                                 \
-        HbDestroy(ToHb(p));                                                    \
+      if constexpr (BUILDFLAG(ENABLE_HARFRUST)) {                              \
+        if (is_harfrust) {                                                     \
+          HrDestroy(ToHr(p));                                                  \
+          return;                                                              \
+        }                                                                      \
       }                                                                        \
+      HbDestroy(ToHb(p));                                                      \
     }                                                                          \
   }
 

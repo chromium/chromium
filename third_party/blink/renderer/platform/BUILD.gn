@@ -19,6 +19,7 @@ import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
+import("//third_party/harfbuzz/harfbuzz.gni")
 import("//third_party/jinja2/jinja2.gni")
 import("//third_party/libgav1/options.gni")
 import("//third_party/webrtc/webrtc.gni")
@@ -176,6 +177,7 @@ group("make_platform_generated") {
   public_deps = [
     ":bindings_buildflags",
     ":color_data",
+    ":font_buildflags",
     ":font_family_names",
     ":runtime_enabled_features",
     ":runtime_feature_state_override_context",
@@ -359,6 +361,13 @@ buildflag_header("bindings_buildflags") {
     "BLINK_BINDINGS_TRACE_ENABLED=$enable_blink_bindings_tracing",
     "HAS_ZSTD_COMPRESSION=$has_zstd_compression",
   ]
+}
+
+buildflag_header("font_buildflags") {
+  header = "buildflags.h"
+  header_dir = "third_party/blink/renderer/platform/fonts"
+
+  flags = [ "ENABLE_HARFRUST=$enable_harfrust" ]
 }
 
 config("blink_platform_implementation") {
