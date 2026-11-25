@@ -141,6 +141,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2295218613066132598">Sýna flýtileiðir á vefsvæði í Chrome</translation>
 <translation id="2301513536169703857">Skráðu þig inn á Chromium til að fá aðgang að aðgangsorðum, bókamerkjum og fleiru í öllum tækjunum þínum</translation>
 <translation id="2307973900865360088">Hafa í dokku</translation>
+<translation id="2308558013860776484">Deildu skjámynd af efni utan Chrome, eins og öðrum forritum eða skrám</translation>
 <translation id="2309047409763057870">Þetta er aukaleg uppsetning á Google Chrome sem ekki er hægt að gera að sjálfgefnum vafra.</translation>
 <translation id="2345992953227471816">Chrome komst að því að eftirfarandi viðbætur innihalda spilliforrit:</translation>
 <translation id="2358140144860869442">Skráðu þig inn á Chrome til að fá aðgang að leslistanum þínum og fleiru í öllum tækjunum þínum</translation>
@@ -250,6 +251,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="3294686910656423119">Notkunarupplýsingar og bilanaskýrslur</translation>
 <translation id="3327226547491422998">Chrome getur síðan spurt hvort þú viljir nota vistuðu upplýsingarnar til að fylla út eyðublöð sjálfkrafa síðar</translation>
 <translation id="3352986031709923790">efsta horn leitarsvæðis hægra megin: til hægri <ph name="RIGHT" />%, efst <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">Vefsvæði og Chrome geta notað gervigreind sem keyrir í tækinu þínu fyrir eiginleika á borð við samantektir, yfirlestur, skjátexta og fleira. Þetta er aðskilið frá Gemini í Chrome. <ph name="BEGIN_LINK" />Nánar um gervigreind í tæki<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Sumir eiginleikar og viðbætur Chrome eru með flýtileiðir. Þú getur valið að kveikja aftur á þeim.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verður endurræst núna}=1{Chrome verður endurræst eftir 1 sekúndu}one{Chrome verður endurræst eftir # sekúndu}other{Chrome verður endurræst eftir # sekúndur}}</translation>
 <translation id="3380249972812870825">Ýttu á <ph name="GLOBAL_HOTKEY" /> til að opna Gemini í Chrome</translation>
@@ -349,6 +351,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="4427306783828095590">Aukin vernd gengur lengra í að loka á vefveiðar og spilliforrit</translation>
 <translation id="4434353761996769206">Uppsetningarvilla: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Deildu þessu skjali með Gemini í Chrome til að fá fljótlegt yfirlit og spyrja frekari spurninga</translation>
+<translation id="4440999670272408191">Þú getur fjarlægt þau hvenær sem er. Chrome kann að sækja þau aftur sjálfkrafa þegar vefsvæði eða eiginleiki þarf á þeim að halda.</translation>
 <translation id="4450664632294415862">Chrome – innskráning á net – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Önnur aðgerð er í gangi í Google Chrome. Reyndu aftur síðar.</translation>
 <translation id="4493028449971051158">Villa í ræsingu: keyrðu uppsetningarforritið sem kerfisstjóri.</translation>
@@ -356,6 +359,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="4501839397124711198">Þú getur fest Google-leit í hliðarglugganum til að spyrja spurninga á meðan þú vafrar</translation>
 <translation id="4571503333518166079">Opna tilkynningastillingar Chrome</translation>
 <translation id="4580939929828762295">Settu öryggið á oddinn með Google-aðgangsorðastjórnun</translation>
+<translation id="4589544932092381064">Sýna leit með Chrome á Windows-forritastiku og kveikja á flýtilykli</translation>
 <translation id="459622048091363950">Þegar Chrome hefur aðgang munu vefsvæði geta beðið þig um aðgang.</translation>
 <translation id="4598116752460667024">Leitaðu að hvaða ferli sem er á listanum.</translation>
 <translation id="4600710005438004015">Ekki var hægt að uppfæra Chrome í nýjustu útgáfu og þú ferð því á mis við nýja eiginleika og öryggislagfæringar.</translation>
@@ -371,6 +375,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-inn)</translation>
 <translation id="4756182432527369254">Styttir hleðslutíma vefsvæða með V8-vél Chrome en gerir Chrome örlítið berskjaldaðri gagnvart árásum</translation>
 <translation id="4768676935374695498">Leita í þessu vídeói með Google-linsu</translation>
+<translation id="4783580253728290203">Þegar slökkt er á þessu fjarlægir Chrome gervigreindarlíkön úr tækinu og sækir þau ekki aftur. Sumir eiginleikar vefsvæða og Chrome hætta hugsanlega að virka.</translation>
 <translation id="479167709087336770">Þetta notar sömu ritvilluleit og er notuð í Google-leit. Textinn sem þú skrifar í vafranum er sendur til Google. Þú getur alltaf breytt þessu í stillingunum.</translation>
 <translation id="4793679854893018356">Kynntu þér hvernig Chrome gætir að öryggi þínu</translation>
 <translation id="4803313124144656665">Loka Google-leit í Chrome</translation>
@@ -456,6 +461,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Ekki er hægt að tengjast internetinu. Staðgengilsþjónninn krefst auðkenningar.</translation>
 <translation id="5709557627224531708">Stilltu Chrome sem sjálfgefinn vafra</translation>
+<translation id="5715427327524421317">Chrome sækir og uppfærir þessi gervigreindarlíkön sjálfkrafa</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Ítarleg vernd krefst þess að þú endurræsir Chrome til að setja upp uppfærslu. Einangraði glugginn opnast ekki aftur.}one{Ítarleg vernd krefst þess að þú endurræsir Chrome til að setja upp uppfærslu. # einangraður gluggi opnast ekki aftur.}other{Ítarleg vernd krefst þess að þú endurræsir Chrome til að setja upp uppfærslu. # einangraðir gluggar opnast ekki aftur.}}</translation>
 <translation id="5719246646468301581">Viðbótarþjónustuskilmálar Google Chrome og ChromeOS</translation>
 <translation id="5736850870166430177">Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í örugga vefskoðun, þar á meðal hluta af innihaldi síðna</translation>
@@ -547,6 +553,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6491330562720922580">QR-kóði til að sækja Chrome-vafra í snjalltæki</translation>
 <translation id="6493527311031785448">Google Chrome er að reyna að <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome var lokað sjálfkrafa</translation>
+<translation id="650039555447046671">Chrome mun fjarlægja gervigreindarlíkön úr þessu tæki. Sumir eiginleikar vefsvæða og Chrome hætta hugsanlega að virka.</translation>
 <translation id="6506909944137591434">Chrome verður að fá leyfi fyrir myndavél til að búa til þrívíddarkort af umhverfi þínu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Veittu Chrome aðgang að staðsetningunni þinni í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" /> til að geta notað hana</translation>
@@ -585,6 +592,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6877155553248388166">neðsta horn leitarsvæðis hægra megin: til hægri <ph name="RIGHT" />%, neðst <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Opna leit með Chrome</translation>
 <translation id="6881299373831449287">Uppfærir Chrome</translation>
+<translation id="6881997500528805781">Notar geymslurými tækis. Chrome fjarlægir ónotuð gervigreindarlíkön eftir 45 daga eða þegar geymslurými er lítið</translation>
 <translation id="6885412569789873916">Chrome Beta forrit</translation>
 <translation id="6893363893008038481">Fjarlægja reikning úr Chrome</translation>
 <translation id="6896758677409633944">Afrita</translation>

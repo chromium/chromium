@@ -5727,15 +5727,6 @@ Pour les appareils non gérés, cette règle ne s'applique pas, et les utilisate
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise la taille de cache par défaut. L'utilisateur peut modifier ce paramètre via le flag "--disk-cache-size".
 
       Remarque : La valeur spécifiée dans cette règle aide à optimiser divers sous-systèmes de cache dans le navigateur. La consommation totale réelle de tous les caches sur le disque sera ainsi plus élevée, mais dans le même ordre de grandeur que la valeur spécifiée.</translation>
-<translation id="4582488040806837065">Cette règle configure le certificat client géré provisionné lorsque <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> est activée.
-
-Le champ <ph name="COMMON_NAME_SOURCE_FIELD" /> spécifie la source du nom commun (CN) de l'objet du certificat :
-
-- S'il n'est pas configuré ou s'il est défini sur <ph name="PROFILE_ID_VALUE" />, le nom commun de l'objet du certificat correspond à l'ID du profil du navigateur.
-
-- S'il est défini sur <ph name="COMPUTER_NAME_VALUE" />, le nom commun du sujet du certificat correspond au nom d'hôte de l'appareil. Remarque : Si vous définissez cette propriété sur <ph name="COMPUTER_NAME_VALUE" />, une propriété au niveau de l'appareil est utilisée dans un certificat au niveau du profil, ce qui a des implications sur la confidentialité des appareils non gérés ou partagés, car le nom d'hôte de l'appareil sera inclus dans le certificat.
-
-Cette règle n'a aucun effet si <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> est désactivée ou n'est pas définie.</translation>
 <translation id="4591366717022345234">Fournir le build Quick Fix aux utilisateurs</translation>
 <translation id="4593391169954484940">Hachage SHA-256 du fichier.</translation>
 <translation id="4594027034164195984">Autoriser les images tierces à afficher une commande d'authentification</translation>

@@ -22,11 +22,13 @@
 <translation id="48558539577516920">Güvenlik duvarınızın veya virüsten korunma programınızın ayarlarından,
         Chromium'un ağa erişmesine izin verin.</translation>
 <translation id="4949828774841497663">Uygulamalar &gt; Sistem Ayarları &gt; Ağ'a gidip etkin ağı seçin, Ayrıntılar... düğmesini tıklayın ve seçilmiş olabilecek tüm proxy'lerin seçimini kaldırın.</translation>
+<translation id="5228339820845278804">Hatırlatıcı: Chromium'un en iyi güvenlik özellikleri cebinizde</translation>
 <translation id="6480456350195404966">Chromium menüsü &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Ağ ve internet &gt; Proxy'ye gidip "Ayarları otomatik olarak algıla"nın seçimini kaldırın.</translation>
 <translation id="648062525172759633">Bu sayfalar Chromium geliştiricilerinin kullanması için tasarlanmış olup etkin şekilde yönetilmiyor veya test edilmemiş olabilir. Bu özellikleri etkinleştirmek için <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> adresine giderek hata ayıklama sayfalarını etkinleştirme düğmesini tıklayın ve tekrar bu sayfaya gelin.</translation>
 <translation id="6549378540556750549">Chromium ayrıca diğer <ph name="BEGIN_LINK_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="6613594504749178791">Değişiklikleriniz, Chromium tekrar başlatıldığında geçerli olacak.</translation>
 <translation id="691026815377248078">Chromium'un eşlemeye devam edebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">Hareket halindeyken Chromium'un güvenliğinden yararlanmak için Chromium uygulamasını kullanın</translation>
 <translation id="7681937895330411637">Chromium, <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açık kaynak projesiyle hazırlanmıştır.</translation>
 <translation id="7861509383340276692">Chromium menüsü &gt;
           <ph name="SETTINGS_TITLE" />

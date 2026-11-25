@@ -842,6 +842,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1921544956190977703">Vous disposez de la meilleure sécurité qu'offre Chrome contre les sites Web, les extensions et les téléchargements dangereux</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> ppp</translation>
 <translation id="1921600948984918136">« <ph name="NAME" /> » est enregistrée uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-la dans votre compte Google.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Ouvrir avec</translation>
 <translation id="1925017091976104802">Appuyez sur <ph name="MODIFIER_KEY_DESCRIPTION" /> pour coller</translation>
 <translation id="1925021887439448749">Entrer une adresse Web personnalisée</translation>
@@ -1388,6 +1389,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2528487766183344810">Veuillez déverrouiller <ph name="TOKEN_NAME" /> pour exporter le certificat client.</translation>
 <translation id="2532198298278778531">Gérer le DNS sécurisé dans les paramètres de Chrome OS Flex</translation>
 <translation id="253434972992662860">Sus&amp;pendre</translation>
+<translation id="2534439599863644240">Port série</translation>
 <translation id="253498598929009420">Le site pourra voir le contenu de votre écran</translation>
 <translation id="253557089021624350">Compte de conservation de connexion active</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> peut afficher et modifier les fichiers et les dossiers suivants</translation>

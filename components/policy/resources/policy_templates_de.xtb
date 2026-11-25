@@ -1791,7 +1791,7 @@ Die Standardwerte auf Desktop-Computern sind: Füllungsdeckkraft bei 4, Konturd
 Die „Füllungsdeckkraft“ ist ein Prozentwert von 0 (völlig durchsichtig) bis 100 (völlig undurchsichtig).
 Die „Konturdeckkraft“ ist ein Prozentwert von 0 (völlig durchsichtig) bis 100 (völlig undurchsichtig).
 Der Wert für „Schriftgröße“ wird in Punkten angegeben.
-Die „Zeitstempel-Zeitzone“ gibt die IANA-Zeitzonen-ID (z. B. America/Toronto) an, die zum Formatieren von Zeitstempeln in Wasserzeichen verwendet wird (ab Chrome 152 unterstützt). Sie entspricht den Namen in der IANA-Zeitzonendatenbank (https://www.iana.org/time-zones). Dies wird derzeit unter iOS nicht unterstützt.</translation>
+Die „Zeitstempel-Zeitzone“ gibt die IANA-Zeitzonen-ID (z. B. „America/Toronto“) an, die zum Formatieren von Zeitstempeln in Wasserzeichen verwendet wird (ab Chrome 152 unterstützt). Sie entspricht den Namen in der IANA-Zeitzonendatenbank (https://www.iana.org/time-zones). Dies wird derzeit unter iOS nicht unterstützt.</translation>
 <translation id="2124881675920287921">Diese Richtlinie ist ab M82 veraltet und wird in M85 entfernt. Verwende stattdessen <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Die Deaktivierung von <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> entspricht der Deaktivierung von <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Die Aktivierung von <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> oder fehlende Konfigurierung dieser Einstellung entspricht der fehlenden Konfigurierung von <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />.
 
       Wenn diese Richtlinie auf "False" gesetzt ist, können Nutzer nicht mehr auswählen, ob sie ausgewählte Systeminformationen und Seiteninhalte an die Google-Server senden möchten. Ist die Richtlinie auf "True" gesetzt oder nicht konfiguriert, können Nutzer einige Systeminformationen und Seiteninhalte an Safe Browsing senden, um bei der Erfassung schädlicher Apps und Websites zu helfen.
@@ -5691,15 +5691,6 @@ Bei nicht verwalteten Geräten gilt diese Richtlinie nicht und Nutzer können da
       Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> die Standardgröße. Nutzer können diese Einstellung mit dem Flag „--disk-cache-size“ ändern.
 
       Hinweis: Der in dieser Richtlinie angegebene Wert wird als Hinweis für verschiedene Cache-Subsysteme des Browsers verwendet. Daher ist der tatsächliche Speicherplatzverbrauch aller Caches insgesamt größer, der angegebene Wert trifft aber in etwa zu.</translation>
-<translation id="4582488040806837065">Mit dieser Richtlinie wird das verwaltete Clientzertifikat konfiguriert, das bereitgestellt wird, wenn „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" />“ aktiviert ist.
-
-Das Feld „<ph name="COMMON_NAME_SOURCE_FIELD" />“ gibt die Quelle des Common Name (CN) des Eigentümers an:
-
-– Wenn es nicht konfiguriert oder auf „<ph name="PROFILE_ID_VALUE" />“ gesetzt ist, wird als Common Name des Eigentümers die Browserprofil-ID festgelegt.
-
-– Wenn als Wert „<ph name="COMPUTER_NAME_VALUE" />“ festgelegt ist, wird als Common Name des Eigentümers der Hostname des Computers verwendet. Hinweis: Wenn du diesen Wert auf „<ph name="COMPUTER_NAME_VALUE" />“ festlegst, wird ein Attribut auf Geräteebene in einem Zertifikat auf Profilebene verwendet. Dies hat Auswirkungen auf den Datenschutz auf nicht verwalteten oder gemeinsam genutzten Geräten, da der Hostname des Computers im Zertifikat enthalten ist.
-
-Diese Richtlinie hat keine Auswirkungen, wenn „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" />“ deaktiviert oder nicht konfiguriert ist.</translation>
 <translation id="4591366717022345234">Nutzern einen Quick-Fix-Build bereitstellen</translation>
 <translation id="4593391169954484940">SHA-256-Hash der Datei.</translation>
 <translation id="4594027034164195984">Zulassen, dass in Bildern von Drittanbietern eine Authentifizierungsaufforderung angezeigt wird</translation>

@@ -1297,6 +1297,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="244071666433939959">As aplicacións ábrense nunha ventá</translation>
 <translation id="2442916515643169563">Sombra do texto</translation>
 <translation id="2443487764245141020">É posible que algúns sitios tamén necesiten recoñecer o teu dispositivo usando un identificador</translation>
+<translation id="2444282212665587861">actualización, actualizacións, actualizar, versión, compilación, información, buscar actualizacións</translation>
 <translation id="244475495405467108">Pechar pestanas á esquerda</translation>
 <translation id="2444874983932528148">Retoma facilmente a túa actividade onde a deixaches</translation>
 <translation id="2445081178310039857">É obrigatorio o directorio raíz da extensión.</translation>
@@ -2134,6 +2135,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3321512411079201586">&amp;Illado</translation>
 <translation id="3323288183237359315">Instalar para Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Co fin de protexer a túa privacidade, quitáronse os permisos dun sitio}other{Co fin de protexer a túa privacidade, quitáronse os permisos dalgúns sitios}}</translation>
+<translation id="3325561120400598624">Os chats revísanse e úsanse para adestrar modelos de IA xenerativa. Gemini é unha IA e pode cometer erros. É posible que algúns contidos non sexan adecuados para todo o mundo. Podes <ph name="BEGIN_LINK_MANAGE_HISTORY" />xestionar o teu historial<ph name="END_LINK_MANAGE_HISTORY" />, incluída a <ph name="BEGIN_LINK_LOCATION_INFO" />información sobre a túa localización<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información sobre as opcións ao teu dispor<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Estilo</translation>
 <translation id="3331974543021145906">Información da aplicación</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: reproducindo vídeo no modo de pantalla superposta</translation>
@@ -2259,6 +2261,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Carga 1 ficheiro .pdf para usalo coa túa pregunta}other{Carga ata # ficheiros .pdf para usalos coa túa pregunta}}</translation>
 <translation id="3456750372063895499">Abrir ligazón nunha ventá illada</translation>
 <translation id="345693547134384690">Abrir &amp;imaxe na pestana nova</translation>
+<translation id="3456949031754827166">Reordenar</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Manter grupo}other{Manter grupos}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Eliminouse 1 marcador}other{Elimináronse # marcadores}}</translation>
 <translation id="3471687177769494956">Editar atallo de navegación</translation>
@@ -3313,6 +3316,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4602776638371779614">Esta pestana está buscando dispositivos Bluetooth de maneira activa</translation>
 <translation id="4605026046465576953">Esta aplicación non se pode abrir porque non tes permiso para executar aplicacións web illadas</translation>
 <translation id="4606551464649945562">Non permitir que os sitios creen un mapa 3D do que te rodea e fagan un seguimento da posición da cámara</translation>
+<translation id="4606965546067937011">velocidade, RAM, atraso, bloqueo, fallo, recurso, uso, batería, optimizador, lento, memoria, aforro de memoria</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Queres eliminar o grupo de pestanas?}other{Queres eliminar os grupos de pestanas?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Carga 1 ficheiro para usalo coa túa pregunta}other{Carga ata # ficheiros para usalos coa túa pregunta}}</translation>
 <translation id="4608500690299898628">&amp;Buscar...</translation>
@@ -4146,6 +4150,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="5535769176698670170">Cambiar pola vista superior</translation>
 <translation id="5536642445914063887">Cambiar de perfil</translation>
 <translation id="5537725057119320332">Emitir</translation>
+<translation id="553876896781261711">eliminar, quitar, seguranza, privacidade, limpeza, almacenamento, restablecer, memoria caché, cookies, lento, velocidade, historial</translation>
 <translation id="5541091577812545428">Non se modificou o contrasinal</translation>
 <translation id="5542132724887566711">Perfil</translation>
 <translation id="5543983818738093899">Comprobando estado...</translation>
@@ -4734,6 +4739,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6214157047210274853">Editar en Google Wallet</translation>
 <translation id="621470880408090483">Non permitir que os sitios se conecten a dispositivos Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Para manter a salvo os teus contrasinais, <ph name="BRAND" /> bloquéase despois de 1 minuto de inactividade}other{Para manter a salvo os teus contrasinais, <ph name="BRAND" /> bloquéase despois de # minutos de inactividade}}</translation>
+<translation id="6215427500141060726">Os chats revísanse e úsanse para adestrar modelos de IA xenerativa. Gemini é unha IA e pode cometer erros. Podes <ph name="BEGIN_LINK_MANAGE_HISTORY" />xestionar o teu historial<ph name="END_LINK_MANAGE_HISTORY" />, incluída a <ph name="BEGIN_LINK_LOCATION_INFO" />información sobre a túa localización<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información sobre as opcións ao teu dispor<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Sitios e aplicacións rexeitados</translation>
 <translation id="6216696360484424239">Iniciar sesión automaticamente</translation>
 <translation id="6218961554829577610">Non me gustou a voz</translation>
@@ -4885,6 +4891,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="639880411171387127">A túa selección de Google Lens. Preme Introducir ou Retroceso para eliminala</translation>
 <translation id="6400360390396538896">Sempre en <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Deixar de enfocar grupo de pestanas</translation>
+<translation id="6401522392962817913">Ao continuar, aceptas as Condicións de servizo de Google Payments. No Aviso de privacidade indícase como se tratan os teus datos. A tarxeta gárdase na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="6402042774506839496">Para saber o motivo, ponte en contacto con quen programou a aplicación</translation>
 <translation id="6402921224457714577">Os sitios poden solicitar permiso para controlar e volver programar os teus dispositivos MIDI</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
@@ -4973,6 +4980,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6499143127267478107">Resolvendo host en script de proxy...</translation>
 <translation id="6503077044568424649">Máis visitados</translation>
 <translation id="6504601948739128893">Permiso denegado para utilizar os tipos de letra instalados no dispositivo</translation>
+<translation id="6505525633061207363">credenciais, inicio de sesión, iniciar sesión, clave de acceso, bloqueo, bloquear, caixa forte, claves, inicio de sesión, iniciar sesión, acceder</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> quere instalar a seguinte aplicación neste dispositivo:}other{<ph name="APP_NAME" /> quere instalar as seguintes aplicacións neste dispositivo:}}</translation>
 <translation id="6508248480704296122">Relacionada con <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>

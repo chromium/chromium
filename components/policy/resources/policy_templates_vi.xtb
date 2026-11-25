@@ -5826,15 +5826,6 @@ Các mẫu URL không được xung đột với <ph name="CONTROLLED_FRAME_BLOC
       Nếu bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ dùng kích thước mặc định. Người dùng có thể thay đổi chế độ cài đặt đó bằng cờ --disk-cache-size.
 
       Xin lưu ý: Giá trị được chỉ định trong chính sách này được dùng làm gợi ý cho nhiều hệ thống bộ nhớ đệm con trong trình duyệt. Do đó, tổng mức tiêu thụ ổ đĩa thực tế của tất cả bộ nhớ đệm sẽ cao hơn nhưng trong cùng một bậc độ lớn như giá trị được chỉ định.</translation>
-<translation id="4582488040806837065">Chính sách này định cấu hình chứng chỉ máy khách được quản lý và được cấp khi <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> bật.
-
-Trường <ph name="COMMON_NAME_SOURCE_FIELD" /> chỉ định nguồn cho Tên chung (CN) của chủ thể chứng chỉ:
-
-– Nếu bạn không đặt hoặc đặt thành <ph name="PROFILE_ID_VALUE" />, Tên chung của chủ thể chứng chỉ sẽ được đặt thành mã nhận dạng hồ sơ của trình duyệt.
-
-– Nếu bạn đặt thành <ph name="COMPUTER_NAME_VALUE" />, Tên chung của chủ thể chứng chỉ sẽ được đặt thành tên máy chủ của thiết bị. Lưu ý: Khi bạn đặt thuộc tính này thành <ph name="COMPUTER_NAME_VALUE" />, một thuộc tính ở cấp thiết bị sẽ được dùng trong chứng chỉ có phạm vi hồ sơ. Điều này có ảnh hưởng đến quyền riêng tư trên các thiết bị không được quản lý hoặc thiết bị dùng chung vì tên máy chủ của thiết bị sẽ được đưa vào chứng chỉ.
-
-Chính sách này không có hiệu lực nếu bạn tắt hoặc không đặt <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" />.</translation>
 <translation id="4591366717022345234">Cung cấp Bản dựng Quick Fix cho người dùng</translation>
 <translation id="4593391169954484940">Hàm băm SHA-256 của tệp.</translation>
 <translation id="4594027034164195984">Cho phép hình ảnh của bên thứ ba hiện lời nhắc xác thực</translation>

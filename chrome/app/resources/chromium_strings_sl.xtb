@@ -72,6 +72,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1792680680989393197">Odstranite jih lahko kadar koli. Chromium jih lahko samodejno znova prenese, ko jih spletno mesto ali funkcija potrebuje.</translation>
 <translation id="1793486931176048546">Kliknite <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> v obvestilu sistema Windows, če želite Chromium pripeti v opravilno vrstico za hitri dostop.</translation>
 <translation id="1808667845054772817">Vnovična namestitev Chromiuma</translation>
+<translation id="1814482312667514397">Z aplikacijo Chromium v telefonu si zagotovite Chromiumove najboljše varnostne funkcije na poti</translation>
 <translation id="1820835682567584003">Chromium poskuša <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. V napravi <ph name="DEVICE" /> boste imeli na voljo tudi razširitve in drugo.</translation>
 <translation id="183031085822326697">Ko boste naslednjič odprli Chromium v napravi <ph name="DEVICE_TYPE" />, bo prikazan poziv za uporabo Googlovega upravitelja gesel.</translation>
@@ -135,6 +136,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Najmanj ena razširitev za Chromium je dostopala do 1 naprave HID}=1{Najmanj ena razširitev za Chromium dostopa do 1 naprave HID}one{Najmanj ena razširitev za Chromium dostopa do # naprave HID}two{Najmanj ena razširitev za Chromium dostopa do # naprav HID}few{Najmanj ena razširitev za Chromium dostopa do # naprav HID}other{Najmanj ena razširitev za Chromium dostopa do # naprav HID}}</translation>
 <translation id="2401032172288869980">Chromium potrebuje dovoljenje za fotoaparat in mikrofon za to spletno mesto.</translation>
 <translation id="2403703063067034158">Napaka pri zagonu: Trenutno se izvaja še en primer nastavitve. Poskusite znova pozneje.</translation>
+<translation id="241044568699443215">Vzemite varnost Chromiuma s sabo na pot z aplikacijo Chromium v napravi <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Povezave iz poljubne aplikacije odprite v Chromiumu in poskrbite, da bo brskalnik dostopen v opravilni vrstici</translation>
 <translation id="2425157128016763890">Kliknite gumb za povzetek, če želite ta dokument deliti z Geminijem v Chromiumu, da pridobite hiter pregled in zastavite dodatna vprašanja</translation>
 <translation id="2440750600860946460">Z <ph name="BEGIN_LINK" />orodji iz Chromiuma<ph name="END_LINK" /> lahko varno brskate in imate nadzor</translation>
@@ -753,6 +755,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8907580949721785412">Chromium poskuša prikazati gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="8910309838319708610">Uspelo je. Z načinom umetne inteligence v Iskanju lahko med brskanjem preprosto postavljate vprašanja</translation>
 <translation id="8932992523185907506">Chromium ni več privzeti brskalnik. Želite Chromium nastaviti kot privzeti brskalnik?</translation>
+<translation id="8940844567350264767">Z aplikacijo Chromium izkoristite Chromiumove najboljše varnostne funkcije na poti</translation>
 <translation id="8941642502866065432">Chromiuma ni mogoče posodobiti</translation>
 <translation id="8944232836376404813">S tem dejanjem se bo zgodilo naslednje:
           <ph name="LINE_BREAKS" />

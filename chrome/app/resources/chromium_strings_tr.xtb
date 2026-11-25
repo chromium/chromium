@@ -67,6 +67,7 @@
 <translation id="1774152462503052664">Chromium'un arka planda çalışmasına izin ver</translation>
 <translation id="1793486931176048546">Hızlı erişim için Chromium'u görev çubuğunuza sabitlemek isterseniz Windows bildiriminde <ph name="BEGIN_BOLD" />Evet<ph name="END_BOLD" /> düğmesini tıklayın.</translation>
 <translation id="1808667845054772817">Chromium'u yeniden yükle</translation>
+<translation id="1814482312667514397">Telefonunuzdaki Chromium uygulamasıyla Chromium'un en iyi güvenlik özelliklerinden hareket halindeyken yararlanın</translation>
 <translation id="1820835682567584003">Chromium şunu yapmaya çalışıyor: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> zaten oturum açmış durumda. Göz atma işlemlerinizi ayrı tutmak için Chromium'da kendi profilinizde <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açın. Ayrıca, <ph name="DEVICE" /> içindeki uzantılarınıza ve diğer öğelere de erişebilirsiniz.</translation>
 <translation id="183031085822326697"><ph name="DEVICE_TYPE" /> cihazınızda, Chromium'u bir sonraki açışınızda Google Şifre Yöneticisi'ni kullanmanız için bir istem görürsünüz.</translation>
@@ -130,6 +131,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Bir veya daha fazla Chromium uzantısı, 1 insan arabirim cihazına erişiyordu}=1{Bir veya daha fazla Chromium uzantısı, 1 insan arabirim cihazına erişiyor}other{Bir veya daha fazla Chromium uzantısı, # insan arabirim cihazına erişiyor}}</translation>
 <translation id="2401032172288869980">Bu site için Chromium'un kamera ve mikrofon izinlerine ihtiyacı var</translation>
 <translation id="2403703063067034158">Başlatma hatası: Şu anda başka bir kurulum işlemi devam ediyor. Lütfen daha sonra tekrar deneyin.</translation>
+<translation id="241044568699443215"><ph name="DEVICE_TYPE" /> cihazınızda Chromium uygulamasıyla hareket halindeyken Chromium'un güvenliğinden yararlanın</translation>
 <translation id="2418322681019544463">Uygulamalardaki bağlantıları Chromium'da açın ve tarayıcıyı görev çubuğunuzda erişilebilir tutun</translation>
 <translation id="2425157128016763890">Kısa bir genel bakış almak ve ek sorular sormak için Özetle düğmesine tıklayıp bu belgeyi Chromium'daki Gemini ile paylaşın</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium araçları<ph name="END_LINK" /> ile güvenli bir şekilde göz atabilir ve kontrolü elinizde tutabilirsiniz</translation>
@@ -741,6 +743,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8907580949721785412">Chromium şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="8910309838319708610">İşlem tamamlandı. Arama AI Modu ile artık göz atarken kolayca soru sorabilirsiniz</translation>
 <translation id="8932992523185907506">Chromium artık varsayılan tarayıcınız değil. Chromium varsayılan tarayıcı olsun mu?</translation>
+<translation id="8940844567350264767">Chromium ile Chromium'un en iyi güvenlik özelliklerinden hareket halindeyken yararlanın</translation>
 <translation id="8941642502866065432">Chromium güncellenemiyor</translation>
 <translation id="8944232836376404813">Bu işlem ile:
           <ph name="LINE_BREAKS" />

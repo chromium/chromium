@@ -968,6 +968,11 @@ Minimum eşik 1 dakikadır.
       Bu politika False (Yanlış) değerine ayarlanırsa kullanıcılar kendi yazıcılarını ekleyemez ve yapılandıramazlar. Ayrıca kullanıcılar, önceden yapılandırılmış yazıcıları kullanarak da yazdırma işlemi yapamazlar.
       </translation>
 <translation id="1613327425322354195">Cihaz güvenlik durumu raporla</translation>
+<translation id="1613552398317518165">Bu politika kullanımdan kaldırılmış olup geçersizdir. Varsayılan arama istekleri her zaman alma yöntemi kullanılarak gönderildiğinden, bu politika ile belirlenen parametreler hiçbir zaman uygulanmaz. Bunun yerine, <ph name="SEARCH_TERM_MARKER" /> yer tutucusu da dahil olmak üzere arama URL'sini yapılandırmak için <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> politikasını kullanın.
+
+POST parametreleri yalnızca <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> üzerinden görsel arama için desteklenir.
+
+Daha önce, <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> ayarı, POST yöntemiyle bir URL'de arama yapılırken parametrelerin virgülle ayrılmış ad-değer çiftleri olarak belirtilmesi için kullanılıyordu.</translation>
 <translation id="1615221548356595305">İstemci sertifikaları kullanıldığında bile bu ana makineler için HTTP/2 bağlantılarının birleşmesine izin ver</translation>
 <translation id="1616280227447957376">Belirli kaynaklarda SSL uyarı sayfasından devam etmeye izin ver</translation>
 <translation id="1617235075406854669">Tarayıcı ve indirme geçmişinin silinmesini etkinleştir</translation>
@@ -2554,6 +2559,19 @@ Politika, Devre dışı değerine ayarlanırsa
 <translation id="2521581787935130926">Yer işareti çubuğunda uygulamalar kısayolunu göster</translation>
 <translation id="2522304491589804974">Uzantı kurulum izin listesini yapılandırma</translation>
 <translation id="2523511232831599126">Oturum açma ekranında erişilebilirlik kısayollarını etkinleştir</translation>
+<translation id="2524400223625951315">İzole Mod'da zorunlu yüklenmiş uzantıların davranışını belirtir.
+
+Bu, <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> aracılığıyla veya <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> içinde <ph name="INSTALLATION_MODE_FIELD" />, <ph name="FORCE_INSTALLED_VALUE" /> olarak ayarlanmış şekilde yapılandırılan uzantılar için geçerlidir. <ph name="INSTALLATION_MODE_FIELD" /> değeri <ph name="NORMAL_INSTALLED_VALUE" /> olarak ayarlanmış şekilde yapılandırılan uzantılar <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" /> tarafından kontrol edilir.
+
+0 (her zaman etkin) değerine ayarlanır veya ayarlanmadan bırakılırsa zorunlu yüklenmiş uzantılar, İzole Mod'da her zaman etkin olur ve kullanıcı tarafından devre dışı bırakılamaz.
+
+1 (varsayılan olarak etkin) değerine ayarlanırsa zorunlu yüklenmiş uzantılar, İzole Mod'da varsayılan olarak etkinleştirilir ve kullanıcı tarafından devre dışı bırakılabilir. Politika 1 değerinde kaldığı sürece kullanıcının seçimi önceliklidir. Kullanıcı, İzole Mod'un dışında da zorunlu yüklenmiş uzantıları devre dışı bırakamaz.
+
+Manifest dosyasında <ph name="INCOGNITO_MANIFEST_KEY" /> değerini <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> olarak ayarlayan uzantılar, bu politikadan bağımsız olarak İzole Mod'da çalışamaz.
+
+Bu politika yalnızca <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> etkinleştirildiğinde geçerli olur.
+
+Bu politikanın geçerli olması için <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> lisansı gerekir.</translation>
 <translation id="252742292004421898">Bu sitelerde Direct Sockets API'ye izin ver</translation>
 <translation id="2528762900096510743">Otomatik oturum kapatma hizmetini etkinleştir</translation>
 <translation id="2529880111512635313">Yüklenmeye zorlanan uygulama ve uzantıların listesini yapılandır</translation>
@@ -4041,6 +4059,7 @@ Bu API, Chrome 145'te kaldırıldığından bunun yerine requestStorageAccess y�
 
       Bu politikanın ayarlanmadığı siteler için, ayarlanmışsa <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> politikası geçerli olur. Aksi takdirde ilgili izin, tarayıcının varsayılan ayarına uyarak kullanıcıların site bazında bu izni belirlemesine imkan verir.</translation>
 <translation id="3435796032110614169">Yazdırma işleri geçmişinin silinmesine izin ver</translation>
+<translation id="3435849940943480491">Zorunlu yüklenmiş uzantılar, İzole Mod'da her zaman etkindir ve devre dışı bırakılamaz</translation>
 <translation id="3436217793443508863">Pil gücüyle çalışırken, ekran kilitlenmeden önce kullanıcı girişi olmadan geçecek süre (milisaniye olarak)</translation>
 <translation id="3437391374720747482">CNSA 2.0 gereksinimlerini karşılayan anahtar değişimi yöntemlerini tercih edin</translation>
 <translation id="3437924696598384725">Kullanıcının VPN bağlantılarını yönetmesine izin verme</translation>
@@ -5838,15 +5857,6 @@ Bu politika, yönetilmeyen cihazlar için geçerli değildir. Kullanıcılar, ci
       Ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan boyutu kullanır. Kullanıcılar bu ayarı --disk-cache-size flag'ini kullanarak değiştirebilirler.
 
       Not: Bu politikada belirtilen değer, tarayıcıdaki çeşitli önbellek alt sistemleri için bir ipucu olarak kullanılır. Bu nedenle, tüm önbelleklerin gerçekteki toplam disk kullanımı daha yüksek olsa da belirtilen değerle aynı büyüklük sırasında olacaktır.</translation>
-<translation id="4582488040806837065">Bu politikayla, <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> etkinleştirildiğinde temel hazırlığı yapılan yönetilen istemci sertifikası yapılandırılır.
-
-<ph name="COMMON_NAME_SOURCE_FIELD" /> alanında, sertifikanın konu ortak adının (CN) kaynağı belirtilir:
-
-- Ayarlanmazsa veya <ph name="PROFILE_ID_VALUE" /> olarak ayarlanırsa sertifikanın konu ortak adı, tarayıcı profil kimliği olarak ayarlanır.
-
-- <ph name="COMPUTER_NAME_VALUE" /> değerine ayarlanırsa sertifikanın ortak konu adı, makinenin ana makine adına ayarlanır. Not: Bu özellik <ph name="COMPUTER_NAME_VALUE" /> olarak ayarlandığında, profil kapsamlı bir sertifikada cihaz düzeyinde bir özellik kullanılır. Bu durumda, makine ana makine adı sertifikaya dahil edileceğinden, yönetilmeyen veya paylaşılan cihazlarda gizlilikle ilgili sorunlar ortaya çıkar.
-
-<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> devre dışı bırakılırsa veya ayarlanmazsa bu politikanın etkisi olmaz.</translation>
 <translation id="4591366717022345234">Kullanıcılara Hızlı Düzeltme Derlemesi sağlayın.</translation>
 <translation id="4593391169954484940">Dosyanın SHA-256 karması.</translation>
 <translation id="4594027034164195984">Üçüncü taraf görsellerinin, kimlik doğrulama istemi göstermesine izin ver</translation>
@@ -6103,6 +6113,11 @@ Geçerli değerler, 1 saniye ile 9.999 saniye aralığındadır. Politika ayarla
 <translation id="4725801978265372736">Yerel kullanıcının adı ile uzak erişim ana makinesi sahibinin adının aynı olmasını gerektir</translation>
 <translation id="4726228171190098009">Cihazın Powerwash istemesine izin verme</translation>
 <translation id="4726895359147376813">Kalıcı kimlikleri sanal makine yapılandırmaları ile eşleme</translation>
+<translation id="473189306848333308">Bu politika kullanımdan kaldırılmış olup geçersizdir. Öneri istekleri her zaman alma yöntemi kullanılarak gönderildiğinden, bu politika ile belirlenen parametreler hiçbir zaman uygulanmaz. Bunun yerine, <ph name="SEARCH_TERM_MARKER" /> yer tutucusu da dahil olmak üzere öneri URL'sini yapılandırmak için <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> politikasını kullanın.
+
+POST parametreleri yalnızca <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> üzerinden görsel arama için desteklenir.
+
+Daha önce, <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> ayarı, POST yöntemiyle öneri araması sırasında parametrelerin virgülle ayrılmış ad-değer çiftleri olarak belirtilmesi için kullanılıyordu.</translation>
 <translation id="4732069502693984686">Birden fazla ekranın otomatik olarak ekran görüntüsünü almayı etkinleştirir</translation>
 <translation id="4733471537137819387">Entegre HTTP kimlik doğrulaması ile ilgili politikalar.</translation>
 <translation id="4737832614429402441">TLS'de etkinleştirilen kuantum sonrası anahtar anlaşması için varsayılan değeri kullan</translation>
@@ -6412,6 +6427,7 @@ Donanım hızlandırmalı video kodu çözme işleminin devre dışı bırakılm
 <translation id="4927797103413916381"><ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> Devre dışı değerine ayarlanmamışsa <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> politikasının Etkin değerine ayarlanması veya ayarlanmadan bırakılması, kötüye kullanım deneyimi yaşatan sitelerin yeni pencere veya sekme açmasını önler.
 
        <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> politikası veya <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> politikası Devre dışı değerine ayarlanırsa, kötüye kullanım deneyimi yaşatan sitelerin yeni pencere veya sekme açmasına izin verilir.</translation>
+<translation id="4928435626872799127">İzole Modda zorunlu yüklenmiş uzantıların davranışını kontrol et</translation>
 <translation id="4929721861648439998">Giriş ekranında mono ses erişilebilirlik özelliğini etkinleştirin.
 
           Bu özellik, cihaz modunun varsayılan stereo sesten mono sese değiştirilmesine olanak tanır.
@@ -9943,6 +9959,7 @@ Bu politikanın yalnızca yönetilen tarayıcılar için geçerli olduğunu ve y
 <translation id="7054840304131108563">Oluşturucu erişilebilirlik özelliklerini devre dışı bırak</translation>
 <translation id="7055022222176591388">Eski <ph name="FLASH_PLUGIN_NAME" /> eklentisine izin verme</translation>
 <translation id="7056040036973126753">Alan güvenilirliği verileri, Chrome Kullanıcı Metrikleri (UMA) politikasına bağlı olarak Google'a gönderilebilir</translation>
+<translation id="7057522375529097624">Zorunlu yüklenmiş uzantılar, İzole Mod'da varsayılan olarak etkindir ve devre dışı bırakılabilir</translation>
 <translation id="7062803946218028349">Telefon Merkezi'nin etkinleştirilmesine izin ver</translation>
 <translation id="7063646777978847358">Bu politika, hizmet çalışanlarından gelen arka planda getirme isteklerinin kısıtlanıp kısıtlanmayacağını kontrol eder. Arka planda dosya indiren bir özellik etkilenirse bu politika geçerli olabilir.
 

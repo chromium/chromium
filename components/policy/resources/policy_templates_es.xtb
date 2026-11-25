@@ -5783,15 +5783,6 @@ En el caso de los dispositivos no gestionados, esta política no se aplica y los
       Si no se establece esta política, <ph name="PRODUCT_NAME" /> usará el tamaño predeterminado. Los usuarios podrán cambiar el ajuste usando la marca "--disk-cache-size".
 
       Nota: El valor especificado en esta política se utilizará como sugerencia en varios subsistemas de caché del navegador. Por ello, el consumo total real de disco de todas las cachés será mayor, pero se mantendrá en el mismo orden de magnitud que el valor especificado.</translation>
-<translation id="4582488040806837065">Esta política configura el certificado de cliente gestionado que se aprovisiona cuando se habilita <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" />.
-
-El campo <ph name="COMMON_NAME_SOURCE_FIELD" /> especifica el origen del nombre común del sujeto del certificado:
-
-- Si no se define o se le asigna el valor <ph name="PROFILE_ID_VALUE" />, el nombre común del sujeto del certificado será el ID del perfil del navegador.
-
-- Si se le asigna el valor <ph name="COMPUTER_NAME_VALUE" />, el nombre común del sujeto del certificado será el nombre de host del equipo. Nota: Si a esta propiedad se le asigna el valor <ph name="COMPUTER_NAME_VALUE" />, se usará una propiedad del dispositivo en un certificado asociado a un perfil. Esto puede tener implicaciones para la privacidad en dispositivos no administrados o compartidos, ya que el nombre de host del equipo se incluirá en el certificado.
-
-Esta política no tendrá efecto si <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> se ha inhabilitado o no se ha definido.</translation>
 <translation id="4591366717022345234">Proporciona a los usuarios una versión Quick Fix</translation>
 <translation id="4593391169954484940">El hash SHA-256 del archivo.</translation>
 <translation id="4594027034164195984">Permitir que las imágenes de terceros muestren una solicitud de autenticación</translation>

@@ -5659,14 +5659,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 会使用默认大小。用户可以使用 --disk-cache-size flag 更改此设置。
 
       注意：此政策中指定的值会被用作对浏览器中各种缓存子系统的提示。因此，所有缓存的实际磁盘总消耗将会变得更高，但仍会与指定的值在同一数量级。</translation>
-<translation id="4582488040806837065">此政策用于配置启用 <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> 以后预配的托管客户端证书。
-
-<ph name="COMMON_NAME_SOURCE_FIELD" /> 字段用于指定证书的主题通用名称 (CN) 的来源：
-- 如果未设置或设为 <ph name="PROFILE_ID_VALUE" />，证书的主题通用名称将设置为浏览器个人资料 ID。
-
-- 如果设为 <ph name="COMPUTER_NAME_VALUE" />，证书的主题通用名称会设为机器的主机名。注意：如果将此属性设为 <ph name="COMPUTER_NAME_VALUE" />，系统会在个人资料级证书中使用设备级属性，这会对非受管设备或共用设备的隐私造成影响，因为证书中会包含机器主机名。
-
-如果 <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> 已停用或未设置，此政策将不会产生任何影响。</translation>
 <translation id="4591366717022345234">为用户提供 Quick Fix Build</translation>
 <translation id="4593391169954484940">相应文件的 SHA-256 哈希值。</translation>
 <translation id="4594027034164195984">允许第三方图片显示身份验证提示</translation>

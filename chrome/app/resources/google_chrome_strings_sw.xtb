@@ -141,6 +141,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2295218613066132598">Onyesha njia za mkato za tovuti ya Chrome</translation>
 <translation id="2301513536169703857">Ili upate manenosiri yako, alamisho na zaidi kwenye vifaa vyako vyote, ingia katika Chrome</translation>
 <translation id="2307973900865360088">Weka katika sehemu ya Kupachika</translation>
+<translation id="2308558013860776484">Tuma picha ya skrini ya maudhui yaliyo nje ya Chrome, kama vile programu au faili nyingine</translation>
 <translation id="2309047409763057870">Huu ni usakinishaji wa pili wa Google Chrome, na haiwezi kufanywa kuwa kivinjari chako chaguomsingi.</translation>
 <translation id="2345992953227471816">Chrome imegundua kwamba viendelezi hivi vina programu hasidi:</translation>
 <translation id="2358140144860869442">Ili upate orodha yako ya kusoma na mengineyo kwenye vifaa vyako vyote, ingia katika Chrome</translation>
@@ -250,6 +251,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="3294686910656423119">Takwimu za matumizi na ripoti za kuacha kufanya kazi</translation>
 <translation id="3327226547491422998">Baadaye, Chrome inaweza kukuuliza ikiwa ungependa kutumia taarifa ulizohifadhi ili ijaze fomu kiotomatiki kwa niaba yako</translation>
 <translation id="3352986031709923790">kona ya juu kulia ya eneo la utafutaji: kulia asilimia <ph name="RIGHT" />, juu asilimia <ph name="TOP" /></translation>
+<translation id="3370239327277137701">Tovuti na Chrome zinaweza kutumia AI inayotekeleza moja kwa moja kwenye kifaa chako kwa vipengele kama vile mihtasari, kuhakiki, manukuu na mengineyo. Hii ni tofauti na Gemini kwenye Chrome. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu AI kwenye kifaa<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Baadhi ya vipengele na viendelezi vya Chrome vinajumuisha njia za mkato. Unaweza kuchagua kuviwasha tena.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome itafunguka upya sasa hivi}=1{Chrome itafunguka upya baada ya sekunde 1}other{Chrome itafunguka upya baada ya sekunde #}}</translation>
 <translation id="3380249972812870825">Ili ufungue Gemini kwenye Chrome, bonyeza <ph name="GLOBAL_HOTKEY" /></translation>
@@ -349,6 +351,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="4427306783828095590">Kipengele cha ulinzi wa hali ya juu hufanya mengi zaidi ili kuzuia programu hasidi na wizi wa data binafsi</translation>
 <translation id="4434353761996769206">Hitilafu ya kisakinishaji: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Ruhusu Gemini ifikie hati hii kwenye Chrome ili upate muhtasari wa haraka na uulize maswali ya nyongeza</translation>
+<translation id="4440999670272408191">Unaweza kuiondoa wakati wowote. Huenda Chrome ikaipakua tena kiotomatiki wakati tovuti au kipengele kinaihitaji.</translation>
 <translation id="4450664632294415862">Chrome - Kuingia katika Akaunti ya Mtandao - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Kuna shughuli nyingine zinaendelea kwenye Google Chrome. Tafadhali jaribu tena baadaye.</translation>
 <translation id="4493028449971051158">Hitilafu ya kuwasha: tafadhali washa kisakinishaji kama msimamizi.</translation>
@@ -356,6 +359,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="4501839397124711198">Unaweza kubandika huduma ya Tafuta na Google kwenye kidirisha cha pembeni ili uulize maswali unapovinjari</translation>
 <translation id="4571503333518166079">Nenda kwenye mipangilio ya arifa za Chrome</translation>
 <translation id="4580939929828762295">Tumia Kidhibiti cha Manenosiri cha Google uwe salama</translation>
+<translation id="4589544932092381064">Kuonyesha utafutaji ukitumia Chrome katika upauzana wa Windows kisha uwashe mikato ya kibodi</translation>
 <translation id="459622048091363950">Chrome itakapopata idhini, tovuti zitaweza kukuomba idhini ya kufikia.</translation>
 <translation id="4598116752460667024">Tafuta mchakato wowote kwenye orodha.</translation>
 <translation id="4600710005438004015">Imeshindwa kupata toleo jipya la Chrome, kwa hivyo hutapata masasisho ya usalama na vipengele vipya.</translation>
@@ -371,6 +375,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Huongeza kasi ya tovuti kwa kutumia mtambo wa V8 wa Chrome lakini huifanya Chrome iwe na uwezo mdogo wa kustahimili mashambulio</translation>
 <translation id="4768676935374695498">Tafuta Video Hii ukitumia Lenzi ya Google</translation>
+<translation id="4783580253728290203">Chrome huondoa mifumo ya AI iliyo kwenye kifaa na haitapakua tena ikiwa umeizima. Huenda baadhi ya tovuti na vipengele vya Chrome visifanye kazi.</translation>
 <translation id="479167709087336770">Huduma hii hutumia kikagua tahajia sawa na kinachotumika kwenye Huduma ya Tafuta na Google. Maandishi unayoandika kwenye kivinjari yanatumwa kwa Google. Unaweza kubadilisha hali hii katika mipangilio wakati wowote.</translation>
 <translation id="4793679854893018356">Pata maelezo ya jinsi Chrome inavyohakikisha usalama wako</translation>
 <translation id="4803313124144656665">Funga huduma ya Tafuta na Google kwenye Chrome</translation>
@@ -456,6 +461,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Imeshindwa kuunganisha kwenye Intaneti. Seva mbadala inahitaji uthibitishaji.</translation>
 <translation id="5709557627224531708">Weka Chrome iwe kivinjari chako chaguomsingi</translation>
+<translation id="5715427327524421317">Chrome hupakua na kusasisha mifumo hii ya AI kiotomatiki</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Mipangilio ya Ulinzi wa Hali ya Juu hukuhitaji ufungue Chrome tena ili utumie sasisho. Dirisha lako Huru halitafunguka upya.}other{Mipangilio ya Ulinzi wa Hali ya Juu hukuhitaji ufungue Chrome tena ili utumie sasisho. Madirisha yako # Huru hayatafunguka upya.}}</translation>
 <translation id="5719246646468301581">Sheria na masharti ya ziada ya Google Chrome na ChromeOS</translation>
 <translation id="5736850870166430177">Ikiwa tovuti inajaribu kuiba nenosiri lako au unapopakua faili hatari, Chrome inaweza pia kutuma URL, ikiwa ni pamoja na sehemu za maudhui ya ukurasa, kwenye kipengele cha Kuvinjari Salama</translation>
@@ -547,6 +553,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6491330562720922580">Msimbo wa QR wa kupakua kivinjari cha Chrome kwenye vifaa vya mkononi</translation>
 <translation id="6493527311031785448">Google Chrome inajaribu <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome ilifungwa kiotomatiki</translation>
+<translation id="650039555447046671">Chrome itaondoa mifumo ya AI kwenye kifaa hiki. Huenda baadhi ya tovuti na vipengele vya Chrome visifanye kazi.</translation>
 <translation id="6506909944137591434">Chrome inahitaji ruhusa ya kufikia kamera ili iunde ramani ya 3D ya mazingira yako</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome ya Wasanidi Programu</translation>
 <translation id="6520670145826811516">Ili utumie maelezo ya mahali, ruhusu Chrome ifikie <ph name="BEGIN_LINK" />mipangilio ya mfumo<ph name="END_LINK" /></translation>
@@ -585,6 +592,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6877155553248388166">kona ya chini kulia ya eneo la utafutaji: kulia asilimia <ph name="RIGHT" />, chini asilimia <ph name="BOTTOM" /></translation>
 <translation id="6879791154455204815">Fungua kipengele cha Utafutaji ukitumia Chrome</translation>
 <translation id="6881299373831449287">Inasasisha Chrome</translation>
+<translation id="6881997500528805781">Hutumia hifadhi ya kifaa. Chrome huondoa mifumo ya AI isiyotumika baada ya siku 45 au nafasi ya hifadhi inapopungua</translation>
 <translation id="6885412569789873916">Programu za Chrome Beta</translation>
 <translation id="6893363893008038481">Ondoa Akaunti kwenye Chrome</translation>
 <translation id="6896758677409633944">Nakili</translation>

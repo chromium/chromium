@@ -820,6 +820,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="188537499764410817">Vefsvæði þar sem Gemini getur skráð þig inn munu birtast hér</translation>
 <translation id="1886996562706621347">Leyfa vefsvæðum að óska eftir að verða sjálfgefin hjálparforrit fyrir samskiptareglur (ráðlagt)</translation>
 <translation id="1887210448491286312">Hætta að varpa flipa yfir í <ph name="DEVICE_NAME" /></translation>
+<translation id="1888096615505794228">Skoðaðu virknina þína</translation>
 <translation id="1888692623866312036">Færni vistuð</translation>
 <translation id="1890026367080681123">Opna stillingar fyrir innfellt efni</translation>
 <translation id="1892453608039100484">1. Smelltu á <ph name="BUTTON_LABEL" /> hér fyrir neðan
@@ -852,6 +853,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1921544956190977703">Þú ert með öflugustu öryggisvarnir Chrome gegn hættulegum vefsvæðum, niðurhali og viðbótum</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">„<ph name="NAME" />“ er aðeins vistuð í þessu tæki. Vistaðu hana á reikningnum þínum til að geta notað hana í öðrum tækjum.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Opna með</translation>
 <translation id="1925017091976104802">Ýttu á <ph name="MODIFIER_KEY_DESCRIPTION" /> til að líma</translation>
 <translation id="1925021887439448749">Færðu inn sérsniðna vefslóð</translation>
@@ -1196,6 +1198,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2300332192655962933">Skrá var ekki tiltæk á vefsvæði</translation>
 <translation id="2300383962156589922">Sérsníða og stjórna <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Rótarmappa viðbótarinnar er ógild.</translation>
+<translation id="2301564937934269788">Stjórnaðu gervigreind sem er notuð fyrir eiginleika á borð við aðstoð við skrif og fleira</translation>
 <translation id="2304820083631266885">Pláneta</translation>
 <translation id="2306794767168143227">Vista í <ph name="BRAND" /> í þessu tæki</translation>
 <translation id="2309620859903500144">Lokað hefur verið á aðgang þessa vefsvæðis að hreyfi- eða birtuskynjara.</translation>
@@ -1401,6 +1404,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2528487766183344810">Taktu <ph name="TOKEN_NAME" /> úr lás til að flytja biðlaravottorðið út.</translation>
 <translation id="2532198298278778531">Stjórnaðu öruggu DNS í stillingum ChromeOS Flex</translation>
 <translation id="253434972992662860">Gera hlé</translation>
+<translation id="2534439599863644240">Raðtengi</translation>
 <translation id="253498598929009420">Vefsvæðið mun get séð það sem er á skjánum hjá þér</translation>
 <translation id="253557089021624350">Fjöldi sem heldur viðbót virkri</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> getur skoðað og breytt eftirfarandi skrám og möppum</translation>
@@ -1434,6 +1438,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2575502321843437554">Ekki nógu spennandi</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Þetta tæki verður vistað í 1 ár og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}one{Þetta tæki verður vistað í {YEARS} ár og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}other{Þetta tæki verður vistað í {YEARS} ár og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}}</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) glatar umsvifalaust aðgangi að flipahópnum „<ph name="GROUP_NAME" />“ og mun ekki lengur geta átt samskipti við þig í Google-þjónustum.</translation>
+<translation id="2579341115189727508">Auðveldar vefsvæðum að taka saman, lesa yfir, búa til skjátexta og fleira</translation>
 <translation id="2580889980133367162">Leyfa <ph name="HOST" /> alltaf að sækja margar skrár</translation>
 <translation id="2583877283803564049">Festa á tækjastiku</translation>
 <translation id="2583905535229480958">Hvaða snjallkortalesari sem er</translation>
@@ -1805,6 +1810,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> fjarlægði forrit}one{<ph name="APP_NAME" /> fjarlægði # forrit}other{<ph name="APP_NAME" /> fjarlægði # forrit}}</translation>
 <translation id="2988018669686457659">Aukamyndþýðandi</translation>
 <translation id="2988328607561082373">Þú ert ekki að endurnýta nein aðgangsorð</translation>
+<translation id="298928587890404307">Birtir lykilatriði, stutta samantekt eða fyrirsögn</translation>
 <translation id="2989523299700148168">Nýlega heimsótt</translation>
 <translation id="2989786307324390836">DER-kóðuð tvíundakerfisskrá, stakt vottorð</translation>
 <translation id="2990583317361835189">Ekki leyfa vefsvæðum að nota hreyfiskynjara</translation>
@@ -1883,6 +1889,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3057938290530993634">Haltu inni til að festa vefsvæðin sem þú heimsækir oftast til að fá auðveldan aðgang næst</translation>
 <translation id="3058498974290601450">Hægt er að kveikja á samstillingu hvenær sem er í stillingunum</translation>
 <translation id="3060694926634506594">Færni</translation>
+<translation id="3061501546390656547">Samantekt</translation>
 <translation id="306166624240243643">Fara yfir uppfærslu nafns og vefslóðar</translation>
 <translation id="3062037978804523418"><ph name="TASK_TITLE" />: Ef þú svarar ekki fljótlega mun Gemini hætta að vinnu við þetta verkefni til að spara hleðslu rafhlöðunnar</translation>
 <translation id="3062655045399308513">Eyða vefskoðunargögnum...</translation>
@@ -2432,6 +2439,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3630132874740063857">Síminn þinn</translation>
 <translation id="3633492436029262388">Til að fá aðgang að aðgangsorðunum þínum, bókamerkjunum og fleiru í öllum tækjunum þínum skaltu vista þau á Google-reikningnum þínum.</translation>
 <translation id="3633759325857031264">HDMI-tæki</translation>
+<translation id="3634271025780115616">Viltu slökkva á gervigreind í tæki?</translation>
 <translation id="3634652306074934350">Heimildabeiðni útrunnin</translation>
 <translation id="3635353578505343390">Senda ábendingar til Google</translation>
 <translation id="3636538438330991674">Stjórna því hvaða forritum Gemini tengist</translation>
@@ -2706,6 +2714,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3893268973182382220">Ekki er hægt að hlaða þessu svæði núna</translation>
 <translation id="3893536212201235195">Lesa og breyta aðgengisstillingum</translation>
 <translation id="3893858854379998374">Ef þú vilt bókamerki á reikningnum þínum skaltu eyða ónotuðum bókamerkjum</translation>
+<translation id="3893902465710154528">Gervigreindarlíkön í þessu tæki</translation>
 <translation id="3894427358181296146">Bæta möppu við</translation>
 <translation id="389521680295183045">Vefsvæði geta beðið um að fá að vita hvenær þú notar tækið þitt</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> vill: <ph name="FIRST_PERMISSION" /> og <ph name="SECOND_PERMISSION" /></translation>
@@ -2739,6 +2748,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3928570707778085600">Viltu vista breytingar á <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Lítið eftir af bleki</translation>
 <translation id="3929426037718431833">Þessar viðbætur geta séð og breytt upplýsingum á þessu vefsvæði.</translation>
+<translation id="3930298488600685734">Hjálpar við að skrifa drög, umorða og skipuleggja texta á vefsvæðum sem nota það</translation>
 <translation id="3930737994424905957">Leitar að tækjum</translation>
 <translation id="3930968231047618417">Bakgrunnslitur</translation>
 <translation id="3932356525934356570">Festa <ph name="EXTENSION_NAME" /></translation>
@@ -2951,6 +2961,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4202536110335087135">Prófa núna</translation>
 <translation id="4203065553461038553">Skáarheiti eða staðsetning of löng</translation>
 <translation id="4203769790323223880">Myndavél ekki leyfð</translation>
+<translation id="4203999225629028925">Nota gervigreind í tæki</translation>
 <translation id="4204415812590935863">Ekki er hægt að búa til þetta þema eins og stendur.</translation>
 <translation id="4206323443866416204">Ábendingaskýrsla</translation>
 <translation id="4206585797409671301">Má sýna beiðnir</translation>
@@ -2971,6 +2982,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4216511743389425832">Hlusta á þessa síðu</translation>
 <translation id="4218081191298393750">Smelltu á hátalaratáknið til að slökkva á hljóði þessa flipa</translation>
 <translation id="4220157655212610908">Nota ytri öryggislykil</translation>
+<translation id="4222217401873406622">Fljótlegra og hnitmiðaðra en almenn skrif</translation>
 <translation id="4222917615373664617">Kveikt er á verðvöktun. Núverandi verð er <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Hljóðnemi ekki leyfður</translation>
 <translation id="4224541845943007092">Lesa og vista lyklaborðsinnslátt af veffangastikunni</translation>
@@ -3414,6 +3426,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Eyða þegar þú lokar öllum gluggum</translation>
 <translation id="4714414859110184926">Fá aðgangslykla</translation>
+<translation id="4715398813921022332">Vinnur mörg verkefni þannig að eitt niðurhal nær yfir marga eiginleika</translation>
 <translation id="4715631922189108923">Breyta notandanafni</translation>
 <translation id="47158868804223727">Smelltu á heiti hópsins til að stækka hann eða minnka</translation>
 <translation id="471759229191973607">Skipta um þema</translation>
@@ -3571,6 +3584,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4876273079589074638">Hjálpaðu hugbúnaðarverkfræðingum okkar að rannsaka og lagfæra ástæðu þess að þetta hrun átti sér stað. Lýstu nákvæmum skrefum eins vel og þú getur. Lýsingin getur ekki verið of ítarleg!</translation>
 <translation id="4876305945144899064">Ekkert notandanafn</translation>
 <translation id="4876327226315760474">Þetta þýðir að flestir eiginleikar vefsvæðisins ættu að virka sem skyldi, en hugsanlega er minni vernd þegar vafrað er.</translation>
+<translation id="4876867869589423092">Athugar stafsetningu og málfræði</translation>
 <translation id="4877276003880815204">Kanna einingar</translation>
 <translation id="4878634973244289103">Ekki tókst að senda ábendingu. Reyndu aftur síðar.</translation>
 <translation id="4878718769565915065">Ekki tókst að bæta fingrafari við öryggislykil</translation>
@@ -3615,6 +3629,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4922104989726031751">Til að nota Aðgangsorðastjórnun með stýrikerfinu þínu skaltu endurræsa Chromium og veita aðgang að aðgangsorðastjórnun tölvunnar. Fliparnir þínir opnast aftur eftir endurræsingu.</translation>
 <translation id="4923561999941435531">{0,plural, =1{Vista 1 atriði á reikningi}one{Vista # atriði á reikningi}other{Vista # atriði á reikningi}}</translation>
 <translation id="4923977675318667854">Sýna flipahópa</translation>
+<translation id="4924283156756356309">Í tækinu þínu</translation>
 <translation id="49265687513387605">Ekki er hægt að senda út skjá.  Athugaðu hvort þú hefur samþykkt tilkynninguna um að byrja að deila skjánum þínum.</translation>
 <translation id="4927753642311223124">Ekkert að sjá hér, haltu þínu striki.</translation>
 <translation id="4928488083257788101">Mannlegir yfirlesarar geta séð gögn sem send eru til Google til að bæta þennan eiginleika</translation>
@@ -3701,6 +3716,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5026572062076949786">stýringar, sérstilling, tungumál, persónuvernd, sjálfgefnar stillingar, ítarlegt</translation>
 <translation id="5026874946691314267">Ekki sýna þetta aftur</translation>
 <translation id="5027550639139316293">Vottorð tölvupósts</translation>
+<translation id="5027821222544962995">Breytir tali í texta, t.d. skjátexta</translation>
 <translation id="502811790397568978">Taktu <ph name="TOKEN_NAME" /> úr lás til að flytja inn biðlaravottorð frá <ph name="HOST_NAME" />.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Heimilisföng}=1{Heimilisföng ({SELECTED_ITEMS})}one{Heimilisföng ({SELECTED_ITEMS})}other{Heimilisföng ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Ekki hægt að búa til QR-kóða</translation>
@@ -3887,6 +3903,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="5235050375939235066">Á að fjarlægja forrit?</translation>
 <translation id="5235750401727657667">Skipta út síðunni sem þú sérð þegar nýr flipi er opnaður</translation>
+<translation id="5235961530490811036">Stingur upp á leiðréttingum á stafsetningu, málfræði og greinarmerkjasetningu á meðan þú skrifar</translation>
 <translation id="5238301240406177137">Vista á reikningi</translation>
 <translation id="523862956770478816">Heimildir vefsvæðis</translation>
 <translation id="5240247138804326767">Loka skjáskiptingu</translation>
@@ -4009,6 +4026,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5395353843367783642">Vistar í reikningnum þínum ...</translation>
 <translation id="5397656531674854099">Notaðu flipahópana þína í símanum</translation>
 <translation id="5397794290049113714">Þú</translation>
+<translation id="5397922003973770546"><ph name="MODEL_NAME" /> · um <ph name="SIZE" /></translation>
 <translation id="5398497406011404839">Falin bókamerki</translation>
 <translation id="5398572795982417028">Síðutilvísun er ekki innan réttra marka, hámarkið er <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Hjálpar þér að skrifa stutta texta á vefnum, t.d. umsagnir</translation>
@@ -4267,6 +4285,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5683916195767086779">Flipahópur</translation>
 <translation id="5684110242705861346">Viðbótinni „<ph name="NAME" />“ var bætt við af stefnu fyrirtækisins þíns og hún stjórnar þessari stillingu. <ph name="BEGIN_LINK" />Sjá upplýsingar<ph name="END_LINK" /></translation>
 <translation id="5687340364605915800">Vefsvæði svara þessari beiðni að eigin ákvörðun</translation>
+<translation id="5688905504429733599">Hjálpar við að skrifa, endurskrifa og taka saman texta</translation>
 <translation id="5689516760719285838">Staðsetning</translation>
 <translation id="568984110402742489">Ekki er hægt að senda ábendingu</translation>
 <translation id="5691772641933328258">Fingrafar þekkist ekki</translation>
@@ -4528,6 +4547,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5992652489368666106">Enginn rammi</translation>
 <translation id="5996490984199062729">Uppsetningu prófílsins þíns er ekki lokið</translation>
 <translation id="5997337190805127100">Frekari upplýsingar um aðgang að vefsvæðum</translation>
+<translation id="5997562608469198702">Sýna upplýsingar um <ph name="MODEL_CATEGORY" /></translation>
 <translation id="5997802678829218272">Þegar þú ert skráð(ur) inn á Chrome með sama reikningi geturðu sent tengla á milli tækja á fljótlegan hátt</translation>
 <translation id="5998458948782718639">Hjálpaðu til við að bæta sjálfvirka útfyllingu</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> niðurstöður fyrir „<ph name="SEARCH_TEXT" />“</translation>
@@ -4773,6 +4793,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6264376385120300461">Sækja samt</translation>
 <translation id="6264636978858465832">Aðgangsorðastjórnun þarfnast fleiri aðgangsheimilda</translation>
 <translation id="626495329434552273">Mega hnekkja innslætti lyklaborðs</translation>
+<translation id="6265472496386910894">Spyrðu Google-linsu út í það sem er á skjánum</translation>
 <translation id="6266984048393265562">Sérsníða prófíl</translation>
 <translation id="6267166720438879315">Veldu vottorð til að auðkenna þig fyrir <ph name="HOST_NAME" /></translation>
 <translation id="6269392226729599142">Endurheimta tvískiptan skjá</translation>
@@ -5026,6 +5047,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6571178651832779742">Til að hreinsa tvítekin bókamerki skaltu vista þau á Google-reikningnum þínum</translation>
 <translation id="6571533309669248172">Textasnið</translation>
 <translation id="6571772921213691236">Breyta innskráningargögnum</translation>
+<translation id="657215700875716805">Breytir löngum texta á mörgum síðum í lykilatriði</translation>
 <translation id="657229725818377235">Fáðu aukna vernd gegn hættulegum vefsvæðum og niðurhali</translation>
 <translation id="6573096386450695060">Leyfa alltaf</translation>
 <translation id="657402800789773160">Endu&amp;rhlaða þessa síðu</translation>
@@ -5200,6 +5222,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6746834324024491643">Skráðu þig inn sem „<ph name="EMAIL" />“ til að fá aðgang að aðgangsorðum og fleiru úr öllum tækjunum þínum</translation>
 <translation id="6749077623962119521">Endurstilla heimildir?</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (huliðsgluggi)</translation>
+<translation id="6754302065638000088">Yfirlestur</translation>
 <translation id="6754359471209693699">Hefja nýja leit</translation>
 <translation id="6756882635793733911">Spyrðu um hvað sem er á skjánum</translation>
 <translation id="6757615605516049275">Taktu <ph name="TOKEN_NAME" /> úr lás.</translation>
@@ -5304,6 +5327,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6853118789186721762">Áminning send á <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629">Ár <ph name="DROPDOWN_NAME" /></translation>
 <translation id="68541483639528434">Loka öðrum flipum</translation>
+<translation id="6855569790346583403">Eyða <ph name="MODEL_CATEGORY" /></translation>
 <translation id="6856348640027512653">Mega ekki nota sýndarveruleikatæki eða -gögn</translation>
 <translation id="6856607887871564638">Settu upp vinnuprófíl til að vista og nota aðgangsorð og fleira á reikningnum þínum</translation>
 <translation id="68601584151169673">Vista og deila</translation>
@@ -5424,6 +5448,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6979440798594660689">Slökkva á hljóði (sjálfgefið)</translation>
 <translation id="6979557074007409812">Já, halda gögnunum mínum aðskildum frá vinnuprófílnum</translation>
 <translation id="6979737339423435258">Frá upphafi</translation>
+<translation id="6981951388037216929">Spyrðu um hvað sem er á skjánum með því að deila skjánum.</translation>
 <translation id="6981982820502123353">Aðgengi</translation>
 <translation id="698428203349952091">Bæta vefsvæði við bannlista</translation>
 <translation id="6985235333261347343">Fulltrúi Microsoft-lyklaendurheimtar</translation>
@@ -5757,6 +5782,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="7341834142292923918">Vill fá aðgang að þessu vefsvæði</translation>
 <translation id="7343372807593926528">Lýstu vandamálinu áður en þú sendir ábendingu.</translation>
 <translation id="7344585835349671209">Stjórna HTTPS-/SSL-vottorðum í tækinu þínu</translation>
+<translation id="734576882396032500">Sótt einu sinni fyrir öll tungumál sem þú notar</translation>
 <translation id="7346909386216857016">Ég skil</translation>
 <translation id="7347751611463936647">Til að nota þessa viðbót skaltu slá inn „<ph name="EXTENSION_KEYWORD" />“, ýta á Tab-lykilinn og slá síðan inn skipun eða leitarorð.</translation>
 <translation id="7347943691222276892">Smelltu til að fletta frá <ph name="SUBPAGE_TITLE" />.</translation>
@@ -6155,6 +6181,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="7793098747275782155">Dökkblár</translation>
 <translation id="7798504574384119986">Skoða vefheimildir</translation>
 <translation id="7798559336183476274">Fleiri aðgerðir fyrir <ph name="BUTTON_TITLE" /></translation>
+<translation id="7798702742851934390">Stingur aðeins upp á lagfæringum, en endurskrifar textann þinn ekki</translation>
 <translation id="7798844538707273832">Lokað var sjálfkrafa á <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Snúa rangsælis</translation>
 <translation id="780254490276923052">Flokkur 2: MID</translation>
@@ -6311,6 +6338,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="7974713334845253259">Sjálfgefinn litur</translation>
 <translation id="7977029776654598145">Þegar í notkun</translation>
 <translation id="7978100757563451333">Flipum er deilt til að gefa betri svör. Google notar efni og vefslóðir samnýttra flipa. Núverandi flipa er deilt í nýju spjalli. Þú getur breytt þessari stillingu hvenær sem er.</translation>
+<translation id="7978324202327430335">Virkar á vefsvæðum sem styðja hljóðumritun í rauntíma</translation>
 <translation id="7978412674231730200">Einkalykill</translation>
 <translation id="7978450511781612192">Þetta skráir þig út af Google reikningnum þínum. Bókamerki, ferill, aðgangsorð og fleira verður ekki lengur samstillt.</translation>
 <translation id="7980066177668669492">Base64-kóðað ASCII, mörg vottorð</translation>
@@ -7393,6 +7421,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9154194610265714752">Uppfært</translation>
 <translation id="9155344700756733162">Afturkalla val á lit</translation>
 <translation id="9155515662479003830">Þú getur alltaf skipt aftur yfir í sígilda stílinn í stillingunum</translation>
+<translation id="9157129135366432684">Engri gervigreind í tæki bætt við</translation>
 <translation id="9157915340203975005">Prentari er opinn</translation>
 <translation id="9165856803582999927">Skannaðu þennan QR-kóða með myndavélinni í tækinu þar sem þú vilt búa til og vista aðgangslykilinn þinn fyrir <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Mynd í mynd</translation>

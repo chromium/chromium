@@ -5598,15 +5598,6 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
       如果未設定，<ph name="PRODUCT_NAME" /> 會使用預設大小，使用者可透過 --disk-cache-size 旗標來變更這項設定。
 
       注意：在這項政策中指定的值是用來提示瀏覽器中各種快取子系統可佔用的快取大小。因此，所有快取的實際總磁碟佔用量會更高，但會落在與指定值相同的數量級內。</translation>
-<translation id="4582488040806837065">這項政策會設定啟用 <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> 時佈建的受管理用戶端憑證。
-
-<ph name="COMMON_NAME_SOURCE_FIELD" /> 欄位會指定憑證主體通用名稱 (CN) 的來源：
-
-- 如果未設定或設為 <ph name="PROFILE_ID_VALUE" />，憑證的主體通用名稱會設為瀏覽器設定檔 ID。
-
-- 如果設為 <ph name="COMPUTER_NAME_VALUE" />，憑證的主體通用名稱會設為機器的主機名稱。注意：如果將這項屬性設為 <ph name="COMPUTER_NAME_VALUE" />，系統會在設定檔範圍的憑證中使用裝置層級屬性，這會影響未受管或共用裝置的隱私，因為憑證中會包含電腦主機名稱。
-
-如果 <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> 政策已停用或未設定，這項政策就不會有任何作用。</translation>
 <translation id="4591366717022345234">提供「快速修復版本」給使用者</translation>
 <translation id="4593391169954484940">檔案的 SHA-256 雜湊值。</translation>
 <translation id="4594027034164195984">允許第三方映像檔顯示驗證提示</translation>

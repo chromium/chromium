@@ -5595,15 +5595,6 @@ URL パターンは、<ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /
       設定しない場合、<ph name="PRODUCT_NAME" /> はデフォルトのサイズを使用します。ユーザーは「--disk-cache-size」フラグを使ってこの設定を変更できます。
 
       注: このポリシーで指定した値は、ブラウザのさまざまなキャッシュ サブシステムに対するヒントとして使用されます。そのため、すべてのキャッシュの実際の合計ディスク消費量は、指定した値より高くなりますが、桁数は同じです。</translation>
-<translation id="4582488040806837065">このポリシーでは、<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> が有効になっている場合にプロビジョニングされる管理対象クライアント証明書を設定できます。
-
-<ph name="COMMON_NAME_SOURCE_FIELD" /> フィールドでは、証明書のサブジェクトの共通名（CN）のソースを指定します。
-
-- 未設定の場合、または <ph name="PROFILE_ID_VALUE" /> に設定されている場合、証明書のサブジェクトの共通名はブラウザのプロファイル ID に設定されます。
-
-- <ph name="COMPUTER_NAME_VALUE" /> に設定すると、証明書のサブジェクトの共通名はそのマシンのホスト名に設定されます。注: このプロパティを <ph name="COMPUTER_NAME_VALUE" /> に設定すると、プロファイル スコープの証明書でデバイスレベルのプロパティが使用されます。これにより、管理対象外のデバイスや共有デバイスにおいて、証明書にマシンのホスト名が含まれるため、プライバシー上の懸念が生じます。
-
-<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> が無効または未設定の場合、このポリシーは無視されます。</translation>
 <translation id="4591366717022345234">ユーザーに Quick Fix ビルドを提供する</translation>
 <translation id="4593391169954484940">ファイルの SHA-256 ハッシュです。</translation>
 <translation id="4594027034164195984">サードパーティの画像による認証プロンプトの表示を許可する</translation>

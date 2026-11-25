@@ -447,6 +447,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2053312383184521053">Idle State Data</translation>
 <translation id="2058456167109518507">Device detected</translation>
 <translation id="2064048859448024834">Camera preview on</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 link}other{# links}}</translation>
 <translation id="2067220651560163985">Show temperature in Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> has finished printing to <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Toggle <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>

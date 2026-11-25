@@ -1310,6 +1310,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="244071666433939959">Programos atidaromos lange</translation>
 <translation id="2442916515643169563">Teksto šešėlis</translation>
 <translation id="2443487764245141020">Svetainėms taip pat gali reikėti atpažinti jūsų įrenginį naudojant identifikatorių</translation>
+<translation id="2444282212665587861">atnaujinti, naujiniai, naujovinti, versija, versijos numeris, informacija, tikrinti, ar yra naujinių</translation>
 <translation id="244475495405467108">Uždaryti kairėje esančius skirtukus</translation>
 <translation id="2444874983932528148">Lengvai tęskite nuo ten, kur baigėte</translation>
 <translation id="2445081178310039857">Reikalingas plėtinio šakninis katalogas.</translation>
@@ -2147,6 +2148,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="3321512411079201586">&amp;Izoliuotas režimas</translation>
 <translation id="3323288183237359315">Įdiegti naršyklėje „Edge“</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš svetainės}one{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}few{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}many{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}other{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}}</translation>
+<translation id="3325561120400598624">Pokalbiai peržiūrimi ir naudojami generatyviniams DI modeliams mokyti. „Gemini“ yra DI ir gali klysti. Tam tikras turinys gali būti tinkamas ne visiems. Galite <ph name="BEGIN_LINK_MANAGE_HISTORY" />tvarkyti istoriją<ph name="END_LINK_MANAGE_HISTORY" />, įskaitant <ph name="BEGIN_LINK_LOCATION_INFO" />informaciją apie vietovę<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau apie pasirinkimus<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="3325995804968971809">Stilius</translation>
 <translation id="3331974543021145906">Programos informacija</translation>
 <translation id="3334632933872291866">„<ph name="WINDOW_TITLE" />“ – vaizdo įrašas leidžiamas vaizdo vaizde režimu</translation>
@@ -2272,6 +2274,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Įkelkite vieną .pdf failą, kurį norite naudoti su klausimu}one{Įkelkite daugiausia # .pdf failą, kuriuos norite naudoti su klausimu}few{Įkelkite daugiausia # .pdf failus, kuriuos norite naudoti su klausimu}many{Įkelkite daugiausia # .pdf failo, kuriuos norite naudoti su klausimu}other{Įkelkite daugiausia # .pdf failų, kuriuos norite naudoti su klausimu}}</translation>
 <translation id="3456750372063895499">Nuorodos atidarymas i&amp;zoliuotame lange</translation>
 <translation id="345693547134384690">Atidaryti &amp;paveikslėlį naujame skirtuke</translation>
+<translation id="3456949031754827166">Pertvarkyti</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Išsaugoti grupę}one{Išsaugoti grupes}few{Išsaugoti grupes}many{Išsaugoti grupes}other{Išsaugoti grupes}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Ištrinta 1 žymė}one{Ištrinta # žymė}few{Ištrintos # žymės}many{Ištrinta # žymės}other{Ištrinta # žymių}}</translation>
 <translation id="3471687177769494956">Redaguoti naršymo spartųjį klavišą</translation>
@@ -3326,6 +3329,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4602776638371779614">Šis skirtukas aktyviai nuskaito „Bluetooth“ įrenginius</translation>
 <translation id="4605026046465576953">Šios programos negalima atidaryti, nes neturite leidimo paleisti izoliuotų žiniatinklio programų</translation>
 <translation id="4606551464649945562">Neleisti svetainėms kurti jūsų aplinkos 3D žemėlapio ir stebėti kameros padėties</translation>
+<translation id="4606965546067937011">sparta, RAM, delsa, užstrigimas, strigtis, ištekliai, naudojimas, akumuliatorius, optimizavimo priemonė, lėtas, atmintis, atminties taupymo priemonė</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Ištrinti skirtukų grupę?}one{Ištrinti skirtukų grupes?}few{Ištrinti skirtukų grupes?}many{Ištrinti skirtukų grupes?}other{Ištrinti skirtukų grupes?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Įkelkite vieną failą, kurį norite naudoti su klausimu}one{Įkelkite daugiausia # failą, kurį norite naudoti su klausimu}few{Įkelkite daugiausia # failus, kuriuos norite naudoti su klausimu}many{Įkelkite daugiausia # failo, kuriuos norite naudoti su klausimu}other{Įkelkite daugiausia # failų, kuriuos norite naudoti su klausimu}}</translation>
 <translation id="4608500690299898628">Rasti...</translation>
@@ -4159,6 +4163,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5535769176698670170">Apkeisti su viršutiniu rodiniu</translation>
 <translation id="5536642445914063887">Profilio perjungimas</translation>
 <translation id="5537725057119320332">Perduoti</translation>
+<translation id="553876896781261711">ištrinti, pašalinti, sauga, privatumas, valymas, saugykla, nustatyti iš naujo, talpykla, slapukai, lėtas, greitis, istorija</translation>
 <translation id="5541091577812545428">Slaptažodis nepakeistas</translation>
 <translation id="5542132724887566711">Profilis</translation>
 <translation id="5543983818738093899">Tikrinama būsena...</translation>
@@ -4751,6 +4756,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6214157047210274853">Redaguoti „Google Wallet“</translation>
 <translation id="621470880408090483">Neleisti svetainėms prisijungti prie „Bluetooth“ įrenginių</translation>
 <translation id="6215039389782910006">{1,plural, =1{Siekiant apsaugoti slaptažodžius, „<ph name="BRAND" />“ užrakinama, kai vieną minutę neatliekama jokių veiksmų}one{Siekiant apsaugoti slaptažodžius, „<ph name="BRAND" />“ užrakinama, kai # minutę neatliekama jokių veiksmų}few{Siekiant apsaugoti slaptažodžius, „<ph name="BRAND" />“ užrakinama, kai # minutes neatliekama jokių veiksmų}many{Siekiant apsaugoti slaptažodžius, „<ph name="BRAND" />“ užrakinama, kai # minutės neatliekama jokių veiksmų}other{Siekiant apsaugoti slaptažodžius, „<ph name="BRAND" />“ užrakinama, kai # minučių neatliekama jokių veiksmų}}</translation>
+<translation id="6215427500141060726">Pokalbiai peržiūrimi ir naudojami generatyviniams DI modeliams mokyti. „Gemini“ yra DI ir gali klysti. Galite <ph name="BEGIN_LINK_MANAGE_HISTORY" />tvarkyti istoriją<ph name="END_LINK_MANAGE_HISTORY" />, įskaitant <ph name="BEGIN_LINK_LOCATION_INFO" />informaciją apie vietovę<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau apie pasirinkimus<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="6216239400972191926">Atmestos svetainės ir programos</translation>
 <translation id="6216696360484424239">Automatiškai prisijungti</translation>
 <translation id="6218961554829577610">Nepatiko balsas</translation>
@@ -4902,6 +4908,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="639880411171387127">Jūsų „Google Lens“ pasirinkimas. Paspauskite „Enter“ arba naikinimo klavišą, kad ištrintumėte „Google Lens“ pasirinkimą</translation>
 <translation id="6400360390396538896">Visada įjungta <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Panaikinti skirtukų grupės paryškinimą</translation>
+<translation id="6401522392962817913">Tęsdami sutinkate su „Google Payments“ paslaugų teikimo sąlygomis. Privatumo pranešime aprašoma, kaip tvarkomi jūsų duomenys. Kortelė išsaugoma jūsų „Google“ paskyroje <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Jei norite sužinoti priežastis, susisiekite su programos kūrėju</translation>
 <translation id="6402921224457714577">Gali būti prašoma valdyti ir iš naujo suprogramuoti MIDI įrenginius</translation>
 <translation id="6404511346730675251">Redaguoti žymę</translation>
@@ -4990,6 +4997,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6499143127267478107">Atnaujinama priegloba įgaliotojo serverio scenarijuje...</translation>
 <translation id="6503077044568424649">Dažniausiai lankomi</translation>
 <translation id="6504601948739128893">Neleidžiama naudoti įrenginyje įdiegtų šriftų</translation>
+<translation id="6505525633061207363">prisijungimo duomenys, prisijungimas, prieigos raktas, užraktas, saugykla, raktai, prisijungti</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ norėtų šiame įrenginyje įdiegti toliau nurodytą programą.}one{„<ph name="APP_NAME" />“ norėtų šiame įrenginyje įdiegti toliau nurodytas programas.}few{„<ph name="APP_NAME" />“ norėtų šiame įrenginyje įdiegti toliau nurodytas programas.}many{„<ph name="APP_NAME" />“ norėtų šiame įrenginyje įdiegti toliau nurodytas programas.}other{„<ph name="APP_NAME" />“ norėtų šiame įrenginyje įdiegti toliau nurodytas programas.}}</translation>
 <translation id="6508248480704296122">Susiję su „<ph name="NAME_PH" />“</translation>
 <translation id="6508261954199872201">Programa: <ph name="APP_NAME" /></translation>

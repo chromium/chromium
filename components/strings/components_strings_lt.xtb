@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Gera politikos talpykla</translation>
 <translation id="1131264053432022307">Nukopijuotas vaizdas</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – jei norite išeiti iš viso ekrano režimo, vilkite nuo viršaus ir palieskite mygtuką „Atgal“</translation>
+<translation id="1132789342529761192">Nerekomenduojama įkelti</translation>
 <translation id="11370190534773372">Išsami kortelės informacija užpildyta</translation>
 <translation id="1138458427267715730">Gaukite įspėjimus, kai kaina sumažės bet kurioje žiniatinklio svetainėje</translation>
 <translation id="1142713751288681188">Popieriaus tipas</translation>
@@ -603,6 +604,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2025891858974379949">Nesaugus turinys</translation>
 <translation id="2027465737841872819">Plastikas</translation>
 <translation id="2027707238798802149">Kortelė nepasiekiama</translation>
+<translation id="2028329426302356196">Nerekomenduojama atsisiųsti</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Patikrinti tarpinį serverį ir užkardą<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Šis „Chrome“ atvejis vykdomas neautomatiškai nustačius komandų eilutės žymas. Atminkite, kad komandų eilučių žymos gali bet kada pasikeisti ir nėra palaikomos.</translation>
 <translation id="2033900728810589426">Spartusis klavišas negali būti toks pat kaip numatytasis paieškos teikėjo raktinis žodis, kurį nustatė „<ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />“: „<ph name="SHORTCUT_NAME" />“</translation>
@@ -1457,6 +1459,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3443504041532578451">Optinis diskas (atlasinis)</translation>
 <translation id="3447661539832366887">Įrenginio savininkas išjungė dinozauro žaidimą.</translation>
 <translation id="3447884698081792621">Rodyti sertifikatą (išdavė „<ph name="ISSUER" />“)</translation>
+<translation id="3449239216441121005">Nerekomenduojama spausdinti</translation>
 <translation id="3450323514459570273">Gali būti prašoma valdyti ir iš naujo suprogramuoti MIDI įrenginius</translation>
 <translation id="3452404311384756672">Gauti intervalą:</translation>
 <translation id="345268527248907593">Nepavyko pasiekti šios svetainės</translation>
@@ -2918,6 +2921,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5851548754964597211">Skirtukų sąrašas</translation>
 <translation id="5851868085455377790">Išdavėjas</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Nerekomenduojama kopijuoti</translation>
 <translation id="5860491529813859533">Įjungti</translation>
 <translation id="5862579898803147654">8 dėtuvė</translation>
 <translation id="5863515189965725638">IBAN redagavimas</translation>
