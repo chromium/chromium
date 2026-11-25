@@ -42,6 +42,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/download/download_commands.h"
@@ -203,7 +204,7 @@ void VerifyNewDownloadId(uint32_t expected_download_id, uint32_t download_id) {
   ASSERT_EQ(expected_download_id, download_id);
 }
 
-class DownloadTestContentBrowserClient : public content::ContentBrowserClient {
+class DownloadTestContentBrowserClient : public ChromeContentBrowserClient {
  public:
   explicit DownloadTestContentBrowserClient(bool must_download)
       : must_download_(must_download) {}
@@ -1886,6 +1887,11 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_UserScriptDownload) {
   DownloadTestContentBrowserClient new_client(true);
   content::ContentBrowserClient* old_client =
       SetBrowserClientForTesting(&new_client);
+  base::ScopedClosureRunner restore_client(base::BindOnce(
+      [](content::ContentBrowserClient* client) {
+        SetBrowserClientForTesting(client);
+      },
+      old_client));
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/" + std::string(kUserScriptPath));
@@ -1899,7 +1905,6 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_UserScriptDownload) {
   observer->WaitForFinished();
   EXPECT_EQ(1u, observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
   CheckDownloadStates(1, DownloadItem::COMPLETE);
-  SetBrowserClientForTesting(old_client);
 }
 
 // Test to make sure auto-open works.

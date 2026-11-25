@@ -592,6 +592,7 @@ if (!is_android) {
       ":impl",
       ":test_support",
       "//base",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/subresource_filter:test_support",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_tabstrip",
