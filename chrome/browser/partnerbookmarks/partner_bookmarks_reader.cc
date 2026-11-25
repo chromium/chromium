@@ -281,6 +281,7 @@ void PartnerBookmarksReader::OnGetFaviconFromCacheFinished(
             "particular partner bookmark."
           data: "Page URL and desired icon size."
           destination: GOOGLE_OWNED_SERVICE
+          static_content: true
           internal {
             contacts {
               email: "wylieb@google.com"
