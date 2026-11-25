@@ -64,6 +64,22 @@
     ]
   },
   {
+    "name": "websocket-h3",
+    "args": [
+          "--enable-features=EnableWebsocketsOverHttp3",
+          "--origin-to-force-quic-on=web-platform.test:0"
+    ],
+    "comments": [
+          "QUIC rejects the WPT certificate because its root is not publicly",
+          "trusted. --origin-to-force-quic-on allows unknown roots for",
+          "web-platform.test. Port 0 is a non-serving sentinel so the flag does",
+          "not force the WebSocket/H3 test origin on port 11001 onto QUIC.",
+          "TODO(crbug.com/40210995): Replace this workaround with a dedicated",
+          "switch for allowing test certificate roots in QUIC without forcing",
+          "QUIC."
+    ]
+  },
+  {
     "name": "webgpu",
     "args": [
           "--enable-unsafe-webgpu",

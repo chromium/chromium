@@ -2570,7 +2570,6 @@ crbug.com/588533902 [ Win ] external/wpt/pointerevents/pointerevent_to_slotted_t
 crbug.com/588508352 external/wpt/scroll-animations/css/timeline-name-conflict-same-element-outside-hierarchy.html [ Failure Pass ]
 crbug.com/588508352 [ Linux ] external/wpt/webrtc-stats/getStats-RTCAudioSourceStats.https.html [ Failure ]
 crbug.com/588508352 [ Win ] external/wpt/webrtc-stats/getStats-RTCAudioSourceStats.https.html [ Failure ]
-crbug.com/588504736 external/wpt/websockets/binary/001.html?wpt_flags=websocket-h3 [ Failure ]
 crbug.com/588508354 virtual/subresource-link-preload-enabled/external/wpt/preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=false&isCrossOriginResource=false [ Failure ]
 crbug.com/588508354 virtual/subresource-link-preload-enabled/external/wpt/preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=false&isCrossOriginResource=true [ Failure ]
 crbug.com/588508354 virtual/subresource-link-preload-enabled/external/wpt/preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=true&isCrossOriginResource=false [ Failure ]

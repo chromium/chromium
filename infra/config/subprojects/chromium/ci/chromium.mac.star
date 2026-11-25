@@ -564,6 +564,7 @@ ci.thin_tester(
         targets = [
             "chromium_mac_gtests",
             "chromium_mac_rel_isolated_scripts",
+            "chromium_websocket_h3_isolated_scripts",
         ],
         mixins = [
             "mac_26_vm_optional",
@@ -678,6 +679,14 @@ ci.thin_tester(
             ),
             "updater_tests": targets.mixin(
                 enable_rts_filtering = True,
+            ),
+            "websocket_h3_content_shell_wpt_tests": targets.per_test_modification(
+                mixins = "mac_26_arm64",
+                remove_mixins = "mac_26_vm_optional",
+            ),
+            "websocket_h3_headless_shell_wpt_tests": targets.per_test_modification(
+                mixins = "mac_26_arm64",
+                remove_mixins = "mac_26_vm_optional",
             ),
         },
     ),

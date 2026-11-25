@@ -52,6 +52,23 @@ Supported values are:
 Also, consider using `-v` to get browser logs.
 It can be provided multiple times to increase verbosity.
 
+To run the WebSocket WPTs with WebSocket over HTTP/3 enabled, use the dedicated
+headless-shell configuration:
+
+```bash
+third_party/blink/tools/run_wpt_tests.py --target=Default \
+  --product=headless_shell --enable-websocket-h3 \
+  --flag-specific=websocket-h3 external/wpt/websockets
+```
+
+The `--enable-websocket-h3` option starts the paired HTTPS/TCP and HTTP/3/UDP
+servers on port 11001 and includes H3 variants; the flag-specific configuration
+enables the `EnableWebsocketsOverHttp3` feature. It also supplies
+`--origin-to-force-quic-on=web-platform.test:0` to work around QUIC
+certificate verification. Port 0 is a non-serving sentinel so it does not
+force the test origin onto QUIC. Ordinary `run_wpt_tests.py` runs leave the H3
+server and variants disabled.
+
 `run_wpt_tests.py --help` shows a full description of `run_wpt_tests.py`'s CLI,
 which resembles that of `run_web_tests.py`.
 

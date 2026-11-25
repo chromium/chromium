@@ -1867,6 +1867,7 @@ targets.bundle(
     name = "chromium_linux_rel_isolated_scripts_once",
     targets = [
         "chromedriver_py_tests_isolated_scripts",
+        "chromium_websocket_h3_isolated_scripts",
         "desktop_chromium_isolated_scripts",
         "desktop_once_isolated_scripts",
         "linux_specific_chromium_isolated_scripts",
@@ -1964,6 +1965,7 @@ targets.bundle(
     name = "chromium_mac_rel_isolated_scripts_once",
     targets = [
         "chromedriver_py_tests_isolated_scripts",
+        "chromium_websocket_h3_isolated_scripts",
         "components_perftests_isolated_scripts",
         "desktop_chromium_isolated_scripts",
         "desktop_once_isolated_scripts",
@@ -2071,6 +2073,21 @@ targets.bundle(
     },
 )
 
+targets.bundle(
+    name = "chromium_websocket_h3_isolated_scripts",
+    targets = [
+        "websocket_h3_content_shell_wpt_tests",
+        "websocket_h3_headless_shell_wpt_tests",
+    ],
+    mixins = [
+        targets.mixin(
+            ci_only = True,
+            # TODO(crbug.com/40210995): Promote out of experimental once stable.
+            experiment_percentage = 100,
+        ),
+    ],
+)
+
 # Pixel tests only enabled on Win 10. So this is
 # 'chromium_win_gtests' + 'pixel_browser_tests_gtests' +
 # 'non_android_chromium_gtests_skia_gold'. When changing
@@ -2148,6 +2165,7 @@ targets.bundle(
     name = "chromium_win_rel_isolated_scripts_once",
     targets = [
         "chromedriver_py_tests_isolated_scripts",
+        "chromium_websocket_h3_isolated_scripts",
         "components_perftests_isolated_scripts",
         "desktop_chromium_isolated_scripts",
         "desktop_once_isolated_scripts",

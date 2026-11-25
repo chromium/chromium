@@ -1,0 +1,6 @@
+# tags: [ Linux Mac Win ]
+# tags: [ Release Debug ]
+# results: [ Timeout Crash Pass Failure Slow Skip ]
+
+# Expectations for WebSocket/H3 WPT suites run with --flag-specific=websocket-h3
+# in content shell and headless shell.

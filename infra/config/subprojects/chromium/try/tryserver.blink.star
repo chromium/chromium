@@ -99,6 +99,7 @@ _rebaseline_builder(
     targets = targets.bundle(
         targets = [
             "chromium_linux_blink_rel_isolated_scripts",
+            "chromium_websocket_h3_isolated_scripts",
         ],
         mixins = [
             "linux-jammy",
@@ -274,6 +275,7 @@ _rebaseline_builder(
     targets = targets.bundle(
         targets = [
             "chromium_blink_isolated_scripts",
+            "chromium_websocket_h3_isolated_scripts",
         ],
         mixins = [
             targets.mixin(
@@ -318,6 +320,7 @@ _mac_rebaseline_builder(
     targets = targets.bundle(
         targets = [
             "chromium_blink_isolated_scripts",
+            "chromium_websocket_h3_isolated_scripts",
         ],
         mixins = [
             "mac_13_x64",

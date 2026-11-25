@@ -705,6 +705,36 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "websocket_h3_content_shell_wpt_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+        "blink_tests_write_run_histories",
+    ],
+    args = [
+        "--enable-websocket-h3",
+        "--flag-specific=websocket-h3",
+        "--num-retries=3",
+        "external/wpt/websockets",
+    ],
+    binary = "blink_wpt_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "websocket_h3_headless_shell_wpt_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--enable-websocket-h3",
+        "--flag-specific=websocket-h3",
+        "--no-virtual-tests",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
+        "external/wpt/websockets",
+    ],
+    binary = "headless_shell_wpt",
+)
+
+targets.tests.isolated_script_test(
     name = "headless_shell_wpt_tests",
     mixins = [
         "has_native_resultdb_integration",

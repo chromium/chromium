@@ -206,12 +206,20 @@ group("expectations") {
     ]
   }
 
-  # flag-specific tests only runs on linux & mac as of now
+  # Include flag-specific expectations and text baselines on Linux and macOS.
   if (is_linux || is_mac) {
     data += [
       "FlagSpecificConfig",
       "FlagExpectations/",
       "flag-specific/",
+    ]
+  } else if (is_win) {
+    # WebSocket/H3 flag-specific tests also run on Windows. They are not
+    # expected to need flag-specific text baselines, so do not include
+    # flag-specific/.
+    data += [
+      "FlagSpecificConfig",
+      "FlagExpectations/websocket-h3",
     ]
   }
 }
