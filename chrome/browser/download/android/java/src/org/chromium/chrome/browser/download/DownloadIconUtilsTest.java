@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download;
 
 import static org.junit.Assert.assertEquals;
 
+import android.graphics.Bitmap;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -40,5 +42,27 @@ public class DownloadIconUtilsTest {
         blocked.failState = FailState.FILE_BLOCKED;
         blocked.dangerType = DownloadDangerType.SENSITIVE_CONTENT_BLOCK;
         assertEquals(R.drawable.dangerous_filled_24dp, DownloadIconUtils.getIconForItem(blocked));
+    }
+
+    @Test
+    public void testGetFileTypeIcon_hasRequestedSize() {
+        Bitmap bitmap = DownloadIconUtils.getFileTypeIcon(OfflineItemFilter.IMAGE, 32);
+        assertEquals(32, bitmap.getWidth());
+        assertEquals(32, bitmap.getHeight());
+        assertEquals(Bitmap.Config.ARGB_8888, bitmap.getConfig());
+
+        bitmap = DownloadIconUtils.getFileTypeIcon(OfflineItemFilter.OTHER, 48);
+        assertEquals(48, bitmap.getWidth());
+        assertEquals(48, bitmap.getHeight());
+    }
+
+    @Test
+    public void testGetFileTypeIcon_everyFilterHasIcon() {
+        // The page and video icons are tinted with a theme attribute, unlike the others.
+        for (@OfflineItemFilter int filter = 0; filter < OfflineItemFilter.NUM_ENTRIES; filter++) {
+            Bitmap bitmap = DownloadIconUtils.getFileTypeIcon(filter, 32);
+            assertEquals("Filter " + filter, 32, bitmap.getWidth());
+            assertEquals("Filter " + filter, 32, bitmap.getHeight());
+        }
     }
 }

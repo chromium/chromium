@@ -1503,6 +1503,7 @@ source_set("core") {
       "//chrome/browser/commerce/android:shopping_service_jni",
       "//chrome/browser/composeplate/android:jni_headers",
       "//chrome/browser/dev_ui",
+      "//chrome/browser/download/android:jni_headers",
       "//chrome/browser/feed",
       "//chrome/browser/finds/core",
       "//chrome/browser/flags:flags_android",
@@ -5275,7 +5276,6 @@ if (!is_android) {
       "crash_recovery_browsertest.cc",
       "fast_shutdown_browsertest.cc",
       "file_select_helper_browsertest.cc",
-      "icon_loader_browsertest.cc",
       "iframe_browsertest.cc",
       "l10n_util_browsertest.cc",
       "locale_tests_browsertest.cc",
@@ -5295,7 +5295,6 @@ if (!is_android) {
       ":chrome_browser_main",
       ":chrome_content_browser_client",
       ":file_select_helper",
-      ":icon_loader",
       ":platform_util_internal",
       "//base",
       "//chrome/browser/accessibility",
@@ -5525,12 +5524,14 @@ source_set("platform_browser_tests") {
 
   sources = [
     "chrome_content_browser_client_platform_browsertest.cc",
+    "icon_loader_browsertest.cc",
     "loadtimes_extension_bindings_browsertest.cc",
     "no_best_effort_tasks_browsertest.cc",
   ]
 
   deps = [
     ":chrome_content_browser_client",
+    ":icon_loader",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_utils",
     "//content/test:test_support",

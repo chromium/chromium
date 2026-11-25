@@ -103,9 +103,7 @@ class IconLoader : public base::SelfDeleting {
 
   IconGroup group_;
 
-#if !BUILDFLAG(IS_ANDROID)
   IconSize icon_size_;
-#endif  // !BUILDFLAG(IS_ANDROID)
   const float scale_;
   IconLoadedCallback callback_;
 };

@@ -11,6 +11,7 @@
 
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
+#include "components/offline_items_collection/core/offline_item_filter.h"
 #include "components/offline_items_collection/core/rename_result.h"
 
 // Contains various utility methods for conversions between DownloadItem and
@@ -25,6 +26,11 @@ class OfflineItemUtils {
   static offline_items_collection::OfflineItem CreateOfflineItem(
       const std::string& name_space,
       download::DownloadItem* item);
+
+  // Returns the filter, i.e. the type of content, that an item with
+  // `mime_type` has.
+  static offline_items_collection::OfflineItemFilter
+  MimeTypeToOfflineItemFilter(const std::string& mime_type);
 
   static offline_items_collection::ContentId GetContentIdForDownload(
       download::DownloadItem* download);

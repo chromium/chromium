@@ -52,7 +52,21 @@ std::optional<OfflineItemFilter> FilterForSpecialMimeTypes(
   return std::nullopt;
 }
 
-OfflineItemFilter MimeTypeToOfflineItemFilter(const std::string& mime_type) {
+bool IsInterruptedDownloadAutoResumable(download::DownloadItem* item) {
+  int auto_resumption_size_limit = 0;
+#if BUILDFLAG(IS_ANDROID)
+  auto_resumption_size_limit = DownloadUtils::GetAutoResumptionSizeLimit();
+#endif
+
+  return download::IsInterruptedDownloadAutoResumable(
+      item, auto_resumption_size_limit);
+}
+
+}  // namespace
+
+// static
+OfflineItemFilter OfflineItemUtils::MimeTypeToOfflineItemFilter(
+    const std::string& mime_type) {
   auto filter = FilterForSpecialMimeTypes(mime_type);
   if (filter.has_value())
     return filter.value();
@@ -74,18 +88,6 @@ OfflineItemFilter MimeTypeToOfflineItemFilter(const std::string& mime_type) {
 
   return filter.value();
 }
-
-bool IsInterruptedDownloadAutoResumable(download::DownloadItem* item) {
-  int auto_resumption_size_limit = 0;
-#if BUILDFLAG(IS_ANDROID)
-  auto_resumption_size_limit = DownloadUtils::GetAutoResumptionSizeLimit();
-#endif
-
-  return download::IsInterruptedDownloadAutoResumable(
-      item, auto_resumption_size_limit);
-}
-
-}  // namespace
 
 OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
                                                 DownloadItem* download_item) {

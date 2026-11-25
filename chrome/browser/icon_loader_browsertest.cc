@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/icon_loader.h"
+
+#include <limits>
+
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "chrome/browser/icon_loader.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/image/image.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
 #endif
 
-using IconLoaderBrowserTest = InProcessBrowserTest;
+using IconLoaderBrowserTest = PlatformBrowserTest;
 
 class TestIconLoader {
  public:
@@ -85,6 +87,25 @@ IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadGroup) {
 
 #endif  // !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(MEMORY_SANITIZER))
+
+#if BUILDFLAG(IS_ANDROID)
+// Android renders its icons into a bitmap of the requested size. A scale that
+// gives a bitmap with no pixels, or far too many, fails to load.
+IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, InvalidScale) {
+  for (float scale :
+       {0.f, -1.f, 1e-10f, 1000.f, std::numeric_limits<float>::quiet_NaN(),
+        std::numeric_limits<float>::infinity()}) {
+    SCOPED_TRACE(scale);
+    base::RunLoop runner;
+    TestIconLoader test_loader(runner.QuitClosure());
+    test_loader.TryLoadIcon(base::FilePath(FILE_PATH_LITERAL("file.txt")),
+                            IconLoader::NORMAL, scale);
+
+    runner.Run();
+    EXPECT_FALSE(test_loader.load_succeeded());
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadExeIcon) {

@@ -11,9 +11,13 @@
 #include <array>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -101,10 +105,13 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/png_codec.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1480,30 +1487,140 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ScopedCancellingItem item(download_item);
   ASSERT_FALSE(download_item->GetTargetFilePath().empty());
 
-  const std::string args =
-      base::StringPrintf("[%d, {\"size\": 32}]", download_item->GetId());
+  for (int size : {16, 32}) {
+    SCOPED_TRACE(size);
+    const std::string args = base::StringPrintf("[%d, {\"size\": %d}]",
+                                                download_item->GetId(), size);
+    auto function = base::MakeRefCounted<DownloadsGetFileIconFunction>();
+    if (!RunFunction(function, args)) {
 #if BUILDFLAG(IS_ANDROID)
-  // Android does not provide file type icons, so the call fails cleanly.
-  EXPECT_EQ(RunFunctionAndReturnError(
-                base::MakeRefCounted<DownloadsGetFileIconFunction>(), args),
-            errors::kIconNotFound);
+      // Android uses Chrome's own file type icons, which are always available.
+      ADD_FAILURE() << function->GetError();
 #else
-  // Whether the OS or toolkit provides an icon depends on the test
-  // environment (e.g. GTK under Xvfb does not), so accept either outcome as
-  // long as the call completes.
-  auto function = base::MakeRefCounted<DownloadsGetFileIconFunction>();
-  if (RunFunction(function, args)) {
+      // Whether the OS or toolkit provides an icon depends on the test
+      // environment (e.g. GTK under Xvfb does not), so accept either outcome
+      // as long as the call completes.
+      EXPECT_EQ(function->GetError(), errors::kIconNotFound);
+#endif
+      continue;
+    }
     const base::ListValue* results = function->GetResultListForTest();
     ASSERT_TRUE(results);
     ASSERT_EQ(1u, results->size());
     ASSERT_TRUE((*results)[0].is_string());
-    EXPECT_TRUE(
-        base::StartsWith((*results)[0].GetString(), "data:image/png;base64,"));
-  } else {
-    EXPECT_EQ(function->GetError(), errors::kIconNotFound);
-  }
+    const std::string& url = (*results)[0].GetString();
+    EXPECT_TRUE(base::StartsWith(url, "data:image/png;base64,"));
+
+#if BUILDFLAG(IS_ANDROID)
+    // The icon has the requested size. There is no sender WebContents here, so
+    // the icon is for a device scale factor of 1.
+    std::string mime_type;
+    std::string charset;
+    std::string data;
+    ASSERT_TRUE(net::DataURL::Parse(GURL(url), &mime_type, &charset, &data));
+    const SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(data));
+    ASSERT_FALSE(bitmap.isNull());
+    EXPECT_EQ(bitmap.width(), size);
+    EXPECT_EQ(bitmap.height(), size);
 #endif
+  }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Android has no OS file type icons, so getFileIcon() returns the icons that
+// Chrome's own download UI uses, chosen by the type of the file.
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_FileIcon_AndroidFileTypes) {
+  const HistoryDownloadInfo kHistoryInfo[] = {
+      {FILE_PATH_LITERAL("text.txt"), DownloadItem::COMPLETE,
+       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS},
+      {FILE_PATH_LITERAL("unknown.unknown-extension"), DownloadItem::COMPLETE,
+       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS},
+      {FILE_PATH_LITERAL("image.png"), DownloadItem::COMPLETE,
+       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS},
+      {FILE_PATH_LITERAL("image.jpg"), DownloadItem::COMPLETE,
+       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS},
+      {FILE_PATH_LITERAL("audio.mp3"), DownloadItem::COMPLETE,
+       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS},
+      {FILE_PATH_LITERAL("video.mp4"), DownloadItem::COMPLETE,
+       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS}};
+  DownloadManager::DownloadVector all_downloads;
+  ASSERT_TRUE(CreateHistoryDownloads(kHistoryInfo, &all_downloads));
+
+  std::vector<std::string> urls;
+  for (const download::DownloadItem* download : all_downloads) {
+    SCOPED_TRACE(download->GetTargetFilePath());
+    std::string url;
+    ASSERT_TRUE(RunFunctionAndReturnString(
+        base::MakeRefCounted<DownloadsGetFileIconFunction>(),
+        DownloadItemIdAsArgList(download), &url));
+    EXPECT_TRUE(base::StartsWith(url, "data:image/png;base64,"));
+    urls.push_back(std::move(url));
+  }
+  ASSERT_EQ(urls.size(), 6u);
+
+  // Files that are not images, audio or video share the generic file icon.
+  EXPECT_EQ(urls[0], urls[1]);
+  // All files of one type share an icon.
+  EXPECT_EQ(urls[2], urls[3]);
+  // The generic file, image, audio and video icons all differ.
+  EXPECT_EQ(base::flat_set<std::string_view>(urls.begin(), urls.end()).size(),
+            4u);
+}
+
+// A finished download on Android is a content URI, which has no file extension,
+// so its type comes from its content provider.
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_FileIcon_AndroidContentUri) {
+  LoadExtension("downloads_split");
+  GoOnTheRecord();
+
+  // A 1x1 PNG.
+  static constexpr char kPngUrl[] =
+      "data:image/png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA"
+      "60e6kgAAAABJRU5ErkJggg==";
+  struct DownloadInfo {
+    const char* url;
+    const char* filename;
+  };
+  const DownloadInfo kDownloads[] = {{"data:text/plain,hello", "text.txt"},
+                                     {kPngUrl, "image.png"}};
+
+  std::vector<std::string> urls;
+  for (const DownloadInfo& info : kDownloads) {
+    SCOPED_TRACE(info.filename);
+    std::optional<base::Value> result = RunFunctionAndReturnResult(
+        base::MakeRefCounted<DownloadsDownloadFunction>(),
+        base::StringPrintf("[{\"url\": \"%s\", \"filename\": \"%s\"}]",
+                           info.url, info.filename));
+    ASSERT_TRUE(result);
+    ASSERT_TRUE(result->is_int());
+    DownloadItem* item = GetCurrentManager()->GetDownload(result->GetInt());
+    ASSERT_TRUE(item);
+    ScopedCancellingItem canceller(item);
+    const std::string completed_event = base::StringPrintf(
+        "[{\"id\": %d,"
+        "  \"state\": {"
+        "    \"previous\": \"in_progress\","
+        "    \"current\": \"complete\"}}]",
+        result->GetInt());
+    ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName, completed_event));
+    ASSERT_TRUE(item->GetTargetFilePath().IsContentUri());
+
+    std::optional<base::Value> icon = RunFunctionAndReturnResult(
+        base::MakeRefCounted<DownloadsGetFileIconFunction>(),
+        DownloadItemIdAsArgList(item));
+    ASSERT_TRUE(icon);
+    ASSERT_TRUE(icon->is_string());
+    urls.push_back(icon->GetString());
+  }
+  ASSERT_EQ(urls.size(), 2u);
+
+  // The image does not get the generic file icon.
+  EXPECT_NE(urls[0], urls[1]);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Test passing the empty query to search().
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,

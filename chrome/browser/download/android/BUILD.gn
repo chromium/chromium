@@ -183,6 +183,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/download/DangerousDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadIconUtils.java",
     "java/src/org/chromium/chrome/browser/download/DownloadInfo.java",
     "java/src/org/chromium/chrome/browser/download/DownloadManagerBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadStartupUtils.java",
