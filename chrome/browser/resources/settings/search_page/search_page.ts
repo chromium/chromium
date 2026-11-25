@@ -100,6 +100,8 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   // is enabled by feature flags.
   private readonly pickerWithMoreEnginesEnabled_: boolean =
       loadTimeData.getBoolean('pickerWithMoreEngines');
+  protected readonly settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
   protected accessor searchPageTitle_: string = this.computeSearchPageTitle_();
   protected accessor confirmationToastLabel_: string = '';
 
@@ -168,8 +170,9 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
   private computeSearchPageTitle_(): string {
     return this.i18n(
-        this.searchSettingsUpdateEnabled_ ? 'defaultSearch' :
-                                            'searchPageTitle');
+        this.searchSettingsUpdateEnabled_ || this.settingsRefresh2026Enabled_ ?
+            'defaultSearch' :
+            'searchPageTitle');
   }
 
   private computeDefaultSearchEngine_(): SearchEngine|null {

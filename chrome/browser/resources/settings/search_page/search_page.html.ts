@@ -8,21 +8,35 @@ import type {SettingsSearchPageElement} from './search_page.js';
 
 export function getHtml(this: SettingsSearchPageElement) {
   return html`<!--_html_template_start_-->
-<settings-section page-title="${this.searchPageTitle_}">
+${this.settingsRefresh2026Enabled_ ? html`
+  <h2 class="section-header">${this.searchPageTitle_}</h2>
+  <div id="headerDescription" class="secondary">
+    $i18n{searchEngineChoiceEntryPointSubtitle}
+    <a href="$i18n{searchExplanationLearnMoreURL}"
+        aria-description="$i18n{opensInNewTab}" target="_blank">
+      $i18n{searchExplanationLearnMore}
+    </a>
+  </div>
+` : ''}
+<settings-section
+    page-title="${
+        this.settingsRefresh2026Enabled_ ? '' : this.searchPageTitle_}">
   <div route-path="default">
     <!-- Omnibox search engine -->
     <div class="cr-row first">
       <div class="default-search-engine flex">
-        ${this.searchPageTitle_}
-        <div class="secondary">
-          $i18n{searchEngineChoiceEntryPointSubtitle}
-          <a href="$i18n{searchExplanationLearnMoreURL}"
-              aria-description="$i18n{opensInNewTab}"
-              aria-label="$i18n{searchExplanationLearnMoreA11yLabel}"
-              target="_blank">
-            $i18n{learnMore}
-          </a>
-        </div>
+        ${!this.settingsRefresh2026Enabled_ ? html`
+          ${this.searchPageTitle_}
+          <div class="secondary">
+            $i18n{searchEngineChoiceEntryPointSubtitle}
+            <a href="$i18n{searchExplanationLearnMoreURL}"
+                aria-description="$i18n{opensInNewTab}"
+                aria-label="$i18n{searchExplanationLearnMoreA11yLabel}"
+                target="_blank">
+              $i18n{learnMore}
+            </a>
+          </div>
+        ` : ''}
         <div class="cr-row first">
           <settings-search-engine-icon .engine="${this.defaultSearchEngine_}">
           </settings-search-engine-icon>
@@ -41,28 +55,6 @@ export function getHtml(this: SettingsSearchPageElement) {
           </cr-button>
         </div>
       </div>
-      ${this.showSearchEngineListDialog_ ? html`
-        <settings-search-engine-list-dialog
-            .searchEngines="${this.searchEngines_}"
-            .saveGuestChoice="${this.saveGuestChoice_}"
-            @close="${this.onSearchEngineListDialogClose_}"
-            @more-engines-click="${this.onMoreEnginesClick_}"
-            @save-guest-choice-changed="${this.onSaveGuestChoiceChanged_}"
-            @search-engine-changed="${this.onSearchEngineChanged_}">
-        </settings-search-engine-list-dialog>
-      ` : ''}
-      ${this.showMoreEnginesDialog_ ? html`
-        <settings-search-engine-more-engines-dialog
-            .saveGuestChoice="${this.saveGuestChoice_}"
-            @back-click="${this.onMoreEnginesBackClick_}"
-            @close="${this.onMoreEnginesDialogClose_}"
-            @save-guest-choice-changed="${this.onSaveGuestChoiceChanged_}"
-            @search-engine-changed="${this.onSearchEngineChanged_}">
-        </settings-search-engine-more-engines-dialog>
-      ` : ''}
-      <cr-toast id="confirmationToast" duration="10000">
-        <div>${this.confirmationToastLabel_}</div>
-      </cr-toast>
     </div>
     ${this.defaultSearchProviderDataPref_?.extensionId ? html`
       ${this.searchSettingsUpdateEnabled_ ? html`
@@ -102,5 +94,26 @@ export function getHtml(this: SettingsSearchPageElement) {
     ` : ''}
   </div>
 </settings-section>
+${this.showSearchEngineListDialog_ ? html`
+  <settings-search-engine-list-dialog .searchEngines="${this.searchEngines_}"
+      .saveGuestChoice="${this.saveGuestChoice_}"
+      @close="${this.onSearchEngineListDialogClose_}"
+      @more-engines-click="${this.onMoreEnginesClick_}"
+      @save-guest-choice-changed="${this.onSaveGuestChoiceChanged_}"
+      @search-engine-changed="${this.onSearchEngineChanged_}">
+  </settings-search-engine-list-dialog>
+` : ''}
+${this.showMoreEnginesDialog_ ? html`
+  <settings-search-engine-more-engines-dialog
+      .saveGuestChoice="${this.saveGuestChoice_}"
+      @back-click="${this.onMoreEnginesBackClick_}"
+      @close="${this.onMoreEnginesDialogClose_}"
+      @save-guest-choice-changed="${this.onSaveGuestChoiceChanged_}"
+      @search-engine-changed="${this.onSearchEngineChanged_}">
+  </settings-search-engine-more-engines-dialog>
+` : ''}
+<cr-toast id="confirmationToast" duration="10000">
+  <div>${this.confirmationToastLabel_}</div>
+</cr-toast>
 <!--_html_template_end_-->`;
 }

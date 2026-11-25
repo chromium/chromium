@@ -3075,6 +3075,8 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"searchPageTitle", IDS_SETTINGS_SEARCH},
       {"searchExplanationLearnMoreA11yLabel",
        IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL},
+      {"searchExplanationLearnMore",
+       IDS_SETTINGS_SEARCH_EXPLANATION_LEARN_MORE},
       {"searchEngineChoiceEntryPointSubtitle",
        IDS_SEARCH_ENGINE_CHOICE_SETTINGS_ENTRY_POINT_SUBTITLE},
       {"searchEnginesChange",

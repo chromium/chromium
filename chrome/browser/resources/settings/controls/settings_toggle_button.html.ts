@@ -15,8 +15,10 @@ export function getHtml(this: SettingsToggleButtonElement) {
     </span>
   ` : ''}
   <div class="flex" id="labelWrapper" ?hidden="${!this.label}">
-    <div class="label" aria-hidden="${!this.ariaShowLabel}">${this.label}</div>
-    <div class="cr-secondary-text label" id="sub-label">
+    <div class="label" part="label" aria-hidden="${!this.ariaShowLabel}">
+      ${this.label}
+    </div>
+    <div class="cr-secondary-text label" id="sub-label" part="sub-label">
       ${this.subLabelIcon ? html`
         <span id="sub-label-icon" aria-hidden="true">
           <cr-icon slot="icon" icon="${this.subLabelIcon}"></cr-icon>

@@ -129,8 +129,9 @@ export class SettingsSearchEngineListDialogElement extends
 
   protected getTitle_(): string {
     return loadTimeData.getString(
-        this.pickerWithMoreEnginesEnabled_ ? 'searchEnginesPickerTitle' :
-                                             'searchPageTitle');
+        this.pickerWithMoreEnginesEnabled_ || this.settingsRefresh2026Enabled_ ?
+            'searchEnginesPickerTitle' :
+            'searchPageTitle');
   }
 
   protected getSubtitle_(): string {

@@ -21,3 +21,21 @@
 .shortcut-input {
   margin-inline-start: auto;
 }
+
+:host-context([settings-refresh-2026]) {
+  settings-toggle-button::part(label),
+  .shortcut-label {
+    color: var(--cr-primary-text-color);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  settings-toggle-button::part(sub-label),
+  .secondary {
+    color: var(--cr-secondary-text-color);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+}

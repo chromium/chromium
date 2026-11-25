@@ -1784,6 +1784,9 @@
     <message name="IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL" desc="Accessibility label for a 'learn more' link which links to an article about setting a default search engine.">
       Learn more about default search engines
     </message>
+    <message name="IDS_SETTINGS_SEARCH_EXPLANATION_LEARN_MORE" desc="Text for a 'learn more' link in the Default search engine section which links to a help article about search engine and site search settings.">
+      Learn more about search engine and site search settings
+    </message>
     <message name="IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH" desc="Label for the Manage Search Engines and Site Search button.">
       Manage search engines and site search
     </message>

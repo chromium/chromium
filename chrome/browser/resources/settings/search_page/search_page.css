@@ -29,3 +29,30 @@
 .search-engine-name {
   margin-inline-end: auto;
 }
+
+:host-context([settings-refresh-2026]) {
+  #headerDescription {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    padding: 0 var(--cr-section-padding) 24px;
+  }
+
+  [route-path='default'] {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2px;
+  }
+
+  .default-search-engine {
+    padding-top: 0;
+  }
+
+  .search-engine-name,
+  #enginesSubpageTrigger,
+  extension-controlled-message {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+}
