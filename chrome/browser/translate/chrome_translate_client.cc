@@ -142,7 +142,7 @@ class ChromeTranslateClient::ReadAnythingObserver
         reason == ReadAnythingCloseReason::kToggledPresentation) {
       return;
     }
-    client_->OnSidePanelClosed();
+    client_->OnReadingModeClosed();
     if (client_->web_contents()) {
       tabs::TabInterface* tab =
           tabs::TabInterface::MaybeGetFromContents(client_->web_contents());
@@ -207,7 +207,7 @@ void ChromeTranslateClient::RevertPdfTranslation() {
 #endif
 }
 
-void ChromeTranslateClient::OnSidePanelClosed() {
+void ChromeTranslateClient::OnReadingModeClosed() {
 #if !BUILDFLAG(IS_ANDROID)
   // Revert translation specifically for PDF documents when Reading Mode UI closes.
   const bool is_pdf =

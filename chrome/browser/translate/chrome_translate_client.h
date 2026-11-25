@@ -122,7 +122,7 @@ class ChromeTranslateClient
   bool IsTranslatableURL(const GURL& url) override;
   void OnPdfTranslationRequested() override;
   void RevertPdfTranslation() override;
-  void OnSidePanelClosed();
+  void OnReadingModeClosed();
   bool IsReadingModeOpen() const override;
 
 #if !BUILDFLAG(IS_ANDROID)
