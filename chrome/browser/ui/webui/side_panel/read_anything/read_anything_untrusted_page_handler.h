@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "pdf/buildflags.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_tree.h"
@@ -313,6 +314,11 @@ class ReadAnythingUntrustedPageHandler :
                              const GURL& image_url,
                              const std::vector<SkBitmap>& bitmaps,
                              const std::vector<gfx::Size>& sizes);
+#if BUILDFLAG(ENABLE_PDF)
+  void OnPdfImageDataReceived(const ui::AXTreeID& target_tree_id,
+                              ui::AXNodeID node_id,
+                              const SkBitmap& bitmap);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
  private:
 #if !BUILDFLAG(IS_CHROMEOS)

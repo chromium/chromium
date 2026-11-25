@@ -92,6 +92,7 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
 #include "components/pdf/common/pdf_util.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
@@ -1355,6 +1356,22 @@ void ReadAnythingUntrustedPageHandler::OnImageDataRequested(
     return;
   }
 
+#if BUILDFLAG(ENABLE_PDF)
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    if (auto* rfh = content::RenderFrameHost::FromAXTreeID(target_tree_id)) {
+      if (auto* pdf_helper =
+              pdf::PDFDocumentHelper::GetForCurrentDocument(rfh)) {
+        pdf_helper->GetImageForNode(
+            target_node_id,
+            base::BindOnce(
+                &ReadAnythingUntrustedPageHandler::OnPdfImageDataReceived,
+                weak_factory_.GetWeakPtr(), target_tree_id, target_node_id));
+        return;
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   main_observer_->web_contents()->DownloadImageFromAxNode(
       target_tree_id, target_node_id,
       /*preferred_size=*/gfx::Size(),
@@ -1398,6 +1415,22 @@ void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
   }
   page_->OnImageDataDownloaded(target_tree_id, node_id, bitmap);
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+void ReadAnythingUntrustedPageHandler::OnPdfImageDataReceived(
+    const ui::AXTreeID& target_tree_id,
+    ui::AXNodeID node_id,
+    const SkBitmap& bitmap) {
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  // The target frame may have been removed or navigated while the image was
+  // being fetched.
+  if (!IsObservingTree(target_tree_id) ||
+      !ui::IsValidAXNodeIDFromRenderer(node_id) || bitmap.drawsNothing()) {
+    return;
+  }
+  page_->OnImageDataDownloaded(target_tree_id, node_id, bitmap);
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 void ReadAnythingUntrustedPageHandler::ScrollToTargetNode(
     const ui::AXTreeID& target_tree_id,

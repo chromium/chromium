@@ -260,6 +260,9 @@ class TestReadAnythingUntrustedPageHandler
                                          /*use_screen_ai_service=*/false) {}
 #endif
   using ReadAnythingUntrustedPageHandler::OnImageDataDownloaded;
+#if BUILDFLAG(ENABLE_PDF)
+  using ReadAnythingUntrustedPageHandler::OnPdfImageDataReceived;
+#endif  // BUILDFLAG(ENABLE_PDF)
 };
 
 class FakeTtsEngineDelegate : public content::TtsEngineDelegate {
@@ -314,7 +317,8 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
  public:
   ReadAnythingUntrustedPageHandlerTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kReadAnythingImprovedUi};
+        features::kReadAnythingImprovedUi,
+        features::kPdfAccessibilityHeuristicEnhancements};
     std::vector<base::test::FeatureRef> disabled_features;
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     // `TestReadAnythingUntrustedPageHandler` disables ScreenAI service, which
@@ -618,6 +622,47 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
         ->OnImageDataDownloaded(target_tree_id, node_id, id, http_status_code,
                                 image_url, bitmaps, sizes);
   }
+
+#if BUILDFLAG(ENABLE_PDF)
+  void OnPdfImageDataReceived(const ui::AXTreeID& target_tree_id,
+                              ui::AXNodeID node_id,
+                              const SkBitmap& bitmap) {
+    static_cast<TestReadAnythingUntrustedPageHandler*>(handler_.get())
+        ->OnPdfImageDataReceived(target_tree_id, node_id, bitmap);
+  }
+
+  // Sets up the handler and waits for the first node with `role` in
+  // `pdf_tree_id` to be received via AccessibilityEventReceived().
+  ui::AXNodeID SetUpHandlerAndFindPdfNodeWithRole(
+      const ui::AXTreeID& pdf_tree_id,
+      ax::mojom::Role role) {
+    ui::AXNodeID found_node_id = ui::kInvalidAXNodeID;
+    EXPECT_CALL(page_, AccessibilityEventReceived)
+        .WillRepeatedly([&](const ui::AXTreeID& tree_id,
+                            const std::vector<ui::AXTreeUpdate>& updates,
+                            const std::vector<ui::AXEvent>&) {
+          if (tree_id != pdf_tree_id || found_node_id != ui::kInvalidAXNodeID) {
+            return;
+          }
+          for (const auto& update : updates) {
+            for (const auto& node : update.nodes) {
+              if (node.role == role) {
+                found_node_id = node.id;
+                return;
+              }
+            }
+          }
+        });
+    SetUpHandler();
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return found_node_id != ui::kInvalidAXNodeID; }));
+    // Clear the expectation before returning: the lambda above captures local
+    // variables (`found_node_id` and `role`) by reference, so leaving it
+    // active would access destroyed stack memory on later accessibility events.
+    testing::Mock::VerifyAndClearExpectations(&page_);
+    return found_node_id;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   void OnActiveAXTreeIDChanged() { handler_->OnActiveAXTreeIDChanged(); }
 
@@ -5135,6 +5180,77 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       ReadAnythingRendererRequestResult::kAllowed,
       /*expected_bucket_count=*/1);
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnImageDataRequested_Pdf_ForwardsImageBitmap) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::RenderFrameHost* pdf_content_rfh = LoadPdfAndGetContentFrame(
+      embedded_test_server()->GetURL("/pdf/accessibility/image_alt_text.pdf"));
+  ASSERT_TRUE(pdf_content_rfh);
+  const ui::AXTreeID pdf_tree_id = pdf_content_rfh->GetAXTreeID();
+
+  const ui::AXNodeID image_node_id =
+      SetUpHandlerAndFindPdfNodeWithRole(pdf_tree_id, ax::mojom::Role::kImage);
+  ASSERT_NE(image_node_id, ui::kInvalidAXNodeID);
+
+  base::test::TestFuture<ui::AXTreeID, int, SkBitmap> bitmap_future;
+  EXPECT_CALL(page_, OnImageDataDownloaded(pdf_tree_id, image_node_id, _))
+      .WillOnce(base::test::InvokeFuture(bitmap_future));
+
+  handler_remote_->OnImageDataRequested(pdf_tree_id, image_node_id);
+  EXPECT_FALSE(bitmap_future.Get<2>().drawsNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnPdfImageDataReceived_EmptyBitmap_DoesNotForward) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::RenderFrameHost* pdf_content_rfh = LoadPdfAndGetContentFrame(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(pdf_content_rfh);
+  const ui::AXTreeID pdf_tree_id = pdf_content_rfh->GetAXTreeID();
+  SetUpHandler();
+
+  SkBitmap valid_bitmap;
+  valid_bitmap.allocN32Pixels(10, 10);
+  base::test::TestFuture<ui::AXTreeID, int, SkBitmap> bitmap_future;
+  EXPECT_CALL(page_, OnImageDataDownloaded(pdf_tree_id, /*node_id=*/1, _))
+      .WillOnce(base::test::InvokeFuture(bitmap_future));
+  OnPdfImageDataReceived(pdf_tree_id, /*node_id=*/1, valid_bitmap);
+  EXPECT_FALSE(bitmap_future.Get<2>().drawsNothing());
+
+  EXPECT_CALL(page_, OnImageDataDownloaded(_, _, _)).Times(0);
+  OnPdfImageDataReceived(pdf_tree_id, /*node_id=*/1, SkBitmap());
+  page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnPdfImageDataReceived_FrameGone_NoCrash) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::RenderFrameHost* pdf_content_rfh = LoadPdfAndGetContentFrame(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(pdf_content_rfh);
+  const ui::AXTreeID pdf_tree_id = pdf_content_rfh->GetAXTreeID();
+  SetUpHandler();
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+
+  EXPECT_CALL(page_, OnImageDataDownloaded(_, _, _)).Times(0);
+  OnPdfImageDataReceived(pdf_tree_id, /*node_id=*/1, bitmap);
+  page_.receiver_.FlushForTesting();
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 class ReadAnythingUntrustedPageHandlerUserEducationTest
     : public ReadAnythingUntrustedPageHandlerTest {

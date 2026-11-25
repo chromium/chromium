@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//pdf/features.gni")
+
 assert(!is_android)
 
 source_set("read_anything") {
@@ -28,6 +30,7 @@ source_set("read_anything") {
     "//components/translate/core/browser",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//pdf:buildflags",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
   ]
   deps = [
@@ -70,6 +73,10 @@ source_set("read_anything") {
     "//ui/webui/resources",
     "//ui/webui/tracked_element",
   ]
+
+  if (enable_pdf) {
+    deps += [ "//components/pdf/browser" ]
+  }
 
   if (is_chromeos) {
     public_deps += [ "//chromeos/ash/components/language_packs" ]
