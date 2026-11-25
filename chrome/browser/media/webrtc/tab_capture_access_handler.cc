@@ -57,11 +57,20 @@ class SameOriginPolicyUI : public MediaStreamUI {
       content::MediaStreamUI::SourceCallback source_callback,
       const std::vector<content::DesktopMediaID>& media_ids) override {
     stop_callback_ = std::move(stop_callback);
+    if (!observer_.is_same_origin()) {
+      OnSameOriginStateChange(observer_.web_contents());
+    }
     return 0;
   }
 
  private:
   void OnSameOriginStateChange(content::WebContents* wc) {
+    // The capture can only be stopped while it is running. If the captured tab
+    // stops being same-origin before the capture has started, OnStarted() stops
+    // it. Once the capture has been stopped, there is nothing left to do.
+    if (stop_callback_.is_null()) {
+      return;
+    }
     std::move(stop_callback_).Run();
     capture_policy::ShowCaptureTerminatedDialog(wc);
   }
