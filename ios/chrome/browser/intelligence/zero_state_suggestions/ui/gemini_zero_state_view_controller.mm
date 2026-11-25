@@ -119,6 +119,7 @@ void ApplyDropShadow(UIView* view) {
       [UIFont preferredFontForTextStyle:UIFontTextStyleTitle1];
   _greetingLabel.adjustsFontForContentSizeCategory = YES;
   _greetingLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  _greetingLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   [_greetingLabel setContentHuggingPriority:UILayoutPriorityRequired
                                     forAxis:UILayoutConstraintAxisVertical];
   [_greetingLabel
