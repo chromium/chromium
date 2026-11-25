@@ -1422,6 +1422,23 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "Select");
 
+  RenderFrameHost* inner_frame = ChildFrameAt(child_frame, 0);
+  ASSERT_TRUE(inner_frame);
+  // ShowPopup() rejects empty visible bounds, so wait for viewport geometry.
+  ASSERT_EQ(true, EvalJs(inner_frame, R"(
+    new Promise(resolve => {
+      const observer = new IntersectionObserver(entries => {
+        const entry = entries[0];
+        if (entry.isIntersecting && entry.intersectionRect.width > 0 &&
+            entry.intersectionRect.height > 0) {
+          observer.disconnect();
+          resolve(true);
+        }
+      });
+      observer.observe(document.querySelector('select'));
+    })
+  )"));
+
   // 4. Perform your AX bounds checks...
   ui::AXNode* root = GetManager()->GetRoot();
   ASSERT_NE(nullptr, root);
@@ -1476,7 +1493,6 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   {
     AccessibilityNotificationWaiter waiter(
-
         shell()->web_contents(), ui::AXEventGenerator::Event::EXPANDED);
     ui::AXActionData action_data;
     action_data.action = ax::mojom::Action::kDoDefault;
