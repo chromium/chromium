@@ -2714,6 +2714,12 @@ void ComposeboxQueryController::OnUploadRequestBodyReady(
     return;
   }
 
+  if (file_info->input_data && file_info->input_data->process_image_async &&
+      request.has_objects_request() &&
+      request.objects_request().has_image_data()) {
+    request.mutable_objects_request()->set_process_image_async(true);
+  }
+
   // Create the upload requests if they haven't been created yet.
   while (file_info->upload_requests_.size() <= request_index) {
     file_info->upload_requests_.push_back(std::make_unique<UploadRequest>());

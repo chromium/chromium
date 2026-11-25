@@ -2245,6 +2245,7 @@ TEST_F(QueryContextualizerTest,
         EXPECT_EQ(*data->upload_type,
                   lens::LensOverlayContextualInputUploadType::
                       CONTEXTUAL_INPUT_UPLOAD_TYPE_AUTO_TAB_CHIP);
+        EXPECT_TRUE(data->process_image_async);
       });
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
@@ -2313,6 +2314,7 @@ TEST_F(
             *data->upload_type,
             lens::LensOverlayContextualInputUploadType::
                 CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY);
+        EXPECT_FALSE(data->process_image_async);
       });
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
@@ -2402,6 +2404,7 @@ TEST_F(QueryContextualizerTest,
         EXPECT_EQ(*data->upload_type,
                   lens::LensOverlayContextualInputUploadType::
                       CONTEXTUAL_INPUT_UPLOAD_TYPE_RECONTEXTUALIZATION);
+        EXPECT_FALSE(data->process_image_async);
       });
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
@@ -2454,6 +2457,7 @@ TEST_F(QueryContextualizerTest,
                       CONTEXTUAL_INPUT_UPLOAD_TYPE_SMART_TAB_SELECTION);
         EXPECT_TRUE(data->is_implicit_upload);
         EXPECT_TRUE(data->was_smart_tab_selection);
+        EXPECT_FALSE(data->process_image_async);
       });
 
   base::MockCallback<QueryContextualizer::ContextualizedCallback> callback;

@@ -92,6 +92,11 @@ struct ContextualInputData {
   // strong user Lens usage intent. This is usually true, but can be false for
   // the LensOverlay zero-state initial context upload.
   bool has_lens_usage_intent = true;
+  // Whether the server may process an uploaded image asynchronously and
+  // acknowledge immediately without returning detected objects, text, or gleams
+  // in `LensOverlayObjectsResponse`. Defaults to false; opted into for
+  // auto-suggested tab uploads.
+  bool process_image_async = false;
   // Whether or not the request is for an implicit context upload.
   // e.g. a viewport screenshot from the Lens overlay contextual searchbox.
   bool is_implicit_upload = false;

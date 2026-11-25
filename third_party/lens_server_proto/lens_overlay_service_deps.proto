@@ -39,6 +39,7 @@ message ViewportRequestContext {
   int32 pdf_page_number = 1;
 }
 
+// Next ID: 7
 message LensOverlayObjectsRequest {
   // Required. Basic information and context for the request.
   LensOverlayRequestContext request_context = 1;
@@ -53,6 +54,14 @@ message LensOverlayObjectsRequest {
 
   // Optional. Viewport context for contextual search viewport requests.
   ViewportRequestContext viewport_request_context = 5;
+
+  // Optional. When true on a standalone image upload request (without an
+  // interaction request), the server acknowledges the upload immediately
+  // (returning only cluster routing info) and runs image processing
+  // asynchronously without returning detected objects, text, or gleams in
+  // LensOverlayObjectsResponse. Non-image uploads already acknowledge
+  // immediately.
+  bool process_image_async = 6;
 
   reserved 2;
 }

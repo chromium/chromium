@@ -1712,6 +1712,10 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
                 .request_id()
                 .media_type(),
             lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  EXPECT_FALSE(controller()
+                   .last_sent_file_upload_request()
+                   ->objects_request()
+                   .process_image_async());
   // Check that the vsrid matches that for an image upload.
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
@@ -1745,6 +1749,34 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
   auto suggest_inputs = controller().CreateSuggestInputs({file_token});
   EXPECT_EQ(suggest_inputs->search_session_id(), kTestSearchSessionId);
   EXPECT_TRUE(suggest_inputs->send_gsession_vsrid_for_contextual_suggest());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadImageFileRequestWithProcessImageAsyncEnabled) {
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kImage;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(
+      lens::ContextualInput(CreateJPGBytes(100, 100), lens::MimeType::kImage));
+  input_data->process_image_async = true;
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kImage);
+
+  std::optional<lens::LensOverlayServerRequest> last_request =
+      controller().last_sent_file_upload_request();
+  ASSERT_TRUE(last_request.has_value());
+  EXPECT_TRUE(last_request->objects_request().process_image_async());
 }
 
 TEST_F(ComposeboxQueryControllerTest,
@@ -3395,6 +3427,53 @@ TEST_F(ComposeboxQueryControllerTest,
                 .media_type(),
             lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE);
   EXPECT_TRUE(viewport_upload_request->process_image_for_aim());
+  EXPECT_FALSE(
+      viewport_upload_request->objects_request().process_image_async());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPageContextWithViewportProcessImageAsyncEnabled) {
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(lens::ContextualInput(
+      std::vector<uint8_t>(), lens::MimeType::kAnnotatedPageContent));
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);
+  input_data->viewport_screenshot = bitmap;
+  input_data->process_image_async = true;
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kAnnotatedPageContent);
+
+  std::optional<lens::LensOverlayServerRequest> first_request =
+      controller().recent_sent_upload_request(0);
+  std::optional<lens::LensOverlayServerRequest> second_request =
+      controller().recent_sent_upload_request(1);
+  ASSERT_TRUE(first_request.has_value());
+  ASSERT_TRUE(second_request.has_value());
+  std::optional<lens::LensOverlayServerRequest> viewport_request =
+      first_request->objects_request().has_image_data() ? first_request
+                                                        : second_request;
+  std::optional<lens::LensOverlayServerRequest> page_content_request =
+      first_request->objects_request().has_image_data() ? second_request
+                                                        : first_request;
+
+  EXPECT_TRUE(viewport_request->objects_request().has_image_data());
+  EXPECT_TRUE(viewport_request->objects_request().process_image_async());
+  EXPECT_FALSE(page_content_request->objects_request().has_image_data());
+  EXPECT_FALSE(page_content_request->objects_request().process_image_async());
 }
 
 TEST_F(ComposeboxQueryControllerTest,

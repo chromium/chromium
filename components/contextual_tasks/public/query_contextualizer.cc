@@ -529,6 +529,7 @@ void QueryContextualizer::OnTabContextualizationFetched(
     page_content_data->upload_type =
         lens::LensOverlayContextualInputUploadType::
             CONTEXTUAL_INPUT_UPLOAD_TYPE_AUTO_TAB_CHIP;
+    page_content_data->process_image_async = true;
   } else if (tab_update.is_smart_selection) {
     page_content_data->upload_type =
         lens::LensOverlayContextualInputUploadType::
