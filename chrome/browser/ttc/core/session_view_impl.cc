@@ -7,13 +7,16 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/hold_to_speak_controller.h"
 #include "chrome/browser/ttc/core/overlay_controller.h"
 #include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/views/voice/hotkeys/application_hotkey_registration_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -53,6 +56,12 @@ SessionViewImpl::SessionViewImpl(SessionViewDelegate& delegate)
     : SessionView(delegate) {
   overlay_controller_ =
       std::make_unique<OverlayController>(*delegate.GetProfile(), *this);
+  if (base::FeatureList::IsEnabled(kTtcHoldToSpeak)) {
+    hold_to_speak_controller_ = std::make_unique<HoldToSpeakController>(
+        delegate,
+        std::make_unique<voice::ApplicationHotkeyRegistrationDelegate>(
+            *delegate.GetProfile()));
+  }
 #if BUILDFLAG(IS_CHROMEOS)
   mic_privacy_indicator_ = std::make_unique<MicPrivacyIndicator>();
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -22,6 +22,7 @@ class Point;
 
 namespace ttc {
 
+class HoldToSpeakController;
 class MicPrivacyIndicator;
 class OverlayController;
 class SessionViewDelegate;
@@ -53,6 +54,9 @@ class SessionViewImpl : public SessionView, public TtcViewDelegate {
   OverlayController& overlay_controller_for_testing() {
     return *overlay_controller_;
   }
+  HoldToSpeakController* hold_to_speak_controller_for_testing() {
+    return hold_to_speak_controller_.get();
+  }
 
  private:
   // SessionView:
@@ -66,6 +70,9 @@ class SessionViewImpl : public SessionView, public TtcViewDelegate {
 
   // Owns the UI the session shows on top of the browser window.
   std::unique_ptr<OverlayController> overlay_controller_;
+
+  // Null unless kTtcHoldToSpeak is enabled.
+  std::unique_ptr<HoldToSpeakController> hold_to_speak_controller_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<MicPrivacyIndicator> mic_privacy_indicator_;

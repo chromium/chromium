@@ -558,6 +558,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "entrypoint_controller_interactive_test.cc",
+      "hold_to_speak_controller_interactive_uitest.cc",
       "session_view_impl_browsertest.cc",
       "ttc_interactive_browser_test_base.cc",
       "ttc_interactive_browser_test_base.h",
@@ -565,6 +566,7 @@ if (!is_android) {
     deps = [
       ":core",
       ":impl",
+      ":prefs",
       ":test_support",
       "//base",
       "//base/test:test_support",
@@ -581,11 +583,14 @@ if (!is_android) {
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/ttc",
+      "//chrome/browser/ui/views/voice/hotkeys",
       "//chrome/test:test_support",
       "//chrome/test/interaction",
       "//components/keyed_service/core",
+      "//components/prefs",
       "//components/ttc/app/public",
       "//content/public/browser",
       "//content/test:test_support",
@@ -594,6 +599,7 @@ if (!is_android) {
       "//third_party/blink/public/common",
       "//ui/base",
       "//ui/base/interaction",
+      "//ui/events",
       "//ui/gfx/geometry",
       "//ui/views",
     ]
