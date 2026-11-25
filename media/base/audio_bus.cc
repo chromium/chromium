@@ -254,8 +254,12 @@ void AudioBus::ZeroFramesPartial(int start, int count) {
     return;
   }
 
+  // Use std::fill_n on the raw pointer rather than std::ranges::fill on
+  // base::span because libc++'s std::ranges::fill does not unwrap
+  // CheckedContiguousIterator to a raw pointer for memset lowering.
   for (auto channel : channel_data_) {
-    std::ranges::fill(channel.subspan(start_frame, frames), 0);
+    auto slice = channel.subspan(start_frame, frames);
+    std::fill_n(slice.data(), slice.size(), 0.0f);
   }
 }
 

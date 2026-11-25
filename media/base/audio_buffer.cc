@@ -4,6 +4,7 @@
 
 #include "media/base/audio_buffer.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -126,8 +127,10 @@ AudioBufferMemoryPool::CreateBuffer(size_t size) {
 
   // FFmpeg may not always initialize the entire output memory, so just like
   // for VideoFrames we need to zero out the memory. https://crbug.com/1144070.
-  auto memory = base::AlignedUninit<uint8_t>(size, GetChannelAlignment());
-  std::ranges::fill(memory, 0u);
+  // Use AlignedZeroed() rather than std::ranges::fill() on a HeapArray:
+  // libc++'s std::ranges::fill() does not unwrap CheckedContiguousIterator to
+  // a raw pointer, preventing memset lowering.
+  auto memory = base::AlignedZeroed<uint8_t>(size, GetChannelAlignment());
   return std::make_unique<ExternalMemoryFromPool>(
       ExternalMemoryFromPool(this, std::move(memory)));
 }
@@ -202,7 +205,7 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
       needs_zeroing = zero_portion;
     }
 
-    std::ranges::fill(needs_zeroing, 0u);
+    std::fill_n(needs_zeroing.data(), needs_zeroing.size(), 0u);
     return;
   }
 
@@ -236,7 +239,7 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
         CHECK_EQ(data[i].size(), data_size_per_channel);
         channel.copy_from_nonoverlapping(data[i]);
       }
-      std::ranges::fill(padding, 0u);
+      std::fill_n(padding.data(), padding.size(), 0u);
       channel_spans_.push_back(channel);
     }
 
