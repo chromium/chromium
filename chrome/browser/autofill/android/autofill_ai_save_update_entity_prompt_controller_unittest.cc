@@ -17,6 +17,7 @@
 #include "chrome/browser/autofill/android/mock_autofill_ai_save_update_entity_prompt_view.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -210,11 +211,63 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
   prompt_controller().OnUserAccepted(env());
 }
 
+// Tests that accepting a Wallet save prompt populates consent string IDs.
 TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
        PopulatesUiContext_WalletEntity) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillRegionalizedPrivatePassesUxRefine);
   SigninUser(TestingProfile::kDefaultProfileUserName,
              signin::ConsentLevel::kSignin);
   CreateController(EntityInstance::RecordType::kServerWallet);
+
+  EXPECT_CALL(
+      prompt_closed_callback(),
+      Run(AutofillClient::AutofillAiBubbleResult::kAccepted, Eq(std::nullopt),
+          EqualsEntityImportUIContext(
+              ElementsAre(
+                  IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+                  IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK),
+              Optional(
+                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON))));
+
+  prompt_controller().OnUserAccepted(env());
+}
+
+// Tests that private pass Wallet saves populate private pass consent IDs.
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       PopulatesUiContext_WalletPrivateEntity_NewPrivatePassNoticeEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillRegionalizedPrivatePassesUxRefine};
+  SigninUser(TestingProfile::kDefaultProfileUserName,
+             signin::ConsentLevel::kSignin);
+  CreateController(EntityInstance::RecordType::kServerWallet);
+
+  EXPECT_CALL(
+      prompt_closed_callback(),
+      Run(AutofillClient::AutofillAiBubbleResult::kAccepted, Eq(std::nullopt),
+          EqualsEntityImportUIContext(
+              ElementsAre(
+                  IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+                  IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK,
+                  IDS_AUTOFILL_PRIVACY_POLICY_LINK),
+              Optional(
+                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON))));
+
+  prompt_controller().OnUserAccepted(env());
+}
+
+// Tests that public pass Wallet saves populate public pass consent IDs.
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       PopulatesUiContext_WalletPublicEntity_NewPrivatePassNoticeEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillRegionalizedPrivatePassesUxRefine};
+  SigninUser(TestingProfile::kDefaultProfileUserName,
+             signin::ConsentLevel::kSignin);
+  CreateControllerWithEntity(test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
 
   EXPECT_CALL(
       prompt_closed_callback(),
@@ -291,8 +344,12 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
                   IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE));
 }
 
+// Tests that Wallet save prompts show the Wallet source notice.
 TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
        PromptUiStrings_WalletEntity) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillRegionalizedPrivatePassesUxRefine);
   SigninUser(TestingProfile::kDefaultProfileUserName,
              signin::ConsentLevel::kSignin);
   CreateController(EntityInstance::RecordType::kServerWallet);
@@ -318,6 +375,37 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
                 google_wallet,
                 base::UTF8ToUTF16(TestingProfile::kDefaultProfileUserName)),
             prompt_controller().GetSourceNotice());
+}
+
+// Tests that private pass saves show the private pass notice with a link to the
+// privacy policy.
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       PromptUiStrings_WalletPrivateEntity_UxRefineEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillRegionalizedPrivatePassesUxRefine};
+  SigninUser(TestingProfile::kDefaultProfileUserName,
+             signin::ConsentLevel::kSignin);
+  CreateController(EntityInstance::RecordType::kServerWallet);
+
+  const std::u16string google_wallet =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
+  const std::u16string how_info_is_used_link =
+      base::StrCat({u"<link>",
+                    l10n_util::GetStringUTF16(
+                        IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK),
+                    u"</link>"});
+  const std::u16string privacy_policy_link =
+      base::StrCat({u"<privacy_link>",
+                    l10n_util::GetStringUTF16(IDS_AUTOFILL_PRIVACY_POLICY_LINK),
+                    u"</privacy_link>"});
+  EXPECT_EQ(
+      prompt_controller().GetSourceNotice(),
+      base::StrCat(
+          {l10n_util::GetStringFUTF16(
+               IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS,
+               google_wallet, how_info_is_used_link,
+               base::UTF8ToUTF16(TestingProfile::kDefaultProfileUserName)),
+           u"\n\n", privacy_policy_link}));
 }
 
 TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,

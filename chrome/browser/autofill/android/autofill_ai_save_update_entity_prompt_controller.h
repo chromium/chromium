@@ -69,6 +69,7 @@ class AutofillAiSaveUpdateEntityPromptController {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
   // Called by AutofillAiSaveUpdateEntityPromptController.java
   void OnWalletLinkClicked(JNIEnv* env);
+  void OnPrivacyPolicyLinkClicked(JNIEnv* env);
   void OnUserAccepted(JNIEnv* env);
   void OnUserDeclined(JNIEnv* env);
   // Called whenever the prompt is dismissed (e.g. because the user already

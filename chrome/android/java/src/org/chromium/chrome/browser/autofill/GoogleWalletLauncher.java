@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.List;
 
@@ -131,5 +132,14 @@ public class GoogleWalletLauncher {
     public static void openGoogleWalletPrivatePassHelpCenterPage(Context context) {
         CustomTabActivity.showInfoPage(
                 context, /* url= */ GOOGLE_WALLET_PRIVATE_PASSES_HELP_CENTER);
+    }
+
+    /**
+     * Opens the Google Privacy Policy page in a Chrome Custom Tab.
+     *
+     * @param context The current application context.
+     */
+    public static void openGooglePrivacyPolicyPage(Context context) {
+        CustomTabActivity.showInfoPage(context, /* url= */ UrlConstants.GOOGLE_PRIVACY_POLICY);
     }
 }

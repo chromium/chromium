@@ -41,5 +41,15 @@ public class AutofillFallbackSurfaceLauncher {
         GoogleWalletLauncher.openGoogleWalletPrivatePassHelpCenterPage(context);
     }
 
+    @CalledByNative
+    public static void openGooglePrivacyPolicyPageInCct(WindowAndroid window) {
+        Context context = window.getActivity().get();
+
+        if (context == null) {
+            return;
+        }
+        GoogleWalletLauncher.openGooglePrivacyPolicyPage(context);
+    }
+
     private AutofillFallbackSurfaceLauncher() {}
 }

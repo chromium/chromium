@@ -1049,4 +1049,37 @@ public class AutofillUiUtils {
                 ? R.drawable.googlewallet_icon_with_gradient
                 : R.drawable.google_wallet_24dp;
     }
+
+    /**
+     * Applies clickable link spans to an Android-formatted Wallet source notice string containing a
+     * {@code <link>...</link>} tag and an optional {@code <privacy_link>...</privacy_link>} tag.
+     *
+     * @param context Context used to style the clickable spans.
+     * @param sourceNotice Formatted notice string from C++ {@code GetAndroidWalletSourceNotice}.
+     * @param onWalletLinkClicked Action run when the {@code <link>} span is clicked.
+     * @param onPrivacyPolicyLinkClicked Action run when the {@code <privacy_link>} span is clicked.
+     * @return Spannable notice text with clickable link spans applied.
+     */
+    public static SpannableString applyWalletSourceNoticeSpans(
+            Context context,
+            String sourceNotice,
+            Runnable onWalletLinkClicked,
+            Runnable onPrivacyPolicyLinkClicked) {
+        SpanApplier.SpanInfo walletLinkSpan =
+                new SpanApplier.SpanInfo(
+                        "<link>",
+                        "</link>",
+                        new ChromeClickableSpan(context, _ -> onWalletLinkClicked.run()));
+        if (sourceNotice.contains("<privacy_link>")) {
+            return SpanApplier.applySpans(
+                    sourceNotice,
+                    walletLinkSpan,
+                    new SpanApplier.SpanInfo(
+                            "<privacy_link>",
+                            "</privacy_link>",
+                            new ChromeClickableSpan(
+                                    context, _ -> onPrivacyPolicyLinkClicked.run())));
+        }
+        return SpanApplier.applySpans(sourceNotice, walletLinkSpan);
+    }
 }

@@ -334,6 +334,7 @@ source_set("unit_tests") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/autofill/autofill_ai:unit_tests",
     "//chrome/browser/ui/autofill/email_verifier:unit_tests",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/hats",

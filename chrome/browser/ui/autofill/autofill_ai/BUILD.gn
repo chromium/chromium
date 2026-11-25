@@ -92,3 +92,20 @@ if (!is_android) {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_ai_import_string_utils_unittest.cc" ]
+  deps = [
+    ":autofill_ai_ui_utils",
+    ":autofill_ai_ui_utils_impl",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/strings:components_strings_grit",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

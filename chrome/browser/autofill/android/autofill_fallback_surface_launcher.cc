@@ -33,6 +33,15 @@ void ShowGoogleWallePrivatePassesHelpCenterPageInCct(
   }
 }
 
+void ShowGooglePrivacyPolicyPageInCct(content::WebContents& web_contents) {
+  if (web_contents.GetNativeView() &&
+      web_contents.GetNativeView()->GetWindowAndroid()) {
+    Java_AutofillFallbackSurfaceLauncher_openGooglePrivacyPolicyPageInCct(
+        base::android::AttachCurrentThread(),
+        web_contents.GetNativeView()->GetWindowAndroid()->GetJavaObject());
+  }
+}
+
 }  // namespace autofill
 
 DEFINE_JNI(AutofillFallbackSurfaceLauncher)

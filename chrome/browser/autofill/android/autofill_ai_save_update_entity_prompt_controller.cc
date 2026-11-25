@@ -140,6 +140,11 @@ void AutofillAiSaveUpdateEntityPromptController::OnWalletLinkClicked(
   }
 }
 
+void AutofillAiSaveUpdateEntityPromptController::OnPrivacyPolicyLinkClicked(
+    JNIEnv* env) {
+  ShowGooglePrivacyPolicyPageInCct(*web_contents_);
+}
+
 void AutofillAiSaveUpdateEntityPromptController::OnUserAccepted(JNIEnv* env) {
   had_user_interaction_ = true;
   RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult::kAccepted);

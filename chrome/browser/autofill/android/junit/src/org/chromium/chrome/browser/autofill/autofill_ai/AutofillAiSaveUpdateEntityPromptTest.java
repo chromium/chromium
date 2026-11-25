@@ -104,6 +104,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         mPromptController.onUserDeclined();
         mPromptController.onPromptDismissed();
         mPromptController.onWalletLinkClicked();
+        mPromptController.onPrivacyPolicyLinkClicked();
 
         verifyNoInteractions(mPromptControllerJni);
     }
@@ -264,6 +265,37 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         assertThat(spans.length, is(1));
         spans[0].onClick(sourceNoticeView);
         verify(mPromptControllerJni).onWalletLinkClicked(eq(mNativeController));
+    }
+
+    // Tests that the private pass notice renders two clickable links.
+    @Test
+    public void walletPrivatePassNotice() {
+        String walletTitle = mActivity.getString(R.string.autofill_google_wallet_title);
+        String sourceNotice =
+                TestUtils.getPrivatePassSaveWalletSourceNotice(walletTitle, "alexpark@gmail.com");
+
+        mPrompt.setSourceNotice(sourceNotice, /* insertWalletLink= */ true);
+        mPrompt.show();
+
+        View dialogView = mPrompt.getDialogViewForTesting();
+        TextView sourceNoticeView = dialogView.findViewById(R.id.autofill_ai_entity_source_notice);
+        assertEquals(View.VISIBLE, sourceNoticeView.getVisibility());
+        assertEquals(
+                sourceNotice
+                        .replace("<link>", "")
+                        .replace("</link>", "")
+                        .replace("<privacy_link>", "")
+                        .replace("</privacy_link>", ""),
+                sourceNoticeView.getText().toString());
+
+        SpannableString spannableString = (SpannableString) sourceNoticeView.getText();
+        ClickableSpan[] spans =
+                spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
+        assertThat(spans.length, is(2));
+        spans[0].onClick(sourceNoticeView);
+        verify(mPromptControllerJni).onWalletLinkClicked(eq(mNativeController));
+        spans[1].onClick(sourceNoticeView);
+        verify(mPromptControllerJni).onPrivacyPolicyLinkClicked(eq(mNativeController));
     }
 
     @Test

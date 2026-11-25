@@ -38,8 +38,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.ChromeClickableSpan;
-import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
 
@@ -239,8 +237,9 @@ public class AutofillAiSaveUpdateEntityPrompt {
      * @param sourceNotice the full source notice string.
      * @param insertWalletLink whether to insert a link to Wallet. This value will be false for
      *     local entities and true for entities stored in wallet. If it is true, `sourceNotice` is
-     *     expected to have a `<link>` and `</link>` tagged substring, which will be turned into a
-     *     clickable link.
+     *     expected to have a `<link>` and `</link>` tagged substring (and optionally a
+     *     `<privacy_link>` and `</privacy_link>` tagged substring), which will be turned into
+     *     clickable links.
      */
     @CalledByNative
     @VisibleForTesting
@@ -260,13 +259,11 @@ public class AutofillAiSaveUpdateEntityPrompt {
         }
 
         CharSequence sourceNoticeWithLink =
-                SpanApplier.applySpans(
+                AutofillUiUtils.applyWalletSourceNoticeSpans(
+                        mContext,
                         sourceNotice,
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new ChromeClickableSpan(
-                                        mContext, _ -> mController.onWalletLinkClicked())));
+                        mController::onWalletLinkClicked,
+                        mController::onPrivacyPolicyLinkClicked);
         sourceNoticeView.setText(sourceNoticeWithLink, TextView.BufferType.SPANNABLE);
         sourceNoticeView.setMovementMethod(LinkMovementMethod.getInstance());
     }

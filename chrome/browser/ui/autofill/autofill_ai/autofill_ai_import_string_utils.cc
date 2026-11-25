@@ -260,6 +260,22 @@ int GetPrimaryButtonTextId(bool is_save_prompt) {
              : IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON;
 }
 
+int GetWalletNoticeStringId(EntityType entity_type, bool is_save_prompt) {
+  if (!is_save_prompt) {
+    return IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE;
+  }
+  if (GetWalletPassType(entity_type,
+                        EntityInstance::RecordType::kServerWallet) ==
+          EntityInstance::WalletPassType::kPrivate &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillRegionalizedPrivatePassesUxRefine)) {
+    return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS;
+  }
+  return base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)
+             ? IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW
+             : IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE;
+}
+
 WalletImportPromptNotice GetWalletImportPromptNotice(
     int notice_id,
     const std::u16string& account_email) {
@@ -317,15 +333,14 @@ WalletImportPromptNotice GetWalletImportPromptNotice(
 #if BUILDFLAG(IS_ANDROID)
 
 AndroidWalletSourceNotice GetAndroidWalletSourceNotice(
-    EntityType /*entity_type*/,
+    EntityType entity_type,
     bool is_save_prompt,
     std::u16string_view account_email) {
   if (account_email.empty()) {
     return {};
   }
   WalletImportPromptNotice notice = GetWalletImportPromptNotice(
-      is_save_prompt ? IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW
-                     : IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
+      GetWalletNoticeStringId(entity_type, is_save_prompt),
       std::u16string(account_email));
   return {.text = FormatWalletImportPromptNoticeForAndroid(notice),
           .string_ids = std::move(notice.string_ids)};

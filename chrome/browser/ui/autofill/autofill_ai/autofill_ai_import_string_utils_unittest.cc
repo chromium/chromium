@@ -9,18 +9,26 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/strings/utf_string_conversions.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace autofill {
 namespace {
 
+#if BUILDFLAG(IS_ANDROID)
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::HasSubstr;
 using ::testing::Not;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Tests that GetPromptTitle returns unbranded strings when is_server_wallet is false,
 // when is_banner_prompt is true, or when kAutofillAiWalletPassBranding2026 feature is disabled.
@@ -235,11 +243,58 @@ TEST(AutofillAiImportStringUtilsTest, GetPrimaryButtonTextId) {
       IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON);
 }
 
+// Tests that `GetWalletNoticeStringId()` returns the Wallet notice string for
+// update prompts.
+TEST(AutofillAiImportStringUtilsTest, GetWalletNoticeStringId_UpdatePrompt) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillRegionalizedPrivatePassesUxRefine);
+  EXPECT_EQ(GetWalletNoticeStringId(EntityType(EntityTypeName::kPassport),
+                                    /*is_save_prompt=*/false),
+            IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE);
+}
+
+// Tests that `GetWalletNoticeStringId()` returns the correct Wallet notice
+// string for save prompts of private passes if
+// `kAutofillRegionalizedPrivatePassesUxRefine` is disabled.
+TEST(AutofillAiImportStringUtilsTest,
+     GetWalletNoticeStringId_UpdatedPrivatePassNoticeDisabled) {
+  base::test::ScopedFeatureList feature_list(
+      /*enabled_features=*/{features::kAutofillAiWalletPrivatePasses},
+      /*disabled_features=*/{
+          features::kAutofillRegionalizedPrivatePassesUxRefine});
+  EXPECT_EQ(GetWalletNoticeStringId(EntityType(EntityTypeName::kPassport),
+                                    /*is_save_prompt=*/true),
+            IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW);
+}
+
+// Tests that `GetWalletNoticeStringId()` returns the correct Wallet notice
+// string for save prompts of public and private passes if
+// `kAutofillRegionalizedPrivatePassesUxRefine` is enabled.
+TEST(AutofillAiImportStringUtilsTest,
+     GetWalletNoticeStringId_UpdatedPrivatePassNoticeEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      /*enabled_features=*/{features::kAutofillAiWalletPrivatePasses,
+                            features::
+                                kAutofillRegionalizedPrivatePassesUxRefine},
+      /*disabled_features=*/{});
+  EXPECT_EQ(GetWalletNoticeStringId(EntityType(EntityTypeName::kPassport),
+                                    /*is_save_prompt=*/true),
+            IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS);
+  EXPECT_EQ(GetWalletNoticeStringId(EntityType(EntityTypeName::kVehicle),
+                                    /*is_save_prompt=*/true),
+            IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 
 // Tests that `GetAndroidWalletSourceNotice()` returns the correct Wallet
 // notices for private passes.
 TEST(AutofillAiImportStringUtilsTest, GetAndroidWalletSourceNotice) {
+  base::test::ScopedFeatureList feature_list(
+      /*enabled_features=*/{features::kAutofillAiWalletPrivatePasses},
+      /*disabled_features=*/{
+          features::kAutofillRegionalizedPrivatePassesUxRefine});
+
   EXPECT_EQ(GetAndroidWalletSourceNotice(EntityType(EntityTypeName::kPassport),
                                          /*is_save_prompt=*/true,
                                          /*account_email=*/u""),
@@ -266,6 +321,32 @@ TEST(AutofillAiImportStringUtilsTest, GetAndroidWalletSourceNotice) {
                   IDS_AUTOFILL_GOOGLE_WALLET_TITLE));
   EXPECT_THAT(base::UTF16ToUTF8(update_notice.text),
               HasSubstr("<link>Google Wallet</link>"));
+}
+
+// Tests that `GetAndroidWalletSourceNotice()` returns the correct private pass
+// Wallet save notice when `kAutofillRegionalizedPrivatePassesUxRefine` is
+// enabled.
+TEST(AutofillAiImportStringUtilsTest,
+     GetAndroidWalletSourceNotice_UpdatedPrivatePassNoticeEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      /*enabled_features=*/{features::kAutofillAiWalletPrivatePasses,
+                            features::
+                                kAutofillRegionalizedPrivatePassesUxRefine},
+      /*disabled_features=*/{});
+  AndroidWalletSourceNotice private_pass_notice =
+      GetAndroidWalletSourceNotice(EntityType(EntityTypeName::kPassport),
+                                   /*is_save_prompt=*/true, u"user@gmail.com");
+  EXPECT_THAT(
+      private_pass_notice.string_ids,
+      ElementsAre(
+          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS,
+          IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+          IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK,
+          IDS_AUTOFILL_PRIVACY_POLICY_LINK));
+  EXPECT_THAT(
+      base::UTF16ToUTF8(private_pass_notice.text),
+      AllOf(HasSubstr("<link>how this info is used across Google</link>"),
+            HasSubstr("<privacy_link>Privacy Policy</privacy_link>")));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

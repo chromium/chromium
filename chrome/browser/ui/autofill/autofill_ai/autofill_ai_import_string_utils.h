@@ -37,9 +37,13 @@ struct WalletImportPromptNotice {
   std::vector<int> string_ids;
 };
 
+// Returns the resource ID of the notice shown in the save or update prompt of a
+// Wallet entity.
+int GetWalletNoticeStringId(EntityType entity_type, bool is_save_prompt);
+
 // Returns the Wallet notice with ID `notice_id` for `account_email`.
 // `notice_id` must be one of the Wallet notices returned by
-// `AutofillAiImportDataController::GetNoticeStringId()`.
+// `GetWalletNoticeStringId()`.
 WalletImportPromptNotice GetWalletImportPromptNotice(
     int notice_id,
     const std::u16string& account_email);

@@ -59,6 +59,13 @@ final class AutofillAiSaveUpdateEntityPromptController {
         }
     }
 
+    public void onPrivacyPolicyLinkClicked() {
+        if (mNativeAutofillAiSaveUpdateEntityPromptController != null) {
+            AutofillAiSaveUpdateEntityPromptControllerJni.get()
+                    .onPrivacyPolicyLinkClicked(mNativeAutofillAiSaveUpdateEntityPromptController);
+        }
+    }
+
     public void onPromptDismissed() {
         if (mNativeAutofillAiSaveUpdateEntityPromptController != null) {
             AutofillAiSaveUpdateEntityPromptControllerJni.get()
@@ -83,6 +90,9 @@ final class AutofillAiSaveUpdateEntityPromptController {
     @NativeMethods
     interface Natives {
         void onWalletLinkClicked(JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self);
+
+        void onPrivacyPolicyLinkClicked(
+                JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self);
 
         void onPromptDismissed(JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self);
 

@@ -33,6 +33,7 @@ import org.robolectric.shadows.ShadowActivity;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
@@ -109,6 +110,30 @@ public class GoogleWalletLauncherTest {
         assertEquals(
                 GoogleWalletLauncher.GOOGLE_WALLET_MANAGE_PASSES_DATA_URL,
                 cctIntent.getDataString());
+    }
+
+    // Tests that opening the private pass help center launches a Custom Tab.
+    @Test
+    public void testOpenGoogleWalletPrivatePassHelpCenterPage_opensCct() {
+        GoogleWalletLauncher.openGoogleWalletPrivatePassHelpCenterPage(mActivity);
+
+        ShadowActivity shadowActivity = Shadows.shadowOf(mActivity);
+        Intent cctIntent = shadowActivity.getNextStartedActivity();
+        assertNotNull(cctIntent);
+        assertEquals(
+                GoogleWalletLauncher.GOOGLE_WALLET_PRIVATE_PASSES_HELP_CENTER,
+                cctIntent.getDataString());
+    }
+
+    // Tests that opening the Google Privacy Policy launches a Custom Tab.
+    @Test
+    public void testOpenGooglePrivacyPolicyPage_opensCct() {
+        GoogleWalletLauncher.openGooglePrivacyPolicyPage(mActivity);
+
+        ShadowActivity shadowActivity = Shadows.shadowOf(mActivity);
+        Intent cctIntent = shadowActivity.getNextStartedActivity();
+        assertNotNull(cctIntent);
+        assertEquals(UrlConstants.GOOGLE_PRIVACY_POLICY, cctIntent.getDataString());
     }
 
     private static List<ResolveInfo> createResolvedInfo(ComponentName componentName) {

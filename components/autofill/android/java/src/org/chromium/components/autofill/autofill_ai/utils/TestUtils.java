@@ -195,6 +195,20 @@ public final class TestUtils {
         return String.format(walletNotice, walletTitle, email);
     }
 
+    // Returns the notice text when saving a private pass Wallet entity with
+    // `kAutofillRegionalizedPrivatePassesUxRefine` enabled. This is necessary because the
+    // `IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS` and
+    // `IDS_AUTOFILL_PRIVACY_POLICY_LINK` string resources are resolved in C++ and thus not exported
+    // to Java to avoid increasing APK size.
+    public static String getPrivatePassSaveWalletSourceNotice(String walletTitle, String email) {
+        String walletNotice =
+                "Save your info in %1$s and get things done faster, like filling forms across"
+                        + " Google products. You can control <link>how this info is used across"
+                        + " Google</link> in your private pass settings for %2$s.\n\n"
+                        + "<privacy_link>Privacy Policy</privacy_link>";
+        return String.format(walletNotice, walletTitle, email);
+    }
+
     // Returns the notice text when updating a Wallet entity. This is necessary because the
     // `IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE` string resource is resolved in
     // C++ and thus not exported to Java to avoid increasing APK size.

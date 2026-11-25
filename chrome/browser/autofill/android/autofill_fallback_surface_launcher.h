@@ -18,6 +18,9 @@ void ShowGoogleWalletPassesPage(content::WebContents& web_contents);
 void ShowGoogleWallePrivatePassesHelpCenterPageInCct(
     content::WebContents& web_contents);
 
+// Opens the Google Privacy Policy page in a Chrome Custom Tab.
+void ShowGooglePrivacyPolicyPageInCct(content::WebContents& web_contents);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_AUTOFILL_ANDROID_AUTOFILL_FALLBACK_SURFACE_LAUNCHER_H_
