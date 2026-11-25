@@ -75,6 +75,13 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
+    // Wait for BookmarkModel and BookmarkMergedSurfaceService to finish loading
+    // before setting the managed bookmarks pref, so ManagedBookmarksTracker has
+    // already registered its PrefChangeRegistrar (otherwise Init() ignores the
+    // non-managed user pref set below).
+    WaitForBookmarkMergedSurfaceServiceToLoad(bookmark_service());
+    model()->CreateAccountPermanentFolders();
+
     // Set managed bookmarks.
     PrefService* prefs = browser()->GetProfile()->GetPrefs();
     ASSERT_FALSE(prefs->HasPrefPath(bookmarks::prefs::kManagedBookmarks));
@@ -84,10 +91,8 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
                            .Set("name", "Google")
                            .Set("url", GURL("http://google.com/").spec())));
 
-    WaitForBookmarkMergedSurfaceServiceToLoad(bookmark_service());
-    model()->CreateAccountPermanentFolders();
-
     CHECK(managed_node());
+    ASSERT_EQ(1u, managed_node()->children().size());
     AddTestData();
   }
 
