@@ -79,6 +79,7 @@ void ChromeMetadataSource::Download(const std::string& key,
             "The country code for the address being edited. No user identifier "
             "is sent."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://chromium-i18n.appspot.com/ssl-aggregate-address/"
         }
         policy {
           cookies_allowed: NO
