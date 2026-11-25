@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
@@ -108,7 +107,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
      *     to create TabSwitcherLayout if it has value.
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
-     * @param toolbarThemeColorProvider {@link ThemeColorProvider} for the toolbar.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      */
     public LayoutManagerChrome(
@@ -117,9 +115,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
             Supplier<@Nullable TabSwitcher> tabSwitcherSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider,
             HubLayoutDependencyHolder hubLayoutDependencyHolder) {
-        super(host, contentContainer, tabContentManagerSupplier, toolbarThemeColorProvider);
+        super(host, contentContainer, tabContentManagerSupplier);
         // Build Event Filter Handlers
         mToolbarSwipeHandler =
                 createToolbarSwipeHandler(

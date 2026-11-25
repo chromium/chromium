@@ -187,11 +187,10 @@ public abstract class Layout {
      * Creates a {@link LayoutTab}.
      *
      * @param id The id of the reference {@link Tab} in the {@link TabModel}.
-     * @param isIncognito Whether the new tab is incognito.
      * @return The newly created {@link LayoutTab}.
      */
-    public LayoutTab createLayoutTab(int id, boolean isIncognito) {
-        LayoutTab layoutTab = mUpdateHost.createLayoutTab(id, isIncognito);
+    public LayoutTab createLayoutTab(int id) {
+        LayoutTab layoutTab = mUpdateHost.createLayoutTab(id);
         initLayoutTabFromHost(layoutTab);
         return layoutTab;
     }
@@ -516,13 +515,6 @@ public abstract class Layout {
      */
     public LayoutTab @Nullable [] getLayoutTabsToRender() {
         return mLayoutTabs;
-    }
-
-    /**
-     * @return Whether the layout is handling the model updates when a tab is closing.
-     */
-    public boolean handlesTabClosing() {
-        return false;
     }
 
     /**

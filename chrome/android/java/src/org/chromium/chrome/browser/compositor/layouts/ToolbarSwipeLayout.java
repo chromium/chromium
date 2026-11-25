@@ -65,8 +65,6 @@ import java.util.List;
 /** Layout defining the animation and positioning of the tabs during the edge swipe effect. */
 @NullMarked
 public class ToolbarSwipeLayout extends Layout {
-    private static final boolean ANONYMIZE_NON_FOCUSED_TAB = true;
-
     // Unit is millisecond / screen.
     private static final float ANIMATION_SPEED_SCREEN_MS = 500.0f;
 
@@ -262,8 +260,7 @@ public class ToolbarSwipeLayout extends Layout {
 
         int fromTabId = mTabModelSelector.getCurrentTabId();
         if (fromTabId == TabModel.INVALID_TAB_INDEX) return;
-        mFromTab = createLayoutTab(fromTabId, model.isIncognito());
-        prepareLayoutTabForSwipe(mFromTab, false);
+        mFromTab = createLayoutTab(fromTabId);
 
         if (mIsSwitchToStaticTab) {
             switchToTab(mToTabId, mFromTabId);
@@ -347,14 +344,12 @@ public class ToolbarSwipeLayout extends Layout {
         TabModel model = mTabModelSelector.getCurrentModel();
         if (0 <= leftIndex && leftIndex < model.getCount()) {
             leftTabId = model.getTabAtChecked(leftIndex).getId();
-            mLeftTab = createLayoutTab(leftTabId, model.isIncognito());
-            prepareLayoutTabForSwipe(mLeftTab, leftIndex != fromIndex);
+            mLeftTab = createLayoutTab(leftTabId);
             mLeftTabSupplier.set(model.getTabAt(leftIndex));
         }
         if (0 <= rightIndex && rightIndex < model.getCount()) {
             rightTabId = model.getTabAtChecked(rightIndex).getId();
-            mRightTab = createLayoutTab(rightTabId, model.isIncognito());
-            prepareLayoutTabForSwipe(mRightTab, rightIndex != fromIndex);
+            mRightTab = createLayoutTab(rightTabId);
             mRightTabSupplier.set(model.getTabAt(rightIndex));
         }
         // Prioritize toTabId because fromTabId likely has a live layer.
@@ -396,18 +391,6 @@ public class ToolbarSwipeLayout extends Layout {
         }
 
         requestUpdate();
-    }
-
-    private void prepareLayoutTabForSwipe(LayoutTab layoutTab, boolean anonymizeToolbar) {
-        assert layoutTab != null;
-        float heightDp = layoutTab.getOriginalContentHeight();
-        layoutTab.setClipSize(layoutTab.getOriginalContentWidth(), heightDp);
-        layoutTab.setScale(1.f);
-        layoutTab.setBorderScale(1.f);
-        layoutTab.setDecorationAlpha(0.f);
-        layoutTab.setY(0.f);
-        layoutTab.setShowToolbar(mMoveToolbar);
-        layoutTab.setAnonymizeToolbar(anonymizeToolbar && ANONYMIZE_NON_FOCUSED_TAB);
     }
 
     public void swipeUpdated(long time, float x, float y, float dx, float dy, float tx, float ty) {
@@ -537,8 +520,8 @@ public class ToolbarSwipeLayout extends Layout {
             // Compute final x post scale and ensure the tab's center point never passes the
             // center point of the screen.
             float screenCenterX = getWidth() / 2;
-            rightX = Math.max(screenCenterX - mRightTab.getFinalContentWidth() / 2, rightX);
-            leftX = Math.min(screenCenterX - mLeftTab.getFinalContentWidth() / 2, leftX);
+            rightX = Math.max(screenCenterX - mRightTab.getOriginalContentWidth() / 2, rightX);
+            leftX = Math.min(screenCenterX - mLeftTab.getOriginalContentWidth() / 2, leftX);
         }
 
         // TODO(mdjones): We shouldn't be using dp here, we should convert everything to px since

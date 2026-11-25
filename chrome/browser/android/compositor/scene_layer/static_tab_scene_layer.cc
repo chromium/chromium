@@ -97,11 +97,7 @@ void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
     }
   }
 
-  content_layer_->SetProperties(
-      id, can_use_live_layer, /* static_to_view_blend= */ 0.f,
-      /* should_override_content_alpha= */ false,
-      /* content_alpha_override= */ 1.f, /* saturation= */ 1.f,
-      /* should_clip= */ false, /* clip= */ gfx::Rect());
+  content_layer_->SetProperties(id, can_use_live_layer);
 
   content_layer_->layer()->SetPosition(gfx::PointF(x, y));
   content_layer_->layer()->SetIsDrawable(true);

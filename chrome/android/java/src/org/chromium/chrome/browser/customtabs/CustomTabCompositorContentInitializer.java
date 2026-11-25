@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,6 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolder;
     private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
-    private final ToolbarThemeColorProvider mToolbarThemeColorProvider;
 
     private boolean mInitialized;
 
@@ -47,13 +45,11 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
             Supplier<@Nullable CompositorViewHolder> compositorViewHolder,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             CompositorViewHolder.Initializer compositorViewHolderInitializer,
-            ToolbarThemeColorProvider toolbarThemeColorProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
         mCompositorViewHolder = compositorViewHolder;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mCompositorViewHolderInitializer = compositorViewHolderInitializer;
-        mToolbarThemeColorProvider = toolbarThemeColorProvider;
         mLifecycleDispatcher = lifecycleDispatcher;
 
         mLifecycleDispatcher.register(this);
@@ -78,8 +74,7 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
                 new LayoutManagerImpl(
                         assertNonNull(mCompositorViewHolder.get()),
                         contentContainer,
-                        mTabContentManagerSupplier,
-                        () -> mToolbarThemeColorProvider);
+                        mTabContentManagerSupplier);
 
         mCompositorViewHolderInitializer.initializeCompositorContent(
                 layoutDriver,

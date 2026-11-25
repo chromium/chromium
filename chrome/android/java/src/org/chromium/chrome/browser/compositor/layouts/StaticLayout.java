@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.compositor.layouts;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.RectF;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -36,16 +34,12 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.resources.ResourceManager;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
-import java.util.function.Supplier;
 
 // TODO(meiliang): Rename to StaticLayoutMediator.
 /**
@@ -57,16 +51,10 @@ import java.util.function.Supplier;
 public class StaticLayout extends Layout {
     public static final String TAG = "StaticLayout";
 
-    private static @Nullable Integer sToolbarTextBoxBackgroundColorForTesting;
-
-    private final boolean mHandlesTabLifecycles;
-
     // StaticTabSceneLayer is a subtree of TabStripSceneLayer, and the tag would have been set
     // on the TabStripSceneLayer already if tablet UI is present.
     private final NonNullObservableSupplier<Boolean> mNeedsOffsetTag;
 
-    private final Context mContext;
-    private final LayoutManagerHost mViewHost;
     private final NonNullObservableSupplier<Long> mFrameRequestSupplier;
     private final Runnable mRequestFrameRunnable;
 
@@ -81,14 +69,9 @@ public class StaticLayout extends Layout {
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
 
-    private final Supplier<ToolbarThemeColorProvider> mToolbarThemeColorProvider;
-
     private boolean mIsShowing;
     private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
     private final Callback<Boolean> mUpdateOffsetTagsCallback;
-
-    @SuppressWarnings("HidingField")
-    private final float mPxToDp;
 
     /**
      * Creates an instance of the {@link StaticLayout}.
@@ -96,38 +79,32 @@ public class StaticLayout extends Layout {
      * @param context The current Android's context.
      * @param updateHost The {@link LayoutUpdateHost} view for this layout.
      * @param renderHost The {@link LayoutRenderHost} view for this layout.
-     * @param viewHost The {@link LayoutManagerHost} view for this layout.
      * @param frameRequestSupplier Frame request supplier for Compositor MCP.
      * @param requestFrameRunnable Frame request runnable for Compositor MCP.
      * @param tabModelSelector {@link TabModelSelector} instance.
-     * @param tabContentManager {@link TabContentsManager} instance.
+     * @param tabContentManager {@link TabContentManager} instance.
      * @param browserControlsStateProvider A {@link BrowserControlsStateProvider}.
-     * @param toolbarThemeColorProvider {@link ThemeColorProvider} for the toolbar.
      * @param needsOffsetTag Whether or not this layout needs an OffsetTag.
      */
     public StaticLayout(
             Context context,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
-            LayoutManagerHost viewHost,
             NonNullObservableSupplier<Long> frameRequestSupplier,
             Runnable requestFrameRunnable,
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider,
             NonNullObservableSupplier<Boolean> needsOffsetTag) {
         this(
                 context,
                 updateHost,
                 renderHost,
-                viewHost,
                 frameRequestSupplier,
                 requestFrameRunnable,
                 tabModelSelector,
                 tabContentManager,
                 browserControlsStateProvider,
-                toolbarThemeColorProvider,
                 null,
                 needsOffsetTag);
     }
@@ -138,27 +115,19 @@ public class StaticLayout extends Layout {
             Context context,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
-            LayoutManagerHost viewHost,
             NonNullObservableSupplier<Long> frameRequestSupplier,
             Runnable requestFrameRunnable,
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider,
             @Nullable StaticTabSceneLayer testSceneLayer,
             NonNullObservableSupplier<Boolean> needsOffsetTag) {
         super(context, updateHost, renderHost);
-
-        mContext = context;
-
-        // Only handle tab lifecycle on tablets.
-        mHandlesTabLifecycles = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
 
         // StaticTabSceneLayer is a subtree of TabStripSceneLayer, and the tag would have been set
         // on the TabStripSceneLayer already if tablet UI is present.
         mNeedsOffsetTag = needsOffsetTag;
 
-        mViewHost = viewHost;
         mFrameRequestSupplier = frameRequestSupplier;
         mRequestFrameRunnable = requestFrameRunnable;
 
@@ -169,19 +138,10 @@ public class StaticLayout extends Layout {
                 new PropertyModel.Builder(LayoutTab.ALL_KEYS)
                         .with(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID)
                         .with(LayoutTab.BACKGROUND_COLOR, Color.TRANSPARENT)
-                        .with(LayoutTab.SCALE, 1.0f)
-                        .with(LayoutTab.X, 0.0f)
-                        .with(LayoutTab.Y, 0.0f)
                         .with(LayoutTab.RENDER_X, 0.0f)
                         .with(LayoutTab.RENDER_Y, 0.0f)
                         .with(LayoutTab.IS_ACTIVE_LAYOUT, false)
                         .build();
-
-        mToolbarThemeColorProvider = toolbarThemeColorProvider;
-
-        Resources res = context.getResources();
-        float dpToPx = res.getDisplayMetrics().density;
-        mPxToDp = 1.0f / dpToPx;
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModel.set(LayoutTab.CONTENT_OFFSET_Y, mBrowserControlsStateProvider.getContentOffset());
@@ -333,11 +293,6 @@ public class StaticLayout extends Layout {
                     }
 
                     @Override
-                    public void onDidChangeThemeColor(Tab tab, int color) {
-                        updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
-                    }
-
-                    @Override
                     public void didBackForwardTransitionAnimationChange(Tab tab) {
                         updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
                     }
@@ -364,12 +319,6 @@ public class StaticLayout extends Layout {
         Tab tab = mTabModelSelector.getCurrentTab();
         if (tab == null) return;
         setStaticTab(tab);
-    }
-
-    @Override
-    protected void updateLayout(long time, long dt) {
-        super.updateLayout(time, dt);
-        updateSnap(dt, mModel);
     }
 
     @Override
@@ -403,11 +352,6 @@ public class StaticLayout extends Layout {
         if (mModel.get(LayoutTab.TAB_ID) == tab.getId()) return;
 
         mModel.set(LayoutTab.TAB_ID, tab.getId());
-        mModel.set(LayoutTab.IS_INCOGNITO, tab.isIncognito());
-        mModel.set(LayoutTab.ORIGINAL_CONTENT_WIDTH_IN_DP, mViewHost.getWidth() * mPxToDp);
-        mModel.set(LayoutTab.ORIGINAL_CONTENT_HEIGHT_IN_DP, mViewHost.getHeight() * mPxToDp);
-        mModel.set(LayoutTab.MAX_CONTENT_WIDTH, mViewHost.getWidth() * mPxToDp);
-        mModel.set(LayoutTab.MAX_CONTENT_HEIGHT, mViewHost.getHeight() * mPxToDp);
 
         updateStaticTab(tab, /* skipUpdateVisibleIds= */ true);
     }
@@ -420,24 +364,8 @@ public class StaticLayout extends Layout {
             updateVisibleIdsCheckingLiveLayer(tab.getId(), useLiveTexture);
         }
 
-        ToolbarThemeColorProvider toolbarTheme = mToolbarThemeColorProvider.get();
         mModel.set(LayoutTab.BACKGROUND_COLOR, ThemeUtils.getBackgroundColor(tab));
-        mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, toolbarTheme.getToolbarBackgroundColor(tab));
-        mModel.set(LayoutTab.TEXT_BOX_BACKGROUND_COLOR, getToolbarTextBoxBackgroundColor(tab));
         mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, useLiveTexture);
-    }
-
-    private int getToolbarTextBoxBackgroundColor(Tab tab) {
-        if (sToolbarTextBoxBackgroundColorForTesting != null) {
-            return sToolbarTextBoxBackgroundColorForTesting;
-        }
-
-        return ThemeUtils.getTextBoxColorForToolbarBackground(
-                mContext, tab, mToolbarThemeColorProvider.get().getToolbarBackgroundColor(tab));
-    }
-
-    void setTextBoxBackgroundColorForTesting(Integer color) {
-        sToolbarTextBoxBackgroundColorForTesting = color;
     }
 
     private boolean canUseLiveTexture(Tab tab) {
@@ -473,16 +401,6 @@ public class StaticLayout extends Layout {
     }
 
     @Override
-    public boolean handlesTabCreating() {
-        return super.handlesTabCreating() || mHandlesTabLifecycles;
-    }
-
-    @Override
-    public boolean handlesTabClosing() {
-        return mHandlesTabLifecycles;
-    }
-
-    @Override
     public boolean shouldDisplayContentOverlay() {
         return true;
     }
@@ -495,18 +413,6 @@ public class StaticLayout extends Layout {
     @Override
     protected SceneLayer getSceneLayer() {
         return mSceneLayer;
-    }
-
-    @Override
-    protected void updateSceneLayer(
-            RectF viewport,
-            RectF contentViewport,
-            TabContentManager tabContentManager,
-            ResourceManager resourceManager,
-            BrowserControlsStateProvider browserControls) {
-        super.updateSceneLayer(
-                viewport, contentViewport, tabContentManager, resourceManager, browserControls);
-        assert mSceneLayer != null;
     }
 
     @Override
@@ -528,6 +434,8 @@ public class StaticLayout extends Layout {
     @Override
     @SuppressWarnings("NullAway")
     public void destroy() {
+        mNeedsOffsetTag.removeObserver(mUpdateOffsetTagsCallback);
+        mBrowserControlsStateProvider.removeObserver(mBrowserControlsStateProviderObserver);
         if (mSceneLayer != null) {
             mSceneLayer.destroy();
             mSceneLayer = null;
@@ -536,9 +444,13 @@ public class StaticLayout extends Layout {
             mMcp.destroy();
             mMcp = null;
         }
-        if (mTabModelSelector != null) {
+        if (mTabModelSelectorTabModelObserver != null) {
             mTabModelSelectorTabModelObserver.destroy();
+            mTabModelSelectorTabModelObserver = null;
+        }
+        if (mTabModelSelectorTabObserver != null) {
             mTabModelSelectorTabObserver.destroy();
+            mTabModelSelectorTabObserver = null;
         }
     }
 

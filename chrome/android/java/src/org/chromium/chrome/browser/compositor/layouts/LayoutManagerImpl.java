@@ -16,7 +16,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
@@ -95,7 +94,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * A class that is responsible for managing an active {@link Layout} to show to the screen. This
@@ -192,9 +190,6 @@ public class LayoutManagerImpl
 
     /** A map of {@link SceneOverlay} to its position relative to the others. */
     private Map<Class, Integer> mOverlayOrderMap = new HashMap<>();
-
-    /** The supplier of {@link ToolbarThemeColorProvider} for the toolbar. */
-    private final Supplier<ToolbarThemeColorProvider> mToolbarThemeColorProvider;
 
     /** The supplier of whether this is going to intercept back press gesture. */
     private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
@@ -327,17 +322,14 @@ public class LayoutManagerImpl
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
-     * @param toolbarThemeColorProvider {@link ToolbarThemeColorProvider} for the toolbar.
      */
     public LayoutManagerImpl(
             LayoutManagerHost host,
             ViewGroup contentContainer,
-            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider) {
+            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mHost = host;
         mPxToDp = 1.f / mHost.getContext().getResources().getDisplayMetrics().density;
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mToolbarThemeColorProvider = toolbarThemeColorProvider;
         mContext = host.getContext();
 
         // Overlays are ordered back (closest to the web content) to front.
@@ -652,13 +644,11 @@ public class LayoutManagerImpl
                         mContext,
                         this,
                         renderHost,
-                        mHost,
                         mFrameRequestSupplier,
                         mRequestFrameRunnable,
                         selector,
                         assertNonNull(mTabContentManagerSupplier.get()),
                         mBrowserControlsStateProvider,
-                        mToolbarThemeColorProvider,
                         getLayoutNeedOffsetTagSupplier());
 
         setNextLayout(null, true);
@@ -983,10 +973,6 @@ public class LayoutManagerImpl
      */
     protected void tabsAllClosing(boolean incognito) {}
 
-    protected Supplier<ToolbarThemeColorProvider> getTopUiThemeColorProvider() {
-        return mToolbarThemeColorProvider;
-    }
-
     @Override
     public void initLayoutTabFromHost(final int tabId) {
         if (getTabModelSelector() == null || getActiveLayout() == null) return;
@@ -1008,14 +994,7 @@ public class LayoutManagerImpl
                         && !isNativePage
                         && !tab.isHidden();
 
-        ToolbarThemeColorProvider toolbarTheme = mToolbarThemeColorProvider.get();
-        @ColorInt int toolbarBackgroundColor = toolbarTheme.getToolbarBackgroundColor(tab);
-        layoutTab.initFromHost(
-                ThemeUtils.getBackgroundColor(tab),
-                canUseLiveTexture,
-                toolbarBackgroundColor,
-                ThemeUtils.getTextBoxColorForToolbarBackground(
-                        mContext, tab, toolbarBackgroundColor));
+        layoutTab.initFromHost(ThemeUtils.getBackgroundColor(tab), canUseLiveTexture);
 
         mHost.requestRender();
     }
@@ -1034,10 +1013,10 @@ public class LayoutManagerImpl
     }
 
     @Override
-    public LayoutTab createLayoutTab(int id, boolean incognito) {
+    public LayoutTab createLayoutTab(int id) {
         LayoutTab tab = mTabCache.get(id);
         if (tab == null) {
-            tab = new LayoutTab(id, incognito, mHost.getWidth(), mHost.getHeight());
+            tab = new LayoutTab(id, mHost.getWidth(), mHost.getHeight());
             mTabCache.put(id, tab);
         } else {
             tab.init(mHost.getWidth(), mHost.getHeight());

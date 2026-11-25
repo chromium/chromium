@@ -258,11 +258,6 @@ public class NewTabAnimationLayout extends Layout {
     }
 
     @Override
-    public boolean handlesTabClosing() {
-        return false;
-    }
-
-    @Override
     protected EventFilter getEventFilter() {
         return mBlackHoleEventFilter;
     }
@@ -468,7 +463,7 @@ public class NewTabAnimationLayout extends Layout {
         assumeNonNull(mTabModelSelector);
         @Nullable Tab tab = mTabModelSelector.getTabById(sourceTabId);
         if (tab == null) return;
-        LayoutTab sourceLayoutTab = createLayoutTab(sourceTabId, tab.isIncognitoBranded());
+        LayoutTab sourceLayoutTab = createLayoutTab(sourceTabId);
 
         mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
         updateCacheVisibleIds(Collections.singletonList(sourceTabId));
@@ -611,7 +606,7 @@ public class NewTabAnimationLayout extends Layout {
             boolean newIsIncognito,
             @Nullable Tab oldTab,
             Tab newTab) {
-        LayoutTab newLayoutTab = createLayoutTab(id, newIsIncognito);
+        LayoutTab newLayoutTab = createLayoutTab(id);
         if (mLayoutTabs == null || mLayoutTabs.length == 0) {
             mLayoutTabs = new LayoutTab[] {newLayoutTab};
             updateCacheVisibleIds(Collections.singletonList(id));

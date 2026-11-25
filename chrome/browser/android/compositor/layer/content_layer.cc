@@ -4,9 +4,6 @@
 
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 
-#include <vector>
-
-#include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
@@ -20,122 +17,59 @@ scoped_refptr<ContentLayer> ContentLayer::Create(
   return base::WrapRefCounted(new ContentLayer(tab_content_manager));
 }
 
-static void SetOpacityOnLeaf(scoped_refptr<cc::slim::Layer> layer,
-                             float alpha) {
-  const auto& children = layer->children();
-  if (!children.empty()) {
-    layer->SetOpacity(1.0f);
-    for (const auto& child : children) {
-      SetOpacityOnLeaf(child, alpha);
-    }
-  } else {
-    layer->SetOpacity(alpha);
-  }
-}
-
-static cc::slim::Layer* GetDrawsContentLeaf(
-    scoped_refptr<cc::slim::Layer> layer) {
-  if (!layer.get()) {
-    return nullptr;
+static bool DoesLayerDrawContent(const cc::slim::Layer* layer) {
+  if (!layer) {
+    return false;
   }
 
   // If the subtree is hidden, then any layers in this tree will not be drawn.
   if (layer->hide_layer_and_subtree()) {
-    return nullptr;
+    return false;
   }
 
   if (layer->opacity() == 0.0f) {
-    return nullptr;
+    return false;
   }
 
   if (layer->draws_content()) {
-    return layer.get();
+    return true;
   }
 
-  const auto& children = layer->children();
-  for (const auto& child : children) {
-    cc::slim::Layer* leaf = GetDrawsContentLeaf(child);
-    if (leaf) {
-      return leaf;
+  for (const auto& child : layer->children()) {
+    if (DoesLayerDrawContent(child.get())) {
+      return true;
     }
   }
-  return nullptr;
+  return false;
 }
 
-void ContentLayer::SetProperties(int id,
-                                 bool can_use_live_layer,
-                                 float static_to_view_blend,
-                                 bool should_override_content_alpha,
-                                 float content_alpha_override,
-                                 float saturation,
-                                 bool should_clip,
-                                 const gfx::Rect& clip) {
+void ContentLayer::SetProperties(int id, bool can_use_live_layer) {
   scoped_refptr<cc::slim::Layer> live_layer =
       tab_content_manager_->GetLiveLayer(id);
   if (live_layer) {
     live_layer->SetHideLayerAndSubtree(!can_use_live_layer);
   }
-  bool live_layer_draws = GetDrawsContentLeaf(live_layer);
-
-  float content_opacity =
-      should_override_content_alpha ? content_alpha_override : 1.0f;
-  float static_opacity =
-      should_override_content_alpha ? content_alpha_override : 1.0f;
-  if (live_layer_draws) {
-    static_opacity = static_to_view_blend;
-  }
+  bool live_layer_draws = DoesLayerDrawContent(live_layer.get());
 
   layer_->RemoveAllChildren();
 
   if (live_layer.get()) {
-    live_layer->SetMasksToBounds(should_clip);
-    live_layer->SetBounds(clip.size());
+    live_layer->SetMasksToBounds(false);
+    live_layer->SetBounds(gfx::Size());
     // Don't override the opacity for layers internal to the WebContents.
-    live_layer->SetOpacity(content_opacity);
+    live_layer->SetOpacity(1.0f);
 
     layer_->AddChild(live_layer);
   }
 
-  if (static_opacity > 0) {
+  if (!live_layer_draws) {
     ThumbnailLayer* static_layer = tab_content_manager_->GetStaticLayer(id);
     if (static_layer) {
       static_layer->layer()->SetIsDrawable(true);
-      if (should_clip) {
-        static_layer->Clip(clip);
-      } else {
-        static_layer->ClearClip();
-      }
-      // TOOD(liuwilliam): The opacity should only need to be set on the static
-      // layer, instead of all its children. The recursive setting was a
-      // workaround for some old CC bug.
-      SetOpacityOnLeaf(static_layer->layer(), static_opacity);
-
-      std::vector<cc::slim::Filter> filters;
-      if (saturation < 1.0f) {
-        filters.push_back(cc::slim::Filter::CreateSaturation(saturation));
-      }
-      static_layer->layer()->SetFilters(std::move(filters));
+      static_layer->layer()->SetOpacity(1.0f);
       layer_->AddChild(static_layer->layer());
     }
   }
-}
-
-gfx::Size ContentLayer::ComputeSize(int id) const {
-  gfx::Size size;
-
-  scoped_refptr<cc::slim::Layer> live_layer =
-      tab_content_manager_->GetLiveLayer(id);
-  cc::slim::Layer* leaf_that_draws = GetDrawsContentLeaf(live_layer);
-  if (leaf_that_draws) {
-    size.SetToMax(leaf_that_draws->bounds());
-  }
-
-  ThumbnailLayer* static_layer = tab_content_manager_->GetStaticLayer(id);
-  if (static_layer && GetDrawsContentLeaf(static_layer->layer())) {
-    size.SetToMax(static_layer->layer()->bounds());
-  }
-
-  return size;
 }
 
 scoped_refptr<cc::slim::Layer> ContentLayer::layer() {

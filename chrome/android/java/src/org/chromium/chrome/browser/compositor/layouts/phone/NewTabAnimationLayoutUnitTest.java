@@ -231,10 +231,10 @@ public class NewTabAnimationLayoutUnitTest {
         doAnswer(
                         invocation -> {
                             var args = invocation.getArguments();
-                            return new LayoutTab((Integer) args[0], (Boolean) args[1], -1, -1);
+                            return new LayoutTab((Integer) args[0], -1, -1);
                         })
                 .when(mUpdateHost)
-                .createLayoutTab(anyInt(), anyBoolean());
+                .createLayoutTab(anyInt());
         // Mock TopInsetProvider to trigger observer callback when addObserver is called
         doAnswer(
                         invocation -> {
@@ -304,7 +304,6 @@ public class NewTabAnimationLayoutUnitTest {
                 ViewportMode.USE_PREVIOUS_BROWSER_CONTROLS_STATE,
                 mNewTabAnimationLayout.getViewportMode());
         assertTrue(mNewTabAnimationLayout.handlesTabCreating());
-        assertFalse(mNewTabAnimationLayout.handlesTabClosing());
         assertThat(mNewTabAnimationLayout.getEventFilter())
                 .isInstanceOf(BlackHoleEventFilter.class);
         assertThat(mNewTabAnimationLayout.getSceneLayer()).isInstanceOf(StaticTabSceneLayer.class);

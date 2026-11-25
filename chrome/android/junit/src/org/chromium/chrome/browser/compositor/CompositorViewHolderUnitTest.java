@@ -2197,12 +2197,7 @@ public class CompositorViewHolderUnitTest {
         when(layoutBgTab.getView()).thenReturn(layoutBgContentView);
         when(layoutBgWebContents.isBeingCaptured()).thenReturn(false);
         Layout activeLayout = mock(Layout.class);
-        LayoutTab layoutTab =
-                new LayoutTab(
-                        layoutBgTab.getId(),
-                        /* isIncognito= */ false,
-                        VIEWPORT_WIDTH,
-                        VIEWPORT_HEIGHT);
+        LayoutTab layoutTab = new LayoutTab(layoutBgTab.getId(), VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
         when(mLayoutManager.getActiveLayout()).thenReturn(activeLayout);
         when(activeLayout.getLayoutTabsToRender()).thenReturn(new LayoutTab[] {null, layoutTab});
 

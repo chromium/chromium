@@ -667,12 +667,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     @Override
-    public boolean handlesTabClosing() {
-        // Tabs can be closed from the Tab Switcher panes without changing layout.
-        return true;
-    }
-
-    @Override
     public boolean handlesTabCreating() {
         // For the new tab animation.
         return true;
@@ -872,8 +866,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     private void createLayoutTabForTabId(@TabId int tabId) {
-        assumeNonNull(mTabModelSelector);
-        LayoutTab layoutTab = createLayoutTab(tabId, mTabModelSelector.isIncognitoSelected());
+        LayoutTab layoutTab = createLayoutTab(tabId);
         layoutTab.set(LayoutTab.CONTENT_OFFSET_X, mContentOffsetX);
         mLayoutTabs = new LayoutTab[] {layoutTab};
         updateCacheVisibleIds(Collections.singletonList(tabId));

@@ -63,10 +63,9 @@ public interface LayoutUpdateHost {
      *
      * @param id The id of the reference tab in the {@link
      *     org.chromium.chrome.browser.tabmodel.TabModel}.
-     * @param incognito Whether the new tab is incognito.
      * @return The created or recycled {@link LayoutTab}.
      */
-    LayoutTab createLayoutTab(int id, boolean incognito);
+    LayoutTab createLayoutTab(int id);
 
     /**
      * Notifies the host that the {@link LayoutTab} is no longer needed by the layout.

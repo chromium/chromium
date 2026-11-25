@@ -56,7 +56,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      *     layout.
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
-     * @param toolbarThemeColorProvider {@link ThemeColorProvider} for the toolbar.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      * @param compositorViewHolderSupplier Supplier of the {@link CompositorViewHolder} instance.
      * @param contentView The base content view.
@@ -71,7 +70,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             Supplier<@Nullable TabSwitcher> tabSwitcherSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider,
             HubLayoutDependencyHolder hubLayoutDependencyHolder,
             Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
             ViewGroup contentView,
@@ -85,7 +83,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                 tabSwitcherSupplier,
                 tabModelSelectorSupplier,
                 tabContentManagerSupplier,
-                toolbarThemeColorProvider,
                 hubLayoutDependencyHolder);
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mContentView = contentView;

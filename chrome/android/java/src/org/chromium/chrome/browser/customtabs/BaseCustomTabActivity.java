@@ -825,7 +825,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getCompositorViewHolderSupplier(),
                         getTabContentManagerSupplier(),
                         /* compositorViewHolderInitializer= */ this,
-                        getToolbarThemeColorProvider(),
                         getLifecycleDispatcher());
 
         var windowAndroid = assertNonNull(getWindowAndroid());

@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
@@ -98,8 +97,6 @@ public class LayoutManagerChromeUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableMonotonicObservableSupplier<TabContentManager>
             mTabContentManagerSupplier = ObservableSuppliers.createMonotonic();
-    private final SettableNullableObservableSupplier<ToolbarThemeColorProvider>
-            mToolbarThemeColorProvider = ObservableSuppliers.createNullable();
 
     @Before
     public void setUp() {
@@ -131,7 +128,6 @@ public class LayoutManagerChromeUnitTest {
                         mTabSwitcherSupplier,
                         mTabModelSelectorSupplier,
                         mTabContentManagerSupplier,
-                        mToolbarThemeColorProvider,
                         mHubLayoutDependencyHolder);
         layoutManagerChrome.destroy();
         layoutManagerChrome.showLayout(LayoutType.HUB, /* animate= */ true);
@@ -147,7 +143,6 @@ public class LayoutManagerChromeUnitTest {
                         mTabSwitcherSupplier,
                         mTabModelSelectorSupplier,
                         mTabContentManagerSupplier,
-                        mToolbarThemeColorProvider,
                         mHubLayoutDependencyHolder);
         layoutManagerChrome.mToolbarSwipeLayout = mToolbarSwipeLayout;
         when(mTab.getId()).thenReturn(1);
@@ -166,7 +161,6 @@ public class LayoutManagerChromeUnitTest {
                         mTabSwitcherSupplier,
                         mTabModelSelectorSupplier,
                         mTabContentManagerSupplier,
-                        mToolbarThemeColorProvider,
                         mHubLayoutDependencyHolder);
         layoutManagerChrome.mToolbarSwipeLayout = mToolbarSwipeLayout;
         when(mTab.getId()).thenReturn(2);
@@ -230,7 +224,6 @@ public class LayoutManagerChromeUnitTest {
                         mTabSwitcherSupplier,
                         mTabModelSelectorSupplier,
                         mTabContentManagerSupplier,
-                        mToolbarThemeColorProvider,
                         mHubLayoutDependencyHolder);
         layoutManagerChrome.mStaticLayout = mStaticLayout;
         layoutManagerChrome.mHubLayout = mHubLayout;
@@ -251,7 +244,6 @@ public class LayoutManagerChromeUnitTest {
                         mTabSwitcherSupplier,
                         mTabModelSelectorSupplier,
                         mTabContentManagerSupplier,
-                        mToolbarThemeColorProvider,
                         mHubLayoutDependencyHolder);
         layoutManagerChrome.mStaticLayout = mStaticLayout;
         layoutManagerChrome.setContentOffsetX(75);
@@ -1085,7 +1077,6 @@ public class LayoutManagerChromeUnitTest {
                                 mTabSwitcherSupplier,
                                 mTabModelSelectorSupplier,
                                 mTabContentManagerSupplier,
-                                mToolbarThemeColorProvider,
                                 mHubLayoutDependencyHolder));
         doNothing().when(layoutManagerChrome).showLayout(eq(LayoutType.HUB), anyBoolean());
         return layoutManagerChrome;

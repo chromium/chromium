@@ -230,7 +230,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         mTabSwitcherSupplier,
                         mTabModelSelectorSupplier,
                         tabContentManagerSupplier,
-                        () -> mToolbarThemeColorProvider,
                         mHubLayoutDependencyHolder,
                         mCompositorViewHolderSupplier,
                         mContentView,
@@ -303,7 +302,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         mTabSwitcherSupplier,
                         mTabModelSelectorSupplier,
                         tabContentManagerSupplier,
-                        () -> mToolbarThemeColorProvider,
                         mHubLayoutDependencyHolder);
 
         tabContentManagerSupplier.set(mTabContentManager);

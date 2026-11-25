@@ -292,10 +292,10 @@ public class HubLayoutUnitTest {
         doAnswer(
                         invocation -> {
                             var args = invocation.getArguments();
-                            return new LayoutTab((Integer) args[0], (Boolean) args[1], -1, -1);
+                            return new LayoutTab((Integer) args[0], -1, -1);
                         })
                 .when(mUpdateHost)
-                .createLayoutTab(anyInt(), anyBoolean());
+                .createLayoutTab(anyInt());
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mTab.isNativePage()).thenReturn(false);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
@@ -361,7 +361,6 @@ public class HubLayoutUnitTest {
     public void testFixedReturnValues() {
         // These are not expected to change. This is here to get unit test coverage.
         assertEquals(ViewportMode.ALWAYS_FULLSCREEN, mHubLayout.getViewportMode());
-        assertTrue(mHubLayout.handlesTabClosing());
         assertTrue(mHubLayout.handlesTabCreating());
         assertNull(mHubLayout.getEventFilter());
         assertEquals(LayoutType.HUB, mHubLayout.getLayoutType());

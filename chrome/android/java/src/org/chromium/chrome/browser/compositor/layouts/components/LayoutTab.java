@@ -20,26 +20,13 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @NullMarked
 public class LayoutTab extends PropertyModel {
-    // TODO(crbug.com/40126260): Make the following properties be part of the PropertyModel.
-    // Begin section --------------
-    // Public Layout constants.
-    public static final float SHADOW_ALPHA_ON_LIGHT_BG = 0.8f;
-    public static final float SHADOW_ALPHA_ON_DARK_BG = 1.0f;
-
     public static float sDpToPx;
     private static float sPxToDp;
-
-    // End section --------------
 
     // TODO(crbug.com/40126260): Maybe make this a ReadableIntPropertyKey
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
 
-    // TODO(crbug.com/40126260): Maybe make this a ReadableIntPropertyKey
-    public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
-
     // Fields initialized in init()
-    public static final WritableFloatPropertyKey SCALE = new WritableFloatPropertyKey();
-
     public static final WritableFloatPropertyKey X = new WritableFloatPropertyKey();
 
     public static final WritableFloatPropertyKey Y = new WritableFloatPropertyKey();
@@ -47,16 +34,6 @@ public class LayoutTab extends PropertyModel {
     public static final WritableFloatPropertyKey RENDER_X = new WritableFloatPropertyKey();
 
     public static final WritableFloatPropertyKey RENDER_Y = new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey CLIPPED_WIDTH = new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey CLIPPED_HEIGHT = new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey BORDER_ALPHA = new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey BORDER_SCALE = new WritableFloatPropertyKey();
 
     public static final WritableFloatPropertyKey ORIGINAL_CONTENT_WIDTH_IN_DP =
             new WritableFloatPropertyKey();
@@ -72,14 +49,6 @@ public class LayoutTab extends PropertyModel {
     public static final WritableBooleanPropertyKey CAN_USE_LIVE_TEXTURE =
             new WritableBooleanPropertyKey();
 
-    public static final WritableBooleanPropertyKey SHOW_TOOLBAR = new WritableBooleanPropertyKey();
-
-    public static final WritableBooleanPropertyKey ANONYMIZE_TOOLBAR =
-            new WritableBooleanPropertyKey();
-
-    /** Whether we need to draw the decoration (border, shadow, ..) at all. */
-    public static final WritableFloatPropertyKey DECORATION_ALPHA = new WritableFloatPropertyKey();
-
     /** Whether initFromHost() has been called since the last call to init(). */
     public static final WritableBooleanPropertyKey INIT_FROM_HOST_CALLED =
             new WritableBooleanPropertyKey();
@@ -90,12 +59,6 @@ public class LayoutTab extends PropertyModel {
 
     /** The color of the background of the tab. Used as the best approximation to fill in. */
     public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
-
-    public static final WritableIntPropertyKey TOOLBAR_BACKGROUND_COLOR =
-            new WritableIntPropertyKey();
-
-    public static final WritableIntPropertyKey TEXT_BOX_BACKGROUND_COLOR =
-            new WritableIntPropertyKey();
 
     // End section --------------
 
@@ -121,29 +84,17 @@ public class LayoutTab extends PropertyModel {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 TAB_ID,
-                IS_INCOGNITO,
-                SCALE,
                 X,
                 Y,
                 RENDER_X,
                 RENDER_Y,
-                CLIPPED_WIDTH,
-                CLIPPED_HEIGHT,
-                ALPHA,
-                BORDER_ALPHA,
-                BORDER_SCALE,
                 ORIGINAL_CONTENT_WIDTH_IN_DP,
                 ORIGINAL_CONTENT_HEIGHT_IN_DP,
                 MAX_CONTENT_WIDTH,
                 MAX_CONTENT_HEIGHT,
                 CAN_USE_LIVE_TEXTURE,
-                SHOW_TOOLBAR,
-                ANONYMIZE_TOOLBAR,
-                DECORATION_ALPHA,
                 INIT_FROM_HOST_CALLED,
                 BACKGROUND_COLOR,
-                TOOLBAR_BACKGROUND_COLOR,
-                TEXT_BOX_BACKGROUND_COLOR,
                 CONTENT_OFFSET_X,
                 CONTENT_OFFSET_Y,
                 IS_ACTIVE_LAYOUT,
@@ -154,22 +105,14 @@ public class LayoutTab extends PropertyModel {
      * Default constructor for a {@link LayoutTab}.
      *
      * @param tabId The id of the source {@link Tab}.
-     * @param isIncognito Whether the tab in the in the incognito stack.
      * @param maxContentTextureWidth The maximum width for drawing the content in px.
      * @param maxContentTextureHeight The maximum height for drawing the content in px.
      */
-    public LayoutTab(
-            int tabId,
-            boolean isIncognito,
-            int maxContentTextureWidth,
-            int maxContentTextureHeight) {
+    public LayoutTab(int tabId, int maxContentTextureWidth, int maxContentTextureHeight) {
         super(ALL_KEYS);
 
         set(TAB_ID, tabId);
-        set(IS_INCOGNITO, isIncognito);
         set(BACKGROUND_COLOR, Color.WHITE);
-        set(TOOLBAR_BACKGROUND_COLOR, 0xfff2f2f2);
-        set(TEXT_BOX_BACKGROUND_COLOR, Color.WHITE);
 
         init(maxContentTextureWidth, maxContentTextureHeight);
     }
@@ -177,24 +120,15 @@ public class LayoutTab extends PropertyModel {
     /**
      * Initializes a {@link LayoutTab} to its default value so it can be reused.
      *
-     * @param maxContentTextureWidth  The maximum width of the page content in px.
+     * @param maxContentTextureWidth The maximum width of the page content in px.
      * @param maxContentTextureHeight The maximum height of the page content in px.
      */
     public void init(int maxContentTextureWidth, int maxContentTextureHeight) {
-        set(ALPHA, 1.0f);
-        set(BORDER_ALPHA, 1.0f);
-        set(BORDER_SCALE, 1.0f);
-        set(CLIPPED_WIDTH, Float.MAX_VALUE);
-        set(CLIPPED_HEIGHT, Float.MAX_VALUE);
-        set(SCALE, 1.0f);
         set(X, 0.0f);
         set(Y, 0.0f);
         set(RENDER_X, 0.0f);
         set(RENDER_Y, 0.0f);
-        set(DECORATION_ALPHA, 1.0f);
         set(CAN_USE_LIVE_TEXTURE, true);
-        set(SHOW_TOOLBAR, false);
-        set(ANONYMIZE_TOOLBAR, false);
         set(ORIGINAL_CONTENT_WIDTH_IN_DP, maxContentTextureWidth * sPxToDp);
         set(ORIGINAL_CONTENT_HEIGHT_IN_DP, maxContentTextureHeight * sPxToDp);
         set(MAX_CONTENT_WIDTH, maxContentTextureWidth * sPxToDp);
@@ -208,17 +142,9 @@ public class LayoutTab extends PropertyModel {
      *
      * @param backgroundColor The color of the page background.
      * @param canUseLiveTexture Whether the tab can use a live texture when being displayed.
-     * @param toolbarBackgroundColor The color of the toolbar background.
-     * @param textBoxBackgroundColor The color of the text box background.
      */
-    public void initFromHost(
-            int backgroundColor,
-            boolean canUseLiveTexture,
-            int toolbarBackgroundColor,
-            int textBoxBackgroundColor) {
+    public void initFromHost(int backgroundColor, boolean canUseLiveTexture) {
         set(BACKGROUND_COLOR, backgroundColor);
-        set(TOOLBAR_BACKGROUND_COLOR, toolbarBackgroundColor);
-        set(TEXT_BOX_BACKGROUND_COLOR, textBoxBackgroundColor);
         set(CAN_USE_LIVE_TEXTURE, canUseLiveTexture);
         set(INIT_FROM_HOST_CALLED, true);
     }
@@ -242,59 +168,6 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * @return The scale applied to the the content of the tab. Default is 1.0.
-     */
-    public float getScale() {
-        return get(SCALE);
-    }
-
-    /**
-     * @param scale The scale to apply on the content of the tab (everything except the borders).
-     */
-    public void setScale(float scale) {
-        set(SCALE, scale);
-    }
-
-    /**
-     * Set the clipping sizes. This apply on the scaled content.
-     *
-     * @param clippedWidth  The width of the clipped rectangle. Float.MAX_VALUE for no clipping.
-     * @param clippedHeight The height of the clipped rectangle. Float.MAX_VALUE for no clipping.
-     */
-    public void setClipSize(float clippedWidth, float clippedHeight) {
-        set(CLIPPED_WIDTH, clippedWidth);
-        set(CLIPPED_HEIGHT, clippedHeight);
-    }
-
-    /**
-     * @return The width of the clipped rectangle. Float.MAX_VALUE for no clipping.
-     */
-    public float getClippedWidth() {
-        return get(CLIPPED_WIDTH);
-    }
-
-    /**
-     * @return The height of the clipped rectangle. Float.MAX_VALUE for no clipping.
-     */
-    public float getClippedHeight() {
-        return get(CLIPPED_HEIGHT);
-    }
-
-    /**
-     * @return The maximum drawable width (scaled) of the tab contents in dp.
-     */
-    public float getScaledContentWidth() {
-        return getOriginalContentWidth() * get(SCALE);
-    }
-
-    /**
-     * @return The maximum drawable height (scaled) of the tab contents in dp.
-     */
-    public float getScaledContentHeight() {
-        return getOriginalContentHeight() * get(SCALE);
-    }
-
-    /**
      * @return The maximum drawable width (not scaled) of the tab contents texture.
      */
     public float getOriginalContentWidth() {
@@ -309,24 +182,10 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * @return The width of the drawn content (clipped and scaled).
-     */
-    public float getFinalContentWidth() {
-        return Math.min(get(CLIPPED_WIDTH), getScaledContentWidth());
-    }
-
-    /**
      * @return The id of the tab, same as the id from the Tab in TabModel.
      */
     public int getId() {
         return get(TAB_ID);
-    }
-
-    /**
-     * @return Whether the underlying tab is incognito or not.
-     */
-    public boolean isIncognito() {
-        return get(IS_INCOGNITO);
     }
 
     /**
@@ -372,74 +231,6 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * Set the transparency value for all of the tab (the contents,
-     * border, etc...).  For components that allow specifying
-     * their own alpha values, it will use the min of these two fields.
-     *
-     * @param f The transparency value for the tab.
-     */
-    public void setAlpha(float f) {
-        set(ALPHA, f);
-    }
-
-    /**
-     * @return The transparency value for all of the tab components.
-     */
-    public float getAlpha() {
-        return get(ALPHA);
-    }
-
-    /**
-     * @param alpha The maximum alpha value of the tab border.
-     */
-    public void setBorderAlpha(float alpha) {
-        set(BORDER_ALPHA, alpha);
-    }
-
-    /**
-     * @return The current alpha value at which the tab border is drawn.
-     */
-    public float getBorderAlpha() {
-        return Math.min(get(BORDER_ALPHA), get(ALPHA));
-    }
-
-    /**
-     * @return The current alpha value at which the tab border inner shadow is drawn.
-     */
-    public float getBorderInnerShadowAlpha() {
-        return Math.min(0, get(ALPHA));
-    }
-
-    /**
-     * @param scale The scale factor of the border.
-     *              1.0f yields 1:1 pixel with the source image.
-     */
-    public void setBorderScale(float scale) {
-        set(BORDER_SCALE, scale);
-    }
-
-    /**
-     * @return The current scale applied on the tab border.
-     */
-    public float getBorderScale() {
-        return get(BORDER_SCALE);
-    }
-
-    /**
-     * @param decorationAlpha Whether or not to draw the decoration for this card.
-     */
-    public void setDecorationAlpha(float decorationAlpha) {
-        set(DECORATION_ALPHA, decorationAlpha);
-    }
-
-    /**
-     * @return The opacity of the decoration.
-     */
-    public float getDecorationAlpha() {
-        return get(DECORATION_ALPHA);
-    }
-
-    /**
      * @param originalContentWidth The maximum content width for the given orientation in px.
      * @param originalContentHeight The maximum content height for the given orientation in px.
      */
@@ -456,55 +247,9 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * @param showToolbar Whether or not to show a toolbar at the top of the content.
-     */
-    public void setShowToolbar(boolean showToolbar) {
-        set(SHOW_TOOLBAR, showToolbar);
-    }
-
-    /**
-     * @return Whether or not to show a toolbar at the top of the content.
-     */
-    public boolean showToolbar() {
-        return get(SHOW_TOOLBAR);
-    }
-
-    /**
-     * This value is only used if {@link #showToolbar()} is {@code true}.
-     *
-     * @param anonymize Whether or not to anonymize the toolbar (hiding URL, etc.).
-     */
-    public void setAnonymizeToolbar(boolean anonymize) {
-        set(ANONYMIZE_TOOLBAR, anonymize);
-    }
-
-    /**
-     * This value is only used if {@link #showToolbar()} is {@code true}.
-     *
-     * @return Whether or not to anonymize the toolbar (hiding URL, etc.).
-     */
-    public boolean anonymizeToolbar() {
-        return get(ANONYMIZE_TOOLBAR);
-    }
-
-    /**
      * @return The color of the background of the tab. Used as the best approximation to fill in.
      */
     public int getBackgroundColor() {
         return get(BACKGROUND_COLOR);
-    }
-
-    /**
-     * @return The color of the background of the toolbar.
-     */
-    public int getToolbarBackgroundColor() {
-        return get(TOOLBAR_BACKGROUND_COLOR);
-    }
-
-    /**
-     * @return The color of the textbox in the toolbar. Used as the color for the anonymize rect.
-     */
-    public int getTextBoxBackgroundColor() {
-        return get(TEXT_BOX_BACKGROUND_COLOR);
     }
 }

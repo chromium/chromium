@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -83,10 +82,6 @@ public class StaticLayoutUnitTest {
     private static final String TAB2_URL = JUnitTestGURLs.URL_2.getSpec();
 
     private static final int BACKGROUND_COLOR = Color.WHITE;
-    private static final int TOOLBAR_BACKGROUND_COLOR = Color.BLUE;
-    private static final int TEXT_BOX_BACKGROUND_COLOR = Color.BLACK;
-    private static final int WIDTH = 9;
-    private static final int HEIGHT = 16;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
@@ -94,7 +89,6 @@ public class StaticLayoutUnitTest {
     @Mock private DisplayMetrics mDisplayMetrics;
     @Mock private LayoutUpdateHost mUpdateHost;
     @Mock private LayoutRenderHost mRenderHost;
-    @Mock private LayoutManagerHost mViewHost;
     @Mock StaticTabSceneLayer mStaticTabSceneLayer;
 
     @Mock private TabContentManager mTabContentManager;
@@ -110,7 +104,6 @@ public class StaticLayoutUnitTest {
             mBrowserControlsStateProviderObserverCaptor;
 
     private final UserDataHost mUserDataHost = new UserDataHost();
-    @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
 
     private Tab mTab1;
     private Tab mTab2;
@@ -161,8 +154,6 @@ public class StaticLayoutUnitTest {
                 .when(mBrowserControlsStateProvider)
                 .addObserver(mBrowserControlsStateProviderObserverCaptor.capture());
         doNothing().when(mTabContentManager).updateVisibleIds(any(), anyInt());
-        doReturn(WIDTH).when(mViewHost).getWidth();
-        doReturn(HEIGHT).when(mViewHost).getHeight();
         doReturn(mCompositorAnimationHandler).when(mUpdateHost).getAnimationHandler();
         mNeedsOffsetTagsSupplier = ObservableSuppliers.createNonNull(true);
         mStaticLayout =
@@ -170,23 +161,16 @@ public class StaticLayoutUnitTest {
                         mContext,
                         mUpdateHost,
                         mRenderHost,
-                        mViewHost,
                         mFrameRequestSupplier,
                         CallbackUtils.emptyRunnable(),
                         mTabModelSelector,
                         mTabContentManager,
                         mBrowserControlsStateProvider,
-                        () -> mToolbarThemeColorProvider,
                         mStaticTabSceneLayer,
                         mNeedsOffsetTagsSupplier);
         mModel = mStaticLayout.getModelForTesting();
         assertEquals(Color.TRANSPARENT, mModel.get(LayoutTab.BACKGROUND_COLOR));
         mStaticLayout.setIsActive(true);
-
-        doReturn(TOOLBAR_BACKGROUND_COLOR)
-                .when(mToolbarThemeColorProvider)
-                .getToolbarBackgroundColor(any());
-        mStaticLayout.setTextBoxBackgroundColorForTesting(TEXT_BOX_BACKGROUND_COLOR);
 
         initAndAssertAllDependencies();
 
@@ -199,7 +183,6 @@ public class StaticLayoutUnitTest {
     @After
     public void tearDown() {
         CompositorAnimationHandler.setTestingMode(false);
-        mStaticLayout.setTextBoxBackgroundColorForTesting(null);
         mStaticLayout.destroy();
     }
 
@@ -216,15 +199,8 @@ public class StaticLayoutUnitTest {
     private void initAndAssertAllProperties() {
         assertEquals(mTab1, mTabModelSelector.getCurrentTab());
         assertEquals(TAB1_ID, mModel.get(LayoutTab.TAB_ID));
-        assertEquals(WIDTH, mModel.get(LayoutTab.ORIGINAL_CONTENT_WIDTH_IN_DP), 0);
-        assertEquals(HEIGHT, mModel.get(LayoutTab.ORIGINAL_CONTENT_HEIGHT_IN_DP), 0);
-        assertEquals(WIDTH, mModel.get(LayoutTab.MAX_CONTENT_WIDTH), 0);
-        assertEquals(HEIGHT, mModel.get(LayoutTab.MAX_CONTENT_HEIGHT), 0);
         assertEquals(BACKGROUND_COLOR, mModel.get(LayoutTab.BACKGROUND_COLOR));
-        assertEquals(TOOLBAR_BACKGROUND_COLOR, mModel.get(LayoutTab.TOOLBAR_BACKGROUND_COLOR));
-        assertEquals(TEXT_BOX_BACKGROUND_COLOR, mModel.get(LayoutTab.TEXT_BOX_BACKGROUND_COLOR));
 
-        assertFalse(mModel.get(LayoutTab.IS_INCOGNITO));
         assertTrue(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
     }
 
@@ -241,7 +217,6 @@ public class StaticLayoutUnitTest {
         doReturn(BACKGROUND_COLOR).when(tab).getBackgroundColor();
         doReturn(webContents).when(tab).getWebContents();
         doReturn(true).when(tab).isInitialized();
-        doReturn(TOOLBAR_BACKGROUND_COLOR).when(tab).getThemeColor();
         when(tab.getUserDataHost()).thenReturn(mUserDataHost);
         return tab;
     }
@@ -476,24 +451,14 @@ public class StaticLayoutUnitTest {
     }
 
     @Test
-    public void testUpdateLayout() {
-        mModel.set(LayoutTab.RENDER_X, 0.0f);
-        mModel.set(LayoutTab.RENDER_Y, 0.0f);
-        mModel.set(LayoutTab.X, 1.0f);
-        mModel.set(LayoutTab.Y, 1.0f);
+    public void testDestroy_RemovesObservers() {
+        assertTrue(mNeedsOffsetTagsSupplier.hasObservers());
 
-        mStaticLayout.updateLayout(System.currentTimeMillis(), 1000);
+        mStaticLayout.destroy();
 
-        assertEquals(1.0f, mModel.get(LayoutTab.RENDER_X), 0);
-        assertEquals(1.0f, mModel.get(LayoutTab.RENDER_Y), 0);
-
-        mModel.set(LayoutTab.X, 0.3f);
-        mModel.set(LayoutTab.Y, 0.3f);
-
-        mStaticLayout.updateLayout(System.currentTimeMillis(), 1000);
-
-        assertEquals(0.0f, mModel.get(LayoutTab.RENDER_X), 0);
-        assertEquals(0.0f, mModel.get(LayoutTab.RENDER_Y), 0);
+        verify(mBrowserControlsStateProvider)
+                .removeObserver(mBrowserControlsStateProviderObserverCaptor.getValue());
+        assertFalse(mNeedsOffsetTagsSupplier.hasObservers());
     }
 
     @Test
