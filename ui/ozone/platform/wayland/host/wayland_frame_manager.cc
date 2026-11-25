@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/host/begin_frame_source_wayland.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
@@ -45,6 +46,21 @@ constexpr uint32_t kMaxFramesInFlight = 3u;
 // value that optimally identifies a freeze due to window occlusion so
 // that it warrants ignoring frame callbacks during tab capture.
 constexpr int kFrameCallbackTimeoutMs = 50;
+// How long an in-flight wl_surface.frame callback may go unanswered before the
+// window is reported as occluded. This runs on every compositor, not only when
+// an output is powered off. wl_surface.frame says: "A server should avoid
+// signaling the frame callbacks if the surface is not visible in any way, e.g.
+// the surface is off-screen, or completely obscured by other opaque surfaces."
+// So a window on another workspace or fully covered by other windows is also
+// reported as occluded, which is the intended semantics. This matters on
+// compositors that don't send xdg_toplevel::suspended (e.g. Weston and sway
+// with xdg_wm_base v5), including when the output enters DPMS-off. The value
+// matches Mutter's delay before sending xdg_toplevel::suspended
+// (https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/3019).
+// Both this and kFrameCallbackTimeoutMs are armed for the same in-flight
+// callback: the 50 ms one only changes frame playback during tab capture,
+// while this one changes the window's visibility.
+constexpr base::TimeDelta kFrameCallbackOcclusionTimeout = base::Seconds(3);
 
 constexpr base::TimeDelta kPresentationFlushTimerDuration =
     base::Milliseconds(160);
@@ -327,8 +343,9 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
            wl_fixed_from_double(config.opacity) == 0)) {
         // The subsurface owning the pending frame callback is being hidden and
         // will not be presented, so allow this frame to request a replacement
-        // callback on a visible surface.
-        ResetFrameCallback();
+        // callback on a visible surface. Keep the occlusion state: the
+        // replacement callback takes over from the hidden one.
+        ClearFrameCallback();
         break;
       }
     }
@@ -557,6 +574,7 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
             FROM_HERE, base::Milliseconds(kFrameCallbackTimeoutMs), this,
             &WaylandFrameManager::FrameCallbackTimeout);
       }
+      MaybeStartFrameCallbackOcclusionTimer();
       wl_callback_add_listener(wl_frame_callback_.get(),
                                &kFrameCallbackListener, this);
       needs_commit = true;
@@ -659,10 +677,42 @@ void WaylandFrameManager::HandleFrameCallback(wl_callback* callback) {
 }
 
 void WaylandFrameManager::ResetFrameCallback() {
+  ClearFrameCallback();
+  SetFrameCallbackOccluded(false);
+}
+
+void WaylandFrameManager::ClearFrameCallback() {
   wl_frame_callback_.reset();
   frame_callback_surface_id_ = 0;
   frame_callback_frame_id_ = 0;
   frame_callback_timer_.Stop();
+  frame_callback_occlusion_timer_.Stop();
+}
+
+void WaylandFrameManager::MaybeStartFrameCallbackOcclusionTimer() {
+  if (!IsWaylandWindowOcclusionEnabled() || !wl_frame_callback_ ||
+      window_->IsSuspended() || frame_callback_occluded_ ||
+      frame_callback_occlusion_timer_.IsRunning()) {
+    return;
+  }
+  frame_callback_occlusion_timer_.Start(
+      FROM_HERE, kFrameCallbackOcclusionTimeout, this,
+      &WaylandFrameManager::FrameCallbackOcclusionTimeout);
+}
+
+void WaylandFrameManager::FrameCallbackOcclusionTimeout() {
+  CHECK(wl_frame_callback_);
+  DVLOG(1) << "surface=" << window_->root_surface()->get_surface_id()
+           << " marked occluded after frame callback timeout";
+  SetFrameCallbackOccluded(true);
+}
+
+void WaylandFrameManager::SetFrameCallbackOccluded(bool occluded) {
+  if (frame_callback_occluded_ == occluded) {
+    return;
+  }
+  frame_callback_occluded_ = occluded;
+  window_->OnFrameCallbackOcclusionChanged();
 }
 
 // static
@@ -1184,6 +1234,12 @@ void WaylandFrameManager::OnWindowSuspensionChanged() {
            << " surface=" << window_->root_surface()->get_surface_id()
            << " is_suspended=" << window_->IsSuspended();
   EvaluateShouldAckSwapWithoutCommit();
+  if (window_->IsSuspended()) {
+    frame_callback_occlusion_timer_.Stop();
+  } else {
+    SetFrameCallbackOccluded(false);
+    MaybeStartFrameCallbackOcclusionTimer();
+  }
 }
 
 void WaylandFrameManager::EvaluateShouldAckSwapWithoutCommit() {
@@ -1284,6 +1340,12 @@ void WaylandFrameManager::ClearStates() {
 base::TimeDelta
 WaylandFrameManager::GetPresentationFlushTimerDurationForTesting() {
   return kPresentationFlushTimerDuration;
+}
+
+// static
+base::TimeDelta
+WaylandFrameManager::GetFrameCallbackOcclusionTimeoutForTesting() {
+  return kFrameCallbackOcclusionTimeout;
 }
 
 void WaylandFrameManager::UpdatePresentationFlushTimer() {

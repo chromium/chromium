@@ -423,6 +423,9 @@ class WaylandWindow : public PlatformWindow,
   // activation status of delegate()->OnActivationChanged() as bubble.
   virtual bool IsActive() const;
   virtual bool IsSuspended() const;
+  // Called by WaylandFrameManager when its frame callback occlusion state
+  // changes.
+  virtual void OnFrameCallbackOcclusionChanged();
 
   // WaylandWindow can be any type of object - WaylandBubble,
   // WaylandToplevelWindow, WaylandPopup. The following methods cast itself to
