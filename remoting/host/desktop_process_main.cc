@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -26,6 +27,7 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/desktop_process.h"
@@ -46,6 +48,13 @@
 #include "remoting/host/linux/systemd_user_env_setter.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/process_requirement.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
+#include "remoting/host/ipc_constants.h"
+#include "remoting/host/mac/constants_mac.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "remoting/host/win/session_interaction_strategy.h"
 #else
@@ -64,8 +73,40 @@ int DesktopProcessMain() {
   }
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  // On macOS, launchd starts the on-demand desktop LaunchAgent directly
+  // without passing inherited Mojo handles or command-line channel switches.
+  // Dial into the root daemon's named Mach service and verify its signature.
+  mojo::NamedPlatformChannel::Options options;
+  options.server_name = GetDesktopSessionServerName();
+  options.server_process_requirement = base::mac::ProcessRequirement::Builder()
+                                           .SignedWithSameIdentity()
+                                           .Identifier(kBundleId)
+                                           .Build();
+  if (!options.server_process_requirement) {
+    LOG(ERROR) << "Failed to build desktop server process requirement.";
+    return kInitializationFailed;
+  }
+  mojo::PlatformChannelEndpoint endpoint =
+      named_mojo_ipc_server::ConnectToServer(options);
+  if (!endpoint.is_valid()) {
+    HOST_LOG << "Desktop session server is not running; exiting.";
+    return kSuccessExitCode;
+  }
+#else
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
+
+  mojo::PlatformChannelEndpoint endpoint =
+      mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
+          *command_line);
+  if (!endpoint.is_valid()) {
+    endpoint = mojo::NamedPlatformChannel::ConnectToServer(*command_line);
+  }
+  if (!endpoint.is_valid()) {
+    return kInvalidCommandLineExitCode;
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
   // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
@@ -93,7 +134,15 @@ int DesktopProcessMain() {
 
   // Launch the video capture thread.
   scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner =
+#if BUILDFLAG(IS_MAC)
+      // macOS screen capture APIs (CoreGraphics/ScreenCaptureKit) require a
+      // CFRunLoop-backed UI message pump, matching
+      // ChromotingHostContext::Create.
+      AutoThread::CreateWithType("Video capture thread", ui_task_runner,
+                                 base::MessagePumpType::UI);
+#else
       AutoThread::Create("Video capture thread", ui_task_runner);
+#endif
 
   // Launch the input thread.
   scoped_refptr<AutoThreadTaskRunner> input_task_runner =
@@ -129,19 +178,15 @@ int DesktopProcessMain() {
   mojo::core::ScopedIPCSupport ipc_support(
       io_task_runner->task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
-  mojo::PlatformChannelEndpoint endpoint =
-      mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
-          *command_line);
-  if (!endpoint.is_valid()) {
-    endpoint = mojo::NamedPlatformChannel::ConnectToServer(*command_line);
-  }
-  if (!endpoint.is_valid()) {
-    return kInvalidCommandLineExitCode;
-  }
 
   auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
+#if BUILDFLAG(IS_MAC)
+  mojo::ScopedMessagePipeHandle message_pipe =
+      invitation.ExtractMessagePipe(kDesktopSessionMessagePipeId);
+#else
   mojo::ScopedMessagePipeHandle message_pipe = invitation.ExtractMessagePipe(
       command_line->GetSwitchValueASCII(kMojoPipeToken));
+#endif
   DesktopProcess desktop_process(ui_task_runner, input_task_runner,
                                  io_task_runner, std::move(message_pipe));
 

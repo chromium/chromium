@@ -190,16 +190,6 @@
 
 using remoting::protocol::PairingRegistry;
 
-#if BUILDFLAG(IS_APPLE)
-
-// The following creates a section that tells Mac OS X that it is OK to let us
-// inject input in the login screen. Just the name of the section is important,
-// not its contents.
-__attribute__((used)) __attribute__((section(
-    "__CGPreLoginApp,__cgpreloginapp"))) static const char magic_section[] = "";
-
-#endif  // BUILDFLAG(IS_APPLE)
-
 namespace remoting {
 
 namespace {
@@ -1197,9 +1187,12 @@ void HostProcess::StartOnUiThread() {
     remoting::SecurityKeyAuthHandlerPosix::SetSecurityKeySocketName(
         security_key_socket_name);
     desktop_environment_options_.set_enable_security_key(true);
-  } else if (multi_process_) {
+  }
+#if BUILDFLAG(IS_LINUX)
+  else if (multi_process_) {
     desktop_environment_options_.set_enable_security_key(true);
   }
+#endif  // BUILDFLAG(IS_LINUX)
 #elif BUILDFLAG(IS_WIN)
   desktop_environment_options_.set_enable_security_key(true);
 #endif

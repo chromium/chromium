@@ -50,6 +50,12 @@ extern const char kAgentProcessBrokerMessagePipeId[];
 
 // Returns the server name for AgentProcessBroker.
 const mojo::NamedPlatformChannel::ServerName& GetAgentProcessBrokerServerName();
+
+// Message pipe ID used for DesktopSession dial-in on macOS.
+extern const uint64_t kDesktopSessionMessagePipeId;
+
+// Returns the server name for DesktopSession dial-in on macOS.
+const mojo::NamedPlatformChannel::ServerName& GetDesktopSessionServerName();
 #endif
 
 #if BUILDFLAG(IS_LINUX)

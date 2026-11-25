@@ -33,6 +33,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+#elif BUILDFLAG(IS_MAC)
+#include "base/mac/process_requirement.h"
+#include "remoting/host/mac/constants_mac.h"
 #endif
 
 namespace remoting {
@@ -65,6 +68,26 @@ mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer(
     mojo::NamedPlatformChannel::Options options;
     options.server_name = server_name;
     options.verify_server_privilege = true;
+    endpoint = named_mojo_ipc_server::ConnectToServer(options);
+#elif BUILDFLAG(IS_MAC)
+    // Verify the Mach service owner's code signature to prevent local
+    // processes from squatting on the bootstrap service name (analogous to
+    // `verify_server_privilege` on Windows). Accept `kBundleId` for the
+    // multi-process root daemon and `"remoting_agent_process_broker"` for
+    // backwards compatibility with the legacy single-process broker.
+    // TODO(crbug.com/499082867): Drop `"remoting_agent_process_broker"` once
+    // single-process mode is removed on macOS.
+    mojo::NamedPlatformChannel::Options options;
+    options.server_name = server_name;
+    options.server_process_requirement =
+        base::mac::ProcessRequirement::Builder()
+            .SignedWithSameIdentity()
+            .IdentifierIsOneOf({kBundleId, "remoting_agent_process_broker"})
+            .Build();
+    if (!options.server_process_requirement) {
+      LOG(ERROR) << "Failed to build host services server process requirement.";
+      continue;
+    }
     endpoint = named_mojo_ipc_server::ConnectToServer(options);
 #else
     endpoint = named_mojo_ipc_server::ConnectToServer(server_name);

@@ -56,7 +56,7 @@
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "ui/events/types/event_type.h"
 
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_LINUX)
 #include "remoting/host/security_key/security_key_auth_handler_posix.h"
 #endif
 
@@ -638,7 +638,7 @@ void DesktopSessionAgent::OnDesktopEnvironmentCreated(
 
   desktop_environment_ = std::move(desktop_environment);
 
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_LINUX)
   if (enable_security_key) {
     const base::FilePath& socket_name =
         SecurityKeyAuthHandlerPosix::GetSecurityKeySocketName();

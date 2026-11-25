@@ -220,6 +220,9 @@ source_set("chromoting_host_services_client") {
   if (is_win) {
     deps += [ "//remoting/host/win:acl_util" ]
   }
+  if (is_mac) {
+    deps += [ "//remoting/host/mac:constants" ]
+  }
 }
 
 source_set("chromoting_host_services_server") {
@@ -792,6 +795,7 @@ static_library("common") {
     deps += [
       ":remoting_version",
       "//remoting/host/base",
+      "//remoting/host/mac:constants",
       "//remoting/host/mac:permission_checking",
       "//ui/events",
     ]

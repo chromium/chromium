@@ -5,9 +5,11 @@
 #include "remoting/host/mac/agent_process_broker_main.h"
 
 #include <signal.h>
+#include <unistd.h>
 
 #include "base/at_exit.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
@@ -22,6 +24,8 @@ namespace remoting {
 
 int AgentProcessBrokerMain(int argc, char** argv) {
   PCHECK(signal(SIGPIPE, SIG_IGN) != SIG_ERR);
+  CHECK_EQ(getuid(), 0u);
+  CHECK_EQ(geteuid(), 0u);
 
   base::AtExitManager exitManager;
   base::CommandLine::Init(argc, argv);

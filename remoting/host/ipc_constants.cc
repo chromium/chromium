@@ -38,10 +38,13 @@ constexpr char kChromotingHostServicesIpcName[] =
 #if !defined(NDEBUG)
 constexpr char kAgentProcessBrokerIpcName[] =
     "chromoting.agent_process_broker_debug_mojo_ipc";
+constexpr char kDesktopSessionIpcName[] =
+    "chromoting.desktop_session_debug_mojo_ipc";
 #else
 // Must match the `MachServices` key in org.chromium.chromoting.broker.plist.
 constexpr char kAgentProcessBrokerIpcName[] =
     "chromoting.agent_process_broker_mojo_ipc";
+constexpr char kDesktopSessionIpcName[] = "chromoting.desktop_session_mojo_ipc";
 #endif
 
 #endif
@@ -139,6 +142,14 @@ const mojo::NamedPlatformChannel::ServerName&
 GetAgentProcessBrokerServerName() {
   static const base::NoDestructor<mojo::NamedPlatformChannel::ServerName>
       server_name(GetServerName(kAgentProcessBrokerIpcName));
+  return *server_name;
+}
+
+const uint64_t kDesktopSessionMessagePipeId = 0u;
+
+const mojo::NamedPlatformChannel::ServerName& GetDesktopSessionServerName() {
+  static const base::NoDestructor<mojo::NamedPlatformChannel::ServerName>
+      server_name(GetServerName(kDesktopSessionIpcName));
   return *server_name;
 }
 
