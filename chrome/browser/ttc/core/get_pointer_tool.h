@@ -11,7 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/ttc/core/pointer_context_capturer.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_context_capturer.h"
 #include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "components/ttc/app/public/tool_types.h"
 
@@ -56,7 +56,7 @@ class GetPointerTool {
                   std::vector<PointerTracker::Location> locations,
                   base::ElapsedTimer capture_timer,
                   ToolResponseCallback callback,
-                  PointerContextCapturer::Result context);
+                  actor::PointerContextCapturer::Result context);
   void OnResponseBuilt(base::WeakPtr<content::Page> page,
                        ToolResponseCallback callback,
                        ToolResponse response);
@@ -70,7 +70,7 @@ class GetPointerTool {
   const raw_ref<SessionControllerImpl> session_controller_;
 
   // Set while the page is being captured.
-  std::unique_ptr<PointerContextCapturer> capturer_;
+  std::unique_ptr<actor::PointerContextCapturer> capturer_;
 
   base::WeakPtrFactory<GetPointerTool> weak_factory_{this};
 };

@@ -13,7 +13,6 @@
 #include "chrome/browser/search/search.h"
 #include "components/actor/core/safety_list_manager.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -95,21 +94,6 @@ std::optional<ToolResponse> CheckPageForCapture(
                                "Renderer crashed");
   }
   return std::nullopt;
-}
-
-actor::mojom::ActionResultCode ToScreenshotErrorCode(
-    page_content_annotations::FetchPageContextError error) {
-  using page_content_annotations::FetchPageContextError;
-  switch (error) {
-    case FetchPageContextError::kWebContentsWentAway:
-      return actor::mojom::ActionResultCode::kTabWentAway;
-    case FetchPageContextError::kWebContentsChanged:
-      return actor::mojom::ActionResultCode::kScreenshotCapturePageChanged;
-    case FetchPageContextError::kPageContextNotEligible:
-      return actor::mojom::ActionResultCode::kScreenshotCapturePageNotEligible;
-    case FetchPageContextError::kUnknown:
-      return actor::mojom::ActionResultCode::kScreenshotCaptureFailed;
-  }
 }
 
 }  // namespace ttc

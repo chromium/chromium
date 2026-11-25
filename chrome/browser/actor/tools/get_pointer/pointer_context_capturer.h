@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_CORE_POINTER_CONTEXT_CAPTURER_H_
-#define CHROME_BROWSER_TTC_CORE_POINTER_CONTEXT_CAPTURER_H_
+#ifndef CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_CONTEXT_CAPTURER_H_
+#define CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_CONTEXT_CAPTURER_H_
 
 #include <memory>
 
@@ -12,22 +12,22 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/tool_result_data.h"
 #include "chrome/browser/actor/tools/get_pointer/pointer_context.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
-#include "components/ttc/app/public/tool_types.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
-namespace ttc {
+namespace actor {
 
-// Captures an actor::PointerContext from a WebContents, giving up if it takes
-// too long: the user is waiting on a spoken answer, and captures can stall,
-// e.g. while the window is occluded.
+// Captures a PointerContext from a WebContents, giving up if it takes too
+// long: the user is waiting on a spoken answer, and captures can stall, e.g.
+// while the window is occluded.
 class PointerContextCapturer {
  public:
-  using Result = base::expected<actor::PointerContext, ToolResponse>;
+  using Result = base::expected<PointerContext, ToolError>;
   using Callback = base::OnceCallback<void(Result)>;
 
   // A capture that takes longer than `timeout` fails.
@@ -38,9 +38,8 @@ class PointerContextCapturer {
 
   // Captures the primary page of `web_contents` and runs `callback` with the
   // result, or with the error to answer the tool call with. The caller must
-  // have checked that the page may be captured (see
-  // IsUrlSupportedForPageContext()). Only one capture can be in progress at a
-  // time. `callback` is not run if this is destroyed first.
+  // have checked that the page may be captured. Only one capture can be in
+  // progress at a time. `callback` is not run if this is destroyed first.
   void Capture(content::WebContents* web_contents, Callback callback);
 
  private:
@@ -60,6 +59,6 @@ class PointerContextCapturer {
   base::WeakPtrFactory<PointerContextCapturer> weak_factory_{this};
 };
 
-}  // namespace ttc
+}  // namespace actor
 
-#endif  // CHROME_BROWSER_TTC_CORE_POINTER_CONTEXT_CAPTURER_H_
+#endif  // CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_CONTEXT_CAPTURER_H_

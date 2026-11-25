@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/pointer_context_capturer.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_context_capturer.h"
 
 #include <string>
 #include <utility>
@@ -11,33 +11,49 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "chrome/browser/ttc/core/page_context_util.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 
-namespace ttc {
+namespace actor {
 
 namespace {
 
-using actor::mojom::ActionResultCode;
+using mojom::ActionResultCode;
 using page_content_annotations::ScreenshotOptions;
 
 // For a screenshot's maximum width and height: do not scale it down.
 constexpr int kNoScaling = 0;
 
+// Returns the tool error for a capture whose page context fetch failed with
+// `error`.
+ActionResultCode ToActionResultCode(
+    page_content_annotations::FetchPageContextError error) {
+  using page_content_annotations::FetchPageContextError;
+  switch (error) {
+    case FetchPageContextError::kWebContentsWentAway:
+      return ActionResultCode::kTabWentAway;
+    case FetchPageContextError::kWebContentsChanged:
+      return ActionResultCode::kScreenshotCapturePageChanged;
+    case FetchPageContextError::kPageContextNotEligible:
+      return ActionResultCode::kScreenshotCapturePageNotEligible;
+    case FetchPageContextError::kUnknown:
+      return ActionResultCode::kScreenshotCaptureFailed;
+  }
+}
+
 PointerContextCapturer::Result Failure(ActionResultCode code,
                                        std::string message) {
-  return base::unexpected(ToolResponse::Error(code, std::move(message)));
+  return base::unexpected(ToolError(code, std::move(message)));
 }
 
 PointerContextCapturer::Result ToResult(
     float scale_factor,
     page_content_annotations::FetchPageContextResultCallbackArg fetch_result) {
   if (!fetch_result.has_value()) {
-    return Failure(ToScreenshotErrorCode(fetch_result.error().error_code),
+    return Failure(ToActionResultCode(fetch_result.error().error_code),
                    fetch_result.error().message);
   }
   // `PageContextFetcher` only reports success with a non-null result.
@@ -52,7 +68,7 @@ PointerContextCapturer::Result ToResult(
     return Failure(ActionResultCode::kScreenshotCaptureFailed,
                    "Could not capture the page");
   }
-  return actor::PointerContext{
+  return PointerContext{
       .screenshot = std::move(fetched.screenshot_result->screenshot_data),
       .scale_factor = scale_factor,
       .page_content = std::move(fetched.annotated_page_content_result->proto)};
@@ -124,4 +140,4 @@ void PointerContextCapturer::OnTimeout() {
       Failure(ActionResultCode::kToolTimeout, "Timed out capturing the page"));
 }
 
-}  // namespace ttc
+}  // namespace actor

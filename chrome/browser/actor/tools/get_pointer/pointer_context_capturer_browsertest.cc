@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/pointer_context_capturer.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_context_capturer.h"
 
 #include <string>
 #include <vector>
@@ -17,7 +17,8 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -38,7 +39,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
-namespace ttc {
+namespace actor {
 namespace {
 
 using optimization_guide::proto::ContentNode;
@@ -57,8 +58,18 @@ bool HasHitTestableDescendant(const ContentNode& node) {
   return false;
 }
 
-class PointerContextCapturerBrowserTest : public TtcCoreBrowserTestBase {
+class PointerContextCapturerBrowserTest : public PlatformBrowserTest {
  public:
+  void SetUpOnMainThread() override {
+    PlatformBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::WebContents* web_contents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
   void NavigateToPageWithText() {
     ASSERT_TRUE(content::NavigateToURL(
         web_contents(), embedded_test_server()->GetURL("/simple.html")));
@@ -270,8 +281,7 @@ IN_PROC_BROWSER_TEST_F(PointerContextCapturerBrowserTest, TimesOut) {
   capturer.Capture(web_contents(), future.GetCallback());
   PointerContextCapturer::Result result = future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().error().code,
-            actor::mojom::ActionResultCode::kToolTimeout);
+  EXPECT_EQ(result.error().code, mojom::ActionResultCode::kToolTimeout);
 
   // The capturer can be used again.
   capturer.Capture(web_contents(), future.GetCallback());
@@ -286,9 +296,8 @@ IN_PROC_BROWSER_TEST_F(PointerContextCapturerBrowserTest, CrashedTab) {
   capturer.Capture(web_contents(), future.GetCallback());
   PointerContextCapturer::Result result = future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().error().code,
-            actor::mojom::ActionResultCode::kRendererCrashed);
+  EXPECT_EQ(result.error().code, mojom::ActionResultCode::kRendererCrashed);
 }
 
 }  // namespace
-}  // namespace ttc
+}  // namespace actor

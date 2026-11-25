@@ -57,14 +57,17 @@ std::vector<actor::PointerLocation> ToPointerLocations(
       });
 }
 
-// Returns `result`, which the actor's code built, as the tool's response.
-// TODO(crbug.com/587484155): Remove this when get_pointer is an actor tool;
+// Return what the actor's code answered with, an error or a result, as the
+// tool's response.
+// TODO(crbug.com/587484155): Remove these when get_pointer is an actor tool;
 // the tool controller then converts the results of all actor tools.
+ToolResponse ToToolResponse(const actor::ToolError& error) {
+  return ToolResponse::Error(error.code, error.message.value_or(std::string()));
+}
+
 ToolResponse ToToolResponse(const actor::ToolResult& result) {
   if (!result.Ok()) {
-    const actor::ToolError& error = *result.error();
-    return ToolResponse::Error(error.code,
-                               error.message.value_or(std::string()));
+    return ToToolResponse(*result.error());
   }
   const actor::ToolResultData& data = CHECK_DEREF(result.data());
   if (std::optional<actor::ToolResultImage> image = data.GetImage()) {
@@ -217,7 +220,7 @@ void GetPointerTool::OnUrlChecked(
     return;
   }
 
-  capturer_ = std::make_unique<PointerContextCapturer>(
+  capturer_ = std::make_unique<actor::PointerContextCapturer>(
       kTtcGetPointerCaptureTimeout.Get());
   capturer_->Capture(
       web_contents,
@@ -230,10 +233,10 @@ void GetPointerTool::OnCaptured(base::WeakPtr<content::Page> page,
                                 std::vector<PointerTracker::Location> locations,
                                 base::ElapsedTimer capture_timer,
                                 ToolResponseCallback callback,
-                                PointerContextCapturer::Result context) {
+                                actor::PointerContextCapturer::Result context) {
   capturer_.reset();
   if (!context.has_value()) {
-    std::move(callback).Run(std::move(context.error()));
+    std::move(callback).Run(ToToolResponse(context.error()));
     return;
   }
   base::UmaHistogramTimes("Ttc.GetPointer.CaptureLatency",

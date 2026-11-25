@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/ttc/app/public/tool_types.h"
 
 class GURL;
@@ -22,10 +21,6 @@ namespace content {
 class Page;
 class WebContents;
 }  // namespace content
-
-namespace page_content_annotations {
-enum class FetchPageContextError;
-}
 
 namespace ttc {
 
@@ -59,11 +54,6 @@ std::optional<ToolResponse> CheckPageForCapture(
     content::WebContents* focused_contents,
     const base::WeakPtr<content::Page>& page,
     bool is_url_supported);
-
-// Returns the tool error for a screenshot whose page context fetch failed
-// with `error`.
-actor::mojom::ActionResultCode ToScreenshotErrorCode(
-    page_content_annotations::FetchPageContextError error);
 
 }  // namespace ttc
 

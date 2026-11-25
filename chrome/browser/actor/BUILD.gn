@@ -58,6 +58,7 @@ source_set("actor") {
     "tools/get_pointer/get_pointer_result_builder.h",
     "tools/get_pointer/get_pointer_tool_result.h",
     "tools/get_pointer/pointer_context.h",
+    "tools/get_pointer/pointer_context_capturer.h",
     "tools/get_pointer/pointer_crop_geometry.h",
     "tools/get_pointer/pointer_frame_redaction.h",
     "tools/get_pointer/pointer_hit_test.h",
@@ -207,6 +208,7 @@ source_set("impl") {
     "tools/gemini_panel_tool_request.cc",
     "tools/get_pointer/get_pointer_result_builder.cc",
     "tools/get_pointer/get_pointer_tool_result.cc",
+    "tools/get_pointer/pointer_context_capturer.cc",
     "tools/get_pointer/pointer_crop_geometry.cc",
     "tools/get_pointer/pointer_frame_redaction.cc",
     "tools/get_pointer/pointer_hit_test.cc",
@@ -663,6 +665,10 @@ source_set("tools_test_support") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  data = [
+    "//chrome/test/data/optimization_guide/",
+    "//chrome/test/data/password.html",
+  ]
 
   sources = [
     "actor_keyed_service_browsertest.cc",
@@ -670,6 +676,7 @@ source_set("browser_tests") {
     "actor_util_browsertest.cc",
     "javascript_dialog_interceptor_browsertest.cc",
     "tools/execute_js_tool_browsertest.cc",
+    "tools/get_pointer/pointer_context_capturer_browsertest.cc",
     "tools/get_screenshot_tool_browsertest.cc",
     "tools/open_known_page_tool_browsertest.cc",
     "tools/open_url_tool_browsertest.cc",
