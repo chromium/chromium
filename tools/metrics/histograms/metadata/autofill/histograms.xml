@@ -2587,7 +2587,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Ai.Suppression.EntitiesFilteredPerPrefetch"
-    units="entities" expires_after="2027-01-01">
+    units="entities" expires_after="2027-11-25">
   <owner>tobson@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
