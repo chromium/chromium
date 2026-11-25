@@ -1086,7 +1086,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateRefreshesServiceWorker) {
   EXPECT_TRUE(listener_v2.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateWithoutSkipWaiting) {
+// TODO(crbug.com/584953671): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_UpdateWithoutSkipWaiting DISABLED_UpdateWithoutSkipWaiting
+#else
+#define MAYBE_UpdateWithoutSkipWaiting UpdateWithoutSkipWaiting
+#endif
+IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, MAYBE_UpdateWithoutSkipWaiting) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
