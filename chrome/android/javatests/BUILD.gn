@@ -1644,6 +1644,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tabmodel") {
   deps = [
     ":chrome_test_java_helper",
     "//base:tristate_java",
+    "//chrome/browser/ui/browser_window/public/android:browser_window_interface_java",
     "//chrome/browser/ui/browser_window/public/android:factory_java",
     "//chrome/browser/ui/browser_window/public/android:java",
     "//components/split_tabs:split_tabs_java",
