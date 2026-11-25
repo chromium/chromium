@@ -84,6 +84,9 @@ declare namespace chrome {
 
     export function hasConversation(conversationId: string): Promise<boolean>;
 
+    export function hasActiveActuationTab(conversationId: string):
+        Promise<boolean>;
+
     export function activateTabWithConversation(conversationId: string):
         Promise<void>;
   }

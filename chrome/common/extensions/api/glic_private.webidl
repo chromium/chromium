@@ -107,7 +107,15 @@ interface GlicPrivate {
   // |PromiseValue|: isPresent: True if conversation is present, false otherwise.
   static Promise<boolean> hasConversation(DOMString conversationId);
 
-  // Activates a tab with a specific conversation open in the side panel.
+  // Checks whether an active local actuation task with a live tab is present
+  // for `conversationId` in this profile.
+  // |Returns|: Promise that resolves to true if an active local actuation tab
+  // is present for the conversation.
+  // |PromiseValue|: isPresent: True if present, false otherwise.
+  static Promise<boolean> hasActiveActuationTab(DOMString conversationId);
+
+  // Activates the active actuation tab for a conversation, or falls back to a
+  // tab with that conversation open in the side panel.
   // |Returns|: Promise that resolves when the activation operation is
   // successful.
   static Promise<undefined> activateTabWithConversation(

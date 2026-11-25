@@ -6,6 +6,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/extensions/api/glic_private/glic_private_api.h"
 #include "chrome/browser/extensions/api/glic_private/glic_private_api_test_base.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -23,6 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -35,10 +39,13 @@
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/switches.h"
+#include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -587,6 +594,106 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest,
       {.extension_url = "test.html", .custom_arg = "has_conversation_false"},
       {.load_as_component = true}))
       << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest,
+                       HasActiveActuationTab_FalseWithPassiveGlicInstance) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  RegisterConversation(instance, "test_conversation_id");
+
+  // Passive side panel registration without an active `ActorTask` returns
+  // false. Omit `extension_url` so only the background service worker runs
+  // `test.js`.
+  EXPECT_TRUE(RunExtensionTest("glic_private",
+                               {.custom_arg = "has_active_actuation_tab_false"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest,
+                       HasActiveActuationTab_True) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  tabs::TabInterface* actuation_tab =
+      CreateAndActivateTab(GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(actuation_tab);
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
+                            "test_conversation_id"),
+      actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  ASSERT_TRUE(task);
+  actor::AddTabToTask(*actuation_tab, *task);
+  // Verify paused (waiting-for-user) tasks still report as active even without
+  // an open `GlicInstance`.
+  task->Pause(/*from_actor=*/true);
+
+  EXPECT_TRUE(RunExtensionTest("glic_private",
+                               {.custom_arg = "has_active_actuation_tab_true"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest,
+                       HasActiveActuationTab_Released) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  tabs::TabInterface* actuation_tab =
+      CreateAndActivateTab(GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(actuation_tab);
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
+                            "test_conversation_id"),
+      actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  ASSERT_TRUE(task);
+  actor::AddTabToTask(*actuation_tab, *task);
+  // Pause so the task exits active actor control and `ActorTaskUnloadHandler`
+  // does not intercept `CloseTab()` with a confirmation dialog, while still
+  // keeping the task active until the tab is closed.
+  task->Pause(/*from_actor=*/true);
+
+  // Coordinate the before/after assertions in a single service-worker-only
+  // extension load to avoid racing back-to-back `RunExtensionTest()` calls.
+  SetCustomArg("has_active_actuation_tab_released");
+  ResultCatcher catcher;
+  ExtensionTestMessageListener close_tab_listener("close_actuation_tab",
+                                                  ReplyBehavior::kWillReply);
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("glic_private"),
+                            {.load_as_component = true}));
+
+  {
+    SCOPED_TRACE("waiting for extension to request closing actuation tab");
+    ASSERT_TRUE(close_tab_listener.WaitUntilSatisfied());
+  }
+
+  // Close the actuated tab and wait for tab teardown to complete.
+  {
+    SCOPED_TRACE("waiting for actuation tab WebContents destruction");
+    content::WebContentsDestroyedWatcher destroyed_watcher(
+        actuation_tab->GetContents());
+    GetTabListInterface()->CloseTab(actuation_tab->GetHandle());
+    destroyed_watcher.Wait();
+  }
+
+  close_tab_listener.Reply("closed");
+  {
+    SCOPED_TRACE("waiting for extension test result after tab close");
+    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

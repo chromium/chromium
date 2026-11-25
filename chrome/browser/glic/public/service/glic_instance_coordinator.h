@@ -61,6 +61,10 @@ class GlicInstanceCoordinator {
   virtual bool IsAnyPanelShowing() const = 0;
   virtual bool IsConversationPresent(
       const std::string& conversation_id) const = 0;
+  // Returns true if an active non-completed Gemini `ActorTask` with a live
+  // controlled tab exists for `conversation_id` in this profile.
+  virtual bool HasActiveActuationTab(
+      const std::string& conversation_id) const = 0;
   // Returns whether a Glic panel for `conversation_id` is currently visible
   // when viewing `tab`—either in `tab`'s side panel (as opposed to another
   // tab's or window's side panel) or in the global floating panel. If `tab` is

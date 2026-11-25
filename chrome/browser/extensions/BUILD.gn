@@ -2573,6 +2573,7 @@ source_set("browser_tests") {
     "//chrome/browser:chrome_browser_main",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:platform_util_internal",
+    "//chrome/browser/actor:test_support",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/bookmarks",
     "//chrome/browser/content_settings",

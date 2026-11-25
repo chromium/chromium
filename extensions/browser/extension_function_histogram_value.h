@@ -2060,6 +2060,7 @@ enum HistogramValue {
   AUTOFILLPRIVATE_GETLOYALTYCARDLIST = 1995,
   AUTOFILLPRIVATE_GETWALLETDIRECTOFFERLIST = 1996,
   SIDEBAR_GETLAYOUT = 1997,
+  GLICPRIVATE_HASACTIVEACTUATIONTAB = 1998,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

@@ -41,6 +41,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/service/glic_actuation_locality_tracker.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_invoke_preparation.h"
@@ -428,6 +429,11 @@ bool GlicInstanceCoordinatorImpl::IsConversationPresent(
   return !!GetInstanceImplForConversationId(conversation_id);
 }
 
+bool GlicInstanceCoordinatorImpl::HasActiveActuationTab(
+    const std::string& conversation_id) const {
+  return FindActiveGeminiActuationTab(profile_, conversation_id) != nullptr;
+}
+
 bool GlicInstanceCoordinatorImpl::IsConversationPanelShowingForTab(
     const std::string& conversation_id,
     const tabs::TabInterface* tab) const {
@@ -444,6 +450,33 @@ GlicInstanceCoordinatorImpl::ActivateTabWithConversation(
     const std::string& conversation_id) {
   if (IsAnyBrowserLockedFullscreen()) {
     return GlicInstanceCoordinator::ActivateTabResult::kLockedFullscreen;
+  }
+
+  if (conversation_id.empty()) {
+    return GlicInstanceCoordinator::ActivateTabResult::kConversationNotFound;
+  }
+
+  auto activate_tab_in_window = [](tabs::TabInterface* tab) {
+    BrowserWindowInterface* target_browser = tab->GetBrowserWindowInterface();
+    if (!target_browser) {
+      return GlicInstanceCoordinator::ActivateTabResult::kTabNotInWindow;
+    }
+    auto* tab_list = TabListInterface::From(target_browser);
+    if (!tab_list || !target_browser->GetWindow()) {
+      return GlicInstanceCoordinator::ActivateTabResult::kTabNotInWindow;
+    }
+    tab_list->ActivateTab(tab->GetHandle());
+    target_browser->GetWindow()->Activate();
+    return GlicInstanceCoordinator::ActivateTabResult::kSuccess;
+  };
+
+  // Resolve the live target tab of an active Gemini `ActorTask` directly first
+  // so tab activation succeeds even when Glic is closed and no
+  // `GlicInstanceImpl` exists for `conversation_id`.
+  if (tabs::TabInterface* actor_tab =
+          FindActiveGeminiActuationTab(profile_, conversation_id)) {
+    metrics_.RecordActivateTabCandidateTabCount(1);
+    return activate_tab_in_window(actor_tab);
   }
 
   GlicInstanceImpl* instance =
@@ -471,18 +504,7 @@ GlicInstanceCoordinatorImpl::ActivateTabWithConversation(
   }
 
   tabs::TabInterface* target_tab = GetMostRecentlyActiveTab(target_tabs);
-
-  BrowserWindowInterface* target_browser =
-      target_tab->GetBrowserWindowInterface();
-  if (!target_browser) {
-    return GlicInstanceCoordinator::ActivateTabResult::kTabNotInWindow;
-  }
-
-  auto* tab_list = TabListInterface::From(target_browser);
-  tab_list->ActivateTab(target_tab->GetHandle());
-  target_browser->GetWindow()->Activate();
-
-  return GlicInstanceCoordinator::ActivateTabResult::kSuccess;
+  return activate_tab_in_window(target_tab);
 }
 
 GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForConversationId(

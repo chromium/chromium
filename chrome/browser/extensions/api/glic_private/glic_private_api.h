@@ -90,6 +90,24 @@ class GlicPrivateHasConversationFunction : public GlicPrivateFunction {
   ResponseAction Run() override;
 };
 
+class GlicPrivateHasActiveActuationTabFunction : public GlicPrivateFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("glicPrivate.hasActiveActuationTab",
+                             GLICPRIVATE_HASACTIVEACTUATIONTAB)
+
+  GlicPrivateHasActiveActuationTabFunction();
+  GlicPrivateHasActiveActuationTabFunction(
+      const GlicPrivateHasActiveActuationTabFunction&) = delete;
+  GlicPrivateHasActiveActuationTabFunction& operator=(
+      const GlicPrivateHasActiveActuationTabFunction&) = delete;
+
+ protected:
+  ~GlicPrivateHasActiveActuationTabFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class GlicPrivateActivateTabWithConversationFunction
     : public GlicPrivateFunction {
  public:

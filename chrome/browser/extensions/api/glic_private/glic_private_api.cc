@@ -696,6 +696,31 @@ ExtensionFunction::ResponseAction GlicPrivateHasConversationFunction::Run() {
               params->conversation_id))));
 }
 
+GlicPrivateHasActiveActuationTabFunction::
+    GlicPrivateHasActiveActuationTabFunction() = default;
+GlicPrivateHasActiveActuationTabFunction::
+    ~GlicPrivateHasActiveActuationTabFunction() = default;
+
+ExtensionFunction::ResponseAction
+GlicPrivateHasActiveActuationTabFunction::Run() {
+  std::optional<api::glic_private::HasActiveActuationTab::Params> params =
+      api::glic_private::HasActiveActuationTab::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
+                                                         /*create=*/true);
+  if (!glic_service) {
+    return RespondNow(Error(kGlicServiceNotAvailable));
+  }
+
+  return RespondNow(
+      ArgumentList(api::glic_private::HasActiveActuationTab::Results::Create(
+          glic_service->instance_coordinator().HasActiveActuationTab(
+              params->conversation_id))));
+}
+
 GlicPrivateActivateTabWithConversationFunction::
     GlicPrivateActivateTabWithConversationFunction() = default;
 GlicPrivateActivateTabWithConversationFunction::

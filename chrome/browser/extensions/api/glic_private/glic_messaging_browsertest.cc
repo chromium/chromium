@@ -6,18 +6,21 @@
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/glic_private/glic_private_api_test_base.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
-#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -32,6 +35,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -668,6 +672,95 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest, HasConversation) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
+                       HasActiveActuationTab) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://gemini.google.com/empty.html")));
+
+  // Create an active Gemini `ActorTask` on a live tab without opening or
+  // registering any `GlicInstance`.
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(active_tab);
+
+  auto query_has_active_actuation_tab = [&](const char* conversation_id) {
+    std::string script = base::StringPrintf(
+        R"(
+        (async () => {
+          return new Promise((resolve) => {
+            chrome.runtime.sendMessage(
+                '%s', {type: 'glicPrivate.hasActiveActuationTab', args: {
+                  conversationId: '%s'
+                }}, (response) => {
+                  if (chrome.runtime.lastError) {
+                    resolve('error: ' + chrome.runtime.lastError.message);
+                  } else {
+                    resolve('success: ' + response.isPresent);
+                  }
+                });
+          });
+        })()
+        )",
+        extension_misc::kGlicExtensionId, conversation_id);
+    return content::EvalJs(GetActiveWebContents(), script).ExtractString();
+  };
+
+  // Active Gemini `ActorTask` without a `GlicInstance` reports true for an
+  // exact conversation ID match and flips to false once stopped.
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
+                            "c_actor_only_conv"),
+      actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  ASSERT_TRUE(task);
+  actor::AddTabToTask(*active_tab, *task);
+
+  EXPECT_EQ("success: true",
+            query_has_active_actuation_tab("c_actor_only_conv"));
+
+  actor_service->StopTask(task_id,
+                          actor::ActorTask::StoppedReason::kTaskComplete);
+  EXPECT_EQ("success: false",
+            query_has_active_actuation_tab("c_actor_only_conv"));
+
+  // Passive Glic side panel registration without an active `ActorTask` returns
+  // false.
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  RegisterConversation(instance, "passive-conv-id");
+  EXPECT_EQ("success: false",
+            query_has_active_actuation_tab("passive-conv-id"));
+
+  // Missing arguments return an error.
+  std::string missing_args_script = base::StringPrintf(
+      R"(
+      (async () => {
+        return new Promise((resolve) => {
+          chrome.runtime.sendMessage(
+              '%s', {type: 'glicPrivate.hasActiveActuationTab'}, (response) => {
+                if (chrome.runtime.lastError) {
+                  resolve('error: ' + chrome.runtime.lastError.message);
+                } else if (response && response.error) {
+                  resolve('error: ' + response.error);
+                } else {
+                  resolve('success');
+                }
+              });
+        });
+      })()
+      )",
+      extension_misc::kGlicExtensionId);
+  EXPECT_EQ("error: missing conversationId",
+            content::EvalJs(GetActiveWebContents(), missing_args_script)
+                .ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
                        ActivateTabWithConversation_ConversationNotFound) {
   const Extension* extension =
       ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
@@ -734,6 +827,41 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
   content::EvalJsResult result = ExecuteActivateTabWithConversation(
       second_tab->GetContents(), "test-conv-id-success");
   EXPECT_EQ("success", result.ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicMessagingFullyEnabledBrowserTest,
+    ActivateTabWithConversation_ActiveActorTaskWithoutGlicInstance) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://gemini.google.com/empty.html")));
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_NE(nullptr, first_tab);
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
+                            "c_actor_only_conv"),
+      actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  ASSERT_TRUE(task);
+  actor::AddTabToTask(*first_tab, *task);
+
+  tabs::TabInterface* second_tab =
+      CreateAndActivateTab(GURL("https://gemini.google.com/empty.html"));
+  ASSERT_NE(nullptr, second_tab);
+  EXPECT_EQ(GetTabListInterface()->GetActiveTab(), second_tab);
+
+  content::EvalJsResult result = ExecuteActivateTabWithConversation(
+      second_tab->GetContents(), "c_actor_only_conv");
+  EXPECT_EQ("success", result.ExtractString());
+  EXPECT_EQ(GetTabListInterface()->GetActiveTab(), first_tab);
 }
 
 // These tests rely on detaching the Glic panel (floaty/detached mode) or

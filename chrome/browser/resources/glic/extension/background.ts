@@ -61,6 +61,15 @@ chrome.runtime.onMessageExternal.addListener(
         return {isPresent};
       }
 
+      if (message && message.type === 'glicPrivate.hasActiveActuationTab') {
+        if (!message.args || !message.args.conversationId) {
+          return {error: 'missing conversationId'};
+        }
+        const isPresent = await chrome.glicPrivate.hasActiveActuationTab(
+            message.args.conversationId);
+        return {isPresent};
+      }
+
       if (message &&
           message.type === 'glicPrivate.activateTabWithConversation') {
         if (!message.args || !message.args.conversationId) {

@@ -8,6 +8,20 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
   const config = await chrome.test.getConfig();
   const mode = config.customArg || 'fully_enabled';
 
+  // `hasActiveActuationTab` does not require a `documentId` or extra test tab.
+  if (mode === 'has_active_actuation_tab_false') {
+    tests_runHasActiveActuationTabFalse();
+    return;
+  }
+  if (mode === 'has_active_actuation_tab_true') {
+    tests_runHasActiveActuationTabTrue();
+    return;
+  }
+  if (mode === 'has_active_actuation_tab_released') {
+    tests_runHasActiveActuationTabReleased();
+    return;
+  }
+
   let origin = 'example.com';
   let path = '/simple.html';
   if (mode === 'account_mismatch') {
@@ -296,6 +310,48 @@ function tests_runHasConversationTrue(documentId) {
       const isPresent =
           await chrome.glicPrivate.hasConversation('test_conversation_id');
       chrome.test.assertTrue(isPresent, 'conversation should be present');
+      chrome.test.succeed();
+    },
+  ]);
+}
+
+function tests_runHasActiveActuationTabFalse() {
+  chrome.test.runTests([
+    async function hasActiveActuationTabFalse() {
+      const isPresent = await chrome.glicPrivate.hasActiveActuationTab(
+          'test_conversation_id');
+      chrome.test.assertFalse(
+          isPresent, 'active actuation tab should not be present');
+      chrome.test.succeed();
+    },
+  ]);
+}
+
+function tests_runHasActiveActuationTabTrue() {
+  chrome.test.runTests([
+    async function hasActiveActuationTabTrue() {
+      const isPresent = await chrome.glicPrivate.hasActiveActuationTab(
+          'test_conversation_id');
+      chrome.test.assertTrue(
+          isPresent, 'active actuation tab should be present');
+      chrome.test.succeed();
+    },
+  ]);
+}
+
+function tests_runHasActiveActuationTabReleased() {
+  chrome.test.runTests([
+    async function hasActiveActuationTabReleased() {
+      const initiallyPresent = await chrome.glicPrivate.hasActiveActuationTab(
+          'test_conversation_id');
+      chrome.test.assertTrue(
+          initiallyPresent, 'active actuation tab should be present');
+      await chrome.test.sendMessage('close_actuation_tab');
+      const afterClosePresent = await chrome.glicPrivate.hasActiveActuationTab(
+          'test_conversation_id');
+      chrome.test.assertFalse(
+          afterClosePresent,
+          'active actuation tab should not be present after tab close');
       chrome.test.succeed();
     },
   ]);
