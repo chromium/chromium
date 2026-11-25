@@ -2688,8 +2688,6 @@ crbug.com/588504735 external/wpt/selection/visible-selection-form-controls.html 
 crbug.com/588505854 [ Win ] external/wpt/svg/crashtests/deep-nesting.html [ Crash ]
 crbug.com/588505854 external/wpt/svg/painting/reftests/paint-fill-attr-rec2020.svg [ Failure ]
 crbug.com/588505854 external/wpt/svg/painting/reftests/paint-fill-rec2020.svg [ Failure ]
-crbug.com/588511567 external/wpt/webcodecs/audioDecoder-pcm-output.https.any.html?pcm-s24 [ Crash ]
-crbug.com/588511567 external/wpt/webcodecs/audioDecoder-pcm-output.https.any.worker.html?pcm-s24 [ Crash ]
 crbug.com/588504737 external/wpt/webdriver/tests/bidi/script/evaluate/exception_serialization_tentative.py [ Failure ]
 crbug.com/588504737 external/wpt/webdriver/tests/bidi/script/evaluate/nesting_depth.py [ Timeout ]
 crbug.com/588504737 external/wpt/webdriver/tests/bidi/script/evaluate/platform_objects.py [ Failure ]

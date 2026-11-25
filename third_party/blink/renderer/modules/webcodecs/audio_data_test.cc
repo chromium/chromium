@@ -573,6 +573,59 @@ TEST_F(AudioDataTest, Interleaved) {
   }
 }
 
+TEST_F(AudioDataTest, CopyToFromS24AudioBuffer) {
+  V8TestingScope scope;
+
+  std::vector<int32_t> samples(kFrames * kChannels);
+  for (int i = 0; i < kFrames * kChannels; ++i) {
+    samples[i] = i << 8;
+  }
+
+  const base::span<const uint8_t> data[] = {base::as_byte_span(samples)};
+  auto media_buffer = media::AudioBuffer::CopyFrom(
+      media::SampleFormat::kSampleFormatS24,
+      media::GuessChannelLayout(kChannels), kChannels, kSampleRate, kFrames,
+      data, base::TimeDelta());
+
+  auto* frame = MakeGarbageCollected<AudioData>(media_buffer);
+  EXPECT_EQ(V8AudioSampleFormat::Enum::kS32, frame->format());
+
+  auto copy_to = [&](auto copy, int plane_index,
+                     std::optional<V8AudioSampleFormat::Enum> format) {
+    auto* dest = MakeGarbageCollected<AllowSharedBufferSource>(copy);
+    auto* options = CreateCopyToOptions(plane_index, /*offset=*/std::nullopt,
+                                        /*count=*/std::nullopt);
+    if (format) {
+      options->setFormat(*format);
+    }
+    frame->copyTo(dest, options, scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetExceptionState().HadException());
+    return copy;
+  };
+
+  auto interleaved = copy_to(
+      MaybeShared(DOMInt32Array::Create(kFrames * kChannels)), 0, std::nullopt);
+  EXPECT_EQ(interleaved->AsSpan(), base::span(samples));
+
+  auto s32 = copy_to(MaybeShared(DOMInt32Array::Create(kFrames * kChannels)), 0,
+                     V8AudioSampleFormat::Enum::kS32);
+  EXPECT_EQ(s32->AsSpan(), base::span(samples));
+
+  auto planar = copy_to(MaybeShared(DOMInt32Array::Create(kFrames)), 1,
+                        V8AudioSampleFormat::Enum::kS32Planar);
+  for (int i = 0; i < kFrames; ++i) {
+    EXPECT_EQ(planar->AsSpan()[i], samples[i * kChannels + 1]);
+  }
+
+  auto f32 = copy_to(MaybeShared(DOMFloat32Array::Create(kFrames)), 0,
+                     V8AudioSampleFormat::Enum::kF32Planar);
+  for (int i = 0; i < kFrames; ++i) {
+    EXPECT_FLOAT_EQ(
+        f32->AsSpan()[i],
+        media::SignedInt32SampleTypeTraits::ToFloat(samples[i * kChannels]));
+  }
+}
+
 struct U8Traits {
   static constexpr V8AudioSampleFormat::Enum Format =
       V8AudioSampleFormat::Enum::kU8;

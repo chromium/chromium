@@ -246,6 +246,7 @@ media::SampleFormat RemovePlanar(media::SampleFormat format) {
 
     case media::kSampleFormatPlanarS32:
     case media::kSampleFormatS32:
+    case media::kSampleFormatS24:
       return media::kSampleFormatS32;
 
     case media::kSampleFormatPlanarF32:
