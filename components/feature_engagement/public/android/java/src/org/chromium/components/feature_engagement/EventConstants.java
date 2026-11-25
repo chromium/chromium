@@ -175,9 +175,6 @@ public final class EventConstants {
     public static final String KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_AUTOFILLED =
             "account_name_email_create_suggestion_feature_used";
 
-    /** The keyboard accessory At Memory feature was used. */
-    public static final String KEYBOARD_ACCESSORY_AT_MEMORY_USED = "autofill_at_memory_iph_used";
-
     /** The keyboard accessory Autofill AI SPII disclaimer was used. */
     public static final String KEYBOARD_ACCESSORY_AUTOFILL_AI_SPII_DISCLAIMER_USED =
             "autofill_ai_spii_disclaimer_used";

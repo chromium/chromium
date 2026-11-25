@@ -600,7 +600,6 @@ DEFINE_VARIATION_PARAM(kIPHAutofillAccountNameEmailSuggestionFeature,
                        "IPH_AutofillAccountNameEmailSuggestion");
 DEFINE_VARIATION_PARAM(kIPHAutofillAiValuablesFeature,
                        "IPH_AutofillAiValuables");
-DEFINE_VARIATION_PARAM(kIPHAutofillAtMemoryFeature, "IPH_AutofillAtMemory");
 DEFINE_VARIATION_PARAM(kIPHAutofillBnplAffirmOrZipSuggestionFeature,
                        "IPH_AutofillBnplAffirmOrZipSuggestion");
 DEFINE_VARIATION_PARAM(kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature,
@@ -995,7 +994,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPH_AutofillAmbientAutofillSpiiDisclaimer),
         VARIATION_ENTRY(kIPHAutofillAccountNameEmailSuggestionFeature),
         VARIATION_ENTRY(kIPHAutofillAiValuablesFeature),
-        VARIATION_ENTRY(kIPHAutofillAtMemoryFeature),
         VARIATION_ENTRY(kIPHAutofillCardInfoRetrievalSuggestionFeature),
         VARIATION_ENTRY(kIPHAutofillCreditCardBenefitFeature),
         VARIATION_ENTRY(kIPHAutofillDisabledVirtualCardSuggestionFeature),

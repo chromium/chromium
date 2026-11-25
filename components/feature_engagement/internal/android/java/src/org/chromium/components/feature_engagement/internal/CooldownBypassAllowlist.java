@@ -31,7 +31,6 @@ public abstract class CooldownBypassAllowlist {
             Set.of(
                     // keep-sorted start
                     FeatureConstants.KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION_FEATURE,
-                    FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE,
                     FeatureConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_SPII_DISCLAIMER_FEATURE,
                     FeatureConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_FEATURE,
                     FeatureConstants.KEYBOARD_ACCESSORY_ENABLE_LOYALTY_CARDS_FEATURE,

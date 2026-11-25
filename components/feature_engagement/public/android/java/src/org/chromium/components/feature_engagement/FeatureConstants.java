@@ -91,7 +91,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.IPH_TAB_TEARING_XR,
     FeatureConstants.IPH_TOUCH_TO_SEARCH_CALLOUT,
     FeatureConstants.KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION_FEATURE,
-    FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_SPII_DISCLAIMER_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_ENABLE_LOYALTY_CARDS_FEATURE,
@@ -367,8 +366,6 @@ public @interface FeatureConstants {
 
     String KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION_FEATURE =
             "IPH_AutofillAccountNameEmailSuggestion";
-
-    String KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE = "IPH_AutofillAtMemory";
 
     String KEYBOARD_ACCESSORY_AUTOFILL_AI_SPII_DISCLAIMER_FEATURE =
             "IPH_AutofillAmbientAutofillSpiiDisclaimer";
