@@ -4,6 +4,9 @@
 
 #include "components/sync/base/data_type.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <array>
 #include <ostream>
 #include <string_view>
@@ -1187,18 +1190,22 @@ static_assert(GetNumDataTypes() == 64,
 // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
 
 constexpr const DataTypeInfo& GetDataTypeInfo(DataType type) {
-  static constexpr auto kTypeToInfo = [] {
-    std::array<const DataTypeInfo*, GetNumDataTypes()> table{};
-    for (const DataTypeInfo& info : kDataTypeInfoTable) {
-      CHECK(!table[info.type]);
-      table[info.type] = &info;
+  static constexpr uint8_t kInvalidIndex = 0xff;
+  static_assert(kDataTypeInfoTable.size() < kInvalidIndex);
+  static constexpr auto kTypeToInfoIndex = [] {
+    std::array<uint8_t, GetNumDataTypes()> table;
+    table.fill(kInvalidIndex);
+    for (size_t i = 0; i < kDataTypeInfoTable.size(); ++i) {
+      const DataType entry_type = kDataTypeInfoTable[i].type;
+      CHECK_EQ(table[entry_type], kInvalidIndex);
+      table[entry_type] = static_cast<uint8_t>(i);
     }
     return table;
   }();
 
   const size_t index = static_cast<size_t>(type);
-  CHECK_LT(index, kTypeToInfo.size()) << "Unknown data type: " << index;
-  return *kTypeToInfo[index];
+  CHECK_LT(index, kTypeToInfoIndex.size()) << "Unknown data type: " << index;
+  return kDataTypeInfoTable[kTypeToInfoIndex[index]];
 }
 
 }  // namespace
