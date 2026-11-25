@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.floating_pill.FloatingPillLayer;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
@@ -58,6 +59,7 @@ public class GlicUiCoordinator implements Destroyable {
      * @param profileSupplier Supplier for the current {@link Profile}.
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}.
      * @param browserControlsVisibilityManager Manager for browser controls visibility.
+     * @param floatingPillLayer Places floating pills against the browser controls.
      * @param tabObscuringHandler Handler for obscuring tabs.
      * @param snackbarManager Manager for showing snackbars.
      * @param backPressHandlerRegistry Registry for back press handlers.
@@ -73,6 +75,7 @@ public class GlicUiCoordinator implements Destroyable {
             MonotonicObservableSupplier<Profile> profileSupplier,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            FloatingPillLayer floatingPillLayer,
             TabObscuringHandler tabObscuringHandler,
             SnackbarManager snackbarManager,
             BackPressHandlerRegistry backPressHandlerRegistry,
@@ -89,6 +92,7 @@ public class GlicUiCoordinator implements Destroyable {
                         overlayStub,
                         tabModelSelectorSupplier.asNonNull().get(),
                         browserControlsVisibilityManager,
+                        floatingPillLayer,
                         tabObscuringHandler,
                         snackbarManager,
                         backPressHandlerRegistry,

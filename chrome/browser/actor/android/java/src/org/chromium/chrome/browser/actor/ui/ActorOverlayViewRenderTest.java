@@ -37,12 +37,14 @@ import org.chromium.chrome.browser.actor.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.floating_pill.FloatingPillLayer;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
@@ -63,12 +65,14 @@ public class ActorOverlayViewRenderTest {
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
+    private static final int TOOLBAR_HEIGHT_DP = 56;
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_GLIC)
-                    .setRevision(8)
-                    .setDescription("Align take over button to line of death using top margin")
+                    .setRevision(9)
+                    .setDescription("Center take over button on a 56dp toolbar's bottom edge")
                     .build();
 
     @Mock private TabModelSelector mTabModelSelector;
@@ -78,6 +82,7 @@ public class ActorOverlayViewRenderTest {
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private SideUiStateProvider mSideUiStateProvider;
+    @Mock private TopControlsStacker mTopControlsStacker;
     private TestBrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 
     private TabObscuringHandler mTabObscuringHandler;
@@ -95,7 +100,10 @@ public class ActorOverlayViewRenderTest {
         mActivity = mActivityTestRule.getActivity();
 
         mBrowserControlsVisibilityManager = new TestBrowserControlsVisibilityManager();
-        mBrowserControlsVisibilityManager.topControlsHeight = 100;
+        // A typical toolbar, which the take over button straddles the bottom edge of.
+        mBrowserControlsVisibilityManager.topControlsHeight =
+                Math.round(
+                        TOOLBAR_HEIGHT_DP * mActivity.getResources().getDisplayMetrics().density);
         mBrowserControlsVisibilityManager.bottomControlsHeight = 100;
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -121,11 +129,15 @@ public class ActorOverlayViewRenderTest {
                     viewStub.setLayoutResource(R.layout.actor_overlay);
                     mParentView.addView(viewStub);
 
+                    FloatingPillLayer floatingPillLayer =
+                            new FloatingPillLayer(
+                                    mTopControlsStacker, mBrowserControlsVisibilityManager);
                     mCoordinator =
                             new ActorOverlayCoordinator(
                                     viewStub,
                                     mTabModelSelector,
                                     mBrowserControlsVisibilityManager,
+                                    floatingPillLayer,
                                     mTabObscuringHandler,
                                     mSnackbarManager,
                                     mBackPressHandlerRegistry,

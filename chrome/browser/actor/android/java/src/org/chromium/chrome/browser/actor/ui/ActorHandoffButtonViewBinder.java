@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.actor.ui;
 
 import android.view.View;
-import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer;
@@ -34,16 +33,6 @@ class ActorHandoffButtonViewBinder {
             if (button != null) {
                 button.setOnClickListener(
                         model.get(ActorOverlayProperties.ON_TAKE_OVER_CLICK_LISTENER));
-            }
-        } else if (key == ActorOverlayProperties.HANDOFF_BUTTON_TOP_MARGIN) {
-            int topMargin = model.get(ActorOverlayProperties.HANDOFF_BUTTON_TOP_MARGIN);
-            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-            if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
-                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) layoutParams;
-                if (params.topMargin != topMargin) {
-                    params.topMargin = topMargin;
-                    view.setLayoutParams(params);
-                }
             }
         }
     }

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.glic.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.floating_pill.FloatingPillLayer;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
@@ -98,6 +99,7 @@ public class GlicUiCoordinatorUnitTest {
                 ObservableSuppliers.alwaysNull(),
                 ObservableSuppliers.createNonNull(tabModelSelector),
                 mock(BrowserControlsVisibilityManager.class),
+                mock(FloatingPillLayer.class),
                 mock(TabObscuringHandler.class),
                 mSnackbarManager,
                 mock(BackPressHandlerRegistry.class),

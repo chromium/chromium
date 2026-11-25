@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.actor.ui;
 
-import android.content.Context;
-import android.content.res.Resources;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -16,7 +13,6 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -25,12 +21,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.omnibox.OmniboxCapabilities;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyObservable;
 
 /** Mediator for the Actor Overlay. */
 @NullMarked
@@ -54,8 +47,6 @@ class ActorOverlayMediator
     private final Runnable mInflateOverlayCallback;
     private final Runnable mBackPressCallback;
     private final Runnable mDismissSnackbarCallback;
-    private final Resources mResources;
-    private final PropertyObservable.PropertyObserver<PropertyKey> mModelObserver;
 
     private @Nullable Tab mCurrentTab;
     private @Nullable ActorUiTabController mTabController;
@@ -63,7 +54,6 @@ class ActorOverlayMediator
     private TabObscuringHandler.@Nullable Token mTabObscuringToken;
 
     /**
-     * @param context The Context to read Android resources.
      * @param model The PropertyModel to modify.
      * @param tabModelSelector The TabModelSelector to observe.
      * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
@@ -77,7 +67,6 @@ class ActorOverlayMediator
      * @param dismissSnackbarCallback The callback to dismiss the snackbar.
      */
     public ActorOverlayMediator(
-            Context context,
             PropertyModel model,
             TabModelSelector tabModelSelector,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
@@ -88,16 +77,6 @@ class ActorOverlayMediator
             Runnable backPressCallback,
             Runnable dismissSnackbarCallback) {
         mModel = model;
-        mResources = context.getResources();
-
-        mModelObserver =
-                (source, key) -> {
-                    if (key == ActorOverlayProperties.CONTROLS_POSITION
-                            || key == ActorOverlayProperties.TOP_MARGIN) {
-                        updateHandoffButtonTopMargin();
-                    }
-                };
-        mModel.addObserver(mModelObserver);
 
         mCurrentTabSupplier = tabModelSelector.getCurrentTabSupplier();
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
@@ -135,11 +114,6 @@ class ActorOverlayMediator
         mBrowserControlsObserver =
                 new BrowserControlsStateProvider.Observer() {
                     @Override
-                    public void onControlsPositionChanged(@ControlsPosition int controlsPosition) {
-                        mModel.set(ActorOverlayProperties.CONTROLS_POSITION, controlsPosition);
-                    }
-
-                    @Override
                     public void onTopControlsHeightChanged(
                             int topControlsHeight, int topControlsMinHeight) {
                         mModel.set(ActorOverlayProperties.TOP_MARGIN, topControlsHeight);
@@ -153,15 +127,11 @@ class ActorOverlayMediator
                 };
         mBrowserControlsVisibilityManager.addObserver(mBrowserControlsObserver);
         mModel.set(
-                ActorOverlayProperties.CONTROLS_POSITION,
-                mBrowserControlsVisibilityManager.getControlsPosition());
-        mModel.set(
                 ActorOverlayProperties.TOP_MARGIN,
                 mBrowserControlsVisibilityManager.getTopControlsHeight());
         mModel.set(
                 ActorOverlayProperties.BOTTOM_MARGIN,
                 mBrowserControlsVisibilityManager.getBottomControlsHeight());
-        updateHandoffButtonTopMargin();
 
         mLayoutManagerAvailableCallback = this::onLayoutManagerAvailable;
         mLayoutManagerSupplier.addSyncObserverAndCallIfNonNull(mLayoutManagerAvailableCallback);
@@ -312,23 +282,12 @@ class ActorOverlayMediator
         return mBackPressChangedSupplier;
     }
 
-    private void updateHandoffButtonTopMargin() {
-        int topControlsHeight = mModel.get(ActorOverlayProperties.TOP_MARGIN);
-        @ControlsPosition
-        int controlsPosition = mModel.get(ActorOverlayProperties.CONTROLS_POSITION);
-        int topMargin =
-                FloatingPillContainer.getTopMargin(
-                        mResources, topControlsHeight, controlsPosition == ControlsPosition.BOTTOM);
-        mModel.set(ActorOverlayProperties.HANDOFF_BUTTON_TOP_MARGIN, topMargin);
-    }
-
     BrowserControlsStateProvider.Observer getBrowserControlsObserverForTesting() {
         return mBrowserControlsObserver;
     }
 
     /** Cleans up the mediator. */
     public void destroy() {
-        mModel.removeObserver(mModelObserver);
         if (mTabController != null) {
             mTabController.removeObserver(this);
             mTabController = null;

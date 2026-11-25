@@ -269,6 +269,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.StartupEnterpriseSignalsDisclaimerController;
 import org.chromium.chrome.browser.ui.extensions.side_panel.ExtensionSidePanelManagerBridge;
 import org.chromium.chrome.browser.ui.extensions.side_panel.ExtensionSidePanelManagerBridgeFactory;
+import org.chromium.chrome.browser.ui.floating_pill.FloatingPillLayer;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator;
@@ -443,6 +444,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBottomSheetContainerMarginAdjuster;
     private @Nullable ContextualTasksBridgeRegistrar mContextualTasksBridgeRegistrar;
     private @Nullable GlicUiCoordinator mGlicUiCoordinator;
+    private @Nullable FloatingPillLayer mFloatingPillLayer;
     private @Nullable TtcSessionCoordinator mTtcSessionCoordinator;
     private @Nullable ForcedSigninController mForcedSigninController;
     private @Nullable VerticalTabsSideUiCoordinator mVerticalTabsSideUiCoordinator;
@@ -1104,6 +1106,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTtcSessionCoordinator = null;
         }
 
+        if (mFloatingPillLayer != null) {
+            mFloatingPillLayer.destroy();
+            mFloatingPillLayer = null;
+        }
+
         if (mGlicButtonContextMenuCoordinator != null) {
             mGlicButtonContextMenuCoordinator.dismiss();
             mGlicButtonContextMenuCoordinator = null;
@@ -1527,6 +1534,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mProfileSupplier,
                             mTabModelSelectorSupplier,
                             mBrowserControlsManager,
+                            getFloatingPillLayer(),
                             mTabObscuringHandlerSupplier.get(),
                             assumeNonNull(mSnackbarManagerSupplier.get()),
                             mBackPressManager,
@@ -1558,6 +1566,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivity,
                             url -> CustomTabActivity.showInfoPage(mActivity, url));
         }
+    }
+
+    /** Returns the window's floating pill layer, creating it on first use. */
+    private FloatingPillLayer getFloatingPillLayer() {
+        if (mFloatingPillLayer == null) {
+            mFloatingPillLayer =
+                    new FloatingPillLayer(mTopControlsStacker, mBrowserControlsManager);
+        }
+        return mFloatingPillLayer;
     }
 
     @VisibleForTesting

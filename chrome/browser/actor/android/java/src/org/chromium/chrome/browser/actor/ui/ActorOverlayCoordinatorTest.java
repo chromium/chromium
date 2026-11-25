@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.actor.ui;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +60,7 @@ import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -68,6 +70,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.floating_pill.FloatingPillLayer;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
@@ -80,10 +83,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link ActorOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.GLIC)
+@EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.FLOATING_PILL_LAYER})
 public class ActorOverlayCoordinatorTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private Tab mTab;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private BackPressHandlerRegistry mBackPressHandlerRegistry;
@@ -107,6 +111,7 @@ public class ActorOverlayCoordinatorTest {
     private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
             ObservableSuppliers.createNonNull(false);
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
+    private FloatingPillLayer mFloatingPillLayer;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -145,11 +150,14 @@ public class ActorOverlayCoordinatorTest {
         mProfileSupplier.set(mProfile);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
 
+        mFloatingPillLayer =
+                new FloatingPillLayer(mTopControlsStacker, mBrowserControlsVisibilityManager);
         mCoordinator =
                 new ActorOverlayCoordinator(
                         mViewStub,
                         mTabModelSelector,
                         mBrowserControlsVisibilityManager,
+                        mFloatingPillLayer,
                         mTabObscuringHandler,
                         mSnackbarManager,
                         mBackPressHandlerRegistry,
@@ -767,15 +775,11 @@ public class ActorOverlayCoordinatorTest {
 
         observerCaptor.getValue().onTopControlsHeightChanged(100, 0);
         observerCaptor.getValue().onBottomControlsHeightChanged(50, 0);
-        observerCaptor.getValue().onControlsPositionChanged(ControlsPosition.BOTTOM);
 
         Assert.assertEquals(
                 100, mCoordinator.getModelForTesting().get(ActorOverlayProperties.TOP_MARGIN));
         Assert.assertEquals(
                 50, mCoordinator.getModelForTesting().get(ActorOverlayProperties.BOTTOM_MARGIN));
-        Assert.assertEquals(
-                ControlsPosition.BOTTOM,
-                mCoordinator.getModelForTesting().get(ActorOverlayProperties.CONTROLS_POSITION));
 
         mCoordinator.showOverlayForTesting(true);
         assertOverlayMargins(0, 100, 0, 0);
@@ -1170,6 +1174,7 @@ public class ActorOverlayCoordinatorTest {
                         mViewStub,
                         mTabModelSelector,
                         mBrowserControlsVisibilityManager,
+                        mFloatingPillLayer,
                         mTabObscuringHandler,
                         mSnackbarManager,
                         mBackPressHandlerRegistry,
@@ -1227,78 +1232,54 @@ public class ActorOverlayCoordinatorTest {
     }
 
     @Test
-    public void testHandoffButtonLayout_ControlsPositionTop() {
+    public void testHandoffButtonPlacedAgainstBrowserControls() {
+        when(mBrowserControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mBrowserControlsVisibilityManager.getControlsPosition())
+                .thenReturn(ControlsPosition.TOP);
         mCoordinator.showOverlayForTesting(true);
-        PropertyModel model = mCoordinator.getModelForTesting();
-        model.set(ActorOverlayProperties.TOP_MARGIN, 100);
-        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP);
-        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
-
+        mCoordinator
+                .getModelForTesting()
+                .set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
         Assert.assertEquals(
                 expectedHandoffButtonTopMargin(100, /* controlsAtBottom= */ false),
                 getHandoffButtonTopMargin());
     }
 
     @Test
-    public void testHandoffButtonLayout_ControlsPositionBottom() {
+    public void testDestroyRemovesHandoffButtonFromFloatingPillLayer() {
         mCoordinator.showOverlayForTesting(true);
-        PropertyModel model = mCoordinator.getModelForTesting();
-        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.BOTTOM);
-        model.set(ActorOverlayProperties.TOP_MARGIN, 0);
-        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
+        mCoordinator
+                .getModelForTesting()
+                .set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
+        verify(mTopControlsStacker).addControl(mFloatingPillLayer);
 
-        Assert.assertEquals(
-                expectedHandoffButtonTopMargin(0, /* controlsAtBottom= */ true),
-                getHandoffButtonTopMargin());
+        mCoordinator.destroy();
+        // The handoff button was the layer's only container.
+        verify(mTopControlsStacker).removeControl(mFloatingPillLayer);
     }
 
     @Test
-    public void testHandoffButtonLayout_ControlsPositionChanged() {
+    public void testHandoffButtonInFloatingPillLayerOnlyWhileShown() {
         mCoordinator.showOverlayForTesting(true);
         PropertyModel model = mCoordinator.getModelForTesting();
-        model.set(ActorOverlayProperties.TOP_MARGIN, 100);
-        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP);
+
         model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
-        Assert.assertEquals(
-                expectedHandoffButtonTopMargin(100, /* controlsAtBottom= */ false),
-                getHandoffButtonTopMargin());
+        verify(mTopControlsStacker).addControl(mFloatingPillLayer);
 
-        // Switch to bottom controls.
-        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.BOTTOM);
-        model.set(ActorOverlayProperties.TOP_MARGIN, 0);
-        Assert.assertEquals(
-                expectedHandoffButtonTopMargin(0, /* controlsAtBottom= */ true),
-                getHandoffButtonTopMargin());
+        // Hidden, it leaves the layer, so the layer no longer counts as a visible top control.
+        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, false);
+        verify(mTopControlsStacker).removeControl(mFloatingPillLayer);
 
-        // Update top controls height while in bottom controls.
-        model.set(ActorOverlayProperties.TOP_MARGIN, 50);
-        Assert.assertEquals(
-                expectedHandoffButtonTopMargin(50, /* controlsAtBottom= */ true),
-                getHandoffButtonTopMargin());
+        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
+        verify(mTopControlsStacker, times(2)).addControl(mFloatingPillLayer);
+        Assert.assertEquals(View.VISIBLE, getHandoffButtonView().getVisibility());
 
-        // Switch back to top controls.
-        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP);
-        Assert.assertEquals(
-                expectedHandoffButtonTopMargin(50, /* controlsAtBottom= */ false),
-                getHandoffButtonTopMargin());
-    }
+        // It also leaves with the overlay, which hides it, even while it's still active.
+        mCoordinator.showOverlayForTesting(false);
+        verify(mTopControlsStacker, times(2)).removeControl(mFloatingPillLayer);
 
-    @Test
-    public void testHandoffButtonLayout_MarginUpdated() {
         mCoordinator.showOverlayForTesting(true);
-        PropertyModel model = mCoordinator.getModelForTesting();
-        model.set(ActorOverlayProperties.TOP_MARGIN, 100);
-        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP);
-        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
-        Assert.assertEquals(
-                expectedHandoffButtonTopMargin(100, /* controlsAtBottom= */ false),
-                getHandoffButtonTopMargin());
-
-        // Mutate margins while button is visible.
-        model.set(ActorOverlayProperties.TOP_MARGIN, 200);
-        Assert.assertEquals(
-                expectedHandoffButtonTopMargin(200, /* controlsAtBottom= */ false),
-                getHandoffButtonTopMargin());
+        verify(mTopControlsStacker, times(3)).addControl(mFloatingPillLayer);
     }
 
     @Test
@@ -1317,10 +1298,11 @@ public class ActorOverlayCoordinatorTest {
         int height = 500;
         int topControlsHeight = 112;
 
+        when(mBrowserControlsVisibilityManager.getTopControlsHeight())
+                .thenReturn(topControlsHeight);
         mCoordinator.showOverlayForTesting(true);
         PropertyModel model = mCoordinator.getModelForTesting();
         model.set(ActorOverlayProperties.TOP_MARGIN, topControlsHeight);
-        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP);
         model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
 
         FrameLayout container = getContainer();

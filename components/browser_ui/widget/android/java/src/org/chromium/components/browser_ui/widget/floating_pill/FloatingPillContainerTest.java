@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget.floating_pill;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
@@ -151,7 +152,7 @@ public class FloatingPillContainerTest {
     }
 
     @Test
-    public void testGetTopMarginCentersPillOnTopControlsEdge() {
+    public void testUpdateTopMarginCentersPillOnTopControlsEdge() {
         int topControlsHeight = 100;
         View pill = layOutAtTopMargin(topControlsHeight, /* controlsAtBottom= */ false);
 
@@ -160,12 +161,28 @@ public class FloatingPillContainerTest {
     }
 
     @Test
-    public void testGetTopMarginWithControlsAtBottom() {
+    public void testUpdateTopMarginWithControlsAtBottom() {
         int topControlsHeight = 40;
         View pill = layOutAtTopMargin(topControlsHeight, /* controlsAtBottom= */ true);
 
         int marginTop = mResources.getDimensionPixelSize(R.dimen.floating_pill_margin_top);
         assertEquals(topControlsHeight + marginTop, mContainer.getTop() + pill.getTop());
+    }
+
+    @Test
+    public void testUpdateTopMarginKeepsPillOffTheWindowEdge() {
+        // Top controls shorter than half a pill would put its top half past the window's edge.
+        View pill = layOutAtTopMargin(/* topControlsHeight= */ 10, /* controlsAtBottom= */ false);
+
+        int marginTop = mResources.getDimensionPixelSize(R.dimen.floating_pill_margin_top);
+        assertEquals(marginTop, mContainer.getTop() + pill.getTop());
+    }
+
+    @Test
+    public void testUpdateTopMarginWithoutParent() {
+        // Without margin layout params there's nothing to update.
+        mContainer.updateTopMargin(100, /* controlsAtBottom= */ false);
+        assertNull(mContainer.getLayoutParams());
     }
 
     private View addPill(int visibility) {
@@ -182,8 +199,8 @@ public class FloatingPillContainerTest {
     }
 
     /**
-     * Lays out the container, with a standard pill, in a parent at the top margin returned by
-     * {@link FloatingPillContainer#getTopMargin}, and returns the pill.
+     * Lays out the container, with a standard pill, in a parent at the top margin set by {@link
+     * FloatingPillContainer#updateTopMargin}, and returns the pill.
      */
     private View layOutAtTopMargin(int topControlsHeight, boolean controlsAtBottom) {
         View pill = addPill(View.VISIBLE);
@@ -192,10 +209,9 @@ public class FloatingPillContainerTest {
                         LayoutParams.WRAP_CONTENT,
                         LayoutParams.WRAP_CONTENT,
                         Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-        params.topMargin =
-                FloatingPillContainer.getTopMargin(mResources, topControlsHeight, controlsAtBottom);
         FrameLayout parent = new FrameLayout(mActivity);
         parent.addView(mContainer, params);
+        mContainer.updateTopMargin(topControlsHeight, controlsAtBottom);
         parent.measure(
                 MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY));

@@ -31,7 +31,8 @@ import org.chromium.components.browser_ui.widget.R;
  * follows their layout position, not their translation, scale or alpha. The container sets its own
  * padding, for the glow, as well as its orientation and gravity.
  *
- * <p>Use {@link #getTopMargin} to place the container on the bottom edge of the top controls.
+ * <p>Use {@link #updateTopMargin}, e.g. through Chrome's {@code FloatingPillLayer}, to place the
+ * container on the bottom edge of the top controls.
  */
 @NullMarked
 public class FloatingPillContainer extends LinearLayout {
@@ -81,8 +82,10 @@ public class FloatingPillContainer extends LinearLayout {
      * Returns the top margin that places a container of standard-height pills on the bottom edge of
      * the top controls (the line of death), half over them and half over the page. When the
      * controls are at the bottom, the pills sit a margin below whatever remains at the top (e.g.
-     * the tab strip) instead. Assumes pills of the standard height, {@code floating_pill_height}.
-     * TODO(b/581411604): Center on the measured height instead, for larger font sizes.
+     * the tab strip) instead. Either way, the pills are never closer to the top of the window than
+     * that margin, so they don't run past its edge when the top controls are short. Assumes pills
+     * of the standard height, {@code floating_pill_height}. TODO(b/581411604): Center on the
+     * measured height instead, for larger font sizes.
      *
      * @param res The resources to read the pill dimensions from.
      * @param topControlsHeight The height of the top controls, in pixels.
@@ -90,13 +93,28 @@ public class FloatingPillContainer extends LinearLayout {
      */
     public static int getTopMargin(Resources res, int topControlsHeight, boolean controlsAtBottom) {
         int glowPadding = res.getDimensionPixelSize(R.dimen.floating_pill_glow_padding);
+        int marginTop = res.getDimensionPixelSize(R.dimen.floating_pill_margin_top);
         if (controlsAtBottom) {
-            int marginTop = res.getDimensionPixelSize(R.dimen.floating_pill_margin_top);
             return topControlsHeight + marginTop - glowPadding;
         }
         int pillHeight = res.getDimensionPixelSize(R.dimen.floating_pill_height);
         int containerHeight = pillHeight + 2 * glowPadding;
-        return topControlsHeight - containerHeight / 2;
+        return Math.max(topControlsHeight - containerHeight / 2, marginTop - glowPadding);
+    }
+
+    /**
+     * Sets this container's top margin to {@link #getTopMargin}, to place it on the bottom edge of
+     * the top controls. No-op unless its layout params have margins.
+     *
+     * @param topControlsHeight The height of the top controls, in pixels.
+     * @param controlsAtBottom Whether the browser controls are at the bottom of the screen.
+     */
+    public void updateTopMargin(int topControlsHeight, boolean controlsAtBottom) {
+        if (!(getLayoutParams() instanceof MarginLayoutParams params)) return;
+        int topMargin = getTopMargin(getResources(), topControlsHeight, controlsAtBottom);
+        if (params.topMargin == topMargin) return;
+        params.topMargin = topMargin;
+        setLayoutParams(params);
     }
 
     @Override

@@ -22,13 +22,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.floating_pill.FloatingPillLayer;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
@@ -60,6 +60,7 @@ public class ActorOverlayCoordinator {
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileObserver;
     private final TabModelSelector mTabModelSelector;
+    private final FloatingPillLayer mFloatingPillLayer;
     private final @Nullable SideUiStateProvider mSideUiStateProvider;
     private final PropertyObservable.PropertyObserver<PropertyKey> mModelObserver;
 
@@ -69,6 +70,8 @@ public class ActorOverlayCoordinator {
     private @Nullable ViewStub mHandoffButtonStub;
     private @Nullable FloatingPillContainer mHandoffButtonView;
     private @Nullable PropertyModelChangeProcessor mHandoffButtonChangeProcessor;
+    private boolean mHandoffButtonInLayer;
+
     private @Nullable SideUiObserver mSideUiObserver;
     private @Nullable ActorKeyedService mActorKeyedService;
     private ActorKeyedService.@Nullable Observer mActorObserver;
@@ -79,6 +82,7 @@ public class ActorOverlayCoordinator {
      * @param viewStub The ViewStub to inflate the overlay into.
      * @param tabModelSelector The TabModelSelector to observe.
      * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
+     * @param floatingPillLayer Places the "Take over task" button against the browser controls.
      * @param tabObscuringHandler The TabObscuringHandler to obscure the web content.
      * @param snackbarManager The SnackbarManager to show the snackbar.
      * @param backPressHandlerRegistry The BackPressHandlerRegistry to handle back press.
@@ -91,6 +95,7 @@ public class ActorOverlayCoordinator {
             ViewStub viewStub,
             TabModelSelector tabModelSelector,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            FloatingPillLayer floatingPillLayer,
             TabObscuringHandler tabObscuringHandler,
             SnackbarManager snackbarManager,
             BackPressHandlerRegistry backPressHandlerRegistry,
@@ -104,6 +109,7 @@ public class ActorOverlayCoordinator {
         mBackPressHandlerRegistry = backPressHandlerRegistry;
         mProfileSupplier = profileSupplier;
         mTabModelSelector = tabModelSelector;
+        mFloatingPillLayer = floatingPillLayer;
 
         mModel =
                 new PropertyModel.Builder(ActorOverlayProperties.ALL_KEYS)
@@ -112,8 +118,6 @@ public class ActorOverlayCoordinator {
                         .with(ActorOverlayProperties.TOP_MARGIN, 0)
                         .with(ActorOverlayProperties.RIGHT_MARGIN, 0)
                         .with(ActorOverlayProperties.BOTTOM_MARGIN, 0)
-                        .with(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP)
-                        .with(ActorOverlayProperties.HANDOFF_BUTTON_TOP_MARGIN, 0)
                         .with(ActorOverlayProperties.ON_CLICK_LISTENER, v -> handleOnClick())
                         .with(
                                 ActorOverlayProperties.ON_TAKE_OVER_CLICK_LISTENER,
@@ -124,8 +128,8 @@ public class ActorOverlayCoordinator {
         mModelObserver =
                 (source, key) -> {
                     if (key == ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE
-                            && mModel.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE)) {
-                        inflateHandoffButtonView();
+                            || key == ActorOverlayProperties.VISIBLE) {
+                        updateHandoffButton();
                     }
                 };
         mModel.addObserver(mModelObserver);
@@ -141,7 +145,6 @@ public class ActorOverlayCoordinator {
 
         mMediator =
                 new ActorOverlayMediator(
-                        mContext,
                         mModel,
                         tabModelSelector,
                         browserControlsVisibilityManager,
@@ -167,8 +170,24 @@ public class ActorOverlayCoordinator {
                         mModel,
                         new ActorOverlayViewBinder.ViewHolder(mContainer, mView),
                         ActorOverlayViewBinder::bind);
-        if (mModel.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE)) {
-            inflateHandoffButtonView();
+        updateHandoffButton();
+    }
+
+    /**
+     * Inflates the handoff button the first time it's needed, and keeps it in the floating pill
+     * layer only while it shows, i.e. with the overlay, so the layer only counts as a visible top
+     * control then.
+     */
+    private void updateHandoffButton() {
+        boolean active = mModel.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE);
+        if (active) inflateHandoffButtonView();
+        boolean show = active && mModel.get(ActorOverlayProperties.VISIBLE);
+        if (mHandoffButtonView == null || show == mHandoffButtonInLayer) return;
+        mHandoffButtonInLayer = show;
+        if (show) {
+            mFloatingPillLayer.addContainer(mHandoffButtonView);
+        } else {
+            mFloatingPillLayer.removeContainer(mHandoffButtonView);
         }
     }
 
@@ -326,6 +345,10 @@ public class ActorOverlayCoordinator {
         if (mHandoffButtonChangeProcessor != null) {
             mHandoffButtonChangeProcessor.destroy();
             mHandoffButtonChangeProcessor = null;
+        }
+        if (mHandoffButtonView != null && mHandoffButtonInLayer) {
+            mFloatingPillLayer.removeContainer(mHandoffButtonView);
+            mHandoffButtonInLayer = false;
         }
         mContainer = null;
         mView = null;

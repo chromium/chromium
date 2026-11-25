@@ -432,6 +432,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kExcludeChromeInIncognitoShareSheet,
     &kFREStringChanges,
     &kFixToolbarHairlineRegression,
+    &kFloatingPillLayer,
     &kFlyoutInBookmarksBar,
     &kForceTranslucentNotificationTrampoline,
     &kFullscreenInsetsApiMigration,
@@ -892,6 +893,7 @@ BASE_FEATURE(kEnforceIncognitoIsolation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kExcludeChromeInIncognitoShareSheet, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFREStringChanges, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFixToolbarHairlineRegression, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFloatingPillLayer, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFlyoutInBookmarksBar, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kForceTranslucentNotificationTrampoline, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFullscreenInsetsApiMigration, base::FEATURE_DISABLED_BY_DEFAULT);

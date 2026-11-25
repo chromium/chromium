@@ -1,0 +1,5 @@
+include_rules = [
+  "+chrome/browser/browser_controls/android",
+  "+chrome/browser/flags",
+  "+components/browser_ui/widget/android",
+]

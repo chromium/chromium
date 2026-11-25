@@ -660,6 +660,7 @@ public abstract class ChromeFeatureList {
             "FeedNullItemAnimatorOnScrollRestore";
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
     public static final String FIX_TOOLBAR_HAIRLINE_REGRESSION = "FixToolbarHairlineRegression";
+    public static final String FLOATING_PILL_LAYER = "FloatingPillLayer";
     public static final String FLYOUT_IN_BOOKMARKS_BAR = "FlyoutInBookmarksBar";
     public static final String FORCE_TRANSLUCENT_NOTIFICATION_TRAMPOLINE =
             "ForceTranslucentNotificationTrampoline";
@@ -1867,6 +1868,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(FED_CM_IDP_LINKS, false);
     public static final MutableFlagWithSafeDefault sFedCmPermissionUiWithContainer =
             newMutableFlagWithSafeDefault(FED_CM_PERMISSION_UI_WITH_CONTAINER, false);
+    public static final MutableFlagWithSafeDefault sFloatingPillLayer =
+            newMutableFlagWithSafeDefault(FLOATING_PILL_LAYER, false);
     public static final MutableFlagWithSafeDefault sFlyoutInBookmarksBar =
             newMutableFlagWithSafeDefault(FLYOUT_IN_BOOKMARKS_BAR, false);
     public static final MutableFlagWithSafeDefault sGlicNoWebview =
