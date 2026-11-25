@@ -552,9 +552,15 @@ void InputDispatcher::DispatchedMessage(
     return;
   }
 
-  if (message_id == message_waiting_for_) {
+  // Moving over non-client hit-test regions (e.g. tab strips or caption bars)
+  // generates `WM_NCMOUSEMOVE` instead of `WM_MOUSEMOVE`; both carry screen
+  // coordinates in `mouse_hook_struct->pt`.
+  const bool matches_message =
+      message_id == message_waiting_for_ ||
+      (message_waiting_for_ == WM_MOUSEMOVE && message_id == WM_NCMOUSEMOVE);
+  if (matches_message) {
     bool definitively_done = false;
-    if (message_id == WM_MOUSEMOVE) {
+    if (message_waiting_for_ == WM_MOUSEMOVE) {
       definitively_done = AreMouseLocationsWithinAPixel(
           expected_mouse_location_, gfx::Point(mouse_hook_struct->pt));
 
