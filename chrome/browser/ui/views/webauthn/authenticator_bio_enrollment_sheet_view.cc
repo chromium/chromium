@@ -25,14 +25,7 @@ double CalculateProgressFor(double samples_remaining, double max_samples) {
 
 AuthenticatorBioEnrollmentSheetView::AuthenticatorBioEnrollmentSheetView(
     std::unique_ptr<AuthenticatorBioEnrollmentSheetModel> sheet_model)
-    : AuthenticatorRequestSheetView(std::move(sheet_model)) {
-  // Override the DialogClientView (i.e. this view's parent) handling of the
-  // escape key to avoid closing the dialog when we want to cancel instead,
-  // since cancelling might do something different.
-  // This is a workaround to fix crbug.com/40155990.
-  // TODO(nsatragno): remove this workaround once crbug.com/40156827 is fixed.
-  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-}
+    : AuthenticatorRequestSheetView(std::move(sheet_model)) {}
 
 AuthenticatorBioEnrollmentSheetView::~AuthenticatorBioEnrollmentSheetView() =
     default;
@@ -70,13 +63,6 @@ AuthenticatorBioEnrollmentSheetView::BuildStepSpecificContent() {
   animation_container->AddChildView(std::move(ring_progress_bar));
 
   return std::make_pair(std::move(animation_container), AutoFocus::kNo);
-}
-
-bool AuthenticatorBioEnrollmentSheetView::AcceleratorPressed(
-    const ui::Accelerator& accelerator) {
-  CHECK_EQ(ui::VKEY_ESCAPE, accelerator.key_code(), base::NotFatalUntil::M162);
-  model()->OnCancel();
-  return true;
 }
 
 BEGIN_METADATA(AuthenticatorBioEnrollmentSheetView)
