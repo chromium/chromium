@@ -433,11 +433,20 @@ void TabGroupsOrganizerPageHandler::OnTabGroupChanged(
     return;
   }
   if (change.type == TabGroupChange::kClosed) {
-    page_->TabGroupRemoved(tab_groups::LocalTabGroupIDToString(change.group));
+    if (change.GetCloseChange()->reason() !=
+        TabGroupChange::TabGroupClosureReason::kDetachedToAnotherTabstrip) {
+      page_->TabGroupRemoved(tab_groups::LocalTabGroupIDToString(change.group));
+    }
     return;
   }
-  if (change.type != TabGroupChange::kVisualsChanged ||
-      !change.GetVisualsChange()->new_visuals) {
+  const bool is_reattached =
+      change.type == TabGroupChange::kCreated &&
+      change.GetCreateChange()->reason() ==
+          TabGroupChange::TabGroupCreationReason::kInsertedFromAnotherTabstrip;
+  const bool is_visuals_changed =
+      change.type == TabGroupChange::kVisualsChanged &&
+      change.GetVisualsChange()->new_visuals;
+  if (!is_reattached && !is_visuals_changed) {
     return;
   }
   if (const TabGroup* tab_group = GetUnsavedTabGroup(change.group)) {

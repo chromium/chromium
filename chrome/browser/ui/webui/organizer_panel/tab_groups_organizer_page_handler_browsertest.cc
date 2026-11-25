@@ -129,6 +129,8 @@ class FakeTabGroupsOrganizerPage
     run_loop.Run();
   }
 
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
   const std::vector<organizer_panel::mojom::TabGroupPtr>& added_groups() const {
     return added_groups_;
   }
@@ -888,6 +890,80 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
 
   ASSERT_EQ(1u, page.removed_group_ids().size());
   EXPECT_EQ(page.removed_group_ids()[0], unsaved_id2);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
+                       NonSavedTabGroupPersistsWhenMovedToAnotherWindow) {
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+  service->SetIsInitializedForTesting(false);
+
+  // Add a second tab so detaching the grouped tab leaves the host window open.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+
+  tab_groups::TabGroupId local_id =
+      browser()->GetTabStripModel()->AddToNewGroup({0});
+  tab_groups::TabGroupVisualData initial_visuals(
+      u"Moved Unsaved Group", tab_groups::TabGroupColorId::kCyan);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(local_id,
+                                                       initial_visuals);
+  ASSERT_FALSE(service->GetGroup(local_id).has_value());
+
+  // Host the handler in the ungrouped tab so detaching tab 0 does not affect
+  // the WebContents it points to.
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  const std::string unsaved_id = tab_groups::LocalTabGroupIDToString(local_id);
+
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(browser2);
+  browser2->GetTabStripModel()->InsertDetachedTabGroupAt(
+      browser()->GetTabStripModel()->DetachTabGroupForInsertion(local_id), 0);
+  page.FlushForTesting();
+
+  ASSERT_TRUE(page.removed_group_ids().empty());
+  ASSERT_TRUE(page.added_groups().empty());
+  ASSERT_EQ(1u, page.updated_groups().size());
+  EXPECT_EQ(page.updated_groups()[0]->id, unsaved_id);
+  EXPECT_EQ(page.updated_groups()[0]->title, "Moved Unsaved Group");
+  EXPECT_EQ(page.updated_groups()[0]->color,
+            tab_groups::TabGroupColorId::kCyan);
+  EXPECT_TRUE(page.updated_groups()[0]->is_open);
+
+  base::test::TestFuture<std::vector<organizer_panel::mojom::TabGroupPtr>>
+      future;
+  handler_remote->GetTabGroups(future.GetCallback());
+  const std::vector<organizer_panel::mojom::TabGroupPtr>& returned_groups =
+      future.Get();
+  ASSERT_EQ(1u, returned_groups.size());
+  EXPECT_EQ(returned_groups[0]->id, unsaved_id);
+  EXPECT_EQ(returned_groups[0]->title, "Moved Unsaved Group");
+
+  // Updates and closure in the destination window continue to notify the page.
+  tab_groups::TabGroupVisualData updated_visuals(
+      u"Renamed After Move", tab_groups::TabGroupColorId::kOrange);
+  browser2->GetTabStripModel()->ChangeTabGroupVisuals(local_id,
+                                                      updated_visuals);
+  page.WaitForUpdatedCount(2);
+  EXPECT_EQ(page.updated_groups()[1]->id, unsaved_id);
+  EXPECT_EQ(page.updated_groups()[1]->title, "Renamed After Move");
+  EXPECT_EQ(page.updated_groups()[1]->color,
+            tab_groups::TabGroupColorId::kOrange);
+
+  browser2->GetTabStripModel()->RemoveFromGroup({0});
+  page.WaitForTabGroupRemoved();
+  ASSERT_EQ(1u, page.removed_group_ids().size());
+  EXPECT_EQ(page.removed_group_ids()[0], unsaved_id);
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
