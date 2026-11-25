@@ -24,15 +24,12 @@
 #endif
 
 namespace {
-actor::TaskId GetActorTaskId(content::WebContents& web_contents) {
+const actor::ActorTask* GetActingActorTask(content::WebContents& web_contents) {
   if (auto* actor_keyed_service =
           actor::ActorKeyedService::Get(web_contents.GetBrowserContext())) {
-    if (auto* task = actor_keyed_service->GetActingActorTaskForWebContents(
-            &web_contents)) {
-      return task->id();
-    }
+    return actor_keyed_service->GetActingActorTaskForWebContents(&web_contents);
   }
-  return actor::TaskId();
+  return nullptr;
 }
 }  // namespace
 
@@ -85,7 +82,10 @@ void ChromeNavigationUIData::PopulateEnvironmentFromNavigationHandle(
   env.is_no_state_prefetching =
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents) != nullptr;
-  env.actor_task_id = GetActorTaskId(*web_contents);
+  if (const actor::ActorTask* task = GetActingActorTask(*web_contents)) {
+    env.actor_task_id = task->id();
+    env.skip_actor_history_recording = task->skip_history_recording();
+  }
   env_ = std::move(env);
 }
 
@@ -117,7 +117,10 @@ ChromeNavigationUIData::CreateForMainFrameNavigation(
   }
 #endif
 
-  env.actor_task_id = GetActorTaskId(*web_contents);
+  if (const actor::ActorTask* task = GetActingActorTask(*web_contents)) {
+    env.actor_task_id = task->id();
+    env.skip_actor_history_recording = task->skip_history_recording();
+  }
   navigation_ui_data->env_ = std::move(env);
 
   return navigation_ui_data;

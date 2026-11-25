@@ -314,6 +314,7 @@ source_set("unit_tests") {
     "//chrome/app/resources:locale_settings",
     "//chrome/browser/actor",
     "//chrome/browser/actor:test_support",
+    "//chrome/browser/renderer_host",
     "//chrome/browser/search_engines",
     "//chrome/browser/search_engines:test_support",
     "//chrome/common:chrome_features",

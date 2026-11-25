@@ -132,6 +132,9 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   actor::TaskId actor_task_id() const {
     return env_.has_value() ? env_->actor_task_id : actor::TaskId();
   }
+  bool skip_actor_history_recording() const {
+    return env_.has_value() && env_->skip_actor_history_recording;
+  }
 
   bool navigation_initiated_from_sync() const {
     return navigation_initiated_from_sync_;
@@ -183,6 +186,18 @@ class ChromeNavigationUIData : public content::NavigationUIData {
     // - Same-navigation copy: Copied.
     // - Re-dispatch: Dropped.
     actor::TaskId actor_task_id;
+
+    // Whether history recording should be skipped for the actor task active
+    // during this navigation.
+    //
+    // Lifecycle:
+    //
+    // - Creation: Snapshotted from the `WebContents` (via
+    //   `CreateForMainFrameNavigation()` or when created by `//content`); left
+    //   false for direct `ChromeNavigationUIData()` callers.
+    // - Same-navigation copy: Copied.
+    // - Re-dispatch: Dropped.
+    bool skip_actor_history_recording = false;
   };
 
   ChromeNavigationUIData(const ChromeNavigationUIData&);

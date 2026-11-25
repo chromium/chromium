@@ -21,7 +21,10 @@
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_task_options.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -136,6 +139,19 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
         &tracker_);
     loop.Run();
     return title;
+  }
+
+  bool HasURLInHistory(const GURL& url) {
+    bool found = false;
+    base::RunLoop loop;
+    history_service_->QueryURL(
+        url, base::BindLambdaForTesting([&](history::QueryURLResult result) {
+          found = result.success;
+          loop.Quit();
+        }),
+        &tracker_);
+    loop.Run();
+    return found;
   }
 
   base::TimeDelta QueryLastVisitDurationFromHistory(const GURL& url) {
@@ -688,6 +704,161 @@ TEST_F(HistoryTabHelperTest,
   EXPECT_EQ(args.visit_source, history::VisitSource::SOURCE_ACTOR);
   ASSERT_TRUE(args.actor_task_id.has_value());
   EXPECT_EQ(args.actor_task_id.value(), task_id.value());
+}
+
+TEST_F(HistoryTabHelperTest,
+       SkipsHistoryRecordingWhenSkipActorHistoryRecordingInNavigationUIData) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+
+  actor::ActorKeyedServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return std::make_unique<actor::ActorKeyedServiceFake>(
+            Profile::FromBrowserContext(context));
+      }));
+  web_contents_tester()->NavigateAndCommit(page_url_);
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetProfile).WillByDefault(testing::Return(profile()));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+
+  auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedService::Get(profile()));
+  actor_service->GetSurfaceRegistry().OnTabCreated(mock_tab);
+  actor::ActorTaskOptions options;
+  options.skip_history_recording = true;
+  actor::TaskId task_id = actor_service->CreateTaskForTesting(
+      actor::TestTaskSourceInfo(), std::move(options));
+  actor_service->GetTask(task_id)->AddTab(
+      mock_tab.GetHandle(), /*stop_task_on_detach=*/true, base::DoNothing());
+
+  testing::NiceMock<MockObserver> mock_observer;
+  base::CallbackListSubscription subscription =
+      history_tab_helper()->RegisterOnUpdatedHistoryForNavigationCallback(
+          base::BindRepeating(&MockObserver::OnUpdatedHistoryForNavigation,
+                              base::Unretained(&mock_observer)));
+
+  const GURL skipped_url("https://skipped.example.com");
+  web_contents()->GetController().GetLastCommittedEntry()->SetVirtualURL(
+      skipped_url);
+  NiceMock<content::MockNavigationHandle> navigation_handle(skipped_url,
+                                                            main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_redirect_chain({skipped_url});
+  ON_CALL(navigation_handle, ShouldUpdateHistory())
+      .WillByDefault(testing::Return(true));
+
+  ChromeNavigationUIData handle_ui_data(&navigation_handle);
+  EXPECT_EQ(handle_ui_data.actor_task_id(), task_id);
+  EXPECT_TRUE(handle_ui_data.skip_actor_history_recording());
+
+  std::unique_ptr<ChromeNavigationUIData> ui_data =
+      ChromeNavigationUIData::CreateForMainFrameNavigation(
+          web_contents(), /*is_using_https_as_default_scheme=*/false,
+          /*force_no_https_upgrade=*/false);
+  EXPECT_EQ(ui_data->actor_task_id(), task_id);
+  EXPECT_TRUE(ui_data->skip_actor_history_recording());
+
+  std::unique_ptr<content::NavigationUIData> cloned_ui_data = ui_data->Clone();
+  EXPECT_TRUE(static_cast<ChromeNavigationUIData*>(cloned_ui_data.get())
+                  ->skip_actor_history_recording());
+
+  ON_CALL(navigation_handle, GetNavigationUIData())
+      .WillByDefault(testing::Return(ui_data.get()));
+
+  actor_service->StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+
+  EXPECT_CALL(mock_observer,
+              OnUpdatedHistoryForNavigation(testing::_, testing::_, testing::_,
+                                            testing::_))
+      .Times(0);
+  static_cast<content::WebContentsObserver*>(history_tab_helper())
+      ->DidFinishNavigation(&navigation_handle);
+
+  EXPECT_FALSE(HasURLInHistory(skipped_url));
+}
+
+TEST_F(HistoryTabHelperTest,
+       SkipsHistoryRecordingFromServiceFallbackWhenSkipHistoryRecordingIsTrue) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+
+  actor::ActorKeyedServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return std::make_unique<actor::ActorKeyedServiceFake>(
+            Profile::FromBrowserContext(context));
+      }));
+  web_contents_tester()->NavigateAndCommit(page_url_);
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetProfile).WillByDefault(testing::Return(profile()));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+
+  auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedService::Get(profile()));
+  actor_service->GetSurfaceRegistry().OnTabCreated(mock_tab);
+  actor::ActorTaskOptions options;
+  options.skip_history_recording = true;
+  actor::TaskId task_id = actor_service->CreateTaskForTesting(
+      actor::TestTaskSourceInfo(), std::move(options));
+  actor_service->GetTask(task_id)->AddTab(
+      mock_tab.GetHandle(), /*stop_task_on_detach=*/true, base::DoNothing());
+
+  testing::NiceMock<MockObserver> mock_observer;
+  base::CallbackListSubscription subscription =
+      history_tab_helper()->RegisterOnUpdatedHistoryForNavigationCallback(
+          base::BindRepeating(&MockObserver::OnUpdatedHistoryForNavigation,
+                              base::Unretained(&mock_observer)));
+
+  const GURL skipped_url("https://fallback-skipped.example.com");
+  web_contents()->GetController().GetLastCommittedEntry()->SetVirtualURL(
+      skipped_url);
+  NiceMock<content::MockNavigationHandle> skipped_handle(skipped_url,
+                                                         main_rfh());
+  skipped_handle.set_has_committed(true);
+  skipped_handle.set_redirect_chain({skipped_url});
+  ON_CALL(skipped_handle, ShouldUpdateHistory())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(skipped_handle, GetNavigationUIData())
+      .WillByDefault(testing::Return(nullptr));
+
+  EXPECT_CALL(mock_observer,
+              OnUpdatedHistoryForNavigation(testing::_, testing::_, testing::_,
+                                            testing::_))
+      .Times(0);
+  static_cast<content::WebContentsObserver*>(history_tab_helper())
+      ->DidFinishNavigation(&skipped_handle);
+  EXPECT_FALSE(HasURLInHistory(skipped_url));
+
+  actor_service->StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+
+  actor::TaskId normal_task_id = actor_service->CreateTaskForTesting();
+  actor_service->GetTask(normal_task_id)
+      ->AddTab(mock_tab.GetHandle(), /*stop_task_on_detach=*/true,
+               base::DoNothing());
+
+  const GURL recorded_url("https://recorded.example.com");
+  web_contents()->GetController().GetLastCommittedEntry()->SetVirtualURL(
+      recorded_url);
+  NiceMock<content::MockNavigationHandle> recorded_handle(recorded_url,
+                                                          main_rfh());
+  recorded_handle.set_has_committed(true);
+  recorded_handle.set_redirect_chain({recorded_url});
+  ON_CALL(recorded_handle, ShouldUpdateHistory())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(recorded_handle, GetNavigationUIData())
+      .WillByDefault(testing::Return(nullptr));
+
+  EXPECT_CALL(mock_observer, OnUpdatedHistoryForNavigation(
+                                 testing::_, true, testing::_, recorded_url))
+      .Times(1);
+  static_cast<content::WebContentsObserver*>(history_tab_helper())
+      ->DidFinishNavigation(&recorded_handle);
+  EXPECT_TRUE(HasURLInHistory(recorded_url));
 }
 
 #if BUILDFLAG(IS_ANDROID)

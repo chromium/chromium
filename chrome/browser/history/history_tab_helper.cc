@@ -127,6 +127,17 @@ std::optional<history::Opener> GetHistoryOpenerFromWeakWebContents(
   return GetHistoryOpenerFromWebContents(weak_web_contents.get());
 }
 
+const actor::ActorTask* GetActingActorTask(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  auto* actor_service =
+      actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
+  return actor_service
+             ? actor_service->GetActingActorTaskForWebContents(web_contents)
+             : nullptr;
+}
+
 // Returns the TaskId associated with an active actor task on the given
 // `web_contents` or from `chrome_ui_data`.
 //
@@ -141,16 +152,27 @@ actor::TaskId GetActorTaskId(content::WebContents* web_contents,
   if (chrome_ui_data) {
     return chrome_ui_data->actor_task_id();
   }
-  if (!web_contents) {
-    return actor::TaskId();
-  }
-  auto* actor_service =
-      actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
-  const actor::ActorTask* task =
-      actor_service
-          ? actor_service->GetActingActorTaskForWebContents(web_contents)
-          : nullptr;
+  const actor::ActorTask* task = GetActingActorTask(web_contents);
   return task ? task->id() : actor::TaskId();
+}
+
+// Returns whether history recording should be skipped for an active actor task
+// on `web_contents` or from `chrome_ui_data`.
+//
+// `chrome_ui_data` captures the task's setting at navigation start time, but
+// is null for same-document navigations and in tests. In those cases, we fall
+// back to checking the active actor task on `web_contents`.
+//
+// TODO(crbug.com/545069770): Unify actor attribution across navigation types
+//   so a fallback is not needed.
+bool ShouldSkipActorHistoryRecording(
+    content::WebContents* web_contents,
+    const ChromeNavigationUIData* chrome_ui_data) {
+  if (chrome_ui_data) {
+    return chrome_ui_data->skip_actor_history_recording();
+  }
+  const actor::ActorTask* task = GetActingActorTask(web_contents);
+  return task && task->skip_history_recording();
 }
 
 history::VisitContextAnnotations::BrowserType GetBrowserType(
@@ -541,6 +563,12 @@ void HistoryTabHelper::DidFinishNavigation(
           web_contents()->GetBrowserContext());
   if (no_state_prefetch_manager &&
       no_state_prefetch_manager->IsWebContentsPrefetching(web_contents())) {
+    return;
+  }
+
+  if (ShouldSkipActorHistoryRecording(
+          web_contents(), static_cast<const ChromeNavigationUIData*>(
+                              navigation_handle->GetNavigationUIData()))) {
     return;
   }
 
