@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "cc/test/pixel_test.h"
 #include "cc/test/pixel_test_utils.h"
+#include "cc/test/render_pass_test_utils.h"
 #include "cc/test/resource_provider_test_utils.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/blit_request.h"
@@ -388,12 +389,14 @@ class ReadbackPixelTest : public VizPixelTest {
   std::unique_ptr<CopyOutputResult> IssueCopyOutputRequestAndRender(
       CopyOutputRequest::ResultFormat format,
       CopyOutputRequest::ResultDestination destination,
+      bool copy_from_child_pass,
       base::OnceCallback<void(CopyOutputRequest&)> configure_request) {
     const SkBitmap& bitmap = GetSourceBitmap();
 
     std::unique_ptr<CopyOutputResult> result;
     {
-      auto pass = GenerateRootRenderPass(bitmap);
+      const AggregatedRenderPassId target_id{copy_from_child_pass ? 2u : 1u};
+      auto pass = GenerateRenderPass(target_id, bitmap);
 
       base::RunLoop loop;
       auto request = std::make_unique<CopyOutputRequest>(
@@ -413,7 +416,14 @@ class ReadbackPixelTest : public VizPixelTest {
 
       AggregatedRenderPassList pass_list;
       SurfaceDamageRectList surface_damage_rect_list;
+      AggregatedRenderPass* child_pass_ptr = pass.get();
       pass_list.push_back(std::move(pass));
+      if (copy_from_child_pass) {
+        auto* root_pass =
+            cc::AddRenderPass(&pass_list, AggregatedRenderPassId{1},
+                              child_pass_ptr->output_rect, gfx::Transform());
+        cc::AddRenderPassQuad(root_pass, child_pass_ptr);
+      }
 
       renderer_->DrawFrame(
           &pass_list, 1.0f, gfx::Size(bitmap.width(), bitmap.height()),
@@ -456,7 +466,8 @@ class ReadbackPixelTest : public VizPixelTest {
 
  private:
   // Creates a RenderPass that embeds a single quad containing |bitmap|.
-  std::unique_ptr<AggregatedRenderPass> GenerateRootRenderPass(
+  std::unique_ptr<AggregatedRenderPass> GenerateRenderPass(
+      AggregatedRenderPassId id,
       const SkBitmap& bitmap) {
     const gfx::Size source_size = gfx::Size(bitmap.width(), bitmap.height());
 
@@ -476,8 +487,7 @@ class ReadbackPixelTest : public VizPixelTest {
 
     const gfx::Rect output_rect(source_size);
     auto pass = std::make_unique<AggregatedRenderPass>();
-    pass->SetNew(AggregatedRenderPassId{1}, output_rect, output_rect,
-                 gfx::Transform());
+    pass->SetNew(id, output_rect, output_rect, gfx::Transform());
 
     SharedQuadState* sqs = CreateSharedQuadState(pass.get(), output_rect);
 
@@ -537,6 +547,67 @@ class ReadbackPixelTestRGBA
     ReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
   }
 
+  void RunTest(bool copy_from_child_pass) {
+    // Generates a RenderPass which contains one quad that spans the full
+    // output.
+    const gfx::Rect result_selection = GetRequestArea();
+
+    std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
+        RequestFormat(), RequestDestination(), copy_from_child_pass,
+        base::BindLambdaForTesting(
+            [this, &result_selection](CopyOutputRequest& request) {
+              // Build CopyOutputRequest based on test parameters.
+              if (ScaleByHalf()) {
+                request.SetUniformScaleRatio(2, 1);
+              }
+
+              request.set_result_selection(result_selection);
+            }));
+
+    // Check that a result was produced and is of the expected rect/size.
+    ASSERT_TRUE(result);
+    ASSERT_FALSE(result->IsEmpty());
+    EXPECT_EQ(result_selection, result->rect());
+
+    std::optional<CopyOutputResult::ScopedSkBitmap> scoped_bitmap;
+    SkBitmap actual;
+
+    // Examine the image in the |result|, and compare it to the baseline PNG
+    // file.
+    switch (RequestDestination()) {
+      case CopyOutputResult::Destination::kSystemMemory: {
+        scoped_bitmap = result->ScopedAccessSkBitmap();
+        actual = scoped_bitmap.value().bitmap();
+        break;
+      }
+#if !BUILDFLAG(IS_ANDROID)
+      case CopyOutputResult::Destination::kSharedImage: {
+        const gfx::Size size = result->size();
+        actual.allocPixels(SkImageInfo::Make(size.width(), size.height(),
+                                             kRGBA_8888_SkColorType,
+                                             kUnpremul_SkAlphaType));
+        ReadbackResultRGBA(gpu_service_holder_, is_software_renderer(), *result,
+                           result->size(), actual);
+        break;
+      }
+#endif
+      default:
+        NOTREACHED();
+    }
+
+    base::FilePath expected_path = GetExpectedPath();
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kRebaselinePixelTests)) {
+      EXPECT_TRUE(cc::WritePNGFile(actual, expected_path, false));
+    }
+
+    if (!cc::MatchesPNGFile(actual, expected_path,
+                            cc::ExactPixelComparator())) {
+      LOG(ERROR) << "Entire source: " << cc::GetPNGDataUrl(GetSourceBitmap());
+      ADD_FAILURE();
+    }
+  }
+
  private:
   bool should_scale_by_half_ = false;
   CopyOutputResult::Destination request_destination_;
@@ -544,64 +615,11 @@ class ReadbackPixelTestRGBA
 
 // Test that RGBA readback works correctly.
 TEST_P(ReadbackPixelTestRGBA, ExecutesCopyRequest) {
-  // Generates a RenderPass which contains one quad that spans the full output.
-  // The quad has our source image, so the framebuffer should contain the source
-  // image after DrawFrame().
+  RunTest(/*copy_from_child_pass=*/false);
+}
 
-  const gfx::Rect result_selection = GetRequestArea();
-
-  std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
-      RequestFormat(), RequestDestination(),
-      base::BindLambdaForTesting(
-          [this, &result_selection](CopyOutputRequest& request) {
-            // Build CopyOutputRequest based on test parameters.
-            if (ScaleByHalf()) {
-              request.SetUniformScaleRatio(2, 1);
-            }
-
-            request.set_result_selection(result_selection);
-          }));
-
-  // Check that a result was produced and is of the expected rect/size.
-  ASSERT_TRUE(result);
-  ASSERT_FALSE(result->IsEmpty());
-  EXPECT_EQ(result_selection, result->rect());
-
-  std::optional<CopyOutputResult::ScopedSkBitmap> scoped_bitmap;
-  SkBitmap actual;
-
-  // Examine the image in the |result|, and compare it to the baseline PNG file.
-  switch (RequestDestination()) {
-    case CopyOutputResult::Destination::kSystemMemory: {
-      scoped_bitmap = result->ScopedAccessSkBitmap();
-      actual = scoped_bitmap.value().bitmap();
-      break;
-    }
-#if !BUILDFLAG(IS_ANDROID)
-    case CopyOutputResult::Destination::kSharedImage: {
-      const gfx::Size size = result->size();
-      actual.allocPixels(SkImageInfo::Make(size.width(), size.height(),
-                                           kRGBA_8888_SkColorType,
-                                           kUnpremul_SkAlphaType));
-      ReadbackResultRGBA(gpu_service_holder_, is_software_renderer(), *result,
-                         result->size(), actual);
-      break;
-    }
-#endif
-    default:
-      NOTREACHED();
-  }
-
-  base::FilePath expected_path = GetExpectedPath();
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kRebaselinePixelTests)) {
-    EXPECT_TRUE(cc::WritePNGFile(actual, expected_path, false));
-  }
-
-  if (!cc::MatchesPNGFile(actual, expected_path, cc::ExactPixelComparator())) {
-    LOG(ERROR) << "Entire source: " << cc::GetPNGDataUrl(GetSourceBitmap());
-    ADD_FAILURE();
-  }
+TEST_P(ReadbackPixelTestRGBA, ExecutesCopyRequestNonRootRenderPass) {
+  RunTest(/*copy_from_child_pass=*/true);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -696,7 +714,7 @@ TEST_P(ReadbackPixelTestRGBAWithBlit, ExecutesCopyRequestWithBlit) {
   ASSERT_TRUE(shared_image);
 
   std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
-      RequestFormat(), RequestDestination(),
+      RequestFormat(), RequestDestination(), /*copy_from_child_pass=*/false,
       base::BindLambdaForTesting(
           // Take `shared_image` by copy to keep alive on main thread.
           [this, shared_image, &result_selection,
@@ -843,7 +861,7 @@ TEST_P(ReadbackPixelTestNV12, ExecutesCopyRequest) {
       << result_selection.width();
 
   std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
-      RequestFormat(), RequestDestination(),
+      RequestFormat(), RequestDestination(), /*copy_from_child_pass=*/false,
       base::BindLambdaForTesting(
           [this, &result_selection](CopyOutputRequest& request) {
             // Build CopyOutputRequest based on test parameters.
@@ -1047,7 +1065,7 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
       gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 
   std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
-      RequestFormat(), RequestDestination(),
+      RequestFormat(), RequestDestination(), /*copy_from_child_pass=*/false,
       base::BindLambdaForTesting([this, &result_selection,
                                   &destination_subregion, &shared_image,
                                   &sync_token](CopyOutputRequest& request) {

@@ -71,6 +71,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "skia/ext/rgba_to_yuva.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
@@ -79,6 +80,7 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
@@ -1185,7 +1187,7 @@ void SkiaOutputSurfaceImplOnGpu::RenderSurface(
 
 bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
     SkSurface* surface,
-    std::vector<GrBackendSemaphore>& end_semaphores,
+    base::span<GrBackendSemaphore> end_semaphores,
     gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
     GrGpuFinishedProc ganesh_finished_proc,
     skgpu::graphite::GpuFinishedProc graphite_finished_proc,
@@ -1684,17 +1686,43 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   DCHECK(scoped_output_device_paint_ || !from_framebuffer);
 
   std::unique_ptr<gpu::SkiaImageRepresentation> backing_representation;
-  std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
-      scoped_access;
+  std::unique_ptr<gpu::SkiaImageRepresentation::ScopedReadAccess> scoped_access;
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-
+  sk_sp<SkImage> image;
   std::optional<gpu::SkiaReadbackSource> source;
-  if (from_framebuffer) {
-    // Vulkan secondary command buffer doesn't support readback.
-    if (SkSurface* surface = scoped_output_device_paint_->sk_surface()) {
-      source.emplace(surface);
+
+  // Runs at the end of the function, or on early return for an error.
+  absl::Cleanup end_access_cleanup = [&] {
+    // Reset SkImage before transitions and end semaphores.
+    source.reset();
+    image.reset();
+
+    // Ensures any pending commands and end access semaphores are flushed.
+    if (!FlushSurface(/*surface=*/nullptr, end_semaphores,
+                      /*scoped_write_access=*/nullptr)) {
+      FailedSkiaFlush("CopyOutput FlushSurface() failed.");
     }
+
+    if (scoped_access) {
+      scoped_access->ApplyBackendSurfaceEndState();
+      if (!end_semaphores.empty()) {
+        // If there are end access semaphores then submit before scoped_access
+        // is destroyed so that VkSemaphores can be exported.
+        gr_context()->submit();
+      }
+      // The end of the function already does a graphite submit and it's not
+      // required for the error early return path.
+    }
+  };
+
+  if (from_framebuffer) {
+    SkSurface* surface = scoped_output_device_paint_->sk_surface();
+    if (!surface) {
+      // Vulkan secondary command buffer doesn't support readback.
+      return;
+    }
+    source.emplace(surface);
   } else {
     auto overlay_pass_access = overlay_pass_accesses_.find(mailbox);
     if (overlay_pass_access != overlay_pass_accesses_.end()) {
@@ -1702,31 +1730,29 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     } else {
       backing_representation =
           shared_image_representation_factory_->ProduceSkia(
-              mailbox, context_state_.get());
+              mailbox, context_state_.get(),
+              /*required_usages=*/{gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE});
       CHECK(backing_representation);
 
-      SkSurfaceProps surface_props;
-      // TODO(crbug.com/40776586): Use BeginScopedReadAccess instead
-      scoped_access = backing_representation->BeginScopedWriteAccess(
-          /*final_msaa_count=*/1, surface_props, &begin_semaphores,
-          &end_semaphores,
-          gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
+      scoped_access = backing_representation->BeginScopedReadAccess(
+          &begin_semaphores, &end_semaphores);
       if (!scoped_access) {
         DLOG(ERROR) << "Failed begin access to CopyOutputRequest source";
         return;
       }
-      source.emplace(scoped_access->surface());
       if (!begin_semaphores.empty()) {
-        auto result = source->surface()->wait(
-            begin_semaphores.size(), begin_semaphores.data(),
-            /*deleteSemaphoresAfterWait=*/false);
+        auto result =
+            gr_context()->wait(begin_semaphores.size(), begin_semaphores.data(),
+                               /*deleteSemaphoresAfterWait=*/false);
         DCHECK(result);
       }
+      image = scoped_access->CreateSkImage(context_state_.get());
+      if (!image) {
+        DLOG(ERROR) << "Failed to create SkImage for CopyOutputRequest source";
+        return;
+      }
+      source.emplace(image.get());
     }
-  }
-
-  if (!source) {
-    return;
   }
 
   // If a platform doesn't support RGBX_8888 format, we will use RGBA_8888
@@ -1744,7 +1770,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     paint.setColor(SK_ColorBLACK);
     paint.setBlendMode(SkBlendMode::kDstATop);
     source->surface()->getCanvas()->drawPaint(paint);
-    if (!FlushSurface(source->surface(), end_semaphores, nullptr)) {
+    if (!FlushSurface(source->surface(), {}, nullptr)) {
       FailedSkiaFlush("CopyOutputRGBA need_discard_alpha flush");
       return;
     }
@@ -1854,11 +1880,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     }
   }
 
-  if (!FlushSurface(source->surface(), end_semaphores, scoped_access.get())) {
-    // TODO(penghuang): handle vulkan device lost.
-    FailedSkiaFlush("surface->flush() failed.");
-    return;
-  }
+  std::move(end_access_cleanup).Invoke();
 
   if (graphite_shared_context() && num_readbacks_pending_ > 0) {
     // Submit pending readback recordings and flush the backend (e.g. Dawn D3D11

@@ -15,6 +15,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -39,6 +40,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
@@ -425,7 +427,7 @@ class SkiaOutputSurfaceImplOnGpu
   // to |surface| with |end_semaphores| and |end_state|.
   bool FlushSurface(
       SkSurface* surface,
-      std::vector<GrBackendSemaphore>& end_semaphores,
+      base::span<GrBackendSemaphore> end_semaphores,
       gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
       GrGpuFinishedProc ganesh_finished_proc = nullptr,
       skgpu::graphite::GpuFinishedProc graphite_finished_proc = nullptr,
