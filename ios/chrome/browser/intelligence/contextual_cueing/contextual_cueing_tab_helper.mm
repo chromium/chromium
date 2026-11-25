@@ -25,6 +25,7 @@
 #import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/pref_service.h"
 #import "components/private_insights/private_insights_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -719,6 +720,8 @@ void ContextualCueingTabHelper::InitiateModelExecutionRequest(
       base::UTF16ToUTF8(web_state_->GetTitle()));
   request.add_supported_surfaces(
       optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_GEMINI_IN_CHROME);
+  request.set_chrome_platform(optimization_guide::proto::CHROME_PLATFORM_IOS);
+  request.mutable_client_capabilities()->set_supports_multitab(false);
 
   const size_t max_historical_tabs = kMaxHistoricalTabs.Get();
   if (max_historical_tabs > 0) {
