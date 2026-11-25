@@ -4029,6 +4029,280 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_FALSE(prompt_factory.is_visible());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelKeepsPermissionRequestPendingWhenPreservedUnderRearch) {
+  display::test::TestScreen test_screen(
+      /*create_display=*/true, /*register_screen=*/!display::Screen::Get());
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasks, {}},
+       {kContextualTasksSidePanelRearchitecture, {}},
+       {kContextualTasksEphemeralBrandedEntryPoint,
+        {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
+      {});
+
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  ASSERT_TRUE(active_tab);
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
+      .WillRepeatedly(Return(task));
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(task_id))
+      .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
+
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+  content::WebContents* panel_contents =
+      GetWebContentsForTaskForTesting(task_id);
+  ASSERT_TRUE(panel_contents);
+  mock_panel_host_->SetWebContents(panel_contents);
+  mock_panel_host_->Show(
+      ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      panel_contents, GURL(permissions::MockPermissionRequest::kDefaultOrigin)
+                          .Resolve("/search?udm=50&q=test"));
+
+  auto* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(panel_contents);
+  ASSERT_TRUE(permission_request_manager);
+  permissions::MockPermissionPromptFactory prompt_factory(
+      permission_request_manager);
+  permission_request_manager->DocumentOnLoadCompletedInPrimaryMainFrame();
+
+  permissions::MockPermissionRequest::MockPermissionRequestState request_state;
+  auto request = std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kMicStream,
+      permissions::PermissionRequestGestureType::GESTURE,
+      request_state.GetWeakPtr());
+  permission_request_manager->AddRequest(panel_contents->GetPrimaryMainFrame(),
+                                         std::move(request));
+  prompt_factory.WaitForPermissionBubble();
+
+  ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
+  ASSERT_TRUE(prompt_factory.is_visible());
+
+  coordinator_->Close();
+
+  // Closing the panel hides the WebContents while the preserved task's request
+  // stays pending so reopening the panel restores the prompt.
+  ASSERT_EQ(GetWebContentsForTaskForTesting(task_id), panel_contents);
+  EXPECT_FALSE(prompt_factory.is_visible());
+  EXPECT_TRUE(permission_request_manager->IsRequestInProgress());
+  EXPECT_FALSE(request_state.cancelled);
+  EXPECT_FALSE(request_state.finished);
+
+  mock_panel_host_->Show(
+      ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
+  EXPECT_TRUE(prompt_factory.is_visible());
+}
+
+TEST_F(
+    ContextualTasksSidePanelCoordinatorTest,
+    CloseSidePanelKeepsPermissionRequestPendingWhenSharedTaskOpenOnOtherTab) {
+  display::test::TestScreen test_screen(
+      /*create_display=*/true, /*register_screen=*/!display::Screen::Get());
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksSidePanelTabState},
+      {kContextualTasksSidePanelRearchitecture});
+
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_b = CreateMockTab();
+  ASSERT_TRUE(tab_a);
+  ASSERT_TRUE(tab_b);
+  SessionID tab_a_id =
+      sessions::SessionTabHelper::IdForTab(tab_a->GetContents());
+  SessionID tab_b_id =
+      sessions::SessionTabHelper::IdForTab(tab_b->GetContents());
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(tab_a_id))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(tab_b_id))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task_id))
+      .WillByDefault(Return(std::vector<SessionID>{tab_a_id, tab_b_id}));
+
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+  content::WebContents* panel_contents =
+      GetWebContentsForTaskForTesting(task_id);
+  ASSERT_TRUE(panel_contents);
+  mock_panel_host_->SetWebContents(panel_contents);
+  mock_panel_host_->Show(
+      ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      panel_contents, GURL(permissions::MockPermissionRequest::kDefaultOrigin)
+                          .Resolve("/search?udm=50&q=test"));
+
+  auto* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(panel_contents);
+  ASSERT_TRUE(permission_request_manager);
+  permissions::MockPermissionPromptFactory prompt_factory(
+      permission_request_manager);
+  permission_request_manager->DocumentOnLoadCompletedInPrimaryMainFrame();
+
+  permissions::MockPermissionRequest::MockPermissionRequestState request_state;
+  auto request = std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kMicStream,
+      permissions::PermissionRequestGestureType::GESTURE,
+      request_state.GetWeakPtr());
+  permission_request_manager->AddRequest(panel_contents->GetPrimaryMainFrame(),
+                                         std::move(request));
+  prompt_factory.WaitForPermissionBubble();
+  ASSERT_TRUE(prompt_factory.is_visible());
+
+  // Closing the panel on Tab A while Tab B still has an open panel for the
+  // shared task must hide the prompt without cancelling Tab B's pending
+  // request.
+  coordinator_->Close();
+
+  ASSERT_EQ(GetWebContentsForTaskForTesting(task_id), panel_contents);
+  EXPECT_FALSE(prompt_factory.is_visible());
+  EXPECT_TRUE(permission_request_manager->IsRequestInProgress());
+  EXPECT_FALSE(request_state.cancelled);
+
+  mock_panel_host_->Show(
+      ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
+  EXPECT_TRUE(prompt_factory.is_visible());
+}
+#else
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelIgnoresPermissionRequestOnAndroidEvenWhenShared) {
+  display::test::TestScreen test_screen(
+      /*create_display=*/true, /*register_screen=*/!display::Screen::Get());
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksSidePanelRearchitecture,
+       kContextualTasksSidePanelTabState},
+      {});
+
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_b = CreateMockTab();
+  ASSERT_TRUE(tab_a);
+  ASSERT_TRUE(tab_b);
+  SessionID tab_a_id =
+      sessions::SessionTabHelper::IdForTab(tab_a->GetContents());
+  SessionID tab_b_id =
+      sessions::SessionTabHelper::IdForTab(tab_b->GetContents());
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(tab_a_id))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(tab_b_id))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task_id))
+      .WillByDefault(Return(std::vector<SessionID>{tab_a_id, tab_b_id}));
+
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+  content::WebContents* panel_contents =
+      GetWebContentsForTaskForTesting(task_id);
+  ASSERT_TRUE(panel_contents);
+  mock_panel_host_->SetWebContents(panel_contents);
+  mock_panel_host_->Show(
+      ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      panel_contents, GURL(permissions::MockPermissionRequest::kDefaultOrigin)
+                          .Resolve("/search?udm=50&q=test"));
+
+  auto* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(panel_contents);
+  ASSERT_TRUE(permission_request_manager);
+  permissions::MockPermissionPromptFactory prompt_factory(
+      permission_request_manager);
+  permission_request_manager->DocumentOnLoadCompletedInPrimaryMainFrame();
+
+  permissions::MockPermissionRequest::MockPermissionRequestState request_state;
+  auto request = std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kMicStream,
+      permissions::PermissionRequestGestureType::GESTURE,
+      request_state.GetWeakPtr());
+  permission_request_manager->AddRequest(panel_contents->GetPrimaryMainFrame(),
+                                         std::move(request));
+  prompt_factory.WaitForPermissionBubble();
+  ASSERT_TRUE(prompt_factory.is_visible());
+
+  coordinator_->Close();
+
+  ASSERT_EQ(GetWebContentsForTaskForTesting(task_id), panel_contents);
+  EXPECT_FALSE(prompt_factory.is_visible());
+  EXPECT_FALSE(permission_request_manager->IsRequestInProgress());
+  EXPECT_TRUE(request_state.cancelled);
+  EXPECT_TRUE(request_state.finished);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelCleansUpPermissionRequestWhenUnpreservedUnderRearch) {
+  display::test::TestScreen test_screen(
+      /*create_display=*/true, /*register_screen=*/!display::Screen::Get());
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksSidePanelRearchitecture}, {});
+
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  ASSERT_TRUE(active_tab);
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
+      .WillByDefault(Return(task));
+  std::vector<SessionID> associated_tabs = {active_tab_id};
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task_id))
+      .WillByDefault(
+          [&associated_tabs](const base::Uuid&) { return associated_tabs; });
+  ON_CALL(*mock_controller_, DisassociateTabFromTask(task_id, active_tab_id))
+      .WillByDefault([&associated_tabs](const base::Uuid&, SessionID) {
+        associated_tabs.clear();
+      });
+
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+  content::WebContents* panel_contents =
+      GetWebContentsForTaskForTesting(task_id);
+  ASSERT_TRUE(panel_contents);
+  mock_panel_host_->SetWebContents(panel_contents);
+  mock_panel_host_->Show(
+      ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
+
+  // Navigate to zero-state (`HasResults()` is false) so the task is not
+  // preserved on close.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      panel_contents, GURL(permissions::MockPermissionRequest::kDefaultOrigin)
+                          .Resolve("/search?udm=50"));
+
+  auto* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(panel_contents);
+  ASSERT_TRUE(permission_request_manager);
+  permissions::MockPermissionPromptFactory prompt_factory(
+      permission_request_manager);
+  permission_request_manager->DocumentOnLoadCompletedInPrimaryMainFrame();
+
+  permissions::MockPermissionRequest::MockPermissionRequestState request_state;
+  auto request = std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kMicStream,
+      permissions::PermissionRequestGestureType::GESTURE,
+      request_state.GetWeakPtr());
+  permission_request_manager->AddRequest(panel_contents->GetPrimaryMainFrame(),
+                                         std::move(request));
+  prompt_factory.WaitForPermissionBubble();
+  ASSERT_TRUE(prompt_factory.is_visible());
+
+  coordinator_->Close();
+
+  EXPECT_EQ(GetWebContentsForTaskForTesting(task_id), nullptr);
+  EXPECT_TRUE(request_state.cancelled);
+  EXPECT_TRUE(request_state.finished);
+}
+
 TEST_F(ContextualTasksSidePanelCoordinatorTest, IsShowingResults) {
   ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
       .WillByDefault(Return(false));

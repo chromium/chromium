@@ -848,13 +848,36 @@ void ContextualTasksSidePanelCoordinator::Show(
 }
 
 void ContextualTasksSidePanelCoordinator::Close() {
+  const bool scoped_to_tab = ShouldScopeSidePanelStateToTab();
+  const std::optional<ContextualTask> current_task =
+      scoped_to_tab ? GetCurrentTask() : std::nullopt;
+  const bool is_open_on_other_tab =
+      current_task.has_value() &&
+      IsPanelOpenOnOtherTabOfTask(current_task->GetTaskId());
+
   if (content::WebContents* active_web_contents = GetActiveWebContents()) {
     if (auto* permission_request_manager =
             permissions::PermissionRequestManager::FromWebContents(
                 active_web_contents);
         permission_request_manager &&
         permission_request_manager->IsRequestInProgress()) {
+#if BUILDFLAG(IS_ANDROID)
+      // On Android, `PermissionPromptAndroid` uses `kKeepPromptAlive` (so
+      // hiding the WebContents does not dismiss the modal dialog) and
+      // reopening the panel does not call `WasShown()`, so keep dismissing
+      // via `Ignore()`.
       permission_request_manager->Ignore(/*prompt_options=*/std::monostate());
+#else
+      // When the side panel rearchitecture is disabled, prompts anchor to the
+      // main browser window's omnibox rather than side panel toolbar chips, so
+      // keep dismissing them on close unless another tab still shows the shared
+      // task. Otherwise, skip `Ignore()` and let `ContextualTasksWebView`
+      // teardown hide the `WebContents` so eligible requests stay pending.
+      if (!IsContextualTasksSidePanelRearchitectureEnabled() &&
+          !is_open_on_other_tab) {
+        permission_request_manager->Ignore(/*prompt_options=*/std::monostate());
+      }
+#endif
     }
     if (WebContentsCacheItem* cache_item =
             GetWebContentsCacheItemForWebContents(active_web_contents)) {
@@ -886,13 +909,10 @@ void ContextualTasksSidePanelCoordinator::Close() {
 
   // When scoped to the tab, only end the current task's session if no other tab
   // of the task still shows the panel, leaving other tasks' open panels intact.
-  const bool scoped_to_tab = ShouldScopeSidePanelStateToTab();
-  std::optional<ContextualTask> current_task =
-      scoped_to_tab ? GetCurrentTask() : std::nullopt;
   if (scoped_to_tab) {
     if (!current_task) {
       RecordSessionEndMetrics();
-    } else if (!IsPanelOpenOnOtherTabOfTask(current_task->GetTaskId())) {
+    } else if (!is_open_on_other_tab) {
       if (auto it =
               task_id_to_web_contents_cache_.find(current_task->GetTaskId());
           it != task_id_to_web_contents_cache_.end() && it->second) {
