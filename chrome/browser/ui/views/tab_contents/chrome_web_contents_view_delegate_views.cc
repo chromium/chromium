@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_guard.h"
 #include "content/public/common/drop_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "ui/base/base_window.h"
@@ -106,6 +107,9 @@ void ChromeWebContentsViewDelegateViews::ShowMenu(
 void ChromeWebContentsViewDelegateViews::ShowContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  // Prevents callbacks and re-entrancy from destroying the contents (and
+  // therefore this object) underneath the call.
+  content::WebContentsGuard guard(*web_contents_);
   BuildMenuAsync(render_frame_host, params,
                  base::BindOnce(&ChromeWebContentsViewDelegateViews::ShowMenu,
                                 weak_ptr_factory_.GetWeakPtr()));
