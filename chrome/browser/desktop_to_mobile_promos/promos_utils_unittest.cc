@@ -7,6 +7,7 @@
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -996,6 +997,43 @@ TEST_F(IOSPromoOnDesktopTest, IOSDesktopNtpPromoShownTest) {
               ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
               .back()),
       after);
+}
+
+// Tests that Safety promo impressions and opt-outs enforce global cooldown,
+// lifetime impression, and opt-out limits across Desktop-to-iOS promos.
+TEST_F(IOSPromoOnDesktopTest, SafetyPromoEnforcesGlobalLimits) {
+  EXPECT_TRUE(IsIOSDesktopPromoAllowedByGlobalImpressions(profile()));
+
+  // Showing Safety records the impression and starts the 90-day cooldown.
+  IOSDesktopPromoShown(profile(), PromoType::kSafety);
+  EXPECT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSSafetyPromoImpressionsCounter),
+            1);
+  EXPECT_FALSE(IsIOSDesktopPromoAllowedByGlobalImpressions(profile()));
+
+  prefs()->SetTime(
+      promos_prefs::kDesktopToiOSSafetyPromoLastImpressionTimestamp,
+      base::Time::Now() - base::Days(91));
+  EXPECT_TRUE(IsIOSDesktopPromoAllowedByGlobalImpressions(profile()));
+
+  // Safety's impression counts toward the 10-impression global cap.
+  prefs()->SetInteger(
+      promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 8);
+  EXPECT_TRUE(IsIOSDesktopPromoAllowedByGlobalImpressions(profile()));
+  prefs()->SetInteger(
+      promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 9);
+  EXPECT_FALSE(IsIOSDesktopPromoAllowedByGlobalImpressions(profile()));
+  prefs()->SetInteger(
+      promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 0);
+
+  // Opting out of Safety counts toward the 2-opt-out global cap.
+  IOSPromoPrefsConfig safety_prefs(PromoType::kSafety);
+  prefs()->SetBoolean(safety_prefs.promo_opt_out_pref_name, true);
+  EXPECT_TRUE(
+      prefs()->GetBoolean(promos_prefs::kDesktopToiOSSafetyPromoOptOut));
+  EXPECT_TRUE(IsIOSDesktopPromoAllowedByGlobalImpressions(profile()));
+  prefs()->SetBoolean(promos_prefs::kDesktopToiOSPasswordPromoOptOut, true);
+  EXPECT_FALSE(IsIOSDesktopPromoAllowedByGlobalImpressions(profile()));
 }
 
 }  // namespace promos_utils

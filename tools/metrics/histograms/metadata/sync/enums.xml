@@ -843,6 +843,9 @@ chromium-metrics-reviews@google.com.
   <int value="100388" label="GlicSmartSelectionAutoPinnedMigration"/>
   <int value="100389" label="ArticlesListVisibleOnPhone"/>
   <int value="100390" label="ArticlesListVisibleOnTablet"/>
+  <int value="100391" label="iOSSafetyPromoLastImpressionTimestamp"/>
+  <int value="100392" label="iOSSafetyPromoImpressionsCounter"/>
+  <int value="100393" label="iOSSafetyPromoOptOut"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

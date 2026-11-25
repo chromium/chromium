@@ -102,7 +102,9 @@ bool VerifyIOSDesktopPromoTotalImpressions(Profile* profile,
       profile->GetPrefs()->GetInteger(
           promos_prefs::kDesktopToiOSTabGroupsPromoImpressionsCounter) +
       profile->GetPrefs()->GetInteger(
-          promos_prefs::kDesktopToiOSPriceTrackingPromoImpressionsCounter);
+          promos_prefs::kDesktopToiOSPriceTrackingPromoImpressionsCounter) +
+      profile->GetPrefs()->GetInteger(
+          promos_prefs::kDesktopToiOSSafetyPromoImpressionsCounter);
 
   if (!skip_ntp_promo) {
     // The Desktop NTP promo shows 10 times in quick succession, but that only
@@ -133,7 +135,9 @@ bool VerifyIOSDesktopPromoTotalOptOuts(Profile* profile) {
       profile->GetPrefs()->GetBoolean(
           promos_prefs::kDesktopToiOSTabGroupsPromoOptOut),
       profile->GetPrefs()->GetBoolean(
-          promos_prefs::kDesktopToiOSPriceTrackingPromoOptOut)};
+          promos_prefs::kDesktopToiOSPriceTrackingPromoOptOut),
+      profile->GetPrefs()->GetBoolean(
+          promos_prefs::kDesktopToiOSSafetyPromoOptOut)};
 
   int total_desktop_promo_opt_outs_counter =
       std::count(promo_opt_outs.begin(), promo_opt_outs.end(), true);
@@ -164,6 +168,8 @@ bool VerifyMostRecentPromoTimestamp(Profile* profile,
           promos_prefs::kDesktopToiOSTabGroupsPromoLastImpressionTimestamp),
       profile->GetPrefs()->GetTime(
           promos_prefs::kDesktopToiOSPriceTrackingPromoLastImpressionTimestamp),
+      profile->GetPrefs()->GetTime(
+          promos_prefs::kDesktopToiOSSafetyPromoLastImpressionTimestamp),
   };
 
   if (!skip_ntp_promo) {
@@ -328,7 +334,11 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(PromoType promo_type) {
 #if !BUILDFLAG(IS_ANDROID)
       promo_feature = &feature_engagement::kIPHiOSSafetyPromoDesktopFeature;
 #endif  // !BUILDFLAG(IS_ANDROID)
-      // TODO(crbug.com/586964303): Add Safety prefs.
+      promo_impressions_counter_pref_name =
+          promos_prefs::kDesktopToiOSSafetyPromoImpressionsCounter;
+      promo_opt_out_pref_name = promos_prefs::kDesktopToiOSSafetyPromoOptOut;
+      promo_last_impression_timestamp_pref_name =
+          promos_prefs::kDesktopToiOSSafetyPromoLastImpressionTimestamp;
       break;
   }
 }
@@ -403,6 +413,16 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       promos_prefs::kDesktopToiOSPriceTrackingPromoOptOut, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  registry->RegisterTimePref(
+      promos_prefs::kDesktopToiOSSafetyPromoLastImpressionTimestamp,
+      base::Time(), user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      promos_prefs::kDesktopToiOSSafetyPromoImpressionsCounter, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      promos_prefs::kDesktopToiOSSafetyPromoOptOut, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   registry->RegisterListPref(
