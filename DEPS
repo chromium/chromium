@@ -2683,7 +2683,7 @@ deps = {
     Var('chromium_git') + '/chromiumos/platform/libva-fake-driver.git' + '@' + '04f902b9ba9f8083b19d22e7b55591bbcaae31c0',
 
   'src/third_party/libvpx/source/libvpx':
-    Var('chromium_git') + '/webm/libvpx.git' + '@' +  'de61454cf81594d5927899da122fc53dcc4a846e',
+    Var('chromium_git') + '/webm/libvpx.git' + '@' +  'bb981e8c2d351c1e6c426c39b882bb17609d8c27',
 
   'src/third_party/libwebm/source':
     Var('chromium_git') + '/webm/libwebm.git' + '@' + '6184f4484a826724b5293837134ab9492261b941',
