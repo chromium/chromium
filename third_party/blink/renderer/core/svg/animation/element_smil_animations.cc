@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/svg/animation/element_smil_animations.h"
 
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_sandwich.h"
+#include "third_party/blink/renderer/core/svg/svg_animation_element.h"
 
 namespace blink {
 
@@ -24,11 +25,18 @@ void ElementSMILAnimations::RemoveAnimation(const QualifiedName& attribute,
   auto it = sandwiches_.find(attribute);
   CHECK(it != sandwiches_.end());
 
-  auto& sandwich = *it->value;
-  sandwich.Remove(animation);
+  SMILAnimationSandwich* sandwich = it->value;
+  const bool should_clear = sandwich->Remove(animation);
 
-  if (sandwich.IsEmpty())
+  if (sandwich->IsEmpty()) {
     sandwiches_.erase(it);
+  }
+
+  // ClearAnimationValue() can re-entrantly mutate `sandwiches_`, so call it
+  // only after erasing `it`.
+  if (should_clear) {
+    animation->ClearAnimationValue();
+  }
 }
 
 bool ElementSMILAnimations::Apply(SMILTime elapsed) {

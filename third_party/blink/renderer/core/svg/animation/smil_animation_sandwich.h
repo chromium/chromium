@@ -100,7 +100,10 @@ class SMILAnimationSandwich : public GarbageCollected<SMILAnimationSandwich> {
   SMILAnimationSandwich();
 
   void Add(SVGAnimationElement* animation);
-  void Remove(SVGAnimationElement* animation);
+  // Removes `animation` from the sandwich. Returns true if the sandwich became
+  // empty while active, so the caller should clear the animated value on
+  // `animation` after updating its own container state.
+  bool Remove(SVGAnimationElement* animation);
 
   void UpdateActiveAnimationStack(SMILTime presentation_time);
   bool ApplyAnimationValues();

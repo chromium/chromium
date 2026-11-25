@@ -53,16 +53,17 @@ void SMILAnimationSandwich::Add(SVGAnimationElement* animation) {
   sandwich_.push_back(animation);
 }
 
-void SMILAnimationSandwich::Remove(SVGAnimationElement* animation) {
+bool SMILAnimationSandwich::Remove(SVGAnimationElement* animation) {
   auto position = std::ranges::find(sandwich_, animation);
   CHECK(sandwich_.end() != position);
   sandwich_.erase(position);
   // Clear the animated value when there are active animation elements but the
   // sandwich is empty.
   if (!active_.empty() && sandwich_.empty()) {
-    animation->ClearAnimationValue();
     active_.Shrink(0);
+    return true;
   }
+  return false;
 }
 
 void SMILAnimationSandwich::UpdateActiveAnimationStack(

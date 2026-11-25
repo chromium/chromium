@@ -249,6 +249,7 @@ void SVGAnimationElement::UnregisterAnimation(
     const QualifiedName& attribute_name) {
   if (!registered_animation_)
     return;
+  registered_animation_ = false;
   DCHECK(targetElement());
   SVGElement* target = targetElement();
   if (ElementSMILAnimations* smil_animations = target->GetSMILAnimations()) {
@@ -262,7 +263,6 @@ void SVGAnimationElement::UnregisterAnimation(
       }
     }
   }
-  registered_animation_ = false;
 }
 
 void SVGAnimationElement::RegisterAnimation(
