@@ -516,7 +516,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         assertEquals(
                 !attributionActionUrl.isEmpty(),
                 json.getJSONObject(NtpBackgroundDataThemeCollection.CUSTOM_BACKGROUND_INFO_KEY)
-                        .has(NtpBackgroundDataThemeCollection.ATTRIBUTION_ACTION_URL_KEY));
+                        .has(CustomBackgroundInfo.ATTRIBUTION_ACTION_URL_KEY));
         NtpBackgroundDataThemeCollection restored = NtpBackgroundDataThemeCollection.fromJson(json);
 
         assertEquals(platformType, restored.getPlatformType());

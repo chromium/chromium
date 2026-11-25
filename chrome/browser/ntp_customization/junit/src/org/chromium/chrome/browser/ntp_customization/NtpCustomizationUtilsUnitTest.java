@@ -64,6 +64,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -91,6 +92,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo.CustomBackgroundInfoVersion;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataImageBase;
@@ -1168,21 +1170,71 @@ public class NtpCustomizationUtilsUnitTest {
         assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
 
         CustomBackgroundInfo info =
-                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, COLLECTION_ID, false, true);
+                createCustomBackgroundInfoWithAttributions(JUnitTestGURLs.URL_1);
         NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(info);
 
-        CustomBackgroundInfo restoredInfo =
-                NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
-        assertEquals(JUnitTestGURLs.URL_1, restoredInfo.backgroundUrl);
-        assertEquals(COLLECTION_ID, restoredInfo.collectionId);
-        assertFalse(restoredInfo.isUploadedImage);
-        assertTrue(restoredInfo.isDailyRefreshEnabled);
+        assertRestoredCustomBackgroundInfo(info);
+    }
+
+    @Test
+    public void testGetCustomBackgroundInfo_legacyVersion_hasNoAttributions() {
+        ChromeSharedPreferences.getInstance()
+                .writeString(
+                        NTP_CUSTOMIZATION_BACKGROUND_INFO,
+                        JUnitTestGURLs.URL_1.getSpec() + "|" + COLLECTION_ID + "|false|true");
+
+        assertRestoredCustomBackgroundInfo(
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true,
+                        /* attributionLine1= */ null,
+                        /* attributionLine2= */ null,
+                        GURL.emptyGURL()));
+    }
+
+    @Test
+    public void testGetCustomBackgroundInfo_unknownVersion_returnsNull() throws JSONException {
+        ChromeSharedPreferences.getInstance()
+                .writeString(
+                        NTP_CUSTOMIZATION_BACKGROUND_INFO,
+                        createCustomBackgroundInfoWithAttributions(JUnitTestGURLs.URL_1)
+                                .toJson()
+                                .put(
+                                        CustomBackgroundInfo.VERSION_KEY,
+                                        CustomBackgroundInfoVersion.JSON_V1 + 1)
+                                .toString());
+
+        assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
+    }
+
+    @Test
+    public void testGetCustomBackgroundInfo_malformedJson_returnsNull() {
+        ChromeSharedPreferences.getInstance()
+                .writeString(NTP_CUSTOMIZATION_BACKGROUND_INFO, "{not_json");
+
+        assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
+    }
+
+    @Test
+    public void testGetCustomBackgroundInfo_invalidBackgroundUrl_returnsNull() {
+        NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(
+                createCustomBackgroundInfoWithAttributions(GURL.emptyGURL()));
+        assertTrue(
+                ChromeSharedPreferences.getInstance().contains(NTP_CUSTOMIZATION_BACKGROUND_INFO));
+
+        assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
     }
 
     @Test
     public void testRemoveCustomBackgroundInfoFromSharedPreference() {
         CustomBackgroundInfo info =
-                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, COLLECTION_ID, false, true);
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
         NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(info);
         NtpCustomizationUtils.removeCustomBackgroundInfoFromSharedPreference();
         assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
@@ -2307,5 +2359,30 @@ public class NtpCustomizationUtilsUnitTest {
         expectedLandscapeMatrix.setScale(
                 DAILY_REFRESH_LANDSCAPE_SCALE, DAILY_REFRESH_LANDSCAPE_SCALE);
         assertEquals(expectedLandscapeMatrix, restoredMatrices.getLandscapeMatrix());
+    }
+
+    private static CustomBackgroundInfo createCustomBackgroundInfoWithAttributions(
+            GURL backgroundUrl) {
+        return new CustomBackgroundInfo(
+                backgroundUrl,
+                COLLECTION_ID,
+                /* isUploadedImage= */ false,
+                /* isDailyRefreshEnabled= */ true,
+                /* attributionLine1= */ "Attribution line 1",
+                /* attributionLine2= */ "Attribution line 2",
+                JUnitTestGURLs.URL_3);
+    }
+
+    private static void assertRestoredCustomBackgroundInfo(CustomBackgroundInfo expectedInfo) {
+        CustomBackgroundInfo restoredInfo =
+                NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
+        assertNotNull(restoredInfo);
+        assertEquals(expectedInfo.backgroundUrl, restoredInfo.backgroundUrl);
+        assertEquals(expectedInfo.collectionId, restoredInfo.collectionId);
+        assertEquals(expectedInfo.isUploadedImage, restoredInfo.isUploadedImage);
+        assertEquals(expectedInfo.isDailyRefreshEnabled, restoredInfo.isDailyRefreshEnabled);
+        assertEquals(expectedInfo.attributionLine1, restoredInfo.attributionLine1);
+        assertEquals(expectedInfo.attributionLine2, restoredInfo.attributionLine2);
+        assertEquals(expectedInfo.attributionActionUrl, restoredInfo.attributionActionUrl);
     }
 }

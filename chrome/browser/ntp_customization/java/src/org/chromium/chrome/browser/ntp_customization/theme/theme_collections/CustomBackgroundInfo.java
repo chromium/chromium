@@ -4,16 +4,46 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Objects;
 
 /** A class to hold information about a custom background. */
 @NullMarked
 public class CustomBackgroundInfo {
+    /** The version of a {@link CustomBackgroundInfo} string stored in SharedPreferences. */
+    @IntDef({CustomBackgroundInfoVersion.LEGACY, CustomBackgroundInfoVersion.JSON_V1})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CustomBackgroundInfoVersion {
+        // The old format: "backgroundUrl|collectionId|isUploadedImage|isDailyRefreshEnabled".
+        // It only has these four fields. Chrome can still read it, but no longer writes it.
+        int LEGACY = 0;
+        // JSON with all fields of CustomBackgroundInfo, plus the version number.
+        int JSON_V1 = 1;
+    }
+
+    public static final String VERSION_KEY = "version";
+    private static final String BACKGROUND_URL_KEY = "backgroundUrl";
+    private static final String COLLECTION_ID_KEY = "collectionId";
+    private static final String IS_UPLOADED_IMAGE_KEY = "isUploadedImage";
+    private static final String IS_DAILY_REFRESH_ENABLED_KEY = "isDailyRefreshEnabled";
+    private static final String ATTRIBUTION_LINE_1_KEY = "attributionLine1";
+    private static final String ATTRIBUTION_LINE_2_KEY = "attributionLine2";
+
+    @VisibleForTesting
+    public static final String ATTRIBUTION_ACTION_URL_KEY = "attributionActionUrl";
+
     public final GURL backgroundUrl;
     public final String collectionId;
     public final boolean isUploadedImage;
@@ -122,6 +152,53 @@ public class CustomBackgroundInfo {
                 attributions != null && attributions.size() > 0 ? attributions.get(0) : null,
                 attributions != null && attributions.size() > 1 ? attributions.get(1) : null,
                 attributionActionUrl);
+    }
+
+    /**
+     * Returns the JSON representation of the object, which includes the version. Attributions that
+     * aren't set are left out.
+     */
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put(VERSION_KEY, CustomBackgroundInfoVersion.JSON_V1);
+        json.put(
+                BACKGROUND_URL_KEY,
+                backgroundUrl == null ? null : backgroundUrl.getPossiblyInvalidSpec());
+        json.put(COLLECTION_ID_KEY, collectionId);
+        json.put(IS_UPLOADED_IMAGE_KEY, isUploadedImage);
+        json.put(IS_DAILY_REFRESH_ENABLED_KEY, isDailyRefreshEnabled);
+        if (attributionLine1 != null) {
+            json.put(ATTRIBUTION_LINE_1_KEY, attributionLine1);
+        }
+        if (attributionLine2 != null) {
+            json.put(ATTRIBUTION_LINE_2_KEY, attributionLine2);
+        }
+        if (!attributionActionUrl.isEmpty()) {
+            json.put(ATTRIBUTION_ACTION_URL_KEY, attributionActionUrl.getPossiblyInvalidSpec());
+        }
+        return json;
+    }
+
+    /** Returns the CustomBackgroundInfo object from the given JSON. */
+    public static CustomBackgroundInfo fromJson(JSONObject json) throws JSONException {
+        String attributionLine1 =
+                json.has(ATTRIBUTION_LINE_1_KEY) ? json.getString(ATTRIBUTION_LINE_1_KEY) : null;
+        String attributionLine2 =
+                json.has(ATTRIBUTION_LINE_2_KEY) ? json.getString(ATTRIBUTION_LINE_2_KEY) : null;
+        return new CustomBackgroundInfo(
+                getGurlFromJson(json, BACKGROUND_URL_KEY),
+                json.getString(COLLECTION_ID_KEY),
+                json.getBoolean(IS_UPLOADED_IMAGE_KEY),
+                json.getBoolean(IS_DAILY_REFRESH_ENABLED_KEY),
+                attributionLine1,
+                attributionLine2,
+                getGurlFromJson(json, ATTRIBUTION_ACTION_URL_KEY));
+    }
+
+    /** Returns the GURL stored under the key, or {@link GURL#emptyGURL()} if missing or empty. */
+    private static GURL getGurlFromJson(JSONObject json, String key) {
+        String spec = json.optString(key);
+        return spec.isEmpty() ? GURL.emptyGURL() : new GURL(spec);
     }
 
     /**

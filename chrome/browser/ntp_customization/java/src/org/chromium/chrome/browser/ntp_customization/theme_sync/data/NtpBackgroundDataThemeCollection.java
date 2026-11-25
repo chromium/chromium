@@ -19,7 +19,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +28,6 @@ import java.util.Objects;
 @NullMarked
 public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase {
     @VisibleForTesting static final String CUSTOM_BACKGROUND_INFO_KEY = "customBackgroundInfo";
-    @VisibleForTesting static final String BACKGROUND_URL_KEY = "backgroundUrl";
-    @VisibleForTesting static final String COLLECTION_ID_KEY = "collectionId";
-    @VisibleForTesting static final String IS_UPLOADED_IMAGE_KEY = "isUploadedImage";
-    @VisibleForTesting static final String IS_DAILY_REFRESH_ENABLED_KEY = "isDailyRefreshEnabled";
-    @VisibleForTesting static final String ATTRIBUTION_LINE_1_KEY = "attributionLine1";
-    @VisibleForTesting static final String ATTRIBUTION_LINE_2_KEY = "attributionLine2";
-    @VisibleForTesting static final String ATTRIBUTION_ACTION_URL_KEY = "attributionActionUrl";
 
     private final CustomBackgroundInfo mCustomBackgroundInfo;
 
@@ -129,7 +121,7 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
-        json.put(CUSTOM_BACKGROUND_INFO_KEY, customBackgroundInfoToJson());
+        json.put(CUSTOM_BACKGROUND_INFO_KEY, mCustomBackgroundInfo.toJson());
         return json;
     }
 
@@ -189,7 +181,7 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
         NtpBackgroundDataThemeCollection data =
                 new NtpBackgroundDataThemeCollection(
                         json.getInt(PLATFORM_TYPE_KEY),
-                        jsonObjectToCustomBackgroundInfo(
+                        CustomBackgroundInfo.fromJson(
                                 json.getJSONObject(CUSTOM_BACKGROUND_INFO_KEY)),
                         backgroundImageInfo,
                         /* bitmap= */ null,
@@ -197,52 +189,6 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
                         json.has(FILE_ID_HASH_KEY) ? json.getString(FILE_ID_HASH_KEY) : null);
         data.setIsBitmapSavedFromJson(json);
         return data;
-    }
-
-    private static CustomBackgroundInfo jsonObjectToCustomBackgroundInfo(JSONObject json)
-            throws JSONException {
-        String attributionLine1 =
-                json.has(ATTRIBUTION_LINE_1_KEY) ? json.getString(ATTRIBUTION_LINE_1_KEY) : null;
-        String attributionLine2 =
-                json.has(ATTRIBUTION_LINE_2_KEY) ? json.getString(ATTRIBUTION_LINE_2_KEY) : null;
-        return new CustomBackgroundInfo(
-                getGurlFromJson(json, BACKGROUND_URL_KEY),
-                json.getString(COLLECTION_ID_KEY),
-                json.getBoolean(IS_UPLOADED_IMAGE_KEY),
-                json.getBoolean(IS_DAILY_REFRESH_ENABLED_KEY),
-                attributionLine1,
-                attributionLine2,
-                getGurlFromJson(json, ATTRIBUTION_ACTION_URL_KEY));
-    }
-
-    /** Returns the GURL stored under the key, or {@link GURL#emptyGURL()} if missing or empty. */
-    private static GURL getGurlFromJson(JSONObject json, String key) {
-        String spec = json.optString(key);
-        return spec.isEmpty() ? GURL.emptyGURL() : new GURL(spec);
-    }
-
-    private JSONObject customBackgroundInfoToJson() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put(
-                BACKGROUND_URL_KEY,
-                mCustomBackgroundInfo.backgroundUrl == null
-                        ? null
-                        : mCustomBackgroundInfo.backgroundUrl.getPossiblyInvalidSpec());
-        json.put(COLLECTION_ID_KEY, mCustomBackgroundInfo.collectionId);
-        json.put(IS_UPLOADED_IMAGE_KEY, mCustomBackgroundInfo.isUploadedImage);
-        json.put(IS_DAILY_REFRESH_ENABLED_KEY, mCustomBackgroundInfo.isDailyRefreshEnabled);
-        if (mCustomBackgroundInfo.attributionLine1 != null) {
-            json.put(ATTRIBUTION_LINE_1_KEY, mCustomBackgroundInfo.attributionLine1);
-        }
-        if (mCustomBackgroundInfo.attributionLine2 != null) {
-            json.put(ATTRIBUTION_LINE_2_KEY, mCustomBackgroundInfo.attributionLine2);
-        }
-        if (!mCustomBackgroundInfo.attributionActionUrl.isEmpty()) {
-            json.put(
-                    ATTRIBUTION_ACTION_URL_KEY,
-                    mCustomBackgroundInfo.attributionActionUrl.getPossiblyInvalidSpec());
-        }
-        return json;
     }
 
     /** Joins the non-empty attribution lines with a comma and a space. */

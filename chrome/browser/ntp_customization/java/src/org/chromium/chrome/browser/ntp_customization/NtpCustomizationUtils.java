@@ -71,6 +71,8 @@ import com.google.android.material.color.DynamicColorsOptions;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -92,6 +94,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo.CustomBackgroundInfoVersion;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
@@ -234,7 +237,7 @@ public class NtpCustomizationUtils {
     private static final int IMAGE_SIZE_FOR_EXTRACTING_COLOR = 100;
     private static final String TAG = "NtpCustomization";
     private static final String DELIMITER = "|";
-    private static final int CUSTOM_BACKGROUND_INFO_NUM_FIELDS = 4;
+    private static final int LEGACY_CUSTOM_BACKGROUND_INFO_NUM_FIELDS = 4;
     private static @Nullable ImageFetcher sImageFetcherForTesting;
 
     /**
@@ -1414,8 +1417,8 @@ public class NtpCustomizationUtils {
     }
 
     /**
-     * Converts a {@link CustomBackgroundInfo} object into a string representation for storage.
-     * Format: "backgroundUrl|collectionId|isUploadedImage|isDailyRefreshEnabled"
+     * Converts a {@link CustomBackgroundInfo} object into a string representation for storage. The
+     * string has the version {@link CustomBackgroundInfoVersion#JSON_V1}.
      *
      * @param info The {@link CustomBackgroundInfo} object to convert.
      */
@@ -1425,23 +1428,19 @@ public class NtpCustomizationUtils {
             return null;
         }
 
-        String backgroundUrlStr = info.backgroundUrl.getPossiblyInvalidSpec();
-
-        return TextUtils.join(
-                DELIMITER,
-                new String[] {
-                    backgroundUrlStr,
-                    info.collectionId,
-                    String.valueOf(info.isUploadedImage),
-                    String.valueOf(info.isDailyRefreshEnabled)
-                });
+        try {
+            return info.toJson().toString();
+        } catch (JSONException e) {
+            Log.i(TAG, "Error converting CustomBackgroundInfo to string: " + e.getMessage(), e);
+            return null;
+        }
     }
 
     /**
-     * Converts a string representation back into a {@link CustomBackgroundInfo} object. Expects
-     * format: "backgroundUrl|collectionId|isUploadedImage|isDailyRefreshEnabled"
+     * Converts a stored string back into a {@link CustomBackgroundInfo} object. Returns null if the
+     * string can't be parsed, its version is unknown or the background URL isn't valid.
      *
-     * @param infoString The string to convert.
+     * @param infoString The string written by {@link #customBackgroundInfoToString}.
      */
     private static @Nullable CustomBackgroundInfo stringToCustomBackgroundInfo(
             @Nullable String infoString) {
@@ -1449,10 +1448,39 @@ public class NtpCustomizationUtils {
             return null;
         }
 
+        // A string of the legacy version isn't JSON and has no version field. It starts with the
+        // background URL.
+        // TODO(crbug.com/488439751): Remove the legacy version once no stored string uses it.
+        if (!infoString.startsWith("{")) return legacyStringToCustomBackgroundInfo(infoString);
+
+        try {
+            JSONObject json = new JSONObject(infoString);
+            // A string of a version which this build doesn't know can't be read.
+            if (json.getInt(CustomBackgroundInfo.VERSION_KEY)
+                    != CustomBackgroundInfoVersion.JSON_V1) {
+                return null;
+            }
+
+            CustomBackgroundInfo info = CustomBackgroundInfo.fromJson(json);
+            return info.backgroundUrl.isValid() ? info : null;
+        } catch (JSONException e) {
+            Log.i(TAG, "Error parsing CustomBackgroundInfo from string: " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    /**
+     * Converts a string of the version {@link CustomBackgroundInfoVersion#LEGACY} back into a
+     * {@link CustomBackgroundInfo} object, which has no attributions.
+     *
+     * @param infoString The string to convert.
+     */
+    private static @Nullable CustomBackgroundInfo legacyStringToCustomBackgroundInfo(
+            String infoString) {
         String[] parts =
                 infoString.split(
                         "\\" + DELIMITER, -1); // Limit -1 to include trailing empty strings
-        if (parts.length != CUSTOM_BACKGROUND_INFO_NUM_FIELDS || parts[0].isEmpty()) {
+        if (parts.length != LEGACY_CUSTOM_BACKGROUND_INFO_NUM_FIELDS || parts[0].isEmpty()) {
             return null;
         }
 
