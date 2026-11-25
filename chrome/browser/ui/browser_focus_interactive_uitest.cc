@@ -253,6 +253,37 @@ class BrowserFocusTest : public InteractiveBrowserTest {
     WaitForInitialWebUIToolbar(browser_interface);
   }
 
+  // Waits for the WebUI toolbar page's focus state and Mojo pipes to settle
+  // with Views focus. No-op when the WebUI toolbar is not enabled.
+  void WaitForWebUIToolbarFocusToSettle() {
+    WebUIToolbarWebView* webui_toolbar = GetWebUIToolbarWebView(browser());
+    if (!webui_toolbar) {
+      return;
+    }
+    // Flushing the pipes is only sufficient once the toolbar page has sent
+    // its omnibox focus notification. The page sends it from the omnibox
+    // input's `focus`/`blur` handler, and Blink only dispatches those events
+    // on the active element once the page itself is focused. That page-level
+    // focus state (RenderWidgetHostImpl::SetPageFocus()) travels over the
+    // widget input pipe, which is not ordered with respect to the frame
+    // interface used by SetInitialFocus() and by the flush below. So when
+    // tab traversal moves Views focus onto the toolbar WebView, the omnibox
+    // element may already be document.activeElement while the page is not
+    // yet focused, and a flush at that point would complete without the
+    // focus notification. Wait for the page's focus state to agree with the
+    // Views focused view first.
+    views::WebView* toolbar_web_view = webui_toolbar->GetWebViewForTesting();
+    const bool toolbar_page_focused =
+        toolbar_web_view->Contains(GetFocusManager()->GetFocusedView());
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(toolbar_web_view->web_contents(),
+                             "document.hasFocus()")
+                 .ExtractBool() == toolbar_page_focused;
+    })) << "Toolbar page focus did not settle to "
+        << toolbar_page_focused;
+    ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
+  }
+
   void FocusNextElement(bool reverse) {
     std::vector<content::WebContents*> web_contents = {
         browser()->tab_strip_model()->GetActiveWebContents()};
@@ -273,30 +304,7 @@ class BrowserFocusTest : public InteractiveBrowserTest {
     // by IsViewFocused(VIEW_ID_OMNIBOX) travels over the separate
     // ToolbarUIService pipe. Settle the toolbar pipes so callers observe the
     // state that corresponds to the focus change they just waited for.
-    if (webui_toolbar) {
-      // Flushing the pipes is only sufficient once the toolbar page has sent
-      // its omnibox focus notification. The page sends it from the omnibox
-      // input's `focus`/`blur` handler, and Blink only dispatches those events
-      // on the active element once the page itself is focused. That page-level
-      // focus state (RenderWidgetHostImpl::SetPageFocus()) travels over the
-      // widget input pipe, which is not ordered with respect to the frame
-      // interface used by SetInitialFocus() and by the flush below. So when
-      // tab traversal moves Views focus onto the toolbar WebView, the omnibox
-      // element may already be document.activeElement while the page is not
-      // yet focused, and a flush at that point would complete without the
-      // focus notification. Wait for the page's focus state to agree with the
-      // Views focused view first.
-      views::WebView* toolbar_web_view = webui_toolbar->GetWebViewForTesting();
-      const bool toolbar_page_focused =
-          toolbar_web_view->Contains(GetFocusManager()->GetFocusedView());
-      ASSERT_TRUE(base::test::RunUntil([&]() {
-        return content::EvalJs(toolbar_web_view->web_contents(),
-                               "document.hasFocus()")
-                   .ExtractBool() == toolbar_page_focused;
-      })) << "Toolbar page focus did not settle to "
-          << toolbar_page_focused;
-      ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
-    }
+    ASSERT_NO_FATAL_FAILURE(WaitForWebUIToolbarFocusToSettle());
   }
 
   void TestFocusTraversal(bool reverse) {
@@ -991,6 +999,12 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NavigateFromOmnibox) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   chrome::FocusLocationBar(browser());
   ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
+  // With the WebUI location bar, `FocusLocationBar()` marks the browser-side
+  // edit model focused synchronously while sending the DOM focus request to the
+  // toolbar renderer asynchronously over Mojo. Settle toolbar focus and pipes
+  // before setting text and sending Enter so the key press lands on the focused
+  // `<input>`.
+  ASSERT_NO_FATAL_FAILURE(WaitForWebUIToolbarFocusToSettle());
   OmniboxView* view =
       BrowserWindow::FromBrowser(browser())->GetLocationBar()->GetOmniboxView();
 
