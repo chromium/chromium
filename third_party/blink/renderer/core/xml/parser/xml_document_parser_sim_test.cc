@@ -626,6 +626,58 @@ TEST_F(XMLDocumentParserSimTest,
   }
 }
 
+TEST_F(XMLDocumentParserSimTest, EmbeddedStylesheetInNestedEntity) {
+  ScopedXSLTForTest enable_xslt(true);
+  ScopedEnableXSLTForCAPAlertsForTest enable_cap(true);
+
+  SimRequest main_resource("https://example.com/test.xml", "application/xml");
+  LoadURL("https://example.com/test.xml");
+  main_resource.Write(
+      "<?xml version=\"1.0\"?>\n"
+      "<?xml-stylesheet type=\"text/xsl\" href=\"#style\"?>\n"
+      "<!DOCTYPE alert [\n"
+      "<!ENTITY inner \"<xsl:stylesheet version='1.0' xml:id='style' "
+      "xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>"
+      "<xsl:template match='/'>"
+      "<html><body><h1>Transformed</h1></body></html>"
+      "</xsl:template></xsl:stylesheet>\">\n"
+      "<!ENTITY outer \"<!--placeholder_padding_text_value-->&inner;\">\n"
+      "]>\n"
+      "<alert xmlns=\"urn:oasis:names:tc:emergency:cap:1.2\">\n"
+      "  &outer;\n"
+      "  <info>Emergency</info>\n"
+      "</alert>");
+  main_resource.Finish();
+  test::RunPendingTasks();
+
+  Document* transformed_doc = MainFrame().GetFrame()->GetDocument();
+  ASSERT_TRUE(transformed_doc);
+
+  // The test requires building with ASan to catch a crash.
+  ASSERT_TRUE(transformed_doc->documentElement());
+  EXPECT_EQ(transformed_doc->documentElement()->tagName(), "HTML");
+  EXPECT_EQ(transformed_doc->body()->textContent(), "Transformed");
+}
+
+TEST_F(XMLDocumentParserSimTest, EmbeddedNonStylesheetElementInNestedEntity) {
+  ScopedXSLTForTest disable_xslt(false);
+  ScopedEnableXSLTForCAPAlertsForTest enable_cap(true);
+
+  SimRequest main_resource("https://example.com/test.xml", "application/xml");
+  LoadURL("https://example.com/test.xml");
+  main_resource.Write(
+      "<?xml-stylesheet type=\"text/xsl\" href=\"#s\"?>\n"
+      "<!DOCTYPE alert [\n"
+      "<!ENTITY a \"<x xml:id='s'/>\">\n"
+      "<!ENTITY b \"<!--placeholder_padding_text_value-->&a;\">\n"
+      "]>\n"
+      "<alert xmlns=\"urn:oasis:names:tc:emergency:cap:1.2\">&b;</alert>");
+  main_resource.Finish();
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(GetDocument().LoadEventFinished());
+}
+
 }  // namespace
 
 }  // namespace blink

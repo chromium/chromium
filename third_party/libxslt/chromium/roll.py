@@ -78,6 +78,7 @@ PATCHES = [
     '0007-Return-an-empty-node-set-from-document-function-with-invalid-uri.patch',
     '0008-Fix-use-after-free-in-direct-pattern-match-cache.patch',
     '0009-Fix-key-pattern-parsing-and-validate-node-document-i.patch',
+    '0010-Check-element-node-type-in-xsltLoadStylesheetPI.patch',
     '0011-Check-allocation-failure-in-xsltAddTextString.patch',
 ]
 

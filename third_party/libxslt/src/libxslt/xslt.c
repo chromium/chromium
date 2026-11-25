@@ -6983,7 +6983,8 @@ xsltLoadStylesheetPI(xmlDocPtr doc) {
 		ID = xmlGetID(doc, (const xmlChar *) &(URI->fragment[1]));
 	    else
 		ID = xmlGetID(doc, (const xmlChar *) URI->fragment);
-	    if (ID == NULL) {
+	    if ((ID == NULL) || (ID->parent == NULL) ||
+		(ID->parent->type != XML_ELEMENT_NODE)) {
 		xsltTransformError(NULL, NULL, child,
 		    "xml-stylesheet : no ID %s found\n", URI->fragment);
 	    } else {
@@ -7028,9 +7029,12 @@ xsltLoadStylesheetPI(xmlDocPtr doc) {
 		    * Add all namespaces in scope of embedded stylesheet to
 		    * root element of newly created stylesheet document
 		    */
-		    while ((subtree = subtree->parent) != (xmlNodePtr)doc) {
-			for (ns = subtree->ns; ns; ns = ns->next) {
-			    xmlNewNs(newtree,  ns->href, ns->prefix);
+		    while (((subtree = subtree->parent) != NULL) &&
+			   (subtree != (xmlNodePtr)doc)) {
+			if (subtree->type == XML_ELEMENT_NODE) {
+			    for (ns = subtree->ns; ns; ns = ns->next) {
+				xmlNewNs(newtree,  ns->href, ns->prefix);
+			    }
 			}
 		    }
 

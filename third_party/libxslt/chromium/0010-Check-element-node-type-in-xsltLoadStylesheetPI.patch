@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Emmanuele Bassi <ebassi@igalia.com>
+Date: Thu, 22 Oct 2026 00:00:00 +0000
+Subject: [PATCH] Check element node type in xsltLoadStylesheetPI
+
+When loading an embedded stylesheet in xsltLoadStylesheetPI, ancestor
+nodes are traversed up to the document node to copy in-scope namespaces.
+If the element holding the target ID resides inside an entity
+declaration, the ancestor chain includes non-element nodes such as
+XML_ENTITY_DECL and XML_DTD_NODE, which do not have the `ns` field of
+`xmlNode`.
+
+Verify that the target node and each ancestor visited during the
+namespace traversal is a non-null XML_ELEMENT_NODE before accessing
+element-specific fields such as `subtree->ns`.
+
+Bug: 576097083
+---
+ libxslt/xslt.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/libxslt/xslt.c b/libxslt/xslt.c
+index 594696199b658..e8e3f5945d89a 100644
+--- a/libxslt/xslt.c
++++ b/libxslt/xslt.c
+@@ -6983,7 +6983,8 @@ xsltLoadStylesheetPI(xmlDocPtr doc) {
+ 		ID = xmlGetID(doc, (const xmlChar *) &(URI->fragment[1]));
+ 	    else
+ 		ID = xmlGetID(doc, (const xmlChar *) URI->fragment);
+-	    if (ID == NULL) {
++	    if ((ID == NULL) || (ID->parent == NULL) ||
++		(ID->parent->type != XML_ELEMENT_NODE)) {
+ 		xsltTransformError(NULL, NULL, child,
+ 		    "xml-stylesheet : no ID %s found\n", URI->fragment);
+ 	    } else {
+@@ -7028,9 +7029,12 @@ xsltLoadStylesheetPI(xmlDocPtr doc) {
+ 		    * Add all namespaces in scope of embedded stylesheet to
+ 		    * root element of newly created stylesheet document
+ 		    */
+-		    while ((subtree = subtree->parent) != (xmlNodePtr)doc) {
+-			for (ns = subtree->ns; ns; ns = ns->next) {
+-			    xmlNewNs(newtree,  ns->href, ns->prefix);
++		    while (((subtree = subtree->parent) != NULL) &&
++			   (subtree != (xmlNodePtr)doc)) {
++			if (subtree->type == XML_ELEMENT_NODE) {
++			    for (ns = subtree->ns; ns; ns = ns->next) {
++				xmlNewNs(newtree,  ns->href, ns->prefix);
++			    }
+ 			}
+ 		    }
+ 
+-- 
