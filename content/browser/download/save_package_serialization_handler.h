@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
-#include "content/common/frame.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 
 namespace content {
 
@@ -19,7 +19,7 @@ namespace content {
 // being serialized, while |done_callback| will simply notify when the
 // serialization process is finished.
 class CONTENT_EXPORT SavePackageSerializationHandler
-    : public mojom::FrameHTMLSerializerHandler {
+    : public blink::mojom::FrameHTMLSerializerHandler {
  public:
   using DidReceiveDataCallback =
       base::RepeatingCallback<void(const std::string&)>;
@@ -36,7 +36,7 @@ class CONTENT_EXPORT SavePackageSerializationHandler
 
   ~SavePackageSerializationHandler() override;
 
-  // mojom::FrameHTMLSerializerHandler implementation:
+  // blink::mojom::FrameHTMLSerializerHandler implementation:
   void DidReceiveData(const std::string& data_buffer) override;
   void Done() override;
 

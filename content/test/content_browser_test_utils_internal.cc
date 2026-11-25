@@ -49,9 +49,13 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "ui/base/page_transition_types.h"
 
@@ -1067,6 +1071,76 @@ LoadFinishObserver::~LoadFinishObserver() = default;
 void LoadFinishObserver::DidFinishLoad(RenderFrameHost* render_frame_host,
                                        const GURL& validated_url) {
   callback_.Run(render_frame_host, validated_url);
+}
+
+namespace {
+
+class TestFrameHTMLSerializerHandler
+    : public blink::mojom::FrameHTMLSerializerHandler {
+ public:
+  TestFrameHTMLSerializerHandler(
+      mojo::PendingReceiver<blink::mojom::FrameHTMLSerializerHandler> receiver,
+      base::OnceClosure quit_closure)
+      : receiver_(this, std::move(receiver)),
+        quit_closure_(std::move(quit_closure)) {
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &TestFrameHTMLSerializerHandler::OnDisconnect, base::Unretained(this)));
+  }
+
+  void DidReceiveData(const std::string& data_buffer) override {
+    EXPECT_FALSE(done_);
+    serialized_contents_.append(data_buffer);
+  }
+
+  void Done() override {
+    EXPECT_FALSE(done_);
+    done_ = true;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  std::optional<std::string> TakeResult() {
+    if (!done_) {
+      return std::nullopt;
+    }
+    return std::move(serialized_contents_);
+  }
+
+ private:
+  void OnDisconnect() {
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  mojo::Receiver<blink::mojom::FrameHTMLSerializerHandler> receiver_;
+  base::OnceClosure quit_closure_;
+  std::string serialized_contents_;
+  bool done_ = false;
+};
+
+}  // namespace
+
+std::optional<std::string> GetSerializedHtmlWithLocalLinksForTesting(
+    RenderFrameHost* render_frame_host,
+    const base::flat_map<GURL, base::FilePath>& url_map,
+    const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
+    bool save_with_empty_url) {
+  auto* rfh_impl = static_cast<RenderFrameHostImpl*>(render_frame_host);
+  if (!rfh_impl || !rfh_impl->IsRenderFrameLive()) {
+    return std::nullopt;
+  }
+
+  base::RunLoop run_loop;
+  mojo::PendingRemote<blink::mojom::FrameHTMLSerializerHandler> handler_remote;
+  TestFrameHTMLSerializerHandler handler(
+      handler_remote.InitWithNewPipeAndPassReceiver(), run_loop.QuitClosure());
+
+  rfh_impl->GetSerializedHtmlWithLocalLinks(
+      url_map, frame_token_map, save_with_empty_url, std::move(handler_remote));
+  run_loop.Run();
+  return handler.TakeResult();
 }
 
 }  // namespace content

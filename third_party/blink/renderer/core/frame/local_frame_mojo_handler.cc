@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/frame/remote_frame_owner.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/savable_resources.h"
+#include "third_party/blink/renderer/core/frame/web_frame_serializer_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -1178,6 +1179,18 @@ void LocalFrameMojoHandler::GetSavableResourceLinks(
   reply->subframes = std::move(subframes);
 
   std::move(callback).Run(std::move(reply));
+}
+
+void LocalFrameMojoHandler::GetSerializedHtmlWithLocalLinks(
+    const HashMap<KURL, base::FilePath>& url_map,
+    const HashMap<FrameToken, base::FilePath>& frame_token_map,
+    bool save_with_empty_url,
+    mojo::PendingRemote<mojom::blink::FrameHTMLSerializerHandler>
+        handler_remote) {
+  WebFrameSerializerImpl serializer(frame_, url_map, frame_token_map,
+                                    save_with_empty_url,
+                                    std::move(handler_remote));
+  serializer.Serialize();
 }
 
 void LocalFrameMojoHandler::MixedContentFound(

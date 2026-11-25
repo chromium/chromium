@@ -1207,7 +1207,8 @@ void SavePackage::GetSerializedHtmlWithLocalLinksForFrame(
   // in progress. It's expected that the Done() callback will be called right
   // after the last time the DidReceiveData() callback gets invoked, at which
   // point the remote end of the pipe will be closed, disposing the receiver.
-  mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> serializer_handler;
+  mojo::PendingRemote<blink::mojom::FrameHTMLSerializerHandler>
+      serializer_handler;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SavePackageSerializationHandler>(
           base::BindRepeating(&SavePackage::OnDidReceiveSerializedHtmlData,

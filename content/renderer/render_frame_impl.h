@@ -114,7 +114,6 @@
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
-#include "third_party/blink/public/web/web_frame_serializer_client.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -833,12 +832,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void Delete(mojom::FrameDeleteIntention intent) override;
   void GetInterfaceProvider(
       mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver)
-      override;
-  void GetSerializedHtmlWithLocalLinks(
-      const base::flat_map<GURL, base::FilePath>& url_map,
-      const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
-      bool save_with_empty_url,
-      mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> handler_remote)
       override;
 
   void OnSerializeMHTMLComplete(

@@ -11,7 +11,6 @@ import "content/common/web_ui.mojom";
 import "content/public/common/extra_mojo_js_features.mojom";
 import "content/public/common/window_container_type.mojom";
 import "ipc/constants.mojom";
-import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "skia/public/mojom/skcolor.mojom";
@@ -373,19 +372,6 @@ struct CreateFrameParams {
   mojo_base.mojom.UnguessableToken? navigation_metrics_token;
 };
 
-// Provided with each call to Frame::GetSerializedHtmlWithLocalLinks() so that
-// the renderer can notify the browser process each time that a chunk of HTML
-// data gets serialized, as well as when the entire process is finished.
-interface FrameHTMLSerializerHandler {
-  // Sent by the renderer as a response to GetSerializedHtmlWithLocalLinks() to
-  // indicate that HTML data has been serialized, included in |data_buffer|.
-  DidReceiveData(string data_buffer);
-
-  // Reports that the serialization process is finished. It is expected to
-  // receive this message right after the last time DidReceiveData() is called.
-  Done();
-};
-
 // An enumeration specifying the reason of the frame deletion.
 enum FrameDeleteIntention {
   // The frame being deleted isn't a (speculative) main frame.
@@ -467,17 +453,6 @@ interface Frame {
 
   GetInterfaceProvider(
       pending_receiver<service_manager.mojom.InterfaceProvider> interfaces);
-
-  // Get HTML data by serializing the target frame and replacing all resource
-  // links with a path to the local copy passed in the message payload. In order
-  // to report progress to the the browser process, a pending remote is passed
-  // via |callback_remote|, so that direct communication with the SavePackage
-  // object that initiated the process can be established.
-  GetSerializedHtmlWithLocalLinks(
-      map<url.mojom.Url, mojo_base.mojom.FilePath> url_map,
-      map<blink.mojom.FrameToken, mojo_base.mojom.FilePath>
-          frame_token_map, bool save_with_empty_url,
-          pending_remote<FrameHTMLSerializerHandler> handler_remote);
 };
 
 // Implemented by the frame (e.g. renderer processes).

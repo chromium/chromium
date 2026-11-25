@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -33,6 +34,7 @@
 #include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
@@ -768,6 +770,16 @@ class LoadFinishObserver : public WebContentsObserver {
 
   Callback callback_;
 };
+
+// Requests serialized HTML for `render_frame_host` via
+// `RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks()` and waits for the
+// renderer to report completion. Returns `std::nullopt` if the frame is not
+// live or the serialization handler pipe disconnects before `Done()` is called.
+std::optional<std::string> GetSerializedHtmlWithLocalLinksForTesting(
+    RenderFrameHost* render_frame_host,
+    const base::flat_map<GURL, base::FilePath>& url_map,
+    const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
+    bool save_with_empty_url);
 
 #if BUILDFLAG(IS_MAC)
 void RouteMouseEventToPopupViewMacForTesting(RenderWidgetHostView* rwhv,

@@ -411,6 +411,21 @@ source_set("allow_discouraged_type") {
   visibility = [ "//third_party/blink/renderer/platform/*" ]
 }
 
+source_set("multi_token_hash_traits") {
+  public = [ "mojo/multi_token_hash_traits.h" ]
+
+  visibility = []  # Allow re-assignment of list.
+  visibility = [
+    ":*",
+    "//third_party/blink/public/mojom/tokens:*",
+  ]
+
+  public_deps = [
+    "//third_party/blink/public/common/tokens:tokens_headers",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
+}
+
 source_set("image_headers") {
   visibility = []  # Allow re-assignment of list.
   visibility = [ "//third_party/blink/renderer/platform/image-decoders/*" ]
@@ -1833,6 +1848,7 @@ component("platform") {
   public_deps = [
     ":allow_discouraged_type",
     ":blink_platform_public_deps",
+    ":multi_token_hash_traits",
     ":platform_export",
     "//components/language_detection/core",
     "//gpu/command_buffer/client:raster_interface",
@@ -2421,6 +2437,7 @@ source_set("blink_platform_unittests_sources") {
     "mojo/heap_mojo_remote_test.cc",
     "mojo/heap_mojo_unique_receiver_set_test.cc",
     "mojo/kurl_security_origin_test.cc",
+    "mojo/multi_token_hash_traits_test.cc",
     "mojo/string16_mojom_traits_test.cc",
     "p2p/filtering_network_manager_test.cc",
     "p2p/ipc_network_manager_test.cc",

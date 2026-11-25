@@ -36,12 +36,10 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/public/web/web_frame_serializer_client.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/frame_serializer.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/web_frame_serializer_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
@@ -140,16 +138,6 @@ void WebFrameSerializer::GenerateMHTMLParts(
       blink::BindOnce(&ContinueGenerateMHTMLParts, boundary,
                       web_frame->GetLocalFrameToken(), encoding_policy,
                       std::move(callback)));
-}
-
-bool WebFrameSerializer::Serialize(
-    WebLocalFrame* frame,
-    WebFrameSerializerClient* client,
-    WebFrameSerializer::LinkRewritingDelegate* delegate,
-    bool save_with_empty_url) {
-  WebFrameSerializerImpl serializer_impl(frame, client, delegate,
-                                         save_with_empty_url);
-  return serializer_impl.Serialize();
 }
 
 WebString WebFrameSerializer::GenerateMetaCharsetDeclaration(

@@ -5,10 +5,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
+#include <optional>
+#include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -18,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -29,6 +33,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -38,7 +43,6 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
-#include "third_party/blink/public/web/web_frame_serializer_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_meta_element.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -51,7 +55,6 @@ using blink::WebElement;
 using blink::WebElementCollection;
 using blink::WebFrame;
 using blink::WebFrameSerializer;
-using blink::WebFrameSerializerClient;
 using blink::WebLocalFrame;
 using blink::WebMetaElement;
 using blink::WebNode;
@@ -75,8 +78,7 @@ bool HasDocType(const WebDocument& doc) {
 #else
 #define MAYBE_DomSerializerTests DomSerializerTests
 #endif  // BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
-class MAYBE_DomSerializerTests : public ContentBrowserTest,
-                                 public WebFrameSerializerClient {
+class MAYBE_DomSerializerTests : public ContentBrowserTest {
  public:
   MAYBE_DomSerializerTests() = default;
 
@@ -87,20 +89,6 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
   void SetUpOnMainThread() override {
     main_frame_token_ =
         shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
-  }
-
-  // DomSerializerDelegate.
-  void DidSerializeDataForFrame(const std::vector<char>& data,
-                                FrameSerializationStatus status) override {
-    // Check finish status of current frame.
-    ASSERT_FALSE(serialization_reported_end_of_data_);
-
-    // Add data to corresponding frame's content.
-    serialized_contents_.append(data.data(), data.size());
-
-    // Current frame is completed saving, change the finish status.
-    if (status == WebFrameSerializerClient::kCurrentFrameIsFinished)
-      serialization_reported_end_of_data_ = true;
   }
 
   WebView* GetWebView() { return GetMainFrame()->View(); }
@@ -133,45 +121,40 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
         shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
   }
 
-  class SingleLinkRewritingDelegate
-      : public WebFrameSerializer::LinkRewritingDelegate {
-   public:
-    SingleLinkRewritingDelegate(const WebURL& url, const WebString& localPath)
-        : url_(url), local_path_(localPath) {}
-
-    bool RewriteFrameSource(WebFrame* frame,
-                            WebString* rewritten_link) override {
-      return false;
-    }
-
-    bool RewriteLink(const WebURL& url, WebString* rewritten_link) override {
-      if (url != url_)
-        return false;
-
-      *rewritten_link = local_path_;
-      return true;
-    }
-
-   private:
-    const WebURL url_;
-    const WebString local_path_;
-  };
-
   // Serialize DOM belonging to a frame with the specified |frame_url|.
+  // Must be called on the browser UI thread.
   void SerializeDomForURL(const GURL& frame_url) {
     SerializeDomForURL(frame_url, false);
   }
 
   void SerializeDomForURL(const GURL& frame_url, bool save_with_empty_url) {
-    // Find corresponding WebFrame according to frame_url.
-    WebFrame* web_frame = FindSubFrameByURL(frame_url);
-    ASSERT_TRUE(web_frame != nullptr);
-    WebString file_path = WebString("c:\\dummy.htm");
-    SingleLinkRewritingDelegate delegate(frame_url, file_path);
-    // Start serializing DOM.
-    bool result = WebFrameSerializer::Serialize(
-        web_frame->ToWebLocalFrame(), this, &delegate, save_with_empty_url);
-    ASSERT_TRUE(result);
+    serialized_contents_.clear();
+    serialization_reported_end_of_data_ = false;
+
+    std::optional<blink::LocalFrameToken> frame_token;
+    PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([&] {
+      if (WebLocalFrame* web_frame = FindSubFrameByURL(frame_url)) {
+        frame_token = web_frame->GetLocalFrameToken();
+      }
+    }));
+    ASSERT_TRUE(frame_token.has_value());
+
+    RenderFrameHost* target_rfh = nullptr;
+    shell()->web_contents()->ForEachRenderFrameHost([&](RenderFrameHost* rfh) {
+      if (rfh->GetFrameToken() == *frame_token) {
+        target_rfh = rfh;
+      }
+    });
+    ASSERT_TRUE(target_rfh != nullptr);
+
+    base::flat_map<GURL, base::FilePath> url_map;
+    url_map[frame_url] = base::FilePath(FILE_PATH_LITERAL("dummy.htm"));
+    std::optional<std::string> result =
+        GetSerializedHtmlWithLocalLinksForTesting(target_rfh, url_map, {},
+                                                  save_with_empty_url);
+    ASSERT_TRUE(result.has_value());
+    serialized_contents_ = std::move(*result);
+    serialization_reported_end_of_data_ = true;
   }
 
   bool serialization_reported_end_of_data() const {
@@ -210,9 +193,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
     ASSERT_TRUE(web_frame != nullptr);
     WebDocument doc = web_frame->GetDocument();
     ASSERT_TRUE(HasDocType(doc));
-    // Do serialization.
-    SerializeDomForURL(file_url);
   }));
+
+  // Do serialization.
+  SerializeDomForURL(file_url);
 
   // Load the serialized contents.
   ASSERT_TRUE(serialization_reported_end_of_data());
@@ -243,9 +227,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
     ASSERT_TRUE(web_frame != nullptr);
     WebDocument doc = web_frame->GetDocument();
     ASSERT_TRUE(!HasDocType(doc));
-    // Do serialization.
-    SerializeDomForURL(file_url);
   }));
+
+  // Do serialization.
+  SerializeDomForURL(file_url);
 
   // Load the serialized contents.
   ASSERT_TRUE(serialization_reported_end_of_data());
@@ -283,13 +268,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
   // Load the test file.
   EXPECT_TRUE(NavigateToURL(shell(), file_url));
 
-  PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([=, this] {
-    // Do serialization.
-    SerializeDomForURL(xml_file_url);
-    // Compare the serialized contents with original contents.
-    ASSERT_TRUE(serialization_reported_end_of_data());
-    ASSERT_EQ(original_contents, serialized_contents());
-  }));
+  // Do serialization.
+  SerializeDomForURL(xml_file_url);
+  // Compare the serialized contents with original contents.
+  ASSERT_TRUE(serialization_reported_end_of_data());
+  ASSERT_EQ(original_contents, serialized_contents());
 }
 
 // When serializing DOM, we add MOTW declaration before html tag.
@@ -312,21 +295,22 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
   // Load the test file.
   EXPECT_TRUE(NavigateToURL(shell(), file_url));
 
-  PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([=, this] {
+  std::string motw_declaration;
+  PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([&] {
     // Make sure original contents does not have MOTW;
-    std::string motw_declaration =
+    motw_declaration =
         WebFrameSerializer::GenerateMarkOfTheWebDeclaration(file_url).Utf8();
     ASSERT_FALSE(motw_declaration.empty());
     // The encoding of original contents is ISO-8859-1, so we convert the MOTW
     // declaration to ASCII and search whether original contents has it or not.
     ASSERT_FALSE(original_contents.contains(motw_declaration));
-
-    // Do serialization.
-    SerializeDomForURL(file_url, false);
-    // Make sure the serialized contents have MOTW ;
-    ASSERT_TRUE(serialization_reported_end_of_data());
-    ASSERT_TRUE(serialized_contents().contains(motw_declaration));
   }));
+
+  // Do serialization.
+  SerializeDomForURL(file_url, false);
+  // Make sure the serialized contents have MOTW ;
+  ASSERT_TRUE(serialization_reported_end_of_data());
+  ASSERT_TRUE(serialized_contents().contains(motw_declaration));
 }
 
 // When serializing DOM, we add MOTW declaration before html tag.
@@ -349,22 +333,23 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
   // Load the test file.
   EXPECT_TRUE(NavigateToURL(shell(), file_url));
 
-  PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([=, this] {
+  std::string motw_declaration;
+  PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([&] {
     // Make sure original contents does not have MOTW;
     GURL frame_url = GURL("about:internet");
-    std::string motw_declaration =
+    motw_declaration =
         WebFrameSerializer::GenerateMarkOfTheWebDeclaration(frame_url).Utf8();
     ASSERT_FALSE(motw_declaration.empty());
     // The encoding of original contents is ISO-8859-1, so we convert the MOTW
     // declaration to ASCII and search whether original contents has it or not.
     ASSERT_TRUE(!original_contents.contains(motw_declaration));
-
-    // Do serialization.
-    SerializeDomForURL(file_url, true);
-    // Make sure the serialized contents have MOTW;
-    ASSERT_TRUE(serialization_reported_end_of_data());
-    ASSERT_TRUE(serialized_contents().contains(motw_declaration));
   }));
+
+  // Do serialization.
+  SerializeDomForURL(file_url, true);
+  // Make sure the serialized contents have MOTW;
+  ASSERT_TRUE(serialization_reported_end_of_data());
+  ASSERT_TRUE(serialized_contents().contains(motw_declaration));
 }
 
 // When serializing DOM, we will add the META which have correct charset
@@ -399,9 +384,10 @@ IN_PROC_BROWSER_TEST_F(
          element = meta_elements.NextItem()) {
       ASSERT_TRUE(element.To<WebMetaElement>().ComputeEncoding().IsEmpty());
     }
-    // Do serialization.
-    SerializeDomForURL(file_url);
   }));
+
+  // Do serialization.
+  SerializeDomForURL(file_url);
 
   // Load the serialized contents.
   ASSERT_TRUE(serialization_reported_end_of_data());
@@ -471,10 +457,10 @@ IN_PROC_BROWSER_TEST_F(
     }
     // The original doc has more than META tags which have charset declaration.
     ASSERT_GT(charset_declaration_count, 1);
-
-    // Do serialization.
-    SerializeDomForURL(file_url);
   }));
+
+  // Do serialization.
+  SerializeDomForURL(file_url);
 
   // Load the serialized contents.
   ASSERT_TRUE(serialization_reported_end_of_data());
@@ -529,7 +515,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
   // Load the test contents.
   LoadContents(original_contents, file_url);
 
-  PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([=, this] {
+  std::string original_str;
+  PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([&] {
     // Get BODY's text content in DOM.
     WebLocalFrame* web_frame = FindSubFrameByURL(file_url);
     ASSERT_TRUE(web_frame != nullptr);
@@ -540,15 +527,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
     WebNode text_node = body_ele.FirstChild();
     ASSERT_TRUE(text_node.IsTextNode());
     ASSERT_EQ(text_node.NodeValue().Utf8(), "&<>\"\'");
-    // Do serialization.
-    SerializeDomForURL(file_url);
-    // Compare the serialized contents with original contents.
-    ASSERT_TRUE(serialization_reported_end_of_data());
-    // Compare the serialized contents with original contents to make sure
-    // they are same.
     // Because we add MOTW when serializing DOM, so before comparison, we also
     // need to add MOTW to original_contents.
-    std::string original_str =
+    original_str =
         WebFrameSerializer::GenerateMarkOfTheWebDeclaration(file_url).Utf8();
     original_str += original_contents;
     // Since WebCore now inserts a new HEAD element if there is no HEAD element
@@ -567,8 +548,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
       head_part += "</head>";
       original_str.insert(pos, head_part);
     }
-    ASSERT_EQ(original_str, serialized_contents());
   }));
+
+  // Do serialization.
+  SerializeDomForURL(file_url);
+  // Compare the serialized contents with original contents to make sure
+  // they are same.
+  ASSERT_TRUE(serialization_reported_end_of_data());
+  ASSERT_EQ(original_str, serialized_contents());
 }
 
 // Test situation of html entities in attribute value when serializing
@@ -594,7 +581,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
   // Load the test contents.
   LoadContents(original_contents, file_url);
 
-  PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([=, this] {
+  std::string original_str;
+  PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([&] {
     // Get value of BODY's title attribute in DOM.
     WebLocalFrame* web_frame = FindSubFrameByURL(file_url);
     ASSERT_TRUE(web_frame != nullptr);
@@ -604,13 +592,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
     ASSERT_TRUE(!body_ele.IsNull());
     WebString value = body_ele.GetAttribute("title");
     ASSERT_EQ(value.Utf8(), "&<>\"");
-    // Do serialization.
-    SerializeDomForURL(file_url);
-    // Compare the serialized contents with original contents.
-    ASSERT_TRUE(serialization_reported_end_of_data());
-    // Compare the serialized contents with original contents to make sure
-    // they are same.
-    std::string original_str =
+    original_str =
         WebFrameSerializer::GenerateMarkOfTheWebDeclaration(file_url).Utf8();
     original_str += original_contents;
     if (!doc.IsNull()) {
@@ -625,8 +607,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
       head_part += "</head>";
       original_str.insert(pos, head_part);
     }
-    ASSERT_EQ(original_str, serialized_contents());
   }));
+
+  // Do serialization.
+  SerializeDomForURL(file_url);
+  // Compare the serialized contents with original contents to make sure
+  // they are same.
+  ASSERT_TRUE(serialization_reported_end_of_data());
+  ASSERT_EQ(original_str, serialized_contents());
 }
 
 // Test situation of non-standard HTML entities when serializing HTML DOM.
@@ -661,17 +649,17 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
         web_frame->View(), 1024);
     ASSERT_TRUE(base::UTF16ToWide(value.Utf16()) == parsed_value);
     ASSERT_TRUE(base::UTF16ToWide(content.Utf16()) == parsed_value);
-
-    // Do serialization.
-    SerializeDomForURL(file_url);
-    // Check the serialized string.
-    ASSERT_TRUE(serialization_reported_end_of_data());
-    // Confirm that the serialized string has no non-standard HTML entities.
-    ASSERT_EQ(std::string::npos, serialized_contents().find("&percnt;"));
-    ASSERT_EQ(std::string::npos, serialized_contents().find("&nsup;"));
-    ASSERT_EQ(std::string::npos, serialized_contents().find("&sup1;"));
-    ASSERT_EQ(std::string::npos, serialized_contents().find("&apos;"));
   }));
+
+  // Do serialization.
+  SerializeDomForURL(file_url);
+  // Check the serialized string.
+  ASSERT_TRUE(serialization_reported_end_of_data());
+  // Confirm that the serialized string has no non-standard HTML entities.
+  ASSERT_EQ(std::string::npos, serialized_contents().find("&percnt;"));
+  ASSERT_EQ(std::string::npos, serialized_contents().find("&nsup;"));
+  ASSERT_EQ(std::string::npos, serialized_contents().find("&sup1;"));
+  ASSERT_EQ(std::string::npos, serialized_contents().find("&apos;"));
 }
 
 // Test situation of BASE tag in original document when serializing HTML DOM.
@@ -739,10 +727,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
     // |path_dir_url|.
     GURL original_base_url(doc.BaseURL());
     ASSERT_NE(original_base_url, path_dir_url);
-
-    // Do serialization.
-    SerializeDomForURL(file_url);
   }));
+
+  // Do serialization.
+  SerializeDomForURL(file_url);
 
   // Load the serialized contents.
   ASSERT_TRUE(serialization_reported_end_of_data());
@@ -817,11 +805,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
     WebElement head_element = doc.Head();
     ASSERT_TRUE(!head_element.IsNull());
     ASSERT_TRUE(head_element.FirstChild().IsNull());
-
-    // Do serialization.
-    SerializeDomForURL(file_url);
-    ASSERT_TRUE(serialization_reported_end_of_data());
   }));
+
+  // Do serialization.
+  SerializeDomForURL(file_url);
+  ASSERT_TRUE(serialization_reported_end_of_data());
 
   // Reload serialized contents and make sure there is only one META tag.
   LoadContents(serialized_contents(), file_url);

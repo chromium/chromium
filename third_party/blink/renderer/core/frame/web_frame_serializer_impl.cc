@@ -77,17 +77,19 @@
 
 #include "third_party/blink/renderer/core/frame/web_frame_serializer_impl.h"
 
-#include <vector>
+#include <utility>
 
-#include "base/containers/to_vector.h"
+#include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_serializer.h"
-#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/html_all_collection.h"
 #include "third_party/blink/renderer/core/html/html_base_element.h"
@@ -115,6 +117,13 @@ String GenerateBaseTagDeclaration(const String& base_target) {
   if (base_target.empty())
     return String("<base href=\".\">");
   return StrCat({"<base href=\".\" target=\"", base_target, "\">"});
+}
+
+String ConvertRelativePathToHtmlAttribute(const base::FilePath& path) {
+  DCHECK(!path.IsAbsolute());
+  return String::FromUtf8(
+      "./" +
+      path.NormalizePathSeparatorsTo(FILE_PATH_LITERAL('/')).AsUTF8Unsafe());
 }
 
 }  // namespace
@@ -270,25 +279,66 @@ String WebFrameSerializerImpl::PostActionAfterSerializeEndTag(
 void WebFrameSerializerImpl::SaveHTMLContentToBuffer(const StringView& result,
                                                      SerializeDomParam* param) {
   data_buffer_.Append(result);
-  EncodeAndFlushBuffer(WebFrameSerializerClient::kCurrentFrameIsNotFinished,
-                       param, kDoNotForceFlush);
+  EncodeAndFlushBuffer(/*is_finished=*/false, param, kDoNotForceFlush);
 }
 
-void WebFrameSerializerImpl::EncodeAndFlushBuffer(
-    WebFrameSerializerClient::FrameSerializationStatus status,
-    SerializeDomParam* param,
-    FlushOption flush_option) {
+void WebFrameSerializerImpl::EncodeAndFlushBuffer(bool is_finished,
+                                                  SerializeDomParam* param,
+                                                  FlushOption flush_option) {
   // Data buffer is not full nor do we want to force flush.
   if (flush_option != kForceFlush &&
-      data_buffer_.length() <= kDataBufferCapacity)
+      data_buffer_.length() <= kDataBufferCapacity) {
     return;
+  }
 
   std::string encoded_content = param->text_encoding.Encode(
       data_buffer_, UnencodableHandling::kXmlCharRef);
   data_buffer_.Clear();
 
-  // Send result to the client.
-  client_->DidSerializeDataForFrame(base::ToVector(encoded_content), status);
+  SendSerializedData(encoded_content, is_finished);
+}
+
+void WebFrameSerializerImpl::SendSerializedData(const std::string& data,
+                                                bool is_finished) {
+  DCHECK(handler_remote_.is_bound());
+  handler_remote_->DidReceiveData(data);
+
+  // Make sure to report Done() to the browser process when receiving the last
+  // chunk of data, and reset the mojo remote so that the DCHECK above ensures
+  // this method won't be called anymore after this point.
+  if (is_finished) {
+    handler_remote_->Done();
+    handler_remote_.reset();
+  }
+}
+
+bool WebFrameSerializerImpl::RewriteFrameSource(Frame* frame,
+                                                String* rewritten_link) const {
+  const FrameToken& frame_token = frame->GetFrameToken();
+  if (!HashMap<FrameToken, base::FilePath>::IsValidKey(frame_token)) {
+    return false;
+  }
+  auto it = frame_token_to_local_path_.find(frame_token);
+  if (it == frame_token_to_local_path_.end()) {
+    return false;  // This can happen because of https://crbug.com/541354.
+  }
+
+  *rewritten_link = ConvertRelativePathToHtmlAttribute(it->value);
+  return true;
+}
+
+bool WebFrameSerializerImpl::RewriteLink(const KURL& url,
+                                         String* rewritten_link) const {
+  if (!HashMap<KURL, base::FilePath>::IsValidKey(url)) {
+    return false;
+  }
+  auto it = url_to_local_path_.find(url);
+  if (it == url_to_local_path_.end()) {
+    return false;
+  }
+
+  *rewritten_link = ConvertRelativePathToHtmlAttribute(it->value);
+  return true;
 }
 
 void WebFrameSerializerImpl::AppendAttribute(StringBuilder& result,
@@ -314,13 +364,13 @@ void WebFrameSerializerImpl::OpenTagToString(Element* element,
   result.Append(element->nodeName().DeprecatedLower());
 
   // Find out if we need to do frame-specific link rewriting.
-  WebFrame* frame = nullptr;
+  Frame* frame = nullptr;
   if (auto* frame_owner_element = DynamicTo<HTMLFrameOwnerElement>(element)) {
-    frame = WebFrame::FromCoreFrame(frame_owner_element->ContentFrame());
+    frame = frame_owner_element->ContentFrame();
   }
-  WebString rewritten_frame_link;
+  String rewritten_frame_link;
   bool should_rewrite_frame_src =
-      frame && delegate_->RewriteFrameSource(frame, &rewritten_frame_link);
+      frame && RewriteFrameSource(frame, &rewritten_frame_link);
   bool did_rewrite_frame_src = false;
 
   // Go through all attributes and serialize them.
@@ -340,11 +390,11 @@ void WebFrameSerializerImpl::OpenTagToString(Element* element,
         KURL complete_url = param->document->CompleteURL(attr_value);
 
         // Check whether we have a local file to link to.
-        WebString rewritten_url;
+        String rewritten_url;
         if (should_rewrite_frame_src) {
           attr_value = rewritten_frame_link;
           did_rewrite_frame_src = true;
-        } else if (delegate_->RewriteLink(complete_url, &rewritten_url)) {
+        } else if (RewriteLink(complete_url, &rewritten_url)) {
           attr_value = rewritten_url;
         } else {
           attr_value = complete_url;
@@ -485,34 +535,29 @@ void WebFrameSerializerImpl::BuildContentForNode(Node* node,
 }
 
 WebFrameSerializerImpl::WebFrameSerializerImpl(
-    WebLocalFrame* frame,
-    WebFrameSerializerClient* client,
-    WebFrameSerializer::LinkRewritingDelegate* delegate,
-    bool save_with_empty_url)
-    : client_(client),
-      delegate_(delegate),
+    LocalFrame* frame,
+    const HashMap<KURL, base::FilePath>& url_to_local_path,
+    const HashMap<FrameToken, base::FilePath>& frame_token_to_local_path,
+    bool save_with_empty_url,
+    mojo::PendingRemote<mojom::blink::FrameHTMLSerializerHandler>
+        handler_remote)
+    : frame_(frame),
+      url_to_local_path_(url_to_local_path),
+      frame_token_to_local_path_(frame_token_to_local_path),
       save_with_empty_url_(save_with_empty_url) {
-  // Must specify available webframe.
-  DCHECK(frame);
-  specified_web_local_frame_impl_ = To<WebLocalFrameImpl>(frame);
-  // Make sure we have non null client and delegate.
-  DCHECK(client);
-  DCHECK(delegate);
-
+  DCHECK(frame_);
+  handler_remote_.Bind(std::move(handler_remote),
+                       frame_->GetTaskRunner(TaskType::kInternalDefault));
+  DCHECK(handler_remote_.is_bound());
   DCHECK(data_buffer_.empty());
 }
 
-bool WebFrameSerializerImpl::Serialize() {
-  bool did_serialization = false;
-
-  Document* document =
-      specified_web_local_frame_impl_->GetFrame()->GetDocument();
+void WebFrameSerializerImpl::Serialize() {
+  Document* document = frame_->GetDocument();
   const KURL& url =
       save_with_empty_url_ ? KURL("about:internet") : document->Url();
 
   if (url.IsValid()) {
-    did_serialization = true;
-
     const TextEncoding& text_encoding =
         document->Encoding().IsValid() ? document->Encoding() : Utf8Encoding();
     if (text_encoding.IsNonByteBasedEncoding()) {
@@ -526,16 +571,13 @@ bool WebFrameSerializerImpl::Serialize() {
     if (document_element)
       BuildContentForNode(document_element, &param);
 
-    EncodeAndFlushBuffer(WebFrameSerializerClient::kCurrentFrameIsFinished,
-                         &param, kForceFlush);
+    EncodeAndFlushBuffer(/*is_finished=*/true, &param, kForceFlush);
   } else {
     // Report empty contents for invalid URLs.
-    client_->DidSerializeDataForFrame(
-        std::vector<char>(), WebFrameSerializerClient::kCurrentFrameIsFinished);
+    SendSerializedData(std::string(), /*is_finished=*/true);
   }
 
   DCHECK(data_buffer_.empty());
-  return did_serialization;
 }
 
 }  // namespace blink

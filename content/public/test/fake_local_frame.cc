@@ -149,6 +149,13 @@ void FakeLocalFrame::JavaScriptExecuteRequestInIsolatedWorld(
 void FakeLocalFrame::GetSavableResourceLinks(
     GetSavableResourceLinksCallback callback) {}
 
+void FakeLocalFrame::GetSerializedHtmlWithLocalLinks(
+    const base::flat_map<GURL, base::FilePath>& url_map,
+    const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
+    bool save_with_empty_url,
+    mojo::PendingRemote<blink::mojom::FrameHTMLSerializerHandler>
+        handler_remote) {}
+
 #if BUILDFLAG(IS_MAC)
 void FakeLocalFrame::GetCharacterIndexAtPoint(
     const base::UnguessableToken& request_token,

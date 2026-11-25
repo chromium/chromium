@@ -13,133 +13,135 @@ mojom_component("tokens") {
 
   sources = [ "tokens.mojom" ]
 
-  shared_cpp_typemaps = [
+  shared_token_types = [
+    # DOCUMENT TOKENS
     {
-      types = [
-        # DOCUMENT TOKENS
-        {
-          mojom = "blink.mojom.DocumentToken"
-          cpp = "::blink::DocumentToken"
-        },
+      mojom = "blink.mojom.DocumentToken"
+      cpp = "::blink::DocumentToken"
+    },
 
-        # INITIATOR STATE TOKENS
-        {
-          mojom = "blink.mojom.InitiatorStateToken"
-          cpp = "::blink::InitiatorStateToken"
-        },
+    # INITIATOR STATE TOKENS
+    {
+      mojom = "blink.mojom.InitiatorStateToken"
+      cpp = "::blink::InitiatorStateToken"
+    },
 
-        # FRAME TOKENS
-        {
-          mojom = "blink.mojom.LocalFrameToken"
-          cpp = "::blink::LocalFrameToken"
-        },
-        {
-          mojom = "blink.mojom.RemoteFrameToken"
-          cpp = "::blink::RemoteFrameToken"
-        },
-        {
-          mojom = "blink.mojom.FrameToken"
-          cpp = "::blink::FrameToken"
-        },
+    # FRAME TOKENS
+    {
+      mojom = "blink.mojom.LocalFrameToken"
+      cpp = "::blink::LocalFrameToken"
+    },
+    {
+      mojom = "blink.mojom.RemoteFrameToken"
+      cpp = "::blink::RemoteFrameToken"
+    },
+    {
+      mojom = "blink.mojom.FrameToken"
+      cpp = "::blink::FrameToken"
+    },
 
-        # WORKER TOKENS
-        {
-          mojom = "blink.mojom.DedicatedWorkerToken"
-          cpp = "::blink::DedicatedWorkerToken"
-        },
-        {
-          mojom = "blink.mojom.ServiceWorkerToken"
-          cpp = "::blink::ServiceWorkerToken"
-        },
-        {
-          mojom = "blink.mojom.SharedWorkerToken"
-          cpp = "::blink::SharedWorkerToken"
-        },
-        {
-          mojom = "blink.mojom.WorkerToken"
-          cpp = "::blink::WorkerToken"
-        },
+    # WORKER TOKENS
+    {
+      mojom = "blink.mojom.DedicatedWorkerToken"
+      cpp = "::blink::DedicatedWorkerToken"
+    },
+    {
+      mojom = "blink.mojom.ServiceWorkerToken"
+      cpp = "::blink::ServiceWorkerToken"
+    },
+    {
+      mojom = "blink.mojom.SharedWorkerToken"
+      cpp = "::blink::SharedWorkerToken"
+    },
+    {
+      mojom = "blink.mojom.WorkerToken"
+      cpp = "::blink::WorkerToken"
+    },
 
-        # WORKLET TOKENS
-        {
-          mojom = "blink.mojom.AnimationWorkletToken"
-          cpp = "::blink::AnimationWorkletToken"
-        },
-        {
-          mojom = "blink.mojom.AudioWorkletToken"
-          cpp = "::blink::AudioWorkletToken"
-        },
-        {
-          mojom = "blink.mojom.PaintWorkletToken"
-          cpp = "::blink::PaintWorkletToken"
-        },
-        {
-          mojom = "blink.mojom.WorkletToken"
-          cpp = "::blink::WorkletToken"
-        },
+    # WORKLET TOKENS
+    {
+      mojom = "blink.mojom.AnimationWorkletToken"
+      cpp = "::blink::AnimationWorkletToken"
+    },
+    {
+      mojom = "blink.mojom.AudioWorkletToken"
+      cpp = "::blink::AudioWorkletToken"
+    },
+    {
+      mojom = "blink.mojom.PaintWorkletToken"
+      cpp = "::blink::PaintWorkletToken"
+    },
+    {
+      mojom = "blink.mojom.WorkletToken"
+      cpp = "::blink::WorkletToken"
+    },
 
-        # SHADOW REALM TOKENS
-        {
-          mojom = "blink.mojom.ShadowRealmToken"
-          cpp = "::blink::ShadowRealmToken"
-        },
+    # SHADOW REALM TOKENS
+    {
+      mojom = "blink.mojom.ShadowRealmToken"
+      cpp = "::blink::ShadowRealmToken"
+    },
 
-        # OTHER TOKENS
-        #
-        # Keep this section last.
-        #
-        # If you have multiple tokens that make a thematic group, please lift
-        # them to their own section, in alphabetical order. If adding a new
-        # token here, please keep the following list in alphabetic order.
-        {
-          mojom = "blink.mojom.ContinuationToken"
-          cpp = "::blink::ContinuationToken"
-        },
-        {
-          mojom = "blink.mojom.ExecutionContextToken"
-          cpp = "::blink::ExecutionContextToken"
-        },
-        {
-          mojom = "blink.mojom.SameDocNavigationScreenshotDestinationToken"
-          cpp = "::blink::SameDocNavigationScreenshotDestinationToken"
-        },
-        {
-          mojom = "blink.mojom.ScriptToolToken"
-          cpp = "::blink::ScriptToolToken"
-        },
-        {
-          mojom = "blink.mojom.ToolInvocationToken"
-          cpp = "::blink::ToolInvocationToken"
-        },
-        {
-          mojom = "blink.mojom.V8ContextToken"
-          cpp = "::blink::V8ContextToken"
-        },
-        {
-          mojom = "blink.mojom.ViewTransitionToken"
-          cpp = "::blink::ViewTransitionToken"
-        },
-        {
-          mojom = "blink.mojom.WebGPUExecutionContextToken"
-          cpp = "::blink::WebGPUExecutionContextToken"
-        },
-        {
-          mojom = "blink.mojom.WebNNContextToken"
-          cpp = "::blink::WebNNContextToken"
-        },
-        {
-          mojom = "blink.mojom.WebNNPendingConstantToken"
-          cpp = "::blink::WebNNPendingConstantToken"
-        },
-        {
-          mojom = "blink.mojom.WebNNTensorToken"
-          cpp = "::blink::WebNNTensorToken"
-        },
-        {
-          mojom = "blink.mojom.WebNNGraphToken"
-          cpp = "::blink::WebNNGraphToken"
-        },
-      ]
+    # OTHER TOKENS
+    #
+    # Keep this section last.
+    #
+    # If you have multiple tokens that make a thematic group, please lift
+    # them to their own section, in alphabetical order. If adding a new
+    # token here, please keep the following list in alphabetic order.
+    {
+      mojom = "blink.mojom.ContinuationToken"
+      cpp = "::blink::ContinuationToken"
+    },
+    {
+      mojom = "blink.mojom.ExecutionContextToken"
+      cpp = "::blink::ExecutionContextToken"
+    },
+    {
+      mojom = "blink.mojom.SameDocNavigationScreenshotDestinationToken"
+      cpp = "::blink::SameDocNavigationScreenshotDestinationToken"
+    },
+    {
+      mojom = "blink.mojom.ScriptToolToken"
+      cpp = "::blink::ScriptToolToken"
+    },
+    {
+      mojom = "blink.mojom.ToolInvocationToken"
+      cpp = "::blink::ToolInvocationToken"
+    },
+    {
+      mojom = "blink.mojom.V8ContextToken"
+      cpp = "::blink::V8ContextToken"
+    },
+    {
+      mojom = "blink.mojom.ViewTransitionToken"
+      cpp = "::blink::ViewTransitionToken"
+    },
+    {
+      mojom = "blink.mojom.WebGPUExecutionContextToken"
+      cpp = "::blink::WebGPUExecutionContextToken"
+    },
+    {
+      mojom = "blink.mojom.WebNNContextToken"
+      cpp = "::blink::WebNNContextToken"
+    },
+    {
+      mojom = "blink.mojom.WebNNPendingConstantToken"
+      cpp = "::blink::WebNNPendingConstantToken"
+    },
+    {
+      mojom = "blink.mojom.WebNNTensorToken"
+      cpp = "::blink::WebNNTensorToken"
+    },
+    {
+      mojom = "blink.mojom.WebNNGraphToken"
+      cpp = "::blink::WebNNGraphToken"
+    },
+  ]
+
+  cpp_typemaps = [
+    {
+      types = shared_token_types
       traits_headers = [
         "//third_party/blink/public/common/tokens/token_mojom_traits_helper.h",
         "//third_party/blink/public/common/tokens/tokens_mojom_traits.h",
@@ -148,8 +150,23 @@ mojom_component("tokens") {
     },
   ]
 
-  cpp_typemaps = shared_cpp_typemaps
-  blink_cpp_typemaps = shared_cpp_typemaps
+  # Includes `multi_token_hash_traits.h` so `blink::MultiToken` tokens (such as
+  # `blink::FrameToken`) can be used as keys in `blink::HashMap` in Blink Mojo
+  # bindings.
+  blink_cpp_typemaps = [
+    {
+      types = shared_token_types
+      traits_headers = [
+        "//third_party/blink/public/common/tokens/token_mojom_traits_helper.h",
+        "//third_party/blink/public/common/tokens/tokens_mojom_traits.h",
+        "//third_party/blink/renderer/platform/mojo/multi_token_hash_traits.h",
+      ]
+      traits_public_deps = [
+        ":tokens_traits",
+        "//third_party/blink/renderer/platform:multi_token_hash_traits",
+      ]
+    },
+  ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
 

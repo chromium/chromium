@@ -9,6 +9,7 @@ import "cc/mojom/browser_controls_state.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/byte_size.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -105,6 +106,21 @@ struct GetSavableResourceLinksReply {
   array<url.mojom.Url> resources_list;
   blink.mojom.Referrer referrer;
   array<SavableSubframe> subframes;
+};
+
+// Provided with each call to LocalFrame::GetSerializedHtmlWithLocalLinks() so
+// that the renderer can notify the browser process each time a chunk of HTML
+// data gets serialized, as well as when the entire process is finished.
+interface FrameHTMLSerializerHandler {
+  // Sent by the renderer as a response to GetSerializedHtmlWithLocalLinks() to
+  // indicate that HTML data has been serialized, included in `data_buffer`.
+  // Uses ByteString because the serialized HTML is encoded in the document's
+  // character encoding, which may not be UTF-8.
+  DidReceiveData(mojo_base.mojom.ByteString data_buffer);
+
+  // Reports that the serialization process is finished. It is expected to
+  // receive this message right after the last time DidReceiveData() is called.
+  Done();
 };
 
 struct FindInPageResultAXParams {
@@ -1186,6 +1202,18 @@ interface LocalFrame {
   // Request to enumerate and return links to all savable resources in the frame
   // Note: this covers only the immediate frame / doesn't cover subframes.
   GetSavableResourceLinks() => (GetSavableResourceLinksReply? reply);
+
+  // Get HTML data by serializing the target frame and replacing all resource
+  // links with a path to the local copy passed in the message payload. Keys in
+  // `url_map` are expected to be valid URLs. In order to report progress to the
+  // browser process, a pending remote is passed via `handler_remote`, so that
+  // direct communication with the caller that initiated the process can be
+  // established.
+  GetSerializedHtmlWithLocalLinks(
+      map<url.mojom.Url, mojo_base.mojom.FilePath> url_map,
+      map<blink.mojom.FrameToken, mojo_base.mojom.FilePath> frame_token_map,
+      bool save_with_empty_url,
+      pending_remote<FrameHTMLSerializerHandler> handler_remote);
 
   // Sent to a frame to notify about mixed content found externally.
   MixedContentFound(url.mojom.Url main_resource_url,

@@ -1065,7 +1065,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const base::flat_map<GURL, base::FilePath>& url_map,
       const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
       bool save_with_empty_url,
-      mojo::PendingRemote<mojom::FrameHTMLSerializerHandler>
+      mojo::PendingRemote<blink::mojom::FrameHTMLSerializerHandler>
           serializer_handler);
 
   // Returns the associated WebUI or null if none applies.

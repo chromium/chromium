@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -123,6 +125,12 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) override;
   void GetSavableResourceLinks(
       GetSavableResourceLinksCallback callback) override;
+  void GetSerializedHtmlWithLocalLinks(
+      const base::flat_map<GURL, base::FilePath>& url_map,
+      const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
+      bool save_with_empty_url,
+      mojo::PendingRemote<blink::mojom::FrameHTMLSerializerHandler>
+          handler_remote) override;
 #if BUILDFLAG(IS_MAC)
   void GetCharacterIndexAtPoint(const base::UnguessableToken& request_token,
                                 const gfx::Point& point) override;

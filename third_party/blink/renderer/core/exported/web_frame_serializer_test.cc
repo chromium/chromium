@@ -28,16 +28,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/public/web/web_frame_serializer.h"
+#include <string>
 
-#include <vector>
-
+#include "base/containers/span.h"
+#include "base/files/file_path.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/web/web_frame_serializer_client.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_frame_serializer_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -45,23 +48,45 @@
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
 namespace {
 
-class SimpleWebFrameSerializerClient final : public WebFrameSerializerClient {
+class TestFrameHTMLSerializerHandler final
+    : public mojom::blink::FrameHTMLSerializerHandler {
  public:
+  TestFrameHTMLSerializerHandler() = default;
+
+  mojo::PendingRemote<mojom::blink::FrameHTMLSerializerHandler>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void WaitForDone() {
+    test::RunPendingTasks();
+    EXPECT_TRUE(done_);
+  }
+
   String ToString() { return builder_.ToString(); }
 
  private:
-  void DidSerializeDataForFrame(const std::vector<char>& data,
-                                FrameSerializationStatus) final {
-    builder_.Append(base::as_byte_span(data));
+  void DidReceiveData(const std::string& data_buffer) final {
+    EXPECT_FALSE(done_);
+    builder_.Append(base::as_byte_span(data_buffer));
   }
 
+  void Done() final {
+    EXPECT_FALSE(done_);
+    done_ = true;
+  }
+
+  mojo::Receiver<mojom::blink::FrameHTMLSerializerHandler> receiver_{this};
   StringBuilder builder_;
+  bool done_ = false;
 };
 
 }  // namespace
@@ -90,29 +115,19 @@ class WebFrameSerializerTest : public testing::Test {
         url, test::CoreTestDataPath(file_path.Utf8().c_str()), mime_type);
   }
 
-  class SingleLinkRewritingDelegate
-      : public WebFrameSerializer::LinkRewritingDelegate {
-   public:
-    SingleLinkRewritingDelegate(const WebURL& url, const WebString& local_path)
-        : url_(url), local_path_(local_path) {}
-
-    bool RewriteFrameSource(WebFrame* frame,
-                            WebString* rewritten_link) override {
-      return false;
-    }
-
-    bool RewriteLink(const WebURL& url, WebString* rewritten_link) override {
-      if (url != url_)
-        return false;
-
-      *rewritten_link = local_path_;
-      return true;
-    }
-
-   private:
-    const WebURL url_;
-    const WebString local_path_;
-  };
+  String SerializeFrame(
+      LocalFrame* frame,
+      const HashMap<KURL, base::FilePath>& url_map,
+      const HashMap<FrameToken, base::FilePath>& frame_token_map,
+      bool save_with_empty_url) {
+    TestFrameHTMLSerializerHandler handler;
+    WebFrameSerializerImpl serializer(frame, url_map, frame_token_map,
+                                      save_with_empty_url,
+                                      handler.BindNewPipeAndPassRemote());
+    serializer.Serialize();
+    handler.WaitForDone();
+    return handler.ToString();
+  }
 
   String SerializeFile(const String& url,
                        const String& file_name,
@@ -122,11 +137,10 @@ class WebFrameSerializerTest : public testing::Test {
     String file_path("frameserialization/" + file_name);
     RegisterMockedFileURLLoad(parsed_url, file_path, mime_type);
     frame_test_helpers::LoadFrame(MainFrameImpl(), url.Utf8().c_str());
-    SingleLinkRewritingDelegate delegate(parsed_url, WebString("local"));
-    SimpleWebFrameSerializerClient serializer_client;
-    WebFrameSerializer::Serialize(MainFrameImpl(), &serializer_client,
-                                  &delegate, save_with_empty_url);
-    return serializer_client.ToString();
+    HashMap<KURL, base::FilePath> url_map;
+    url_map.insert(parsed_url, base::FilePath(FILE_PATH_LITERAL("local")));
+    return SerializeFrame(MainFrameImpl()->GetFrame(), url_map, {},
+                          save_with_empty_url);
   }
 
   WebLocalFrameImpl* MainFrameImpl() { return helper_.LocalMainFrame(); }
@@ -254,6 +268,41 @@ TEST_F(WebFrameSerializerTest, EntitiesInAttributeXml) {
   String actual = SerializeFile("http://www.test.com/2", "entities.xml", false,
                                 "application/xhtml+xml");
   EXPECT_TRUE(actual.ends_with(expected));
+}
+
+TEST_F(WebFrameSerializerTest, RewriteLinksAndFrameSources) {
+  RegisterMockedImageURLLoad("http://www.test.com/img.png");
+  frame_test_helpers::LoadHTMLString(
+      MainFrameImpl(),
+      "<!DOCTYPE html><html><body>"
+      "<img src=\"img.png\">"
+      "<a href=\"other.html\">other</a>"
+      "<iframe srcdoc=\"<p>child</p>\"></iframe>"
+      "</body></html>",
+      url_test_helpers::ToKURL("http://www.test.com/page.html"));
+
+  Frame* child_frame = MainFrameImpl()->GetFrame()->Tree().FirstChild();
+  ASSERT_TRUE(child_frame);
+
+  HashMap<KURL, base::FilePath> url_map;
+  url_map.insert(KURL("http://www.test.com/img.png"),
+                 base::FilePath(FILE_PATH_LITERAL("page_files"))
+                     .Append(FILE_PATH_LITERAL("img.png")));
+
+  HashMap<FrameToken, base::FilePath> frame_token_map;
+  frame_token_map.insert(child_frame->GetFrameToken(),
+                         base::FilePath(FILE_PATH_LITERAL("page_files"))
+                             .Append(FILE_PATH_LITERAL("child.html")));
+
+  String actual_html = SerializeFrame(MainFrameImpl()->GetFrame(), url_map,
+                                      frame_token_map, false);
+  EXPECT_NE(actual_html.find("<img src=\"./page_files/img.png\">"),
+            String::npos);
+  EXPECT_NE(actual_html.find("<a href=\"http://www.test.com/other.html\">"),
+            String::npos);
+  EXPECT_NE(actual_html.find("<iframe src=\"./page_files/child.html\">"),
+            String::npos);
+  EXPECT_EQ(actual_html.find("srcdoc"), String::npos);
 }
 
 }  // namespace blink

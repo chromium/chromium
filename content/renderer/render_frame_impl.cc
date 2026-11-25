@@ -275,7 +275,6 @@ using blink::WebElementCollection;
 using blink::WebFrame;
 using blink::WebFrameLoadType;
 using blink::WebFrameSerializer;
-using blink::WebFrameSerializerClient;
 using blink::WebHistoryItem;
 using blink::WebHTTPBody;
 using blink::WebInputMethodController;
@@ -690,80 +689,6 @@ WebFrameLoadType NavigationTypeToLoadType(
 
 RenderFrameImpl::CreateRenderFrameImplFunction g_create_render_frame_impl =
     nullptr;
-
-WebString ConvertRelativePathToHtmlAttribute(const base::FilePath& path) {
-  DCHECK(!path.IsAbsolute());
-  return WebString::FromUtf8(
-      std::string("./") +
-      path.NormalizePathSeparatorsTo(FILE_PATH_LITERAL('/')).AsUTF8Unsafe());
-}
-
-class RenderFrameWebFrameSerializerClient
-    : public blink::WebFrameSerializerClient {
- public:
-  explicit RenderFrameWebFrameSerializerClient(
-      mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> handler_remote)
-      : handler_remote_(std::move(handler_remote)) {}
-
-  // WebFrameSerializerClient implementation:
-  void DidSerializeDataForFrame(
-      const std::vector<char>& data,
-      WebFrameSerializerClient::FrameSerializationStatus status) override {
-    DCHECK(handler_remote_.is_bound());
-    handler_remote_->DidReceiveData(std::string(data.data(), data.size()));
-
-    // Make sure to report Done() to the browser process when receiving the last
-    // chunk of data, and reset the mojo remote so that the DCHECK above ensures
-    // this method won't be called anymore after this point.
-    if (status == WebFrameSerializerClient::kCurrentFrameIsFinished) {
-      handler_remote_->Done();
-      handler_remote_.reset();
-    }
-  }
-
- private:
-  mojo::Remote<mojom::FrameHTMLSerializerHandler> handler_remote_;
-};
-
-// Implementation of WebFrameSerializer::LinkRewritingDelegate that responds
-// based on the payload of mojom::Frame::GetSerializedHtmlWithLocalLinks().
-class LinkRewritingDelegate : public WebFrameSerializer::LinkRewritingDelegate {
- public:
-  LinkRewritingDelegate(
-      const base::flat_map<GURL, base::FilePath>& url_to_local_path,
-      const base::flat_map<blink::FrameToken, base::FilePath>&
-          frame_token_to_local_path)
-      : url_to_local_path_(url_to_local_path),
-        frame_token_to_local_path_(frame_token_to_local_path) {}
-
-  bool RewriteFrameSource(WebFrame* frame, WebString* rewritten_link) override {
-    const blink::FrameToken frame_token = frame->GetFrameToken();
-    auto it = frame_token_to_local_path_->find(frame_token);
-    if (it == frame_token_to_local_path_->end()) {
-      return false;  // This can happen because of https://crbug.com/541354.
-    }
-
-    const base::FilePath& local_path = it->second;
-    *rewritten_link = ConvertRelativePathToHtmlAttribute(local_path);
-    return true;
-  }
-
-  bool RewriteLink(const WebURL& url, WebString* rewritten_link) override {
-    auto it = url_to_local_path_->find(GURL(url));
-    if (it == url_to_local_path_->end()) {
-      return false;
-    }
-
-    const base::FilePath& local_path = it->second;
-    *rewritten_link = ConvertRelativePathToHtmlAttribute(local_path);
-    return true;
-  }
-
- private:
-  const raw_ref<const base::flat_map<GURL, base::FilePath>> url_to_local_path_;
-  const raw_ref<const base::flat_map<blink::FrameToken, base::FilePath>>
-      frame_token_to_local_path_;
-};
 
 bool IsHttpPost(const blink::WebURLRequest& request) {
   return request.HttpMethod().Utf8() == "POST";
@@ -2305,20 +2230,6 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
   // This will result in a call to RenderFrameImpl::FrameDetached, which
   // deletes the object. Do not access |this| after detach.
   frame_->Detach();
-}
-
-void RenderFrameImpl::GetSerializedHtmlWithLocalLinks(
-    const base::flat_map<GURL, base::FilePath>& url_map,
-    const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
-    bool save_with_empty_url,
-    mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> handler_remote) {
-  // Convert input to the canonical way of passing a map into a Blink API.
-  LinkRewritingDelegate delegate(url_map, frame_token_map);
-  RenderFrameWebFrameSerializerClient client(std::move(handler_remote));
-
-  // Serialize the frame (without recursing into subframes).
-  WebFrameSerializer::Serialize(GetWebFrame(), &client, &delegate,
-                                save_with_empty_url);
 }
 
 void RenderFrameImpl::NotifyObserversOfFailedProvisionalLoad() {

@@ -3714,11 +3714,17 @@ void RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks(
     const base::flat_map<GURL, base::FilePath>& url_map,
     const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
     bool save_with_empty_url,
-    mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> serializer_handler) {
+    mojo::PendingRemote<blink::mojom::FrameHTMLSerializerHandler>
+        serializer_handler) {
   if (!IsRenderFrameLive()) {
     return;
   }
-  GetMojomFrameInRenderer()->GetSerializedHtmlWithLocalLinks(
+#if DCHECK_IS_ON()
+  for (const auto& [url, path] : url_map) {
+    DCHECK(url.is_valid()) << "Invalid URL in url_map: " << url;
+  }
+#endif
+  GetAssociatedLocalFrame()->GetSerializedHtmlWithLocalLinks(
       url_map, frame_token_map, save_with_empty_url,
       std::move(serializer_handler));
 }

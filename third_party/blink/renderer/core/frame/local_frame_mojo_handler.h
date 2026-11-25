@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
 
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -202,6 +203,12 @@ class CORE_EXPORT LocalFrameMojoHandler
   void UpdateOpener(
       const std::optional<blink::FrameToken>& opener_routing_id) final;
   void GetSavableResourceLinks(GetSavableResourceLinksCallback callback) final;
+  void GetSerializedHtmlWithLocalLinks(
+      const HashMap<KURL, base::FilePath>& url_map,
+      const HashMap<FrameToken, base::FilePath>& frame_token_map,
+      bool save_with_empty_url,
+      mojo::PendingRemote<mojom::blink::FrameHTMLSerializerHandler>
+          handler_remote) final;
   void MixedContentFound(
       const KURL& main_resource_url,
       const KURL& mixed_content_url,

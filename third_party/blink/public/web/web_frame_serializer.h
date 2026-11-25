@@ -39,8 +39,6 @@
 
 namespace blink {
 
-class WebFrameSerializerClient;
-class WebFrame;
 class WebLocalFrame;
 
 // Serialization of frame contents into html or mhtml.
@@ -83,46 +81,6 @@ class BLINK_EXPORT WebFrameSerializer {
       WebLocalFrame*,
       MHTMLPartsGenerationDelegate*,
       base::OnceCallback<void(WebThreadSafeData)> callback);
-
-  // IMPORTANT:
-  // The API below is an older implementation of frame serialization that
-  // will be removed soon.
-
-  class LinkRewritingDelegate {
-   public:
-    // Method allowing the delegate control which URLs are written into the
-    // generated html document.
-    //
-    // When URL of the given frame needs to be rewritten, this method should
-    // return true and populate |rewrittenLink| with a desired value of the
-    // html attribute value to be used in place of the original link (i.e.
-    // in place of the original iframe.src or object.data attribute value).
-    //
-    // If no link rewriting is desired, this method should return false.
-    virtual bool RewriteFrameSource(WebFrame*, WebString* rewritten_link) = 0;
-
-    // Method allowing the delegate control which URLs are written into the
-    // generated html document.
-    //
-    // When the given URL needs to be rewritten, this method should
-    // return true and populate |rewrittenLink| with a desired value of the
-    // html attribute value to be used in place of the original link (i.e.
-    // in place of the original img.src or blockquote.cite attribute value).
-    //
-    // If no link rewriting is desired, this method should return false.
-    virtual bool RewriteLink(const WebURL&, WebString* rewritten_link) = 0;
-  };
-
-  // This function will serialize the specified frame to HTML data.
-  // We have a data buffer to temporary saving generated html data. We will
-  // sequentially call WebFrameSerializerClient once the data buffer is full.
-  //
-  // False is returned if no data has been serialized (i.e. because
-  // the target frame didn't have a valid url).
-  static bool Serialize(WebLocalFrame*,
-                        WebFrameSerializerClient*,
-                        LinkRewritingDelegate*,
-                        bool);
 
   // FIXME: The following are here for unit testing purposes. Consider
   // changing the unit tests instead.
