@@ -2,29 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-#include <hb.h>
-#include <hb-aat.h>
-#include <hb-cplusplus.hh>
-// clang-format on
-
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_caps_support.h"
+
+#include "third_party/blink/renderer/platform/fonts/shaping/hb_shim.h"
 
 namespace blink {
 
 namespace {
 
 bool ActivationSelectorPresent(
-    hb_face_t* hb_face,
+    hb_shim::Face* hb_face,
     const hb_aat_layout_feature_type_t feature_type,
     const hb_aat_layout_feature_selector_t enabled_selector_expectation) {
   Vector<hb_aat_layout_feature_selector_info_t> feature_selectors;
   wtf_size_t num_feature_selectors = 0;
   wtf_size_t default_index = 0;
-  num_feature_selectors = hb_aat_layout_feature_type_get_selector_infos(
+  num_feature_selectors = hb_shim::aat_layout_feature_type_get_selector_infos(
       hb_face, feature_type, 0, nullptr, nullptr, nullptr);
   feature_selectors.resize(num_feature_selectors);
-  if (!hb_aat_layout_feature_type_get_selector_infos(
+  if (!hb_shim::aat_layout_feature_type_get_selector_infos(
           hb_face, feature_type, 0, &num_feature_selectors,
           feature_selectors.data(), &default_index)) {
     return false;
@@ -134,20 +130,20 @@ CaseMapIntend OpenTypeCapsSupport::NeedsCaseChange(
 
 OpenTypeCapsSupport::FontFormat OpenTypeCapsSupport::GetFontFormat() const {
   if (font_format_ == FontFormat::kUndetermined) {
-    hb_face_t* const hb_face =
-        hb_font_get_face(harfbuzz_face_->GetScaledFont());
+    hb_shim::Face* const hb_face =
+        hb_shim::font_get_face(harfbuzz_face_->GetScaledFont());
 
-    hb::unique_ptr<hb_blob_t> morx_blob(
-        hb_face_reference_table(hb_face, HB_TAG('m', 'o', 'r', 'x')));
-    hb::unique_ptr<hb_blob_t> mort_blob(
-        hb_face_reference_table(hb_face, HB_TAG('m', 'o', 'r', 't')));
+    hb_shim::unique_ptr<hb_shim::Blob> morx_blob(
+        hb_shim::face_reference_table(hb_face, HB_TAG('m', 'o', 'r', 'x')));
+    hb_shim::unique_ptr<hb_shim::Blob> mort_blob(
+        hb_shim::face_reference_table(hb_face, HB_TAG('m', 'o', 'r', 't')));
 
     // TODO(crbug.com/911149): Use hb_aat_layout_has_substitution() for
     // has_morx_or_mort and hb_ot_layout_has_substitution() for has_gsub once is
     // exposed in HarfBuzz.
-    bool has_morx_or_mort = hb_blob_get_length(morx_blob.get()) ||
-                            hb_blob_get_length(mort_blob.get());
-    bool has_gsub = hb_ot_layout_has_substitution(hb_face);
+    bool has_morx_or_mort = hb_shim::blob_get_length(morx_blob.get()) ||
+                            hb_shim::blob_get_length(mort_blob.get());
+    bool has_gsub = hb_shim::ot_layout_has_substitution(hb_face);
     font_format_ = has_morx_or_mort && !has_gsub ? FontFormat::kAat
                                                  : FontFormat::kOpenType;
   }
@@ -168,15 +164,17 @@ bool OpenTypeCapsSupport::SupportsAatFeature(uint32_t tag) const {
     return false;
   }
 
-  hb_face_t* const hb_face = hb_font_get_face(harfbuzz_face_->GetScaledFont());
+  hb_shim::Face* const hb_face =
+      hb_shim::font_get_face(harfbuzz_face_->GetScaledFont());
 
   Vector<hb_aat_layout_feature_type_t> aat_features;
   wtf_size_t feature_count =
-      hb_aat_layout_get_feature_types(hb_face, 0, nullptr, nullptr);
+      hb_shim::aat_layout_get_feature_types(hb_face, 0, nullptr, nullptr);
   aat_features.resize(feature_count);
-  if (!hb_aat_layout_get_feature_types(hb_face, 0, &feature_count,
-                                       aat_features.data()))
+  if (!hb_shim::aat_layout_get_feature_types(hb_face, 0, &feature_count,
+                                             aat_features.data())) {
     return false;
+  }
 
   if (tag == HB_TAG('s', 'm', 'c', 'p')) {
     // Check for presence of new style (feature id 38) or old style (letter

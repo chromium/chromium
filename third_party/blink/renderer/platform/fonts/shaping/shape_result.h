@@ -60,9 +60,11 @@
 #define USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS 1
 #endif
 
-struct hb_buffer_t;
-
 namespace blink {
+
+namespace hb_shim {
+struct Buffer;
+}  // namespace hb_shim
 
 struct CharacterRange;
 class Font;
@@ -443,7 +445,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   void ComputeGlyphPositions(ShapeResultRun*,
                              wtf_size_t start_glyph,
                              wtf_size_t num_glyphs,
-                             hb_buffer_t*);
+                             hb_shim::Buffer*);
   // Inserts as many glyphs as possible as a ShapeResultRun, and sets
   // |next_start_glyph| to the start index of the remaining glyphs to be
   // inserted.
@@ -451,7 +453,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
                  wtf_size_t start_glyph,
                  wtf_size_t num_glyphs,
                  wtf_size_t* next_start_glyph,
-                 hb_buffer_t*);
+                 hb_shim::Buffer*);
   void InsertRun(ShapeResultRun*);
   void ReorderRtlRuns(wtf_size_t run_size_before);
 

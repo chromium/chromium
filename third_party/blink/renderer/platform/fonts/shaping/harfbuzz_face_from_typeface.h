@@ -5,16 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_FROM_TYPEFACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_FROM_TYPEFACE_H_
 
+#include "third_party/blink/renderer/platform/fonts/shaping/hb_shim.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
-#include <hb.h>
-#include <hb-cplusplus.hh>
-
 namespace blink {
 
-// Creates a scoped HarfBuzz hb_face_t based on accessing the underlying SkData
-// of the SkTypeface (using SkTypeface::openStream() and
+// Creates a scoped HarfBuzz/HarfRust face based on accessing the underlying
+// SkData of the SkTypeface (using SkTypeface::openStream() and
 // SkStream::getMemoryBase().
 //
 // Warning regarding usage on Mac: Using this for FreeType-backed SkTypeface
@@ -24,7 +22,7 @@ namespace blink {
 // from copying all font tables on Mac into newly allocated memory, causing a
 // potentially quite large allocations (in the megabytes range). See the
 // implementation of SkTypeface_Mac::onOpenStream.
-PLATFORM_EXPORT hb::unique_ptr<hb_face_t> HbFaceFromSkTypeface(
+PLATFORM_EXPORT hb_shim::unique_ptr<hb_shim::Face> HbFaceFromSkTypeface(
     sk_sp<SkTypeface> typeface);
 }  // namespace blink
 

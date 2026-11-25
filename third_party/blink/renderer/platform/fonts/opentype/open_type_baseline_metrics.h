@@ -15,6 +15,10 @@
 namespace blink {
 class HarfBuzzFace;
 
+namespace hb_shim {
+struct Font;
+}  // namespace hb_shim
+
 class PLATFORM_EXPORT OpenTypeBaselineMetrics {
  public:
   OpenTypeBaselineMetrics(HarfBuzzFace* harf_buzz_face,
@@ -32,7 +36,7 @@ class PLATFORM_EXPORT OpenTypeBaselineMetrics {
  private:
   // UnprotectedInReleaseForPerformance: Based on analysis of Speedometer 3
   // (font shaping).
-  raw_ptr<hb_font_t, UnprotectedInReleaseForPerformance | DanglingUntriaged>
+  raw_ptr<hb_shim::Font, UnprotectedInReleaseForPerformance | DanglingUntriaged>
       font_;
   hb_direction_t hb_dir_;
 };

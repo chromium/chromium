@@ -101,9 +101,8 @@ ShapeResultRun* CreateTestShapeResultRun(
     const SimpleFontData* font = nullptr,
     hb_direction_t direction = HB_DIRECTION_LTR) {
   return MakeGarbageCollected<ShapeResultRun>(
-      font, direction, CanvasRotationInVertical::kRegular,
-      hb_script_t::HB_SCRIPT_LATIN, /*start_index*/ 0, num_glyphs,
-      num_characters);
+      font, direction, CanvasRotationInVertical::kRegular, HB_SCRIPT_LATIN,
+      /*start_index*/ 0, num_glyphs, num_characters);
 }
 
 }  // namespace

@@ -10,9 +10,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
-#include <hb.h>
-
 namespace blink {
+
+namespace hb_shim {
+struct Buffer;
+}  // namespace hb_shim
 
 enum class CaseMapIntend { kKeepSameCase, kUpperCase, kLowerCase };
 
@@ -22,7 +24,7 @@ class CaseMappingHarfBuzzBufferFiller {
  public:
   CaseMappingHarfBuzzBufferFiller(CaseMapIntend,
                                   const AtomicString& locale,
-                                  hb_buffer_t* harfbuzz_buffer,
+                                  hb_shim::Buffer* harfbuzz_buffer,
                                   const String& text,
                                   wtf_size_t start_index,
                                   wtf_size_t num_characters);
@@ -33,7 +35,7 @@ class CaseMappingHarfBuzzBufferFiller {
                     base::span<const UChar> buffer,
                     wtf_size_t start_index,
                     wtf_size_t num_characters);
-  hb_buffer_t* harfbuzz_buffer_;
+  hb_shim::Buffer* harfbuzz_buffer_;
 };
 
 }  // namespace blink

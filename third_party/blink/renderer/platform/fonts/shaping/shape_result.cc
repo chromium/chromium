@@ -31,8 +31,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 
-#include <hb.h>
-
 #include <algorithm>
 #include <limits>
 #include <memory>
@@ -46,6 +44,7 @@
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_bounds_accumulator.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/hb_shim.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1493,9 +1492,8 @@ inline TextRunLayoutUnit HarfBuzzPositionToTextLayoutUnit(hb_position_t value) {
   return TextRunLayoutUnit::FromFixed<16>(value);
 }
 
-template <typename T>
-base::span<const T> HbBufferSpan(T* (*get_array)(hb_buffer_t*, unsigned*),
-                                 hb_buffer_t* buffer) {
+template <typename T, typename GetArray>
+base::span<const T> HbBufferSpan(GetArray get_array, hb_shim::Buffer* buffer) {
   unsigned length = 0;
   T* data = get_array(buffer, &length);
   // Positions may be null during a shaping callback.
@@ -1714,16 +1712,18 @@ template <bool kIsHorizontalRun>
 void ShapeResult::ComputeGlyphPositions(ShapeResultRun* run,
                                         wtf_size_t start_glyph,
                                         wtf_size_t num_glyphs,
-                                        hb_buffer_t* harfbuzz_buffer) {
+                                        hb_shim::Buffer* harfbuzz_buffer) {
   DCHECK_EQ(kIsHorizontalRun, run->IsHorizontal());
   const wtf_size_t start_cluster = run->StartIndex();
   DCHECK_LE(num_glyphs, HarfBuzzRunGlyphData::kMaxGlyphs);
 
   const base::span<const hb_glyph_info_t> glyph_infos =
-      HbBufferSpan(hb_buffer_get_glyph_infos, harfbuzz_buffer)
+      HbBufferSpan<hb_glyph_info_t>(hb_shim::buffer_get_glyph_infos,
+                                    harfbuzz_buffer)
           .subspan(start_glyph, num_glyphs);
   const base::span<const hb_glyph_position_t> glyph_positions =
-      HbBufferSpan(hb_buffer_get_glyph_positions, harfbuzz_buffer)
+      HbBufferSpan<hb_glyph_position_t>(hb_shim::buffer_get_glyph_positions,
+                                        harfbuzz_buffer)
           .subspan(start_glyph, num_glyphs);
 
   if constexpr (kIsHorizontalRun) {
@@ -1781,13 +1781,13 @@ void ShapeResult::InsertRun(ShapeResultRun* run,
                             wtf_size_t start_glyph,
                             wtf_size_t num_glyphs,
                             wtf_size_t* next_start_glyph,
-                            hb_buffer_t* harfbuzz_buffer) {
+                            hb_shim::Buffer* harfbuzz_buffer) {
   DCHECK_GT(num_glyphs, 0u);
 
   const hb_glyph_info_t* glyph_infos =
-      hb_buffer_get_glyph_infos(harfbuzz_buffer, nullptr);
+      hb_shim::buffer_get_glyph_infos(harfbuzz_buffer, nullptr);
   const bool is_ltr =
-      HB_DIRECTION_IS_FORWARD(hb_buffer_get_direction(harfbuzz_buffer));
+      HB_DIRECTION_IS_FORWARD(hb_shim::buffer_get_direction(harfbuzz_buffer));
   // num_glyphs_removed will be non-zero if the first grapheme cluster of |run|
   // is too big to fit in a single run, in which case it is truncated and the
   // truncated glyphs won't be inserted into any run.

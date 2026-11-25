@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/stretchy_operator_shaper.h"
 
-#include <hb-ot.h>
-#include <hb.h>
 #include <unicode/uchar.h>
 
 #include "base/numerics/safe_conversions.h"
@@ -13,6 +11,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/hb_shim.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -41,7 +40,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
   if (parts.empty())
     return std::nullopt;
 
-  hb_font_t* const hb_font = harfbuzz_face->GetScaledFont();
+  hb_shim::Font* const hb_font = harfbuzz_face->GetScaledFont();
 
   auto hb_stretch_axis =
       stretch_axis == OpenTypeMathStretchData::StretchAxis::Horizontal
@@ -51,7 +50,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
   // Go over the assembly parts and determine parameters used below.
   // https://w3c.github.io/mathml-core/#the-glyphassembly-table
   float min_connector_overlap = HarfBuzzUnitsToFloat(
-      hb_ot_math_get_min_connector_overlap(hb_font, hb_stretch_axis));
+      hb_shim::ot_math_get_min_connector_overlap(hb_font, hb_stretch_axis));
   float max_connector_overlap = std::numeric_limits<float>::max();
   float non_extender_advance_sum = 0, extender_advance_sum = 0;
   wtf_size_t non_extender_count = 0, extender_count = 0;

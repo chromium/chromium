@@ -17,8 +17,9 @@ static void DeleteTypefaceStream(void* stream_asset_ptr) {
 }  // namespace
 
 namespace blink {
-hb::unique_ptr<hb_face_t> HbFaceFromSkTypeface(sk_sp<SkTypeface> typeface) {
-  hb::unique_ptr<hb_face_t> return_face(nullptr);
+hb_shim::unique_ptr<hb_shim::Face> HbFaceFromSkTypeface(
+    sk_sp<SkTypeface> typeface) {
+  hb_shim::unique_ptr<hb_shim::Face> return_face(nullptr);
   int ttc_index = 0;
 
   // Have openStream() write the ttc index of this typeface within the stream to
@@ -28,7 +29,7 @@ hb::unique_ptr<hb_face_t> HbFaceFromSkTypeface(sk_sp<SkTypeface> typeface) {
   if (tf_stream && tf_stream->getMemoryBase()) {
     const void* tf_memory = tf_stream->getMemoryBase();
     size_t tf_size = tf_stream->getLength();
-    hb::unique_ptr<hb_blob_t> face_blob(hb_blob_create(
+    hb_shim::unique_ptr<hb_shim::Blob> face_blob(hb_shim::blob_create(
         reinterpret_cast<const char*>(tf_memory),
         base::checked_cast<wtf_size_t>(tf_size), HB_MEMORY_MODE_READONLY,
         tf_stream.release(), DeleteTypefaceStream));
@@ -36,10 +37,10 @@ hb::unique_ptr<hb_face_t> HbFaceFromSkTypeface(sk_sp<SkTypeface> typeface) {
     // Use hb_face_count to retrieve the number of recognized faces in the blob.
     // hb_face_create_for_tables may still create a working hb_face.
     // See https://github.com/harfbuzz/harfbuzz/issues/248 .
-    wtf_size_t num_hb_faces = hb_face_count(face_blob.get());
+    wtf_size_t num_hb_faces = hb_shim::face_count(face_blob.get());
     if (0 < num_hb_faces && static_cast<wtf_size_t>(ttc_index) < num_hb_faces) {
-      return_face =
-          hb::unique_ptr<hb_face_t>(hb_face_create(face_blob.get(), ttc_index));
+      return_face = hb_shim::unique_ptr<hb_shim::Face>(
+          hb_shim::face_create(face_blob.get(), ttc_index));
     }
   }
   return return_face;

@@ -31,13 +31,10 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 
-#include <hb-ot.h>
-#include <hb.h>
 #include <unicode/uchar.h>
 #include <unicode/uscript.h>
 
 #include <algorithm>
-#include <hb-cplusplus.hh>
 #include <memory>
 #include <utility>
 
@@ -59,6 +56,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/han_kerning.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/hb_shim.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/fonts/small_caps_iterator.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -94,11 +92,11 @@ class PooledHarfBuzzBuffer {
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
       pool.pop_back();
 
-      hb_buffer_reset(buffer_);
+      hb_shim::buffer_reset(buffer_);
       return;
     }
 
-    buffer_ = hb::unique_ptr<hb_buffer_t>{hb_buffer_create()};
+    buffer_ = hb_shim::unique_ptr<hb_shim::Buffer>{hb_shim::buffer_create()};
   }
 
   ~PooledHarfBuzzBuffer() {
@@ -110,21 +108,21 @@ class PooledHarfBuzzBuffer {
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
   }
 
-  hb_buffer_t* Get() const { return buffer_; }
-  const hb_buffer_t* operator->() const { return Get(); }
-  explicit operator hb_buffer_t*() const { return Get(); }
-  explicit operator bool() const { return Get(); }
+  hb_shim::Buffer* Get() const { return buffer_; }
+  const hb_shim::Buffer* operator->() const { return Get(); }
+  explicit operator hb_shim::Buffer*() const { return Get(); }
+  explicit operator bool() const { return static_cast<bool>(buffer_); }
 
  private:
   static constexpr wtf_size_t kInlineCapacity = 8;
-  using Pool = Vector<hb::unique_ptr<hb_buffer_t>, kInlineCapacity>;
+  using Pool = Vector<hb_shim::unique_ptr<hb_shim::Buffer>, kInlineCapacity>;
 
   static Pool& GetPool() {
     static base::NoDestructor<ThreadSpecific<Pool>> pool;
     return **pool;
   }
 
-  hb::unique_ptr<hb_buffer_t> buffer_;
+  hb_shim::unique_ptr<hb_shim::Buffer> buffer_;
 };
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -274,7 +272,7 @@ static inline hb_script_t IcuScriptToHbScript(UScriptCode script) {
     return HB_SCRIPT_INVALID;
   }
 
-  return hb_script_from_string(uscript_getShortName(script), -1);
+  return hb_shim::script_from_string(uscript_getShortName(script), -1);
 }
 
 inline float HarfBuzzPositionToFloat(hb_position_t value) {
@@ -290,10 +288,10 @@ void RoundHarfBuzzPosition(hb_position_t* value) {
   }
 }
 
-void RoundHarfBuzzBufferPositions(hb_buffer_t* buffer) {
+void RoundHarfBuzzBufferPositions(hb_shim::Buffer* buffer) {
   wtf_size_t len;
   hb_glyph_position_t* glyph_positions =
-      hb_buffer_get_glyph_positions(buffer, &len);
+      hb_shim::buffer_get_glyph_positions(buffer, &len);
   for (wtf_size_t i = 0; i < len; ++i) {
     hb_glyph_position_t* pos = &UNSAFE_TODO(glyph_positions[i]);
     RoundHarfBuzzPosition(&pos->x_offset);
@@ -303,13 +301,13 @@ void RoundHarfBuzzBufferPositions(hb_buffer_t* buffer) {
   }
 }
 
-inline bool ShapeRange(hb_buffer_t* buffer,
+inline bool ShapeRange(hb_shim::Buffer* buffer,
                        const FontFeatureRanges& font_features,
                        const SimpleFontData* current_font,
                        const UnicodeRangeSet* current_font_range_set,
                        UScriptCode current_run_script,
                        hb_direction_t direction,
-                       hb_language_t language,
+                       hb_shim::Language language,
                        float specified_size,
                        VariationSelectorMode variation_selector_mode) {
   const FontPlatformData& platform_data = current_font->PlatformData();
@@ -334,20 +332,20 @@ inline bool ShapeRange(hb_buffer_t* buffer,
   const FontFeatureRanges& argument_features =
       variant_features ? *variant_features : font_features;
 
-  hb_buffer_set_language(buffer, language);
-  hb_buffer_set_script(buffer, IcuScriptToHbScript(current_run_script));
-  hb_buffer_set_direction(buffer, direction);
+  hb_shim::buffer_set_language(buffer, language);
+  hb_shim::buffer_set_script(buffer, IcuScriptToHbScript(current_run_script));
+  hb_shim::buffer_set_direction(buffer, direction);
 
-  hb_font_t* hb_font =
+  hb_shim::Font* hb_font =
       face->GetScaledFont(current_font_range_set,
                           HB_DIRECTION_IS_VERTICAL(direction)
                               ? HarfBuzzFace::kPrepareForVerticalLayout
                               : HarfBuzzFace::kNoVerticalLayout,
                           specified_size);
   face->SetVariationSelectorMode(variation_selector_mode);
-  hb_shape(hb_font, buffer,
-           FontFeatureRange::ToHarfBuzzData(argument_features.data()),
-           argument_features.size());
+  hb_shim::shape(hb_font, buffer,
+                 FontFeatureRange::ToHarfBuzzData(argument_features.data()),
+                 argument_features.size());
   if (!face->ShouldSubpixelPosition()) {
     RoundHarfBuzzBufferPositions(buffer);
   }
@@ -369,7 +367,7 @@ BufferSlice ComputeSlice(RangeContext* range_data,
   result.num_glyphs = new_glyph_index - old_glyph_index;
 
   if (HB_DIRECTION_IS_FORWARD(
-          hb_buffer_get_direction(range_data->buffer.Get()))) {
+          hb_shim::buffer_get_direction(range_data->buffer.Get()))) {
     result.start_character_index =
         UNSAFE_TODO(glyph_info[old_glyph_index].cluster);
     if (new_glyph_index == num_glyphs) {
@@ -570,9 +568,9 @@ void HarfBuzzShaper::ExtractShapeResults(
   wtf_size_t current_cluster = 0;
 
   // Find first notdef glyph in buffer.
-  wtf_size_t num_glyphs = hb_buffer_get_length(range_data->buffer.Get());
+  wtf_size_t num_glyphs = hb_shim::buffer_get_length(range_data->buffer.Get());
   hb_glyph_info_t* glyph_info =
-      hb_buffer_get_glyph_infos(range_data->buffer.Get(), nullptr);
+      hb_shim::buffer_get_glyph_infos(range_data->buffer.Get(), nullptr);
 
   wtf_size_t last_change_glyph_index = 0;
   wtf_size_t previous_cluster_start_glyph_index = 0;
@@ -855,7 +853,7 @@ CapsFeatureSettingsScopedOverlay::~CapsFeatureSettingsScopedOverlay() {
   features_->EraseAt(0, count_features_);
 }
 
-inline hb_language_t GetLanguageFromFontDescription(
+inline hb_shim::Language GetLanguageFromFontDescription(
     const FontDescription& font_description) {
   // Determines the HarfBuzz language used for shaping.
   // If the `font-language-override property` is present, its value (a
@@ -865,14 +863,15 @@ inline hb_language_t GetLanguageFromFontDescription(
   // null-terminated. If no override is specified, the locale-based HarfBuzz
   // language is used instead.
   if (font_description.HasLanguageOverride()) {
-    const hb_language_t override_language =
-        hb_ot_tag_to_language(hb_tag_from_string(
+    const hb_shim::Language override_language =
+        hb_shim::ot_tag_to_language(hb_shim::tag_from_string(
             font_description.FontLanguageOverride().Utf8().data(), -1));
     if (override_language) {
       return override_language;
     }
   }
-  return font_description.LocaleOrDefault().HarfbuzzLanguage();
+  return hb_shim::FromHbLanguage(
+      font_description.LocaleOrDefault().HarfbuzzLanguage());
 }
 
 bool IftRequireSubset(const SimpleFontData* font_data, const StringView& text) {
@@ -893,7 +892,7 @@ void HarfBuzzShaper::ShapeSegment(
   const Font* font = range_data->font;
   const FontDescription& font_description = font->GetFontDescription();
   const LayoutLocale& locale = font_description.LocaleOrDefault();
-  const hb_language_t language =
+  const hb_shim::Language language =
       GetLanguageFromFontDescription(font_description);
 
   bool needs_caps_handling =
@@ -1089,7 +1088,7 @@ void HarfBuzzShaper::ShapeSegment(
       }
     }
 
-    hb_buffer_reset(range_data->buffer.Get());
+    hb_shim::buffer_reset(range_data->buffer.Get());
   }
 
   han_kerning.DidShapeSegment(*result);
@@ -1221,43 +1220,44 @@ void HarfBuzzShaper::GetGlyphData(const SimpleFontData& font_data,
     return;
   }
   PooledHarfBuzzBuffer pooled_hb_buffer;
-  hb_buffer_t* hb_buffer = pooled_hb_buffer.Get();
-  hb_buffer_set_language(hb_buffer, locale.HarfbuzzLanguage());
-  hb_buffer_set_script(hb_buffer, IcuScriptToHbScript(script));
-  hb_buffer_set_direction(
+  hb_shim::Buffer* hb_buffer = pooled_hb_buffer.Get();
+  hb_shim::buffer_set_language(
+      hb_buffer, hb_shim::FromHbLanguage(locale.HarfbuzzLanguage()));
+  hb_shim::buffer_set_script(hb_buffer, IcuScriptToHbScript(script));
+  hb_shim::buffer_set_direction(
       hb_buffer, is_horizontal ? (blink::IsLtr(direction) ? HB_DIRECTION_LTR
                                                           : HB_DIRECTION_RTL)
                                : HB_DIRECTION_TTB);
   if (text_.Is8Bit()) {
     auto span = text_.Span8();
-    hb_buffer_add_latin1(hb_buffer, span.data(),
-                         base::checked_cast<int>(span.size()), 0,
-                         text_.length());
+    hb_shim::buffer_add_latin1(hb_buffer, span.data(),
+                               base::checked_cast<int>(span.size()), 0,
+                               text_.length());
   } else {
     static_assert(sizeof(uint16_t) == sizeof(UChar));
     auto span = text_.SpanUint16();
-    hb_buffer_add_utf16(hb_buffer, span.data(),
-                        base::checked_cast<int>(span.size()), 0,
-                        text_.length());
+    hb_shim::buffer_add_utf16(hb_buffer, span.data(),
+                              base::checked_cast<int>(span.size()), 0,
+                              text_.length());
   }
 
   const FontPlatformData& platform_data = font_data.PlatformData();
   HarfBuzzFace* const hb_face = platform_data.GetHarfBuzzFace();
   DCHECK(hb_face);
-  hb_font_t* const hb_font = hb_face->GetScaledFont(
+  hb_shim::Font* const hb_font = hb_face->GetScaledFont(
       nullptr,
       is_horizontal ? HarfBuzzFace::kNoVerticalLayout
                     : HarfBuzzFace::kPrepareForVerticalLayout,
       platform_data.size());
   DCHECK(hb_font);
-  hb_shape(hb_font, hb_buffer, nullptr, 0);
+  hb_shim::shape(hb_font, hb_buffer, nullptr, 0);
 
   // Create `GlyphDataList` from `hb_buffer`.
   wtf_size_t num_glyphs;
   hb_glyph_info_t* glyph_info =
-      hb_buffer_get_glyph_infos(hb_buffer, &num_glyphs);
+      hb_shim::buffer_get_glyph_infos(hb_buffer, &num_glyphs);
   hb_glyph_position_t* glyph_position =
-      hb_buffer_get_glyph_positions(hb_buffer, nullptr);
+      hb_shim::buffer_get_glyph_positions(hb_buffer, nullptr);
   glyphs.reserve(num_glyphs);
   for (; num_glyphs;
        --num_glyphs, UNSAFE_TODO(++glyph_info), UNSAFE_TODO(++glyph_position)) {

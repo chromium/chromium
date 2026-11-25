@@ -5,18 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FONT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FONT_DATA_H_
 
-#include <hb-cplusplus.hh>
 #include <memory>
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/hb_shim.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/variation_selector_mode.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkStrikeRef.h"
-
-struct hb_font_t;
 
 namespace blink {
 
@@ -30,7 +28,7 @@ inline constexpr wtf_size_t kInvalidFallbackMetricsValue =
 // Since it lives on a thread-local cache, it is used by one thread only.
 struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
  public:
-  explicit HarfBuzzFontData(hb_font_t* unscaled_font)
+  explicit HarfBuzzFontData(hb_shim::Font* unscaled_font)
       : unscaled_font_(unscaled_font) {}
 
   HarfBuzzFontData(const HarfBuzzFontData&) = delete;
@@ -110,7 +108,7 @@ struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
     variation_selector_mode_ = value;
   }
 
-  const hb::unique_ptr<hb_font_t> unscaled_font_;
+  const hb_shim::unique_ptr<hb_shim::Font> unscaled_font_;
   SkFont font_;
   // Lazily-populated cached strike for the HarfBuzz advance callbacks; reset
   // when `font_` changes. See `UpdateFallbackMetricsAndScale`.

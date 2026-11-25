@@ -33,8 +33,6 @@
 
 #include <hb.h>
 
-#include <hb-cplusplus.hh>
-
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/variation_selector_mode.h"
@@ -47,6 +45,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
+
+namespace hb_shim {
+struct Font;
+}  // namespace hb_shim
 
 class FontPlatformData;
 class OpenTypeVerticalData;
@@ -71,14 +73,14 @@ class PLATFORM_EXPORT HarfBuzzFace final
   // Passing in specified_size in order to control selecting the right value
   // from the trak table. If not set, the size of the internal FontPlatformData
   // object will be used.
-  hb_font_t* GetScaledFont(const UnicodeRangeSet*,
-                           VerticalLayoutCallbacks,
-                           float specified_size) const;
+  hb_shim::Font* GetScaledFont(const UnicodeRangeSet*,
+                               VerticalLayoutCallbacks,
+                               float specified_size) const;
 
-  // Returns `hb_font_t` as same as `GetScaledFont()` with null
+  // Returns `hb_shim::Font*` as same as `GetScaledFont()` with null
   // `UnicodeRangeSet`, `HarfBuzzFace::kNoVerticalLayout`, and
   // `platform_data_.size()`.
-  hb_font_t* GetScaledFont() const;
+  hb_shim::Font* GetScaledFont() const;
 
   bool HasSpaceInLigaturesOrKerning(TypesettingFeatures);
   wtf_size_t UnitsPerEmFromHeadTable();

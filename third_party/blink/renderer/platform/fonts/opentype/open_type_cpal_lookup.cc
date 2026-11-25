@@ -6,13 +6,8 @@
 
 #include "base/containers/heap_array.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face_from_typeface.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/hb_shim.h"
 #include "third_party/skia/include/core/SkStream.h"
-
-// clang-format off
-#include <hb.h>
-#include <hb-cplusplus.hh>
-#include <hb-ot.h>
-// clang-format on
 
 namespace {
 SkFontTableTag kCpalTag = SkSetFourByteTag('C', 'P', 'A', 'L');
@@ -28,20 +23,22 @@ std::optional<uint16_t> OpenTypeCpalLookup::FirstThemedPalette(
   if (!typeface || !typeface->getTableSize(kCpalTag))
     return std::nullopt;
 
-  hb::unique_ptr<hb_face_t> face(HbFaceFromSkTypeface(typeface));
+  hb_shim::unique_ptr<hb_shim::Face> face(HbFaceFromSkTypeface(typeface));
 
-  if (!face || !hb_ot_color_has_palettes(face.get()))
+  if (!face || !hb_shim::ot_color_has_palettes(face.get())) {
     return std::nullopt;
+  }
 
-  int num_palettes = hb_ot_color_palette_get_count(face.get());
+  int num_palettes = hb_shim::ot_color_palette_get_count(face.get());
 
   const hb_ot_color_palette_flags_t desired_flag =
       palette_use == kUsableWithLightBackground
           ? HB_OT_COLOR_PALETTE_FLAG_USABLE_WITH_LIGHT_BACKGROUND
           : HB_OT_COLOR_PALETTE_FLAG_USABLE_WITH_DARK_BACKGROUND;
   for (int i = 0; i < num_palettes; ++i) {
-    if (hb_ot_color_palette_get_flags(face.get(), i) == desired_flag)
+    if (hb_shim::ot_color_palette_get_flags(face.get(), i) == desired_flag) {
       return i;
+    }
   }
   return std::nullopt;
 }
@@ -49,21 +46,21 @@ std::optional<uint16_t> OpenTypeCpalLookup::FirstThemedPalette(
 Vector<Color> OpenTypeCpalLookup::RetrieveColorRecords(
     sk_sp<SkTypeface> typeface,
     wtf_size_t palette_index) {
-  hb::unique_ptr<hb_face_t> face(HbFaceFromSkTypeface(typeface));
+  hb_shim::unique_ptr<hb_shim::Face> face(HbFaceFromSkTypeface(typeface));
 
   if (!face) {
     return Vector<Color>();
   }
 
-  wtf_size_t num_colors = hb_ot_color_palette_get_colors(
+  wtf_size_t num_colors = hb_shim::ot_color_palette_get_colors(
       face.get(), palette_index, 0, nullptr, nullptr);
   if (!num_colors) {
     return Vector<Color>();
   }
 
   auto colors = base::HeapArray<hb_color_t>::WithSize(num_colors);
-  if (!hb_ot_color_palette_get_colors(face.get(), palette_index, 0, &num_colors,
-                                      colors.data())) {
+  if (!hb_shim::ot_color_palette_get_colors(face.get(), palette_index, 0,
+                                            &num_colors, colors.data())) {
     return Vector<Color>();
   }
   Vector<Color> color_records(num_colors);
