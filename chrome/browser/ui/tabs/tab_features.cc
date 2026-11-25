@@ -246,6 +246,7 @@
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_impl.h"
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
+#include "chrome/browser/glic/selection/selection_context_sender.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/selection/selection_suggestion_tool.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
@@ -691,6 +692,13 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               .CreateInstance<commerce::InStockNotificationManager>(tab, &tab);
     }
 
+    // Before the various glic util classes below, which might look it up.
+    if (glic::GlicKeyedService::Get(profile)) {
+      glic_side_panel_coordinator_ =
+          GetUserDataFactory()
+              .CreateInstance<glic::GlicSidePanelCoordinatorImpl>(
+                  tab, &tab, side_panel_registry_.get());
+    }
     if (glic::GlicEnabling::IsProfileEligible(profile)) {
       glic_instance_helper_ =
           GetUserDataFactory().CreateInstance<glic::GlicInstanceHelper>(tab,
@@ -724,6 +732,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       }
 
       if (glic::GlicEnabling::IsEnabledForProfile(profile)) {
+        // The observer looks up the sender in its constructor, so the sender
+        // goes first (and is destroyed after it).
+        glic_selection_context_sender_ =
+            std::make_unique<glic::SelectionContextSender>(tab);
         glic_selection_observer_ =
             std::make_unique<glic::GlicSelectionObserver>(tab.GetContents());
       }
@@ -733,12 +745,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             GetUserDataFactory().CreateInstance<glic::GlicPageFeaturesManager>(
                 tab, &tab);
       }
-    }
-    if (glic::GlicKeyedService::Get(profile)) {
-      glic_side_panel_coordinator_ =
-          GetUserDataFactory()
-              .CreateInstance<glic::GlicSidePanelCoordinatorImpl>(
-                  tab, &tab, side_panel_registry_.get());
     }
     // TODO(crbug.com/433973411): Move this logic to a helper function.
     if (base::FeatureList::IsEnabled(features::kGlicActor) &&

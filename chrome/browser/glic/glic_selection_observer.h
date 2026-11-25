@@ -10,17 +10,12 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget_controller_delegate.h"
-#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/shake_trigger.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -36,17 +31,10 @@ namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
-class BrowserWindowInterface;
-
-namespace optimization_guide {
-class PageContextEligibilityObserver;
-class PageContextEligibility;
-}  // namespace optimization_guide
-
 namespace glic {
 
-class GlicKeyedService;
 class GlicSelectionWidgetController;
+class SelectionContextSender;
 
 class GlicSelectionObserver
     : public content::WebContentsObserver,
@@ -92,9 +80,7 @@ class GlicSelectionObserver
   void UpdateSelectionStateFromSmartSuggestionContextMenu(
       const std::u16string& selected_text);
 
-  bool has_sent_selection_context() const {
-    return has_sent_selection_context_;
-  }
+  bool has_sent_selection_context() const;
 
   // Dismisses the selection UI.
   // Virtual for testing.
@@ -133,31 +119,13 @@ class GlicSelectionObserver
   // Virtual for testing.
   virtual bool IsInlineCueEnabled() const;
 
-  // Returns true if Glic panel is showing for the current browser.
-  // Virtual for testing.
-  virtual bool IsPanelShowing(tabs::TabInterface* tab_interface,
-                              BrowserWindowInterface* bwi);
-
-  // Sends the selection context to the Glic panel.
-  // Virtual for testing.
-  virtual void SendAdditionalContextToPanel(
-      tabs::TabInterface* tab_interface,
-      const std::u16string& selected_text);
-
   // Shows the selection widget.
   // Virtual for testing.
   virtual void ShowSelectionAffordance(const std::u16string& selected_text);
 
-  // Called when the page context eligibility changes.
+  // Closes the selection widget, if any.
   // Virtual for testing.
-  virtual void OnPageContextEligibilityChanged(
-      optimization_guide::PageContextEligibilityStatus status);
-
-  bool IsPageContextEligible() const;
-
-  ::optimization_guide::PageContextEligibilityObserver* page_context_tracker() {
-    return page_context_tracker_.get();
-  }
+  virtual void CloseSelectionAffordance();
 
  private:
   friend class GlicSelectionObserverTest;
@@ -170,16 +138,17 @@ class GlicSelectionObserver
   void OnGlobalPanelShowHide();
   void EnsureSidePanelStateSubscription();
   void OnSidePanelStateChanged(GlicSidePanelCoordinator::State state);
-
-  void CreatePageContextEligibilityAPI(std::string account);
-  void OnPageContextEligibilityAPILoaded(
-      std::string account,
-      optimization_guide::PageContextEligibility* page_context_eligibility);
+  SelectionContextSender* GetSelectionContextSender() const;
 
   void ResetSelectionState();
   bool IsQuickAnswersEligible() const;
 
-  raw_ptr<GlicKeyedService> glic_keyed_service_;
+  // Set in the constructor when the tab already has a sender: `TabFeatures`
+  // creates the sender before the observer and destroys it after. Null when
+  // the observer is re-created for a discard (the new contents isn't tied to
+  // the tab yet) and in tests that attach a sender later; those look it up on
+  // use.
+  raw_ptr<SelectionContextSender> selection_context_sender_ = nullptr;
   base::CallbackListSubscription panel_state_subscription_;
   base::CallbackListSubscription side_panel_state_subscription_;
   GlicSidePanelCoordinator::State last_side_panel_state_ =
@@ -200,9 +169,6 @@ class GlicSelectionObserver
   bool is_key_selection_ = false;
   int bounds_retry_count_ = 0;
 
-  // True if the selection context was sent to the Glic panel, so we know to
-  // clear it if the selection becomes empty while the panel remains open.
-  bool has_sent_selection_context_ = false;
   // True during active user selection (mouse drag or key hold) to defer UI
   // updates until the input event completes.
   bool is_selecting_ = false;
@@ -215,9 +181,6 @@ class GlicSelectionObserver
 
   std::unique_ptr<GlicSelectionWidgetController> widget_controller_;
 
-  base::CallbackListSubscription page_context_eligibility_subscription_;
-  std::unique_ptr<::optimization_guide::PageContextEligibilityObserver>
-      page_context_tracker_;
   std::unique_ptr<ui::ScopedUnownedUserData<GlicSelectionObserver>>
       scoped_unowned_user_data_;
   base::WeakPtrFactory<GlicSelectionObserver> weak_ptr_factory_{this};

@@ -10,40 +10,28 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
-#include "base/logging.h"
-#include "base/strings/string_split.h"
+#include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget_controller.h"
-#include "chrome/browser/glic/common/local_hotkey_manager.h"
-#include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_instance.h"
-#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
-#include "chrome/browser/glic/selection/selection_context.h"
+#include "chrome/browser/glic/selection/selection_context_sender.h"
 #include "chrome/browser/glic/selection/shake_trigger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
-#include "chrome/common/webui_url_constants.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/url_utils.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -112,44 +100,23 @@ GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
   CHECK(web_contents);
   last_web_contents_size_ = web_contents->GetSize();
   shake_trigger_ = std::make_unique<ShakeTrigger>(web_contents, *this);
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  glic_keyed_service_ = GlicKeyedService::Get(profile);
-
-  if (glic_keyed_service_) {
-    panel_state_subscription_ =
-        glic_keyed_service_->instance_coordinator().AddGlobalShowHideCallback(
-            base::BindRepeating(&GlicSelectionObserver::OnGlobalPanelShowHide,
-                                weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  std::string account;
-  if (profile) {
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-    if (identity_manager) {
-      account =
-          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-              .email;
-    }
-  }
 
   auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (tab_interface) {
+    selection_context_sender_ = SelectionContextSender::From(
+        base::PassKey<GlicSelectionObserver>(), tab_interface);
     scoped_unowned_user_data_ =
         std::make_unique<ui::ScopedUnownedUserData<GlicSelectionObserver>>(
             tab_interface->GetUnownedUserDataHost(), *this);
     EnsureSidePanelStateSubscription();
   }
-  auto* helper = tab_interface
-                     ? tabs::PageContextEligibilityHelper::From(tab_interface)
-                     : nullptr;
-  if (helper) {
-    page_context_eligibility_subscription_ =
-        helper->RegisterEligibilityChangeCallback(base::BindRepeating(
-            &GlicSelectionObserver::OnPageContextEligibilityChanged,
-            weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    CreatePageContextEligibilityAPI(std::move(account));
+
+  if (auto* service = GlicKeyedService::Get(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+    panel_state_subscription_ =
+        service->instance_coordinator().AddGlobalShowHideCallback(
+            base::BindRepeating(&GlicSelectionObserver::OnGlobalPanelShowHide,
+                                weak_ptr_factory_.GetWeakPtr()));
   }
 
   widget_controller_ =
@@ -181,7 +148,7 @@ GlicSelectionObserver::~GlicSelectionObserver() {
 void GlicSelectionObserver::OnTextSelectionChanged(
     content::RenderFrameHost* render_frame_host,
     std::u16string_view selected_text) {
-  if (!IsTextSelectionSharingEnabled() && !has_sent_selection_context_) {
+  if (!IsTextSelectionSharingEnabled() && !has_sent_selection_context()) {
     return;
   }
 
@@ -189,7 +156,7 @@ void GlicSelectionObserver::OnTextSelectionChanged(
   // is disabled. However, if context was explicitly sent (e.g. via the context
   // menu), any deselection must clear that context from the panel.
   if (!IsTabValidForSharing(web_contents())) {
-    if (has_sent_selection_context_) {
+    if (has_sent_selection_context()) {
       UpdateSelectionState(std::u16string(), /*is_pending_selection=*/false,
                            SelectionSource::kAutomatic);
     }
@@ -265,11 +232,34 @@ void GlicSelectionObserver::UpdateSelectionStateFromContextMenu(
 void GlicSelectionObserver::UpdateSelectionStateFromSmartSuggestionContextMenu(
     const std::u16string& selected_text) {
   ResetPendingSelection();
-  if (last_selected_text_ == selected_text && has_sent_selection_context_) {
+  if (last_selected_text_ == selected_text && has_sent_selection_context()) {
     return;
   }
   UpdateSelectionState(selected_text, /*is_pending_selection=*/false,
                        SelectionSource::kAutomatic);
+}
+
+bool GlicSelectionObserver::has_sent_selection_context() const {
+  auto* sender = GetSelectionContextSender();
+  return sender && sender->has_sent_selection_context();
+}
+
+SelectionContextSender* GlicSelectionObserver::GetSelectionContextSender()
+    const {
+  if (selection_context_sender_) {
+    return selection_context_sender_;
+  }
+  auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  return SelectionContextSender::From(base::PassKey<GlicSelectionObserver>(),
+                                      tab_interface);
+}
+
+void GlicSelectionObserver::OnGlobalPanelShowHide() {
+  auto* sender = GetSelectionContextSender();
+  if (sender && sender->IsPanelShowing()) {
+    CloseSelectionAffordance();
+  }
 }
 
 void GlicSelectionObserver::DismissUI(DismissReason reason) {
@@ -394,7 +384,7 @@ void GlicSelectionObserver::OnInputEvent(
   // "Ask Gemini" context menu), we must still process input events even on
   // unshareable pages (such as chrome:// URLs) so that clicking away can clear
   // the selection chip from the panel.
-  if (!IsTabValidForSharing(web_contents()) && !has_sent_selection_context_) {
+  if (!IsTabValidForSharing(web_contents()) && !has_sent_selection_context()) {
     return;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -413,50 +403,46 @@ void GlicSelectionObserver::UpdateSelectionState(
     return;
   }
 
+  auto* sender = GetSelectionContextSender();
   if (source == SelectionSource::kContextMenu) {
-    has_sent_selection_context_ = !selected_text.empty();
+    if (sender) {
+      sender->MarkTextSent(selected_text);
+    }
     return;
   }
 
-  BrowserWindowInterface* bwi = tab_interface->GetBrowserWindowInterface();
-
   if (selected_text.empty()) {
-    widget_controller_->Close();
-
-    if (has_sent_selection_context_) {
-      SendAdditionalContextToPanel(tab_interface, u"");
-      has_sent_selection_context_ = false;
+    CloseSelectionAffordance();
+    if (sender) {
+      sender->SetText(u"");
     }
-
     last_selection_frame_token_.reset();
     return;
   }
 
+  BrowserWindowInterface* bwi = tab_interface->GetBrowserWindowInterface();
   if (!bwi) {
+    if (sender) {
+      sender->SetText(selected_text);
+    }
     return;
   }
 
-  bool panel_showing = IsPanelShowing(tab_interface, bwi);
+  bool panel_showing = sender && sender->IsPanelShowing();
   bool show_widget =
       is_pending_selection && IsInlineCueEnabled() &&
       IsQuickAnswersEligible() &&
       // Only normal browser windows show the widget, not popups or app windows.
       bwi->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
 
-  if (panel_showing) {
-    if (show_widget) {
-      ShowSelectionAffordance(selected_text);
-    } else {
-      widget_controller_->Close();
-    }
+  if (show_widget) {
+    ShowSelectionAffordance(selected_text);
+  } else if (panel_showing) {
+    CloseSelectionAffordance();
+  }
 
-    SendAdditionalContextToPanel(tab_interface, selected_text);
-    has_sent_selection_context_ = true;
-  } else {
-    if (show_widget) {
-      ShowSelectionAffordance(selected_text);
-    }
-    has_sent_selection_context_ = false;
+  if (sender) {
+    sender->SetText(selected_text);
   }
 }
 
@@ -466,73 +452,6 @@ bool GlicSelectionObserver::IsInlineCueEnabled() const {
   }
   return GlicEnabling::IsInlineCueEnabledForProfile(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-}
-
-bool GlicSelectionObserver::IsPanelShowing(tabs::TabInterface* tab_interface,
-                                           BrowserWindowInterface* bwi) {
-  if (glic_keyed_service_ &&
-      glic_keyed_service_->GetInstanceForTab(tab_interface)) {
-    return glic_keyed_service_->IsPanelShowingForBrowser(*bwi);
-  }
-  return false;
-}
-
-void GlicSelectionObserver::SendAdditionalContextToPanel(
-    tabs::TabInterface* tab_interface,
-    const std::u16string& selected_text) {
-  if (!glic_keyed_service_) {
-    return;
-  }
-
-  // If the page is not eligible, do not send the additional context.
-  if (!IsPageContextEligible() && !selected_text.empty()) {
-    return;
-  }
-
-  mojom::AdditionalContextPtr context = CreateTextSelectionContext(
-      web_contents(), selected_text, SelectionTextLength::kElided);
-
-  // Common case: the tab's instance already exists and is showing. This is a
-  // background update of the panel's selection context, not a user asking to
-  // invoke Gemini, so hand it straight to the instance. Going through Invoke()
-  // here would start a full invocation that (a) is rejected with
-  // kInvokeInProgress whenever any client invocation is already in flight on
-  // the instance, including the previous selection update, and (b) records an
-  // InvokeStarted/InvokeTerminated pair for something that is not a journey.
-  // SendAdditionalContext() has neither problem and coalesces to the latest
-  // value per source while the client is still connecting.
-  if (GlicInstance* instance =
-          glic_keyed_service_->GetInstanceForTab(tab_interface)) {
-    if (instance->IsShowing()) {
-      // The selected text flow has no live mode UI: mirror
-      // `LiveModeBehavior::kFail` and leave a live conversation alone.
-      if (instance->IsLiveMode()) {
-        return;
-      }
-      instance->SendAdditionalContext(std::move(context));
-      return;
-    }
-  }
-
-  // Clearing a previous selection only matters while the panel is open to
-  // display it; never start an invocation just to send an empty selection.
-  if (selected_text.empty()) {
-    return;
-  }
-
-  // Otherwise fall back to an invocation so the surface is resolved and shown
-  // the same way as before.
-  GlicInvokeOptions options(glic::Target(*tab_interface),
-                            mojom::InvocationSource::kTextSelectionWidget);
-  // Delivering the selection shouldn't relocate the conversation: leave it on
-  // the surface it's already showing on, and if that surface is a live mode
-  // floaty, don't invoke at all (see `InvokeGlicFromSelectionAffordance`).
-  options.preserve_active_surface = true;
-  options.target.live_mode_behavior = LiveModeBehavior::kFail;
-  options.additional_context = AdditionalTabContext(
-      std::move(context), content::GlobalRenderFrameHostId(),
-      PolicyCheck::kNone);
-  glic_keyed_service_->Invoke(std::move(options));
 }
 
 void GlicSelectionObserver::ShowSelectionAffordance(
@@ -553,50 +472,8 @@ void GlicSelectionObserver::ShowSelectionAffordance(
   }
 }
 
-void GlicSelectionObserver::OnPageContextEligibilityChanged(
-    optimization_guide::PageContextEligibilityStatus status) {
-  // If the page context transitions into a liminal state (kUnknown) or becomes
-  // ineligible (kNotEligible), and we've already sent selection context, we
-  // should clear it.
-  if (status != optimization_guide::PageContextEligibilityStatus::kEligible &&
-      has_sent_selection_context_) {
-    auto* tab_interface =
-        tabs::TabInterface::MaybeGetFromContents(web_contents());
-    if (tab_interface) {
-      SendAdditionalContextToPanel(tab_interface, std::u16string());
-      has_sent_selection_context_ = false;
-    }
-  } else if (status ==
-                 optimization_guide::PageContextEligibilityStatus::kEligible &&
-             !last_selected_text_.empty()) {
-    auto* tab_interface =
-        tabs::TabInterface::MaybeGetFromContents(web_contents());
-    if (!tab_interface) {
-      return;
-    }
-    BrowserWindowInterface* bwi = tab_interface->GetBrowserWindowInterface();
-    if (bwi && IsPanelShowing(tab_interface, bwi)) {
-      SendAdditionalContextToPanel(tab_interface, last_selected_text_);
-      has_sent_selection_context_ = true;
-    }
-  }
-}
-
-bool GlicSelectionObserver::IsPageContextEligible() const {
-  auto* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (tab_interface) {
-    auto* helper = tabs::PageContextEligibilityHelper::From(tab_interface);
-    if (helper) {
-      return helper->IsPageContextEligible() ==
-             optimization_guide::PageContextEligibilityStatus::kEligible;
-    }
-  }
-  if (page_context_tracker_) {
-    return page_context_tracker_->IsPageContextEligible() ==
-           optimization_guide::PageContextEligibilityStatus::kEligible;
-  }
-  return false;
+void GlicSelectionObserver::CloseSelectionAffordance() {
+  widget_controller_->Close();
 }
 
 void GlicSelectionObserver::ProcessPendingSelection() {
@@ -630,7 +507,7 @@ void GlicSelectionObserver::ResetFollowUpSelection() {
 
 void GlicSelectionObserver::ProcessInputEvent(
     std::unique_ptr<blink::WebInputEvent> event) {
-  if (!IsTextSelectionSharingEnabled() && !has_sent_selection_context_) {
+  if (!IsTextSelectionSharingEnabled() && !has_sent_selection_context()) {
     return;
   }
 
@@ -667,7 +544,7 @@ void GlicSelectionObserver::ProcessInputEvent(
         is_selecting_ = true;
         ResetPendingSelection();
         ResetFollowUpSelection();
-        if (has_sent_selection_context_) {
+        if (has_sent_selection_context()) {
           UpdateSelectionState(std::u16string(),
                                /*is_pending_selection=*/false,
                                SelectionSource::kAutomatic);
@@ -742,15 +619,6 @@ void GlicSelectionObserver::ProcessInputEvent(
   }
 }
 
-void GlicSelectionObserver::OnGlobalPanelShowHide() {
-  if (last_selected_text_.empty()) {
-    return;
-  }
-
-  UpdateSelectionState(last_selected_text_, /*is_pending_selection=*/false,
-                       SelectionSource::kAutomatic);
-}
-
 void GlicSelectionObserver::EnsureSidePanelStateSubscription() {
   if (side_panel_state_subscription_ || !shake_trigger_->IsCounting()) {
     return;
@@ -778,32 +646,6 @@ void GlicSelectionObserver::OnSidePanelStateChanged(
       previous_state != GlicSidePanelCoordinator::State::kBackgrounded) {
     shake_trigger_->OnFollowUpAction();
   }
-}
-
-void GlicSelectionObserver::CreatePageContextEligibilityAPI(
-    std::string account) {
-  optimization_guide::PageContextEligibility::GetAsync(
-      base::BindOnce(&GlicSelectionObserver::OnPageContextEligibilityAPILoaded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(account)));
-}
-
-void GlicSelectionObserver::OnPageContextEligibilityAPILoaded(
-    std::string account,
-    optimization_guide::PageContextEligibility* page_context_eligibility) {
-  if (!page_context_eligibility) {
-    return;
-  }
-  page_context_tracker_ =
-      optimization_guide::PageContextEligibilityObserver::Create(
-          web_contents(), std::move(account),
-          base::BindRepeating(
-              [](base::WeakPtr<GlicSelectionObserver> observer,
-                 optimization_guide::PageContextEligibilityStatus status) {
-                if (observer) {
-                  observer->OnPageContextEligibilityChanged(status);
-                }
-              },
-              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GlicSelectionObserver::ResetSelectionState() {

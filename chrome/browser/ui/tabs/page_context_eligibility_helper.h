@@ -72,6 +72,10 @@ class PageContextEligibilityHelper : public tabs::ContentsObservingTabFeature {
                          content::WebContents* old_contents,
                          content::WebContents* new_contents) override;
 
+  // Records `status` and notifies registered callbacks if it changed.
+  void NotifyEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus status);
+
  private:
   void OnTabActivated(tabs::TabInterface* tab);
   void OnTabDeactivated(tabs::TabInterface* tab);
@@ -83,8 +87,6 @@ class PageContextEligibilityHelper : public tabs::ContentsObservingTabFeature {
 
   void CreateObserver(content::WebContents* contents);
   void ResetObserverAndNotifyUnknown();
-  void NotifyEligibilityChanged(
-      optimization_guide::PageContextEligibilityStatus status);
 
   base::RepeatingCallbackList<void(
       optimization_guide::PageContextEligibilityStatus)>

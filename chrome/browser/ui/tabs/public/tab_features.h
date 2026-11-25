@@ -234,6 +234,7 @@ class GlicSidePanelCoordinator;
 class GlicSelectionObserver;
 class GlicWebDragObserver;
 class QuickAnswersTool;
+class SelectionContextSender;
 class SelectionOverlayController;
 class SelectionSuggestionTool;
 class GlicPageFeaturesManager;
@@ -594,6 +595,7 @@ class TabFeatures {
   std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
   std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
+  std::unique_ptr<glic::SelectionContextSender> glic_selection_context_sender_;
   std::unique_ptr<glic::GlicSelectionObserver> glic_selection_observer_;
   std::unique_ptr<glic::GlicWebDragObserver> glic_web_drag_observer_;
   std::unique_ptr<selection::SuggestionService> selection_suggestion_service_;
