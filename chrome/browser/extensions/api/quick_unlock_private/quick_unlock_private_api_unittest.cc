@@ -28,6 +28,8 @@
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
@@ -772,6 +774,27 @@ TEST_P(QuickUnlockPrivateUnitTest, VerifyAuthenticationAgainstPIN) {
   EXPECT_FALSE(TryAuthenticate("000000"));
   EXPECT_TRUE(TryAuthenticate("111111"));
   EXPECT_FALSE(TryAuthenticate("000000"));
+}
+
+// Setting a cryptohome-based PIN removes a PIN that was previously set with
+// the prefs-based backend, so that the new PIN is the one used to authenticate.
+TEST_P(QuickUnlockPrivateUnitTest, SetCryptohomePinRemovesPrefsPin) {
+  if (GetParam() != TestType::kCryptohome) {
+    GTEST_SKIP() << "Only relevant when cryptohome-based PIN is supported.";
+  }
+
+  ash::quick_unlock::PinStoragePrefs* pin_storage_prefs =
+      ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile())
+          ->pin_storage_prefs();
+  pin_storage_prefs->SetPin("111111");
+  ASSERT_TRUE(pin_storage_prefs->IsPinSet());
+
+  RunSetModes(QuickUnlockModeList{QuickUnlockMode::kPin}, {"222222"});
+
+  EXPECT_FALSE(pin_storage_prefs->IsPinSet());
+  EXPECT_TRUE(IsPinSetInBackend());
+  EXPECT_FALSE(TryAuthenticate("111111"));
+  EXPECT_TRUE(TryAuthenticate("222222"));
 }
 
 // Verifies that the number of modes and the number of passwords given must be

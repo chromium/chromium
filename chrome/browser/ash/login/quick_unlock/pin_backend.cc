@@ -296,8 +296,9 @@ void PinBackend::SetWithContext(const AccountId& account_id,
     PostResponse(std::move(did_set), false);
     return;
   }
+  // The prefs backend is not available if the user's profile is not loaded.
   QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-  if (!storage && storage->pin_storage_prefs()) {
+  if (storage) {
     // There may be a pref value if resetting PIN and the device now supports
     // cryptohome-based PIN.
     storage->pin_storage_prefs()->RemovePin();
