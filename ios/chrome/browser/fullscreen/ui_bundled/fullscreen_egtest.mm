@@ -936,6 +936,45 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
                 @"Failed to release histogram tester.");
 }
 
+// Tests that tapping the status bar while in fullscreen expands the toolbars
+// (`kForcedByUser`) and suppresses scrolling to the top on the first tap.
+- (void)testStatusBarTapExitsFullscreen {
+  _responses["/tallpage"] =
+      base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
+
+  GURL URL = self.testServer->GetURL("/tallpage");
+  [ChromeEarlGrey loadURL:URL withTimeout:kWaitForPageLoadTimeout];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  HideToolbarUsingUI();
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+
+  // First status bar tap while toolbars are collapsed should return NO and
+  // expand the toolbars with `kForcedByUser`.
+  GREYAssertFalse([FullscreenAppInterface shouldScrollToTopOnStatusBarTap],
+                  @"Scroll to top should be suppressed while in fullscreen.");
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  NSError* exitError = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       FullscreenModeTransitionTrigger::kForcedByUser)
+      forHistogram:@"IOS.Fullscreen.TransitionTrigger.Exit"];
+  GREYAssertNil(exitError, @"Histogram error for Exit: %@", exitError);
+
+  // Second status bar tap once toolbars are expanded should allow scrolling to
+  // top.
+  GREYAssertTrue([FullscreenAppInterface shouldScrollToTopOnStatusBarTap],
+                 @"Scroll to top should be allowed when toolbars are visible.");
+
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
+}
+
 // Tests that viewport-fit=cover works as intended in landscape mode.
 // The test loads a page with a lime green content div and a button to toggle
 // the viewport-fit meta tag.

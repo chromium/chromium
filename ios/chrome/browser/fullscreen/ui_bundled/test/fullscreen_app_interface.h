@@ -27,6 +27,11 @@ typedef NS_ENUM(NSInteger, GREYDirection);
 // Returns whether the active web view is scrolled to the bottom.
 + (BOOL)isScrolledToBottom;
 
+// Simulates a status bar tap by querying `-scrollViewShouldScrollToTop:` on the
+// active web view's scroll view delegate and returns whether the scroll view
+// should scroll to the top.
++ (BOOL)shouldScrollToTopOnStatusBarTap;
+
 // Returns the y-origin of the secondary toolbar in window coordinates, or 0 if
 // unavailable.
 + (CGFloat)secondaryToolbarTopInWindow;

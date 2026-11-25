@@ -292,6 +292,17 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 
 #pragma mark - CRWWebViewScrollViewProxyObserver
 
+- (BOOL)webViewScrollViewShouldScrollToTop:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  // Exit fullscreen when the status bar is tapped, but don't allow the scroll-
+  // to-top animation to occur if the toolbars are fully collapsed.
+  BOOL scrollToTop = _browserAgent->State() != FullscreenState::kUICollapsed;
+  _browserAgent->ExitFullscreen(PassKey(),
+                                FullscreenModeTransitionTrigger::kForcedByUser,
+                                /*animated=*/true);
+  return scrollToTop;
+}
+
 - (void)webViewScrollViewDidScroll:(CRWWebViewScrollViewProxy*)scrollView {
   CGFloat previousContentOffset = _lastContentOffset;
   CGFloat contentOffset = scrollView.contentOffset.y;

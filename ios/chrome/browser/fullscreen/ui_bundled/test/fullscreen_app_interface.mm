@@ -114,6 +114,21 @@ constexpr NSTimeInterval kTouchTimeout = 10.0;
   return fullscreenController->IsScrolledToBottomForTesting();
 }
 
++ (BOOL)shouldScrollToTopOnStatusBarTap {
+  web::WebState* webState = chrome_test_util::GetCurrentWebState();
+  if (!webState) {
+    return NO;
+  }
+  UIScrollView* scrollView = base::apple::ObjCCast<UIScrollView>(
+      webState->GetWebViewProxy().scrollViewProxy.panGestureRecognizer.view);
+  if (!scrollView ||
+      ![scrollView.delegate
+          respondsToSelector:@selector(scrollViewShouldScrollToTop:)]) {
+    return NO;
+  }
+  return [scrollView.delegate scrollViewShouldScrollToTop:scrollView];
+}
+
 + (CGFloat)secondaryToolbarTopInWindow {
   Browser* browser = chrome_test_util::GetCurrentBrowser();
   if (!browser) {
