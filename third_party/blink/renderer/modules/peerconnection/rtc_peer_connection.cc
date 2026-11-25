@@ -832,7 +832,7 @@ RTCPeerConnection::RTCPeerConnection(
         std::move(g_create_rpc_peer_connection_handler_callback_.Get()).Run();
   } else {
     peer_handler_ = dependency_factory.CreateRTCPeerConnectionHandler(
-        this, window->GetTaskRunner(TaskType::kInternalMedia),
+        this, window->GetTaskRunner(TaskType::kNetworking),
         encoded_insertable_streams_);
   }
 
@@ -1759,7 +1759,7 @@ ScriptPromise<RTCCertificate> RTCPeerConnection::generateCertificate(
   // destruction as well as the resolver's destruction.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       ExecutionContext::From(script_state)
-          ->GetTaskRunner(blink::TaskType::kInternalMedia);
+          ->GetTaskRunner(blink::TaskType::kNetworking);
   if (!expires) {
     certificate_generator->GenerateCertificate(
         key_params.value(), std::move(completion_callback),
@@ -2450,7 +2450,7 @@ RTCRtpSender* RTCPeerConnection::CreateOrUpdateSender(
     sender = MakeGarbageCollected<RTCRtpSender>(
         this, std::move(rtp_sender_platform), kind, track, MediaStreamVector(),
         encoded_insertable_streams_,
-        GetExecutionContext()->GetTaskRunner(TaskType::kInternalMedia));
+        GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
   } else {
     // Update existing sender (not touching the stream set).
     DCHECK_EQ(sender->web_sender()->Id(), rtp_sender_platform->Id());
@@ -2474,7 +2474,7 @@ RTCRtpReceiver* RTCPeerConnection::CreateOrUpdateReceiver(
     receiver = MakeGarbageCollected<RTCRtpReceiver>(
         this, std::move(platform_receiver), track, MediaStreamVector(),
         encoded_insertable_streams_,
-        GetExecutionContext()->GetTaskRunner(TaskType::kInternalMedia));
+        GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
     // Receiving tracks should be muted by default. SetReadyState() propagates
     // the related state changes to ensure it is muted on all layers. It also
     // fires events - which is not desired - but because they fire synchronously
