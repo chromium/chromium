@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.FUSEBOX_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.NTP_THEME_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
@@ -137,7 +138,8 @@ public class NtpCardsMediatorUnitTest {
                         TAB_GROUP_PROMO,
                         TAB_GROUP_SYNC_PROMO,
                         QUICK_DELETE_PROMO,
-                        NTP_THEME_PROMO);
+                        NTP_THEME_PROMO,
+                        FUSEBOX_PROMO);
         for (int type : types) {
             assertEquals(
                     HomeModulesUtils.getTitleForModuleType(type, mContext),

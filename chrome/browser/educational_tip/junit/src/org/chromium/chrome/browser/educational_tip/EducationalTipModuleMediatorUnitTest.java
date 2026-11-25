@@ -154,7 +154,7 @@ public class EducationalTipModuleMediatorUnitTest {
                 R.string.educational_tip_history_sync_description,
                 R.drawable.history_sync_promo_logo);
 
-        // Test showing quick delete promo card.
+        // Test showing ntp theme promo card.
         testShowModuleImpl(
                 ModuleType.NTP_THEME_PROMO,
                 R.string.educational_tip_ntp_theme_title,
@@ -167,6 +167,13 @@ public class EducationalTipModuleMediatorUnitTest {
                 R.string.educational_tip_tips_notifications_title,
                 R.string.educational_tip_tips_notifications_description,
                 R.drawable.tips_notifications_promo_logo);
+
+        // Test showing fusebox promo card.
+        testShowModuleImpl(
+                ModuleType.FUSEBOX_PROMO,
+                R.string.educational_tip_fusebox_title,
+                R.string.educational_tip_fusebox_description,
+                R.drawable.fusebox_promo_logo);
     }
 
     @Test

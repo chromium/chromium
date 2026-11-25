@@ -356,4 +356,24 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
         assertEquals(
                 1.0f, inputContext.getEntryValue("is_eligible_to_tips_opt_in").floatValue, 0.01);
     }
+
+    @Test
+    public void testCreateInputContext_FuseboxPromoCard() {
+        when(mActionDelegate.isFuseboxGuidedTourEligible()).thenReturn(true);
+
+        InputContext inputContext =
+                EducationalTipCardProviderSignalHandler.createInputContext(
+                        ModuleType.FUSEBOX_PROMO, mActionDelegate, mProfile, mTracker);
+
+        assertEquals(2, inputContext.getSizeForTesting());
+        assertTrue(inputContext.getEntryValue("is_fusebox_eligible").booleanValue);
+
+        when(mActionDelegate.isFuseboxGuidedTourEligible()).thenReturn(false);
+
+        inputContext =
+                EducationalTipCardProviderSignalHandler.createInputContext(
+                        ModuleType.FUSEBOX_PROMO, mActionDelegate, mProfile, mTracker);
+
+        assertFalse(inputContext.getEntryValue("is_fusebox_eligible").booleanValue);
+    }
 }

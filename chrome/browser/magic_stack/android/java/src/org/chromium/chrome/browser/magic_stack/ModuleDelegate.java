@@ -47,6 +47,7 @@ public interface ModuleDelegate {
         ModuleType.SETUP_LIST_CELEBRATORY_PROMO,
         ModuleType.NTP_THEME_PROMO,
         ModuleType.TIPS_NOTIFICATIONS_PROMO,
+        ModuleType.FUSEBOX_PROMO,
         ModuleType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -72,7 +73,8 @@ public interface ModuleDelegate {
         int SETUP_LIST_CELEBRATORY_PROMO = 18;
         int NTP_THEME_PROMO = 19;
         int TIPS_NOTIFICATIONS_PROMO = 20;
-        int NUM_ENTRIES = 21;
+        int FUSEBOX_PROMO = 21;
+        int NUM_ENTRIES = 22;
     }
 
     // LINT.ThenChange(//chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediator.java:HomeModuleTypes, //tools/metrics/histograms/metadata/magic_stack/enums.xml:ModuleType, //tools/metrics/histograms/metadata/magic_stack/histograms.xml:ModuleType)

@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_TAB_RESUMPTION;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_TIPS_NOTIFICATIONS_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.FUSEBOX_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.NTP_THEME_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
@@ -141,6 +142,8 @@ public class HomeModulesMetricsUtils {
                 return "NtpThemePromo";
             case TIPS_NOTIFICATIONS_PROMO:
                 return "TipsNotificationsPromo";
+            case FUSEBOX_PROMO:
+                return "FuseboxPromo";
             case HISTORY_SYNC_PROMO:
                 return "HistorySyncPromo";
             case ENHANCED_SAFE_BROWSING_PROMO:
@@ -189,6 +192,8 @@ public class HomeModulesMetricsUtils {
                 return NTP_THEME_PROMO;
             case "TipsNotificationsPromo":
                 return TIPS_NOTIFICATIONS_PROMO;
+            case "FuseboxPromo":
+                return FUSEBOX_PROMO;
             default:
                 Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;

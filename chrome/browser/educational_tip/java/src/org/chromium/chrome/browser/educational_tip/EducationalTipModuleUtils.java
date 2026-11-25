@@ -29,6 +29,7 @@ public class EducationalTipModuleUtils {
         modules.add(ModuleType.HISTORY_SYNC_PROMO);
         modules.add(ModuleType.NTP_THEME_PROMO);
         modules.add(ModuleType.TIPS_NOTIFICATIONS_PROMO);
+        modules.add(ModuleType.FUSEBOX_PROMO);
         return modules;
     }
 

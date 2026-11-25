@@ -36,6 +36,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DeprecatedTabResumption"/>
   <variant name="DeprecatedTipsNotificationsPromo"/>
   <variant name="EnhancedSafeBrowsingPromo"/>
+  <variant name="FuseboxPromo"/>
   <variant name="HistorySyncPromo"/>
   <variant name="NtpThemePromo"/>
   <variant name="PriceChange"/>

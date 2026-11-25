@@ -67,6 +67,11 @@ public class EducationalTipCardProviderSignalHandler {
                 return inputContext;
             case ModuleType.QUICK_DELETE_PROMO:
                 return inputContext;
+            case ModuleType.FUSEBOX_PROMO:
+                inputContext.addEntry(
+                        "is_fusebox_eligible",
+                        ProcessedValue.fromBoolean(actionDelegate.isFuseboxGuidedTourEligible()));
+                return inputContext;
             case ModuleType.NTP_THEME_PROMO:
                 inputContext.addEntry(
                         "has_customized_ntp_background",

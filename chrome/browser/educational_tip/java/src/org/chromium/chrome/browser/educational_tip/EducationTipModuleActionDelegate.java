@@ -84,4 +84,10 @@ public interface EducationTipModuleActionDelegate {
      * tablets, while checks whether edge-to-edge is enabled on phones.
      */
     boolean supportCustomizedNtpTheme();
+
+    /** Returns whether the Fusebox guided tour is currently eligible on this device and profile. */
+    boolean isFuseboxGuidedTourEligible();
+
+    /** Starts the Fusebox guided tour in the Omnibox. */
+    void startFuseboxGuidedTour();
 }

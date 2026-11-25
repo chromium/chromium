@@ -10,6 +10,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.cards.AddressBarPlacementPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.EnhancedSafeBrowsingPromoCoordinator;
+import org.chromium.chrome.browser.educational_tip.cards.FuseboxPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.HistorySyncPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.NtpThemePromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.QuickDeletePromoCoordinator;
@@ -65,6 +66,9 @@ public class EducationalTipCardProviderFactory {
                         callbackController,
                         actionDelegate,
                         removeModuleCallback);
+            case ModuleType.FUSEBOX_PROMO:
+                return new FuseboxPromoCoordinator(
+                        onModuleClickedCallback, callbackController, actionDelegate);
             default:
                 assert false : "Educational tip module's card type not supported!";
                 return null;

@@ -1237,6 +1237,15 @@
       <message name="IDS_EDUCATIONAL_TIP_NTP_THEME_PROMO_BUTTON" desc="Text on the clickable button for the ntp theme promo in the Educational tip module on NTP.">
         Try it now
       </message>
+      <message name="IDS_EDUCATIONAL_TIP_FUSEBOX_TITLE" desc="Title of the search tools promo in the educational tip module on the New Tab Page.">
+        Ask about a page or photo
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_FUSEBOX_DESCRIPTION" desc="Description of the search tools promo in the educational tip module on the New Tab Page.">
+        Add tabs, images, and more as context to enhance your search
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_FUSEBOX_PROMO_BUTTON" desc="Text on the clickable button for the search tools promo in the educational tip module on the New Tab Page.">
+        Get started
+      </message>
       <message name="IDS_EDUCATIONAL_TIP_QUICK_DELETE_TITLE" desc="Title of the quick delete promo in the educational tip module on NTP.">
         Manage your browsing data
       </message>

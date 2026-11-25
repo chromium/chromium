@@ -3964,6 +3964,19 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 return NtpCustomizationPromoManager.canTriggerCustomizationPromo(
                         windowAndroid, getTabletMode().isTablet);
             }
+
+            @Override
+            public boolean isFuseboxGuidedTourEligible() {
+                // TODO(crbug.com/565869893): Wire up
+                // FuseboxFeatureUtils.isFuseboxGuidedTourEligible() once
+                // startFuseboxGuidedTour() is implemented.
+                return false;
+            }
+
+            @Override
+            public void startFuseboxGuidedTour() {
+                // TODO(crbug.com/565869893): Launch the Fusebox guided tour in the Omnibox.
+            }
         };
     }
 

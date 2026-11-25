@@ -566,7 +566,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
                         ModuleType.SETUP_LIST_CELEBRATORY_PROMO,
                         ModuleType.NTP_THEME_PROMO,
-                        ModuleType.TIPS_NOTIFICATIONS_PROMO);
+                        ModuleType.TIPS_NOTIFICATIONS_PROMO,
+                        ModuleType.FUSEBOX_PROMO);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
 
         // Verifies that the single tab module isn't shown if it isn't the home surface even with
@@ -587,7 +588,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
                         ModuleType.SETUP_LIST_CELEBRATORY_PROMO,
                         ModuleType.NTP_THEME_PROMO,
-                        ModuleType.TIPS_NOTIFICATIONS_PROMO);
+                        ModuleType.TIPS_NOTIFICATIONS_PROMO,
+                        ModuleType.FUSEBOX_PROMO);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
     }
 
