@@ -438,20 +438,29 @@ class HostResolverManager::ProbeRequestImpl
     if (runner_) {
       // Destroy the runner asynchronously to prevent its destructor from
       // causing reentrant modifications to HostResolverManager::jobs_
-      // during InvalidateCaches().
-      base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
-          FROM_HERE, std::move(runner_));
+      // during InvalidateCaches(). Retain ownership so that request destruction
+      // cancels its URLRequests before the URLRequestContext is destroyed.
+      cancelled_runners_.push_back(std::move(runner_));
     }
 
     // Synchronously invalidate WeakPtrs to ensure that any previously posted
     // asynchronous StartRunner() tasks (e.g., from the old session) are
     // cancelled and do not execute unexpectedly in the new session.
     weak_ptr_factory_.InvalidateWeakPtrs();
+
+    if (!cancelled_runners_.empty()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&ProbeRequestImpl::ClearCancelledRunners,
+                                    weak_ptr_factory_.GetWeakPtr()));
+    }
   }
+
+  void ClearCancelledRunners() { cancelled_runners_.clear(); }
 
   base::WeakPtr<ResolveContext> context_;
 
   std::unique_ptr<DnsProbeRunner> runner_;
+  std::vector<std::unique_ptr<DnsProbeRunner>> cancelled_runners_;
   base::WeakPtr<HostResolverManager> resolver_;
 
   base::WeakPtrFactory<ProbeRequestImpl> weak_ptr_factory_{this};

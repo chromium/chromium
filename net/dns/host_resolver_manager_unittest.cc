@@ -14029,9 +14029,43 @@ TEST_F(HostResolverManagerDnsTest,
   // Trigger InvalidateDnsConfig() which calls OnSystemDnsConfigChanged().
   InvalidateDnsConfig();
 
-  // Ensure the DeleteSoon task runs.
+  // Ensure the deferred runner deletion task runs.
   callback.WaitForResult();
   EXPECT_FALSE(request);
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       DohProbeRequest_ShutdownBeforeCancelledRunnerDeletion) {
+  ChangeDnsConfig(CreateValidDnsConfig());
+  auto request = resolver_->CreateDohProbeRequest(resolve_context_.get());
+  ASSERT_THAT(request->Start(), IsError(ERR_IO_PENDING));
+  ASSERT_TRUE(mock_dns_client_->factory()->doh_probes_running());
+
+  DnsConfigOverrides overrides;
+  overrides.dns_over_https_config = DnsOverHttpsConfig();
+  resolver_->SetDnsConfigOverrides(overrides);
+  EXPECT_TRUE(mock_dns_client_->factory()->doh_probes_running());
+
+  request.reset();
+  EXPECT_FALSE(mock_dns_client_->factory()->doh_probes_running());
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       DohProbeRequest_RepeatedSessionChangesBeforeCancelledRunnerDeletion) {
+  ChangeDnsConfig(CreateValidDnsConfig());
+  auto request = resolver_->CreateDohProbeRequest(resolve_context_.get());
+  ASSERT_THAT(request->Start(), IsError(ERR_IO_PENDING));
+  ASSERT_TRUE(mock_dns_client_->factory()->doh_probes_running());
+
+  DnsConfigOverrides overrides;
+  overrides.dns_over_https_config = DnsOverHttpsConfig();
+  resolver_->SetDnsConfigOverrides(overrides);
+  overrides.ndots = 2;
+  resolver_->SetDnsConfigOverrides(overrides);
+  EXPECT_TRUE(mock_dns_client_->factory()->doh_probes_running());
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !mock_dns_client_->factory()->doh_probes_running(); }));
 }
 
 TEST_F(HostResolverManagerDnsTest, DohProbeRequest_RestartOnConnectionChange) {

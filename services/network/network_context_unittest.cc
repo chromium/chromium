@@ -63,6 +63,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -144,6 +145,7 @@
 #include "net/dns/dns_test_util.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/host_resolver_source.h"
@@ -8494,6 +8496,34 @@ TEST_F(NetworkContextActivateDohProbesTest, NotPrimaryContext) {
 
   EXPECT_FALSE(state->IsDohProbeRunning());
 }
+
+#if BUILDFLAG(USE_BLINK)
+TEST_F(NetworkContextActivateDohProbesTest,
+       ShutdownBeforeCancelledRunnerDeletion) {
+  auto network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  auto* manager = network_service_->host_resolver_manager();
+  auto overrides =
+      net::DnsConfigOverrides::CreateOverridingEverythingWithDefaults();
+  overrides.nameservers = std::vector<net::IPEndPoint>{
+      net::IPEndPoint(net::IPAddress::IPv4Localhost(), 53)};
+  overrides.dns_over_https_config =
+      *net::DnsOverHttpsConfig::FromString("https://127.0.0.1/dns-query");
+  overrides.secure_dns_mode = net::SecureDnsMode::kAutomatic;
+  manager->SetDnsConfigOverrides(overrides);
+
+  network_context->ActivateDohProbes();
+  ASSERT_EQ(1u, network_context->url_request_context()->url_requests()->size());
+
+  overrides.secure_dns_mode = net::SecureDnsMode::kOff;
+  manager->SetDnsConfigOverrides(overrides);
+  ASSERT_EQ(1u, network_context->url_request_context()->url_requests()->size());
+
+  // Teardown must cancel the probe's URLRequest without running the queued
+  // runner deletion task first.
+  network_context.reset();
+}
+#endif  // BUILDFLAG(USE_BLINK)
 
 TEST_F(NetworkContextTest,
        ShouldForceIgnoreSiteForCookiesCalledForEveryRedirectHop) {
