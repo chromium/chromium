@@ -511,8 +511,8 @@ export class AppElement extends CrLitElement {
     }
   };
 
-  private async initializeResourceBundle(baseUrl: string):
-      Promise<ResourceBundle> {
+  private async initializeResourceBundle(
+      baseUrl: string, timeoutMs: number = 10000): Promise<ResourceBundle> {
     if (!baseUrl) {
       throw new Error('No resource bundle URL provided');
     }
@@ -521,7 +521,7 @@ export class AppElement extends CrLitElement {
 
     const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
 
-    const signal = AbortSignal.timeout(10000);
+    const signal = AbortSignal.timeout(timeoutMs);
     const [
       personaResponse,
       apiConfigResponse,
@@ -936,14 +936,27 @@ export class AppElement extends CrLitElement {
           (Boolean(localApiKey || DEFAULT_API_CONFIG.apiKey) ||
            this.isMesEnabled());
 
+      // Skip the network round-trip only when the caller supplied its own
+      // credentials (--enable-features=AiOverlayDialog:api_key/...) or MES
+      // is handling auth. Otherwise prefer the remote bundle so that API key,
+      // persona and instruction rotations on the server take effect without
+      // a Chrome release, and fall back to the built-in defaults when it
+      // cannot be fetched (e.g. off-corp, offline).
+      const useBuiltInDirectly = !this.usePersona && !customBundleUrl &&
+          hasLocalAuth &&
+          (Boolean(localApiKey) || this.isMesEnabled() ||
+           !DEFAULT_TTC_BUNDLE_URL);
+
       let bundle: ResourceBundle;
-      if (!this.usePersona && !customBundleUrl && hasLocalAuth) {
+      if (useBuiltInDirectly) {
         log(FILE, 'Using built-in resource bundle (local auth / MES mode)');
         bundle = this.getBuiltInResourceBundle();
       } else {
         const ttcBundleUrl = customBundleUrl || DEFAULT_TTC_BUNDLE_URL;
+        // Keep the fallback path snappy when built-in defaults exist.
+        const timeoutMs = hasLocalAuth ? 4000 : 10000;
         try {
-          bundle = await this.initializeResourceBundle(ttcBundleUrl);
+          bundle = await this.initializeResourceBundle(ttcBundleUrl, timeoutMs);
           log(FILE, 'Remote resource bundle initialized');
         } catch (e) {
           if (hasLocalAuth ||
