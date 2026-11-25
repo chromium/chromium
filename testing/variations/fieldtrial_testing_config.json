@@ -20062,6 +20062,22 @@
             ]
         }
     ],
+    "TopToolbarSceneLayerSkipUpdateOnProgress": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TopToolbarSceneLayerSkipUpdateOnProgress"
+                    ]
+                }
+            ]
+        }
+    ],
     "TouchToSearchCallout": [
         {
             "platforms": [
