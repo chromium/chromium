@@ -33,4 +33,9 @@ found in the LICENSE file.
 
     <!-- Autofill AI attribution verification bottom sheet dimensions -->
     <dimen name="autofill_ai_attribution_verification_sheet_peek_height">96dp</dimen>
+
+    <!-- Autofill "save card" anchored dialog dimensions. -->
+    <dimen name="anchored_dialog_elevation">3dp</dimen>
+    <dimen name="anchored_dialog_margin">18dp</dimen>
+    <dimen name="anchored_dialog_width">412dp</dimen>
 </resources>

@@ -19,7 +19,7 @@ import android.widget.PopupWindow.OnDismissListener;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /**

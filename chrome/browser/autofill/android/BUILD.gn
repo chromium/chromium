@@ -46,6 +46,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePrompt.java",
     "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptController.java",
     "java/src/org/chromium/chrome/browser/autofill/SubKeyRequesterFactory.java",
+    "java/src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogCoordinatorProvider.java",
+    "java/src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogMediator.java",
+    "java/src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogProperties.java",
+    "java/src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogView.java",
+    "java/src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogViewBinder.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiAttributionVerificationSheetBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiAttributionVerificationSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiAttributionVerificationSheetMediator.java",
@@ -240,6 +246,8 @@ generate_jni("jni_headers") {
 android_resources("java_resources") {
   deps = [
     "//components/browser_ui/settings/android:java_resources",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
     "//components/strings:components_strings_grd",
     "//ui/android:ui_java_resources",
   ]
@@ -266,6 +274,7 @@ android_resources("java_resources") {
     "java/res/layout/autofill_ai_settings_info_item.xml",
     "java/res/layout/autofill_ai_source_attribution_sheet.xml",
     "java/res/layout/autofill_ai_source_card_item.xml",
+    "java/res/layout/autofill_anchored_dialog_view.xml",
     "java/res/layout/autofill_editor_base.xml",
     "java/res/layout/autofill_editor_base_buttons.xml",
     "java/res/layout/autofill_editor_dialog.xml",
