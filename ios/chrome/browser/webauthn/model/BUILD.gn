@@ -140,6 +140,7 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/sync/protocol",
     "//components/sync/service",
+    "//components/trusted_vault:trusted_vault_key_and_version",
     "//components/webauthn/core/browser/device_authorization",
     "//components/webauthn/core/browser/device_authorization:features",
     "//components/webauthn/core/browser/device_authorization:test_support",

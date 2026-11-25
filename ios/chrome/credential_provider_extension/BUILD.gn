@@ -137,6 +137,7 @@ source_set("unit_tests") {
     "//components/cbor",
     "//components/password_manager/core/common:browser_assisted_login_type",
     "//components/sync/protocol",
+    "//components/trusted_vault:trusted_vault_key_and_version",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webauthn/ios:passkey_types",
     "//device/fido",

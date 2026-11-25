@@ -14,6 +14,7 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/containers/to_vector.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
@@ -24,6 +25,7 @@
 #import "base/time/time.h"
 #import "components/password_manager/core/common/browser_assisted_login_type.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -324,11 +326,18 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
  public:
   FakePasskeyKeychainProvider()
       : PasskeyKeychainProvider(/*metrics_reporting_enabled=*/false),
-        keys_({GetTestTrustedVaultKey()}) {}
+        keys_(
+            {trusted_vault::TrustedVaultKeyAndVersion(GetTestTrustedVaultKey(),
+                                                      /*version=*/0)}) {}
 
   ~FakePasskeyKeychainProvider() override = default;
 
-  void SetKeys(SharedKeyList keys) { keys_ = std::move(keys); }
+  // TODO(crbug.com/588274186): Clean this up after refactor.
+  void SetKeys(SharedKeyList keys) {
+    keys_ = base::ToVector(keys, [](const webauthn::SharedKey& key) {
+      return trusted_vault::TrustedVaultKeyAndVersion(key, /*version=*/0);
+    });
+  }
   void SetIsEnrolled(bool is_enrolled) { is_enrolled_ = is_enrolled; }
   void SetHoldCheckEnrolled(bool hold) { hold_check_enrolled_ = hold; }
 
@@ -342,7 +351,7 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
 
   void FetchKeys(NSString* gaia,
                  webauthn::ReauthenticatePurpose purpose,
-                 webauthn::KeysFetchedCallback callback) override {
+                 webauthn::KeysWithVersionsFetchedCallback callback) override {
     std::move(callback).Run(keys_, /*error=*/nil);
   }
 
@@ -354,7 +363,7 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
   }
 
  private:
-  SharedKeyList keys_;
+  std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys_;
   bool is_enrolled_ = true;
   bool hold_check_enrolled_ = false;
 };

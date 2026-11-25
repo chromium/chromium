@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/webauthn/test/ios_chrome_passkey_client_app_interface.h"
 
+#import <vector>
+
 #import "base/check.h"
 #import "base/functional/callback.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "ios/chrome/browser/webauthn/public/scoped_passkey_keychain_provider_override.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
@@ -31,9 +34,11 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
 
   void FetchKeys(NSString* gaia,
                  webauthn::ReauthenticatePurpose purpose,
-                 webauthn::KeysFetchedCallback callback) override {
+                 webauthn::KeysWithVersionsFetchedCallback callback) override {
     CHECK(!callback.is_null());
-    std::move(callback).Run({GetTestKey()}, /*error=*/nil);
+    std::move(callback).Run(
+        {trusted_vault::TrustedVaultKeyAndVersion(GetTestKey(), /*version=*/0)},
+        /*error=*/nil);
   }
 
   void CheckEnrolled(NSString* gaia, CheckEnrolledCallback callback) override {

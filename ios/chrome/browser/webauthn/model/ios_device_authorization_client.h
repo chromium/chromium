@@ -6,8 +6,10 @@
 #define IOS_CHROME_BROWSER_WEBAUTHN_MODEL_IOS_DEVICE_AUTHORIZATION_CLIENT_H_
 
 #import <memory>
+#import <vector>
 
 #import "base/memory/weak_ptr.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_client.h"
 #import "components/webauthn/ios/passkey_types.h"
 
@@ -39,10 +41,11 @@ class IOSDeviceAuthorizationClient
 
  private:
   // Invoked when passkey trusted vault keys have been fetched.
-  void OnPasskeyKeysFetched(sync_pb::GetDeviceAuthorizationKeyRequest request,
-                            webauthn::PopulatePlatformDataCallback callback,
-                            webauthn::SharedKeyList keys,
-                            NSError* error);
+  void OnPasskeyKeysFetched(
+      sync_pb::GetDeviceAuthorizationKeyRequest request,
+      webauthn::PopulatePlatformDataCallback callback,
+      std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys,
+      NSError* error);
 
   // Fetches device integrity signals and populates them into `request`.
   void FetchDeviceIntegritySignals(

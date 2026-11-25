@@ -65,9 +65,9 @@ class PasskeyKeychainProvider {
   //   fetched keys.
   // - "callback" is called once the keys are fetched and receives the fetched
   //   keys as input (the array will be empty on failure).
-  virtual void FetchKeys(NSString* gaia,
-                         webauthn::ReauthenticatePurpose purpose,
-                         webauthn::KeysFetchedCallback callback);
+  void FetchKeys(NSString* gaia,
+                 webauthn::ReauthenticatePurpose purpose,
+                 webauthn::KeysFetchedCallback callback);
 
   // Asynchronously fetches the shared keys and their versions for the identity
   // identified by `gaia` and invokes `callback` with the fetched keys.
@@ -77,9 +77,9 @@ class PasskeyKeychainProvider {
   //   fetched keys.
   // - `callback` is called once the keys are fetched and receives the fetched
   //   keys and their versions as input (the vector will be empty on failure).
-  void FetchKeys(NSString* gaia,
-                 webauthn::ReauthenticatePurpose purpose,
-                 webauthn::KeysWithVersionsFetchedCallback callback);
+  virtual void FetchKeys(NSString* gaia,
+                         webauthn::ReauthenticatePurpose purpose,
+                         webauthn::KeysWithVersionsFetchedCallback callback);
 
   // Asynchronously marks the keys as stale for the identity identified by
   // `gaia` and invokes `callback` after completion. This should be invoked

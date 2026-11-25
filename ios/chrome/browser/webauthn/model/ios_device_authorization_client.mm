@@ -8,6 +8,7 @@
 
 #import <string>
 #import <utility>
+#import <vector>
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
@@ -20,6 +21,7 @@
 #import "base/task/thread_pool.h"
 #import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/prefs/pref_service.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "components/webauthn/core/browser/device_authorization/proto/device_authorization_key.pb.h"
 #import "google_apis/gaia/gaia_id.h"
@@ -93,7 +95,7 @@ void IOSDeviceAuthorizationClient::PopulatePlatformData(
 void IOSDeviceAuthorizationClient::OnPasskeyKeysFetched(
     sync_pb::GetDeviceAuthorizationKeyRequest request,
     webauthn::PopulatePlatformDataCallback callback,
-    webauthn::SharedKeyList keys,
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys,
     NSError* error) {
   webauthn::TrustedVaultKeyAvailability* availability =
       request.add_trusted_vault_key_availability();

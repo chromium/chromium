@@ -9,6 +9,7 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 
@@ -259,10 +260,15 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
               completion:(FetchTrustedVaultKeysCompletionBlock)completion {
   _passkeyKeychainProvider->FetchKeys(
       gaia, purpose,
-      base::BindOnce(
-          ^(webauthn::SharedKeyList trustedVaultKeys, NSError* error) {
-            completion(std::move(trustedVaultKeys), error);
-          }));
+      base::BindOnce(^(std::vector<trusted_vault::TrustedVaultKeyAndVersion>
+                           trustedVaultKeys,
+                       NSError* error) {
+        // TODO(crbug.com/588274186): Clean this up after refactor.
+        completion(
+            base::ToVector(trustedVaultKeys,
+                           &trusted_vault::TrustedVaultKeyAndVersion::key),
+            error);
+      }));
 }
 
 // Handles the outcome of the key fetch process.
@@ -351,7 +357,12 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
   __weak __typeof(self) weakSelf = self;
   _passkeyKeychainProvider->Reauthenticate(
       gaia, navigationController, _navigationItemTitleView, purpose,
-      base::BindOnce(^(webauthn::SharedKeyList key_list, NSError* error) {
+      base::BindOnce(^(std::vector<trusted_vault::TrustedVaultKeyAndVersion>
+                           trustedVaultKeys,
+                       NSError* error) {
+        // TODO(crbug.com/588274186): Clean this up after refactor.
+        webauthn::SharedKeyList key_list = base::ToVector(
+            trustedVaultKeys, &trusted_vault::TrustedVaultKeyAndVersion::key);
         // If we got nonempty keys, that means the reauthentication was a
         // success. Report this back to the delegate.
         if (!key_list.empty()) {

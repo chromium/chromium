@@ -9,7 +9,9 @@
 #import <string>
 #import <string_view>
 #import <utility>
+#import <vector>
 
+#import "base/containers/to_vector.h"
 #import "base/functional/bind.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/protobuf_matchers.h"
@@ -22,6 +24,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/core/browser/device_authorization/mock_device_authorization_service.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
@@ -109,12 +112,17 @@ constexpr std::string_view kDeviceAuthorizationKey = "device_authorization_key";
 // `FetchTrustedVaultKeys()`.
 class TestPasskeyKeychainProvider : public PasskeyKeychainProvider {
  public:
+  // TODO(crbug.com/588274186): Clean this up after refactor.
   TestPasskeyKeychainProvider(bool is_enrolled,
                               webauthn::SharedKeyList keys,
                               bool in_degraded_recoverability)
       : PasskeyKeychainProvider(/*metrics_reporting_enabled=*/false),
         is_enrolled_(is_enrolled),
-        keys_(std::move(keys)),
+        keys_(base::ToVector(keys,
+                             [](const webauthn::SharedKey& key) {
+                               return trusted_vault::TrustedVaultKeyAndVersion(
+                                   key, /*version=*/0);
+                             })),
         in_degraded_recoverability_(in_degraded_recoverability) {}
 
   void CheckEnrolled(NSString* gaia, CheckEnrolledCallback callback) override {
@@ -123,7 +131,7 @@ class TestPasskeyKeychainProvider : public PasskeyKeychainProvider {
 
   void FetchKeys(NSString* gaia,
                  webauthn::ReauthenticatePurpose purpose,
-                 webauthn::KeysFetchedCallback callback) override {
+                 webauthn::KeysWithVersionsFetchedCallback callback) override {
     std::move(callback).Run(keys_, /*error=*/nil);
   }
 
@@ -140,7 +148,7 @@ class TestPasskeyKeychainProvider : public PasskeyKeychainProvider {
 
  private:
   bool is_enrolled_;
-  webauthn::SharedKeyList keys_;
+  std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys_;
   bool in_degraded_recoverability_;
   bool check_degraded_recoverability_called_ = false;
 };

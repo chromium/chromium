@@ -6,6 +6,7 @@ include_rules = [
   "+components/password_manager/core/common/browser_assisted_login_type.h",
   "+components/password_manager/core/common/password_manager_constants.h",
   "+components/sync/protocol",
+  "+components/trusted_vault/trusted_vault_key_and_version.h",
   "+components/webauthn/core/browser",
   "+components/webauthn/ios/passkey_types.h",
   "+device/fido",
