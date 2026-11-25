@@ -22,7 +22,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
-#include "ui/accessibility/accessibility_features.h"
 
 namespace ash::settings {
 
@@ -125,13 +124,6 @@ class OSSettingsDeviceTestBacklightEnabled : public OSSettingsMochaTest {
 using OSSettingsDeviceTestAltAndBacklightEnabled = OSSettingsMochaTest;
 
 using OSSettingsNearbyShareTestSharingEnabled = OSSettingsMochaTest;
-
-class OSSettingsOsA11yTestMainNodeAnnotationsEnabled
-    : public OSSettingsMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kMainNodeAnnotations};
-};
 
 class OSSettingsFilesTestCrosComponentsAndJellyEnabled
     : public OSSettingsMochaTest {
@@ -848,11 +840,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageSwitchAccessSubpage) {
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageTextToSpeechSubpage) {
   RunSettingsTest("os_a11y_page/text_to_speech_subpage_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsOsA11yTestMainNodeAnnotationsEnabled,
-                       OsA11yPageAxAnnotationsSection) {
-  RunSettingsTest("os_a11y_page/ax_annotations_section_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageTtsVoiceSubpage) {

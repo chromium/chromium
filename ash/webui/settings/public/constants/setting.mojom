@@ -339,7 +339,7 @@ enum Setting {
   kOverscrollEnabled = 1547,
   kCaretBrowsing = 1548,
   kMagnifierFollowsChromeVox = 1549,
-  kMainNodeAnnotationsEnabled = 1550,
+  // [Deprecated] kMainNodeAnnotationsEnabled = 1550,
   kFlashNotifications = 1551,
   kAlwaysShowScrollbarsEnabled = 1552,
   kFaceGaze = 1553,

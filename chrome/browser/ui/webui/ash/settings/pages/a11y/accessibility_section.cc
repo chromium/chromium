@@ -1606,7 +1606,10 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddInteger("defaultSlowKeysDelayMillis",
                           kDefaultAccessibilitySlowKeysDelay.InMilliseconds());
 
-  ::settings::AddAxAnnotationsSectionStrings(html_source);
+  html_source->AddBoolean(
+      "japaneseBrailleEnabled",
+      base::FeatureList::IsEnabled(
+          ::features::kAccessibilityChromeVoxJapaneseBraille));
   ::settings::AddCaptionSubpageStrings(html_source);
 }
 
@@ -1693,11 +1696,6 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
     case mojom::Setting::kLiveCaption:
       base::UmaHistogramBoolean(
           "ChromeOS.Settings.Accessibility.LiveCaption.Enabled",
-          value.GetBool());
-      return true;
-    case mojom::Setting::kMainNodeAnnotationsEnabled:
-      base::UmaHistogramBoolean(
-          "ChromeOS.Settings.Accessibility.MainNodeAnnotations.Enabled",
           value.GetBool());
       return true;
     case mojom::Setting::kMonoAudio:
@@ -1909,7 +1907,6 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kHighlightCursorWhileMoving,
       mojom::Setting::kTabletNavigationButtons,
       mojom::Setting::kLiveCaption,
-      mojom::Setting::kMainNodeAnnotationsEnabled,
       mojom::Setting::kMonoAudio,
       mojom::Setting::kStartupSound,
       mojom::Setting::kEnableCursorColor,

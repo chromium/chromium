@@ -11,7 +11,6 @@
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
-import './ax_annotations_section.js';
 import './bluetooth_braille_display_ui.js';
 
 import type {BrailleTable} from 'chrome://resources/ash/common/accessibility/braille_table.js';
@@ -318,12 +317,6 @@ export class SettingsChromeVoxSubpageElement extends
         },
       },
 
-      mainNodeAnnotationsFeatureEnabled_: {
-        type: String,
-        value: loadTimeData.getBoolean('mainNodeAnnotationsEnabled'),
-        readOnly: true,
-      },
-
       japaneseBrailleEnabled_: {
         type: String,
         value: loadTimeData.getBoolean('japaneseBrailleEnabled'),
@@ -361,7 +354,6 @@ export class SettingsChromeVoxSubpageElement extends
   declare private brailleTables_: BrailleTable[];
   declare private developerOptionsExpanded_: boolean;
   declare private readonly eventStreamFilters_: string[];
-  declare private readonly mainNodeAnnotationsFeatureEnabled_: boolean;
   declare private readonly japaneseBrailleEnabled_: boolean;
 
   // Regular expressions that will match against a voice name if it contains a

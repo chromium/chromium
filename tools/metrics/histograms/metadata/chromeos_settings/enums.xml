@@ -374,7 +374,7 @@ chromium-metrics-reviews@google.com.
   <int value="1547" label="Enable overscroll to navigate"/>
   <int value="1548" label="Caret browsing"/>
   <int value="1549" label="Magnifier follows ChromeVox focus"/>
-  <int value="1550" label="Main node annotations enabled"/>
+  <int value="1550" label="(deprecated) Main node annotations enabled"/>
   <int value="1551" label="Flash screen for notifications"/>
   <int value="1552" label="Always show scrollbars"/>
   <int value="1553" label="Face control"/>

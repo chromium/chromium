@@ -13142,24 +13142,6 @@
             ]
         }
     ],
-    "MainNodeAnnotationsRollout": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MainNodeAnnotations"
-                    ]
-                }
-            ]
-        }
-    ],
     "MakeIdentityManagerSourceOfAccountsAndroidPart1": [
         {
             "platforms": [
