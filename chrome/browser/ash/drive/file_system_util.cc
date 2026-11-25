@@ -210,10 +210,6 @@ bool IsDriveFsBulkPinningAvailable(const Profile* const profile) {
       ash::features::kFeatureManagementDriveFsBulkPinning);
 }
 
-bool IsDriveFsBulkPinningAvailable() {
-  return IsDriveFsBulkPinningAvailable(ProfileManager::GetActiveUserProfile());
-}
-
 bool IsOobeDrivePinningAvailable(const Profile* const profile) {
   const bool b = IsOobeDrivePinningScreenEnabled() &&
                  IsDriveFsBulkPinningAvailable(profile);

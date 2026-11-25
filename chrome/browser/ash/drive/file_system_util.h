@@ -56,7 +56,6 @@ DriveAvailability CheckDriveEnabledAndDriveAvailabilityForProfile(
 // whether the bulk-pinning feature is available and can be turned on by the
 // user if they choose to.
 [[nodiscard]] bool IsDriveFsBulkPinningAvailable(const Profile* profile);
-[[nodiscard]] bool IsDriveFsBulkPinningAvailable();
 [[nodiscard]] bool IsOobeDrivePinningAvailable(const Profile* profile);
 [[nodiscard]] bool IsOobeDrivePinningAvailable();
 [[nodiscard]] bool IsOobeDrivePinningScreenEnabled();

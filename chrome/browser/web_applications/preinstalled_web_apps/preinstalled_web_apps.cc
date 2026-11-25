@@ -76,7 +76,7 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
   //   installers on every desktop platform.
   std::vector<ExternalInstallOptions> apps = {
       GetConfigForGmail(),
-      GetConfigForGoogleDocs(is_standalone_tabbed),
+      GetConfigForGoogleDocs(profile, is_standalone_tabbed),
       GetConfigForGoogleDrive(/*is_standalone=*/is_standalone_tabbed),
       GetConfigForGoogleSheets(is_standalone_tabbed),
       GetConfigForGoogleSlides(is_standalone_tabbed),

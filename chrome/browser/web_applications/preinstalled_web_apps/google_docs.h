@@ -7,9 +7,13 @@
 
 #include "chrome/browser/web_applications/external_install_options.h"
 
+class Profile;
+
 namespace web_app {
 
-ExternalInstallOptions GetConfigForGoogleDocs(bool is_standalone_tabbed);
+// `profile` is the profile the apps are being preinstalled for.
+ExternalInstallOptions GetConfigForGoogleDocs(Profile& profile,
+                                              bool is_standalone_tabbed);
 
 }  // namespace web_app
 

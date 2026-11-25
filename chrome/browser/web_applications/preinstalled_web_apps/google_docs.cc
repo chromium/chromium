@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -111,14 +112,15 @@ constexpr Translation kNameTranslations[] = {
 // clang-format on
 
 #if BUILDFLAG(IS_CHROMEOS)
-bool IsDriveFsBulkPinningAvailable() {
-  return drive::util::IsDriveFsBulkPinningAvailable();
+bool IsDriveFsBulkPinningAvailable(Profile& profile) {
+  return drive::util::IsDriveFsBulkPinningAvailable(&profile);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
-ExternalInstallOptions GetConfigForGoogleDocs(bool is_standalone_tabbed) {
+ExternalInstallOptions GetConfigForGoogleDocs(Profile& profile,
+                                              bool is_standalone_tabbed) {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://docs.google.com/document/installwebapp?usp=chrome_default"),
@@ -132,7 +134,7 @@ ExternalInstallOptions GetConfigForGoogleDocs(bool is_standalone_tabbed) {
   options.expected_app_id = ash::kGoogleDocsAppId;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (IsDriveFsBulkPinningAvailable()) {
+  if (IsDriveFsBulkPinningAvailable(profile)) {
     VLOG(1) << "DriveFsBulkPinning enabled, registering service worker";
     options.load_and_await_service_worker_registration = true;
     options.only_use_app_info_factory = false;
