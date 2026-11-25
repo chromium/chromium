@@ -266,14 +266,14 @@ MediaKeys::~MediaKeys() {
 }
 
 MediaKeySession* MediaKeys::createSession(
-    ScriptState* script_state,
     const V8MediaKeySessionType& v8_session_type,
     ExceptionState& exception_state) {
   DVLOG(MEDIA_KEYS_LOG_LEVEL)
       << __func__ << "(" << this << ") " << v8_session_type.AsCStr();
 
   // If the context for MediaKeys has been destroyed, fail.
-  if (!GetExecutionContext()) {
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context || execution_context->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The context provided is invalid.");
     return nullptr;
@@ -302,8 +302,11 @@ MediaKeySession* MediaKeys::createSession(
   //    follows:
   //    (Initialization is performed in the constructor.)
   // 4. Return session.
-  return MakeGarbageCollected<MediaKeySession>(script_state, this, session_type,
-                                               config_);
+  // Bind the session to MediaKeys' ExecutionContext rather than the receiver
+  // wrapper's realm so it shares MediaKeys' lifecycle and cannot observe an
+  // already-destroyed context.
+  return MakeGarbageCollected<MediaKeySession>(execution_context, this,
+                                               session_type, config_);
 }
 
 ScriptPromise<IDLBoolean> MediaKeys::setServerCertificate(

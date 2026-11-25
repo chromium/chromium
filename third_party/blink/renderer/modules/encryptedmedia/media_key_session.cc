@@ -403,27 +403,27 @@ class SimpleResultPromise : public ContentDecryptionModuleResultPromise {
   Member<MediaKeySession> session_;
 };
 
-MediaKeySession::MediaKeySession(ScriptState* script_state,
+MediaKeySession::MediaKeySession(ExecutionContext* execution_context,
                                  MediaKeys* media_keys,
                                  WebEncryptedMediaSessionType session_type,
                                  const MediaKeysConfig& config)
     : ActiveScriptWrappable<MediaKeySession>({}),
-      ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+      ExecutionContextLifecycleObserver(execution_context),
       async_event_queue_(
-          MakeGarbageCollected<EventQueue>(GetExecutionContext(),
+          MakeGarbageCollected<EventQueue>(execution_context,
                                            TaskType::kMediaElementEvent)),
       media_keys_(media_keys),
       session_type_(session_type),
       config_(config),
       expiration_(std::numeric_limits<double>::quiet_NaN()),
       key_statuses_map_(MakeGarbageCollected<MediaKeyStatusMap>()),
-      closed_promise_(MakeGarbageCollected<ClosedPromise>(
-          ExecutionContext::From(script_state))),
-      action_timer_(ExecutionContext::From(script_state)
-                        ->GetTaskRunner(TaskType::kMediaElementEvent),
-                    this,
-                    &MediaKeySession::ActionTimerFired) {
+      closed_promise_(MakeGarbageCollected<ClosedPromise>(execution_context)),
+      action_timer_(
+          execution_context->GetTaskRunner(TaskType::kMediaElementEvent),
+          this,
+          &MediaKeySession::ActionTimerFired) {
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL) << __func__ << "(" << this << ")";
+  CHECK(!execution_context->IsContextDestroyed());
   InstanceCounters::IncrementCounter(InstanceCounters::kMediaKeySessionCounter);
 
   // Create the matching Chromium object. It will not be usable until
@@ -1098,8 +1098,11 @@ void MediaKeySession::OnSessionKeysChange(
   // 4.1 Empty statuses.
   key_statuses_map_->Clear();
 
-  auto* ukm_recorder = GetExecutionContext()->UkmRecorder();
-  const ukm::SourceId source_id = GetExecutionContext()->UkmSourceID();
+  // ContextDestroyed() resets |session_|, so callbacks cannot arrive after
+  // context destruction and the ExecutionContext remains strongly reachable.
+  ExecutionContext* execution_context = GetExecutionContext();
+  CHECK(execution_context);
+  CHECK(!execution_context->IsContextDestroyed());
 
   // 4.2 For each pair in input statuses.
   for (size_t i = 0; i < keys.size(); ++i) {
@@ -1110,9 +1113,9 @@ void MediaKeySession::OnSessionKeysChange(
     key_statuses_map_->AddEntry(
         key.Id(), EncryptedMediaUtils::ConvertKeyStatusToEnum(key.Status()));
 
-    ukm::builders::Media_EME_CdmSystemCode(source_id)
+    ukm::builders::Media_EME_CdmSystemCode(execution_context->UkmSourceID())
         .SetCdmSystemCode(key.SystemCode())
-        .Record(ukm_recorder);
+        .Record(execution_context->UkmRecorder());
   }
 
   // 5. Queue a task to fire a simple event named keystatuseschange
