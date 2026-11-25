@@ -17,11 +17,12 @@
 // Delegate for communicating with the FirstRunCoordinator.
 @property(nonatomic, weak) id<FirstRunScreenDelegate> firstRunDelegate;
 
-// Initializes an AnimatedLensPromoCoordinator with `navigationController` and
-// `browser`.
+// Initializes an AnimatedLensPromoCoordinator with `navigationController`,
+// `browser`, and `firstRun`.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                                        firstRun:(BOOL)firstRun
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

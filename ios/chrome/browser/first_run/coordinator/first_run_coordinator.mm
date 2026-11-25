@@ -210,6 +210,7 @@ class FirstRunCoordinatorMetricsHelper final {
       return [[DefaultBrowserScreenCoordinator alloc]
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser
+                                  firstRun:YES
                                   delegate:self];
     case kChoice:
       return [[SearchEngineChoiceCoordinator alloc]
@@ -220,12 +221,14 @@ class FirstRunCoordinatorMetricsHelper final {
       return [[BestFeaturesScreenCoordinator alloc]
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser
+                                  firstRun:YES
                                   delegate:self];
     case kLensInteractivePromo: {
       InteractiveLensPromoCoordinator* lensInteractivePromoCoordinator =
           [[InteractiveLensPromoCoordinator alloc]
               initWithBaseNavigationController:_navigationController
-                                       browser:self.browser];
+                                       browser:self.browser
+                                      firstRun:YES];
       lensInteractivePromoCoordinator.firstRunDelegate = self;
       return lensInteractivePromoCoordinator;
     }
@@ -233,7 +236,8 @@ class FirstRunCoordinatorMetricsHelper final {
       AnimatedLensPromoCoordinator* lensAnimatedPromoCoordinator =
           [[AnimatedLensPromoCoordinator alloc]
               initWithBaseNavigationController:_navigationController
-                                       browser:self.browser];
+                                       browser:self.browser
+                                      firstRun:YES];
       lensAnimatedPromoCoordinator.firstRunDelegate = self;
       return lensAnimatedPromoCoordinator;
     }

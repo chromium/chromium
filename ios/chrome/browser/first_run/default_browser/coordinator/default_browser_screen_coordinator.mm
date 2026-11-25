@@ -50,17 +50,21 @@
   UMACoordinator* _UMACoordinator;
   raw_ptr<ProfileIOS> _profile;
   UIView* _transparentView;
+  // `YES` if presented during the First Run Experience.
+  BOOL _firstRun;
 }
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                                        firstRun:(BOOL)firstRun
                                         delegate:(id<FirstRunScreenDelegate>)
                                                      delegate {
   if ((self = [super initWithBaseViewController:navigationController
                                         browser:browser])) {
     _baseNavigationController = navigationController;
+    _firstRun = firstRun;
     _delegate = delegate;
   }
   return self;
@@ -88,7 +92,8 @@
                                          SegmentationPlatformServiceFactory::
                                              GetDispatcherForProfile(_profile)
                   templateURLService:ios::TemplateURLServiceFactory::
-                                         GetForProfile(_profile)];
+                                         GetForProfile(_profile)
+                            firstRun:_firstRun];
   _mediator.delegate = self;
   [_mediator startPromoEvaluation];
   if (!_viewController) {
@@ -127,10 +132,13 @@
 - (void)didTapPrimaryActionButton {
   RecordDefaultBrowserPromoLastAction(
       IOSDefaultBrowserPromoAction::kActionButton,
-      IOSDefaultBrowserPromoSurface::kFirstRun);
-  base::UmaHistogramEnumeration(
-      first_run::kFirstRunStageHistogram,
-      first_run::kDefaultBrowserScreenCompletionWithSettings);
+      _firstRun ? IOSDefaultBrowserPromoSurface::kFirstRun
+                : IOSDefaultBrowserPromoSurface::kFullscreenGeneric);
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(
+        first_run::kFirstRunStageHistogram,
+        first_run::kDefaultBrowserScreenCompletionWithSettings);
+  }
 
   OpenIOSDefaultBrowserSettingsPage();
 
@@ -142,9 +150,11 @@
   // for the user to dismiss this view as part of the FRE. `kDismiss` will not
   // cause the SetUpList Default Browser item to be marked complete.
   RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
-  base::UmaHistogramEnumeration(
-      first_run::kFirstRunStageHistogram,
-      first_run::kDefaultBrowserScreenCompletionWithoutSettings);
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(
+        first_run::kFirstRunStageHistogram,
+        first_run::kDefaultBrowserScreenCompletionWithoutSettings);
+  }
   [self finishPresenting];
 }
 
@@ -222,8 +232,10 @@
   [_transparentView removeFromSuperview];
   _transparentView = nil;
 
-  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
-                                first_run::kDefaultBrowserScreenStart);
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kDefaultBrowserScreenStart);
+  }
   default_browser::NotifyDefaultBrowserFREPromoShown(
       feature_engagement::TrackerFactory::GetForProfile(_profile));
 
@@ -241,7 +253,7 @@
     _viewController = [[DefaultBrowserScreenViewController alloc] init];
   }
   _viewController.delegate = self;
-  _viewController.modalInPresentation = YES;
+  _viewController.modalInPresentation = _firstRun;
   _mediator.consumer = _viewController;
 
   BOOL animated = self.baseNavigationController.topViewController != nil;

@@ -21,10 +21,14 @@
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "base/values.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/web_resource/web_resource_pref_names.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/default_browser/ui/default_browser_android_switcher_screen_view_controller.h"
 #import "ios/chrome/browser/first_run/default_browser/ui/default_browser_animated_screen_view_controller.h"
 #import "ios/chrome/browser/first_run/default_browser/ui/default_browser_screen_view_controller.h"
@@ -51,6 +55,7 @@
 #import "ios/chrome/test/providers/switcher_info/test_switcher_info.h"
 #import "ios/public/provider/chrome/browser/switcher_info/switcher_info_api.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
@@ -59,12 +64,14 @@
 // Test implementation of `FirstRunScreenDelegate`.
 @interface DefaultBrowserFirstRunScreenTestDelegate
     : NSObject <FirstRunScreenDelegate>
+@property(nonatomic, weak) ChromeCoordinator* stoppedCoordinator;
 @end
 
 @implementation DefaultBrowserFirstRunScreenTestDelegate
 
 - (void)firstRunScreenCoordinatorWantsToBeStopped:
     (ChromeCoordinator*)coordinator {
+  self.stoppedCoordinator = coordinator;
 }
 
 @end
@@ -187,6 +194,11 @@ class DefaultBrowserScreenCoordinatorTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindOnce(
+            &std::make_unique<
+                testing::NiceMock<feature_engagement::test::MockTracker>>));
+    builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
         base::BindOnce(&SetupProfileForSegmentationPlatformService,
@@ -200,6 +212,7 @@ class DefaultBrowserScreenCoordinatorTest : public PlatformTest {
     coordinator_ = [[DefaultBrowserScreenCoordinator alloc]
         initWithBaseNavigationController:navigation_controller_
                                  browser:browser_.get()
+                                firstRun:YES
                                 delegate:delegate_];
   }
 
@@ -903,6 +916,64 @@ TEST_F(DefaultBrowserScreenCoordinatorTest,
   EXPECT_FALSE(chrome_test_util::FindLabelWithText(
       view, l10n_util::GetNSString(
                 IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_LENS_ROW)));
+}
+
+// Tests that when `firstRun` is `NO`, the coordinator allows swipe-to-dismiss
+// (`modalInPresentation == NO`), notifies Feature Engagement so post-FRE
+// Default Browser cooldowns still apply, does not show the First Run TOS/UMA
+// footer or mutate `prefs::kEulaAccepted`, and does not emit First Run
+// histograms.
+TEST_F(DefaultBrowserScreenCoordinatorTest,
+       SkipsFirstRunMetricsAndAllowsDismissalWhenNotFirstRun) {
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{first_run::kAndroidSwitcherDefaultBrowserPromoInFRE,
+        {{first_run::kAndroidSwitcherDefaultBrowserPromoInFREParam,
+          first_run::
+              kAndroidSwitcherDefaultBrowserPromoInFREParamSegmentationSignal}}}},
+      /*disabled_features=*/{
+          first_run::kAnimatedDefaultBrowserPromoInFRE,
+          segmentation_platform::features::kSegmentationPlatformDeviceSwitcher,
+          segmentation_platform::features::kSegmentationPlatformUmaFromSqlDb});
+  GetApplicationContext()->GetLocalState()->SetBoolean(prefs::kEulaAccepted,
+                                                       false);
+  ConfigureSegmentationLabels(std::vector<std::string>{
+      segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel});
+  SignIn();
+  [coordinator_ stop];
+  coordinator_ = [[DefaultBrowserScreenCoordinator alloc]
+      initWithBaseNavigationController:navigation_controller_
+                               browser:browser_.get()
+                              firstRun:NO
+                              delegate:delegate_];
+  auto* mock_tracker = static_cast<feature_engagement::test::MockTracker*>(
+      feature_engagement::TrackerFactory::GetForProfile(profile_));
+  EXPECT_CALL(
+      *mock_tracker,
+      NotifyEvent(feature_engagement::events::kIOSDefaultBrowserFREShown))
+      .Times(1);
+
+  [coordinator_ start];
+
+  DefaultBrowserScreenViewController* presented_view_controller =
+      base::apple::ObjCCastStrict<DefaultBrowserScreenViewController>(
+          navigation_controller_.topViewController);
+  ASSERT_NE(presented_view_controller, nil);
+  EXPECT_FALSE(presented_view_controller.modalInPresentation);
+  EXPECT_EQ(presented_view_controller.screenIntent,
+            DefaultBrowserScreenConsumerScreenIntent::kDefault);
+  histogram_tester_.ExpectTotalCount(first_run::kFirstRunStageHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencySuccessHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencyFailureHistogram, 0);
+
+  [coordinator_ didTapSecondaryActionButton];
+  EXPECT_EQ(delegate_.stoppedCoordinator, coordinator_);
+  EXPECT_FALSE(GetApplicationContext()->GetLocalState()->GetBoolean(
+      prefs::kEulaAccepted));
+  histogram_tester_.ExpectTotalCount(first_run::kFirstRunStageHistogram, 0);
 }
 
 }  // namespace

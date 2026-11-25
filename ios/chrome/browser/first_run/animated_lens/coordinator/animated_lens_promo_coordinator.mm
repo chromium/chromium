@@ -12,16 +12,20 @@
 @implementation AnimatedLensPromoCoordinator {
   // Animated Lens Promo view controller.
   AnimatedLensPromoViewController* _viewController;
+  // `YES` if presented during the First Run Experience.
+  BOOL _firstRun;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+                                         browser:(Browser*)browser
+                                        firstRun:(BOOL)firstRun {
   if ((self = [super initWithBaseViewController:navigationController
                                         browser:browser])) {
     _baseNavigationController = navigationController;
+    _firstRun = firstRun;
   }
   return self;
 }
@@ -31,12 +35,15 @@
 - (void)start {
   [super start];
 
-  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
-                                first_run::kAnimatedLensPromoStart);
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kAnimatedLensPromoStart);
+  }
 
   _viewController = [[AnimatedLensPromoViewController alloc] init];
   _viewController.delegate = self;
   _viewController.shouldHideBanner = YES;
+  _viewController.modalInPresentation = _firstRun;
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ _viewController ]
                                            animated:animated];
@@ -52,9 +59,11 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  base::UmaHistogramEnumeration(
-      first_run::kFirstRunStageHistogram,
-      first_run::kAnimatedLensPromoCompletionWithAction);
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(
+        first_run::kFirstRunStageHistogram,
+        first_run::kAnimatedLensPromoCompletionWithAction);
+  }
   [self.firstRunDelegate firstRunScreenCoordinatorWantsToBeStopped:self];
 }
 

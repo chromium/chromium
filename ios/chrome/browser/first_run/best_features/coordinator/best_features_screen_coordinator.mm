@@ -37,17 +37,21 @@
   BestFeaturesScreenDetailCoordinator* _detailScreenCoordinator;
   // Whether the user has tapped one of the Best Feature items.
   BOOL _itemTapped;
+  // `YES` if presented during the First Run Experience.
+  BOOL _firstRun;
 }
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                                        firstRun:(BOOL)firstRun
                                         delegate:(id<FirstRunScreenDelegate>)
                                                      delegate {
   if ((self = [super initWithBaseViewController:navigationController
                                         browser:browser])) {
     _baseNavigationController = navigationController;
+    _firstRun = firstRun;
     _delegate = delegate;
   }
   return self;
@@ -59,6 +63,16 @@
   [super start];
   first_run::BestFeaturesScreenVariationType variation =
       first_run::GetBestFeaturesScreenVariationType();
+
+  // Skip the screen if Best Features was disabled or switched to
+  // `kAddressBarPromoInsteadOfBestFeaturesScreen` between First Run (when
+  // `ScreenType::kBestFeatures` was persisted for deferral) and presentation.
+  if (variation == first_run::BestFeaturesScreenVariationType::kDisabled ||
+      variation == first_run::BestFeaturesScreenVariationType::
+                       kAddressBarPromoInsteadOfBestFeaturesScreen) {
+    [_delegate firstRunScreenCoordinatorWantsToBeStopped:self];
+    return;
+  }
 
   if (variation == first_run::BestFeaturesScreenVariationType::
                        kSignedInUsersOnlyAfterDBPromo) {
@@ -72,8 +86,10 @@
     }
   }
 
-  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
-                                first_run::kBestFeaturesExperienceStart);
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kBestFeaturesExperienceStart);
+  }
 
   _mediator = [[BestFeaturesScreenMediator alloc] init];
   [self presentScreen];
@@ -98,9 +114,11 @@
         kActionOnBestFeaturesMainScreenHistogram,
         BestFeaturesMainScreenActionType::kContinueWithoutInteracting);
   }
-  base::UmaHistogramEnumeration(
-      first_run::kFirstRunStageHistogram,
-      first_run::kBestFeaturesExperienceCompletionThroughMainScreen);
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(
+        first_run::kFirstRunStageHistogram,
+        first_run::kBestFeaturesExperienceCompletionThroughMainScreen);
+  }
   [_delegate firstRunScreenCoordinatorWantsToBeStopped:self];
 }
 
@@ -128,14 +146,16 @@
                            bestFeaturesItems:bestFeaturesItems
                                   startIndex:startIndex
                                       source:DetailScreenPresentationSource::
-                                                 kBestOfAppFRE];
+                                                 kBestOfAppFRE
+                                    firstRun:_firstRun];
   } else {
     _detailScreenCoordinator = [[BestFeaturesScreenDetailCoordinator alloc]
         initWithBaseNavigationViewController:_baseNavigationController
                                      browser:self.browser
                             bestFeaturesItem:item
                                       source:DetailScreenPresentationSource::
-                                                 kBestFeaturesFRE];
+                                                 kBestFeaturesFRE
+                                    firstRun:_firstRun];
   }
 
   [self logItemSelection:item.type];
@@ -161,7 +181,7 @@
   _mediator.consumer = _viewController;
   _viewController.delegate = self;
   _viewController.bestFeaturesDelegate = self;
-  _viewController.modalInPresentation = YES;
+  _viewController.modalInPresentation = _firstRun;
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ _viewController ]
                                            animated:animated];

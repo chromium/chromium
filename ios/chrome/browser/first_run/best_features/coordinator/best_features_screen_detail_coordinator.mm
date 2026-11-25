@@ -37,6 +37,8 @@
   InstructionsBottomSheetCoordinator* _halfSheetCoordinator;
   // The source from which this coordinator was started.
   DetailScreenPresentationSource _source;
+  // `YES` if presented during the First Run Experience.
+  BOOL _firstRun;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -46,13 +48,14 @@
         (UINavigationController*)navigationController
                                  browser:(Browser*)browser
                         bestFeaturesItem:(BestFeaturesItem*)bestFeaturesItem
-                                  source:
-                                      (DetailScreenPresentationSource)source {
+                                  source:(DetailScreenPresentationSource)source
+                                firstRun:(BOOL)firstRun {
   return [self initWithBaseNavigationViewController:navigationController
                                             browser:browser
                                   bestFeaturesItems:@[ bestFeaturesItem ]
                                          startIndex:0
-                                             source:source];
+                                             source:source
+                                           firstRun:firstRun];
 }
 
 - (instancetype)
@@ -62,8 +65,8 @@
                        bestFeaturesItems:
                            (NSArray<BestFeaturesItem*>*)bestFeaturesItems
                               startIndex:(int)startIndex
-                                  source:
-                                      (DetailScreenPresentationSource)source {
+                                  source:(DetailScreenPresentationSource)source
+                                firstRun:(BOOL)firstRun {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -72,6 +75,7 @@
     _bestFeaturesItem = bestFeaturesItems[startIndex];
     _baseNavigationController = navigationController;
     _source = source;
+    _firstRun = firstRun;
   }
   return self;
 }
@@ -111,6 +115,9 @@
   [_halfSheetCoordinator stop];
   _halfSheetCoordinator = nil;
 
+  if (_source != DetailScreenPresentationSource::kBestOfAppFRE) {
+    _baseNavigationController.navigationBarHidden = YES;
+  }
   if (_baseNavigationController.topViewController == _viewController) {
     [_baseNavigationController popViewControllerAnimated:NO];
   }
@@ -171,6 +178,7 @@
 #pragma mark - Private
 
 - (void)dismiss {
+  _baseNavigationController.navigationBarHidden = YES;
   [_baseNavigationController popViewControllerAnimated:NO];
 }
 
@@ -178,9 +186,11 @@
   base::UmaHistogramEnumeration(
       BestFeaturesActionHistogramForItemType(_bestFeaturesItem.type),
       BestFeaturesDetailScreenActionType::kContinueInFRESequence);
-  base::UmaHistogramEnumeration(
-      first_run::kFirstRunStageHistogram,
-      first_run::kBestFeaturesExperienceCompletionThroughDetailScreen);
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(
+        first_run::kFirstRunStageHistogram,
+        first_run::kBestFeaturesExperienceCompletionThroughDetailScreen);
+  }
   [self.delegate firstRunScreenCoordinatorWantsToBeStopped:self];
 }
 

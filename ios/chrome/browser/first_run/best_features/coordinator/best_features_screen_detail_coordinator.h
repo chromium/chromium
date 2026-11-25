@@ -26,17 +26,18 @@ enum class DetailScreenPresentationSource {
 @property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
 
 // Initializes a BestFeaturesScreenDetailCoordinator with
-// `navigationController`, `browser`, and `BestFeaturesItem`.
+// `navigationController`, `browser`, `BestFeaturesItem`, and `firstRun`.
 - (instancetype)
     initWithBaseNavigationViewController:
         (UINavigationController*)navigationController
                                  browser:(Browser*)browser
                         bestFeaturesItem:(BestFeaturesItem*)bestFeaturesItem
-                                  source:(DetailScreenPresentationSource)source;
+                                  source:(DetailScreenPresentationSource)source
+                                firstRun:(BOOL)firstRun;
 
 // Initializes a BestFeaturesScreenDetailCoordinator with
-// `navigationController`, `browser`, `BestFeaturesItems`, and `startIndex`.
-// This is used to create the animated feature carousel.
+// `navigationController`, `browser`, `BestFeaturesItems`, `startIndex`, and
+// `firstRun`. This is used to create the animated feature carousel.
 - (instancetype)
     initWithBaseNavigationViewController:
         (UINavigationController*)navigationController
@@ -45,6 +46,7 @@ enum class DetailScreenPresentationSource {
                            (NSArray<BestFeaturesItem*>*)bestFeaturesItems
                               startIndex:(int)startIndex
                                   source:(DetailScreenPresentationSource)source
+                                firstRun:(BOOL)firstRun
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

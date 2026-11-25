@@ -50,8 +50,8 @@ class DeviceSwitcherResultDispatcher;
 @property(nonatomic, assign) BOOL UMALinkWasTapped;
 
 // Designated initializer with `authenticationService`, `accountManagerService`,
-// segmentation `dispatcher`, and `templateURLService` used to determine Lens
-// availability.
+// segmentation `dispatcher`, `templateURLService` (used to determine Lens
+// availability), and `firstRun`.
 - (instancetype)
      initWithAuthenticationService:(AuthenticationService*)authenticationService
              accountManagerService:
@@ -59,7 +59,7 @@ class DeviceSwitcherResultDispatcher;
     deviceSwitcherResultDispatcher:
         (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher
                 templateURLService:(TemplateURLService*)templateURLService
-    NS_DESIGNATED_INITIALIZER;
+                          firstRun:(BOOL)firstRun NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

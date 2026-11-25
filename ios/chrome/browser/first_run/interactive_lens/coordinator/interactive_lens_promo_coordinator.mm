@@ -23,16 +23,20 @@
   InteractiveLensOverlayPromoViewController* _promoViewController;
   // Command handler for the Lens Overlay commands.
   __weak id<LensOverlayCommands> _lensOverlayHandler;
+  // `YES` if presented during the First Run Experience.
+  BOOL _firstRun;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+                                         browser:(Browser*)browser
+                                        firstRun:(BOOL)firstRun {
   if ((self = [super initWithBaseViewController:navigationController
                                         browser:browser])) {
     _baseNavigationController = navigationController;
+    _firstRun = firstRun;
     _lensOverlayHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), LensOverlayCommands);
   }
@@ -78,8 +82,10 @@
       resultsPresenterFactory:factory
                    completion:nil];
 
-  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
-                                first_run::kInteractiveLensStart);
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kInteractiveLensStart);
+  }
 
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ _promoViewController ]
@@ -99,11 +105,13 @@
 
 - (void)didTapContinueButtonWithInteraction:(BOOL)interaction {
   CHECK(self.firstRunDelegate);
+  if (_firstRun) {
+    first_run::FirstRunStage stage =
+        interaction ? first_run::kInteractiveLensCompletionWithInteraction
+                    : first_run::kInteractiveLensCompletionWithoutInteraction;
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram, stage);
+  }
   [self.firstRunDelegate firstRunScreenCoordinatorWantsToBeStopped:self];
-  first_run::FirstRunStage stage =
-      interaction ? first_run::kInteractiveLensCompletionWithInteraction
-                  : first_run::kInteractiveLensCompletionWithoutInteraction;
-  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram, stage);
 }
 
 @end

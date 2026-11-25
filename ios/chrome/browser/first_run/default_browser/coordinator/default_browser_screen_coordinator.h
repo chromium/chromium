@@ -15,10 +15,11 @@
     : ChromeCoordinator <PromoStyleViewControllerDelegate>
 
 // Initializes a DefaultBrowserScreenCoordinator with `navigationController`,
-// `browser`, and `delegate`.
+// `browser`, `firstRun`, and `delegate`.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                                        firstRun:(BOOL)firstRun
                                         delegate:
                                             (id<FirstRunScreenDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;

@@ -156,6 +156,8 @@ void RecordDeviceSwitcherSignalMetrics(
 }  // namespace
 
 @implementation DefaultBrowserScreenMediator {
+  // `YES` if presented during the First Run Experience.
+  BOOL _firstRun;
   // True if the sign-in screen will be the first screen in the FRE sequence.
   BOOL _firstScreenInFRESequence;
   // Local state pref service.
@@ -188,9 +190,11 @@ void RecordDeviceSwitcherSignalMetrics(
                  (ChromeAccountManagerService*)accountManagerService
     deviceSwitcherResultDispatcher:
         (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher
-                templateURLService:(TemplateURLService*)templateURLService {
+                templateURLService:(TemplateURLService*)templateURLService
+                          firstRun:(BOOL)firstRun {
   self = [super init];
   if (self) {
+    _firstRun = firstRun;
     _authenticationService = authenticationService;
     _accountManagerService = accountManagerService;
     _deviceSwitcherResultDispatcher = dispatcher;
@@ -198,7 +202,7 @@ void RecordDeviceSwitcherSignalMetrics(
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
     _localState = GetApplicationContext()->GetLocalState();
     _firstScreenInFRESequence =
-        !first_run::IsAnimatedDefaultBrowserPromoInFREEnabled() &&
+        _firstRun && !first_run::IsAnimatedDefaultBrowserPromoInFREEnabled() &&
         !_localState->GetBoolean(prefs::kEulaAccepted);
   }
   return self;
@@ -387,8 +391,10 @@ void RecordDeviceSwitcherSignalMetrics(
     return;
   }
   _switcherInfoTimer.Stop();
-  base::TimeDelta elapsed = base::TimeTicks::Now() - _evaluationStartTime;
-  RecordDeviceSwitcherSignalMetrics(result, elapsed);
+  if (_firstRun) {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - _evaluationStartTime;
+    RecordDeviceSwitcherSignalMetrics(result, elapsed);
+  }
   BOOL showAndroidSwitcherPromo =
       result ==
       first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher;
