@@ -15,16 +15,18 @@ namespace blink {
 // at points that the trackers care about (e.g., during script creation
 // or during API calls that are intervened on).
 enum class MonkeyPatchableApi {
-  // Default setting to disable the heuristic.
-  kNone,
-  kMinValue = kNone,
   // history.pushState
   kHistoryPushState,
+  kMinValue = kHistoryPushState,
   // history.replaceState
   kHistoryReplaceState,
   // Node.prototype.appendChild
   kNodeAppendChild,
-  kMaxValue = kNodeAppendChild,
+  // Node.prototype.insertBefore
+  kNodeInsertBefore,
+  // Element.prototype.append
+  kElementAppend,
+  kMaxValue = kElementAppend,
 };
 
 using MonkeyPatchableApiSet = base::EnumSet<MonkeyPatchableApi>;

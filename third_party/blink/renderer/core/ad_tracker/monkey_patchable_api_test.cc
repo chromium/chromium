@@ -40,6 +40,16 @@ TEST_F(MonkeyPatchableApiTest, NativeApiIsNotMonkeyPatched) {
         isolate, MonkeyPatchableApi::kNodeAppendChild);
     EXPECT_FALSE(info.is_monkey_patched);
   }
+  {
+    MonkeyPatchableApiFunctionInfo info = GetMonkeyPatchableApiFunctionInfo(
+        isolate, MonkeyPatchableApi::kNodeInsertBefore);
+    EXPECT_FALSE(info.is_monkey_patched);
+  }
+  {
+    MonkeyPatchableApiFunctionInfo info = GetMonkeyPatchableApiFunctionInfo(
+        isolate, MonkeyPatchableApi::kElementAppend);
+    EXPECT_FALSE(info.is_monkey_patched);
+  }
 }
 
 TEST_F(MonkeyPatchableApiTest, MonkeyPatchedApiIsDetected) {

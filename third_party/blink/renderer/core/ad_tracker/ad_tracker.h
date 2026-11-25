@@ -107,7 +107,7 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
   //   triggering filterlist rule. See `AdScriptAncestry` for more details on
   //   the populated fields.
   virtual bool IsAdScriptInStack(
-      MonkeyPatchableApi ignore_monkey_patch = MonkeyPatchableApi::kNone,
+      MonkeyPatchableApiSet ignore_monkey_patches = {},
       AdScriptAncestry* out_ad_script_ancestry = nullptr);
 
   // Returns the identifier of the ad script that created `frame`, if available.

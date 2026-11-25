@@ -1217,20 +1217,20 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     // Apply a heuristic to mitigate inaccurate stack tagging caused by common
     // API monkey patches (e.g., pushState or replaceState). This ensures the
     // execution is attributed to the true originator of the call.
-    AdTracker::MonkeyPatchableApi monkey_patchable_api =
-        AdTracker::MonkeyPatchableApi::kNone;
+    AdTracker::MonkeyPatchableApiSet monkey_patchable_apis;
     if (same_document_navigation_type ==
         mojom::blink::SameDocumentNavigationType::kHistoryApi) {
       if (type == WebFrameLoadType::kStandard) {
-        monkey_patchable_api = AdTracker::MonkeyPatchableApi::kHistoryPushState;
+        monkey_patchable_apis = {
+            AdTracker::MonkeyPatchableApi::kHistoryPushState};
       } else if (type == WebFrameLoadType::kReplaceCurrentItem) {
-        monkey_patchable_api =
-            AdTracker::MonkeyPatchableApi::kHistoryReplaceState;
+        monkey_patchable_apis = {
+            AdTracker::MonkeyPatchableApi::kHistoryReplaceState};
       }
     }
 
     caused_by_ad = ad_tracker->IsAdScriptInStack(
-        /*ignore_monkey_patch=*/monkey_patchable_api);
+        /*ignore_monkey_patches=*/monkey_patchable_apis);
   }
 
   if (frame_->DomWindow() &&

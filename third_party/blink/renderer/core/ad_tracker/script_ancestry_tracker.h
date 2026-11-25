@@ -64,6 +64,7 @@ class CORE_EXPORT ScriptAncestryTracker
       public ScriptInitiationMonitor::Observer {
  public:
   using MonkeyPatchableApi = ::blink::MonkeyPatchableApi;
+  using MonkeyPatchableApiSet = ::blink::MonkeyPatchableApiSet;
 
   struct ScriptMetadata {
     v8_inspector::V8DebuggerId context_id;
@@ -135,9 +136,9 @@ class CORE_EXPORT ScriptAncestryTracker
   // stack (falling back to the async stack when the sync stack is empty) is a
   // marked script, or `std::nullopt` if not.
   //
-  // When `ignore_monkey_patch` is specified, a heuristic is enabled to mitigate
-  // inaccurate stack tagging caused by API monkey patching (i.e., the immediate
-  // caller is a proxy for the real caller). This handles two distinct
+  // When `ignore_monkey_patches` is non-empty, a heuristic is enabled to
+  // mitigate inaccurate stack tagging caused by API monkey patching (i.e., the
+  // immediate caller is a proxy for the real caller). This handles two distinct
   // scenarios:
   // 1. Marked Script Monkey Patch (Mitigating False Positives):
   //    If the script at the top of the stack is marked and the API was
@@ -147,11 +148,17 @@ class CORE_EXPORT ScriptAncestryTracker
   //    If the script at the top of the stack is an unmarked script and the API
   //    was invoked by a marked script, the stack is classified as marked.
   //
-  // Note: This function is not idempotent when `ignore_monkey_patch` is used,
-  // as it tracks the first call to an API within a synchronous task.
+  // Note: This function is not idempotent when `ignore_monkey_patches` is
+  // non-empty, as it tracks the first call to an API within a synchronous task.
   std::optional<V8ScriptId> GetMarkedScriptInStack(
       LazyStackTrace& stack_trace,
-      MonkeyPatchableApi ignore_monkey_patch = MonkeyPatchableApi::kNone);
+      MonkeyPatchableApiSet ignore_monkey_patches = {});
+
+  static constexpr MonkeyPatchableApiSet kDomInsertionApis = {
+      MonkeyPatchableApi::kNodeAppendChild,
+      MonkeyPatchableApi::kNodeInsertBefore,
+      MonkeyPatchableApi::kElementAppend,
+  };
 
   virtual void Shutdown();
   void Trace(Visitor*) const override;
@@ -214,28 +221,42 @@ class CORE_EXPORT ScriptAncestryTracker
                              const String& script_url,
                              bool is_inline_script,
                              LazyStackTrace& stack_trace);
-  // Helper for `ignore_monkey_patch` heuristic. Tracks the API call within
+  // Helper for `ignore_monkey_patches` heuristic. Tracks the API call within
   // the current synchronous task and returns true if it is the first time the
   // API is being called. This method is not const because it modifies
   // `monkey_patch_calls_in_scope_`.
   bool IsFirstMonkeyPatchCall(MonkeyPatchableApi api);
 
+  struct PatchedApiFunction {
+    MonkeyPatchableApi api;
+    v8::Local<v8::Function> function;
+  };
+  using PatchedApiFunctionVector =
+      Vector<PatchedApiFunction,
+             static_cast<size_t>(MonkeyPatchableApi::kMaxValue) + 1>;
+
   struct MonkeyPatchCallerResult {
-    bool is_api_in_stack = false;
+    std::optional<MonkeyPatchableApi> matched_api;
     std::optional<V8ScriptId> marked_caller_id;
   };
 
-  // Helper for `WasApiCalledByNonAttributedScript` and `IsMarkedScriptInStack`.
-  // Inspects the stack to find the patched API.
+  // Collects the active monkey-patched V8 functions for `apis`.
+  PatchedApiFunctionVector GetPatchedApiFunctions(
+      v8::Isolate* isolate,
+      MonkeyPatchableApiSet apis) const;
+
+  // Helper for `WasApiCalledByNonAttributedScript` and
+  // `GetMarkedScriptInStack`. Inspects the stack to find any patched API
+  // (skipping contiguous chained patched wrappers) and inspects its caller.
   MonkeyPatchCallerResult FindMonkeyPatchCaller(
       v8::Isolate* isolate,
-      const v8::Local<v8::Function>& api_function,
+      base::span<const PatchedApiFunction> patched_apis,
       base::span<const v8::StackTrace::ScriptData> stack) const;
 
   // Analyzes the stack to determine if the call stack indicates that a
-  // non-marked script called the monkey patched `api`.
+  // non-marked script called any monkey patched API in `apis`.
   bool WasApiCalledByNonAttributedScript(v8::Isolate* isolate,
-                                         MonkeyPatchableApi api,
+                                         MonkeyPatchableApiSet apis,
                                          LazyStackTrace& stack_trace) const;
 
   void MaybeSetBottomMostScript(ExecutionContext& execution_context,

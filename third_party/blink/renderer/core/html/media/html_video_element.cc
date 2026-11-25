@@ -191,8 +191,7 @@ Node::InsertionNotificationRequest HTMLVideoElement::InsertedInto(
         AdTracker::AdScriptAncestry ad_script_ancestry;
         if (!IsAdRelated() &&
             ad_tracker->IsAdScriptInStack(
-                /*ignore_monkey_patch=*/
-                AdTracker::MonkeyPatchableApi::kNodeAppendChild,
+                /*ignore_monkey_patches=*/AdTracker::kDomInsertionApis,
                 &ad_script_ancestry)) {
           AdProvenance ad_provenance =
               !ad_script_ancestry.ancestry_chain.empty()

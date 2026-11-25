@@ -97,9 +97,7 @@ void ScriptAncestryTracker::DidRegisterDynamicScript(
   if (!async_script_stack_.empty() && async_script_stack_.back().has_value()) {
     marked_script_id = async_script_stack_.back();
   } else {
-    marked_script_id = GetMarkedScriptInStack(
-        stack_trace,
-        /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild);
+    marked_script_id = GetMarkedScriptInStack(stack_trace, kDomInsertionApis);
   }
 
   RegisterScript(script_id, marked_script_id);
@@ -163,14 +161,14 @@ void ScriptAncestryTracker::DidCreateAsyncTask(
   if (!script_metadata_.empty()) {
     v8::Isolate* isolate = GetIsolate();
     if (isolate && !isolate->GetCurrentContext().IsEmpty()) {
-      // TODO(jkarlin): Restrict the kNodeAppendChild monkeypatch exception
+      // TODO(jkarlin): Restrict the DOM insertion monkeypatch exception
       // specifically to script element creation tasks (e.g., PendingScript) by
       // passing the async task name/type to DidCreateAsyncTask.
       // Note: We do this check separately from GetMarkedScriptInStack because
       // we don't want to count it against the 1-call-per-sync-stack budget in
       // case downstream callers want to call GetMarkedScriptInStack.
-      if (WasApiCalledByNonAttributedScript(
-              isolate, MonkeyPatchableApi::kNodeAppendChild, stack_trace)) {
+      if (WasApiCalledByNonAttributedScript(isolate, kDomInsertionApis,
+                                            stack_trace)) {
         return;
       }
     }
@@ -216,9 +214,8 @@ void ScriptAncestryTracker::DidCreateFrame(LocalFrame* frame,
   // stack. Cross-origin OOPIFs and remote swaps do not carry initiating V8
   // script state across process boundaries without explicit browser-side IPC
   // propagation.
-  std::optional<V8ScriptId> marked_script_id = GetMarkedScriptInStack(
-      stack_trace,
-      /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild);
+  std::optional<V8ScriptId> marked_script_id =
+      GetMarkedScriptInStack(stack_trace, kDomInsertionApis);
   if (!marked_script_id.has_value()) {
     return;
   }
@@ -269,7 +266,7 @@ bool ScriptAncestryTracker::IsMarkedExecutionContext(
 
 std::optional<V8ScriptId> ScriptAncestryTracker::GetMarkedScriptInStack(
     LazyStackTrace& stack_trace,
-    MonkeyPatchableApi ignore_monkey_patch) {
+    MonkeyPatchableApiSet ignore_monkey_patches) {
   // If the currently executing context is within a frame created by a marked
   // script (or marked frame), classify the stack as marked and return the
   // creating script's id.
@@ -300,11 +297,11 @@ std::optional<V8ScriptId> ScriptAncestryTracker::GetMarkedScriptInStack(
 
   v8::Isolate* isolate = GetIsolate();
 
-  // When the `ignore_monkey_patch` heuristic is specified, we inspect the top
-  // five stack frames instead of just the top frame. It allows us to capture
-  // publisher monkey patch scenarios (i.e., one or more publisher monkey
-  // patches that passively invoke a marked script's intent).
-  size_t limit = (ignore_monkey_patch != MonkeyPatchableApi::kNone) ? 5 : 1;
+  // When `ignore_monkey_patches` is non-empty, we inspect the top five stack
+  // frames instead of just the top frame. It allows us to capture publisher
+  // monkey patch scenarios (i.e., one or more publisher monkey patches that
+  // passively invoke a marked script's intent).
+  size_t limit = !ignore_monkey_patches.empty() ? 5 : 1;
   auto stack = stack_trace.GetStack(limit);
 
   if (stack.empty()) {
@@ -344,24 +341,21 @@ std::optional<V8ScriptId> ScriptAncestryTracker::GetMarkedScriptInStack(
     return std::nullopt;
   }
 
-  if (ignore_monkey_patch != MonkeyPatchableApi::kNone) {
-    MonkeyPatchableApiFunctionInfo api_info =
-        GetMonkeyPatchableApiFunctionInfo(isolate, ignore_monkey_patch);
-    v8::Local<v8::Function> api_function;
-    if (api_info.is_monkey_patched &&
-        api_info.function.ToLocal(&api_function)) {
+  if (!ignore_monkey_patches.empty()) {
+    PatchedApiFunctionVector patched_apis =
+        GetPatchedApiFunctions(isolate, ignore_monkey_patches);
+    if (!patched_apis.empty()) {
       MonkeyPatchCallerResult result =
-          FindMonkeyPatchCaller(isolate, api_function, stack);
-      if (result.is_api_in_stack) {
+          FindMonkeyPatchCaller(isolate, patched_apis, stack);
+      if (result.matched_api.has_value()) {
         if (result.marked_caller_id.has_value()) {
           // The API was invoked by a marked script. Attribute the call to it.
           return result.marked_caller_id;
-        } else {
-          // The API was invoked by a non-marked script. Allow this to bypass
-          // the marked-script-in-stack check once per synchronous task.
-          if (IsFirstMonkeyPatchCall(ignore_monkey_patch)) {
-            return std::nullopt;
-          }
+        }
+        // The API was invoked by a non-marked script. Allow this to bypass
+        // the marked-script-in-stack check once per synchronous task.
+        if (IsFirstMonkeyPatchCall(*result.matched_api)) {
+          return std::nullopt;
         }
       }
     }
@@ -431,9 +425,8 @@ void ScriptAncestryTracker::RegisterScriptWithUrl(
   String url =
       is_inline_script ? GenerateFakeUrlFromScriptId(script_id) : script_url;
 
-  std::optional<V8ScriptId> marked_script_id = GetMarkedScriptInStack(
-      stack_trace,
-      /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild);
+  std::optional<V8ScriptId> marked_script_id =
+      GetMarkedScriptInStack(stack_trace, kDomInsertionApis);
 
   OnScriptRegistered(execution_context, script_id, url, marked_script_id);
 
@@ -465,22 +458,63 @@ bool ScriptAncestryTracker::IsFirstMonkeyPatchCall(MonkeyPatchableApi api) {
   return true;
 }
 
+ScriptAncestryTracker::PatchedApiFunctionVector
+ScriptAncestryTracker::GetPatchedApiFunctions(
+    v8::Isolate* isolate,
+    MonkeyPatchableApiSet apis) const {
+  PatchedApiFunctionVector patched_apis;
+  for (MonkeyPatchableApi api : apis) {
+    MonkeyPatchableApiFunctionInfo api_info =
+        GetMonkeyPatchableApiFunctionInfo(isolate, api);
+    v8::Local<v8::Function> api_function;
+    if (api_info.is_monkey_patched &&
+        api_info.function.ToLocal(&api_function)) {
+      patched_apis.push_back(PatchedApiFunction{api, api_function});
+    }
+  }
+  return patched_apis;
+}
+
 ScriptAncestryTracker::MonkeyPatchCallerResult
 ScriptAncestryTracker::FindMonkeyPatchCaller(
     v8::Isolate* isolate,
-    const v8::Local<v8::Function>& api_function,
+    base::span<const PatchedApiFunction> patched_apis,
     base::span<const v8::StackTrace::ScriptData> stack) const {
   MonkeyPatchCallerResult result;
-  if (stack.size() <= 1) {
+  if (stack.size() <= 1 || patched_apis.empty()) {
     return result;
   }
 
-  // Look for the exact tracked API in the stack. The frame immediately
-  // preceding it is the true initiator.
+  auto find_matching_api = [&](const v8::Local<v8::Function>& fn)
+      -> std::optional<MonkeyPatchableApi> {
+    for (const auto& patched : patched_apis) {
+      if (IsFunctionAMonkeyPatch(isolate, fn, patched.function)) {
+        return patched.api;
+      }
+    }
+    return std::nullopt;
+  };
+
+  // Look for the first tracked patched API in the stack, skip past any
+  // contiguous chained patched API wrappers, and inspect the true caller.
   for (size_t i = 0; i < stack.size() - 1; ++i) {
-    if (IsFunctionAMonkeyPatch(isolate, stack[i].function, api_function)) {
-      result.is_api_in_stack = true;
-      V8ScriptId caller_id(stack[i + 1].id);
+    if (std::optional<MonkeyPatchableApi> matched_api =
+            find_matching_api(stack[i].function)) {
+      size_t caller_index = i + 1;
+      while (caller_index < stack.size()) {
+        std::optional<MonkeyPatchableApi> outer_api =
+            find_matching_api(stack[caller_index].function);
+        if (!outer_api.has_value()) {
+          break;
+        }
+        matched_api = *outer_api;
+        ++caller_index;
+      }
+      if (caller_index == stack.size()) {
+        return result;
+      }
+      result.matched_api = matched_api;
+      V8ScriptId caller_id(stack[caller_index].id);
       if (caller_id.value() > 0 && IsMarkedScript(caller_id)) {
         result.marked_caller_id = caller_id;
       }
@@ -511,28 +545,17 @@ void ScriptAncestryTracker::MaybeResetBottomMostScript() {
 
 bool ScriptAncestryTracker::WasApiCalledByNonAttributedScript(
     v8::Isolate* isolate,
-    MonkeyPatchableApi api,
+    MonkeyPatchableApiSet apis,
     LazyStackTrace& stack_trace) const {
-  MonkeyPatchableApiFunctionInfo api_info =
-      GetMonkeyPatchableApiFunctionInfo(isolate, api);
-  if (!api_info.is_monkey_patched) {
-    return false;
-  }
-
-  v8::Local<v8::Function> api_function;
-  if (!api_info.function.ToLocal(&api_function)) {
+  PatchedApiFunctionVector patched_apis = GetPatchedApiFunctions(isolate, apis);
+  if (patched_apis.empty()) {
     return false;
   }
 
   auto stack = stack_trace.GetStack(5);
-
   MonkeyPatchCallerResult result =
-      FindMonkeyPatchCaller(isolate, api_function, stack);
-  if (result.is_api_in_stack) {
-    return !result.marked_caller_id.has_value();
-  }
-
-  return false;
+      FindMonkeyPatchCaller(isolate, patched_apis, stack);
+  return result.matched_api.has_value() && !result.marked_caller_id.has_value();
 }
 
 }  // namespace blink

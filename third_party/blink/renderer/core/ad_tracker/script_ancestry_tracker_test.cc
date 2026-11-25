@@ -784,6 +784,168 @@ TEST_F(ScriptAncestryTrackerTest,
   EXPECT_FALSE(test_observer_->IsMarkedScript(target_id));
 }
 
+TEST_F(ScriptAncestryTrackerTest,
+       IgnoreMonkeyPatchHeuristic_MonkeypatchedInsertBefore) {
+  SimSubresourceRequest marked_script("https://example.com/marked_script.js",
+                                      "text/javascript");
+  SimSubresourceRequest vanilla_script("https://example.com/vanilla_script.js",
+                                       "text/javascript");
+  SimSubresourceRequest target_script("https://example.com/target_script.js",
+                                      "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <div id="ref"></div>
+      <script src="marked_script.js"></script>
+      <script src="vanilla_script.js"></script>
+    </body>
+  )HTML");
+  test::RunPendingTasks();
+
+  // 1. The marked script monkeypatches Node.prototype.insertBefore.
+  marked_script.Complete(R"SCRIPT(
+    const originalInsertBefore = Node.prototype.insertBefore;
+    Node.prototype.insertBefore = function(newNode, refNode) {
+      return originalInsertBefore.call(this, newNode, refNode);
+    };
+  )SCRIPT");
+  test::RunPendingTasks();
+
+  // 2. The vanilla script calls the monkeypatched insertBefore to add
+  // target_script.js.
+  vanilla_script.Complete(R"SCRIPT(
+    const script = document.createElement("script");
+    script.src = "target_script.js";
+    document.body.insertBefore(script, document.getElementById("ref"));
+  )SCRIPT");
+  test::RunPendingTasks();
+
+  target_script.Complete("console.log('target');");
+
+  V8ScriptId marked_id =
+      test_observer_->WaitAndFindScriptIdByUrl("marked_script.js");
+  V8ScriptId vanilla_id =
+      test_observer_->WaitAndFindScriptIdByUrl("vanilla_script.js");
+  V8ScriptId target_id =
+      test_observer_->WaitAndFindScriptIdByUrl("target_script.js");
+
+  EXPECT_NE(V8ScriptId(), marked_id);
+  EXPECT_NE(V8ScriptId(), vanilla_id);
+  EXPECT_NE(V8ScriptId(), target_id);
+  EXPECT_TRUE(test_observer_->IsMarkedScript(marked_id));
+  EXPECT_FALSE(test_observer_->IsMarkedScript(vanilla_id));
+  EXPECT_FALSE(test_observer_->IsMarkedScript(target_id));
+}
+
+TEST_F(ScriptAncestryTrackerTest,
+       IgnoreMonkeyPatchHeuristic_MonkeypatchedElementAppend) {
+  SimSubresourceRequest marked_script("https://example.com/marked_script.js",
+                                      "text/javascript");
+  SimSubresourceRequest vanilla_script("https://example.com/vanilla_script.js",
+                                       "text/javascript");
+  SimSubresourceRequest target_script("https://example.com/target_script.js",
+                                      "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="marked_script.js"></script>
+      <script src="vanilla_script.js"></script>
+    </body>
+  )HTML");
+  test::RunPendingTasks();
+
+  // 1. The marked script monkeypatches Element.prototype.append.
+  marked_script.Complete(R"SCRIPT(
+    const originalAppend = Element.prototype.append;
+    Element.prototype.append = function(...nodes) {
+      return originalAppend.apply(this, nodes);
+    };
+  )SCRIPT");
+  test::RunPendingTasks();
+
+  // 2. The vanilla script calls the monkeypatched append to add
+  // target_script.js.
+  vanilla_script.Complete(R"SCRIPT(
+    const script = document.createElement("script");
+    script.src = "target_script.js";
+    document.body.append(script);
+  )SCRIPT");
+  test::RunPendingTasks();
+
+  target_script.Complete("console.log('target');");
+
+  V8ScriptId marked_id =
+      test_observer_->WaitAndFindScriptIdByUrl("marked_script.js");
+  V8ScriptId vanilla_id =
+      test_observer_->WaitAndFindScriptIdByUrl("vanilla_script.js");
+  V8ScriptId target_id =
+      test_observer_->WaitAndFindScriptIdByUrl("target_script.js");
+
+  EXPECT_NE(V8ScriptId(), marked_id);
+  EXPECT_NE(V8ScriptId(), vanilla_id);
+  EXPECT_NE(V8ScriptId(), target_id);
+  EXPECT_TRUE(test_observer_->IsMarkedScript(marked_id));
+  EXPECT_FALSE(test_observer_->IsMarkedScript(vanilla_id));
+  EXPECT_FALSE(test_observer_->IsMarkedScript(target_id));
+}
+
+TEST_F(ScriptAncestryTrackerTest,
+       IgnoreMonkeyPatchHeuristic_ChainedMonkeypatchedApis) {
+  SimSubresourceRequest marked_script("https://example.com/marked_script.js",
+                                      "text/javascript");
+  SimSubresourceRequest vanilla_script("https://example.com/vanilla_script.js",
+                                       "text/javascript");
+  SimSubresourceRequest target_script("https://example.com/target_script.js",
+                                      "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="marked_script.js"></script>
+      <script src="vanilla_script.js"></script>
+    </body>
+  )HTML");
+  test::RunPendingTasks();
+
+  // 1. The marked script monkeypatches both Node.prototype.appendChild and
+  // Element.prototype.append, with append() delegating to this.appendChild().
+  marked_script.Complete(R"SCRIPT(
+    const originalAppendChild = Node.prototype.appendChild;
+    Node.prototype.appendChild = function(node) {
+      return originalAppendChild.call(this, node);
+    };
+    Element.prototype.append = function(...nodes) {
+      for (const node of nodes) {
+        this.appendChild(node);
+      }
+    };
+  )SCRIPT");
+  test::RunPendingTasks();
+
+  // 2. The vanilla script calls the chained monkeypatched append().
+  vanilla_script.Complete(R"SCRIPT(
+    const script = document.createElement("script");
+    script.src = "target_script.js";
+    document.body.append(script);
+  )SCRIPT");
+  test::RunPendingTasks();
+
+  target_script.Complete("console.log('target');");
+
+  V8ScriptId marked_id =
+      test_observer_->WaitAndFindScriptIdByUrl("marked_script.js");
+  V8ScriptId vanilla_id =
+      test_observer_->WaitAndFindScriptIdByUrl("vanilla_script.js");
+  V8ScriptId target_id =
+      test_observer_->WaitAndFindScriptIdByUrl("target_script.js");
+
+  EXPECT_NE(V8ScriptId(), marked_id);
+  EXPECT_NE(V8ScriptId(), vanilla_id);
+  EXPECT_NE(V8ScriptId(), target_id);
+  EXPECT_TRUE(test_observer_->IsMarkedScript(marked_id));
+  EXPECT_FALSE(test_observer_->IsMarkedScript(vanilla_id));
+  EXPECT_FALSE(test_observer_->IsMarkedScript(target_id));
+}
+
 TEST_F(ScriptAncestryTrackerTest, DynamicScriptAppendsExternalModule) {
   SimSubresourceRequest initial_script(
       "https://example.com/initial_marked_script.js", "application/javascript");

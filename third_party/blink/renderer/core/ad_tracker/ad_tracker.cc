@@ -100,9 +100,8 @@ std::optional<AdProvenance> AdTracker::CalculateIfAdSubresource(
     if (isolate) {
       v8::HandleScope handle_scope(isolate);
       LazyStackTrace stack_trace(isolate);
-      if (std::optional<V8ScriptId> ancestor_ad_script = GetMarkedScriptInStack(
-              stack_trace,
-              /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild)) {
+      if (std::optional<V8ScriptId> ancestor_ad_script =
+              GetMarkedScriptInStack(stack_trace, kDomInsertionApis)) {
         known_ad_provenance = AdProvenance(*ancestor_ad_script);
       }
     }
@@ -211,7 +210,7 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(V8ScriptId script_id) {
   return ancestry;
 }
 
-bool AdTracker::IsAdScriptInStack(MonkeyPatchableApi ignore_monkey_patch,
+bool AdTracker::IsAdScriptInStack(MonkeyPatchableApiSet ignore_monkey_patches,
                                   AdScriptAncestry* out_ad_script_ancestry) {
   v8::Isolate* isolate = GetIsolate();
   std::optional<v8::HandleScope> handle_scope;
@@ -220,7 +219,7 @@ bool AdTracker::IsAdScriptInStack(MonkeyPatchableApi ignore_monkey_patch,
   }
   LazyStackTrace stack_trace(isolate);
   std::optional<V8ScriptId> out_ad_script =
-      GetMarkedScriptInStack(stack_trace, ignore_monkey_patch);
+      GetMarkedScriptInStack(stack_trace, ignore_monkey_patches);
 
   if (out_ad_script_ancestry) {
     *out_ad_script_ancestry = out_ad_script.has_value()

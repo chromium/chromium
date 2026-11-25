@@ -77,8 +77,12 @@ v8::MaybeLocal<v8::Value> GetMonkeyPatchableApi(v8::Isolate* isolate,
     case MonkeyPatchableApi::kNodeAppendChild:
       return GetPropertyPath(isolate, context, context->Global(),
                              {"Node", "prototype", "appendChild"});
-    case MonkeyPatchableApi::kNone:
-      NOTREACHED();
+    case MonkeyPatchableApi::kNodeInsertBefore:
+      return GetPropertyPath(isolate, context, context->Global(),
+                             {"Node", "prototype", "insertBefore"});
+    case MonkeyPatchableApi::kElementAppend:
+      return GetPropertyPath(isolate, context, context->Global(),
+                             {"Element", "prototype", "append"});
   }
   NOTREACHED();
 }

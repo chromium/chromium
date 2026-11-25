@@ -36,7 +36,7 @@ class CORE_EXPORT ExtensionScriptTracker : public ScriptAncestryTracker {
   // extension that injected or initiated the script, or an empty String if no
   // extension script was found.
   String ExtensionScriptInStack(
-      MonkeyPatchableApi ignore_monkey_patch = MonkeyPatchableApi::kNone);
+      MonkeyPatchableApiSet ignore_monkey_patches = {});
 
   // ScriptAncestryTracker overrides:
   ScriptAncestryTrackerType GetTrackerType() const override {
