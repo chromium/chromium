@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Dedicated-worker JS Self-Profiling requires runtime flags without an Origin Trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async t => {
+  const kDocumentPolicyHeader = 3225;
+  const kJSSelfProfilingInDedicatedWorker = 6164;
+  const kUserTimingL3 = 3053;
+  internals.clearUseCounter(document, kDocumentPolicyHeader);
+  internals.clearUseCounter(document, kJSSelfProfilingInDedicatedWorker);
+  internals.clearUseCounter(document, kUserTimingL3);
+
+  const worker = new Worker(
+      'resources/js-self-profiling-dedicated-worker.php');
+  t.add_cleanup(() => worker.terminate());
+  const result = await new Promise((resolve, reject) => {
+    worker.onmessage = event => {
+      if (event.data.workerError) {
+        reject(new Error(event.data.workerError));
+      } else {
+        resolve(event.data);
+      }
+    };
+    worker.onerror = event => reject(new Error(event.message));
+  });
+  // The worker counts this after profiling, on the same queue as use counters.
+  await internals.observeUseCounter(document, kUserTimingL3);
+
+  const profilerEnabledByRuntimeFlag =
+      internals.runtimeFlags.profilerAPIForDedicatedWorkerEnabled;
+  const policyEnabledByRuntimeFlag =
+      internals.runtimeFlags.documentPolicyInDedicatedWorkerEnabled;
+  assert_equals(result.hasProfiler, profilerEnabledByRuntimeFlag,
+      'without a token, Profiler exposure requires its runtime flag');
+  assert_equals(result.created,
+      profilerEnabledByRuntimeFlag && policyEnabledByRuntimeFlag,
+      'without a token, construction requires both worker runtime flags');
+
+  if (policyEnabledByRuntimeFlag) {
+    await internals.observeUseCounter(document, kDocumentPolicyHeader);
+  }
+  if (profilerEnabledByRuntimeFlag && policyEnabledByRuntimeFlag) {
+    await internals.observeUseCounter(
+        document, kJSSelfProfilingInDedicatedWorker);
+  }
+  assert_equals(internals.isUseCounted(document, kDocumentPolicyHeader),
+      policyEnabledByRuntimeFlag,
+      'without a token, the policy counter requires its runtime flag');
+  assert_equals(internals.isUseCounted(
+      document, kJSSelfProfilingInDedicatedWorker),
+      profilerEnabledByRuntimeFlag && policyEnabledByRuntimeFlag,
+      'without a token, the profiling counter requires both runtime flags');
+}, 'Without a token, dedicated-worker JS Self-Profiling requires runtime flags');
+</script>

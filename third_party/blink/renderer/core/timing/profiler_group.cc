@@ -100,7 +100,8 @@ bool ProfilerGroup::CanProfile(ExecutionContext* execution_context,
   DCHECK(execution_context);
 
   if (execution_context->IsDedicatedWorkerGlobalScope() &&
-      !RuntimeEnabledFeatures::DocumentPolicyInDedicatedWorkerEnabled()) {
+      !RuntimeEnabledFeatures::DocumentPolicyInDedicatedWorkerEnabled(
+          execution_context)) {
     if (exception_state) {
       exception_state->ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,

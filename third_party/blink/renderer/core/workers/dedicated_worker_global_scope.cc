@@ -275,7 +275,8 @@ void DedicatedWorkerGlobalScope::Initialize(
 
   // Document-Policy: inherit from the owner for local schemes, otherwise use
   // the DP parsed from the response headers.
-  if (RuntimeEnabledFeatures::DocumentPolicyInDedicatedWorkerEnabled()) {
+  if (RuntimeEnabledFeatures::DocumentPolicyInDedicatedWorkerEnabled(
+          GetExecutionContext())) {
     DocumentPolicy::DocumentPolicyBundle document_policy_bundle =
         is_local_scheme ? std::move(creator_document_policy_)
                         : std::move(response_document_policy);
@@ -314,7 +315,8 @@ void DedicatedWorkerGlobalScope::Initialize(
 
   // If profiling is enabled in dedicated workers, ensure that profiling
   // metadata is available by tracking the execution context's lifetime.
-  if (RuntimeEnabledFeatures::ProfilerAPIForDedicatedWorkerEnabled()) {
+  if (RuntimeEnabledFeatures::ProfilerAPIForDedicatedWorkerEnabled(
+          GetExecutionContext())) {
     ProfilerGroup::InitializeIfEnabled(GetExecutionContext());
   }
 }

@@ -173,6 +173,9 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   bool canceled_ = false;
   bool need_to_cancel_ = false;
 
+  // Capture the context-dependent gate before processing response callbacks.
+  bool document_policy_in_dedicated_worker_enabled_ = false;
+
   // true when LoadTopLevelScriptAsynchronously() is called,
   // false when LoadSynchronously() is called i.e. for importScripts().
   bool is_top_level_script_ = false;

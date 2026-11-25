@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate this token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 JSSelfProfilingInDedicatedWorker --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="A1VVXj8s++lsIOJLBTjRt7vJXeguNJr2KpHnus8aPOCt2m0EJ0UtFN/GopC50tASSnpmHkAevjFruHXKrGHrFAEAAABoeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiSlNTZWxmUHJvZmlsaW5nSW5EZWRpY2F0ZWRXb3JrZXIiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=">
+<title>JS Self-Profiling is enabled in a dedicated worker by an Origin Trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const kJSSelfProfilingInDedicatedWorker = 6164;
+const kUserTimingL3 = 3053;
+
+async function runWorker(t, query = '', options = {}) {
+  internals.clearUseCounter(document, kUserTimingL3);
+  const worker = new Worker(
+      'resources/js-self-profiling-dedicated-worker.php' + query, options);
+  t.add_cleanup(() => worker.terminate());
+  const result = await new Promise((resolve, reject) => {
+    worker.onmessage = event => {
+      if (event.data.workerError) {
+        reject(new Error(event.data.workerError));
+      } else {
+        resolve(event.data);
+      }
+    };
+    worker.onerror = event => reject(new Error(event.message));
+  });
+  // The worker counts this after profiling, on the same queue as use counters.
+  await internals.observeUseCounter(document, kUserTimingL3);
+  return result;
+}
+
+promise_test(async t => {
+  const kDocumentPolicyReportOnlyHeader = 3226;
+  internals.clearUseCounter(
+      document, kJSSelfProfilingInDedicatedWorker);
+  internals.clearUseCounter(document, kDocumentPolicyReportOnlyHeader);
+
+  const result = await runWorker(t, '?sample&report_only');
+
+  assert_true(result.hasProfiler,
+      'the Origin Trial should expose Profiler in the dedicated worker');
+  assert_true(result.created,
+      `Profiler construction should succeed: ${JSON.stringify(result.error)}`);
+  assert_true(result.stopped, 'the profiler should stop successfully');
+  assert_greater_than(result.trace.resources.length, 0);
+  assert_greater_than(result.trace.frames.length, 0);
+  assert_greater_than(result.trace.stacks.length, 0);
+  assert_greater_than(result.trace.samples.length, 0);
+  await Promise.all([
+    internals.observeUseCounter(document, kJSSelfProfilingInDedicatedWorker),
+    internals.observeUseCounter(document, kDocumentPolicyReportOnlyHeader),
+  ]);
+  assert_true(
+      internals.isUseCounted(
+          document, kJSSelfProfilingInDedicatedWorker),
+      'successful worker Profiler construction should record the UseCounter');
+  assert_true(internals.isUseCounted(
+      document, kDocumentPolicyReportOnlyHeader),
+      'the worker must apply its report-only response policy');
+}, 'A report-only policy does not block profiling allowed by the enforced policy');
+
+promise_test(async t => {
+  const result = await runWorker(t, '?sample', {type: 'module'});
+
+  assert_true(result.hasProfiler,
+      'the Origin Trial should expose Profiler in the module worker');
+  assert_true(result.created,
+      `Profiler construction should succeed: ${JSON.stringify(result.error)}`);
+  assert_true(result.stopped, 'the module worker profiler should stop');
+  assert_greater_than(result.trace.samples.length, 0);
+}, 'A network module worker can profile with its response Document Policy');
+
+promise_test(async t => {
+  internals.clearUseCounter(document, kJSSelfProfilingInDedicatedWorker);
+  const result = await runWorker(t, '?without_document_policy');
+
+  assert_true(result.hasProfiler,
+      'the Origin Trial should expose Profiler in the dedicated worker');
+  assert_false(result.created,
+      'the Origin Trial must not bypass the Document Policy requirement');
+  assert_equals(result.error.name, 'NotAllowedError');
+  assert_false(internals.isUseCounted(
+      document, kJSSelfProfilingInDedicatedWorker),
+      'rejected worker Profiler construction must not record the UseCounter');
+}, 'The Origin Trial still requires Document-Policy: js-profiling');
+
+promise_test(async t => {
+  const result = await runWorker(
+      t, '?without_document_policy', {type: 'module'});
+
+  assert_true(result.hasProfiler,
+      'the Origin Trial should expose Profiler in the module worker');
+  assert_false(result.created,
+      'the module worker must require an enforced Document Policy');
+  assert_equals(result.error.name, 'NotAllowedError');
+}, 'A network module worker requires Document-Policy: js-profiling');
+
+promise_test(async t => {
+  const result = await runWorker(t, '?profiling_mode_only');
+
+  assert_true(result.hasProfiler, 'the Origin Trial exposes Profiler');
+  const modeEnabledByRuntimeFlag =
+      internals.runtimeFlags.documentPolicyJSProfilingModeEnabled;
+  assert_equals(result.created, modeEnabledByRuntimeFlag,
+      'js-profiling-mode requires its own flag, not the worker Origin Trial');
+  if (!modeEnabledByRuntimeFlag) {
+    assert_equals(result.error.name, 'NotAllowedError');
+  }
+}, 'The Origin Trial does not enable js-profiling-mode');
+
+for (const scheme of ['blob', 'data']) {
+  promise_test(async t => {
+    const result = await runWorker(t, `?child_scheme=${scheme}`);
+    assert_true(result.hasProfiler, 'the child inherits the Origin Trial');
+    assert_true(result.created,
+        `Profiler construction should succeed: ${JSON.stringify(result.error)}`);
+    assert_true(result.stopped, 'the child can stop its profiler');
+  }, `A ${scheme} module child inherits the Origin Trial and Document Policy`);
+}
+</script>

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/timing/profiler.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -24,7 +26,8 @@ Profiler* Profiler::Create(ScriptState* script_state,
 
   CHECK(execution_context->IsWindow() ||
         (execution_context->IsDedicatedWorkerGlobalScope() &&
-         RuntimeEnabledFeatures::ProfilerAPIForDedicatedWorkerEnabled()));
+         RuntimeEnabledFeatures::ProfilerAPIForDedicatedWorkerEnabled(
+             execution_context)));
 
   bool can_profile = ProfilerGroup::CanProfile(
       execution_context, &exception_state, ReportOptions::kReportOnFailure);
@@ -50,6 +53,11 @@ Profiler* Profiler::Create(ScriptState* script_state,
       exception_state);
   if (exception_state.HadException()) {
     return nullptr;
+  }
+
+  if (execution_context->IsDedicatedWorkerGlobalScope()) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kJSSelfProfilingInDedicatedWorker);
   }
 
   return profiler;

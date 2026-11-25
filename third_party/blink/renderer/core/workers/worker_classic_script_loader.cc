@@ -154,6 +154,9 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
   url_ = url;
   fetch_client_settings_object_fetcher_ = fetch_client_settings_object_fetcher;
   is_top_level_script_ = true;
+  document_policy_in_dedicated_worker_enabled_ =
+      RuntimeEnabledFeatures::DocumentPolicyInDedicatedWorkerEnabled(
+          &execution_context);
   ResourceRequest request(url);
   request.SetHttpMethod(http_names::kGET);
   request.SetRequestContext(request_context);
@@ -396,7 +399,7 @@ void WorkerClassicScriptLoader::ProcessContentSecurityPolicy(
 
 void WorkerClassicScriptLoader::ProcessDocumentPolicy(
     const ResourceResponse& response) {
-  if (!RuntimeEnabledFeatures::DocumentPolicyInDedicatedWorkerEnabled()) {
+  if (!document_policy_in_dedicated_worker_enabled_) {
     return;
   }
 

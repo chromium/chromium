@@ -2841,6 +2841,7 @@
     // Enables Document Policy for DedicatedWorkers.
     {
       name: "DocumentPolicyInDedicatedWorker",
+      origin_trial_feature_name: "JSSelfProfilingInDedicatedWorker",
       status: "experimental",
     },
     {
@@ -5542,6 +5543,7 @@
     {
       // When enabled, dedicated workers can use profiler API
       name: "ProfilerAPIForDedicatedWorker",
+      origin_trial_feature_name: "JSSelfProfilingInDedicatedWorker",
       status: "experimental",
     },
     // Promisify programmatic scroll methods in Element and Window.
