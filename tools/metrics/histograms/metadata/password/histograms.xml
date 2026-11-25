@@ -265,13 +265,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="KeyboardAccessory.GenerationDialogChoice.{GenerationType}"
-    enum="GenerationDialogChoice" expires_after="2027-01-03">
+    enum="GenerationDialogChoice" expires_after="2027-11-25">
   <owner>ioanap@chromium.org</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     Android only. Records the interactions with the password generation sheet
     for {GenerationType} triggered from the keyboard accessory. Recorded when
-    the user taps a button in the sheet or dismsses it.
+    the user taps a button in the sheet or dismisses it.
   </summary>
   <token key="GenerationType">
     <variant name="Automatic" summary="automatic generation"/>
