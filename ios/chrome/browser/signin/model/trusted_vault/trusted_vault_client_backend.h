@@ -7,8 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <cstdint>
 #import <map>
-#import <string>
+#import <optional>
 #import <vector>
 
 #import "base/functional/callback_forward.h"
@@ -27,10 +28,6 @@ struct TrustedVaultKeyAndVersion;
 // Abstract class to manage shared keys.
 class TrustedVaultClientBackend : public KeyedService {
  public:
-  // Helper types representing a key and a list of key respectively.
-  using SharedKey = std::vector<uint8_t>;
-  using SharedKeyList = std::vector<SharedKey>;
-
   // A public key.
   using PublicKey = std::vector<uint8_t>;
 
@@ -38,7 +35,6 @@ class TrustedVaultClientBackend : public KeyedService {
   using Observer = trusted_vault::TrustedVaultClient::Observer;
 
   // Types for the different callbacks.
-  using KeysFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
   using KeysWithVersionsFetchedCallback = base::OnceCallback<void(
       const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)>;
   using CompletionBlock = void (^)(BOOL success, NSError* error);
@@ -61,19 +57,11 @@ class TrustedVaultClientBackend : public KeyedService {
   void RemoveObserver(Observer* observer,
                       trusted_vault::SecurityDomainId security_domain_id);
 
-  // Asynchronously fetches the shared keys for `identity` and invokes
-  // `completion` with the fetched keys.
-  // Deprecated: subclasses should override the overload taking
-  // `KeysWithVersionsFetchedCallback`.
-  virtual void FetchKeys(id<SystemIdentity> identity,
-                         trusted_vault::SecurityDomainId security_domain_id,
-                         KeysFetchedCallback completion);
-
   // Asynchronously fetches the shared keys and their versions for `identity`
   // and invokes `completion` with the fetched keys.
   virtual void FetchKeys(id<SystemIdentity> identity,
                          trusted_vault::SecurityDomainId security_domain_id,
-                         KeysWithVersionsFetchedCallback completion);
+                         KeysWithVersionsFetchedCallback completion) = 0;
 
   // Invoked when the result of FetchKeys() contains keys that are not
   // up-to-date. During the execution, before `callback` is invoked, the
