@@ -21,7 +21,9 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +52,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
+import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
@@ -129,10 +132,22 @@ public class TabAlertIndicatorTest {
         }
     }
 
+    @BeforeClass
+    public static void setUpClass() {
+        // Keep ForegroundServiceUtils mocked for the entire batch so leftover
+        // MediaNotificationController tasks cannot invoke the real startForegroundService()
+        // between test methods after per-method ResettersForTesting teardown.
+        ForegroundServiceUtils.setInstanceForTesting(Mockito.mock(ForegroundServiceUtils.class));
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+        MediaNotificationManager.resetForTesting();
+    }
+
     @Before
     public void setUp() throws Exception {
         ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
-        ForegroundServiceUtils.setInstanceForTesting(Mockito.mock(ForegroundServiceUtils.class));
         mPage = mActivityTestRule.startOnBlankPage();
         mTabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         mTab = mPage.getTab();
@@ -154,6 +169,7 @@ public class TabAlertIndicatorTest {
     @After
     public void tearDown() {
         Intents.release();
+        MediaNotificationManager.resetForTesting();
     }
 
     @Test
