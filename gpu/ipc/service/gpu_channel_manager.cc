@@ -200,6 +200,8 @@ void SetCrashKeyTimeDelta(base::debug::CrashKeyString* key,
   base::debug::SetCrashKeyString(key, str);
 }
 
+BASE_FEATURE(kAlwaysExitOnContextLost, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 GpuChannelManager::GpuPeakMemoryMonitor::GpuPeakMemoryMonitor() = default;
@@ -1076,6 +1078,11 @@ void GpuChannelManager::OnContextLost(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // ANGLE doesn't support recovering from context lost very well.
   bool force_restart = use_passthrough_cmd_decoder();
+  // Exit on context lost always by default on all platforms. Remove after M160
+  // ships on stable.
+  if (base::FeatureList::IsEnabled(kAlwaysExitOnContextLost)) {
+    force_restart = true;
+  }
 
   // Add crash keys for context lost count and time.
   static auto* const lost_count_crash_key = base::debug::AllocateCrashKeyString(
