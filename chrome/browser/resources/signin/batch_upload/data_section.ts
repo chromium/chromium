@@ -123,7 +123,7 @@ export class DataSectionElement extends DataSectionElementBase {
     // `intervalDurationOfUpdateHeightRequests_` is initialized. `willUpdate`
     // may be called before `firstUpdated`.
     if (changedPrivateProperties.has('expanded_') &&
-        this.intervalDurationOfUpdateHeightRequests_) {
+        this.intervalDurationOfUpdateHeightRequests_ !== null) {
       setTimeout(() => {
         this.updateViewHeightInterval_(
             this.intervalDurationOfUpdateHeightRequests_!);
@@ -153,8 +153,9 @@ export class DataSectionElement extends DataSectionElementBase {
   override firstUpdated() {
     // Compute the animation duration/intervals once on startup.
     this.collapseAnimationDuration_ =
-        parseInt(getComputedStyle(this).getPropertyValue(
-            '--collapse-transition-duration'));
+        (parseFloat(getComputedStyle(this.$.collapse).transitionDuration) ||
+         0) *
+        1000;
     this.intervalDurationOfUpdateHeightRequests_ =
         this.collapseAnimationDuration_ / UPDATE_REQUEST_COUNT;
   }

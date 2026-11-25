@@ -10,10 +10,6 @@
  * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
-:host {
-  --collapse-transition-duration: 300ms;
-}
-
 .data-section {
   background-color: var(--color-batch-upload-data-background);
   border-radius: 10px;
@@ -119,8 +115,4 @@ cr-checkbox::part(label-container) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-cr-collapse {
-  --iron-collapse-transition-duration: var(--collapse-transition-duration);
 }

@@ -128,6 +128,10 @@ suite('cr-collapse', function() {
   });
 
   test('customizes transition timing and durations', async () => {
+    assertEquals('0.3s', getComputedStyle(collapse).transitionDuration);
+    assertEquals(
+        'ease-out', getComputedStyle(collapse).transitionTimingFunction);
+
     collapse.style.setProperty('--cr-collapse-expand-duration', '10ms');
     collapse.style.setProperty('--cr-collapse-collapse-duration', '5ms');
     collapse.style.setProperty(
@@ -152,17 +156,6 @@ suite('cr-collapse', function() {
     assertEquals('0.005s', getComputedStyle(collapse).transitionDuration);
     await whenTransitionEnd;
     assertCollapsedState();
-  });
-
-  test('falls back to legacy duration variable', async () => {
-    assertEquals('0.3s', getComputedStyle(collapse).transitionDuration);
-
-    collapse.style.setProperty('--iron-collapse-transition-duration', '50ms');
-    assertEquals('0.05s', getComputedStyle(collapse).transitionDuration);
-
-    collapse.opened = true;
-    await microtasksFinished();
-    assertEquals('0.05s', getComputedStyle(collapse).transitionDuration);
   });
 
   test('handles zero duration transitions synchronously', async () => {

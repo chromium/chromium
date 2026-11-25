@@ -83,8 +83,9 @@ export class ExtensionsSectionElement extends CrLitElement {
   override firstUpdated() {
     // Compute the animation duration/intervals once on startup.
     this.collapseAnimationDuration_ =
-        parseInt(getComputedStyle(this).getPropertyValue(
-            '--iron-collapse-transition-duration'));
+        (parseFloat(getComputedStyle(this.$.collapse).transitionDuration) ||
+         0) *
+        1000;
     this.updateHeightInterval_ =
         this.collapseAnimationDuration_ / UPDATE_REQUEST_COUNT;
   }

@@ -8,20 +8,16 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  /* TODO(crbug.com/589840369): Migrate callers to --cr-collapse-* and remove
-   * --iron-collapse-transition-duration. */
-  --collapse-duration: var(--iron-collapse-transition-duration, 300ms);
   display: block;
   transition:
       max-height
-      var(--cr-collapse-collapse-duration, var(--collapse-duration))
+      var(--cr-collapse-collapse-duration, 300ms)
       var(--cr-collapse-transition-timing-function, ease-out);
   overflow: visible;
 }
 
 :host([opened]) {
-  transition-duration:
-      var(--cr-collapse-expand-duration, var(--collapse-duration));
+  transition-duration: var(--cr-collapse-expand-duration, 300ms);
 }
 
 :host([no-animation]) {

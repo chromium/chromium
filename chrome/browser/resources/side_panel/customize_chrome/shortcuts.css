@@ -18,7 +18,6 @@
 }
 
 cr-collapse {
-  --iron-collapse-transition-duration: 300ms;
   width: 100%;
 }
 
