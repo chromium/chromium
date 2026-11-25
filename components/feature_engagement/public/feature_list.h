@@ -564,6 +564,8 @@ DEFINE_VARIATION_PARAM(kIPHPwaQuietNotificationFeature,
 DEFINE_VARIATION_PARAM(kIPHTabAudioMutingFeature, "IPH_TabAudioMuting");
 DEFINE_VARIATION_PARAM(kIPHTabScrollButtonFeature,
                        "IPH_TabScrollButtonFeature");
+DEFINE_VARIATION_PARAM(kIPHDelightDinoBookmarkFeature,
+                       "IPH_DelightDinoBookmark");
 DEFINE_VARIATION_PARAM(kIPHDesktopPwaInstallFeature, "IPH_DesktopPwaInstall");
 DEFINE_VARIATION_PARAM(kIPHProfileSwitchFeature, "IPH_ProfileSwitch");
 DEFINE_VARIATION_PARAM(kIPHDesktopSharedHighlightingFeature,
@@ -914,6 +916,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHContextualTasksPinnedIconChangedFeature),
         VARIATION_ENTRY(kIPHCriticalActionAppMenuFeature),
         VARIATION_ENTRY(kIPHCriticalActionFilterChipFeature),
+        VARIATION_ENTRY(kIPHDelightDinoBookmarkFeature),
         VARIATION_ENTRY(kIPHDesktopCustomizeChromeAutoOpenFeature),
         VARIATION_ENTRY(kIPHDesktopCustomizeChromeExperimentFeature),
         VARIATION_ENTRY(kIPHDesktopPwaInstallFeature),

@@ -68,6 +68,9 @@ BASE_FEATURE(kIPHCriticalActionAppMenuFeature,
 BASE_FEATURE(kIPHCriticalActionFilterChipFeature,
              "IPH_CriticalActionFilterChip",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHDelightDinoBookmarkFeature,
+             "IPH_DelightDinoBookmark",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDesktopSharedHighlightingFeature,
              "IPH_DesktopSharedHighlighting",
              base::FEATURE_DISABLED_BY_DEFAULT);

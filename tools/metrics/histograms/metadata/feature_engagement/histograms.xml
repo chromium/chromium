@@ -236,6 +236,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_DefaultBrowserPromoSettingCard"
       summary="Default browser promo in Chrome settings"/>
   <variant name="IPH_DefaultSiteView" summary="default site view info on iOS"/>
+  <variant name="IPH_DelightDinoBookmark"
+      summary="prompting users to bookmark chrome://dino after offline game
+               over"/>
   <variant name="IPH_DesktopCustomizeChromeAutoOpen"
       summary="Customize Chrome Auto Open"/>
   <variant name="IPH_DesktopCustomizeChromeExperiment"

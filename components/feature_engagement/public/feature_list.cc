@@ -276,6 +276,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHContextualTasksPinnedIconChangedFeature,
     &kIPHCriticalActionAppMenuFeature,
     &kIPHCriticalActionFilterChipFeature,
+    &kIPHDelightDinoBookmarkFeature,
     &kIPHDesktopCustomizeChromeAutoOpenFeature,
     &kIPHDesktopCustomizeChromeExperimentFeature,
     &kIPHDesktopPwaInstallFeature,
