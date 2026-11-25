@@ -56,7 +56,8 @@ CriticalActionService::CriticalActionService(
           features::kMaxTaskToCriticalActionIdsCacheCapacity.Get()),
       task_to_anchor_cache_(base::saturated_cast<size_t>(
           features::kMaxTaskToAnchorCacheCapacity.Get())) {
-  backend_.AsyncCall(&CriticalActionBackend::Init);
+  // `backend_` opens the database lazily on first use, so that creating the
+  // service with the profile does not open (or create) the database file.
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }

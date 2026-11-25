@@ -61,33 +61,91 @@ class CriticalActionBackendTest : public testing::Test {
   std::unique_ptr<CriticalActionBackend> backend_;
 };
 
-TEST_F(CriticalActionBackendTest, InitBackend) {
-  backend_->Init();
+TEST_F(CriticalActionBackendTest, AddCreatesDatabase) {
+  CriticalActionEntry entry = CreateEntry("first_write");
+  backend_->AddCriticalAction(entry);
   EXPECT_TRUE(base::PathExists(db_path_));
+
+  auto retrieved = backend_->GetCriticalAction(entry.critical_action_id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(*retrieved, entry);
 }
 
-TEST_F(CriticalActionBackendTest, CallBeforeInitReturnsGracefully) {
+// Reads and deletions have nothing to operate on until something was added, so
+// they must return gracefully without creating an empty database.
+TEST_F(CriticalActionBackendTest, ReadsAndDeletionsDoNotCreateDatabase) {
   const std::string action_id =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
-  CriticalActionEntry entry;
-  entry.critical_action_id = action_id;
-  entry.timestamp = base::Time::Now();
-  entry.action_type = ActionType::kFormFill;
 
-  // Database is not initialized. All the operations should return gracefully
-  // without crashing.
-  backend_->AddCriticalAction(entry);
   backend_->SetCriticalActionsConversationId({action_id}, "conv_id");
   EXPECT_FALSE(backend_->GetCriticalAction(action_id).has_value());
+  EXPECT_TRUE(
+      backend_->GetCriticalActions(CriticalActionQueryOptions()).empty());
   backend_->DeleteCriticalAction(action_id);
-  backend_->DeleteCriticalActionsInTimeRange(base::Time::Now(),
-                                             base::Time::Now());
+  backend_->DeleteCriticalActionsInTimeRange(base::Time(), base::Time::Max());
   backend_->DeleteCriticalActionsByVisitIds({123, 456});
+
+  EXPECT_FALSE(base::PathExists(db_path_));
+
+  // A later write still opens (and creates) the database.
+  CriticalActionEntry entry = CreateEntry(action_id);
+  backend_->AddCriticalAction(entry);
+  EXPECT_TRUE(base::PathExists(db_path_));
+  EXPECT_TRUE(backend_->GetCriticalAction(action_id).has_value());
+}
+
+// Reads open a database persisted by an earlier session.
+TEST_F(CriticalActionBackendTest, ReadOpensExistingDatabase) {
+  CriticalActionEntry entry = CreateEntry("persisted");
+  {
+    CriticalActionBackend previous_session_backend(db_path_);
+    previous_session_backend.AddCriticalAction(entry);
+  }
+
+  auto retrieved = backend_->GetCriticalAction(entry.critical_action_id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(*retrieved, entry);
+}
+
+// Once a read or deletion finds no database file, later reads and deletions
+// don't check the filesystem again until a write opens the database. Only the
+// backend creates the file, so a file created by anything else in the meantime
+// is only picked up by the next write.
+TEST_F(CriticalActionBackendTest, MissingDatabaseFileIsCachedUntilWrite) {
+  CriticalActionEntry persisted = CreateEntry("persisted");
+  EXPECT_FALSE(
+      backend_->GetCriticalAction(persisted.critical_action_id).has_value());
+
+  {
+    CriticalActionBackend other_backend(db_path_);
+    other_backend.AddCriticalAction(persisted);
+  }
+  ASSERT_TRUE(base::PathExists(db_path_));
+  EXPECT_FALSE(
+      backend_->GetCriticalAction(persisted.critical_action_id).has_value());
+
+  CriticalActionEntry entry = CreateEntry("first_write");
+  backend_->AddCriticalAction(entry);
+  EXPECT_TRUE(
+      backend_->GetCriticalAction(entry.critical_action_id).has_value());
+  EXPECT_TRUE(
+      backend_->GetCriticalAction(persisted.critical_action_id).has_value());
+}
+
+TEST_F(CriticalActionBackendTest, DeletionOpensExistingDatabase) {
+  CriticalActionEntry entry = CreateEntry("persisted");
+  {
+    CriticalActionBackend previous_session_backend(db_path_);
+    previous_session_backend.AddCriticalAction(entry);
+  }
+
+  // The first operation of this session is a deletion.
+  backend_->DeleteCriticalActionsInTimeRange(base::Time(), base::Time::Max());
+  EXPECT_FALSE(
+      backend_->GetCriticalAction(entry.critical_action_id).has_value());
 }
 
 TEST_F(CriticalActionBackendTest, ForwardCallsToDatabase) {
-  backend_->Init();
-
   const std::string action_id =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   CriticalActionEntry entry;
@@ -111,8 +169,6 @@ TEST_F(CriticalActionBackendTest, ForwardCallsToDatabase) {
 }
 
 TEST_F(CriticalActionBackendTest, SetCriticalActionsConversationId) {
-  backend_->Init();
-
   const std::string action_id = "backend_action_1";
   const std::string task_id = "backend_task_1";
   const std::string conv_id = "backend_conv_1";
@@ -147,7 +203,7 @@ TEST_F(CriticalActionBackendTest, BusyTimeoutRetriesAndRecoversOnTimer) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_BUSY);
-    backend_->Init();
+    backend_->AddCriticalAction(CreateEntry());
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
   histogram_tester.ExpectUniqueSample("CriticalActions.Database.SqliteError",
@@ -189,7 +245,7 @@ TEST_F(CriticalActionBackendTest,
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_BUSY);
-    backend_->Init();
+    backend_->AddCriticalAction(CreateEntry());
     task_environment_.FastForwardBy(base::Seconds(3));
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
@@ -220,10 +276,10 @@ TEST_F(CriticalActionBackendTest,
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_BUSY);
-    backend_->Init();
+    backend_->AddCriticalAction(CreateEntry());
 
     // A burst of calls within <1s of the failed attempt must not trigger extra
-    // Init() attempts.
+    // open attempts.
     for (int i = 0; i < 5; ++i) {
       backend_->AddCriticalAction(CreateEntry());
     }
@@ -253,7 +309,7 @@ TEST_F(CriticalActionBackendTest, ExhaustedBusyRetriesStopsRetrying) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_BUSY);
-    backend_->Init();
+    backend_->AddCriticalAction(CreateEntry());
     task_environment_.FastForwardBy(base::Seconds(31));
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
@@ -274,7 +330,7 @@ TEST_F(CriticalActionBackendTest, ExhaustedBusyRetriesStopsRetrying) {
 TEST_F(CriticalActionBackendTest, NonBusyInitErrorDoesNotScheduleRetries) {
   base::HistogramTester histogram_tester;
   CriticalActionBackend dir_backend(temp_dir_.GetPath());
-  dir_backend.Init();
+  dir_backend.AddCriticalAction(CreateEntry("first_attempt"));
 
   histogram_tester.ExpectTotalCount(
       "Sql.Database.Open.FirstAttempt.Error.CriticalActions", 1);
@@ -297,7 +353,7 @@ TEST_F(CriticalActionBackendTest, DestroyWhileRetryPendingCancelsTimerCleanly) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_BUSY);
-    backend_->Init();
+    backend_->AddCriticalAction(CreateEntry());
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
   histogram_tester.ExpectUniqueSample("CriticalActions.Database.SqliteError",

@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -210,6 +211,37 @@ TEST_F(CriticalActionServiceTest, CallsAfterShutdownGracefullyFail) {
   EXPECT_FALSE(get_future.Get().has_value());
 
   task_environment_.RunUntilIdle();
+}
+
+// Verifies that the database is opened lazily: creating the service, reading,
+// and History deletions (including expiry) do not create the database file, but
+// the first persisted critical action does.
+TEST_F(CriticalActionServiceTest, DatabaseCreatedOnFirstWrite) {
+  FlushBackend();
+  EXPECT_FALSE(base::PathExists(db_path_));
+
+  CriticalActionEntry entry = CreateDefaultEntry();
+  EXPECT_FALSE(GetCriticalActionSync(entry.critical_action_id).has_value());
+  base::test::TestFuture<std::vector<CriticalActionEntry>> get_all_future;
+  service_->GetCriticalActions(CriticalActionQueryOptions(),
+                               get_all_future.GetCallback());
+  EXPECT_TRUE(get_all_future.Get().empty());
+  service_->OnHistoryDeletions(nullptr, history::DeletionInfo::ForAllHistory());
+  // History's routine expiry of old visits, the most frequent deletion.
+  service_->OnHistoryDeletions(
+      nullptr, history::DeletionInfo(history::DeletionTimeRange::Invalid(),
+                                     /*is_from_expiration=*/true,
+                                     history::DeletionInfo::Reason::kOther,
+                                     /*deleted_rows=*/{},
+                                     /*deleted_visit_ids=*/{123, 456},
+                                     /*favicon_urls=*/{},
+                                     /*restrict_urls=*/std::nullopt));
+  FlushBackend();
+  EXPECT_FALSE(base::PathExists(db_path_));
+
+  service_->AddCriticalAction(entry);
+  EXPECT_TRUE(GetCriticalActionSync(entry.critical_action_id).has_value());
+  EXPECT_TRUE(base::PathExists(db_path_));
 }
 
 TEST_F(CriticalActionServiceTest, DeleteAllHistoryDeletesEverything) {

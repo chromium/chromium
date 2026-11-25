@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -36,13 +37,6 @@ CriticalActionBackend::CriticalActionBackend(const base::FilePath& db_path)
 
 CriticalActionBackend::~CriticalActionBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void CriticalActionBackend::Init() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!db_);
-  DCHECK(!init_retry_timer_.IsRunning());
-  TryInit(/*advance_backoff=*/true);
 }
 
 void CriticalActionBackend::SetBusyTimeoutForTesting(
@@ -88,10 +82,24 @@ void CriticalActionBackend::TryInit(bool advance_backoff) {
   }
 }
 
-bool CriticalActionBackend::EnsureInitialized() {
+bool CriticalActionBackend::EnsureInitialized(
+    CreateIfMissing create_if_missing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (db_) {
     return true;
+  }
+  if (!init_attempted_) {
+    // Don't create an empty database just to read from or delete from it.
+    if (create_if_missing == CreateIfMissing::kNo) {
+      if (db_file_missing_ || !base::PathExists(db_path_)) {
+        db_file_missing_ = true;
+        return false;
+      }
+    }
+    db_file_missing_ = false;
+    init_attempted_ = true;
+    TryInit(/*advance_backoff=*/true);
+    return db_ != nullptr;
   }
   if (!init_retry_timer_.IsRunning()) {
     return false;
@@ -118,7 +126,7 @@ void CriticalActionBackend::AddCriticalAction(
   VLOG(1) << "CriticalActionBackend::AddCriticalAction: id="
           << entry.critical_action_id
           << ", type=" << static_cast<int>(entry.action_type);
-  if (!EnsureInitialized()) {
+  if (!EnsureInitialized(CreateIfMissing::kYes)) {
     return;
   }
   if (!db_->AddCriticalAction(entry)) {
@@ -134,7 +142,7 @@ void CriticalActionBackend::SetCriticalActionsConversationId(
   VLOG(1) << "CriticalActionBackend::SetCriticalActionsConversationId: "
              "critical_action_ids="
           << critical_action_ids.size() << ", conv_id=" << conversation_id;
-  if (!EnsureInitialized()) {
+  if (!EnsureInitialized(CreateIfMissing::kNo)) {
     return;
   }
   if (!db_->SetCriticalActionsConversationId(critical_action_ids,
@@ -148,7 +156,7 @@ std::optional<CriticalActionEntry> CriticalActionBackend::GetCriticalAction(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "CriticalActionBackend::GetCriticalAction: id="
           << critical_action_id;
-  if (!EnsureInitialized()) {
+  if (!EnsureInitialized(CreateIfMissing::kNo)) {
     return std::nullopt;
   }
   return db_->GetCriticalAction(critical_action_id);
@@ -158,7 +166,7 @@ std::vector<CriticalActionEntry> CriticalActionBackend::GetCriticalActions(
     const CriticalActionQueryOptions& options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "CriticalActionBackend::GetCriticalActions";
-  if (!EnsureInitialized()) {
+  if (!EnsureInitialized(CreateIfMissing::kNo)) {
     return {};
   }
   return db_->GetCriticalActions(options);
@@ -169,7 +177,7 @@ void CriticalActionBackend::DeleteCriticalAction(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "CriticalActionBackend::DeleteCriticalAction: id="
           << critical_action_id;
-  if (!EnsureInitialized()) {
+  if (!EnsureInitialized(CreateIfMissing::kNo)) {
     return;
   }
   if (!db_->DeleteCriticalAction(critical_action_id)) {
@@ -184,7 +192,7 @@ void CriticalActionBackend::DeleteCriticalActionsInTimeRange(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "CriticalActionBackend::DeleteCriticalActionsInTimeRange: "
           << "start_time=" << start_time << ", end_time=" << end_time;
-  if (!EnsureInitialized()) {
+  if (!EnsureInitialized(CreateIfMissing::kNo)) {
     return;
   }
   if (!db_->DeleteCriticalActionsInTimeRange(start_time, end_time)) {
@@ -198,7 +206,7 @@ void CriticalActionBackend::DeleteCriticalActionsByVisitIds(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "CriticalActionBackend::DeleteCriticalActionsByVisitIds: "
           << "count=" << visit_ids.size();
-  if (!EnsureInitialized()) {
+  if (!EnsureInitialized(CreateIfMissing::kNo)) {
     return;
   }
   if (!db_->DeleteCriticalActionsByVisitIds(visit_ids)) {
