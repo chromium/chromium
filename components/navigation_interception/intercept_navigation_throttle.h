@@ -97,8 +97,6 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
   // True if a redirect is doing the deferring.
   bool deferring_redirect_ = false;
 
-  base::TimeTicks defer_start_;
-
   // Tracks whether we're in a synchronous intercept navigation check so we can
   // crash if we're deleted during the check and get a stack trace.
   bool in_sync_check_ = false;

@@ -3446,20 +3446,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Intent.InterceptNavigationDeferDuration" units="ms"
-    expires_after="2026-08-09">
-  <owner>mthiesse@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records the duration of a deferred navigation due to the
-    InterceptNavigationThrottle, every time a navigation is deferred.
-
-    At time of writing, this can only be caused by the ExternalNavigationHandler
-    on Android, and should only happen when background/early navigations
-    redirect.
-  </summary>
-</histogram>
-
 <histogram name="Android.Intent.LaunchInInstance.EarlyFailureReason"
     enum="LaunchInInstanceEarlyFailureReason" expires_after="2027-05-09">
   <owner>philyan@chromium.org</owner>

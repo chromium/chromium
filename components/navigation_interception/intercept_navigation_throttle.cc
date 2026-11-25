@@ -80,7 +80,6 @@ const char* InterceptNavigationThrottle::GetNameForLogging() {
 content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::Defer() {
   deferring_ = true;
-  defer_start_ = base::TimeTicks::Now();
   return content::NavigationThrottle::DEFER;
 }
 
@@ -141,8 +140,6 @@ void InterceptNavigationThrottle::OnCheckComplete(bool should_ignore) {
   }
   deferring_redirect_ = false;
   if (deferring_) {
-    UMA_HISTOGRAM_TIMES("Android.Intent.InterceptNavigationDeferDuration",
-                        base::TimeTicks::Now() - defer_start_);
     deferring_ = false;
     if (should_ignore_) {
       CancelDeferredNavigation(content::NavigationThrottle::CANCEL_AND_IGNORE);
