@@ -1242,7 +1242,7 @@ class MediaCodecBridge {
     }
 
     // TODO(sanfin): Move this out of MediaCodecBridge.
-    boolean configureAudio(MediaFormat format, MediaCrypto crypto, int flags) {
+    boolean configureAudio(MediaFormat format, @Nullable MediaCrypto crypto, int flags) {
         try {
             mMediaCodec.configure(format, null, crypto, flags);
             return true;

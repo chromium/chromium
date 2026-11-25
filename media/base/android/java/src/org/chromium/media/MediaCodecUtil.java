@@ -230,11 +230,7 @@ class MediaCodecUtil {
         CodecCreationInfo info = createDecoder(mime, isSecure ? CodecType.SECURE : CodecType.ANY);
         if (info == null || info.mediaCodec == null) return false;
 
-        try {
-            info.mediaCodec.release();
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "Cannot release media codec", e);
-        }
+        releaseMediaCodec(info.mediaCodec);
         return true;
     }
 
@@ -340,6 +336,7 @@ class MediaCodecUtil {
             }
         } catch (Exception e) {
             Log.e(TAG, "Failed to create MediaCodec: %s, codecType: %d", mime, codecType, e);
+            releaseMediaCodec(result.mediaCodec);
             result.mediaCodec = null;
         }
         return result;
@@ -362,10 +359,20 @@ class MediaCodecUtil {
                     codecSupportsAdaptivePlayback(result.mediaCodec, mime);
         } catch (Exception e) {
             Log.e(TAG, "Failed to create MediaCodec by decoder name %s", decoderName, e);
+            releaseMediaCodec(result.mediaCodec);
             result.mediaCodec = null;
         }
 
         return result;
+    }
+
+    private static void releaseMediaCodec(@Nullable MediaCodec mediaCodec) {
+        if (mediaCodec == null) return;
+        try {
+            mediaCodec.release();
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot release media codec", e);
+        }
     }
 
     /**

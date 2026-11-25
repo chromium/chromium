@@ -26,16 +26,16 @@ class MediaCodecBridgeBuilder {
     static @Nullable MediaCodecBridge createVideoDecoder(
             String mime,
             @CodecType int codecType,
-            MediaCrypto mediaCrypto,
+            @Nullable MediaCrypto mediaCrypto,
             int width,
             int height,
-            Surface surface,
+            @Nullable Surface surface,
             byte[] csd0,
             byte[] csd1,
             int colorStandard,
             int colorTransfer,
             int colorRange,
-            HdrMetadata hdrMetadata,
+            @Nullable HdrMetadata hdrMetadata,
             boolean allowAdaptivePlayback,
             boolean useAsyncApi,
             boolean useBlockModel,
@@ -43,6 +43,7 @@ class MediaCodecBridgeBuilder {
             String decoderName,
             int profile) {
         CodecCreationInfo info = new CodecCreationInfo();
+        MediaCodecBridge bridge = null;
         try {
             Log.i(
                     TAG,
@@ -58,7 +59,7 @@ class MediaCodecBridgeBuilder {
 
             if (info.mediaCodec == null) return null;
 
-            MediaCodecBridge bridge = new MediaCodecBridge(info.mediaCodec, useAsyncApi);
+            bridge = new MediaCodecBridge(info.mediaCodec, useAsyncApi);
             byte[][] csds = {csd0, csd1};
             MediaFormat format =
                     MediaFormatBuilder.createVideoDecoderFormat(
@@ -88,20 +89,14 @@ class MediaCodecBridgeBuilder {
                         true);
             }
 
-            if (!bridge.configureVideo(
-                    format,
-                    surface,
-                    mediaCrypto,
-                    useBlockModel ? MediaCodec.CONFIGURE_FLAG_USE_BLOCK_MODEL : 0)) {
-                return null;
+            if (bridge.configureVideo(
+                            format,
+                            surface,
+                            mediaCrypto,
+                            useBlockModel ? MediaCodec.CONFIGURE_FLAG_USE_BLOCK_MODEL : 0)
+                    && bridge.start()) {
+                return bridge;
             }
-
-            if (!bridge.start()) {
-                bridge.release();
-                return null;
-            }
-
-            return bridge;
         } catch (Exception e) {
             Log.e(
                     TAG,
@@ -111,13 +106,14 @@ class MediaCodecBridgeBuilder {
                     e);
         }
 
+        releaseCodec(bridge, info.mediaCodec);
         return null;
     }
 
     @CalledByNative
     static @Nullable MediaCodecBridge createAudioDecoder(
             String mime,
-            MediaCrypto mediaCrypto,
+            @Nullable MediaCrypto mediaCrypto,
             int sampleRate,
             int channelCount,
             byte[] csd0,
@@ -126,29 +122,40 @@ class MediaCodecBridgeBuilder {
             boolean frameHasAdtsHeader,
             boolean useAsyncApi) {
         CodecCreationInfo info = new CodecCreationInfo();
+        MediaCodecBridge bridge = null;
         try {
             Log.i(TAG, "create MediaCodec audio decoder, mime %s", mime);
             info = MediaCodecUtil.createDecoder(mime, CodecType.ANY, mediaCrypto);
 
             if (info.mediaCodec == null) return null;
 
-            MediaCodecBridge bridge = new MediaCodecBridge(info.mediaCodec, useAsyncApi);
+            bridge = new MediaCodecBridge(info.mediaCodec, useAsyncApi);
             byte[][] csds = {csd0, csd1, csd2};
             MediaFormat format =
                     MediaFormatBuilder.createAudioFormat(
                             mime, sampleRate, channelCount, csds, frameHasAdtsHeader);
 
-            if (!bridge.configureAudio(format, mediaCrypto, 0)) return null;
-
-            if (!bridge.start()) {
-                bridge.release();
-                return null;
+            if (bridge.configureAudio(format, mediaCrypto, 0) && bridge.start()) {
+                return bridge;
             }
-            return bridge;
-
         } catch (Exception e) {
             Log.e(TAG, "Failed to create MediaCodec audio decoder: %s", mime, e);
         }
+
+        releaseCodec(bridge, info.mediaCodec);
         return null;
+    }
+
+    private static void releaseCodec(
+            @Nullable MediaCodecBridge bridge, @Nullable MediaCodec mediaCodec) {
+        try {
+            if (bridge != null) {
+                bridge.release();
+            } else if (mediaCodec != null) {
+                mediaCodec.release();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot release media codec", e);
+        }
     }
 }
