@@ -369,8 +369,6 @@ FileBackedRulesetSource::IndexAndPersistJSONRuleset(uint8_t parse_flags) const {
 }
 
 ReadJSONRulesResult FileBackedRulesetSource::ReadJSONRules() const {
-  ReadJSONRulesResult result;
-
   auto contents = ReadRulesetFileToString(json_path_);
   if (!contents.has_value()) {
     if (contents.error() == FileReadError::kSizeLimitExceeded) {
@@ -394,8 +392,11 @@ ReadJSONRulesResult FileBackedRulesetSource::ReadJSONRules() const {
         Status::kJSONParseError, std::move(value_with_error.error().message));
   }
 
-  return ParseRulesFromJSON(id(), json_path(), *value_with_error,
-                            rule_count_limit(), is_dynamic_ruleset());
+  ReadJSONRulesResult result =
+      ParseRulesFromJSON(id(), json_path(), *value_with_error,
+                         rule_count_limit(), is_dynamic_ruleset());
+  result.json_file_size = json_contents.size();
+  return result;
 }
 
 bool FileBackedRulesetSource::SerializeRulesToJSON(

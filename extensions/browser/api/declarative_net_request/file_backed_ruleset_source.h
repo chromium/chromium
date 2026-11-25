@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FILE_BACKED_RULESET_SOURCE_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FILE_BACKED_RULESET_SOURCE_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -137,6 +138,9 @@ struct ReadJSONRulesResult {
 
   // Populated on error.
   std::string error;
+
+  // Size in bytes of the JSON file read from disk, or 0 if no file was parsed.
+  size_t json_file_size = 0;
 };
 
 // A Ruleset source which is backed on disk. The indexed version of such a

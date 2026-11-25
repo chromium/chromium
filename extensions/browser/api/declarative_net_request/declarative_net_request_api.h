@@ -5,12 +5,14 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_DECLARATIVE_NET_REQUEST_API_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_DECLARATIVE_NET_REQUEST_API_H_
 
+#include <optional>
 #include <string>
 
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "net/http/http_response_headers.h"
 
 namespace extensions {
@@ -56,9 +58,19 @@ class DeclarativeNetRequestGetDynamicRulesFunction : public ExtensionFunction {
   ExtensionFunction::ResponseAction Run() override;
 
  private:
-  void OnDynamicRulesFetched(
+  // Respond to the getDynamicRules() call on the UI thread after reading
+  // dynamic rules on the extension file task runner.
+  // - OnDynamicRulesFetchedAsRuleArray() receives parsed rules (and status in
+  //   `read_json_result.status`), then filters and serializes them on the UI
+  //   thread.
+  // - OnDynamicRulesFetchedAsJSONBuffer() receives rules already filtered and
+  //   serialized as a UTF-8 JSON array in `json_rules`, or `std::nullopt` on
+  //   a file read or size-limit error.
+  void OnDynamicRulesFetchedAsRuleArray(
       api::declarative_net_request::GetDynamicRules::Params params,
       declarative_net_request::ReadJSONRulesResult read_json_result);
+  void OnDynamicRulesFetchedAsJSONBuffer(
+      std::optional<mojo_base::BigBuffer> json_rules);
 };
 
 class DeclarativeNetRequestUpdateSessionRulesFunction

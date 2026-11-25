@@ -9,11 +9,15 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -77,6 +81,58 @@ void FilterRules(std::vector<dnr_api::Rule>& rules,
       return !rule_ids.contains(rule.id);
     });
   }
+}
+
+// Reads the dynamic rules from `source`, filters them with `filter`, and
+// serializes them as a UTF-8 JSON array in a `BigBuffer` ready to be forwarded
+// via Mojo without extra work on the UI thread. Returns `std::nullopt` on
+// errors that should be reported to the caller. Must run on the extension file
+// task runner.
+std::optional<mojo_base::BigBuffer> ReadAndSerializeDynamicRules(
+    const declarative_net_request::FileBackedRulesetSource& source,
+    std::optional<dnr_api::GetRulesFilter> filter) {
+  using Status = declarative_net_request::ReadJSONRulesResult::Status;
+
+  // TODO(crbug.com/568824848): Stream `source` one `dnr_api::Rule` at a time
+  // directly into the `BigBuffer`, instead of holding all parsed `Rule`s and
+  // `json` in memory before copying `json` into the `BigBuffer`.
+  declarative_net_request::ReadJSONRulesResult read_json_result =
+      source.ReadJSONRules();
+  LogReadDynamicRulesStatus(read_json_result.status);
+
+  // Same as in OnDynamicRulesFetchedAsRuleArray(): a read error is probably
+  // transient, whereas other errors denote corruption and produce an empty
+  // list.
+  if (read_json_result.status == Status::kFileReadError ||
+      read_json_result.status == Status::kRulesetFileSizeLimitExceeded) {
+    return std::nullopt;
+  }
+
+  if (filter) {
+    FilterRules(read_json_result.rules, *filter);
+  }
+
+  // Serialize rules one at a time to avoid building a base::Value for all
+  // rules. When unfiltered, reserve `json_file_size` (Chrome writes
+  // `rules.json` with the same `Rule::ToValue()` + `base::WriteJson()`
+  // encoding); skip reserving when filtering by `rule_ids` to avoid
+  // over-allocating.
+  std::string json;
+  if ((!filter || !filter->rule_ids) && !read_json_result.rules.empty()) {
+    json.reserve(read_json_result.json_file_size);
+  }
+  // Append directly to `json` instead of using `base::JoinString()`, which
+  // would hold all per-rule strings in memory alongside the joined output.
+  json += '[';
+  for (const dnr_api::Rule& rule : read_json_result.rules) {
+    if (json.size() > 1) {
+      json += ',';
+    }
+    json += base::WriteJson(rule.ToValue()).value();
+  }
+  json += ']';
+  read_json_result = {};
+  return mojo_base::BigBuffer(base::as_byte_span(json));
 }
 
 // Returns if the first action in `actions` will intercept the request (i.e.
@@ -192,23 +248,35 @@ DeclarativeNetRequestGetDynamicRulesFunction::Run() {
   auto source = declarative_net_request::FileBackedRulesetSource::CreateDynamic(
       browser_context(), extension()->id());
 
-  auto read_dynamic_rules = base::BindOnce(
-      [](const declarative_net_request::FileBackedRulesetSource& source) {
-        return source.ReadJSONRules();
-      },
-      std::move(source));
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionGetDynamicRulesOffThread)) {
+    GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&ReadAndSerializeDynamicRules, std::move(source),
+                       std::move(params->filter)),
+        base::BindOnce(&DeclarativeNetRequestGetDynamicRulesFunction::
+                           OnDynamicRulesFetchedAsJSONBuffer,
+                       this));
+  } else {
+    auto read_dynamic_rules = base::BindOnce(
+        [](const declarative_net_request::FileBackedRulesetSource& source) {
+          return source.ReadJSONRules();
+        },
+        std::move(source));
 
-  GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE, std::move(read_dynamic_rules),
-      base::BindOnce(
-          &DeclarativeNetRequestGetDynamicRulesFunction::OnDynamicRulesFetched,
-          this, std::move(params).value()));
+    GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE, std::move(read_dynamic_rules),
+        base::BindOnce(&DeclarativeNetRequestGetDynamicRulesFunction::
+                           OnDynamicRulesFetchedAsRuleArray,
+                       this, std::move(params).value()));
+  }
   return RespondLater();
 }
 
-void DeclarativeNetRequestGetDynamicRulesFunction::OnDynamicRulesFetched(
-    dnr_api::GetDynamicRules::Params params,
-    declarative_net_request::ReadJSONRulesResult read_json_result) {
+void DeclarativeNetRequestGetDynamicRulesFunction::
+    OnDynamicRulesFetchedAsRuleArray(
+        dnr_api::GetDynamicRules::Params params,
+        declarative_net_request::ReadJSONRulesResult read_json_result) {
   using Status = declarative_net_request::ReadJSONRulesResult::Status;
 
   LogReadDynamicRulesStatus(read_json_result.status);
@@ -230,6 +298,16 @@ void DeclarativeNetRequestGetDynamicRulesFunction::OnDynamicRulesFetched(
 
   Respond(ArgumentList(
       dnr_api::GetDynamicRules::Results::Create(read_json_result.rules)));
+}
+
+void DeclarativeNetRequestGetDynamicRulesFunction::
+    OnDynamicRulesFetchedAsJSONBuffer(
+        std::optional<mojo_base::BigBuffer> json_rules) {
+  if (!json_rules) {
+    Respond(Error(declarative_net_request::kInternalErrorGettingDynamicRules));
+    return;
+  }
+  Respond(JsonArgument(std::move(*json_rules)));
 }
 
 DeclarativeNetRequestUpdateSessionRulesFunction::

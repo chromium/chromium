@@ -229,6 +229,11 @@ BASE_DECLARE_FEATURE(kExtensionDebuggerStrictPolicyRestrictions);
 // implications.
 BASE_DECLARE_FEATURE(kExtensionDownloaderPublisherProofByUpdateUrl);
 
+// If enabled, declarativeNetRequest.getDynamicRules() filters and serializes
+// rules to JSON on the extension file task runner, instead of building and
+// serializing a base::Value response on the UI thread.
+BASE_DECLARE_FEATURE(kExtensionGetDynamicRulesOffThread);
+
 // Allow e.g. .css files to use default_locale messages in WAR files via GUID.
 // TODO(crbug.com/435609878): Remove after m142. It's for safe m141 back merge.
 BASE_DECLARE_FEATURE(kExtensionLocalizationGuid);

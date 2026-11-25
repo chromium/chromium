@@ -123,4 +123,24 @@ chrome.test.runTests([
 
     chrome.test.succeed();
   },
+
+  // Ensure many rules can be retrieved. The response is large enough to be
+  // transferred in shared memory when serialized as JSON.
+  async function manyRules() {
+    const longFilter = 'a'.repeat(200);
+    const manyRules = [];
+    for (let id = 100; id < 1100; ++id) {
+      const rule = createRuleWithID(id);
+      rule.condition.urlFilter = `${id}${longFilter}`;
+      manyRules.push(rule);
+    }
+    currentRules = currentRules.concat(manyRules);
+    await updateDynamicRules({addRules: manyRules});
+    await dynamicRulesEqual(currentRules);
+    await dynamicRulesEqual(
+        currentRules.filter(({id}) => id === 3 || id === 500),
+        {ruleIds: [3, 500]});
+
+    chrome.test.succeed();
+  },
 ]);

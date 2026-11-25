@@ -151,6 +151,9 @@ BASE_FEATURE(kExtensionDebuggerStrictPolicyRestrictions,
 BASE_FEATURE(kExtensionDownloaderPublisherProofByUpdateUrl,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionGetDynamicRulesOffThread,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionLocalizationGuid, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionIconVariants, base::FEATURE_DISABLED_BY_DEFAULT);

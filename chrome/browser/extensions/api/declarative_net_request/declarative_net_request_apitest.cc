@@ -6,6 +6,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -78,9 +79,31 @@ class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, DynamicRules) {
+// Tests getDynamicRules with and without `kExtensionGetDynamicRulesOffThread`.
+class DeclarativeNetRequestDynamicRulesApiTest
+    : public DeclarativeNetRequestApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DeclarativeNetRequestDynamicRulesApiTest() {
+    feature_list_.InitWithFeatureState(
+        extensions_features::kExtensionGetDynamicRulesOffThread, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestDynamicRulesApiTest, DynamicRules) {
   ASSERT_TRUE(RunExtensionTest("dynamic_rules")) << message_;
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeclarativeNetRequestDynamicRulesApiTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "OffThreadResponse"
+                                             : "UIThreadResponse";
+                         });
 
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, RegexRuleMessage) {
   // Ensure the error message for large RegEx rules is updated with the

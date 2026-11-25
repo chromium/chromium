@@ -3351,10 +3351,139 @@ TEST_P(SingleRulesetTest, StaleDynamicRulesCleanedUpOnLoad) {
                          {kDefaultRulesetID, dnr_api::DYNAMIC_RULESET_ID});
 }
 
+using SingleRulesetTest_Unpacked = SingleRulesetTest;
+
+// Tests getDynamicRules with and without `kExtensionGetDynamicRulesOffThread`.
+// In the off-thread case, `RunGetRulesFunction()` still receives a
+// `base::Value` because `api_test_utils::RunFunction()` enables
+// `preserve_results_for_testing_`, which makes `ExtensionFunction` parse the
+// JSON response into `results_`.
+TEST_P(SingleRulesetTest_Unpacked, GetDynamicRules) {
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess();
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  TestRule rule_1 = CreateGenericRule(1);
+  TestRule rule_2 = CreateRegexRule(2);
+  TestRule rule_3 = CreateGenericRule(3);
+  rule_3.action->type = std::string("redirect");
+  rule_3.action->redirect.emplace();
+  rule_3.action->redirect->url = std::string("https://redirect.example");
+  rule_3.priority = 2;
+
+  FileBackedRulesetSource dynamic_source =
+      FileBackedRulesetSource::CreateDynamic(browser_context(),
+                                             extension()->id());
+
+  for (bool off_thread : {false, true}) {
+    SCOPED_TRACE(off_thread);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(
+        extensions_features::kExtensionGetDynamicRulesOffThread, off_thread);
+
+    // No dynamic rules file.
+    ASSERT_FALSE(base::PathExists(dynamic_source.json_path()));
+    {
+      base::HistogramTester tester;
+      base::Value result;
+      ASSERT_NO_FATAL_FAILURE(
+          RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result));
+      EXPECT_TRUE(result.GetList().empty());
+      tester.ExpectUniqueSample(kReadDynamicRulesJSONStatusHistogram,
+                                ReadJSONRulesResult::Status::kFileDoesNotExist,
+                                1);
+    }
+
+    // Write dynamic rules to disk.
+    ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+        *extension(), /*rule_ids_to_remove=*/{}, {rule_1, rule_2, rule_3},
+        RulesetScope::kDynamic));
+
+    {
+      base::HistogramTester tester;
+      base::Value result;
+      ASSERT_NO_FATAL_FAILURE(
+          RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result));
+      EXPECT_EQ(base::ListValue()
+                    .Append(rule_1.ToValue())
+                    .Append(rule_2.ToValue())
+                    .Append(rule_3.ToValue()),
+                result.GetList());
+      tester.ExpectUniqueSample(kReadDynamicRulesJSONStatusHistogram,
+                                ReadJSONRulesResult::Status::kSuccess, 1);
+    }
+
+    // Rule ID filters.
+    {
+      auto empty_filter_function =
+          base::MakeRefCounted<DeclarativeNetRequestGetDynamicRulesFunction>();
+      empty_filter_function->set_extension(extension());
+      empty_filter_function->set_has_callback(true);
+      std::optional<base::Value> empty_filter_result =
+          api_test_utils::RunFunctionAndReturnSingleResult(
+              empty_filter_function.get(), "[{}]", browser_context());
+      ASSERT_TRUE(empty_filter_result);
+      EXPECT_EQ(base::ListValue()
+                    .Append(rule_1.ToValue())
+                    .Append(rule_2.ToValue())
+                    .Append(rule_3.ToValue()),
+                empty_filter_result->GetList());
+
+      base::Value result;
+      ASSERT_NO_FATAL_FAILURE(RunGetRulesFunction(
+          *extension(), RulesetScope::kDynamic,
+          std::make_optional<std::vector<int>>({1, 3, 4}), &result));
+      EXPECT_EQ(
+          base::ListValue().Append(rule_1.ToValue()).Append(rule_3.ToValue()),
+          result.GetList());
+      ASSERT_NO_FATAL_FAILURE(RunGetRulesFunction(
+          *extension(), RulesetScope::kDynamic,
+          std::make_optional<std::vector<int>>({}), &result));
+      EXPECT_TRUE(result.GetList().empty());
+    }
+
+    // A corrupted rules file produces an empty list.
+    ASSERT_TRUE(base::WriteFile(dynamic_source.json_path(), "{not json"));
+    {
+      base::HistogramTester tester;
+      base::Value result;
+      ASSERT_NO_FATAL_FAILURE(
+          RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result));
+      EXPECT_TRUE(result.GetList().empty());
+      tester.ExpectUniqueSample(kReadDynamicRulesJSONStatusHistogram,
+                                ReadJSONRulesResult::Status::kJSONParseError,
+                                1);
+    }
+
+    // A rules file that exceeds the size limit produces an error.
+    {
+      base::AutoReset<size_t> max_size_override =
+          CreateScopedMaxRulesetSizeOverrideForTesting(5);
+      base::HistogramTester tester;
+      auto function =
+          base::MakeRefCounted<DeclarativeNetRequestGetDynamicRulesFunction>();
+      function->set_extension(extension());
+      function->set_has_callback(true);
+      EXPECT_EQ(kInternalErrorGettingDynamicRules,
+                api_test_utils::RunFunctionAndReturnError(function.get(), "[]",
+                                                          browser_context()));
+      tester.ExpectUniqueSample(
+          kReadDynamicRulesJSONStatusHistogram,
+          ReadJSONRulesResult::Status::kRulesetFileSizeLimitExceeded, 1);
+    }
+
+    ASSERT_TRUE(base::DeleteFile(dynamic_source.json_path()));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SingleRulesetTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SingleRulesetTest_Unpacked,
+                         ::testing::Values(ExtensionLoadType::UNPACKED));
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SingleRulesetWithoutSafeRulesTest,
