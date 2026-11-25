@@ -2848,6 +2848,7 @@ test("content_unittests") {
     "../browser/renderer_host/clipboard_host_impl_unittest.cc",
     "../browser/renderer_host/code_cache_host_impl_unittest.cc",
     "../browser/renderer_host/commit_deferring_condition_runner_unittest.cc",
+    "../browser/renderer_host/crash_report_utils_unittest.cc",
     "../browser/renderer_host/cursor_manager_unittest.cc",
     "../browser/renderer_host/debug_urls_unittest.cc",
     "../browser/renderer_host/display_feature_unittest.cc",

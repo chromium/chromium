@@ -1655,6 +1655,8 @@ source_set("browser") {
     "renderer_host/cookie_access_observers.h",
     "renderer_host/cookie_utils.cc",
     "renderer_host/cookie_utils.h",
+    "renderer_host/crash_report_utils.cc",
+    "renderer_host/crash_report_utils.h",
     "renderer_host/cross_process_frame_connector.cc",
     "renderer_host/cross_process_frame_connector.h",
     "renderer_host/data_transfer_util.cc",

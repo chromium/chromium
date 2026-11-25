@@ -2636,6 +2636,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return *document_associated_data_;
   }
 
+  const std::string& crash_reporting_group() const {
+    return crash_reporting_group_;
+  }
+
+  // Marks that crash report generation has been attempted for the current live
+  // RenderFrame and returns false if it was already attempted since the
+  // RenderFrame was created.
+  bool MarkCrashReportAttempted() {
+    return !std::exchange(crash_report_attempted_, true);
+  }
+
   // Called when we commit speculative RFH early due to not having an alive
   // current frame. This happens when the renderer crashes before navigating to
   // a new URL using speculative RenderFrameHost.
@@ -3974,11 +3985,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   CreateURLLoaderFactoriesForIsolatedWorlds(
       const SubresourceLoaderFactoriesConfig& config,
       const base::flat_set<url::Origin>& isolated_world_origins);
-
-  // Based on the process termination |info|, may generate a crash report to be
-  // routed to the Reporting API.
-  void MaybeGenerateCrashReport(const ChildProcessTerminationInfo& info);
-  base::DictValue ReadCrashReportAPIBody();
 
   // Bitfield values for recording navigation frame-type (main or subframe)
   // combined with whether a sudden termination disabler is present. Currently
@@ -5551,7 +5557,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // `ResetChildren()` destroying descendant frames before their observer
   // notifications run, but enforces a stronger per-frame invariant if that
   // ordering or cleanup ever changes.
-  bool has_reported_crash_ = false;
+  bool crash_report_attempted_ = false;
 
   PrerenderStateChangedCallback prerender_state_callback_;
 

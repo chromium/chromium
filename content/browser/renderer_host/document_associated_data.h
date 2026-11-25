@@ -289,9 +289,8 @@ class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
   // `RenderFrameHostImpl::GetCookieSettingOverrides`.
   net::CookieSettingOverrides cookie_setting_overrides_;
   // Shared memory region for crash report storage. The renderer is the sole
-  // writer into the memory, and `this` reads from it in
-  // `RenderFrameHostImpl::MaybeGenerateCrashReport()`, after the renderer
-  // process has crashed.
+  // writer into the memory, and the browser reads from it in
+  // `crash_report::ReadAPIBody()`, after the renderer process has crashed.
   base::UnsafeSharedMemoryRegion crash_report_storage_region_;
 
   // Whether writing to the Renderer-Accessible HTTP Cache is enabled for this

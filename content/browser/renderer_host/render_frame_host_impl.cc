@@ -20,7 +20,6 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/containers/span_reader.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -40,7 +39,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/kill.h"
-#include "base/process/memory.h"
 #include "base/state_transitions.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -128,6 +126,7 @@
 #include "content/browser/renderer_host/clipboard_host_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/cookie_utils.h"
+#include "content/browser/renderer_host/crash_report_utils.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -265,7 +264,6 @@
 #include "net/http/http_util.h"
 #include "net/net_buildflags.h"
 #include "net/storage_access_api/status.h"
-#include "partition_alloc/page_allocator.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/connection_allowlist.h"
@@ -373,15 +371,6 @@
 
 #if BUILDFLAG(ENABLE_MDNS)
 #include "content/browser/renderer_host/no_op_mdns_responder.h"
-#endif
-
-#if BUILDFLAG(IS_POSIX)
-#include <signal.h>
-#include <sys/wait.h>
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_types.h"
 #endif
 
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
@@ -496,8 +485,6 @@ uint32_t g_accessibility_reset_token = 0;
 bool g_allow_injecting_javascript = false;
 
 const char kDotGoogleDotCom[] = ".google.com";
-
-const char kCrashReportingGroupName[] = "crash-reporting";
 
 using RoutingIDFrameMap =
     absl::flat_hash_map<GlobalRenderFrameHostId, RenderFrameHostImpl*>;
@@ -4788,7 +4775,7 @@ void RenderFrameHostImpl::RenderProcessGone(
   // reporting sources in `~RenderFrameHostImpl()`).
   ForEachRenderFrameHostImpl([&](RenderFrameHostImpl* rfh) {
     if (rfh->GetProcess() == GetProcess()) {
-      rfh->MaybeGenerateCrashReport(info);
+      crash_report::MaybeGenerate(*rfh, info);
     }
   });
 
@@ -5180,7 +5167,7 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 
   const RenderFrameState old_render_frame_state = render_frame_state_;
   render_frame_state_ = RenderFrameState::kCreated;
-  has_reported_crash_ = false;
+  crash_report_attempted_ = false;
 
   if (old_render_frame_state == RenderFrameState::kDeleted) {
     // Dispatch update notification when a Page is recreated after a crash. Only
@@ -11386,51 +11373,7 @@ void RenderFrameHostImpl::RecordWindowProxyUsageMetrics(
 void RenderFrameHostImpl::InitializeCrashReportContext(
     uint64_t length,
     InitializeCrashReportContextCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kCrashReportingStorageAPI)) {
-    mojo::ReportBadMessage("kCrashReportingStorageAPI feature must be enabled");
-    return;
-  }
-
-  if (length > blink::mojom::kMaxCrashReportContextSize) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFH_CRASH_REPORT_STORAGE_SIZE_TOO_LARGE);
-    return;
-  }
-
-  // A renderer process must not try and create and initialize its shared memory
-  // buffer for crash reports more than once. See
-  // `CrashReportContext::initialize()`.
-  if (document_associated_data_->crash_report_storage_region().IsValid()) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(),
-        bad_message::RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED);
-    return;
-  }
-
-  // The shared memory buffer that the browser allocates needs to be as many
-  // bytes as the renderer requests, plus `sizeof(uint32_t)` bytes for a leading
-  // integer that describes how many bytes of the buffer are used/written to.
-  //
-  // Every time a value is added or removed from the shared memory, this leading
-  // integer is updated by the renderer, and the browser process finally uses it
-  // in `MaybeGenerateCrashReport()` when parsing the bytes.
-  base::CheckedNumeric<uint32_t> total_size = length;
-  total_size += sizeof(uint32_t);
-
-  // We can use `ValueOrDie()` below because we know `length` is sufficiently
-  // far enough from the boundary of `uint32_t` (because of the
-  // `kMaxCrashReportContextSize` check) such that it cannot have overflown at
-  // this point.
-  base::UnsafeSharedMemoryRegion region =
-      base::UnsafeSharedMemoryRegion::Create(total_size.ValueOrDie());
-  if (!region.IsValid()) {
-    std::move(callback).Run(base::UnsafeSharedMemoryRegion());
-    return;
-  }
-
-  document_associated_data_->SetCrashReportContextRegion(region.Duplicate());
-  std::move(callback).Run(std::move(region));
+  crash_report::InitializeContext(*this, length, std::move(callback));
 }
 
 // Preconditions/permissions for unbounded elements are checked in:
@@ -17704,8 +17647,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
         navigation_request->response()->parsed_headers->reporting_endpoints;
     if (base::FeatureList::IsEnabled(
             blink::features::kOverrideCrashReportingEndpoint) &&
-        endpoints.contains(kCrashReportingGroupName)) {
-      crash_reporting_group_ = kCrashReportingGroupName;
+        endpoints.contains(crash_report::kGroupName)) {
+      crash_reporting_group_ = crash_report::kGroupName;
     }
     GetStoragePartition()->GetNetworkContext()->SetDocumentReportingEndpoints(
         GetReportingSource(), origin, isolation_info_, endpoints);
@@ -17766,264 +17709,6 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
   // renderer itself cancelled the navigation and already did its own cleanup.
   request->second->set_pending_navigation_api_key(std::nullopt);
   same_document_navigation_requests_.erase(navigation_token);
-}
-
-void RenderFrameHostImpl::MaybeGenerateCrashReport(
-    const ChildProcessTerminationInfo& info) {
-  if (has_reported_crash_) {
-    return;
-  }
-  has_reported_crash_ = true;
-
-  if (!last_committed_url_.SchemeIsHTTPOrHTTPS()) {
-    return;
-  }
-
-  // Only generate crash reports for active documents (and not documents in
-  // BackForwardCache, Prerendering, PendingCommit, Speculative, or
-  // PendingDeletion states). When a renderer process terminates in those
-  // states, the browser silently evicts the BFCached page, cancels
-  // prerendering, or completes frame deletion in the background; the user is
-  // not interacting with the document and never observes a crash.
-  if (!IsActive()) {
-    return;
-  }
-
-  const int exit_code = info.exit_code;
-  auto metrics = GetProcess()->GetCrashMemoryMetrics();
-
-  const bool is_oom =
-      (metrics && metrics->allocation_failed != 0) ||
-#if BUILDFLAG(IS_WIN)
-      static_cast<DWORD>(exit_code) == base::win::kOomExceptionCode ||
-      static_cast<DWORD>(exit_code) == base::win::kSandboxFatalMemoryExceeded ||
-#endif
-      exit_code ==
-          static_cast<int>(partition_alloc::kTerminateOnCommitFailureExitCode);
-
-  // All frames in the same renderer process share the main thread and V8
-  // isolate, so if one frame hangs, every frame in the process is blocked and
-  // killed together. A single `RenderProcessHost` can host multiple
-  // `RenderWidgetHostImpl`s (e.g. sibling cross-origin subframes from the same
-  // site, an A1 -> B -> A2 frame tree, or multiple tabs/popups sharing a
-  // process), and input ack or commit timeouts only mark the single targeted
-  // `RenderWidgetHostImpl` as unresponsive. Check whether any widget in the
-  // process is unresponsive so that all active frames in the hung process
-  // receive `reason: "unresponsive"`.
-  bool is_unresponsive =
-      exit_code == RESULT_CODE_HUNG ||
-      !GetProcess()->GetUnresponsiveDocumentJavascriptCallStack().empty();
-  if (!is_unresponsive) {
-    GetProcess()->ForEachRenderFrameHost(
-        [&is_unresponsive](RenderFrameHost* rfh) {
-          if (rfh->GetRenderWidgetHost() &&
-              rfh->GetRenderWidgetHost()->IsCurrentlyUnresponsive()) {
-            is_unresponsive = true;
-          }
-        });
-  }
-
-  // Check the termination status to see if a crash occurred (and potentially
-  // determine the |reason| for the crash). Note: |is_oom| takes precedence over
-  // |is_unresponsive| because a renderer exhausting memory often becomes
-  // unresponsive prior to termination.
-  std::string reason;
-  switch (info.status) {
-    case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
-    case base::TERMINATION_STATUS_PROCESS_CRASHED:
-#if BUILDFLAG(IS_WIN)
-    case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
-#endif
-      if (is_oom) {
-        reason = "oom";
-      } else if (is_unresponsive) {
-        reason = "unresponsive";
-      }
-      break;
-    case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
-      if (is_oom) {
-        reason = "oom";
-      } else if (is_unresponsive) {
-        reason = "unresponsive";
-      } else if (exit_code == RESULT_CODE_KILLED_BAD_MESSAGE
-#if BUILDFLAG(IS_POSIX)
-                 || (WIFSIGNALED(exit_code) && WTERMSIG(exit_code) == SIGKILL)
-#endif
-      ) {
-        // On POSIX, bad-message kills, kernel OOM kills, and
-        // GetKnownDeadTerminationStatus() races terminate the process with
-        // SIGKILL (mapping to TERMINATION_STATUS_PROCESS_WAS_KILLED). Report
-        // these as generic crashes with no reason.
-      } else {
-        // A kill that is neither OOM, unresponsive, nor a forced SIGKILL /
-        // bad-message termination (such as a manual kill via the Task Manager,
-        // which sends SIGTERM on POSIX or RESULT_CODE_KILLED on Windows) is an
-        // intentional termination and should not be reported.
-        return;
-      }
-      break;
-    case base::TERMINATION_STATUS_OOM:
-    case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
-      reason = "oom";
-      break;
-#if BUILDFLAG(IS_ANDROID)
-    case base::TERMINATION_STATUS_OOM_PROTECTED:
-      // On Android, child processes are spawned from the system Zygote rather
-      // than being direct children of the browser process, so waitpid() does
-      // not work and ChildProcessLauncherHelper::GetTerminationInfo() maps all
-      // foreground process terminations to TERMINATION_STATUS_OOM_PROTECTED
-      // (while background/waived processes—including routine OS memory
-      // evictions—receive TERMINATION_STATUS_NORMAL_TERMINATION and are not
-      // reported).
-      if (GetProcess()->FastShutdownStarted() ||
-          GetProcess()->IsDeletingSoon() || info.clean_exit) {
-        return;
-      }
-      if (is_oom) {
-        reason = "oom";
-      } else if (is_unresponsive) {
-        reason = "unresponsive";
-      } else if (info.was_killed_intentionally_by_browser ||
-                 GetProcess()->ShutdownRequested()) {
-        if (exit_code != RESULT_CODE_KILLED_BAD_MESSAGE) {
-          // An intentional browser-initiated shutdown or Task Manager kill
-          // should not be reported.
-          return;
-        }
-      }
-      break;
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-    case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
-      // On ChromeOS, GetTerminationStatus() maps any SIGKILL to
-      // TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM, even when the process was
-      // killed by the browser (e.g. via TerminateInternal() for a bad IPC
-      // message, or via GetKnownDeadTerminationStatus() while reaping an
-      // unresponsive or shutting-down renderer). Check |is_oom|,
-      // |is_unresponsive|, and |exit_code| before attributing the kill to OOM.
-      if (is_oom) {
-        reason = "oom";
-      } else if (is_unresponsive) {
-        reason = "unresponsive";
-      } else if (exit_code == RESULT_CODE_KILLED_BAD_MESSAGE) {
-        // Report bad-message kills as generic crashes with no reason.
-      } else if (exit_code == RESULT_CODE_NORMAL_EXIT ||
-                 exit_code == RESULT_CODE_KILLED) {
-        // An intentional browser-initiated shutdown or Task Manager kill that
-        // was reaped with SIGKILL should not be reported.
-        return;
-      } else {
-        reason = "oom";
-      }
-      break;
-#endif
-    default:
-      // Other termination statuses do not indicate a crash.
-      return;
-  }
-
-  // Construct the crash report.
-  base::DictValue body;
-  if (base::FeatureList::IsEnabled(
-          blink::features::kCrashReportingAPIMoreContextData)) {
-    body.Set("is_top_level", IsOutermostMainFrame() ? true : false);
-    body.Set("visibility_state",
-             GetVisibilityState() == PageVisibilityState::kVisible ? "visible"
-                                                                   : "hidden");
-  }
-
-  // Read the key/value data from the document associated data shared memory
-  // buffer that the renderer may have written to; parse it as JSON, and add it
-  // to the crash report.
-  base::DictValue crash_report_api_body = ReadCrashReportAPIBody();
-  body.Set("crash_report_api", std::move(crash_report_api_body));
-
-  if (!reason.empty()) {
-    body.Set("reason", reason);
-  }
-
-  if (reason == "unresponsive" &&
-      base::FeatureList::IsEnabled(
-          blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports)) {
-    const std::string& unresponsive_document_javascript_call_stack =
-        GetProcess()->GetUnresponsiveDocumentJavascriptCallStack();
-    const blink::LocalFrameToken& unresponsive_document_token =
-        GetProcess()->GetUnresponsiveDocumentToken();
-
-    if (!unresponsive_document_javascript_call_stack.empty()) {
-      if (unresponsive_document_token == GetFrameToken()) {
-        body.Set("stack", unresponsive_document_javascript_call_stack);
-      } else {
-        body.Set("stack", "Unable to collect JS call stack.");
-      }
-    }
-  }
-
-  // Send the crash report to the Reporting API.
-  GetProcess()->GetStoragePartition()->GetNetworkContext()->QueueReport(
-      /*type=*/"crash", crash_reporting_group_, last_committed_url_,
-      GetReportingSource(), isolation_info_.network_anonymization_key(),
-      std::move(body));
-}
-
-base::DictValue RenderFrameHostImpl::ReadCrashReportAPIBody() {
-  base::DictValue crash_report_api_body;
-  if (!document_associated_data_->crash_report_storage_region().IsValid()) {
-    return crash_report_api_body;
-  }
-
-  // Create a writable mapping that we only read from; we cannot create a
-  // read-only mapping from an unsafe shared memory region, since the
-  // read-only mapping has no way to guarantee that the platform handle
-  // backing the unsafe region is truly no longer writable.
-  base::WritableSharedMemoryMapping mapping =
-      document_associated_data_->crash_report_storage_region().Map();
-
-  if (!mapping.IsValid() || mapping.size() < sizeof(uint32_t)) {
-    return crash_report_api_body;
-  }
-
-  base::SpanReader<const uint8_t> reader(
-      mapping.GetMemoryAsSpan<const uint8_t>());
-  // The first uint32_t-sized chunk of the memory tells us how large the
-  // *remaining* amount of data that we need to read is.
-  uint32_t data_size = 0;
-  reader.ReadU32NativeEndian(data_size);
-
-  // Only attempt to read the report data if the recorded size of the data
-  // fits inside the real size of the shared memory. Only a compromised
-  // renderer could set us up to fail this condition; see
-  // `CrashReportContext::set()`, which ensures that the writes of oversized
-  // reports are not attempted.
-  if (mapping.size() < sizeof(data_size) + data_size) {
-    return crash_report_api_body;
-  }
-
-  // Take a copy of the entire crash report API memory, to snapshot the data so
-  // that a malicious writer can't change it while it's being parsed. Note that
-  // a malicious writer could technically change the data that we're about to
-  // snapshot, after we've read `data_size`, but changing the contents or format
-  // of this data after we snapshot the body below shouldn't matter; the worst
-  // that can happen is the data is no longer valid JSON, and it gets omitted
-  // from the report.
-  std::string body_copy(data_size, '\0');
-  const bool read_success =
-      reader.ReadCopy(base::as_writable_bytes(base::span(body_copy)));
-  CHECK(read_success);
-  // We use `JSON_PARSE_RFC` here, because the writer uses
-  // `JSONValue::ToJSONString()` which outputs RFC-compliant JSON.
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(
-      body_copy, base::JSONParserOptions::JSON_PARSE_RFC);
-
-  if (parsed_json && parsed_json->is_dict()) {
-    for (auto it : parsed_json->GetDict()) {
-      if (it.second.is_string()) {
-        crash_report_api_body.Set(it.first, it.second.GetString());
-      }
-    }
-  }
-
-  return crash_report_api_body;
 }
 
 void RenderFrameHostImpl::UpdateOrDisableCompositorMetricRecorder() const {

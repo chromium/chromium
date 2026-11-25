@@ -838,9 +838,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
 
   // Note: The following two methods are exposed here rather than kept
   // internal to RenderProcessHostImpl so that callers like
-  // RenderFrameHostImpl::MaybeGenerateCrashReport() can inspect unresponsive
-  // state without unsafe downcasts, ensuring compatibility with test
-  // environments where GetProcess() returns a MockRenderProcessHost.
+  // crash_report::MaybeGenerate() can inspect unresponsive state without
+  // unsafe downcasts, ensuring compatibility with test environments where
+  // GetProcess() returns a MockRenderProcessHost.
 
   // Returns the JavaScript call stack captured while the renderer process was
   // unresponsive, if any.
