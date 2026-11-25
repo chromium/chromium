@@ -421,6 +421,7 @@ BASE_DECLARE_FEATURE(kTabGroupsFocusing);
 BASE_DECLARE_FEATURE_PARAM(bool, kTabGroupsFocusFreezing);
 BASE_DECLARE_FEATURE_PARAM(int, kTabGroupsFocusingIphMinTabs);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTabGroupsFocusingIphPromoDelay);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTabGroupsUnfocusingIphPromoDelay);
 bool IsTabGroupsFocusFreezingEnabled();
 
 BASE_DECLARE_FEATURE(kNonGroupFocus);

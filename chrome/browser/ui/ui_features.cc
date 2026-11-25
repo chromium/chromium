@@ -635,6 +635,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kTabGroupsFocusing,
                    base::Seconds(3));
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTabGroupsUnfocusingIphPromoDelay,
+                   &kTabGroupsFocusing,
+                   base::Seconds(3));
+
 bool IsTabGroupsFocusFreezingEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupsFocusing) &&
          kTabGroupsFocusFreezing.Get();

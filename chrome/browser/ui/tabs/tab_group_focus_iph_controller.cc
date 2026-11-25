@@ -84,6 +84,8 @@ void TabGroupFocusIphController::OnTabGroupFocusChanged(
     if (std::exchange(is_restoring_focused_group_, false)) {
       return;
     }
+  } else if (old_focused_group_id.has_value()) {
+    promo_timer_.Stop();
   }
 
   // May be null in tests.
@@ -103,8 +105,9 @@ void TabGroupFocusIphController::OnTabGroupFocusChanged(
           FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
       user_ed->NotifyNewBadgeFeatureUsed(features::kTabGroupsFocusing);
     }
-    user_ed->MaybeShowFeaturePromo(
-        feature_engagement::kIPHTabGroupsUnfocusingFeature);
+    promo_timer_.Start(FROM_HERE,
+                       features::kTabGroupsUnfocusingIphPromoDelay.Get(), this,
+                       &TabGroupFocusIphController::ShowUnfocusPromo);
     MaybeShowNonGroupPromo();
   } else if (old_focused_group_id.has_value()) {
     user_ed->NotifyFeaturePromoFeatureUsed(
@@ -138,6 +141,19 @@ void TabGroupFocusIphController::ShowGroupFocusPromo() {
           BrowserUserEducationInterface::From(browser_window_interface_)) {
     user_ed->MaybeShowFeaturePromo(
         feature_engagement::kIPHTabGroupsFocusingFeature);
+  }
+}
+
+void TabGroupFocusIphController::ShowUnfocusPromo() {
+  if (!browser_window_interface_->GetTabStripModel()
+           ->GetFocusedGroup()
+           .has_value()) {
+    return;
+  }
+  if (auto* user_ed =
+          BrowserUserEducationInterface::From(browser_window_interface_)) {
+    user_ed->MaybeShowFeaturePromo(
+        feature_engagement::kIPHTabGroupsUnfocusingFeature);
   }
 }
 

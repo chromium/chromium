@@ -157,6 +157,8 @@ TEST_F(TabGroupFocusIphControllerTest,
       .Times(1);
 
   tab_strip_model()->EnterFocusMode(group_id);
+  task_environment()->FastForwardBy(
+      features::kTabGroupsUnfocusingIphPromoDelay.Get());
   testing::Mock::VerifyAndClearExpectations(user_education());
 
   EXPECT_CALL(
@@ -217,6 +219,8 @@ TEST_F(TabGroupFocusIphControllerTest,
               })))
       .Times(1);
   tab_strip_model()->EnterFocusMode(group_id);
+  task_environment()->FastForwardBy(
+      features::kTabGroupsUnfocusingIphPromoDelay.Get());
 }
 
 TEST_F(TabGroupFocusIphControllerTest,

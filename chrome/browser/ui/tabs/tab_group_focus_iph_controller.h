@@ -50,6 +50,7 @@ class TabGroupFocusIphController : public TabStripModelObserver {
  private:
   void MaybeScheduleGroupFocusPromo();
   void ShowGroupFocusPromo();
+  void ShowUnfocusPromo();
   void MaybeShowNonGroupPromo();
 
   bool is_restoring_focused_group_ = false;
