@@ -613,13 +613,28 @@ TEST_F(PrivacyOverlayWinTest,
   testing::Mock::VerifyAndClearExpectations(&client_session_control_);
   EXPECT_TRUE(IsWindow(windows.button_hwnd));
 
-  // A genuine local click (extra info == 0) disconnects the session and
-  // destroys all overlay windows.
+  // A genuine local click (extra info == 0) disconnects the session and hides
+  // the button, but keeps the backdrops up until session teardown destroys the
+  // overlay.
+  key_pressed_callback_.Run(0x04);
+  ASSERT_TRUE(IsWindowVisible(windows.button_hwnd));
   EXPECT_CALL(client_session_control_, DisconnectSession(ErrorCode::OK, _, _))
       .Times(1);
   SetMessageExtraInfo(0);
   SendMessage(windows.button_hwnd, WM_COMMAND,
               MAKEWPARAM(IDC_DISCONNECT, BN_CLICKED), 0);
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+
+  EXPECT_TRUE(IsWindow(windows.button_hwnd));
+  EXPECT_FALSE(IsWindowVisible(windows.button_hwnd));
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    EXPECT_TRUE(IsWindow(backdrop_hwnd));
+    EXPECT_TRUE(IsWindowVisible(backdrop_hwnd));
+  }
+
+  // Session teardown destroys the overlay and its windows.
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
+  DestroyOverlay();
   testing::Mock::VerifyAndClearExpectations(&client_session_control_);
 
   EXPECT_FALSE(IsWindow(windows.button_hwnd));
@@ -628,11 +643,12 @@ TEST_F(PrivacyOverlayWinTest,
   }
 }
 
-TEST_F(PrivacyOverlayWinTest, HotkeyDisconnectsSessionAndDestroysWindows) {
+TEST_F(PrivacyOverlayWinTest, HotkeyDisconnectsSessionAndKeepsBackdropsUp) {
   StartOverlay();
 
   OverlayThreadWindows windows = FindOverlayThreadWindows();
   ASSERT_NE(windows.button_hwnd, nullptr);
+  ASSERT_FALSE(windows.backdrop_hwnds.empty());
 
   // Unrecognized hotkey IDs should be ignored.
   EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
@@ -640,15 +656,170 @@ TEST_F(PrivacyOverlayWinTest, HotkeyDisconnectsSessionAndDestroysWindows) {
   testing::Mock::VerifyAndClearExpectations(&client_session_control_);
   EXPECT_TRUE(IsWindow(windows.button_hwnd));
 
+  // Reveal the button so the test can verify the hotkey hides it.
+  key_pressed_callback_.Run(0x04);
+  ASSERT_TRUE(IsWindowVisible(windows.button_hwnd));
+
   EXPECT_CALL(client_session_control_, DisconnectSession(ErrorCode::OK, _, _))
       .Times(1);
   SendMessage(windows.button_hwnd, WM_HOTKEY, kDisconnectHotkeyId, 0);
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+
+  EXPECT_TRUE(IsWindow(windows.button_hwnd));
+  EXPECT_FALSE(IsWindowVisible(windows.button_hwnd));
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    EXPECT_TRUE(IsWindow(backdrop_hwnd));
+    EXPECT_TRUE(IsWindowVisible(backdrop_hwnd));
+  }
+
+  // Repeated requests while the disconnect is pending neither disconnect again
+  // nor reveal the button.
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
+  SendMessage(windows.button_hwnd, WM_HOTKEY, kDisconnectHotkeyId, 0);
+  SendMessage(windows.button_hwnd, WM_COMMAND,
+              MAKEWPARAM(IDC_DISCONNECT, BN_CLICKED), 0);
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+  EXPECT_FALSE(IsWindowVisible(windows.button_hwnd));
+
+  // Local input and monitor errors that were queued before the monitor was
+  // released do not reveal the button either.
+  pointer_callback_.Run(webrtc::DesktopVector(10, 10),
+                        ui::EventType::kMouseMoved);
+  pointer_callback_.Run(webrtc::DesktopVector(400, 400),
+                        ui::EventType::kMouseMoved);
+  key_pressed_callback_.Run(0x04);
+  error_callback_.Run();
+  EXPECT_FALSE(IsWindowVisible(windows.button_hwnd));
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    EXPECT_TRUE(IsWindowVisible(backdrop_hwnd));
+  }
+
+  DestroyOverlay();
+  EXPECT_FALSE(IsWindow(windows.button_hwnd));
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    EXPECT_FALSE(IsWindow(backdrop_hwnd));
+  }
+}
+
+TEST_F(PrivacyOverlayWinTest,
+       LocalDisconnectEndsOverlayIfSessionTeardownTimesOut) {
+  StartOverlay();
+
+  OverlayThreadWindows windows = FindOverlayThreadWindows();
+  ASSERT_NE(windows.button_hwnd, nullptr);
+  ASSERT_FALSE(windows.backdrop_hwnds.empty());
+
+  EXPECT_CALL(client_session_control_, DisconnectSession(ErrorCode::OK, _, _))
+      .Times(1);
+  SendMessage(windows.button_hwnd, WM_HOTKEY, kDisconnectHotkeyId, 0);
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout - base::Milliseconds(1));
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    EXPECT_TRUE(IsWindow(backdrop_hwnd));
+  }
+
+  // The overlay is removed without a second disconnect request.
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   testing::Mock::VerifyAndClearExpectations(&client_session_control_);
 
   EXPECT_FALSE(IsWindow(windows.button_hwnd));
   for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
     EXPECT_FALSE(IsWindow(backdrop_hwnd));
   }
+}
+
+TEST_F(PrivacyOverlayWinTest,
+       ExternalDestroyWhileDisconnectPendingKeepsBackdropsUntilTimeout) {
+  StartOverlay();
+
+  OverlayThreadWindows windows = FindOverlayThreadWindows();
+  ASSERT_NE(windows.button_hwnd, nullptr);
+  ASSERT_FALSE(windows.backdrop_hwnds.empty());
+
+  EXPECT_CALL(client_session_control_, DisconnectSession(ErrorCode::OK, _, _))
+      .Times(1);
+  SendMessage(windows.button_hwnd, WM_HOTKEY, kDisconnectHotkeyId, 0);
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+
+  // Destroying the button window while the disconnect is pending neither
+  // removes the backdrops nor disconnects the session again.
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
+  DestroyWindow(windows.button_hwnd);
+  EXPECT_FALSE(IsWindow(windows.button_hwnd));
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    EXPECT_TRUE(IsWindow(backdrop_hwnd));
+    EXPECT_TRUE(IsWindowVisible(backdrop_hwnd));
+  }
+
+  // The teardown timeout still removes the backdrops.
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout);
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    EXPECT_FALSE(IsWindow(backdrop_hwnd));
+  }
+}
+
+TEST_F(PrivacyOverlayWinTest,
+       BackdropUpdateFailureWhileDisconnectPendingRemovesOverlayImmediately) {
+  StartOverlay();
+
+  OverlayThreadWindows windows = FindOverlayThreadWindows();
+  ASSERT_NE(windows.button_hwnd, nullptr);
+  ASSERT_FALSE(windows.backdrop_hwnds.empty());
+
+  EXPECT_CALL(client_session_control_, DisconnectSession(ErrorCode::OK, _, _))
+      .Times(1);
+  SendMessage(windows.button_hwnd, WM_HOTKEY, kDisconnectHotkeyId, 0);
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+
+  // Fail-closed paths still remove the overlay right away while a disconnect
+  // is pending.
+  base::AutoReset<bool> fail_backdrop_updates =
+      ScopedFailBackdropUpdatesForTesting();
+  EXPECT_CALL(client_session_control_, DisconnectSession(ErrorCode::OK, _, _))
+      .Times(1);
+  SendMessage(windows.button_hwnd, WM_DISPLAYCHANGE, 0, 0);
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+  EXPECT_FALSE(IsWindow(windows.button_hwnd));
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    EXPECT_FALSE(IsWindow(backdrop_hwnd));
+  }
+
+  // The pending teardown timeout then does nothing.
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout);
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+}
+
+TEST_F(PrivacyOverlayWinTest,
+       LocalClickHandlesSynchronousSessionTeardownInDisconnectSession) {
+  StartOverlay();
+
+  OverlayThreadWindows windows = FindOverlayThreadWindows();
+  ASSERT_NE(windows.button_hwnd, nullptr);
+  ASSERT_FALSE(windows.backdrop_hwnds.empty());
+
+  // Simulate `DisconnectSession()` synchronously deleting `overlay_` while the
+  // button's `WM_COMMAND` is still being dispatched.
+  EXPECT_CALL(client_session_control_, DisconnectSession(ErrorCode::OK, _, _))
+      .WillOnce([this]() { DestroyOverlay(); });
+  SetMessageExtraInfo(0);
+  SendMessage(windows.button_hwnd, WM_COMMAND,
+              MAKEWPARAM(IDC_DISCONNECT, BN_CLICKED), 0);
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+
+  EXPECT_EQ(overlay_, nullptr);
+  EXPECT_FALSE(IsWindow(windows.button_hwnd));
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    EXPECT_FALSE(IsWindow(backdrop_hwnd));
+  }
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout);
 }
 
 TEST_F(PrivacyOverlayWinTest,

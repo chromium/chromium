@@ -43,6 +43,10 @@ ScopedOverrideMaxButtonDialogWidthForTesting(
 base::AutoReset<std::optional<std::wstring_view>>
 ScopedOverrideDisconnectButtonTextForTesting(std::wstring_view button_text);
 
+// Makes every backdrop update after a display or DPI change fail, as a capture
+// exclusion failure would, until the returned object is destroyed.
+base::AutoReset<bool> ScopedFailBackdropUpdatesForTesting();
+
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_PRIVACY_OVERLAY_WIN_H_

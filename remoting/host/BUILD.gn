@@ -927,6 +927,7 @@ source_set("unit_tests") {
     "host_config_unittest.cc",
     "host_experiment_session_plugin_unittest.cc",
     "host_power_save_blocker_unittest.cc",
+    "host_window_proxy_unittest.cc",
     "input_monitor/local_input_monitor_unittest.cc",
     "it2me/it2me_confirmation_dialog_proxy_unittest.cc",
     "it2me/it2me_host_unittest.cc",

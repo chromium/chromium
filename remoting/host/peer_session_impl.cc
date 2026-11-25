@@ -841,6 +841,9 @@ void PeerSessionImpl::OnConnectionClosed(protocol::ErrorCode error,
   client_clipboard_factory_.InvalidateWeakPtrs();
   input_injector_.reset();
   screen_controls_.reset();
+  // Keep this after `video_streams_` and `input_injector_`: destroying the
+  // desktop environment removes in-session UI such as the privacy overlay,
+  // which must stay up until capture and input injection have stopped.
   desktop_environment_.reset();
   terminal_data_channel_manager_.reset();
 

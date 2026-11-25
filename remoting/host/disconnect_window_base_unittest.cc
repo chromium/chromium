@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_mock_objects.h"
@@ -99,6 +100,100 @@ TEST_F(DisconnectWindowBaseTest, DisconnectSessionCallsSessionControl) {
       .Times(1);
 
   window.DisconnectSession("Custom disconnect reason");
+}
+
+TEST_F(DisconnectWindowBaseTest,
+       DisconnectSessionAndAwaitTeardownRunsTimeoutClosureOnce) {
+  FakeClientSessionControl session_control(kTestUserJid);
+  TestDisconnectWindow window;
+  window.Start(session_control.GetWeakPtr());
+  EXPECT_FALSE(window.is_awaiting_session_teardown());
+
+  EXPECT_CALL(session_control,
+              DisconnectSession(protocol::ErrorCode::OK,
+                                testing::Eq("Teardown reason"), testing::_))
+      .Times(1);
+  int first_timeout_calls = 0;
+  int second_timeout_calls = 0;
+  window.DisconnectSessionAndAwaitTeardown(
+      "Teardown reason",
+      base::BindLambdaForTesting([&]() { ++first_timeout_calls; }));
+  EXPECT_TRUE(window.is_awaiting_session_teardown());
+
+  // Later requests neither disconnect again nor replace the timeout closure.
+  window.DisconnectSessionAndAwaitTeardown(
+      "Second reason",
+      base::BindLambdaForTesting([&]() { ++second_timeout_calls; }));
+  testing::Mock::VerifyAndClearExpectations(&session_control);
+
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout - base::Milliseconds(1));
+  EXPECT_EQ(first_timeout_calls, 0);
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_EQ(first_timeout_calls, 1);
+  EXPECT_EQ(second_timeout_calls, 0);
+
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout);
+  EXPECT_EQ(first_timeout_calls, 1);
+  EXPECT_EQ(second_timeout_calls, 0);
+}
+
+TEST_F(DisconnectWindowBaseTest,
+       DestroyingWindowBeforeTeardownTimeoutSkipsTimeoutClosure) {
+  FakeClientSessionControl session_control(kTestUserJid);
+  auto window = std::make_unique<TestDisconnectWindow>();
+  window->Start(session_control.GetWeakPtr());
+
+  EXPECT_CALL(session_control, DisconnectSession(protocol::ErrorCode::OK,
+                                                 testing::_, testing::_))
+      .Times(1);
+  bool timeout_called = false;
+  window->DisconnectSessionAndAwaitTeardown(
+      "Teardown reason",
+      base::BindLambdaForTesting([&]() { timeout_called = true; }));
+
+  // Session teardown destroys the window.
+  window.reset();
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout);
+  EXPECT_FALSE(timeout_called);
+}
+
+TEST_F(DisconnectWindowBaseTest,
+       DisconnectSessionAndAwaitTeardownHandlesSynchronousDestruction) {
+  FakeClientSessionControl session_control(kTestUserJid);
+  auto window = std::make_unique<TestDisconnectWindow>();
+  window->Start(session_control.GetWeakPtr());
+
+  // Simulate `DisconnectSession()` tearing down the session synchronously.
+  EXPECT_CALL(session_control, DisconnectSession(protocol::ErrorCode::OK,
+                                                 testing::_, testing::_))
+      .WillOnce([&window]() { window.reset(); });
+  bool timeout_called = false;
+  window->DisconnectSessionAndAwaitTeardown(
+      "Teardown reason",
+      base::BindLambdaForTesting([&]() { timeout_called = true; }));
+
+  EXPECT_EQ(window, nullptr);
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout);
+  EXPECT_FALSE(timeout_called);
+}
+
+TEST_F(DisconnectWindowBaseTest,
+       DisconnectSessionAndAwaitTeardownWithoutSessionStillTimesOut) {
+  TestDisconnectWindow window;
+
+  bool timeout_called = false;
+  window.DisconnectSessionAndAwaitTeardown(
+      "Teardown reason",
+      base::BindLambdaForTesting([&]() { timeout_called = true; }));
+
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout);
+  EXPECT_TRUE(timeout_called);
 }
 
 TEST_F(DisconnectWindowBaseTest, ToggleAlignmentFlipsAnchorAndCooldown) {

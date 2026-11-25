@@ -383,6 +383,14 @@ void DesktopSessionAgent::Stop() {
       input_tracker_.reset();
     }
 
+    // The desktop environment owns in-session UI such as the privacy overlay,
+    // which must stay up until capture and input injection have stopped. It
+    // is reset before `input_injector_` and `video_capturers_` below, which is
+    // only safe because its `HostWindowProxy` posts the window's destruction
+    // to the UI task runner, and in the desktop process the UI task runner is
+    // also the caller task runner, so that task cannot run until `Stop()`
+    // returns. `network_channel_` is also closed above, so no further remote
+    // input or frames are exchanged.
     desktop_environment_.reset();
     action_executor_.reset();
     clipboard_adapter_.reset();

@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -39,6 +40,10 @@ class DisconnectWindowBase : public HostWindow {
   static constexpr char kDisconnectDeletedReason[] =
       "Disconnect window deleted.";
 
+  // Maximum time `DisconnectSessionAndAwaitTeardown()` waits for the session
+  // teardown to destroy this window before running its timeout closure.
+  static constexpr base::TimeDelta kSessionTeardownTimeout = base::Seconds(5);
+
   DisconnectWindowBase();
   DisconnectWindowBase(const DisconnectWindowBase&) = delete;
   DisconnectWindowBase& operator=(const DisconnectWindowBase&) = delete;
@@ -50,6 +55,19 @@ class DisconnectWindowBase : public HostWindow {
 
   // Disconnects the remote session if active.
   void DisconnectSession(std::string_view reason = kDisconnectClickedReason);
+
+  // Disconnects the remote session but leaves this window's UI in place.
+  // Session teardown destroys this window (via `HostWindowProxy`) only after
+  // the session's capturers and input injector have been stopped, so UI that
+  // hides the local display (such as the privacy overlay) is not removed while
+  // the remote session is still live. If this window still exists
+  // `kSessionTeardownTimeout` later, `on_teardown_timeout` runs so the caller
+  // can remove its UI. The timeout does not check or retry the disconnect, so
+  // the session may still be connected when `on_teardown_timeout` runs. Only
+  // the first call has any effect. `this` may be destroyed before this method
+  // returns.
+  void DisconnectSessionAndAwaitTeardown(std::string_view reason,
+                                         base::OnceClosure on_teardown_timeout);
 
   // Toggles dialog alignment between kBottom and kTop, and triggers cooldown.
   void ToggleAlignment();
@@ -67,6 +85,7 @@ class DisconnectWindowBase : public HostWindow {
   std::optional<int> expected_y() const;
   int consecutive_reposition_attempts() const;
   const base::WeakPtr<ClientSessionControl>& client_session_control() const;
+  bool is_awaiting_session_teardown() const;
 
  protected:
   // Hook called when the position toggle cooldown timer expires. Subclasses
@@ -81,6 +100,7 @@ class DisconnectWindowBase : public HostWindow {
 
  private:
   void HandleCooldownExpired();
+  void OnSessionTeardownTimeout(base::OnceClosure on_teardown_timeout);
 
   base::WeakPtr<ClientSessionControl> client_session_control_;
 
@@ -89,6 +109,10 @@ class DisconnectWindowBase : public HostWindow {
   std::u16string formatted_email_;
 
   base::OneShotTimer cooldown_timer_;
+
+  // Set by the first `DisconnectSessionAndAwaitTeardown()` call.
+  bool is_awaiting_session_teardown_ = false;
+  base::OneShotTimer session_teardown_timer_;
 
   std::optional<int> expected_x_;
   std::optional<int> expected_y_;

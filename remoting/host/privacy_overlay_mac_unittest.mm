@@ -26,6 +26,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
@@ -866,23 +867,157 @@ TEST_F(PrivacyOverlayMacTest,
 }
 
 TEST_F(PrivacyOverlayMacTest,
-       LocalClickOnDisconnectButtonDisconnectsSessionAndClosesWindows) {
+       LocalClickOnDisconnectButtonDisconnectsSessionAndKeepsBackdropsUp) {
   StartOverlay();
   ActivateDisconnectButtonOnPrimaryScreen();
 
   PrivacyOverlayButtonWindow* button_window =
       overlay_->button_window_for_testing();
   ASSERT_NE(button_window, nil);
+  ASSERT_GT(overlay_->backdrop_windows_for_testing().count, 0u);
+  NSArray<PrivacyOverlayBackdropWindow*>* backdrop_windows =
+      [overlay_->backdrop_windows_for_testing() copy];
 
+  base::RunLoop disconnect_loop;
   EXPECT_CALL(client_session_control_,
               DisconnectSession(protocol::ErrorCode::OK, _, _))
-      .Times(1);
+      .WillOnce([&disconnect_loop]() { disconnect_loop.Quit(); });
   [button_window.disconnectButton performClick:nil];
-  task_environment_.RunUntilIdle();
+  disconnect_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+
+  // The button is hidden, but the backdrops stay up until session teardown
+  // destroys the overlay.
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+  EXPECT_FALSE(button_window.isVisible);
+  EXPECT_EQ(overlay_->backdrop_windows_for_testing().count,
+            backdrop_windows.count);
+  for (PrivacyOverlayBackdropWindow* window in backdrop_windows) {
+    EXPECT_TRUE(window.isVisible);
+  }
+
+  // Local input and monitor errors that were queued before the monitor was
+  // released do not reveal the button again.
+  SimulatePointerMove(webrtc::DesktopVector(10, 10));
+  SimulatePointerMove(webrtc::DesktopVector(400, 400),
+                      ui::EventType::kMousePressed);
+  SimulateKeyPress(0x04);
+  SimulateError();
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+  EXPECT_FALSE(button_window.isVisible);
+  for (PrivacyOverlayBackdropWindow* window in backdrop_windows) {
+    EXPECT_TRUE(window.isVisible);
+  }
+
+  // Session teardown destroys the overlay and closes its windows.
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
+  DestroyOverlay();
+  for (PrivacyOverlayBackdropWindow* window in backdrop_windows) {
+    EXPECT_FALSE(window.isVisible);
+  }
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       LocalDisconnectEndsOverlayIfSessionTeardownTimesOut) {
+  StartOverlay();
+  ActivateDisconnectButtonOnPrimaryScreen();
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  ASSERT_GT(overlay_->backdrop_windows_for_testing().count, 0u);
+
+  base::RunLoop disconnect_loop;
+  EXPECT_CALL(client_session_control_,
+              DisconnectSession(protocol::ErrorCode::OK, _, _))
+      .WillOnce([&disconnect_loop]() { disconnect_loop.Quit(); });
+  [button_window.disconnectButton performClick:nil];
+  disconnect_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout - base::Milliseconds(1));
+  EXPECT_GT(overlay_->backdrop_windows_for_testing().count, 0u);
+
+  // The overlay is removed without a second disconnect request.
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
+  task_environment_.FastForwardBy(base::Milliseconds(1));
 
   EXPECT_EQ(overlay_->button_window_for_testing(), nil);
   EXPECT_EQ(overlay_->backdrop_windows_for_testing().count, 0u);
-  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       BackdropUpdateFailureWhileDisconnectPendingRemovesOverlayImmediately) {
+  std::vector<NSRect> frames = {NSMakeRect(0.0, 0.0, 1440.0, 900.0)};
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting([&frames]() { return frames; }));
+
+  StartOverlay();
+  ActivateDisconnectButtonOnPrimaryScreen();
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  ASSERT_EQ(overlay_->backdrop_windows_for_testing().count, 1u);
+
+  base::RunLoop disconnect_loop;
+  EXPECT_CALL(client_session_control_,
+              DisconnectSession(protocol::ErrorCode::OK, _, _))
+      .WillOnce([&disconnect_loop]() { disconnect_loop.Quit(); });
+  [button_window.disconnectButton performClick:nil];
+  disconnect_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+  ASSERT_EQ(overlay_->backdrop_windows_for_testing().count, 1u);
+
+  // Fail-closed paths still remove the overlay right away while a disconnect
+  // is pending.
+  frames.clear();
+  EXPECT_CALL(client_session_control_,
+              DisconnectSession(protocol::ErrorCode::OK, _, _))
+      .Times(1);
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSApplicationDidChangeScreenParametersNotification
+                    object:NSApp];
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+  EXPECT_EQ(overlay_->button_window_for_testing(), nil);
+  EXPECT_EQ(overlay_->backdrop_windows_for_testing().count, 0u);
+
+  // The pending teardown timeout then does nothing.
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout);
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       LocalClickHandlesSynchronousSessionTeardownInDisconnectSession) {
+  StartOverlay();
+  ActivateDisconnectButtonOnPrimaryScreen();
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  ASSERT_GT(overlay_->backdrop_windows_for_testing().count, 0u);
+  NSArray<PrivacyOverlayBackdropWindow*>* backdrop_windows =
+      [overlay_->backdrop_windows_for_testing() copy];
+
+  base::RunLoop disconnect_loop;
+  EXPECT_CALL(client_session_control_,
+              DisconnectSession(protocol::ErrorCode::OK, _, _))
+      .WillOnce([this, &disconnect_loop]() {
+        DestroyOverlay();
+        disconnect_loop.Quit();
+      });
+  [button_window.disconnectButton performClick:nil];
+  disconnect_loop.Run();
+
+  EXPECT_EQ(overlay_, nullptr);
+  EXPECT_FALSE(button_window.isVisible);
+  for (PrivacyOverlayBackdropWindow* window in backdrop_windows) {
+    EXPECT_FALSE(window.isVisible);
+  }
+  task_environment_.FastForwardBy(
+      DisconnectWindowBase::kSessionTeardownTimeout);
 }
 
 TEST_F(PrivacyOverlayMacTest,
@@ -999,9 +1134,11 @@ TEST_F(PrivacyOverlayMacTest,
       .Times(1);
   [button_window.disconnectButton accessibilityPerformPress];
   task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
 
-  EXPECT_EQ(overlay_->button_window_for_testing(), nil);
-  EXPECT_EQ(overlay_->backdrop_windows_for_testing().count, 0u);
+  // The backdrops stay up until session teardown destroys the overlay.
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+  EXPECT_GT(overlay_->backdrop_windows_for_testing().count, 0u);
 }
 
 TEST_F(PrivacyOverlayMacTest,

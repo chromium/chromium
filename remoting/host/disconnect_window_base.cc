@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "remoting/base/email_utils.h"
 #include "remoting/protocol/errors.h"
 
@@ -52,6 +53,24 @@ void DisconnectWindowBase::DisconnectSession(std::string_view reason) {
   }
 }
 
+void DisconnectWindowBase::DisconnectSessionAndAwaitTeardown(
+    std::string_view reason,
+    base::OnceClosure on_teardown_timeout) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_awaiting_session_teardown_) {
+    return;
+  }
+  is_awaiting_session_teardown_ = true;
+
+  // Arm the timer before `DisconnectSession()`, which may destroy `this`.
+  session_teardown_timer_.Start(
+      FROM_HERE, kSessionTeardownTimeout,
+      base::BindOnce(&DisconnectWindowBase::OnSessionTeardownTimeout,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(on_teardown_timeout)));
+  DisconnectSession(reason);
+}
+
 void DisconnectWindowBase::ToggleAlignment() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   g_current_anchor = (g_current_anchor == WindowAnchor::kBottom)
@@ -73,6 +92,14 @@ void DisconnectWindowBase::OnCooldownExpired() {
 void DisconnectWindowBase::HandleCooldownExpired() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnCooldownExpired();
+}
+
+void DisconnectWindowBase::OnSessionTeardownTimeout(
+    base::OnceClosure on_teardown_timeout) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LOG(WARNING) << "Session teardown did not complete within "
+               << kSessionTeardownTimeout << " of a local disconnect request.";
+  std::move(on_teardown_timeout).Run();
 }
 
 void DisconnectWindowBase::SetExpectedPosition(int x, int y) {
@@ -139,6 +166,10 @@ int DisconnectWindowBase::consecutive_reposition_attempts() const {
 const base::WeakPtr<ClientSessionControl>&
 DisconnectWindowBase::client_session_control() const {
   return client_session_control_;
+}
+
+bool DisconnectWindowBase::is_awaiting_session_teardown() const {
+  return is_awaiting_session_teardown_;
 }
 
 // static

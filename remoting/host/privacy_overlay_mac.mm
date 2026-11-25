@@ -1488,7 +1488,9 @@ void PrivacyOverlayMac::ActivateDisconnectButtonWithFrames(
     const std::vector<NSRect>& screen_frames,
     NSPoint cocoa_screen_point) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!button_window_) {
+  // Local input or monitor errors already queued when a disconnect was
+  // requested must not reveal the button again.
+  if (!button_window_ || is_awaiting_session_teardown()) {
     return;
   }
 
@@ -1639,8 +1641,22 @@ void PrivacyOverlayMac::OnAccessibilityDisplayOptionsChanged() {
 
 void PrivacyOverlayMac::OnDisconnectButtonClicked() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EndOverlay();
-  DisconnectSession();
+  if (is_ending_ || is_awaiting_session_teardown()) {
+    return;
+  }
+
+  // Hide the button and stop revealing it. The backdrops stay up until session
+  // teardown destroys `this`, so the local display does not show the session
+  // while capture and input injection are still running. If teardown does not
+  // complete in time, the timeout ends the overlay.
+  auto_hide_timer_.Stop();
+  local_input_monitor_.reset();
+  DeactivateDisconnectButton();
+
+  // May destroy `this` synchronously.
+  DisconnectSessionAndAwaitTeardown(
+      kDisconnectClickedReason, base::BindOnce(&PrivacyOverlayMac::EndOverlay,
+                                               weak_factory_.GetWeakPtr()));
 }
 
 // static

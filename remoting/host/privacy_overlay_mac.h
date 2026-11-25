@@ -174,7 +174,9 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
   // Called when a local keyboard event is observed by `local_input_monitor_`.
   void OnLocalKeyPressed(uint32_t usb_keycode);
 
-  // Invoked when the local user clicks the Disconnect button.
+  // Invoked when the local user clicks the Disconnect button. Hides the button
+  // and disconnects the session; the backdrops stay up until session teardown
+  // destroys `this`.
   void OnDisconnectButtonClicked();
 
   // Monitors local hardware mouse and keyboard input to wake the Disconnect

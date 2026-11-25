@@ -49,6 +49,7 @@ namespace {
 std::optional<ButtonDialogWidthOverrideForTesting>
     g_max_button_dialog_width_override_for_testing;
 std::optional<std::wstring_view> g_button_text_override_for_testing;
+bool g_fail_backdrop_updates_for_testing = false;
 
 // Minimum width and extra slack passed to `MeasureControlWrappedText()` when
 // measuring a single unconstrained reference line, staying well within 32-bit
@@ -160,6 +161,12 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   // Destroys all backdrop and button windows, unregisters the disconnect
   // hotkey, stops the auto-hide timer, and releases cached GDI resources.
   void EndOverlay();
+
+  // Handles a local Disconnect button click or Ctrl+Alt+Esc hotkey press: hides
+  // the button and disconnects the session while keeping the backdrops up until
+  // session teardown destroys `this`, so the local display does not show the
+  // session while capture and input injection are still running.
+  void RequestDisconnect();
 
   // Returns `control`'s bounding rectangle in `hwnd_`'s client coordinates.
   bool GetControlRect(HWND control, RECT* rect);
@@ -405,8 +412,7 @@ BOOL PrivacyOverlayWin::OnDialogMessage(HWND hwnd,
             kCrdInputExtraInfo) {
           return TRUE;
         }
-        EndOverlay();
-        DisconnectSession("Disconnect window closed.");
+        RequestDisconnect();
         return TRUE;
       }
       return FALSE;
@@ -416,6 +422,16 @@ BOOL PrivacyOverlayWin::OnDialogMessage(HWND hwnd,
     case WM_DESTROY:
       SetWindowLongPtr(hwnd, DWLP_USER, 0);
       hwnd_ = nullptr;
+      if (is_awaiting_session_teardown()) {
+        // A local disconnect is already pending. Keep the backdrops until
+        // session teardown destroys `this` or the teardown timeout ends the
+        // overlay; only release what belonged to the button window.
+        if (hotkey_registered_) {
+          UnregisterDisconnectHotKey(hwnd);
+          hotkey_registered_ = false;
+        }
+        return TRUE;
+      }
       EndOverlay();
       DisconnectSession("Disconnect window closed.");
       return TRUE;
@@ -475,7 +491,7 @@ BOOL PrivacyOverlayWin::OnDialogMessage(HWND hwnd,
       ResetRepositionAttempts();
       UINT explicit_dpi =
           (message == WM_DPICHANGED) ? static_cast<UINT>(LOWORD(wparam)) : 0;
-      if (!UpdateBackdrops()) {
+      if (g_fail_backdrop_updates_for_testing || !UpdateBackdrops()) {
         EndOverlay();
         DisconnectSession("Failed to update Privacy Overlay backdrops.");
         return TRUE;
@@ -511,8 +527,7 @@ BOOL PrivacyOverlayWin::OnDialogMessage(HWND hwnd,
     // Handle the Ctrl+Alt+Esc disconnect hot-key.
     case WM_HOTKEY:
       if (static_cast<int>(wparam) == kDisconnectHotkeyId) {
-        EndOverlay();
-        DisconnectSession("Disconnect window closed.");
+        RequestDisconnect();
         return TRUE;
       }
       return FALSE;
@@ -770,6 +785,25 @@ void PrivacyOverlayWin::EndOverlay() {
   backdrop_dpi_cache_.clear();
   button_font_.reset();
   button_border_pen_.reset();
+}
+
+void PrivacyOverlayWin::RequestDisconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_ending_ || is_awaiting_session_teardown()) {
+    return;
+  }
+
+  // Hide the button and stop revealing it. The backdrops stay up until session
+  // teardown destroys `this`, or until the teardown timeout ends the overlay.
+  auto_hide_timer_.Stop();
+  local_input_monitor_.reset();
+  DeactivateDisconnectButton();
+
+  // May destroy `this` synchronously.
+  DisconnectSessionAndAwaitTeardown(
+      "Disconnect window closed.",
+      base::BindOnce(&PrivacyOverlayWin::EndOverlay,
+                     weak_factory_.GetWeakPtr()));
 }
 
 bool PrivacyOverlayWin::GetControlRect(HWND control, RECT* rect) {
@@ -1196,7 +1230,9 @@ void PrivacyOverlayWin::PositionDisconnectButton(POINT screen_point,
 
 void PrivacyOverlayWin::ActivateDisconnectButton(POINT screen_point) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!hwnd_) {
+  // Local input or monitor errors already queued when a disconnect was
+  // requested must not reveal the button again.
+  if (!hwnd_ || is_awaiting_session_teardown()) {
     return;
   }
 
@@ -1520,6 +1556,10 @@ ScopedOverrideDisconnectButtonTextForTesting(std::wstring_view button_text) {
   CHECK(!button_text.empty());
   return base::AutoReset<std::optional<std::wstring_view>>(
       &g_button_text_override_for_testing, button_text);
+}
+
+base::AutoReset<bool> ScopedFailBackdropUpdatesForTesting() {
+  return base::AutoReset<bool>(&g_fail_backdrop_updates_for_testing, true);
 }
 
 // static
