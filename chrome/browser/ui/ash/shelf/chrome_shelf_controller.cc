@@ -1477,8 +1477,9 @@ bool ChromeShelfController::EnsureAppPinnedInModelAtIndex(
   // Passing current app index in model as an argument is an optimization in
   // case this method is used while looping over items that avoids extra pass
   // over items in the model to find the app index.
-  CHECK_EQ(current_index, model_->ItemIndexByAppID(app_id),
-           base::NotFatalUntil::M162);
+  // TODO(crbug.com/588566915): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(current_index, model_->ItemIndexByAppID(app_id));
 
   if (current_index >= 0) {
     const ash::ShelfItem item = model_->items()[current_index];
