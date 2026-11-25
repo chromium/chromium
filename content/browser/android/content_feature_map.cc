@@ -61,7 +61,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAndroidReplayDelKeyEvent,
     &features::kAndroidRestartInputAfterHiddenStateUpdate,
     &features::kAndroidSpeechRecognitionInProcessAudio,
-    &features::kEarlyTopAppForSandboxedRenderer,
     &features::kStrictHighRankProcessLRU,
     &features::kFedCm,
     &features::kFedCmActiveModeMultipleIdentityProviders,

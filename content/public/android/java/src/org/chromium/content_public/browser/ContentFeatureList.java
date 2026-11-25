@@ -165,12 +165,6 @@ public class ContentFeatureList {
                     ContentInternalFeatures.STRICT_HIGH_RANK_PROCESS_LRU,
                     true);
 
-    public static final MutableFlagWithSafeDefault sEarlyTopAppForSandboxedRenderer =
-            new MutableFlagWithSafeDefault(
-                    ContentFeatureMap.getInstance(),
-                    ContentInternalFeatures.EARLY_TOP_APP_FOR_SANDBOXED_RENDERER,
-                    true);
-
     private static final MutableFlagWithSafeDefault sAndroidSpeechRecognitionInProcessAudio =
             new MutableFlagWithSafeDefault(
                     ContentFeatureMap.getInstance(),

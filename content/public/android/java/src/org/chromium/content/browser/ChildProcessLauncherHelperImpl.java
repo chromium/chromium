@@ -841,9 +841,7 @@ public final class ChildProcessLauncherHelperImpl {
                 mEffectiveImportance = ChildProcessImportance.NORMAL;
             } else if (useNotPerceptibleBinding) {
                 mEffectiveImportance = ChildProcessImportance.NOT_PERCEPTIBLE;
-            } else if (!isSpareRenderer
-                    && isForOutermostMainFrame
-                    && ContentFeatureList.sEarlyTopAppForSandboxedRenderer.isEnabled()) {
+            } else if (!isSpareRenderer && isForOutermostMainFrame) {
                 mEffectiveImportance = ChildProcessImportance.IMPORTANT;
             } else {
                 mEffectiveImportance = ChildProcessImportance.MODERATE;

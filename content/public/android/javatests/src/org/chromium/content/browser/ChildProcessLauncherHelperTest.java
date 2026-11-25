@@ -30,10 +30,7 @@ import org.chromium.base.process_launcher.IFileDescriptorInfo;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.content.browser.ChildProcessLauncherHelperImpl.ServiceType;
-import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -241,7 +238,6 @@ public class ChildProcessLauncherHelperTest {
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    @DisableFeatures({ContentInternalFeatures.EARLY_TOP_APP_FOR_SANDBOXED_RENDERER})
     public void testNotPerceptiveBindingForSpareRenderer() {
         FeatureOverrides.overrideParam(
                 ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getFeatureName(),
@@ -263,7 +259,8 @@ public class ChildProcessLauncherHelperTest {
                         /* doSetupConnection= */ true,
                         ServiceType.SANDBOXED,
                         /* reducePriorityOnBackground= */ true,
-                        /* canUseWarmUpConnection= */ true);
+                        /* canUseWarmUpConnection= */ true,
+                        /* isForOutermostMainFrame= */ false);
         final ChildProcessConnection connection =
                 ChildProcessLauncherTestUtils.getConnection(launcher);
 
@@ -299,7 +296,6 @@ public class ChildProcessLauncherHelperTest {
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    @EnableFeatures({ContentInternalFeatures.EARLY_TOP_APP_FOR_SANDBOXED_RENDERER})
     public void testEarlyTopAppForSandboxedRenderer() {
         ChildProcessLauncherHelperImpl launcher =
                 startChildProcess(
@@ -322,8 +318,7 @@ public class ChildProcessLauncherHelperTest {
                         ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                                 () -> connection.getVisibleBindingCount()));
 
-        // Also verify that a spare renderer does not get early strong binding even when the feature
-        // is enabled.
+        // Also verify that a spare renderer does not get early strong binding.
         ChildProcessLauncherHelperImpl spareLauncher =
                 ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                         new Callable<ChildProcessLauncherHelperImpl>() {
@@ -358,7 +353,7 @@ public class ChildProcessLauncherHelperTest {
                                 () -> spareConnection.getVisibleBindingCount()));
 
         // Also verify that a subframe renderer (!isForOutermostMainFrame) does not get early strong
-        // binding when the feature is enabled.
+        // binding.
         ChildProcessLauncherHelperImpl subframeLauncher =
                 ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                         new Callable<ChildProcessLauncherHelperImpl>() {
@@ -409,6 +404,22 @@ public class ChildProcessLauncherHelperTest {
             @ServiceType int serviceType,
             boolean reducePriorityOnBackground,
             boolean canUseWarmUpConnection) {
+        return startChildProcess(
+                blockingPolicy,
+                doSetupConnection,
+                serviceType,
+                reducePriorityOnBackground,
+                canUseWarmUpConnection,
+                /* isForOutermostMainFrame= */ true);
+    }
+
+    private static ChildProcessLauncherHelperImpl startChildProcess(
+            int blockingPolicy,
+            final boolean doSetupConnection,
+            @ServiceType int serviceType,
+            boolean reducePriorityOnBackground,
+            boolean canUseWarmUpConnection,
+            boolean isForOutermostMainFrame) {
         assertThat(doSetupConnection || blockingPolicy != BLOCK_UNTIL_SETUP).isTrue();
         ChildProcessLauncherHelperImpl launcher =
                 ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
@@ -424,7 +435,7 @@ public class ChildProcessLauncherHelperTest {
                                         /* binderCallback= */ null,
                                         doSetupConnection,
                                         /* isSpareRenderer= */ false,
-                                        /* isForOutermostMainFrame= */ true);
+                                        isForOutermostMainFrame);
                             }
                         });
         if (blockingPolicy != DONT_BLOCK) {
