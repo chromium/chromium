@@ -28,6 +28,7 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -602,6 +603,15 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
 
   if (is_rt_lookup_successful) {
     LogLookupResponseForToken(webui_token, *response);
+    if (response->client_side_detection_type() ==
+            ClientSideDetectionType::FORCE_REQUEST &&
+        response->has_llama_forced_trigger_info()) {
+      for (const auto& rule_info :
+           response->llama_forced_trigger_info().llama_trigger_rule_infos()) {
+        base::UmaHistogramSparse("SafeBrowsing.RT.Response.LlamaTriggerRuleId",
+                                 rule_info.llama_trigger_rule_id());
+      }
+    }
   }
 
   RecordCount100WithAndWithoutSuffix("SafeBrowsing.RT.ThreatInfoSize",

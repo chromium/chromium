@@ -3140,6 +3140,20 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.Response.LlamaTriggerRuleId" units="rule_id"
+    expires_after="2027-11-24">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the llama_trigger_rule_id for every LlamaTriggerRuleInfo in
+    RTLookupResponse.llama_forced_trigger_info. Logged as a sparse histogram
+    across all platforms (Desktop, Android, and iOS) when a real-time URL lookup
+    network response is successfully received with client_side_detection_type
+    set to FORCE_REQUEST and llama_forced_trigger_info populated. Not logged
+    when a verdict is served from the local cache.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.Response.VerdictType.{UserPopulation}"
     enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2027-05-11">
   <owner>zackhan@chromium.org</owner>

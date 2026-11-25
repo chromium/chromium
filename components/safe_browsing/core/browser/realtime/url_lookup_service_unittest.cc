@@ -342,7 +342,10 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
       int cache_duration_sec,
       const std::string& cache_expression,
       RTLookupResponse::ThreatInfo::CacheExpressionMatchType
-          cache_expression_match_type) {
+          cache_expression_match_type,
+      std::optional<ClientSideDetectionType> client_side_detection_type =
+          std::nullopt,
+      std::vector<int> llama_trigger_rule_ids = {}) {
     RTLookupResponse response;
     RTLookupResponse::ThreatInfo* new_threat_info = response.add_threat_info();
     new_threat_info->set_verdict_type(verdict_type);
@@ -351,6 +354,14 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     new_threat_info->set_cache_expression_using_match_type(cache_expression);
     new_threat_info->set_cache_expression_match_type(
         cache_expression_match_type);
+    if (client_side_detection_type.has_value()) {
+      response.set_client_side_detection_type(*client_side_detection_type);
+    }
+    for (int rule_id : llama_trigger_rule_ids) {
+      response.mutable_llama_forced_trigger_info()
+          ->add_llama_trigger_rule_infos()
+          ->set_llama_trigger_rule_id(rule_id);
+    }
     rt_service_->MayBeCacheRealTimeUrlVerdict(response);
 
     // Call RunUntilIdle() in order to execute task which was posted by
@@ -364,7 +375,10 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
       int cache_duration_sec,
       const std::string& cache_expression,
       RTLookupResponse::ThreatInfo::CacheExpressionMatchType
-          cache_expression_match_type) {
+          cache_expression_match_type,
+      std::optional<ClientSideDetectionType> client_side_detection_type =
+          std::nullopt,
+      std::vector<int> llama_trigger_rule_ids = {}) {
     RTLookupResponse response;
     RTLookupResponse::ThreatInfo* new_threat_info = response.add_threat_info();
     RTLookupResponse::ThreatInfo threat_info;
@@ -374,6 +388,14 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     threat_info.set_cache_expression_using_match_type(cache_expression);
     threat_info.set_cache_expression_match_type(cache_expression_match_type);
     *new_threat_info = threat_info;
+    if (client_side_detection_type.has_value()) {
+      response.set_client_side_detection_type(*client_side_detection_type);
+    }
+    for (int rule_id : llama_trigger_rule_ids) {
+      response.mutable_llama_forced_trigger_info()
+          ->add_llama_trigger_rule_infos()
+          ->set_llama_trigger_rule_id(rule_id);
+    }
     std::string expected_response_str;
     response.SerializeToString(&expected_response_str);
     test_url_loader_factory_.AddResponse(kRealTimeLookupUrlPrefix,
@@ -1054,7 +1076,9 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
   MayBeCacheRealTimeUrlVerdictSync(
       RTLookupResponse::ThreatInfo::DANGEROUS,
       RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60, "example.test/",
-      RTLookupResponse::ThreatInfo::COVERING_MATCH);
+      RTLookupResponse::ThreatInfo::COVERING_MATCH,
+      ClientSideDetectionType::FORCE_REQUEST,
+      /*llama_trigger_rule_ids=*/{12});
 
   base::MockCallback<network::TestURLLoaderFactory::Interceptor>
       request_callback;
@@ -1077,6 +1101,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
   histograms.ExpectUniqueSample("SafeBrowsing.RT.ThreatInfoSize",
                                 /* sample */ 0,
                                 /* expected_count */ 0);
+  histograms.ExpectTotalCount("SafeBrowsing.RT.Response.LlamaTriggerRuleId", 0);
 
   // No requests were sent.
   histograms.ExpectTotalCount("SafeBrowsing.RT.Request.Concurrent", 0);
@@ -1250,7 +1275,9 @@ TEST_F(RealTimeUrlLookupServiceTest,
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
                         "example.test/",
-                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH,
+                        ClientSideDetectionType::FORCE_REQUEST,
+                        /*llama_trigger_rule_ids=*/{12, 13});
 
   WaitableMockRTLookupResponseCallback response_callback;
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
@@ -1294,6 +1321,11 @@ TEST_F(RealTimeUrlLookupServiceTest,
   histograms.ExpectUniqueSample("SafeBrowsing.RT.ThreatInfoSize",
                                 /* sample */ 1,
                                 /* expected_count */ 1);
+  histograms.ExpectTotalCount("SafeBrowsing.RT.Response.LlamaTriggerRuleId", 2);
+  histograms.ExpectBucketCount("SafeBrowsing.RT.Response.LlamaTriggerRuleId",
+                               12, 1);
+  histograms.ExpectBucketCount("SafeBrowsing.RT.Response.LlamaTriggerRuleId",
+                               13, 1);
   histograms.ExpectUniqueSample("SafeBrowsing.RT.HasAccessTokenFromFetcher",
                                 /*sample=*/true, /*expected_bucket_count=*/1);
   histograms.ExpectUniqueSample(
@@ -1314,7 +1346,9 @@ TEST_F(RealTimeUrlLookupServiceTest,
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
                         "example.test/",
-                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH,
+                        /*client_side_detection_type=*/std::nullopt,
+                        /*llama_trigger_rule_ids=*/{13});
 
   WaitableMockRTLookupResponseCallback response_callback;
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
@@ -1350,6 +1384,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
   histograms.ExpectUniqueSample("SafeBrowsing.RT.HasTokenInRequest",
                                 /* sample */ 0,
                                 /* expected_count */ 1);
+  // Not logged because `client_side_detection_type` is not `FORCE_REQUEST`.
+  histograms.ExpectTotalCount("SafeBrowsing.RT.Response.LlamaTriggerRuleId", 0);
 }
 
 TEST_F(RealTimeUrlLookupServiceTest,
@@ -2237,6 +2273,5 @@ TEST_F(RealTimeUrlLookupServiceTest, TestVerdictCacheBypass) {
       std::nullopt, false);
   response_callback.Wait();
 }
-
 
 }  // namespace safe_browsing
