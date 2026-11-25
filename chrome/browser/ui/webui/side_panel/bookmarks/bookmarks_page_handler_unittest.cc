@@ -358,7 +358,7 @@ class BookmarksPageHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void PrepareDragData(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                                 VectorExperimental>>& nodes) {
+                                                 DanglingUntriaged>>& nodes) {
     bookmarks::BookmarkNodeData data(nodes);
     data.SetOriginatingProfilePath(profile()->GetPath());
     extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
