@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -68,11 +67,9 @@ class ActorOverlayCoordinatorTest : public PlatformTest {
 // Test that `start()` and `stop()` correctly add/remove the child view
 // controller and its view.
 TEST_F(ActorOverlayCoordinatorTest, StartAndStopLifecycle) {
-  web::FakeWebState fake_web_state;
   ActorOverlayCoordinator* coordinator = [[ActorOverlayCoordinator alloc]
       initWithBaseViewController:base_view_controller_
-                         browser:browser_.get()
-                        webState:&fake_web_state];
+                         browser:browser_.get()];
 
   EXPECT_NE(coordinator, nil);
 
@@ -104,11 +101,9 @@ TEST_F(ActorOverlayCoordinatorTest, StartAndStopLifecycle) {
 // Test that calling `start()` multiple times consecutively does not result in
 // duplicate child view controllers or duplicate subviews.
 TEST_F(ActorOverlayCoordinatorTest, StartReentrance) {
-  web::FakeWebState fake_web_state;
   ActorOverlayCoordinator* coordinator = [[ActorOverlayCoordinator alloc]
       initWithBaseViewController:base_view_controller_
-                         browser:browser_.get()
-                        webState:&fake_web_state];
+                         browser:browser_.get()];
 
   EXPECT_NE(coordinator, nil);
 
@@ -138,11 +133,9 @@ TEST_F(ActorOverlayCoordinatorTest, StartReentrance) {
 // requests until dismissed, and dismiss the snackbar on `stop`.
 TEST_F(ActorOverlayCoordinatorTest,
        ShowInteractionLimitedSnackbarDeduplicatesAndDismissesOnStop) {
-  web::FakeWebState fake_web_state;
   ActorOverlayCoordinator* coordinator = [[ActorOverlayCoordinator alloc]
       initWithBaseViewController:base_view_controller_
-                         browser:browser_.get()
-                        webState:&fake_web_state];
+                         browser:browser_.get()];
   [coordinator start];
 
   ActorOverlayViewController* overlay_vc =
@@ -195,11 +188,9 @@ TEST_F(ActorOverlayCoordinatorTest,
 // `-start`, and ignores scrim taps while hidden.
 TEST_F(ActorOverlayCoordinatorTest,
        ScrimVisibleDefaultsToYesAndCanBeConfiguredBeforeStart) {
-  web::FakeWebState fake_web_state;
   ActorOverlayCoordinator* coordinator = [[ActorOverlayCoordinator alloc]
       initWithBaseViewController:base_view_controller_
-                         browser:browser_.get()
-                        webState:&fake_web_state];
+                         browser:browser_.get()];
   EXPECT_TRUE(coordinator.scrimVisible);
 
   coordinator.scrimVisible = NO;
@@ -225,11 +216,9 @@ TEST_F(ActorOverlayCoordinatorTest,
 // tap handling when set back to `YES`.
 TEST_F(ActorOverlayCoordinatorTest,
        SetScrimVisibleUpdatesViewControllerAndDismissesSnackbar) {
-  web::FakeWebState fake_web_state;
   ActorOverlayCoordinator* coordinator = [[ActorOverlayCoordinator alloc]
       initWithBaseViewController:base_view_controller_
-                         browser:browser_.get()
-                        webState:&fake_web_state];
+                         browser:browser_.get()];
   [coordinator start];
 
   ActorOverlayViewController* overlay_vc =

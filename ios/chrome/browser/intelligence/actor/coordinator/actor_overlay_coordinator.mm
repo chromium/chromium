@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_overlay_coordinator.h"
 
-#import "base/check.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actor_overlay_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -24,10 +23,6 @@
 @implementation ActorOverlayCoordinator {
   // The view controller managing the overlay UI.
   ActorOverlayViewController* _viewController;
-  // The base color of the scrim.
-  UIColor* _scrimColor;
-  // The base color of the glow.
-  UIColor* _glowColor;
   // Handler used to present and dismiss snackbars.
   id<SnackbarCommands> _snackbarCommandsHandler;
   // Currently presented snackbar informing the user that page interaction is
@@ -35,34 +30,7 @@
   SnackbarMessage* _interactionLimitedSnackbar;
 }
 
-#pragma mark - ActorOverlayCoordinator
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                  webState:(web::WebState*)webState
-                                scrimColor:(UIColor*)scrimColor
-                                 glowColor:(UIColor*)glowColor {
-  self = [super initWithBaseViewController:viewController browser:browser];
-  if (self) {
-    CHECK(scrimColor);
-    CHECK(glowColor);
-    _scrimColor = scrimColor;
-    _glowColor = glowColor;
-    _scrimVisible = YES;
-  }
-  return self;
-}
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                  webState:(web::WebState*)webState {
-  return
-      [self initWithBaseViewController:viewController
-                               browser:browser
-                              webState:webState
-                            scrimColor:[UIColor colorNamed:kStaticBlueColor]
-                             glowColor:[UIColor colorNamed:kStaticBlueColor]];
-}
+#pragma mark - Public
 
 - (void)showInteractionLimitedSnackbar {
   // No-op before `start`, after `stop`, when the scrim is hidden, or while the
@@ -99,6 +67,15 @@
 
 #pragma mark - ChromeCoordinator
 
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _scrimVisible = YES;
+  }
+  return self;
+}
+
 - (void)start {
   if (_viewController) {
     return;
@@ -110,10 +87,11 @@
   _snackbarCommandsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
 
+  UIColor* overlayColor = [UIColor colorNamed:kStaticBlueColor];
   _viewController = [[ActorOverlayViewController alloc]
       initWithBrowserLayoutGuideCenter:browserCenter
-                            scrimColor:_scrimColor
-                             glowColor:_glowColor];
+                            scrimColor:overlayColor
+                             glowColor:overlayColor];
   _viewController.delegate = self;
   _viewController.scrimVisible = self.scrimVisible;
   _viewController.layoutState = layoutState;

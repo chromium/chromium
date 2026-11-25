@@ -549,6 +549,20 @@ const char kContextPanelDismissedHistogram[] =
   _tabPickerCoordinator = nil;
 }
 
+// Shows or updates the actor overlay coordinator with `scrimVisible`.
+- (void)showActorOverlayWithScrimVisible:(BOOL)scrimVisible {
+  if (!_actorOverlayCoordinator) {
+    _actorOverlayCoordinator = [[ActorOverlayCoordinator alloc]
+        initWithBaseViewController:_baseViewController
+                           browser:_browser];
+    _actorOverlayCoordinator.scrimVisible = scrimVisible;
+    [_actorOverlayCoordinator start];
+    return;
+  }
+  // Updating `scrimVisible` in place avoids restarting the glow view.
+  _actorOverlayCoordinator.scrimVisible = scrimVisible;
+}
+
 // Stops the Trusted Vault reauthentication coordinator and runs its pending
 // completion, if any.
 - (void)stopTrustedVaultReauthentication {
@@ -818,20 +832,12 @@ const char kContextPanelDismissedHistogram[] =
 
 #pragma mark - ActorOverlayCommands
 
-- (void)showActorOverlayForWebState:(web::WebState*)webState
-                          showScrim:(BOOL)showScrim {
-  if (!_actorOverlayCoordinator) {
-    _actorOverlayCoordinator = [[ActorOverlayCoordinator alloc]
-        initWithBaseViewController:_baseViewController
-                           browser:_browser
-                          webState:webState];
-    _actorOverlayCoordinator.scrimVisible = showScrim;
-    [_actorOverlayCoordinator start];
-    return;
-  }
-  // `ActorOverlayCoordinator` does not retain `webState` (crbug.com/548051839),
-  // so updating `scrimVisible` in place avoids restarting the glow view.
-  _actorOverlayCoordinator.scrimVisible = showScrim;
+- (void)showActorOverlayWithScrim {
+  [self showActorOverlayWithScrimVisible:YES];
+}
+
+- (void)showActorOverlayWithoutScrim {
+  [self showActorOverlayWithScrimVisible:NO];
 }
 
 - (void)hideActorOverlay {

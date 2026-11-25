@@ -991,29 +991,25 @@ TEST_F(BrowserModalHostTest, HidesDefaultBrowserPromo) {
 // initial `scrimVisible` value, updates `scrimVisible` in place without
 // restarting the coordinator on subsequent show calls, and stops it on hide.
 TEST_F(BrowserModalHostTest, StartsUpdatesAndStopsActorOverlayCoordinator) {
-  InsertWebState();
-  web::WebState* web_state = GetActiveWebState();
-
   id class_mock = OCMStrictClassMock([ActorOverlayCoordinator class]);
   [class_mock setExpectationOrderMatters:YES];
   ActorOverlayCoordinator* mock_coordinator = class_mock;
   OCMExpect([class_mock alloc]).andReturn(class_mock);
   OCMExpect([mock_coordinator initWithBaseViewController:base_view_controller_
-                                                 browser:browser_.get()
-                                                webState:web_state])
+                                                 browser:browser_.get()])
       .andReturn(mock_coordinator);
   OCMExpect([mock_coordinator setScrimVisible:NO]);
   OCMExpect([mock_coordinator start]);
 
   id<ActorOverlayCommands> handler = HandlerForProtocol(
       browser_->GetCommandDispatcher(), ActorOverlayCommands);
-  [handler showActorOverlayForWebState:web_state showScrim:NO];
+  [handler showActorOverlayWithoutScrim];
   EXPECT_OCMOCK_VERIFY(class_mock);
 
-  // Calling `-showActorOverlayForWebState:showScrim:` while already started
-  // updates `scrimVisible` in place without re-allocating or re-starting.
+  // Calling `-showActorOverlayWithScrim` while already started updates
+  // `scrimVisible` in place without re-allocating or re-starting.
   OCMExpect([mock_coordinator setScrimVisible:YES]);
-  [handler showActorOverlayForWebState:web_state showScrim:YES];
+  [handler showActorOverlayWithScrim];
   EXPECT_OCMOCK_VERIFY(class_mock);
 
   OCMExpect([mock_coordinator stop]);

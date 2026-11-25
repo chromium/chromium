@@ -48,7 +48,7 @@ void ActorBrowserAgent::OnControlStateChanged(
     web::WebState* web_state,
     actor::ActorControlState previous_control_state,
     actor::ActorControlState new_control_state) {
-  UpdateOverlayForControlState(new_control_state, web_state);
+  UpdateOverlayForControlState(new_control_state);
 }
 
 void ActorBrowserAgent::UpdateActiveWebState(web::WebState* old_web_state,
@@ -72,7 +72,7 @@ void ActorBrowserAgent::UpdateActiveWebState(web::WebState* old_web_state,
                      : actor::ActorControlState::kInactive;
 
   if (old_control_state != new_control_state) {
-    UpdateOverlayForControlState(new_control_state, new_web_state);
+    UpdateOverlayForControlState(new_control_state);
   }
 
   if (new_tab_helper) {
@@ -81,8 +81,7 @@ void ActorBrowserAgent::UpdateActiveWebState(web::WebState* old_web_state,
 }
 
 void ActorBrowserAgent::UpdateOverlayForControlState(
-    actor::ActorControlState control_state,
-    web::WebState* web_state) {
+    actor::ActorControlState control_state) {
   id<ActorOverlayCommands> handler = HandlerForProtocol(
       browser_->GetCommandDispatcher(), ActorOverlayCommands);
   switch (control_state) {
@@ -90,10 +89,10 @@ void ActorBrowserAgent::UpdateOverlayForControlState(
       [handler hideActorOverlay];
       break;
     case actor::ActorControlState::kActorControlled:
-      [handler showActorOverlayForWebState:web_state showScrim:YES];
+      [handler showActorOverlayWithScrim];
       break;
     case actor::ActorControlState::kUserControlled:
-      [handler showActorOverlayForWebState:web_state showScrim:NO];
+      [handler showActorOverlayWithoutScrim];
       break;
   }
 }
