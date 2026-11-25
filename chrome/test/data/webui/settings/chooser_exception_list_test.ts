@@ -567,4 +567,57 @@ suite('ChooserExceptionList', function() {
     assertEquals(testElement.chooserExceptions[0]!.sites[0]!.origin, args[1]);
     assertDeepEquals(testElement.chooserExceptions[0]!.object, args[2]);
   });
+
+  test('policy only exceptions hide reset settings button', async function() {
+    setUpChooserType(
+        ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
+        createPrefsPolicyProvider());
+    await browserProxy.whenCalled('getChooserExceptionList');
+    await microtasksFinished();
+    assertEquals(1, testElement.chooserExceptions.length);
+
+    const emptyListMessage =
+        testElement.shadowRoot.querySelector<HTMLElement>('#emptyListMessage');
+    assertTrue(emptyListMessage !== null);
+    assertFalse(isVisible(emptyListMessage));
+
+    const resetButton = testElement.shadowRoot.querySelector<HTMLElement>(
+        '#resetSettingsButton');
+    assertTrue(resetButton !== null);
+    assertFalse(isVisible(resetButton));
+  });
+
+  test(
+      'reset settings skips policy enforced site exceptions', async function() {
+        setUpChooserType(
+            ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
+            createPrefsUsb());
+        await browserProxy.whenCalled('getChooserExceptionList');
+        await microtasksFinished();
+        assertEquals(3, testElement.chooserExceptions.length);
+
+        const resetButton = testElement.shadowRoot.querySelector<HTMLElement>(
+            '#resetSettingsButton');
+        assertTrue(resetButton !== null);
+        assertTrue(isVisible(resetButton));
+        assertFalse(testElement.$.confirmResetSettings.open);
+        assertEquals(
+            0, browserProxy.getCallCount('resetChooserExceptionForSite'));
+
+        resetButton.click();
+        assertTrue(testElement.$.confirmResetSettings.open);
+
+        const confirmButton = testElement.shadowRoot.querySelector<HTMLElement>(
+            '#confirmResetSettings .action-button');
+        assertTrue(confirmButton !== null);
+        confirmButton.click();
+        assertFalse(testElement.$.confirmResetSettings.open);
+
+        assertEquals(
+            2, browserProxy.getCallCount('resetChooserExceptionForSite'));
+        const calls = browserProxy.getArgs('resetChooserExceptionForSite');
+        assertDeepEquals(
+            ['https://foo-user.com', 'https://baz-user.com'],
+            calls.map(call => call[1]));
+      });
 });

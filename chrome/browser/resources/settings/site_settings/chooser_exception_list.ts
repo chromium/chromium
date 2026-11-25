@@ -173,6 +173,17 @@ export class ChooserExceptionListElement extends
     return this.chooserExceptions.length > 0;
   }
 
+  /**
+   * @return true if there is at least one chooser exception that is not
+   *     enforced by policy and can be reset by the user.
+   */
+  protected hasResettableExceptions_(): boolean {
+    return this.chooserExceptions.some(
+        exception => exception.sites.some(
+            site => site.enforcement !==
+                chrome.settingsPrivate.Enforcement.ENFORCED));
+  }
+
   protected async onShowTooltip_(
       e: CustomEvent<{target: HTMLElement, text: string}>) {
     this.tooltipText_ = e.detail.text;
@@ -224,6 +235,9 @@ export class ChooserExceptionListElement extends
   protected onResetSettingsClick_(e: Event) {
     this.chooserExceptions.forEach(exception => {
       exception.sites.forEach(site => {
+        if (site.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED) {
+          return;
+        }
         this.browserProxy.resetChooserExceptionForSite(
             exception.chooserType, site.origin, exception.object);
       });

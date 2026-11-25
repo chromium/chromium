@@ -15,7 +15,7 @@
       <div class="secondary">${this.emptyListMessage_}</div>
     </div>
 
-    <div ?hidden="${!this.hasExceptions_()}">
+    <div ?hidden="${!this.hasResettableExceptions_()}">
       <cr-button id="resetSettingsButton" role="button" aria-disabled="false"
           @click="${this.onConfirmClearSettingsClick_}">
         $i18n{siteSettingsReset}
