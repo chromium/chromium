@@ -2409,7 +2409,10 @@ TEST(V8ScriptValueSerializerTest, CoexistWithGin) {
   EXPECT_FALSE(serialized_script_value);
 }
 
-TEST(V8ScriptValueSerializerTest, RoundTripImmutableArrayBufferShared) {
+// TODO(crbug.com/585626939): Sets a V8 flag after V8 is initialized, which
+// crashes when run in a batch after other tests.
+TEST(V8ScriptValueSerializerTest,
+     DISABLED_RoundTripImmutableArrayBufferShared) {
   ScopedSharedArrayBufferForTest enable_sab(true);
   v8::V8::SetFlagsFromString("--js-immutable-arraybuffer");
   test::TaskEnvironment task_environment;
@@ -2442,7 +2445,10 @@ TEST(V8ScriptValueSerializerTest, RoundTripImmutableArrayBufferShared) {
             output_ab->GetBackingStore()->Data());
 }
 
-TEST(V8ScriptValueSerializerTest, RoundTripImmutableArrayBufferSlowMode) {
+// TODO(crbug.com/585626939): Sets a V8 flag after V8 is initialized, which
+// crashes when run in a batch after other tests.
+TEST(V8ScriptValueSerializerTest,
+     DISABLED_RoundTripImmutableArrayBufferSlowMode) {
   ScopedSharedArrayBufferForTest enable_sab(true);
   v8::V8::SetFlagsFromString("--js-immutable-arraybuffer");
   test::TaskEnvironment task_environment;
@@ -2477,8 +2483,10 @@ TEST(V8ScriptValueSerializerTest, RoundTripImmutableArrayBufferSlowMode) {
             output_ab->GetBackingStore()->Data());
 }
 
+// TODO(crbug.com/585626939): Sets a V8 flag after V8 is initialized, which
+// crashes when run in a batch after other tests.
 TEST(V8ScriptValueSerializerTest,
-     RoundTripImmutableArrayBufferWithoutSABPermission) {
+     DISABLED_RoundTripImmutableArrayBufferWithoutSABPermission) {
   ScopedSharedArrayBufferForTest disable_sab(false);
   v8::V8::SetFlagsFromString("--js-immutable-arraybuffer");
   test::TaskEnvironment task_environment;
@@ -2518,7 +2526,10 @@ TEST(V8ScriptValueSerializerTest,
   EXPECT_EQ(input_span, output_span);
 }
 
-TEST(V8ScriptValueSerializerTest, RoundTripImmutableArrayBufferForStorage) {
+// TODO(crbug.com/585626939): Sets a V8 flag after V8 is initialized, which
+// crashes when run in a batch after other tests.
+TEST(V8ScriptValueSerializerTest,
+     DISABLED_RoundTripImmutableArrayBufferForStorage) {
   ScopedSharedArrayBufferForTest enable_sab(true);
   v8::V8::SetFlagsFromString("--js-immutable-arraybuffer");
   test::TaskEnvironment task_environment;
@@ -2557,7 +2568,10 @@ TEST(V8ScriptValueSerializerTest, RoundTripImmutableArrayBufferForStorage) {
   EXPECT_EQ(input_span, output_span);
 }
 
-TEST(V8ScriptValueSerializerTest, RoundTripImmutableArrayBufferUnpacked) {
+// TODO(crbug.com/585626939): Sets a V8 flag after V8 is initialized, which
+// crashes when run in a batch after other tests.
+TEST(V8ScriptValueSerializerTest,
+     DISABLED_RoundTripImmutableArrayBufferUnpacked) {
   ScopedSharedArrayBufferForTest enable_sab(true);
   v8::V8::SetFlagsFromString("--js-immutable-arraybuffer");
   test::TaskEnvironment task_environment;
