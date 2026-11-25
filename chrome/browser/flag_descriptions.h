@@ -8376,10 +8376,6 @@ inline constexpr char kPdfSaveToDriveName[] = "Save PDF to Drive";
 inline constexpr char kPdfSaveToDriveDescription[] =
     "Enables the ability to save PDFs to Google Drive.";
 
-inline constexpr char kPdfOopifName[] = "OOPIF for PDF Viewer";
-inline constexpr char kPdfOopifDescription[] =
-    "Use an OOPIF for the PDF Viewer, instead of a GuestView.";
-
 inline constexpr char kPdfPortfolioName[] = "PDF portfolio";
 inline constexpr char kPdfPortfolioDescription[] =
     "Enable PDF portfolio feature.";

@@ -2106,11 +2106,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   platform_experience::prefs::RegisterPrefs(*registry);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if BUILDFLAG(ENABLE_PDF)
-  registry->RegisterBooleanPref(prefs::kPdfViewerOutOfProcessIframeEnabled,
-                                true);
-#endif  // BUILDFLAG(ENABLE_PDF)
-
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   registry->RegisterStringPref(
       prefs::kRestrictPdfSaveToGoogleDriveAccountsToPattern, "");

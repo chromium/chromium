@@ -8185,11 +8185,6 @@
     "expiry_milestone": 162
   },
   {
-    "name": "pdf-oopif",
-    "owners": [ "andyphan@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 180
-  },
-  {
     "name": "pdf-portfolio",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
     "expiry_milestone": 140

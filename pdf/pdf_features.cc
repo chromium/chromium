@@ -11,11 +11,6 @@
 
 namespace chrome_pdf::features {
 
-namespace {
-bool g_is_oopif_pdf_policy_enabled = true;
-}  // namespace
-
-
 // Enables PDFium to support the experimental PDF 2.0 /BrotliDecode filter
 // allowing for PDFs encoded with Brotli to be viewable by Chrome's PDF
 // viewer.
@@ -100,13 +95,8 @@ const base::FeatureParam<std::string> kPdfSaveToDriveSurveyEnterpriseTriggerId{
     &kPdfSaveToDriveSurvey, "enterprise-trigger-id", ""};
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
-void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled) {
-  g_is_oopif_pdf_policy_enabled = is_oopif_pdf_policy_enabled;
-}
-
 bool IsOopifPdfEnabled() {
-  return g_is_oopif_pdf_policy_enabled &&
-         base::FeatureList::IsEnabled(kPdfOopif);
+  return base::FeatureList::IsEnabled(kPdfOopif);
 }
 
 }  // namespace chrome_pdf::features

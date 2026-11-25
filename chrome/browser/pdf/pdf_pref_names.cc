@@ -13,10 +13,6 @@ const char kPdfLocalFileAccessAllowedForDomains[] =
 // Boolean pref to control whether to use Skia renderer in the PDF viewer.
 const char kPdfUseSkiaRendererEnabled[] = "pdf.enable_skia";
 
-// Boolean pref to control whether to use the OOPIF PDF viewer.
-const char kPdfViewerOutOfProcessIframeEnabled[] =
-    "pdf.enable_out_of_process_iframe_viewer";
-
 // Boolean pref to control whether to enable support for XFA forms in PDF
 // viewer.
 const char kPdfXfaFormsEnabled[] = "pdf.xfa_forms_enabled";

@@ -846,9 +846,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPdfUseSkiaRendererEnabled,
     prefs::kPdfUseSkiaRendererEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kPdfViewerOutOfProcessIframeEnabled,
-    prefs::kPdfViewerOutOfProcessIframeEnabled,
-    base::Value::Type::BOOLEAN },
 #if BUILDFLAG(IS_CHROMEOS)
   { key::kPdfXfaFormsEnabled,
     prefs::kPdfXfaFormsEnabled,

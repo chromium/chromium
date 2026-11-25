@@ -138,7 +138,6 @@
 #include "media/base/localized_strings.h"
 #include "net/base/data_url.h"
 #include "net/base/module/net_module.h"
-#include "pdf/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -282,11 +281,6 @@
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_info_handler.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/pdf/pdf_pref_names.h"
-#include "pdf/pdf_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -2059,12 +2053,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // This can't be created in the BrowserProcessImpl constructor because it
   // needs to read prefs that get set after that runs.
   browser_process_->intranet_redirect_detector();
-
-#if BUILDFLAG(ENABLE_PDF)
-  chrome_pdf::features::SetIsOopifPdfPolicyEnabled(
-      g_browser_process->local_state()->GetBoolean(
-          prefs::kPdfViewerOutOfProcessIframeEnabled));
-#endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

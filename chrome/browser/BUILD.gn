@@ -2100,7 +2100,6 @@ source_set("core") {
   if (enable_pdf) {
     deps += [
       "//chrome/browser/pdf",
-      "//chrome/browser/pdf:pdf_pref_names",
       "//chrome/browser/ui/pdf",
       "//components/pdf/browser:interceptors",
     ]

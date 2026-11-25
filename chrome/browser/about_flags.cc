@@ -7755,10 +7755,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPdfEnableFontationsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfEnableFontations)},
 
-    {"pdf-oopif", flag_descriptions::kPdfOopifName,
-     flag_descriptions::kPdfOopifDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfOopif)},
-
     {"pdf-portfolio", flag_descriptions::kPdfPortfolioName,
      flag_descriptions::kPdfPortfolioDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfPortfolio)},

@@ -8,13 +8,11 @@ desc: |-
 
   When this policy is set to Disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will strictly use the existing GuestView PDF viewer. It embeds a web page with a separate frame tree into another web page.
 
-  This policy is deprecated in M152 and will be removed in M155. The GuestView PDF viewer is being removed, and the out-of-process iframe (OOPIF) PDF viewer architecture will always be used.
+  This policy was deprecated in M152 and was removed in M160. The GuestView PDF viewer has been removed, and the out-of-process iframe (OOPIF) PDF viewer architecture is always used.
 example_value: true
 features:
   dynamic_refresh: false
   per_profile: false
-future_on:
-- chrome_os
 items:
 - caption: PDF viewer uses the OOPIF architecture.
   value: true
@@ -26,6 +24,6 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.*:126-
+- chrome.*:126-159
 tags: []
 type: main
