@@ -44,6 +44,7 @@
 #include "components/viz/service/gl/gpu_log_message_manager.h"
 #include "components/viz/service/main/viz_main_impl.h"
 #include "content/child/child_process.h"
+#include "content/child/memory_coordinator/child_memory_coordinator.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -53,6 +54,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/process_type.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "content/public/gpu/content_gpu_client.h"
@@ -493,6 +495,8 @@ int GpuMain(MainFunctionParams parameters) {
 
   base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
       switches::kGpuProcess);
+
+  ChildMemoryCoordinator::Get().InitializeProcessTypePolicies(PROCESS_TYPE_GPU);
 
   base::HighResolutionTimerManager hi_res_timer_manager;
 

@@ -3099,6 +3099,7 @@ test("content_unittests") {
     "../common/input/actions_parser_unittest.cc",
     "../common/input/synthetic_gesture_controller_unittest.cc",
     "../common/input/synthetic_pointer_action_unittest.cc",
+    "../common/memory_coordinator/background_policy_unittest.cc",
     "../common/memory_coordinator/memory_consumer_registry_unittest.cc",
     "../common/memory_coordinator/memory_coordinator_policy_manager_unittest.cc",
     "../common/memory_coordinator/memory_pressure_policy_unittest.cc",

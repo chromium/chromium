@@ -304,9 +304,10 @@ struct BASE_EXPORT MemoryConsumerTraits {
 
   // Indicates whether the consumer is affected by its process being
   // backgrounded, and if so, how long to wait after backgrounding before asking
-  // it to release memory. The memory limit itself drops as soon as the process
-  // is backgrounded. If the process is about to be frozen, the remaining delay
-  // is skipped.
+  // it to release memory. Its memory limit is also lowered while the process is
+  // backgrounded. On Android 14+, if the process is about to be frozen before
+  // the delay expires, the consumer is asked to release memory right away
+  // instead.
   //
   // Together with AffectedByMemoryPressure, this allows consumers that today
   // only release memory when backgrounded to migrate to the memory coordinator

@@ -142,6 +142,8 @@ source_set("common") {
     "lazy_shared_url_loader_factory.cc",
     "lazy_shared_url_loader_factory.h",
     "media/cdm_info.cc",
+    "memory_coordinator/background_policy.cc",
+    "memory_coordinator/background_policy.h",
     "memory_coordinator/constants.h",
     "memory_coordinator/memory_consumer_group_controller.h",
     "memory_coordinator/memory_consumer_group_host.h",

@@ -44,6 +44,7 @@
 #include "content/common/skia_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/process_type.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/memory_coordinator/last_resort_gc_policy.h"
@@ -233,6 +234,9 @@ int RendererMain(MainFunctionParams parameters) {
   // zygote_main_linux.cc.  However, calling multiple times from the same thread
   // is OK.
   InitializeWebRtcModuleBeforeSandbox();
+
+  ChildMemoryCoordinator::Get().InitializeProcessTypePolicies(
+      PROCESS_TYPE_RENDERER);
 
   std::optional<LastResortGCPolicy> last_resort_gc_policy;
   if (base::FeatureList::IsEnabled(kMemoryCoordinatorLastResortGC)) {

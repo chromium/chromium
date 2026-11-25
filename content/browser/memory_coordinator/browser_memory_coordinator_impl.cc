@@ -68,7 +68,21 @@ void BrowserMemoryCoordinatorImpl::InitializePolicies() {
   if (base::FeatureList::IsEnabled(kMemoryCoordinatorZeroLimit)) {
     zero_limit_policy_.emplace(policy_manager_);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // On other platforms, the browser process is never considered backgrounded.
+  background_policy_.emplace(policy_manager_);
+  // Notifies of the current priority, if known.
+  process_priority_observation_.Observe(ProcessPriorityTracker::GetInstance());
+#endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void BrowserMemoryCoordinatorImpl::OnPriorityChanged(
+    base::Process::Priority process_priority) {
+  background_policy_->OnProcessPriorityChanged(process_priority);
+}
+#endif
 
 MemoryCoordinatorPolicyManager& BrowserMemoryCoordinatorImpl::policy_manager() {
   return policy_manager_;

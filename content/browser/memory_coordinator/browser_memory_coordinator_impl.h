@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/memory_coordinator/memory_consumer_registry.h"
+#include "build/build_config.h"
 #include "content/browser/memory_coordinator/zero_limit_policy.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
@@ -24,6 +25,12 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/scoped_observation.h"
+#include "content/common/memory_coordinator/background_policy.h"
+#include "content/common/process_priority_tracker.h"
+#endif
+
 namespace content {
 
 class ChildMemoryConsumerRegistryHost;
@@ -32,7 +39,12 @@ class ChildMemoryConsumerRegistryHost;
 // MemoryConsumerRegistry, the ChildMemoryConsumerRegistryHost
 // instances, and the MemoryCoordinatorPolicyManager.
 class CONTENT_EXPORT BrowserMemoryCoordinatorImpl
-    : public BrowserMemoryCoordinator {
+    : public BrowserMemoryCoordinator
+#if BUILDFLAG(IS_ANDROID)
+    ,
+      public ProcessPriorityTracker::ProcessPriorityObserver
+#endif
+{
  public:
   static BrowserMemoryCoordinatorImpl& Get();
 
@@ -75,6 +87,11 @@ class CONTENT_EXPORT BrowserMemoryCoordinatorImpl
       mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver);
 
  private:
+#if BUILDFLAG(IS_ANDROID)
+  // ProcessPriorityTracker::ProcessPriorityObserver:
+  void OnPriorityChanged(base::Process::Priority process_priority) override;
+#endif
+
   void OnHostDisconnected(ChildProcessId child_process_id);
 
   MemoryCoordinatorPolicyManager policy_manager_;
@@ -90,6 +107,17 @@ class CONTENT_EXPORT BrowserMemoryCoordinatorImpl
       memory_pressure_policy_registration_;
 
   std::optional<ZeroLimitPolicy> zero_limit_policy_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // On other platforms, the browser process is never considered backgrounded.
+  std::optional<BackgroundPolicy> background_policy_;
+
+  // Declared after `background_policy_` so that observation stops before the
+  // policy is destroyed.
+  base::ScopedObservation<ProcessPriorityTracker,
+                          ProcessPriorityTracker::ProcessPriorityObserver>
+      process_priority_observation_{this};
+#endif
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   size_t diagnostic_observer_count_ = 0u;
