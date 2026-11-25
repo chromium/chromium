@@ -35,8 +35,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
-#include "ui/views/test/widget_activation_waiter.h"
-#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
 using desktop_to_mobile_promos::PromoType;
@@ -142,10 +140,9 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
       CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true,
                        {MobilePromoOnDesktopPromoType::kAllPromos}));
 
-  views::Widget* widget =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  views::test::WidgetTest::SimulateNativeActivate(widget);
-  views::test::WaitForWidgetActive(widget, true);
+  auto paint_as_active_lock = BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->GetWidget()
+                                  ->LockPaintAsActive();
 
   EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
       .WillOnce(testing::Return(true));
@@ -162,10 +159,9 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
   device_info_tracker()->Add(
       CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/false));
 
-  views::Widget* widget =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  views::test::WidgetTest::SimulateNativeActivate(widget);
-  views::test::WaitForWidgetActive(widget, true);
+  auto paint_as_active_lock = BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->GetWidget()
+                                  ->LockPaintAsActive();
 
   EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
       .Times(0);
@@ -188,10 +184,9 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
       promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
       base::Time::Now());
 
-  views::Widget* widget =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  views::test::WidgetTest::SimulateNativeActivate(widget);
-  views::test::WaitForWidgetActive(widget, true);
+  auto paint_as_active_lock = BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->GetWidget()
+                                  ->LockPaintAsActive();
 
   EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
       .Times(0);
@@ -213,10 +208,9 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
   browser()->GetProfile()->GetPrefs()->SetInteger(
       promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 10);
 
-  views::Widget* widget =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  views::test::WidgetTest::SimulateNativeActivate(widget);
-  views::test::WaitForWidgetActive(widget, true);
+  auto paint_as_active_lock = BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->GetWidget()
+                                  ->LockPaintAsActive();
 
   EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
       .Times(0);
@@ -236,10 +230,9 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
       CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/false,
                        {MobilePromoOnDesktopPromoType::kLensPromo}));
 
-  views::Widget* widget =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  views::test::WidgetTest::SimulateNativeActivate(widget);
-  views::test::WaitForWidgetActive(widget, true);
+  auto paint_as_active_lock = BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->GetWidget()
+                                  ->LockPaintAsActive();
 
   EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
       .Times(0);
@@ -259,10 +252,9 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
       CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true,
                        {MobilePromoOnDesktopPromoType::kESBPromo}));
 
-  views::Widget* widget =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  views::test::WidgetTest::SimulateNativeActivate(widget);
-  views::test::WaitForWidgetActive(widget, true);
+  auto paint_as_active_lock = BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->GetWidget()
+                                  ->LockPaintAsActive();
 
   EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
       .Times(0);
@@ -279,10 +271,9 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
   device_info_tracker()->Add(
       CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true, {}));
 
-  views::Widget* widget =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  views::test::WidgetTest::SimulateNativeActivate(widget);
-  views::test::WaitForWidgetActive(widget, true);
+  auto paint_as_active_lock = BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->GetWidget()
+                                  ->LockPaintAsActive();
 
   EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
       .Times(1);
@@ -300,10 +291,9 @@ IN_PROC_BROWSER_TEST_F(
   device_info_tracker()->Add(
       CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true, {}));
 
-  views::Widget* widget =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  views::test::WidgetTest::SimulateNativeActivate(widget);
-  views::test::WaitForWidgetActive(widget, true);
+  auto paint_as_active_lock = BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->GetWidget()
+                                  ->LockPaintAsActive();
 
   EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
       .Times(0);
@@ -323,10 +313,9 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
       CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true,
                        {MobilePromoOnDesktopPromoType::kAutofillPromo}));
 
-  views::Widget* widget =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  views::test::WidgetTest::SimulateNativeActivate(widget);
-  views::test::WaitForWidgetActive(widget, true);
+  auto paint_as_active_lock = BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->GetWidget()
+                                  ->LockPaintAsActive();
 
   EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
       .Times(1);
