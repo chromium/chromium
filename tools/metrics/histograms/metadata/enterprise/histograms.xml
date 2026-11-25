@@ -1787,7 +1787,8 @@ chromium-metrics-reviews@google.com.
     Captures the size, in bytes, of the device attestation blob generated to
     bind a signals report to the device. Recorded once per attestation blob
     generation request, only when the generation was successful. Recorded on all
-    platforms that support device attestation (currently Android and iOS).
+    platforms that support device attestation (currently Android, iOS and
+    ChromeOS).
   </summary>
 </histogram>
 
@@ -1800,7 +1801,9 @@ chromium-metrics-reviews@google.com.
     before any work is done. Acts as the denominator for
     Enterprise.DeviceSignals.Attestation.Result: the difference between the two
     counts is the number of requests that never completed. Recorded on all
-    platforms that support device attestation (currently Android and iOS).
+    platforms that support device attestation (currently Android, iOS and
+    ChromeOS). On ChromeOS, attestation is only requested for affiliated
+    profiles on enterprise-managed devices; other profiles record nothing.
   </summary>
 </histogram>
 
@@ -1815,7 +1818,7 @@ chromium-metrics-reviews@google.com.
     is torn down while generation is in flight, record no result; compare
     against Enterprise.DeviceSignals.Attestation.Requested to measure how often
     that happens. Recorded on all platforms that support device attestation
-    (currently Android and iOS).
+    (currently Android, iOS and ChromeOS).
   </summary>
 </histogram>
 
@@ -1858,8 +1861,8 @@ chromium-metrics-reviews@google.com.
     {Outcome}. Requests that could not be attempted at all, because no
     attestation service was available, are excluded and are instead recorded to
     Enterprise.DeviceSignals.Attestation.Result as service unavailable. Recorded
-    on all platforms that support device attestation (currently Android and
-    iOS).
+    on all platforms that support device attestation (currently Android, iOS and
+    ChromeOS).
   </summary>
   <token key="Outcome" variants="DeviceSignalsOutcome"/>
 </histogram>

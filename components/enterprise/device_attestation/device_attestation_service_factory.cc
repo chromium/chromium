@@ -5,6 +5,8 @@
 #include "components/enterprise/device_attestation/device_attestation_service_factory.h"
 
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -16,6 +18,9 @@
 #elif BUILDFLAG(IS_IOS)
 #include "components/enterprise/device_attestation/ios/attestation_service_ios.h"
 #include "components/enterprise/device_attestation/ios/device_attestation_service_ios.h"
+#elif BUILDFLAG(IS_CHROMEOS)
+#include "components/device_signals/core/common/signals_features.h"
+#include "components/enterprise/device_attestation/ash/device_attestation_service_ash.h"
 #endif
 
 namespace enterprise {
@@ -30,8 +35,8 @@ std::optional<DeviceAttestationServiceFactory*>& GetTestInstanceStorage() {
 #if BUILDFLAG(IS_IOS)
 std::optional<DeviceAttestationServiceFactory::AttestationServiceIOSProvider>&
 GetAttestationServiceIOSProviderStorage() {
-  static base::NoDestructor<
-      std::optional<DeviceAttestationServiceFactory::AttestationServiceIOSProvider>>
+  static base::NoDestructor<std::optional<
+      DeviceAttestationServiceFactory::AttestationServiceIOSProvider>>
       storage;
   return *storage;
 }
@@ -63,6 +68,13 @@ DeviceAttestationServiceFactory::CreateDeviceAttestationService() {
                                                : nullptr;
   return std::make_unique<DeviceAttestationServiceIOS>(
       std::move(attestation_service_ios));
+#elif BUILDFLAG(IS_CHROMEOS)
+  if (!enterprise_signals::features::IsChromeOsDeviceAttestationEnabled()) {
+    // Kill switch: fall back to the no-op service, which reports attestation
+    // as unsupported without affecting the rest of the signals report.
+    return std::make_unique<DeviceAttestationService>();
+  }
+  return std::make_unique<DeviceAttestationServiceAsh>();
 #else
   return std::make_unique<DeviceAttestationService>();
 #endif

@@ -14,12 +14,14 @@ static_library("device_attestation") {
   public = [
     "device_attestation_service.h",
     "device_attestation_service_factory.h",
+    "device_attestation_utils.h",
   ]
   sources = [
     "device_attestation_metrics.cc",
     "device_attestation_metrics.h",
     "device_attestation_service.cc",
     "device_attestation_service_factory.cc",
+    "device_attestation_utils.cc",
   ]
 
   public_deps = [
@@ -36,6 +38,18 @@ static_library("device_attestation") {
     public += [ "android/device_attestation_service_android.h" ]
     sources += [ "android/device_attestation_service_android.cc" ]
     deps += [ "//components/enterprise/device_attestation/android" ]
+  }
+
+  if (is_chromeos) {
+    public += [ "ash/device_attestation_service_ash.h" ]
+    sources += [ "ash/device_attestation_service_ash.cc" ]
+    deps += [
+      "//chromeos/ash/components/dbus/attestation",
+      "//chromeos/ash/components/dbus/attestation:attestation_proto",
+      "//chromeos/ash/components/dbus/constants",
+      "//chromeos/ash/components/install_attributes",
+      "//crypto",
+    ]
   }
 
   if (is_ios) {

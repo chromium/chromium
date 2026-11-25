@@ -18,6 +18,7 @@ BASE_DECLARE_FEATURE(kPolicyDataCollectionEnabled);
 BASE_DECLARE_FEATURE(kCertificateCollectionEnabled);
 BASE_DECLARE_FEATURE(kContentBindingVersioningEnabled);
 BASE_DECLARE_FEATURE(kContentBindingVersioningEnabledIOS);
+BASE_DECLARE_FEATURE(kChromeOsDeviceAttestationEnabled);
 
 // Returns true if additional device signals reporting for browser-level Chrome
 // reports has been enabled.
@@ -33,6 +34,9 @@ bool IsCertificateCollectionEnabled();
 bool IsContentBindingVersioningEnabled();
 // Returns true if content binding versioning feature has been enabled on iOS.
 bool IsContentBindingVersioningEnabledIOS();
+// Returns true if hardware-backed device attestation of signals reports has
+// been enabled on ChromeOS.
+bool IsChromeOsDeviceAttestationEnabled();
 
 // Feature flag for supporting the new private SecureConnect functions in
 // unaffiliated contexts via the consent flow.

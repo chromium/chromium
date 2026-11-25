@@ -32,6 +32,12 @@ BASE_FEATURE(kContentBindingVersioningEnabled,
 BASE_FEATURE(kContentBindingVersioningEnabledIOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables hardware-backed device attestation of signals reports on ChromeOS.
+// Acts as a kill switch: when disabled, no attestation blob is generated and
+// signals are still reported unattested.
+BASE_FEATURE(kChromeOsDeviceAttestationEnabled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsBrowserSignalsReportingEnabled() {
   return base::FeatureList::IsEnabled(kBrowserSignalsReportingEnabled);
 }
@@ -54,6 +60,10 @@ bool IsContentBindingVersioningEnabled() {
 
 bool IsContentBindingVersioningEnabledIOS() {
   return base::FeatureList::IsEnabled(kContentBindingVersioningEnabledIOS);
+}
+
+bool IsChromeOsDeviceAttestationEnabled() {
+  return base::FeatureList::IsEnabled(kChromeOsDeviceAttestationEnabled);
 }
 
 BASE_FEATURE(kNewEvSignalsUnaffiliatedEnabled,

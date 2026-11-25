@@ -31,7 +31,9 @@ enum class AttestationBlobResult {
 // once at the start of every request, before any early return, so that it can
 // act as the denominator for the result metric: requests whose callback never
 // runs (e.g. the service is torn down mid-flight) are recorded here but have no
-// corresponding result.
+// corresponding result. Calls for which attestation does not apply at all
+// (e.g. profiles that are not eligible for it on ChromeOS) are not requests and
+// are not recorded, as on platforms without an attestation service.
 void LogAttestationBlobRequested();
 
 // Records the result of an attempted blob generation, along with how long the

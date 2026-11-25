@@ -44,9 +44,6 @@ class DeviceAttestationServiceAndroid : public DeviceAttestationService {
                              DeviceAttestationCallback callback,
                              BlobGenerationResult blob_generation_result);
 
-  std::string GenerateV1ContentBindingString(
-      const enterprise_management::ChromeProfileReportRequest& report);
-
   std::unique_ptr<AndroidAttestationClient> client_;
   base::WeakPtrFactory<DeviceAttestationServiceAndroid> weak_ptr_factory_{this};
 };
