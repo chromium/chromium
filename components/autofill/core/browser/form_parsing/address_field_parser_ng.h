@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -65,6 +66,8 @@ class AddressFieldParserNG : public FormFieldParser {
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
+  friend class AddressFieldParserNGTestApi;
+
   explicit AddressFieldParserNG(AddressCountryCode country_code);
 
   // Returns the score of the best matching rule that assigns `field_type` to
@@ -101,7 +104,7 @@ class AddressFieldParserNG : public FormFieldParser {
 
   // Prepared work for the address hierarchy corresponding to the country of the
   // client.
-  std::unique_ptr<AddressHierarchyConstraints> constraints_;
+  const raw_ref<const AddressHierarchyConstraints> constraints_;
 
   // The best classification encountered so far.
   ClassifiedFieldSequence best_classification_;

@@ -7,7 +7,10 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/address_field_parser_ng_test_api.h"
+#include "components/autofill/core/browser/form_parsing/address_hierarchy_constraints_cache.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -256,7 +259,6 @@ TEST_F(AddressFieldParserTestNG, ParseAmbiguousCountryState2) {
   ClassifyAndVerify();
 }
 
-
 // Tests that address name is not misclassified as address.
 TEST_F(AddressFieldParserTestNG, NotParseAddressName_TR) {
   AddTextFormFieldData("address", "Adres Başlığı", UNKNOWN_TYPE);
@@ -350,6 +352,25 @@ TEST_F(AddressFieldParserTestNG, IN_BuildingAndLandmark_Locality) {
   AddTextFormFieldData("address2", "Locality", ADDRESS_HOME_DEPENDENT_LOCALITY);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("IN"),
                     LanguageCode("en"));
+}
+
+// Tests that `AddressFieldParserNG` reuses cached `AddressHierarchyConstraints`
+// instances from `AddressHierarchyConstraintsCache` for the same country and
+// uses distinct instances for countries with different hierarchies.
+TEST_F(AddressFieldParserTestNG, ReusesCachedAddressHierarchyConstraints) {
+  std::unique_ptr<AddressFieldParserNG> us_first =
+      AddressFieldParserNGTestApi::Create(AddressCountryCode("US"));
+  std::unique_ptr<AddressFieldParserNG> us_second =
+      AddressFieldParserNGTestApi::Create(AddressCountryCode("US"));
+  std::unique_ptr<AddressFieldParserNG> mx =
+      AddressFieldParserNGTestApi::Create(AddressCountryCode("MX"));
+
+  EXPECT_EQ(&test_api(*us_first).constraints(),
+            &AddressHierarchyConstraintsCache::GetInstance().Get(
+                AddressCountryCode("US")));
+  EXPECT_EQ(&test_api(*us_first).constraints(),
+            &test_api(*us_second).constraints());
+  EXPECT_NE(&test_api(*us_first).constraints(), &test_api(*mx).constraints());
 }
 
 }  // namespace

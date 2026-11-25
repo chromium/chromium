@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/address_hierarchy_constraints.h"
+#include "components/autofill/core/browser/form_parsing/address_hierarchy_constraints_cache.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_util.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
@@ -62,11 +64,9 @@ bool ClassifiedFieldSequence::BetterThan(
   return score > other.score;
 }
 
-// TODO(crbug.com/328954153): This initialization of prepared work could be
-// cached in a registry to prevent the repetitive creation effort.
 AddressFieldParserNG::AddressFieldParserNG(AddressCountryCode client_country)
-    : constraints_(
-          std::make_unique<AddressHierarchyConstraints>(client_country)) {}
+    : constraints_(AddressHierarchyConstraintsCache::GetInstance().Get(
+          std::move(client_country))) {}
 
 AddressFieldParserNG::~AddressFieldParserNG() = default;
 
