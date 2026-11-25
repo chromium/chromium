@@ -140,10 +140,6 @@ inline constexpr char kDisableHighResTimer[] = "disable-highres-timer";
 inline constexpr char kDisableUsbKeyboardDetect[] =
     "disable-usb-keyboard-detect";
 
-// Forces the use of QPC for TimeTicks even if cpuid doesn't report the presence
-// of an invariant TSC.
-inline constexpr char kForceHighResTimeTicks[] = "force-high-res-timeticks";
-
 // Instructs base::win::IsUser32AndGdi32Available() to load and pin user32.dll
 // (and its static import gdi32.dll) to verify initialization.
 inline constexpr char kPinUser32AndGdi32InAvailabilityCheck[] =

@@ -42,13 +42,10 @@
 #include <atomic>
 #include <ostream>
 
-#include "base/base_switches.h"
 #include "base/bit_cast.h"
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/notreached.h"
-#include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"
@@ -524,8 +521,6 @@ TimeTicks QPCNow() {
   return TimeTicks() + QPCValueToTimeDelta(QPCNowRaw());
 }
 
-std::atomic<bool> g_opted_out_of_qpc_trial_because_no_command_line = false;
-
 void InitializeNowFunctionPointer() {
   LARGE_INTEGER ticks_per_sec = {};
   // `QueryPerformanceFrequency` always succeeds and sets its out parameter to a
@@ -533,49 +528,6 @@ void InitializeNowFunctionPointer() {
   // https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancefrequency
   CHECK(QueryPerformanceFrequency(&ticks_per_sec));
   CHECK_GT(ticks_per_sec.QuadPart, 0);
-
-  // To debug an issue where in the field, all clients are in the Control group.
-  // We suspect it might be due to the command line not being ready before this
-  // function is called in some build configurations.
-  bool opted_out_because_no_command_line = false;
-
-  // QPC is enabled for all devices with invariant TSCs.
-  // On devices where the CPU doesn't report having an invariant TSC, we would
-  // previously have considered the QPC overhead to be unacceptable. For this
-  // field trial, try enabling the high-res, QPC-based implementation of
-  // TimeTicks on 50% of such devices.
-  bool force_high_res_time_ticks = false;
-  // There is an explicit check for
-  // `base::CommandLine::InitializedForCurrentProcess()` not being null here,
-  // because some targets (like `generate_colors_info`) use `TimeTicks` during
-  // the build without initializing this command line object. In those cases,
-  // it's also not necessary to roll the dice to force high res timer since
-  // we're not running a browser.
-  if (base::CommandLine::InitializedForCurrentProcess()) {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kForceHighResTimeTicks)) {
-      // If `switches::kForceHighResTimeTicks` is present, it's because this
-      // is a child process that is being instructed to use the same clock as
-      // its parent browser process. In this case, force the use of high
-      // resolution TimeTicks iff `switches::kForceHighResTimeTicks` is set to
-      // "enabled". It can also take the value of "disabled" when the browser
-      // is in either the "Control" or "ExcludedBecauseNoCommandLine" groups.
-      auto switch_value =
-          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-              switches::kForceHighResTimeTicks);
-      if (switch_value == "enabled") {
-        force_high_res_time_ticks = true;
-      }
-    } else {
-      // If `switches::kForceHighResTimeTicks` isn't present, this is either
-      // the browser process so we should roll a dice to determine if we're in
-      // the field trial, or this device already uses high resolution
-      // TimeTicks so the dice roll will not be used.
-      force_high_res_time_ticks = base::RandDouble() < 0.5;
-    }
-  } else {
-    opted_out_because_no_command_line = true;
-  }
 
   // If the QPC implementation is expensive and/or unreliable, TimeTicks::Now()
   // will still use the low-resolution clock. A CPU lacking a non-stop time
@@ -585,11 +537,8 @@ void InitializeNowFunctionPointer() {
   // Otherwise, Now uses the high-resolution QPC clock. As of November 2026,
   // ~99.4% of updateable users (excluding clients stuck on M109 or older due to
   // unsupported OS versions) fall within this category.
-  const bool eligible_for_high_res_time_ticks =
-      force_high_res_time_ticks || CPU().has_non_stop_time_stamp_counter();
-
   const TimeTicksNowFunction now_function =
-      eligible_for_high_res_time_ticks ? &QPCNow : &RolloverProtectedNow;
+      CPU().has_non_stop_time_stamp_counter() ? &QPCNow : &RolloverProtectedNow;
 
   // Threading note 1: In an unlikely race condition, it's possible for two or
   // more threads to enter InitializeNowFunctionPointer() in parallel. This is
@@ -597,83 +546,28 @@ void InitializeNowFunctionPointer() {
   // to the global variables, and those variable being atomic are safe to read
   // from other threads.
   //
-  // Under the high resolution field trial for low resolution devices, multiple
-  // threads racing could roll a different dice roll and attempt to set the
-  // functions to different values. To avoid having thread A set the "now"
-  // function to something, and thread B set the "now without override" function
-  // to something else, only the thread where the first compare_exchange
-  // succeeds is allowed to proceed with setting the remainder of the global
-  // state.
-  //
   // Threading note 2: A release fence is placed here to ensure, from the
   // perspective of other threads using the function pointers, that the
   // assignment to |g_qpc_ticks_per_second| happens before the function pointers
   // are changed.
   g_qpc_ticks_per_second = ticks_per_sec.QuadPart;
   std::atomic_thread_fence(std::memory_order_release);
-  // memory_order_relaxed is sufficient since an explicit fence was inserted
-  // above.
+  // Also set g_time_ticks_now_function to avoid the additional indirection via
+  // TimeTicksNowIgnoringOverride() for future calls to TimeTicks::Now(), only
+  // if it wasn't already overridden to a different value. memory_order_relaxed
+  // is sufficient since an explicit fence was inserted above.
   base::TimeTicksNowFunction initial_time_ticks_now_function =
-      &InitialNowFunction;
-
-  if (g_time_ticks_now_ignoring_override_function.compare_exchange_strong(
-          initial_time_ticks_now_function, now_function,
-          std::memory_order_relaxed)) {
-    // Also set g_time_ticks_now_function to avoid the additional indirection
-    // via TimeTicksNowIgnoringOverride() for future calls to TimeTicks::Now().
-    internal::g_time_ticks_now_function.store(now_function,
-                                              std::memory_order_relaxed);
-
-    // Only the thread setting the functions should report whether its command
-    // line was ready.
-    g_opted_out_of_qpc_trial_because_no_command_line.store(
-        opted_out_because_no_command_line, std::memory_order_relaxed);
-  }
+      &subtle::TimeTicksNowIgnoringOverride;
+  internal::g_time_ticks_now_function.compare_exchange_strong(
+      initial_time_ticks_now_function, now_function, std::memory_order_relaxed);
+  g_time_ticks_now_ignoring_override_function.store(now_function,
+                                                    std::memory_order_relaxed);
 }
 
 TimeTicks InitialNowFunction() {
   InitializeNowFunctionPointer();
   return g_time_ticks_now_ignoring_override_function.load(
       std::memory_order_relaxed)();
-}
-
-enum class HighResolutionTrialState {
-  kAlreadyHighResolution,
-  kDontUseHighResolution,
-  kUseHighResolution,
-  kExcludedBecauseNoCommandLine,
-};
-
-HighResolutionTrialState GetHighResolutionTrialState() {
-  // This is a copy of the conditions in `InitializeNowFunctionPointer`, minus
-  // the work around global atomics. The return value of this function shouldn't
-  // vary on the same device.
-  // TODO(crbug.com/410560675): Remove this function once experimentation with
-  // QPC is concluded.
-
-  // IsHighResolution() initializes the clock if it hasn't been done.
-  bool is_high_res = TimeTicks::IsHighResolution();
-
-  if (!CPU().has_non_stop_time_stamp_counter()) {
-    if (g_opted_out_of_qpc_trial_because_no_command_line.load(
-            std::memory_order_relaxed)) {
-      // If there was no command line ready when initializing the time
-      // functions, put the client in a separate group.
-      return HighResolutionTrialState::kExcludedBecauseNoCommandLine;
-    } else if (is_high_res) {
-      // If the device isn't considered eligible for QPC-based TimeTicks but is
-      // using it regardless, it means that it's part of the experimental QPC
-      // group.
-      return HighResolutionTrialState::kUseHighResolution;
-    } else {
-      // Otherwise, the device is expectedly using low-res TimeTicks, add it to
-      // the control group.
-      return HighResolutionTrialState::kDontUseHighResolution;
-    }
-  }
-
-  // Don't add clients with ideal QPC implementations to the trial at all.
-  return HighResolutionTrialState::kAlreadyHighResolution;
 }
 
 }  // namespace
@@ -835,57 +729,6 @@ void ThreadTicks::WaitUntilInitializedWin() {
 // static
 TimeTicks TimeTicks::FromQPCValue(LONGLONG qpc_value) {
   return TimeTicks() + QPCValueToTimeDelta(qpc_value);
-}
-
-// static
-bool TimeTicks::GetHighResolutionTimeTicksFieldTrial(std::string* trial_name,
-                                                     std::string* group_name) {
-  auto state = GetHighResolutionTrialState();
-
-  switch (state) {
-    case HighResolutionTrialState::kAlreadyHighResolution:
-      return false;
-    case HighResolutionTrialState::kDontUseHighResolution:
-      *group_name = "Control";
-      break;
-    case HighResolutionTrialState::kUseHighResolution:
-      *group_name = "Enabled";
-      break;
-    case HighResolutionTrialState::kExcludedBecauseNoCommandLine:
-      *group_name = "ExcludedBecauseNoCommandLine";
-      break;
-  }
-
-  *trial_name = "HighResolutionTimeTicks";
-  return true;
-}
-
-// static
-void TimeTicks::MaybeAddHighResolutionTimeTicksSwitch(
-    base::CommandLine* command_line) {
-  auto state = GetHighResolutionTrialState();
-
-  switch (state) {
-    case HighResolutionTrialState::kAlreadyHighResolution:
-      // If the device is already using an ideal QPC implementation for
-      // TimeTicks, don't pass any command line flag.
-      break;
-    case HighResolutionTrialState::kExcludedBecauseNoCommandLine:
-    case HighResolutionTrialState::kDontUseHighResolution:
-      // In the cases of "Control" and "ExcludedBecauseNoCommandLine", tell the
-      // child process not to use QPC for TimeTicks to match the browser
-      // process.
-      command_line->AppendSwitchASCII(switches::kForceHighResTimeTicks,
-                                      "disabled");
-      break;
-    case HighResolutionTrialState::kUseHighResolution:
-      // If the device doesn't report having an invariant TSC, but the browser
-      // process has rolled a dice and is being included in the high-resolution
-      // trial's "enabled" group, pass this information to the child process.
-      command_line->AppendSwitchASCII(switches::kForceHighResTimeTicks,
-                                      "enabled");
-      break;
-  }
 }
 
 // TimeDelta ------------------------------------------------------------------

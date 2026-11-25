@@ -99,8 +99,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include <string>
-
 #include "base/win/windows_types.h"
 
 namespace ABI {
@@ -116,7 +114,6 @@ struct TimeSpan;
 namespace base {
 
 #if BUILDFLAG(IS_WIN)
-class CommandLine;
 class PlatformThreadHandle;
 #endif
 class TimeDelta;
@@ -1252,16 +1249,6 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // value has the same origin as Now(). Do NOT attempt to use this if
   // IsHighResolution() returns false.
   static TimeTicks FromQPCValue(LONGLONG qpc_value);
-
-  // If this device doesn't have an invariant TSC, it may be added to the
-  // client-side trial to try to use QPC anyway. This function returns true for
-  // all devices in the trial (which is all the devices without an invariant
-  // TSC), and populates `trial_name` and `group_name` for them. `group_name`
-  // can be "Enabled", "Control", or "ExcludedBecauseNoCommandLine".
-  static bool GetHighResolutionTimeTicksFieldTrial(std::string* trial_name,
-                                                   std::string* group_name);
-
-  static void MaybeAddHighResolutionTimeTicksSwitch(CommandLine* command_line);
 #endif
 
 #if BUILDFLAG(IS_APPLE)
