@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.history;
 
+import android.os.Build;
+
+import androidx.annotation.ChecksSdkIntAtLeast;
+
 import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -12,6 +16,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 @NullMarked
 public final class HistoryFeatures {
     private HistoryFeatures() {}
+
+    /** Returns whether app-specific history is enabled. */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public static boolean isAppSpecificHistoryEnabled() {
+        return ChromeFeatureList.sAppSpecificHistory.isEnabled()
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+    }
 
     // LINT.IfChange(AndroidDesktopWebUiHistory)
     /** Returns whether the WebUI history surface is enabled on Android Desktop. */

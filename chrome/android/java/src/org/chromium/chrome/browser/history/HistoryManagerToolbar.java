@@ -25,15 +25,35 @@ import java.util.List;
 /** The SelectionToolbar for the browsing history UI. */
 @NullMarked
 public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
-    private HistoryManager mManager;
-    private HistoryManagerMenuDelegate mMenuDelegate;
+    private HistoryToolbarDelegate mDelegate;
 
-    /** Delegate for menu capabilities of history management. */
-    public interface HistoryManagerMenuDelegate {
-        /** Return whether deleting history is currently supported. */
+    /** Delegate for host interactions needed by the history toolbar. */
+    public interface HistoryToolbarDelegate {
+        /** Returns whether history is displayed in a separate activity. */
+        boolean isDisplayedInSeparateActivity();
+
+        /** Returns whether the info button should be shown. */
+        boolean shouldShowInfoButton();
+
+        /** Returns whether the info header should be shown if available. */
+        boolean shouldShowInfoHeaderIfAvailable();
+
+        /** Records that selection mode was established. */
+        void recordSelectionEstablished();
+
+        /** Shows the app-specific history IPH if eligible. */
+        void showIph();
+
+        /** Returns the list content view for focus traversal. */
+        View getListContentView();
+
+        /** Finishes the host history UI. */
+        void finish();
+
+        /** Returns whether deleting history is currently supported. */
         boolean supportsDeletingHistory();
 
-        /** Return whether incognito is currently supported. */
+        /** Returns whether incognito is currently supported. */
         boolean supportsIncognito();
     }
 
@@ -42,24 +62,15 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
     }
 
     /**
-     * @param manager The {@link HistoryManager} associated with this toolbar.
+     * @param delegate The {@link HistoryToolbarDelegate} associated with this toolbar.
      */
     @Initializer
-    public void setManager(HistoryManager manager) {
-        mManager = manager;
+    public void setDelegate(HistoryToolbarDelegate delegate) {
+        mDelegate = delegate;
 
-        if (!mManager.isDisplayedInSeparateActivity()) {
+        if (!mDelegate.isDisplayedInSeparateActivity()) {
             getMenu().removeItem(R.id.close_menu_id);
         }
-    }
-
-    /**
-     * @param menuDelegate The {@link HistoryManagerMenuDelegate} that determines the availability
-     *     of various menu items.
-     */
-    @Initializer
-    public void setMenuDelegate(HistoryManagerMenuDelegate menuDelegate) {
-        mMenuDelegate = menuDelegate;
         updateMenuItemVisibility();
     }
 
@@ -67,7 +78,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
     protected void showNormalView() {
         super.showNormalView();
         updateInfoMenuItem(
-                mManager.shouldShowInfoButton(), mManager.shouldShowInfoHeaderIfAvailable());
+                mDelegate.shouldShowInfoButton(), mDelegate.shouldShowInfoHeaderIfAvailable());
     }
 
     @Override
@@ -94,7 +105,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
             assumeNonNull(getItemById(R.id.selection_mode_copy_link)).setVisible(numSelected == 1);
 
             if (!wasSelectionEnabled) {
-                mManager.recordSelectionEstablished();
+                mDelegate.recordSelectionEstablished();
             }
         }
     }
@@ -103,10 +114,10 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
     public void setSearchEnabled(boolean searchEnabled) {
         super.setSearchEnabled(searchEnabled);
         updateInfoMenuItem(
-                mManager.shouldShowInfoButton(), mManager.shouldShowInfoHeaderIfAvailable());
+                mDelegate.shouldShowInfoButton(), mDelegate.shouldShowInfoHeaderIfAvailable());
         // shouldShowInfoButton is checked to ensure all the menu items are ready.
-        if (searchEnabled && mManager.shouldShowInfoButton()) {
-            mManager.showIph();
+        if (searchEnabled && mDelegate.shouldShowInfoButton()) {
+            mDelegate.showIph();
         }
     }
 
@@ -118,19 +129,19 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
     // Move focus to list content view.
     @Override
     protected View getNextFocusForward() {
-        return mManager.getListContentView();
+        return mDelegate.getListContentView();
     }
 
     /** Should be called when the user's sign in state changes. */
     public void onSignInStateChange() {
         updateMenuItemVisibility();
         updateInfoMenuItem(
-                mManager.shouldShowInfoButton(), mManager.shouldShowInfoHeaderIfAvailable());
+                mDelegate.shouldShowInfoButton(), mDelegate.shouldShowInfoHeaderIfAvailable());
     }
 
     @Override
     protected void onNavigationBack() {
-        mManager.finish();
+        mDelegate.finish();
     }
 
     private void updateMenuItemVisibility() {
@@ -138,11 +149,10 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
         // be added back until the user refreshes the history UI. This could happen if the user is
         // signed in to an account that cannot remove browsing history or has incognito disabled and
         // signs out.
-        assert mMenuDelegate != null;
-        if (!mMenuDelegate.supportsDeletingHistory()) {
+        if (!mDelegate.supportsDeletingHistory()) {
             getMenu().removeItem(R.id.selection_mode_delete_menu_id);
         }
-        if (!mMenuDelegate.supportsIncognito()) {
+        if (!mDelegate.supportsIncognito()) {
             getMenu().removeItem(R.id.selection_mode_open_in_incognito);
         }
     }

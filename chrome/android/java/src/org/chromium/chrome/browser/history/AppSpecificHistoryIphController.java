@@ -55,7 +55,7 @@ public class AppSpecificHistoryIphController {
     void maybeShowIph() {
         Profile profile = mProfileSupplier.get();
         if (profile == null) return;
-        if (!HistoryManager.isAppSpecificHistoryEnabled()) return;
+        if (!HistoryFeatures.isAppSpecificHistoryEnabled()) return;
 
         var tracker = TrackerFactory.getTrackerForProfile(profile);
         if (!tracker.isInitialized()

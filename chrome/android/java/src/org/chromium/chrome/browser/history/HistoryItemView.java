@@ -31,7 +31,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
-import org.chromium.chrome.browser.history.HistoryContentManager.AppInfoCache;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;

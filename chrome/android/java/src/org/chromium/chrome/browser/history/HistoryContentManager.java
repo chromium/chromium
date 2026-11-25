@@ -15,7 +15,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.SystemClock;
@@ -81,7 +80,6 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -844,14 +842,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @return True if history UI was launched for the app-specific mode.
      */
     boolean launchedForApp() {
-        return HistoryManager.isAppSpecificHistoryEnabled() && mLaunchedForApp;
+        return HistoryFeatures.isAppSpecificHistoryEnabled() && mLaunchedForApp;
     }
 
     /**
      * @return True if history page needs to show app filter UI.
      */
     boolean showAppFilter() {
-        return HistoryManager.isAppSpecificHistoryEnabled() && mShowAppFilter;
+        return HistoryFeatures.isAppSpecificHistoryEnabled() && mShowAppFilter;
     }
 
     /**
@@ -1221,41 +1219,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         }
         IntentUtils.addTrustedIntentExtras(viewIntent);
         return viewIntent;
-    }
-
-    static class AppInfoCache {
-        private static final FilterItem<String> INVALID_ITEM = new FilterItem<>("", null, "");
-        private @Nullable HashMap<String, FilterItem<String>> mAppInfoMap;
-        private PackageManager mPackageManager;
-
-        public AppInfoCache(PackageManager packageManager) {
-            mPackageManager = packageManager;
-        }
-
-        public @Nullable FilterItem<String> get(String appId) {
-            if (mAppInfoMap == null) mAppInfoMap = new HashMap<>();
-            FilterItem<String> appInfo = mAppInfoMap.get(appId);
-            if (appInfo == null) {
-                try {
-                    PackageManager pm = mPackageManager;
-                    var info = pm.getApplicationInfo(appId, PackageManager.GET_META_DATA);
-                    var icon = pm.getApplicationIcon(info);
-                    var label = pm.getApplicationLabel(info);
-                    appInfo = new FilterItem<>(appId, icon, label);
-                } catch (NameNotFoundException e) {
-                    // Can happen if the corresponding app was uninstalled, or unavailable for any
-                    // reason. Map it with an invalid info so it won't be queried again till next
-                    // time history UI is launched.
-                    appInfo = INVALID_ITEM;
-                }
-                mAppInfoMap.put(appId, appInfo);
-            }
-            return appInfo == INVALID_ITEM ? null : appInfo;
-        }
-
-        void setPackageManagerForTesting(PackageManager packageManager) {
-            mPackageManager = packageManager;
-        }
     }
 
     AppInfoCache getAppInfoCache() {

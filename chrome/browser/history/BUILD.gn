@@ -117,6 +117,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//chrome/browser/flags:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 
@@ -128,6 +129,7 @@ if (is_android) {
     sources = [
       "java/src/org/chromium/chrome/browser/history/AppHistoryInfoHeaderPref.java",
       "java/src/org/chromium/chrome/browser/history/AppHistoryUmaRecorder.java",
+      "java/src/org/chromium/chrome/browser/history/AppInfoCache.java",
       "java/src/org/chromium/chrome/browser/history/BrowserHistoryInfoHeaderPref.java",
       "java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
       "java/src/org/chromium/chrome/browser/history/CriticalAction.java",

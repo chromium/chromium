@@ -112,8 +112,7 @@ public class HistoryManager
 
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public static boolean isAppSpecificHistoryEnabled() {
-        return ChromeFeatureList.sAppSpecificHistory.isEnabled()
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+        return HistoryFeatures.isAppSpecificHistoryEnabled();
     }
 
     /**
@@ -277,9 +276,43 @@ public class HistoryManager
                                         ? R.menu.app_specific_history_manager_menu
                                         : R.menu.history_manager_menu,
                                 launchedForApp);
-        mToolbar.setManager(this);
-        mToolbar.setMenuDelegate(
-                new HistoryManagerToolbar.HistoryManagerMenuDelegate() {
+        mToolbar.setDelegate(
+                new HistoryManagerToolbar.HistoryToolbarDelegate() {
+                    @Override
+                    public boolean isDisplayedInSeparateActivity() {
+                        return HistoryManager.this.isDisplayedInSeparateActivity();
+                    }
+
+                    @Override
+                    public boolean shouldShowInfoButton() {
+                        return HistoryManager.this.shouldShowInfoButton();
+                    }
+
+                    @Override
+                    public boolean shouldShowInfoHeaderIfAvailable() {
+                        return HistoryManager.this.shouldShowInfoHeaderIfAvailable();
+                    }
+
+                    @Override
+                    public void recordSelectionEstablished() {
+                        HistoryManager.this.recordSelectionEstablished();
+                    }
+
+                    @Override
+                    public void showIph() {
+                        HistoryManager.this.showIph();
+                    }
+
+                    @Override
+                    public View getListContentView() {
+                        return HistoryManager.this.getListContentView();
+                    }
+
+                    @Override
+                    public void finish() {
+                        HistoryManager.this.finish();
+                    }
+
                     @Override
                     public boolean supportsDeletingHistory() {
                         return mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
@@ -503,7 +536,7 @@ public class HistoryManager
     /**
      * @return The view that shows the list content below toolbar.
      */
-    View getListContentView() {
+    private View getListContentView() {
         return mActivity.findViewById(R.id.list_content);
     }
 
@@ -617,7 +650,7 @@ public class HistoryManager
     /**
      * @return True if info menu item should be shown on history toolbar, false otherwise.
      */
-    boolean shouldShowInfoButton() {
+    private boolean shouldShowInfoButton() {
         assumeNonNull(mContentManager);
         assumeNonNull(mSelectionDelegate);
         assumeNonNull(mToolbar);
@@ -637,7 +670,7 @@ public class HistoryManager
                 && !mSelectionDelegate.isSelectionEnabled();
     }
 
-    void showIph() {
+    private void showIph() {
         AppSpecificHistoryIphController iphController =
                 new AppSpecificHistoryIphController(mActivity, () -> mProfile);
         iphController.maybeShowIph();
@@ -647,11 +680,11 @@ public class HistoryManager
      * @return True if the available privacy disclaimers should be shown. Note that this may return
      *     true even if there are currently no privacy disclaimers.
      */
-    boolean shouldShowInfoHeaderIfAvailable() {
+    private boolean shouldShowInfoHeaderIfAvailable() {
         return assumeNonNull(mContentManager).getShouldShowPrivacyDisclaimersIfAvailable();
     }
 
-    void recordSelectionEstablished() {
+    private void recordSelectionEstablished() {
         mUmaRecorder.recordSelectionEstablished(mIsSearching);
     }
 
