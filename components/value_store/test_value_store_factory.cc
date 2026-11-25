@@ -23,10 +23,10 @@ TestValueStoreFactory::TestValueStoreFactory(const base::FilePath& db_path)
 
 TestValueStoreFactory::~TestValueStoreFactory() = default;
 
-std::unique_ptr<ValueStore> TestValueStoreFactory::CreateValueStore(
+std::unique_ptr<QuotaEnforcer> TestValueStoreFactory::CreateValueStore(
     const base::FilePath& directory,
     const std::string& uma_client_name) {
-  std::unique_ptr<ValueStore> value_store(CreateStore());
+  std::unique_ptr<QuotaEnforcer> value_store(CreateStore());
   // This factory is purposely keeping the raw pointers to each ValueStore
   // created. Tests using TestValueStoreFactory must be careful to keep
   // those ValueStore's alive for the duration of their test.
@@ -58,8 +58,8 @@ void TestValueStoreFactory::Reset() {
   value_store_map_.clear();
 }
 
-std::unique_ptr<ValueStore> TestValueStoreFactory::CreateStore() {
-  std::unique_ptr<ValueStore> store;
+std::unique_ptr<QuotaEnforcer> TestValueStoreFactory::CreateStore() {
+  std::unique_ptr<QuotaEnforcer> store;
   if (db_path_.empty()) {
     store = std::make_unique<TestingValueStore>();
   } else {

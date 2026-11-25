@@ -797,8 +797,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, StorageAreaOnChanged) {
 // | ReadInvalidJSON             | Logical (JSON)  | get()   | Key deleted     |
 // | ReadInvalidJSONAfterRestart | Logical (JSON)  | Restart | Key deleted     |
 // | RepairUnopenableDatabase... | Structural      | get()   | Database wiped  |
-// | InvalidJsonClear            | Logical (JSON)  | clear() | Key deleted     |
-// | ClearOnRead                 | Physical        | clear() | Database locked |
+// | InvalidJsonClear            | Logical (JSON)  | clear() | Database wiped  |
+// | ClearOnRead                 | Physical        | clear() | Database wiped  |
 // | PhysicalBlockRot            | Physical        | get()   | Database locked |
 //
 using ExtensionCorruptLocalSettingsApiTest = ExtensionSettingsApiTest;
@@ -811,7 +811,7 @@ using ExtensionCorruptLocalSettingsApiTest = ExtensionSettingsApiTest;
 //
 // Expectation:
 // - The first read fails with an "Invalid JSON" error.
-// - A subsequent read succeeds because `SettingsStorageQuotaEnforcer`
+// - A subsequent read succeeds because `LeveldbValueStore`
 //   automatically deletes the corrupted key upon hitting the failure inline.
 IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest, ReadInvalidJSON) {
   ExtensionTestMessageListener extension_background_loaded_listener(
@@ -1025,18 +1025,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest,
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Tests that heavy sequential operations like `clear()` fail immediately when
-// faced with severely corrupted physical table wreckage.
+// Tests that `clear()` reports physical table corruption on its initial scan
+// while still destroying the corrupted database so subsequent operations
+// recover.
 //
 // Flow (Manual raw LevelDB creates valid structure, then destroys with .ldb
 // garbage):
 // 1. Extension attempts `chrome.storage.local.clear()`.
 //
 // Expectation:
-// - `clear()` triggers index traversals that encounter the wrecked table data.
-// - Operation fails with lockout instead of wiping destructively.
-// - Any subsequent `clear()` or `get()` calls also fail because LevelDB doesn't
-// attempt any repair in this case.
+// - `clear()` triggers index traversals that encounter the wrecked table data,
+//   surfaces the corruption error, and deletes the backing database.
+// - Subsequent `clear()` and `get()` calls succeed against a fresh empty
+//   database.
 IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest, ClearOnRead) {
   ExtensionTestMessageListener extension_background_loaded_listener(
       "background_ready", ReplyBehavior::kWillReply);
@@ -1091,28 +1092,25 @@ IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest, ClearOnRead) {
       ReplyBehavior::kWillReply);
   extension_background_loaded_listener.Reply("clear");
   // Verify that calling chrome.storage.local.clear() creates an iterator which
-  // hits the corrupted .ldb block and fails immediately.
+  // hits the corrupted .ldb block and reports the corruption error, while still
+  // deleting the database on disk.
   EXPECT_TRUE(clear_result_listener.WaitUntilSatisfied());
 
-  // Verify that a second attempt to clear the database also fails, proving that
-  // the first failed clear didn't repair or delete the database.
-  ExtensionTestMessageListener second_clear_listener(
-      "clear_error: Corruption: not an sstable (footer too short)",
-      ReplyBehavior::kWillReply);
+  // Verify that a second attempt to clear the database succeeds because the
+  // first clear deleted the corrupted database.
+  ExtensionTestMessageListener second_clear_listener("clear_success",
+                                                     ReplyBehavior::kWillReply);
   clear_result_listener.Reply("clear");
   EXPECT_TRUE(second_clear_listener.WaitUntilSatisfied());
 
-  // Verify that a get() for the corrupted key fails.
-  ExtensionTestMessageListener get_listener(
-      "get_test_key_error: Corruption: not an sstable (footer too short)",
-      ReplyBehavior::kWillReply);
+  // Verify that subsequent get() calls succeed with empty results.
+  ExtensionTestMessageListener get_listener("get_test_key_success: {}",
+                                            ReplyBehavior::kWillReply);
   second_clear_listener.Reply("get_test_key");
   EXPECT_TRUE(get_listener.WaitUntilSatisfied());
 
-  // Verify that getting a different, non-corrupted key also fails because the
-  // entire database is locked out.
   ExtensionTestMessageListener get_good_key_listener(
-      "get_good_key_error: Corruption: not an sstable (footer too short)");
+      "get_good_key_success: {}");
   get_listener.Reply("get_good_key");
   EXPECT_TRUE(get_good_key_listener.WaitUntilSatisfied());
 }
@@ -1125,10 +1123,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest, ClearOnRead) {
 // 2. Extension attempts `chrome.storage.local.clear()`.
 //
 // Expectation:
-// - The quota enforcer reads the invalid JSON and deletes the key inline.
-// - Subsequence .clear() succeeds resolving normally.
-// - `onChanged` triggers fires with only the uncorrupted key data (not the
-// corrupted key that was deleted inline earlier).
+// - `LeveldbValueStore::Clear()` accumulates removal changes for valid keys in
+//   a single scan before wiping the store.
+// - `clear()` succeeds and resolves normally.
+// - `onChanged` fires with only the uncorrupted key data (not the corrupted
+//   key that was deleted inline).
 IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest, InvalidJsonClear) {
   ExtensionTestMessageListener extension_background_loaded_listener(
       "background_ready", ReplyBehavior::kWillReply);
@@ -1164,9 +1163,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest, InvalidJsonClear) {
   // the `chrome.storage.onChanged` event (for local namespace) is fired for the
   // uncorrupted key.
   ExtensionTestMessageListener clear_listener("clear_success");
-  // `test_key` (corrupted) is deleted inline during a quota read operation
-  // before `clear()` executes, so `onChanged()` only reports updates for
-  // `good_key`.
+  // `test_key` (corrupted) is deleted during `LeveldbValueStore::Clear()`, so
+  // `onChanged()` only reports updates for `good_key`.
   ExtensionTestMessageListener on_changed_listener(
       "on_changed_success: {\"good_key\":{\"oldValue\":\"good_value\"}}");
 
@@ -1178,8 +1176,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest, InvalidJsonClear) {
   EXPECT_TRUE(on_changed_listener.WaitUntilSatisfied());
 }
 
-// Tests that localized physical bit rot (checksum mismatch) locks out the
-// entire database session from access or clears.
+// Tests localized physical bit rot (checksum mismatch) on reads and recovery
+// via `clear()`.
 //
 // Flow:
 // 1. Compress valid data to disk and inject single "GARBAGE" byte into .ldb
@@ -1191,9 +1189,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest, InvalidJsonClear) {
 // 4. Extension attempts full database read (`get(null)`) and fails.
 //
 // Expectation:
-// - Incremental `clear()` or `get(good_key)` operations continue to fail after
-// encountering block checksum mismatch.
-// - Physical block failures constitute non-recoverable session fatalities.
+// - `clear()` surfaces the block checksum mismatch while deleting the backing
+//   database.
+// - Subsequent `get()` operations succeed against a fresh empty database.
 IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest, PhysicalBlockRot) {
   ExtensionTestMessageListener extension_background_loaded_listener(
       "background_ready", ReplyBehavior::kWillReply);
@@ -1298,7 +1296,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest, PhysicalBlockRot) {
             std::string::npos);
   EXPECT_EQ(full_database_get_response.find("_key'"), std::string::npos);
 
-  // Verify clear() fails with checksum mismatch.
+  // Verify clear() surfaces the checksum mismatch while deleting the database.
   ExtensionTestMessageListener clear_listener(ReplyBehavior::kWillReply);
   full_database_get_listener.Reply("clear");
   ASSERT_TRUE(clear_listener.WaitUntilSatisfied());
@@ -1306,23 +1304,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionCorruptLocalSettingsApiTest, PhysicalBlockRot) {
   EXPECT_TRUE(base::StartsWith(clear_response, "clear_error:"));
   EXPECT_NE(clear_response.find("block checksum mismatch"), std::string::npos);
 
-  // Verify getting corrupted Key still fails with checksum mismatch.
+  // Verify subsequent get() calls succeed against the freshly recreated empty
+  // database.
   ExtensionTestMessageListener get_test_listener(ReplyBehavior::kWillReply);
   clear_listener.Reply("get_test_key");
   ASSERT_TRUE(get_test_listener.WaitUntilSatisfied());
-  std::string get_test_response = get_test_listener.message();
-  EXPECT_TRUE(base::StartsWith(get_test_response, "get_test_key_error:"));
-  EXPECT_NE(get_test_response.find("block checksum mismatch"),
-            std::string::npos);
+  EXPECT_EQ(get_test_listener.message(), "get_test_key_success: {}");
 
-  // Verify getting the uncorrupted key also fails.
   ExtensionTestMessageListener get_good_listener(ReplyBehavior::kWillReply);
   get_test_listener.Reply("get_good_key");
   ASSERT_TRUE(get_good_listener.WaitUntilSatisfied());
-  std::string get_good_response = get_good_listener.message();
-  EXPECT_TRUE(base::StartsWith(get_good_response, "get_good_key_error:"));
-  EXPECT_NE(get_good_response.find("block checksum mismatch"),
-            std::string::npos);
+  EXPECT_EQ(get_good_listener.message(), "get_good_key_success: {}");
   get_good_listener.Reply("");  // Release JS execution thread
 }
 

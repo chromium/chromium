@@ -29,9 +29,9 @@ base::FilePath GetValueStoreDir(
     ModelType model_type,
     const ExtensionId& id);
 
-// Creates a `ValueStore` to contain settings data for a specific extension
+// Creates a `QuotaEnforcer` to contain settings data for a specific extension
 // namespace and model type.
-std::unique_ptr<value_store::ValueStore> CreateSettingsStore(
+std::unique_ptr<value_store::QuotaEnforcer> CreateSettingsStore(
     settings_namespace::Namespace settings_namespace,
     ModelType model_type,
     const ExtensionId& id,

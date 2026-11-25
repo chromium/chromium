@@ -8,6 +8,8 @@
 #include <ostream>
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/json/json_writer.h"
 #include "base/notreached.h"
 
 namespace value_store {
@@ -22,6 +24,10 @@ ValueStore::Status CreateStatusCopy(const ValueStore::Status& status) {
   return ValueStore::Status(status.code, status.restore_status, status.message);
 }
 
+size_t JsonValueByteSize(const base::Value& value) {
+  return base::WriteJson(value).value_or("").size();
+}
+
 }  // namespace
 
 TestingValueStore::TestingValueStore() = default;
@@ -29,21 +35,6 @@ TestingValueStore::~TestingValueStore() = default;
 
 void TestingValueStore::set_status_code(StatusCode status_code) {
   status_ = ValueStore::Status(status_code, kGenericErrorMessage);
-}
-
-size_t TestingValueStore::GetBytesInUse(const std::string& key) {
-  // Let SettingsStorageQuotaEnforcer implement this.
-  NOTREACHED() << "Not implemented";
-}
-
-size_t TestingValueStore::GetBytesInUse(const std::vector<std::string>& keys) {
-  // Let SettingsStorageQuotaEnforcer implement this.
-  NOTREACHED() << "Not implemented";
-}
-
-size_t TestingValueStore::GetBytesInUse() {
-  // Let SettingsStorageQuotaEnforcer implement this.
-  NOTREACHED() << "Not implemented";
 }
 
 ValueStore::ReadResult TestingValueStore::GetKeys() {
@@ -89,20 +80,19 @@ ValueStore::ReadResult TestingValueStore::Get() {
 ValueStore::WriteResult TestingValueStore::Set(WriteOptions options,
                                                const std::string& key,
                                                const base::Value& value) {
-  base::DictValue settings;
-  settings.Set(key, value.Clone());
-  return Set(options, settings);
-}
+  ScopedQuotaTransaction quota_transaction(this);
+  if (Status quota_status = quota_transaction.Stage(options, key, value);
+      !quota_status.ok()) {
+    return WriteResult(std::move(quota_status));
+  }
 
-ValueStore::WriteResult TestingValueStore::Set(
-    WriteOptions options,
-    const base::DictValue& settings) {
   write_count_++;
-  if (!status_.ok())
+  if (!status_.ok()) {
     return WriteResult(CreateStatusCopy(status_));
+  }
 
   ValueStoreChangeList changes;
-  for (const auto [key, value] : settings) {
+  if (!(options & NO_GENERATE_CHANGES)) {
     base::Value* old_value = storage_.Find(key);
     if (!old_value || *old_value != value) {
       changes.emplace_back(key,
@@ -112,7 +102,46 @@ ValueStore::WriteResult TestingValueStore::Set(
                            value.Clone());
       storage_.Set(key, value.Clone());
     }
+  } else {
+    storage_.Set(key, value.Clone());
   }
+
+  quota_transaction.Commit();
+  return WriteResult(std::move(changes), CreateStatusCopy(status_));
+}
+
+ValueStore::WriteResult TestingValueStore::Set(
+    WriteOptions options,
+    const base::DictValue& settings) {
+  ScopedQuotaTransaction quota_transaction(this);
+  if (Status quota_status = quota_transaction.Stage(options, settings);
+      !quota_status.ok()) {
+    return WriteResult(std::move(quota_status));
+  }
+
+  write_count_++;
+  if (!status_.ok()) {
+    return WriteResult(CreateStatusCopy(status_));
+  }
+
+  ValueStoreChangeList changes;
+  for (const auto [key, value] : settings) {
+    if (!(options & NO_GENERATE_CHANGES)) {
+      base::Value* old_value = storage_.Find(key);
+      if (!old_value || *old_value != value) {
+        changes.emplace_back(
+            key,
+            old_value ? std::optional<base::Value>(old_value->Clone())
+                      : std::nullopt,
+            value.Clone());
+        storage_.Set(key, value.Clone());
+      }
+    } else {
+      storage_.Set(key, value.Clone());
+    }
+  }
+
+  quota_transaction.Commit();
   return WriteResult(std::move(changes), CreateStatusCopy(status_));
 }
 
@@ -132,6 +161,7 @@ ValueStore::WriteResult TestingValueStore::Remove(
     if (old_value.has_value()) {
       changes.emplace_back(key, std::move(*old_value), std::nullopt);
     }
+    FreeQuotaUsage(key);
   }
   return WriteResult(std::move(changes), CreateStatusCopy(status_));
 }
@@ -141,7 +171,22 @@ ValueStore::WriteResult TestingValueStore::Clear() {
   for (const auto [key, value] : storage_) {
     keys.push_back(key);
   }
-  return Remove(keys);
+  WriteResult result = Remove(keys);
+  if (result.status().ok()) {
+    ResetQuotaUsage();
+  }
+  return result;
+}
+
+bool TestingValueStore::CalculateUsage() {
+  if (!status_.ok()) {
+    return false;
+  }
+
+  for (const auto [key, value] : storage_) {
+    RecordStoredItemSize(key, key.size() + JsonValueByteSize(value));
+  }
+  return true;
 }
 
 }  // namespace value_store

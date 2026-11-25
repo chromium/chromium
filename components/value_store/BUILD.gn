@@ -8,6 +8,8 @@ source_set("value_store") {
     "lazy_leveldb.h",
     "leveldb_value_store.cc",
     "leveldb_value_store.h",
+    "quota_enforcer.cc",
+    "quota_enforcer.h",
     "value_store.cc",
     "value_store.h",
     "value_store_change.cc",
@@ -54,6 +56,7 @@ source_set("unit_tests") {
 
   sources = [
     "leveldb_value_store_unittest.cc",
+    "quota_enforcer_unittest.cc",
     "testing_value_store_unittest.cc",
     "value_store_change_unittest.cc",
     "value_store_frontend_unittest.cc",

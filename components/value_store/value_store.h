@@ -167,10 +167,6 @@ class ValueStore {
   virtual ~ValueStore() = default;
 
   // Gets the amount of space being used by a single value, in bytes.
-  // Note: The GetBytesInUse methods are only used by extension settings at the
-  // moment. If these become more generally useful, the
-  // SettingsStorageQuotaEnforcer and WeakUnlimitedSettingsStorage classes
-  // should be moved to the value_store directory.
   virtual size_t GetBytesInUse(const std::string& key) = 0;
 
   // Gets the total amount of space being used by multiple values, in bytes.

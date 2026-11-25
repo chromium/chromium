@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
-#include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
+#include "components/value_store/quota_enforcer.h"
 #include "extensions/browser/api/storage/value_store_cache.h"
 #include "extensions/common/extension_id.h"
 
@@ -46,8 +46,8 @@ class LocalValueStoreCache : public ValueStoreCache {
   // The Factory to use for creating new ValueStores.
   const scoped_refptr<value_store::ValueStoreFactory> storage_factory_;
 
-  // Quota limits (see SettingsStorageQuotaEnforcer).
-  const SettingsStorageQuotaEnforcer::Limits quota_;
+  // Quota limits (see value_store::QuotaEnforcer).
+  const value_store::QuotaEnforcer::Limits quota_;
 
   // The collection of ValueStores for local storage.
   StorageMap storage_map_;

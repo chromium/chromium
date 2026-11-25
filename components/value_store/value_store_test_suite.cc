@@ -214,6 +214,18 @@ TEST_P(ValueStoreTestSuite, DotsAllowedInKeyNames) {
   ExpectSettingsEq(MakeTestMap({{"foo.bar", "qux"}}), storage_->Get("foo.bar"));
 }
 
+TEST_P(ValueStoreTestSuite, SetWithNoGenerateChangesProducesNoChanges) {
+  ExpectChangesEq({}, storage_->Set(ValueStore::NO_GENERATE_CHANGES, "foo",
+                                    base::Value("bar")));
+  ExpectSettingsEq(MakeTestMap({{"foo", "bar"}}), storage_->Get("foo"));
+
+  ExpectChangesEq({},
+                  storage_->Set(ValueStore::NO_GENERATE_CHANGES,
+                                MakeTestMap({{"foo", "baz"}, {"qux", "1"}})));
+  ExpectSettingsEq(MakeTestMap({{"foo", "baz"}, {"qux", "1"}}),
+                   storage_->Get());
+}
+
 // This test suite is instantiated by implementers of ValueStore.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(ValueStoreTestSuite);
 

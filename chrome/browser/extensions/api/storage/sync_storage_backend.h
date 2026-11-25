@@ -14,9 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/value_store/quota_enforcer.h"
 #include "components/value_store/value_store_factory.h"
 #include "extensions/browser/api/storage/settings_observer.h"
-#include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
@@ -44,7 +44,7 @@ class SyncStorageBackend final : public syncer::SyncableService {
   // `observers` is the list of observers to settings changes.
   SyncStorageBackend(
       scoped_refptr<value_store::ValueStoreFactory> storage_factory,
-      const SettingsStorageQuotaEnforcer::Limits& quota,
+      const value_store::QuotaEnforcer::Limits& quota,
       SequenceBoundSettingsChangedCallback observer,
       syncer::DataType sync_type,
       const syncer::SyncableService::StartSyncFlare& flare);
@@ -90,8 +90,8 @@ class SyncStorageBackend final : public syncer::SyncableService {
   // The Factory to use for creating new ValueStores.
   const scoped_refptr<value_store::ValueStoreFactory> storage_factory_;
 
-  // Quota limits (see SettingsStorageQuotaEnforcer).
-  const SettingsStorageQuotaEnforcer::Limits quota_;
+  // Quota limits (see value_store::QuotaEnforcer).
+  const value_store::QuotaEnforcer::Limits quota_;
 
   // Observer to settings changes.
   SequenceBoundSettingsChangedCallback observer_;

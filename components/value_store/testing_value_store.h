@@ -11,13 +11,14 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "components/value_store/quota_enforcer.h"
 #include "components/value_store/value_store.h"
 
 namespace value_store {
 
 // ValueStore for testing, with an in-memory storage but the ability to
 // optionally fail all operations.
-class TestingValueStore : public ValueStore {
+class TestingValueStore : public QuotaEnforcer {
  public:
   TestingValueStore();
   ~TestingValueStore() override;
@@ -37,9 +38,6 @@ class TestingValueStore : public ValueStore {
   int write_count() { return write_count_; }
 
   // ValueStore implementation.
-  size_t GetBytesInUse(const std::string& key) override;
-  size_t GetBytesInUse(const std::vector<std::string>& keys) override;
-  size_t GetBytesInUse() override;
   ReadResult GetKeys() override;
   ReadResult Get(const std::string& key) override;
   ReadResult Get(const std::vector<std::string>& keys) override;
@@ -51,6 +49,10 @@ class TestingValueStore : public ValueStore {
   WriteResult Remove(const std::string& key) override;
   WriteResult Remove(const std::vector<std::string>& keys) override;
   WriteResult Clear() override;
+
+ protected:
+  // QuotaEnforcer implementation.
+  bool CalculateUsage() override;
 
  private:
   base::DictValue storage_;

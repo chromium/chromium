@@ -23,7 +23,7 @@ base::FilePath ValueStoreFactoryImpl::GetDBPath(
   return profile_path_.Append(directory);
 }
 
-std::unique_ptr<ValueStore> ValueStoreFactoryImpl::CreateValueStore(
+std::unique_ptr<QuotaEnforcer> ValueStoreFactoryImpl::CreateValueStore(
     const base::FilePath& directory,
     const std::string& uma_client_name) {
   return std::make_unique<LeveldbValueStore>(uma_client_name,

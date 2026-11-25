@@ -41,7 +41,7 @@ base::FilePath GetValueStoreDir(
   return dir.AppendASCII(id);
 }
 
-std::unique_ptr<value_store::ValueStore> CreateSettingsStore(
+std::unique_ptr<value_store::QuotaEnforcer> CreateSettingsStore(
     settings_namespace::Namespace settings_namespace,
     ModelType model_type,
     const ExtensionId& id,

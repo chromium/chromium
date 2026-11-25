@@ -15083,6 +15083,25 @@
             ]
         }
     ],
+    "OptimizeValueStoreQuotaEnforcement": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OptimizeValueStoreQuotaEnforcement"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptimizeVariationsIpcStudy": [
         {
             "platforms": [

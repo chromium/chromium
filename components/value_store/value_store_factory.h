@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "components/value_store/quota_enforcer.h"
 
 namespace base {
 class FilePath;
@@ -16,16 +17,14 @@ class FilePath;
 
 namespace value_store {
 
-class ValueStore;
-
 // Manages ValueStore instances.
 //
 // This factory creates the lower level stores that directly read/write to disk.
 class ValueStoreFactory : public base::RefCountedThreadSafe<ValueStoreFactory> {
  public:
-  // Creates a |ValueStore| to contain data for a specific app in the given
+  // Creates a |QuotaEnforcer| to contain data for a specific app in the given
   // directory.
-  virtual std::unique_ptr<ValueStore> CreateValueStore(
+  virtual std::unique_ptr<QuotaEnforcer> CreateValueStore(
       const base::FilePath& directory,
       const std::string& uma_client_name) = 0;
 

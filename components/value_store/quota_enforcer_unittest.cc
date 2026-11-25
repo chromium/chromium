@@ -1,35 +1,38 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/value_store/quota_enforcer.h"
+
+#include <limits.h>
 #include <stddef.h>
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/json/json_writer.h"
-#include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/value_store/testing_value_store.h"
-#include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions {
+namespace value_store {
 
-// To save typing value_store::ValueStore::DEFAULTS/IGNORE_QUOTA everywhere.
-const value_store::ValueStore::WriteOptions DEFAULTS =
-    value_store::ValueStore::DEFAULTS;
-const value_store::ValueStore::WriteOptions IGNORE_QUOTA =
-    value_store::ValueStore::IGNORE_QUOTA;
+namespace {
 
-class ExtensionSettingsQuotaTest : public testing::Test {
+const ValueStore::WriteOptions DEFAULTS = ValueStore::DEFAULTS;
+const ValueStore::WriteOptions IGNORE_QUOTA = ValueStore::IGNORE_QUOTA;
+
+}  // namespace
+
+class QuotaEnforcerTest : public testing::Test {
  public:
-  ExtensionSettingsQuotaTest()
+  QuotaEnforcerTest()
       : byte_value_1_(1),
         byte_value_16_("sixteen bytes."),
         byte_value_256_(base::Value(base::Value::Type::LIST)),
-        delegate_(new value_store::TestingValueStore()) {
+        storage_(std::make_unique<TestingValueStore>()) {
     for (int i = 1; i < 89; ++i) {
       byte_value_256_.GetList().Append(i);
     }
@@ -45,39 +48,27 @@ class ExtensionSettingsQuotaTest : public testing::Test {
     ASSERT_EQ(256u, validate_sizes.size());
   }
 
-  void TearDown() override { ASSERT_TRUE(storage_.get() != nullptr); }
-
  protected:
-  // Creates |storage_|.  Must only be called once.
-  void CreateStorage(
-      size_t quota_bytes, size_t quota_bytes_per_item, size_t max_items) {
-    ASSERT_TRUE(storage_.get() == nullptr);
-    SettingsStorageQuotaEnforcer::Limits limits =
-        { quota_bytes, quota_bytes_per_item, max_items };
-    storage_ = std::make_unique<SettingsStorageQuotaEnforcer>(
-        limits, base::WrapUnique(delegate_.get()));
+  void CreateStorage(size_t quota_bytes,
+                     size_t quota_bytes_per_item,
+                     size_t max_items) {
+    QuotaEnforcer::Limits limits = {quota_bytes, quota_bytes_per_item,
+                                    max_items};
+    storage_->SetQuotaLimits(limits);
   }
 
-  // Returns whether the settings in |storage_| and |delegate_| are the same as
-  // |settings|.
   bool SettingsEqual(const base::DictValue& settings) {
-    return settings == storage_->Get().settings() &&
-           settings == delegate_->Get().settings();
+    return settings == storage_->Get().settings();
   }
 
-  // Values with different serialized sizes.
   base::Value byte_value_1_;
   base::Value byte_value_16_;
   base::Value byte_value_256_;
 
-  // Quota enforcing storage area being tested.
-  std::unique_ptr<SettingsStorageQuotaEnforcer> storage_;
-
-  // In-memory storage area being delegated to.  Always owned by |storage_|.
-  raw_ptr<value_store::TestingValueStore> delegate_;
+  std::unique_ptr<TestingValueStore> storage_;
 };
 
-TEST_F(ExtensionSettingsQuotaTest, ZeroQuotaBytes) {
+TEST_F(QuotaEnforcerTest, ZeroQuotaBytes) {
   base::DictValue empty;
   CreateStorage(0, UINT_MAX, UINT_MAX);
 
@@ -87,7 +78,7 @@ TEST_F(ExtensionSettingsQuotaTest, ZeroQuotaBytes) {
   EXPECT_TRUE(SettingsEqual(empty));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, KeySizeTakenIntoAccount) {
+TEST_F(QuotaEnforcerTest, KeySizeTakenIntoAccount) {
   base::DictValue empty;
   CreateStorage(8u, UINT_MAX, UINT_MAX);
   EXPECT_FALSE(
@@ -95,7 +86,7 @@ TEST_F(ExtensionSettingsQuotaTest, KeySizeTakenIntoAccount) {
   EXPECT_TRUE(SettingsEqual(empty));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, SmallByteQuota) {
+TEST_F(QuotaEnforcerTest, SmallByteQuota) {
   base::DictValue settings;
   CreateStorage(8u, UINT_MAX, UINT_MAX);
 
@@ -108,7 +99,7 @@ TEST_F(ExtensionSettingsQuotaTest, SmallByteQuota) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, MediumByteQuota) {
+TEST_F(QuotaEnforcerTest, MediumByteQuota) {
   base::DictValue settings;
   CreateStorage(40, UINT_MAX, UINT_MAX);
 
@@ -130,7 +121,7 @@ TEST_F(ExtensionSettingsQuotaTest, MediumByteQuota) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, ZeroMaxKeys) {
+TEST_F(QuotaEnforcerTest, ZeroMaxKeys) {
   base::DictValue empty;
   CreateStorage(UINT_MAX, UINT_MAX, 0);
 
@@ -140,7 +131,7 @@ TEST_F(ExtensionSettingsQuotaTest, ZeroMaxKeys) {
   EXPECT_TRUE(SettingsEqual(empty));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, SmallMaxKeys) {
+TEST_F(QuotaEnforcerTest, SmallMaxKeys) {
   base::DictValue settings;
   CreateStorage(UINT_MAX, UINT_MAX, 1);
 
@@ -158,7 +149,7 @@ TEST_F(ExtensionSettingsQuotaTest, SmallMaxKeys) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, MediumMaxKeys) {
+TEST_F(QuotaEnforcerTest, MediumMaxKeys) {
   base::DictValue settings;
   CreateStorage(UINT_MAX, UINT_MAX, 2);
 
@@ -181,7 +172,7 @@ TEST_F(ExtensionSettingsQuotaTest, MediumMaxKeys) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, RemovingExistingSettings) {
+TEST_F(QuotaEnforcerTest, RemovingExistingSettings) {
   base::DictValue settings;
   CreateStorage(266, UINT_MAX, 2);
 
@@ -214,7 +205,7 @@ TEST_F(ExtensionSettingsQuotaTest, RemovingExistingSettings) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, RemovingNonexistentSettings) {
+TEST_F(QuotaEnforcerTest, RemovingNonexistentSettings) {
   base::DictValue settings;
   CreateStorage(36, UINT_MAX, 3);
 
@@ -264,7 +255,7 @@ TEST_F(ExtensionSettingsQuotaTest, RemovingNonexistentSettings) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, Clear) {
+TEST_F(QuotaEnforcerTest, Clear) {
   base::DictValue settings;
   CreateStorage(40, UINT_MAX, 5);
 
@@ -303,7 +294,7 @@ TEST_F(ExtensionSettingsQuotaTest, Clear) {
   }
 }
 
-TEST_F(ExtensionSettingsQuotaTest, ChangingUsedBytesWithSet) {
+TEST_F(QuotaEnforcerTest, ChangingUsedBytesWithSet) {
   base::DictValue settings;
   CreateStorage(20, UINT_MAX, UINT_MAX);
 
@@ -325,7 +316,7 @@ TEST_F(ExtensionSettingsQuotaTest, ChangingUsedBytesWithSet) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, SetsOnlyEntirelyCompletedWithByteQuota) {
+TEST_F(QuotaEnforcerTest, SetsOnlyEntirelyCompletedWithByteQuota) {
   base::DictValue settings;
   CreateStorage(40, UINT_MAX, UINT_MAX);
 
@@ -348,7 +339,7 @@ TEST_F(ExtensionSettingsQuotaTest, SetsOnlyEntirelyCompletedWithByteQuota) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, SetsOnlyEntireCompletedWithMaxKeys) {
+TEST_F(QuotaEnforcerTest, SetsOnlyEntireCompletedWithMaxKeys) {
   base::DictValue settings;
   CreateStorage(UINT_MAX, UINT_MAX, 2);
 
@@ -362,9 +353,9 @@ TEST_F(ExtensionSettingsQuotaTest, SetsOnlyEntireCompletedWithMaxKeys) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, WithInitialDataAndByteQuota) {
+TEST_F(QuotaEnforcerTest, WithInitialDataAndByteQuota) {
   base::DictValue settings;
-  delegate_->Set(DEFAULTS, "a", byte_value_256_);
+  storage_->Set(DEFAULTS, "a", byte_value_256_);
   settings.Set("a", byte_value_256_.Clone());
 
   CreateStorage(280, UINT_MAX, UINT_MAX);
@@ -404,9 +395,9 @@ TEST_F(ExtensionSettingsQuotaTest, WithInitialDataAndByteQuota) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, WithInitialDataAndMaxKeys) {
+TEST_F(QuotaEnforcerTest, WithInitialDataAndMaxKeys) {
   base::DictValue settings;
-  delegate_->Set(DEFAULTS, "a", byte_value_1_);
+  storage_->Set(DEFAULTS, "a", byte_value_1_);
   settings.Set("a", byte_value_1_.Clone());
   CreateStorage(UINT_MAX, UINT_MAX, 2);
 
@@ -418,12 +409,12 @@ TEST_F(ExtensionSettingsQuotaTest, WithInitialDataAndMaxKeys) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, InitiallyOverByteQuota) {
+TEST_F(QuotaEnforcerTest, InitiallyOverByteQuota) {
   base::DictValue settings;
   settings.Set("a", byte_value_16_.Clone());
   settings.Set("b", byte_value_16_.Clone());
   settings.Set("c", byte_value_16_.Clone());
-  delegate_->Set(DEFAULTS, settings);
+  storage_->Set(DEFAULTS, settings);
 
   CreateStorage(40, UINT_MAX, UINT_MAX);
   EXPECT_TRUE(SettingsEqual(settings));
@@ -441,12 +432,12 @@ TEST_F(ExtensionSettingsQuotaTest, InitiallyOverByteQuota) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, InitiallyOverMaxKeys) {
+TEST_F(QuotaEnforcerTest, InitiallyOverMaxKeys) {
   base::DictValue settings;
   settings.Set("a", byte_value_16_.Clone());
   settings.Set("b", byte_value_16_.Clone());
   settings.Set("c", byte_value_16_.Clone());
-  delegate_->Set(DEFAULTS, settings);
+  storage_->Set(DEFAULTS, settings);
 
   CreateStorage(UINT_MAX, UINT_MAX, 2);
   EXPECT_TRUE(SettingsEqual(settings));
@@ -473,7 +464,7 @@ TEST_F(ExtensionSettingsQuotaTest, InitiallyOverMaxKeys) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, ZeroQuotaBytesPerSetting) {
+TEST_F(QuotaEnforcerTest, ZeroQuotaBytesPerSetting) {
   base::DictValue empty;
   CreateStorage(UINT_MAX, 0, UINT_MAX);
 
@@ -483,7 +474,7 @@ TEST_F(ExtensionSettingsQuotaTest, ZeroQuotaBytesPerSetting) {
   EXPECT_TRUE(SettingsEqual(empty));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, QuotaBytesPerSetting) {
+TEST_F(QuotaEnforcerTest, QuotaBytesPerSetting) {
   base::DictValue settings;
 
   CreateStorage(UINT_MAX, 20, UINT_MAX);
@@ -501,12 +492,12 @@ TEST_F(ExtensionSettingsQuotaTest, QuotaBytesPerSetting) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, QuotaBytesPerSettingWithInitialSettings) {
+TEST_F(QuotaEnforcerTest, QuotaBytesPerSettingWithInitialSettings) {
   base::DictValue settings;
 
-  delegate_->Set(DEFAULTS, "a", byte_value_1_);
-  delegate_->Set(DEFAULTS, "b", byte_value_16_);
-  delegate_->Set(DEFAULTS, "c", byte_value_256_);
+  storage_->Set(DEFAULTS, "a", byte_value_1_);
+  storage_->Set(DEFAULTS, "b", byte_value_16_);
+  storage_->Set(DEFAULTS, "c", byte_value_256_);
   CreateStorage(UINT_MAX, 20, UINT_MAX);
 
   EXPECT_TRUE(storage_->Set(DEFAULTS, "a", byte_value_1_).status().ok());
@@ -527,16 +518,12 @@ TEST_F(ExtensionSettingsQuotaTest, QuotaBytesPerSettingWithInitialSettings) {
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest,
-    QuotaBytesPerSettingWithInitialSettingsForced) {
-  // This is a lazy test to make sure IGNORE_QUOTA lets through changes: the
-  // test above copied, but using IGNORE_QUOTA and asserting nothing is ever
-  // rejected...
+TEST_F(QuotaEnforcerTest, QuotaBytesPerSettingWithInitialSettingsForced) {
   base::DictValue settings;
 
-  delegate_->Set(DEFAULTS, "a", byte_value_1_);
-  delegate_->Set(DEFAULTS, "b", byte_value_16_);
-  delegate_->Set(DEFAULTS, "c", byte_value_256_);
+  storage_->Set(DEFAULTS, "a", byte_value_1_);
+  storage_->Set(DEFAULTS, "b", byte_value_16_);
+  storage_->Set(DEFAULTS, "c", byte_value_256_);
   CreateStorage(UINT_MAX, 20, UINT_MAX);
 
   EXPECT_TRUE(storage_->Set(IGNORE_QUOTA, "a", byte_value_1_).status().ok());
@@ -553,14 +540,12 @@ TEST_F(ExtensionSettingsQuotaTest,
   EXPECT_TRUE(storage_->Set(IGNORE_QUOTA, "c", byte_value_16_).status().ok());
   settings.Set("c", byte_value_16_.Clone());
 
-  // ... except the last.  Make sure it can still fail.
   EXPECT_FALSE(storage_->Set(DEFAULTS, "c", byte_value_256_).status().ok());
 
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
-TEST_F(ExtensionSettingsQuotaTest, GetBytesInUse) {
-  // Just testing GetBytesInUse, no need for a quota.
+TEST_F(QuotaEnforcerTest, GetBytesInUse) {
   CreateStorage(UINT_MAX, UINT_MAX, UINT_MAX);
 
   std::vector<std::string> ab;
@@ -594,4 +579,80 @@ TEST_F(ExtensionSettingsQuotaTest, GetBytesInUse) {
   EXPECT_EQ(4u, storage_->GetBytesInUse(ab));
 }
 
-}  // namespace extensions
+TEST_F(QuotaEnforcerTest, ZeroExtraGetReadsDuringQuotaEnforcement) {
+  base::test::ScopedFeatureList feature_list(
+      kOptimizeValueStoreQuotaEnforcement);
+  storage_->Set(DEFAULTS, "existing", byte_value_16_);
+  ASSERT_EQ(0, storage_->read_count());
+  ASSERT_EQ(1, storage_->write_count());
+
+  CreateStorage(100, 50, 5);
+
+  // Calculating GetBytesInUse and enforcing quota on Set/Remove/Clear should
+  // not issue any Get() round-trips to the underlying ValueStore.
+  EXPECT_EQ(24u, storage_->GetBytesInUse());
+  EXPECT_EQ(0, storage_->read_count());
+
+  EXPECT_TRUE(storage_->Set(DEFAULTS, "k1", byte_value_16_).status().ok());
+  EXPECT_EQ(0, storage_->read_count());
+  EXPECT_EQ(2, storage_->write_count());
+
+  // Quota-exceeded Set should be rejected before writing.
+  ValueStore::WriteResult over_quota =
+      storage_->Set(DEFAULTS, "k2", byte_value_256_);
+  EXPECT_FALSE(over_quota.status().ok());
+  EXPECT_EQ(ValueStore::QUOTA_EXCEEDED, over_quota.status().code);
+  EXPECT_EQ(0, storage_->read_count());
+  EXPECT_EQ(2, storage_->write_count());
+}
+
+TEST_F(QuotaEnforcerTest, UnoptimizedQuotaCalculationCallsGet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kOptimizeValueStoreQuotaEnforcement);
+
+  storage_->Set(DEFAULTS, "existing", byte_value_16_);
+  ASSERT_EQ(0, storage_->read_count());
+  ASSERT_EQ(1, storage_->write_count());
+
+  CreateStorage(100, 50, 5);
+
+  // When kOptimizeValueStoreQuotaEnforcement is disabled, LazyCalculateUsage()
+  // reads the backing store via Get() and re-serializes values to JSON.
+  EXPECT_EQ(24u, storage_->GetBytesInUse());
+  EXPECT_EQ(1, storage_->read_count());
+
+  EXPECT_TRUE(storage_->Set(DEFAULTS, "k1", byte_value_16_).status().ok());
+  EXPECT_EQ(1, storage_->read_count());
+  EXPECT_EQ(2, storage_->write_count());
+}
+
+TEST_F(QuotaEnforcerTest, EarlyExitBeforeCommitDiscardsStagedQuota) {
+  CreateStorage(40, 20, 2);
+  ASSERT_TRUE(storage_->Set(DEFAULTS, "a", byte_value_16_).status().ok());
+  ASSERT_EQ(17u, storage_->GetBytesInUse());
+
+  // Per-item quota failure on the second key discards the first key's staging.
+  base::DictValue per_item_fail;
+  per_item_fail.Set("a", byte_value_1_.Clone());
+  per_item_fail.Set("b", byte_value_256_.Clone());
+  EXPECT_FALSE(storage_->Set(DEFAULTS, per_item_fail).status().ok());
+  EXPECT_EQ(17u, storage_->GetBytesInUse("a"));
+  EXPECT_EQ(17u, storage_->GetBytesInUse());
+
+  // Backing-store errors after Stage()/Check() also discard staged quota.
+  storage_->set_status_code(ValueStore::OTHER_ERROR);
+  EXPECT_FALSE(storage_->Set(DEFAULTS, "b", byte_value_16_).status().ok());
+  base::DictValue valid_batch;
+  valid_batch.Set("a", byte_value_1_.Clone());
+  valid_batch.Set("b", byte_value_16_.Clone());
+  EXPECT_FALSE(storage_->Set(DEFAULTS, valid_batch).status().ok());
+  storage_->set_status_code(ValueStore::OK);
+
+  EXPECT_EQ(17u, storage_->GetBytesInUse("a"));
+  EXPECT_EQ(0u, storage_->GetBytesInUse("b"));
+  EXPECT_EQ(17u, storage_->GetBytesInUse());
+  EXPECT_TRUE(storage_->Set(DEFAULTS, "b", byte_value_16_).status().ok());
+  EXPECT_EQ(34u, storage_->GetBytesInUse());
+}
+
+}  // namespace value_store

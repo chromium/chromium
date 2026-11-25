@@ -20,16 +20,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/crx_file/id_util.h"
 #include "components/value_store/leveldb_value_store.h"
+#include "components/value_store/testing_value_store.h"
 #include "components/value_store/value_store.h"
 #include "components/value_store/value_store_factory_impl.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
 #include "extensions/browser/api/storage/settings_test_util.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/api/storage/storage_utils.h"
 #include "extensions/browser/api/storage/value_store_cache.h"
+#include "extensions/browser/api/storage/weak_unlimited_settings_storage.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/browser/event_router.h"
@@ -325,11 +326,8 @@ TEST_F(StorageApiUnittest, RestoreCorruptedStorage) {
   ASSERT_TRUE(store);
   // TODO(cmumford): Modify test as this requires that the factory always
   //                 creates instances of LeveldbValueStore.
-  SettingsStorageQuotaEnforcer* quota_store =
-      static_cast<SettingsStorageQuotaEnforcer*>(store);
   value_store::LeveldbValueStore* leveldb_store =
-      static_cast<value_store::LeveldbValueStore*>(
-          quota_store->get_delegate_for_test());
+      static_cast<value_store::LeveldbValueStore*>(store);
   leveldb::WriteBatch batch;
   batch.Put(kKey, "[{(.*+\"\'\\");
   EXPECT_TRUE(leveldb_store->WriteToDbForTest(&batch));
@@ -460,6 +458,29 @@ TEST_F(StorageApiUnittest, GetOperationExceedsSizeLimit) {
   EXPECT_TRUE(error.contains(expected_error_substring));
 
   frontend->DisableStorageForTesting(settings_namespace::Namespace::LOCAL);
+}
+
+TEST_F(StorageApiUnittest, UnlimitedStorageBypassesQuotaAndUpdatesUsage) {
+  value_store::TestingValueStore store;
+  store.SetQuotaLimits({10, 10, 1});
+  WeakUnlimitedSettingsStorage unlimited_storage(&store);
+
+  base::Value byte_value_1(1);
+  base::Value byte_value_16("sixteen bytes.");
+  EXPECT_TRUE(
+      unlimited_storage
+          .Set(value_store::ValueStore::DEFAULTS, "u_key", byte_value_16)
+          .status()
+          .ok());
+  EXPECT_EQ(21u, store.GetBytesInUse("u_key"));
+
+  base::DictValue dict;
+  dict.Set("uk1", byte_value_16.Clone());
+  dict.Set("uk2", byte_value_1.Clone());
+  EXPECT_TRUE(unlimited_storage.Set(value_store::ValueStore::DEFAULTS, dict)
+                  .status()
+                  .ok());
+  EXPECT_EQ(44u, store.GetBytesInUse());
 }
 
 }  // namespace extensions

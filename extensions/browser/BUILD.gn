@@ -1091,7 +1091,6 @@ source_set("unit_tests") {
     "api/runtime/restart_after_delay_api_unittest.cc",
     "api/runtime/runtime_api_unittest.cc",
     "api/storage/session_storage_manager_unittest.cc",
-    "api/storage/settings_quota_unittest.cc",
     "api/storage/storage_api_unittest.cc",
     "api/storage/storage_frontend_unittest.cc",
     "api/system_network/system_network_api_unittest.cc",

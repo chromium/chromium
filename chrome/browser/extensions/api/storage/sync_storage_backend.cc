@@ -55,7 +55,7 @@ value_store_util::ModelType ToFactoryModelType(syncer::DataType sync_type) {
 
 SyncStorageBackend::SyncStorageBackend(
     scoped_refptr<value_store::ValueStoreFactory> storage_factory,
-    const SettingsStorageQuotaEnforcer::Limits& quota,
+    const value_store::QuotaEnforcer::Limits& quota,
     SequenceBoundSettingsChangedCallback observer,
     syncer::DataType sync_type,
     const syncer::SyncableService::StartSyncFlare& flare)
@@ -88,11 +88,12 @@ SyncableSettingsStorage* SyncStorageBackend::GetOrCreateStorageWithSyncData(
     return maybe_storage->second.get();
   }
 
-  std::unique_ptr<SettingsStorageQuotaEnforcer> settings_storage(
-      new SettingsStorageQuotaEnforcer(
-          quota_, value_store_util::CreateSettingsStore(
-                      settings_namespace::SYNC, ToFactoryModelType(sync_type_),
-                      extension_id, storage_factory_)));
+  std::unique_ptr<value_store::QuotaEnforcer> settings_storage =
+      value_store_util::CreateSettingsStore(settings_namespace::SYNC,
+                                            ToFactoryModelType(sync_type_),
+                                            extension_id, storage_factory_);
+  CHECK(settings_storage);
+  settings_storage->SetQuotaLimits(quota_);
 
   // It's fine to create the quota enforcer underneath the sync layer, since
   // sync will only go ahead if each underlying storage operation succeeds.

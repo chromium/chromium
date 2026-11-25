@@ -27,7 +27,7 @@ class TestValueStoreFactory : public ValueStoreFactory {
   TestValueStoreFactory& operator=(const TestValueStoreFactory&) = delete;
 
   // ValueStoreFactory
-  std::unique_ptr<ValueStore> CreateValueStore(
+  std::unique_ptr<QuotaEnforcer> CreateValueStore(
       const base::FilePath& directory,
       const std::string& uma_client_name) override;
   void DeleteValueStore(const base::FilePath& directory) override;
@@ -45,7 +45,7 @@ class TestValueStoreFactory : public ValueStoreFactory {
  private:
   ~TestValueStoreFactory() override;
 
-  std::unique_ptr<ValueStore> CreateStore();
+  std::unique_ptr<QuotaEnforcer> CreateStore();
 
   base::FilePath db_path_;
   raw_ptr<ValueStore, AcrossTasksDanglingUntriaged> last_created_store_ =

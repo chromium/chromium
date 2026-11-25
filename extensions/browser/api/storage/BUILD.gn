@@ -32,8 +32,6 @@ source_set("storage") {
     "local_value_store_cache.h",
     "session_storage_manager.cc",
     "session_storage_manager.h",
-    "settings_storage_quota_enforcer.cc",
-    "settings_storage_quota_enforcer.h",
     "storage_api.cc",
     "storage_api.h",
     "storage_area_namespace.cc",

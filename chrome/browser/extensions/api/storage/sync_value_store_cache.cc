@@ -30,8 +30,8 @@ namespace {
 
 // Returns the quota limit for sync storage, taken from the schema in
 // extensions/common/api/storage.json.
-SettingsStorageQuotaEnforcer::Limits GetSyncQuotaLimits() {
-  SettingsStorageQuotaEnforcer::Limits limits = {
+value_store::QuotaEnforcer::Limits GetSyncQuotaLimits() {
+  value_store::QuotaEnforcer::Limits limits = {
       static_cast<size_t>(api::storage::sync::QUOTA_BYTES),
       static_cast<size_t>(api::storage::sync::QUOTA_BYTES_PER_ITEM),
       static_cast<size_t>(api::storage::sync::MAX_ITEMS)};

@@ -8,13 +8,16 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/value_store/lazy_leveldb.h"
+#include "components/value_store/quota_enforcer.h"
 #include "components/value_store/value_store.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
@@ -22,7 +25,7 @@ namespace value_store {
 
 // Value store area, backed by a leveldb database.
 // All methods must be run on the FILE thread.
-class LeveldbValueStore : public ValueStore,
+class LeveldbValueStore : public QuotaEnforcer,
                           public LazyLevelDb,
                           public base::trace_event::MemoryDumpProvider {
  public:
@@ -42,9 +45,6 @@ class LeveldbValueStore : public ValueStore,
   LeveldbValueStore& operator=(const LeveldbValueStore&) = delete;
 
   // ValueStore implementation.
-  size_t GetBytesInUse(const std::string& key) override;
-  size_t GetBytesInUse(const std::vector<std::string>& keys) override;
-  size_t GetBytesInUse() override;
   ReadResult GetKeys() override;
   ReadResult Get(const std::string& key) override;
   ReadResult Get(const std::vector<std::string>& keys) override;
@@ -66,12 +66,21 @@ class LeveldbValueStore : public ValueStore,
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
+ protected:
+  // QuotaEnforcer implementation.
+  bool CalculateUsage() override;
+
  private:
+  ValueStore::Status EnsureDbIsOpen();
+  ValueStore::Status Read(const std::string& key,
+                          std::optional<base::Value>* value);
+
   // Adds a setting to a WriteBatch, and logs the change in |changes|. For use
   // with WriteToDb.
   ValueStore::Status AddToBatch(ValueStore::WriteOptions options,
                                 const std::string& key,
                                 const base::Value& value,
+                                std::optional<std::string_view> value_as_json,
                                 leveldb::WriteBatch* batch,
                                 ValueStoreChangeList* changes);
 

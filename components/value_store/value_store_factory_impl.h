@@ -22,7 +22,7 @@ class ValueStoreFactoryImpl : public ValueStoreFactory {
   ValueStoreFactoryImpl& operator=(const ValueStoreFactoryImpl&) = delete;
 
   // ValueStoreFactory:
-  std::unique_ptr<ValueStore> CreateValueStore(
+  std::unique_ptr<QuotaEnforcer> CreateValueStore(
       const base::FilePath& directory,
       const std::string& uma_client_name) override;
   void DeleteValueStore(const base::FilePath& directory) override;

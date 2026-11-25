@@ -27,8 +27,8 @@ namespace {
 
 // Returns the quota limit for local storage, taken from the schema in
 // extensions/common/api/storage.json.
-SettingsStorageQuotaEnforcer::Limits GetLocalQuotaLimits() {
-  SettingsStorageQuotaEnforcer::Limits limits = {
+value_store::QuotaEnforcer::Limits GetLocalQuotaLimits() {
+  value_store::QuotaEnforcer::Limits limits = {
       static_cast<size_t>(api::storage::local::QUOTA_BYTES),
       std::numeric_limits<size_t>::max(), std::numeric_limits<size_t>::max()};
   return limits;
@@ -87,16 +87,15 @@ value_store::ValueStore* LocalValueStoreCache::GetStorage(
   value_store_util::ModelType model_type =
       extension->is_app() ? value_store_util::ModelType::APP
                           : value_store_util::ModelType::EXTENSION;
-  std::unique_ptr<value_store::ValueStore> store =
+  std::unique_ptr<value_store::QuotaEnforcer> store =
       value_store_util::CreateSettingsStore(settings_namespace::LOCAL,
                                             model_type, extension->id(),
                                             storage_factory_);
-  std::unique_ptr<SettingsStorageQuotaEnforcer> storage(
-      new SettingsStorageQuotaEnforcer(quota_, std::move(store)));
-  DCHECK(storage.get());
+  DCHECK(store);
+  store->SetQuotaLimits(quota_);
 
-  value_store::ValueStore* storage_ptr = storage.get();
-  storage_map_[extension->id()] = std::move(storage);
+  value_store::ValueStore* storage_ptr = store.get();
+  storage_map_[extension->id()] = std::move(store);
   return storage_ptr;
 }
 
