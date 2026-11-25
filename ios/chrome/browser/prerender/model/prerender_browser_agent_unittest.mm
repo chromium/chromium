@@ -10,8 +10,12 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_run_loop_timeout.h"
 #import "base/test/test_future.h"
+#import "base/values.h"
+#import "components/enterprise/net/core/features.h"
+#import "components/enterprise/net/core/prefs.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/fake_signin_enabled_datasource.h"
 #import "components/signin/public/base/consent_level.h"
@@ -254,6 +258,15 @@ class PrerenderBrowserAgentTest : public PlatformTest {
         prerender_prefs::NetworkPredictionSetting::kDisabled);
   }
 
+  // Enables Secure Gateway by setting its "ProxyProvisioningDomains" policy
+  // pref.
+  void EnableSecureGateway() {
+    base::ListValue domains;
+    domains.Append("pvd.example.com");
+    profile_->GetPrefs()->SetList(enterprise_net::kProxyProvisioningDomains,
+                                  std::move(domains));
+  }
+
   // Simulate network connection type.
   void SimulateNetworkConnectionType(
       net::NetworkChangeNotifier::ConnectionType type) {
@@ -291,6 +304,11 @@ class PrerenderBrowserAgentTest : public PlatformTest {
   }
 
  private:
+  // Enables the feature that Secure Gateway requires, so that tests can enable
+  // Secure Gateway with its policy pref alone. Declared first so that it is
+  // initialized before the task environment starts its threads.
+  base::test::ScopedFeatureList scoped_feature_list_{
+      enterprise_net::kEnableDynamicRouteFetching};
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<net::test::MockNetworkChangeNotifier>
@@ -559,6 +577,29 @@ TEST_F(PrerenderBrowserAgentTest, DisabledForSupervisedUsers) {
 
   StartPrerender(url, transition);
   EXPECT_FALSE(agent()->ValidatePrerender(url, transition));
+}
+
+// Tests that prerendering is disabled when Secure Gateway is enabled.
+TEST_F(PrerenderBrowserAgentTest, DisabledIfSecureGatewayEnabled) {
+  EnableSecureGateway();
+  PrerenderEnabledOnWiFiAndCellular();
+  SimulateWiFiConnection();
+
+  const GURL url("https://www.google.com/");
+  const auto transition = ui::PageTransition::PAGE_TRANSITION_TYPED;
+
+  StartPrerender(url, transition);
+  EXPECT_FALSE(agent()->ValidatePrerender(url, transition));
+}
+
+// Tests that no WebState is pre-cloned when Secure Gateway is enabled.
+TEST_F(PrerenderBrowserAgentTest, PrecloningDisabledIfSecureGatewayEnabled) {
+  EnableSecureGateway();
+  PrerenderEnabledOnWiFiAndCellular();
+  SimulateWiFiConnection();
+
+  agent()->SetWebStatePrecloningNeeded(true);
+  EXPECT_EQ(agent()->precloned_web_state_for_testing(), nullptr);
 }
 
 // Check that PrepareWebStateInAdvance pre-clones the active WebState and it is

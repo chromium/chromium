@@ -21,6 +21,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/time/time.h"
+#import "components/enterprise/net/core/utils.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
@@ -665,6 +666,19 @@ bool PrerenderBrowserAgent::Enabled() const {
       !ios::device_util::RamIsAtLeast512Mb() ||
       net::NetworkChangeNotifier::IsOffline() ||
       supervised_user::IsSubjectToParentalControls(profile)) {
+    return false;
+  }
+
+  // Prerendering deallocates `WKWebView`s mid-load as the user types. When a
+  // Secure Gateway proxy's 407 challenge arrives after the requesting
+  // `WKWebView` is gone, WebKit rejects it without asking Chrome, and iOS
+  // shows a system "Proxy Authentication Required" alert
+  // (https://bugs.webkit.org/show_bug.cgi?id=332970).
+  // TODO(crbug.com/590205418): Remove once the WebKit fix ships in all
+  // supported iOS versions, or once there is a better way to handle
+  // prerendering for proxied URLs (e.g. disabling it only for URLs matching
+  // Secure Gateway's routing rules).
+  if (enterprise_net::IsSecureGatewayEnabled(profile->GetPrefs())) {
     return false;
   }
 
