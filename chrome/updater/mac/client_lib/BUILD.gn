@@ -58,6 +58,7 @@ source_set("unit_test_sources") {
   deps = [
     ":public_sources",
     "//base",
+    "//base/test:test_support",
     "//net/",
     "//testing/gtest",
     "//url/",

@@ -15,6 +15,8 @@
 #include "base/path_service.h"
 #include "base/scoped_generic.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #import "chrome/updater/mac/client_lib/CRURegistration-Private.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,6 +48,12 @@
 namespace {
 
 constexpr char kEmitTextTestBinaryName[] = "emit_text";
+
+// Returns the deadline for waits on asynchronous results in these tests.
+NSDate* ResultDeadline() {
+  return [NSDate dateWithTimeIntervalSinceNow:TestTimeouts::action_max_timeout()
+                                                  .InSecondsF()];
+}
 
 TEST(CRURegistrationTest, SmokeTest) {
   CRURegistration* registration = [[CRURegistration alloc]
@@ -139,9 +147,7 @@ bool CRUAsyncTaskRunnerTest::RunEmitText(NSString* text,
     [results_lock unlockWithCondition:1];
   }];
 
-  if (![results_lock
-          lockWhenCondition:1
-                 beforeDate:[NSDate dateWithTimeIntervalSinceNow:15.0]]) {
+  if (![results_lock lockWhenCondition:1 beforeDate:ResultDeadline()]) {
     // Timed out; can't read any of the fields, we have no sync relationship
     // with them.
     return false;
@@ -295,9 +301,8 @@ void TestWorkQueueImpl(int item_count) {
 
   [registration addWorkItems:items];
 
-  ASSERT_TRUE([result_order_lock
-      lockWhenCondition:(NSInteger)item_count
-             beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]]);
+  ASSERT_TRUE([result_order_lock lockWhenCondition:(NSInteger)item_count
+                                        beforeDate:ResultDeadline()]);
   absl::Cleanup result_unlocker = ^{
     [result_order_lock unlock];
   };
@@ -425,9 +430,7 @@ TEST(CRURegistrationTest, CannotInstallMissingArchive) {
     [results_lock unlockWithCondition:1];
   }];
 
-  ASSERT_TRUE([results_lock
-      lockWhenCondition:1
-             beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]]);
+  ASSERT_TRUE([results_lock lockWhenCondition:1 beforeDate:ResultDeadline()]);
 
   EXPECT_NSEQ(install_error.domain, CRURegistrationErrorDomain);
   EXPECT_EQ(install_error.code, CRURegistrationErrorUpdaterArchiveNotFound);
