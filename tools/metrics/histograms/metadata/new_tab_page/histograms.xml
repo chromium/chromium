@@ -2610,6 +2610,87 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.ThreadsRail.FirstExpandWasPreloaded" enum="Boolean"
+    expires_after="2027-05-30">
+  <owner>dhruvkathpalia@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records whether the expanded threads rail iframe was already preloaded and
+    ready (had posted NTP_LHS_READY) when the user first requested to expand the
+    folded rail. True means the expanded iframe is shown right away; false means
+    the ghost loader is shown until the iframe is ready. Recorded at most once
+    per NTP, at the first expand request. Only logged on the 1P NTP. Note that
+    Incognito and Guest mode NTPs are not considered 1P and don't log this
+    histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ThreadsRail.GhostLoaderShownDuration" units="ms"
+    expires_after="2027-05-30">
+  <owner>dhruvkathpalia@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Time the ghost loader was shown in place of the expanded threads rail
+    iframe, from the user expanding the folded rail before the iframe was ready
+    until the iframe replaced it or the user collapsed the rail again. Recorded
+    each time the ghost loader is hidden, so it can be recorded more than once
+    per NTP if the user collapses the rail before the iframe is ready and
+    expands it again. Not recorded if the page was hidden during the interval,
+    or if the page is closed while the ghost loader is shown. See
+    NewTabPage.ThreadsRail.FirstExpandWasPreloaded for the share of first
+    expands that show the ghost loader. Only logged on the 1P NTP. Note that
+    Incognito and Guest mode NTPs are not considered 1P and don't log this
+    histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ThreadsRail.IframeLoadLatency" units="ms"
+    expires_after="2027-05-30">
+  <owner>dhruvkathpalia@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Time from the expanded threads rail iframe being stamped into the New Tab
+    Page (after a debounced hover/focus of the folded rail, or on expand) until
+    it posts its first NTP_LHS_READY message. Recorded at most once per NTP, and
+    not recorded if the page was hidden during the interval. Only logged on the
+    1P NTP. Note that Incognito and Guest mode NTPs are not considered 1P and
+    don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ThreadsRail.LongestFocusDurationBeforeExpand"
+    units="ms" expires_after="2027-05-30">
+  <owner>dhruvkathpalia@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Longest continuous time the folded threads rail was hovered or focused
+    before the user first expanded it, including the hover/focus that is still
+    active at the time of the expand request. A hover/focus interval ends once
+    the rail is neither hovered nor focused, or when the page is hidden.
+    Recorded at most once per NTP, at the first expand request, and only if the
+    rail was hovered or focused before. Compared against
+    NewTabPage.ThreadsRail.LongestFocusDurationWithoutExpand to tune the preload
+    debounce delay. Only logged on the 1P NTP. Note that Incognito and Guest
+    mode NTPs are not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ThreadsRail.LongestFocusDurationWithoutExpand"
+    units="ms" expires_after="2027-05-30">
+  <owner>dhruvkathpalia@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Longest continuous time the folded threads rail was hovered or focused on a
+    New Tab Page that was closed or navigated away from (pagehide) without the
+    rail ever being expanded. A hover/focus interval ends once the rail is
+    neither hovered nor focused, or when the page is hidden. Recorded at most
+    once per NTP, and only if the rail was hovered or focused. Compared against
+    NewTabPage.ThreadsRail.LongestFocusDurationBeforeExpand to tune the preload
+    debounce delay. Only logged on the 1P NTP. Note that Incognito and Guest
+    mode NTPs are not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ThreadsRail.Shown" enum="BooleanShown"
     expires_after="2027-03-21">
   <owner>bofengchen@google.com</owner>
