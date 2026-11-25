@@ -3,9 +3,9 @@
 ++++[paragraph]
 ++++++[link] name='start first link start second link end second link end first link '
 ++++++++[static] name='start first link start second link end second link end first link '
-++++[paragraph]
 ++++++[link] name=' start second link end second link'
 ++++++++[static] name=' start second link end second link'
+++++[paragraph]
 ++++++[link] name='START FIRST LINK START SECOND LINK END FIRST LINK'
 ++++++++[static] name='START FIRST LINK START SECOND LINK END FIRST LINK'
 ++++++[link] name='START SECOND LINK END FIRST LINK END SECOND LINK'

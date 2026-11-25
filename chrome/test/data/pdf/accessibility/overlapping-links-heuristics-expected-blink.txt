@@ -6,10 +6,10 @@ pdfRoot name='PDF document containing 1 page' restriction=readOnly
 ++++++++++inlineTextBox name='start first link' restriction=readOnly
 ++++++++++inlineTextBox name=' start second link end second link' restriction=readOnly
 ++++++++++inlineTextBox name=' end first link ' restriction=readOnly
-++++paragraph restriction=readOnly
 ++++++link name=' start second link end second link' restriction=readOnly
 ++++++++staticText name=' start second link end second link' restriction=readOnly
 ++++++++++inlineTextBox name=' start second link end second link' restriction=readOnly
+++++paragraph restriction=readOnly
 ++++++link name='START FIRST LINK START SECOND LINK END FIRST LINK' restriction=readOnly
 ++++++++staticText name='START FIRST LINK START SECOND LINK END FIRST LINK' restriction=readOnly
 ++++++++++inlineTextBox name='START FIRST LINK ' restriction=readOnly

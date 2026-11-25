@@ -309,14 +309,37 @@ class PdfAccessibilityTreeBuilderHeuristic {
                            LineHelper* line_helper,
                            size_t* text_run_index);
 
-  // Adds `link` to `para_node`. Returns false if the link has no text. Then
-  // `*text_run_index` is moved back, so the caller revisits the current run.
+  // Like `AddTextToObjectNode()`, but `*text_run_index` is the first run not
+  // added yet, so it only moves forward. Returns false if no new runs were
+  // added.
+  //
+  // TODO(crbug.com/467180032): Rename to `AddTextToObjectNode()` and remove the
+  // old one when `kPdfAccessibilityHeuristicEnhancements` is removed.
+  bool AddTextToObjectNodeWithEnhancements(
+      size_t object_text_run_index,
+      uint32_t object_text_run_count,
+      ui::AXNodeData* object_node,
+      ui::AXNodeData* para_node,
+      ui::AXNodeData** previous_on_line_node,
+      LineHelper* line_helper,
+      size_t* text_run_index);
+
+  // Adds `link` to `para_node`. Returns false if the link has no text, or if
+  // `kPdfAccessibilityHeuristicEnhancements` is enabled and all of its runs
+  // were already added.
+  //
+  // When `kPdfAccessibilityHeuristicEnhancements` is enabled, `*text_run_index`
+  // is the first run not added yet, so it only moves forward. Otherwise, it's
+  // the current run, and moves backward for a link with no text, so the caller
+  // revisits it.
   bool AddLinkToParaNode(const chrome_pdf::AccessibilityLinkInfo& link,
                          ui::AXNodeData* para_node,
                          ui::AXNodeData** previous_on_line_node,
                          LineHelper* line_helper,
                          size_t* text_run_index);
 
+  // Adds `image` to `para_node`. Only moves `*text_run_index` backward when
+  // `kPdfAccessibilityHeuristicEnhancements` is disabled.
   void AddImageToParaNode(const chrome_pdf::AccessibilityImageInfo& image,
                           ui::AXNodeData* para_node,
                           size_t* text_run_index);
