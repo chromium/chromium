@@ -392,7 +392,7 @@ enum HotseatState {
   "Extended"
 };
 
-// The frame mode of a window. None if the window is framesless.
+// The frame mode of a window.
 enum FrameMode {
   "Normal",
   "Immersive"
@@ -464,7 +464,9 @@ dictionary AppWindowInfo {
   required long stackingOrder;
 
   // Window frame info
-  required FrameMode frameMode;
+
+  // The frame mode. May be 'undefined' if the window is frameless.
+  FrameMode frameMode;
   required boolean isFrameVisible;
   required long captionHeight;
   // The bitset of the enabled caption buttons. See

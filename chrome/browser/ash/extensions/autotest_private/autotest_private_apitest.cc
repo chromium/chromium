@@ -7,13 +7,17 @@
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/window_properties.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -42,6 +46,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -52,6 +58,8 @@
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "chromeos/ash/experiences/arc/test/fake_process_instance.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/language/core/browser/pref_names.h"
@@ -65,12 +73,18 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/viz/privileged/mojom/compositing/features.mojom-features.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
+#include "ui/views/window/frame_view.h"
 
 using testing::_;
 using testing::Return;
@@ -302,6 +316,127 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType, ShelfAPITest) {
 IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
                        IsFeatureEnabled) {
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("isFeatureEnabled")) << message_;
+}
+
+// Verifies that getAppWindowList works with a top-level dialog that uses the
+// bubble frame, which is a system app window without a frame header.
+IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
+                       GetAppWindowListWithBubbleFrameDialog) {
+  auto delegate = std::make_unique<views::DialogDelegate>();
+  delegate->SetOwnershipOfNewWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  delegate->SetTitle(u"BubbleFrameDialog");
+  delegate->SetContentsView(std::make_unique<views::View>());
+  std::unique_ptr<views::Widget> widget =
+      base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
+          delegate.get(), browser()->GetWindow()->GetNativeWindow(),
+          gfx::NativeView()));
+  widget->Show();
+  ASSERT_EQ(chromeos::AppType::SYSTEM_APP,
+            widget->GetNativeWindow()->GetProperty(chromeos::kAppTypeKey));
+
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("bubbleFrameDialog")) << message_;
+}
+
+struct FramelessPipParams {
+  ContextType context_type = ContextType::kNone;
+  bool pip_auto_layout_enabled = false;
+};
+
+class AutotestPrivateFramelessPipApiTest
+    : public AutotestPrivateApiTest,
+      public ::testing::WithParamInterface<FramelessPipParams> {
+ public:
+  AutotestPrivateFramelessPipApiTest()
+      : AutotestPrivateApiTest(GetParam().context_type) {
+    pip_feature_list_.InitWithFeatureState(ash::features::kPipAutoLayoutToggle,
+                                           GetParam().pip_auto_layout_enabled);
+    // Disable DocumentPipStandaloneWindow so Document PiP creates a
+    // Browser-backed TYPE_FLOATING window, which is an app window listed by
+    // getAppWindowList().
+    standalone_pip_feature_list_.InitFromCommandLine(
+        /*enable_features=*/"",
+        /*disable_features=*/"DocumentPipStandaloneWindow");
+  }
+
+ private:
+  base::test::ScopedFeatureList pip_feature_list_;
+  base::test::ScopedFeatureList standalone_pip_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    EventPagePipAutoLayoutEnabled,
+    AutotestPrivateFramelessPipApiTest,
+    ::testing::Values(FramelessPipParams(ContextType::kEventPage, true)));
+INSTANTIATE_TEST_SUITE_P(
+    EventPagePipAutoLayoutDisabled,
+    AutotestPrivateFramelessPipApiTest,
+    ::testing::Values(FramelessPipParams(ContextType::kEventPage, false)));
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorkerPipAutoLayoutEnabled,
+    AutotestPrivateFramelessPipApiTest,
+    ::testing::Values(FramelessPipParams(ContextType::kServiceWorker, true)));
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorkerPipAutoLayoutDisabled,
+    AutotestPrivateFramelessPipApiTest,
+    ::testing::Values(FramelessPipParams(ContextType::kServiceWorker, false)));
+
+// Verifies that getAppWindowList works with frameless PiP windows (both video
+// PiP and Document PiP) whether kPipAutoLayoutToggle is enabled or disabled.
+IN_PROC_BROWSER_TEST_P(AutotestPrivateFramelessPipApiTest,
+                       GetAppWindowListWithFramelessPipWindow) {
+  // Create a frameless browser window in the PiP state, like a video PiP
+  // window.
+  views::WidgetDelegate delegate;
+  delegate.SetTitle(u"VideoPiP");
+  delegate.SetFrameViewFactory(base::BindRepeating(
+      [](views::Widget*) { return std::make_unique<views::FrameView>(); }));
+
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.delegate = &delegate;
+  params.context = browser()->GetWindow()->GetNativeWindow();
+  params.bounds = {100, 100, 200, 100};
+  params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                               chromeos::AppType::BROWSER);
+  views::Widget video_pip_widget;
+  video_pip_widget.Init(std::move(params));
+  video_pip_widget.GetNativeWindow()->SetProperty(ash::kWindowPipTypeKey, true);
+  video_pip_widget.Show();
+
+  // Open a Document PiP window.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            embedded_test_server()->GetURL("/empty.html")));
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents,
+                "documentPictureInPicture.requestWindow().then(() => true)"));
+
+  aura::Window* doc_pip_window = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser_delegate) {
+        if (browser_delegate.GetType() == ash::BrowserType::kOther) {
+          doc_pip_window = browser_delegate.GetNativeWindow();
+          return ash::BrowserController::kBreakIteration;
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
+  ASSERT_TRUE(doc_pip_window);
+  // The test extension finds the Document PiP window by this id, since its
+  // title follows the opener tab.
+  constexpr int kDocPipWindowId = -20000;
+  doc_pip_window->SetId(kDocPipWindowId);
+
+  base::ListValue suite_args;
+  suite_args.Append(kDocPipWindowId);
+  suite_args.Append(GetParam().pip_auto_layout_enabled);
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("framelessPipWindow",
+                                              std::move(suite_args)))
+      << message_;
 }
 
 struct HoldingSpaceParams {

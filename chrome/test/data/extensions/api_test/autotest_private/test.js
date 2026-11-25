@@ -1578,6 +1578,41 @@ const shelfTests = [function fetchShelfUIInfo() {
       }));
 }];
 
+const bubbleFrameDialogTests = [
+  function getAppWindowListWithBubbleFrameDialog() {
+    chrome.autotestPrivate.getAppWindowList(
+        chrome.test.callbackPass(function(list) {
+          const dialog =
+              list.find(window => window.title === 'BubbleFrameDialog');
+          chrome.test.assertTrue(!!dialog);
+          chrome.test.assertEq('SystemApp', dialog.windowType);
+          chrome.test.assertEq(undefined, dialog.frameMode);
+          chrome.test.assertFalse(dialog.isFrameVisible);
+        }));
+  },
+];
+
+const framelessPipWindowTests = [
+  function getAppWindowListWithFramelessPipWindow(
+      docPipWindowId, pipAutoLayoutEnabled) {
+    chrome.autotestPrivate.getAppWindowList(
+        chrome.test.callbackPass(function(list) {
+          const videoPip = list.find(window => window.title === 'VideoPiP');
+          chrome.test.assertTrue(!!videoPip);
+          chrome.test.assertEq('PIP', videoPip.stateType);
+          chrome.test.assertEq(undefined, videoPip.frameMode);
+          chrome.test.assertFalse(videoPip.isFrameVisible);
+
+          const docPip = list.find(window => window.id === docPipWindowId);
+          chrome.test.assertTrue(!!docPip);
+          chrome.test.assertEq(
+              pipAutoLayoutEnabled ? 'PIP' : 'Normal', docPip.stateType);
+          chrome.test.assertEq(undefined, docPip.frameMode);
+          chrome.test.assertFalse(docPip.isFrameVisible);
+        }));
+  },
+];
+
 const isFeatureEnabledTests = [
   function getEnabledFeature() {
     chrome.autotestPrivate.isFeatureEnabled(
@@ -1748,6 +1783,8 @@ const test_suites = {
   'splitviewPrimarySnapped': splitviewPrimarySnappedTests,
   'scrollableShelf': scrollableShelfTests,
   'shelf': shelfTests,
+  'bubbleFrameDialog': bubbleFrameDialogTests,
+  'framelessPipWindow': framelessPipWindowTests,
   'isFeatureEnabled': isFeatureEnabledTests,
   'holdingSpace': holdingSpaceTests,
   'systemWebApps': systemWebAppsTests,

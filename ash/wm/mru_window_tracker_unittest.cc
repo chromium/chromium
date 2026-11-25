@@ -13,6 +13,7 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "chromeos/ui/base/app_types.h"
 #include "components/app_restore/window_properties.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,6 +65,23 @@ TEST_F(MruWindowTrackerTest, Basic) {
   EXPECT_EQ(w1.get(), window_list[0]);
   EXPECT_EQ(w2.get(), window_list[1]);
   EXPECT_EQ(w3.get(), window_list[2]);
+}
+
+// Tests that a tracked window that becomes excluded from the MRU list is not in
+// the MRU list, but is still in the app window list at its MRU position.
+TEST_F(MruWindowTrackerTest, ExcludedWindowInAppWindowList) {
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(chromeos::AppType::BROWSER);
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(chromeos::AppType::BROWSER);
+  wm::ActivateWindow(w2.get());
+  wm::ActivateWindow(w1.get());
+
+  w1->SetProperty(kExcludeInMruKey, true);
+  EXPECT_THAT(mru_window_tracker()->BuildMruWindowList(kAllDesks),
+              testing::ElementsAre(w2.get()));
+  EXPECT_THAT(mru_window_tracker()->BuildAppWindowList(kAllDesks),
+              testing::ElementsAre(w1.get(), w2.get()));
 }
 
 // Tests that windows being dragged are only in the WindowList once.

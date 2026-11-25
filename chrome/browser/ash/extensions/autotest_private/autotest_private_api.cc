@@ -147,6 +147,7 @@
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -253,7 +254,9 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_types.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_properties.h"
@@ -851,6 +854,31 @@ bool IsFrameVisible(views::Widget* widget) {
                                      ? widget->non_client_view()->frame_view()
                                      : nullptr;
   return frame_view && frame_view->GetEnabled() && frame_view->GetVisible();
+}
+
+// Returns true if `widget` is for an app window that may have no frame header.
+bool IsFramelessAppWindowAllowed(views::Widget* widget) {
+  aura::Window* window = widget->GetNativeWindow();
+  if (window->GetProperty(chromeos::kWindowStateTypeKey) ==
+      chromeos::WindowStateType::kPip) {
+    return true;
+  }
+  // Top-level dialogs without a parent are system app windows, and use the
+  // bubble frame unless they opt out of the custom frame.
+  views::DialogDelegate* dialog = widget->widget_delegate()->AsDialogDelegate();
+  if (dialog && dialog->use_custom_frame()) {
+    return true;
+  }
+  // Floating browser windows (TYPE_FLOATING, exposed as BrowserType::kOther),
+  // such as Document PiP when kPipAutoLayoutToggle is disabled and
+  // always-on-top popups, use PictureInPictureBrowserFrameViewAsh and have no
+  // FrameHeader.
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForWindow(window);
+  if (browser && browser->GetType() == ash::BrowserType::kOther) {
+    return true;
+  }
+  return false;
 }
 
 void ConvertPointToHost(aura::Window* root_window, gfx::PointF* location) {
@@ -4048,13 +4076,14 @@ AutotestPrivateGetAppWindowListFunction::Run() {
     } else {
       auto* no_frame_header_widget =
           views::Widget::GetWidgetForNativeWindow(window);
-      // All widgets for app windows in chromeos should have a frame. Non app
-      // windows may not have a frame and frame mode will be NONE.
-      // TODO(b/585323198): CHECK-exclusion: Restore to CHECK once frameless
-      // PiP and Live Caption window handling is fixed.
-      DCHECK(!no_frame_header_widget ||
-             no_frame_header_widget->GetNativeWindow()->GetType() !=
-                 aura::client::WINDOW_TYPE_NORMAL);
+      // All widgets for app windows in chromeos should have a frame, except
+      // for PiP windows and bubble frame dialogs, which are frameless. Non app
+      // windows may not have a frame. `frameMode` is 'undefined' if the window
+      // is frameless.
+      CHECK(!no_frame_header_widget ||
+            no_frame_header_widget->GetNativeWindow()->GetType() !=
+                aura::client::WINDOW_TYPE_NORMAL ||
+            IsFramelessAppWindowAllowed(no_frame_header_widget));
       window_info.frame_mode = api::autotest_private::FrameMode::kNone;
       window_info.is_frame_visible = false;
     }

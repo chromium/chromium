@@ -123,11 +123,14 @@ bool CanIncludeWindowInCycleWithPipList(aura::Window* window) {
 // considered.
 // It uses the given |can_include_window_predicate| to determine whether to
 // include a window in the returned list or not.
+// |can_include_excluded_windows| is true for lists that may include windows
+// with `kExcludeInMruKey` set, e.g. PIP windows.
 template <class CanIncludeWindowPredicate>
 MruWindowTracker::WindowList BuildWindowListInternal(
     const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>* mru_windows,
     DesksMruType desks_mru_type,
-    CanIncludeWindowPredicate can_include_window_predicate) {
+    CanIncludeWindowPredicate can_include_window_predicate,
+    bool can_include_excluded_windows = false) {
   MruWindowTracker::WindowList windows;
 
   const Desk* active_desk = DesksController::Get()->active_desk();
@@ -165,7 +168,8 @@ MruWindowTracker::WindowList BuildWindowListInternal(
         if (!can_include_window_predicate(window))
           continue;
 
-        DCHECK(!window->GetProperty(kExcludeInMruKey));
+        DCHECK(can_include_excluded_windows ||
+               !window->GetProperty(kExcludeInMruKey));
         windows.emplace_back(window);
       }
     }
@@ -251,7 +255,8 @@ MruWindowTracker::~MruWindowTracker() {
 WindowList MruWindowTracker::BuildAppWindowList(
     DesksMruType desks_mru_type) const {
   return BuildWindowListInternal(&mru_windows_, desks_mru_type,
-                                 CanIncludeWindowInAppMruList);
+                                 CanIncludeWindowInAppMruList,
+                                 /*can_include_excluded_windows=*/true);
 }
 
 WindowList MruWindowTracker::BuildMruWindowList(
