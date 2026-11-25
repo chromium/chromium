@@ -1,0 +1,8 @@
+<!doctype html>
+<script>
+top.postMessage({
+  key: navigation.currentEntry.key,
+  id: navigation.currentEntry.id,
+  state: navigation.currentEntry.getState(),
+}, "*");
+</script>

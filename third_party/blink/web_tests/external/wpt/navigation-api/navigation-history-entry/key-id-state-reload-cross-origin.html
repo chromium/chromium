@@ -1,0 +1,67 @@
+<!doctype html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script>
+const TARGET_PATH = "/navigation-api/navigation-history-entry/resources/post-entry-to-top.html";
+
+async function runRedirectedReloadTest(t, targetOrigin, reloadFn) {
+  const targetUrl = targetOrigin + TARGET_PATH;
+  const i = document.createElement("iframe");
+  i.src = "resources/redirect-on-second-visit.py?key=" + token() +
+          "&location=" + encodeURIComponent(targetUrl);
+  t.add_cleanup(() => i.remove());
+
+  await new Promise(resolve => {
+    i.onload = resolve;
+    document.body.appendChild(i);
+  });
+
+  i.contentWindow.navigation.updateCurrentEntry({ state: { secret: "value" } });
+  const keyBefore = i.contentWindow.navigation.currentEntry.key;
+  const idBefore = i.contentWindow.navigation.currentEntry.id;
+  assert_equals(i.contentWindow.navigation.currentEntry.getState().secret, "value");
+
+  const messagePromise = new Promise(resolve => {
+    const handler = e => {
+      if (e.source === i.contentWindow) {
+        window.removeEventListener("message", handler);
+        resolve(e.data);
+      }
+    };
+    window.addEventListener("message", handler);
+  });
+
+  reloadFn(i.contentWindow);
+  const data = await messagePromise;
+  return { keyBefore, idBefore, data };
+}
+
+promise_test(async t => {
+  const { keyBefore, idBefore, data } = await runRedirectedReloadTest(
+      t, get_host_info().HTTP_REMOTE_ORIGIN, win => win.location.reload());
+  assert_not_equals(data.key, keyBefore, "key must not leak across origins");
+  assert_not_equals(data.id, idBefore, "id must not leak across origins");
+  assert_equals(data.state, undefined, "state must not leak across origins");
+}, "location.reload() with cross-origin server redirect does not leak key, id, or state");
+
+promise_test(async t => {
+  const { keyBefore, idBefore, data } = await runRedirectedReloadTest(
+      t, get_host_info().HTTP_REMOTE_ORIGIN,
+      win => win.navigation.reload({ state: { secret: "from-reload" } }));
+  assert_not_equals(data.key, keyBefore, "key must not leak across origins");
+  assert_not_equals(data.id, idBefore, "id must not leak across origins");
+  assert_equals(data.state, undefined, "state must not leak across origins");
+}, "navigation.reload() with cross-origin server redirect does not leak key, id, or state");
+
+promise_test(async t => {
+  const { keyBefore, idBefore, data } = await runRedirectedReloadTest(
+      t, get_host_info().HTTP_ORIGIN, win => win.location.reload());
+  assert_equals(data.key, keyBefore, "key is preserved on same-origin reload");
+  assert_equals(data.id, idBefore, "id is preserved on same-origin reload");
+  assert_equals(data.state.secret, "value", "state is preserved on same-origin reload");
+}, "location.reload() with same-origin server redirect preserves key, id, and state");
+</script>
+</body>
