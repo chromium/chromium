@@ -84,6 +84,7 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
     data:
         "A simple GET HTTP request. No user data is included."
     destination: GOOGLE_OWNED_SERVICE
+    static_content: true
     internal {
       contacts {
         email: "xinghuilu@chromium.org"
