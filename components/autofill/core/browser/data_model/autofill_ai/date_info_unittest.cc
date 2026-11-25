@@ -10,6 +10,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/map_util.h"
+#include "base/i18n/language_tag.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/data_model_util.h"
@@ -66,10 +67,11 @@ TEST(DateInfo, GetIcuDate_IncrementalSet) {
   EXPECT_EQ(info.GetDate(u"YYYY-MM-DD"), u"");
 
   info.SetDate(u"12/2022", u"MM/YYYY");
-  EXPECT_EQ(info.GetIcuDate("en_US"), u"");
+  EXPECT_EQ(info.GetIcuDate(base::i18n::GetKnownLanguageTag("en-US")), u"");
 
   info.SetDate(u"16", u"DD");
-  EXPECT_EQ(info.GetIcuDate("en_US"), u"Dec 16");
+  EXPECT_EQ(info.GetIcuDate(base::i18n::GetKnownLanguageTag("en-US")),
+            u"Dec 16");
 }
 
 // Tests that GetIcuDate() returns the localized date.
@@ -78,9 +80,12 @@ TEST(DateInfo, GetIcuDate_LocalizedOutput) {
   info.SetDate(u"16/12/2022", u"DD/MM/YYYY");
   EXPECT_EQ(info.GetDate(u"YYYY-MM-DD"), u"2022-12-16");
 
-  EXPECT_EQ(info.GetIcuDate("en_US"), u"Dec 16");
-  EXPECT_EQ(info.GetIcuDate("pl_PL"), u"16 gru");
-  EXPECT_EQ(info.GetIcuDate("de_DE"), u"16. Dez.");
+  EXPECT_EQ(info.GetIcuDate(base::i18n::GetKnownLanguageTag("en-US")),
+            u"Dec 16");
+  EXPECT_EQ(info.GetIcuDate(base::i18n::GetKnownLanguageTag("pl-PL")),
+            u"16 gru");
+  EXPECT_EQ(info.GetIcuDate(base::i18n::GetKnownLanguageTag("de-DE")),
+            u"16. Dez.");
 }
 
 // Tests that GetDateProto() populates a proto with  year, month, and day.
@@ -96,8 +101,8 @@ TEST(DateInfo, GetDateProto) {
 // Tests that GetIcuDate() returns the localized date for a localized pattern
 // across all Chrome UI platform locales (ui_l10n::GetPlatformLanguageTags()).
 TEST(DateInfo, GetIcuDate_LocalizedPattern_AllPlatformLocales) {
-  constexpr auto kPlatformLocales = std::to_array({
-#define PLATFORM_LOCALE(locale) #locale,
+  constexpr auto kPlatformLocales = std::to_array<base::i18n::LanguageTag>({
+#define PLATFORM_LOCALE(locale) base::i18n::GetKnownLanguageTag(#locale),
 #include "ui/base/l10n/l10n_util_locales_list.inc"
 #undef PLATFORM_LOCALE
   });
@@ -239,11 +244,11 @@ TEST(DateInfo, GetIcuDate_LocalizedPattern_AllPlatformLocales) {
 
   // We loop over `kPlatformLocales`, not `expected_dates`, so that we limit
   // ourselves to those locales supported by the platform.
-  for (std::string_view locale : kPlatformLocales) {
-    SCOPED_TRACE(testing::Message() << "Locale: " << locale);
+  for (base::i18n::LanguageTag locale : kPlatformLocales) {
+    SCOPED_TRACE(testing::Message() << "Locale: " << locale.tag_string());
 
     const std::u16string_view* expected_date =
-        base::FindOrNull(expected_dates, locale);
+        base::FindOrNull(expected_dates, locale.tag_string());
     ASSERT_NE(expected_date, nullptr);
 
     DateInfo info;

@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
@@ -27,22 +28,24 @@ CountryInfo& CountryInfo::operator=(CountryInfo&& info) = default;
 
 CountryInfo::~CountryInfo() = default;
 
-std::u16string CountryInfo::GetCountryName(std::string_view app_locale) const {
-  return AutofillCountry(country_code_, app_locale).name();
+std::u16string CountryInfo::GetCountryName(
+    const base::i18n::LanguageTag& app_locale) const {
+  return AutofillCountry(country_code_, app_locale.tag_string()).name();
 }
 
 std::string CountryInfo::GetCountryCode() const {
   return country_code_;
 }
 
-bool CountryInfo::SetCountryFromCountryName(std::u16string_view value,
-                                            std::string_view app_locale) {
+bool CountryInfo::SetCountryFromCountryName(
+    std::u16string_view value,
+    const base::i18n::LanguageTag& app_locale) {
   if (value.empty()) {
     return false;
   }
   if (CountryNames* country_names = CountryNames::GetInstance()) {
-    country_code_ =
-        country_names->GetCountryCodeForLocalizedCountryName(value, app_locale);
+    country_code_ = country_names->GetCountryCodeForLocalizedCountryName(
+        value, app_locale.tag_string());
     return !country_code_.empty();
   }
   return false;

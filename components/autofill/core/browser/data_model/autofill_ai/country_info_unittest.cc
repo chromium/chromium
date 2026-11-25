@@ -4,13 +4,15 @@
 
 #include "components/autofill/core/browser/data_model/autofill_ai/country_info.h"
 
+#include "base/i18n/language_tag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 namespace {
 
-constexpr char kAppLocaleUS[] = "en-US";
+constexpr base::i18n::LanguageTag kAppLocaleUS =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 // Tests that we can read the country name of an object constructed with country
 // name.

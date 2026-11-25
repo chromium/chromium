@@ -8,10 +8,8 @@
 #include <string_view>
 
 #include "base/i18n/icubridge/date_time_formatter.h"
-#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/i18n/timezone.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -49,7 +47,8 @@ std::u16string DateInfo::GetDate(std::u16string_view format) const {
   return data_util::FormatDate(date_, format);
 }
 
-std::u16string DateInfo::GetIcuDate(std::string_view locale) const {
+std::u16string DateInfo::GetIcuDate(
+    const base::i18n::LanguageTag& locale) const {
   if (date_.day == 0 || date_.month == 0 || date_.year == 0) {
     return {};
   }
@@ -60,11 +59,8 @@ std::u16string DateInfo::GetIcuDate(std::string_view locale) const {
   if (!base::Time::FromUTCExploded(base::Time::Exploded{exploded}, &time)) {
     return {};
   }
-  base::i18n::LanguageTag locale_tag =
-      base::i18n::GetLanguageTagFromString(locale).value_or(
-          base::i18n::GetDefaultIcuLocale());
   const base::i18n::IcuBridge::DateTimeFormatter& formatter =
-      base::i18n::IcuBridge::GetInstance().date_time_formatter(locale_tag);
+      base::i18n::IcuBridge::GetInstance().date_time_formatter(locale);
   base::i18n::DateTimeFormatterOptions options =
       base::i18n::datetime_options::MD::Medium()
           .with_time_zone(base::i18n::TimeZone::GMT())

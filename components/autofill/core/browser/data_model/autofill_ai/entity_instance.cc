@@ -270,13 +270,13 @@ std::u16string AttributeInstance::GetInfo(
 
   return std::visit(
       absl::Overload{[&](const CountryInfo& country) {
-                       return country.GetCountryName(app_locale.tag_string());
+                       return country.GetCountryName(app_locale);
                      },
                      [&](const DateInfo& date) {
                        if (compatible_format_string &&
                            compatible_format_string->type ==
                                FormatString_Type_ICU_DATE) {
-                         return date.GetIcuDate(app_locale.tag_string());
+                         return date.GetIcuDate(app_locale);
                        }
                        return date.GetDate(compatible_format_string
                                                ? compatible_format_string->value
@@ -365,8 +365,7 @@ void AttributeInstance::SetInfo(
             // We assume that the given `value` is either a valid country code
             // or a valid country name localized to the provided `app_locale`.
             if (!country.SetCountryFromCountryCode(value) &&
-                !country.SetCountryFromCountryName(value,
-                                                   app_locale.tag_string())) {
+                !country.SetCountryFromCountryName(value, app_locale)) {
               // In case `value` turns out to be neither of the two options
               // mentioned above, we reset the country value to indicate
               // failure.

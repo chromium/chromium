@@ -10,6 +10,10 @@
 
 #include "components/autofill/core/browser/data_model/data_model_util.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace personal_context::proto {
 class Date;
 }  // namespace personal_context::proto
@@ -39,11 +43,9 @@ class DateInfo {
 
   // Returns the date formatted according to `locale` using ICU with
   // base::i18n::datetime_options::MD::Medium() formatting.
-  // If `locale` cannot be parsed, falls back to
-  // `base::i18n::GetDefaultIcuLocale()`.
   // Returns an empty string if the date is partially set (e.g. day is not set)
   // or invalid.
-  std::u16string GetIcuDate(std::string_view locale) const;
+  std::u16string GetIcuDate(const base::i18n::LanguageTag& locale) const;
 
   // Returns the date in a `personal_context::proto::Date` representation.
   personal_context::proto::Date GetDateProto() const;

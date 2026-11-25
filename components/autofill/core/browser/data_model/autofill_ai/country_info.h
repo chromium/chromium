@@ -8,6 +8,10 @@
 #include <string>
 #include <string_view>
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 // A class that stores country information. This class is used to represent
@@ -27,14 +31,15 @@ class CountryInfo {
 
   // Returns the stored country, represented as a name localized to
   // `app_locale`.
-  std::u16string GetCountryName(std::string_view app_locale) const;
+  std::u16string GetCountryName(
+      const base::i18n::LanguageTag& app_locale) const;
   // Returns the stored country code, in the two-letter ISO-3166 format.
   std::string GetCountryCode() const;
 
   // Returns true if `country_code_` is set according to `country_name` and
   // `app_locale`, i.e. the write ioperation s successful, and false otherwise.
   bool SetCountryFromCountryName(std::u16string_view country_name,
-                                 std::string_view app_locale);
+                                 const base::i18n::LanguageTag& app_locale);
   // Returns true if `country_code_` is set according to `country_code`, i.e.
   // the write operation is successful, and false otherwise.
   bool SetCountryFromCountryCode(std::u16string_view country_code);

@@ -10,6 +10,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
@@ -102,7 +103,9 @@ std::optional<std::u16string> FormatShortDate(
   }
   DateInfo date_info;
   date_info.SetDate(DateToIsoString(year, month, day), u"YYYY-MM-DD");
-  std::u16string formatted = date_info.GetIcuDate(app_locale);
+  std::u16string formatted =
+      date_info.GetIcuDate(base::i18n::GetLanguageTagFromString(app_locale)
+                               .value_or(base::i18n::GetDefaultIcuLocale()));
   return formatted.empty() ? std::nullopt
                            : std::make_optional(std::move(formatted));
 }
