@@ -286,6 +286,8 @@ if (!skip_android_unmigrated_actor_files) {
 
 source_set("ui") {
   sources = [
+    "actor_flow_delegate.cc",
+    "actor_flow_delegate.h",
     "actor_ui_state_manager.cc",
     "actor_ui_state_manager.h",
     "actor_ui_state_manager_interface.h",
@@ -412,9 +414,13 @@ source_set("ui_event_utils") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "dom_node_geometry_unittest.cc" ]
+  sources = [
+    "actor_flow_delegate_unittest.cc",
+    "dom_node_geometry_unittest.cc",
+  ]
   deps = [
     ":dom_node_geometry",
+    ":ui",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
@@ -439,7 +445,6 @@ source_set("unit_tests") {
       ":actor_overlay_web_view",
       ":event_dispatcher",
       ":test_support",
-      ":ui",
       ":ui_event_types",
       ":ui_event_utils",
       "//chrome/browser/actor",
