@@ -32,8 +32,7 @@ import java.util.Objects;
 public class Snackbar {
     /**
      * Snackbars that are created as an immediate response to user's action. These snackbars are
-     * managed in a stack and will be dismissed one by one. They do not require an action button;
-     * the longer action timeout applies only when an action button is present.
+     * managed in a stack and will be dismissed one by one.
      */
     public static final int TYPE_ACTION = 0;
 
@@ -384,8 +383,7 @@ public class Snackbar {
     /**
      * @return Whether the snackbar is of {@link #TYPE_ACTION}.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public boolean isTypeAction() {
+    boolean isTypeAction() {
         return mType == TYPE_ACTION;
     }
 

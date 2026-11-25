@@ -28,8 +28,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
-import java.util.List;
-
 /** Tests for {@link ExclusiveAccessBubble}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ExclusiveAccessBubbleTest {
@@ -38,29 +36,10 @@ public class ExclusiveAccessBubbleTest {
     @Mock private ExclusiveAccessContext mExclusiveAccessContext;
     @Mock private SnackbarManager mSnackbarManager;
 
-    private List<Snackbar> showAndUpdateNotice() {
-        ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
-        bubble.update("Fullscreen notice");
-        bubble.update("Updated fullscreen notice");
-        ArgumentCaptor<Snackbar> captor = ArgumentCaptor.forClass(Snackbar.class);
-        Mockito.verify(mSnackbarManager, Mockito.times(2)).showSnackbar(captor.capture());
-        return captor.getAllValues();
-    }
-
     @Before
     public void setUp() {
         Mockito.when(mExclusiveAccessContext.getSnackbarManager()).thenReturn(mSnackbarManager);
         Mockito.when(mSnackbarManager.canShowSnackbar()).thenReturn(true);
-    }
-
-    @Test
-    public void testShowAndUpdateConfigureFullscreenNotice() {
-        for (Snackbar snackbar : showAndUpdateNotice()) {
-            Assert.assertNull(snackbar.getActionText());
-            Assert.assertTrue(snackbar.isTypeAction());
-            Assert.assertTrue(snackbar.isHighPriority());
-            Assert.assertEquals(3800, snackbar.getDuration());
-        }
     }
 
     @Test

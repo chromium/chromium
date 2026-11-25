@@ -357,11 +357,10 @@ public class SnackbarTest {
         SnackbarManager.setDurationForTesting(timeout);
         final Snackbar snackbar =
                 Snackbar.make(
-                                "persistent",
-                                mDismissController,
-                                Snackbar.TYPE_PERSISTENT,
-                                Snackbar.UMA_TEST_SNACKBAR)
-                        .setAction("Dismiss", null);
+                        "persistent",
+                        mDismissController,
+                        Snackbar.TYPE_PERSISTENT,
+                        Snackbar.UMA_TEST_SNACKBAR);
         mDismissed = false;
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> mManager.showSnackbar(snackbar));
         pollSnackbarCondition(
@@ -378,110 +377,68 @@ public class SnackbarTest {
     @Test
     @SmallTest
     public void testSnackbarDuration() {
-        ThreadUtils.runOnUiThreadBlocking(
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "persistent",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
                 () -> {
-                    // Keep the general, action-button and accessibility defaults distinct.
-                    SnackbarManager.resetDurationForTesting();
-                    try {
-                        Snackbar actionlessSnackbar =
-                                Snackbar.make(
-                                        "Saved",
-                                        mDismissController,
-                                        Snackbar.TYPE_ACTION,
-                                        Snackbar.UMA_TEST_SNACKBAR);
-                        Assert.assertEquals(
-                                "An actionless TYPE_ACTION snackbar uses the general minimum",
-                                SnackbarManager.DEFAULT_SNACKBAR_DURATION_MS,
-                                mManager.getDuration(actionlessSnackbar));
+                    snackbar.setDuration(0);
+                    Assert.assertEquals(
+                            "Snackbar should use default duration when client sets duration to 0.",
+                            SnackbarManager.getDefaultTypeActionSnackbarDuration(),
+                            mManager.getDuration(snackbar));
+                });
 
-                        actionlessSnackbar.setDuration(1000);
-                        Assert.assertEquals(
-                                "A short actionless snackbar request retains the general minimum",
-                                SnackbarManager.DEFAULT_SNACKBAR_DURATION_MS,
-                                mManager.getDuration(actionlessSnackbar));
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    snackbar.setDuration(70000);
+                    Assert.assertEquals(
+                            "Snackbar should use set duration when no gesture performing a11y "
+                                    + "services are running.",
+                            70000,
+                            mManager.getDuration(snackbar));
+                });
 
-                        actionlessSnackbar.setDuration(3800);
-                        Assert.assertEquals(
-                                "An actionless snackbar honors the fullscreen notice duration",
-                                3800,
-                                mManager.getDuration(actionlessSnackbar));
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    snackbar.setDuration(
+                            SnackbarManager.getDefaultTypeActionSnackbarDuration() / 2);
+                    Assert.assertEquals(
+                            "Snackbar should use default duration when client sets a very short"
+                                    + " duration.",
+                            SnackbarManager.getDefaultTypeActionSnackbarDuration(),
+                            mManager.getDuration(snackbar));
+                });
 
-                        actionlessSnackbar.setDuration(70000);
-                        Assert.assertEquals(
-                                "An actionless snackbar honors a long requested duration",
-                                70000,
-                                mManager.getDuration(actionlessSnackbar));
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(true);
+                    snackbar.setDuration(SnackbarManager.getDefaultA11yDurationForTesting() / 3);
+                    Assert.assertEquals(
+                            "Snackbar should use default a11y duration when set duration is less"
+                                + " than default and a gesture performing a11y service is running.",
+                            SnackbarManager.getDefaultA11yDurationForTesting(),
+                            mManager.getDuration(snackbar));
+                });
 
-                        Snackbar actionSnackbar =
-                                Snackbar.make(
-                                                "Closed tab",
-                                                mDismissController,
-                                                Snackbar.TYPE_ACTION,
-                                                Snackbar.UMA_TEST_SNACKBAR)
-                                        .setAction("Undo", null);
-                        Assert.assertEquals(
-                                "An action button retains the action minimum with null action data",
-                                SnackbarManager.DEFAULT_TYPE_ACTION_SNACKBAR_DURATION_MS,
-                                mManager.getDuration(actionSnackbar));
-
-                        actionSnackbar.setDuration(3800);
-                        Assert.assertEquals(
-                                "An action button keeps the action minimum for a short request",
-                                SnackbarManager.DEFAULT_TYPE_ACTION_SNACKBAR_DURATION_MS,
-                                mManager.getDuration(actionSnackbar));
-
-                        actionSnackbar.setDuration(70000);
-                        Assert.assertEquals(
-                                "An action button honors a request longer than the action minimum",
-                                70000,
-                                mManager.getDuration(actionSnackbar));
-
-                        Snackbar notificationSnackbar =
-                                Snackbar.make(
-                                                "Downloaded",
-                                                mDismissController,
-                                                Snackbar.TYPE_NOTIFICATION,
-                                                Snackbar.UMA_TEST_SNACKBAR)
-                                        .setAction("Open", null)
-                                        .setDuration(3800);
-                        Assert.assertEquals(
-                                "A notification button does not impose the TYPE_ACTION minimum",
-                                3800,
-                                mManager.getDuration(notificationSnackbar));
-
-                        notificationSnackbar.setDuration(0);
-                        Assert.assertEquals(
-                                "A notification with a button retains the general default",
-                                SnackbarManager.DEFAULT_SNACKBAR_DURATION_MS,
-                                mManager.getDuration(notificationSnackbar));
-
-                        AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(true);
-                        actionlessSnackbar.setDuration(3800);
-                        Assert.assertEquals(
-                                "Accessibility extends actionless fullscreen notice durations",
-                                SnackbarManager.getDefaultA11yDurationForTesting(),
-                                mManager.getDuration(actionlessSnackbar));
-
-                        actionSnackbar.setDuration(3800);
-                        Assert.assertEquals(
-                                "Accessibility extends action-button snackbar durations",
-                                SnackbarManager.getDefaultA11yDurationForTesting(),
-                                mManager.getDuration(actionSnackbar));
-
-                        actionlessSnackbar.setDuration(70000);
-                        Assert.assertEquals(
-                                "Accessibility does not shorten a longer actionless request",
-                                70000,
-                                mManager.getDuration(actionlessSnackbar));
-
-                        actionSnackbar.setDuration(70000);
-                        Assert.assertEquals(
-                                "Accessibility does not shorten a longer action-button request",
-                                70000,
-                                mManager.getDuration(actionSnackbar));
-                    } finally {
-                        SnackbarManager.setDurationForTesting(1000);
-                    }
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(true);
+                    snackbar.setDuration(SnackbarManager.getDefaultA11yDurationForTesting() * 3);
+                    Assert.assertTrue(
+                            "Snackbar should use the recommended duration if it is more than "
+                                    + "the default a11y duration.",
+                            SnackbarManager.getDefaultA11yDurationForTesting()
+                                    < mManager.getDuration(snackbar));
                 });
     }
 

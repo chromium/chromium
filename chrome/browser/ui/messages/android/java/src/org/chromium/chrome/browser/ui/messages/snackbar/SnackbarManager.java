@@ -620,7 +620,7 @@ public class SnackbarManager
     @VisibleForTesting
     int getDuration(Snackbar snackbar) {
         int durationMs = Math.max(snackbar.getDuration(), sSnackbarDurationMs);
-        if (snackbar.isTypeAction() && snackbar.getActionText() != null) {
+        if (snackbar.isTypeAction()) {
             durationMs = Math.max(sTypeActionSnackbarDurationsMs, durationMs);
         }
 
