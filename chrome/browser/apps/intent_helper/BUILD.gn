@@ -37,7 +37,7 @@ if (!is_android) {
     sources = [ "intent_chip_display_prefs_unittest.cc" ]
     deps = [
       ":intent_chip_display_prefs",
-      "//chrome/test:test_support",
+      "//chrome/test/base:testing_profile",
       "//content/test:test_support",
       "//testing/gtest",
       "//url",

@@ -59,7 +59,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:constants",
-    "//chrome/test:test_support",
+    "//chrome/test/base:testing_profile",
     "//chromeos/ash/components/system",
     "//content/test:test_support",
     "//testing/gtest",

@@ -120,11 +120,12 @@ source_set("unit_tests") {
     "//chrome/browser/apps/almanac_api_client",
     "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/intent_helper:test_support",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
-    "//chrome/test:test_support",
+    "//chrome/test/base:testing_profile",
     "//chromeos/ash/components/login/session",
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/arc:arc_app_constants",
@@ -158,15 +159,19 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/ui/navigator",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/ash/app_install",
     "//chrome/browser/ui/webui/ash/app_install:test_support",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
-    "//chrome/test:test_support",
+    "//chrome/test/base:in_process_browser_test",
+    "//chrome/test/base:ui_test_utils",
     "//components/services/app_service",
+    "//components/user_manager",
     "//components/webapps/common",
     "//content/test:test_support",
+    "//net:test_support",
     "//services/network:test_support",
     "//testing/gtest",
   ]
@@ -181,7 +186,7 @@ test("app_install_fuzztests") {
 
   deps = [
     ":navigation_throttle",
-    "//chrome/test:test_support",
+    "//base",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
 }

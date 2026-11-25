@@ -74,17 +74,24 @@ source_set("unit_tests") {
   deps = [
     ":almanac_api_client",
     "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
     "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/browser/apps/almanac_api_client/proto:test_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/common:channel_info",
-    "//chrome/test:test_support",
+    "//chrome/common:constants",
+    "//chrome/test/base:testing_profile",
     "//chromeos/ash/components/system",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
     "//components/language/core/browser",
     "//components/prefs",
+    "//content/test:test_support",
+    "//net/traffic_annotation:test_support",
     "//testing/gtest",
+    "//ui/base",
+    "//ui/resources:ui_resources_grd",
   ]
 }
 
@@ -98,7 +105,7 @@ source_set("browser_tests") {
   deps = [
     ":almanac_api_client",
     "//base",
-    "//chrome/test:test_support",
+    "//chrome/test/base:in_process_browser_test",
     "//content/test:test_support",
   ]
 }

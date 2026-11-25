@@ -62,9 +62,10 @@ source_set("unit_tests") {
   deps = [
     ":recommended_arc_apps",
     ":test_support",
+    "//ash",
     "//base",
-    "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
+    "//chrome/test/base:testing_profile",
     "//chromeos/ash/experiences/arc",
     "//components/user_manager",
     "//content/test:test_support",
