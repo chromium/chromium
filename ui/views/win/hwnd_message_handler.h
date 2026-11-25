@@ -117,7 +117,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   void DestroyHandler();
 
-  // Delete `this` if `in_wnd_proc_depth_` is 0.
+  // Delete `this` if `message_handling_depth_` is 0.
   void DeleteIfStackUnwound();
 
   virtual gfx::Rect GetWindowBoundsInScreen() const;
@@ -290,7 +290,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
  private:
   friend class ::views::test::DesktopWindowTreeHostWinTestApi;
 
-  class ScopedWndProcDepth;
+  class ScopedMessageHandlingDepth;
 
   using TouchIDs = std::set<DWORD>;
   enum class DwmFrameState { kOff, kOn };
@@ -350,6 +350,8 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   gfx::NativeViewAccessible GetChildOfAXFragmentRoot() override;
   gfx::NativeViewAccessible GetParentOfAXFragmentRoot() override;
   bool IsAXFragmentRootAControlElement() override;
+
+  bool CanDispatchEvent() const;
 
   void ApplyPanGestureEvent(int scroll_x,
                             int scroll_y,
@@ -932,8 +934,9 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   bool delete_pending_ = false;
 
-  // Tracks how many instances of OnWndProc are on the stack.
-  int in_wnd_proc_depth_ = 0;
+  // Tracks how many instances of OnWndProc or WindowEventTarget methods are on
+  // the stack.
+  int message_handling_depth_ = 0;
 
   // Returns true if the message handler is pending deletion.
   bool IsDestroyed() const;

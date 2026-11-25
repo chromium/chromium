@@ -308,20 +308,24 @@ bool g_is_in_native_menu_loop = false;
 
 }  // namespace
 
-class HWNDMessageHandler::ScopedWndProcDepth {
+class HWNDMessageHandler::ScopedMessageHandlingDepth {
  public:
-  explicit ScopedWndProcDepth(base::WeakPtr<HWNDMessageHandler> handler)
+  explicit ScopedMessageHandlingDepth(base::WeakPtr<HWNDMessageHandler> handler)
       : handler_(std::move(handler)) {
     if (handler_) {
-      ++handler_->in_wnd_proc_depth_;
+      ++handler_->message_handling_depth_;
     }
   }
 
-  ~ScopedWndProcDepth() {
+  ScopedMessageHandlingDepth(const ScopedMessageHandlingDepth&) = delete;
+  ScopedMessageHandlingDepth& operator=(const ScopedMessageHandlingDepth&) =
+      delete;
+
+  ~ScopedMessageHandlingDepth() {
     if (!handler_) {
       return;
     }
-    if (--handler_->in_wnd_proc_depth_ == 0 && handler_->delete_pending_) {
+    if (--handler_->message_handling_depth_ == 0 && handler_->delete_pending_) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&HWNDMessageHandler::DeleteIfStackUnwound, handler_));
@@ -570,7 +574,7 @@ void HWNDMessageHandler::DestroyHandler() {
 }
 
 void HWNDMessageHandler::DeleteIfStackUnwound() {
-  if (in_wnd_proc_depth_ > 0) {
+  if (message_handling_depth_ > 0) {
     return;
   }
   delete this;
@@ -1222,7 +1226,8 @@ HICON HWNDMessageHandler::GetSmallWindowIcon() const {
 LRESULT HWNDMessageHandler::OnWndProc(UINT message,
                                       WPARAM w_param,
                                       LPARAM l_param) {
-  ScopedWndProcDepth scoped_depth(msg_handler_weak_factory_.GetWeakPtr());
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
   if (delete_pending_) {
     return ::DefWindowProc(hwnd(), message, w_param, l_param);
   }
@@ -1313,11 +1318,17 @@ void HWNDMessageHandler::OnInputMethodDestroyed(
   DestroyAXSystemCaret();
 }
 
+bool HWNDMessageHandler::CanDispatchEvent() const {
+  return !delete_pending_ && delegate_;
+}
+
 LRESULT HWNDMessageHandler::HandleMouseMessage(unsigned int message,
                                                WPARAM w_param,
                                                LPARAM l_param,
                                                bool* handled) {
-  if (!delegate_) {
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
+  if (!CanDispatchEvent()) {
     *handled = false;
     return 0;
   }
@@ -1332,7 +1343,9 @@ LRESULT HWNDMessageHandler::HandleKeyboardMessage(unsigned int message,
                                                   WPARAM w_param,
                                                   LPARAM l_param,
                                                   bool* handled) {
-  if (!delegate_) {
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
+  if (!CanDispatchEvent()) {
     *handled = false;
     return 0;
   }
@@ -1350,7 +1363,9 @@ LRESULT HWNDMessageHandler::HandleTouchMessage(unsigned int message,
                                                WPARAM w_param,
                                                LPARAM l_param,
                                                bool* handled) {
-  if (!delegate_) {
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
+  if (!CanDispatchEvent()) {
     *handled = false;
     return 0;
   }
@@ -1363,7 +1378,9 @@ LRESULT HWNDMessageHandler::HandlePointerMessage(unsigned int message,
                                                  WPARAM w_param,
                                                  LPARAM l_param,
                                                  bool* handled) {
-  if (!delegate_) {
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
+  if (!CanDispatchEvent()) {
     *handled = false;
     return 0;
   }
@@ -1376,7 +1393,9 @@ LRESULT HWNDMessageHandler::HandleInputMessage(unsigned int message,
                                                WPARAM w_param,
                                                LPARAM l_param,
                                                bool* handled) {
-  if (!delegate_) {
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
+  if (!CanDispatchEvent()) {
     *handled = false;
     return 0;
   }
@@ -1389,7 +1408,9 @@ LRESULT HWNDMessageHandler::HandleScrollMessage(unsigned int message,
                                                 WPARAM w_param,
                                                 LPARAM l_param,
                                                 bool* handled) {
-  if (!delegate_) {
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
+  if (!CanDispatchEvent()) {
     *handled = false;
     return 0;
   }
@@ -1402,7 +1423,9 @@ LRESULT HWNDMessageHandler::HandleNcHitTestMessage(unsigned int message,
                                                    WPARAM w_param,
                                                    LPARAM l_param,
                                                    bool* handled) {
-  if (!delegate_) {
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
+  if (!CanDispatchEvent()) {
     *handled = false;
     return 0;
   }
@@ -1413,7 +1436,9 @@ LRESULT HWNDMessageHandler::HandleNcHitTestMessage(unsigned int message,
 }
 
 void HWNDMessageHandler::ApplyPinchZoomScale(float scale) {
-  if (!delegate_) {
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
+  if (!CanDispatchEvent()) {
     return;
   }
   POINT cursor_pos = GetCursorPos();
@@ -1429,7 +1454,9 @@ void HWNDMessageHandler::ApplyPinchZoomScale(float scale) {
 }
 
 void HWNDMessageHandler::ApplyPinchZoomBegin() {
-  if (!delegate_) {
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
+  if (!CanDispatchEvent()) {
     return;
   }
   POINT cursor_pos = GetCursorPos();
@@ -1444,7 +1471,9 @@ void HWNDMessageHandler::ApplyPinchZoomBegin() {
 }
 
 void HWNDMessageHandler::ApplyPinchZoomEnd() {
-  if (!delegate_) {
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
+  if (!CanDispatchEvent()) {
     return;
   }
   POINT cursor_pos = GetCursorPos();
@@ -1463,7 +1492,9 @@ void HWNDMessageHandler::ApplyPanGestureEvent(
     int scroll_y,
     ui::EventMomentumPhase momentum_phase,
     ui::ScrollEventPhase phase) {
-  if (!delegate_) {
+  ScopedMessageHandlingDepth scoped_depth(
+      msg_handler_weak_factory_.GetWeakPtr());
+  if (!CanDispatchEvent()) {
     return;
   }
   gfx::Vector2d offset{scroll_x, scroll_y};
