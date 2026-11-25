@@ -219,6 +219,7 @@ source_set("impl") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",
     "//components/search",
+    "//components/search_engines",
     "//components/sessions",
     "//components/sessions:session_id",
     "//components/sync/base",

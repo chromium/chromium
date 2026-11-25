@@ -228,7 +228,7 @@ void UpdateAiModeThreadForTask(ContextualTasksService& service,
 bool IsUrlValidForContextSharing(const GURL& url);
 
 // Returns true if `tab` at `url` can be listed in a recent tabs picker. Tabs in
-// `always_include_tab_ids` stay listed even when they are internal or
+// `always_include_tab_ids` stay listed even when they are internal, AI Mode, or
 // page-context-ineligible pages so users can deselect them. If
 // `exclude_page_context_ineligible_tabs` is true, other tabs are listed only
 // when their last known page context eligibility is `kEligible`.

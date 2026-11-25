@@ -24,6 +24,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
 #include "chrome/browser/profiles/profile.h"
@@ -700,9 +702,8 @@ bool IsRecentTabSelectable(
     const GURL& url,
     const base::flat_set<SessionID>& always_include_tab_ids,
     bool exclude_page_context_ineligible_tabs) {
-  // Never list blank or invalid URLs, or AI Mode pages.
-  if (!url.is_valid() || url.IsAboutBlank() || IsAimURL(url) ||
-      IsAimZeroStateURL(url)) {
+  // Never list blank or invalid URLs.
+  if (!url.is_valid() || url.IsAboutBlank()) {
     return false;
   }
 
@@ -711,6 +712,22 @@ bool IsRecentTabSelectable(
       always_include_tab_ids.contains(
           sessions::SessionTabHelper::IdForTab(tab.GetContents()))) {
     return true;
+  }
+
+  // AI Mode pages cannot be added as context. One that is already shared
+  // (e.g. because it was auto-suggested) stays listed above so that it can be
+  // deselected. `IsAiUrl()` also covers AI Mode hosts that `IsAimURL()` does
+  // not know about (e.g. g.ai and a forced embedded page host).
+  if (IsAimURL(url) || IsAimZeroStateURL(url)) {
+    return false;
+  }
+  if (content::WebContents* contents = tab.GetContents()) {
+    if (ContextualTasksUiService* ui_service =
+            ContextualTasksUiServiceFactory::GetForBrowserContextIfExists(
+                contents->GetBrowserContext());
+        ui_service && ui_service->IsAiUrl(url)) {
+      return false;
+    }
   }
 
   // Exclude unattached internal pages and, when requested, tabs whose last

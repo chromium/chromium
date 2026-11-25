@@ -197,8 +197,8 @@ class ContextualSearchboxHandler
   // `exclude_page_context_ineligible_tabs` is true, tabs known to be
   // page-context-ineligible (`kNotEligible`) are excluded. Tabs whose
   // `SessionID` is in `always_include_tab_ids` are included even if they are
-  // internal or page-context-ineligible pages (e.g. an NTP tab attached via
-  // Lens Overlay).
+  // internal, AI Mode or page-context-ineligible pages (e.g. an NTP tab
+  // attached via Lens Overlay).
   static std::vector<searchbox::mojom::TabInfoPtr> GetRecentTabInfos(
       BrowserWindowInterface* browser_window_interface,
       std::optional<int> max_tab_suggestions = std::nullopt,

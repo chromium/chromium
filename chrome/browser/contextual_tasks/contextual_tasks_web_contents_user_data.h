@@ -467,7 +467,8 @@ class ContextualTasksWebContentsUserData
   // active).
   bool ShouldMountContextLibrary();
   // Returns true if any open tab in the browser window is eligible to be shown
-  // in the tab picker.
+  // in the tab picker, or if the session already has tabs that the tab picker
+  // lists so that they can be deselected.
   bool HasEligibleTabsForTabPicker() const;
 
   struct ImplicitTab {

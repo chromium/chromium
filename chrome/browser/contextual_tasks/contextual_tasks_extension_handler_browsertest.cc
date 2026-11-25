@@ -836,6 +836,47 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   run_loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       GetRecentTabs_ListsAttachedAiModeTab) {
+  const GURL attached_aim_url("https://www.google.com/search?q=test&udm=50");
+  const GURL unattached_aim_url("https://www.google.com/search?q=other&udm=50");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), attached_aim_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  content::WebContents* attached_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), unattached_aim_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // An AI Mode tab that is already attached to the session stays listed so
+  // that it can be deselected. An unattached AI Mode tab is still filtered out.
+  mock_session_handle_->AddPendingDelayedTab(
+      sessions::SessionTabHelper::IdForTab(attached_contents).id(),
+      attached_aim_url, base::UTF16ToUTF8(attached_contents->GetTitle()));
+
+  base::RunLoop run_loop;
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->GetRecentTabs(
+      base::BindLambdaForTesting(
+          [&](std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+            EXPECT_TRUE(std::ranges::any_of(
+                tabs, [&](const searchbox::mojom::TabInfoPtr& tab) {
+                  return tab->url == attached_aim_url;
+                }));
+            EXPECT_TRUE(std::ranges::none_of(
+                tabs, [&](const searchbox::mojom::TabInfoPtr& tab) {
+                  return tab->url == unattached_aim_url;
+                }));
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
 class ContextualTasksExtensionHandlerNoTabsBrowserTest
     : public ContextualTasksExtensionHandlerBrowserTest {
  public:

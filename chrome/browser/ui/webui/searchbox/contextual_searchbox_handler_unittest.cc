@@ -13,8 +13,10 @@
 #include "base/base64.h"
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
@@ -37,9 +39,14 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/smart_tab_sharing_metrics.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -95,6 +102,7 @@
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/desktop_capture.h"
@@ -457,6 +465,22 @@ class MockActiveTaskContextProvider
   MOCK_METHOD(void, AddLocalTabUnderline, (tabs::TabHandle), (override));
   MOCK_METHOD(void, RemoveLocalTabUnderline, (tabs::TabHandle), (override));
   MOCK_METHOD(void, ClearAllLocalTabUnderlines, (), (override));
+};
+
+// A `ContextualTasksUiService` that treats g.ai as the only AI Mode host.
+class FakeContextualTasksUiService
+    : public contextual_tasks::ContextualTasksUiService {
+ public:
+  explicit FakeContextualTasksUiService(Profile* profile)
+      : ContextualTasksUiService(profile,
+                                 /*delegate=*/nullptr,
+                                 /*contextual_tasks_service=*/nullptr,
+                                 /*identity_manager=*/nullptr,
+                                 /*aim_eligibility_service=*/nullptr,
+                                 /*eligibility_manager=*/nullptr,
+                                 /*cookie_synchronizer=*/nullptr) {}
+
+  bool IsAiUrl(const GURL& url) override { return url.host() == "g.ai"; }
 };
 
 }  // namespace
@@ -4548,6 +4572,81 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
     ASSERT_EQ(tabs.size(), 1u);
     EXPECT_EQ(tabs[0]->tab_id, regular_search_tab->GetHandle().raw_value());
   }
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       GetRecentTabInfos_AlwaysIncludesAttachedAiModeTabs) {
+  auto* regular_tab = AddTab(GURL("https://www.example.com"));
+  auto* attached_aim_search_tab =
+      AddTab(GURL("https://www.google.com/search?q=test&udm=50"));
+  auto* attached_aim_zero_state_tab =
+      AddTab(GURL("https://www.google.com/?udm=50"));
+  auto* unattached_aim_search_tab =
+      AddTab(GURL("https://www.google.com/search?q=other&udm=50"));
+
+  base::flat_set<SessionID> always_include_tab_ids;
+  for (tabs::TabInterface* tab :
+       {attached_aim_search_tab, attached_aim_zero_state_tab}) {
+    sessions::SessionTabHelper::CreateForWebContents(tab->GetContents(),
+                                                     base::NullCallback());
+    always_include_tab_ids.insert(
+        sessions::SessionTabHelper::IdForTab(tab->GetContents()));
+  }
+
+  // AI Mode tabs that are already attached stay listed so that they can be
+  // deselected, while an unattached AI Mode tab is still filtered out.
+  std::vector<int32_t> tab_ids;
+  for (const auto& tab : ContextualSearchboxHandler::GetRecentTabInfos(
+           browser_window_interface(), /*max_tab_suggestions=*/std::nullopt,
+           always_include_tab_ids)) {
+    tab_ids.push_back(tab->tab_id);
+  }
+  EXPECT_THAT(tab_ids,
+              testing::UnorderedElementsAre(
+                  regular_tab->GetHandle().raw_value(),
+                  attached_aim_search_tab->GetHandle().raw_value(),
+                  attached_aim_zero_state_tab->GetHandle().raw_value()));
+  EXPECT_THAT(tab_ids,
+              testing::Not(testing::Contains(
+                  unattached_aim_search_tab->GetHandle().raw_value())));
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       GetRecentTabInfos_FiltersUiServiceAiUrls) {
+  contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+      ->SetTestingFactory(
+          profile(), base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+            return std::make_unique<FakeContextualTasksUiService>(
+                Profile::FromBrowserContext(context));
+          }));
+  ASSERT_TRUE(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          profile()));
+
+  auto* regular_tab = AddTab(GURL("https://www.example.com"));
+  auto* attached_ai_tab = AddTab(GURL("https://g.ai/attached"));
+  auto* unattached_ai_tab = AddTab(GURL("https://g.ai/unattached"));
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      attached_ai_tab->GetContents(), base::NullCallback());
+  const base::flat_set<SessionID> always_include_tab_ids = {
+      sessions::SessionTabHelper::IdForTab(attached_ai_tab->GetContents())};
+
+  // AI Mode pages that only the UI service knows about (e.g. g.ai) cannot be
+  // picked either, but one that is already attached stays listed so that it
+  // can be deselected.
+  std::vector<int32_t> tab_ids;
+  for (const auto& tab : ContextualSearchboxHandler::GetRecentTabInfos(
+           browser_window_interface(), /*max_tab_suggestions=*/std::nullopt,
+           always_include_tab_ids)) {
+    tab_ids.push_back(tab->tab_id);
+  }
+  EXPECT_THAT(tab_ids, testing::UnorderedElementsAre(
+                           regular_tab->GetHandle().raw_value(),
+                           attached_ai_tab->GetHandle().raw_value()));
+  EXPECT_THAT(tab_ids, testing::Not(testing::Contains(
+                           unattached_ai_tab->GetHandle().raw_value())));
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,

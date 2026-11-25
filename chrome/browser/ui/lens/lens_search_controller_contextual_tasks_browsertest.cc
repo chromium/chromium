@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/base64url.h"
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -240,6 +242,14 @@ class TestingContextualTasksUiService
     return std::nullopt;
   }
 
+  bool IsAiUrl(const GURL& url) override {
+    return (ai_url_for_testing_.is_valid() && url == ai_url_for_testing_) ||
+           contextual_tasks::ContextualTasksUiService::IsAiUrl(url);
+  }
+
+  // Makes `url` be treated as an AI Mode page (e.g. like g.ai).
+  void SetAiUrlForTesting(const GURL& url) { ai_url_for_testing_ = url; }
+
   bool IsPanelOpen() const { return is_panel_open_; }
   void SetPanelOpen(bool open) { is_panel_open_ = open; }
 
@@ -259,6 +269,7 @@ class TestingContextualTasksUiService
   base::Uuid pending_task_id_;
   GURL pending_task_url_;
   GURL last_task_url_;
+  GURL ai_url_for_testing_;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
 };
@@ -635,6 +646,18 @@ class ContextualTasksLensInteractionBrowserTestBase
     return testing_ui_service_ ? testing_ui_service_->last_task_url() : GURL();
   }
 
+  // Returns the session handle that Lens handed off to the side panel.
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualTasksSessionHandle() {
+    return testing_ui_service_ ? testing_ui_service_->GetSessionHandle()
+                               : nullptr;
+  }
+
+  void SetAiUrl(const GURL& url) {
+    ASSERT_TRUE(testing_ui_service_);
+    testing_ui_service_->SetAiUrlForTesting(url);
+  }
+
   content::WebContents* GetContextualTasksWebContents() {
     if (testing_ui_service_ && testing_ui_service_->stub_web_contents()) {
       return testing_ui_service_->stub_web_contents();
@@ -923,6 +946,92 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(viewport_input.request_id().context_id(),
             page_input.request_id().context_id());
   EXPECT_NE(viewport_input.request_id().uuid(), page_input.request_id().uuid());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TextQueryOnAiModePageKeepsTabDeselectable \
+  DISABLED_TextQueryOnAiModePageKeepsTabDeselectable
+#else
+#define MAYBE_TextQueryOnAiModePageKeepsTabDeselectable \
+  TextQueryOnAiModePageKeepsTabDeselectable
+#endif
+class ContextualTasksLensInteractionSidePanelRearchitectureBrowserTest
+    : public ContextualTasksLensInteractionSeparateViewportRequestIdsBrowserTest {
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetAdditionalEnabledFeatures()
+      override {
+    std::vector<base::test::FeatureRefAndParams> features =
+        ContextualTasksLensInteractionSeparateViewportRequestIdsBrowserTest::
+            GetAdditionalEnabledFeatures();
+    // Tabs that were already submitted can only be deselected in the
+    // rearchitected side panel.
+    features.push_back(
+        {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}});
+    return features;
+  }
+};
+
+// AI Mode pages cannot be picked in the tab picker. If Lens attaches one as
+// page context before the side panel opens, the tab picker must still list it
+// so that the user can deselect it.
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksLensInteractionSidePanelRearchitectureBrowserTest,
+    MAYBE_TextQueryOnAiModePageKeepsTabDeselectable) {
+  // Wait for the page to be painted to prevent flakiness when screenshotting.
+  WaitForPaint();
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  ASSERT_TRUE(tab);
+  const GURL page_url = tab->GetContents()->GetLastCommittedURL();
+  const SessionID tab_id =
+      sessions::SessionTabHelper::IdForTab(tab->GetContents());
+  ASSERT_TRUE(tab_id.is_valid());
+
+  // Treat the page as an AI Mode page (e.g. g.ai). It cannot be picked while
+  // it is not attached.
+  SetAiUrl(page_url);
+  EXPECT_FALSE(contextual_tasks::IsRecentTabSelectable(
+      *tab, page_url, /*always_include_tab_ids=*/{},
+      /*exclude_page_context_ineligible_tabs=*/false));
+
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller);
+
+  // Open Lens Overlay via App Menu so the full page content is uploaded.
+  controller->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
+  WaitForOverlayToOpen(controller);
+  ASSERT_TRUE(controller->IsShowingUI());
+
+  // Issue a contextual searchbox query, which opens the side panel.
+  controller->IssueTextSearchRequest(
+      lens::LensOverlayInvocationSource::kContextualTasksComposebox,
+      "test query", /*additional_query_parameters=*/{},
+      omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
+      /*is_zero_prefix_suggestion=*/false,
+      /*suppress_contextualization=*/false);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !GetLastContextualTasksUrl().is_empty(); }));
+
+  // Lens attached the AI Mode page to the session that the side panel uses, so
+  // the tab picker lists it.
+  contextual_search::ContextualSearchSessionHandle* session_handle =
+      GetContextualTasksSessionHandle();
+  ASSERT_TRUE(session_handle);
+  EXPECT_TRUE(session_handle->GetNonDeselectedTabSessionIds().contains(tab_id));
+  EXPECT_TRUE(contextual_tasks::IsRecentTabSelectable(
+      *tab, page_url, session_handle->GetNonDeselectedTabSessionIds(),
+      /*exclude_page_context_ineligible_tabs=*/false));
+
+  // Deselecting the tab in the tab picker removes it from the session.
+  EXPECT_TRUE(session_handle->DeleteTabContext(
+      tab_id, page_url, base::UTF16ToUTF8(tab->GetContents()->GetTitle())));
+
+  EXPECT_FALSE(session_handle->GetTabContextState().ContainsTab(tab_id));
+  EXPECT_FALSE(
+      session_handle->GetNonDeselectedTabSessionIds().contains(tab_id));
+  EXPECT_FALSE(contextual_tasks::IsRecentTabSelectable(
+      *tab, page_url, session_handle->GetNonDeselectedTabSessionIds(),
+      /*exclude_page_context_ineligible_tabs=*/false));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

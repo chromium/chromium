@@ -204,6 +204,11 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
           /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr,
           AimEligibilityService::Configuration{});
 
+  // The mock treats every URL as an AI Mode URL by default, and AI Mode pages
+  // cannot be picked in the tab picker.
+  ON_CALL(*mock_aim_eligibility_service, IsAimUrl(testing::_, testing::_))
+      .WillByDefault(testing::Return(false));
+
   auto* config = &mock_aim_eligibility_service->config();
 
   auto* image_input_config = config->add_input_type_configs();
