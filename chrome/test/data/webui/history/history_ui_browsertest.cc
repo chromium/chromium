@@ -237,7 +237,13 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, AnnouncesExactMatches) {
   RunTestCase("AnnouncesExactMatches");
 }
 
-IN_PROC_BROWSER_TEST_F(HistoryListTest, ScrollingLoadsMore) {
+// TODO(crbug.com/589758966): Flaky on Desktop Android.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_ScrollingLoadsMore DISABLED_ScrollingLoadsMore
+#else
+#define MAYBE_ScrollingLoadsMore ScrollingLoadsMore
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+IN_PROC_BROWSER_TEST_F(HistoryListTest, MAYBE_ScrollingLoadsMore) {
   RunTestCase("ScrollingLoadsMore");
 }
 
