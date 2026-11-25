@@ -116,10 +116,6 @@ BASE_FEATURE(kLowerPriorityForCompositorGestures,
 
 
 #if BUILDFLAG(IS_ANDROID)
-// If set, the PerformanceHelper determines when to boost CPU performance
-// via affinity hints.
-BASE_FEATURE(kUsePerformanceHelper, base::FEATURE_DISABLED_BY_DEFAULT);
-
 enum class PerformanceHintMode {
   kNone = 0,
   kAffinity = 1,
@@ -132,18 +128,18 @@ constexpr base::FeatureParam<
 
 [[maybe_unused]] const base::FeatureParam<PerformanceHintMode>
     kUsePerformanceHelperParam{
-        &kUsePerformanceHelper,
+        &features::kUsePerformanceHelper,
         "helper_mode",
         PerformanceHintMode::kAffinity,
         &kUsePerformanceHelperModeOption,
     };
 
 const base::FeatureParam<base::TimeDelta> kPageLoadBoostParam{
-    &kUsePerformanceHelper, "page_load_boost", base::Seconds(3.0)};
+    &features::kUsePerformanceHelper, "page_load_boost", base::Seconds(3.0)};
 const base::FeatureParam<base::TimeDelta> kUserInputBoostParam{
-    &kUsePerformanceHelper, "user_input_boost", base::Seconds(0.5)};
+    &features::kUsePerformanceHelper, "user_input_boost", base::Seconds(2.0)};
 const base::FeatureParam<base::TimeDelta> kScrollBoostParam{
-    &kUsePerformanceHelper, "scroll_boost", base::Seconds(0.2)};
+    &features::kUsePerformanceHelper, "scroll_boost", base::Seconds(0.2)};
 
 namespace {
 PerformanceHintMode GetPerformanceHelperMode() {
@@ -151,7 +147,7 @@ PerformanceHintMode GetPerformanceHelperMode() {
     // Control.
     return PerformanceHintMode::kNone;
   }
-  if (!base::FeatureList::IsEnabled(kUsePerformanceHelper)) {
+  if (!base::FeatureList::IsEnabled(features::kUsePerformanceHelper)) {
     return PerformanceHintMode::kNone;
   }
 
@@ -2798,7 +2794,7 @@ void MainThreadSchedulerImpl::UpdateCompositorTaskQueuePriority() {
 #if BUILDFLAG(IS_ANDROID)
 void MainThreadSchedulerImpl::ApplyPerformanceState(
     const bool prefer_efficient_scheduling) {
-  DCHECK(base::FeatureList::IsEnabled(kUsePerformanceHelper));
+  DCHECK(base::FeatureList::IsEnabled(features::kUsePerformanceHelper));
   if (GetPerformanceHelperMode() == PerformanceHintMode::kAffinity) {
     base::SetCanRunOnBigCore(base::PlatformThread::CurrentId(),
                              !prefer_efficient_scheduling);

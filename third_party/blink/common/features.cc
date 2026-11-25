@@ -2278,6 +2278,12 @@ BASE_FEATURE(kUrgentMainFrameForInput,
 BASE_FEATURE(kURLPatternDummyURLCanonicalization,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// If set, the PerformanceHelper determines when to boost CPU performance
+// via affinity hints.
+BASE_FEATURE(kUsePerformanceHelper, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Use PersistentCache on either side of blink.mojom.CodeCacheHost. This feature
 // is dependent on net::HttpCache::IsSplitCacheEnabled() being true. Always use
 // IsPersistentCacheForCodeCacheEnabled() rather than querying this feature

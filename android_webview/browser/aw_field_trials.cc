@@ -422,4 +422,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // context menu or dropdown selection menu.
   aw_feature_overrides.DisableFeature(
       blink::features::kAndroidKeyboardContextMenu);
+
+  // DISABLED_TEMPORARY: AndroidAdaptiveAffinityMode was only evaluated on
+  // Android and Android Desktop, not Android WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kUsePerformanceHelper);
 }

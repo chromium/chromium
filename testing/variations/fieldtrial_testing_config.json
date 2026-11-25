@@ -533,28 +533,6 @@
             ]
         }
     ],
-    "AndroidAdaptiveAffinityMode": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_LongInputBoost_20261016",
-                    "params": {
-                        "helper_mode": "affinity",
-                        "page_load_boost": "3s",
-                        "scroll_boost": "0.2s",
-                        "user_input_boost": "2s"
-                    },
-                    "enable_features": [
-                        "UsePerformanceHelper"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidAdaptiveUiTransitions": [
         {
             "platforms": [

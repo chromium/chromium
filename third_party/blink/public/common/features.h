@@ -1743,6 +1743,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUrgentMainFrameForInput);
 // to canonicalize URL properties. See https://crbug.com/409350827
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kURLPatternDummyURLCanonicalization);
 
+#if BUILDFLAG(IS_ANDROID)
+// If set, the PerformanceHelper determines when to boost CPU performance
+// via affinity hints.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUsePerformanceHelper);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Always use IsPersistentCacheForCodeCacheEnabled() rather than checking this
 // feature directly.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUsePersistentCacheForCodeCache);
