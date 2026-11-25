@@ -35,6 +35,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/host_access_request_helper.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -2101,4 +2102,93 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_TRUE(callback_invoked);
     EXPECT_FALSE(coordinator->IsShowing());
   }
+}
+
+// Verifies that clicking a stale/desynchronized site access toggle while async
+// permission notifications are still in flight (or when an early-return rejects
+// a toggle change) does not crash and immediately resynchronizes the toggle UI.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsMenuMainPageViewBrowserTest,
+    SiteAccessToggle_DesynchronizedToggleResyncsWithoutCrashing) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateAndCommit(url);
+
+  ShowMenu();
+  ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
+  ASSERT_TRUE(menu_entry);
+  ASSERT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
+
+  // Grant broad host permissions synchronously in PermissionsData/prefs without
+  // spinning the RunLoop, leaving the menu entry's toggle stale (off) while
+  // async NetworkPermissionsUpdater notifications are still in flight.
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(false);
+  ASSERT_EQ(GetUserSiteAccess(*extension, url),
+            PermissionsManager::UserSiteAccess::kOnAllSites);
+  ASSERT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
+
+  // Clicking the stale off->on toggle must not crash in GrantSiteAccess() and
+  // must resynchronize the menu entry state.
+  ClickButton(menu_entry->site_access_toggle_for_testing());
+  LayoutMenuIfNecessary();
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
+            PermissionsManager::UserSiteAccess::kOnAllSites);
+  EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
+  EXPECT_EQ(
+      menu_entry->site_permissions_button_for_testing()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
+
+  // Simulate an optimistic toggle-off flip rejected due to a stale origin:
+  // RevokeSiteAccess() early-returns and must snap the toggle back to on.
+  menu_entry->site_access_toggle_for_testing()->SetIsOn(false);
+  menu_coordinator()->GetDelegateForTesting()->OnExtensionToggleSelected(
+      extension->id(), url::Origin::Create(GURL("https://stale-origin.com")),
+      /*is_on=*/false);
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
+            PermissionsManager::UserSiteAccess::kOnAllSites);
+  EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
+}
+
+// Verifies that clicking the "Allow" button on a host access request
+// synchronously updates the extension's site access toggle in the menu without
+// waiting for async NetworkPermissionsUpdater callbacks.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsMenuMainPageViewBrowserTest,
+    SiteAccessToggle_AllowHostAccessRequestSynchronouslyUpdatesToggle) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateAndCommit(url);
+  AddHostAccessRequest(*extension,
+                       browser()->GetTabStripModel()->GetActiveWebContents());
+
+  ShowMenu();
+  ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
+  ASSERT_TRUE(menu_entry);
+  ASSERT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
+
+  views::View* request_entry =
+      main_page()->GetExtensionRequestingAccessEntryForTesting(extension->id());
+  ASSERT_TRUE(request_entry);
+  views::Button* request_allow_button =
+      static_cast<views::Button*>(request_entry->children()[3]);
+
+  // Click Allow without spinning PermissionsManagerWaiter: the menu entry's
+  // toggle and site permissions label must already reflect granted kOnSite.
+  ClickButton(request_allow_button);
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
+            PermissionsManager::UserSiteAccess::kOnSite);
+  EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
+  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
 }
