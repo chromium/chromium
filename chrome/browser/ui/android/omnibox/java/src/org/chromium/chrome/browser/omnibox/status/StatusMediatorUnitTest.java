@@ -204,6 +204,7 @@ public final class StatusMediatorUnitTest {
 
     @After
     public void tearDown() {
+        mMediator.destroy();
         mWindowAndroid.destroy();
     }
 

@@ -145,6 +145,7 @@ public class StatusMediator
             this::onDisplayStateChanged;
     private final Callback<@AutocompleteState Integer> mOnAutocompleteStateChanged =
             this::onAutocompleteStateChanged;
+    private final Callback<Profile> mOnProfileChanged = this::onProfileChanged;
 
     private boolean mVerboseStatusSpaceAvailable;
     private boolean mPageIsPaintPreview;
@@ -239,23 +240,25 @@ public class StatusMediator
                         this,
                         mIconTaskHandler);
 
-        mProfileSupplier.addSyncObserverAndPostIfNonNull(
-                p -> {
-                    if (mSearchEngineService != null) {
-                        mSearchEngineService.removeIconObserver(this);
-                    }
-                    mSearchEngineService = SearchEngineService.getForProfile(p);
-                    mSearchEngineService.addIconObserver(this);
-                    mImageSupplier.setProfile(p);
-                    updateLocationBarIcon(IconTransitionType.CROSSFADE);
-                });
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(mOnProfileChanged);
 
         updateColorTheme();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
         updateStatusViewMinWidth();
     }
 
+    private void onProfileChanged(Profile profile) {
+        if (mSearchEngineService != null) {
+            mSearchEngineService.removeIconObserver(this);
+        }
+        mSearchEngineService = SearchEngineService.getForProfile(profile);
+        mSearchEngineService.addIconObserver(this);
+        mImageSupplier.setProfile(profile);
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
+    }
+
     public void destroy() {
+        mProfileSupplier.removeObserver(mOnProfileChanged);
         if (mSearchEngineService != null) {
             mSearchEngineService.removeIconObserver(this);
             mSearchEngineService = null;
