@@ -18,12 +18,6 @@
 
 namespace critical_actions {
 
-namespace {
-
-constexpr base::FilePath::CharType kCriticalActionsDatabaseFilename[] =
-    FILE_PATH_LITERAL("CriticalActions.db");
-}  // namespace
-
 // static
 CriticalActionFactory* CriticalActionFactory::GetInstance() {
   static base::NoDestructor<CriticalActionFactory> instance;
@@ -34,6 +28,13 @@ CriticalActionFactory* CriticalActionFactory::GetInstance() {
 CriticalActionService* CriticalActionFactory::GetForProfile(Profile* profile) {
   return static_cast<CriticalActionService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+// static
+CriticalActionService* CriticalActionFactory::GetForProfileIfExistsForTesting(
+    Profile* profile) {
+  return static_cast<CriticalActionService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, false));
 }
 
 CriticalActionFactory::CriticalActionFactory()
@@ -48,6 +49,12 @@ CriticalActionFactory::CriticalActionFactory()
 }
 
 CriticalActionFactory::~CriticalActionFactory() = default;
+
+bool CriticalActionFactory::ServiceIsCreatedWithBrowserContext() const {
+  // The service must observe History from the first navigation: it maps
+  // navigation IDs to visits only from live OnURLVisitedWithNavigationId().
+  return base::FeatureList::IsEnabled(features::kCriticalActionHistory);
+}
 
 std::unique_ptr<KeyedService>
 CriticalActionFactory::BuildServiceInstanceForBrowserContext(

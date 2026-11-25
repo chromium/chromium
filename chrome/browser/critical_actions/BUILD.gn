@@ -56,6 +56,8 @@ source_set("unit_tests") {
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
     "//components/critical_actions/core/browser",
+    "//components/history/core/browser",
+    "//components/history/core/test",
     "//components/keyed_service/core",
     "//components/tabs:public",
     "//components/tabs:test_support",
@@ -63,6 +65,8 @@ source_set("unit_tests") {
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
+    "//url",
   ]
 
   if (is_android) {

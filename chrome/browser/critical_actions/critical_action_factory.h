@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -15,6 +16,10 @@ class Profile;
 namespace critical_actions {
 
 class CriticalActionService;
+
+// Name of the critical actions database file in the profile directory.
+inline constexpr base::FilePath::CharType kCriticalActionsDatabaseFilename[] =
+    FILE_PATH_LITERAL("CriticalActions.db");
 
 // A factory that creates and manages `CriticalActionService` instances
 // for each eligible `Profile`.
@@ -28,6 +33,14 @@ class CriticalActionFactory : public ProfileKeyedServiceFactory {
   // `profile` is off-the-record (incognito) or otherwise ineligible.
   static CriticalActionService* GetForProfile(Profile* profile);
 
+  // Like `GetForProfile()`, but returns nullptr instead of creating the
+  // service if it does not exist yet. Used by tests to verify that the service
+  // is created together with the profile (see
+  // `ServiceIsCreatedWithBrowserContext()`), which `GetForProfile()` cannot
+  // check because it creates the service on demand.
+  static CriticalActionService* GetForProfileIfExistsForTesting(
+      Profile* profile);
+
   CriticalActionFactory(const CriticalActionFactory&) = delete;
   CriticalActionFactory& operator=(const CriticalActionFactory&) = delete;
 
@@ -40,6 +53,7 @@ class CriticalActionFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 }  // namespace critical_actions
