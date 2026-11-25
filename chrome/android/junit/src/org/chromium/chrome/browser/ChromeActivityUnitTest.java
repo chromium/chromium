@@ -60,6 +60,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -400,6 +401,25 @@ public class ChromeActivityUnitTest {
 
         chromeActivity.onPictureInPictureModeChanged(/* inPicture= */ true, new Configuration());
         verify(mExclusiveAccessManager).hideExclusiveAccessBubble();
+    }
+
+    @Test
+    public void testInPictureInPictureModeSupplierUpdated() {
+        TestChromeActivity chromeActivity =
+                new TestChromeActivity() {
+                    @Override
+                    public OneshotSupplier<ProfileProvider> getProfileProviderSupplier() {
+                        return new OneshotSupplierImpl<>();
+                    }
+                };
+        Configuration config = new Configuration();
+        assertFalse(chromeActivity.getInPictureInPictureModeSupplier().get());
+
+        chromeActivity.onPictureInPictureModeChanged(true, config);
+        assertTrue(chromeActivity.getInPictureInPictureModeSupplier().get());
+
+        chromeActivity.onPictureInPictureModeChanged(false, config);
+        assertFalse(chromeActivity.getInPictureInPictureModeSupplier().get());
     }
 
     @Test

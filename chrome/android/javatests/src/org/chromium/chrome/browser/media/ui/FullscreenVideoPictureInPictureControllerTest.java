@@ -325,14 +325,14 @@ public class FullscreenVideoPictureInPictureControllerTest {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         // Since we intercept moveTaskToBack, the framework won't automatically send the signal.
-        mActivity.onPictureInPictureModeChanged(false, mActivity.getResources().getConfiguration());
-
-        // Wait for Chrome to acknowledge PiP exit.
-        CriteriaHelper.pollUiThread(
-                () -> !mActivity.getLastPictureInPictureModeForTesting(),
-                "Chrome should have acknowledged PiP exit",
-                PIP_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity.onPictureInPictureModeChanged(
+                            false, mActivity.getResources().getConfiguration());
+                    Assert.assertFalse(
+                            "Chrome should have acknowledged PiP exit",
+                            mActivity.getLastPictureInPictureModeForTesting());
+                });
     }
 
     private WebContents getWebContents() {
@@ -403,7 +403,10 @@ public class FullscreenVideoPictureInPictureControllerTest {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         // This logic would run if we hadn't intercepted moveTaskToBack (which is how PiP gets
         // exited), so run it now just in case.
-        mActivity.onPictureInPictureModeChanged(false, mActivity.getResources().getConfiguration());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mActivity.onPictureInPictureModeChanged(
+                                false, mActivity.getResources().getConfiguration()));
     }
 
     /** A TabObserver that tracks whether a navigation has occurred. */
@@ -440,8 +443,12 @@ public class FullscreenVideoPictureInPictureControllerTest {
                 AsyncInitializationActivity::wasMoveTaskToBackInterceptedForTesting);
         // This logic would run if we hadn't intercepted moveTaskToBack (which is how PiP gets
         // exited), we run it now for completion and proceed to ensure we exited Picture in Picture.
-        mActivity.onPictureInPictureModeChanged(false, mActivity.getResources().getConfiguration());
-        CriteriaHelper.pollUiThread(() -> !mActivity.getLastPictureInPictureModeForTesting());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity.onPictureInPictureModeChanged(
+                            false, mActivity.getResources().getConfiguration());
+                    Assert.assertFalse(mActivity.getLastPictureInPictureModeForTesting());
+                });
     }
 
     @Test

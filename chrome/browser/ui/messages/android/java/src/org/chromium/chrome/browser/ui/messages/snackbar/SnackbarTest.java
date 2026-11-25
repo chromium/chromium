@@ -97,6 +97,7 @@ public class SnackbarTest {
     private static FrameLayout sAlternateParent2;
     private SettableNonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
     private SettableNonNullObservableSupplier<Boolean> mFullscreenSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mInPictureInPictureModeSupplier;
     private boolean mDismissed;
     private boolean mActionClicked;
     private final CallbackHelper mActionHelper = new CallbackHelper();
@@ -143,6 +144,7 @@ public class SnackbarTest {
                 () -> {
                     mAdditionalBottomMarginPxSupplier = ObservableSuppliers.createNonNull(0);
                     mFullscreenSupplier = ObservableSuppliers.createNonNull(false);
+                    mInPictureInPictureModeSupplier = ObservableSuppliers.createNonNull(false);
                     mManager =
                             new SnackbarManager(
                                     sActivity,
@@ -150,7 +152,8 @@ public class SnackbarTest {
                                     null,
                                     mAdditionalBottomMarginPxSupplier,
                                     ((BlankUiTestActivity) sActivity).getModalDialogManager(),
-                                    mFullscreenSupplier);
+                                    mFullscreenSupplier,
+                                    mInPictureInPictureModeSupplier);
                     mManager.isShowingSupplier()
                             .addSyncObserverAndPostIfNonNull(
                                     (showing) -> mShowingHelper.notifyCalled());
@@ -938,6 +941,172 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
+    public void testSnackbarHiddenInPictureInPicture() throws Exception {
+        int timeout = 400;
+        SnackbarManager.setDurationForTesting(timeout);
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "stack",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        mDismissed = false;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.showSnackbar(snackbar);
+                    Assert.assertTrue(
+                            "Snackbar should be showing initially.", mManager.isShowing());
+                    mManager.onActivityStateChange(sActivity, ActivityState.PAUSED);
+                    mInPictureInPictureModeSupplier.set(true);
+                    Assert.assertFalse(
+                            "Snackbar view should be hidden in PiP.", mManager.isShowing());
+                    Assert.assertNull(
+                            "SnackbarView should be cleared in PiP.",
+                            mManager.getCurrentSnackbarViewForTesting());
+                });
+
+        // Wait past the timeout while in PiP; snackbar must remain queued, not dismissed.
+        TimeUnit.MILLISECONDS.sleep(timeout + 100);
+        Assert.assertFalse("Snackbar should not be dismissed while in PiP.", mDismissed);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        Assert.assertEquals(
+                                "Snackbar should remain queued while in PiP.",
+                                snackbar,
+                                mManager.getCurrentSnackbarForTesting()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSnackbarRestoredOnResumeAfterPictureInPicture() throws Exception {
+        int timeout = 400;
+        SnackbarManager.setDurationForTesting(timeout);
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "stack",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        mDismissed = false;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.showSnackbar(snackbar);
+                    mManager.onActivityStateChange(sActivity, ActivityState.PAUSED);
+                    mInPictureInPictureModeSupplier.set(true);
+
+                    // Simulate expanding PiP back to full window.
+                    mInPictureInPictureModeSupplier.set(false);
+                    Assert.assertFalse(
+                            "Snackbar view should not flash before resume.", mManager.isShowing());
+                    mManager.onActivityStateChange(sActivity, ActivityState.RESUMED);
+                    Assert.assertTrue(
+                            "Snackbar view should be restored on resume.", mManager.isShowing());
+                });
+
+        Assert.assertFalse(
+                "Snackbar should not immediately time out after exiting PiP.", mDismissed);
+
+        // Now it should time out normally.
+        TimeUnit.MILLISECONDS.sleep(timeout + 200);
+        pollSnackbarCondition(
+                "Snackbar should eventually time out after exiting PiP.",
+                () -> !mManager.isShowing() && mDismissed);
+    }
+
+    @Test
+    @SmallTest
+    public void testSnackbarClearedOnStopAfterPictureInPicture() {
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "stack",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        mDismissed = false;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.showSnackbar(snackbar);
+                    mManager.onActivityStateChange(sActivity, ActivityState.PAUSED);
+                    mInPictureInPictureModeSupplier.set(true);
+
+                    // Simulate closing PiP (PiP exits without resuming, followed by STOPPED).
+                    mInPictureInPictureModeSupplier.set(false);
+                    Assert.assertFalse(
+                            "Snackbar view should not flash when PiP closes.",
+                            mManager.isShowing());
+                    mManager.onActivityStateChange(sActivity, ActivityState.STOPPED);
+                    Assert.assertTrue("Snackbar should be dismissed when PiP stops.", mDismissed);
+                    Assert.assertNull(
+                            "Snackbar queue should be empty after stop.",
+                            mManager.getCurrentSnackbarForTesting());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSnackbarQueuedDuringPictureInPicture() throws Exception {
+        int timeout = 400;
+        SnackbarManager.setDurationForTesting(timeout);
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "stack",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        mDismissed = false;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.onActivityStateChange(sActivity, ActivityState.PAUSED);
+                    mInPictureInPictureModeSupplier.set(true);
+                    Assert.assertTrue(
+                            "Manager should still accept snackbars in PiP.",
+                            mManager.canShowSnackbar());
+
+                    mManager.showSnackbar(snackbar);
+                    Assert.assertFalse(
+                            "Snackbar view should not show during PiP.", mManager.isShowing());
+                    Assert.assertNull(
+                            "SnackbarView should remain null during PiP.",
+                            mManager.getCurrentSnackbarViewForTesting());
+                    Assert.assertEquals(
+                            "Snackbar should be queued during PiP.",
+                            snackbar,
+                            mManager.getCurrentSnackbarForTesting());
+
+                    // Updating an already-queued snackbar in PiP should also keep the view hidden.
+                    snackbar.setText("updated");
+                    mManager.showSnackbar(snackbar);
+                    Assert.assertFalse(
+                            "Updated snackbar view should not show during PiP.",
+                            mManager.isShowing());
+                });
+
+        // Wait past the timeout while in PiP; queued snackbar must not time out.
+        TimeUnit.MILLISECONDS.sleep(timeout + 100);
+        Assert.assertFalse("Queued snackbar should not time out during PiP.", mDismissed);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mInPictureInPictureModeSupplier.set(false);
+                    Assert.assertFalse(
+                            "Snackbar view should not flash before resume.", mManager.isShowing());
+                    mManager.onActivityStateChange(sActivity, ActivityState.RESUMED);
+                    Assert.assertTrue(
+                            "Queued snackbar should appear on resume.", mManager.isShowing());
+                    Assert.assertEquals(
+                            "Updated snackbar text should be preserved.",
+                            "updated",
+                            mManager.getCurrentSnackbarForTesting().getTextForTesting());
+                });
+
+        TimeUnit.MILLISECONDS.sleep(timeout + 200);
+        pollSnackbarCondition(
+                "Queued snackbar should eventually time out after exiting PiP.",
+                () -> !mManager.isShowing() && mDismissed);
+    }
+
+    @Test
+    @SmallTest
     public void testSnackbarManagerInitializedWhilePaused() throws Exception {
         int timeout = 400;
         SnackbarManager.setDurationForTesting(timeout);
@@ -963,6 +1132,7 @@ public class SnackbarTest {
                                         null,
                                         null,
                                         null,
+                                        ObservableSuppliers.createNonNull(false),
                                         ObservableSuppliers.createNonNull(false)));
                         Assert.assertTrue(
                                 "Manager should be able to show snackbars when paused.",

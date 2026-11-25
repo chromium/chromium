@@ -485,6 +485,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     // returned by {@link isInPictureInPictureMode}.
     private boolean mLastPictureInPictureModeForTesting;
 
+    /**
+     * Whether this Activity is currently in Picture-in-Picture mode, updated via {@link
+     * #onPictureInPictureModeChanged} and synced with {@link #isInPictureInPictureMode()} on
+     * startup.
+     */
+    private final SettableNonNullObservableSupplier<Boolean> mInPictureInPictureModeSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private @Nullable TextBubbleBackPressHandler mTextBubbleBackPressHandler;
     private @Nullable SelectionPopupBackPressHandler mSelectionPopupBackPressHandler;
     private @Nullable Callback<TabModelSelector> mSelectionPopupBackPressInitCallback;
@@ -740,6 +748,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             assert windowAndroid != null;
             var modalDialogManager = getModalDialogManager();
             assert modalDialogManager != null;
+            mInPictureInPictureModeSupplier.set(isInPictureInPictureMode());
             SnackbarManager snackbarManager =
                     new SnackbarManager(
                             this,
@@ -747,7 +756,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             windowAndroid,
                             mChromeActivitySnackbarHelper.getBottomMarginSupplier(),
                             modalDialogManager,
-                            getFullscreenManager().getPersistentFullscreenModeSupplier());
+                            getFullscreenManager().getPersistentFullscreenModeSupplier(),
+                            mInPictureInPictureModeSupplier);
 
             mSnackbarManagerSupplier.set(snackbarManager);
             mChromeActivitySnackbarHelper.setSnackbarManager(snackbarManager);
@@ -1621,6 +1631,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @Override
     public void onPictureInPictureModeChanged(boolean inPicture, Configuration newConfig) {
         super.onPictureInPictureModeChanged(inPicture, newConfig);
+        mInPictureInPictureModeSupplier.set(inPicture);
         Log.i(
                 TAG,
                 "Picture in picture mode changed, inPicture: %b custom tabs: %b",
@@ -1678,6 +1689,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      */
     public boolean getLastPictureInPictureModeForTesting() {
         return mLastPictureInPictureModeForTesting;
+    }
+
+    /** Returns a supplier indicating whether this activity is in Picture-in-Picture mode. */
+    public NonNullObservableSupplier<Boolean> getInPictureInPictureModeSupplier() {
+        return mInPictureInPictureModeSupplier;
     }
 
     @Override

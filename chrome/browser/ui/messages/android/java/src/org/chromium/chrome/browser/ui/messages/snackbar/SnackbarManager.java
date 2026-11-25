@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.os.Handler;
@@ -19,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
@@ -51,6 +51,11 @@ import java.lang.annotation.Target;
  *
  * <p>If a modal dialog is shown, any snackbars that are already showing or that begin to show will
  * wait until all modal dialogs are dismissed and then will begin their timeout countdowns.
+ *
+ * <p>While the activity is in Picture-in-Picture mode, snackbars are queued without showing a view,
+ * and any existing snackbar view is hidden with its timeout paused without dismissing queued
+ * snackbars. Queued snackbars are restored if the activity exits Picture-in-Picture and resumes, or
+ * cleared in {@code onStop()} if Picture-in-Picture is closed.
  */
 @NullMarked
 public class SnackbarManager
@@ -198,6 +203,9 @@ public class SnackbarManager
     private final NonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
     private final @Nullable ModalDialogManager mModalDialogManager;
     private final NonNullObservableSupplier<Boolean> mPersistentFullscreenModeSupplier;
+    private final NonNullObservableSupplier<Boolean> mInPictureInPictureModeSupplier;
+    private final Callback<Boolean> mOnPictureInPictureModeChangedCallback =
+            this::onPictureInPictureModeChanged;
 
     private @Nullable SnackbarView mView;
     private long mCurrentSnackbarStartTimeMs;
@@ -210,7 +218,7 @@ public class SnackbarManager
      * Constructs a SnackbarManager to show snackbars in the given window.
      *
      * <p>See {@link #SnackbarManager(Activity, ViewGroup, WindowAndroid, NonNullObservableSupplier,
-     * ModalDialogManager, NonNullObservableSupplier)} for details.
+     * ModalDialogManager, NonNullObservableSupplier, NonNullObservableSupplier)} for details.
      */
     public SnackbarManager(
             Activity activity,
@@ -224,6 +232,7 @@ public class SnackbarManager
                 windowAndroid,
                 additionalBottomMarginPxSupplier,
                 modalDialogManager,
+                ObservableSuppliers.alwaysFalse(),
                 ObservableSuppliers.alwaysFalse());
     }
 
@@ -239,6 +248,8 @@ public class SnackbarManager
      * @param modalDialogManager The ModalDialogManager to observe for dialog visibility.
      * @param persistentFullscreenModeSupplier The supplier that monitors whether the app is in
      *     persistent fullscreen mode.
+     * @param inPictureInPictureModeSupplier The supplier that monitors whether the activity is in
+     *     Picture-in-Picture mode.
      */
     public SnackbarManager(
             Activity activity,
@@ -246,7 +257,8 @@ public class SnackbarManager
             @Nullable WindowAndroid windowAndroid,
             @Nullable NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier,
             @Nullable ModalDialogManager modalDialogManager,
-            NonNullObservableSupplier<Boolean> persistentFullscreenModeSupplier) {
+            NonNullObservableSupplier<Boolean> persistentFullscreenModeSupplier,
+            NonNullObservableSupplier<Boolean> inPictureInPictureModeSupplier) {
         mActivity = activity;
         mUiThreadHandler = new Handler();
         mOriginalParentView = snackbarParentView;
@@ -275,6 +287,8 @@ public class SnackbarManager
             mIsModalDialogShowing = mModalDialogManager.isShowing();
         }
         mPersistentFullscreenModeSupplier = persistentFullscreenModeSupplier;
+        mInPictureInPictureModeSupplier = inPictureInPictureModeSupplier;
+        mInPictureInPictureModeSupplier.addSyncObserver(mOnPictureInPictureModeChangedCallback);
     }
 
     @Override
@@ -302,7 +316,13 @@ public class SnackbarManager
     private void onResume() {
         mActivityInForeground = true;
         mIsActivityPaused = false;
-        resetSnackbarTimeout();
+        // Restore a snackbar hidden during PiP (which also restarts its timeout); otherwise
+        // restart the timeout directly since updateView() won't reset it for the same snackbar.
+        if (mView == null && !mSnackbars.isEmpty()) {
+            updateView();
+        } else {
+            resetSnackbarTimeout();
+        }
     }
 
     /** Notifies the snackbar manager that the activity has been pushed to background. */
@@ -313,10 +333,21 @@ public class SnackbarManager
         mIsActivityPaused = false;
     }
 
+    /**
+     * Updates the snackbar view on PiP changes, skipping restore while paused to avoid flashing if
+     * PiP is closing.
+     */
+    private void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+        if (isInPictureInPictureMode || !mIsActivityPaused) {
+            updateView();
+        }
+    }
+
     /** Destroys the SnackbarManager, unregistering any observers and dismissing all snackbars. */
     public void destroy() {
         dismissAllSnackbars();
         ApplicationStatus.unregisterActivityStateListener(this);
+        mInPictureInPictureModeSupplier.removeObserver(mOnPictureInPictureModeChangedCallback);
         if (mModalDialogManager != null) {
             mModalDialogManager.removeObserver(this);
         }
@@ -333,7 +364,7 @@ public class SnackbarManager
     /** Shows a snackbar at the bottom of the screen. */
     public void showSnackbar(Snackbar snackbar) {
         ThreadUtils.assertOnUiThread();
-        if (!mActivityInForeground || mIsDisabledForTesting) return;
+        if (!canShowSnackbar()) return;
 
         if (mSnackbars.contains(snackbar)) {
             // If the snackbar is already in the queue, we treat this as an update.
@@ -350,8 +381,9 @@ public class SnackbarManager
         mSnackbars.add(snackbar);
 
         updateView();
-        assumeNonNull(mView);
-        mView.updateAccessibilityPaneTitle();
+        if (mView != null) {
+            mView.updateAccessibilityPaneTitle();
+        }
     }
 
     /** Dismisses the currently showing snackbar after user swipe. */
@@ -420,7 +452,8 @@ public class SnackbarManager
         if (currentSnackbar != null
                 && !currentSnackbar.isTypePersistent()
                 && !mIsModalDialogShowing
-                && !mIsActivityPaused) {
+                && !mIsActivityPaused
+                && !mInPictureInPictureModeSupplier.get()) {
             mCurrentSnackbarStartTimeMs = TimeUtils.uptimeMillis();
             int durationMs = getDuration(currentSnackbar);
             mUiThreadHandler.postDelayed(mHideRunnable, durationMs);
@@ -543,7 +576,7 @@ public class SnackbarManager
     private void updateView() {
         if (!mActivityInForeground) return;
         Snackbar currentSnackbar = mSnackbars.getCurrent();
-        if (currentSnackbar == null) {
+        if (currentSnackbar == null || mInPictureInPictureModeSupplier.get()) {
             mUiThreadHandler.removeCallbacks(mHideRunnable);
             if (mView != null) {
                 mView.dismiss();
