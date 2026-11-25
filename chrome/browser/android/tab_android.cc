@@ -279,7 +279,12 @@ TabAndroid::CalculateUserAgentOverrideOption(const GURL& url) const {
 
 bool TabAndroid::IsNativePage() const {
   JNIEnv* env = AttachCurrentThread();
-  return Java_TabImpl_isNativePage(env, GetJavaObject(env));
+  base::android::ScopedJavaLocalRef<jobject> j_obj = GetJavaObject(env);
+  if (!j_obj) {
+    CHECK_IS_TEST();
+    return false;
+  }
+  return Java_TabImpl_isNativePage(env, j_obj);
 }
 
 bool TabAndroid::IsPdf() const {
@@ -872,7 +877,12 @@ std::u16string TabAndroid::GetTitle() const {
 
 GURL TabAndroid::GetURL() const {
   JNIEnv* env = AttachCurrentThread();
-  return Java_TabImpl_getUrl(env, GetJavaObject(env));
+  base::android::ScopedJavaLocalRef<jobject> j_obj = GetJavaObject(env);
+  if (!j_obj) {
+    CHECK_IS_TEST();
+    return web_contents() ? web_contents()->GetVisibleURL() : GURL();
+  }
+  return Java_TabImpl_getUrl(env, j_obj);
 }
 
 base::Time TabAndroid::GetLastActiveTime() const {

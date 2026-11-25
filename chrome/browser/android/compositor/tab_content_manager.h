@@ -11,6 +11,9 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/thumbnail/cc/thumbnail_cache.h"
@@ -23,11 +26,17 @@ namespace cc::slim {
 class Layer;
 }
 
+namespace content {
+class WebContents;
+}
+
 namespace ui {
 class UIResourceProvider;
 }
 
 namespace android {
+
+BASE_DECLARE_FEATURE(kDeferTabSwitchThumbnailCapture);
 
 class ThumbnailLayer;
 
@@ -100,6 +109,9 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
  private:
   friend class TabContentManagerTest;
 
+  using CopyFromSurfaceCallback = base::RepeatingCallback<void(
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)>)>;
+
   class TabReadbackRequest;
   using ThumbnailLayerMap = base::flat_map<int, scoped_refptr<ThumbnailLayer>>;
   using TabReadbackRequestMap =
@@ -114,12 +126,24 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                           thumbnail::ThumbnailCaptureTracker* tracker);
   void OnTabReadback(int tab_id,
                      ThumbnailCaptureTrackerPtr tracker,
-                     JavaBitmapCallback callback,
-                     bool return_bitmap,
                      float thumbnail_scale,
                      const SkBitmap& bitmap);
+  void CacheThumbnailBitmap(int tab_id,
+                            ThumbnailCaptureTrackerPtr tracker,
+                            float thumbnail_scale,
+                            const SkBitmap& bitmap);
+  std::unique_ptr<TabReadbackRequest> TakePendingReadback(
+      TabReadbackRequestMap::iterator it,
+      base::ScopedClosureRunner* notify_dropped);
+  void StartTabReadbackRequest(int tab_id,
+                               content::WebContents* web_contents,
+                               float thumbnail_scale,
+                               bool return_bitmap,
+                               bool defer_until_next_frame,
+                               JavaBitmapCallback callback);
 
   void SeedDeferredReadbackForTesting(int tab_id, JavaBitmapCallback callback);
+  void SetCopyFromSurfaceForTesting(CopyFromSurfaceCallback callback);
 
   void SendThumbnailToJava(JavaBitmapCallback callback,
                            bool need_downsampling,
@@ -132,6 +156,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   thumbnail::ThumbnailCache thumbnail_cache_;
   ThumbnailLayerMap static_layer_cache_;
   TabReadbackRequestMap pending_tab_readbacks_;
+  CopyFromSurfaceCallback copy_from_surface_for_testing_;
 
   JavaObjectWeakGlobalRef weak_java_tab_content_manager_;
   base::WeakPtrFactory<TabContentManager> weak_factory_{this};
