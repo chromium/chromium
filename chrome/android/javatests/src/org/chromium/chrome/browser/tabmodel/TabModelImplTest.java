@@ -370,6 +370,7 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/590563552")
     public void testDuplicateTab_InsideTabGroup() {
         TabModel tabModel = mPage.getTabModel();
         // 0:Tab0 | Group0: 1:Tab1 (tabToDuplicate), 2:Tab2, 3:Tab3
