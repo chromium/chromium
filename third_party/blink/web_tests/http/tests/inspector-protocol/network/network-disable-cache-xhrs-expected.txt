@@ -1,0 +1,7 @@
+Tests disabling cache from inspector.
+http://127.0.0.1:8000/inspector-protocol/network/resources/cached.php
+http://127.0.0.1:8000/inspector-protocol/network/resources/cached.php
+http://127.0.0.1:8000/inspector-protocol/network/resources/cached.php
+First and second resources are equal: true
+Second and third resources differ: true
+

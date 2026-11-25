@@ -1,6 +1,0 @@
-Tests disabling cache from inspector.
-
-http://127.0.0.1:8000/devtools/network/resources/resource.php?random=1&cached=1
-http://127.0.0.1:8000/devtools/network/resources/resource.php?random=1&cached=1
-http://127.0.0.1:8000/devtools/network/resources/resource.php?random=1&cached=1
-
