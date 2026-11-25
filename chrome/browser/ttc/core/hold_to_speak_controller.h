@@ -18,18 +18,25 @@ namespace ttc {
 class SessionViewDelegate;
 
 // Hold-to-speak for a TTC session. While the session is live, holding the
-// hold-to-speak shortcut (prefs::kTtcHoldToSpeakShortcut) in any of the
-// profile's browser windows for kTtcHoldToSpeakThreshold turns the microphone
-// on, and releasing it turns the microphone off. Shorter presses do nothing.
+// hold-to-speak shortcut (prefs::kTtcHoldToSpeakShortcut) for
+// kTtcHoldToSpeakThreshold turns the microphone on, and releasing it turns
+// the microphone off. Shorter presses do nothing. The hotkey works while any of
+// the profile's browser windows, or the session's voice plate, has focus.
 //
 // Owned by SessionViewImpl, so the hotkey is only registered during a session.
 class HoldToSpeakController : public ui::AcceleratorTarget {
  public:
-  // `delegate` must outlive `this`. The constructor only calls
-  // `delegate.GetProfile()`, since the delegate may still be being constructed.
+  // The hotkey is registered with the profile's browser windows through
+  // `browser_registration_delegate`, and with the session's voice plate, which
+  // has its own FocusManager, through `overlay_registration_delegate`.
+  // `delegate` and `overlay_registration_delegate` must outlive `this`. The
+  // constructor only calls `delegate.GetProfile()`, since the delegate may
+  // still be being constructed.
   HoldToSpeakController(
       SessionViewDelegate& delegate,
-      std::unique_ptr<voice::HotkeyRegistrationDelegate> registration_delegate);
+      std::unique_ptr<voice::HotkeyRegistrationDelegate>
+          browser_registration_delegate,
+      voice::HotkeyRegistrationDelegate& overlay_registration_delegate);
   HoldToSpeakController(const HoldToSpeakController&) = delete;
   HoldToSpeakController& operator=(const HoldToSpeakController&) = delete;
   ~HoldToSpeakController() override;
@@ -52,10 +59,15 @@ class HoldToSpeakController : public ui::AcceleratorTarget {
 
   const raw_ref<SessionViewDelegate> delegate_;
   const std::unique_ptr<voice::HotkeyRegistrationDelegate>
-      registration_delegate_;
+      browser_registration_delegate_;
+  const raw_ref<voice::HotkeyRegistrationDelegate>
+      overlay_registration_delegate_;
   PrefChangeRegistrar pref_registrar_;
+  // The hotkey's registrations through the delegates above.
   std::unique_ptr<voice::HotkeyRegistrationDelegate::ScopedRegistration>
-      registration_;
+      browser_registration_;
+  std::unique_ptr<voice::HotkeyRegistrationDelegate::ScopedRegistration>
+      overlay_registration_;
   // Watches the hotkey from its press until its release.
   std::unique_ptr<voice::HotkeyHoldWatcher> hold_watcher_;
 };

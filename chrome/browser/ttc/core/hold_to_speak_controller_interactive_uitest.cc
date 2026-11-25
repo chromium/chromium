@@ -5,6 +5,7 @@
 #include "chrome/browser/ttc/core/hold_to_speak_controller.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/prefs.h"
@@ -15,7 +16,10 @@
 #include "chrome/browser/ttc/core/ttc_interactive_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/ttc/ttc_voice_plate.h"
 #include "chrome/browser/ui/views/voice/hotkeys/hotkey_hold_watcher.h"
 #include "chrome/browser/ui/views/voice/hotkeys/hotkey_pref_util.h"
 #include "components/prefs/pref_service.h"
@@ -25,6 +29,8 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/view.h"
 
 namespace ttc {
 
@@ -78,6 +84,27 @@ class TtcHoldToSpeakInteractiveUiTest : public TtcInteractiveBrowserTestBase {
       EXPECT_TRUE(hold_to_speak()->AcceleratorPressed(GetHotkey()));
       EXPECT_TRUE(hold_watcher());
     });
+  }
+
+  // Presses the hotkey through the voice plate's FocusManager, as when the
+  // voice plate has focus, e.g. after a click on its mute button.
+  StepBuilder PressHotkeyInVoicePlate() {
+    return WithView(
+        TtcVoicePlate::kViewElementId, [this](views::View* voice_plate) {
+          EXPECT_TRUE(
+              voice_plate->GetFocusManager()->ProcessAccelerator(GetHotkey()));
+          EXPECT_TRUE(hold_watcher());
+        });
+  }
+
+  // Checks that the hotkey is registered with the voice plate, which has its
+  // own FocusManager.
+  StepBuilder CheckVoicePlateHasHotkey() {
+    return CheckView(
+        TtcVoicePlate::kViewElementId, [this](views::View* voice_plate) {
+          return voice_plate->GetFocusManager()->IsAcceleratorRegistered(
+              GetHotkey());
+        });
   }
 
   // Sends a key event to the hold watcher, as its event monitor does.
@@ -200,6 +227,59 @@ IN_PROC_BROWSER_TEST_F(TtcHoldToSpeakInteractiveUiTest,
     SendKeyEvent(ui::EventType::kKeyPressed, ui::VKEY_A),
     CheckHoldWatched(false),
     CheckMicMuted(true)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(TtcHoldToSpeakInteractiveUiTest,
+                       HoldWorksWhileVoicePlateHasFocus) {
+  // clang-format off
+  RunTestSequence(
+    ActivateSurface(kBrowserViewElementId),
+    StartLiveSession(/*mic_muted=*/true),
+    WaitForShow(TtcVoicePlate::kViewElementId),
+    PressHotkeyInVoicePlate(),
+    ReachHoldThreshold(),
+    CheckMicMuted(false),
+    ReleaseHotkey(),
+    CheckHoldWatched(false),
+    CheckMicMuted(true)
+  );
+  // clang-format on
+}
+
+// The voice plate is recreated in each window it moves to.
+IN_PROC_BROWSER_TEST_F(TtcHoldToSpeakInteractiveUiTest,
+                       HotkeyFollowsVoicePlateToNewWindow) {
+#if BUILDFLAG(IS_LINUX)
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP()
+        << "Programmatic window activation is not supported in the Weston "
+           "reference implementation of Wayland used by test bots.";
+  }
+#endif
+
+  // clang-format off
+  RunTestSequence(
+    ActivateSurface(kBrowserViewElementId),
+    Do([this]() { ttc_service().StartSession(); }),
+    WaitForShow(TtcVoicePlate::kViewElementId),
+    CheckVoicePlateHasHotkey()
+  );
+  // clang-format on
+
+  BrowserWindowInterface* const second_browser = CreateBrowser(profile());
+
+  // CreateBrowser() doesn't wait for the new window to be activated, and only
+  // activation moves the voice plate, so activate it explicitly.
+  // clang-format off
+  RunTestSequence(
+    InContext(BrowserElements::From(second_browser)->GetContext(),
+              ActivateSurface(kBrowserViewElementId)),
+    InContext(BrowserElements::From(second_browser)->GetContext(),
+              WaitForShow(TtcVoicePlate::kViewElementId)),
+    InContext(BrowserElements::From(second_browser)->GetContext(),
+              CheckVoicePlateHasHotkey())
   );
   // clang-format on
 }

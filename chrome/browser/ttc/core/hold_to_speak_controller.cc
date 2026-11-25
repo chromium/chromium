@@ -25,10 +25,13 @@ namespace ttc {
 
 HoldToSpeakController::HoldToSpeakController(
     SessionViewDelegate& delegate,
-    std::unique_ptr<voice::HotkeyRegistrationDelegate> registration_delegate)
+    std::unique_ptr<voice::HotkeyRegistrationDelegate>
+        browser_registration_delegate,
+    voice::HotkeyRegistrationDelegate& overlay_registration_delegate)
     : delegate_(delegate),
-      registration_delegate_(std::move(registration_delegate)) {
-  CHECK(registration_delegate_);
+      browser_registration_delegate_(std::move(browser_registration_delegate)),
+      overlay_registration_delegate_(overlay_registration_delegate) {
+  CHECK(browser_registration_delegate_);
   pref_registrar_.Init(CHECK_DEREF(delegate_->GetProfile()).GetPrefs());
   // `base::Unretained(this)` is safe because `this` owns `pref_registrar_`.
   pref_registrar_.Add(
@@ -88,10 +91,14 @@ ui::Accelerator HoldToSpeakController::GetHotkey() const {
 }
 
 void HoldToSpeakController::UpdateRegistration() {
-  registration_.reset();
+  browser_registration_.reset();
+  overlay_registration_.reset();
   const ui::Accelerator hotkey = GetHotkey();
   if (!hotkey.IsEmpty()) {
-    registration_ = registration_delegate_->Register(hotkey, *this);
+    browser_registration_ =
+        browser_registration_delegate_->Register(hotkey, *this);
+    overlay_registration_ =
+        overlay_registration_delegate_->Register(hotkey, *this);
   }
 }
 

@@ -71,7 +71,9 @@ class SessionViewImpl : public SessionView, public TtcViewDelegate {
   // Owns the UI the session shows on top of the browser window.
   std::unique_ptr<OverlayController> overlay_controller_;
 
-  // Null unless kTtcHoldToSpeak is enabled.
+  // Null unless kTtcHoldToSpeak is enabled. Declared after
+  // `overlay_controller_`, which it registers its hotkey with, so that it is
+  // destroyed first.
   std::unique_ptr<HoldToSpeakController> hold_to_speak_controller_;
 
 #if BUILDFLAG(IS_CHROMEOS)

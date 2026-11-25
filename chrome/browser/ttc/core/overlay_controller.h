@@ -16,6 +16,7 @@
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/views/voice/hotkeys/hotkey_registration_delegate.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -24,7 +25,13 @@ namespace gfx {
 class Point;
 }  // namespace gfx
 
+namespace ui {
+class Accelerator;
+class AcceleratorTarget;
+}  // namespace ui
+
 namespace views {
+class FocusManager;
 class View;
 class Widget;
 }  // namespace views
@@ -37,7 +44,8 @@ class TtcVoicePlate;
 
 // Owns the TTC views shown on top of the browser window and keeps them in the
 // tabbed browser window the user is currently working in.
-class OverlayController : public BrowserCollectionObserver {
+class OverlayController : public BrowserCollectionObserver,
+                          public voice::HotkeyRegistrationDelegate {
  public:
   OverlayController(Profile& profile, TtcViewDelegate& delegate);
   ~OverlayController() override;
@@ -55,16 +63,34 @@ class OverlayController : public BrowserCollectionObserver {
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
+  // voice::HotkeyRegistrationDelegate:
+  // Registers `accelerator` with the voice plate, so that it also works while
+  // the voice plate has focus, e.g. after a click on its mute button. The
+  // voice plate has its own FocusManager, so hotkeys registered with the
+  // browser window don't reach it. Stays registered as the voice plate moves
+  // between windows.
+  std::unique_ptr<ScopedRegistration> Register(
+      const ui::Accelerator& accelerator,
+      ui::AcceleratorTarget& target) override;
+
   const std::vector<std::unique_ptr<views::Widget>>& pointer_marks_for_testing()
       const {
     return pointer_marks_;
   }
 
  private:
+  class HotkeyRegistration;
+
   void MoveToWindow(BrowserWindowInterface* browser);
 
   void CreateViews(views::View* anchor_view);
   void OnFullscreenStateChanged();
+
+  // Returns the voice plate's FocusManager, or null if there's none.
+  views::FocusManager* GetVoicePlateFocusManager();
+  // Called after creating and before destroying the voice plate.
+  void RegisterHotkeysWithVoicePlate();
+  void UnregisterHotkeysFromVoicePlate();
 
   // Safe because the delegate is guaranteed to outlive this object.
   const raw_ref<TtcViewDelegate> delegate_;
@@ -87,6 +113,10 @@ class OverlayController : public BrowserCollectionObserver {
 
   // Fullscreen changes of `anchored_browser_`.
   base::CallbackListSubscription fullscreen_subscription_;
+
+  // The registrations created by Register() that are still alive. They must
+  // not outlive `this`.
+  std::vector<raw_ptr<HotkeyRegistration>> hotkey_registrations_;
 
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};

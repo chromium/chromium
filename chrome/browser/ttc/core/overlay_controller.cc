@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -23,8 +24,11 @@
 #include "chrome/browser/ui/views/ttc/ttc_voice_plate.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -61,6 +65,47 @@ views::View* GetAnchorView(BrowserWindowInterface* browser) {
 
 }  // namespace
 
+// Keeps a hotkey registered with the voice plate of an OverlayController.
+class OverlayController::HotkeyRegistration
+    : public voice::HotkeyRegistrationDelegate::ScopedRegistration {
+ public:
+  HotkeyRegistration(OverlayController& overlay_controller,
+                     const ui::Accelerator& accelerator,
+                     ui::AcceleratorTarget& target)
+      : overlay_controller_(overlay_controller),
+        accelerator_(accelerator),
+        target_(target) {
+    overlay_controller_->hotkey_registrations_.push_back(this);
+    RegisterWith(overlay_controller_->GetVoicePlateFocusManager());
+  }
+  HotkeyRegistration(const HotkeyRegistration&) = delete;
+  HotkeyRegistration& operator=(const HotkeyRegistration&) = delete;
+  ~HotkeyRegistration() override {
+    UnregisterFrom(overlay_controller_->GetVoicePlateFocusManager());
+    std::erase(overlay_controller_->hotkey_registrations_, this);
+  }
+
+  // Both do nothing if `focus_manager` is null.
+  void RegisterWith(views::FocusManager* focus_manager) {
+    if (focus_manager) {
+      focus_manager->RegisterAccelerator(
+          accelerator_,
+          ui::AcceleratorManager::HandlerPriority::kNormalPriority,
+          &(*target_));
+    }
+  }
+  void UnregisterFrom(views::FocusManager* focus_manager) {
+    if (focus_manager) {
+      focus_manager->UnregisterAccelerator(accelerator_, &(*target_));
+    }
+  }
+
+ private:
+  const raw_ref<OverlayController> overlay_controller_;
+  const ui::Accelerator accelerator_;
+  const raw_ref<ui::AcceleratorTarget> target_;
+};
+
 OverlayController::OverlayController(Profile& profile,
                                      TtcViewDelegate& delegate)
     : delegate_(delegate) {
@@ -74,7 +119,15 @@ OverlayController::OverlayController(Profile& profile,
   MoveToWindow(browsers->FindTabbedBrowser());
 }
 
-OverlayController::~OverlayController() = default;
+OverlayController::~OverlayController() {
+  CHECK(hotkey_registrations_.empty());
+}
+
+std::unique_ptr<voice::HotkeyRegistrationDelegate::ScopedRegistration>
+OverlayController::Register(const ui::Accelerator& accelerator,
+                            ui::AcceleratorTarget& target) {
+  return std::make_unique<HotkeyRegistration>(*this, accelerator, target);
+}
 
 void OverlayController::ApplyUiState(UiState ui_state) {
   ui_state_ = ui_state;
@@ -127,6 +180,7 @@ void OverlayController::OnBrowserClosed(BrowserWindowInterface* browser) {
 
   fullscreen_subscription_ = {};
   anchored_browser_ = nullptr;
+  UnregisterHotkeysFromVoicePlate();
   voice_plate_ = nullptr;
   views_.clear();
   pointer_marks_.clear();
@@ -153,6 +207,7 @@ void OverlayController::MoveToWindow(BrowserWindowInterface* browser) {
 
   // Re-parenting the existing views turned out to be somewhat fraught, at least
   // on Linux, so we recreate the views on each window move.
+  UnregisterHotkeysFromVoicePlate();
   voice_plate_ = nullptr;
   views_.clear();
   pointer_marks_.clear();
@@ -175,6 +230,7 @@ void OverlayController::CreateViews(views::View* anchor_view) {
       ShouldRenderOverWebContents(anchored_browser_));
   voice_plate_ = voice_plate.get();
   views_.push_back(std::move(voice_plate));
+  RegisterHotkeysWithVoicePlate();
 
   for (const std::unique_ptr<TtcView>& view : views_) {
     view->ApplyUiState(ui_state_);
@@ -185,6 +241,24 @@ void OverlayController::CreateViews(views::View* anchor_view) {
 void OverlayController::OnFullscreenStateChanged() {
   voice_plate_->SetRenderOverWebContents(
       ShouldRenderOverWebContents(anchored_browser_));
+}
+
+views::FocusManager* OverlayController::GetVoicePlateFocusManager() {
+  views::Widget* const widget =
+      voice_plate_ ? voice_plate_->GetWidget() : nullptr;
+  return widget ? widget->GetFocusManager() : nullptr;
+}
+
+void OverlayController::RegisterHotkeysWithVoicePlate() {
+  for (HotkeyRegistration* registration : hotkey_registrations_) {
+    registration->RegisterWith(GetVoicePlateFocusManager());
+  }
+}
+
+void OverlayController::UnregisterHotkeysFromVoicePlate() {
+  for (HotkeyRegistration* registration : hotkey_registrations_) {
+    registration->UnregisterFrom(GetVoicePlateFocusManager());
+  }
 }
 
 }  // namespace ttc

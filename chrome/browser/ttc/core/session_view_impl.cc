@@ -60,7 +60,8 @@ SessionViewImpl::SessionViewImpl(SessionViewDelegate& delegate)
     hold_to_speak_controller_ = std::make_unique<HoldToSpeakController>(
         delegate,
         std::make_unique<voice::ApplicationHotkeyRegistrationDelegate>(
-            *delegate.GetProfile()));
+            *delegate.GetProfile()),
+        *overlay_controller_);
   }
 #if BUILDFLAG(IS_CHROMEOS)
   mic_privacy_indicator_ = std::make_unique<MicPrivacyIndicator>();

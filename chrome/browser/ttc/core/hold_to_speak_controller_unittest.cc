@@ -10,6 +10,7 @@
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ttc/core/test_utils.h"
 #include "chrome/browser/ui/views/voice/hotkeys/fake_hotkey_registry.h"
+#include "chrome/browser/ui/views/voice/hotkeys/hotkey_registration_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -30,7 +31,8 @@ class TtcHoldToSpeakControllerTest : public testing::Test {
  protected:
   void CreateController() {
     controller_ = std::make_unique<HoldToSpeakController>(
-        delegate_, registry_.CreateDelegate());
+        delegate_, browser_registry_.CreateDelegate(),
+        *overlay_registration_delegate_);
   }
 
   PrefService& prefs() { return *profile_.GetPrefs(); }
@@ -38,22 +40,28 @@ class TtcHoldToSpeakControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   FakeSessionViewDelegate delegate_;
-  voice::FakeHotkeyRegistry registry_;
+  voice::FakeHotkeyRegistry browser_registry_;
+  voice::FakeHotkeyRegistry overlay_registry_;
+  const std::unique_ptr<voice::HotkeyRegistrationDelegate>
+      overlay_registration_delegate_ = overlay_registry_.CreateDelegate();
   std::unique_ptr<HoldToSpeakController> controller_;
 };
 
 TEST_F(TtcHoldToSpeakControllerTest, RegistersDefaultHotkey) {
   CreateController();
-  EXPECT_TRUE(registry_.is_registered());
-  EXPECT_EQ(
-      registry_.last_registered_accelerator(),
-      ui::Accelerator(ui::VKEY_SPACE, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN));
+  const ui::Accelerator default_hotkey(ui::VKEY_SPACE,
+                                       ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(browser_registry_.is_registered());
+  EXPECT_EQ(browser_registry_.last_registered_accelerator(), default_hotkey);
+  EXPECT_TRUE(overlay_registry_.is_registered());
+  EXPECT_EQ(overlay_registry_.last_registered_accelerator(), default_hotkey);
 }
 
 TEST_F(TtcHoldToSpeakControllerTest, EmptyPrefDisablesHotkey) {
   prefs().SetString(prefs::kTtcHoldToSpeakShortcut, "");
   CreateController();
-  EXPECT_FALSE(registry_.is_registered());
+  EXPECT_FALSE(browser_registry_.is_registered());
+  EXPECT_FALSE(overlay_registry_.is_registered());
 }
 
 TEST_F(TtcHoldToSpeakControllerTest, PrefChangeReregistersHotkey) {
@@ -62,16 +70,21 @@ TEST_F(TtcHoldToSpeakControllerTest, PrefChangeReregistersHotkey) {
                                       ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
   prefs().SetString(prefs::kTtcHoldToSpeakShortcut,
                     ui::Command::AcceleratorToString(custom_hotkey));
-  EXPECT_TRUE(registry_.is_registered());
-  EXPECT_EQ(registry_.last_registered_accelerator(), custom_hotkey);
-  EXPECT_EQ(registry_.registration_count(), 2);
-  EXPECT_EQ(registry_.destruction_count(), 1);
+  EXPECT_TRUE(browser_registry_.is_registered());
+  EXPECT_EQ(browser_registry_.last_registered_accelerator(), custom_hotkey);
+  EXPECT_EQ(browser_registry_.registration_count(), 2);
+  EXPECT_EQ(browser_registry_.destruction_count(), 1);
+  EXPECT_TRUE(overlay_registry_.is_registered());
+  EXPECT_EQ(overlay_registry_.last_registered_accelerator(), custom_hotkey);
+  EXPECT_EQ(overlay_registry_.registration_count(), 2);
+  EXPECT_EQ(overlay_registry_.destruction_count(), 1);
 }
 
 TEST_F(TtcHoldToSpeakControllerTest, UnregistersHotkeyOnDestruction) {
   CreateController();
   controller_.reset();
-  EXPECT_FALSE(registry_.is_registered());
+  EXPECT_FALSE(browser_registry_.is_registered());
+  EXPECT_FALSE(overlay_registry_.is_registered());
 }
 
 TEST_F(TtcHoldToSpeakControllerTest, IgnoresHotkeyUntilSessionIsLive) {
@@ -79,7 +92,7 @@ TEST_F(TtcHoldToSpeakControllerTest, IgnoresHotkeyUntilSessionIsLive) {
   delegate_.set_app_mic_muted(true);
   CreateController();
   EXPECT_TRUE(controller_->AcceleratorPressed(
-      *registry_.last_registered_accelerator()));
+      *browser_registry_.last_registered_accelerator()));
   EXPECT_FALSE(controller_->hold_watcher_for_testing());
   EXPECT_TRUE(delegate_.IsMicMuted());
 }
