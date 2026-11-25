@@ -125,6 +125,8 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "chrome/android/chrome_jni_headers/DevToolsActivity_jni.h"
 #else
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
@@ -2206,14 +2208,24 @@ void DevToolsWindow::ShowCertificateViewer(const std::string& cert_chain) {
       net::X509Certificate::CreateFromDERCertChain(cert_string_piece);
   CHECK(cert);
 
+#if BUILDFLAG(IS_ANDROID)
+  if (is_docked_) {
+    NOTIMPLEMENTED();
+    return;
+  }
+  if (!main_web_contents_) {
+    return;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_DevToolsActivity_showCertificateViewer(
+      env, main_web_contents_->GetJavaWebContents(),
+      base::android::ToJavaArrayOfByteArray(env, decoded));
+#else
   WebContents* inspected_contents =
       is_docked_ ? GetInspectedWebContents() : main_web_contents_.get();
   if (!inspected_contents) {
     return;
   }
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-#else
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           inspected_contents);

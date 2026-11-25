@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.devtools;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,7 +29,9 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.components.page_info.CertificateViewer;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Activity to show DevTools frontend. */
 @NullMarked
@@ -42,6 +45,8 @@ public class DevToolsActivity extends BaseCustomTabActivity {
      */
     private static final String IS_INCOGNITO_KEY =
             "org.chromium.chrome.browser.devtools.DevTools.IsIncognito";
+
+    private @Nullable CertificateViewer mCertificateViewer;
 
     @CalledByNative
     /** Launches the DevTools activity for the given DevTools frontend. */
@@ -58,6 +63,24 @@ public class DevToolsActivity extends BaseCustomTabActivity {
         intent.putExtra(IS_INCOGNITO_KEY, profile != null && profile.isPrimaryOtrProfile());
 
         context.startActivity(intent);
+    }
+
+    @CalledByNative
+    static void showCertificateViewer(WebContents webContents, byte[][] certChain) {
+        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) return;
+        Activity activity = windowAndroid.getActivity().get();
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+        if (activity instanceof DevToolsActivity devToolsActivity) {
+            devToolsActivity.showCertificateChain(certChain);
+        }
+    }
+
+    private void showCertificateChain(byte[][] certChain) {
+        if (mCertificateViewer == null) {
+            mCertificateViewer = new CertificateViewer(this);
+        }
+        mCertificateViewer.showCertificateChain(certChain);
     }
 
     private boolean isIncognito() {
@@ -141,5 +164,18 @@ public class DevToolsActivity extends BaseCustomTabActivity {
 
         // Remove the existing blank page tab.
         tabModel.getTabRemover().closeTabs(TabClosureParams.closeTab(existingTab).build(), false);
+    }
+
+    @Override
+    protected void onDestroyInternal() {
+        if (mCertificateViewer != null) {
+            mCertificateViewer.dismiss();
+            mCertificateViewer = null;
+        }
+        super.onDestroyInternal();
+    }
+
+    @Nullable CertificateViewer getCertificateViewerForTesting() {
+        return mCertificateViewer;
     }
 }
