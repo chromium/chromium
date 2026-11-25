@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 
+#include <tuple>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -42,9 +44,11 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -440,6 +444,236 @@ TEST(ScriptPromiseTest, ChainPromisesWithDifferentResolveTypes) {
   EXPECT_TRUE(resolve2->react_called);
   EXPECT_FALSE(reject2->react_called);
   EXPECT_EQ("hello", resolve2->resolve_string);
+}
+
+class AttachReactionsInOtherContextFunction final : public ScriptFunction {
+ public:
+  AttachReactionsInOtherContextFunction(ScriptState* other_script_state,
+                                        ScriptPromise<IDLString> promise,
+                                        ResolveString* on_fulfilled,
+                                        AnyCallable* on_rejected)
+      : other_script_state_(other_script_state),
+        promise_(promise),
+        on_fulfilled_(on_fulfilled),
+        on_rejected_(on_rejected) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(other_script_state_);
+    visitor->Trace(promise_);
+    visitor->Trace(on_fulfilled_);
+    visitor->Trace(on_rejected_);
+    ScriptFunction::Trace(visitor);
+  }
+
+  bool saw_empty_catch = false;
+  bool saw_empty_then_one_arg = false;
+  bool saw_empty_then_two_arg = false;
+  bool saw_pending_exception = false;
+
+ private:
+  ScriptValue Call(ScriptState*, ScriptValue) override {
+    v8::Isolate* isolate = other_script_state_->GetIsolate();
+    ScriptState::Scope scope(other_script_state_);
+    ScriptPromise<IDLString> promise = promise_.Unwrap();
+
+    auto catch_promise = promise.Catch(other_script_state_, on_rejected_.Get());
+    if (catch_promise.IsEmpty()) {
+      saw_empty_catch = true;
+    }
+    if (isolate->HasPendingException()) {
+      saw_pending_exception = true;
+      return ScriptValue();
+    }
+
+    auto then_one_promise =
+        promise.Then(other_script_state_, on_fulfilled_.Get());
+    if (then_one_promise.IsEmpty()) {
+      saw_empty_then_one_arg = true;
+    }
+    if (isolate->HasPendingException()) {
+      saw_pending_exception = true;
+      return ScriptValue();
+    }
+
+    auto then_two_promise = promise.Then(
+        other_script_state_, on_fulfilled_.Get(), on_rejected_.Get());
+    if (then_two_promise.IsEmpty()) {
+      saw_empty_then_two_arg = true;
+    }
+    if (isolate->HasPendingException()) {
+      saw_pending_exception = true;
+    }
+    return ScriptValue();
+  }
+
+  Member<ScriptState> other_script_state_;
+  MemberScriptPromise<IDLString> promise_;
+  Member<ResolveString> on_fulfilled_;
+  Member<AnyCallable> on_rejected_;
+};
+
+TEST(ScriptPromiseTest, ReactionNearStackLimitClearsPendingException) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope caller_scope(KURL("https://a.example.com/"));
+  V8TestingScope other_scope(KURL("https://b.example.com/"));
+
+  v8::Isolate* isolate = caller_scope.GetIsolate();
+  ASSERT_EQ(isolate, other_scope.GetIsolate());
+  ASSERT_NE(caller_scope.GetContext(), other_scope.GetContext());
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
+      other_scope.GetScriptState());
+  ScriptPromise<IDLString> promise = resolver->Promise();
+  auto* on_fulfilled = MakeGarbageCollected<ResolveString>();
+  auto* on_rejected = MakeGarbageCollected<AnyCallable>();
+  std::ignore = on_fulfilled->ToV8Function(other_scope.GetScriptState());
+  std::ignore = on_rejected->ToV8Function(other_scope.GetScriptState());
+
+  auto* trigger_fn =
+      MakeGarbageCollected<AttachReactionsInOtherContextFunction>(
+          other_scope.GetScriptState(), promise, on_fulfilled, on_rejected);
+
+  {
+    v8::Context::Scope caller_context_scope(caller_scope.GetContext());
+    v8::Local<v8::Function> trigger =
+        trigger_fn->ToV8Function(caller_scope.GetScriptState());
+    ASSERT_TRUE(caller_scope.GetContext()
+                    ->Global()
+                    ->Set(caller_scope.GetContext(),
+                          V8String(isolate, "trigger"), trigger)
+                    .FromMaybe(false));
+
+    constexpr char kScript[] = R"(
+      (() => {
+        let unwind = 0;
+        let sawOtherRealmException = false;
+        function step() {
+          try {
+            step();
+          } catch (e) {
+            if (e.constructor.constructor !== Function ||
+                !(e instanceof RangeError)) {
+              sawOtherRealmException = true;
+            }
+          }
+          if (unwind++ < 64) {
+            try {
+              trigger();
+            } catch (e) {
+              if (e.constructor.constructor !== Function ||
+                  !(e instanceof RangeError)) {
+                sawOtherRealmException = true;
+              }
+            }
+          }
+        }
+        step();
+        return sawOtherRealmException ? 'mismatched_realm' : 'ok';
+      })();
+    )";
+    v8::Local<v8::Script> script =
+        v8::Script::Compile(caller_scope.GetContext(),
+                            V8String(isolate, kScript))
+            .ToLocalChecked();
+    v8::Local<v8::Value> result =
+        script->Run(caller_scope.GetContext()).ToLocalChecked();
+    EXPECT_EQ("ok", ToString(caller_scope.GetContext(),
+                             ScriptValue(isolate, result)));
+  }
+
+  EXPECT_TRUE(trigger_fn->saw_empty_catch);
+  EXPECT_TRUE(trigger_fn->saw_empty_then_one_arg);
+  EXPECT_TRUE(trigger_fn->saw_empty_then_two_arg);
+  EXPECT_FALSE(trigger_fn->saw_pending_exception);
+
+  // Verify normal reaction attachment and settlement still succeed once stack
+  // space is available.
+  auto* normal_fulfilled = MakeGarbageCollected<ResolveString>();
+  auto* normal_rejected = MakeGarbageCollected<AnyCallable>();
+  auto normal_then = promise.Then(other_scope.GetScriptState(),
+                                  normal_fulfilled, normal_rejected);
+  EXPECT_FALSE(normal_then.IsEmpty());
+  resolver->Resolve("sample_data");
+  other_scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(normal_fulfilled->react_called);
+  EXPECT_FALSE(normal_rejected->react_called);
+  EXPECT_EQ("sample_data", normal_fulfilled->resolve_string);
+
+  auto rejected_promise = ScriptPromise<IDLString>::Reject(
+      other_scope.GetScriptState(), V8String(isolate, "rejected_sample"));
+  auto* catch_handler = MakeGarbageCollected<AnyCallable>();
+  auto normal_catch =
+      rejected_promise.Catch(other_scope.GetScriptState(), catch_handler);
+  EXPECT_FALSE(normal_catch.IsEmpty());
+  other_scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(catch_handler->react_called);
+  EXPECT_EQ("rejected_sample",
+            ToString(other_scope.GetContext(), catch_handler->react_value));
+}
+
+TEST(ScriptPromiseTest, ReactionPreservesExecutionTermination) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope(KURL("https://a.example.com/"));
+  V8TestingScope uncached_scope(KURL("https://b.example.com/"));
+  v8::Isolate* isolate = scope.GetIsolate();
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto promise = ToResolvedPromise<IDLString>(script_state, "hello");
+  auto* on_fulfilled = MakeGarbageCollected<ResolveString>();
+  auto* on_rejected = MakeGarbageCollected<AnyCallable>();
+
+  v8::TryCatch outer_try_catch(isolate);
+  isolate->TerminateExecution();
+
+  auto then_promise = promise.Then(script_state, on_fulfilled, on_rejected);
+  EXPECT_TRUE(then_promise.IsEmpty());
+  EXPECT_TRUE(isolate->IsExecutionTerminating());
+
+  // Subsequent reaction attachment and factory calls in a context without
+  // cached wrapper boilerplates must also return empty while preserving
+  // termination.
+  auto* uncached_rejected = MakeGarbageCollected<AnyCallable>();
+  auto catch_promise =
+      promise.Catch(uncached_scope.GetScriptState(), uncached_rejected);
+  EXPECT_TRUE(catch_promise.IsEmpty());
+  EXPECT_TRUE(
+      ToResolvedPromise<IDLString>(uncached_scope.GetScriptState(), "ignored")
+          .IsEmpty());
+  EXPECT_TRUE(
+      ScriptPromise<IDLString>::Reject(uncached_scope.GetScriptState(),
+                                       V8String(isolate, "ignored_reject"))
+          .IsEmpty());
+  EXPECT_TRUE(isolate->IsExecutionTerminating());
+  EXPECT_TRUE(outer_try_catch.HasTerminated());
+
+  isolate->CancelTerminateExecution();
+  outer_try_catch.Reset();
+}
+
+TEST(ScriptPromiseTest, TopLevelTerminationDoesNotLeaveDanglingException) {
+  test::TaskEnvironment task_environment;
+  auto page_holder =
+      DummyPageHolder::CreateAndCommitNavigation(KURL("https://example.com/"));
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(page_holder->GetDocument().GetFrame());
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ScriptState::Scope script_state_scope(script_state);
+
+  auto promise = ToResolvedPromise<IDLString>(script_state, "hello");
+  auto* on_fulfilled = MakeGarbageCollected<ResolveString>();
+  auto* on_rejected = MakeGarbageCollected<AnyCallable>();
+
+  isolate->TerminateExecution();
+  auto then_promise = promise.Then(script_state, on_fulfilled, on_rejected);
+  EXPECT_TRUE(then_promise.IsEmpty());
+  EXPECT_FALSE(isolate->IsExecutionTerminating());
+
+  // Subsequent V8 API calls using EnterV8Scope must succeed without hitting
+  // DCHECK(!i_isolate->is_execution_terminating()).
+  auto rejected = ScriptPromise<IDLString>::Reject(
+      script_state, V8String(isolate, "after_terminate"));
+  EXPECT_FALSE(rejected.IsEmpty());
+  isolate->CancelTerminateExecution();
 }
 
 }  // namespace

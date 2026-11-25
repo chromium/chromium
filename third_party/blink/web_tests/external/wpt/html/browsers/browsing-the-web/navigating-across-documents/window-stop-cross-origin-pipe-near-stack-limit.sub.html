@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>window.stop() near stack limit with cross-origin stream piping does not leak foreign exceptions</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+
+  const pipingReady = new Promise(resolve => {
+    window.addEventListener("message", function onMessage(e) {
+      if (e.data === "piping") {
+        window.removeEventListener("message", onMessage);
+        resolve();
+      }
+    });
+  });
+
+  iframe.src =
+      "http://{{hosts[][www1]}}:{{ports[http][0]}}/html/browsers/browsing-the-web/navigating-across-documents/resources/pipe-trickle-iframe.html";
+  document.body.appendChild(iframe);
+  await pipingReady;
+
+  let lo = 0;
+  let hi = 1 << 20;
+  while (hi - lo > 1) {
+    const mid = (lo + hi) >> 1;
+    try {
+      Reflect.apply(Function.prototype, null, {length: mid});
+      lo = mid;
+    } catch {
+      hi = mid;
+    }
+  }
+
+  for (const headroom of [96, 64, 48, 32, 16]) {
+    if (lo <= headroom) {
+      continue;
+    }
+    try {
+      Reflect.apply(window.stop, window, {length: lo - headroom});
+    } catch (e) {
+      assert_true(e instanceof RangeError, "Expected same-realm RangeError");
+      assert_equals(e.constructor, RangeError);
+      assert_equals(e.constructor.constructor, Function);
+    }
+  }
+}, "window.stop() near stack limit while canceling a cross-origin stream pipe only throws same-realm RangeError");
+</script>
+</body>

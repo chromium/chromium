@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script>
+fetch("/fetch/api/resources/trickle.py?ms=50&count=100").then(response => {
+  let notified = false;
+  return response.body.pipeTo(new WritableStream({
+    write() {
+      if (!notified) {
+        notified = true;
+        parent.postMessage("piping", "*");
+      }
+    }
+  }));
+}).catch(() => {});
+</script>
