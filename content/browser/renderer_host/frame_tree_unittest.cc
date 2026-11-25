@@ -6,8 +6,12 @@
 
 #include <stddef.h>
 
+#include <string>
+#include <vector>
+
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_factory.h"
@@ -22,6 +26,7 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
@@ -673,14 +678,19 @@ TEST_F(FrameTreeTest, ObserverWalksTreeAfterCrash) {
       "RenderFrameHostChanged(new)(23) -> 1: [22: [], 23: []]",
       activity.GetLog());
 
-  // Crash the renderer
+  // Crash the renderer. Sibling deletion order in ResetChildren() depends on
+  // std::vector's unspecified element destruction order, while both child
+  // frames must be deleted before the main frame and RenderProcessGone.
   main_test_rfh()->GetProcess()->SimulateCrash();
-  EXPECT_EQ(
-      "RenderFrameDeleted(22) -> 1*: []\n"
-      "RenderFrameDeleted(23) -> 1*: []\n"
-      "RenderFrameDeleted(1) -> 1*: []\n"
-      "RenderProcessGone -> 1*: []",
-      activity.GetLog());
+  std::vector<std::string> lines = base::SplitString(
+      activity.GetLog(), "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(4u, lines.size());
+  EXPECT_THAT(
+      std::vector(lines.begin(), lines.begin() + 2),
+      testing::UnorderedElementsAre("RenderFrameDeleted(22) -> 1*: []",
+                                    "RenderFrameDeleted(23) -> 1*: []"));
+  EXPECT_EQ("RenderFrameDeleted(1) -> 1*: []", lines[2]);
+  EXPECT_EQ("RenderProcessGone -> 1*: []", lines[3]);
 }
 
 // Ensure that frames are not added to the tree, if the process passed in

@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <variant>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -636,15 +636,18 @@ class ProcessMemoryMetricsEmitterTest
   ~ProcessMemoryMetricsEmitterTest() override = default;
 
  protected:
-  // TestNodeWrapper<NodeType> classes don't have a common base class, so they
-  // need to be held in a variant.
-  using AnyNodeWrapper = std::variant<TestNodeWrapper<FrameNodeImpl>,
-                                      TestNodeWrapper<PageNodeImpl>,
-                                      TestNodeWrapper<TestProcessNodeImpl>>;
+  // Group graph nodes by type so C++ reverse member destruction order tears
+  // down frame nodes before page and process nodes, independent of
+  // std::vector's element destruction order.
+  struct TestGraphNodes {
+    std::vector<TestNodeWrapper<TestProcessNodeImpl>> process_nodes;
+    std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+    std::vector<TestNodeWrapper<FrameNodeImpl>> frame_nodes;
+  };
 
   // Creates a set of graph nodes for complex tests.
-  std::vector<AnyNodeWrapper> CreateTestGraphNodes() {
-    std::vector<AnyNodeWrapper> nodes;
+  TestGraphNodes CreateTestGraphNodes() {
+    TestGraphNodes nodes;
 
     // Process 200 always has no URLs. Tests don't call PopulateRendererMetrics
     // for this PID so it should never appear in memory dumps. (This tests that
@@ -654,7 +657,7 @@ class ProcessMemoryMetricsEmitterTest
     {
       auto process_node = CreateNode<TestProcessNodeImpl>();
       process_node->SetProcessWithPid(200);
-      nodes.push_back(std::move(process_node));
+      nodes.process_nodes.push_back(std::move(process_node));
     }
 
     // Process kTestRendererPid201 always has 1 URL
@@ -671,9 +674,9 @@ class ProcessMemoryMetricsEmitterTest
       auto frame_node =
           CreateFrameNodeAutoId(process_node.get(), page_node.get());
 
-      nodes.push_back(std::move(frame_node));
-      nodes.push_back(std::move(page_node));
-      nodes.push_back(std::move(process_node));
+      nodes.frame_nodes.push_back(std::move(frame_node));
+      nodes.page_nodes.push_back(std::move(page_node));
+      nodes.process_nodes.push_back(std::move(process_node));
     }
 
     // Process kTestRendererPid202 always has 2 URL
@@ -697,11 +700,11 @@ class ProcessMemoryMetricsEmitterTest
       auto frame_node2 =
           CreateFrameNodeAutoId(process_node.get(), page_node2.get());
 
-      nodes.push_back(std::move(frame_node1));
-      nodes.push_back(std::move(page_node1));
-      nodes.push_back(std::move(frame_node2));
-      nodes.push_back(std::move(page_node2));
-      nodes.push_back(std::move(process_node));
+      nodes.frame_nodes.push_back(std::move(frame_node1));
+      nodes.page_nodes.push_back(std::move(page_node1));
+      nodes.frame_nodes.push_back(std::move(frame_node2));
+      nodes.page_nodes.push_back(std::move(page_node2));
+      nodes.process_nodes.push_back(std::move(process_node));
     }
 
     return nodes;
@@ -1065,7 +1068,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, NetworkServiceHistogramsAreRecorded) {
                          "devtools/durable_message_collectors", "size",
                          14 * kMiB);
 
-  std::vector<AnyNodeWrapper> graph_nodes = CreateTestGraphNodes();
+  TestGraphNodes graph_nodes = CreateTestGraphNodes();
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
