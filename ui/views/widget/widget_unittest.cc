@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -4177,6 +4178,68 @@ TEST_F(WidgetWindowTitleTest, SetWindowTitleChanged_DesktopNativeWidget) {
   // Override to use a DesktopNativeWidget.
   bool desktop_native_widget = true;
   RunTest(desktop_native_widget);
+}
+
+// A mixed-direction title that resolves to LTR under UAX #9 P2 must not be
+// embedded as RTL in an LTR UI, while RTL-first and LRE-wrapped RTL URL titles
+// still receive locale direction adjustment.
+TEST_F(WidgetTest, MixedDirectionWindowTitleNotEmbeddedAsRtl) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  auto native_widget =
+      std::make_unique<testing::NiceMock<MockNativeWidget>>(widget.get());
+  ON_CALL(*native_widget, CreateFrameView).WillByDefault([]() {
+    return std::make_unique<FrameView>();
+  });
+  params.native_widget = native_widget.get();
+  widget->Init(std::move(params));
+
+  const std::u16string kLtrFirstMixed =
+      u"Of contraseñas, תואמסיס, and 密码 - Chromium";
+  const std::u16string kRtlFirst = u"תואמסיס - Chromium";
+  const std::u16string kLreWrappedRtlUrl =
+      u"\u202Aדוגמה.ישראל\u202C - Chromium";
+
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(false);
+    EXPECT_CALL(*native_widget, SetWindowTitle(kLtrFirstMixed))
+        .WillOnce(testing::Return(true));
+    widget->widget_delegate()->SetTitle(kLtrFirstMixed);
+
+#if BUILDFLAG(IS_WIN)
+    const std::u16string expected_rtl_first = kRtlFirst;
+    const std::u16string expected_lre_url = kLreWrappedRtlUrl;
+#else
+    const std::u16string expected_rtl_first =
+        u"\u200E\u202B" + kRtlFirst + u"\u202C\u200E";
+    const std::u16string expected_lre_url =
+        u"\u200E\u202B" + kLreWrappedRtlUrl + u"\u202C\u200E";
+#endif
+    EXPECT_CALL(*native_widget, SetWindowTitle(expected_rtl_first))
+        .WillOnce(testing::Return(true));
+    widget->widget_delegate()->SetTitle(kRtlFirst);
+
+    EXPECT_CALL(*native_widget, SetWindowTitle(expected_lre_url))
+        .WillOnce(testing::Return(true));
+    widget->widget_delegate()->SetTitle(kLreWrappedRtlUrl);
+  }
+
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(true);
+#if BUILDFLAG(IS_WIN)
+    const std::u16string expected_rtl_ui =
+        u"\u202B" + kLtrFirstMixed + u"\u202C";
+#else
+    const std::u16string expected_rtl_ui =
+        u"\u200F\u202B" + kLtrFirstMixed + u"\u202C\u200F";
+#endif
+    EXPECT_CALL(*native_widget, SetWindowTitle(expected_rtl_ui))
+        .WillOnce(testing::Return(true));
+    widget->widget_delegate()->SetTitle(kLtrFirstMixed);
+  }
+
+  widget.reset();
 }
 
 TEST_F(WidgetTest, WidgetDeleted_InOnMousePressed) {
