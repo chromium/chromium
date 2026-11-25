@@ -6,14 +6,17 @@
 #define CHROME_BROWSER_WEBAUTHN_GPM_LOCAL_CHANGE_PIN_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/change_pin_controller.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/document_user_data.h"
 
 namespace content {
@@ -83,6 +86,9 @@ class LocalChangePinControllerImpl
       public content::DocumentUserData<LocalChangePinControllerImpl>,
       public AuthenticatorRequestDialogModel::Observer {
  public:
+  using DeviceAuthenticatorFactory = base::RepeatingCallback<
+      std::unique_ptr<device_reauth::DeviceAuthenticator>()>;
+
   LocalChangePinControllerImpl(const LocalChangePinControllerImpl&) = delete;
   LocalChangePinControllerImpl& operator=(const LocalChangePinControllerImpl&) =
       delete;
@@ -99,6 +105,13 @@ class LocalChangePinControllerImpl
   void OnGPMPinEntered(const std::u16string& pin) override;
   void OnGPMPinOptionChanged(bool is_arbitrary) override;
 
+  AuthenticatorRequestDialogModel* model_for_testing() { return model_.get(); }
+
+  // Overrides OS user verification creation in tests. Returning `nullptr`
+  // simulates OS user verification being unavailable.
+  void SetDeviceAuthenticatorFactoryForTesting(
+      DeviceAuthenticatorFactory factory);
+
  private:
   explicit LocalChangePinControllerImpl(
       content::RenderFrameHost* render_frame_host);
@@ -107,6 +120,9 @@ class LocalChangePinControllerImpl
 
   void OnOsUvCompleted(bool success);
   void OnGpmPinChanged(bool success);
+  void CancelPendingOperations();
+  void Reset(bool success);
+  bool HasValidPrimaryAccount() const;
 
   std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
   CreateAvailabilityChecker();
@@ -119,8 +135,11 @@ class LocalChangePinControllerImpl
   const raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<AuthenticatorRequestDialogModel> model_;
   SuccessCallback notify_pin_change_callback_;
+  std::optional<CoreAccountInfo> account_;
+  bool setting_pin_ = false;
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
+  DeviceAuthenticatorFactory device_authenticator_factory_for_testing_;
 
   base::ScopedObservation<AuthenticatorRequestDialogModel,
                           AuthenticatorRequestDialogModel::Observer>
