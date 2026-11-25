@@ -2710,6 +2710,9 @@ public abstract class ChromeFeatureList {
             sContextualTasksEntryPointsToolbarButton =
                     sContextualTasksEntryPoints.newBooleanParam("toolbar_button", true);
     public static final MutableBooleanParamWithSafeDefault
+            sCriticalActionHistoryEnableChatLinkouts =
+                    sCriticalActionHistory.newBooleanParam("enable_chat_linkouts", true);
+    public static final MutableBooleanParamWithSafeDefault
             sCrossWindowTabGroupOperationsRemoteGroupOperations =
                     sCrossWindowTabGroupOperations.newBooleanParam(
                             "remote_group_operations", false);

@@ -38,6 +38,7 @@ const base::FeatureParam<int> kMaxTaskToCriticalActionIdsCacheCapacity{
 const base::FeatureParam<int> kMaxTaskToAnchorCacheCapacity{
     &kCriticalActionHistory, "max_task_to_anchor_cache_capacity", 200};
 
+// LINT.IfChange(IsChatLinkoutsEnabled)
 const base::FeatureParam<bool> kEnableChatLinkouts{
     &kCriticalActionHistory, "enable_chat_linkouts", true};
 
@@ -48,6 +49,7 @@ bool IsChatLinkoutsEnabled() {
   return base::FeatureList::IsEnabled(kCriticalActionHistory) &&
          kEnableChatLinkouts.Get();
 }
+// LINT.ThenChange(//chrome/browser/history/java/src/org/chromium/chrome/browser/history/HistoryFeatures.java:IsChatLinkoutsEnabled)
 
 bool IsActionLevelChatLinkoutsEnabled() {
   return IsChatLinkoutsEnabled() && kEnableActionLevelChatLinkouts.Get();

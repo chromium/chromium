@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.history;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.critical_actions.OpenConversationResult;
 
 import java.util.List;
 import java.util.Objects;
@@ -189,6 +192,30 @@ public interface HistoryProvider {
 
     /** Removes all items that have been marked for removal through #markItemForRemoval(). */
     void removeItems();
+
+    /**
+     * Opens the Gemini conversation associated with {@code criticalActionId} in Glic and invokes
+     * {@code callback} with an {@link OpenConversationResult} status code.
+     *
+     * <p>{@code callback} is invoked at most once, possibly synchronously. It is not invoked if the
+     * provider is destroyed before the request completes, though the request itself is not
+     * cancelled.
+     *
+     * @param criticalActionId Unique ID of the critical action whose conversation should open.
+     * @param tab The current {@link Tab} when History is shown in a tab, or {@code null} when shown
+     *     in a separate Activity. Must belong to the profile of this provider, so callers must pass
+     *     {@code null} instead of an Incognito tab. If {@code null}, the conversation is opened on
+     *     the active tab of the most recently active tabbed window for the profile, or on a new tab
+     *     in that window; if the profile has no tabbed window, no conversation is opened and the
+     *     result is {@link OpenConversationResult#ERROR_INTERNAL}. If non-null but destroyed or not
+     *     initialized, no conversation is opened and the result is {@link
+     *     OpenConversationResult#ERROR_INTERNAL}.
+     * @param callback Callback invoked with an {@link OpenConversationResult} value.
+     */
+    void openCriticalActionConversation(
+            String criticalActionId,
+            @Nullable Tab tab,
+            Callback<@OpenConversationResult Integer> callback);
 
     /** Destroys the HistoryProvider. */
     void destroy();

@@ -9,10 +9,13 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
+#include "chrome/browser/critical_actions/critical_action_ui_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -310,6 +313,25 @@ void BrowsingHistoryBridge::MarkItemForRemoval(
 void BrowsingHistoryBridge::RemoveItems() {
   browsing_history_service_->RemoveVisits(items_to_remove_);
   items_to_remove_.clear();
+}
+
+void BrowsingHistoryBridge::OpenCriticalActionConversation(
+    const std::string& critical_action_id,
+    TabAndroid* tab,
+    const JavaRef<jobject>& j_callback) {
+  // The "Gemini actions" header button is the visit-level linkout, so it opens
+  // the conversation at its default position, like "Go to Gemini chat" in the
+  // Desktop history entry menu.
+  critical_actions::OpenCriticalActionConversationForTab(
+      profile_, tab, critical_action_id,
+      critical_actions::OpenConversationSource::kEntryMenu,
+      base::BindOnce(
+          [](base::android::ScopedJavaGlobalRef<jobject> j_cb,
+             critical_actions::OpenConversationResult result) {
+            base::android::RunIntCallbackAndroid(j_cb,
+                                                 static_cast<int>(result));
+          },
+          base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 void BrowsingHistoryBridge::OnRemoveVisitsComplete() {

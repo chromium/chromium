@@ -29,5 +29,17 @@ public final class HistoryFeatures {
     public static boolean isAndroidDesktopWebUiHistoryEnabled() {
         return DeviceInfo.isDesktop() && ChromeFeatureList.sAndroidDesktopWebUiHistory.isEnabled();
     }
+
     // LINT.ThenChange(//chrome/browser/android/ntp/new_tab_page_url_handler.cc:AndroidDesktopWebUiHistory, //chrome/browser/ui/webui/history/history_ui.cc:AndroidDesktopWebUiHistory)
+
+    // LINT.IfChange(IsChatLinkoutsEnabled)
+    /**
+     * Returns whether visit-level Critical Action chat linkouts open the Gemini conversation in
+     * Glic. When false, they fall back to Gemini Apps Activity.
+     */
+    public static boolean isCriticalActionChatLinkoutsEnabled() {
+        return ChromeFeatureList.sCriticalActionHistory.isEnabled()
+                && ChromeFeatureList.sCriticalActionHistoryEnableChatLinkouts.getValue();
+    }
+    // LINT.ThenChange(//components/critical_actions/core/browser/features.cc:IsChatLinkoutsEnabled)
 }

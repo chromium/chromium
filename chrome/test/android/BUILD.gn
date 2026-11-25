@@ -601,6 +601,7 @@ android_library("chrome_java_test_support_common") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
+    "//components/critical_actions/core/browser:critical_actions_enums_java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",

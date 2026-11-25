@@ -8,6 +8,9 @@ import android.text.TextUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.critical_actions.OpenConversationResult;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import java.util.Locale;
 public class StubbedHistoryProvider implements HistoryProvider {
     public final CallbackHelper markItemForRemovalCallback = new CallbackHelper();
     public final CallbackHelper removeItemsCallback = new CallbackHelper();
+    public final CallbackHelper openCriticalActionConversationCallback = new CallbackHelper();
 
     private BrowsingHistoryObserver mObserver;
     private final List<HistoryItem> mItems = new ArrayList<>();
@@ -34,6 +38,9 @@ public class StubbedHistoryProvider implements HistoryProvider {
 
     private boolean mQueryAppsTriggered;
     private QueryOptions mLastQueryOptions;
+    private @OpenConversationResult int mOpenConversationResult = OpenConversationResult.SUCCESS;
+    private @Nullable String mLastOpenedCriticalActionId;
+    private @Nullable Tab mLastOpenedCriticalActionTab;
 
     @Override
     public void setObserver(BrowsingHistoryObserver observer) {
@@ -149,6 +156,29 @@ public class StubbedHistoryProvider implements HistoryProvider {
         mRemovedItems.clear();
         removeItemsCallback.notifyCalled();
         mObserver.onHistoryDeleted();
+    }
+
+    @Override
+    public void openCriticalActionConversation(
+            String criticalActionId,
+            @Nullable Tab tab,
+            Callback<@OpenConversationResult Integer> callback) {
+        mLastOpenedCriticalActionId = criticalActionId;
+        mLastOpenedCriticalActionTab = tab;
+        callback.onResult(mOpenConversationResult);
+        openCriticalActionConversationCallback.notifyCalled();
+    }
+
+    public void setOpenConversationResult(@OpenConversationResult int result) {
+        mOpenConversationResult = result;
+    }
+
+    public @Nullable String getLastOpenedCriticalActionId() {
+        return mLastOpenedCriticalActionId;
+    }
+
+    public @Nullable Tab getLastOpenedCriticalActionTab() {
+        return mLastOpenedCriticalActionTab;
     }
 
     @Override

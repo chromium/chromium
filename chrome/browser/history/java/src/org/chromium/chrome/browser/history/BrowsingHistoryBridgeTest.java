@@ -13,24 +13,32 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.critical_actions.ActionType;
+import org.chromium.components.critical_actions.OpenConversationResult;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -41,17 +49,23 @@ import java.util.Map;
 /** Unit tests for BrowsingHistoryBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BrowsingHistoryBridgeTest {
+    private static final long NATIVE_PTR = 123L;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock BrowsingHistoryBridge.Natives mNativeMocks;
 
     @Mock private Profile mProfile;
+    @Mock private Tab mTab;
+    @Mock private Callback<Integer> mOpenConversationCallback;
+
+    @Captor private ArgumentCaptor<Callback<Integer>> mNativeCallbackCaptor;
 
     BrowsingHistoryBridge mBrowsingHistoryBridge;
 
     @Before
     public void setUp() {
         BrowsingHistoryBridgeJni.setInstanceForTesting(mNativeMocks);
+        when(mNativeMocks.init(any(), eq(mProfile))).thenReturn(NATIVE_PTR);
         mBrowsingHistoryBridge = new BrowsingHistoryBridge(mProfile);
     }
 
@@ -378,5 +392,97 @@ public class BrowsingHistoryBridgeTest {
         assertEquals("Yesterday", options.get(1).label);
         assertEquals(1000L, options.get(1).beginTimeMs);
         assertEquals(2000L, options.get(1).endTimeMs);
+    }
+
+    @Test
+    public void testOpenCriticalActionConversation_forwardsToNative() {
+        when(mTab.isInitialized()).thenReturn(true);
+
+        mBrowsingHistoryBridge.openCriticalActionConversation(
+                "action-123", mTab, mOpenConversationCallback);
+
+        verify(mNativeMocks)
+                .openCriticalActionConversation(
+                        eq(NATIVE_PTR),
+                        eq("action-123"),
+                        eq(mTab),
+                        mNativeCallbackCaptor.capture());
+        // The result is reported by native code, not by the Java side.
+        verify(mOpenConversationCallback, never()).onResult(any());
+
+        mNativeCallbackCaptor.getValue().onResult(OpenConversationResult.SUCCESS);
+        verify(mOpenConversationCallback).onResult(OpenConversationResult.SUCCESS);
+    }
+
+    @Test
+    public void testOpenCriticalActionConversation_nullTab_forwardsNull() {
+        mBrowsingHistoryBridge.openCriticalActionConversation(
+                "action-123", /* tab= */ null, mOpenConversationCallback);
+
+        verify(mNativeMocks)
+                .openCriticalActionConversation(eq(NATIVE_PTR), eq("action-123"), isNull(), any());
+    }
+
+    @Test
+    public void testOpenCriticalActionConversation_destroyedTab_returnsErrorInternal() {
+        when(mTab.isDestroyed()).thenReturn(true);
+
+        mBrowsingHistoryBridge.openCriticalActionConversation(
+                "action-123", mTab, mOpenConversationCallback);
+
+        verify(mOpenConversationCallback).onResult(OpenConversationResult.ERROR_INTERNAL);
+        verify(mNativeMocks, never())
+                .openCriticalActionConversation(anyLong(), any(), any(), any());
+    }
+
+    @Test
+    public void testOpenCriticalActionConversation_uninitializedTab_returnsErrorInternal() {
+        when(mTab.isInitialized()).thenReturn(false);
+
+        mBrowsingHistoryBridge.openCriticalActionConversation(
+                "action-123", mTab, mOpenConversationCallback);
+
+        verify(mOpenConversationCallback).onResult(OpenConversationResult.ERROR_INTERNAL);
+        verify(mNativeMocks, never())
+                .openCriticalActionConversation(anyLong(), any(), any(), any());
+    }
+
+    @Test
+    public void testOpenCriticalActionConversation_afterDestroy_returnsErrorInternal() {
+        mBrowsingHistoryBridge.destroy();
+
+        mBrowsingHistoryBridge.openCriticalActionConversation(
+                "action-456", mTab, mOpenConversationCallback);
+
+        verify(mOpenConversationCallback).onResult(OpenConversationResult.ERROR_INTERNAL);
+        verify(mNativeMocks, never())
+                .openCriticalActionConversation(anyLong(), any(), any(), any());
+    }
+
+    @Test
+    public void testOpenCriticalActionConversation_destroyDropsPendingCallback() {
+        when(mTab.isInitialized()).thenReturn(true);
+
+        mBrowsingHistoryBridge.openCriticalActionConversation(
+                "action-123", mTab, mOpenConversationCallback);
+        verify(mNativeMocks)
+                .openCriticalActionConversation(
+                        eq(NATIVE_PTR),
+                        eq("action-123"),
+                        eq(mTab),
+                        mNativeCallbackCaptor.capture());
+
+        mBrowsingHistoryBridge.destroy();
+        mNativeCallbackCaptor.getValue().onResult(OpenConversationResult.SUCCESS);
+
+        verify(mOpenConversationCallback, never()).onResult(any());
+    }
+
+    @Test
+    public void testDestroy_calledTwice_destroysNativeOnce() {
+        mBrowsingHistoryBridge.destroy();
+        mBrowsingHistoryBridge.destroy();
+
+        verify(mNativeMocks).destroy(NATIVE_PTR);
     }
 }

@@ -19,6 +19,8 @@
 
 using base::android::JavaRef;
 
+class TabAndroid;
+
 // The bridge for fetching browsing history information for the Android
 // history UI. This queries the history::BrowsingHistoryService and listens
 // for callbacks.
@@ -70,6 +72,13 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   // Removes all items that have been marked for removal through
   // ::markItemForRemoval().
   void RemoveItems();
+
+  // Opens the Gemini conversation associated with `critical_action_id` in Glic
+  // and passes the resulting `critical_actions::OpenConversationResult` int
+  // value to `j_callback`.
+  void OpenCriticalActionConversation(const std::string& critical_action_id,
+                                      TabAndroid* tab,
+                                      const JavaRef<jobject>& j_callback);
 
   // Queries `HistoryService` for the cached page title associated with `url` in
   // `profile`, invoking `callback` with the UTF-8 page title (or an empty

@@ -59,6 +59,7 @@ enum class ActionSource {
 
 // Result of attempting to open a conversation associated with a critical
 // action.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.critical_actions
 // LINT.IfChange(OpenConversationResult)
 enum class OpenConversationResult {
   kSuccess = 0,
@@ -98,9 +99,10 @@ void SetFormFillTypes(base::DictValue& metadata_dict, FormFillTypes types);
 
 // Identifies which History UI surface requested opening a conversation.
 // `kEntryMenu` is the visit-level linkout, which opens the conversation at its
-// default position (the "Go to Gemini chat" history entry menu item).
-// `kCriticalActionRow` is the per-action linkout, which opens the conversation
-// at the action's turn when action-level chat linkouts are enabled.
+// default position (the "Go to Gemini chat" entry menu item on Desktop, the
+// "Gemini actions" header button on Android). `kCriticalActionRow` is the
+// per-action linkout, which opens the conversation at the action's turn when
+// action-level chat linkouts are enabled.
 // LINT.IfChange(OpenConversationSource)
 enum class OpenConversationSource {
   kEntryMenu = 0,

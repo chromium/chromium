@@ -9,14 +9,17 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.history.HistoryProvider.ClientGroup;
 import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.critical_actions.ActionType;
+import org.chromium.components.critical_actions.OpenConversationResult;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -27,6 +30,8 @@ import java.util.Map;
 /** The JNI bridge for Android to fetch and manipulate browsing history. */
 @NullMarked
 public class BrowsingHistoryBridge implements HistoryProvider {
+    // Drops pending openCriticalActionConversation() callbacks on destroy().
+    private final CallbackController mCallbackController = new CallbackController();
     private @Nullable BrowsingHistoryObserver mObserver;
     private long mNativeHistoryBridge;
     private boolean mRemovingItems;
@@ -46,6 +51,8 @@ public class BrowsingHistoryBridge implements HistoryProvider {
         if (mNativeHistoryBridge != 0) {
             BrowsingHistoryBridgeJni.get().destroy(mNativeHistoryBridge);
             mNativeHistoryBridge = 0;
+            // Must stay inside the check, as CallbackController#destroy() asserts if called twice.
+            mCallbackController.destroy();
         }
     }
 
@@ -141,6 +148,26 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 DeleteBrowsingDataAction.MAX_VALUE + 1);
 
         BrowsingHistoryBridgeJni.get().removeItems(mNativeHistoryBridge);
+    }
+
+    @Override
+    public void openCriticalActionConversation(
+            String criticalActionId,
+            @Nullable Tab tab,
+            Callback<@OpenConversationResult Integer> callback) {
+        // A destroyed or uninitialized tab would reach native as a null TabAndroid*, which means
+        // that no tab was requested, so the conversation would open on another window's tab.
+        if (mNativeHistoryBridge == 0
+                || (tab != null && (tab.isDestroyed() || !tab.isInitialized()))) {
+            callback.onResult(OpenConversationResult.ERROR_INTERNAL);
+            return;
+        }
+        BrowsingHistoryBridgeJni.get()
+                .openCriticalActionConversation(
+                        mNativeHistoryBridge,
+                        criticalActionId,
+                        tab,
+                        mCallbackController.makeCancelable(callback));
     }
 
     @CalledByNative
@@ -290,6 +317,12 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                         Map<GURL, long[]> nativeTimestampsMap);
 
         void removeItems(long nativeBrowsingHistoryBridge);
+
+        void openCriticalActionConversation(
+                long nativeBrowsingHistoryBridge,
+                @JniType("std::string") String criticalActionId,
+                @JniType("TabAndroid*") @Nullable Tab tab,
+                Callback<@OpenConversationResult Integer> callback);
 
         void getAllAppIds(long nativeBrowsingHistoryBridge);
 

@@ -48,7 +48,9 @@ chromium-metrics-reviews@google.com.
   <variant name="CriticalActionRow"
       summary="the per-action 'Open chat' button on a critical action row"/>
   <variant name="EntryMenu"
-      summary="the 'Go to Gemini chat' item in a history entry's menu"/>
+      summary="the visit-level 'Go to Gemini chat' linkout (the history entry
+               menu item on Desktop, the 'Gemini actions' header button on
+               Android)"/>
 </variants>
 
 <!-- LINT.ThenChange(
