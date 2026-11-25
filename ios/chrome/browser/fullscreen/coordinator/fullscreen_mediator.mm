@@ -131,6 +131,10 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
            selector:@selector(voiceOverStatusDidChange)
                name:UIAccessibilityVoiceOverStatusDidChangeNotification
              object:nil];
+    if (UIAccessibilityIsVoiceOverRunning()) {
+      _voiceOverDisabler =
+          std::make_unique<ScopedFullscreenDisabler>(self, /*animated=*/false);
+    }
     [defaultCenter addObserver:self
                       selector:@selector(applicationDidEnterBackground)
                           name:UIApplicationDidEnterBackgroundNotification
@@ -165,6 +169,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 }
 
 - (void)disconnect {
+  _voiceOverDisabler.reset();
   _browserAgent = nullptr;
   if (_webStateList) {
     _webStateList->RemoveObserver(_webStateListObserver.get());
