@@ -364,6 +364,28 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/tips/android/java/src/org/chromium/chrome/browser/tips/TipsOptInCoordinator.java:OptInPromoEventType) -->
 
+<!-- LINT.IfChange(TipsNotificationsOptInPromoTriggerOutcome) -->
+
+<enum name="TipsNotificationsOptInPromoTriggerOutcome">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Skipped: Glic promo shown instead"/>
+  <int value="2" label="Skipped: feature disabled"/>
+  <int value="3" label="Skipped: unsupported device type"/>
+  <int value="4" label="Skipped: app notifications disabled"/>
+  <int value="5" label="Skipped: Tips channel exists (enabled or declined)"/>
+  <int value="6" label="Skipped: promo already accepted"/>
+  <int value="7" label="Skipped: time since backgrounded unknown"/>
+  <int value="8" label="Skipped: time since backgrounded too short"/>
+  <int value="9" label="Skipped: show cap reached"/>
+  <int value="10" label="Skipped: cooldown not passed"/>
+  <int value="11" label="Skipped: activity finishing or destroyed"/>
+  <int value="12" label="Skipped: null profile"/>
+  <int value="13" label="Skipped: by Feature Engagement"/>
+  <int value="14" label="Not shown immediately: bottom sheet suppressed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/tips/android/java/src/org/chromium/chrome/browser/tips/TipsUtils.java:TipsOptInPromoTriggerOutcome) -->
+
 <!-- NSError codes returned by -[UNUserNotificationCenter
      addNotificationRequest:withCompletionHandler:]. Codes are only meaningful
      in combination with the NSError domain, which is not recorded, so labels

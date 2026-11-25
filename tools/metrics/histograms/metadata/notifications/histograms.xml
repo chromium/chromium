@@ -1388,6 +1388,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Tips.OptInPromo.TriggerOutcome.{StartType}"
+    enum="TipsNotificationsOptInPromoTriggerOutcome" expires_after="2027-11-30">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <summary>
+    Records why each foreground evaluation of the Tips opt-in promo did or did
+    not request the bottom sheet. Recorded once per evaluation of the tabbed
+    activity's foreground promos, either when the Glic promo wins (before Tips
+    eligibility is checked) or, when the bottom sheet controller and snackbar
+    manager are available, at the first failing Tips eligibility check or with
+    the result of requesting the sheet. Shown means the bottom sheet accepted
+    the request without immediate suppression (the sheet can still be dropped
+    before opening; see Notifications.Tips.OptInPromo.EventType3 for actual
+    opens). {StartType} This is for Android only.
+  </summary>
+  <token key="StartType">
+    <variant name="ColdStart"
+        summary="The first foreground after the activity was created
+                 (including activity recreation). May be recorded twice on a
+                 single cold start when the Feature Engagement tracker
+                 initializes before the first foreground callback (first with
+                 unknown background time, then again on foreground)."/>
+    <variant name="WarmStart"
+        summary="A later foreground of the same activity."/>
+  </token>
+</histogram>
+
 <histogram name="Notifications.UsingSystemNotificationCenter"
     enum="BooleanSystemNotifications" expires_after="never">
 <!-- expires-never: core to the notification user experience. -->

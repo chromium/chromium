@@ -35,6 +35,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.ChromeInactivityTracker.InactivityObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -46,6 +47,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tips.TipsOptInCoordinator;
+import org.chromium.chrome.browser.tips.TipsUtils;
+import org.chromium.chrome.browser.tips.TipsUtils.TipsOptInPromoTriggerOutcome;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -69,6 +72,12 @@ import java.util.function.Supplier;
 })
 public class ForegroundPromoControllerUnitTest {
     private static final long TIME_IN_BACKGROUND_MS = TimeUnit.HOURS.toMillis(5);
+    private static final String COLD_START_HISTOGRAM =
+            TipsUtils.TRIGGER_OUTCOME_HISTOGRAM_PREFIX
+                    + TipsUtils.TRIGGER_OUTCOME_COLD_START_SUFFIX;
+    private static final String WARM_START_HISTOGRAM =
+            TipsUtils.TRIGGER_OUTCOME_HISTOGRAM_PREFIX
+                    + TipsUtils.TRIGGER_OUTCOME_WARM_START_SUFFIX;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -171,6 +180,77 @@ public class ForegroundPromoControllerUnitTest {
 
         assertNotNull(mController.getGlicPromoCoordinatorForTesting());
         assertTrue(mTipsPromoTimes.isEmpty());
+    }
+
+    @Test
+    public void testPromosOnForeground_GlicPromoShown_RecordsTriggerOutcome() {
+        setUpGlicPromoToShow();
+        createController();
+        InactivityObserver observer = deliverInactivityTracker();
+
+        // The constructor-path evaluation and the first onForegrounded() are both cold starts.
+        HistogramWatcher coldStartWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                COLD_START_HISTOGRAM,
+                                TipsOptInPromoTriggerOutcome.SKIPPED_FOR_GLIC_PROMO,
+                                2)
+                        .expectNoRecords(WARM_START_HISTOGRAM)
+                        .build();
+        deliverTrackerInitialized(/* initialized= */ true);
+        // Showing the Glic promo marks it as evaluated; clear that so it wins again.
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
+        observer.onForegrounded(TIME_IN_BACKGROUND_MS);
+        coldStartWatcher.assertExpected();
+
+        // Any later foreground is a warm start.
+        HistogramWatcher warmStartWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                WARM_START_HISTOGRAM,
+                                TipsOptInPromoTriggerOutcome.SKIPPED_FOR_GLIC_PROMO)
+                        .expectNoRecords(COLD_START_HISTOGRAM)
+                        .build();
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
+        observer.onForegrounded(TIME_IN_BACKGROUND_MS);
+        warmStartWatcher.assertExpected();
+        assertTrue(mTipsPromoTimes.isEmpty());
+    }
+
+    @Test
+    public void testTipsOptInPromo_RecordsColdAndWarmStartOutcomes() {
+        mController =
+                new ForegroundPromoController(
+                        mActivity,
+                        mProfileSupplier,
+                        mInactivityTrackerSupplier,
+                        mTrackerInitializedSupplier,
+                        mBottomSheetControllerSupplier,
+                        mSnackbarManagerSupplier);
+        InactivityObserver observer = deliverInactivityTracker();
+
+        // First foreground forwards isColdStart=true to TipsUtils.
+        HistogramWatcher coldStartWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                COLD_START_HISTOGRAM,
+                                TipsOptInPromoTriggerOutcome.SKIPPED_FEATURE_DISABLED)
+                        .expectNoRecords(WARM_START_HISTOGRAM)
+                        .build();
+        observer.onForegrounded(TIME_IN_BACKGROUND_MS);
+        deliverTrackerInitialized(/* initialized= */ true);
+        coldStartWatcher.assertExpected();
+
+        // Subsequent foregrounds forward isColdStart=false.
+        HistogramWatcher warmStartWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                WARM_START_HISTOGRAM,
+                                TipsOptInPromoTriggerOutcome.SKIPPED_FEATURE_DISABLED)
+                        .expectNoRecords(COLD_START_HISTOGRAM)
+                        .build();
+        observer.onForegrounded(TIME_IN_BACKGROUND_MS);
+        warmStartWatcher.assertExpected();
     }
 
     @Test

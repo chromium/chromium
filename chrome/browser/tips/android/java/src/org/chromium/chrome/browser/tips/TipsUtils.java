@@ -18,11 +18,13 @@ import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
@@ -57,6 +59,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,6 +76,68 @@ public class TipsUtils {
 
     /** The minimum number of hours the app must be backgrounded before showing the promo. */
     @VisibleForTesting public static final int APP_BACKGROUNDED_HOURS_FOR_PROMO = 4;
+
+    /**
+     * Prefix of the histogram recording the outcome of each foreground evaluation of the Tips
+     * opt-in promo. Suffixed with {@link #TRIGGER_OUTCOME_COLD_START_SUFFIX} or {@link
+     * #TRIGGER_OUTCOME_WARM_START_SUFFIX}.
+     */
+    @VisibleForTesting
+    public static final String TRIGGER_OUTCOME_HISTOGRAM_PREFIX =
+            "Notifications.Tips.OptInPromo.TriggerOutcome";
+
+    @VisibleForTesting public static final String TRIGGER_OUTCOME_COLD_START_SUFFIX = ".ColdStart";
+    @VisibleForTesting public static final String TRIGGER_OUTCOME_WARM_START_SUFFIX = ".WarmStart";
+
+    /**
+     * Why a foreground evaluation of the Tips opt-in promo did or did not request the sheet.
+     * Recorded once per evaluation.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused.
+     */
+    // LINT.IfChange(TipsOptInPromoTriggerOutcome)
+    @IntDef({
+        TipsOptInPromoTriggerOutcome.SHOWN,
+        TipsOptInPromoTriggerOutcome.SKIPPED_FOR_GLIC_PROMO,
+        TipsOptInPromoTriggerOutcome.SKIPPED_FEATURE_DISABLED,
+        TipsOptInPromoTriggerOutcome.SKIPPED_UNSUPPORTED_DEVICE,
+        TipsOptInPromoTriggerOutcome.SKIPPED_APP_NOTIFICATIONS_DISABLED,
+        TipsOptInPromoTriggerOutcome.SKIPPED_CHANNEL_ALREADY_CREATED,
+        TipsOptInPromoTriggerOutcome.SKIPPED_ALREADY_ACCEPTED,
+        TipsOptInPromoTriggerOutcome.SKIPPED_BACKGROUND_TIME_UNKNOWN,
+        TipsOptInPromoTriggerOutcome.SKIPPED_BACKGROUND_TIME_TOO_SHORT,
+        TipsOptInPromoTriggerOutcome.SKIPPED_SHOW_CAP_REACHED,
+        TipsOptInPromoTriggerOutcome.SKIPPED_COOLDOWN_NOT_PASSED,
+        TipsOptInPromoTriggerOutcome.SKIPPED_ACTIVITY_INVALID,
+        TipsOptInPromoTriggerOutcome.SKIPPED_NULL_PROFILE,
+        TipsOptInPromoTriggerOutcome.SKIPPED_BY_FEATURE_ENGAGEMENT,
+        TipsOptInPromoTriggerOutcome.BOTTOM_SHEET_SUPPRESSED,
+        TipsOptInPromoTriggerOutcome.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TipsOptInPromoTriggerOutcome {
+        int SHOWN = 0;
+        int SKIPPED_FOR_GLIC_PROMO = 1;
+        int SKIPPED_FEATURE_DISABLED = 2;
+        int SKIPPED_UNSUPPORTED_DEVICE = 3;
+        int SKIPPED_APP_NOTIFICATIONS_DISABLED = 4;
+        int SKIPPED_CHANNEL_ALREADY_CREATED = 5;
+        int SKIPPED_ALREADY_ACCEPTED = 6;
+        int SKIPPED_BACKGROUND_TIME_UNKNOWN = 7;
+        int SKIPPED_BACKGROUND_TIME_TOO_SHORT = 8;
+        int SKIPPED_SHOW_CAP_REACHED = 9;
+        int SKIPPED_COOLDOWN_NOT_PASSED = 10;
+        int SKIPPED_ACTIVITY_INVALID = 11;
+        int SKIPPED_NULL_PROFILE = 12;
+        int SKIPPED_BY_FEATURE_ENGAGEMENT = 13;
+        int BOTTOM_SHEET_SUPPRESSED = 14;
+
+        // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 15;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:TipsNotificationsOptInPromoTriggerOutcome)
 
     // LINT.IfChange(TipsShownPrefs)
     public static final String ENHANCED_SAFE_BROWSING_SHOWN =
@@ -696,7 +762,8 @@ public class TipsUtils {
     }
 
     /**
-     * Checks criteria and potentially shows the Tips opt-in promo bottom sheet.
+     * Checks criteria and potentially shows the Tips opt-in promo bottom sheet. Records the outcome
+     * of the evaluation to {@link #TRIGGER_OUTCOME_HISTOGRAM_PREFIX}.
      *
      * @param activity The current {@link Activity}.
      * @param profile The current {@link Profile}, or null if unavailable.
@@ -704,6 +771,7 @@ public class TipsUtils {
      * @param snackbarManager The {@link SnackbarManager} to use.
      * @param sharedPreferences The {@link SharedPreferencesManager} to use.
      * @param timeSinceLastBackgroundedMs The time since the app was last backgrounded.
+     * @param isColdStart Whether this is the first foreground since the activity was created.
      * @param onShowCallback Callback called when the coordinator is created and shown.
      */
     public static void maybeShowTipsOptInPromo(
@@ -713,47 +781,96 @@ public class TipsUtils {
             SnackbarManager snackbarManager,
             SharedPreferencesManager sharedPreferences,
             long timeSinceLastBackgroundedMs,
+            boolean isColdStart,
             Callback<TipsOptInCoordinator> onShowCallback) {
-        if (isTipsNotificationsFeatureAvailable()) {
-            // Skip users with Chrome notifications off, since accepting would only send them to
-            // system settings. Checked here to avoid the asynchronous channel lookup.
-            if (!shouldAlwaysShowOptInPromo() && !areAppNotificationsEnabled()) return;
-            TipsUtils.isTipsChannelCreated(
-                    (channelCreated) -> {
-                        if (shouldShowTipsOptInPromo(
-                                channelCreated, sharedPreferences, timeSinceLastBackgroundedMs)) {
-                            if (!isActivityValid(activity)) {
-                                return;
-                            }
-
-                            Tracker tracker = null;
-                            if (!shouldAlwaysShowOptInPromo()
-                                    && TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
-                                if (profile == null) {
-                                    return;
-                                }
-                                tracker = TrackerFactory.getTrackerForProfile(profile);
-                                FeatureProperties featureProperties =
-                                        new FeatureProperties(UiFormat.BOTTOM_SHEET);
-                                if (!tracker.shouldTriggerHelpUi(
-                                        FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE,
-                                        featureProperties)) {
-                                    return;
-                                }
-                            }
-
-                            TipsOptInCoordinator coordinator =
-                                    new TipsOptInCoordinator(
-                                            activity,
-                                            bottomSheetController,
-                                            snackbarManager,
-                                            sharedPreferences,
-                                            tracker);
-                            coordinator.showBottomSheet();
-                            onShowCallback.onResult(coordinator);
-                        }
-                    });
+        if (!ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
+            recordTipsOptInPromoTriggerOutcome(
+                    TipsOptInPromoTriggerOutcome.SKIPPED_FEATURE_DISABLED, isColdStart);
+            return;
         }
+        if (!isSupportedDeviceType()) {
+            recordTipsOptInPromoTriggerOutcome(
+                    TipsOptInPromoTriggerOutcome.SKIPPED_UNSUPPORTED_DEVICE, isColdStart);
+            return;
+        }
+        // Skip users with Chrome notifications off, since accepting would only send them to
+        // system settings. Checked here to avoid the asynchronous channel lookup.
+        if (!shouldAlwaysShowOptInPromo() && !areAppNotificationsEnabled()) {
+            recordTipsOptInPromoTriggerOutcome(
+                    TipsOptInPromoTriggerOutcome.SKIPPED_APP_NOTIFICATIONS_DISABLED, isColdStart);
+            return;
+        }
+
+        TipsUtils.isTipsChannelCreated(
+                (channelCreated) -> {
+                    @TipsOptInPromoTriggerOutcome
+                    int outcome =
+                            getTipsOptInPromoEligibility(
+                                    channelCreated, sharedPreferences, timeSinceLastBackgroundedMs);
+                    if (outcome != TipsOptInPromoTriggerOutcome.SHOWN) {
+                        recordTipsOptInPromoTriggerOutcome(outcome, isColdStart);
+                        return;
+                    }
+
+                    if (!isActivityValid(activity)) {
+                        recordTipsOptInPromoTriggerOutcome(
+                                TipsOptInPromoTriggerOutcome.SKIPPED_ACTIVITY_INVALID, isColdStart);
+                        return;
+                    }
+
+                    Tracker tracker = null;
+                    if (!shouldAlwaysShowOptInPromo()
+                            && TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
+                        if (profile == null) {
+                            recordTipsOptInPromoTriggerOutcome(
+                                    TipsOptInPromoTriggerOutcome.SKIPPED_NULL_PROFILE, isColdStart);
+                            return;
+                        }
+                        tracker = TrackerFactory.getTrackerForProfile(profile);
+                        FeatureProperties featureProperties =
+                                new FeatureProperties(UiFormat.BOTTOM_SHEET);
+                        if (!tracker.shouldTriggerHelpUi(
+                                FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE,
+                                featureProperties)) {
+                            recordTipsOptInPromoTriggerOutcome(
+                                    TipsOptInPromoTriggerOutcome.SKIPPED_BY_FEATURE_ENGAGEMENT,
+                                    isColdStart);
+                            return;
+                        }
+                    }
+
+                    TipsOptInCoordinator coordinator =
+                            new TipsOptInCoordinator(
+                                    activity,
+                                    bottomSheetController,
+                                    snackbarManager,
+                                    sharedPreferences,
+                                    tracker);
+                    boolean shown = coordinator.showBottomSheet();
+                    recordTipsOptInPromoTriggerOutcome(
+                            shown
+                                    ? TipsOptInPromoTriggerOutcome.SHOWN
+                                    : TipsOptInPromoTriggerOutcome.BOTTOM_SHEET_SUPPRESSED,
+                            isColdStart);
+                    onShowCallback.onResult(coordinator);
+                });
+    }
+
+    /**
+     * Records the outcome of a foreground evaluation of the Tips opt-in promo.
+     *
+     * @param outcome The {@link TipsOptInPromoTriggerOutcome} of the evaluation.
+     * @param isColdStart Whether this is the first foreground since the activity was created.
+     */
+    public static void recordTipsOptInPromoTriggerOutcome(
+            @TipsOptInPromoTriggerOutcome int outcome, boolean isColdStart) {
+        RecordHistogram.recordEnumeratedHistogram(
+                TRIGGER_OUTCOME_HISTOGRAM_PREFIX
+                        + (isColdStart
+                                ? TRIGGER_OUTCOME_COLD_START_SUFFIX
+                                : TRIGGER_OUTCOME_WARM_START_SUFFIX),
+                outcome,
+                TipsOptInPromoTriggerOutcome.NUM_ENTRIES);
     }
 
     private static boolean isActivityValid(Activity activity) {
@@ -773,36 +890,62 @@ public class TipsUtils {
             boolean tipsChannelCreated,
             SharedPreferencesManager sharedPreferences,
             long timeSinceLastBackgroundedMs) {
+        return getTipsOptInPromoEligibility(
+                        tipsChannelCreated, sharedPreferences, timeSinceLastBackgroundedMs)
+                == TipsOptInPromoTriggerOutcome.SHOWN;
+    }
+
+    /**
+     * Evaluates the state-based criteria for the opt-in promo.
+     *
+     * @return {@link TipsOptInPromoTriggerOutcome#SHOWN} if the promo is eligible so far, else the
+     *     skip reason.
+     */
+    private static @TipsOptInPromoTriggerOutcome int getTipsOptInPromoEligibility(
+            boolean tipsChannelCreated,
+            SharedPreferencesManager sharedPreferences,
+            long timeSinceLastBackgroundedMs) {
         if (shouldAlwaysShowOptInPromo()) {
-            return true;
+            return TipsOptInPromoTriggerOutcome.SHOWN;
         }
 
         // Skip users who already made a choice.
-        if (tipsChannelCreated
-                || sharedPreferences.readBoolean(
-                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false)
-                || timeSinceLastBackgroundedMs
-                        <= TimeUnit.HOURS.toMillis(APP_BACKGROUNDED_HOURS_FOR_PROMO)) {
-            return false;
+        if (tipsChannelCreated) {
+            return TipsOptInPromoTriggerOutcome.SKIPPED_CHANNEL_ALREADY_CREATED;
+        }
+        if (sharedPreferences.readBoolean(
+                ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false)) {
+            return TipsOptInPromoTriggerOutcome.SKIPPED_ALREADY_ACCEPTED;
+        }
+        if (timeSinceLastBackgroundedMs < 0) {
+            return TipsOptInPromoTriggerOutcome.SKIPPED_BACKGROUND_TIME_UNKNOWN;
+        }
+        if (timeSinceLastBackgroundedMs
+                <= TimeUnit.HOURS.toMillis(APP_BACKGROUNDED_HOURS_FOR_PROMO)) {
+            return TipsOptInPromoTriggerOutcome.SKIPPED_BACKGROUND_TIME_TOO_SHORT;
         }
 
         // When the interruptive IPH cooldown group is enabled, frequency and cooldown limits are
         // enforced by Feature Engagement instead of SharedPreferences.
         if (TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
-            return true;
+            return TipsOptInPromoTriggerOutcome.SHOWN;
+        }
+
+        if (sharedPreferences.readInt(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, 0)
+                >= getMaxTipsOptInPromoShowCount()) {
+            return TipsOptInPromoTriggerOutcome.SKIPPED_SHOW_CAP_REACHED;
         }
 
         long lastShownTimeMs =
                 sharedPreferences.readLong(
                         ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP,
                         0);
-        boolean cooldownPassed =
-                (System.currentTimeMillis() - lastShownTimeMs)
-                        >= TimeUnit.DAYS.toMillis(getTipsOptInPromoCooldownDays());
+        if ((System.currentTimeMillis() - lastShownTimeMs)
+                < TimeUnit.DAYS.toMillis(getTipsOptInPromoCooldownDays())) {
+            return TipsOptInPromoTriggerOutcome.SKIPPED_COOLDOWN_NOT_PASSED;
+        }
 
-        return sharedPreferences.readInt(
-                                ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, 0)
-                        < getMaxTipsOptInPromoShowCount()
-                && cooldownPassed;
+        return TipsOptInPromoTriggerOutcome.SHOWN;
     }
 }

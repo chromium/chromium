@@ -116,7 +116,7 @@ public class TipsOptInCoordinatorUnitTest {
                         "Notifications.Tips.OptInPromo.EventType3",
                         TipsOptInCoordinator.OptInPromoEventType.SHOWN);
 
-        mTipsOptInCoordinator.showBottomSheet();
+        assertTrue(mTipsOptInCoordinator.showBottomSheet());
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
 
         // Nothing is counted until the sheet opens.
@@ -549,7 +549,7 @@ public class TipsOptInCoordinatorUnitTest {
     public void testTrackerDismissedWhenShowBottomSheetFails() {
         when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
 
-        mTipsOptInCoordinator.showBottomSheet();
+        assertFalse(mTipsOptInCoordinator.showBottomSheet());
         verify(mTracker).dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
     }
 

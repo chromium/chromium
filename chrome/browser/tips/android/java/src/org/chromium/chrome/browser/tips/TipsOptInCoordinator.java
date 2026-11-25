@@ -180,11 +180,15 @@ public class TipsOptInCoordinator {
     /**
      * Requests the promo. The caller is responsible for all eligibility checks. The show is counted
      * once the sheet actually opens, since a request can be queued behind another sheet or dropped.
+     *
+     * @return Whether the bottom sheet showed the content immediately (false if suppressed).
      */
-    public void showBottomSheet() {
+    public boolean showBottomSheet() {
         if (!mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true)) {
             notifyTrackerDismissed();
+            return false;
         }
+        return true;
     }
 
     /** Counts the show against the promo limits once the sheet opens. */

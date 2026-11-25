@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tips.TipsOptInCoordinator;
 import org.chromium.chrome.browser.tips.TipsUtils;
+import org.chromium.chrome.browser.tips.TipsUtils.TipsOptInPromoTriggerOutcome;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -46,6 +47,9 @@ public class ForegroundPromoController {
     // stored timestamp before a promo evaluation deferred on tracker initialization runs.
     private long mTimeSinceLastBackgroundedMs =
             ChromeInactivityTracker.UNKNOWN_LAST_BACKGROUNDED_TIME;
+    // Number of onForegrounded() calls so far. The first one belongs to the activity's initial
+    // start, so promo evaluations before or during it count as a cold start.
+    private int mForegroundCount;
     private Callback<Long> mTipsOptInPromoShowCallback = this::maybeShowTipsOptInPromo;
     private @Nullable TipsOptInCoordinator mTipsOptInCoordinator;
     private @Nullable GlicPromoCoordinator mGlicPromoCoordinator;
@@ -83,6 +87,7 @@ public class ForegroundPromoController {
                         // new foreground session has started and promos should be re-evaluated.
                         mPromosEvaluatedForCurrentForeground = false;
                         mTimeSinceLastBackgroundedMs = timeSinceLastBackgroundedMs;
+                        mForegroundCount++;
                         mShowPromoCallback.run();
                     }
                 };
@@ -126,10 +131,17 @@ public class ForegroundPromoController {
         mPromosEvaluatedForCurrentForeground = true;
 
         if (maybeShowGlicPromo()) {
+            TipsUtils.recordTipsOptInPromoTriggerOutcome(
+                    TipsOptInPromoTriggerOutcome.SKIPPED_FOR_GLIC_PROMO, isColdStart());
             return;
         }
 
         mTipsOptInPromoShowCallback.onResult(mTimeSinceLastBackgroundedMs);
+    }
+
+    /** Whether promos are being evaluated for the first foreground since the activity started. */
+    private boolean isColdStart() {
+        return mForegroundCount <= 1;
     }
 
     private void maybeShowTipsOptInPromo(long timeSinceLastBackgroundedMs) {
@@ -145,6 +157,7 @@ public class ForegroundPromoController {
                 snackbarManager,
                 ChromeSharedPreferences.getInstance(),
                 timeSinceLastBackgroundedMs,
+                isColdStart(),
                 (coordinator) -> mTipsOptInCoordinator = coordinator);
     }
 

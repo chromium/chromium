@@ -42,10 +42,12 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProviderSupplier;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
@@ -53,6 +55,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.chrome.browser.tips.TipsUtils.TipsOptInPromoTriggerOutcome;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -60,6 +63,8 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Map;
@@ -69,6 +74,9 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
 public class TipsUtilsUnitTest {
+    private static final long ELIGIBLE_TIME_IN_BACKGROUND_MS =
+            TimeUnit.HOURS.toMillis(TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1);
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SharedPreferencesManager mSharedPreferences;
@@ -80,6 +88,8 @@ public class TipsUtilsUnitTest {
     @Mock private ProfileProvider mProfileProvider;
     @Mock private TipsPromoHandler mTipsPromoHandler;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Tracker mTracker;
     @Mock private Callback<Boolean> mOnOptInComplete;
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
 
@@ -90,6 +100,7 @@ public class TipsUtilsUnitTest {
     public void setUp() {
         ChannelsInitializer.resetForTesting();
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mWindowAndroid = new WindowAndroid(mActivity, /* occlusionTrackingAllowed= */ false);
         TipsSchedulerBridgeJni.setInstanceForTesting(mTipsSchedulerBridgeJni);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
@@ -510,43 +521,221 @@ public class TipsUtilsUnitTest {
         ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
     })
     public void testMaybeShowTipsOptInPromo_CooldownGroupEnabledAndNullProfile_DoesNotShow() {
-        maybeShowTipsOptInPromo(/* profile= */ null);
+        HistogramWatcher watcher =
+                expectColdStartOutcome(TipsOptInPromoTriggerOutcome.SKIPPED_NULL_PROFILE);
+
+        maybeShowTipsOptInPromo(/* profile= */ null, ELIGIBLE_TIME_IN_BACKGROUND_MS);
 
         verify(mOnShowCallback, never()).onResult(any());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS,
+        ChromeFeatureList.USER_EDUCATION_FRAMEWORK,
+        ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
+    })
+    public void testMaybeShowTipsOptInPromo_FeatureEngagementRefuses_RecordsOutcome() {
+        TrackerFactory.setTrackerForTests(mTracker);
+        when(mTracker.shouldTriggerHelpUi(
+                        eq(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE), any()))
+                .thenReturn(false);
+        HistogramWatcher watcher =
+                expectColdStartOutcome(TipsOptInPromoTriggerOutcome.SKIPPED_BY_FEATURE_ENGAGEMENT);
+
+        maybeShowTipsOptInPromo(mProfile, ELIGIBLE_TIME_IN_BACKGROUND_MS);
+
+        verify(mOnShowCallback, never()).onResult(any());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testMaybeShowTipsOptInPromo_FeatureDisabled_RecordsOutcome() {
+        HistogramWatcher watcher =
+                expectColdStartOutcome(TipsOptInPromoTriggerOutcome.SKIPPED_FEATURE_DISABLED);
+
+        maybeShowTipsOptInPromo(mProfile, ELIGIBLE_TIME_IN_BACKGROUND_MS);
+
+        watcher.assertExpected();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
-    @DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
-    public void testMaybeShowTipsOptInPromo_ConditionsMet_Shows() {
-        maybeShowTipsOptInPromo(mProfile);
+    public void testMaybeShowTipsOptInPromo_UnsupportedDevice_RecordsOutcome() {
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        HistogramWatcher watcher =
+                expectColdStartOutcome(TipsOptInPromoTriggerOutcome.SKIPPED_UNSUPPORTED_DEVICE);
 
-        verify(mOnShowCallback).onResult(any());
+        maybeShowTipsOptInPromo(mProfile, ELIGIBLE_TIME_IN_BACKGROUND_MS);
+
+        watcher.assertExpected();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
-    @DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
     public void testMaybeShowTipsOptInPromo_AppNotificationsDisabled_DoesNotShow() {
         NotificationProxyUtils.setNotificationEnabledForTest(false);
+        HistogramWatcher watcher =
+                expectColdStartOutcome(
+                        TipsOptInPromoTriggerOutcome.SKIPPED_APP_NOTIFICATIONS_DISABLED);
 
-        maybeShowTipsOptInPromo(mProfile);
+        maybeShowTipsOptInPromo(mProfile, ELIGIBLE_TIME_IN_BACKGROUND_MS);
 
         verify(mOnShowCallback, never()).onResult(any());
+        watcher.assertExpected();
     }
 
-    private void maybeShowTipsOptInPromo(@Nullable Profile profile) {
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testMaybeShowTipsOptInPromo_ChannelAlreadyCreated_RecordsOutcome() {
+        new ChannelsInitializer(
+                        BaseNotificationManagerProxyFactory.create(),
+                        ChromeChannelDefinitions.getInstance(),
+                        mActivity.getResources())
+                .ensureInitialized(ChannelId.TIPS_V2);
+        ShadowLooper.idleMainLooper();
+        HistogramWatcher watcher =
+                expectColdStartOutcome(
+                        TipsOptInPromoTriggerOutcome.SKIPPED_CHANNEL_ALREADY_CREATED);
+
+        maybeShowTipsOptInPromo(mProfile, ELIGIBLE_TIME_IN_BACKGROUND_MS);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testMaybeShowTipsOptInPromo_AlreadyAccepted_RecordsOutcome() {
+        when(mSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false))
+                .thenReturn(true);
+        HistogramWatcher watcher =
+                expectColdStartOutcome(TipsOptInPromoTriggerOutcome.SKIPPED_ALREADY_ACCEPTED);
+
+        maybeShowTipsOptInPromo(mProfile, ELIGIBLE_TIME_IN_BACKGROUND_MS);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testMaybeShowTipsOptInPromo_BackgroundTimeUnknown_RecordsOutcome() {
+        HistogramWatcher watcher =
+                expectColdStartOutcome(
+                        TipsOptInPromoTriggerOutcome.SKIPPED_BACKGROUND_TIME_UNKNOWN);
+
+        maybeShowTipsOptInPromo(mProfile, /* timeSinceLastBackgroundedMs= */ -1);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testMaybeShowTipsOptInPromo_BackgroundTimeTooShort_RecordsOutcome() {
+        HistogramWatcher watcher =
+                expectColdStartOutcome(
+                        TipsOptInPromoTriggerOutcome.SKIPPED_BACKGROUND_TIME_TOO_SHORT);
+
+        maybeShowTipsOptInPromo(
+                mProfile, TimeUnit.HOURS.toMillis(TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO - 1));
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testMaybeShowTipsOptInPromo_ShowCapReached_RecordsOutcome() {
+        when(mSharedPreferences.readInt(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, 0))
+                .thenReturn(TipsUtils.getMaxTipsOptInPromoShowCount());
+        HistogramWatcher watcher =
+                expectColdStartOutcome(TipsOptInPromoTriggerOutcome.SKIPPED_SHOW_CAP_REACHED);
+
+        maybeShowTipsOptInPromo(mProfile, ELIGIBLE_TIME_IN_BACKGROUND_MS);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testMaybeShowTipsOptInPromo_CooldownNotPassed_RecordsOutcome() {
+        when(mSharedPreferences.readLong(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP,
+                        0))
+                .thenReturn(System.currentTimeMillis());
+        HistogramWatcher watcher =
+                expectColdStartOutcome(TipsOptInPromoTriggerOutcome.SKIPPED_COOLDOWN_NOT_PASSED);
+
+        maybeShowTipsOptInPromo(mProfile, ELIGIBLE_TIME_IN_BACKGROUND_MS);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testMaybeShowTipsOptInPromo_ActivityFinishing_RecordsOutcome() {
+        mActivity.finish();
+        HistogramWatcher watcher =
+                expectColdStartOutcome(TipsOptInPromoTriggerOutcome.SKIPPED_ACTIVITY_INVALID);
+
+        maybeShowTipsOptInPromo(mProfile, ELIGIBLE_TIME_IN_BACKGROUND_MS);
+
+        verify(mOnShowCallback, never()).onResult(any());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testMaybeShowTipsOptInPromo_ConditionsMet_Shows() {
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        HistogramWatcher watcher = expectColdStartOutcome(TipsOptInPromoTriggerOutcome.SHOWN);
+
+        maybeShowTipsOptInPromo(mProfile, ELIGIBLE_TIME_IN_BACKGROUND_MS);
+
+        verify(mOnShowCallback).onResult(any());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testMaybeShowTipsOptInPromo_BottomSheetSuppressed_RecordsOutcome() {
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
+        HistogramWatcher watcher =
+                expectColdStartOutcome(TipsOptInPromoTriggerOutcome.BOTTOM_SHEET_SUPPRESSED);
+
+        maybeShowTipsOptInPromo(mProfile, ELIGIBLE_TIME_IN_BACKGROUND_MS);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testMaybeShowTipsOptInPromo_WarmStart_RecordsWarmStartSuffix() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                TipsUtils.TRIGGER_OUTCOME_HISTOGRAM_PREFIX
+                                        + TipsUtils.TRIGGER_OUTCOME_WARM_START_SUFFIX,
+                                TipsOptInPromoTriggerOutcome.SKIPPED_BACKGROUND_TIME_UNKNOWN)
+                        .expectNoRecords(
+                                TipsUtils.TRIGGER_OUTCOME_HISTOGRAM_PREFIX
+                                        + TipsUtils.TRIGGER_OUTCOME_COLD_START_SUFFIX)
+                        .build();
+
         TipsUtils.maybeShowTipsOptInPromo(
                 mActivity,
-                profile,
-                mock(BottomSheetController.class),
-                mock(SnackbarManager.class),
+                mProfile,
+                mBottomSheetController,
+                mSnackbarManager,
                 mSharedPreferences,
-                /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
-                        TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1),
+                /* timeSinceLastBackgroundedMs= */ -1,
+                /* isColdStart= */ false,
                 mOnShowCallback);
-        // Let the asynchronous channel lookup finish.
         ShadowLooper.idleMainLooper();
+
+        watcher.assertExpected();
     }
 
     @Test
@@ -869,6 +1058,28 @@ public class TipsUtilsUnitTest {
         OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
         profileProviderSupplier.set(mProfileProvider);
         TipsUtils.scheduleOrCancelTipsNotification(profileProviderSupplier, mWindowAndroid);
+        ShadowLooper.idleMainLooper();
+    }
+
+    private HistogramWatcher expectColdStartOutcome(@TipsOptInPromoTriggerOutcome int outcome) {
+        return HistogramWatcher.newSingleRecordWatcher(
+                TipsUtils.TRIGGER_OUTCOME_HISTOGRAM_PREFIX
+                        + TipsUtils.TRIGGER_OUTCOME_COLD_START_SUFFIX,
+                outcome);
+    }
+
+    private void maybeShowTipsOptInPromo(
+            @Nullable Profile profile, long timeSinceLastBackgroundedMs) {
+        TipsUtils.maybeShowTipsOptInPromo(
+                mActivity,
+                profile,
+                mBottomSheetController,
+                mSnackbarManager,
+                mSharedPreferences,
+                timeSinceLastBackgroundedMs,
+                /* isColdStart= */ true,
+                mOnShowCallback);
+        // Let the asynchronous channel lookup finish.
         ShadowLooper.idleMainLooper();
     }
 }
