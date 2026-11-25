@@ -84,6 +84,16 @@ class MockOnDeviceWebSpeechRecognitionService
     return !speech_recognition_contexts_.empty();
   }
 
+  const media::mojom::SpeechRecognitionOptions* last_recognizer_options()
+      const {
+    return last_recognizer_options_.get();
+  }
+
+  const media::mojom::SpeechRecognitionOptions*
+  last_web_speech_recognizer_options() const {
+    return last_web_speech_recognizer_options_.get();
+  }
+
   base::WeakPtr<MockOnDeviceWebSpeechRecognitionService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -101,6 +111,8 @@ class MockOnDeviceWebSpeechRecognitionService
       recognizer_client_remote_;
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizer>
       recognizer_receiver_{this};
+  media::mojom::SpeechRecognitionOptionsPtr last_recognizer_options_;
+  media::mojom::SpeechRecognitionOptionsPtr last_web_speech_recognizer_options_;
 
   base::WeakPtrFactory<MockOnDeviceWebSpeechRecognitionService> weak_factory_{
       this};

@@ -875,7 +875,8 @@ int SpeechRecognitionManagerImpl::CreateSession(
 
     media::mojom::SpeechRecognitionOptionsPtr options =
         media::mojom::SpeechRecognitionOptions::New();
-    options->recognition_mode = media::mojom::SpeechRecognitionMode::kCaption;
+    options->recognition_mode =
+        SodaSpeechRecognitionEngineImpl::GetRecognitionModeForConfig(config);
     options->enable_formatting = config.unspoken_punctuation;
     options->language = config.language;
     options->recognizer_client_type =

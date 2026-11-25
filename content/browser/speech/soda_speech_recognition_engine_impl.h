@@ -45,6 +45,11 @@ class CONTENT_EXPORT SodaSpeechRecognitionEngineImpl
   SodaSpeechRecognitionEngineImpl& operator=(
       const SodaSpeechRecognitionEngineImpl&) = delete;
 
+  // Returns `kIme` when `config` includes an HTTP(S) `/reserved/spoken_punc`
+  // grammar URL, and `kCaption` otherwise.
+  static media::mojom::SpeechRecognitionMode GetRecognitionModeForConfig(
+      const SpeechRecognitionSessionConfig& config);
+
   // Sets the delegate for tests.
   static void SetSpeechRecognitionManagerDelegateForTesting(
       SpeechRecognitionManagerDelegate*);

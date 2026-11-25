@@ -4,6 +4,7 @@
 
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -22,8 +23,10 @@
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
+#include "media/mojo/mojom/speech_recognition_grammar.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -52,6 +55,24 @@ SodaSpeechRecognitionEngineImpl::SodaSpeechRecognitionEngineImpl(
 }
 
 SodaSpeechRecognitionEngineImpl::~SodaSpeechRecognitionEngineImpl() = default;
+
+// static
+media::mojom::SpeechRecognitionMode
+SodaSpeechRecognitionEngineImpl::GetRecognitionModeForConfig(
+    const SpeechRecognitionSessionConfig& config) {
+  // Mirrors the cloud speech service's `/reserved/spoken_punc` grammar
+  // convention: `kIme` selects SODA's dictation mode, which converts spoken
+  // punctuation words into symbols.
+  const bool has_spoken_punctuation_grammar = std::ranges::any_of(
+      config.grammars,
+      [](const media::mojom::SpeechRecognitionGrammar& grammar) {
+        return grammar.url.SchemeIsHTTPOrHTTPS() &&
+               grammar.url.path() == "/reserved/spoken_punc";
+      });
+  return has_spoken_punctuation_grammar
+             ? media::mojom::SpeechRecognitionMode::kIme
+             : media::mojom::SpeechRecognitionMode::kCaption;
+}
 
 bool SodaSpeechRecognitionEngineImpl::Initialize() {
   if (speech_recognition_context_.is_bound()) {
@@ -84,7 +105,7 @@ bool SodaSpeechRecognitionEngineImpl::Initialize() {
           speech_recognition_context_.BindNewPipeAndPassReceiver();
   media::mojom::SpeechRecognitionOptionsPtr options =
       media::mojom::SpeechRecognitionOptions::New();
-  options->recognition_mode = media::mojom::SpeechRecognitionMode::kCaption;
+  options->recognition_mode = GetRecognitionModeForConfig(config_);
   options->enable_formatting = config_.unspoken_punctuation;
   options->recognizer_client_type =
       media::mojom::RecognizerClientType::kLiveCaption;

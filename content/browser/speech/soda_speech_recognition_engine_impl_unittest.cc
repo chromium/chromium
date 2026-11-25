@@ -20,6 +20,7 @@
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 const char kFirstSpeechResult[] = "the brown fox";
@@ -478,6 +479,85 @@ TEST_F(SodaSpeechRecognitionEngineImplTest,
   error_ = media::mojom::SpeechRecognitionErrorCode::kNone;
   client_under_test_->StartRecognition();
   EXPECT_EQ(media::mojom::SpeechRecognitionErrorCode::kAborted, error_);
+}
+
+TEST(SodaSpeechRecognitionEngineImplModeTest, GetRecognitionModeForConfig) {
+  using Mode = media::mojom::SpeechRecognitionMode;
+  struct Case {
+    const char* name;
+    std::vector<const char*> grammar_urls;
+    Mode expected_mode;
+  };
+
+  const Case kCases[] = {
+      {"https_spoken_punc",
+       {"https://example.com/reserved/spoken_punc"},
+       Mode::kIme},
+      {"http_spoken_punc",
+       {"http://example.com/reserved/spoken_punc"},
+       Mode::kIme},
+      {"query_and_fragment_ignored",
+       {"https://docs.google.com/reserved/spoken_punc?q=1#frag"},
+       Mode::kIme},
+      {"multiple_grammars_including_spoken_punc",
+       {"https://example.com/reserved/spoken_emoji",
+        "https://example.com/reserved/spoken_punc"},
+       Mode::kIme},
+      {"no_grammars", {}, Mode::kCaption},
+      {"slides_caption_grammar",
+       {"https://docs.google.com/reserved/condition/caption"},
+       Mode::kCaption},
+      {"spoken_emoji_only",
+       {"https://example.com/reserved/spoken_emoji"},
+       Mode::kCaption},
+      {"non_reserved_first_segment",
+       {"https://example.com/other/spoken_punc"},
+       Mode::kCaption},
+      {"too_few_path_segments",
+       {"https://example.com/spoken_punc"},
+       Mode::kCaption},
+      {"trailing_slash",
+       {"https://example.com/reserved/spoken_punc/"},
+       Mode::kCaption},
+      {"extra_leading_segment",
+       {"https://example.com/a/reserved/spoken_punc"},
+       Mode::kCaption},
+      {"non_http_scheme",
+       {"wss://example.com/reserved/spoken_punc"},
+       Mode::kCaption},
+      {"data_scheme_grammar_url",
+       {"data:text/plain,/reserved/spoken_punc"},
+       Mode::kCaption},
+      {"invalid_grammar_url", {""}, Mode::kCaption},
+  };
+
+  for (const Case& test_case : kCases) {
+    SCOPED_TRACE(test_case.name);
+    SpeechRecognitionSessionConfig config;
+    for (const char* grammar_url : test_case.grammar_urls) {
+      config.grammars.emplace_back(GURL(grammar_url), 1.0);
+    }
+    EXPECT_EQ(
+        SodaSpeechRecognitionEngineImpl::GetRecognitionModeForConfig(config),
+        test_case.expected_mode);
+  }
+}
+
+TEST_F(SodaSpeechRecognitionEngineImplTest,
+       InitializeUsesImeModeForSpokenPunctuationGrammar) {
+  SpeechRecognitionSessionConfig config;
+  config.language = "en-US";
+  config.grammars.emplace_back(GURL("https://example.com/reserved/spoken_punc"),
+                               1.0);
+
+  client_under_test_ = CreateSpeechRecognition(
+      config, fake_speech_recognition_mgr_delegate_.get(), false);
+  ASSERT_TRUE(client_under_test_->Initialize());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return mock_service_->last_recognizer_options() != nullptr; }));
+
+  EXPECT_EQ(mock_service_->last_recognizer_options()->recognition_mode,
+            media::mojom::SpeechRecognitionMode::kIme);
 }
 
 }  // namespace content

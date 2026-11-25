@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 #include "content/browser/speech/speech_recognition_manager_impl.h"
 
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,6 +32,7 @@
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -597,6 +602,41 @@ TEST_F(SpeechRecognitionManagerImplTest,
   SpeechRecognitionSessionConfig local_only_config = config;
   local_only_config.allow_cloud_fallback = false;
   EXPECT_TRUE(manager_->UseOnDeviceSpeechRecognition(local_only_config));
+}
+
+TEST_F(SpeechRecognitionManagerImplTest,
+       AudioForwarderUsesImeModeForSpokenPunctuationGrammar) {
+  SetDelegate(std::make_unique<FakeSpeechRecognitionManagerDelegate>(
+      mock_service_.get()));
+
+  SpeechRecognitionSessionConfig config;
+  config.on_device = true;
+  config.on_device_available = true;
+  config.allow_cloud_fallback = true;
+  config.language = "en-US";
+  config.grammars.emplace_back(GURL("https://example.com/reserved/spoken_punc"),
+                               1.0);
+  config.initial_context.global_id = main_rfh()->GetGlobalId();
+
+  mojo::Remote<media::mojom::SpeechRecognitionSession> session_remote;
+  mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+      client_remote;
+  auto client_receiver = client_remote.InitWithNewPipeAndPassReceiver();
+  mojo::Remote<media::mojom::SpeechRecognitionAudioForwarder> forwarder_remote;
+  EXPECT_EQ(0, manager_->CreateSession(
+                   config, session_remote.BindNewPipeAndPassReceiver(),
+                   std::move(client_remote),
+                   std::make_optional<SpeechRecognitionAudioForwarderConfig>(
+                       forwarder_remote.BindNewPipeAndPassReceiver(),
+                       /*channel_count=*/1,
+                       /*sample_rate=*/16000),
+                   /*can_render_frame_use_on_device=*/true));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return mock_service_->last_web_speech_recognizer_options() != nullptr;
+  }));
+  EXPECT_EQ(
+      mock_service_->last_web_speech_recognizer_options()->recognition_mode,
+      media::mojom::SpeechRecognitionMode::kIme);
 }
 
 }  // namespace content
