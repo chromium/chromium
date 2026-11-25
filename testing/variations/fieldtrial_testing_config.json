@@ -11203,24 +11203,6 @@
             ]
         }
     ],
-    "HeliosAureus": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledForegroundQuotaRefresh",
-                    "params": {
-                        "foreground_quota_refresh_enabled": "true"
-                    },
-                    "enable_features": [
-                        "GeminiAureus"
-                    ]
-                }
-            ]
-        }
-    ],
     "HeliosLive": [
         {
             "platforms": [
