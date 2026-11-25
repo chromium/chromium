@@ -55,6 +55,13 @@ struct ActorTaskOptions {
   // Whether navigations and critical actions performed during the task should
   // be excluded from Chrome history and critical action logging.
   bool skip_history_recording = false;
+
+  // Whether the task keeps its surfaces between calls to Act(). When false,
+  // the task clears its controlled surfaces, observed surfaces and additional
+  // tab observations each time Act() completes, including when a pause
+  // cancels the call. A surface added outside Act() stays until then. Only for
+  // clients that do not read tab observations after acting.
+  bool retain_tabs_after_act = true;
 };
 
 }  // namespace actor

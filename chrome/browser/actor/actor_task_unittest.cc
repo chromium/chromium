@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_surface_tab_helper.h"
+#include "chrome/browser/actor/actor_task_options.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/fake_tool_request.h"
@@ -206,7 +207,8 @@ class ActorTaskTest : public testing::Test {
   }
 
   ActorTask* CreateAdditionalTask(
-      ui::MockUiEventDispatcher** out_dispatcher = nullptr) {
+      ui::MockUiEventDispatcher** out_dispatcher = nullptr,
+      ActorTaskOptions options = {}) {
     auto dispatcher =
         std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
     ConfigureMockDispatcher(*dispatcher);
@@ -214,7 +216,6 @@ class ActorTaskTest : public testing::Test {
       *out_dispatcher = dispatcher.get();
     }
     auto* service = ActorKeyedService::Get(profile_.get());
-    ActorTaskOptions options;
     options.delegate = mock_delegate_.GetWeakPtr();
     TaskId task_id = service->CreateTaskForTesting(
         std::move(dispatcher), TestTaskSourceInfo(),
@@ -1598,6 +1599,218 @@ TEST_F(ActorTaskTest, AddTab_SucceedsAfterOwningTaskRemovesTabOrStops) {
   EXPECT_EQ(AddTabAndGetCode(*third_task, tab.GetHandle()),
             mojom::ActionResultCode::kOk);
   EXPECT_TRUE(third_task->HasTab(tab.GetHandle()));
+}
+
+TEST_F(ActorTaskTest, Act_StaysActingWhenCallbackStartsAnotherAct) {
+  base::test::TestFuture<DeprecatedToolCallback> second_invoke_future;
+  ActResultFuture second_future;
+
+  std::vector<std::unique_ptr<ToolRequest>> first_actions;
+  first_actions.push_back(std::make_unique<FakeToolRequest>(
+      base::BindOnce([](DeprecatedToolCallback callback) {
+        std::move(callback).Run(MakeOkResult());
+      }),
+      /*on_destroy=*/base::DoNothing()));
+  base::test::TestFuture<void> first_finished;
+  task_->Act(std::move(first_actions),
+             base::BindLambdaForTesting(
+                 [&](std::vector<ToolResultWithLatencyInfo> results,
+                     TabObservationStrategy strategy) {
+                   std::vector<std::unique_ptr<ToolRequest>> second_actions;
+                   second_actions.push_back(std::make_unique<FakeToolRequest>(
+                       second_invoke_future.GetCallback(),
+                       /*on_destroy=*/base::DoNothing()));
+                   task_->Act(std::move(second_actions),
+                              second_future.GetCallback());
+                   first_finished.SetValue();
+                 }));
+  ASSERT_TRUE(first_finished.Wait());
+
+  ASSERT_TRUE(second_invoke_future.Wait());
+  EXPECT_EQ(task_->GetState(), ActorTask::State::kActing);
+
+  second_invoke_future.Take().Run(MakeOkResult());
+  ASSERT_TRUE(second_future.Wait());
+  EXPECT_EQ(second_future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kOk);
+  EXPECT_EQ(task_->GetState(), ActorTask::State::kReflecting);
+}
+
+TEST_F(ActorTaskTest, Act_RemovesTabsOnCompletionWhenNotRetainingTabs) {
+  auto web_contents = CreateTestWebContents();
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("about:blank"));
+  TestTabState tab_state(web_contents.get());
+  tabs::TabHandle tab_handle = tab_state.tab.GetHandle();
+
+  ActorTaskOptions options;
+  options.retain_tabs_after_act = false;
+  ActorTask* non_retaining_task =
+      CreateAdditionalTask(/*out_dispatcher=*/nullptr, std::move(options));
+  ASSERT_NE(non_retaining_task, nullptr);
+
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future;
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+  actions.push_back(std::make_unique<FakeToolRequest>(
+      on_invoke_future.GetCallback(), /*on_destroy=*/base::DoNothing(),
+      ActorSurfaceHandle::From(tab_handle)));
+
+  bool had_tab_in_callback = true;
+  ActResultFuture act_future;
+  non_retaining_task->Act(
+      std::move(actions),
+      base::BindLambdaForTesting(
+          [&](std::vector<ToolResultWithLatencyInfo> results,
+              TabObservationStrategy strategy) {
+            had_tab_in_callback = non_retaining_task->HasTab(tab_handle);
+            act_future.GetCallback().Run(std::move(results),
+                                         std::move(strategy));
+          }));
+  ASSERT_TRUE(on_invoke_future.Wait());
+  EXPECT_TRUE(non_retaining_task->IsActingOnTab(tab_handle));
+  EXPECT_TRUE(web_contents->IsBeingCaptured());
+  EXPECT_EQ(AddTabAndGetCode(*task_, tab_handle),
+            mojom::ActionResultCode::kTabOwnedByAnotherTask);
+
+  on_invoke_future.Take().Run(MakeOkResult());
+  ASSERT_TRUE(act_future.Wait());
+  EXPECT_EQ(act_future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kOk);
+  EXPECT_FALSE(had_tab_in_callback);
+  EXPECT_EQ(non_retaining_task->GetState(), ActorTask::State::kReflecting);
+  EXPECT_TRUE(non_retaining_task->GetTabs().empty());
+  EXPECT_FALSE(web_contents->IsBeingCaptured());
+
+  ExpectTabAddedNotification(tab_handle);
+  EXPECT_EQ(AddTabAndGetCode(*task_, tab_handle), mojom::ActionResultCode::kOk);
+  EXPECT_EQ(ActOnTabAndGetCode(*non_retaining_task, tab_handle),
+            mojom::ActionResultCode::kTabOwnedByAnotherTask);
+}
+
+TEST_F(ActorTaskTest, Act_RemovesAddedTabsOnEarlyAddFailureWhenNotRetaining) {
+  tabs::MockTabInterface owned_tab;
+  AddTabAndVerify(owned_tab);
+
+  auto web_contents = CreateTestWebContents();
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("about:blank"));
+  TestTabState free_tab(web_contents.get());
+
+  ActorTaskOptions options;
+  options.retain_tabs_after_act = false;
+  ActorTask* non_retaining_task =
+      CreateAdditionalTask(/*out_dispatcher=*/nullptr, std::move(options));
+  ASSERT_NE(non_retaining_task, nullptr);
+
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+  for (tabs::TabHandle tab_handle :
+       {free_tab.tab.GetHandle(), owned_tab.GetHandle()}) {
+    actions.push_back(std::make_unique<FakeToolRequest>(
+        base::BindRepeating(
+            [](DeprecatedToolCallback) { ADD_FAILURE() << "Tool invoked"; }),
+        /*on_destroy=*/base::DoNothing(),
+        ActorSurfaceHandle::From(tab_handle)));
+  }
+  ActResultFuture act_future;
+  non_retaining_task->Act(std::move(actions), act_future.GetCallback());
+  ASSERT_TRUE(act_future.Wait());
+  EXPECT_EQ(act_future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kTabOwnedByAnotherTask);
+  EXPECT_TRUE(non_retaining_task->GetTabs().empty());
+  EXPECT_FALSE(web_contents->IsBeingCaptured());
+}
+
+TEST_F(ActorTaskTest, Act_ClearsAdditionalTabObservationsWhenNotRetaining) {
+  base::test::ScopedFeatureList feature_list(
+      kGlicActorLoadAndExtractContentTool);
+
+  ActorTaskOptions options;
+  options.retain_tabs_after_act = false;
+  ActorTask* non_retaining_task =
+      CreateAdditionalTask(/*out_dispatcher=*/nullptr, std::move(options));
+  ASSERT_NE(non_retaining_task, nullptr);
+
+  for (ActorTask* task : {task_.get(), non_retaining_task}) {
+    std::vector<std::unique_ptr<ToolRequest>> actions;
+    actions.push_back(std::make_unique<FakeToolRequest>(
+        base::BindLambdaForTesting([task](DeprecatedToolCallback callback) {
+          task->AddAdditionalTabObservations(
+              {optimization_guide::proto::TabObservation()});
+          std::move(callback).Run(MakeOkResult());
+        }),
+        /*on_destroy=*/base::DoNothing()));
+    ActResultFuture act_future;
+    task->Act(std::move(actions), act_future.GetCallback());
+    ASSERT_TRUE(act_future.Wait());
+  }
+
+  EXPECT_EQ(task_->GetAdditionalTabObservations().size(), 1u);
+  EXPECT_TRUE(non_retaining_task->GetAdditionalTabObservations().empty());
+}
+
+TEST_F(ActorTaskTest, Pause_RemovesTabsWhenNotRetainingTabs) {
+  auto web_contents = CreateTestWebContents();
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("about:blank"));
+  TestTabState tab_state(web_contents.get());
+  tabs::TabHandle tab_handle = tab_state.tab.GetHandle();
+
+  ActorTaskOptions options;
+  options.retain_tabs_after_act = false;
+  ActorTask* non_retaining_task =
+      CreateAdditionalTask(/*out_dispatcher=*/nullptr, std::move(options));
+  ASSERT_NE(non_retaining_task, nullptr);
+
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future;
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+  actions.push_back(std::make_unique<FakeToolRequest>(
+      on_invoke_future.GetCallback(), /*on_destroy=*/base::DoNothing(),
+      ActorSurfaceHandle::From(tab_handle)));
+
+  ActResultFuture act_future;
+  non_retaining_task->Act(std::move(actions), act_future.GetCallback());
+  ASSERT_TRUE(on_invoke_future.Wait());
+  EXPECT_TRUE(non_retaining_task->HasTab(tab_handle));
+
+  non_retaining_task->Pause(/*from_actor=*/true);
+  ASSERT_TRUE(act_future.Wait());
+  EXPECT_EQ(act_future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kTaskPaused);
+  EXPECT_FALSE(non_retaining_task->HasTab(tab_handle));
+  EXPECT_FALSE(web_contents->IsBeingCaptured());
+
+  non_retaining_task->Resume();
+  EXPECT_FALSE(non_retaining_task->HasTab(tab_handle));
+  EXPECT_FALSE(web_contents->IsBeingCaptured());
+}
+
+TEST_F(ActorTaskTest, Pause_RemovesTabsBeingAddedWhenNotRetainingTabs) {
+  auto web_contents = CreateTestWebContents();
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("about:blank"));
+  TestTabState tab_state(web_contents.get());
+  tabs::TabHandle tab_handle = tab_state.tab.GetHandle();
+
+  ActorTaskOptions options;
+  options.retain_tabs_after_act = false;
+  ActorTask* non_retaining_task =
+      CreateAdditionalTask(/*out_dispatcher=*/nullptr, std::move(options));
+  ASSERT_NE(non_retaining_task, nullptr);
+
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+  actions.push_back(std::make_unique<FakeToolRequest>(
+      base::DoNothing(), /*on_destroy=*/base::DoNothing(),
+      ActorSurfaceHandle::From(tab_handle)));
+  ActResultFuture act_future;
+  non_retaining_task->Act(std::move(actions), act_future.GetCallback());
+  ASSERT_EQ(non_retaining_task->GetState(), ActorTask::State::kCreated);
+  ASSERT_TRUE(non_retaining_task->HasTab(tab_handle));
+
+  non_retaining_task->Pause(/*from_actor=*/true);
+  ASSERT_TRUE(act_future.Wait());
+  EXPECT_EQ(act_future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kTaskPaused);
+  EXPECT_FALSE(non_retaining_task->HasTab(tab_handle));
 }
 
 }  // namespace

@@ -66,6 +66,7 @@ actor::TaskId ActorTaskHolder::EnsureTaskCreated() {
   options.delegate = task_delegate_.GetWeakPtr();
   options.allowed_schemes =
       actor::ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttpOrNtp;
+  options.retain_tabs_after_act = false;
   task_id_ = actor_service->CreateTaskWithOptions(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc, session_id_),
       ttc_service->enterprise_policy_checker(),

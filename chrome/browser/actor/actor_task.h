@@ -458,6 +458,11 @@ class ActorTask : public base::SupportsUserData {
   void OnFinishedAct(std::vector<ToolResultWithLatencyInfo> action_results,
                      TabObservationStrategy observation_strategy);
 
+  // Clears the task's tab state unless it retains tabs between calls to Act().
+  // This removes all controlled and observed surfaces and drops additional tab
+  // observations. State on the execution engine is kept.
+  void ClearTabStateIfNotRetainingTabs();
+
   void ResetToObserveTabsSet();
   void ResetAdditionalTabObservations();
 
@@ -514,6 +519,11 @@ class ActorTask : public base::SupportsUserData {
   // created from. nullopt for tasks not created via Glic.
   const std::optional<glic::mojom::InvocationSource>
       glic_initial_invocation_source_;
+
+  // Whether the task keeps its surfaces between calls to Act(). When false,
+  // `controlled_tabs_`, `to_observe_tabs_` and `additional_tab_observations_`
+  // are cleared each time Act() completes.
+  const bool retain_tabs_after_act_;
 
   // The callback to notify the client of the result of calling Act().
   ActCallback callback_for_act_;

@@ -501,10 +501,17 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPageOnCrashedTab) {
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile());
   ASSERT_TRUE(actor_service);
-  const actor::ActorTask* acting_task =
-      actor_service->GetActingActorTaskForWebContents(web_contents());
-  ASSERT_TRUE(acting_task);
-  EXPECT_EQ(acting_task->id(), session_controller->GetActorTaskId());
+  EXPECT_FALSE(actor_service->GetActingActorTaskForWebContents(web_contents()));
+
+  base::test::TestFuture<ToolResponse> second_future;
+  ToolRequest second_tool_request;
+  second_tool_request.name =
+      std::string(actor::ReloadPageToolRequest::kModelFacingName);
+  session_controller->ProcessToolCall(std::move(second_tool_request),
+                                      second_future.GetCallback());
+  EXPECT_TRUE(second_future.Take().Ok());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
+  EXPECT_FALSE(actor_service->GetActingActorTaskForWebContents(web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SwitchTab) {
@@ -596,10 +603,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenKnownPage) {
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile());
   ASSERT_TRUE(actor_service);
-  const actor::ActorTask* acting_task =
-      actor_service->GetActingActorTaskForWebContents(web_contents());
-  ASSERT_TRUE(acting_task);
-  EXPECT_EQ(acting_task->id(), session_controller->GetActorTaskId());
+  EXPECT_FALSE(actor_service->GetActingActorTaskForWebContents(web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,

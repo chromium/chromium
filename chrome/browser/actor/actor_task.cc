@@ -204,6 +204,7 @@ ActorTask::ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
                         : glic::mojom::FeatureMode::kUnspecified),
       skip_history_recording_(options.skip_history_recording),
       glic_initial_invocation_source_(options.glic_initial_invocation_source),
+      retain_tabs_after_act_(options.retain_tabs_after_act),
       policy_checker_(*policy_checker),
       delegate_(options.delegate),
       ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {
@@ -493,8 +494,19 @@ void ActorTask::OnFinishedAct(
     DCHECK(state_ == State::kCreated || state_ == State::kActing ||
            state_ == State::kReflecting);
     action_tracker_for_metrics_->OnFinishedAct(*result);
-    std::move(callback_for_act_)
-        .Run(std::move(action_results), std::move(observation_strategy));
+    // Remove surfaces before running the callback, which may call `Act()`
+    // again. Take the callback first in case removing a surface stops or pauses
+    // the task.
+    ActCallback callback = std::move(callback_for_act_);
+    base::WeakPtr<ActorTask> weak_this = GetWeakPtr();
+    ClearTabStateIfNotRetainingTabs();
+    std::move(callback).Run(std::move(action_results),
+                            std::move(observation_strategy));
+    // The callback may have destroyed the task or called Act() again. A new
+    // call owns the state from here.
+    if (!weak_this || callback_for_act_) {
+      return;
+    }
   }
 
   if (state_ == State::kActing) {
@@ -568,6 +580,9 @@ void ActorTask::Pause(bool from_actor) {
   }
 
   CancelOngoingActions(mojom::ActionResultCode::kTaskPaused);
+  // `OnFinishedAct()` does not clear tabs for a paused call, since the
+  // callback has already run.
+  ClearTabStateIfNotRetainingTabs();
   if (from_actor) {
     SetState(State::kPausedByActor);
   } else {
@@ -999,6 +1014,17 @@ void ActorTask::RecomputeHasVisibleTab() {
     delegate_->OnTaskTabsVisibilityChanged(id_, has_visible_tab_);
   }
   service_->NotifyTaskVisibilityChanged(*this);
+}
+
+void ActorTask::ClearTabStateIfNotRetainingTabs() {
+  if (retain_tabs_after_act_) {
+    return;
+  }
+  while (!controlled_tabs_.empty()) {
+    RemoveActorSurface(controlled_tabs_.begin()->first);
+  }
+  ResetToObserveTabsSet();
+  ResetAdditionalTabObservations();
 }
 
 void ActorTask::ResetToObserveTabsSet() {
