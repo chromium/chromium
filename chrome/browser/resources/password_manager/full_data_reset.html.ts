@@ -8,7 +8,7 @@ import type {FullDataResetElement} from './full_data_reset.js';
 
 export function getHtml(this: FullDataResetElement) {
   return html`<!--_html_template_start_-->
-<cr-link-row class="cr-row" non-clickable hide-icon
+<cr-link-row class="cr-row" non-clickable no-hover hide-icon
     label="$i18n{fullResetTitle}" sub-label="$i18n{fullResetRowDescription}"
     aria-show-label aria-show-sublabel>
   <cr-button id="deleteAllButton" class="cr-row-action-button"

@@ -15,10 +15,7 @@
   overflow: hidden;
 }
 
-/* This selector relies on the fact that pseudo-classes :hover and :active have
- * lower priority than attribute selector. */
 cr-link-row[non-clickable] {
-  background-color: var(--cr-card-background-color);
   cursor: default;
 }
 

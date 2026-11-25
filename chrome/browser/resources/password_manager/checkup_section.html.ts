@@ -50,6 +50,7 @@ export function getHtml(this: CheckupSectionElement) {
         ?show-yellow-icon="${this.didCompromiseCheckFail_()}"
         ?show-red-icon="${this.hasIssues_(this.compromisedPasswords_)}"
         ?non-clickable="${!this.hasIssues_(this.compromisedPasswords_)}"
+        ?no-hover="${!this.hasIssues_(this.compromisedPasswords_)}"
         @click="${this.onCompromisedClick_}" role-description="button"
         aria-show-label aria-show-sublabel>
     </cr-link-row>
@@ -59,6 +60,7 @@ export function getHtml(this: CheckupSectionElement) {
         sub-label="${this.getReusedSectionSublabel_()}"
         ?show-yellow-icon="${this.hasIssues_(this.reusedPasswords_)}"
         ?non-clickable="${!this.hasIssues_(this.reusedPasswords_)}"
+        ?no-hover="${!this.hasIssues_(this.reusedPasswords_)}"
         @click="${this.onReusedClick_}" role-description="button"
         aria-show-label aria-show-sublabel>
     </cr-link-row>
@@ -68,6 +70,7 @@ export function getHtml(this: CheckupSectionElement) {
         sub-label="${this.getWeakSectionSublabel_()}"
         ?show-yellow-icon="${this.hasIssues_(this.weakPasswords_)}"
         ?non-clickable="${!this.hasIssues_(this.weakPasswords_)}"
+        ?no-hover="${!this.hasIssues_(this.weakPasswords_)}"
         @click="${this.onWeakClick_}" role-description="button" aria-show-label
         aria-show-sublabel>
     </cr-link-row>

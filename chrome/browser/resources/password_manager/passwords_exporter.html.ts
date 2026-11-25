@@ -8,9 +8,9 @@ import type {PasswordsExporterElement} from './passwords_exporter.js';
 
 export function getHtml(this: PasswordsExporterElement) {
   return html`<!--_html_template_start_-->
-<cr-link-row class="cr-row" non-clickable label="$i18n{exportPasswords}"
-    sub-label="$i18n{exportPasswordsDescription}" hide-icon aria-show-label
-    aria-show-sublabel>
+<cr-link-row class="cr-row" non-clickable no-hover
+    label="$i18n{exportPasswords}" sub-label="$i18n{exportPasswordsDescription}"
+    hide-icon aria-show-label aria-show-sublabel>
   ${!this.showExportInProgress_ ? html`
     <cr-button id="exportPasswordsButton" class="cr-row-action-button"
         @click="${this.onExportClick_}"

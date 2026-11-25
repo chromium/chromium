@@ -46,7 +46,7 @@ export function getHtml(this: SettingsSectionElement) {
   ` : ''}
 </if>
   ${this.shouldShowMovePasswordsEntry_() ? html`
-    <cr-link-row class="cr-row" non-clickable
+    <cr-link-row class="cr-row" non-clickable no-hover
         label="${this.movePasswordsLabel_}"
         sub-label="$i18n{movePasswordsInSettingsSubLabel}" hide-icon
         aria-show-label aria-show-sublabel>
@@ -89,7 +89,7 @@ export function getHtml(this: SettingsSectionElement) {
         class="cr-row settings-cr-link-row"
         label="$i18n{disconnectCloudAuthenticatorTitle}"
         sub-label="$i18n{disconnectCloudAuthenticatorDescription}" hide-icon
-        non-clickable aria-show-label aria-show-sublabel>
+        non-clickable no-hover aria-show-label aria-show-sublabel>
       ${!this.isDisconnectCloudAuthenticatorInProgress_ ? html`
         <cr-button id="disconnectCloudAuthenticatorButton"
             class="cr-row-action-button" aria-description="${

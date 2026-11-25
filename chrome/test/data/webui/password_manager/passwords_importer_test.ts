@@ -119,6 +119,7 @@ suite('PasswordsImporterTest', function() {
         importer.i18n('importPasswordsDescriptionDevice');
     assertEquals(expectedDescription, importer.$.linkRow.subLabel);
     assertTrue(importer.$.linkRow.hasAttribute('hide-icon'));
+    assertTrue(importer.$.linkRow.hasAttribute('no-hover'));
   });
 
   test('has correct syncing initial state', async function() {
@@ -131,6 +132,7 @@ suite('PasswordsImporterTest', function() {
         importer.i18n('localPasswordManager'), 'test@test.com');
     assertEquals(expectedDescription, importer.$.linkRow.subLabel);
     assertTrue(importer.$.linkRow.hasAttribute('hide-icon'));
+    assertTrue(importer.$.linkRow.hasAttribute('no-hover'));
   });
 
   test('has correct initial state for account store users', async function() {
@@ -142,6 +144,7 @@ suite('PasswordsImporterTest', function() {
         importer.i18n('importPasswordsGenericDescription');
     assertEquals(expectedDescription, importer.$.linkRow.subLabel);
     assertFalse(importer.$.linkRow.hasAttribute('hide-icon'));
+    assertFalse(importer.$.linkRow.hasAttribute('no-hover'));
   });
 
   test('can trigger import', async function() {

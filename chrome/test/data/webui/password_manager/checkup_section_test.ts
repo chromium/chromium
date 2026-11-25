@@ -251,8 +251,11 @@ suite('CheckupSectionTest', function() {
 
     // Expect a proper rear icon state
     assertFalse(section.$.compromisedRow.hasAttribute('non-clickable'));
+    assertFalse(section.$.compromisedRow.hasAttribute('no-hover'));
     assertTrue(section.$.reusedRow.hasAttribute('non-clickable'));
+    assertTrue(section.$.reusedRow.hasAttribute('no-hover'));
     assertFalse(section.$.weakRow.hasAttribute('non-clickable'));
+    assertFalse(section.$.weakRow.hasAttribute('no-hover'));
   });
 
   test('Number of checked passwords shown', async function() {

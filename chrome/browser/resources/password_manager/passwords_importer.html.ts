@@ -13,7 +13,8 @@ export function getHtml(this: PasswordsImporterElement) {
     label="$i18n{importPasswords}" sub-label="${this.bannerDescription_}"
     ?hide-icon="${this.shouldHideLinkRowIcon_()}" aria-show-sublabel
     aria-show-label role-description="button"
-    ?non-clickable="${!this.isAccountStoreUser}">
+    ?non-clickable="${!this.isAccountStoreUser}"
+    ?no-hover="${this.shouldHideLinkRowIcon_()}">
   <cr-button id="selectFileButtonLinkRow" @click="${this.onSelectFileClick_}"
       class="cr-row-action-button"
       ?hidden="${this.shouldHideSelectFileButton_()}"
