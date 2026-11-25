@@ -7,6 +7,7 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {INITIAL_ITEM_COUNT, OrganizerPanelAction, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, OrganizerSectionMenuOption, OrganizerSectionToggleAction, SearchApiProxyImpl, SectionId} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionElement, OrganizerListSectionItem, OrganizerListSectionItemElement, OrganizerPanelPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -674,8 +675,8 @@ suite('OrganizerListSectionTest', () => {
       'ignores item updates while searching until searchQuery changes',
       async () => {
         const delegateItems: Array<OrganizerListSectionItem<unknown>> = [
-          {title: ['Google'], description: [{text: 'google.com'}]},
-          {title: ['YouTube'], description: [{text: 'youtube.com'}]},
+          {id: '1', title: ['Google'], description: [{text: 'google.com'}]},
+          {id: '2', title: ['YouTube'], description: [{text: 'youtube.com'}]},
         ];
         listSection.delegate =
             new TestSectionDelegate('Open Tabs', delegateItems);
@@ -690,8 +691,13 @@ suite('OrganizerListSectionTest', () => {
         assertDeepEquals(['YouTube'], listItems[0]!.item.title);
 
         listSection.onItemsChanged([
-          {title: ['Updated Title'], description: [{text: 'example.com'}]},
           {
+            id: '1',
+            title: ['Updated Title'],
+            description: [{text: 'example.com'}],
+          },
+          {
+            id: '2',
             title: ['YouTube Music'],
             description: [{text: 'music.youtube.com'}],
           },
@@ -768,6 +774,105 @@ suite('OrganizerListSectionTest', () => {
         assertDeepEquals(['YouTube Music'], listItems[1]!.item.title);
         assertFalse(listSection.hidden);
       });
+
+  test(
+      'updates filtered items while searching only when item ids change',
+      async () => {
+        listSection.delegate = new TestSectionDelegate('Open Tabs', [
+          {id: '1', title: ['Google']},
+          {id: '2', title: ['YouTube']},
+        ]);
+        await microtasksFinished();
+
+        listSection.searchQuery = 'You';
+        await microtasksFinished();
+
+        let listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(1, listItems.length);
+        assertDeepEquals(['YouTube'], listItems[0]!.item.title);
+
+        listSection.onItemsChanged([
+          {id: '2', title: ['Vimeo']},
+          {id: '1', title: ['Google']},
+        ]);
+        await microtasksFinished();
+
+        listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(1, listItems.length);
+        assertDeepEquals(['YouTube'], listItems[0]!.item.title);
+
+        listSection.onItemsChanged([
+          {id: '3', title: ['YouTube Music']},
+          {id: '1', title: ['Google']},
+        ]);
+        await microtasksFinished();
+
+        listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(1, listItems.length);
+        assertDeepEquals(['YouTube Music'], listItems[0]!.item.title);
+      });
+
+  test(
+      'updates filtered items while searching for items without IDs',
+      async () => {
+        listSection.delegate = new TestSectionDelegate(
+            'Open Tabs', [{title: ['Google']}, {title: ['YouTube']}]);
+        await microtasksFinished();
+
+        listSection.searchQuery = 'You';
+        await microtasksFinished();
+
+        listSection.onItemsChanged(
+            [{title: ['Google']}, {title: ['YouTube Music']}]);
+        await microtasksFinished();
+
+        const listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(1, listItems.length);
+        assertDeepEquals(['YouTube Music'], listItems[0]!.item.title);
+      });
+
+  test('ignores results of outdated searches', async () => {
+    const pendingSearches: Array<PromiseResolver<void>> = [];
+    const getRanges =
+        testSearchProxy.getRangesIgnoringCaseAndAccents.bind(testSearchProxy);
+    testSearchProxy.getRangesIgnoringCaseAndAccents =
+        async (searchText: string, targets: string[]) => {
+      const pendingSearch = new PromiseResolver<void>();
+      pendingSearches.push(pendingSearch);
+      await pendingSearch.promise;
+      return getRanges(searchText, targets);
+    };
+
+    listSection.delegate = new TestSectionDelegate(
+        'Open Tabs', [{title: ['Google']}, {title: ['YouTube']}]);
+    await microtasksFinished();
+
+    listSection.searchQuery = 'You';
+    await microtasksFinished();
+    listSection.onItemsChanged([{title: ['Google']}]);
+    await microtasksFinished();
+    assertEquals(2, pendingSearches.length);
+
+    pendingSearches[1]!.resolve();
+    await microtasksFinished();
+    assertEquals(
+        0,
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item')
+            .length);
+    assertTrue(listSection.hidden);
+
+    pendingSearches[0]!.resolve();
+    await microtasksFinished();
+    assertEquals(
+        0,
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item')
+            .length);
+    assertTrue(listSection.hidden);
+  });
 
   test('hides section only when search query has no matches', async () => {
     listSection.delegate = new TestSectionDelegate('Open Tabs', []);

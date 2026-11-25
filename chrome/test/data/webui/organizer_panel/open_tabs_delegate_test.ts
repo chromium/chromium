@@ -6,7 +6,7 @@ import {browserProxyFactory, Color, isActive, isSplitTab, OpenTabsDelegate, Open
 import type {OrganizerListSectionClient, OrganizerListSectionItem, PageRemote, ProfileData, Tab} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -198,6 +198,7 @@ suite('OpenTabsDelegateTest', () => {
   test('populates section item fields for a tab', async () => {
     const items = await delegate.getItems();
     const item = items[0]!;
+    assertEquals(youtubeTab.tabId.toString(), item.id);
     assertDeepEquals([youtubeTab.title], item.title);
     assertDeepEquals(
         [{text: youtubeTab.lastActiveElapsedText, matchable: false}],
@@ -517,6 +518,31 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals(chromiumTab.tabId, args);
   });
 
+  test('changes split view item ID when a tab is swapped', async () => {
+    const splitTab1 =
+        createTab({tabId: SPLIT_TAB_1_ID, split: true, splitId: SPLIT_TOKEN});
+    const splitTab2 =
+        createTab({tabId: SPLIT_TAB_2_ID, split: true, splitId: SPLIT_TOKEN});
+    mockPageHandler.setResultFor('getProfileData', Promise.resolve({
+      profileData: createProfileData([splitTab1, splitTab2]),
+    }));
+    const [item] = await delegate.getItems();
+    assertTrue(!!item);
+
+    const swappedTab = createTab({
+      tabId: SPLIT_TAB_2_ID + 1,
+      split: true,
+      splitId: SPLIT_TOKEN,
+    });
+    mockPageHandler.setResultFor('getProfileData', Promise.resolve({
+      profileData: createProfileData([splitTab1, swappedTab]),
+    }));
+    const [swappedItem] = await delegate.getItems();
+    assertTrue(!!swappedItem);
+
+    assertNotEquals(item.id, swappedItem.id);
+  });
+
   test(
       'returns split view tabs with stacked favicons icon and orientation',
       async () => {
@@ -554,6 +580,7 @@ suite('OpenTabsDelegateTest', () => {
         assertEquals(1, items.length);
 
         const item = items[0]!;
+        assertEquals(`${SPLIT_TAB_1_ID}#${SPLIT_TAB_2_ID}`, item.id);
         assertDeepEquals([loadTimeData.getString('splitView')], item.title);
         assertDeepEquals(
             [

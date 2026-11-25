@@ -176,6 +176,7 @@ export class RecentTabsDelegate implements
   private tabToSectionItem_(tab: RecentlyClosedTab):
       OrganizerListSectionItem<RecentlyClosedItem> {
     return {
+      id: tab.tabId.toString(),
       title: [tab.title],
       description: tab.lastActiveElapsedText ?
           [{text: tab.lastActiveElapsedText, matchable: false}] :
@@ -202,6 +203,7 @@ export class RecentTabsDelegate implements
         {text: splitView.tabTitles[0]!}, {text: splitView.tabTitles[1]!});
 
     return {
+      id: splitView.sessionId.toString(),
       title: [loadTimeData.getString('splitView')],
       ariaLabel: [
         loadTimeData.getString('splitView'),
@@ -230,6 +232,7 @@ export class RecentTabsDelegate implements
       ariaDescription.push(tabGroup.lastActiveElapsedText);
     }
     return {
+      id: tabGroup.sessionId.toString(),
       title: [title],
       ariaLabel: [loadTimeData.getString('tabGroup'), title],
       description: tabGroup.lastActiveElapsedText ?

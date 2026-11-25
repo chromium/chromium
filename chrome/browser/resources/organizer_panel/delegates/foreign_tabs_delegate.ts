@@ -44,6 +44,7 @@ export class ForeignTabsDelegate implements
 
     return tabs.map(
         tab => ({
+          id: `${tab.sessionTag}#${tab.sessionTabId}`,
           title: [tab.title],
           description: [
             {text: tab.lastActiveElapsedText, matchable: false},

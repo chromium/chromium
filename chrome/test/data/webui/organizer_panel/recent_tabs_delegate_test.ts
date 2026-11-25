@@ -148,6 +148,7 @@ suite('RecentTabsDelegateTest', () => {
   test('populates section item fields for a tab', async () => {
     const items = await delegate.getItems();
     const item = items[0]!;
+    assertEquals(youtubeTab.tabId.toString(), item.id);
     assertDeepEquals([youtubeTab.title], item.title);
     assertDeepEquals(
         [{text: youtubeTab.lastActiveElapsedText, matchable: false}],
@@ -183,6 +184,7 @@ suite('RecentTabsDelegateTest', () => {
     assertEquals(youtubeTab, items[0]!.data);
 
     // Second: tabGroup (250n)
+    assertEquals('10', items[1]!.id);
     assertDeepEquals([tabGroup.title], items[1]!.title);
     assertEquals(1, items[1]!.description?.length);
     assertDeepEquals(
@@ -499,6 +501,7 @@ suite('RecentTabsDelegateTest', () => {
         assertEquals(1, items.length);
 
         const item = items[0]!;
+        assertEquals('20', item.id);
         assertDeepEquals([loadTimeData.getString('splitView')], item.title);
         assertDeepEquals(
             [loadTimeData.getString('splitView'), 'Docs', 'Sheets'],

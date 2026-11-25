@@ -66,6 +66,9 @@ export interface OrganizerListSectionItemActionButton {
 
 // Model for a single item in an organizer list section.
 export interface OrganizerListSectionItem<T> {
+  // Optional: Unique identifier for the item.
+  id?: string;
+
   // Title (main line) of the item.
   title: string[];
 

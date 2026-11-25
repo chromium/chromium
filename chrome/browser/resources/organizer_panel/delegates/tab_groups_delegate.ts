@@ -148,6 +148,7 @@ export class TabGroupsDelegate implements
     const stateText = group.isOpen ? loadTimeData.getString('openTabGroup') :
                                      loadTimeData.getString('savedTabGroup');
     return {
+      id: group.id,
       title: [group.title],
       ariaLabel: hasTitle ? undefined : [stateText],
       description: group.lastActiveElapsedText ?

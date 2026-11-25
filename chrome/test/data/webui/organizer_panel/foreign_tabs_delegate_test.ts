@@ -95,6 +95,9 @@ suite('ForeignTabsDelegateTest', () => {
         for (let i = 0; i < 3; i++) {
           const item = items[i]!;
           const expected = expectedTabs[i]!;
+          assertEquals(
+              `${sampleTabs[i]!.sessionTag}#${sampleTabs[i]!.sessionTabId}`,
+              item.id);
           assertEquals(expected.title, item.title[0]);
           assertTrue(!!item.description);
           assertEquals(2, item.description.length);

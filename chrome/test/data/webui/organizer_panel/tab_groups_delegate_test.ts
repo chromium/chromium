@@ -87,6 +87,7 @@ suite('TabGroupsDelegateTest', () => {
   test('returns tab groups', async () => {
     const items = await delegate.getItems();
     assertEquals(3, items.length);
+    assertEquals('1', items[0]!.id);
     assertEquals('Sample Group 1', items[0]!.title[0]);
     assertEquals(undefined, items[0]!.ariaLabel);
     assertDeepEquals(

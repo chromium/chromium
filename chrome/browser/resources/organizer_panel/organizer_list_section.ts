@@ -133,6 +133,8 @@ export class OrganizerListSectionElement extends CrLitElement implements
   // Generation identifier used to associate async reload results with the
   // current show/hide cycle.
   private loadGeneration_: number = 0;
+  // Generation identifier used to drop the results of outdated searches.
+  private filterGeneration_: number = 0;
 
   private searchOptions_:
       SearchOptions<HighlightableOrganizerListSectionItem<unknown>> = {
@@ -194,7 +196,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     if (changedProperties.has('searchQuery') ||
         (changedProperties.has('items') &&
          (!this.isSearching_() ||
-          changedProperties.get('items')?.length !== this.items.length))) {
+          this.hasAddedOrRemovedItems_(changedProperties.get('items'))))) {
       this.updateFilteredItems_();
     }
 
@@ -284,7 +286,22 @@ export class OrganizerListSectionElement extends CrLitElement implements
     this.showAll_ = state.showAll;
   }
 
+  // Items updated in place keep their ID, so only a change in the count or the
+  // set of IDs means that items were added or removed. Items without an ID
+  // are treated as added.
+  // TODO(crbug.com/590490417): Make the ID required.
+  private hasAddedOrRemovedItems_(
+      previousItems?: Array<OrganizerListSectionItem<unknown>>): boolean {
+    if (previousItems?.length !== this.items.length) {
+      return true;
+    }
+    const previousIds = new Set(previousItems.map(item => item.id));
+    return this.items.some(
+        item => item.id === undefined || !previousIds.has(item.id));
+  }
+
   private async updateFilteredItems_() {
+    const generation = ++this.filterGeneration_;
     const query = this.searchQuery;
     if (query.length === 0) {
       this.filteredSearchQuery_ = '';
@@ -292,9 +309,8 @@ export class OrganizerListSectionElement extends CrLitElement implements
       return;
     }
     const filteredItems = await search(query, this.items, this.searchOptions_);
-    // Confirm that the search query hasn't changed before updating the filtered
-    // items.
-    if (this.searchQuery === query) {
+    // Drop the results if a newer search has started.
+    if (generation === this.filterGeneration_) {
       this.filteredSearchQuery_ = query;
       this.filteredItems_ = filteredItems;
     }

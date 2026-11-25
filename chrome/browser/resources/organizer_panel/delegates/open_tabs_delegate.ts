@@ -289,6 +289,7 @@ export class OpenTabsDelegate implements
 
   private toSectionItem_(item: OpenTabsItem):
       OrganizerListSectionItem<OpenTabsItem> {
+    let id: string;
     let title: string[];
     let ariaLabel: string[]|undefined;
     let closeAriaLabel: string;
@@ -296,6 +297,7 @@ export class OpenTabsDelegate implements
     let prefixIcon: OrganizerListSectionItemIcon|undefined;
 
     if (isSplitTab(item)) {
+      id = `${item.tabs[0].tabId}#${item.tabs[1].tabId}`;
       title = [loadTimeData.getString('splitView')];
       ariaLabel = [
         loadTimeData.getString('splitView'),
@@ -308,6 +310,7 @@ export class OpenTabsDelegate implements
       prefixIcon = getSplitViewPrefixIcon(
           [item.tabs[0].url, item.tabs[1].url], item.tabs[0].splitLayout);
     } else {
+      id = item.tab.tabId.toString();
       title = [item.tab.title];
       closeAriaLabel = loadTimeData.getStringF('closeTab', item.tab.title);
       extraSearchTerms = [getHostnameOrUrl(item.tab.url)];
@@ -342,6 +345,7 @@ export class OpenTabsDelegate implements
 
     const hasAudio = hasAudioAlert(item);
     return {
+      id,
       title,
       ariaLabel,
       description,
