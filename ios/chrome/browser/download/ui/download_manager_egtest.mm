@@ -107,7 +107,6 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
   // enabled.
   configuration.features_disabled.push_back(
       kDownloadAutoDeletionFeatureEnabled);
-  configuration.features_disabled.push_back(kChromeNextIa);
 
   if ([self isEnterpriseDownloadTest]) {
     configuration.additional_args.push_back(base::StrCat(
@@ -476,12 +475,7 @@ TAG_SMOKE_TEST(DownloadManagerTestCase, testSuccessfulDownload);
 
 // Tests that a pdf that is displayed in the web view can be downloaded.
 // Only valid with "Save to drive" enabled.
-// TODO(crbug.com/502586050): Failing with ChromeNextIA.
 - (void)testDownloadDisplayedPDF {
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test is failing with ChromeNextIA enabled. See b/502586050.");
-  }
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/two_pages.pdf")];
   [ChromeEarlGrey waitForPageToFinishLoading];
   GREYAssert(WaitForDownloadButton(/*loading*/ true),

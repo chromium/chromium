@@ -267,35 +267,14 @@ UIImageView* CreateProgressIcon(Symbol symbol) {
   }
 
   [self updateActionButtonLayout];
-  // `self.view`, bottom margin, download controls row constraints.
+  [self addBottomMarginGuideConstraints];
+
+  // Download controls row constraints.
   UIView* view = self.view;
-  UILayoutGuide* bottomMarginGuide = self.bottomMarginGuide;
   UIView* downloadRow = self.downloadControlsRow;
-  UIView* secondaryToolbar =
-      [self.layoutGuideCenter referencedViewUnderName:kSecondaryToolbarGuide];
-
-  if (IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled()) {
-    [NSLayoutConstraint activateConstraints:@[
-      [bottomMarginGuide.bottomAnchor
-          constraintEqualToAnchor:view.bottomAnchor],
-      [bottomMarginGuide.topAnchor
-          constraintEqualToAnchor:secondaryToolbar.topAnchor],
-    ]];
-  } else {
-    [NSLayoutConstraint activateConstraints:@[
-      [bottomMarginGuide.bottomAnchor
-          constraintEqualToAnchor:view.bottomAnchor],
-      [bottomMarginGuide.heightAnchor
-          constraintGreaterThanOrEqualToAnchor:secondaryToolbar.heightAnchor],
-      [bottomMarginGuide.topAnchor
-          constraintLessThanOrEqualToAnchor:view.safeAreaLayoutGuide
-                                                .bottomAnchor],
-    ]];
-  }
-
   [NSLayoutConstraint activateConstraints:@[
     [downloadRow.bottomAnchor
-        constraintEqualToAnchor:bottomMarginGuide.topAnchor
+        constraintEqualToAnchor:self.bottomMarginGuide.topAnchor
                        constant:-kRowVerticalMargins],
     [downloadRow.topAnchor constraintEqualToAnchor:view.topAnchor
                                           constant:kRowVerticalMargins],
@@ -308,7 +287,7 @@ UIImageView* CreateProgressIcon(Symbol symbol) {
         constraintGreaterThanOrEqualToConstant:kRowHeight],
   ]];
 
-  // Leading icon contraints.
+  // Leading icon constraints.
   UIView* leadingIcon = self.leadingIcon;
   UIView* leadingIconNotStarted = self.leadingIconNotStarted;
   [NSLayoutConstraint activateConstraints:@[
@@ -320,7 +299,7 @@ UIImageView* CreateProgressIcon(Symbol symbol) {
         constraintEqualToConstant:kLeadingIconSize],
   ]];
 
-  // Add a constraint on the detail label so it take as few lines as possible.
+  // Add a constraint on the detail label so it takes as few lines as possible.
   NSLayoutConstraint* widthConstraint = [self.detailLabel.widthAnchor
       constraintEqualToAnchor:self.textStack.widthAnchor];
   widthConstraint.priority = UILayoutPriorityDefaultHigh;
@@ -1215,6 +1194,44 @@ UIImageView* CreateProgressIcon(Symbol symbol) {
 }
 
 #pragma mark - Private
+
+// Adds constraints to position `self.bottomMarginGuide` above the bottom safe
+// area and secondary toolbar.
+- (void)addBottomMarginGuideConstraints {
+  UIView* view = self.view;
+  UILayoutGuide* bottomMarginGuide = self.bottomMarginGuide;
+  UIView* secondaryToolbar =
+      [self.layoutGuideCenter referencedViewUnderName:kSecondaryToolbarGuide];
+
+  NSLayoutConstraint* zeroHeightConstraint =
+      [bottomMarginGuide.heightAnchor constraintEqualToConstant:0];
+  zeroHeightConstraint.priority = UILayoutPriorityDefaultLow;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [bottomMarginGuide.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
+    [bottomMarginGuide.topAnchor
+        constraintLessThanOrEqualToAnchor:view.safeAreaLayoutGuide
+                                              .bottomAnchor],
+    zeroHeightConstraint,
+  ]];
+
+  if (!secondaryToolbar) {
+    return;
+  }
+
+  if (IsChromeNextIaEnabled()) {
+    // Lower priority avoids conflicts when `VerticalAnimationContainer`
+    // slides `view` offscreen.
+    NSLayoutConstraint* toolbarTopConstraint = [bottomMarginGuide.topAnchor
+        constraintLessThanOrEqualToAnchor:secondaryToolbar.topAnchor];
+    toolbarTopConstraint.priority = UILayoutPriorityDefaultHigh - 1;
+    toolbarTopConstraint.active = YES;
+  } else {
+    [bottomMarginGuide.heightAnchor
+        constraintGreaterThanOrEqualToAnchor:secondaryToolbar.heightAnchor]
+        .active = YES;
+  }
+}
 
 // Returns a localized string with the file name as well as its size if it is
 // available. If `period` is YES, then a period is appended at the end.
