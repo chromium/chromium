@@ -530,26 +530,28 @@ public class WebViewResizingHelper implements ImeResizePredictor.Delegate {
         if (sizeChanged) {
             mPendingTimeoutRunnable =
                     new TimeoutRunnable(
-                            this::onNextFrameAfterResize,
-                            this::onNextFrameAfterResize,
+                            () -> onNextFrameAfterResize(/* delayFadeIn= */ true),
+                            () -> onNextFrameAfterResize(/* delayFadeIn= */ true),
                             TIMEOUT_RUNNABLE_TIMEOUT_MS);
             mPendingTimeoutRunnable.startTimeout();
             mThinWebView.runOnNextFrame(mPendingTimeoutRunnable);
         } else {
-            onNextFrameAfterResize();
+            onNextFrameAfterResize(/* delayFadeIn= */ false);
         }
     }
 
-    private void onNextFrameAfterResize() {
+    private void onNextFrameAfterResize(boolean delayFadeIn) {
         if (mThinWebView == null || mIsViewportSizeFixed) return;
 
         View webView = mThinWebView.getView();
 
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(0.f, 1.f);
-        // TODO(crbug.com/540352621): Fix this via a synchronization mechanism between the WebUI and
-        // the Android UI.
-        // Delay to allow CSS/JS layout pass and reflow to settle.
-        valueAnimator.setStartDelay(FADE_ANIMATION_DELAY_MS);
+        if (delayFadeIn) {
+            // TODO(crbug.com/540352621): Fix this via a synchronization mechanism between the WebUI
+            // and the Android UI.
+            // Delay to allow CSS/JS layout pass and reflow to settle.
+            valueAnimator.setStartDelay(FADE_ANIMATION_DELAY_MS);
+        }
         valueAnimator.setDuration(RESIZING_ANIMATION_DURATION_MS);
         valueAnimator.addUpdateListener(
                 animator -> {

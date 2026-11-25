@@ -51,6 +51,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowChoreographer;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
@@ -817,14 +818,77 @@ public class WebViewResizingHelperUnitTest {
         container.layout(0, 0, 100, 200);
 
         ResizeLock lock = mHelper.requestResize();
+        ShadowLooper.idleMainLooper(200, TimeUnit.MILLISECONDS);
+        View placeholder = mHelper.getPlaceholderCoordinator().getView();
+        assertEquals(View.VISIBLE, placeholder.getVisibility());
         clearInvocations(mMockThinWebView);
 
         // Size did not change; unlocking should trigger onNextFrameAfterResize directly
-        // without registering a runOnNextFrame callback.
+        // without registering a runOnNextFrame callback or applying a fade-in delay.
+        ShadowChoreographer.setPaused(true);
+        try {
+            lock.unlock();
+
+            verify(mMockThinWebView, never()).runOnNextFrame(any());
+            assertEquals(View.VISIBLE, mView.getVisibility());
+            assertEquals(0.0f, mView.getAlpha(), 0.01f);
+
+            // Advance one frame to commit the animator's start time, then 200ms (> 150ms duration).
+            ShadowLooper.idleMainLooper(16, TimeUnit.MILLISECONDS);
+            ShadowLooper.idleMainLooper(200, TimeUnit.MILLISECONDS);
+            assertEquals(View.VISIBLE, mView.getVisibility());
+            assertEquals(1.0f, mView.getAlpha(), 0.01f);
+            assertEquals(View.INVISIBLE, placeholder.getVisibility());
+        } finally {
+            ShadowChoreographer.setPaused(false);
+        }
+    }
+
+    @Test
+    public void testDisableResizingMode_SizeChanged_DelaysFadeInAfterNextFrame() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        mView.layout(0, 0, 100, 200);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+
+        doAnswer(invocation -> null).when(mMockThinWebView).runOnNextFrame(any());
+
+        ResizeLock lock = mHelper.requestResize();
+        ShadowLooper.idleMainLooper(200, TimeUnit.MILLISECONDS);
+        View placeholder = mHelper.getPlaceholderCoordinator().getView();
+        assertEquals(View.VISIBLE, placeholder.getVisibility());
+
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 100, 200);
+
+        ArgumentCaptor<Runnable> frameCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         lock.unlock();
 
-        verify(mMockThinWebView, never()).runOnNextFrame(any());
-        assertEquals(View.VISIBLE, mView.getVisibility());
+        verify(mMockThinWebView).runOnNextFrame(frameCallbackCaptor.capture());
+        assertEquals(0.0f, mView.getAlpha(), 0.01f);
+        assertEquals(View.VISIBLE, placeholder.getVisibility());
+
+        ShadowChoreographer.setPaused(true);
+        try {
+            frameCallbackCaptor.getValue().run();
+
+            // Fade-in has a 250ms start delay when size changed, so it has not started at 216ms.
+            ShadowLooper.idleMainLooper(16, TimeUnit.MILLISECONDS);
+            ShadowLooper.idleMainLooper(200, TimeUnit.MILLISECONDS);
+            assertEquals(0.0f, mView.getAlpha(), 0.01f);
+            assertEquals(View.VISIBLE, placeholder.getVisibility());
+
+            // Advance past the 250ms start delay (to 266ms) to start, then 200ms (> 150ms
+            // duration).
+            ShadowLooper.idleMainLooper(50, TimeUnit.MILLISECONDS);
+            ShadowLooper.idleMainLooper(200, TimeUnit.MILLISECONDS);
+            assertEquals(View.VISIBLE, mView.getVisibility());
+            assertEquals(1.0f, mView.getAlpha(), 0.01f);
+            assertEquals(View.INVISIBLE, placeholder.getVisibility());
+        } finally {
+            ShadowChoreographer.setPaused(false);
+        }
     }
 
     @Test
