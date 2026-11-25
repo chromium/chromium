@@ -459,6 +459,12 @@ class RenderFrameHostOrProxy {
 
 namespace {
 
+// Kill switch for returning true (inactive) from
+// RenderFrameHostImpl::IsInactiveAndDisallowActivation() when called on a
+// speculative or pending commit RenderFrameHost.
+BASE_FEATURE(kDisallowActivationForSpeculativeAndPendingCommitRFH,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Maximum amount of time to wait for beforeunload/unload handlers to be
 // processed by the renderer process.
 constexpr base::TimeDelta kUnloadTimeout = base::Milliseconds(500);
@@ -9631,18 +9637,23 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
       // We do not expect speculative or pending commit RenderFrameHosts to
       // generate events that require an active/inactive check. Don't crash the
       // browser process in case it comes from a compromised renderer, but kill
-      // the renderer to avoid further confusion.
+      // the renderer to avoid further confusion. Return true so that callers
+      // ignore the event instead of continuing to process it (e.g. starting a
+      // navigation) on behalf of a process that is being terminated.
       bad_message::ReceivedBadMessage(
           GetProcess(), bad_message::RFH_INACTIVE_CHECK_FROM_SPECULATIVE_RFH);
-      return false;
+      return base::FeatureList::IsEnabled(
+          kDisallowActivationForSpeculativeAndPendingCommitRFH);
     case LifecycleStateImpl::kPendingCommit:
       // TODO(crbug.com/40174540): Understand the expected behaviour to
       // disallow activation for kPendingCommit RenderFrameHosts and update
-      // accordingly.
+      // accordingly. Like the speculative case above, kill the renderer and
+      // return true so that callers ignore the event.
       bad_message::ReceivedBadMessage(
           GetProcess(),
           bad_message::RFH_INACTIVE_CHECK_FROM_PENDING_COMMIT_RFH);
-      return false;
+      return base::FeatureList::IsEnabled(
+          kDisallowActivationForSpeculativeAndPendingCommitRFH);
     case LifecycleStateImpl::kActive:
       return false;
   }

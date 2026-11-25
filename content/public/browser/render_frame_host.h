@@ -850,15 +850,15 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // This should not be used just to check whether a RenderFrameHost is active
   // or not. For that, use |IsActive()| instead.
   //
-  // This should not be used for speculative and pending commit
-  // RenderFrameHosts as disallowing activation is not supported. In that case
-  // |IsInactiveAndDisallowActivation()| returns false along with terminating
-  // the renderer process.
+  // Speculative and pending commit RenderFrameHosts are not expected to
+  // receive events checked by this method (except from a compromised
+  // renderer), and disallowing activation is not meaningful before a
+  // document is active. If called in those states,
+  // |IsInactiveAndDisallowActivation()| terminates the renderer process and
+  // returns true so that callers ignore the event.
   //
-  // Return value: The opposite of |IsActive()|, except in some uncommon cases:
-  //
-  // - The "small window" referred to in the |IsActive()| documentation.
-  // - For speculative and pending commit RenderFrameHosts, as mentioned above.
+  // Return value: The opposite of |IsActive()|, except during the "small
+  // window" referred to in the |IsActive()| documentation.
   //
   // |reason| will be logged via UMA and UKM. It is recommended to provide
   // a unique value for each caller.

@@ -1163,11 +1163,11 @@ void RenderFrameHostManager::DidChangeOpener(
       // is in a different BrowsingInstance from the new opener, as it would be
       // incorrect to establish an opener relationship in those cases.
       //
-      // Note that `IsInactiveAndDisallowActivation` may return false for
+      // Note that `IsInactiveAndDisallowActivation` also returns true for
       // speculative and pending commit RFHs (while killing their renderer
       // process), because this case is unexpected except for compromised
-      // renderers. As a result, also confirm that opener_rfhi is the current
-      // frame of its FTN, to catch speculative and pending commit cases.
+      // renderers. As defense in depth, also confirm that opener_rfhi is the
+      // current frame of its FTN.
       if (opener_rfhi->IsInactiveAndDisallowActivation(
               DisallowActivationReasonId::kDidChangeOpener) ||
           opener_rfhi != opener_rfhi->frame_tree_node()->current_frame_host() ||
