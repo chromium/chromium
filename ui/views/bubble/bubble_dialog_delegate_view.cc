@@ -822,11 +822,11 @@ void BubbleDialogDelegate::SetResolvedHighlightedElement(
 }
 
 void BubbleDialogDelegate::SetBackgroundColor(ui::ColorVariant color) {
-  if (color_ == color) {
+  if (background_color_ == color) {
     return;
   }
 
-  color_ = color;
+  background_color_ = color;
   if (GetWidget()) {
     UpdateFrameColor();
   }
