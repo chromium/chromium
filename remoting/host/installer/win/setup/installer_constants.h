@@ -57,6 +57,8 @@ inline constexpr wchar_t kRemoteSecurityKeyBinaryName[] =
     L"remote_security_key.exe";
 inline constexpr wchar_t kRemoteOpenUrlBinaryName[] = L"remote_open_url.exe";
 inline constexpr wchar_t kHostConfigFileName[] = L"host.json";
+inline constexpr wchar_t kUnprivilegedHostConfigFileName[] =
+    L"host_unprivileged.json";
 
 // Windows EventLog source name.
 inline constexpr wchar_t kEventSourceName[] = L"chromoting";

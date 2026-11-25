@@ -27,6 +27,14 @@ inline constexpr char kPairingRegistrySecretsSddl[] =
 inline constexpr char kRdpDesktopSessionComPermissionsSddl[] =
     "O:BAG:BAD:(A;;0xb;;;SY)(A;;0xb;;;BA)(A;;0xb;;;LS)S:(ML;;NX;;;ME)";
 
+// Protected SDDL setting Owner and Group to Built-in Administrators (BA) and
+// granting Generic All (GA) only to LocalSystem (SY) and BA. Used with
+// `base::win::SecurityDescriptor::FromSddl()` to lock untrusted subdirectories
+// before deletion and to remediate or write sensitive host configuration files
+// (`host.json`).
+inline constexpr wchar_t kAdminOnlyProtectedSddl[] =
+    L"O:BAG:BAD:P(A;;GA;;;SY)(A;;GA;;;BA)";
+
 typedef TypedBuffer<ACL> ScopedAcl;
 typedef TypedBuffer<SECURITY_DESCRIPTOR> ScopedSd;
 typedef TypedBuffer<SID> ScopedSid;

@@ -95,6 +95,8 @@ source_set("payload_files_header") {
 
 source_set("setup_lib") {
   sources = [
+    "config_dir_entry_security.cc",
+    "config_dir_entry_security.h",
     "file_util.cc",
     "file_util.h",
     "file_work_items.cc",
@@ -155,6 +157,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "config_dir_entry_security_unittest.cc",
     "file_util_unittest.cc",
     "file_work_items_unittest.cc",
     "installer_constants_unittest.cc",
