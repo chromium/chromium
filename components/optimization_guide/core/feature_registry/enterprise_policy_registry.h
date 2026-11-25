@@ -23,8 +23,7 @@ enum class EnterprisePolicyValue {
   kAllowWithoutLogging = 1,
   kDisable = 2,
 };
-// LINT.ThenChange(//chrome/browser/resources/settings/ai_page/constants.ts:ModelExecutionEnterprisePolicyValue,
-// //chrome/browser/ui/android/autofill/internal/java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java:AllowLogging)
+// LINT.ThenChange(//chrome/browser/resources/settings/ai_page/constants.ts:ModelExecutionEnterprisePolicyValue)
 
 // EnterprisePolicyPref holds configuration for an enterprise policy controlling
 // a model execution feature.
