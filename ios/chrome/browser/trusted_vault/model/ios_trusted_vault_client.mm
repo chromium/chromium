@@ -9,6 +9,7 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/location.h"
 #import "base/notimplemented.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -47,8 +48,18 @@ void IOSTrustedVaultClient::FetchKeys(
     base::OnceCallback<
         void(const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)>
         callback) {
-  backend_->FetchKeys(IdentityForAccount(account_info), security_domain_id_,
-                      std::move(callback));
+  id<SystemIdentity> identity = IdentityForAccount(account_info);
+  if (!identity) {
+    // Preserve `TrustedVaultClient`'s async contract so callers do not receive
+    // re-entrant callbacks.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            std::vector<trusted_vault::TrustedVaultKeyAndVersion>()));
+    return;
+  }
+  backend_->FetchKeys(identity, security_domain_id_, std::move(callback));
 }
 
 void IOSTrustedVaultClient::StoreKeys(
@@ -63,8 +74,16 @@ void IOSTrustedVaultClient::StoreKeys(
 void IOSTrustedVaultClient::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {
+  id<SystemIdentity> identity = IdentityForAccount(account_info);
+  if (!identity) {
+    // Preserve `TrustedVaultClient`'s async contract to avoid re-entrant
+    // callbacks.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
   backend_->MarkLocalKeysAsStale(
-      IdentityForAccount(account_info), security_domain_id_,
+      identity, security_domain_id_,
       // Since false positives are allowed in the API, always invoke `callback`
       // with true, indicating that something may have changed.
       base::BindOnce(std::move(callback), true));
@@ -73,8 +92,15 @@ void IOSTrustedVaultClient::MarkLocalKeysAsStale(
 void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {
-  backend_->GetDegradedRecoverabilityStatus(IdentityForAccount(account_info),
-                                            security_domain_id_,
+  id<SystemIdentity> identity = IdentityForAccount(account_info);
+  if (!identity) {
+    // Preserve `TrustedVaultClient`'s async contract to avoid re-entrant
+    // callbacks.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+  backend_->GetDegradedRecoverabilityStatus(identity, security_domain_id_,
                                             std::move(callback));
 }
 
@@ -104,8 +130,11 @@ void IOSTrustedVaultClient::Enroll(
 
 void IOSTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
-  backend_->ClearLocalData(IdentityForAccount(account_info),
-                           security_domain_id_, base::DoNothing());
+  id<SystemIdentity> identity = IdentityForAccount(account_info);
+  if (!identity) {
+    return;
+  }
+  backend_->ClearLocalData(identity, security_domain_id_, base::DoNothing());
 }
 
 id<SystemIdentity> IOSTrustedVaultClient::IdentityForAccount(

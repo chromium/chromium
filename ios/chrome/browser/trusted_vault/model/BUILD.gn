@@ -23,3 +23,28 @@ source_set("model") {
     "//ios/chrome/browser/signin/model/trusted_vault:trusted_vault_factory",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_trusted_vault_client_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/trusted_vault",
+    "//google_apis",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model/trusted_vault",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
