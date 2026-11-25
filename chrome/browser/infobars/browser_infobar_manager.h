@@ -12,6 +12,9 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/infobars/infobar_spec.h"
@@ -142,7 +145,8 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
  private:
-  friend class RegistryInfoBarDelegate;
+  struct GlobalInfoBarContext;
+  using SharedInfoBarSpec = base::RefCountedData<InfoBarSpec>;
 
   // Shared implementation for the `Show()` overloads, named `ShowInternal()`
   // to distinguish it from public `Show(content::WebContents*, ...)` with the
@@ -156,6 +160,9 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
       InfoBarShowParams params);
 
   void PopulateGlobalInfoBarsForActiveTab(BrowserWindowInterface* browser);
+  void HideGlobalInternal(
+      infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+      bool suppress_outcome);
   void OnActiveTabChanged(BrowserWindowInterface* browser);
   void StartObservingBrowsersIfNeeded();
   void StopObservingBrowsersIfIdle();
@@ -175,18 +182,13 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   const raw_ptr<PrefService> local_state_;
   ui::ScopedUnownedUserData<BrowserInfoBarManager> scoped_unowned_user_data_;
 
-  std::map<infobars::InfoBarDelegate::InfoBarIdentifier, InfoBarSpec>
+  std::map<infobars::InfoBarDelegate::InfoBarIdentifier,
+           scoped_refptr<const SharedInfoBarSpec>>
       registered_specs_;
 
-  struct GlobalInfoBarContext {
-    InfoBarSpec spec;
-    InfoBarShowParams params;
-    std::optional<InfoBarResult> pending_result = InfoBarResult::kIgnored;
-    std::map<infobars::InfoBarManager*, infobars::InfoBar*> active_instances;
-  };
-
   // Tracking for active global infobars and their instances.
-  std::map<infobars::InfoBarDelegate::InfoBarIdentifier, GlobalInfoBarContext>
+  std::map<infobars::InfoBarDelegate::InfoBarIdentifier,
+           std::unique_ptr<GlobalInfoBarContext>>
       active_global_infobars_;
 
   // FIFO `ShowGlobally()` activation order for `active_global_infobars_`.
@@ -212,6 +214,8 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   base::ScopedMultiSourceObservation<infobars::InfoBarManager,
                                      infobars::InfoBarManager::Observer>
       infobar_manager_observations_{this};
+
+  base::WeakPtrFactory<BrowserInfoBarManager> weak_factory_{this};
 };
 
 }  // namespace infobars

@@ -29,6 +29,8 @@ source_set("infobars") {
       "browser_infobar_manager.cc",
       "infobar_outcome_tracker.cc",
       "infobar_outcome_tracker.h",
+      "registry_infobar_delegate.cc",
+      "registry_infobar_delegate.h",
     ]
   }
 

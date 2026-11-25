@@ -4,6 +4,7 @@
 
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -1339,6 +1340,114 @@ TEST_F(BrowserInfoBarManagerUnitTest,
 
   EXPECT_EQ(0u, tab0_manager->infobars().size());
   EXPECT_EQ(0u, tab1_manager->infobars().size());
+}
+
+TEST_F(BrowserInfoBarManagerUnitTest,
+       ShowGloballyHandlesReentrantHideInFilterOrObserver) {
+  constexpr auto filter_hide_id = InfoBarDelegate::TEST_INFOBAR;
+  constexpr auto observer_hide_id =
+      InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE;
+
+  auto browser1 = CreateBrowserWindow();
+  content::WebContents* tab1 = browser1->AddTab(/*foreground=*/true);
+  auto browser2 = CreateBrowserWindow();
+  content::WebContents* tab2 = browser2->AddTab(/*foreground=*/true);
+  auto* tab1_manager = ContentInfoBarManager::FromWebContents(tab1);
+  auto* tab2_manager = ContentInfoBarManager::FromWebContents(tab2);
+
+  int filter_calls = 0;
+  manager()->Register(InfoBarSpec::Builder(filter_hide_id)
+                          .SetMessageText(u"Hide In Filter")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .SetBrowserFilter(base::BindLambdaForTesting(
+                              [&](BrowserWindowInterface*) {
+                                if (++filter_calls == 2) {
+                                  manager()->Hide(filter_hide_id);
+                                }
+                                return true;
+                              }))
+                          .Build());
+
+  manager()->ShowGlobally(filter_hide_id);
+  EXPECT_EQ(0u, tab1_manager->infobars().size());
+  EXPECT_EQ(0u, tab2_manager->infobars().size());
+
+  manager()->Register(InfoBarSpec::Builder(observer_hide_id)
+                          .SetMessageText(u"Hide In Add Observer")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .Build());
+  HideOnAddObserver hide_on_add1(tab1_manager, manager(), observer_hide_id);
+  HideOnAddObserver hide_on_add2(tab2_manager, manager(), observer_hide_id);
+
+  EXPECT_FALSE(manager()->ShowGlobally(observer_hide_id));
+  EXPECT_EQ(0u, tab1_manager->infobars().size());
+  EXPECT_EQ(0u, tab2_manager->infobars().size());
+}
+
+TEST_F(BrowserInfoBarManagerUnitTest,
+       WebContentsDestroyedMidActionReportsNullContents) {
+  constexpr auto accept_id = InfoBarDelegate::TEST_INFOBAR;
+  constexpr auto inline_link_id =
+      InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE;
+
+  auto browser = CreateBrowserWindow();
+  std::vector<std::pair<content::WebContents*, InfoBarResult>> calls;
+  auto record = base::BindLambdaForTesting(
+      [&](content::WebContents* contents, InfoBarResult result) {
+        calls.emplace_back(contents, result);
+      });
+
+  manager()->Register(
+      InfoBarSpec::Builder(accept_id)
+          .SetMessageText(u"Close Tab On Accept")
+          .AddOkButton(u"OK",
+                       base::BindLambdaForTesting([&](content::WebContents*) {
+                         browser->tab_strip_model().CloseAllTabs();
+                       }))
+          .SetResultCallback(record)
+          .Build());
+  manager()->Register(
+      InfoBarSpec::Builder(inline_link_id)
+          .SetMessageTextTemplate(u"Click $1")
+          .SetSubstitutionsCallback(
+              base::BindLambdaForTesting([](content::WebContents*) {
+                return std::vector<MessageSubstitution>{MessageSubstitution(
+                    u"here", /*is_link=*/true, std::nullopt)};
+              }))
+          .SetInlineLinkCallback(
+              base::BindLambdaForTesting([&](content::WebContents*, size_t,
+                                             ui::mojom::WindowOpenDisposition) {
+                browser->tab_strip_model().CloseAllTabs();
+                return true;
+              }))
+          .SetResultCallback(record)
+          .Build());
+
+  // Destroying WebContents inside a button action callback.
+  browser->AddTab(/*foreground=*/true);
+  infobars::InfoBar* accept_infobar =
+      manager()->Show(browser->tab_strip_model().GetActiveTab(), accept_id);
+  ASSERT_NE(nullptr, accept_infobar);
+  EXPECT_FALSE(
+      accept_infobar->delegate()->AsConfirmInfoBarDelegate()->Accept());
+
+  ASSERT_EQ(1u, calls.size());
+  EXPECT_EQ(nullptr, calls[0].first);
+  EXPECT_EQ(InfoBarResult::kAccepted, calls[0].second);
+
+  // Destroying WebContents inside an inline substitution link callback.
+  browser->AddTab(/*foreground=*/true);
+  infobars::InfoBar* link_infobar = manager()->Show(
+      browser->tab_strip_model().GetActiveTab(), inline_link_id);
+  ASSERT_NE(nullptr, link_infobar);
+  EXPECT_FALSE(link_infobar->delegate()
+                   ->AsConfirmInfoBarDelegate()
+                   ->InlineSubstitutionLinkClicked(
+                       0u, ui::mojom::WindowOpenDisposition::kCurrentTab));
+
+  ASSERT_EQ(2u, calls.size());
+  EXPECT_EQ(nullptr, calls[1].first);
+  EXPECT_EQ(InfoBarResult::kLinkClicked, calls[1].second);
 }
 
 }  // namespace infobars
