@@ -57,7 +57,7 @@ class ExtensionHostQueue {
   base::TimeDelta delay_;
 
   // The list of DeferredStartRenderHosts waiting to be started.
-  std::list<raw_ptr<DeferredStartRenderHost, CtnExperimental>> queue_;
+  std::list<raw_ptr<DeferredStartRenderHost>> queue_;
 
   base::WeakPtrFactory<ExtensionHostQueue> ptr_factory_{this};
 };

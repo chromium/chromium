@@ -48,7 +48,7 @@ class PreloadCheckGroup : public PreloadCheck {
   bool stop_on_first_error_ = false;
 
   // Checks to run. Not owned.
-  std::vector<raw_ptr<PreloadCheck, VectorExperimental>> checks_;
+  std::vector<raw_ptr<PreloadCheck>> checks_;
 
   ResultCallback callback_;
   int running_checks_ = 0;

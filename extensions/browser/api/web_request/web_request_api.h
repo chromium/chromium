@@ -152,8 +152,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
     std::set<std::unique_ptr<Proxy>, base::UniquePtrComparator> proxies_;
 
     // Bi-directional mapping between request ID and Proxy for faster lookup.
-    std::map<content::GlobalRequestID, raw_ptr<Proxy, CtnExperimental>>
-        request_id_to_proxy_map_;
+    std::map<content::GlobalRequestID, raw_ptr<Proxy>> request_id_to_proxy_map_;
     std::map<Proxy*, std::set<content::GlobalRequestID>>
         proxy_to_request_id_map_;
   };

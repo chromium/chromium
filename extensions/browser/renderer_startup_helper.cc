@@ -490,8 +490,8 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
   DCHECK(!extension_process_map_.contains(extension.id()));
 
   // Mark the extension as loaded.
-  std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>&
-      loaded_process_set = extension_process_map_[extension.id()];
+  std::set<raw_ptr<content::RenderProcessHost>>& loaded_process_set =
+      extension_process_map_[extension.id()];
 
   // util::IsExtensionVisibleToContext() would filter out themes, but we choose
   // to return early for performance reasons.
@@ -525,8 +525,8 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
 void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
   DCHECK(extension_process_map_.contains(extension.id()));
 
-  const std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>&
-      loaded_process_set = extension_process_map_[extension.id()];
+  const std::set<raw_ptr<content::RenderProcessHost>>& loaded_process_set =
+      extension_process_map_[extension.id()];
   for (content::RenderProcessHost* process : loaded_process_set) {
     mojom::Renderer* renderer = GetRenderer(process);
     if (renderer) {

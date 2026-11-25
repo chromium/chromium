@@ -135,7 +135,7 @@ class ScriptContextSet : public ScriptContextSetIterable {
   raw_ptr<ExtensionIdSet> active_extension_ids_;
 
   // The set of all ScriptContexts we own.
-  std::set<raw_ptr<ScriptContext, SetExperimental>> contexts_;
+  std::set<raw_ptr<ScriptContext>> contexts_;
 };
 
 }  // namespace extensions

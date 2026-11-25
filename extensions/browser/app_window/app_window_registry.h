@@ -54,7 +54,7 @@ class AppWindowRegistry : public KeyedService,
     ~Observer() override;
   };
 
-  using AppWindowList = std::list<raw_ptr<AppWindow, CtnExperimental>>;
+  using AppWindowList = std::list<raw_ptr<AppWindow>>;
   using const_iterator = AppWindowList::const_iterator;
   using InspectedWindowSet = std::set<std::string>;
 

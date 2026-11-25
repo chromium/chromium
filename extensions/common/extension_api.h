@@ -190,7 +190,7 @@ class ExtensionAPI {
 
   // FeatureProviders used for resolving dependencies.
   using FeatureProviderMap =
-      std::map<std::string, raw_ptr<const FeatureProvider, CtnExperimental>>;
+      std::map<std::string, raw_ptr<const FeatureProvider>>;
   FeatureProviderMap dependency_providers_;
 };
 

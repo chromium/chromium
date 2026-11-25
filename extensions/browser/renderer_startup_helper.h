@@ -162,8 +162,7 @@ class RendererStartupHelper : public KeyedService,
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 
   // Tracks the set of loaded extensions and the processes they are loaded in.
-  std::map<ExtensionId,
-           std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>>
+  std::map<ExtensionId, std::set<raw_ptr<content::RenderProcessHost>>>
       extension_process_map_;
 
   // The set of ids for extensions that are active in a process that has not

@@ -223,7 +223,7 @@ class FakeUpdateClient : public update_client::UpdateClient {
 
   std::vector<std::optional<update_client::CrxComponent>> data_;
   std::vector<UninstallPing> uninstall_pings_;
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_;
+  std::vector<raw_ptr<Observer>> observers_;
 
   base::RepeatingClosure delay_update_;
   bool is_malware_update_item_ = false;

@@ -132,8 +132,7 @@ class ExtensionHostRegistry : public KeyedService {
   ExtensionHost* GetExtensionHostForPrimaryMainFrame(
       content::RenderFrameHost* render_frame_host);
 
-  const std::unordered_set<raw_ptr<ExtensionHost, CtnExperimental>>&
-  extension_hosts() {
+  const std::unordered_set<raw_ptr<ExtensionHost>>& extension_hosts() {
     return extension_hosts_;
   }
 
@@ -145,7 +144,7 @@ class ExtensionHostRegistry : public KeyedService {
 
  private:
   // The active set of ExtensionHosts.
-  std::unordered_set<raw_ptr<ExtensionHost, CtnExperimental>> extension_hosts_;
+  std::unordered_set<raw_ptr<ExtensionHost>> extension_hosts_;
 
   base::ObserverList<Observer> observers_;
 };

@@ -74,8 +74,7 @@ class ManifestHandlerRegistry {
   // to the backup base::flat_map, which we don't want, as that would
   // defeat the optimization of using small_map.
   static constexpr size_t kHandlerMax = 87;
-  using FallbackMap =
-      base::flat_map<std::string, raw_ptr<ManifestHandler, CtnExperimental>>;
+  using FallbackMap = base::flat_map<std::string, raw_ptr<ManifestHandler>>;
   using ManifestHandlerMap = base::small_map<FallbackMap, kHandlerMax>;
   using FallbackPriorityMap = base::flat_map<ManifestHandler*, int>;
   using ManifestHandlerPriorityMap =

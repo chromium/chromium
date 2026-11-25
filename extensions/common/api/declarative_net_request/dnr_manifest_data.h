@@ -89,8 +89,7 @@ class DNRManifestData : public Extension::ManifestData {
   // strings in the `rulesets_` vector stored within the same class, so they
   // share the same lifetime.
   using ManifestIDToRulesetMap =
-      absl::flat_hash_map<std::string_view,
-                          raw_ptr<const RulesetInfo, CtnExperimental>>;
+      absl::flat_hash_map<std::string_view, raw_ptr<const RulesetInfo>>;
 
   // Static rulesets specified by the extension in its manifest, in the order in
   // which they were specified.

@@ -61,8 +61,7 @@ class TestExtensionsClient : public ExtensionsClient {
   // added to this list.
   ScriptingAllowlist scripting_allowlist_;
 
-  std::set<raw_ptr<BrowserImagePathsFilter, SetExperimental>>
-      browser_image_filters_;
+  std::set<raw_ptr<BrowserImagePathsFilter>> browser_image_filters_;
 
   const GURL webstore_base_url_;
   const GURL new_webstore_base_url_;

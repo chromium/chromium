@@ -61,7 +61,7 @@ class FeatureCache {
   void InvalidateAllExtensions();
 
  private:
-  using FeatureVector = std::vector<raw_ptr<const Feature, VectorExperimental>>;
+  using FeatureVector = std::vector<raw_ptr<const Feature>>;
   struct ExtensionFeatureData {
    public:
     ExtensionFeatureData();

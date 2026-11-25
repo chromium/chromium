@@ -158,7 +158,7 @@ void ScriptContextSet::ForEach(
     const base::RepeatingCallback<void(ScriptContext*)>& callback) {
   // We copy the context list, because calling into javascript may modify it
   // out from under us.
-  std::set<raw_ptr<ScriptContext, SetExperimental>> contexts_copy = contexts_;
+  std::set<raw_ptr<ScriptContext>> contexts_copy = contexts_;
 
   for (ScriptContext* context : contexts_copy) {
     // For the same reason as above, contexts may become invalid while we run.

@@ -104,8 +104,8 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
     for (const auto& param : loaded_extensions) {
       loaded_params_.push_back(
           {param->id, param->is_mojo_js_enabled_for_service_worker});
-      const std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>&
-          process_set = extension_process_map_[param->id];
+      const std::set<raw_ptr<content::RenderProcessHost>>& process_set =
+          extension_process_map_[param->id];
       for (content::RenderProcessHost* process : process_set) {
         // Count the invocation of the LoadExtensions method on the normal
         // renderer or the incognito renderer.

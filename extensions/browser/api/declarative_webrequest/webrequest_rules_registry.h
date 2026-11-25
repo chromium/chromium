@@ -107,7 +107,7 @@ class WebRequestRulesRegistry : public RulesRegistry {
       const ExtensionId& extension_id) const;
   virtual void ClearCacheOnNavigation();
 
-  const std::set<raw_ptr<const WebRequestRule, SetExperimental>>&
+  const std::set<raw_ptr<const WebRequestRule>>&
   rules_with_untriggered_conditions_for_test() const {
     return rules_with_untriggered_conditions_;
   }
@@ -170,8 +170,7 @@ class WebRequestRulesRegistry : public RulesRegistry {
   // These rules contain condition sets with conditions without URL attributes.
   // Such conditions are not triggered by URL matcher, so we need to test them
   // separately.
-  std::set<raw_ptr<const WebRequestRule, SetExperimental>>
-      rules_with_untriggered_conditions_;
+  std::set<raw_ptr<const WebRequestRule>> rules_with_untriggered_conditions_;
 
   url_matcher::URLMatcher url_matcher_;
 };
