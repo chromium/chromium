@@ -7,27 +7,16 @@
 #include <algorithm>
 #include <functional>
 #include <ostream>
+#include <string>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/notreached.h"
-#include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
+#include "extensions/renderer/v8_helpers.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "v8/include/v8-primitive.h"
 
 namespace extensions {
-
-namespace {
-
-v8::Local<v8::String> ConvertString(v8::Isolate* isolate,
-                                    std::string_view string) {
-  // v8 takes ownership of the StaticV8ExternalOneByteStringResource (see
-  // v8::String::NewExternalOneByte()).
-  return v8::String::NewExternalOneByte(
-             isolate, new StaticV8ExternalOneByteStringResource(string))
-      .FromMaybe(v8::Local<v8::String>());
-}
-
-}  // namespace
 
 ResourceBundleSourceMap::ResourceBundleSourceMap(
     const ui::ResourceBundle* resource_bundle)
@@ -38,34 +27,27 @@ ResourceBundleSourceMap::~ResourceBundleSourceMap() = default;
 v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
     v8::Isolate* isolate,
     std::string_view name) const {
-  base::AutoLock lock(lock_);
-  std::optional<int> resource_id = FindResourceId(name);
+  std::optional<int> resource_id;
+  {
+    base::AutoLock lock(lock_);
+    resource_id = FindResourceId(name);
+  }
   if (!resource_id) {
     DUMP_WILL_BE_NOTREACHED()
         << "No module is registered with name \"" << name << "\"";
     return v8::Local<v8::String>();
   }
 
-  auto cached = cached_sources_.find(*resource_id);
-  if (cached != cached_sources_.end()) {
-    return ConvertString(isolate, cached->second);
-  }
-
-  std::string_view resource =
-      resource_bundle_->GetRawDataResource(*resource_id);
+  std::string resource = resource_bundle_->LoadDataResourceString(*resource_id);
   if (resource.empty()) {
     DUMP_WILL_BE_NOTREACHED()
         << "Module resource registered as \"" << name << "\" not found";
     return v8::Local<v8::String>();
   }
 
-  if (resource_bundle_->IsCompressed(*resource_id)) {
-    std::string& cached_source = cached_sources_[*resource_id];
-    cached_source = resource_bundle_->LoadDataResourceString(*resource_id);
-    resource = cached_source;
-  }
-
-  return ConvertString(isolate, resource);
+  v8::Local<v8::String> result;
+  CHECK(v8_helpers::ToV8String(isolate, resource, &result));
+  return result;
 }
 
 bool ResourceBundleSourceMap::Contains(std::string_view name) const {

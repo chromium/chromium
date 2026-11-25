@@ -6,9 +6,7 @@
 #define EXTENSIONS_RENDERER_RESOURCE_BUNDLE_SOURCE_MAP_H_
 
 #include <cstddef>
-#include <map>
 #include <optional>
-#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -60,8 +58,6 @@ class ResourceBundleSourceMap : public SourceMap {
   FRIEND_TEST_ALL_PREFIXES(ResourceBundleSourceMapTest,
                            FirstRegisteredTableWinsForDuplicateNames);
   FRIEND_TEST_ALL_PREFIXES(ResourceBundleSourceMapTest, IgnoresEmptyTables);
-  FRIEND_TEST_ALL_PREFIXES(ResourceBundleSourceMapV8Test,
-                           LoadsAndCachesCompressedSource);
 
   using SourceEntry = std::pair<const std::string_view, int>;
   using SourceTable = base::raw_span<const SourceEntry>;
@@ -73,9 +69,6 @@ class ResourceBundleSourceMap : public SourceMap {
 
   mutable base::Lock lock_;
   std::vector<SourceTable> source_tables_ GUARDED_BY(lock_);
-  // The node-based map keeps cached backing strings stable while V8 external
-  // strings retain views into them.
-  mutable std::map<int, std::string> cached_sources_ GUARDED_BY(lock_);
 };
 
 }  // namespace extensions

@@ -89,7 +89,6 @@
 #include "extensions/renderer/script_injection_manager.h"
 #include "extensions/renderer/service_worker_data.h"
 #include "extensions/renderer/shared_l10n_map.h"
-#include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "extensions/renderer/trace_util.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "extensions/renderer/worker_script_context_set.h"

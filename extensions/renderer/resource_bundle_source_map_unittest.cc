@@ -96,7 +96,7 @@ TEST(ResourceBundleSourceMapTest, IgnoresEmptyTables) {
   EXPECT_EQ(1u, source_map.source_tables_.size());
 }
 
-TEST_F(ResourceBundleSourceMapV8Test, LoadsAndCachesCompressedSource) {
+TEST_F(ResourceBundleSourceMapV8Test, LoadsCompressedSource) {
   constexpr int kResourceId = IDR_EXTENSIONS_RENDERER_GENERATED_UTILS_JS;
   static constexpr auto kSources =
       base::MakeFixedFlatMap<std::string_view, int>({{"utils", kResourceId}});
@@ -112,19 +112,8 @@ TEST_F(ResourceBundleSourceMapV8Test, LoadsAndCachesCompressedSource) {
 
   v8::Local<v8::String> source = source_map.GetSource(isolate(), "utils");
   ASSERT_FALSE(source.IsEmpty());
+  EXPECT_FALSE(source->IsExternal());
   EXPECT_EQ(expected, gin::V8ToString(isolate(), source));
-  {
-    base::AutoLock lock(source_map.lock_);
-    EXPECT_EQ(1u, source_map.cached_sources_.size());
-  }
-
-  source = source_map.GetSource(isolate(), "utils");
-  ASSERT_FALSE(source.IsEmpty());
-  EXPECT_EQ(expected, gin::V8ToString(isolate(), source));
-  {
-    base::AutoLock lock(source_map.lock_);
-    EXPECT_EQ(1u, source_map.cached_sources_.size());
-  }
 }
 
 }  // namespace extensions

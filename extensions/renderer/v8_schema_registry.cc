@@ -20,7 +20,6 @@
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "extensions/renderer/script_context.h"
-#include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-context.h"
@@ -169,10 +168,8 @@ v8::Local<v8::Object> V8SchemaRegistry::GetSchema(v8::Isolate* isolate,
   std::string_view schema_string =
       ExtensionAPI::GetSharedInstance()->GetSchemaStringPiece(api);
   CHECK(!schema_string.empty());
-  v8::MaybeLocal<v8::String> v8_maybe_string = v8::String::NewExternalOneByte(
-      isolate, new StaticV8ExternalOneByteStringResource(schema_string));
   v8::Local<v8::String> v8_schema_string;
-  CHECK(v8_maybe_string.ToLocal(&v8_schema_string));
+  CHECK(v8_helpers::ToV8String(isolate, schema_string, &v8_schema_string));
 
   v8::MaybeLocal<v8::Value> v8_maybe_schema_value =
       v8::JSON::Parse(context, v8_schema_string);

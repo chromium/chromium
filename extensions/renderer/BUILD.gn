@@ -212,8 +212,6 @@ source_set("renderer") {
     "shared_l10n_map.cc",
     "shared_l10n_map.h",
     "source_map.h",
-    "static_v8_external_one_byte_string_resource.cc",
-    "static_v8_external_one_byte_string_resource.h",
     "storage_area.cc",
     "storage_area.h",
     "test_api_standardized_behavior_native_handler.cc",
