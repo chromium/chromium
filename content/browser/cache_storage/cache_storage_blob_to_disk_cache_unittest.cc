@@ -216,6 +216,46 @@ TEST_F(CacheStorageBlobToDiskCacheTest, Stream) {
   EXPECT_STREQ(data_.c_str(), ReadCacheContent().c_str());
 }
 
+TEST_F(CacheStorageBlobToDiskCacheTest, StreamEmptyBlobTruncatesExistingData) {
+  auto stream_content = [&](std::string content, bool delay_reads) {
+    blob_handle_.reset();
+    base::RunLoop().RunUntilIdle();
+    data_ = std::move(content);
+    InitBlob();
+    callback_called_ = false;
+    callback_success_ = false;
+    cache_storage_blob_to_disk_cache_ =
+        std::make_unique<TestCacheStorageBlobToDiskCache>(
+            quota_manager_proxy());
+    cache_storage_blob_to_disk_cache_->set_delay_blob_reads(delay_reads);
+    return Stream();
+  };
+
+  // Pre-populate the entry stream and truncate with an empty 0-byte blob.
+  ASSERT_TRUE(Stream());
+  ASSERT_EQ(static_cast<int64_t>(data_.size()),
+            disk_cache_entry_->GetDataSize(kCacheEntryIndex));
+  EXPECT_TRUE(stream_content("", /*delay_reads=*/false));
+  EXPECT_EQ(0, disk_cache_entry_->GetDataSize(kCacheEntryIndex));
+  EXPECT_EQ("", ReadCacheContent());
+
+  // Re-populate and exercise `OnComplete` arriving before pipe closure is read.
+  ASSERT_TRUE(stream_content(kTestData, /*delay_reads=*/false));
+  ASSERT_EQ(static_cast<int64_t>(data_.size()),
+            disk_cache_entry_->GetDataSize(kCacheEntryIndex));
+  EXPECT_FALSE(stream_content("", /*delay_reads=*/true));
+  EXPECT_FALSE(callback_called_);
+
+  cache_storage_blob_to_disk_cache_->set_delay_blob_reads(false);
+  cache_storage_blob_to_disk_cache_->ContinueReadFromBlob();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(callback_called_);
+  EXPECT_TRUE(callback_success_);
+  EXPECT_EQ(0, disk_cache_entry_->GetDataSize(kCacheEntryIndex));
+  EXPECT_EQ("", ReadCacheContent());
+}
+
 TEST_F(CacheStorageBlobToDiskCacheTest, StreamLarge) {
   blob_handle_.reset();
   base::RunLoop().RunUntilIdle();

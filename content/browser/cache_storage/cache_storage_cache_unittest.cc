@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -128,6 +129,10 @@ class DelayableBackend : public disk_cache::Backend {
   EntryResult OpenEntry(const std::string& key,
                         net::RequestPriority request_priority,
                         EntryResultCallback callback) override {
+    if (fail_next_open_entry_) {
+      fail_next_open_entry_ = false;
+      return EntryResult::MakeError(net::ERR_FAILED);
+    }
     if (delay_open_entry_ && open_entry_callback_.is_null()) {
       open_entry_callback_ =
           base::BindOnce(&DelayableBackend::OpenEntryDelayedImpl,
@@ -202,6 +207,8 @@ class DelayableBackend : public disk_cache::Backend {
 
   void set_delay_open_entry(bool value) { delay_open_entry_ = value; }
 
+  void set_fail_next_open_entry(bool value) { fail_next_open_entry_ = value; }
+
   void set_open_entry_started_callback(
       base::OnceClosure open_entry_started_callback) {
     open_entry_started_callback_ = std::move(open_entry_started_callback);
@@ -219,6 +226,7 @@ class DelayableBackend : public disk_cache::Backend {
 
   std::unique_ptr<disk_cache::Backend> backend_;
   bool delay_open_entry_;
+  bool fail_next_open_entry_ = false;
   base::OnceClosure open_entry_callback_;
   base::OnceClosure open_entry_started_callback_;
 };
@@ -1265,6 +1273,43 @@ class CacheStorageCacheTestP : public CacheStorageCacheTest,
                                public testing::WithParamInterface<bool> {
  public:
   bool MemoryOnly() override { return !GetParam(); }
+
+ protected:
+  // Populates `body_request_` with an opaque response containing both body and
+  // side data, then fails the next `OpenEntry()` so the following `Put()`
+  // reopens the existing entry via `OpenOrCreateEntry()`.
+  void PrepareReopenedOpaqueEntry() {
+    ASSERT_TRUE(Keys());
+    DelayableBackend* delayable_backend = cache_->UseDelayableBackend();
+    blink::mojom::FetchAPIResponsePtr populated = CreateOpaqueResponse();
+    CopySideDataToResponse("blob-id:initial-side-data", "initial_side_data",
+                           populated.get());
+    ASSERT_TRUE(Put(body_request_, std::move(populated)));
+    ASSERT_TRUE(Match(body_request_));
+    ASSERT_EQ(network::mojom::FetchResponseType::kOpaque,
+              callback_response_->response_type);
+    ASSERT_TRUE(callback_response_->blob);
+    mojo::Remote<blink::mojom::Blob> initial_blob(
+        std::move(callback_response_->blob->blob));
+    ASSERT_EQ("initial_side_data", CopySideData(initial_blob.get()));
+    delayable_backend->set_fail_next_open_entry(true);
+  }
+
+  blink::mojom::FetchAPIResponsePtr CreateBlobBodyResponseWithContents(
+      const std::string& uuid,
+      std::string_view contents) {
+    auto blob = blink::mojom::SerializedBlob::New();
+    blob->uuid = uuid;
+    blob->size = contents.size();
+    blob_storage_context_->context()->RegisterFromMemory(
+        blob->blob.InitWithNewPipeAndPassReceiver(), uuid,
+        base::as_byte_span(contents));
+
+    blink::mojom::FetchAPIResponsePtr response = CreateNoBodyResponse();
+    response->url_list = {BodyUrl()};
+    response->blob = std::move(blob);
+    return response;
+  }
 };
 
 TEST_P(CacheStorageCacheTestP, PutNoBody) {
@@ -1487,6 +1532,46 @@ TEST_P(CacheStorageCacheTestP, PutReplace) {
   EXPECT_TRUE(Put(body_request_, CreateNoBodyResponse()));
   EXPECT_TRUE(Match(body_request_));
   EXPECT_FALSE(callback_response_->blob);
+}
+
+TEST_P(CacheStorageCacheTestP, PutClearsPreExistingStreamData_NoBody) {
+  ASSERT_NO_FATAL_FAILURE(PrepareReopenedOpaqueEntry());
+
+  ASSERT_TRUE(Put(body_request_, CreateNoBodyResponse()));
+  ASSERT_TRUE(Match(body_request_));
+  EXPECT_EQ(network::mojom::FetchResponseType::kDefault,
+            callback_response_->response_type);
+  EXPECT_FALSE(callback_response_->blob);
+  EXPECT_FALSE(callback_response_->side_data_blob);
+}
+
+TEST_P(CacheStorageCacheTestP, PutClearsPreExistingStreamData_EmptyBlob) {
+  ASSERT_NO_FATAL_FAILURE(PrepareReopenedOpaqueEntry());
+
+  ASSERT_TRUE(Put(body_request_, CreateBlobBodyResponseWithContents(
+                                     "blob-id:empty-blob", "")));
+  ASSERT_TRUE(Match(body_request_));
+  EXPECT_EQ(network::mojom::FetchResponseType::kDefault,
+            callback_response_->response_type);
+  EXPECT_FALSE(callback_response_->blob);
+  EXPECT_FALSE(callback_response_->side_data_blob);
+}
+
+TEST_P(CacheStorageCacheTestP, PutClearsPreExistingStreamData_ShorterBody) {
+  ASSERT_NO_FATAL_FAILURE(PrepareReopenedOpaqueEntry());
+
+  const std::string replacement_data = "short_body";
+  ASSERT_TRUE(
+      Put(body_request_, CreateBlobBodyResponseWithContents(
+                             "blob-id:replacement-blob", replacement_data)));
+  ASSERT_TRUE(Match(body_request_));
+  EXPECT_EQ(network::mojom::FetchResponseType::kDefault,
+            callback_response_->response_type);
+  ASSERT_TRUE(callback_response_->blob);
+  mojo::Remote<blink::mojom::Blob> matched_blob(
+      std::move(callback_response_->blob->blob));
+  EXPECT_EQ(replacement_data, storage::BlobToString(matched_blob.get()));
+  EXPECT_EQ("", CopySideData(matched_blob.get()));
 }
 
 TEST_P(CacheStorageCacheTestP, PutReplaceInBatchFails) {

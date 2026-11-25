@@ -2139,7 +2139,7 @@ void CacheStorageCache::PutWriteBlobToCache(
 
     // If there is no pre-existing data, then proceed to the next
     // step immediately.
-    if (temp_entry_ptr->GetDataSize(disk_cache_body_index) != 0) {
+    if (temp_entry_ptr->GetDataSize(disk_cache_body_index) == 0) {
       std::move(clear_callback).Run(net::OK);
       return;
     }
