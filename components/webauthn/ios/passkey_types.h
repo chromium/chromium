@@ -78,12 +78,6 @@ enum class PasskeyUserVerificationStatus {
 using SharedKey = std::vector<uint8_t>;
 using SharedKeyList = std::vector<SharedKey>;
 
-// Callback to be called once trusted vault keys are fetched by
-// `PasskeyKeychainProvider`.
-// TODO(crbug.com/588274186): Remove once callers migrate to
-// `KeysWithVersionsFetchedCallback`.
-using KeysFetchedCallback = base::OnceCallback<void(SharedKeyList, NSError*)>;
-
 // Callback to be called once trusted vault keys and their versions are fetched
 // by `PasskeyKeychainProvider`.
 using KeysWithVersionsFetchedCallback = base::OnceCallback<

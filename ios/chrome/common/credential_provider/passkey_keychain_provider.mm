@@ -32,15 +32,6 @@ void PasskeyKeychainProvider::Enroll(
 void PasskeyKeychainProvider::FetchKeys(
     NSString* gaia,
     webauthn::ReauthenticatePurpose purpose,
-    webauthn::KeysFetchedCallback callback) {
-  if (!callback.is_null()) {
-    std::move(callback).Run({}, nil);
-  }
-}
-
-void PasskeyKeychainProvider::FetchKeys(
-    NSString* gaia,
-    webauthn::ReauthenticatePurpose purpose,
     webauthn::KeysWithVersionsFetchedCallback callback) {
   if (!callback.is_null()) {
     std::move(callback).Run({}, nil);
@@ -52,17 +43,6 @@ void PasskeyKeychainProvider::MarkKeysAsStale(
     KeysMarkedAsAsStaleCallback callback) {
   if (!callback.is_null()) {
     std::move(callback).Run();
-  }
-}
-
-void PasskeyKeychainProvider::Reauthenticate(
-    NSString* gaia,
-    UINavigationController* navigation_controller,
-    UIView* navigation_item_title_view,
-    webauthn::ReauthenticatePurpose purpose,
-    webauthn::KeysFetchedCallback callback) {
-  if (!callback.is_null()) {
-    std::move(callback).Run({}, nil);
   }
 }
 

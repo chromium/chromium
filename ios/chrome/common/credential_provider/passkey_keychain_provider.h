@@ -53,22 +53,6 @@ class PasskeyKeychainProvider {
               UIView* navigation_item_title_view,
               EnrollCallback callback);
 
-  // Asynchronously fetches the shared keys for the identity identified by
-  // `gaia` and invokes `callback` with the fetched keys.
-  // Deprecated: callers should use the overload taking
-  // `webauthn::KeysWithVersionsFetchedCallback`.
-  // TODO(crbug.com/588274186): Remove once callers migrate to the versioned
-  // overload.
-  // - "gaia" is used to identify the account.
-  // - "purpose" is used to specify if the keys will be used to encrypt or
-  //   decrypt. This is mostly for logging purposes and has no effect on the
-  //   fetched keys.
-  // - "callback" is called once the keys are fetched and receives the fetched
-  //   keys as input (the array will be empty on failure).
-  void FetchKeys(NSString* gaia,
-                 webauthn::ReauthenticatePurpose purpose,
-                 webauthn::KeysFetchedCallback callback);
-
   // Asynchronously fetches the shared keys and their versions for the identity
   // identified by `gaia` and invokes `callback` with the fetched keys.
   // - `gaia` is used to identify the account.
@@ -88,28 +72,6 @@ class PasskeyKeychainProvider {
   // - "gaia" is used to identify the account.
   // - "callback" is called once the keys are marked as stale.
   void MarkKeysAsStale(NSString* gaia, KeysMarkedAsAsStaleCallback callback);
-
-  // Asynchronously reauthenticates the identity identified by `gaia` after the
-  // keys were fetched and invokes `callback` with the fetched keys.
-  // Deprecated: callers should use the overload taking
-  // `webauthn::KeysWithVersionsFetchedCallback`.
-  // TODO(crbug.com/588274186): Remove once callers migrate to the versioned
-  // overload.
-  // - "gaia" is used to identify the account.
-  // - "navigation_controller" is used to display UI for the user to enter
-  //   credentials.
-  // - "navigation_item_title_view" is a branded title view of the
-  //   password manager.
-  // - "purpose" is used to specify if the keys will be used to encrypt or
-  //   decrypt. This is mostly for logging purposes and has no effect on the
-  //   fetched keys.
-  // - "callback" is called once the keys are fetched and receives the fetched
-  //   keys as input (the array will be empty on failure).
-  void Reauthenticate(NSString* gaia,
-                      UINavigationController* navigation_controller,
-                      UIView* navigation_item_title_view,
-                      webauthn::ReauthenticatePurpose purpose,
-                      webauthn::KeysFetchedCallback callback);
 
   // Asynchronously reauthenticates the identity identified by `gaia` after the
   // keys were fetched and invokes `callback` with the fetched keys and their
