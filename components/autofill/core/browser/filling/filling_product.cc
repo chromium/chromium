@@ -187,8 +187,6 @@ FillingProduct GetFillingProductFromSuggestionDataSource(
       return FillingProduct::kCompose;
     case SuggestionGenerator::SuggestionDataSource::kOneTimePassword:
       return FillingProduct::kOneTimePassword;
-    case SuggestionGenerator::SuggestionDataSource::kAtMemoryInactivityNudge:
-      return FillingProduct::kNone;
   }
   NOTREACHED();
 }

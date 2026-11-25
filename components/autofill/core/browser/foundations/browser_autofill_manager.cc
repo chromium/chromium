@@ -125,7 +125,6 @@
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
-#include "components/autofill/core/browser/suggestions/at_memory/at_memory_nudge_generator.h"
 #include "components/autofill/core/browser/suggestions/autocomplete_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/autofill_ai/autofill_ai_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/compose/compose_suggestion_generator.h"
@@ -616,7 +615,7 @@ FillingProductSet GetFillingProductsToSuggest(
     case kAtMemoryKeyboardShortcut:
       return {FillingProduct::kAtMemory};
     case kAtMemoryInactivityNudge:
-      return {FillingProduct::kNone};
+      return {};
     case kGmailOneTimePasswordAvailable:
       return {FillingProduct::kOneTimePassword};
   }
@@ -907,7 +906,6 @@ FilterSuggestionsByPrioritization(
 // still launches asynchronous generators (`kAutocomplete`, `kOneTimePassword`)
 // before synchronous `kAddress` and `kCreditCard` generation.
 constexpr auto kLegacySuggestionGeneratorOrder = std::to_array<FillingProduct>({
-    FillingProduct::kNone,
     FillingProduct::kAutofillAi,
     FillingProduct::kIban,
     FillingProduct::kMerchantPromoCode,
@@ -939,7 +937,6 @@ constexpr auto kSuggestionGeneratorLaunchOrder = std::to_array<FillingProduct>({
     FillingProduct::kIban,
     FillingProduct::kPasskey,
     FillingProduct::kPassword,
-    FillingProduct::kNone,
 });
 
 static_assert(FillingProductSet(kLegacySuggestionGeneratorOrder) ==
@@ -3557,15 +3554,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     const AutofillField& autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
     const std::vector<one_time_tokens::OneTimeToken>& one_time_tokens) {
-  // TODO(crbug.com/489659527): This currently overrides Autofill suggestions if
-  // suggestions were presented to the user after typing started. Fix that.
-  if (trigger_source ==
-      AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge) {
-    // TODO(crbug.com/489659527): Localize the string.
-    return {Suggestion(u"Try searching in Chrome Memory",
-                       SuggestionType::kAtMemoryInactivityNudge)};
-  }
-
   std::vector<Suggestion> suggestions;
   switch (GetPreferredSuggestionFillingProduct(autofill_field.Type())) {
     case FillingProduct::kAddress:
@@ -3708,12 +3696,6 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
   std::vector<std::pair<FillingProduct, std::unique_ptr<SuggestionGenerator>>>
       generators;
   generators.reserve(relevant_filling_products.size());
-
-  if (trigger_source ==
-      AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge) {
-    generators.emplace_back(FillingProduct::kNone,
-                            std::make_unique<AtMemoryNudgeGenerator>());
-  }
 
   if (relevant_filling_products.contains(FillingProduct::kAutofillAi)) {
     generators.emplace_back(FillingProduct::kAutofillAi,
