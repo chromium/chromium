@@ -60,6 +60,15 @@ struct LaunchpadTask {
   std::optional<GURL> actionable_url;
 };
 
+// Generation state and status metadata tracked by `LaunchpadService`.
+struct TasksGenerationMetadata {
+  bool is_generating = false;
+  // TODO(crbug.com/590316128): Populate this from a server-side value instead
+  // of tracking the generation time client-side.
+  std::optional<base::Time> last_generation_time;
+  bool has_error = false;
+};
+
 }  // namespace launchpad
 
 #endif  // CHROME_BROWSER_LAUNCHPAD_LAUNCHPAD_TASK_H_

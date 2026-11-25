@@ -22,6 +22,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/context_hub/topics/topics_feedback_exporter.h"
+#include "chrome/browser/launchpad/launchpad_service.h"
+#include "chrome/browser/launchpad/launchpad_task.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -52,7 +54,8 @@ class ContextHubPageHandler
 #if !BUILDFLAG(IS_ANDROID)
       public context_hub::SkillRecordingService::Observer,
 #endif
-      public context_hub::ContextHubService::Observer {
+      public context_hub::ContextHubService::Observer,
+      public launchpad::LaunchpadService::Observer {
  public:
   class TabProvider {
    public:
@@ -237,6 +240,12 @@ class ContextHubPageHandler
   void GetTasks(GetTasksCallback callback) override;
 
  private:
+  // launchpad::LaunchpadService::Observer:
+  void OnTasksChanged(
+      base::span<const launchpad::LaunchpadTask> tasks) override;
+  void OnTasksGenerationStateChanged(
+      const launchpad::TasksGenerationMetadata& metadata) override;
+
 #if !BUILDFLAG(IS_ANDROID)
   // context_hub::SkillRecordingService::Observer:
   void OnTranscriptUpdate(const std::string& text,
@@ -276,6 +285,9 @@ class ContextHubPageHandler
   base::ScopedObservation<context_hub::ContextHubService,
                           context_hub::ContextHubService::Observer>
       service_observation_{this};
+  base::ScopedObservation<launchpad::LaunchpadService,
+                          launchpad::LaunchpadService::Observer>
+      launchpad_service_observation_{this};
 #if !BUILDFLAG(IS_ANDROID)
   base::ScopedObservation<context_hub::SkillRecordingService,
                           context_hub::SkillRecordingService::Observer>

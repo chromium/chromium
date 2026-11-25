@@ -384,6 +384,16 @@ bool UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
 }
 
 // static
+bool StructTraits<browser::context_hub::mojom::TasksGenerationMetadataDataView,
+                  launchpad::TasksGenerationMetadata>::
+    Read(browser::context_hub::mojom::TasksGenerationMetadataDataView data,
+         launchpad::TasksGenerationMetadata* out) {
+  out->is_generating = data.is_generating();
+  out->has_error = data.has_error();
+  return data.ReadLastGenerationTime(&out->last_generation_time);
+}
+
+// static
 bool StructTraits<browser::context_hub::mojom::LaunchpadTaskDataView,
                   launchpad::LaunchpadTask>::
     Read(browser::context_hub::mojom::LaunchpadTaskDataView data,
@@ -478,9 +488,9 @@ UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
 }
 
 // static
-browser::context_hub::mojom::PhotosReferencePtr UnionTraits<
-    browser::context_hub::mojom::SourceReferenceDataView,
-    personal_context::proto::SourceReference>::
+browser::context_hub::mojom::PhotosReferencePtr
+UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
+            personal_context::proto::SourceReference>::
     photos(const personal_context::proto::SourceReference& ref) {
   auto photos = browser::context_hub::mojom::PhotosReference::New();
   photos->photos_url = GURL(ref.photos().photos_url());

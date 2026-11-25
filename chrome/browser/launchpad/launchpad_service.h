@@ -9,9 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/launchpad/launchpad_task.h"
 #include "chrome/browser/launchpad/tasks_store.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,6 +31,15 @@ namespace launchpad {
 
 class LaunchpadService : public KeyedService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Currently invoked when a generation completes and stores updated tasks.
+    // TODO(b/586299803): Also notify on user task status mutations.
+    virtual void OnTasksChanged(base::span<const LaunchpadTask> tasks) = 0;
+    virtual void OnTasksGenerationStateChanged(
+        const TasksGenerationMetadata& metadata) = 0;
+  };
+
   LaunchpadService(
       Profile* profile,
       personal_context::PersonalContextService* personal_context_service);
@@ -36,19 +48,27 @@ class LaunchpadService : public KeyedService {
   LaunchpadService& operator=(const LaunchpadService&) = delete;
   ~LaunchpadService() override;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   using GenerateTasksCallback = base::OnceCallback<void(
       const std::optional<std::vector<LaunchpadTask>>&)>;
 
   // Generates tasks, saves them in `tasks_store_`, and invokes `callback` on
   // completion (whether successful or not), unless `LaunchpadService` is
   // destroyed first.
+  // While the UI normally disables generation buttons during an active request,
+  // concurrent calls coalesce onto the in-flight request and receive its result
+  // to handle edge cases (e.g. multiple open surfaces, IPC state races, or
+  // non-UI callers) without issuing duplicate fetches.
   void GenerateTasks(GenerateTasksCallback callback);
 
   // Returns true if a task generation request is currently in flight.
-  // TODO(b/586300169): Have the WebUI check `IsGeneratingTasks()` on load and
-  // observe generation state changes so controls are disabled while
-  // generating/writing.
   bool IsGeneratingTasks() const;
+
+  // Returns the current generation state, last success timestamp, and error
+  // status for Launchpad tasks.
+  const TasksGenerationMetadata& GetGenerationMetadata() const;
 
   // Retrieves all tasks currently stored in `tasks_store_`.
   // TODO(b/586300169): Read from server cache when implemented.
@@ -69,8 +89,14 @@ class LaunchpadService : public KeyedService {
 
  private:
   // Handles the async response from the AutoTodos fetch.
-  void OnTasksFetched(GenerateTasksCallback callback,
-                      personal_context::FetchContextResult result);
+  void OnTasksFetched(personal_context::FetchContextResult result);
+
+  // Completes `GenerateTasks()` after newly generated tasks are stored.
+  void OnGeneratedTasksStored(std::vector<LaunchpadTask> stored_tasks);
+
+  // Clears generation state, notifies observers, and resolves pending
+  // `GenerateTasks()` callbacks with `result`.
+  void CompleteTaskGeneration(std::optional<std::vector<LaunchpadTask>> result);
 
   const raw_ref<Profile> profile_;
   const raw_ref<personal_context::PersonalContextService>
@@ -78,9 +104,16 @@ class LaunchpadService : public KeyedService {
 
   TasksStore tasks_store_;
 
-  // Indicates if a `GenerateTasks()` request is currently in flight, enforcing
-  // that only a single generation flow is active at a time.
-  bool is_generating_tasks_ = false;
+  // Tracks whether a generation request is in flight, the last completion
+  // timestamp, and whether the last attempt failed.
+  TasksGenerationMetadata generation_metadata_;
+
+  // Callbacks waiting on the currently in-flight `GenerateTasks()` request.
+  // Coalesces edge-case concurrent calls (e.g. across multiple open UI
+  // surfaces or IPC races before the UI disables the button) onto one fetch.
+  std::vector<GenerateTasksCallback> pending_generate_callbacks_;
+
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
   base::WeakPtrFactory<LaunchpadService> weak_factory_{this};
 };

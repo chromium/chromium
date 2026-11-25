@@ -159,6 +159,16 @@ struct AutoTodosGenerationMetadata {
   bool has_error;
 };
 
+// Metadata describing Launchpad task generation state and last completion.
+struct TasksGenerationMetadata {
+  // Whether a Launchpad task generation request is currently in flight.
+  bool is_generating;
+  // Timestamp of the last successful generation, or null if none yet.
+  mojo_base.mojom.Time? last_generation_time;
+  // Whether the last generation attempt failed.
+  bool has_error;
+};
+
 // Represents a task in Launchpad, sent browser -> WebUI via
 // `PageHandler.GenerateTasks` and `PageHandler.GetTasks`. Values are fetched
 // from CMS, but may be derived from untrusted third-party content (that will
@@ -599,6 +609,19 @@ interface Page {
   [RuntimeFeature=kAutoTabGroups]
   OnAutoTabGroupsPreferencesChanged(string text,
                                     PreferencesChangeSource source);
+
+  // Notifies the WebUI when Launchpad tasks in the cache change. Currently
+  // only emitted when task generation finishes with updated tasks.
+  // Guarded by `launchpad::features::kLaunchpad` flag as the LaunchpadService
+  // is not available otherwise.
+  // TODO(crbug.com/587521550): Add kLaunchpad flag to mojom features and guard.
+  OnTasksChanged(array<LaunchpadTask> tasks);
+
+  // Notifies the WebUI when Launchpad task generation metadata changes.
+  // Guarded by `launchpad::features::kLaunchpad` flag as the LaunchpadService
+  // is not available otherwise.
+  // TODO(crbug.com/587521550): Add kLaunchpad flag to mojom features and guard.
+  OnTasksGenerationStateChanged(TasksGenerationMetadata metadata);
 };
 
 // Types of user actions that can be recorded during a skill recording session.
@@ -996,9 +1019,10 @@ interface PageHandler {
   // TODO(crbug.com/587521550): Add kLaunchpad flag to mojom features and guard.
   GenerateTasks() => (array<LaunchpadTask>? tasks);
 
-  // Returns stored Launchpad tasks from the cache.
+  // Returns stored Launchpad tasks from the cache along with generation
+  // state and completion metadata.
   // Guarded by `launchpad::features::kLaunchpad` flag as the LaunchpadService
   // is not available otherwise.
   // TODO(crbug.com/587521550): Add kLaunchpad flag to mojom features and guard.
-  GetTasks() => (array<LaunchpadTask> tasks);
+  GetTasks() => (array<LaunchpadTask> tasks, TasksGenerationMetadata metadata);
 };

@@ -331,6 +331,29 @@ struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
 };
 
 template <>
+struct StructTraits<
+    browser::context_hub::mojom::TasksGenerationMetadataDataView,
+    launchpad::TasksGenerationMetadata> {
+  static bool is_generating(
+      const launchpad::TasksGenerationMetadata& metadata) {
+    return metadata.is_generating;
+  }
+
+  static const std::optional<base::Time>& last_generation_time(
+      const launchpad::TasksGenerationMetadata& metadata) {
+    return metadata.last_generation_time;
+  }
+
+  static bool has_error(const launchpad::TasksGenerationMetadata& metadata) {
+    return metadata.has_error;
+  }
+
+  static bool Read(
+      browser::context_hub::mojom::TasksGenerationMetadataDataView data,
+      launchpad::TasksGenerationMetadata* out);
+};
+
+template <>
 struct StructTraits<browser::context_hub::mojom::LaunchpadTaskDataView,
                     launchpad::LaunchpadTask> {
   static const std::string& id(const launchpad::LaunchpadTask& task) {

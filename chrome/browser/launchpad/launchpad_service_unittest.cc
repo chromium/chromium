@@ -11,8 +11,12 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -50,8 +54,26 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::FieldsAre;
+using ::testing::IsEmpty;
+using ::testing::Not;
+using ::testing::SizeIs;
 using ::testing::VariantWith;
+
+class MockLaunchpadServiceObserver : public LaunchpadService::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnTasksChanged,
+              (base::span<const LaunchpadTask>),
+              (override));
+  MOCK_METHOD(void,
+              OnTasksGenerationStateChanged,
+              (const TasksGenerationMetadata&),
+              (override));
+};
 
 class LaunchpadServiceTest : public testing::Test {
  public:
@@ -273,12 +295,12 @@ TEST_F(LaunchpadServiceTest, GenerateTasks_TracksIsGeneratingTasksState) {
   service_.GenerateTasks(future_1.GetCallback());
   EXPECT_TRUE(service_.IsGeneratingTasks());
 
-  // While a request is in flight, a second call is rejected without sending
-  // another RPC.
+  // While a request is in flight, a second call coalesces onto the active
+  // request without sending another RPC, and both callbacks receive the result.
   base::test::TestFuture<const std::optional<std::vector<LaunchpadTask>>&>
       future_2;
   service_.GenerateTasks(future_2.GetCallback());
-  EXPECT_FALSE(future_2.Get().has_value());
+  EXPECT_FALSE(future_2.IsReady());
   EXPECT_TRUE(service_.IsGeneratingTasks());
 
   personal_context::proto::AutoTodosResponse response;
@@ -291,7 +313,11 @@ TEST_F(LaunchpadServiceTest, GenerateTasks_TracksIsGeneratingTasksState) {
 
   EXPECT_FALSE(service_.IsGeneratingTasks());
   ASSERT_TRUE(future_1.Get().has_value());
-  EXPECT_EQ(future_1.Get()->size(), 1u);
+  ASSERT_EQ(future_1.Get()->size(), 1u);
+  EXPECT_EQ(future_1.Get()->at(0).id, "task_1");
+  ASSERT_TRUE(future_2.Get().has_value());
+  ASSERT_EQ(future_2.Get()->size(), 1u);
+  EXPECT_EQ(future_2.Get()->at(0).id, "task_1");
 }
 
 TEST_F(LaunchpadServiceTest, GenerateTasks_ServiceErrorPreservesCache) {
@@ -481,6 +507,343 @@ TEST_F(LaunchpadServiceRunTaskTest, RunTaskForProfile_FailsWhenProfileNull) {
 
   EXPECT_FALSE(LaunchpadService::RunTaskForProfile(
       /*profile=*/nullptr, "Task: Reply to Alice", &mock_browser_window_));
+}
+
+TEST_F(LaunchpadServiceTest, GenerateTasks_NotifiesObserversOnSuccess) {
+  personal_context::proto::AutoTodosResponse expected_response;
+  auto* todo = expected_response.add_todos();
+  todo->set_id("task_1");
+  todo->set_title("Test Todo");
+
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::ok(std::move(any_response)))));
+
+  testing::StrictMock<MockLaunchpadServiceObserver> observer;
+  base::ScopedObservation<LaunchpadService, LaunchpadService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(
+        observer,
+        OnTasksGenerationStateChanged(AllOf(
+            Field(&TasksGenerationMetadata::is_generating, true),
+            Field(&TasksGenerationMetadata::last_generation_time, std::nullopt),
+            Field(&TasksGenerationMetadata::has_error, false))));
+    EXPECT_CALL(
+        observer,
+        OnTasksChanged(ElementsAre(Field(&LaunchpadTask::id, "task_1"))));
+    EXPECT_CALL(observer,
+                OnTasksGenerationStateChanged(
+                    AllOf(Field(&TasksGenerationMetadata::is_generating, false),
+                          Field(&TasksGenerationMetadata::last_generation_time,
+                                Not(std::nullopt)),
+                          Field(&TasksGenerationMetadata::has_error, false))));
+  }
+
+  base::test::TestFuture<const std::optional<std::vector<LaunchpadTask>>&>
+      future;
+  service_.GenerateTasks(future.GetCallback());
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_FALSE(service_.GetGenerationMetadata().is_generating);
+  EXPECT_TRUE(
+      service_.GetGenerationMetadata().last_generation_time.has_value());
+  EXPECT_FALSE(service_.GetGenerationMetadata().has_error);
+}
+
+TEST_F(LaunchpadServiceTest, GenerateTasks_NotifiesObserversOnEmptySuccess) {
+  personal_context::proto::AutoTodosResponse expected_response;
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::ok(std::move(any_response)))));
+
+  testing::StrictMock<MockLaunchpadServiceObserver> observer;
+  base::ScopedObservation<LaunchpadService, LaunchpadService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(observer, OnTasksGenerationStateChanged(Field(
+                              &TasksGenerationMetadata::is_generating, true)));
+    EXPECT_CALL(observer, OnTasksChanged(IsEmpty()));
+    EXPECT_CALL(observer,
+                OnTasksGenerationStateChanged(
+                    AllOf(Field(&TasksGenerationMetadata::is_generating, false),
+                          Field(&TasksGenerationMetadata::last_generation_time,
+                                Not(std::nullopt)),
+                          Field(&TasksGenerationMetadata::has_error, false))));
+  }
+
+  base::test::TestFuture<const std::optional<std::vector<LaunchpadTask>>&>
+      future;
+  service_.GenerateTasks(future.GetCallback());
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_TRUE(future.Get()->empty());
+}
+
+TEST_F(LaunchpadServiceTest, GenerateTasks_NotifiesObserversOnError) {
+  personal_context::ContextMemoryError expected_error =
+      personal_context::ContextMemoryError::FromExecutionError(
+          personal_context::ContextMemoryError::ExecutionError::
+              kGenericFailure);
+
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::unexpected(expected_error))));
+
+  testing::StrictMock<MockLaunchpadServiceObserver> observer;
+  base::ScopedObservation<LaunchpadService, LaunchpadService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(observer, OnTasksGenerationStateChanged(Field(
+                              &TasksGenerationMetadata::is_generating, true)));
+    EXPECT_CALL(
+        observer,
+        OnTasksGenerationStateChanged(AllOf(
+            Field(&TasksGenerationMetadata::is_generating, false),
+            Field(&TasksGenerationMetadata::last_generation_time, std::nullopt),
+            Field(&TasksGenerationMetadata::has_error, true))));
+  }
+  EXPECT_CALL(observer, OnTasksChanged(_)).Times(0);
+
+  base::test::TestFuture<const std::optional<std::vector<LaunchpadTask>>&>
+      future;
+  service_.GenerateTasks(future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_TRUE(service_.GetGenerationMetadata().has_error);
+  EXPECT_FALSE(
+      service_.GetGenerationMetadata().last_generation_time.has_value());
+}
+
+TEST_F(LaunchpadServiceTest,
+       GenerateTasks_ConcurrentCallCoalescesAndDoesNotNotifyObserversAgain) {
+  personal_context::FetchContextCallback saved_callback;
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce([&](personal_context::proto::ContextMemoryFeature,
+                    const google::protobuf::MessageLite&,
+                    const personal_context::ContextMemoryRequestOptions&,
+                    personal_context::FetchContextCallback callback) {
+        saved_callback = std::move(callback);
+      });
+
+  testing::StrictMock<MockLaunchpadServiceObserver> observer;
+  base::ScopedObservation<LaunchpadService, LaunchpadService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  EXPECT_CALL(observer, OnTasksGenerationStateChanged(Field(
+                            &TasksGenerationMetadata::is_generating, true)))
+      .Times(1);
+
+  base::test::TestFuture<const std::optional<std::vector<LaunchpadTask>>&>
+      future_1;
+  service_.GenerateTasks(future_1.GetCallback());
+
+  base::test::TestFuture<const std::optional<std::vector<LaunchpadTask>>&>
+      future_2;
+  service_.GenerateTasks(future_2.GetCallback());
+  EXPECT_FALSE(future_2.IsReady());
+
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnTasksChanged(SizeIs(1)));
+  EXPECT_CALL(observer,
+              OnTasksGenerationStateChanged(
+                  AllOf(Field(&TasksGenerationMetadata::is_generating, false),
+                        Field(&TasksGenerationMetadata::last_generation_time,
+                              Not(std::nullopt)),
+                        Field(&TasksGenerationMetadata::has_error, false))));
+
+  personal_context::proto::AutoTodosResponse response;
+  response.add_todos()->set_id("task_1");
+  personal_context::proto::Any any_response;
+  response.SerializeToString(any_response.mutable_value());
+  std::move(saved_callback)
+      .Run(personal_context::FetchContextResult(
+          base::ok(std::move(any_response))));
+  ASSERT_TRUE(future_1.Get().has_value());
+  ASSERT_TRUE(future_2.Get().has_value());
+  EXPECT_EQ(future_2.Get()->size(), 1u);
+}
+
+TEST_F(LaunchpadServiceTest,
+       GenerateTasks_StartsNewGenerationFromCompletionCallback) {
+  personal_context::FetchContextCallback second_callback;
+  personal_context::proto::AutoTodosResponse first_response;
+  first_response.add_todos()->set_id("task_1");
+  personal_context::proto::Any first_any;
+  first_response.SerializeToString(first_any.mutable_value());
+
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(std::move(first_any)))))
+      .WillOnce([&](personal_context::proto::ContextMemoryFeature,
+                    const google::protobuf::MessageLite&,
+                    const personal_context::ContextMemoryRequestOptions&,
+                    personal_context::FetchContextCallback callback) {
+        second_callback = std::move(callback);
+      });
+
+  testing::StrictMock<MockLaunchpadServiceObserver> observer;
+  base::ScopedObservation<LaunchpadService, LaunchpadService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(observer, OnTasksGenerationStateChanged(Field(
+                              &TasksGenerationMetadata::is_generating, true)))
+        .Times(1);
+    EXPECT_CALL(observer, OnTasksChanged(SizeIs(1))).Times(1);
+    EXPECT_CALL(observer, OnTasksGenerationStateChanged(Field(
+                              &TasksGenerationMetadata::is_generating, false)))
+        .Times(1);
+    EXPECT_CALL(observer, OnTasksGenerationStateChanged(Field(
+                              &TasksGenerationMetadata::is_generating, true)))
+        .Times(1);
+  }
+
+  base::RunLoop run_loop;
+  base::test::TestFuture<const std::optional<std::vector<LaunchpadTask>>&>
+      second_future;
+  service_.GenerateTasks(base::BindLambdaForTesting(
+      [&](const std::optional<std::vector<LaunchpadTask>>& first_result) {
+        ASSERT_TRUE(first_result.has_value());
+        EXPECT_EQ(first_result->size(), 1u);
+        service_.GenerateTasks(second_future.GetCallback());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_TRUE(service_.IsGeneratingTasks());
+
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnTasksChanged(SizeIs(1)));
+  EXPECT_CALL(observer,
+              OnTasksGenerationStateChanged(
+                  AllOf(Field(&TasksGenerationMetadata::is_generating, false),
+                        Field(&TasksGenerationMetadata::last_generation_time,
+                              Not(std::nullopt)),
+                        Field(&TasksGenerationMetadata::has_error, false))));
+
+  personal_context::proto::AutoTodosResponse second_response;
+  second_response.add_todos()->set_id("task_2");
+  personal_context::proto::Any second_any;
+  second_response.SerializeToString(second_any.mutable_value());
+  std::move(second_callback)
+      .Run(personal_context::FetchContextResult(
+          base::ok(std::move(second_any))));
+  ASSERT_TRUE(second_future.Get().has_value());
+  EXPECT_EQ(second_future.Get()->size(), 1u);
+  EXPECT_FALSE(service_.IsGeneratingTasks());
+}
+
+TEST_F(LaunchpadServiceTest, GenerateTasks_StartsRetryFromErrorCallback) {
+  personal_context::ContextMemoryError expected_error =
+      personal_context::ContextMemoryError::FromExecutionError(
+          personal_context::ContextMemoryError::ExecutionError::
+              kGenericFailure);
+  personal_context::FetchContextCallback second_callback;
+
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::unexpected(expected_error))))
+      .WillOnce([&](personal_context::proto::ContextMemoryFeature,
+                    const google::protobuf::MessageLite&,
+                    const personal_context::ContextMemoryRequestOptions&,
+                    personal_context::FetchContextCallback callback) {
+        second_callback = std::move(callback);
+      });
+
+  testing::StrictMock<MockLaunchpadServiceObserver> observer;
+  base::ScopedObservation<LaunchpadService, LaunchpadService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(observer,
+                OnTasksGenerationStateChanged(
+                    AllOf(Field(&TasksGenerationMetadata::is_generating, true),
+                          Field(&TasksGenerationMetadata::has_error, false))))
+        .Times(1);
+    EXPECT_CALL(observer,
+                OnTasksGenerationStateChanged(
+                    AllOf(Field(&TasksGenerationMetadata::is_generating, false),
+                          Field(&TasksGenerationMetadata::has_error, true))))
+        .Times(1);
+    EXPECT_CALL(observer,
+                OnTasksGenerationStateChanged(
+                    AllOf(Field(&TasksGenerationMetadata::is_generating, true),
+                          Field(&TasksGenerationMetadata::has_error, false))))
+        .Times(1);
+  }
+  EXPECT_CALL(observer, OnTasksChanged(_)).Times(0);
+
+  base::RunLoop run_loop;
+  base::test::TestFuture<const std::optional<std::vector<LaunchpadTask>>&>
+      retry_future;
+  service_.GenerateTasks(base::BindLambdaForTesting(
+      [&](const std::optional<std::vector<LaunchpadTask>>& first_result) {
+        EXPECT_FALSE(first_result.has_value());
+        service_.GenerateTasks(retry_future.GetCallback());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_TRUE(service_.IsGeneratingTasks());
+  EXPECT_FALSE(service_.GetGenerationMetadata().has_error);
+  EXPECT_FALSE(retry_future.IsReady());
+
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnTasksChanged(SizeIs(1)));
+  EXPECT_CALL(observer,
+              OnTasksGenerationStateChanged(
+                  AllOf(Field(&TasksGenerationMetadata::is_generating, false),
+                        Field(&TasksGenerationMetadata::last_generation_time,
+                              Not(std::nullopt)),
+                        Field(&TasksGenerationMetadata::has_error, false))));
+
+  personal_context::proto::AutoTodosResponse second_response;
+  second_response.add_todos()->set_id("task_2");
+  personal_context::proto::Any second_any;
+  second_response.SerializeToString(second_any.mutable_value());
+  std::move(second_callback)
+      .Run(personal_context::FetchContextResult(
+          base::ok(std::move(second_any))));
+  ASSERT_TRUE(retry_future.Get().has_value());
+  EXPECT_EQ(retry_future.Get()->size(), 1u);
+  EXPECT_FALSE(service_.IsGeneratingTasks());
 }
 
 }  // namespace

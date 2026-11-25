@@ -253,6 +253,14 @@ class MockPage : public browser::context_hub::mojom::Page {
               (bool),
               (override));
   MOCK_METHOD(void,
+              OnTasksChanged,
+              (const std::vector<launchpad::LaunchpadTask>&),
+              (override));
+  MOCK_METHOD(void,
+              OnTasksGenerationStateChanged,
+              (const launchpad::TasksGenerationMetadata&),
+              (override));
+  MOCK_METHOD(void,
               OnThirdPartyAutoTodosGenerationStateChanged,
               (bool),
               (override));
@@ -620,6 +628,21 @@ TEST_F(ContextHubPageHandlerTest, GenerateTasks_Success) {
       .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
           base::ok(std::move(any_response)))));
 
+  {
+    testing::InSequence s;
+    EXPECT_CALL(mock_page_,
+                OnTasksGenerationStateChanged(Field(
+                    &launchpad::TasksGenerationMetadata::is_generating, true)));
+    EXPECT_CALL(mock_page_, OnTasksChanged(_));
+    EXPECT_CALL(
+        mock_page_,
+        OnTasksGenerationStateChanged(AllOf(
+            Field(&launchpad::TasksGenerationMetadata::is_generating, false),
+            Field(&launchpad::TasksGenerationMetadata::last_generation_time,
+                  Not(std::nullopt)),
+            Field(&launchpad::TasksGenerationMetadata::has_error, false))));
+  }
+
   base::test::TestFuture<
       const std::optional<std::vector<launchpad::LaunchpadTask>>&>
       future;
@@ -627,6 +650,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateTasks_Success) {
 
   const std::optional<std::vector<launchpad::LaunchpadTask>>& tasks =
       future.Get();
+  mock_page_.Flush();
   ASSERT_TRUE(tasks.has_value());
   ASSERT_EQ(tasks->size(), 1u);
   EXPECT_EQ((*tasks)[0].id, "task-id-1");
@@ -671,6 +695,21 @@ TEST_F(ContextHubPageHandlerTest, GenerateTasks_WithSourceReferences) {
       .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
           base::ok(std::move(any_response)))));
 
+  {
+    testing::InSequence s;
+    EXPECT_CALL(mock_page_,
+                OnTasksGenerationStateChanged(Field(
+                    &launchpad::TasksGenerationMetadata::is_generating, true)));
+    EXPECT_CALL(mock_page_, OnTasksChanged(_));
+    EXPECT_CALL(
+        mock_page_,
+        OnTasksGenerationStateChanged(AllOf(
+            Field(&launchpad::TasksGenerationMetadata::is_generating, false),
+            Field(&launchpad::TasksGenerationMetadata::last_generation_time,
+                  Not(std::nullopt)),
+            Field(&launchpad::TasksGenerationMetadata::has_error, false))));
+  }
+
   base::test::TestFuture<
       const std::optional<std::vector<launchpad::LaunchpadTask>>&>
       future;
@@ -678,6 +717,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateTasks_WithSourceReferences) {
 
   const std::optional<std::vector<launchpad::LaunchpadTask>>& tasks =
       future.Get();
+  mock_page_.Flush();
   ASSERT_TRUE(tasks.has_value());
   ASSERT_EQ(tasks->size(), 1u);
   EXPECT_EQ((*tasks)[0].id, "task-id-2");
@@ -706,6 +746,21 @@ TEST_F(ContextHubPageHandlerTest, GenerateTasks_Empty) {
       .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
           base::ok(std::move(any_response)))));
 
+  {
+    testing::InSequence s;
+    EXPECT_CALL(mock_page_,
+                OnTasksGenerationStateChanged(Field(
+                    &launchpad::TasksGenerationMetadata::is_generating, true)));
+    EXPECT_CALL(mock_page_, OnTasksChanged(IsEmpty()));
+    EXPECT_CALL(
+        mock_page_,
+        OnTasksGenerationStateChanged(AllOf(
+            Field(&launchpad::TasksGenerationMetadata::is_generating, false),
+            Field(&launchpad::TasksGenerationMetadata::last_generation_time,
+                  Not(std::nullopt)),
+            Field(&launchpad::TasksGenerationMetadata::has_error, false))));
+  }
+
   base::test::TestFuture<
       const std::optional<std::vector<launchpad::LaunchpadTask>>&>
       future;
@@ -713,6 +768,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateTasks_Empty) {
 
   const std::optional<std::vector<launchpad::LaunchpadTask>>& tasks =
       future.Get();
+  mock_page_.Flush();
   ASSERT_TRUE(tasks.has_value());
   EXPECT_TRUE(tasks->empty());
 }
@@ -748,17 +804,38 @@ TEST_F(ContextHubPageHandlerTest, GenerateTasks_Failure) {
                   personal_context::ContextMemoryError::ExecutionError::
                       kUnknown)))));
 
+  {
+    testing::InSequence s;
+    EXPECT_CALL(mock_page_,
+                OnTasksGenerationStateChanged(Field(
+                    &launchpad::TasksGenerationMetadata::is_generating, true)));
+    EXPECT_CALL(
+        mock_page_,
+        OnTasksGenerationStateChanged(AllOf(
+            Field(&launchpad::TasksGenerationMetadata::is_generating, false),
+            Field(&launchpad::TasksGenerationMetadata::last_generation_time,
+                  std::nullopt),
+            Field(&launchpad::TasksGenerationMetadata::has_error, true))));
+  }
+  EXPECT_CALL(mock_page_, OnTasksChanged(_)).Times(0);
+
   base::test::TestFuture<
       const std::optional<std::vector<launchpad::LaunchpadTask>>&>
       future;
   handler_->GenerateTasks(future.GetCallback());
   EXPECT_FALSE(future.Get().has_value());
+  mock_page_.Flush();
 }
 
 TEST_F(ContextHubPageHandlerTest, GetTasks_Empty) {
-  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&> future;
+  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&,
+                         const launchpad::TasksGenerationMetadata&>
+      future;
   handler_->GetTasks(future.GetCallback());
-  EXPECT_TRUE(future.Get().empty());
+  EXPECT_TRUE(future.Get<0>().empty());
+  EXPECT_FALSE(future.Get<1>().is_generating);
+  EXPECT_FALSE(future.Get<1>().last_generation_time.has_value());
+  EXPECT_FALSE(future.Get<1>().has_error);
 }
 
 TEST_F(ContextHubPageHandlerTest, GetTasks_ReturnsCachedTasks) {
@@ -778,20 +855,40 @@ TEST_F(ContextHubPageHandlerTest, GetTasks_ReturnsCachedTasks) {
       .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
           base::ok(std::move(any_response)))));
 
+  {
+    testing::InSequence s;
+    EXPECT_CALL(mock_page_,
+                OnTasksGenerationStateChanged(Field(
+                    &launchpad::TasksGenerationMetadata::is_generating, true)));
+    EXPECT_CALL(mock_page_, OnTasksChanged(_));
+    EXPECT_CALL(
+        mock_page_,
+        OnTasksGenerationStateChanged(AllOf(
+            Field(&launchpad::TasksGenerationMetadata::is_generating, false),
+            Field(&launchpad::TasksGenerationMetadata::last_generation_time,
+                  Not(std::nullopt)),
+            Field(&launchpad::TasksGenerationMetadata::has_error, false))));
+  }
+
   base::test::TestFuture<
       const std::optional<std::vector<launchpad::LaunchpadTask>>&>
       gen_future;
   handler_->GenerateTasks(gen_future.GetCallback());
   ASSERT_TRUE(gen_future.Get().has_value());
+  mock_page_.Flush();
 
-  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&>
+  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&,
+                         const launchpad::TasksGenerationMetadata&>
       get_future;
   handler_->GetTasks(get_future.GetCallback());
-  const std::vector<launchpad::LaunchpadTask>& tasks = get_future.Get();
+  const std::vector<launchpad::LaunchpadTask>& tasks = get_future.Get<0>();
   ASSERT_EQ(tasks.size(), 1u);
   EXPECT_EQ(tasks[0].id, "task-id-1");
   EXPECT_EQ(tasks[0].title, "Cached Task Title");
   EXPECT_EQ(tasks[0].description, "Cached Task Description");
+  EXPECT_FALSE(get_future.Get<1>().is_generating);
+  EXPECT_TRUE(get_future.Get<1>().last_generation_time.has_value());
+  EXPECT_FALSE(get_future.Get<1>().has_error);
 }
 
 TEST_F(ContextHubPageHandlerTest, GetTasks_LaunchpadDisabled) {
@@ -807,9 +904,86 @@ TEST_F(ContextHubPageHandlerTest, GetTasks_LaunchpadDisabled) {
       mojo::PendingReceiver<browser::context_hub::mojom::PageHandler>(),
       &disabled_profile, nullptr, nullptr);
 
-  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&> future;
+  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&,
+                         const launchpad::TasksGenerationMetadata&>
+      future;
   disabled_handler.GetTasks(future.GetCallback());
-  EXPECT_TRUE(future.Get().empty());
+  EXPECT_TRUE(future.Get<0>().empty());
+  EXPECT_FALSE(future.Get<1>().is_generating);
+  EXPECT_FALSE(future.Get<1>().last_generation_time.has_value());
+  EXPECT_FALSE(future.Get<1>().has_error);
+}
+
+TEST_F(ContextHubPageHandlerTest, GetTasks_TracksInFlightGenerationState) {
+  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&,
+                         const launchpad::TasksGenerationMetadata&>
+      initial_future;
+  handler_->GetTasks(initial_future.GetCallback());
+  EXPECT_TRUE(initial_future.Get<0>().empty());
+  EXPECT_FALSE(initial_future.Get<1>().is_generating);
+  EXPECT_FALSE(initial_future.Get<1>().last_generation_time.has_value());
+  EXPECT_FALSE(initial_future.Get<1>().has_error);
+
+  launchpad::LaunchpadService* service =
+      LaunchpadServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  personal_context::FetchContextCallback saved_callback;
+  EXPECT_CALL(
+      *GetMockService(),
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce([&](personal_context::proto::ContextMemoryFeature,
+                    const google::protobuf::MessageLite&,
+                    const personal_context::ContextMemoryRequestOptions&,
+                    personal_context::FetchContextCallback callback) {
+        saved_callback = std::move(callback);
+      });
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(mock_page_,
+                OnTasksGenerationStateChanged(Field(
+                    &launchpad::TasksGenerationMetadata::is_generating, true)));
+    EXPECT_CALL(mock_page_, OnTasksChanged(_));
+    EXPECT_CALL(
+        mock_page_,
+        OnTasksGenerationStateChanged(AllOf(
+            Field(&launchpad::TasksGenerationMetadata::is_generating, false),
+            Field(&launchpad::TasksGenerationMetadata::last_generation_time,
+                  Not(std::nullopt)),
+            Field(&launchpad::TasksGenerationMetadata::has_error, false))));
+  }
+
+  service->GenerateTasks(base::DoNothing());
+  mock_page_.Flush();
+
+  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&,
+                         const launchpad::TasksGenerationMetadata&>
+      in_flight_future;
+  handler_->GetTasks(in_flight_future.GetCallback());
+  EXPECT_TRUE(in_flight_future.Get<0>().empty());
+  EXPECT_TRUE(in_flight_future.Get<1>().is_generating);
+  EXPECT_FALSE(in_flight_future.Get<1>().last_generation_time.has_value());
+  EXPECT_FALSE(in_flight_future.Get<1>().has_error);
+
+  personal_context::proto::AutoTodosResponse response;
+  response.add_todos()->set_id("task-id-1");
+  personal_context::proto::Any any_response;
+  response.SerializeToString(any_response.mutable_value());
+  std::move(saved_callback)
+      .Run(personal_context::FetchContextResult(
+          base::ok(std::move(any_response))));
+  mock_page_.Flush();
+
+  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&,
+                         const launchpad::TasksGenerationMetadata&>
+      done_future;
+  handler_->GetTasks(done_future.GetCallback());
+  ASSERT_EQ(done_future.Get<0>().size(), 1u);
+  EXPECT_FALSE(done_future.Get<1>().is_generating);
+  EXPECT_TRUE(done_future.Get<1>().last_generation_time.has_value());
+  EXPECT_FALSE(done_future.Get<1>().has_error);
 }
 
 TEST_F(ContextHubPageHandlerTest, InitialStatePushedIfGenerationInFlight) {

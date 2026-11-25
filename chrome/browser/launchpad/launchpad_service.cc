@@ -137,24 +137,45 @@ LaunchpadService::LaunchpadService(
 
 LaunchpadService::~LaunchpadService() = default;
 
+void LaunchpadService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void LaunchpadService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void LaunchpadService::GenerateTasks(GenerateTasksCallback callback) {
-  if (is_generating_tasks_) {
-    std::move(callback).Run(std::nullopt);
+  if (callback) {
+    pending_generate_callbacks_.push_back(std::move(callback));
+  }
+
+  // While the UI normally disables generation buttons while generating, attach
+  // to the in-flight request instead of starting a duplicate fetch to handle
+  // edge cases (e.g. multiple open surfaces, IPC races, or non-UI callers).
+  if (generation_metadata_.is_generating) {
     return;
   }
 
-  is_generating_tasks_ = true;
+  generation_metadata_.is_generating = true;
+  generation_metadata_.has_error = false;
+  observers_.Notify(&Observer::OnTasksGenerationStateChanged,
+                    generation_metadata_);
 
   personal_context::proto::AutoTodosRequest request_metadata;
   personal_context_service_->FetchContext(
       personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
       request_metadata, /*options=*/{},
       base::BindOnce(&LaunchpadService::OnTasksFetched,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 bool LaunchpadService::IsGeneratingTasks() const {
-  return is_generating_tasks_;
+  return generation_metadata_.is_generating;
+}
+
+const TasksGenerationMetadata& LaunchpadService::GetGenerationMetadata() const {
+  return generation_metadata_;
 }
 
 void LaunchpadService::GetAllTasks(
@@ -199,18 +220,11 @@ bool LaunchpadService::RunTaskForProfile(
 }
 
 void LaunchpadService::OnTasksFetched(
-    GenerateTasksCallback callback,
     personal_context::FetchContextResult result) {
-  is_generating_tasks_ = false;
-
-  if (!result.response.has_value()) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
   personal_context::proto::AutoTodosResponse response;
-  if (!response.ParseFromString(result.response->value())) {
-    std::move(callback).Run(std::nullopt);
+  if (!result.response.has_value() ||
+      !response.ParseFromString(result.response->value())) {
+    CompleteTaskGeneration(std::nullopt);
     return;
   }
 
@@ -223,11 +237,32 @@ void LaunchpadService::OnTasksFetched(
 
   tasks_store_.AddAllTasks(tasks, base::DoNothing());
   tasks_store_.GetAllTasks(base::BindOnce(
-      [](GenerateTasksCallback callback,
-         std::vector<LaunchpadTask> stored_tasks) {
-        std::move(callback).Run(std::move(stored_tasks));
-      },
-      std::move(callback)));
+      &LaunchpadService::OnGeneratedTasksStored, weak_factory_.GetWeakPtr()));
+}
+
+void LaunchpadService::OnGeneratedTasksStored(
+    std::vector<LaunchpadTask> stored_tasks) {
+  CompleteTaskGeneration(std::move(stored_tasks));
+}
+
+void LaunchpadService::CompleteTaskGeneration(
+    std::optional<std::vector<LaunchpadTask>> result) {
+  std::vector<GenerateTasksCallback> callbacks =
+      std::exchange(pending_generate_callbacks_, {});
+  if (generation_metadata_.is_generating) {
+    generation_metadata_.is_generating = false;
+    if (result.has_value()) {
+      generation_metadata_.last_generation_time = base::Time::Now();
+      observers_.Notify(&Observer::OnTasksChanged, *result);
+    } else {
+      generation_metadata_.has_error = true;
+    }
+    observers_.Notify(&Observer::OnTasksGenerationStateChanged,
+                      generation_metadata_);
+  }
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(result);
+  }
 }
 
 }  // namespace launchpad

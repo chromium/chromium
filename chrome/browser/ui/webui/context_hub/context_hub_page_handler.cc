@@ -420,8 +420,10 @@ ContextHubPageHandler::ContextHubPageHandler(
       page_->OnFirstPartyAutoTodosGenerationStateChanged(true);
     }
   }
-  // TODO(b/586300169): Observe `LaunchpadService` and forward task and
-  // generation state updates to `page_`.
+  if (launchpad::LaunchpadService* launchpad_service =
+          LaunchpadServiceFactory::GetForProfile(profile_)) {
+    launchpad_service_observation_.Observe(launchpad_service);
+  }
 #if !BUILDFLAG(IS_ANDROID)
   // Proactively prune stale clipboard staging directories (>1 hour old)
   // created during prior sessions so temporary user notes do not linger in
@@ -514,6 +516,17 @@ void ContextHubPageHandler::OnMemoryBankEntryUpdated(
 void ContextHubPageHandler::OnMemoryBankEntriesDeleted(
     const std::vector<int64_t>& ids) {
   page_->OnMemoryBankEntriesDeleted(ids);
+}
+
+void ContextHubPageHandler::OnTasksChanged(
+    base::span<const launchpad::LaunchpadTask> tasks) {
+  page_->OnTasksChanged(
+      std::vector<launchpad::LaunchpadTask>(tasks.begin(), tasks.end()));
+}
+
+void ContextHubPageHandler::OnTasksGenerationStateChanged(
+    const launchpad::TasksGenerationMetadata& metadata) {
+  page_->OnTasksGenerationStateChanged(metadata);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2106,15 +2119,19 @@ void ContextHubPageHandler::GetTasks(GetTasksCallback callback) {
   launchpad::LaunchpadService* service =
       LaunchpadServiceFactory::GetForProfile(profile_);
   if (!service) {
-    std::move(callback).Run({});
+    std::move(callback).Run({}, launchpad::TasksGenerationMetadata());
     return;
   }
 
+  const launchpad::TasksGenerationMetadata metadata =
+      service->GetGenerationMetadata();
   service->GetAllTasks(base::BindOnce(
-      [](GetTasksCallback callback,
+      [](GetTasksCallback callback, launchpad::TasksGenerationMetadata metadata,
          std::vector<launchpad::LaunchpadTask> tasks) {
-        std::move(callback).Run(tasks);
+        std::move(callback).Run(std::move(tasks), std::move(metadata));
       },
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(callback), std::vector<launchpad::LaunchpadTask>())));
+          std::move(callback), std::vector<launchpad::LaunchpadTask>(),
+          metadata),
+      metadata));
 }

@@ -60,6 +60,10 @@ mojom("mojo_bindings") {
           cpp = "::context_hub::AutoTodosGenerationMetadata"
         },
         {
+          mojom = "browser.context_hub.mojom.TasksGenerationMetadata"
+          cpp = "::launchpad::TasksGenerationMetadata"
+        },
+        {
           mojom = "browser.context_hub.mojom.LaunchpadTask"
           cpp = "::launchpad::LaunchpadTask"
         },
@@ -110,6 +114,7 @@ source_set("context_hub_page_handler") {
   public_deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser/launchpad",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/webui",
@@ -119,7 +124,6 @@ source_set("context_hub_page_handler") {
     "//chrome/browser/context_hub",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
-    "//chrome/browser/launchpad",
     "//chrome/browser/page_image_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
