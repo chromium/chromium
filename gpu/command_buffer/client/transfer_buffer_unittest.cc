@@ -22,6 +22,7 @@
 using ::testing::_;
 using ::testing::AtMost;
 using ::testing::DoAll;
+using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SetArgPointee;
@@ -734,15 +735,29 @@ TEST_F(TransferBufferExpandContractTest, OutOfMemory) {
   // See it's freed.
   EXPECT_FALSE(transfer_buffer_->HaveBuffer());
 
-  // Try to allocate again, fail both requests.
-  EXPECT_CALL(*command_buffer(), CreateTransferBuffer(_, _, _, _))
-      .WillOnce(
-          DoAll(SetArgPointee<1>(-1), Return(scoped_refptr<gpu::Buffer>())))
-      .WillOnce(
-          DoAll(SetArgPointee<1>(-1), Return(scoped_refptr<gpu::Buffer>())))
-      .WillOnce(
-          DoAll(SetArgPointee<1>(-1), Return(scoped_refptr<gpu::Buffer>())))
-      .RetiresOnSaturation();
+  // Try to allocate again, fail all requests. Only the last (minimum size)
+  // attempt may lose the context.
+  {
+    InSequence sequence;
+    EXPECT_CALL(
+        *command_buffer(),
+        CreateTransferBuffer(kStartTransferBufferSize * 2, _, _,
+                             TransferBufferAllocationOption::kReturnNullOnOOM))
+        .WillOnce(
+            DoAll(SetArgPointee<1>(-1), Return(scoped_refptr<gpu::Buffer>())));
+    EXPECT_CALL(
+        *command_buffer(),
+        CreateTransferBuffer(kStartTransferBufferSize, _, _,
+                             TransferBufferAllocationOption::kReturnNullOnOOM))
+        .WillOnce(
+            DoAll(SetArgPointee<1>(-1), Return(scoped_refptr<gpu::Buffer>())));
+    EXPECT_CALL(
+        *command_buffer(),
+        CreateTransferBuffer(kMinTransferBufferSize, _, _,
+                             TransferBufferAllocationOption::kLoseContextOnOOM))
+        .WillOnce(
+            DoAll(SetArgPointee<1>(-1), Return(scoped_refptr<gpu::Buffer>())));
+  }
 
   const uint32_t kSize1 = 512 - kStartingOffset;
   base::span<uint8_t> data = transfer_buffer_->AllocUpTo(kSize1);

@@ -15,11 +15,21 @@
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/numerics/clamped_math.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 
 namespace gpu {
+
+namespace {
+
+// Kill switch for retrying smaller TransferBuffer sizes on shared memory OOM
+// instead of losing the context on the first failed allocation.
+BASE_FEATURE(kRetrySmallerTransferBufferOnOOM,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 TransferBuffer::TransferBuffer(CommandBufferHelper* helper)
     : helper_(helper),
@@ -120,10 +130,16 @@ unsigned int TransferBuffer::GetMaxSize() const {
 }
 
 void TransferBuffer::AllocateRingBuffer(unsigned int size) {
+  const bool retry_on_oom =
+      base::FeatureList::IsEnabled(kRetrySmallerTransferBufferOnOOM);
   for (;size >= min_buffer_size_; size /= 2) {
     int32_t id = -1;
     scoped_refptr<gpu::Buffer> buffer =
-        helper_->command_buffer()->CreateTransferBuffer(size, &id, alignment_);
+        helper_->command_buffer()->CreateTransferBuffer(
+            size, &id, alignment_,
+            retry_on_oom && size / 2 >= min_buffer_size_
+                ? TransferBufferAllocationOption::kReturnNullOnOOM
+                : TransferBufferAllocationOption::kLoseContextOnOOM);
     if (id != -1) {
       last_allocated_size_ = size;
       DCHECK(buffer.get());
