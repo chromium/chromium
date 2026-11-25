@@ -427,9 +427,7 @@ config("compiler") {
   # optimizations. This flag must be consistently set for both module
   # precompilation and normal source compilation, which means it's enabled for
   # some targets even in debug builds.
-  if (is_win && is_clang) {
-    cflags += [ "/clang:-fno-math-errno" ]
-  } else if (!is_win) {
+  if (!is_win || is_clang) {
     cflags += [ "-fno-math-errno" ]
   }
 
