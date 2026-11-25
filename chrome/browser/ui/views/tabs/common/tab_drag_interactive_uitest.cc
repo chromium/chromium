@@ -2551,8 +2551,16 @@ IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest, DragTabReorders) {
       }));
 }
 
+// TODO(crbug.com/589969023): Flaky on Linux. Re-enable once deflaked.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DetachPinnedTabPreservesBoundsDuringDrag \
+  DISABLED_DetachPinnedTabPreservesBoundsDuringDrag
+#else
+#define MAYBE_DetachPinnedTabPreservesBoundsDuringDrag \
+  DetachPinnedTabPreservesBoundsDuringDrag
+#endif
 IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest,
-                       DetachPinnedTabPreservesBoundsDuringDrag) {
+                       MAYBE_DetachPinnedTabPreservesBoundsDuringDrag) {
   gfx::Rect initial_tab_bounds;
 
   RunTestSequence(
