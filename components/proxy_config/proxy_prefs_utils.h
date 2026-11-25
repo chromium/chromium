@@ -5,11 +5,27 @@
 #ifndef COMPONENTS_PROXY_CONFIG_PROXY_PREFS_UTILS_H_
 #define COMPONENTS_PROXY_CONFIG_PROXY_PREFS_UTILS_H_
 
+#include <optional>
+#include <string_view>
+#include <vector>
+
 #include "components/proxy_config/proxy_config_export.h"
 #include "net/base/proxy_chain.h"
+#include "net/proxy_resolution/proxy_config.h"
 #include "url/scheme_host_port.h"
 
 class PrefService;
+class ProxyConfigDictionary;
+
+namespace base {
+class ListValue;
+class Value;
+}  // namespace base
+
+namespace net {
+class ProxyConfigWithAnnotation;
+struct NetworkTrafficAnnotationTag;
+}  // namespace net
 
 namespace policy {
 class PolicyService;
@@ -73,6 +89,27 @@ PROXY_CONFIG_EXPORT bool IsUserOrExtensionProxyOverrideRules(
 PROXY_CONFIG_EXPORT bool ProxyOverrideRulesAllowed(
     const PrefService* pref_service,
     policy::PolicyService* policy_service);
+
+// Parses a single dictionary entry from the "ProxyOverrideRules" preference
+// list into a `net::ProxyConfig::ProxyOverrideRule`, or returns `std::nullopt`
+// if the entry is malformed or contains no valid proxy chains.
+PROXY_CONFIG_EXPORT std::optional<net::ProxyConfig::ProxyOverrideRule>
+ValueToOverrideRule(const base::Value& value);
+
+// Parses a "ProxyOverrideRules" preference list into valid
+// `net::ProxyConfig::ProxyOverrideRule` entries, skipping invalid entries.
+PROXY_CONFIG_EXPORT std::vector<net::ProxyConfig::ProxyOverrideRule>
+ParseProxyOverrideRules(const base::ListValue& rules_list);
+
+// Converts a `ProxyConfigDictionary` to a `net::ProxyConfigWithAnnotation`
+// representation using `traffic_annotation` when non-direct settings are
+// populated. Returns true if the dictionary specifies an explicit proxy mode
+// (including `MODE_DIRECT`), or false if Chrome should fall back to system
+// proxy settings (`MODE_SYSTEM` or missing/invalid mode).
+PROXY_CONFIG_EXPORT bool PrefConfigToNetConfig(
+    const ProxyConfigDictionary& proxy_dict,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    net::ProxyConfigWithAnnotation* config);
 
 }  // namespace proxy_config
 

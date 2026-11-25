@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -18,9 +20,14 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
+#include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "net/base/proxy_chain.h"
+#include "net/proxy_resolution/proxy_config_with_annotation.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
 namespace proxy_config {
@@ -404,6 +411,100 @@ TEST_F(ProxyPrefsUtilsTest, AreUserProxyOverrideRulesAllowed) {
   prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 0);
 #endif
   EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+}
+
+TEST_F(ProxyPrefsUtilsTest, ParseProxyOverrideRules) {
+  std::optional<base::Value> parsed = base::JSONReader::Read(
+      R"([
+        {
+          "DestinationMatchers": ["https://*.example.com"],
+          "ExcludeDestinationMatchers": ["https://bypass.example.com"],
+          "ProxyList": ["HTTPS proxy.example.com:443", "DIRECT"],
+          "Conditions": [
+            {
+              "DnsProbe": {
+                "Host": "corp.internal",
+                "Result": "resolved"
+              }
+            }
+          ]
+        },
+        {
+          "DestinationMatchers": ["https://invalid-no-proxy-list.example.com"]
+        }
+      ])",
+      base::JSON_PARSE_RFC);
+  ASSERT_TRUE(parsed && parsed->is_list());
+
+  std::vector<net::ProxyConfig::ProxyOverrideRule> rules =
+      ParseProxyOverrideRules(parsed->GetList());
+  ASSERT_EQ(rules.size(), 1u);
+  EXPECT_TRUE(rules[0].MatchesDestination(GURL("https://app.example.com")));
+  EXPECT_FALSE(rules[0].MatchesDestination(GURL("https://bypass.example.com")));
+  EXPECT_FALSE(rules[0].MatchesDestination(GURL("http://app.example.com")));
+  EXPECT_FALSE(rules[0].MatchesDestination(GURL("https://localhost")));
+  EXPECT_EQ(rules[0].proxy_list.ToPacString(),
+            "HTTPS proxy.example.com:443;DIRECT");
+  ASSERT_EQ(rules[0].dns_conditions.size(), 1u);
+  EXPECT_EQ(rules[0].dns_conditions[0].host,
+            url::SchemeHostPort(url::kHttpScheme, "corp.internal", 80));
+  EXPECT_EQ(rules[0].dns_conditions[0].result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
+}
+
+TEST_F(ProxyPrefsUtilsTest, PrefConfigToNetConfig) {
+  net::ProxyConfigWithAnnotation config;
+
+  // MODE_SYSTEM returns false so callers fall back to OS proxy settings.
+  ProxyConfigDictionary system_dict(ProxyConfigDictionary::CreateSystem());
+  EXPECT_FALSE(PrefConfigToNetConfig(system_dict, TRAFFIC_ANNOTATION_FOR_TESTS,
+                                     &config));
+
+  // MODE_DIRECT returns true with empty proxy rules.
+  ProxyConfigDictionary direct_dict(ProxyConfigDictionary::CreateDirect());
+  config = net::ProxyConfigWithAnnotation::CreateDirect();
+  EXPECT_TRUE(PrefConfigToNetConfig(direct_dict, TRAFFIC_ANNOTATION_FOR_TESTS,
+                                    &config));
+  EXPECT_TRUE(config.value().proxy_rules().empty());
+  EXPECT_FALSE(config.value().auto_detect());
+  EXPECT_FALSE(config.value().has_pac_url());
+
+  // MODE_AUTO_DETECT enables WPAD auto-detection and preserves the annotation.
+  ProxyConfigDictionary auto_detect_dict(
+      ProxyConfigDictionary::CreateAutoDetect());
+  config = net::ProxyConfigWithAnnotation::CreateDirect();
+  EXPECT_TRUE(PrefConfigToNetConfig(auto_detect_dict,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS, &config));
+  EXPECT_TRUE(config.value().auto_detect());
+  EXPECT_FALSE(config.value().has_pac_url());
+  EXPECT_TRUE(config.value().proxy_rules().empty());
+  EXPECT_EQ(config.traffic_annotation(), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // MODE_PAC_SCRIPT populates PAC URL, mandatory bit, and traffic annotation.
+  ProxyConfigDictionary pac_dict(ProxyConfigDictionary::CreatePacScript(
+      "https://pac.example.com/wpad.dat", /*pac_mandatory=*/true));
+  config = net::ProxyConfigWithAnnotation::CreateDirect();
+  EXPECT_TRUE(
+      PrefConfigToNetConfig(pac_dict, TRAFFIC_ANNOTATION_FOR_TESTS, &config));
+  EXPECT_EQ(config.value().pac_url(), GURL("https://pac.example.com/wpad.dat"));
+  EXPECT_TRUE(config.value().pac_mandatory());
+  EXPECT_EQ(config.traffic_annotation(), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // MODE_FIXED_SERVERS populates proxy rules, bypass list, and annotation.
+  ProxyConfigDictionary fixed_dict(ProxyConfigDictionary::CreateFixedServers(
+      "https://proxy.example.com:8443", "*.internal.example.com"));
+  config = net::ProxyConfigWithAnnotation::CreateDirect();
+  EXPECT_TRUE(
+      PrefConfigToNetConfig(fixed_dict, TRAFFIC_ANNOTATION_FOR_TESTS, &config));
+  EXPECT_EQ(config.value().proxy_rules().type,
+            net::ProxyConfig::ProxyRules::Type::PROXY_LIST);
+  EXPECT_EQ(config.value().proxy_rules().single_proxies.ToPacString(),
+            "HTTPS proxy.example.com:8443");
+  EXPECT_TRUE(config.value().proxy_rules().bypass_rules.Matches(
+      GURL("https://foo.internal.example.com")));
+  EXPECT_FALSE(config.value().proxy_rules().bypass_rules.Matches(
+      GURL("https://external.example.org")));
+  EXPECT_EQ(config.traffic_annotation(), TRAFFIC_ANNOTATION_FOR_TESTS);
 }
 
 }  // namespace proxy_config
