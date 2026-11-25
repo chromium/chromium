@@ -7,11 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/on_device_translation/component_updater_library_source.h"
 #include "chrome/browser/on_device_translation/installer_impl.h"
@@ -24,6 +27,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace on_device_translation {
 namespace {
@@ -188,6 +192,32 @@ TEST_F(TranslateKitLibrarySourceTest, CreateUsesPathFromCommandLine) {
   std::unique_ptr<TranslateKitLibrarySource> library_source =
       TranslateKitLibrarySource::Create();
   EXPECT_EQ(library_source->GetLibraryPath(), base::FilePath(kLibraryPath));
+}
+
+TEST_F(TranslateKitLibrarySourceTest, UnsupportedWithLittleMemory) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kTranslationAPI,
+      {{"TranslationAPIMinPhysicalMemoryMB", "2048"}});
+  CreateInstaller();
+  {
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory(base::MiB(1900));
+    EXPECT_FALSE(installer_->IsSupported());
+  }
+  {
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory(base::MiB(3800));
+    EXPECT_TRUE(installer_->IsSupported());
+  }
+}
+
+TEST_F(TranslateKitLibrarySourceTest, SupportedWhenMinPhysicalMemoryDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kTranslationAPI,
+      {{"TranslationAPIMinPhysicalMemoryMB", "0"}});
+  CreateInstaller();
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory(base::MiB(1900));
+  EXPECT_TRUE(installer_->IsSupported());
 }
 
 TEST_F(TranslateKitLibrarySourceTest, FixedPathSourceWithoutPathIsUnsupported) {

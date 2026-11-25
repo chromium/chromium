@@ -48,6 +48,10 @@ extern const base::FeatureParam<base::TimeDelta>
 // queues, which the service runs one after another.
 extern const base::FeatureParam<int> kTranslationAPIMaxInputSizeBytes;
 
+// Minimum total physical RAM in MB required to use on-device translation.
+// Devices below this floor report the API as unavailable. 0 disables the check.
+extern const base::FeatureParam<size_t> kTranslationAPIMinPhysicalMemoryMB;
+
 // Enables automatic download of language packs for on-device translation.
 BASE_DECLARE_FEATURE(kAutoDownloadTranslateLanguagePacks);
 

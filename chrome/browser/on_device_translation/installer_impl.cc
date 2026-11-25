@@ -5,11 +5,13 @@
 #include "chrome/browser/on_device_translation/installer_impl.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -19,6 +21,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
@@ -373,6 +376,13 @@ OnDeviceTranslationInstallerImpl::RegisteredLanguagePacks() const {
 }
 
 bool OnDeviceTranslationInstallerImpl::IsSupported() const {
+  const size_t min_physical_memory_mb =
+      kTranslationAPIMinPhysicalMemoryMB.Get();
+  if (min_physical_memory_mb > 0 &&
+      base::SysInfo::AmountOfTotalPhysicalMemory() <
+          base::MiB(min_physical_memory_mb)) {
+    return false;
+  }
   return library_source_->IsSupported();
 }
 

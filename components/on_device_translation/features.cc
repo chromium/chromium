@@ -71,6 +71,17 @@ const base::FeatureParam<int> kTranslationAPIMaxInputSizeBytes{
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
+const base::FeatureParam<size_t> kTranslationAPIMinPhysicalMemoryMB{
+    &blink::features::kTranslationAPI, "TranslationAPIMinPhysicalMemoryMB",
+#if BUILDFLAG(IS_ANDROID)
+    // Leaves out devices with 2 GB of RAM or less, which report less than
+    // 2048 MB. That includes Android Go devices.
+    2048
+#else
+    0
+#endif  // BUILDFLAG(IS_ANDROID)
+};
+
 BASE_FEATURE(kAutoDownloadTranslateLanguagePacks,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
