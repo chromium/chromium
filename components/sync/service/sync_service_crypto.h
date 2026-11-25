@@ -27,6 +27,10 @@ namespace os_crypt_async {
 class Encryptor;
 }  // namespace os_crypt_async
 
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
+
 namespace syncer {
 
 class CustomPassphraseBootstrapToken;
@@ -164,7 +168,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   void TrustedVaultKeysFetchedFromClient(
       bool is_second_fetch_attempt,
       std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger,
-      const std::vector<std::vector<uint8_t>>& keys);
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys);
   void TrustedVaultKeysAdded(
       bool is_second_fetch_attempt,
       std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>

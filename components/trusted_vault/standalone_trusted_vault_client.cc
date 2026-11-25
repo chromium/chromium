@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/to_vector.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/standalone_trusted_vault_frontend.h"
@@ -40,12 +38,9 @@ void StandaloneTrustedVaultClient::RemoveObserver(Observer* observer) {
 
 void StandaloneTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
-    base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb) {
-  frontend_->FetchKeys(
-      account_info, security_domain_,
-      base::BindOnce([](const std::vector<TrustedVaultKeyAndVersion>& keys) {
-        return base::ToVector(keys, &TrustedVaultKeyAndVersion::key);
-      }).Then(std::move(cb)));
+    base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
+        cb) {
+  frontend_->FetchKeys(account_info, security_domain_, std::move(cb));
 }
 
 void StandaloneTrustedVaultClient::StoreKeys(

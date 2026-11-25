@@ -40,6 +40,7 @@
 #include "components/trusted_vault/test/fake_security_domains_server.h"
 #include "components/trusted_vault/test/fake_security_domains_url_loader_factory.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_throttling_connection_impl.h"
 #if BUILDFLAG(IS_MAC)
@@ -192,10 +193,11 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
     ASSERT_TRUE(future.Wait());
   }
 
-  std::vector<std::vector<uint8_t>> FetchKeys(
+  std::vector<TrustedVaultKeyAndVersion> FetchKeys(
       StandaloneTrustedVaultClient* client,
       const CoreAccountInfo& account) {
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+    base::test::TestFuture<const std::vector<TrustedVaultKeyAndVersion>&>
+        future;
     client->FetchKeys(account, future.GetCallback());
     return future.Get();
   }
@@ -309,7 +311,8 @@ TEST_F(StandaloneTrustedVaultClientTest,
               UnorderedElementsAreArray(DefaultLocalRecoveryFactorMatchers()));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(kServerKey));
 
-  EXPECT_THAT(FetchKeys(client.get(), account_info), ElementsAre(kServerKey));
+  EXPECT_THAT(FetchKeys(client.get(), account_info),
+              ElementsAre(TrustedVaultKeyAndVersion(kServerKey, kServerEpoch)));
 }
 
 TEST_F(StandaloneTrustedVaultClientTest,
@@ -351,8 +354,10 @@ TEST_F(StandaloneTrustedVaultClientTest,
   // and register local factors if applicable.
   EXPECT_CALL(observer,
               OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
-  EXPECT_THAT(FetchKeys(client.get(), account_info),
-              ElementsAre(new_epoch_key));
+  EXPECT_THAT(
+      FetchKeys(client.get(), account_info),
+      ElementsAre(TrustedVaultKeyAndVersion(
+          new_epoch_key, fake_security_domains_server_->GetCurrentEpoch())));
   WaitForIdle(client.get());
   EXPECT_THAT(fake_security_domains_server_->GetMembers(),
               UnorderedElementsAreArray(DefaultLocalRecoveryFactorMatchers()));
@@ -380,7 +385,9 @@ TEST_F(StandaloneTrustedVaultClientTest,
               OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
   StoreKeys(client.get(), account_info.gaia, {kLocalKeyV1}, kLocalEpochV1);
   WaitForIdle(client.get());
-  ASSERT_THAT(FetchKeys(client.get(), account_info), ElementsAre(kLocalKeyV1));
+  ASSERT_THAT(
+      FetchKeys(client.get(), account_info),
+      ElementsAre(TrustedVaultKeyAndVersion(kLocalKeyV1, kLocalEpochV1)));
 
   // Attempting to add a recovery method with stale local key fails with
   // kLocalDataObsolete.
@@ -402,8 +409,10 @@ TEST_F(StandaloneTrustedVaultClientTest,
               UnorderedElementsAreArray(DefaultLocalRecoveryFactorMatchers()));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(kRemoteKeyV2));
 
-  EXPECT_THAT(FetchKeys(client.get(), account_info),
-              ElementsAre(kLocalKeyV1, kRemoteKeyV2));
+  EXPECT_THAT(
+      FetchKeys(client.get(), account_info),
+      ElementsAre(TrustedVaultKeyAndVersion(kLocalKeyV1, kLocalEpochV1),
+                  TrustedVaultKeyAndVersion(kRemoteKeyV2, kRemoteEpochV2)));
 }
 
 TEST_F(StandaloneTrustedVaultClientTest,
@@ -420,7 +429,8 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   {
     std::unique_ptr<StandaloneTrustedVaultClient> client_b = CreateClient();
-    EXPECT_THAT(FetchKeys(client_b.get(), account_info), ElementsAre(kKey));
+    EXPECT_THAT(FetchKeys(client_b.get(), account_info),
+                ElementsAre(TrustedVaultKeyAndVersion(kKey, kServerEpoch)));
     EXPECT_EQ(GetLastKeyVersion(client_b.get(), account_info.gaia),
               kServerEpoch);
   }
@@ -459,7 +469,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
   testing::Mock::VerifyAndClearExpectations(&passkeys_observer);
 
   EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
-              ElementsAre(kSyncKey));
+              ElementsAre(TrustedVaultKeyAndVersion(kSyncKey, kServerEpoch)));
 
   // Downloading rotated keys via `FetchKeys()` in `kChromeSync` should notify
   // only `sync_observer`.
@@ -470,7 +480,9 @@ TEST_F(StandaloneTrustedVaultClientTest,
               OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
   EXPECT_CALL(passkeys_observer, OnTrustedVaultKeysChanged).Times(0);
   EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
-              ElementsAre(kSyncKey, rotated_sync_key));
+              ElementsAre(TrustedVaultKeyAndVersion(kSyncKey, kServerEpoch),
+                          TrustedVaultKeyAndVersion(rotated_sync_key,
+                                                    kServerEpoch + 1)));
   testing::Mock::VerifyAndClearExpectations(&sync_observer);
   testing::Mock::VerifyAndClearExpectations(&passkeys_observer);
 
@@ -525,9 +537,9 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldStoreAndFetchKeysAcrossDomains) {
     WaitForIdle(sync_client.get());
 
     EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
-                ElementsAre(kSyncKey));
+                ElementsAre(TrustedVaultKeyAndVersion(kSyncKey, 1)));
     EXPECT_THAT(FetchKeys(passkeys_client.get(), account_info),
-                ElementsAre(kPasskeysKey));
+                ElementsAre(TrustedVaultKeyAndVersion(kPasskeysKey, 2)));
   }
 
   // Verify persistence across frontend/client restart with LocalDomainsStorage.
@@ -539,9 +551,9 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldStoreAndFetchKeysAcrossDomains) {
         CreateClient(SecurityDomainId::kPasskeys, frontend);
 
     EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
-                ElementsAre(kSyncKey));
+                ElementsAre(TrustedVaultKeyAndVersion(kSyncKey, 1)));
     EXPECT_THAT(FetchKeys(passkeys_client.get(), account_info),
-                ElementsAre(kPasskeysKey));
+                ElementsAre(TrustedVaultKeyAndVersion(kPasskeysKey, 2)));
   }
 }
 
@@ -587,7 +599,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
   // Cached keys should be immediately returned from migrated storage without
   // re-registering recovery factors.
   EXPECT_THAT(FetchKeys(migrated_client.get(), account_info),
-              ElementsAre(kKey1));
+              ElementsAre(TrustedVaultKeyAndVersion(kKey1, kServerEpoch)));
   EXPECT_THAT(fake_security_domains_server_->GetMembers(), Eq(initial_members));
 
   // Verify that the migrated physical device private key can decrypt newly
@@ -595,8 +607,10 @@ TEST_F(StandaloneTrustedVaultClientTest,
   const std::vector<uint8_t> new_epoch_key =
       fake_security_domains_server_->RotateTrustedVaultKey(kKey1);
   EXPECT_TRUE(MarkLocalKeysAsStale(migrated_client.get(), account_info));
-  EXPECT_THAT(FetchKeys(migrated_client.get(), account_info),
-              ElementsAre(kKey1, new_epoch_key));
+  EXPECT_THAT(
+      FetchKeys(migrated_client.get(), account_info),
+      ElementsAre(TrustedVaultKeyAndVersion(kKey1, kServerEpoch),
+                  TrustedVaultKeyAndVersion(new_epoch_key, kServerEpoch + 1)));
 }
 
 TEST_F(StandaloneTrustedVaultClientTest, ShouldCheckCanEnrollEligibility) {
@@ -661,7 +675,9 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldEnroll) {
   EXPECT_FALSE(fake_security_domains_server_->ReceivedInvalidRequest());
 
   EXPECT_FALSE(CanEnroll(client.get(), account_info));
-  EXPECT_THAT(FetchKeys(client.get(), account_info), ElementsAre(rotated_key));
+  EXPECT_THAT(
+      FetchKeys(client.get(), account_info),
+      ElementsAre(TrustedVaultKeyAndVersion(rotated_key, rotated_key_version)));
 }
 
 TEST_F(StandaloneTrustedVaultClientTest,
@@ -696,8 +712,9 @@ TEST_F(StandaloneTrustedVaultClientTest,
               OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
 
   EXPECT_FALSE(MarkLocalKeysAsStale(second_client.get(), account_info));
-  EXPECT_THAT(FetchKeys(second_client.get(), account_info),
-              ElementsAre(rotated_key));
+  EXPECT_THAT(
+      FetchKeys(second_client.get(), account_info),
+      ElementsAre(TrustedVaultKeyAndVersion(rotated_key, rotated_key_version)));
   WaitForIdle(second_client.get());
   EXPECT_EQ(GetLastKeyVersion(second_client.get(), account_info.gaia),
             rotated_key_version);

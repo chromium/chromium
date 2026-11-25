@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -27,6 +28,7 @@
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/trusted_vault_histograms.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 
 namespace syncer {
 
@@ -629,7 +631,7 @@ void SyncServiceCrypto::FetchTrustedVaultKeys(
 void SyncServiceCrypto::TrustedVaultKeysFetchedFromClient(
     bool is_second_fetch_attempt,
     std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger,
-    const std::vector<std::vector<uint8_t>>& keys) {
+    const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(state_.engine);
 
@@ -651,9 +653,10 @@ void SyncServiceCrypto::TrustedVaultKeysFetchedFromClient(
   }
 
   state_.engine->AddTrustedVaultDecryptionKeys(
-      keys, base::BindOnce(&SyncServiceCrypto::TrustedVaultKeysAdded,
-                           weak_factory_.GetWeakPtr(), is_second_fetch_attempt,
-                           trigger));
+      base::ToVector(keys, &trusted_vault::TrustedVaultKeyAndVersion::key),
+      base::BindOnce(&SyncServiceCrypto::TrustedVaultKeysAdded,
+                     weak_factory_.GetWeakPtr(), is_second_fetch_attempt,
+                     trigger));
 }
 
 void SyncServiceCrypto::TrustedVaultKeysAdded(

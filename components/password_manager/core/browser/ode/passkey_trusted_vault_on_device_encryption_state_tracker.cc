@@ -13,6 +13,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
@@ -146,7 +147,7 @@ void PasskeyTrustedVaultOnDeviceEncryptionStateTracker::
 
 void PasskeyTrustedVaultOnDeviceEncryptionStateTracker::
     UpdateInformationAboutKeysAndComputeState(
-        const std::vector<std::vector<uint8_t>>& keys) {
+        const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys) {
   if (keys.empty()) {
     has_keys_ = false;
     CheckIsSecurityDomainEmpty();

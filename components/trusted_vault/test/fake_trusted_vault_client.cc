@@ -13,12 +13,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 #include "crypto/random.h"
 
 namespace trusted_vault {
@@ -60,7 +62,7 @@ void FakeTrustedVaultClient::FakeServer::MimicKeyRetrievalByUser(
 
   client->StoreKeys(gaia_id, gaia_id_to_keys_[gaia_id],
                     /*last_key_version=*/
-                    static_cast<int>(gaia_id_to_keys_[gaia_id].size()) - 1,
+                    static_cast<int>(gaia_id_to_keys_[gaia_id].size()),
                     trigger);
 }
 
@@ -144,12 +146,12 @@ std::vector<std::vector<uint8_t>> FakeTrustedVaultClient::GetStoredKeys(
   if (it == gaia_id_to_cached_keys_.end()) {
     return {};
   }
-  return it->second.keys;
+  return base::ToVector(it->second.keys, &TrustedVaultKeyAndVersion::key);
 }
 
 void FakeTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
-    base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+    base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
         callback) {
   if (auto_complete_requests_) {
     // This posts a task to call CompleteAllPendingRequests(). It is okay to
@@ -168,7 +170,7 @@ void FakeTrustedVaultClient::FetchKeys(
   // going through a retrieval flow, see MimicKeyRetrievalByUser().
   if (cached_keys.keys.empty()) {
     pending_responses_.push_back(base::BindOnce(
-        std::move(callback), std::vector<std::vector<uint8_t>>()));
+        std::move(callback), std::vector<TrustedVaultKeyAndVersion>()));
     return;
   }
 
@@ -191,8 +193,9 @@ void FakeTrustedVaultClient::StoreKeys(
     int last_key_version,
     std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
-  const bool keys_changed = cached_keys.keys != keys;
-  cached_keys.keys = keys;
+  const bool keys_changed = !std::ranges::equal(
+      cached_keys.keys, keys, {}, &TrustedVaultKeyAndVersion::key);
+  cached_keys.keys = GetTrustedVaultKeysWithVersions(keys, last_key_version);
   cached_keys.marked_as_stale = false;
   if (keys_changed) {
     for (Observer& observer : observer_list_) {
@@ -267,10 +270,13 @@ void FakeTrustedVaultClient::Enroll(
   const std::vector<uint8_t> new_shared_key =
       crypto::RandBytesAsVector(kSharedKeyLength);
   CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[account_info.gaia];
-  cached_keys.keys.push_back(new_shared_key);
+  const int new_key_version =
+      cached_keys.keys.empty() ? 1 : cached_keys.keys.back().version + 1;
+  cached_keys.keys.emplace_back(new_shared_key, new_key_version);
   cached_keys.marked_as_stale = false;
-  const int new_key_version = static_cast<int>(cached_keys.keys.size());
-  server_.StoreKeysOnServer(account_info.gaia, cached_keys.keys);
+  server_.StoreKeysOnServer(
+      account_info.gaia,
+      base::ToVector(cached_keys.keys, &TrustedVaultKeyAndVersion::key));
   for (auto& observer : observer_list_) {
     observer.OnTrustedVaultKeysChanged(/*trigger=*/std::nullopt);
   }
@@ -287,7 +293,7 @@ void FakeTrustedVaultClient::ClearLocalDataForAccount(
 
 void FakeTrustedVaultClient::CompleteStaleFetchKeys(
     const GaiaId& gaia_id,
-    base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+    base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
         callback) {
   auto it = gaia_id_to_cached_keys_.find(gaia_id);
   if (it == gaia_id_to_cached_keys_.end() || it->second.keys.empty()) {
@@ -297,24 +303,29 @@ void FakeTrustedVaultClient::CompleteStaleFetchKeys(
 
   CachedKeysPerUser& cached_keys = it->second;
   if (!cached_keys.marked_as_stale) {
-    const std::vector<std::vector<uint8_t>> keys = cached_keys.keys;
+    const std::vector<TrustedVaultKeyAndVersion> keys = cached_keys.keys;
     std::move(callback).Run(keys);
     return;
   }
 
   std::vector<std::vector<uint8_t>> rotated_keys =
-      server_.RequestRotatedKeysFromServer(gaia_id, cached_keys.keys.back());
-  if (!rotated_keys.empty()) {
-    StoreKeys(gaia_id, rotated_keys,
-              /*last_key_version=*/static_cast<int>(rotated_keys.size()) - 1,
-              /*trigger=*/std::nullopt);
-  } else {
+      server_.RequestRotatedKeysFromServer(gaia_id,
+                                           cached_keys.keys.back().key);
+  if (rotated_keys.empty()) {
     // Key rotation failed (local keys are obsolete); clear cached keys and
     // stale flag without notifying observers.
     cached_keys.keys.clear();
     cached_keys.marked_as_stale = false;
+    std::move(callback).Run({});
+    return;
   }
-  std::move(callback).Run(rotated_keys);
+
+  const int last_key_version = static_cast<int>(rotated_keys.size());
+  const std::vector<TrustedVaultKeyAndVersion> keys_with_versions =
+      GetTrustedVaultKeysWithVersions(rotated_keys, last_key_version);
+  StoreKeys(gaia_id, rotated_keys, last_key_version,
+            /*trigger=*/std::nullopt);
+  std::move(callback).Run(keys_with_versions);
 }
 
 void FakeTrustedVaultClient::PostCompleteAllPendingRequests() {

@@ -11,8 +11,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/check_op.h"
-#include "base/containers/to_vector.h"
-#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/trusted_vault/trusted_vault_key_and_version.h"
@@ -230,17 +228,13 @@ void TrustedVaultClientAndroid::RemoveObserver(Observer* observer) {
 
 void TrustedVaultClientAndroid::FetchKeys(
     const CoreAccountInfo& account_info,
-    base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb) {
+    base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
+        cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Store for later completion when Java invokes FetchKeysCompleted().
-  // TODO(crbug.com/588274186): Remove this adapter once
-  // `TrustedVaultClient::FetchKeys()` returns `TrustedVaultKeyAndVersion`.
-  const RequestId request_id = RegisterNewOngoingRequest(OngoingFetchKeys(
-      account_info,
-      base::BindOnce([](const std::vector<TrustedVaultKeyAndVersion>& keys) {
-        return base::ToVector(keys, &TrustedVaultKeyAndVersion::key);
-      }).Then(std::move(cb))));
+  const RequestId request_id =
+      RegisterNewOngoingRequest(OngoingFetchKeys(account_info, std::move(cb)));
 
   // Trigger the fetching keys from the implementation in Java, which will
   // eventually call FetchKeysCompleted().

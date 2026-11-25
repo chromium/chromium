@@ -7,6 +7,10 @@
 
 #include "components/trusted_vault/trusted_vault_client.h"
 
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
+
 namespace ios_web_view {
 
 // ChromeWebView implementation of TrustedVaultClient.
@@ -21,7 +25,8 @@ class WebViewTrustedVaultClient : public trusted_vault::TrustedVaultClient {
   void RemoveObserver(Observer* observer) override;
   void FetchKeys(
       const CoreAccountInfo& account_info,
-      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+      base::OnceCallback<
+          void(const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)>
           callback) override;
   void StoreKeys(
       const GaiaId& gaia_id,

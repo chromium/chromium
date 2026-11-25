@@ -210,7 +210,8 @@ void GpmBrowserAuthenticator::GetAssertion(
   CHECK_EQ(request.allow_list.size(), 1u);
   CHECK(std::ranges::equal(request.allow_list[0].id, credential_id));
 
-  // `TrustedVaultClient::FetchKeys()` does not expose key versions and
+  // TODO(crbug.com/570170982): Key versions from
+  // `TrustedVaultClient::FetchKeys()` are not yet plumbed here, and
   // `entity.key_version()` might be unset, so try keys from newest to oldest.
   std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted> secrets;
   for (const std::vector<uint8_t>& trusted_vault_key :

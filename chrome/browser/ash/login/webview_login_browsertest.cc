@@ -105,6 +105,7 @@
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -846,18 +847,21 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
   // Verify that the sync trusted vault keys have been received and stored.
   {
     base::RunLoop loop;
-    std::vector<std::vector<uint8_t>> actual_keys;
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> actual_keys;
     trusted_vault_client->FetchKeys(
         sync_service->GetAccountInfo(),
         base::BindLambdaForTesting(
-            [&](const std::vector<std::vector<uint8_t>>& keys) {
+            [&](const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&
+                    keys) {
               actual_keys = keys;
               loop.Quit();
             }));
     loop.Run();
 
     EXPECT_THAT(actual_keys,
-                testing::ElementsAre(fake_gaia_keys.encryption_key));
+                testing::ElementsAre(trusted_vault::TrustedVaultKeyAndVersion(
+                    fake_gaia_keys.encryption_key,
+                    fake_gaia_keys.encryption_key_version)));
   }
 
   // Verify that the recovery method was passed too.

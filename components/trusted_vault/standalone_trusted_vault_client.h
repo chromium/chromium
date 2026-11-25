@@ -22,6 +22,7 @@ namespace trusted_vault {
 
 enum class SecurityDomainId;
 class StandaloneTrustedVaultFrontend;
+struct TrustedVaultKeyAndVersion;
 
 // Standalone, file-based implementation of TrustedVaultClient that stores the
 // keys in a local file, containing a serialized protocol buffer encrypted with
@@ -45,8 +46,8 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   void RemoveObserver(Observer* observer) override;
   void FetchKeys(
       const CoreAccountInfo& account_info,
-      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
-      override;
+      base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
+          cb) override;
   void StoreKeys(
       const GaiaId& gaia_id,
       const std::vector<std::vector<uint8_t>>& keys,

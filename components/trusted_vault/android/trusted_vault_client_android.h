@@ -95,8 +95,8 @@ class TrustedVaultClientAndroid : public TrustedVaultClient {
   void RemoveObserver(Observer* observer) override;
   void FetchKeys(
       const CoreAccountInfo& account_info,
-      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
-      override;
+      base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
+          cb) override;
   void StoreKeys(
       const GaiaId& gaia_id,
       const std::vector<std::vector<uint8_t>>& keys,

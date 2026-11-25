@@ -6,7 +6,6 @@
 
 #import <utility>
 
-#import "base/containers/to_vector.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
@@ -45,15 +44,11 @@ void IOSTrustedVaultClient::RemoveObserver(Observer* observer) {
 
 void IOSTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
-    base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+    base::OnceCallback<
+        void(const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)>
         callback) {
-  backend_->FetchKeys(
-      IdentityForAccount(account_info), security_domain_id_,
-      base::BindOnce([](const std::vector<
-                         trusted_vault::TrustedVaultKeyAndVersion>& keys) {
-        return base::ToVector(keys,
-                              &trusted_vault::TrustedVaultKeyAndVersion::key);
-      }).Then(std::move(callback)));
+  backend_->FetchKeys(IdentityForAccount(account_info), security_domain_id_,
+                      std::move(callback));
 }
 
 void IOSTrustedVaultClient::StoreKeys(

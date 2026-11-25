@@ -38,6 +38,10 @@ namespace sync_pb {
 class WebauthnCredentialSpecifics;
 }  // namespace sync_pb
 
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
+
 enum class EnclaveEnabledStatus;
 class Profile;
 
@@ -119,15 +123,16 @@ class GpmBrowserAuthenticatorController
   Profile* GetProfile() const;
   content::WebContents* web_contents() const;
 
-  void OnKeysFetched(CoreAccountInfo account,
-                     const std::vector<std::vector<uint8_t>>& keys);
+  void OnKeysFetched(
+      CoreAccountInfo account,
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys);
   void DownloadAccountState(const CoreAccountInfo& account);
   void OnAccountStateDownloaded(
       std::unique_ptr<trusted_vault::TrustedVaultConnection> connection,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
           result);
   void OnKeysFetchedAfterRecovery(
-      const std::vector<std::vector<uint8_t>>& keys);
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys);
 
   void SetActive(EnclaveEnabledStatus status);
   void SetAccountState(AccountState account_state);

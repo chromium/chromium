@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
@@ -32,6 +33,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_service.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -339,10 +341,11 @@ content::WebContents* GpmBrowserAuthenticatorController::web_contents() const {
 
 void GpmBrowserAuthenticatorController::OnKeysFetched(
     CoreAccountInfo account,
-    const std::vector<std::vector<uint8_t>>& keys) {
+    const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys) {
   // TODO(crbug.com/570170982): Poll the security domain service for freshness
   // of the cached keys and plumb the current key's version.
-  trusted_vault_keys_ = keys;
+  trusted_vault_keys_ =
+      base::ToVector(keys, &trusted_vault::TrustedVaultKeyAndVersion::key);
   if (request_type_ == device::FidoRequestType::kGetAssertion &&
       !trusted_vault_keys_.empty()) {
     SetAccountState(AccountState::kReady);
@@ -413,13 +416,16 @@ void GpmBrowserAuthenticatorController::OnAccountStateDownloaded(
 }
 
 void GpmBrowserAuthenticatorController::OnKeysFetchedAfterRecovery(
-    const std::vector<std::vector<uint8_t>>& keys) {
+    const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys) {
   if (keys.empty()) {
     model_->SetStep(Step::kGPMError);
     return;
   }
 
-  trusted_vault_keys_ = keys;
+  // TODO(crbug.com/570170982): Plumb the fetched keys' versions instead of
+  // stripping them once `trusted_vault_keys_` stores key versions.
+  trusted_vault_keys_ =
+      base::ToVector(keys, &trusted_vault::TrustedVaultKeyAndVersion::key);
   SetAccountState(AccountState::kReady);
   StartTransaction();
 }

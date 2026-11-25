@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CLIENT_H_
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CLIENT_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -17,6 +18,8 @@ struct CoreAccountInfo;
 class GaiaId;
 
 namespace trusted_vault {
+
+struct TrustedVaultKeyAndVersion;
 
 // Represents the UI elements which contain trusted vault error button. These
 // values are persisted to logs. Entries should not be renumbered and numeric
@@ -91,12 +94,14 @@ class TrustedVaultClient {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Attempts to fetch decryption keys, required by sync to resume.
-  // Implementations are expected to NOT prompt the user for actions. |cb| is
-  // called on completion with known keys or an empty list if none known.
+  // Attempts to fetch decryption keys and their versions, required by
+  // consumers (such as sync or passkeys) to resume. Implementations are
+  // expected to NOT prompt the user for actions. `cb` is called on completion
+  // with known keys and their versions (ordered from oldest to newest, where
+  // the last one is the most recent), or an empty list if none are known.
   virtual void FetchKeys(
       const CoreAccountInfo& account_info,
-      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+      base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
           cb) = 0;
 
   // Invoked when the result of FetchKeys() contains keys that cannot decrypt

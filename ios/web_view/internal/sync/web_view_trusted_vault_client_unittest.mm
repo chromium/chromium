@@ -12,6 +12,7 @@
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller.h"
@@ -162,13 +163,17 @@ TEST_F(WebViewTrustedVaultClientTest, FetchKeysUsesKeysWithVersionsSelector) {
   CWVSyncController.trustedVaultProvider = provider;
 
   WebViewTrustedVaultClient client;
-  base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+  base::test::TestFuture<
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&>
+      future;
   client.FetchKeys(MakeTestAccount(), future.GetCallback());
 
   EXPECT_NSEQ(@"test-gaia-id", provider.lastFetchedIdentity.gaiaID);
   EXPECT_NSEQ(@"user@example.com", provider.lastFetchedIdentity.email);
-  EXPECT_THAT(future.Get(), ElementsAre(std::vector<uint8_t>{1, 2, 3},
-                                        std::vector<uint8_t>{4, 5}));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(trusted_vault::TrustedVaultKeyAndVersion({1, 2, 3}, 10),
+                  trusted_vault::TrustedVaultKeyAndVersion({4, 5}, 11)));
 }
 
 TEST_F(WebViewTrustedVaultClientTest, FetchKeysFallsBackToLegacySelector) {
@@ -179,11 +184,15 @@ TEST_F(WebViewTrustedVaultClientTest, FetchKeysFallsBackToLegacySelector) {
   CWVSyncController.trustedVaultProvider = provider;
 
   WebViewTrustedVaultClient client;
-  base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+  base::test::TestFuture<
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&>
+      future;
   client.FetchKeys(MakeTestAccount(), future.GetCallback());
 
   EXPECT_NSEQ(@"test-gaia-id", provider.lastFetchedIdentity.gaiaID);
-  EXPECT_THAT(future.Get(), ElementsAre(std::vector<uint8_t>{9, 8, 7}));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(trusted_vault::TrustedVaultKeyAndVersion({9, 8, 7}, 0)));
 }
 
 TEST_F(WebViewTrustedVaultClientTest, FetchKeysReturnsEmptyOnError) {
@@ -199,7 +208,8 @@ TEST_F(WebViewTrustedVaultClientTest, FetchKeysReturnsEmptyOnError) {
   modern_provider.error = test_error;
   CWVSyncController.trustedVaultProvider = modern_provider;
 
-  base::test::TestFuture<const std::vector<std::vector<uint8_t>>&>
+  base::test::TestFuture<
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&>
       modern_future;
   client.FetchKeys(MakeTestAccount(), modern_future.GetCallback());
   EXPECT_THAT(modern_future.Get(), IsEmpty());
@@ -210,7 +220,8 @@ TEST_F(WebViewTrustedVaultClientTest, FetchKeysReturnsEmptyOnError) {
   legacy_provider.error = test_error;
   CWVSyncController.trustedVaultProvider = legacy_provider;
 
-  base::test::TestFuture<const std::vector<std::vector<uint8_t>>&>
+  base::test::TestFuture<
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&>
       legacy_future;
   client.FetchKeys(MakeTestAccount(), legacy_future.GetCallback());
   EXPECT_THAT(legacy_future.Get(), IsEmpty());
@@ -223,7 +234,9 @@ TEST_F(WebViewTrustedVaultClientTest,
   CWVSyncController.trustedVaultProvider = provider;
 
   WebViewTrustedVaultClient client;
-  base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
+  base::test::TestFuture<
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&>
+      future;
   client.FetchKeys(MakeTestAccount(), future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());

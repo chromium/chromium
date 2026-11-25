@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ODE_PASSKEY_TRUSTED_VAULT_ON_DEVICE_ENCRYPTION_STATE_TRACKER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ODE_PASSKEY_TRUSTED_VAULT_ON_DEVICE_ENCRYPTION_STATE_TRACKER_H_
 
-#include <cstdint>
 #include <optional>
 #include <vector>
 
@@ -16,6 +15,10 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
 
 namespace password_manager {
 
@@ -63,7 +66,7 @@ class PasskeyTrustedVaultOnDeviceEncryptionStateTracker
   bool IsSignedInAccountChanged();
   void FetchKeysAndComputeStateIfAccountIsNotEmpty();
   void UpdateInformationAboutKeysAndComputeState(
-      const std::vector<std::vector<uint8_t>>& keys);
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys);
 
   syncer::SyncService* sync_service();
   trusted_vault::TrustedVaultClient* passkey_trusted_vault_client();

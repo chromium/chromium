@@ -114,7 +114,8 @@ void WebViewTrustedVaultClient::RemoveObserver(Observer* observer) {
 
 void WebViewTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
-    base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+    base::OnceCallback<
+        void(const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)>
         callback) {
   id<CWVTrustedVaultProvider> provider = CWVSyncController.trustedVaultProvider;
   if (!provider) {
@@ -123,16 +124,6 @@ void WebViewTrustedVaultClient::FetchKeys(
     return;
   }
 
-  // TODO(crbug.com/588274186): Remove this adapter once
-  // `TrustedVaultClient::FetchKeys()` returns `TrustedVaultKeyAndVersion`.
-  base::OnceCallback<void(
-      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)>
-      adapted_callback =
-          base::BindOnce([](const std::vector<
-                             trusted_vault::TrustedVaultKeyAndVersion>& keys) {
-            return base::ToVector(
-                keys, &trusted_vault::TrustedVaultKeyAndVersion::key);
-          }).Then(std::move(callback));
   CWVIdentity* identity = CWVIdentityFromCoreAccountInfo(account_info);
   // TODO(crbug.com/588274186): Both fetch selectors on
   // `CWVTrustedVaultProvider` are temporarily `@optional` so downstream
@@ -145,12 +136,12 @@ void WebViewTrustedVaultClient::FetchKeys(
   // checks and the fallback below.
   if ([provider respondsToSelector:
                     @selector(fetchKeysWithVersionsForIdentity:completion:)]) {
-    [provider fetchKeysWithVersionsForIdentity:identity
-                                    completion:base::CallbackToBlock(
-                                                   base::BindOnce(
-                                                       &ConvertKeysWithVersions)
-                                                       .Then(std::move(
-                                                           adapted_callback)))];
+    [provider
+        fetchKeysWithVersionsForIdentity:identity
+                              completion:base::CallbackToBlock(
+                                             base::BindOnce(
+                                                 &ConvertKeysWithVersions)
+                                                 .Then(std::move(callback)))];
     return;
   }
   if ([provider
@@ -158,11 +149,11 @@ void WebViewTrustedVaultClient::FetchKeys(
     [provider fetchKeysForIdentity:identity
                         completion:base::CallbackToBlock(
                                        base::BindOnce(&ConvertLegacyKeys)
-                                           .Then(std::move(adapted_callback)))];
+                                           .Then(std::move(callback)))];
     return;
   }
   DLOG(ERROR) << "CWVTrustedVaultProvider does not implement key fetching.";
-  std::move(adapted_callback).Run({});
+  std::move(callback).Run({});
 }
 
 void WebViewTrustedVaultClient::StoreKeys(

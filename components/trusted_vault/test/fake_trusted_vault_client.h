@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 #include "google_apis/gaia/gaia_id.h"
 
 struct CoreAccountInfo;
@@ -126,7 +127,7 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   void RemoveObserver(Observer* observer) override;
   void FetchKeys(
       const CoreAccountInfo& account_info,
-      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+      base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
           callback) override;
   void StoreKeys(
       const GaiaId& gaia_id,
@@ -157,12 +158,12 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
     ~CachedKeysPerUser();
 
     bool marked_as_stale = false;
-    std::vector<std::vector<uint8_t>> keys;
+    std::vector<TrustedVaultKeyAndVersion> keys;
   };
 
   void CompleteStaleFetchKeys(
       const GaiaId& gaia_id,
-      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+      base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
           callback);
   void PostCompleteAllPendingRequests();
 
