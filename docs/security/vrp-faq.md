@@ -250,8 +250,9 @@ This list is not exhaustive but should help reporters focus on issues in Chrome:
     message at runtime.
 * *Swiftshader* is deprecated and only supported for limited test and debug
     environments.
-* *WebNN* is not enabled and undergoing security hardening. It is not eligible
-    for the VRP at this time.
+* *WebNN* is undergoing security hardening. Issues are only eligible for the VRP
+    if they are reproducible when the compiler utility process and sandboxed
+    LiteRT runtime are enabled (`webnn::IsWebNNUnsafe()` returns `false`).
 * *Unsafe Flags*. Any flags which show a warning infobar that they present a
     risk to the user are not in scope. These flags are intended for testing and
     debugging only.
