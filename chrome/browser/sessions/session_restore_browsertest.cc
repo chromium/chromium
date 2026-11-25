@@ -1164,6 +1164,26 @@ bool IsSetWindowBoundsCommand(const sessions::SessionCommand& command,
   return false;
 }
 
+// Returns the pending SetWindowBounds commands. Other commands can be
+// scheduled at any time, e.g. SetWindowWorkspace when the restorable state of
+// a window changes on Mac or when a window gains focus on Windows.
+std::vector<const sessions::SessionCommand*> GetPendingSetWindowBoundsCommands(
+    SessionServiceTestHelper& helper) {
+  const sessions::SessionCommand::id_type set_window_bounds_id =
+      sessions::CreateSetWindowBoundsCommand(
+          SessionID::InvalidValue(), gfx::Rect(),
+          ui::mojom::WindowShowState::kNormal)
+          ->id();
+  std::vector<const sessions::SessionCommand*> commands;
+  for (const auto& command :
+       helper.command_storage_manager()->pending_commands()) {
+    if (command->id() == set_window_bounds_id) {
+      commands.push_back(command.get());
+    }
+  }
+  return commands;
+}
+
 }  // namespace
 
 // SessionEnding() (e.g. on SIGTERM at logout) terminates the process without
@@ -1222,7 +1242,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SessionEndingSavesMovedWindow) {
            second_browser->GetWindow()->GetBounds().origin() ==
                second_bounds.origin();
   }));
-  ASSERT_TRUE(helper.command_storage_manager()->pending_commands().empty());
+  ASSERT_TRUE(GetPendingSetWindowBoundsCommands(helper).empty());
   EXPECT_EQ(initial_saved_bounds, GetSavedWindowPlacementPrefBounds(profile));
 
   const gfx::Rect first_expected = *first_initial_bounds + first_offset;
@@ -1244,7 +1264,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SessionEndingSavesMovedWindow) {
 
   // SessionService receives SetWindowBounds commands from least to most
   // recently active.
-  const auto& pending = helper.command_storage_manager()->pending_commands();
+  const std::vector<const sessions::SessionCommand*> pending =
+      GetPendingSetWindowBoundsCommands(helper);
   ASSERT_EQ(2u, pending.size());
   EXPECT_TRUE(
       IsSetWindowBoundsCommand(*pending[0], inactive_id, inactive_expected));
