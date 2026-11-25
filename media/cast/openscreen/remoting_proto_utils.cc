@@ -217,13 +217,17 @@ bool ConvertProtoToAudioDecoderConfig(
     media::AudioDecoderConfig* audio_config) {
   DCHECK(audio_config);
 
+  const auto codec = ToMediaAudioCodec(audio_message.codec());
+  const auto sample_format = ToMediaSampleFormat(audio_message.sample_format());
+  const auto layout = ToMediaChannelLayout(audio_message.channel_layout());
+  if (!codec || !sample_format || !layout ||
+      *layout == media::CHANNEL_LAYOUT_DISCRETE) {
+    return false;
+  }
+
   const auto extra_data = base::span(audio_message.extra_data());
-  const media::ChannelLayout layout =
-      ToMediaChannelLayout(audio_message.channel_layout()).value();
   audio_config->Initialize(
-      ToMediaAudioCodec(audio_message.codec()).value(),
-      ToMediaSampleFormat(audio_message.sample_format()).value(),
-      media::ChannelLayoutConfig::FromLayout(layout),
+      *codec, *sample_format, media::ChannelLayoutConfig::FromLayout(*layout),
       audio_message.samples_per_second(),
       std::vector<uint8_t>(extra_data.begin(), extra_data.end()),
       media::EncryptionScheme::kUnencrypted,
@@ -295,6 +299,13 @@ bool ConvertProtoToVideoDecoderConfig(
     media::VideoDecoderConfig* video_config) {
   DCHECK(video_config);
 
+  const auto codec = ToMediaVideoCodec(video_message.codec());
+  const auto profile = ToMediaVideoCodecProfile(video_message.profile());
+  const auto pixel_format = ToMediaVideoPixelFormat(video_message.format());
+  if (!codec || !profile || !pixel_format) {
+    return false;
+  }
+
   // TODO(hubbe): Update pb to use VideoColorSpace
   media::VideoColorSpace color_space;
   switch (video_message.color_space()) {
@@ -310,12 +321,11 @@ bool ConvertProtoToVideoDecoderConfig(
       color_space = media::VideoColorSpace::REC601();
       break;
   }
+
   video_config->Initialize(
-      ToMediaVideoCodec(video_message.codec()).value(),
-      ToMediaVideoCodecProfile(video_message.profile()).value(),
-      IsOpaque(ToMediaVideoPixelFormat(video_message.format()).value())
-          ? media::VideoDecoderConfig::AlphaMode::kIsOpaque
-          : media::VideoDecoderConfig::AlphaMode::kHasAlpha,
+      *codec, *profile,
+      IsOpaque(*pixel_format) ? media::VideoDecoderConfig::AlphaMode::kIsOpaque
+                              : media::VideoDecoderConfig::AlphaMode::kHasAlpha,
       color_space, media::kNoTransformation,
       gfx::Size(video_message.coded_size().width(),
                 video_message.coded_size().height()),

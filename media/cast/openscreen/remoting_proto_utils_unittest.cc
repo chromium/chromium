@@ -107,6 +107,29 @@ TEST_F(ProtoUtilsTest, AudioDecoderConfigConversionTest) {
       ConvertProtoToAudioDecoderConfig(audio_message, &audio_output_config));
 
   ASSERT_TRUE(audio_config.Matches(audio_output_config));
+
+  media::AudioDecoderConfig invalid_output_config;
+  {
+    auto invalid_message = audio_message;
+    invalid_message.set_codec(openscreen::cast::AudioDecoderConfig::kCodecDTS);
+    EXPECT_FALSE(ConvertProtoToAudioDecoderConfig(invalid_message,
+                                                  &invalid_output_config));
+  }
+  {
+    auto invalid_message = audio_message;
+    invalid_message.set_sample_format(
+        openscreen::cast::AudioDecoderConfig::kSampleFormatDts);
+    EXPECT_FALSE(ConvertProtoToAudioDecoderConfig(invalid_message,
+                                                  &invalid_output_config));
+  }
+  {
+    auto invalid_message = audio_message;
+    invalid_message.set_channel_layout(
+        openscreen::cast::AudioDecoderConfig::CHANNEL_LAYOUT_DISCRETE);
+    EXPECT_FALSE(ConvertProtoToAudioDecoderConfig(invalid_message,
+                                                  &invalid_output_config));
+  }
+  EXPECT_FALSE(invalid_output_config.IsValidConfig());
 }
 
 TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
@@ -200,6 +223,11 @@ TEST_F(ProtoUtilsTest, VideoDecoderConfigConversionTest) {
   media::VideoDecoderConfig converted;
   ASSERT_TRUE(ConvertProtoToVideoDecoderConfig(message, &converted));
   ASSERT_TRUE(converted.Matches(video_config));
+
+  message.set_format(openscreen::cast::VideoDecoderConfig::PIXEL_FORMAT_RGB32);
+  media::VideoDecoderConfig invalid_converted;
+  EXPECT_FALSE(ConvertProtoToVideoDecoderConfig(message, &invalid_converted));
+  EXPECT_FALSE(invalid_converted.IsValidConfig());
 }
 
 }  // namespace media::cast
