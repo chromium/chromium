@@ -17,7 +17,6 @@ import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinati
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
-import android.content.Intent;
 import android.provider.Settings;
 import android.util.Pair;
 import android.view.View;
@@ -37,7 +36,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -144,16 +142,13 @@ public class TipsNotificationsOptInPromoTest {
     }
 
     private Pair<TipsOptInBottomSheetFacility, RegularNewTabPageStation> showOptInBottomSheet() {
-        // Setup the NTP that will be opened with the custom tips intent.
+        // Launch from the launcher so the opt-in sheet is not suppressed as an intent launch.
         RegularNewTabPageStation openedNtp =
                 RegularNewTabPageStation.newBuilder().withEntryPoint().build();
 
-        Intent intent = IntentHandler.createTrustedOpenNewTabIntent(mContext, false);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         return new Pair<>(
                 mCtaTestRule
-                        .startWithIntentTo(intent)
+                        .startFromLauncherTo()
                         .arriveAtAnd(openedNtp)
                         .enterFacility(new TipsOptInBottomSheetFacility<>()),
                 openedNtp);

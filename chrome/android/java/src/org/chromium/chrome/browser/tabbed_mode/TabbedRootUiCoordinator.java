@@ -337,6 +337,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 /** A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI. */
@@ -636,6 +637,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param urlBarVisibleSupplier Supplier indicating if the omnibox URL bar is visible.
      * @param onTabLayoutAvailable Runnable to invoke when the tab layout UI is ready.
      * @param isWarmOnResumeSupplier Supplier indicating whether the activity is warm on resume.
+     * @param launchCauseSupplier Supplier for the current {@code LaunchCause}.
      */
     public TabbedRootUiCoordinator(
             AppCompatActivity activity,
@@ -697,7 +699,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             VerticalTabsActionDelegate verticalTabsActionDelegate,
             Supplier<Boolean> urlBarVisibleSupplier,
             Runnable onTabLayoutAvailable,
-            BooleanSupplier isWarmOnResumeSupplier) {
+            BooleanSupplier isWarmOnResumeSupplier,
+            IntSupplier launchCauseSupplier) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -883,7 +886,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mInactivityTrackerSupplier,
                         mTrackerInitializedOneshotSupplier,
                         getBottomSheetControllerSupplier(),
-                        mSnackbarManagerSupplier);
+                        mSnackbarManagerSupplier,
+                        mActivityLifecycleDispatcher,
+                        launchCauseSupplier);
 
         new OneShotCallback<>(mProfileSupplier, this::waitForTrackerInit);
 
@@ -3047,6 +3052,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onPendingActorTaskTrigger() {
         if (mGlicUiCoordinator != null) {
             mGlicUiCoordinator.onPendingActorTaskTrigger();
+        }
+    }
+
+    /**
+     * Evaluates foreground promos after {@link ChromeTabbedActivity#onResumeWithNative} completes.
+     */
+    public void onResumeWithNativeCompleted() {
+        if (mForegroundPromoController != null) {
+            mForegroundPromoController.onResumeWithNativeCompleted();
         }
     }
 

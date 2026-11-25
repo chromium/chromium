@@ -60,6 +60,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics.LaunchCause;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -618,7 +619,8 @@ public class TabbedRootUiCoordinatorUnitTest {
                 mVerticalTabsActionDelegate,
                 /* urlBarVisibleSupplier= */ () -> false,
                 /* onTabLayoutAvailable= */ CallbackUtils.emptyRunnable(),
-                mIsWarmOnResume::get);
+                mIsWarmOnResume::get,
+                () -> LaunchCause.MAIN_LAUNCHER_ICON);
     }
 
     @Test

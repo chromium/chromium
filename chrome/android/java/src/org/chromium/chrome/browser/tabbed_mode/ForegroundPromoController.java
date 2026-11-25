@@ -15,7 +15,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.ChromeInactivityTracker.InactivityObserver;
+import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics.LaunchCause;
 import org.chromium.chrome.browser.glic.ui.GlicPromoCoordinator;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tips.TipsOptInCoordinator;
@@ -24,11 +27,12 @@ import org.chromium.chrome.browser.tips.TipsUtils.TipsOptInPromoTriggerOutcome;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 /**
  * Controller for managing and showing foreground promos (such as the Glic promo and Tips Opt-In
- * promo) when the activity is foregrounded.
+ * promo) when the activity resumes in a new foreground session.
  */
 @NullMarked
 public class ForegroundPromoController {
@@ -38,13 +42,15 @@ public class ForegroundPromoController {
     private final OneshotSupplier<Boolean> mTrackerInitializedOneshotSupplier;
     private final Supplier<@Nullable BottomSheetController> mBottomSheetControllerSupplier;
     private final Supplier<@Nullable SnackbarManager> mSnackbarManagerSupplier;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final IntSupplier mLaunchCauseSupplier;
     private final InactivityObserver mInactivityObserver;
     private final CallbackController mCallbackController;
     private final Runnable mShowPromoCallback;
 
     private boolean mPromosEvaluatedForCurrentForeground;
     // Captured in onForegrounded() because ChromeInactivityTracker#onResumeWithNative clears the
-    // stored timestamp before a promo evaluation deferred on tracker initialization runs.
+    // stored timestamp before promo evaluation runs on resume (or on late tracker initialization).
     private long mTimeSinceLastBackgroundedMs =
             ChromeInactivityTracker.UNKNOWN_LAST_BACKGROUNDED_TIME;
     // Number of onForegrounded() calls so far. The first one belongs to the activity's initial
@@ -62,6 +68,8 @@ public class ForegroundPromoController {
      *     tracker is initialized.
      * @param bottomSheetControllerSupplier Supplier for the {@link BottomSheetController}.
      * @param snackbarManagerSupplier Supplier for the {@link SnackbarManager}.
+     * @param activityLifecycleDispatcher Lifecycle dispatcher for checking resumed state.
+     * @param launchCauseSupplier Supplier for the current {@link LaunchCause}.
      */
     public ForegroundPromoController(
             Activity activity,
@@ -69,26 +77,30 @@ public class ForegroundPromoController {
             OneshotSupplier<ChromeInactivityTracker> inactivityTrackerSupplier,
             OneshotSupplier<Boolean> trackerInitializedOneshotSupplier,
             Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier,
-            Supplier<@Nullable SnackbarManager> snackbarManagerSupplier) {
+            Supplier<@Nullable SnackbarManager> snackbarManagerSupplier,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            IntSupplier launchCauseSupplier) {
         mActivity = activity;
         mProfileSupplier = profileSupplier;
         mInactivityTrackerSupplier = inactivityTrackerSupplier;
         mTrackerInitializedOneshotSupplier = trackerInitializedOneshotSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mLaunchCauseSupplier = launchCauseSupplier;
         mCallbackController = new CallbackController();
-        mShowPromoCallback = mCallbackController.makeCancelable(this::maybeShowPromosOnForeground);
+        mShowPromoCallback = mCallbackController.makeCancelable(this::maybeShowPromosOnResume);
 
         mInactivityObserver =
                 new InactivityObserver() {
                     @Override
                     public void onForegrounded(long timeSinceLastBackgroundedMs) {
-                        // Reset the evaluation flag when the app is foregrounded, indicating a
-                        // new foreground session has started and promos should be re-evaluated.
+                        // Reset the evaluation flag when the app starts a new foreground session.
+                        // Evaluation runs once the activity actually resumes so activities started
+                        // without resuming do not show promos unseen.
                         mPromosEvaluatedForCurrentForeground = false;
                         mTimeSinceLastBackgroundedMs = timeSinceLastBackgroundedMs;
                         mForegroundCount++;
-                        mShowPromoCallback.run();
                     }
                 };
 
@@ -99,6 +111,17 @@ public class ForegroundPromoController {
                         }));
 
         mTrackerInitializedOneshotSupplier.onAvailable((initialized) -> mShowPromoCallback.run());
+    }
+
+    /**
+     * Evaluates foreground promos after {@code ChromeTabbedActivity#onResumeWithNative} completes
+     * (after home-surface NTP selection and launch-cause recording).
+     *
+     * <p>Not a {@code PauseResumeWithNativeObserver} because {@code ChromeActivity} records the
+     * launch cause after lifecycle observers are dispatched.
+     */
+    public void onResumeWithNativeCompleted() {
+        mShowPromoCallback.run();
     }
 
     /** Destroys the controller and any promo it is showing. */
@@ -118,7 +141,12 @@ public class ForegroundPromoController {
         }
     }
 
-    private void maybeShowPromosOnForeground() {
+    private void maybeShowPromosOnResume() {
+        if (mActivityLifecycleDispatcher.isActivityFinishingOrDestroyed()
+                || mActivityLifecycleDispatcher.getCurrentActivityState()
+                        != ActivityState.RESUMED_WITH_NATIVE) {
+            return;
+        }
         if (!Boolean.TRUE.equals(mTrackerInitializedOneshotSupplier.get())) {
             return;
         }
@@ -136,12 +164,36 @@ public class ForegroundPromoController {
             return;
         }
 
+        // External-intent suppression is scoped to the Tips opt-in sheet (Glic behavior is
+        // unchanged), so the Tips sheet does not cover content the user navigated to via a deep
+        // link or notification.
+        if (isExternalIntentLaunch(mLaunchCauseSupplier.getAsInt())) {
+            return;
+        }
+
         mTipsOptInPromoShowCallback.onResult(mTimeSinceLastBackgroundedMs);
     }
 
     /** Whether promos are being evaluated for the first foreground since the activity started. */
     private boolean isColdStart() {
         return mForegroundCount <= 1;
+    }
+
+    private static boolean isExternalIntentLaunch(@LaunchCause int launchCause) {
+        return switch (launchCause) {
+            case LaunchCause.EXTERNAL_VIEW_INTENT,
+                    LaunchCause.NOTIFICATION,
+                    LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT,
+                    LaunchCause.SHARE_INTENT,
+                    LaunchCause.NFC,
+                    LaunchCause.OPEN_IN_BROWSER_FROM_MENU,
+                    LaunchCause.HOME_SCREEN_WIDGET,
+                    LaunchCause.HOME_SCREEN_SHORTCUT,
+                    LaunchCause.HANDOFF,
+                    LaunchCause.OTHER_CHROME ->
+                    true;
+            default -> false;
+        };
     }
 
     private void maybeShowTipsOptInPromo(long timeSinceLastBackgroundedMs) {

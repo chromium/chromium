@@ -1844,6 +1844,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             assumeNonNull(mInactivityTrackerSupplier.get())
                     .setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
         }
+
+        // Must run after setInitialOverviewState() and super.onResumeWithNative(), which records
+        // the launch cause.
+        if (mRootUiCoordinator != null) {
+            ((TabbedRootUiCoordinator) mRootUiCoordinator).onResumeWithNativeCompleted();
+        }
     }
 
     @Override
@@ -3626,7 +3632,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 createVerticalTabsActionDelegate(),
                 mUrlBarVisibleSupplier,
                 mAppLaunchDrawBlocker::onTabLayoutAvailable,
-                this::isWarmOnResume);
+                this::isWarmOnResume,
+                this::getLaunchCause);
     }
 
     @Override
