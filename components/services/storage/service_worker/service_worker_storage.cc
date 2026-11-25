@@ -1519,8 +1519,6 @@ void ServiceWorkerStorage::OnDiskCacheInitialized(int rv) {
                << net::ErrorToString(rv);
     Disable();
   }
-  base::UmaHistogramBoolean("ServiceWorker.DiskCache.InitResult",
-                            rv == net::OK);
 }
 
 void ServiceWorkerStorage::StartPurgingResources(

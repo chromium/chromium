@@ -440,16 +440,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.DiskCache.InitResult" units="units"
-    expires_after="2024-08-04">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>chikamune@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    Records result of opening a disk cache for ServiceWorkerDiskCache.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.DiskCache.ReadResponseResult"
     enum="ServiceWorkerReadResponseResult" expires_after="2023-12-04">
   <owner>yyanagisawa@chromium.org</owner>
