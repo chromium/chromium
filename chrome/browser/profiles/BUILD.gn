@@ -1383,7 +1383,7 @@ if (is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser:browser_process",
-      "//chrome/common:chrome_features",
+      "//chrome/browser/flags:flags_android",
       "//chrome/test:test_support",
       "//content/test:test_support",
       "//testing/gtest",

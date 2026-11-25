@@ -524,7 +524,7 @@ ProfileImpl::ProfileImpl(
 
 #if BUILDFLAG(IS_ANDROID)
   auto* startup_data = g_browser_process->startup_data();
-  if (profiles::IsAndroidMultiprofileStartupDataEnabled() && startup_data &&
+  if (profiles::IsMultipleProfilesEnabled() && startup_data &&
       !startup_data->GetProfileKey()) {
     // StartupData pre-creates objects only for the first profile, which has
     // already taken them over.
@@ -595,7 +595,7 @@ ProfileImpl::ProfileImpl(
 #if BUILDFLAG(IS_ANDROID)
 void ProfileImpl::TakePrefsFromStartupData() {
   auto* startup_data = g_browser_process->startup_data();
-  if (profiles::IsAndroidMultiprofileStartupDataEnabled()) {
+  if (profiles::IsMultipleProfilesEnabled()) {
     // StartupData's prefs, policy cache and proto databases live in its
     // profile directory, so only the profile at that path may take them over.
     // The first profile created must therefore be the startup profile.
@@ -625,8 +625,8 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   key_ = std::make_unique<ProfileKey>(GetPath());
 #if BUILDFLAG(IS_ANDROID)
   // On Android this is only called when
-  // profiles::IsAndroidMultiprofileStartupDataEnabled() is true (see the
-  // constructor), so the flag doesn't need to be checked again here.
+  // `profiles::IsMultipleProfilesEnabled()` is true (see the constructor), so
+  // the flag doesn't need to be checked again here.
   //
   // Some SimpleKeyedServices created with the browser context services (e.g.
   // the image fetcher) need the key's ProtoDatabaseProvider before the default

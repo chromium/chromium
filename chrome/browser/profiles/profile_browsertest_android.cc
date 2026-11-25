@@ -19,12 +19,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -152,13 +152,12 @@ IN_PROC_BROWSER_TEST_F(ProfileDeleteMediaBrowserTest, DeleteMediaCache) {
 
 // Android builds the startup profile's ProfileKey, PrefService and
 // ProtoDatabaseProvider in StartupData before any Profile exists. With
-// AndroidMultiprofileStartupData enabled, a second regular profile must load
-// its own data instead of taking over (already consumed) StartupData.
+// AndroidMultiprofile enabled, a second regular profile must load its own data
+// instead of taking over (already consumed) `StartupData`.
 class ProfileAndroidSecondProfileBrowserTest : public AndroidBrowserTest {
  public:
   ProfileAndroidSecondProfileBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kAndroidMultiprofileStartupData);
+    feature_list_.InitAndEnableFeature(chrome::android::kAndroidMultiprofile);
   }
 
  private:
@@ -174,9 +173,6 @@ IN_PROC_BROWSER_TEST_F(ProfileAndroidSecondProfileBrowserTest,
   Profile* startup_profile = GetProfile();
   ASSERT_TRUE(startup_profile);
 
-  // ProfileManager::GenerateNextProfileDirectoryPath() requires
-  // profiles::IsMultipleProfilesEnabled(), which follows kAndroidMultiprofile
-  // and is not enabled in this test.
   base::FilePath second_path =
       profile_manager->user_data_dir().AppendASCII("Profile 1");
   Profile& second_profile =

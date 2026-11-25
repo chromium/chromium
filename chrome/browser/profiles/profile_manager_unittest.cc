@@ -51,7 +51,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -209,8 +208,7 @@ class ProfileManagerTestBase : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 #if BUILDFLAG(IS_ANDROID)
     // SharedPreferences outlive a test, unlike Local State. With
-    // AndroidMultiprofileStartupData, profiles::SetLastUsedProfile() writes to
-    // them.
+    // AndroidMultiprofile, `profiles::SetLastUsedProfile()` writes to them.
     GetSharedPrefs().RemoveKey(
         profiles::kLastUsedProfileBaseNameSharedPreferenceKey);
 #endif
@@ -917,8 +915,7 @@ class ProfileManagerMultiProfileTest : public ProfileManagerTest {
 #if BUILDFLAG(IS_ANDROID)
  private:
   base::test::ScopedFeatureList feature_list_{
-      { chrome::android::kAndroidMultiprofile,
-        features::kAndroidMultiprofileStartupData }};
+      chrome::android::kAndroidMultiprofile};
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
@@ -1595,7 +1592,7 @@ TEST_F(ProfileManagerTest, IsAllowedProfilePath) {
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileManagerTest, SetProfileAsLastUsedOverwritesStaleLastUsedProfile) {
   base::test::ScopedFeatureList feature_list(
-      features::kAndroidMultiprofileStartupData);
+      chrome::android::kAndroidMultiprofile);
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* profile = profile_manager->GetProfile(
       temp_dir_.GetPath().AppendASCII(chrome::kInitialProfile));
@@ -1614,22 +1611,22 @@ TEST_F(ProfileManagerTest, SetProfileAsLastUsedOverwritesStaleLastUsedProfile) {
 class ProfileManagerAndroidSetProfileAsLastUsedTest
     : public ProfileManagerTest {
  protected:
-  void TestWritesBaseNameImpl(bool startup_data_enabled);
+  void TestWritesBaseNameImpl(bool multiprofile_enabled);
 };
 
 TEST_F(ProfileManagerAndroidSetProfileAsLastUsedTest, WritesBaseName) {
-  TestWritesBaseNameImpl(/*startup_data_enabled=*/true);
+  TestWritesBaseNameImpl(/*multiprofile_enabled=*/true);
 }
 
 TEST_F(ProfileManagerAndroidSetProfileAsLastUsedTest,
        KeepsBaseNameWhenDisabled) {
-  TestWritesBaseNameImpl(/*startup_data_enabled=*/false);
+  TestWritesBaseNameImpl(/*multiprofile_enabled=*/false);
 }
 
 TEST_F(ProfileManagerAndroidSetProfileAsLastUsedTest,
        OffTheRecordProfileWritesOriginalProfileBaseName) {
   base::test::ScopedFeatureList feature_list(
-      features::kAndroidMultiprofileStartupData);
+      chrome::android::kAndroidMultiprofile);
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* profile =
       profile_manager->GetProfile(temp_dir_.GetPath().AppendASCII("Profile 1"));
@@ -1645,10 +1642,10 @@ TEST_F(ProfileManagerAndroidSetProfileAsLastUsedTest,
 }
 
 void ProfileManagerAndroidSetProfileAsLastUsedTest::TestWritesBaseNameImpl(
-    bool startup_data_enabled) {
+    bool multiprofile_enabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(features::kAndroidMultiprofileStartupData,
-                                    startup_data_enabled);
+  feature_list.InitWithFeatureState(chrome::android::kAndroidMultiprofile,
+                                    multiprofile_enabled);
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // Not the initial profile, which is also the fallback for unknown profiles.
   Profile* profile =
@@ -1662,7 +1659,7 @@ void ProfileManagerAndroidSetProfileAsLastUsedTest::TestWritesBaseNameImpl(
 
   // Without the flag, StartupData writes the initial profile's base name at
   // startup instead.
-  EXPECT_EQ(startup_data_enabled ? "Profile 1" : stale_base_name,
+  EXPECT_EQ(multiprofile_enabled ? "Profile 1" : stale_base_name,
             GetSharedPrefs().ReadString(
                 profiles::kLastUsedProfileBaseNameSharedPreferenceKey,
                 std::string()));
@@ -1680,25 +1677,25 @@ class ProfileManagerAndroidStartupDataTest : public ProfileManagerTest {
     ProfileManagerTest::TearDown();
   }
 
-  void TestCreateInitialProfileImpl(bool startup_data_enabled);
+  void TestCreateInitialProfileImpl(bool multiprofile_enabled);
 
   StartupData startup_data_;
 };
 
 TEST_F(ProfileManagerAndroidStartupDataTest,
        CreateInitialProfileOpensStartupDataProfile) {
-  TestCreateInitialProfileImpl(/*startup_data_enabled=*/true);
+  TestCreateInitialProfileImpl(/*multiprofile_enabled=*/true);
 }
 
 TEST_F(ProfileManagerAndroidStartupDataTest,
        CreateInitialProfileIgnoresStartupDataProfileWhenDisabled) {
-  TestCreateInitialProfileImpl(/*startup_data_enabled=*/false);
+  TestCreateInitialProfileImpl(/*multiprofile_enabled=*/false);
 }
 
 TEST_F(ProfileManagerAndroidStartupDataTest,
        InitialProfileDirIsDefaultBeforeStartupDataPicksProfile) {
   base::test::ScopedFeatureList feature_list(
-      features::kAndroidMultiprofileStartupData);
+      chrome::android::kAndroidMultiprofile);
 
   EXPECT_EQ(base::FilePath::FromASCII(chrome::kInitialProfile),
             ProfileManager::GetInitialProfileDir());
@@ -1707,7 +1704,7 @@ TEST_F(ProfileManagerAndroidStartupDataTest,
 TEST_F(ProfileManagerAndroidStartupDataTest,
        CreateInitialProfileUpdatesSharedPrefsForNewLastUsedProfile) {
   base::test::ScopedFeatureList feature_list(
-      features::kAndroidMultiprofileStartupData);
+      chrome::android::kAndroidMultiprofile);
   base::FilePath startup_profile_path =
       temp_dir_.GetPath().AppendASCII("Profile 1");
   startup_data_.SetProfilePathForTesting(startup_profile_path);
@@ -1729,7 +1726,7 @@ TEST_F(ProfileManagerAndroidStartupDataTest,
 TEST_F(ProfileManagerAndroidStartupDataTest,
        UnrelatedProfileAddedLeavesSharedPrefsUntouched) {
   base::test::ScopedFeatureList feature_list(
-      features::kAndroidMultiprofileStartupData);
+      chrome::android::kAndroidMultiprofile);
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   const std::string stale_base_name = "StaleProfile";
   profiles::SetLastUsedProfile(base::FilePath::FromASCII("Profile 1"));
@@ -1749,7 +1746,7 @@ TEST_F(ProfileManagerAndroidStartupDataTest,
 TEST_F(ProfileManagerAndroidStartupDataTest,
        CreateInitialProfileLeavesSharedPrefsUntouchedWhenDisabled) {
   base::test::ScopedFeatureList disabled;
-  disabled.InitAndDisableFeature(features::kAndroidMultiprofileStartupData);
+  disabled.InitAndDisableFeature(chrome::android::kAndroidMultiprofile);
   const std::string stale_base_name = "StaleProfile";
   profiles::SetLastUsedProfile(
       base::FilePath::FromASCII(chrome::kInitialProfile));
@@ -1766,10 +1763,10 @@ TEST_F(ProfileManagerAndroidStartupDataTest,
 }
 
 void ProfileManagerAndroidStartupDataTest::TestCreateInitialProfileImpl(
-    bool startup_data_enabled) {
+    bool multiprofile_enabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(features::kAndroidMultiprofileStartupData,
-                                    startup_data_enabled);
+  feature_list.InitWithFeatureState(chrome::android::kAndroidMultiprofile,
+                                    multiprofile_enabled);
   base::FilePath startup_profile_path =
       temp_dir_.GetPath().AppendASCII("Profile 1");
   startup_data_.SetProfilePathForTesting(startup_profile_path);
@@ -1777,7 +1774,7 @@ void ProfileManagerAndroidStartupDataTest::TestCreateInitialProfileImpl(
   Profile* profile = ProfileManager::CreateInitialProfile();
 
   ASSERT_TRUE(profile);
-  EXPECT_EQ(startup_data_enabled
+  EXPECT_EQ(multiprofile_enabled
                 ? startup_profile_path
                 : temp_dir_.GetPath().AppendASCII(chrome::kInitialProfile),
             profile->GetPath());

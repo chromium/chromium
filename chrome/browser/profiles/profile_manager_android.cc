@@ -35,7 +35,7 @@ void ProfileManagerAndroid::OnProfileAdded(Profile* profile) {
   // --profile-directory) is in ProfileAttributesStorage, writing the initial
   // profile to SharedPreferences instead. Re-sync here after
   // AddProfileToStorage() has run if this profile matches kProfileLastUsed.
-  if (profiles::IsAndroidMultiprofileStartupDataEnabled() &&
+  if (profiles::IsMultipleProfilesEnabled() &&
       g_browser_process->local_state()->GetFilePath(prefs::kProfileLastUsed) ==
           profile->GetBaseName()) {
     profiles::WriteLastUsedProfileBaseName(

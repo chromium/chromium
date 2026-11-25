@@ -931,7 +931,7 @@ base::FilePath ProfileManager::GetInitialProfileDir() {
   // that its ProfileImpl takes over the pre-created objects.
   StartupData* startup_data =
       g_browser_process ? g_browser_process->startup_data() : nullptr;
-  if (profiles::IsAndroidMultiprofileStartupDataEnabled() && startup_data &&
+  if (profiles::IsMultipleProfilesEnabled() && startup_data &&
       !startup_data->GetProfilePath().empty()) {
     return startup_data->GetProfilePath().BaseName();
   }
@@ -1036,9 +1036,6 @@ void ProfileManager::CreateMultiProfileAsync(
   // On Android, multiple profiles are only supported behind
   // `kAndroidMultiprofile`.
   CHECK(profiles::IsMultipleProfilesEnabled());
-#if BUILDFLAG(IS_ANDROID)
-  CHECK(profiles::IsAndroidMultiprofileStartupDataEnabled());
-#endif
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(!name.empty(), base::NotFatalUntil::M162);
   CHECK(profiles::IsDefaultAvatarIconIndex(icon_index),

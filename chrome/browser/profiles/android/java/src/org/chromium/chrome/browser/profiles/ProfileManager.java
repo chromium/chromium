@@ -120,11 +120,11 @@ public class ProfileManager {
      * by native, so that it can be used before native is initialized. Returns null if native hasn't
      * recorded one yet.
      *
-     * <p>Native records the profile it starts with, and, with AndroidMultiprofileStartupData, the
-     * profile it will start with whenever the last used profile changes, e.g. when a profile is
-     * activated. This is only a hint for the profile that native will start with: until native
-     * starts, it may be stale, e.g. after a crash or a flag change. Callers must check it against
-     * the profile native starts with.
+     * <p>Native records the profile it starts with, and, with AndroidMultiprofile, the profile it
+     * will start with whenever the last used profile changes, e.g. when a profile is activated.
+     * This is only a hint for the profile that native will start with: until native starts, it may
+     * be stale, e.g. after a crash or a flag change. Callers must check it against the profile
+     * native starts with.
      */
     public static @Nullable String getLastUsedProfileBaseName() {
         return ChromeSharedPreferences.getInstance()
@@ -138,8 +138,7 @@ public class ProfileManager {
 
     /**
      * Asynchronously creates a new profile in the next available multiprofile directory. Must only
-     * be called if {@code kAndroidMultiprofile} and {@code kAndroidMultiprofileStartupData} are
-     * enabled.
+     * be called if {@code kAndroidMultiprofile} is enabled.
      *
      * @param name The name of the new profile. Must not be empty.
      * @param initializedCallback Called when profile initialization is done, with the created

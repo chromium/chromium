@@ -90,9 +90,8 @@ void ChromeBrowserMainPartsAndroid::PostProfileInit(Profile* profile,
                                                     bool is_initial_profile) {
   // Only the initial profile is loaded unless profile startup supports
   // multiple profiles.
-  CHECK(
-      is_initial_profile || profiles::IsAndroidMultiprofileStartupDataEnabled(),
-      base::NotFatalUntil::M162);
+  CHECK(is_initial_profile || profiles::IsMultipleProfilesEnabled(),
+        base::NotFatalUntil::M162);
   ChromeBrowserMainParts::PostProfileInit(profile, is_initial_profile);
 
   // The Android-specific work below is process-wide, or only for the initial

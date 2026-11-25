@@ -87,12 +87,6 @@ BASE_FEATURE(kAutofillPasswordSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidKeepProfilePartitionDirsInCacheDir,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, Android profile startup supports more than one profile: only
-// the profile that StartupData was built for takes over its pre-created
-// objects, and other profiles load their own prefs.
-BASE_FEATURE(kAndroidMultiprofileStartupData,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, renderers for Top Chrome WebUIs (e.g. the tab strip new tab
 // button) do not create URL loader throttles for their resource requests.
 // Android counterpart of kWebUIReloadButtonBypassLoaderThrottles.

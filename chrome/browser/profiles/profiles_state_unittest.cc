@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -267,8 +266,7 @@ class GetLastUsedProfileBaseNameTest : public testing::Test {
                                                 std::string());
     local_state_.registry()->RegisterDictionaryPref(prefs::kProfileAttributes);
 #if BUILDFLAG(IS_ANDROID)
-    feature_list_.InitAndEnableFeature(
-        features::kAndroidMultiprofileStartupData);
+    feature_list_.InitAndEnableFeature(chrome::android::kAndroidMultiprofile);
 #endif
   }
 
@@ -288,7 +286,7 @@ class GetLastUsedProfileBaseNameTest : public testing::Test {
 
 #if BUILDFLAG(IS_ANDROID)
   void TestProfileBaseNameForStartupImpl(
-      bool startup_data_enabled,
+      bool multiprofile_enabled,
       const std::string& command_line_profile,
       const std::string& expected_profile);
 #endif
@@ -335,14 +333,14 @@ TEST_F(GetLastUsedProfileBaseNameTest, AndroidIgnoresUnknownProfile) {
 TEST_F(GetLastUsedProfileBaseNameTest,
        AndroidReturnsUnknownLastUsedProfileWhenDisabled) {
   base::test::ScopedFeatureList disabled;
-  disabled.InitAndDisableFeature(features::kAndroidMultiprofileStartupData);
+  disabled.InitAndDisableFeature(chrome::android::kAndroidMultiprofile);
   SetLastUsedProfile(kProfile1);
 
   EXPECT_EQ(base::FilePath::FromASCII(kProfile1), GetLastUsedProfileBaseName());
 }
 
 TEST_F(GetLastUsedProfileBaseNameTest, AndroidStartsWithLastUsedProfile) {
-  TestProfileBaseNameForStartupImpl(/*startup_data_enabled=*/true,
+  TestProfileBaseNameForStartupImpl(/*multiprofile_enabled=*/true,
                                     /*command_line_profile=*/std::string(),
                                     /*expected_profile=*/kProfile1);
 }
@@ -350,19 +348,19 @@ TEST_F(GetLastUsedProfileBaseNameTest, AndroidStartsWithLastUsedProfile) {
 TEST_F(GetLastUsedProfileBaseNameTest,
        AndroidStartsWithInitialProfileWhenDisabled) {
   TestProfileBaseNameForStartupImpl(
-      /*startup_data_enabled=*/false,
+      /*multiprofile_enabled=*/false,
       /*command_line_profile=*/kExistingProfile,
       /*expected_profile=*/chrome::kInitialProfile);
 }
 
 TEST_F(GetLastUsedProfileBaseNameTest, AndroidStartsWithCommandLineProfile) {
-  TestProfileBaseNameForStartupImpl(/*startup_data_enabled=*/true,
+  TestProfileBaseNameForStartupImpl(/*multiprofile_enabled=*/true,
                                     /*command_line_profile=*/kExistingProfile,
                                     /*expected_profile=*/kExistingProfile);
 }
 
 TEST_F(GetLastUsedProfileBaseNameTest, AndroidStartsWithNewCommandLineProfile) {
-  TestProfileBaseNameForStartupImpl(/*startup_data_enabled=*/true,
+  TestProfileBaseNameForStartupImpl(/*multiprofile_enabled=*/true,
                                     /*command_line_profile=*/"Profile 3",
                                     /*expected_profile=*/"Profile 3");
 }
@@ -377,20 +375,19 @@ TEST_F(GetLastUsedProfileBaseNameTest,
   };
   for (const std::string& profile : invalid_profiles) {
     SCOPED_TRACE(profile);
-    TestProfileBaseNameForStartupImpl(/*startup_data_enabled=*/true,
+    TestProfileBaseNameForStartupImpl(/*multiprofile_enabled=*/true,
                                       /*command_line_profile=*/profile,
                                       /*expected_profile=*/kProfile1);
   }
 }
 
 void GetLastUsedProfileBaseNameTest::TestProfileBaseNameForStartupImpl(
-    bool startup_data_enabled,
+    bool multiprofile_enabled,
     const std::string& command_line_profile,
     const std::string& expected_profile) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates(
-      {{chrome::android::kAndroidMultiprofile, true},
-       {features::kAndroidMultiprofileStartupData, startup_data_enabled}});
+  feature_list.InitWithFeatureState(chrome::android::kAndroidMultiprofile,
+                                    multiprofile_enabled);
   SetLastUsedProfile(kProfile1);
   AddKnownProfile(kProfile1);
   AddKnownProfile(kExistingProfile);
@@ -449,7 +446,7 @@ TEST_F(LastUsedProfileBaseNameTest,
 void LastUsedProfileBaseNameTest::TestSetLastUsedProfileWritesBaseNameImpl(
     bool profile_exists) {
   base::test::ScopedFeatureList feature_list(
-      features::kAndroidMultiprofileStartupData);
+      chrome::android::kAndroidMultiprofile);
   if (profile_exists) {
     ScopedDictPrefUpdate(TestingBrowserProcess::GetGlobal()->local_state(),
                          prefs::kProfileAttributes)

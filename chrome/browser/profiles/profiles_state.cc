@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -87,13 +86,6 @@ bool IsMultipleProfilesEnabled() {
 #endif
 }
 
-#if BUILDFLAG(IS_ANDROID)
-bool IsAndroidMultiprofileStartupDataEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAndroidMultiprofileStartupData);
-}
-#endif
-
 base::FilePath GetDefaultProfileDir(const base::FilePath& user_data_dir) {
   base::FilePath default_profile_dir(user_data_dir);
   default_profile_dir =
@@ -110,11 +102,10 @@ base::FilePath GetLastUsedProfileBaseName(const PrefService& local_state) {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // With AndroidMultiprofileStartupData, the startup profile is chosen from
-  // this value, so require a ProfileAttributesStorage entry. This also rejects
-  // deleted profiles and values that are not profile directory names, such as
-  // "..".
-  if (IsAndroidMultiprofileStartupDataEnabled() &&
+  // With AndroidMultiprofile, the startup profile is chosen from this value, so
+  // require a `ProfileAttributesStorage` entry. This also rejects deleted
+  // profiles and values that are not profile directory names, such as "..".
+  if (IsMultipleProfilesEnabled() &&
       !DoesProfileExist(local_state, base_name)) {
     return initial_profile;
   }
@@ -189,9 +180,9 @@ void SetLastUsedProfile(const base::FilePath& profile_dir) {
   local_state->SetFilePath(prefs::kProfileLastUsed, profile_dir);
 
 #if BUILDFLAG(IS_ANDROID)
-  // Without AndroidMultiprofileStartupData, Chrome always starts with the
-  // initial profile, whose base name StartupData writes at startup.
-  if (IsAndroidMultiprofileStartupDataEnabled()) {
+  // Without AndroidMultiprofile, Chrome always starts with the initial profile,
+  // whose base name `StartupData` writes at startup.
+  if (IsMultipleProfilesEnabled()) {
     // Record the profile that Chrome will start with, which falls back to the
     // initial profile if `profile_dir` isn't a known profile.
     WriteLastUsedProfileBaseName(GetLastUsedProfileBaseName(*local_state));

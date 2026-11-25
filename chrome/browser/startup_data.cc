@@ -209,9 +209,9 @@ base::FilePath StartupData::GetProfileBaseNameForStartup(
     const PrefService& local_state,
     const base::CommandLine& command_line,
     const base::FilePath& user_data_dir) {
-  // Only the flag may start a non-Default profile, the same as
+  // Only AndroidMultiprofile may start a non-Default profile, the same as
   // ProfileManager::GetInitialProfileDir(), which opens this profile first.
-  if (!profiles::IsAndroidMultiprofileStartupDataEnabled()) {
+  if (!profiles::IsMultipleProfilesEnabled()) {
     return base::FilePath::FromASCII(chrome::kInitialProfile);
   }
 
