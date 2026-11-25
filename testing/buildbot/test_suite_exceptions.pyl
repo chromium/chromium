@@ -195,6 +195,47 @@
       },
     },
   },
+  'litert_conversation_e2e_tests_cpu': {
+    'modifications': {
+      # TODO(crbug.com/584336366): Make blocking after initial soak period.
+      'optimization_guide-linux': {
+        'experiment_percentage': 100,
+      },
+      # TODO(crbug.com/584336366): Make blocking after initial soak period.
+      'optimization_guide-mac-arm64': {
+        'experiment_percentage': 100,
+      },
+      # TODO(crbug.com/584336366): Make blocking after initial soak period.
+      'optimization_guide-mac-x64': {
+        'experiment_percentage': 100,
+      },
+      # TODO(crbug.com/584336366): Make blocking after initial soak period.
+      'optimization_guide-win64': {
+        'experiment_percentage': 100,
+      },
+    },
+  },
+  'litert_conversation_e2e_tests_gpu': {
+    'modifications': {
+      # TODO(crbug.com/547936735): Make blocking again once
+      # VK_ERROR_DEVICE_LOST on Linux Intel GPUs is fixed.
+      'optimization_guide-linux': {
+        'experiment_percentage': 100,
+      },
+      # TODO(crbug.com/584336366): Make blocking after initial soak period.
+      'optimization_guide-mac-arm64': {
+        'experiment_percentage': 100,
+      },
+      # TODO(crbug.com/584336366): Make blocking after initial soak period.
+      'optimization_guide-mac-x64': {
+        'experiment_percentage': 100,
+      },
+      # TODO(crbug.com/584336366): Make blocking after initial soak period.
+      'optimization_guide-win64': {
+        'experiment_percentage': 100,
+      },
+    },
+  },
   'litert_e2e_tests_gpu': {
     'modifications': {
       # TODO(crbug.com/547936735): Make blocking again once

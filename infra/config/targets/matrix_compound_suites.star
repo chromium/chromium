@@ -854,6 +854,8 @@ targets.legacy_matrix_compound_suite(
         "ondevice_stability_tests_suite": None,
         "litert_e2e_tests_gpu_suite": None,
         "litert_e2e_tests_cpu_suite": None,
+        "litert_conversation_e2e_tests_gpu_suite": None,
+        "litert_conversation_e2e_tests_cpu_suite": None,
         "litert_lm_advanced_main_legacy_tests_cpu_suite": None,
         "litert_lm_advanced_main_legacy_tests_gpu_suite": None,
         "chrome_ai_wpt_tests_manifest_suite": None,
@@ -939,6 +941,18 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "litert_e2e_tests_cpu_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+            ],
+        ),
+        "litert_conversation_e2e_tests_gpu_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+            ],
+        ),
+        "litert_conversation_e2e_tests_cpu_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
                 "non-gce",
@@ -1130,6 +1144,13 @@ targets.legacy_matrix_compound_suite(
                 "win10",
             ],
         ),
+        "litert_conversation_e2e_tests_gpu_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+                "win10",
+            ],
+        ),
         "chrome_ai_wpt_tests_manifest_cpu_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
@@ -1229,6 +1250,13 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "litert_e2e_tests_cpu_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+                "win10",
+            ],
+        ),
+        "litert_conversation_e2e_tests_cpu_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
                 "non-gce",

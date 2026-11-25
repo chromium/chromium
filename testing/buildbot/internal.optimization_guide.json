@@ -1883,6 +1883,62 @@
           "--benchmark_binary_dir=./",
           "--backends=cpu"
         ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:litert_conversation_e2e_tests",
+        "module_scheme": "flat",
+        "name": "litert_conversation_e2e_tests_cpu",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "0",
+            "os": "Ubuntu",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "litert_conversation_e2e_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:litert_conversation_e2e_tests/"
+      },
+      {
+        "args": [
+          "--benchmark_binary_dir=./",
+          "--backends=gpu"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:litert_conversation_e2e_tests",
+        "module_scheme": "flat",
+        "name": "litert_conversation_e2e_tests_gpu",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "0",
+            "os": "Ubuntu",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "litert_conversation_e2e_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:litert_conversation_e2e_tests/"
+      },
+      {
+        "args": [
+          "--benchmark_binary_dir=./",
+          "--backends=cpu"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -2798,6 +2854,60 @@
           "--benchmark_binary_dir=./",
           "--backends=cpu"
         ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:litert_conversation_e2e_tests",
+        "module_scheme": "flat",
+        "name": "litert_conversation_e2e_tests_cpu",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-26",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "litert_conversation_e2e_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:litert_conversation_e2e_tests/"
+      },
+      {
+        "args": [
+          "--benchmark_binary_dir=./",
+          "--backends=gpu"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:litert_conversation_e2e_tests",
+        "module_scheme": "flat",
+        "name": "litert_conversation_e2e_tests_gpu",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-26",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "litert_conversation_e2e_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:litert_conversation_e2e_tests/"
+      },
+      {
+        "args": [
+          "--benchmark_binary_dir=./",
+          "--backends=cpu"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3687,6 +3797,60 @@
         },
         "test": "chrome_ai_wpt_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:chrome_ai_wpt_tests/"
+      },
+      {
+        "args": [
+          "--benchmark_binary_dir=./",
+          "--backends=cpu"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:litert_conversation_e2e_tests",
+        "module_scheme": "flat",
+        "name": "litert_conversation_e2e_tests_cpu",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-15",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "litert_conversation_e2e_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:litert_conversation_e2e_tests/"
+      },
+      {
+        "args": [
+          "--benchmark_binary_dir=./",
+          "--backends=gpu"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:litert_conversation_e2e_tests",
+        "module_scheme": "flat",
+        "name": "litert_conversation_e2e_tests_gpu",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-15",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "litert_conversation_e2e_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:litert_conversation_e2e_tests/"
       },
       {
         "args": [
@@ -5814,6 +5978,60 @@
         },
         "test": "chrome_ai_wpt_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:chrome_ai_wpt_tests/"
+      },
+      {
+        "args": [
+          "--benchmark_binary_dir=./",
+          "--backends=cpu"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:litert_conversation_e2e_tests",
+        "module_scheme": "flat",
+        "name": "litert_conversation_e2e_tests_cpu",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gce": "0",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "litert_conversation_e2e_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:litert_conversation_e2e_tests/"
+      },
+      {
+        "args": [
+          "--benchmark_binary_dir=./",
+          "--backends=gpu"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:litert_conversation_e2e_tests",
+        "module_scheme": "flat",
+        "name": "litert_conversation_e2e_tests_gpu",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gce": "0",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "litert_conversation_e2e_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:litert_conversation_e2e_tests/"
       },
       {
         "args": [

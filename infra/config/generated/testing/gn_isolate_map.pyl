@@ -1503,6 +1503,11 @@
     "label": "//chrome:linux_symbols",
     "type": "additional_compile_target",
   },
+  "litert_conversation_e2e_tests": {
+    "label": "//components/optimization_guide/internal/testing:litert_conversation_e2e_tests",
+    "type": "generated_script",
+    "module_scheme": "flat",
+  },
   "litert_e2e_tests": {
     "label": "//components/optimization_guide/internal/testing:litert_e2e_tests",
     "type": "generated_script",
