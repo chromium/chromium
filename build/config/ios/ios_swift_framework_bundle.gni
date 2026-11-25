@@ -1,0 +1,171 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/mobile_config.gni")
+import("//build/config/apple/swift_source_set.gni")
+import("//build/config/ios/rules.gni")
+
+# Template to package a shared library composed of a single Swift module
+# into an iOS framework bundle.
+#
+# The template wraps an ios_framework_bundle(...) template while taking
+# care of building the a Swift module and adding the Modules information
+# to the framework bundle. Unless specified otherwise all parameters are
+# directly forwarded to ios_framework_bundle(...) and you should check
+# the documentation for that template for more details.
+#
+# Arguments
+#
+#   sources
+#       (required) list of swift file names to build for the swift module
+#       exposed by this framework bundle
+#
+#   module_name
+#       (optional) string, name of this build target's top level swift module.
+#       If not specified, a module name will be generated based on the target's
+#       name
+#
+template("ios_swift_framework_bundle") {
+  assert(defined(invoker.sources) && invoker.sources != [])
+  foreach(_name, invoker.sources) {
+    assert(get_path_info(_name, "extension") == "swift",
+           "only .swift files must be listed in sources")
+  }
+
+  _target_name = target_name
+  _output_name = target_name
+  if (defined(invoker.output_name)) {
+    _output_name = invoker.output_name
+  }
+  _module_name = _output_name
+  if (defined(invoker.module_name)) {
+    _module_name = invoker.module_name
+  }
+
+  _module_target = "${_target_name}__module"
+
+  _gen_dir = get_label_info(":$_module_target", "target_gen_dir")
+  _out_dir = get_label_info(":$_module_target", "target_out_dir")
+
+  _headers_dir = "{{bundle_contents_dir}}/Headers"
+  _modules_dir = "{{bundle_contents_dir}}/Modules"
+  _swiftmodule_dir = "$_modules_dir/$_module_name.swiftmodule"
+
+  _basename = "${target_cpu}-apple-ios"
+  if (target_environment == "simulator") {
+    _basename = "${_basename}-simulator"
+  }
+
+  _bundle_data_header = "${_target_name}__bundle_data_header"
+  _bundle_data_abi_json = "${_target_name}__bundle_data_abi_json"
+  _bundle_data_swiftdoc = "${_target_name}__bundle_data_swiftdoc"
+  _bundle_data_swiftmodule = "${_target_name}__bundle_data_swiftmodule"
+  _bundle_data_swiftsourceinfo = "${_target_name}__bundle_data_swiftsourceinfo"
+  _bundle_data_modulemap = "${_target_name}__bundle_data_modulemap"
+
+  swift_source_set(_module_target) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "bundle_deps",
+                             "bundle_deps_filter",
+                             "data_deps",
+                             "enable_code_signing",
+                             "extra_substitutions",
+                             "info_plist",
+                             "info_plist_target",
+                             "output_name",
+                             "module_name",
+                             "public_headers",
+                             "public_configs",
+                             "transparent",
+                             "visibility",
+                           ])
+
+    visibility = [ ":*" ]
+
+    output_name = _output_name
+    module_name = _module_name
+  }
+
+  bundle_data(_bundle_data_header) {
+    visibility = [ ":*" ]
+    public_deps = [ ":$_module_target" ]
+    sources = [ "$_gen_dir/$_output_name.h" ]
+    outputs = [ "$_headers_dir/${_module_name}-Swift.h" ]
+  }
+
+  bundle_data(_bundle_data_abi_json) {
+    visibility = [ ":*" ]
+    public_deps = [ ":$_module_target" ]
+    sources = [ "$_out_dir/$_module_target/$_module_name.abi.json" ]
+    outputs = [ "$_swiftmodule_dir/$_basename.abi.json" ]
+  }
+
+  bundle_data(_bundle_data_swiftdoc) {
+    visibility = [ ":*" ]
+    public_deps = [ ":$_module_target" ]
+    sources = [ "$_out_dir/$_module_target/$_module_name.swiftdoc" ]
+    outputs = [ "$_swiftmodule_dir/$_basename.swiftdoc" ]
+  }
+
+  bundle_data(_bundle_data_swiftmodule) {
+    visibility = [ ":*" ]
+    public_deps = [ ":$_module_target" ]
+    sources = [ "$_out_dir/$_module_target/$_module_name.swiftmodule" ]
+    outputs = [ "$_swiftmodule_dir/$_basename.swiftmodule" ]
+  }
+
+  bundle_data(_bundle_data_swiftsourceinfo) {
+    visibility = [ ":*" ]
+    public_deps = [ ":$_module_target" ]
+    sources = [ "$_out_dir/$_module_target/$_module_name.swiftsourceinfo" ]
+    outputs = [ "$_swiftmodule_dir/Project/$_basename.swiftsourceinfo" ]
+  }
+
+  bundle_data(_bundle_data_modulemap) {
+    visibility = [ ":*" ]
+    sources = [ "$_gen_dir/$_output_name.modulemap" ]
+    outputs = [ "$_modules_dir/module.modulemap" ]
+
+    write_file("$_gen_dir/$_output_name.modulemap",
+               [
+                 "framework module $_module_name {",
+                 "  header \"${_module_name}-Swift.h\"",
+                 "}",
+               ])
+  }
+
+  ios_framework_bundle(_target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "sources",
+                             "module_name",
+                             "public_headers",
+                           ])
+
+    if (!defined(deps)) {
+      deps = []
+    }
+    if (!defined(bundle_deps)) {
+      bundle_deps = []
+    }
+
+    deps += [ ":$_module_target" ]
+
+    bundle_deps += [
+      ":$_bundle_data_abi_json",
+      ":$_bundle_data_header",
+      ":$_bundle_data_modulemap",
+      ":$_bundle_data_swiftdoc",
+      ":$_bundle_data_swiftmodule",
+      ":$_bundle_data_swiftsourceinfo",
+    ]
+  }
+}
+
+set_defaults("ios_swift_framework_bundle") {
+  configs = default_shared_library_configs
+}
