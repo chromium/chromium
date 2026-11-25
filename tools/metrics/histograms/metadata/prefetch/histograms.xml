@@ -905,26 +905,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PrefetchProxy.CanaryChecker.NumAttemptsBeforeSuccess.{PrefetchProxyCanaryCheckerClient}"
-    units="count" expires_after="2025-03-01">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Records the number of attempts that are made to achieve a successful canary
-    check. This is recorded every time we make a canary check and the result is
-    a success. In particular, this means this is no recorded when a result was
-    already cached or when the check attempt fails after exhausting its retries.
-    This metric is 1-based so if a probe succeeds the first time, a sample of 1
-    will be recorded.
-
-    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
-    be missing.
-  </summary>
-  <token key="PrefetchProxyCanaryCheckerClient"
-      variants="PrefetchProxyCanaryCheckerClient"/>
-</histogram>
-
-<histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilFailure.{PrefetchProxyCanaryCheckerClient}"
     units="ms" expires_after="2027-04-11">
   <owner>kouhei@chromium.org</owner>

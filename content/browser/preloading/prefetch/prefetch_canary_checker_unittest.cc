@@ -195,8 +195,6 @@ TEST_F(PrefetchCanaryCheckerTest, OK) {
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.CanaryChecker.FinalState.DNS", true, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.CanaryChecker.NumAttemptsBeforeSuccess.DNS", 1, 1);
   histogram_tester.ExpectBucketCount(
       "PrefetchProxy.CanaryChecker.CacheLookupResult.DNS", 0, 1);
 }
@@ -463,8 +461,6 @@ TEST_F(PrefetchCanaryCheckerTest, Timeout) {
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.CanaryChecker.FinalState.DNS", true, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.CanaryChecker.NumAttemptsBeforeSuccess.DNS", 3, 1);
 }
 
 TEST_F(PrefetchCanaryCheckerTest, CacheEntryAge) {

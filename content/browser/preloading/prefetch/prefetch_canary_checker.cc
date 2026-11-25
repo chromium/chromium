@@ -42,8 +42,6 @@ const size_t kMaxCacheSize = 4;
 const char kFinalResultHistogram[] = "PrefetchProxy.CanaryChecker.FinalState";
 const char kTimeUntilSuccess[] = "PrefetchProxy.CanaryChecker.TimeUntilSuccess";
 const char kTimeUntilFailure[] = "PrefetchProxy.CanaryChecker.TimeUntilFailure";
-const char kAttemptsBeforeSuccessHistogram[] =
-    "PrefetchProxy.CanaryChecker.NumAttemptsBeforeSuccess";
 const char kNetErrorHistogram[] = "PrefetchProxy.CanaryChecker.NetError";
 const char kCacheEntryAgeHistogram[] =
     "PrefetchProxy.CanaryChecker.CacheEntryAge";
@@ -299,14 +297,6 @@ void PrefetchCanaryChecker::ProcessSuccess() {
   CHECK(!timeout_timer_ || !timeout_timer_->IsRunning(),
         base::NotFatalUntil::M159);
   CHECK(time_when_set_active_.has_value(), base::NotFatalUntil::M159);
-
-  base::LinearHistogram::FactoryGet(
-      AppendNameToHistogram(kAttemptsBeforeSuccessHistogram), 1 /* minimum */,
-      25 /* maximum */, 25 /* bucket_count */,
-      base::HistogramBase::kUmaTargetedHistogramFlag)
-      // |failure_count| is zero when the first attempt is successful.
-      // Increase by one for more intuitive metrics.
-      ->Add(backoff_entry_.failure_count() + 1);
 
   OnCheckEnd(true);
 }
