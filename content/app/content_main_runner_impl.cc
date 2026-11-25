@@ -1012,6 +1012,13 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
     // TODO(evanm): move this to some shared subprocess-init function.
     if (!base::debug::BeingDebugged())
       signal(SIGINT, SIG_IGN);
+
+    // SIGHUP is also often delivered to every process of the browser, e.g.
+    // when the session ends or with `killall -HUP`. The browser handles it by
+    // shutting down gracefully. Child processes ignore it; otherwise the
+    // browser would have to relaunch them (e.g. the GPU process) while
+    // shutting down, which can fail and crash the browser.
+    signal(SIGHUP, SIG_IGN);
   }
 #endif
 

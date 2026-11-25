@@ -2,21 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/child_process_launcher.h"
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "content/browser/child_process_launcher.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include <signal.h>
+#endif
 
 namespace {
 
@@ -96,5 +102,23 @@ IN_PROC_BROWSER_TEST_F(ChildProcessLauncherBrowserTest, ChildSpawnFail) {
   EXPECT_EQ(last_entry->GetPageType(), PAGE_TYPE_NORMAL);
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), url);
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// SIGHUP is often delivered to every process of the browser (e.g. on session
+// end), and the browser shuts down gracefully in response. Child processes
+// must survive it so that the browser doesn't have to relaunch them (e.g. the
+// GPU process) while it shuts down.
+IN_PROC_BROWSER_TEST_F(ChildProcessLauncherBrowserTest, ChildIgnoresSIGHUP) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("data:text/html,sighup")));
+  RenderProcessHost* process =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  ASSERT_TRUE(process->IsReady());
+  ASSERT_EQ(0, kill(process->GetProcess().Pid(), SIGHUP));
+
+  // A round trip makes sure the renderer has run since the signal arrived.
+  EXPECT_EQ(2, EvalJs(shell(), "1 + 1"));
+  EXPECT_TRUE(process->IsInitializedAndNotDead());
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace content
