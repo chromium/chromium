@@ -439,6 +439,50 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
+    public void testOnPrepareOptionsMenu_notShownInTab_searchOpen_removesHelpAndKeepsDelete() {
+        when(mDelegate.isShownInTab()).thenReturn(false);
+        SettingsSearchCoordinator searchCoordinator = mock(SettingsSearchCoordinator.class);
+        when(searchCoordinator.isSearchOpen()).thenReturn(true);
+        when(mDelegate.getSearchCoordinator()).thenReturn(searchCoordinator);
+
+        Menu menu = mToolbar.getMenu();
+        menu.clear();
+        menu.add(Menu.NONE, R.id.menu_id_general_help, Menu.NONE, "General Help");
+        menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, "Targeted Help");
+        menu.add(Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, "Site Settings Help");
+        menu.add(Menu.NONE, R.id.help_menu_id, Menu.NONE, "Help");
+        menu.add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
+
+        SettingsMenuHelper.onPrepareOptionsMenu(menu, mDelegate);
+
+        assertEquals(1, menu.size());
+        assertNotNull(menu.findItem(R.id.delete_menu_id));
+        assertNull(menu.findItem(R.id.menu_id_general_help));
+        assertNull(menu.findItem(R.id.menu_id_targeted_help));
+        assertNull(menu.findItem(R.id.menu_id_site_settings_help));
+        assertNull(menu.findItem(R.id.help_menu_id));
+    }
+
+    @Test
+    public void testOnPrepareOptionsMenu_notShownInTab_searchClosed_keepsHelp() {
+        when(mDelegate.isShownInTab()).thenReturn(false);
+        SettingsSearchCoordinator searchCoordinator = mock(SettingsSearchCoordinator.class);
+        when(searchCoordinator.isSearchOpen()).thenReturn(false);
+        when(mDelegate.getSearchCoordinator()).thenReturn(searchCoordinator);
+
+        Menu menu = mToolbar.getMenu();
+        menu.clear();
+        menu.add(Menu.NONE, R.id.menu_id_general_help, Menu.NONE, "General Help");
+        menu.add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
+
+        SettingsMenuHelper.onPrepareOptionsMenu(menu, mDelegate);
+
+        assertEquals(2, menu.size());
+        assertNotNull(menu.findItem(R.id.menu_id_general_help));
+        assertNotNull(menu.findItem(R.id.delete_menu_id));
+    }
+
+    @Test
     public void testPrepareOptionsMenu_MultipleItems() {
         Menu menu = mock(Menu.class);
         MenuItem itemWithIcon = mock(MenuItem.class);
