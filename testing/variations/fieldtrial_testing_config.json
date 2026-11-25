@@ -9074,6 +9074,24 @@
             ]
         }
     ],
+    "ExtensionGetDynamicRulesOffThread": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExtensionGetDynamicRulesOffThread"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtensionServiceWorkerVoter": [
         {
             "platforms": [
