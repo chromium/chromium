@@ -1,0 +1,25 @@
+Tests that pause on promise rejection works.
+=== Pausing only on uncaught exceptions ===
+Set timer for test function.
+Call stack:
+    0) testFunction (pause-on-promise-rejection-chains.js:28)
+    [setTimeout]
+    0) scheduleTestFunction (pause-on-promise-rejection-chains.js:32)
+    1) (anonymous) (<unknown>:1)
+Paused reason: promiseRejection, uncaught: true, description: Error: uncaught
+
+=== Pausing on all exceptions ===
+Set timer for test function.
+Call stack:
+    0) testFunction (pause-on-promise-rejection-chains.js:27)
+    [setTimeout]
+    0) scheduleTestFunction (pause-on-promise-rejection-chains.js:32)
+    1) (anonymous) (<unknown>:1)
+Paused reason: promiseRejection, uncaught: false, description: Error: caught
+Call stack:
+    0) testFunction (pause-on-promise-rejection-chains.js:28)
+    [setTimeout]
+    0) scheduleTestFunction (pause-on-promise-rejection-chains.js:32)
+    1) (anonymous) (<unknown>:1)
+Paused reason: promiseRejection, uncaught: true, description: Error: uncaught
+
