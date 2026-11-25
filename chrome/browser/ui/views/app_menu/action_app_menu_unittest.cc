@@ -2916,6 +2916,58 @@ TEST_F(ActionAppMenuWithSearchTest, ClearItemsBelowSearchBarKeepsNotification) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuWithSearchTest, SearchBarSpacingUniformBelowNotification) {
+  if (!browser_defaults::kShowUpgradeMenuItem) {
+    GTEST_SKIP() << "Upgrade menu item is not supported on this platform.";
+  }
+
+  actions::ActionItem* upgrade_action =
+      actions::ActionManager::Get().FindAction(
+          kActionUpgradeDialog, browser_actions_->root_action_item());
+  ASSERT_NE(upgrade_action, nullptr);
+  upgrade_action->SetVisible(true);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::MenuItemView* upgrade_item =
+      root->GetMenuItemByID(kActionUpgradeDialog);
+  ASSERT_NE(upgrade_item, nullptr);
+
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  views::Textfield* search_field = GetSearchField(search_bar);
+  ASSERT_NE(search_field, nullptr);
+  views::Separator* separator = GetSeparator(search_bar);
+  ASSERT_NE(separator, nullptr);
+
+  const gfx::Insets* search_bar_margins =
+      search_bar->GetProperty(views::kMarginsKey);
+  ASSERT_NE(search_bar_margins, nullptr);
+  const gfx::Insets* search_field_margins =
+      search_field->GetProperty(views::kMarginsKey);
+  ASSERT_NE(search_field_margins, nullptr);
+
+  // The search bar's top margin compensates for its internal top margin so
+  // that the gap between the notification row and the search field matches the
+  // gap between the search field and the divider below it.
+  EXPECT_EQ(search_bar_margins->top(),
+            search_field_margins->bottom() - search_field_margins->top());
+  const int gap_above_search_field = search_field->GetBoundsInScreen().y() -
+                                     upgrade_item->GetBoundsInScreen().bottom();
+  const int gap_below_search_field = separator->GetBoundsInScreen().y() -
+                                     search_field->GetBoundsInScreen().bottom();
+  EXPECT_EQ(gap_above_search_field, gap_below_search_field);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 TEST_F(ActionAppMenuWithSearchTest, ShortSearchQueryKeepsNormalMenu) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());

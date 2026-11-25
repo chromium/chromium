@@ -1069,13 +1069,16 @@ void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,
   search_item->SetIsPinned(true);
 
   const auto* provider = ChromeLayoutProvider::Get();
-  // The search bar applies its own insets, so only the gap below a
-  // notification is set here.
+  // The search bar applies its own insets
+  // (`INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN`), whose top margin assumes the
+  // menu's top border sits directly above it. When a notification header sits
+  // above the search bar instead, add the difference so the gap above the
+  // search field matches the gap below it to the divider.
   gfx::Insets margins;
   if (has_notification_header_) {
-    margins.set_top(margins.top() +
-                    provider->GetDistanceMetric(
-                        DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
+    const gfx::Insets search_bar_margins =
+        provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN);
+    margins.set_top(search_bar_margins.bottom() - search_bar_margins.top());
   }
 
   auto search_bar = std::make_unique<AppMenuSearchBarView>();
