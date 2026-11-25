@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <atomic>
 #include <limits>
 #include <memory>
 #include <string>
@@ -18,10 +19,15 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/condition_variable.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -29,15 +35,30 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_capture.h"
+#include "content/public/test/browser_task_environment.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/device/public/mojom/wake_lock.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "third_party/webrtc/modules/desktop_capture/frame_texture.h"
 #include "ui/base/ozone_buildflags.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/win/scoped_handle.h"
+#include "content/public/browser/gpu_data_manager.h"
+#include "gpu/config/gpu_info.h"
+#endif
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -1117,5 +1138,409 @@ INSTANTIATE_TEST_SUITE_P(All, DesktopCaptureDeviceTest, testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          DesktopCaptureDeviceThrottledTest,
                          testing::Bool());
+
+namespace {
+
+class FakeFrameTexture : public webrtc::FrameTexture {
+ public:
+  FakeFrameTexture()
+#if BUILDFLAG(IS_WIN)
+      : webrtc::FrameTexture(CreateEvent(nullptr, FALSE, FALSE, nullptr)),
+        owned_handle_(handle())
+#else
+      : webrtc::FrameTexture(1)
+#endif
+  {
+  }
+  ~FakeFrameTexture() override = default;
+
+ private:
+#if BUILDFLAG(IS_WIN)
+  base::win::ScopedHandle owned_handle_;
+#endif
+};
+
+class TextureDesktopFrame : public webrtc::DesktopFrame {
+ public:
+  explicit TextureDesktopFrame(const webrtc::DesktopSize& size)
+      : TextureDesktopFrame(size, std::make_unique<FakeFrameTexture>()) {}
+
+  ~TextureDesktopFrame() override = default;
+
+ private:
+  TextureDesktopFrame(const webrtc::DesktopSize& size,
+                      std::unique_ptr<FakeFrameTexture> texture)
+      : webrtc::DesktopFrame(size,
+                             /*stride=*/0,
+                             webrtc::FOURCC_ARGB,
+                             /*data=*/nullptr,
+                             /*shared_memory=*/nullptr,
+                             texture.get()),
+        owned_texture_(std::move(texture)) {
+    mutable_updated_region()->SetRect(webrtc::DesktopRect::MakeSize(size));
+  }
+
+  std::unique_ptr<FakeFrameTexture> owned_texture_;
+};
+
+class FakeTextureCapturer : public webrtc::DesktopCapturer {
+ public:
+  FakeTextureCapturer() = default;
+  ~FakeTextureCapturer() override = default;
+
+  void set_max_texture_frames(int max_texture_frames) {
+    max_texture_frames_.store(max_texture_frames, std::memory_order_release);
+  }
+
+  void WaitForCompletedTextureFrames(int target_count) {
+    base::AutoLock lock(lock_);
+    while (completed_texture_frames_ < target_count) {
+      cv_.Wait();
+    }
+  }
+
+  int capture_attempts() {
+    base::AutoLock lock(lock_);
+    return capture_attempts_;
+  }
+
+  // webrtc::DesktopCapturer:
+  void Start(Callback* callback) override { callback_ = callback; }
+
+  void CaptureFrame() override {
+    const int max_frames = max_texture_frames_.load(std::memory_order_acquire);
+    {
+      base::AutoLock lock(lock_);
+      ++capture_attempts_;
+      if (max_frames >= 0 && completed_texture_frames_ >= max_frames) {
+        base::AutoUnlock unlock(lock_);
+        callback_->OnCaptureResult(
+            webrtc::DesktopCapturer::Result::ERROR_TEMPORARY, nullptr);
+        return;
+      }
+    }
+
+    auto frame = std::make_unique<TextureDesktopFrame>(
+        webrtc::DesktopSize(kTestFrameWidth3, kTestFrameHeight3));
+    callback_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,
+                               std::move(frame));
+
+    base::AutoLock lock(lock_);
+    ++completed_texture_frames_;
+    cv_.Broadcast();
+  }
+
+  bool GetSourceList(SourceList* screens) override { return false; }
+  bool SelectSource(SourceId id) override { return false; }
+
+ private:
+  raw_ptr<Callback> callback_ = nullptr;
+  std::atomic<int> max_texture_frames_{-1};
+  base::Lock lock_;
+  base::ConditionVariable cv_{&lock_};
+  int capture_attempts_ GUARDED_BY(lock_) = 0;
+  int completed_texture_frames_ GUARDED_BY(lock_) = 0;
+};
+
+}  // namespace
+
+class DesktopCaptureDeviceTextureTest : public testing::Test {
+ protected:
+  void CreateWindowCaptureDevice(
+      std::unique_ptr<webrtc::DesktopCapturer> capturer) {
+    capture_device_.reset(new DesktopCaptureDevice(
+        std::move(capturer), DesktopMediaID::TYPE_WINDOW));
+
+    // Bind a dummy WakeLock pipe so Core::AllocateAndStart() does not spin up
+    // DeviceService / Linux D-Bus threads in unit tests.
+    mojo::PendingRemote<device::mojom::WakeLock> dummy_wake_lock;
+    wake_lock_receiver_ = dummy_wake_lock.InitWithNewPipeAndPassReceiver();
+    capture_device_->SetWakeLockForTesting(std::move(dummy_wake_lock));
+
+#if BUILDFLAG(IS_WIN)
+    capture_device_->SetGpuLuidForTesting(
+        GpuDataManager::GetInstance()->GetGPUInfo().active_gpu().luid);
+#endif
+  }
+
+  void SetSharedImageInterfaceGetter(
+      DesktopCaptureDevice::SharedImageInterfaceGetter getter) {
+    capture_device_->SetSharedImageInterfaceGetterForTesting(std::move(getter));
+  }
+
+#if BUILDFLAG(IS_WIN)
+  void SetGpuLuid(CHROME_LUID luid) {
+    capture_device_->SetGpuLuidForTesting(luid);
+  }
+#endif
+
+  void FlushCaptureThread() {
+    base::RunLoop loop;
+    capture_device_->thread_.task_runner()->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), loop.QuitClosure());
+    loop.Run();
+  }
+
+  media::VideoCaptureParams CaptureParamsWithFrameRate(float frame_rate) const {
+    media::VideoCaptureParams params;
+    params.requested_format.frame_size.SetSize(kTestFrameWidth3,
+                                               kTestFrameHeight3);
+    params.requested_format.frame_rate = frame_rate;
+    params.requested_format.pixel_format = media::PIXEL_FORMAT_ARGB;
+    return params;
+  }
+
+  media::VideoCaptureParams DefaultCaptureParams() const {
+    return CaptureParamsWithFrameRate(kFrameRate);
+  }
+
+  BrowserTaskEnvironment task_environment_;
+  mojo::PendingReceiver<device::mojom::WakeLock> wake_lock_receiver_;
+  std::unique_ptr<DesktopCaptureDevice> capture_device_;
+};
+
+// Verifies that texture frames arriving before the UI-thread
+// SharedImageInterface request completes are dropped without reporting OnError,
+// and that stopping the device while the UI-thread request is still in flight
+// safely drops the reply.
+TEST_F(DesktopCaptureDeviceTextureTest,
+       DropsFramesWhileSharedImageInterfacePendingAndStopsCleanly) {
+  auto capturer = std::make_unique<FakeTextureCapturer>();
+  FakeTextureCapturer* raw_capturer = capturer.get();
+  CreateWindowCaptureDevice(std::move(capturer));
+
+  base::RunLoop ui_getter_loop;
+  bool getter_ran_on_ui = false;
+  SetSharedImageInterfaceGetter(base::BindLambdaForTesting(
+      [&]() -> scoped_refptr<gpu::SharedImageInterface> {
+        EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+        getter_ran_on_ui = true;
+        ui_getter_loop.Quit();
+        return base::MakeRefCounted<gpu::TestSharedImageInterface>();
+      }));
+
+  auto client =
+      std::make_unique<NiceMock<media::MockVideoCaptureDeviceClient>>();
+  EXPECT_CALL(*client, OnError).Times(0);
+  EXPECT_CALL(*client, OnIncomingCapturedImage).Times(0);
+  EXPECT_CALL(*client, OnStarted);
+
+  capture_device_->AllocateAndStart(DefaultCaptureParams(), std::move(client));
+
+  // Wait for two texture frames on the capture thread before pumping the UI
+  // thread message loop, ensuring SharedImageInterface creation is still
+  // pending.
+  raw_capturer->WaitForCompletedTextureFrames(2);
+  EXPECT_FALSE(getter_ran_on_ui);
+
+  // Stop the device before the UI thread processes the request; running the UI
+  // thread getter afterwards must safely drop the reply to the destroyed Core.
+  capture_device_->StopAndDeAllocate();
+  ui_getter_loop.Run();
+  EXPECT_TRUE(getter_ran_on_ui);
+}
+
+// Verifies that when UI-thread SharedImageInterface creation fails (e.g. no GPU
+// channel is available), frames while pending are dropped without error and the
+// subsequent texture frame reports OnError.
+TEST_F(DesktopCaptureDeviceTextureTest,
+       ReportsErrorWhenSharedImageInterfaceUnavailable) {
+  auto capturer = std::make_unique<FakeTextureCapturer>();
+  FakeTextureCapturer* raw_capturer = capturer.get();
+  CreateWindowCaptureDevice(std::move(capturer));
+
+  base::RunLoop error_loop;
+  auto quit_error_loop = error_loop.QuitClosure();
+  std::atomic<bool> error_reported{false};
+
+  auto client =
+      std::make_unique<NiceMock<media::MockVideoCaptureDeviceClient>>();
+  EXPECT_CALL(*client, OnStarted);
+  EXPECT_CALL(*client, OnIncomingCapturedImage).Times(0);
+  EXPECT_CALL(
+      *client,
+      OnError(media::VideoCaptureError::kDesktopCaptureDeviceGpuAdapterChanged,
+              _, _))
+      .WillOnce([&] {
+        error_reported.store(true, std::memory_order_release);
+        quit_error_loop.Run();
+      });
+
+  // Uses the default production UI-thread getter; in unit tests
+  // BrowserGpuChannelHostFactory::instance() is null so it returns nullptr,
+  // and the next texture frame triggers OnError.
+  capture_device_->AllocateAndStart(DefaultCaptureParams(), std::move(client));
+
+  raw_capturer->WaitForCompletedTextureFrames(1);
+  EXPECT_FALSE(error_reported.load(std::memory_order_acquire));
+
+  error_loop.Run();
+  EXPECT_TRUE(error_reported.load(std::memory_order_acquire));
+  capture_device_->StopAndDeAllocate();
+}
+
+// Verifies that OnSharedImageInterfaceCreated() immediately triggers a refresh
+// capture when ready, and that if the SharedImageInterface later becomes lost
+// (simulating a GPU process crash), texture delivery reports OnError.
+TEST_F(DesktopCaptureDeviceTextureTest,
+       ReportsErrorWhenSharedImageInterfaceLost) {
+  auto capturer = std::make_unique<FakeTextureCapturer>();
+  FakeTextureCapturer* raw_capturer = capturer.get();
+  raw_capturer->set_max_texture_frames(1);
+  CreateWindowCaptureDevice(std::move(capturer));
+
+  base::RunLoop ui_getter_loop;
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  SetSharedImageInterfaceGetter(base::BindLambdaForTesting(
+      [&]() -> scoped_refptr<gpu::SharedImageInterface> {
+        EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+        ui_getter_loop.Quit();
+        return test_sii;
+      }));
+
+  base::RunLoop error_loop;
+  auto quit_error_loop = error_loop.QuitClosure();
+  std::atomic<bool> error_reported{false};
+
+  auto client =
+      std::make_unique<NiceMock<media::MockVideoCaptureDeviceClient>>();
+  EXPECT_CALL(*client, OnStarted);
+  EXPECT_CALL(
+      *client,
+      OnError(media::VideoCaptureError::kDesktopCaptureDeviceGpuAdapterChanged,
+              _, _))
+      .WillOnce([&] {
+        error_reported.store(true, std::memory_order_release);
+        quit_error_loop.Run();
+      });
+
+  // Request 1 fps so the periodic timer will not fire for 1000 ms; the second
+  // capture attempt must come from OnSharedImageInterfaceCreated() calling
+  // CaptureFrame(/*is_refresh_frame=*/true).
+  capture_device_->AllocateAndStart(CaptureParamsWithFrameRate(1.0f),
+                                    std::move(client));
+
+  raw_capturer->WaitForCompletedTextureFrames(1);
+  EXPECT_EQ(raw_capturer->capture_attempts(), 1);
+  EXPECT_FALSE(error_reported.load(std::memory_order_acquire));
+
+  ui_getter_loop.Run();
+  FlushCaptureThread();
+  EXPECT_EQ(raw_capturer->capture_attempts(), 2);
+  EXPECT_FALSE(error_reported.load(std::memory_order_acquire));
+
+  test_sii->MarkAsLost();
+  raw_capturer->set_max_texture_frames(-1);
+  capture_device_->RequestRefreshFrame();
+
+  error_loop.Run();
+  EXPECT_TRUE(error_reported.load(std::memory_order_acquire));
+  capture_device_->StopAndDeAllocate();
+}
+
+#if BUILDFLAG(IS_WIN)
+// Verifies end-to-end texture delivery once the UI-thread SharedImageInterface
+// arrives (via immediate refresh capture at 1 fps), followed by OnError when
+// the SharedImageInterface becomes lost.
+TEST_F(DesktopCaptureDeviceTextureTest,
+       DeliversTextureOnceSharedImageInterfaceReadyAndErrorsOnLoss) {
+  auto capturer = std::make_unique<FakeTextureCapturer>();
+  FakeTextureCapturer* raw_capturer = capturer.get();
+  CreateWindowCaptureDevice(std::move(capturer));
+
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  SetSharedImageInterfaceGetter(base::BindLambdaForTesting(
+      [&]() -> scoped_refptr<gpu::SharedImageInterface> {
+        EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+        return test_sii;
+      }));
+
+  base::RunLoop image_loop;
+  auto quit_image_loop = image_loop.QuitClosure();
+  base::RunLoop error_loop;
+  auto quit_error_loop = error_loop.QuitClosure();
+
+  auto client =
+      std::make_unique<NiceMock<media::MockVideoCaptureDeviceClient>>();
+  EXPECT_CALL(*client, OnStarted);
+  EXPECT_CALL(*client, OnIncomingCapturedImage)
+      .WillOnce([&] { quit_image_loop.Run(); })
+      .WillRepeatedly([] {});
+  EXPECT_CALL(
+      *client,
+      OnError(media::VideoCaptureError::kDesktopCaptureDeviceGpuAdapterChanged,
+              _, _))
+      .WillOnce([&] { quit_error_loop.Run(); });
+
+  capture_device_->AllocateAndStart(CaptureParamsWithFrameRate(1.0f),
+                                    std::move(client));
+
+  // Frame 1 is dropped while the UI-thread request is pending.
+  raw_capturer->WaitForCompletedTextureFrames(1);
+
+  // Pumping the UI thread delivers SharedImageInterface and immediately
+  // triggers a refresh capture delivering OnIncomingCapturedImage.
+  image_loop.Run();
+
+  // Simulating a GPU process crash causes OnError on the next frame.
+  test_sii->MarkAsLost();
+  capture_device_->RequestRefreshFrame();
+  error_loop.Run();
+
+  capture_device_->StopAndDeAllocate();
+}
+
+// Verifies that if the GPU adapter LUID changes while the UI-thread
+// SharedImageInterface request is still in flight (transitioning sii_state_ to
+// kFailed), the late reply in OnSharedImageInterfaceCreated() is ignored
+// cleanly without hitting a CHECK.
+TEST_F(DesktopCaptureDeviceTextureTest,
+       IgnoresSharedImageInterfaceReplyAfterGpuLuidChanged) {
+  auto capturer = std::make_unique<FakeTextureCapturer>();
+  FakeTextureCapturer* raw_capturer = capturer.get();
+  CreateWindowCaptureDevice(std::move(capturer));
+
+  base::RunLoop ui_getter_loop;
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  SetSharedImageInterfaceGetter(base::BindLambdaForTesting(
+      [&]() -> scoped_refptr<gpu::SharedImageInterface> {
+        EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+        ui_getter_loop.Quit();
+        return test_sii;
+      }));
+
+  base::WaitableEvent error_event(
+      base::WaitableEvent::ResetPolicy::AUTOMATIC,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  auto client =
+      std::make_unique<NiceMock<media::MockVideoCaptureDeviceClient>>();
+  EXPECT_CALL(*client, OnStarted);
+  EXPECT_CALL(*client, OnIncomingCapturedImage).Times(0);
+  EXPECT_CALL(
+      *client,
+      OnError(media::VideoCaptureError::kDesktopCaptureDeviceGpuAdapterChanged,
+              _, _))
+      .WillOnce(InvokeWithoutArgs(&error_event, &base::WaitableEvent::Signal));
+
+  capture_device_->AllocateAndStart(CaptureParamsWithFrameRate(1.0f),
+                                    std::move(client));
+
+  // Frame 1 sets sii_state_ = kPending while the UI-thread task has not run.
+  raw_capturer->WaitForCompletedTextureFrames(1);
+
+  // Simulate an adapter LUID mismatch before the UI-thread reply arrives.
+  SetGpuLuid(CHROME_LUID{0xdead, 0xbeef});
+  capture_device_->RequestRefreshFrame();
+  EXPECT_TRUE(error_event.TimedWait(TestTimeouts::action_max_timeout()));
+
+  // Now run the UI-thread getter and flush its reply to Core while
+  // sii_state_ == kFailed.
+  ui_getter_loop.Run();
+  FlushCaptureThread();
+
+  capture_device_->StopAndDeAllocate();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content
