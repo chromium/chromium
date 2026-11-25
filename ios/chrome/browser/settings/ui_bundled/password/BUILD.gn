@@ -12,7 +12,6 @@ source_set("password") {
     "passwords_mediator.mm",
   ]
   deps = [
-    ":common",
     ":password_utils",
     ":ui",
     "//components/application_locale_storage",
@@ -36,6 +35,7 @@ source_set("password") {
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_metrics",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/passwords/model:saved_passwords_presenter_observer",
     "//ios/chrome/browser/passwords/model/metrics",
     "//ios/chrome/browser/settings/password/model:account_storage_utils",
     "//ios/chrome/browser/settings/password/public:features",
@@ -67,19 +67,6 @@ source_set("password") {
     "//url",
   ]
   frameworks = [ "MobileCoreServices.framework" ]
-}
-
-source_set("common") {
-  sources = [
-    "saved_passwords_presenter_observer.h",
-    "saved_passwords_presenter_observer.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/password_manager/core/browser",
-    "//components/password_manager/core/browser/features:password_features",
-    "//components/password_manager/core/common",
-  ]
 }
 
 source_set("ui") {

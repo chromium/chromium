@@ -445,3 +445,14 @@ source_set("eg_test_support+eg2") {
   ]
   deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }
+
+source_set("saved_passwords_presenter_observer") {
+  sources = [
+    "saved_passwords_presenter_observer.h",
+    "saved_passwords_presenter_observer.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/password_manager/core/browser/ui",
+  ]
+}

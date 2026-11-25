@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/autofill/manual_fill/ui/password_consumer.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/saved_passwords_presenter_observer.h"
+#import "ios/chrome/browser/passwords/model/saved_passwords_presenter_observer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
