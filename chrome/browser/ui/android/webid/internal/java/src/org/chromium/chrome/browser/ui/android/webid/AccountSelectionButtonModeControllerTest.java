@@ -42,6 +42,7 @@ import org.mockito.Mock;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.RpContext;
@@ -64,6 +65,7 @@ import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -855,6 +857,157 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         idpProps.mOnClickListener.onResult(
                 new ButtonData(/* account= */ null, idpProps.mIdentityProvider.getIdpMetadata()));
         verify(mMockDelegate, never()).onLoginToIdP(any(), any());
+    }
+
+    @Test
+    public void testIdpPickerReturningAccountLoginVerifiesOverAccountChooser() {
+        showMultiIdpAccountChooser(Arrays.asList(mAnaAccount));
+        clickUseDifferentAccountRow();
+        assertEquals(HeaderType.IDP_PICKER, mModel.get(ItemProperties.HEADER).get(TYPE));
+        clickIdpRow(/* itemIndex= */ 1);
+        mMediator.onModalDialogOpened();
+        clearInvocations(mMockBottomSheetController);
+        mMediator.onModalDialogClosed();
+
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount, mDanAccount),
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Arrays.asList(mDanAccount));
+
+        verify(mMockDelegate).onAccountSelected(mDanAccount);
+        verify(mMockBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.VERIFY, headerModel.get(TYPE));
+        assertFalse(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
+        assertTrue(headerModel.get(IS_MULTI_IDP_REQUEST));
+        assertNull(headerModel.get(IDP_FOR_DISPLAY));
+        assertEquals(0, mSheetAccountItems.size());
+        assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+        assertEquals("Choose an account to continue", subtitle.getText().toString());
+    }
+
+    @Test
+    public void testMultiIdpPermissionModalReturningAccountRefreshesHeaderBeforeVerify() {
+        showMultiIdpAccountChooser(Arrays.asList(mNewUserAccount));
+        clickAccountRow(/* itemIndex= */ 0);
+        assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, mMediator.getHeaderType());
+        clearInvocations(mMockBottomSheetController);
+
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount, mDanAccount),
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Arrays.asList(mDanAccount));
+
+        verify(mMockDelegate).onAccountSelected(mDanAccount);
+        verify(mMockBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.VERIFY, headerModel.get(TYPE));
+        assertNull(headerModel.get(IDP_FOR_DISPLAY));
+        assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+        assertEquals("Choose an account to continue", subtitle.getText().toString());
+        assertEquals(View.GONE, mContentView.findViewById(R.id.arrow_range_icon).getVisibility());
+    }
+
+    @Test
+    public void testMultiIdpPermissionModalNewAccountUpdatesIdpForDisplay() {
+        showMultiIdpAccountChooser(Arrays.asList(mNewUserAccount));
+        clickAccountRow(/* itemIndex= */ 0);
+        assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, mMediator.getHeaderType());
+        assertEquals(
+                mIdpData.getIdpForDisplay(),
+                mModel.get(ItemProperties.HEADER).get(IDP_FOR_DISPLAY));
+
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount, mNewUserAccountForIdp2),
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Arrays.asList(mNewUserAccountForIdp2));
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, headerModel.get(TYPE));
+        assertEquals(mIdpData2.getIdpForDisplay(), headerModel.get(IDP_FOR_DISPLAY));
+        assertEquals(
+                mNewUserAccountForIdp2,
+                mModel.get(ItemProperties.CONTINUE_BUTTON)
+                        .get(ContinueButtonProperties.PROPERTIES)
+                        .mAccount);
+        TextView title = mContentView.findViewById(R.id.header_title);
+        assertTrue(title.getText().toString().contains(mIdpData2.getIdpForDisplay()));
+    }
+
+    @Test
+    public void testSingleIdpPermissionModalReturningAccountKeepsHeaderBeforeVerify() {
+        showRequestPermissionDialog();
+        clearInvocations(mMockBottomSheetController);
+
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount, mBobAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Arrays.asList(mBobAccount));
+
+        verify(mMockDelegate).onAccountSelected(mBobAccount);
+        verify(mMockBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.VERIFY, headerModel.get(TYPE));
+        assertEquals(mIdpData.getIdpForDisplay(), headerModel.get(IDP_FOR_DISPLAY));
+        assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+        assertEquals(mTestEtldPlusOne, subtitle.getText().toString());
+    }
+
+    @Test
+    @EnableFeatures(ContentFeatures.FED_CM_ACTIVE_MODE_MULTIPLE_IDENTITY_PROVIDERS)
+    public void testIdpPickerNewAccountWithoutFieldsShowsMultiIdpChooser() {
+        openIdpPickerFromAccountChooser();
+        clickIdpRow(/* itemIndex= */ 0);
+        mMediator.onModalDialogOpened();
+        mMediator.onModalDialogClosed();
+
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccountWithoutFields, mDanAccount),
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Arrays.asList(mNewUserAccountWithoutFields));
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
+        assertTrue(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
+        assertTrue(headerModel.get(IS_MULTI_IDP_REQUEST));
+        assertEquals(3, mSheetAccountItems.size());
+        assertFalse(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
+    }
+
+    @Test
+    @DisableFeatures(ContentFeatures.FED_CM_ACTIVE_MODE_MULTIPLE_IDENTITY_PROVIDERS)
+    public void testMultiIdpNewAccountWithoutFieldsFlagOffPreselectsAccount() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showLoadingDialog(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                /* idpForDisplay= */ "",
+                RpContext.SIGN_IN);
+
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount, mDanAccount),
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Arrays.asList(mAnaAccount));
+
+        assertSingleAccountChooserWithoutDisclosureText(mAnaAccount);
+        assertEquals(
+                mIdpData.getIdpForDisplay(),
+                mModel.get(ItemProperties.HEADER).get(IDP_FOR_DISPLAY));
     }
 
     @Test

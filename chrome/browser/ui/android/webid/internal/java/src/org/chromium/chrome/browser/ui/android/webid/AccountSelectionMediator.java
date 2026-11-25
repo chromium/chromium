@@ -10,7 +10,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.SystemClock;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -712,10 +711,7 @@ class AccountSelectionMediator {
 
     boolean showRequestPermissionModalSheet(Account account) {
         mHeaderType = HeaderType.REQUEST_PERMISSION_MODAL;
-        if (TextUtils.isEmpty(mIdpForDisplay)) {
-            // The previous sheet had no IDP to display because the request has multiple IDPs.
-            mIdpForDisplay = account.getIdentityProviderData().getIdpForDisplay();
-        }
+        mIdpForDisplay = account.getIdentityProviderData().getIdpForDisplay();
         if (!updateSheet(
                 Arrays.asList(account),
                 /* identityProviders= */ Collections.emptyList(),
@@ -749,10 +745,7 @@ class AccountSelectionMediator {
         // shows the RP icon of `account`'s identity provider, and back shows the account chooser
         // with the row to open the IDP picker, see `updateSheet()`.
         mIsMultiIdpRequest = idpDataList.size() > 1;
-        // Title the sheet with the identity provider of `account`.
-        IdentityProviderData idpData = account.getIdentityProviderData();
-        mIdpForDisplay = idpData.getIdpForDisplay();
-        mRpContext = idpData.getRpContext();
+        mRpContext = account.getIdentityProviderData().getRpContext();
         mSelectedAccount = account;
         // This sheet is first shown on the request permission dialog, so `showContent()` doesn't
         // notify the delegate that the accounts were displayed. The passive mode sheet already did.
@@ -1087,8 +1080,6 @@ class AccountSelectionMediator {
                         : null;
 
         if (newlySignedInAccount != null && mRpMode == RpMode.ACTIVE) {
-            mSelectedAccount = newlySignedInAccount;
-
             // The browser trusted login state controls whether we'd skip the next
             // dialog. One caveat: if a user was logged out of the IdP and they just
             // logged in with a returning account from the LOADING state, we do not
@@ -1098,7 +1089,26 @@ class AccountSelectionMediator {
                     newlySignedInAccount.isBrowserTrustedSignIn()
                             && mHeaderType != HeaderType.LOADING;
             if (shouldShowVerifyingSheet) {
+                boolean shouldRefreshMultiIdpHeader =
+                        mHeaderType == HeaderType.IDP_PICKER
+                                || (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
+                                        && mIsMultiIdpRequest);
                 mHeaderType = HeaderType.SIGN_IN;
+                if (shouldRefreshMultiIdpHeader) {
+                    // Active-mode VERIFY reuses the previous sheet's header views. Refresh the
+                    // header to the multi-IDP chooser when coming from IDP_PICKER (matching
+                    // desktop) or a multi-IDP REQUEST_PERMISSION_MODAL so a stale provider header
+                    // is not left above the spinner.
+                    assert mIsMultiIdpRequest;
+                    assert mIsShowingMultipleIdps;
+                    assert mSelectedAccount == null;
+                    mIdpForDisplay = null;
+                    updateHeader(
+                            /* headerIcon= */ null,
+                            /* shouldCircleCrop= */ false,
+                            /* rpBrandIcon= */ null);
+                }
+                mSelectedAccount = newlySignedInAccount;
                 mDelegate.onAccountSelected(mSelectedAccount);
                 return showVerifySheet(mSelectedAccount);
             }
@@ -1108,12 +1118,19 @@ class AccountSelectionMediator {
             // the requested fields.
             boolean shouldShowRequestPermissionDialog = newlySignedInAccount.getFields().length > 0;
             if (shouldShowRequestPermissionDialog) {
+                mSelectedAccount = newlySignedInAccount;
                 return showRequestPermissionModalSheet(mSelectedAccount);
             }
 
-            // Else:
-            // Show accounts picker which doesn't contain the disclosure text. We do not support
-            // request permission UI without disclosure text.
+            // Single-IDP active mode (or multi-IDP when active-mode multi-IDP is disabled, e.g.
+            // conditional-mediation Autofill escalated to active mode) shows a single-account
+            // chooser without disclosure text; multi-IDP with the feature enabled keeps all
+            // accounts clickable in the multi-IDP chooser (matching desktop).
+            if (assumeNonNull(mIdpDataListForShowAccounts).size() == 1
+                    || !ContentFeatureMap.isEnabled(
+                            ContentFeatures.FED_CM_ACTIVE_MODE_MULTIPLE_IDENTITY_PROVIDERS)) {
+                mSelectedAccount = newlySignedInAccount;
+            }
         }
 
         // With multiple IDPs in active mode and no usable account to choose from, open the IDP
