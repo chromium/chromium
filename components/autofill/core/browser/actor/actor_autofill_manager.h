@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
+#include "components/critical_actions/core/browser/critical_action_types.h"
 
 namespace critical_actions {
 class CriticalActionService;
@@ -75,14 +76,12 @@ class ActorAutofillManager : public AutofillManager::Observer {
   }
 
  private:
-  // Logs a critical action event to the CriticalActionService if the tab
-  // has an active Actor task. Critical actions track actor-triggered
-  // actions (such as form filling) to associate them with the user's
-  // actor history.
-  void MaybeLogCriticalAction(
-      AutofillManager& manager,
-      FormGlobalId form_id,
-      const base::flat_set<FieldGlobalId>& filled_field_ids);
+  // Logs a form fill critical action for `group` with the filled
+  // `form_fill_types` to the `CriticalActionService` if the tab has an active
+  // Actor task. Critical actions track actor-triggered actions (such as form
+  // filling) to associate them with the user's actor history.
+  void MaybeLogCriticalAction(critical_actions::ActionType group,
+                              critical_actions::FormFillTypes form_fill_types);
 
   const raw_ref<AutofillClient> client_;
   const raw_ptr<critical_actions::CriticalActionService>

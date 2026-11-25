@@ -156,6 +156,9 @@ chromium-metrics-reviews@google.com.
     saved once it has been associated with a history visit; actions that are
     dropped before that are not recorded (see
     CriticalActions.VisitIdResolutionOutcome.{ActionSource}).
+
+    Since M160, Autofill records form fills as their form fill group
+    (FormFillContactInfo or FormFillPayments) instead of FormFill.
   </summary>
   <token key="ActionSource" variants="ActionSource"/>
 </histogram>

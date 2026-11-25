@@ -15,8 +15,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/actor/actor_test_util.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/autofill_test_util.h"
@@ -106,6 +111,19 @@ class ActorAutofillManagerTest
                                    NAME_FIRST);
   }
 
+  // Marks the fields of the cached form `form_id` as autofilled with `types`,
+  // like `FormFiller` does when it fills them.
+  void SetAutofilledTypes(FormGlobalId form_id,
+                          const std::vector<FieldType>& types) {
+    FormStructure* form_structure =
+        test_api(autofill_manager()).FindCachedFormById(form_id);
+    ASSERT_TRUE(form_structure);
+    ASSERT_EQ(form_structure->field_count(), types.size());
+    for (size_t i = 0; i < types.size(); ++i) {
+      form_structure->field(i)->set_autofilled_type(types[i]);
+    }
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -115,8 +133,9 @@ class ActorAutofillManagerTest
   std::unique_ptr<ActorAutofillManager> manager_;
 };
 
-// Test that when a form is filled and there is an active Actor task, a critical
-// action of type kFormFill is logged to the CriticalActionService.
+// Test that when a form is filled from a profile and there is an active Actor
+// task, a contact info critical action with the filled attributes is logged to
+// the `CriticalActionService`.
 TEST_F(ActorAutofillManagerTest, OnFillOrPreviewFormLogsCriticalAction) {
   autofill_client().set_navigation_id(100);
 
@@ -132,6 +151,7 @@ TEST_F(ActorAutofillManagerTest, OnFillOrPreviewFormLogsCriticalAction) {
   FormGlobalId form_id = form.global_id();
   FieldGlobalId field_id1 = form.fields()[0].global_id();
   FieldGlobalId field_id2 = form.fields()[1].global_id();
+  SetAutofilledTypes(form_id, {NAME_FIRST, EMAIL_ADDRESS});
 
   EXPECT_CALL(
       mock_critical_service(),
@@ -139,12 +159,14 @@ TEST_F(ActorAutofillManagerTest, OnFillOrPreviewFormLogsCriticalAction) {
           testing::AllOf(
               testing::Field(
                   &critical_actions::CriticalActionEntry::action_type,
-                  critical_actions::ActionType::kFormFill),
+                  critical_actions::ActionType::kFormFillContactInfo),
               testing::Field(
                   &critical_actions::CriticalActionEntry::conversation_id,
                   "test-conv-id"),
               testing::Field(
-                  &critical_actions::CriticalActionEntry::actor_task_id, "42")),
+                  &critical_actions::CriticalActionEntry::actor_task_id, "42"),
+              testing::Field(&critical_actions::CriticalActionEntry::metadata,
+                             "{\"form_fill_types\":[\"NAME\",\"EMAIL\"]}")),
           100));
 
   manager().OnFillOrPreviewForm(
@@ -153,7 +175,8 @@ TEST_F(ActorAutofillManagerTest, OnFillOrPreviewFormLogsCriticalAction) {
 }
 
 // Test that when a single field is filled and there is an active Actor task, a
-// critical action of type kFormFill is logged to the CriticalActionService.
+// critical action for the field's form fill group is logged to the
+// `CriticalActionService`.
 TEST_F(ActorAutofillManagerTest, OnFillOrPreviewFieldLogsCriticalAction) {
   autofill_client().set_navigation_id(100);
 
@@ -175,12 +198,14 @@ TEST_F(ActorAutofillManagerTest, OnFillOrPreviewFieldLogsCriticalAction) {
           testing::AllOf(
               testing::Field(
                   &critical_actions::CriticalActionEntry::action_type,
-                  critical_actions::ActionType::kFormFill),
+                  critical_actions::ActionType::kFormFillContactInfo),
               testing::Field(
                   &critical_actions::CriticalActionEntry::conversation_id,
                   "test-conv-id"),
               testing::Field(
-                  &critical_actions::CriticalActionEntry::actor_task_id, "42")),
+                  &critical_actions::CriticalActionEntry::actor_task_id, "42"),
+              testing::Field(&critical_actions::CriticalActionEntry::metadata,
+                             "{\"form_fill_types\":[\"NAME\"]}")),
           100));
 
   manager().OnFillOrPreviewField(autofill_manager(), form_id, field_id1,
@@ -304,6 +329,125 @@ TEST_F(ActorAutofillManagerTest,
 
   // Other actor-specific Autofill behavior is unchanged.
   EXPECT_TRUE(manager().IsTabInActorMode());
+}
+
+// Test that credit card fills, of a form or a single field, are logged as
+// payments critical actions with the card details attribute.
+TEST_F(ActorAutofillManagerTest, CreditCardFillsLogPayments) {
+  autofill_client().set_navigation_id(100);
+  manager().OnActorTaskStateChanged(ActorAutofillManager::ActorTaskInfo{
+      .conversation_id = "test-conv-id",
+      .task_id = ::actor::TaskId(42),
+      .critical_action_logger_supports_task_source = true,
+  });
+
+  FormData form = test::GetFormData({CREDIT_CARD_NUMBER});
+  autofill_manager().AddSeenForm(form, {CREDIT_CARD_NUMBER});
+  FormGlobalId form_id = form.global_id();
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_CALL(
+      mock_critical_service(),
+      AddCriticalActionWithNavigationId(
+          testing::AllOf(
+              testing::Field(
+                  &critical_actions::CriticalActionEntry::action_type,
+                  critical_actions::ActionType::kFormFillPayments),
+              testing::Field(&critical_actions::CriticalActionEntry::metadata,
+                             "{\"form_fill_types\":[\"CREDIT_CARD\"]}")),
+          100))
+      .Times(2);
+
+  manager().OnFillOrPreviewForm(autofill_manager(), form_id, field_id,
+                                mojom::ActionPersistence::kFill, {field_id}, {},
+                                static_cast<const CreditCard*>(nullptr));
+  manager().OnFillOrPreviewField(autofill_manager(), form_id, field_id,
+                                 mojom::ActionPersistence::kFill, u"value",
+                                 CREDIT_CARD_NUMBER);
+}
+
+// Test that previews are not logged as critical actions.
+TEST_F(ActorAutofillManagerTest, PreviewsAreNotLogged) {
+  manager().OnActorTaskStateChanged(ActorAutofillManager::ActorTaskInfo{
+      .conversation_id = "test-conv-id",
+      .task_id = ::actor::TaskId(42),
+      .critical_action_logger_supports_task_source = true,
+  });
+
+  FormData form = test::GetFormData({NAME_FIRST});
+  autofill_manager().AddSeenForm(form, {NAME_FIRST});
+  FormGlobalId form_id = form.global_id();
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_CALL(mock_critical_service(), AddCriticalActionWithNavigationId)
+      .Times(0);
+
+  manager().OnFillOrPreviewForm(
+      autofill_manager(), form_id, field_id, mojom::ActionPersistence::kPreview,
+      {field_id}, {}, static_cast<const AutofillProfile*>(nullptr));
+  manager().OnFillOrPreviewField(autofill_manager(), form_id, field_id,
+                                 mojom::ActionPersistence::kPreview, u"value",
+                                 NAME_FIRST);
+}
+
+// Test that form fills that didn't fill any field are not logged, for both
+// profiles and credit cards.
+TEST_F(ActorAutofillManagerTest, FormFillsWithoutFilledFieldsAreNotLogged) {
+  manager().OnActorTaskStateChanged(ActorAutofillManager::ActorTaskInfo{
+      .conversation_id = "test-conv-id",
+      .task_id = ::actor::TaskId(42),
+      .critical_action_logger_supports_task_source = true,
+  });
+
+  FormData form = test::GetFormData({NAME_FIRST});
+  autofill_manager().AddSeenForm(form, {NAME_FIRST});
+  FormGlobalId form_id = form.global_id();
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_CALL(mock_critical_service(), AddCriticalActionWithNavigationId)
+      .Times(0);
+
+  manager().OnFillOrPreviewForm(autofill_manager(), form_id, field_id,
+                                mojom::ActionPersistence::kFill,
+                                /*filled_field_ids=*/{}, {},
+                                static_cast<const AutofillProfile*>(nullptr));
+  manager().OnFillOrPreviewForm(
+      autofill_manager(), form_id, field_id, mojom::ActionPersistence::kFill,
+      /*filled_field_ids=*/{}, {}, static_cast<const CreditCard*>(nullptr));
+}
+
+// Test that fills of data the agent can't fill yet (IBAN, loyalty card,
+// Enhanced Autofill) are not logged.
+TEST_F(ActorAutofillManagerTest, OutOfScopeFillsAreNotLogged) {
+  manager().OnActorTaskStateChanged(ActorAutofillManager::ActorTaskInfo{
+      .conversation_id = "test-conv-id",
+      .task_id = ::actor::TaskId(42),
+      .critical_action_logger_supports_task_source = true,
+  });
+
+  FormData form = test::GetFormData({IBAN_VALUE});
+  autofill_manager().AddSeenForm(form, {IBAN_VALUE});
+  FormGlobalId form_id = form.global_id();
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_CALL(mock_critical_service(), AddCriticalActionWithNavigationId)
+      .Times(0);
+
+  // IBAN and loyalty card single-field fills.
+  manager().OnFillOrPreviewField(autofill_manager(), form_id, field_id,
+                                 mojom::ActionPersistence::kFill, u"value",
+                                 IBAN_VALUE);
+  manager().OnFillOrPreviewField(autofill_manager(), form_id, field_id,
+                                 mojom::ActionPersistence::kFill, u"value",
+                                 LOYALTY_MEMBERSHIP_ID);
+  // Single-field fills without a known field type.
+  manager().OnFillOrPreviewField(autofill_manager(), form_id, field_id,
+                                 mojom::ActionPersistence::kFill, u"value",
+                                 std::nullopt);
+  // Enhanced Autofill entity fill.
+  manager().OnFillOrPreviewForm(autofill_manager(), form_id, field_id,
+                                mojom::ActionPersistence::kFill, {field_id}, {},
+                                static_cast<const EntityInstance*>(nullptr));
 }
 
 }  // namespace

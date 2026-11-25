@@ -4,42 +4,54 @@
 
 #include "components/autofill/core/browser/actor/actor_autofill_manager.h"
 
+#include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/actor/actor_critical_action_util.h"
 #include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
+#include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/critical_actions/core/browser/features.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 
 namespace {
 
-std::string GetAutofillFilledTypesMetadata(
-    const FormStructure& form_structure,
+// Returns the contact info attributes of the fields filled from a profile, or
+// `std::nullopt` if the form isn't cached.
+std::optional<critical_actions::FormFillTypes> GetFilledContactInfoTypes(
+    const AutofillManager& manager,
+    FormGlobalId form_id,
     const base::flat_set<FieldGlobalId>& filled_field_ids) {
-  base::ListValue filled_types_list;
-  for (FieldGlobalId field_id : filled_field_ids) {
-    const AutofillField* field = form_structure.GetFieldById(field_id);
-    if (!field) {
-      continue;
-    }
-    std::optional<FieldType> field_type = field->autofilled_type();
-    if (!field_type.has_value()) {
-      continue;
-    }
-    filled_types_list.Append(FieldTypeToString(*field_type));
+  const FormStructure* form_structure = manager.FindCachedFormById(form_id);
+  if (!form_structure) {
+    return std::nullopt;
   }
-
-  base::DictValue metadata_dict;
-  metadata_dict.Set("filled_types", std::move(filled_types_list));
-  return base::WriteJson(metadata_dict).value_or("");
+  critical_actions::FormFillTypes types;
+  for (FieldGlobalId field_id : filled_field_ids) {
+    const AutofillField* field = form_structure->GetFieldById(field_id);
+    if (!field || !field->autofilled_type()) {
+      continue;
+    }
+    std::optional<critical_actions::FormFillType> type =
+        ToFormFillType(GroupTypeOfFieldType(*field->autofilled_type()));
+    if (type && critical_actions::GetFormFillGroup(*type) ==
+                    critical_actions::ActionType::kFormFillContactInfo) {
+      types.Put(*type);
+    }
+  }
+  return types;
 }
 
 }  // namespace
@@ -65,11 +77,35 @@ void ActorAutofillManager::OnFillOrPreviewForm(
     const base::flat_set<FieldGlobalId>& filled_field_ids,
     const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&,
     const FillingPayload& filling_payload) {
-  if (action_persistence != mojom::ActionPersistence::kFill) {
+  // Fills that didn't fill any field aren't logged.
+  if (action_persistence != mojom::ActionPersistence::kFill ||
+      filled_field_ids.empty()) {
     return;
   }
 
-  MaybeLogCriticalAction(manager, form_id, filled_field_ids);
+  // The group is chosen from the payload, not from each field's type.
+  std::visit(
+      absl::Overload{
+          [&](const AutofillProfile*) {
+            if (std::optional<critical_actions::FormFillTypes> types =
+                    GetFilledContactInfoTypes(manager, form_id,
+                                              filled_field_ids)) {
+              MaybeLogCriticalAction(
+                  critical_actions::ActionType::kFormFillContactInfo, *types);
+            }
+          },
+          [&](const CreditCard*) {
+            MaybeLogCriticalAction(
+                critical_actions::ActionType::kFormFillPayments,
+                {critical_actions::FormFillType::kCreditCard});
+          },
+          // Not supported yet.
+          [](const EntityInstance*) {},
+          // Not fills of saved data. OTPs are logged as `kCredentialsOtp`.
+          [](const VerifiedProfile*) {},
+          [](const OtpFillData*) {},
+      },
+      filling_payload);
 }
 
 void ActorAutofillManager::OnFillOrPreviewField(
@@ -79,11 +115,16 @@ void ActorAutofillManager::OnFillOrPreviewField(
     mojom::ActionPersistence action_persistence,
     const std::u16string& value,
     std::optional<FieldType> field_type_used) {
-  if (action_persistence != mojom::ActionPersistence::kFill) {
+  if (action_persistence != mojom::ActionPersistence::kFill ||
+      !field_type_used) {
     return;
   }
 
-  MaybeLogCriticalAction(manager, form_id, {field_id});
+  // Single-field fills, e.g. one address field filled from a profile.
+  if (std::optional<critical_actions::FormFillType> type =
+          ToFormFillType(GroupTypeOfFieldType(*field_type_used))) {
+    MaybeLogCriticalAction(critical_actions::GetFormFillGroup(*type), {*type});
+  }
 }
 
 bool ActorAutofillManager::IsTabInActorMode() const {
@@ -99,9 +140,8 @@ void ActorAutofillManager::OnActorTaskStateChanged(
 }
 
 void ActorAutofillManager::MaybeLogCriticalAction(
-    AutofillManager& manager,
-    FormGlobalId form_id,
-    const base::flat_set<FieldGlobalId>& filled_field_ids) {
+    critical_actions::ActionType group,
+    critical_actions::FormFillTypes form_fill_types) {
   if (!base::FeatureList::IsEnabled(
           critical_actions::features::kCriticalActionHistory)) {
     return;
@@ -127,21 +167,17 @@ void ActorAutofillManager::MaybeLogCriticalAction(
     return;
   }
 
-  const FormStructure* const form_structure =
-      manager.FindCachedFormById(form_id);
-  if (!form_structure) {
-    return;
-  }
+  base::DictValue metadata_dict;
+  critical_actions::SetFormFillTypes(metadata_dict, form_fill_types);
 
   critical_actions::CriticalActionEntry entry =
       critical_actions::CriticalActionEntry::Builder()
-          .SetActionType(critical_actions::ActionType::kFormFill)
+          .SetActionType(group)
           .SetActionSource(critical_actions::ActionSource::kAutofill)
           .SetConversationId(active_actor_task_->conversation_id)
           .SetActorTaskId(
               base::NumberToString(active_actor_task_->task_id.value()))
-          .SetMetadata(
-              GetAutofillFilledTypesMetadata(*form_structure, filled_field_ids))
+          .SetMetadata(base::WriteJson(metadata_dict).value_or(""))
           .Build();
 
   // Pass the navigation ID directly to the service. If the navigation ID is 0,
