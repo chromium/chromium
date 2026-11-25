@@ -12,6 +12,7 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 
@@ -384,10 +385,14 @@ public class DownloadSharedPreferenceEntry {
         OtrProfileId otrProfileId = null;
         if (!NO_OTR_PROFILE_ID.equals(stringOtrProfileId)) {
             try {
-                // OtrProfileId#deserialize function may throw IllegalStateException if the related
+                // OtrProfileId#deserializeAndVerify may throw IllegalStateException if the related
                 // OTR profile has been already destroyed. For such cases, we need to use primary
                 // OtrProfileId to cancel the download notification.
-                otrProfileId = OtrProfileId.deserialize(stringOtrProfileId);
+                // TODO(crbug.com/40254448): Pass the owning profile instead of using the last used
+                // regular profile.
+                otrProfileId =
+                        OtrProfileId.deserializeAndVerify(
+                                stringOtrProfileId, ProfileManager.getLastUsedRegularProfile());
             } catch (IllegalStateException e) {
                 otrProfileId = OtrProfileId.getPrimaryOtrProfileId();
             }

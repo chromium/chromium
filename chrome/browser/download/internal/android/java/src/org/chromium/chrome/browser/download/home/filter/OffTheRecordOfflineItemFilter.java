@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 /**
@@ -33,7 +34,12 @@ public class OffTheRecordOfflineItemFilter extends OfflineItemFilter {
 
         try {
             // Only show downloads from primary OTR profile if mIncludeOffTheRecordItems is true.
-            OtrProfileId profileId = OtrProfileId.deserialize(assumeNonNull(item.otrProfileId));
+            // TODO(crbug.com/40254448): Pass the owning profile instead of using the last used
+            // regular profile.
+            OtrProfileId profileId =
+                    OtrProfileId.deserializeAndVerify(
+                            assumeNonNull(item.otrProfileId),
+                            ProfileManager.getLastUsedRegularProfile());
             boolean isPrimaryOtr = assumeNonNull(profileId).isPrimaryOtrId();
             return !(mIncludeOffTheRecordItems && isPrimaryOtr);
         } catch (IllegalStateException e) {

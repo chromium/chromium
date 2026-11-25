@@ -205,7 +205,11 @@ public class DownloadUtils {
      */
     public static @Nullable OtrProfileId getOtrProfileIdFromIntent(Intent intent) {
         String serializedId = IntentUtils.safeGetStringExtra(intent, EXTRA_OTR_PROFILE_ID);
-        return OtrProfileId.deserialize(serializedId);
+        if (TextUtils.isEmpty(serializedId)) return null;
+        // TODO(crbug.com/40254448): Pass the owning profile instead of using the last used regular
+        // profile.
+        return OtrProfileId.deserializeAndVerify(
+                serializedId, ProfileManager.getLastUsedRegularProfile());
     }
 
     /**

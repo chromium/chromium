@@ -13,7 +13,12 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/** Wrapper that allows passing a OtrProfileId reference around in the Java layer. */
+/**
+ * Wrapper that allows passing a OtrProfileId reference around in the Java layer.
+ *
+ * <p>An {@link OtrProfileId} identifies an off-the-record profile relative to its owning regular
+ * {@link Profile}; it does not uniquely identify a profile across different regular profiles.
+ */
 @NullMarked
 public class OtrProfileId {
     private final String mProfileId;
@@ -52,7 +57,7 @@ public class OtrProfileId {
     @CalledByNative
     public static @JniType("std::string") @Nullable String serialize(
             @Nullable OtrProfileId otrProfileId) {
-        // The OtrProfileId might be null, if it represents the regular profile.
+        // The OtrProfileId might be null, if it represents a regular profile.
         if (otrProfileId == null) return null;
 
         return otrProfileId.toString();
@@ -63,20 +68,23 @@ public class OtrProfileId {
      *
      * @param value The string representation of the OtrProfileId that is generated with {@link
      *     OtrProfileId#serialize} function.
-     * @return An OtrProfileId instance.
-     * @throws IllegalStateException when the OTR profile belongs to the OtrProfileId is not
-     *     available. The off-the-record profile should exist when OtrProfileId will be used.
+     * @param profile The {@link Profile} used to verify that the off-the-record profile exists. If
+     *     this is an off-the-record profile, its original profile is checked.
+     * @return An OtrProfileId instance, or null if {@code value} is null or empty.
+     * @throws IllegalStateException when the OTR profile belonging to the OtrProfileId is not
+     *     available on {@code profile}. The off-the-record profile should exist when OtrProfileId
+     *     will be used.
      */
-    public static @Nullable OtrProfileId deserialize(@Nullable String value) {
+    public static @Nullable OtrProfileId deserializeAndVerify(
+            @Nullable String value, Profile profile) {
+        assert profile != null;
         OtrProfileId otrProfileId = deserializeWithoutVerify(value);
 
         // The off-the-record profile should exist for the given OtrProfileId, since OtrProfileId
         // creation is completed just before the profile creation. So there should always be a
-        // profile for the id. If OTR profile is not available, deserialize function should not be
+        // profile for the id. If OTR profile is not available, deserializeAndVerify should not be
         // called.
-        if (otrProfileId != null
-                && !ProfileManager.getLastUsedRegularProfile()
-                        .hasOffTheRecordProfile(otrProfileId)) {
+        if (otrProfileId != null && !profile.hasOffTheRecordProfile(otrProfileId)) {
             throw new IllegalStateException("The OTR profile should exist for otr profile id.");
         }
 
@@ -94,7 +102,7 @@ public class OtrProfileId {
     @CalledByNative
     public static @Nullable OtrProfileId deserializeWithoutVerify(
             @JniType("std::string") @Nullable String value) {
-        // The value might be null, if it represents the regular profile.
+        // The value might be null, if it represents a regular profile.
         if (TextUtils.isEmpty(value)) return null;
 
         // Check if the format is align with |OtrProfileId#toString| function.
@@ -118,7 +126,8 @@ public class OtrProfileId {
     }
 
     /**
-     * @return The OtrProfileId of the primary off-the-record profile.
+     * @return The OtrProfileId of the primary off-the-record profile. Note that each regular
+     *     profile has its own primary off-the-record profile using this same ID.
      */
     public static OtrProfileId getPrimaryOtrProfileId() {
         return sPrimaryOtrProfileId;
@@ -136,7 +145,8 @@ public class OtrProfileId {
     }
 
     /**
-     * Checks whether the given OtrProfileIds belong to the same profile.
+     * Checks whether the given OtrProfileIds are equal. Note that two equal OtrProfileIds (or two
+     * nulls) only represent the same profile if they belong to the same original regular profile.
      *
      * @param otrProfileId1 The first OtrProfileId
      * @param otrProfileId2 The second OtrProfileId
@@ -144,21 +154,23 @@ public class OtrProfileId {
      */
     public static boolean areEqual(
             @Nullable OtrProfileId otrProfileId1, @Nullable OtrProfileId otrProfileId2) {
-        // If both OtrProfileIds null, then both belong to the regular profile.
+        // If both OtrProfileIds are null, then both represent a regular profile.
         if (otrProfileId1 == null) return otrProfileId2 == null;
 
         return otrProfileId1.equals(otrProfileId2);
     }
 
     /**
-     * Checks whether the given OtrProfileId strings belong to the same profile.
+     * Checks whether the given OtrProfileId strings are equal. Note that two equal OtrProfileId
+     * strings (or two empty/null values) only represent the same profile if they belong to the same
+     * original regular profile.
      *
      * @param otrProfileId1 The string of first OtrProfileId
      * @param otrProfileId2 The string of second OtrProfileId
      * @return Whether the given OtrProfileIds are equals.
      */
     public static boolean areEqual(@Nullable String otrProfileId1, @Nullable String otrProfileId2) {
-        // If both OtrProfileIds null, then both belong to the regular profile.
+        // If both OtrProfileIds are null or empty, then both represent a regular profile.
         if (TextUtils.isEmpty(otrProfileId1)) {
             return TextUtils.isEmpty(otrProfileId2);
         }

@@ -52,6 +52,7 @@ generate_jni("jni_headers") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/profiles/OtrProfileIdUnitTest.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileAttributesStorageTest.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileKeyedMapTest.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileManagerTest.java",
@@ -60,6 +61,7 @@ robolectric_library("junit") {
 
   deps = [
     ":java",
+    ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

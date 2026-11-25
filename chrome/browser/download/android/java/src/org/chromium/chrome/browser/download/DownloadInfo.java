@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download;
 
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -12,6 +13,7 @@ import org.jni_zero.JniType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -305,9 +307,14 @@ public final class DownloadInfo {
                 .setMimeType(item.mimeType)
                 .setUrl(item.url)
                 .setOriginalUrl(item.originalUrl)
+                // TODO(crbug.com/40254448): Pass the owning profile instead of using the last used
+                // regular profile.
                 .setOtrProfileId(
-                        OtrProfileId.deserialize(
-                                item.otrProfileId == null ? "" : item.otrProfileId))
+                        TextUtils.isEmpty(item.otrProfileId)
+                                ? null
+                                : OtrProfileId.deserializeAndVerify(
+                                        item.otrProfileId,
+                                        ProfileManager.getLastUsedRegularProfile()))
                 .setState(state)
                 .setIsPaused(item.state == OfflineItemState.PAUSED)
                 .setIsResumable(item.isResumable)
