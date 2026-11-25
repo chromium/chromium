@@ -15,6 +15,7 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
+#include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -181,8 +182,13 @@ bool ParseProcStats(std::string_view stats_data,
   if (open_parens_idx == std::string::npos ||
       close_parens_idx == std::string::npos ||
       open_parens_idx > close_parens_idx) {
+    // The contents of /proc are external input, and malformed stat data has
+    // been observed in the field on Android (https://crbug.com/41487808).
     DLOG(WARNING) << "Failed to find matched parens in '" << stats_data << "'";
-    NOTREACHED();
+    SCOPED_CRASH_KEY_STRING64("ParseProcStats", "stats_data",
+                              stats_data.substr(0, 64));
+    DUMP_WILL_BE_NOTREACHED();
+    return false;
   }
   open_parens_idx++;
 
