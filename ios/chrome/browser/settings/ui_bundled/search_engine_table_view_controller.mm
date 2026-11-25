@@ -556,7 +556,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   } else {
     item = [[SettingsSearchEngineItem alloc] initWithType:ItemTypeCustomEngine];
   }
-  item.templateURL = templateURL;
+  item.templateURLID = templateURL->id();
   item.text = base::SysUTF16ToNSString(templateURL->short_name());
   item.detailText = base::SysUTF16ToNSString(templateURL->keyword());
   if ([self isItem:item
@@ -600,6 +600,7 @@ const char kUmaSelectDefaultSearchEngine[] =
       sectionForSectionIdentifier:SectionIdentifierSecondList];
 
   // Remove search engines from `_templateURLService` and `_secondList`.
+  BOOL staleItemFound = NO;
   for (NSIndexPath* path : indexPaths) {
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:path];
     SettingsSearchEngineItem* engineItem =
@@ -609,8 +610,34 @@ const char kUmaSelectDefaultSearchEngine[] =
     // engine (which cannot be removed as long as it is selected),
     // or prepopulated search engine.
     CHECK_EQ(path.section, secondSectionIdentifier);
-    std::erase(_secondList, engineItem.templateURL);
-    _templateURLService->Remove(engineItem.templateURL);
+    const TemplateURL* templateURL =
+        _templateURLService->GetTemplateURLForId(engineItem.templateURLID);
+    if (!templateURL) {
+      // The item is stale: its search engine is no longer in
+      // `_templateURLService`. This is possible if the items were not reloaded
+      // since the service last changed. There is nothing to remove from the
+      // backend for this item. The table view is resynchronized with
+      // `_templateURLService` below.
+      staleItemFound = YES;
+      continue;
+    }
+    std::erase(_secondList, templateURL);
+    _templateURLService->Remove(templateURL);
+  }
+
+  if (staleItemFound) {
+    // The table view was out of sync with `_templateURLService`, so
+    // `indexPaths` cannot be trusted to update it. Reload everything from the
+    // service instead, and leave the edit mode since the reloaded items are
+    // created in their non-editing state.
+    // `searchEngineChangedInBackground` is cleared first, so that
+    // `-setUpdatingBackend:` does not reload the search engines on its own
+    // before `-reloadData`.
+    self.searchEngineChangedInBackground = NO;
+    self.updatingBackend = NO;
+    [self reloadData];
+    [self setEditing:NO animated:YES];
+    return;
   }
 
   // Update UI.

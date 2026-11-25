@@ -7,11 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/search_engines/template_url_id.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 @class FaviconAttributes;
 @class FaviconView;
-class TemplateURL;
 
 // SettingsSearchEngineItem contains the model data for a
 // SettingsSearchEngineCell.
@@ -26,8 +26,11 @@ class TemplateURL;
 @property(nonatomic, readwrite, copy) NSString* detailText;
 // Sets the favicon.
 @property(nonatomic, strong) FaviconAttributes* faviconAttributes;
-// Template URL.
-@property(nonatomic, assign) const TemplateURL* templateURL;
+// ID of the TemplateURL represented by this item. Defaults to
+// `kInvalidTemplateURLID`. Resolve it with
+// TemplateURLService::GetTemplateURLForId(), which returns nullptr if the
+// TemplateURL no longer exists.
+@property(nonatomic, assign) TemplateURLID templateURLID;
 
 @end
 

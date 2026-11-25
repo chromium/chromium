@@ -53,6 +53,8 @@ source_set("cells") {
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ui/base",
   ]
+
+  public_deps = [ "//components/search_engines" ]
 }
 
 source_set("public") {

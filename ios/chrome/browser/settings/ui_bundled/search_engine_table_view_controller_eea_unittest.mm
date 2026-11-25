@@ -5,6 +5,7 @@
 #import "base/command_line.h"
 #import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engines_pref_names.h"
+#import "components/search_engines/template_url_id.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller_unittest.h"
@@ -241,18 +242,26 @@ TEST_F(SearchEngineTableViewControllerEEATest, DeleteItems) {
   AddPriorSearchEngine(prepopulated_search_engine_[2], 1003,
                        /*set_default=*/false);
   const int number_of_prepopulated_items = 3;
-  AddCustomSearchEngine(custom_search_engine_[0],
-                        base::Time::Now() - base::Seconds(10),
-                        /*set_default=*/false);
-  AddCustomSearchEngine(custom_search_engine_[1],
-                        base::Time::Now() - base::Minutes(10),
-                        /*set_default=*/false);
-  AddCustomSearchEngine(custom_search_engine_[2],
-                        base::Time::Now() - base::Hours(10),
-                        /*set_default=*/true);
-  AddCustomSearchEngine(custom_search_engine_[3],
-                        base::Time::Now() - base::Days(1),
-                        /*set_default=*/false);
+  const TemplateURLID c0_id =
+      AddCustomSearchEngine(custom_search_engine_[0],
+                            base::Time::Now() - base::Seconds(10),
+                            /*set_default=*/false)
+          ->id();
+  const TemplateURLID c1_id =
+      AddCustomSearchEngine(custom_search_engine_[1],
+                            base::Time::Now() - base::Minutes(10),
+                            /*set_default=*/false)
+          ->id();
+  const TemplateURLID c2_id =
+      AddCustomSearchEngine(custom_search_engine_[2],
+                            base::Time::Now() - base::Hours(10),
+                            /*set_default=*/true)
+          ->id();
+  const TemplateURLID c3_id =
+      AddCustomSearchEngine(custom_search_engine_[3],
+                            base::Time::Now() - base::Days(1),
+                            /*set_default=*/false)
+          ->id();
 
   CreateController();
   CheckController();
@@ -261,7 +270,7 @@ TEST_F(SearchEngineTableViewControllerEEATest, DeleteItems) {
   ASSERT_EQ(number_of_prepopulated_items + 1, NumberOfItemsInSection(0));
   ASSERT_EQ(3, NumberOfItemsInSection(1));
 
-  // Remove C1 from second list.
+  // Remove C#0 from the second list.
   ASSERT_TRUE(
       DeleteItemsAndWait(@[ [NSIndexPath indexPathForRow:0 inSection:1] ], ^{
         // the first section should still contain the selected custom search
@@ -269,6 +278,11 @@ TEST_F(SearchEngineTableViewControllerEEATest, DeleteItems) {
         return NumberOfItemsInSection(0) == number_of_prepopulated_items + 1;
       }));
   ASSERT_TRUE(NumberOfItemsInSection(1) == 2);
+  // Only C#0 should have been removed from the TemplateURLService.
+  EXPECT_FALSE(template_url_service_->GetTemplateURLForId(c0_id));
+  EXPECT_TRUE(template_url_service_->GetTemplateURLForId(c1_id));
+  EXPECT_TRUE(template_url_service_->GetTemplateURLForId(c2_id));
+  EXPECT_TRUE(template_url_service_->GetTemplateURLForId(c3_id));
 
   // Select prepopulated search engine as default engine by user interaction.
   [controller() tableView:controller().tableView
@@ -293,6 +307,11 @@ TEST_F(SearchEngineTableViewControllerEEATest, DeleteItems) {
         return NumberOfSections() == 1;
       }));
   ASSERT_TRUE(NumberOfItemsInSection(0) == number_of_prepopulated_items);
+  // C#1, C#2 (which is no longer selected) and C#3 should have been removed
+  // from the TemplateURLService.
+  EXPECT_FALSE(template_url_service_->GetTemplateURLForId(c1_id));
+  EXPECT_FALSE(template_url_service_->GetTemplateURLForId(c2_id));
+  EXPECT_FALSE(template_url_service_->GetTemplateURLForId(c3_id));
 }
 
 // Tests all prepopulated items and the selected custom search engine are
