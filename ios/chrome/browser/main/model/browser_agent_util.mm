@@ -24,11 +24,13 @@
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_browser_agent.h"
 #import "ios/chrome/browser/favicon/model/favicon_browser_agent.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/infobar_overlay_browser_agent_util.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_browser_agent.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -51,6 +53,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_disabled_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
@@ -214,7 +217,11 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
 
   if (!browser_is_inactive && !browser_is_temporary && !browser_is_off_record &&
       IsPageActionMenuEnabled()) {
-    GeminiBrowserAgent::CreateForBrowser(browser);
+    GeminiBrowserAgent::CreateForBrowser(
+        browser, IdentityManagerFactory::GetForProfile(profile),
+        AuthenticationServiceFactory::GetForProfile(profile),
+        feature_engagement::TrackerFactory::GetForProfile(profile),
+        GeminiCapabilitiesManagerFactory::GetForProfile(profile));
   }
 
   // Must be attached after `GeminiBrowserAgent`, which it observes. Mirrors

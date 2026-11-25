@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
@@ -63,6 +64,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
@@ -179,7 +181,14 @@ class GeminiBrowserAgentTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(personal_profile_, scene_state_);
     InitFullscreenCoordinatorIfNeeded();
     PersistTabContextBrowserAgent::CreateForBrowser(browser_.get());
-    GeminiBrowserAgent::CreateForBrowser(browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(
+        browser_.get(),
+        IdentityManagerFactory::GetForProfile(personal_profile_.get()),
+        AuthenticationServiceFactory::GetForProfile(personal_profile_.get()),
+        feature_engagement::TrackerFactory::GetForProfile(
+            personal_profile_.get()),
+        GeminiCapabilitiesManagerFactory::GetForProfile(
+            personal_profile_.get()));
     gemini_browser_agent_ = GeminiBrowserAgent::FromBrowser(browser_.get());
 
     optimization_guide_service_ =
@@ -544,7 +553,13 @@ TEST_F(GeminiBrowserAgentTest, TestActiveWebStateChanged) {
   if (IsFullscreenRefactoringEnabled()) {
     FullscreenBrowserAgent::CreateForBrowser(scoped_browser.get());
   }
-  GeminiBrowserAgent::CreateForBrowser(scoped_browser.get());
+  GeminiBrowserAgent::CreateForBrowser(
+      scoped_browser.get(),
+      IdentityManagerFactory::GetForProfile(personal_profile_.get()),
+      AuthenticationServiceFactory::GetForProfile(personal_profile_.get()),
+      feature_engagement::TrackerFactory::GetForProfile(
+          personal_profile_.get()),
+      GeminiCapabilitiesManagerFactory::GetForProfile(personal_profile_.get()));
   GeminiBrowserAgent* agent =
       GeminiBrowserAgent::FromBrowser(scoped_browser.get());
 

@@ -34,9 +34,13 @@
 class AuthenticationService;
 class Browser;
 class FullscreenController;
+class GeminiCapabilitiesManager;
 class GeminiSharedTabsManager;
 class GeminiSharedTabsManagerImpl;
 class ScopedFullscreenDisabler;
+namespace feature_engagement {
+class Tracker;
+}
 
 @class GeminiConfiguration;
 @class GeminiContainerMediator;
@@ -182,9 +186,14 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   gemini::EntryPoint GetEntryPoint() const;
 
  private:
-  explicit GeminiBrowserAgent(Browser* browser);
   friend class BrowserUserData<GeminiBrowserAgent>;
   friend class GeminiBrowserAgentTest;
+
+  GeminiBrowserAgent(Browser* browser,
+                     signin::IdentityManager* identity_manager,
+                     AuthenticationService* authentication_service,
+                     feature_engagement::Tracker* feature_engagement_tracker,
+                     GeminiCapabilitiesManager* gemini_capabilities_manager);
 
   // Configures Gemini with startup parameters.
   void ConfigureGemini();
@@ -366,11 +375,11 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // implementation.
   raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
 
-  // IdentityManager associated with the Browser's profile.
+  // `KeyedService` associated and owned by the `Browser`'s profile that are
+  // used by the `GeminiBrowserAgent`.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
-
-  // `AuthenticationService` associated with the `Browser`'s profile.
   raw_ptr<AuthenticationService> authentication_service_ = nullptr;
+  raw_ptr<feature_engagement::Tracker> feature_engagement_tracker_ = nullptr;
 
   // Observers for keyboard events.
   id keyboard_show_observer_ = nil;

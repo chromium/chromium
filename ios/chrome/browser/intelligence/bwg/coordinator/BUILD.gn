@@ -280,6 +280,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/bwg/model:config",
     "//ios/chrome/browser/intelligence/bwg/model:custom_ui",
     "//ios/chrome/browser/intelligence/bwg/model:gateway_manager",
+    "//ios/chrome/browser/intelligence/bwg/model:gemini_capabilities_manager_factory",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
     "//ios/chrome/browser/intelligence/bwg/model:page_context",
     "//ios/chrome/browser/intelligence/bwg/model:tab_helper",

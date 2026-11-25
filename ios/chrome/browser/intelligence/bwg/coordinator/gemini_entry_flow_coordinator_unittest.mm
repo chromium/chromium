@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -90,7 +91,11 @@ class GeminiEntryFlowCoordinatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_);
     BrowserListFactory::GetForProfile(profile_)->AddBrowser(browser_.get());
     TestFullscreenController::CreateForBrowser(browser_.get());
-    GeminiBrowserAgent::CreateForBrowser(browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(
+        browser_.get(), IdentityManagerFactory::GetForProfile(profile_.get()),
+        AuthenticationServiceFactory::GetForProfile(profile_.get()),
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get()),
+        GeminiCapabilitiesManagerFactory::GetForProfile(profile_.get()));
 
     root_view_controller_ = [[UIViewController alloc] init];
     scoped_key_window_.Get().rootViewController = root_view_controller_;

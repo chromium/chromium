@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -351,7 +352,14 @@ class AppBarMediatorTest : public PlatformTest,
     ClipboardRecentContent::SetInstance(
         std::make_unique<FakeClipboardRecentContent>());
 
-    GeminiBrowserAgent::CreateForBrowser(regular_browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(
+        regular_browser_.get(),
+        IdentityManagerFactory::GetForProfile(regular_profile_.get()),
+        AuthenticationServiceFactory::GetForProfile(regular_profile_.get()),
+        feature_engagement::TrackerFactory::GetForProfile(
+            regular_profile_.get()),
+        GeminiCapabilitiesManagerFactory::GetForProfile(
+            regular_profile_.get()));
 
     aim_eligibility_service_ = CreateMockAimEligibilityService();
     ON_CALL(*aim_eligibility_service_, IsAimEligible())
@@ -1725,7 +1733,12 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateLensWhenIneligibleSignedIn) {
   SignInAndSetCapability(false);
 
   // Recreate agent and mediator with the new location eligibility.
-  GeminiBrowserAgent::CreateForBrowser(regular_browser_.get());
+  GeminiBrowserAgent::CreateForBrowser(
+      regular_browser_.get(),
+      IdentityManagerFactory::GetForProfile(regular_profile_.get()),
+      AuthenticationServiceFactory::GetForProfile(regular_profile_.get()),
+      feature_engagement::TrackerFactory::GetForProfile(regular_profile_.get()),
+      GeminiCapabilitiesManagerFactory::GetForProfile(regular_profile_.get()));
 
   BrowserActionFactory* regular_action_factory =
       [[BrowserActionFactory alloc] initWithBrowser:regular_browser_.get()

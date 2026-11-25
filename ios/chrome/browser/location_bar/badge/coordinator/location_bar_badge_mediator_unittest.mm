@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -198,7 +199,11 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     // Seed a fake FullscreenController to satisfy the GeminiBrowserAgent's
     // dependency without crashing.
     TestFullscreenController::CreateForBrowser(browser_.get());
-    GeminiBrowserAgent::CreateForBrowser(browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(
+        browser_.get(), IdentityManagerFactory::GetForProfile(profile_.get()),
+        AuthenticationServiceFactory::GetForProfile(profile_.get()),
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get()),
+        GeminiCapabilitiesManagerFactory::GetForProfile(profile_.get()));
 
     mediator_ = [[LocationBarBadgeMediator alloc]
         initWithWebStateList:web_state_list_

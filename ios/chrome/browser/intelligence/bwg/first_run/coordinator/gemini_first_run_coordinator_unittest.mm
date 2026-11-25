@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/intelligence/bwg/first_run/ui/gemini_visual_rich_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -82,7 +84,11 @@ class GeminiFirstRunCoordinatorTest : public PlatformTest {
     browser_list_ = BrowserListFactory::GetForProfile(personal_profile);
     browser_list_->AddBrowser(browser_.get());
     TestFullscreenController::CreateForBrowser(browser_.get());
-    GeminiBrowserAgent::CreateForBrowser(browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(
+        browser_.get(), IdentityManagerFactory::GetForProfile(personal_profile),
+        AuthenticationServiceFactory::GetForProfile(personal_profile),
+        feature_engagement::TrackerFactory::GetForProfile(personal_profile),
+        GeminiCapabilitiesManagerFactory::GetForProfile(personal_profile));
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));

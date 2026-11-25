@@ -14,9 +14,11 @@
 #import "base/test/test_future.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_block_data_types.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_custom_ui_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
@@ -42,6 +44,7 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
@@ -90,7 +93,14 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
     BrowserList* browser_list =
         BrowserListFactory::GetForProfile(personal_profile_);
     browser_list->AddBrowser(browser_.get());
-    GeminiBrowserAgent::CreateForBrowser(browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(
+        browser_.get(),
+        IdentityManagerFactory::GetForProfile(personal_profile_.get()),
+        AuthenticationServiceFactory::GetForProfile(personal_profile_.get()),
+        feature_engagement::TrackerFactory::GetForProfile(
+            personal_profile_.get()),
+        GeminiCapabilitiesManagerFactory::GetForProfile(
+            personal_profile_.get()));
 
     mock_fullscreen_handler_ = OCMProtocolMock(@protocol(FullscreenCommands));
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));

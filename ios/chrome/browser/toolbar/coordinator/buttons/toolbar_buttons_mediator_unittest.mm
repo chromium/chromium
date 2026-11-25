@@ -15,11 +15,13 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/menu/public/menu_histograms.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
@@ -113,7 +115,11 @@ class ToolbarButtonsMediatorTest : public PlatformTest {
     // The Gemini browser agent observes fullscreen.
     TestFullscreenController::CreateForBrowser(browser_.get());
     FullscreenBrowserAgent::CreateForBrowser(browser_.get());
-    GeminiBrowserAgent::CreateForBrowser(browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(
+        browser_.get(), IdentityManagerFactory::GetForProfile(profile_.get()),
+        AuthenticationServiceFactory::GetForProfile(profile_.get()),
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get()),
+        GeminiCapabilitiesManagerFactory::GetForProfile(profile_.get()));
     gemini_browser_agent_ = GeminiBrowserAgent::FromBrowser(browser_.get());
 
     // The menus' actions need these handlers.

@@ -26,7 +26,6 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -37,15 +36,12 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_session_metrics_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_consent_provider_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_scroll_observer.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_manager.h"
@@ -89,8 +85,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -293,8 +287,16 @@ void ShowGeminiMicrophonePermissionAlert(UIViewController* base_view_controller,
 
 @end
 
-GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
-    : BrowserUserData(browser) {
+GeminiBrowserAgent::GeminiBrowserAgent(
+    Browser* browser,
+    signin::IdentityManager* identity_manager,
+    AuthenticationService* authentication_service,
+    feature_engagement::Tracker* feature_engagement_tracker,
+    GeminiCapabilitiesManager* gemini_capabilities_manager)
+    : BrowserUserData(browser),
+      identity_manager_(identity_manager),
+      authentication_service_(authentication_service),
+      feature_engagement_tracker_(feature_engagement_tracker) {
   browser_->AddObserver(this);
   StartObserving(browser_);
 
@@ -362,26 +364,13 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
                                  &GeminiBrowserAgent::OnScrollEvent,
                                  weak_factory_.GetWeakPtr())];
 
-  // Creating the `AuthenticationService` may trigger a main account change (if
-  // the user is signed-in) which will notify the `IdentityManager` observers –
-  // including the `GeminiBrowserAgent` – of the account change. Ensure this
-  // happens before registering as an `Observer` (otherwise the notification
-  // would be received before the current instance constructor completes).
-  authentication_service_ =
-      AuthenticationServiceFactory::GetForProfile(profile);
-
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
   if (identity_manager_) {
     identity_manager_->AddObserver(this);
   }
   last_known_gemini_availability_ = IsGeminiAvailableForActiveWebState();
 
-  if (IsAppSwitcherAISummarizationEnabled()) {
-    GeminiCapabilitiesManager* capabilities_manager =
-        GeminiCapabilitiesManagerFactory::GetForProfile(profile);
-    if (capabilities_manager) {
-      capabilities_manager->UpdateCapabilities();
-    }
+  if (gemini_capabilities_manager) {
+    gemini_capabilities_manager->UpdateCapabilities();
   }
 
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
@@ -497,6 +486,7 @@ void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
     identity_manager_ = nullptr;
   }
 
+  feature_engagement_tracker_ = nullptr;
   authentication_service_ = nullptr;
   browser->RemoveObserver(this);
 }
@@ -1254,10 +1244,9 @@ void GeminiBrowserAgent::SetLastShownViewState(
 
 void GeminiBrowserAgent::OnLiveButtonTapped() {
   RecordLiveButtonTapped();
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile());
-  if (tracker) {
-    tracker->NotifyEvent(feature_engagement::events::kIOSGeminiLiveUsed);
+  if (feature_engagement_tracker_) {
+    feature_engagement_tracker_->NotifyEvent(
+        feature_engagement::events::kIOSGeminiLiveUsed);
   }
 }
 
@@ -1303,6 +1292,10 @@ void GeminiBrowserAgent::OnGeminiUIDidAppear() {
   ResetFullscreenDisabler();
 }
 
+// TODO(crbug.com/590376812): `GeminiBrowserAgent` is a `Browser`-level object
+// and should not iterate over all `ProfileIOS` nor all `Browser` instances as
+// this is a layering violation. Instead a delegate should be injected that is
+// at higher-level and can perform this operation (e.g. a `AppAgent`).
 void GeminiBrowserAgent::DismissGeminiFromOtherWindows(
     base::OnceClosure completion) {
   // Collect all browsers (excluding the current one) for all profiles.

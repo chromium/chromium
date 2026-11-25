@@ -12,9 +12,11 @@
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/banner_promo/model/fake_default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/menu/public/menu_histograms.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
@@ -138,7 +140,11 @@ class ToolbarMediatorTest : public PlatformTest,
                                              scenario:kTestMenuScenario];
 
     FullscreenBrowserAgent::CreateForBrowser(browser_.get());
-    GeminiBrowserAgent::CreateForBrowser(browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(
+        browser_.get(), IdentityManagerFactory::GetForProfile(profile_.get()),
+        AuthenticationServiceFactory::GetForProfile(profile_.get()),
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get()),
+        GeminiCapabilitiesManagerFactory::GetForProfile(profile_.get()));
     gemini_browser_agent_ = GeminiBrowserAgent::FromBrowser(browser_.get());
 
     buttons_mediator_ = [[ToolbarButtonsMediator alloc]
