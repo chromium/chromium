@@ -953,6 +953,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "assistant-aim-large-state",
+    "owners": [ "alionadangla@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "assistant-aim-minimized-state",
     "owners": [ "alionadangla@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 163

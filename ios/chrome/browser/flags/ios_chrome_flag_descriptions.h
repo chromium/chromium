@@ -169,6 +169,11 @@ inline constexpr char kAskGeminiChipIgnoreCriteriaName[] =
 inline constexpr char kAskGeminiChipIgnoreCriteriaDescription[] =
     "Enables the Ask Gemini Chip ignoring FET and time criteria.";
 
+inline constexpr char kAssistantAimLargeStateName[] = "AssistantAimLargeState";
+inline constexpr char kAssistantAimLargeStateDescription[] =
+    "When enabled, the Assistant AIM (Co-browse) interface initially appears "
+    "in a large state instead of the default medium state.";
+
 inline constexpr char kAssistantAimMinimizedStateName[] =
     "AssistantAimMinimizedState";
 inline constexpr char kAssistantAimMinimizedStateDescription[] =

@@ -1041,4 +1041,10 @@ BASE_DECLARE_FEATURE(kIOSSupportMediaCapturePolicies);
 // Returns true if the IOSSupportMediaCapturePolicies feature is enabled.
 bool IsIOSSupportMediaCapturePoliciesEnabled();
 
+// Enables the AssistantAimLargeState feature.
+BASE_DECLARE_FEATURE(kAssistantAimLargeState);
+
+// Returns true if the AssistantAimLargeState feature is enabled.
+bool IsAssistantAimLargeStateEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

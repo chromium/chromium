@@ -396,6 +396,12 @@ void RemoveSharedTab(NSString* title) {
     config.features_disabled.push_back(kAssistantAimMinimizedState);
   }
 
+  if ([self isRunningTest:@selector(testLargeStateWhenFlagEnabled)]) {
+    config.features_enabled.push_back(kAssistantAimLargeState);
+  } else {
+    config.features_disabled.push_back(kAssistantAimLargeState);
+  }
+
   if ([self isRunningTest:
                 @selector(testCobrowseAutoAttachesCurrentTabAfterNavigation)] ||
       [self
@@ -1012,6 +1018,35 @@ void RemoveSharedTab(NSString* title) {
 
   // Verify the assistant expanded.
   WaitForDetent(AssistantContainerDetent::kLarge);
+}
+
+// Tests that the assistant starts in large state when `kAssistantAimLargeState`
+// is enabled, while keeping medium available and preserved across re-show.
+- (void)testLargeStateWhenFlagEnabled {
+  OpenCoBrowse(_defaultURL);
+
+  // Wait for the assistant to appear and verify it starts in large state.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_allOf(CloseButton(),
+                                                     grey_sufficientlyVisible(),
+                                                     nil)];
+  WaitForDetent(AssistantContainerDetent::kLarge);
+
+  // Cycle via the grabber to verify minimized and medium detents are still
+  // available.
+  TapGrabberAndWaitForDetent(AssistantContainerDetent::kMinimized);
+  TapGrabberAndWaitForDetent(AssistantContainerDetent::kMedium);
+
+  // Hide and re-show the assistant via the Tab Grid and verify `kMedium` is
+  // preserved.
+  [ChromeEarlGreyUI openTabGrid];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              kTabGridScrollViewIdentifier)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+  WaitForDetent(AssistantContainerDetent::kMedium);
 }
 
 - (void)testAssistantPersistsOnBackground {

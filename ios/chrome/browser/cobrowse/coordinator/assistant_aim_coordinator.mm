@@ -317,7 +317,11 @@ class AssistantAIMUIStateProvider
                              kAssistantAIMMediumDetentPercentage];
       [_containerHandler showAssistantContainerWithContent:_viewController
                                                   delegate:self];
-      if (targetDetent == AssistantContainerDetent::kMedium) {
+      // `kMedium` is not available in iPhone landscape, so fall back to the
+      // default expanded detent to avoid `animateAssistantContainerToDetent:`
+      // no-oping on an invalid detent.
+      if (targetDetent == AssistantContainerDetent::kMedium &&
+          IsIPhoneLandscapeLayout(_viewController.traitCollection)) {
         targetDetent = [self defaultExpandedDetent];
       }
       // Restore `_currentDetent` in case `showAssistantContainerWithContent:`
@@ -450,9 +454,13 @@ class AssistantAIMUIStateProvider
 // collection. `AssistantContainerDetent::kMedium` is not available in iPhone
 // landscape.
 - (AssistantContainerDetent)defaultExpandedDetent {
-  return IsIPhoneLandscapeLayout(_viewController.traitCollection)
-             ? AssistantContainerDetent::kLarge
-             : AssistantContainerDetent::kMedium;
+  if (IsAssistantAimLargeStateEnabled()) {
+    return AssistantContainerDetent::kLarge;
+  }
+  if (IsIPhoneLandscapeLayout(_viewController.traitCollection)) {
+    return AssistantContainerDetent::kLarge;
+  }
+  return AssistantContainerDetent::kMedium;
 }
 
 // Returns whether the tab sharing consent alert should be presented.

@@ -1269,3 +1269,9 @@ BASE_FEATURE(kIOSSupportMediaCapturePolicies,
 bool IsIOSSupportMediaCapturePoliciesEnabled() {
   return base::FeatureList::IsEnabled(kIOSSupportMediaCapturePolicies);
 }
+
+BASE_FEATURE(kAssistantAimLargeState, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAssistantAimLargeStateEnabled() {
+  return base::FeatureList::IsEnabled(kAssistantAimLargeState);
+}

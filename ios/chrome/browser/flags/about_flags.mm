@@ -3226,6 +3226,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kMobilePromoOnDesktopWithReminderWave2,
                                     kMobilePromoOnDesktopWave2Variations,
                                     "MobilePromoOnDesktopWithReminderWave2")},
+    {"assistant-aim-large-state",
+     flag_descriptions::kAssistantAimLargeStateName,
+     flag_descriptions::kAssistantAimLargeStateDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAssistantAimLargeState)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
