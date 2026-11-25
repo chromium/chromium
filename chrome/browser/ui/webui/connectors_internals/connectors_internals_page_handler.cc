@@ -64,7 +64,7 @@ namespace enterprise_connectors {
 ConnectorsInternalsPageHandler::ConnectorsInternalsPageHandler(
     mojo::PendingReceiver<connectors_internals::mojom::PageHandler> receiver,
     Profile* profile)
-    : receiver_(this, std::move(receiver)), profile_(profile) {
+    : profile_(profile), receiver_(this, std::move(receiver)) {
   CHECK(profile_, base::NotFatalUntil::M162);
 }
 

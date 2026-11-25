@@ -65,7 +65,6 @@ class ConnectorsInternalsPageHandler
                           bool is_device_trust_enabled,
                           const base::DictValue signals);
 
-  mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;
   raw_ptr<Profile> profile_;
   std::unique_ptr<enterprise_reporting::ChromeProfileRequestGenerator>
       request_generator_;
@@ -73,6 +72,12 @@ class ConnectorsInternalsPageHandler
 #if BUILDFLAG(ENTERPRISE_PROXY)
   ProvisioningDomainRefreshHelper pvd_refresh_helper_;
 #endif
+
+  // Must be declared after any member that may own pending Mojo reply
+  // callbacks (e.g. `request_generator_`), so that the receiver is destroyed
+  // first. Otherwise, dropping those callbacks while the pipe is still
+  // connected triggers a "callback was never run" DCHECK.
+  mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;
 
   base::WeakPtrFactory<ConnectorsInternalsPageHandler> weak_ptr_factory_{this};
 };

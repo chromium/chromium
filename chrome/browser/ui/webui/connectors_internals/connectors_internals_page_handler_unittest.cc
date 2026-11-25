@@ -183,6 +183,36 @@ TEST_F(ConnectorsInternalsPageHandlerTest, RefreshProvisioningDomainConfigs) {
 #endif
 }
 
+#if BUILDFLAG(ENTERPRISE_PROXY)
+// Regression test: destroying the handler while a Mojo reply callback is still
+// held by a member (here `pvd_refresh_helper_`) must not trigger the "callback
+// was never run" DCHECK. This guards against member reorderings that would
+// destroy the pending callback before `receiver_`.
+TEST_F(ConnectorsInternalsPageHandlerTest,
+       DestroyWithPendingRefreshProvisioningDomainConfigsCallback) {
+  auto* mock_service = static_cast<enterprise_net::MockEnterpriseProxyService*>(
+      EnterpriseProxyServiceFactory::GetForProfile(&profile_));
+
+  // Keep the refresh "in progress" so the reply callback stays pending.
+  EXPECT_CALL(*mock_service, IsRefreshInProgress())
+      .WillRepeatedly(Return(true));
+
+  base::test::TestFuture<
+      connectors_internals::mojom::ProvisioningDomainStatePtr>
+      future;
+  page_handler_->RefreshProvisioningDomainConfigs(future.GetCallback());
+  page_handler_.FlushForTesting();
+  EXPECT_FALSE(future.IsReady());
+
+  // Destroy the handler while `page_handler_` is still bound.
+  handler_.reset();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(future.IsReady());
+  page_handler_.reset();
+}
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ConnectorsInternalsPageHandlerTest,
        GetDeviceTrustState_FeatureDisabled) {
