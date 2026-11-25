@@ -70,8 +70,44 @@ describe('SessionProcessor', () => {
       });
 
       assert.notProperty(result.capabilities, 'goog:sessionType');
+      assert.strictEqual(result.capabilities.browserName, 'Chrome');
+      assert.strictEqual(result.capabilities.browserVersion, '140.0.0.0');
       assert.isFalse(aclManager.isEnabled());
       assert.isTrue(aclManager.isCommandAllowed('network.addIntercept'));
+    });
+
+    it('extracts browserName and browserVersion for HeadlessChrome product', async () => {
+      browserCdpClient.sendCommand.resolves({
+        protocolVersion: '1.3',
+        product: 'HeadlessChrome/159.0.8154.13',
+        revision: '@0000000000000000000000000000000000000000',
+        userAgent: 'Mozilla/5.0',
+        jsVersion: '1.0',
+      });
+
+      const result = await sessionProcessor.new({
+        capabilities: {},
+      });
+
+      assert.strictEqual(result.capabilities.browserName, 'HeadlessChrome');
+      assert.strictEqual(result.capabilities.browserVersion, '159.0.8154.13');
+    });
+
+    it('falls back to product and revision when product has no slash', async () => {
+      browserCdpClient.sendCommand.resolves({
+        protocolVersion: '1.3',
+        product: 'Chromium',
+        revision: '12345',
+        userAgent: 'Mozilla/5.0',
+        jsVersion: '1.0',
+      });
+
+      const result = await sessionProcessor.new({
+        capabilities: {},
+      });
+
+      assert.strictEqual(result.capabilities.browserName, 'Chromium');
+      assert.strictEqual(result.capabilities.browserVersion, '12345');
     });
 
     it('enables empty ACL when goog:sessionType is restricted in alwaysMatch', async () => {

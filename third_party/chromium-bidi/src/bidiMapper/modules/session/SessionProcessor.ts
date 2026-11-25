@@ -224,6 +224,14 @@ export class SessionProcessor {
 
     const version =
       await this.#browserCdpClient.sendCommand('Browser.getVersion');
+    const slashIndex = version.product.indexOf('/');
+    const browserName =
+      slashIndex === -1
+        ? version.product
+        : version.product.slice(0, slashIndex);
+    const browserVersion =
+      (slashIndex === -1 ? undefined : version.product.slice(slashIndex + 1)) ||
+      version.revision;
     this.#created = true;
 
     return {
@@ -231,8 +239,8 @@ export class SessionProcessor {
       capabilities: {
         ...matchedCapabilities,
         acceptInsecureCerts: matchedCapabilities.acceptInsecureCerts ?? false,
-        browserName: version.product,
-        browserVersion: version.revision,
+        browserName,
+        browserVersion,
         platformName: '',
         setWindowRect: false,
         webSocketUrl: '',
