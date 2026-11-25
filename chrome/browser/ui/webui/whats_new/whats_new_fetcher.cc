@@ -136,6 +136,7 @@ class WhatsNewFetcher {
               "No data sent, other than URL of What's New. "
               "Data does not contain PII."
             destination: GOOGLE_OWNED_SERVICE
+            legacy_api_url: "https://www.google.com/chrome/whats-new/"
             internal {
               contacts {
                 email: "frizzle-team@google.com"
