@@ -10,6 +10,7 @@ import type {OmniboxPopupAppElement, OmniboxPopupContextualEntrypointButtonEleme
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createAutocompleteResult, createSearchMatch, createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
@@ -46,6 +47,12 @@ suite('AppTest', function() {
     });
 
     testProxy = new TestSearchboxBrowserProxy();
+    testProxy.handler.setPromiseResolveFor<'getInputState'>('getInputState', {
+      state: {
+        ...createDefaultInputState(),
+        allowedInputTypes: [InputType.kBrowserTab, InputType.kLensImage],
+      },
+    });
     SearchboxBrowserProxy.setInstance(testProxy);
 
     handler = TestMock.fromClass(OmniboxPopupPageHandlerRemote);
@@ -428,6 +435,12 @@ suite('AppTestSelectionControl', () => {
       webuiOmniboxPopupSelectionControlEnabled: true,
     });
     testProxy = new TestSearchboxBrowserProxy();
+    testProxy.handler.setPromiseResolveFor<'getInputState'>('getInputState', {
+      state: {
+        ...createDefaultInputState(),
+        allowedInputTypes: [InputType.kBrowserTab, InputType.kLensImage],
+      },
+    });
     SearchboxBrowserProxy.setInstance(testProxy);
 
     localApp = document.createElement('omnibox-popup-app');

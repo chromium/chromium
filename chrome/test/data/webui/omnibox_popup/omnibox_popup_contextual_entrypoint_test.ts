@@ -32,7 +32,7 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
       composeboxShowCurrentTabChip: true,
       composeboxShowChip: true,
       composeboxShowLensIcon: true,
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       contextButtonHasBackground: false,
       contextButtonShapeIsOblong: false,
     });
@@ -47,7 +47,10 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
     omniboxPopupBrowserProxyFactory.setInstance(instance);
 
     element = document.createElement('omnibox-popup-contextual-entrypoint');
-    element.inputState = createDefaultInputState();
+    element.inputState = {
+      ...createDefaultInputState(),
+      allowedInputTypes: [InputType.kBrowserTab],
+    };
     element.isContentSharingEnabled = true;
     document.body.appendChild(element);
     testProxy.initVisibilityPrefs();
@@ -124,6 +127,10 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
 
     const newElement =
         document.createElement('omnibox-popup-contextual-entrypoint');
+    newElement.inputState = {
+      ...createDefaultInputState(),
+      allowedInputTypes: [InputType.kLensImage],
+    };
     document.body.appendChild(newElement);
     testProxy.initVisibilityPrefs();
     await microtasksFinished();
@@ -165,7 +172,10 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
 
     const newElement =
         document.createElement('omnibox-popup-contextual-entrypoint');
-    newElement.inputState = createDefaultInputState();
+    newElement.inputState = {
+      ...createDefaultInputState(),
+      allowedInputTypes: [InputType.kBrowserTab],
+    };
     newElement.isContentSharingEnabled = true;
     newElement.isLensSearchEligible = true;
     newElement.isLensIconEligible = true;
@@ -203,6 +213,10 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
 
     const newElement =
         document.createElement('omnibox-popup-contextual-entrypoint');
+    newElement.inputState = {
+      ...createDefaultInputState(),
+      allowedInputTypes: [InputType.kLensImage],
+    };
     document.body.appendChild(newElement);
     testProxy.initVisibilityPrefs();
     await microtasksFinished();
@@ -283,6 +297,10 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
                                    }));
     const newElement =
         document.createElement('omnibox-popup-contextual-entrypoint');
+    newElement.inputState = {
+      ...createDefaultInputState(),
+      allowedInputTypes: [InputType.kLensImage],
+    };
     document.body.appendChild(newElement);
     testProxy.initVisibilityPrefs();
 
@@ -316,7 +334,10 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
     loadTimeData.overrideValues({askGLensIconIphEnabled: iphEnabled});
     const newElement =
         document.createElement('omnibox-popup-contextual-entrypoint');
-    newElement.inputState = createDefaultInputState();
+    newElement.inputState = {
+      ...createDefaultInputState(),
+      allowedInputTypes: [InputType.kBrowserTab],
+    };
     newElement.isContentSharingEnabled = true;
     newElement.isLensIconEligible = true;
     document.body.appendChild(newElement);

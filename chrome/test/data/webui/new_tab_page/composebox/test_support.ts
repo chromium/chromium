@@ -85,7 +85,7 @@ export function setupComposeboxTest(): ComposeboxTestElement {
       'composeboxImageFileTypes':
           'image/avif,image/bmp,image/jpeg,image/png,image/webp,image/heif,image/heic',
       'composeboxAttachmentFileTypes': '.pdf,application/pdf',
-      'contextualMenuUsePecApi': false,
+      'contextualMenuUsePecApi': true,
       'composeboxSmartTabSharingVisible': false,
       'contextManagementInComposeboxEnabled': false,
       'searchboxComposePlaceholder': 'Placeholder',

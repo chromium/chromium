@@ -12,7 +12,7 @@ import type {AppElement, NtpSearchboxElement, PageRemote} from 'chrome://new-tab
 import {BrowserPromoType, NtpBackgroundImageSource, ntpPromoProxyFactory, PageHandlerRemote, ShowNtpPromosResult} from 'chrome://new-tab-page/new_tab_page.js';
 import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {ContextUploadStatus, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {WindowProxy as ComposeboxWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -2100,10 +2100,18 @@ suite('NewTabPageAppTest', () => {
           loadTimeData.overrideValues({
             ntpRealboxNextEnabled: true,
             contextManagementInComposeboxEnabled: true,
-            contextualMenuUsePecApi: false,
+            contextualMenuUsePecApi: true,
             energyEffectEnabled,
             energyEffectVariant,
             energyEffectAnimationEnabled,
+          });
+        });
+
+        // The "+" entrypoint renders only when the input state allows an input.
+        setup(() => {
+          searchboxHandler.setPromiseResolveFor('getInputState', {
+            state: new MockInputState(
+                {allowedInputTypes: [InputType.kBrowserTab]}),
           });
         });
 

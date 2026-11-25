@@ -52,7 +52,7 @@ async function setupRealboxTest(): Promise<{
   testMetricsReporterProxy: TestMock<BrowserProxyImpl>,
 }> {
   loadTimeData.overrideValues({
-    contextualMenuUsePecApi: false,
+    contextualMenuUsePecApi: true,
     isLensSearchbox: false,
     searchboxCyclingPlaceholders: false,
     searchboxDefaultIcon: 'search.svg',

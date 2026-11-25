@@ -43,6 +43,14 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
     setup(() => {
       window.addEventListener('blur', dropTrustedWindowEvent, true);
       window.addEventListener('resize', dropTrustedWindowEvent, true);
+      testProxy.searchboxHandler.setPromiseResolveFor('getInputState', {
+        state: new MockInputState({
+          allowedInputTypes: [InputType.kBrowserTab],
+          toolConfigs: [],
+          toolsSectionConfig: {header: ''},
+          modelSectionConfig: {header: ''},
+        }),
+      });
     });
 
     teardown(() => {
@@ -170,6 +178,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       testProxy.searchboxHandler.setResultFor(
           'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
       createComposeboxElement(testProxy);
+      await microtasksFinished();
 
       const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
           'cr-composebox-contextual-entrypoint-and-menu');
@@ -231,6 +240,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           testProxy.searchboxHandler.setResultFor(
               'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
           createComposeboxElement(testProxy);
+          await microtasksFinished();
 
           const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
               'cr-composebox-contextual-entrypoint-and-menu');
@@ -433,6 +443,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
 
       createComposeboxElement(testProxy);
+      await microtasksFinished();
 
       // Select tabId 2 by setting it in addedTabsIds.
       testProxy.element.addedTabsIds = new Map([[2, '1']]);

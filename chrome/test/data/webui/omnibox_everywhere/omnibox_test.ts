@@ -2629,7 +2629,7 @@ suite('OmniboxEverywhereAppTest', () => {
       searchboxLayoutMode: 'normal',
       caretAnimationEnabled: true,
       composeboxAnimationDisabled: false,
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       contextButtonShapeIsOblong: false,
       contextManagementInComposeboxEnabled: false,
       searchboxCr23Theming: true,

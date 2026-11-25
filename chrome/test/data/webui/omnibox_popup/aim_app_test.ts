@@ -46,7 +46,7 @@ suite('AimAppTest', function() {
       omniboxAimWebUIShadowEnabled: false,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
     });
   });
 
@@ -55,7 +55,7 @@ suite('AimAppTest', function() {
     loadTimeData.overrideValues({
       voiceSearchCoherenceComposeboxesEnabled: false,
       voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
     });
   });
   // TODO(crbug.com/479888362): Disabled by gardener due to failure without
@@ -328,6 +328,10 @@ suite('AimAppTest', function() {
 
     // Enable the context menu so the real entrypoint button is rendered.
     app.$.composebox.contextMenuEnabled = true;
+    app.$.composebox.inputState = {
+      ...createDefaultInputState(),
+      allowedModels: [1],
+    };
     await microtasksFinished();
 
     const contextButton = app.$.composebox.getContextEntrypointElement();

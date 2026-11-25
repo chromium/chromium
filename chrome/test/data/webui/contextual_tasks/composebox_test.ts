@@ -134,7 +134,7 @@ suite('ContextualTasksComposeboxTest', () => {
     mockTimer = new MockTimer();
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
       enableComposeboxJumpFix: false,
@@ -209,7 +209,8 @@ suite('ContextualTasksComposeboxTest', () => {
         MockResizeObserver.instances.length >= 1,
         'There should be at least one ResizeObserver instance.');
 
-    searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
+    searchboxCallbackRouterRemote.onInputStateChanged(
+        new MockInputState({allowedInputTypes: [InputType.kBrowserTab]}));
     await microtasksFinished();
   });
 
@@ -1462,7 +1463,7 @@ suite('ContextualTasksComposeboxForkSmokeTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       enableComposeboxJumpFix: false,
       composeboxShowTypedSuggest: true,
@@ -1490,8 +1491,9 @@ suite('ContextualTasksComposeboxForkSmokeTest', () => {
         Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
     mockSearchboxPageHandler.setResultFor(
         'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-    mockSearchboxPageHandler.setResultFor(
-        'getInputState', Promise.resolve({state: new MockInputState()}));
+    mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
+      state: new MockInputState({allowedInputTypes: [InputType.kLensImage]}),
+    }));
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
@@ -1570,7 +1572,7 @@ suite('ContextualTasksComposeboxForkBasicInputTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       enableComposeboxJumpFix: false,
       composeboxShowTypedSuggest: true,
@@ -1599,8 +1601,9 @@ suite('ContextualTasksComposeboxForkBasicInputTest', () => {
         Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
     mockSearchboxPageHandler.setResultFor(
         'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-    mockSearchboxPageHandler.setResultFor(
-        'getInputState', Promise.resolve({state: new MockInputState()}));
+    mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
+      state: new MockInputState({allowedInputTypes: [InputType.kLensImage]}),
+    }));
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
@@ -1866,7 +1869,7 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
     mockTimer = new MockTimer();
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       enableComposeboxJumpFix: false,
       composeboxShowTypedSuggest: true,
@@ -1895,8 +1898,9 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
         Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
     mockSearchboxPageHandler.setResultFor(
         'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-    mockSearchboxPageHandler.setResultFor(
-        'getInputState', Promise.resolve({state: new MockInputState()}));
+    mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
+      state: new MockInputState({allowedInputTypes: [InputType.kLensImage]}),
+    }));
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouterRemote =
         searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
@@ -1905,7 +1909,8 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
         searchboxCallbackRouter));
 
     parts = await createCtComposeboxApp();
-    searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
+    searchboxCallbackRouterRemote.onInputStateChanged(
+        new MockInputState({allowedInputTypes: [InputType.kBrowserTab]}));
     await microtasksFinished();
   });
 
@@ -2237,7 +2242,7 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
       enableComposeboxJumpFix: false,
@@ -2268,8 +2273,9 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
         Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
     mockSearchboxPageHandler.setResultFor(
         'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-    mockSearchboxPageHandler.setResultFor(
-        'getInputState', Promise.resolve({state: new MockInputState()}));
+    mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
+      state: new MockInputState({allowedInputTypes: [InputType.kLensImage]}),
+    }));
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     // The remote is only needed by the desktop-only tests below.
     // <if expr="is_android">
@@ -2499,7 +2505,8 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
 
     // The wrapper only settles out of tool mode once the browser has sent an
     // input state, and the entrypoint pill is transparent while in tool mode.
-    searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
+    searchboxCallbackRouterRemote.onInputStateChanged(
+        new MockInputState({allowedInputTypes: [InputType.kBrowserTab]}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
 
     // Attach two tabs through the real chain so the coins render inside the
@@ -2629,7 +2636,7 @@ suite('ContextualTasksComposeboxResizeTest', () => {
     mockTimer = new MockTimer();
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       enableComposeboxJumpFix: false,
       composeboxShowTypedSuggest: true,
@@ -2658,8 +2665,9 @@ suite('ContextualTasksComposeboxResizeTest', () => {
         Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
     mockSearchboxPageHandler.setResultFor(
         'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-    mockSearchboxPageHandler.setResultFor(
-        'getInputState', Promise.resolve({state: new MockInputState()}));
+    mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
+      state: new MockInputState({allowedInputTypes: [InputType.kLensImage]}),
+    }));
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouterRemote =
         searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
@@ -2668,7 +2676,8 @@ suite('ContextualTasksComposeboxResizeTest', () => {
         searchboxCallbackRouter));
 
     parts = await createCtComposeboxApp();
-    searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
+    searchboxCallbackRouterRemote.onInputStateChanged(
+        new MockInputState({allowedInputTypes: [InputType.kBrowserTab]}));
     await microtasksFinished();
 
     assertTrue(
@@ -2760,7 +2769,7 @@ suite('ContextualTasksComposeboxForkGlowTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       enableComposeboxJumpFix: false,
       composeboxShowTypedSuggest: true,
@@ -2791,8 +2800,9 @@ suite('ContextualTasksComposeboxForkGlowTest', () => {
         Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
     mockSearchboxPageHandler.setResultFor(
         'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-    mockSearchboxPageHandler.setResultFor(
-        'getInputState', Promise.resolve({state: new MockInputState()}));
+    mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
+      state: new MockInputState({allowedInputTypes: [InputType.kLensImage]}),
+    }));
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
@@ -2864,7 +2874,7 @@ suite('ContextualTasksComposeboxForkErrorScrimTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       enableComposeboxJumpFix: false,
       composeboxShowTypedSuggest: true,
@@ -2893,8 +2903,9 @@ suite('ContextualTasksComposeboxForkErrorScrimTest', () => {
         Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
     mockSearchboxPageHandler.setResultFor(
         'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
-    mockSearchboxPageHandler.setResultFor(
-        'getInputState', Promise.resolve({state: new MockInputState()}));
+    mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
+      state: new MockInputState({allowedInputTypes: [InputType.kLensImage]}),
+    }));
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouterRemote =
         searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
@@ -2903,7 +2914,8 @@ suite('ContextualTasksComposeboxForkErrorScrimTest', () => {
         searchboxCallbackRouter));
 
     parts = await createCtComposeboxApp();
-    searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
+    searchboxCallbackRouterRemote.onInputStateChanged(
+        new MockInputState({allowedInputTypes: [InputType.kBrowserTab]}));
     await microtasksFinished();
   });
 
@@ -3047,7 +3059,7 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
           document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
           loadTimeData.overrideValues({
-            contextualMenuUsePecApi: false,
+            contextualMenuUsePecApi: true,
             composeboxSmartTabSharingVisible: false,
             enableComposeboxJumpFix: false,
             composeboxShowTypedSuggest: true,

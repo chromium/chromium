@@ -11,6 +11,7 @@ import type {MetricsReporter} from 'chrome://resources/js/metrics_reporter/metri
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {KeywordType, RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createAutocompleteResult, createMatchKeywordModel, createSearchMatch, createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
@@ -164,11 +165,17 @@ suite('OmniboxPopupSearchboxTest', function() {
       composeboxShowContextMenuDescription: false,
       addContext: 'Add tabs and more',
       contextButtonShapeIsOblong: false,
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       omniboxSearchOrTypeUrlPlaceholder: 'Search $1 or type a URL',
       omniboxAskOrTypeUrlPlaceholder: 'Ask $1 or type a URL',
     });
     testProxy = new TestSearchboxBrowserProxy();
+    testProxy.handler.setPromiseResolveFor<'getInputState'>('getInputState', {
+      state: {
+        ...createDefaultInputState(),
+        allowedInputTypes: [InputType.kBrowserTab, InputType.kLensImage],
+      },
+    });
     SearchboxBrowserProxy.setInstance(testProxy);
     handler = TestMock.fromClass(OmniboxPopupPageHandlerRemote);
     // Returns no AIM hint by default. Unlike a result set on the mock, this
@@ -5493,7 +5500,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        loadTimeData.overrideValues({
          omniboxAimPopupEnabled: true,
          hideClassicContextButton: false,
-         contextualMenuUsePecApi: false,
+         contextualMenuUsePecApi: true,
          searchboxLayoutMode: 'TallBottomContext',
          composeboxShowChip: true,
        });
@@ -5528,7 +5535,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        loadTimeData.overrideValues({
          omniboxAimPopupEnabled: true,
          hideClassicContextButton: false,
-         contextualMenuUsePecApi: false,
+         contextualMenuUsePecApi: true,
          composeboxShowContextMenuDescription: true,
          searchboxLayoutMode: 'TallBottomContext',
        });
@@ -5564,7 +5571,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        document.body.innerHTML = window.trustedTypes!.emptyHTML;
        loadTimeData.overrideValues({
          hideClassicContextButton: true,
-         contextualMenuUsePecApi: false,
+         contextualMenuUsePecApi: true,
        });
        localSearchbox = document.createElement('omnibox-popup-searchbox');
        localSearchbox.dropdownIsVisible = true;
@@ -5653,7 +5660,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        document.body.innerHTML = window.trustedTypes!.emptyHTML;
        loadTimeData.overrideValues({
          hideClassicContextButton: false,
-         contextualMenuUsePecApi: false,
+         contextualMenuUsePecApi: true,
          searchboxLayoutMode: 'TallBottomContext',
        });
        localSearchbox = document.createElement('omnibox-popup-searchbox');
@@ -6697,7 +6704,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    document.body.innerHTML = window.trustedTypes!.emptyHTML;
    loadTimeData.overrideValues({
      hideClassicContextButton: false,
-     contextualMenuUsePecApi: false,
+     contextualMenuUsePecApi: true,
      searchboxLayoutMode: 'TallBottomContext',
      composeboxShowChip: false,
      composeboxShowLensIcon: true,
@@ -6732,7 +6739,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    document.body.innerHTML = window.trustedTypes!.emptyHTML;
    loadTimeData.overrideValues({
      hideClassicContextButton: false,
-     contextualMenuUsePecApi: false,
+     contextualMenuUsePecApi: true,
      searchboxLayoutMode: 'TallBottomContext',
      composeboxShowChip: true,
      composeboxShowLensIcon: false,
@@ -6767,7 +6774,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    document.body.innerHTML = window.trustedTypes!.emptyHTML;
    loadTimeData.overrideValues({
      hideClassicContextButton: false,
-     contextualMenuUsePecApi: false,
+     contextualMenuUsePecApi: true,
      searchboxLayoutMode: 'TallBottomContext',
      composeboxShowChip: true,
      composeboxShowCurrentTabChip: true,
@@ -6848,7 +6855,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        document.body.innerHTML = window.trustedTypes!.emptyHTML;
        loadTimeData.overrideValues({
          hideClassicContextButton: false,
-         contextualMenuUsePecApi: false,
+         contextualMenuUsePecApi: true,
          searchboxLayoutMode: 'TallBottomContext',
        });
        const localSearchbox = document.createElement('omnibox-popup-searchbox');
@@ -6989,7 +6996,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    document.body.innerHTML = window.trustedTypes!.emptyHTML;
    loadTimeData.overrideValues({
      hideClassicContextButton: false,
-     contextualMenuUsePecApi: false,
+     contextualMenuUsePecApi: true,
      searchboxLayoutMode: 'TallBottomContext',
      composeboxShowChip: false,
      composeboxShowLensIcon: true,
@@ -7070,7 +7077,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    document.body.innerHTML = window.trustedTypes!.emptyHTML;
    loadTimeData.overrideValues({
      hideClassicContextButton: false,
-     contextualMenuUsePecApi: false,
+     contextualMenuUsePecApi: true,
      searchboxLayoutMode: 'TallBottomContext',
      composeboxShowChip: true,
      composeboxShowLensIcon: false,
@@ -7154,7 +7161,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        document.body.innerHTML = window.trustedTypes!.emptyHTML;
        loadTimeData.overrideValues({
          hideClassicContextButton: false,
-         contextualMenuUsePecApi: false,
+         contextualMenuUsePecApi: true,
          searchboxLayoutMode: 'TallBottomContext',
          composeboxShowChip: true,
          composeboxShowCurrentTabChip: true,

@@ -71,7 +71,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     mockTimer = new MockTimer();
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
       enableComposeboxJumpFix: false,
@@ -1039,7 +1039,7 @@ suite('ContextualTasksComposeboxForkSubmitTest', () => {
     mockTimer = new MockTimer();
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       enableComposeboxJumpFix: false,
       composeboxShowTypedSuggest: true,
@@ -1319,7 +1319,7 @@ suite('ContextualTasksComposeboxForkInjectInputTest', () => {
     document.body.innerHTML = win.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       enableComposeboxJumpFix: false,
       composeboxShowTypedSuggest: true,

@@ -75,7 +75,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
     mockTimer = new MockTimer();
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
       enableComposeboxJumpFix: false,
@@ -421,7 +421,7 @@ suite('ContextualTasksComposeboxForkFilesTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
       enableComposeboxJumpFix: false,
@@ -852,7 +852,7 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
       enableComposeboxJumpFix: false,

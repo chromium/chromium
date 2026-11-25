@@ -12,7 +12,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
-#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_page_focus_override.h"
@@ -23,8 +22,7 @@ class OmniboxPopupTest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUIOmniboxPopupHost);
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{omnibox::internal::kWebUIOmniboxPopup},
-        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxFullPopup,
-                               omnibox::kAimUsePecApi});
+        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxFullPopup});
   }
 
  private:

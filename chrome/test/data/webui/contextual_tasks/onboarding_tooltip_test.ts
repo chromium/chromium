@@ -148,7 +148,7 @@ suite('ContextualTasksOnboardingTooltipForkTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
       enableComposeboxJumpFix: false,

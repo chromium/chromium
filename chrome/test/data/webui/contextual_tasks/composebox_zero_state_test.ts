@@ -88,7 +88,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     mockTimer = new MockTimer();
 
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
       composeboxShowTypedSuggest: true,
