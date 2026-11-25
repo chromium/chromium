@@ -243,9 +243,10 @@ class FileSystemAccessManagerImplTest : public testing::Test {
     // This maps the virtual path a native local path to make sure an external
     // path round trips as an external path, even if the path resolves to a
     // local path.
-    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        kTestMountPoint, storage::kFileSystemTypeLocal,
-        storage::FileSystemMountOption(), dir_.GetPath());
+    ASSERT_TRUE(
+        storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+            kTestMountPoint, storage::kFileSystemTypeLocal,
+            storage::FileSystemMountOption(), dir_.GetPath()));
 
     chrome_blob_context_ = base::MakeRefCounted<ChromeBlobStorageContext>();
     chrome_blob_context_->InitializeOnIOThread(base::FilePath(),
@@ -2311,16 +2312,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   }
 }
 
-// TODO(https://crbug.com/589822091): Fails first batched attempt on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_DeserializeHandle_External_SensitiveEntryCheck \
-  DISABLED_DeserializeHandle_External_SensitiveEntryCheck
-#else
-#define MAYBE_DeserializeHandle_External_SensitiveEntryCheck \
-  DeserializeHandle_External_SensitiveEntryCheck
-#endif
 TEST_F(FileSystemAccessManagerImplTest,
-       MAYBE_DeserializeHandle_External_SensitiveEntryCheck) {
+       DeserializeHandle_External_SensitiveEntryCheck) {
   using SensitiveEntryResult =
       FileSystemAccessPermissionContext::SensitiveEntryResult;
   const base::FilePath kExtRoot =

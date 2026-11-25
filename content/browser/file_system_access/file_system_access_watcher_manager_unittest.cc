@@ -304,9 +304,10 @@ class FileSystemAccessWatcherManagerTestBase : public testing::Test {
             std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
             dir_.GetPath());
 
-    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        kTestMountPoint, storage::kFileSystemTypeLocal,
-        storage::FileSystemMountOption(), dir_.GetPath());
+    ASSERT_TRUE(
+        storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+            kTestMountPoint, storage::kFileSystemTypeLocal,
+            storage::FileSystemMountOption(), dir_.GetPath()));
 
     chrome_blob_context_ = base::MakeRefCounted<ChromeBlobStorageContext>();
     base::RunLoop run_loop;

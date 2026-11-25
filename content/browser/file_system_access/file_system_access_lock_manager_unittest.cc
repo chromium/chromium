@@ -50,9 +50,10 @@ class FileSystemAccessLockManagerTest : public RenderViewHostTestHarness {
     // This maps the virtual path a native local path to make these tests work
     // on all platforms. We're not testing more complicated ChromeOS specific
     // file system backends here.
-    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        kTestMountPoint, storage::kFileSystemTypeLocal,
-        storage::FileSystemMountOption(), dir_.GetPath());
+    ASSERT_TRUE(
+        storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+            kTestMountPoint, storage::kFileSystemTypeLocal,
+            storage::FileSystemMountOption(), dir_.GetPath()));
 
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         /*quota_manager_proxy=*/nullptr, dir_.GetPath());
@@ -68,6 +69,8 @@ class FileSystemAccessLockManagerTest : public RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        kTestMountPoint);
     manager_.reset();
 
     task_environment()->RunUntilIdle();
