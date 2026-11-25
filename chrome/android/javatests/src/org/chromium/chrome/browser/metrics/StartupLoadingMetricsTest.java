@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import android.app.ApplicationStartInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Process;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
@@ -26,11 +24,11 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -88,6 +86,11 @@ public class StartupLoadingMetricsTest {
 
     private static final String TABBED_SUFFIX = ".Tabbed";
     private static final String WEB_APK_SUFFIX = ".WebApk";
+
+    // ApplicationStartInfo is available with Android 15, but getStartComponent is only
+    // available with Android 16.
+    private static final boolean APPLICATION_START_INFO_SUPPORTED =
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA);
 
     private CustomTabsConnection mConnectionToCleanup;
 
@@ -170,37 +173,10 @@ public class StartupLoadingMetricsTest {
                 .build();
     }
 
-    private static HistogramWatcher createTimeToFirstFrameWatcher(int expectedCount) {
-        return HistogramWatcher.newBuilder()
-                .expectAnyRecordTimes(COLD_START_TIME_TO_FIRST_FRAME2, expectedCount)
-                .build();
-    }
-
     private void assertMainIntentLaunchColdStartHistogramRecorded(int expectedCount) {
         Assert.assertEquals(
                 expectedCount,
                 RecordHistogram.getHistogramTotalCountForTesting(MAIN_INTENT_COLD_START_HISTOGRAM));
-    }
-
-    private void assertTimeToFirstFrameRecorded(
-            HistogramWatcher recordedWatcher, HistogramWatcher notRecordedWatcher) {
-        boolean expectRecorded = false;
-        // ApplicationStartInfo is available with Android 15, but getStartComponent is only
-        // available with Android 16.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
-            ApplicationStartInfo startInfo = StartupMetricsTracker.getCurrentApplicationStartInfo();
-            if (startInfo != null) {
-                long firstFrameTimeMs =
-                        startInfo
-                                        .getStartupTimestamps()
-                                        .getOrDefault(
-                                                ApplicationStartInfo.START_TIMESTAMP_FIRST_FRAME,
-                                                0L)
-                                / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-                expectRecorded = firstFrameTimeMs > Process.getStartUptimeMillis();
-            }
-        }
-        waitForHistogram(expectRecorded ? recordedWatcher : notRecordedWatcher);
     }
 
     private void assertHistogramsRecordedAsExpected(int expectedCount, String histogramSuffix) {
@@ -243,18 +219,22 @@ public class StartupLoadingMetricsTest {
     /** Tests cold start metrics for main icon shortcut launches recorded correctly. */
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // flaky: https://crbug.com/498170975
     public void testStartWithMainLauncerShortcutRecorded() throws Exception {
-        HistogramWatcher ntpColdStartWatcher = createNtpColdStartHistogramWatcher(1);
-        HistogramWatcher firstFrameRecordedWatcher = createTimeToFirstFrameWatcher(1);
-        HistogramWatcher firstFrameNotRecordedWatcher = createTimeToFirstFrameWatcher(0);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(NTP_TIME_TO_FIRST_DRAW_COLD_HISTOGRAM)
+                        .expectAnyRecordTimes(
+                                COLD_START_TIME_TO_FIRST_FRAME2,
+                                APPLICATION_START_INFO_SUPPORTED ? 1 : 0)
+                        .build();
         Intent intent = new Intent(LauncherShortcutActivity.ACTION_OPEN_NEW_TAB);
         intent.setClass(ContextUtils.getApplicationContext(), LauncherShortcutActivity.class);
         mTabbedActivityTestRule
                 .startWithIntentPlusUrlTo(intent, /* url= */ null)
                 .arriveAt(RegularNewTabPageStation.newBuilder().withEntryPoint().build());
         assertMainIntentLaunchColdStartHistogramRecorded(1);
-        waitForHistogram(ntpColdStartWatcher);
-        assertTimeToFirstFrameRecorded(firstFrameRecordedWatcher, firstFrameNotRecordedWatcher);
+        waitForHistogram(histogramWatcher);
     }
 
     /** Tests warm start metric for main icon launches recorded correctly. */
@@ -375,17 +355,20 @@ public class StartupLoadingMetricsTest {
     // Tests the Java native NTP, which is not used on desktop (it uses the WebUI NTP).
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testNtpRecordedCorrectly() throws Exception {
-        HistogramWatcher ntpColdStartWatcher = createNtpColdStartHistogramWatcher(1);
-        HistogramWatcher firstFrameRecordedWatcher = createTimeToFirstFrameWatcher(1);
-        HistogramWatcher firstFrameNotRecordedWatcher = createTimeToFirstFrameWatcher(0);
-        mTabbedActivityTestRule.startOnNtp();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(NTP_TIME_TO_FIRST_DRAW_COLD_HISTOGRAM, 1)
+                        .expectAnyRecordTimes(
+                                COLD_START_TIME_TO_FIRST_FRAME2,
+                                APPLICATION_START_INFO_SUPPORTED ? 1 : 0)
+                        .build();
+        runAndWaitForPageLoadMetricsRecorded(() -> mTabbedActivityTestRule.startOnNtp());
         assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(
                 mTabbedActivityTestRule.getActivityTestRule(), getTestPage2());
         assertMainIntentLaunchColdStartHistogramRecorded(0);
-        waitForHistogram(ntpColdStartWatcher);
-        assertTimeToFirstFrameRecorded(firstFrameRecordedWatcher, firstFrameNotRecordedWatcher);
+        waitForHistogram(histogramWatcher);
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
     }
 
