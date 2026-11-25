@@ -68,31 +68,33 @@
             "after window navigated, with nothing to carry over");
     }
 
+    // The window is same origin with this page, so from here on it is read and
+    // driven through the handle directly. Transient activation expires a few
+    // seconds after the click, so nothing between the click and the final
+    // assertion waits on an executor round trip or on a timeout scaled by the
+    // harness's timeout multiplier. Also, if the traversal did go through,
+    // whatever document is there would answer for neither uuid, and a timeout
+    // would say less than the URL does.
+
     // Confirm that the second document gets user activation after a click.
     await test_driver.click(w.document.documentElement);
-    {
-      const result = await second.execute_script(getUserActivationState);
-      assertUserActivationState(result, true, true, "after window clicked");
-    }
+    assertUserActivationState(
+          [w.navigator.userActivation.isActive,
+           w.navigator.userActivation.hasBeenActive], true, true,
+          "after window clicked");
 
-    // The window is same origin with this page, so what it is showing can be
-    // read from the handle directly. Nothing in the executor is relied on past
-    // this point: if the traversal did go through, whatever document is there
-    // would answer for neither uuid, and a timeout would say less than the URL
-    // does.
     const url_before = w.location.href;
 
-    // Traverse back. The executor is not suspended for this one: an aborted
-    // traversal fires nothing, so there would be nothing to resume it with.
-    await second.execute_script(() => {
-      history.back();
-    });
+    // Traverse back.
+    w.history.back();
 
     // An aborted traversal is observable only by what did not happen, so give
     // it time to be attempted. Fetching the entry's URL is a network round
     // trip, and the Navigation API's own promises never settle for a traversal
-    // a 204 ends, which leaves a bare wait as the signal available here.
-    await new Promise(resolve => test.step_timeout(resolve, 1000));
+    // a 204 ends, which leaves a bare wait as the signal available here. The
+    // wait is a one second server-side delay rather than step_timeout(), which
+    // the timeout multiplier can stretch past the activation's lifetime.
+    await fetch("/common/blank.html?pipe=trickle(d1)");
 
     // Confirm that the window is still showing the second document, with the
     // activation it earned there.
