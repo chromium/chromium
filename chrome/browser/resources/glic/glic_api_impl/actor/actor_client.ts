@@ -88,7 +88,7 @@ import {                        //
 import {assertNever, ErrorWithReasonImpl} from '../glic_client_common.js';
 import {rgbaImageToBlob} from '../image_utils.js';
 import type {CheckEnumCompatibility} from '../legacy_enum_check.js';
-import {maybeWrapWithLogging} from '../mojo_logging.js';
+import {wrapMojoRemote} from '../mojo_remote.js';
 
 // Implements actor-specific methods on GlicBrowserHost.
 export class GlicBrowserHostActor implements ActorClientInterface,
@@ -142,8 +142,9 @@ export class GlicBrowserHostActor implements ActorClientInterface,
       return;
     }
 
-    this.actorHandler = maybeWrapWithLogging(
-        new ActorHandlerRemote(), {prefix: 'ActorHandler'});
+    this.actorHandler = wrapMojoRemote(
+        new ActorHandlerRemote(),
+        {prefix: 'ActorHandler', hangOnDisconnect: true});
     this.actorClientReceiver = new ActorClientReceiver(this);
     handler.createActorHandler(
         this.actorHandler.$.bindNewPipeAndPassReceiver(),

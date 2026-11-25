@@ -38,6 +38,10 @@ IN_PROC_BROWSER_TEST_F(GlicWebUIBrowserTest, UnitTestMojoLogging) {
   RunTest("glic/unit_tests/mojo_logging_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(GlicWebUIBrowserTest, UnitTestMojoRemote) {
+  RunTest("glic/unit_tests/mojo_remote_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(GlicWebUIBrowserTest, UnitTestActorClient) {
   RunTest("glic/unit_tests/actor_client_test.js", "mocha.run()");
 }

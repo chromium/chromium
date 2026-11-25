@@ -15,7 +15,7 @@ import type {GlicBrowserHost, ScrollToParams} from '../../glic_api/glic_api.js';
 import {ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {urlFromClient} from '../conversions.js';
 import {ErrorWithReasonImpl} from '../glic_client_common.js';
-import {maybeWrapWithLogging} from '../mojo_logging.js';
+import {wrapMojoRemote} from '../mojo_remote.js';
 
 export class GlicBrowserHostAnnotation implements Partial<GlicBrowserHost> {
   private annotationHandler?: AnnotationHandlerRemote;
@@ -114,8 +114,9 @@ export class GlicBrowserHostAnnotation implements Partial<GlicBrowserHost> {
       return this.annotationHandler;
     }
     assert(this.handler);
-    this.annotationHandler = maybeWrapWithLogging(
-        new AnnotationHandlerRemote(), {prefix: 'AnnotationHandler'});
+    this.annotationHandler = wrapMojoRemote(
+        new AnnotationHandlerRemote(),
+        {prefix: 'AnnotationHandler', hangOnDisconnect: true});
     this.handler.createAnnotationHandler(
         this.annotationHandler.$.bindNewPipeAndPassReceiver());
     return this.annotationHandler;

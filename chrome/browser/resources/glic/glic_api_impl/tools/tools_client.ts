@@ -15,7 +15,7 @@ import {                         //
 import type {ChromeTool, ChromeToolExecutionResult, GlicBrowserHost, GlicToolsHost} from '../../glic_api/glic_api.js';
 import {AiOverlayToolsRemote, ScrollGranularity} from '../../tools.mojom-webui.js';
 import {hostCapabilitiesToClient} from '../conversions.js';
-import {maybeWrapWithLogging} from '../mojo_logging.js';
+import {wrapMojoRemote} from '../mojo_remote.js';
 
 class InvalidArgumentError extends Error {}
 
@@ -283,11 +283,8 @@ export class GlicBrowserHostTools implements Partial<GlicBrowserHost> {
     }
     assert(this.handler);
     const toolsRemote = new AiOverlayToolsRemote();
-    toolsRemote.onConnectionError.addListener(() => {
-      toolsRemote.$.close();
-    });
-    this.toolsRemote =
-        maybeWrapWithLogging(toolsRemote, {prefix: 'AiOverlayToolsRemote'});
+    this.toolsRemote = wrapMojoRemote(
+        toolsRemote, {prefix: 'AiOverlayToolsRemote', hangOnDisconnect: true});
     this.handler.createAiOverlayTools(
         toolsRemote.$.bindNewPipeAndPassReceiver());
     return this.toolsRemote;

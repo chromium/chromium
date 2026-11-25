@@ -21,6 +21,7 @@ import type {                            //
              SelectRolloutStageOptions,  //
              SelectRolloutStageResponse, //
 } from '../../glic_api/glic_api.js';
+import {wrapMojoRemote} from '../mojo_remote.js';
 
 export class GlicBrowserHostGeic implements GeicBrowserHost {
   private handler?: WebClientHandlerRemote;
@@ -100,7 +101,9 @@ export class GlicBrowserHostGeic implements GeicBrowserHost {
   private getGeicHandler(): GeminiEnterpriseHandlerRemote {
     assert(this.handler);
     if (!this.handlerRemote) {
-      this.handlerRemote = new GeminiEnterpriseHandlerRemote();
+      this.handlerRemote = wrapMojoRemote(
+          new GeminiEnterpriseHandlerRemote(),
+          {prefix: 'GeminiEnterpriseHandler', hangOnDisconnect: true});
       this.handler.createGeminiEnterpriseHandler(
           this.handlerRemote.$.bindNewPipeAndPassReceiver());
     }

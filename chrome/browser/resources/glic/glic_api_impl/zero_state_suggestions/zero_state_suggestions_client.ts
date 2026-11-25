@@ -18,7 +18,7 @@ import type {                             //
 } from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../../observable.js';
 import {zeroStateSuggestionsToClient} from '../conversions.js';
-import {maybeWrapWithLogging} from '../mojo_logging.js';
+import {wrapMojoRemote} from '../mojo_remote.js';
 
 export class GlicBrowserHostZeroStateSuggestions implements
     ZeroStateSuggestionsClientInterface, Partial<GlicBrowserHost> {
@@ -35,9 +35,9 @@ export class GlicBrowserHostZeroStateSuggestions implements
       return;
     }
 
-    this.handler = maybeWrapWithLogging(
+    this.handler = wrapMojoRemote(
         new ZeroStateSuggestionsHandlerRemote(),
-        {prefix: 'ZeroStateSuggestionsHandler'});
+        {prefix: 'ZeroStateSuggestionsHandler', hangOnDisconnect: true});
     handler.createZeroStateSuggestionsHandler(
         this.handler.$.bindNewPipeAndPassReceiver());
   }

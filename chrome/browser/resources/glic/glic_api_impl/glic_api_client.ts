@@ -143,7 +143,7 @@ import {GlicBrowserHostExperimentalTriggering} from './experimental_triggering/e
 import {GlicBrowserHostGeic} from './geic/geic_client.js';
 import {assertNever, createDelegationProxy, ErrorWithReasonImpl} from './glic_client_common.js';
 import {rgbaImageToBlob} from './image_utils.js';
-import {maybeWrapWithLogging} from './mojo_logging.js';
+import {wrapMojoRemote} from './mojo_remote.js';
 import {TabObservable, TabObservableSet} from './observable_set_by_tab_id.js';
 import {GlicBrowserHostSkills} from './skills/skills_client.js';
 import {GlicBrowserHostTools} from './tools/tools_client.js';
@@ -278,8 +278,9 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   constructor(
       public webClient: GlicWebClient,
   ) {
-    this.handler = maybeWrapWithLogging(
-        new WebClientHandlerRemote(), {prefix: 'WebClientHandler'});
+    this.handler = wrapMojoRemote(
+        new WebClientHandlerRemote(),
+        {prefix: 'WebClientHandler', hangOnDisconnect: true});
     this.handler.onConnectionError.addListener(() => {
       if (this.isDestroyed) {
         return;

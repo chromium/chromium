@@ -25,7 +25,7 @@ import type {                      //
 } from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../../observable.js';
 import {optionalToClient, timeToClient, urlToClient} from '../conversions.js';
-import {maybeWrapWithLogging} from '../mojo_logging.js';
+import {wrapMojoRemote} from '../mojo_remote.js';
 
 export function skillPreviewToClient(
     preview: SkillPreviewMojo, isContextual: boolean): SkillPreview {
@@ -128,8 +128,9 @@ export class GlicBrowserHostSkills implements SkillsClientInterface,
       this.getSkillToInvoke = undefined;
     }
 
-    this.skillsHandler = maybeWrapWithLogging(
-        new SkillsHandlerRemote(), {prefix: 'SkillsHandler'});
+    this.skillsHandler = wrapMojoRemote(
+        new SkillsHandlerRemote(),
+        {prefix: 'SkillsHandler', hangOnDisconnect: true});
     this.skillsClientReceiver = new SkillsClientReceiver(this);
     handler.createSkillsHandler(
         this.skillsHandler.$.bindNewPipeAndPassReceiver(),
