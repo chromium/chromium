@@ -52,8 +52,9 @@ const HINT = checkEnum({
   UNINITIALIZED: -1,
   IDLE: 0,
   CTRL_LOAD: 1,
-  CTRL_ZOOM: 2,
-  LAYOUT_SPLITTER: 3,
+  CTRL_UNIT: 2,
+  CTRL_ZOOM: 3,
+  LAYOUT_SPLITTER: 4,
 });
 
 /**
@@ -63,6 +64,7 @@ const HINT = checkEnum({
 const HINT_STRINGS = {
   [HINT.IDLE]: 'Hover over a View or control to see info.',
   [HINT.CTRL_LOAD]: 'Fetch UI hierarchy and screenshot from device.',
+  [HINT.CTRL_UNIT]: 'Select measurement unit (dp or px).',
   [HINT.CTRL_ZOOM]: 'Change display scale of the screenshot.',
   [HINT.LAYOUT_SPLITTER]: 'Drag: Resize | Double-Click: Auto-Resize',
 };

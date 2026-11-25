@@ -21,6 +21,7 @@ class MainElements {
     this.divScreenshot = getById('div-screenshot');
     this.divScreenshotInfo = getById('div-screenshot-info');
     this.divViewTree = getById('div-view-tree');
+    this.selUnitPreference = getById('sel-unit-preference');
     this.selZoom = getById('sel-zoom');
   }
 }
@@ -162,6 +163,10 @@ class MainController {
 
   bindAll() {
     this.el.btnLoad.addEventListener('click', () => this.handleLoad());
+    this.el.selUnitPreference.addEventListener('change', (e) => {
+      this.model.visOpts.lengthUnit = e.target.value;
+      this.screenshotCtrl.updateAllHighlights();
+    });
     this.el.selZoom.addEventListener('change', (e) => {
       this.model.visOpts.setZoomIndex(parseInt(e.target.value, 10));
       this.screenshotCtrl.updateZoom();
@@ -186,6 +191,7 @@ class MainController {
   init() {
     SvgMarkupTheme.injectGlobalCss();
     this.vis.populateZoomOptions();
+    this.model.visOpts.lengthUnit = this.el.selUnitPreference.value;
     this.bindAll();
     this.el.btnLoad.focus();
   }

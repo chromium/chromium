@@ -45,6 +45,11 @@ class SvgEditor {
     return this;
   }
 
+  textContent(content) {
+    this.cur.textContent = content;
+    return this;
+  }
+
   /**
    * Given integer rectangle pixel (boundary) coordinates, updates <path>
    * (assumed selected) to render an inner rectangle with sharp boundaries (if
@@ -98,7 +103,8 @@ class SvgEditor {
 // clang-format off
 SvgEditor.extend(
     'x', 'y', 'width', 'height', 'fill', 'stroke', 'stroke-width',
-    'stroke-dasharray', 'visibility', 'display', 'viewBox'
+    'stroke-dasharray', 'font-size', 'font-family', 'font-weight',
+    'text-anchor', 'dominant-baseline', 'visibility', 'display', 'viewBox'
   );
 // clang-format on
 

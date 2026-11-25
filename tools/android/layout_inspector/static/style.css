@@ -81,8 +81,15 @@ select {
   }
 }
 
+/* TODO(crbug.com/544811853): Temporary spacing reserving space for upcoming
+ * Shade and Filled controls.
+ */
+label:has(#sel-unit-preference) {
+  margin-left: 95px;
+}
+
 label:has(#sel-zoom) {
-  margin-left: 263px;
+  margin-left: 78px;
 }
 
 #sel-zoom {

@@ -12,6 +12,7 @@
  */
 const MARKUP_ROLE = {
   NONE: '',
+  BADGE: 'badge',
   HIGHLIGHT: 'highlight',
 };
 
@@ -91,7 +92,7 @@ class SvgMarkupTheme {
    *
    * @param {MARKUP_ROLE} role
    * @param {!Array<string>} subselectors Relative selectors within the
-   *     component root (e.g., ['rect'], ['> rect'], or [] for root itself).
+   *     component root (e.g., ['rect'], ['> path'], or [] for root itself).
    * @param {!Array<string>} solidStyles CSS property names mapped to
    *     `--color-solid` (e.g., ['fill'] or ['stroke']).
    * @param {!Array<string>} shadeStyles CSS property names mapped to
@@ -126,6 +127,85 @@ class SvgMarkupTheme {
   }
 }
 
+/******** DimBadge Constants ********/
+
+const DIM_BADGE_FONT = {
+  family: 'monospace',
+  weight: 'bold',
+  size: 9,
+};
+const DIM_BADGE_PADDING = 2;
+
+/******** DimBadge ********/
+/**
+ * Dimensions Badge: An SVG group containing a solid background rectangle and
+ * white label text, positioned via CSS transform with integer alignment to keep
+ * text sharp and prevent jitter for upcoming Guide label transitions.
+ */
+class DimBadge extends SvgMarkupItem {
+  static ROLE = MARKUP_ROLE.BADGE;
+  static {
+    SvgMarkupTheme.registerCss(this.ROLE, ['rect'], ['fill'], []);
+  }
+
+  /** @type {?TextSizeMeasurer} */
+  static _measurer = null;
+
+  /** @return {!TextSizeMeasurer} */
+  static _getMeasurer() {
+    if (!this._measurer) {
+      this._measurer = new TextSizeMeasurer(DIM_BADGE_FONT, '0123456789');
+    }
+    return this._measurer;
+  }
+
+  constructor() {
+    super(g_svg.init('g').get());
+
+    this.rectBg = g_svg.init('rect').get();
+    this.textLabel = g_svg.init('text')
+                         .fill('white')
+                         .fontFamily(DIM_BADGE_FONT.family)
+                         .fontWeight(DIM_BADGE_FONT.weight)
+                         .fontSize(DIM_BADGE_FONT.size)
+                         .textAnchor('middle')
+                         .dominantBaseline('central')
+                         .get();
+    this.labelDims = new Dims2D(0, 0);
+
+    g_svg.edit(this.root).append(this.rectBg).append(this.textLabel);
+  }
+
+  /** @param {string} label */
+  setTextContent(label) {
+    g_svg.edit(this.textLabel).textContent(label);
+    const {w, h} = DimBadge._getMeasurer().measure(label);
+    this.labelDims.assign(w, h);
+  }
+
+  _calculateScaledDims() {
+    // Add padding and round UP to the nearest EVEN integer to enable perfect
+    // centering at pixel boundaries.
+    return this.labelDims.map(t => alignUp(t + DIM_BADGE_PADDING * 2, 2));
+  }
+
+  _applyLayout(sx, sy, sDims) {
+    // Use integer points to prevent inconsistent antialiasing.
+    const isx = Math.round(sx);
+    const isy = Math.round(sy);
+    // Position the group via CSS transform (preparing for upcoming Guide label
+    // transitions, since animating x/y on SVG <text> is unreliable).
+    this.root.style.transform = `translate(${isx}px, ${isy}px)`;
+    g_svg.edit(this.rectBg).x(0).y(0).width(sDims.w).height(sDims.h);
+    g_svg.edit(this.textLabel).x(sDims.w / 2).y(sDims.h / 2);
+  }
+
+  moveRightTopTo(sx, sy) {
+    const sDims = this._calculateScaledDims();
+    this._applyLayout(sx - sDims.w, sy, sDims);
+  }
+}
+
 /******** ViewHighlight ********/
 /**
  * Renders a dashed rectangular SVG overlay over a {@link ViewNode}. It
@@ -143,11 +223,19 @@ class ViewHighlight extends SvgMarkupItem {
 
     this.rectElt =
         g_svg.init('path').strokeWidth('1').strokeDasharray('2,2').get();
+    this.dimBadge = new DimBadge();
 
-    g_svg.edit(this.root).append(this.rectElt);
+    g_svg.edit(this.root).append(this.rectElt).append(this.dimBadge.root);
 
     this.rect = null;
     this.setVisible(false);
+  }
+
+  _updateLabel(visOpts) {
+    const wwStr = visOpts.formatLength(this.rect.width);
+    const whStr = visOpts.formatLength(this.rect.height);
+    const label = `${wwStr}x${whStr}`;
+    this.dimBadge.setTextContent(label);
   }
 
   _updatePlacement(visOpts) {
@@ -156,6 +244,9 @@ class ViewHighlight extends SvgMarkupItem {
     const sRight = visOpts.w2sFloor(this.rect.right);
     const sBottom = visOpts.w2sFloor(this.rect.bottom);
     g_svg.edit(this.rectElt).pathInnerRect(sLeft, sTop, sRight, sBottom);
+    // TODO(crbug.com/544811853): Consider handling badge clipping for narrow
+    // edge-aligned views.
+    this.dimBadge.moveRightTopTo(sRight, sTop);
   }
 
   /**
@@ -171,6 +262,7 @@ class ViewHighlight extends SvgMarkupItem {
    */
   setRectAndRedraw(rect, visOpts) {
     this.rect = rect;
+    this._updateLabel(visOpts);
     this.redraw(visOpts);
   }
 }

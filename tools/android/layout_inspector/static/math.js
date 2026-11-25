@@ -22,6 +22,11 @@ function clip(lo, v, hi) {
   return Math.max(lo, Math.min(v, hi));
 }
 
+/** Aligns a value `v` up to the next multiple of `align`. */
+function alignUp(v, align) {
+  return Math.ceil(v / align) * align;
+}
+
 /**
  * Formats a number like toFixed(), but strips trailing zeros and period.
  */

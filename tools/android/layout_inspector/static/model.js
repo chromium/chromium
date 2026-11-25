@@ -6,6 +6,15 @@
 
 /******** Constants ********/
 
+/**
+ * Units for displaying lengths in markup labels.
+ * @enum {string}
+ */
+const LENGTH_UNIT = {
+  DP: 'dp',
+  PX: 'px',
+};
+
 const ZOOM_LEVELS = [
   {title: 'Fit', scale: null},
   {title: '10%', scale: 1 / 10},
@@ -81,6 +90,9 @@ class LayoutMode {
 class VisOptions {
   constructor() {
     this.densityFactor = 1.0;
+    /** @type {LENGTH_UNIT} */
+    this.lengthUnit = LENGTH_UNIT.DP;
+    /** @type {!LayoutMode} */
     this.layoutMode = LayoutMode.LEFT;
 
     // The usage of scaling leads to two sets of dimensions / coordinates:
@@ -166,6 +178,19 @@ class VisOptions {
   /** @return {number} World to integer Scaled coordinate. */
   w2sFloor(w) {
     return Math.floor(w * this.scale);
+  }
+
+  /**
+   * Formats a length in device pixels using the active {@link lengthUnit}.
+   * @param {number} px
+   * @return {string}
+   */
+  formatLength(px) {
+    if (this.lengthUnit === LENGTH_UNIT.PX) {
+      return `${Math.round(px)}`;
+    }
+    const dp = this.pxToDp(px);
+    return `${Math.round(dp)}`;
   }
 }
 

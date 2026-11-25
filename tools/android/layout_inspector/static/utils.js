@@ -108,3 +108,41 @@ const getScrollbarThickness = (() => {
     return thickness;
   };
 })();
+
+/******** TextSizeMeasurer ********/
+/**
+ * Uses an offscreen 2D canvas to calculate the required width and height
+ * in pixels for a given string of text before it is rendered to the DOM.
+ */
+class TextSizeMeasurer {
+  /**
+   * @param {!Object} font
+   * @param {string} font.family
+   * @param {string} font.weight
+   * @param {number} font.size
+   * @param {?string=} heightRefText Optional reference string used to compute a
+   *     consistent height across calls (avoiding per-glyph vertical jitter).
+   */
+  constructor({family, weight, size}, heightRefText = null) {
+    const canvas = makeElt('canvas');
+    this.ctx = canvas.getContext('2d');
+    this.ctx.font = `${weight} ${size}px ${family}`;
+    this.fixedHeight = heightRefText
+        ? this._measureHeight(this.ctx.measureText(heightRefText))
+        : null;
+  }
+
+  _measureHeight(metrics) {
+    return metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+  }
+
+  /**
+   * @param {string} text
+   * @return {!{w: number, h: number}}
+   */
+  measure(text) {
+    const metrics = this.ctx.measureText(text);
+    const h = this.fixedHeight ?? this._measureHeight(metrics);
+    return {w: metrics.width, h};
+  }
+}

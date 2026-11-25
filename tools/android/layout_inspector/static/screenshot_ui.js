@@ -200,6 +200,11 @@ class ScreenshotVis {
     });
   }
 
+  updateAllHighlights() {
+    // Placeholder: Upcoming CLs will update fill style and selection
+    // highlights here (hover is re-synced by the enclosing transaction).
+  }
+
   updateScale() {
     this._applyRescale();
   }
@@ -243,6 +248,12 @@ class ScreenshotController {
 
   setHover(index) {
     this.vis.setHover(index);
+  }
+
+  updateAllHighlights() {
+    this.vis.withTransaction(() => {
+      this.vis.updateAllHighlights();
+    });
   }
 
   updateZoom() {
