@@ -34,11 +34,6 @@ public interface ButtonData {
     /** Returns {@code true} when the {@link ButtonDataProvider} wants to show a button. */
     boolean canShow();
 
-    /** Returns {@code true} if this button data represents the Identity Disk. */
-    default boolean isIdentityDisc() {
-        return getButtonSpec() != null && getButtonSpec().isIdentityDisc();
-    }
-
     /** Returns {@code true} if the button is supposed to be enabled and clickable. */
     boolean isEnabled();
 
@@ -70,15 +65,12 @@ public interface ButtonData {
         private final boolean mIsDynamicAction;
         private final @StringRes int mActionChipLabelResId;
         private final @StringRes int mTooltipTextResId;
-        private final boolean mHasErrorBadge;
         private final boolean mIsChecked;
         private final boolean mIsSelected;
         private final boolean mShouldSuppressCpa;
         private final int mActionChipCollapseDelayMs;
         private final @AttrRes int mActionChipBackgroundColorResId;
         private final @AttrRes int mActionChipTextColorResId;
-        private final boolean mIsIdentityDisc;
-        private final boolean mHasAiTierRing;
 
         private ButtonSpec(
                 @Nullable Drawable drawable,
@@ -91,15 +83,12 @@ public interface ButtonData {
                 @AdaptiveToolbarButtonVariant int buttonVariant,
                 int actionChipLabelResId,
                 int tooltipTextResId,
-                boolean hasErrorBadge,
                 boolean isChecked,
                 boolean isSelected,
                 boolean shouldSuppressCpa,
                 int actionChipCollapseDelayMs,
                 @AttrRes int actionChipBackgroundColorResId,
-                @AttrRes int actionChipTextColorResId,
-                boolean isIdentityDisc,
-                boolean hasAiTierRing) {
+                @AttrRes int actionChipTextColorResId) {
             mDrawable = drawable;
             mCollapsedDrawable = collapsedDrawable;
             mOnClickListener = onClickListener;
@@ -111,15 +100,12 @@ public interface ButtonData {
             mIsDynamicAction = AdaptiveToolbarFeatures.isDynamicAction(mButtonVariant);
             mActionChipLabelResId = actionChipLabelResId;
             mTooltipTextResId = tooltipTextResId;
-            mHasErrorBadge = hasErrorBadge;
             mIsChecked = isChecked;
             mIsSelected = isSelected;
             mShouldSuppressCpa = shouldSuppressCpa;
             mActionChipCollapseDelayMs = actionChipCollapseDelayMs;
             mActionChipBackgroundColorResId = actionChipBackgroundColorResId;
             mActionChipTextColorResId = actionChipTextColorResId;
-            mIsIdentityDisc = isIdentityDisc;
-            mHasAiTierRing = hasAiTierRing;
         }
 
         /** Builder for {@link ButtonSpec}. */
@@ -129,21 +115,18 @@ public interface ButtonData {
             private @Nullable OnClickListener mOnClickListener;
             private @Nullable OnLongClickListener mOnLongClickListener;
             private String mContentDescription;
-            private boolean mSupportsTinting;
+            private final boolean mSupportsTinting;
             private @Nullable IphCommandBuilder mIphCommandBuilder;
             private @AdaptiveToolbarButtonVariant int mButtonVariant =
                     AdaptiveToolbarButtonVariant.UNKNOWN;
             private @StringRes int mActionChipLabelResId = INVALID_TOOLTIP_TEXT_ID;
             private @StringRes int mTooltipTextResId = INVALID_TOOLTIP_TEXT_ID;
-            private boolean mHasErrorBadge;
             private boolean mIsChecked;
             private boolean mIsSelected;
             private boolean mShouldSuppressCpa;
             private int mActionChipCollapseDelayMs = DEFAULT_ACTION_CHIP_DELAY_MS;
             private @AttrRes int mActionChipBackgroundColorResId = Resources.ID_NULL;
             private @AttrRes int mActionChipTextColorResId = Resources.ID_NULL;
-            private boolean mIsIdentityDisc;
-            private boolean mHasAiTierRing;
 
             /**
              * Creates a new {@link Builder} with the required properties.
@@ -159,8 +142,6 @@ public interface ButtonData {
                 mDrawable = drawable;
                 mContentDescription = contentDescription;
                 mSupportsTinting = supportsTinting;
-                mIsIdentityDisc = false;
-                mHasAiTierRing = false;
             }
 
             /**
@@ -179,15 +160,12 @@ public interface ButtonData {
                 mButtonVariant = buttonSpec.mButtonVariant;
                 mActionChipLabelResId = buttonSpec.mActionChipLabelResId;
                 mTooltipTextResId = buttonSpec.mTooltipTextResId;
-                mHasErrorBadge = buttonSpec.mHasErrorBadge;
                 mIsChecked = buttonSpec.mIsChecked;
                 mIsSelected = buttonSpec.mIsSelected;
                 mShouldSuppressCpa = buttonSpec.mShouldSuppressCpa;
                 mActionChipCollapseDelayMs = buttonSpec.mActionChipCollapseDelayMs;
                 mActionChipBackgroundColorResId = buttonSpec.mActionChipBackgroundColorResId;
                 mActionChipTextColorResId = buttonSpec.mActionChipTextColorResId;
-                mIsIdentityDisc = buttonSpec.mIsIdentityDisc;
-                mHasAiTierRing = buttonSpec.mHasAiTierRing;
             }
 
             public Builder setDrawable(@Nullable Drawable drawable) {
@@ -216,11 +194,6 @@ public interface ButtonData {
                 return this;
             }
 
-            public Builder setSupportsTinting(boolean supportsTinting) {
-                mSupportsTinting = supportsTinting;
-                return this;
-            }
-
             public Builder setIphCommandBuilder(@Nullable IphCommandBuilder iphCommandBuilder) {
                 mIphCommandBuilder = iphCommandBuilder;
                 return this;
@@ -238,11 +211,6 @@ public interface ButtonData {
 
             public Builder setHoverTooltipTextId(@StringRes int tooltipTextResId) {
                 mTooltipTextResId = tooltipTextResId;
-                return this;
-            }
-
-            public Builder setHasErrorBadge(boolean hasErrorBadge) {
-                mHasErrorBadge = hasErrorBadge;
                 return this;
             }
 
@@ -277,16 +245,6 @@ public interface ButtonData {
                 return this;
             }
 
-            // TODO(crbug.com/573174911): Remove setIdentityDiscConfig(), setHasErrorBadge() and
-            // setSupportsTinting(), which have no production callers since IdentityDiscController
-            // was removed, along with the identity disc and error badge state and the code that
-            // reads it.
-            public Builder setIdentityDiscConfig(boolean isIdentityDisc, boolean hasAiTierRing) {
-                mIsIdentityDisc = isIdentityDisc;
-                mHasAiTierRing = hasAiTierRing;
-                return this;
-            }
-
             public ButtonSpec build() {
                 return new ButtonSpec(
                         mDrawable,
@@ -299,15 +257,12 @@ public interface ButtonData {
                         mButtonVariant,
                         mActionChipLabelResId,
                         mTooltipTextResId,
-                        mHasErrorBadge,
                         mIsChecked,
                         mIsSelected,
                         mShouldSuppressCpa,
                         mActionChipCollapseDelayMs,
                         mActionChipBackgroundColorResId,
-                        mActionChipTextColorResId,
-                        mIsIdentityDisc,
-                        mHasAiTierRing);
+                        mActionChipTextColorResId);
             }
         }
 
@@ -370,30 +325,12 @@ public interface ButtonData {
             return mIsDynamicAction;
         }
 
-        /** Returns {@code true} if this button spec represents the Identity Disk. */
-        public boolean isIdentityDisc() {
-            return mIsIdentityDisc;
-        }
-
-        /** Returns {@code true} if the button should display the AI Tier ring. */
-        public boolean hasAiTierRing() {
-            return mHasAiTierRing;
-        }
-
         /**
          * Get hover state tooltip text for optional toolbar buttons(e.g. share, voice search, new
          * tab and profile).
          */
         public @StringRes int getHoverTooltipTextId() {
             return mTooltipTextResId;
-        }
-
-        /**
-         * Returns {@code true} if the button has an error badge. False otherwise. The button's
-         * height is increased to accommodate the larger icon when an error badge is present.
-         */
-        public boolean hasErrorBadge() {
-            return mHasErrorBadge;
         }
 
         /**
@@ -455,15 +392,12 @@ public interface ButtonData {
                     && mIsDynamicAction == that.mIsDynamicAction
                     && mActionChipLabelResId == that.mActionChipLabelResId
                     && mTooltipTextResId == that.mTooltipTextResId
-                    && mHasErrorBadge == that.mHasErrorBadge
                     && mIsChecked == that.mIsChecked
                     && mIsSelected == that.mIsSelected
                     && mShouldSuppressCpa == that.mShouldSuppressCpa
                     && mActionChipCollapseDelayMs == that.mActionChipCollapseDelayMs
                     && mActionChipBackgroundColorResId == that.mActionChipBackgroundColorResId
                     && mActionChipTextColorResId == that.mActionChipTextColorResId
-                    && mIsIdentityDisc == that.mIsIdentityDisc
-                    && mHasAiTierRing == that.mHasAiTierRing
                     && Objects.equals(mDrawable, that.mDrawable)
                     && Objects.equals(mOnClickListener, that.mOnClickListener)
                     && Objects.equals(mOnLongClickListener, that.mOnLongClickListener)
@@ -484,15 +418,12 @@ public interface ButtonData {
                     mIsDynamicAction,
                     mActionChipLabelResId,
                     mTooltipTextResId,
-                    mHasErrorBadge,
                     mIsChecked,
                     mIsSelected,
                     mShouldSuppressCpa,
                     mActionChipCollapseDelayMs,
                     mActionChipBackgroundColorResId,
-                    mActionChipTextColorResId,
-                    mIsIdentityDisc,
-                    mHasAiTierRing);
+                    mActionChipTextColorResId);
         }
     }
 }

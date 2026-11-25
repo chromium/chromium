@@ -16,8 +16,8 @@ import org.chromium.chrome.browser.tab.Tab;
 public interface ButtonDataProvider {
     /**
      * Observer class for changes in button state. Implementers should notify their observers when
-     * their feature-specific display state changes, e.g. the user signing out making the
-     * IdentityDisc non-displayable, or drawable for the button changing.
+     * their feature-specific display state changes, e.g. the button becoming unavailable for the
+     * current tab, or the drawable for the button changing.
      */
     interface ButtonDataObserver {
         /**

@@ -222,7 +222,7 @@ public class OptionalButtonCoordinatorTest {
     }
 
     @Test
-    public void testUpdateButton_hasErrorBadge() {
+    public void testUpdateButton_padding() {
         Drawable iconDrawable = new ColorDrawable(Color.RED);
         OnClickListener clickListener = ViewUtils.emptyClickListener();
         OnLongClickListener longClickListener = ViewUtils.emptyLongClickListener();
@@ -235,19 +235,22 @@ public class OptionalButtonCoordinatorTest {
                         .setOnClickListener(clickListener)
                         .setOnLongClickListener(longClickListener)
                         .setIphCommandBuilder(mockIphCommandBuilder)
-                        .setHasErrorBadge(true)
                         .build();
         ButtonDataImpl buttonData = new ButtonDataImpl(/* canShow= */ true, isEnabled, buttonSpec);
 
         mOptionalButtonCoordinator.updateButton(buttonData, /* isIncognito= */ false);
 
+        Resources resources = mOptionalButtonView.getResources();
+        int expectedVerticalPadding =
+                resources.getDimensionPixelSize(
+                        R.dimen.toolbar_phone_optional_button_foreground_vertical_padding);
+        View buttonView = mOptionalButtonView.getButtonView();
         assertEquals(
-                mOptionalButtonView
-                        .getResources()
-                        .getDimensionPixelSize(
-                                R.dimen
-                                        .optional_toolbar_phone_button_with_error_badge_padding_bottom),
-                mOptionalButtonView.getButtonView().getPaddingBottom());
+                resources.getDimensionPixelSize(
+                        R.dimen.toolbar_phone_optional_button_foreground_start_padding),
+                buttonView.getPaddingStart());
+        assertEquals(expectedVerticalPadding, buttonView.getPaddingTop());
+        assertEquals(expectedVerticalPadding, buttonView.getPaddingBottom());
     }
 
     @Test
@@ -536,7 +539,6 @@ public class OptionalButtonCoordinatorTest {
                         .setOnClickListener(clickListener)
                         .setOnLongClickListener(longClickListener)
                         .setIphCommandBuilder(mockIphCommandBuilder)
-                        .setHasErrorBadge(false)
                         .build();
         ButtonDataImpl buttonData = new ButtonDataImpl(/* canShow= */ false, isEnabled, buttonSpec);
 

@@ -687,23 +687,9 @@ public class ToolbarTablet extends ToolbarLayout {
         }
         mOptionalButton.setImageDrawable(buttonSpec.getDrawable());
 
-        // Adjusting the paddings ensures the avatar remains stationary while the error badge is
-        // added or removed.
-        int paddingStart =
-                getDimensionPixelSize(
-                        buttonSpec.hasErrorBadge()
-                                ? R.dimen
-                                        .optional_toolbar_tablet_button_with_error_badge_padding_start
-                                : R.dimen.optional_toolbar_tablet_button_padding_start);
-        int paddingTop =
-                getDimensionPixelSize(
-                        buttonSpec.hasErrorBadge()
-                                ? R.dimen
-                                        .optional_toolbar_tablet_button_with_error_badge_padding_top
-                                : R.dimen.optional_toolbar_tablet_button_padding_top);
         mOptionalButton.setPaddingRelative(
-                paddingStart,
-                paddingTop,
+                getDimensionPixelSize(R.dimen.optional_toolbar_tablet_button_padding_start),
+                getDimensionPixelSize(R.dimen.optional_toolbar_tablet_button_padding_top),
                 mOptionalButton.getPaddingEnd(),
                 mOptionalButton.getPaddingBottom());
 

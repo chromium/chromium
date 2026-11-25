@@ -404,37 +404,15 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             mActionChipLabelString = getContext().getString(chipLabelResId);
         }
 
-        // The button's bounds precisely match the avatar and its padding. When additional elements
-        // like an error badge or an AI tier ring are added to the avatar, the effective size
-        // increases.
-        // To maintain the original position and bounds of the avatar, the button's paddings are
-        // adjusted accordingly.
-        int paddingBottomRes;
-        int paddingTopRes;
-        int paddingStartRes;
-
-        if (buttonSpec.hasAiTierRing()) {
-            paddingBottomRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_vertical;
-            paddingTopRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_vertical;
-            paddingStartRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_start;
-        } else if (buttonSpec.hasErrorBadge()) {
-            paddingBottomRes =
-                    R.dimen.optional_toolbar_phone_button_with_error_badge_padding_bottom;
-            paddingTopRes = R.dimen.toolbar_phone_optional_button_foreground_vertical_padding;
-            paddingStartRes = R.dimen.toolbar_phone_optional_button_foreground_start_padding;
-        } else {
-            paddingBottomRes = R.dimen.toolbar_phone_optional_button_foreground_vertical_padding;
-            paddingTopRes = R.dimen.toolbar_phone_optional_button_foreground_vertical_padding;
-            paddingStartRes = R.dimen.toolbar_phone_optional_button_foreground_start_padding;
-        }
-
-        int paddingEnd = mButton.getPaddingEnd();
-
+        int paddingVertical =
+                getDimensionPixelSize(
+                        R.dimen.toolbar_phone_optional_button_foreground_vertical_padding);
         mButton.setPaddingRelative(
-                getDimensionPixelSize(paddingStartRes),
-                getDimensionPixelSize(paddingTopRes),
-                paddingEnd,
-                getDimensionPixelSize(paddingBottomRes));
+                getDimensionPixelSize(
+                        R.dimen.toolbar_phone_optional_button_foreground_start_padding),
+                paddingVertical,
+                mButton.getPaddingEnd(),
+                paddingVertical);
 
         mClickListener = buttonSpec.getOnClickListener();
         mLongClickListener = buttonSpec.getOnLongClickListener();

@@ -1489,8 +1489,7 @@ public class LocationBarCoordinator
         if (!ToolbarVariationUtils.isToolbarUiRefactorEnabled(mLocationBarLayout.getContext())) {
             return false;
         }
-        // Identity disc is only shown on the NTP toolbar, never inside the location bar.
-        if (mOptionalButtonData == null || mOptionalButtonData.isIdentityDisc()) {
+        if (mOptionalButtonData == null) {
             return false;
         }
         boolean isNtp =

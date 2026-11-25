@@ -728,7 +728,7 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    public void testOptionalButtonWithErrorBadge() {
+    public void testOptionalButtonPadding() {
         updateOptionalButton(
                 /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
                 /* tooltipTextResId= */ 0);
@@ -742,26 +742,6 @@ public final class ToolbarTabletUnitTest {
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.optional_toolbar_tablet_button_padding_top),
-                mToolbarTablet.getOptionalButtonViewForTesting().getPaddingTop());
-
-        // Test whether the paddings are set correctly.
-        updateOptionalButton(
-                /* buttonVariant= */ AdaptiveToolbarButtonVariant.SHARE,
-                /* tooltipTextResId= */ 0,
-                /* hasErrorBadge= */ true);
-        assertEquals(
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(
-                                R.dimen
-                                        .optional_toolbar_tablet_button_with_error_badge_padding_start),
-                mToolbarTablet.getOptionalButtonViewForTesting().getPaddingStart());
-        assertEquals(
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(
-                                R.dimen
-                                        .optional_toolbar_tablet_button_with_error_badge_padding_top),
                 mToolbarTablet.getOptionalButtonViewForTesting().getPaddingTop());
     }
 
@@ -1731,13 +1711,6 @@ public final class ToolbarTabletUnitTest {
 
     private void updateOptionalButton(
             @AdaptiveToolbarButtonVariant int buttonVariant, int tooltipTextResId) {
-        updateOptionalButton(buttonVariant, tooltipTextResId, /* hasErrorBadge= */ false);
-    }
-
-    private void updateOptionalButton(
-            @AdaptiveToolbarButtonVariant int buttonVariant,
-            int tooltipTextResId,
-            boolean hasErrorBadge) {
         // Verify reader mode tooltip text is null.
         ButtonSpec buttonSpec =
                 new ButtonSpec.Builder(
@@ -1747,7 +1720,6 @@ public final class ToolbarTabletUnitTest {
                         .setOnLongClickListener(v -> false)
                         .setButtonVariant(buttonVariant)
                         .setHoverTooltipTextId(tooltipTextResId)
-                        .setHasErrorBadge(hasErrorBadge)
                         .build();
 
         ButtonDataImpl buttonData =

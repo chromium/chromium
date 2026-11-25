@@ -110,7 +110,6 @@ import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.accessibility.KeyboardFocusUtil;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -2470,20 +2469,6 @@ public class ToolbarPhone extends ToolbarLayout
         // If the refactored animations are enabled, this will instead be set when the transition
         // actually starts (in the next update cycle).
         mUrlFocusChangeInProgress = !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled();
-        // Hide the optional button immediately when animating in the suggestions list (since other
-        // toolbar buttons are also hidden immediately) or restore it when omnibox focus is lost.
-        // If the animation refactor is enabled, this will instead be handled by the refactored
-        // flow's transitions.
-        // If fusebox is enabled, do not hide the optional button because it causes button alignment
-        // issues.
-        if (animatingSuggestionsListOnNtp()
-                && !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()
-                && !OmniboxFeatures.isMultimodalInputEnabled(getContext())) {
-            ButtonData copy = mButtonData;
-            updateOptionalButton(hasFocus ? null : mButtonData);
-            mButtonData = copy;
-        }
-
         if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
             createAndRunFocusAnimatorRefactored(hasFocus);
         } else {
@@ -3831,8 +3816,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private boolean shouldShowOptionalButtonInToolbar() {
-        // The identity disc is now a dedicated signin button, so the optional button is never shown
-        // in the toolbar on the NTP. In the new IA, the optional button lives in the location bar.
+        // The NTP uses the dedicated signin button, so the optional button is never shown in the
+        // toolbar on the NTP. In the new IA, the optional button lives in the location bar.
         return !mIsToolbarUiRefactorEnabled && !isNtpVisualState(mVisualState);
     }
 }
