@@ -857,9 +857,6 @@
     <message name="IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER" desc="The placeholder of the autofill popup search bar input for passwords.">
       Search passwords
     </message>
-    <message name="IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER" desc="Main action pattern for enhanced autofill. It functions as a concise command or header explaining that Chrome will locate relevant information and insert it into a form.">
-      Find and fill
-    </message>
 
     <message name="IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_NOT_FOUND" desc="On the autofill popup for paswords, the label to be used when no passwords matching user's request were found.">
       No passwords found
@@ -945,18 +942,6 @@
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_YOUR_SAVED_INFO" desc="Title shown in the AtMemory suggestions above Autofill-sourced suggestions." translateable="false">
     Your saved info
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_ORDER_NUMBER" desc="Example search query shown in the AtMemory zero state for finding an order number." translateable="false">
-    Try "running shoes order number"
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_FLIGHT_CONFIRMATION_CODE" desc="Example search query shown in the AtMemory zero state for finding a flight confirmation code." translateable="false">
-    Try "confirmation code for LAX flight"
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_TRACKING_NUMBER" desc="Example search query shown in the AtMemory zero state for finding a shipment tracking number." translateable="false">
-    Try "running shoes tracking number"
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_HOTEL_ADDRESS" desc="Example search query shown in the AtMemory zero state for finding a hotel address." translateable="false">
-    Try "address for my hotel in Tokyo"
   </message>
   <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI" desc="Sublabel text or accessibility description indicating that a suggestion is sourced from Gemini." formatter_data="android_java" translateable="false">
     Suggested by Gemini

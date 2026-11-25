@@ -564,8 +564,7 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
                   {Suggestion(u"Address entry", SuggestionType::kAddressEntry)},
                   AutofillSuggestionTriggerSource::kFormControlElementClicked,
                   AutoselectFirstSuggestion(false),
-                  AutofillSuggestionsIgnoreFocusLoss(false),
-                  /*search_bar_initial_value=*/{});
+                  AutofillSuggestionsIgnoreFocusLoss(false));
   Mock::VerifyAndClearExpectations(&controller);
 
   // Suggestions for the active main frame should still be shown normally.

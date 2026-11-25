@@ -735,8 +735,7 @@ TEST_F(AutofillPopupControllerImplTest,
       {Suggestion(u"Search Query", SuggestionType::kAddressEntry)},
       AutofillSuggestionTriggerSource::kFormControlElementClicked,
       AutoselectFirstSuggestion(false),
-      AutofillSuggestionsIgnoreFocusLoss(false),
-      /*search_bar_initial_value=*/{});
+      AutofillSuggestionsIgnoreFocusLoss(false));
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -1207,27 +1206,6 @@ TEST_F(AutofillPopupControllerImplTest,
 
   EXPECT_CALL(client().suggestion_controller(manager()),
               Hide(SuggestionHidingReason::kNoSuggestions));
-  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
-}
-
-TEST_F(AutofillPopupControllerImplTest,
-       RemoveLastSuggestion_DoesNotHidePopupForAtMemory) {
-  ShowSuggestions(manager(), {SuggestionType::kAtMemorySearchResult},
-                  AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
-
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-  EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(Field(&Suggestion::type,
-                                     SuggestionType::kAtMemorySearchResult)))
-      .WillOnce(Return(true));
-
-  EXPECT_CALL(client().suggestion_controller(manager()), Hide)
-      .WillRepeatedly(Return());
-  EXPECT_CALL(client().suggestion_controller(manager()),
-              Hide(SuggestionHidingReason::kNoSuggestions))
-      .Times(0);
-  EXPECT_CALL(*client().popup_view(),
-              OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false));
   EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
 }
 

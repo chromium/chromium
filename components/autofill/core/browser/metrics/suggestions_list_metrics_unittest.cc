@@ -115,8 +115,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndexDisplayedAtLeast) {
       3, Suggestion(u"test", SuggestionType::kAddressEntry));
   {
     autofill_manager().OnAskForValuesToFillTest(form, form_field.global_id());
-    external_delegate().OnSuggestionsReturned(form_field, suggestions,
-                                              /*prefilled_query=*/{});
+    external_delegate().OnSuggestionsReturned(form_field, suggestions);
 
     base::HistogramTester histogram_tester;
     external_delegate().DidAcceptSuggestion(suggestions[1],
@@ -132,8 +131,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndexDisplayedAtLeast) {
   suggestions.resize(7, Suggestion(u"test", SuggestionType::kAddressEntry));
   {
     autofill_manager().OnAskForValuesToFillTest(form, form_field.global_id());
-    external_delegate().OnSuggestionsReturned(form_field, suggestions,
-                                              /*prefilled_query=*/{});
+    external_delegate().OnSuggestionsReturned(form_field, suggestions);
 
     base::HistogramTester histogram_tester;
     external_delegate().DidAcceptSuggestion(suggestions[1],
@@ -151,8 +149,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndexDisplayedAtLeast) {
   suggestions.resize(10, Suggestion(u"test", SuggestionType::kAddressEntry));
   {
     autofill_manager().OnAskForValuesToFillTest(form, form_field.global_id());
-    external_delegate().OnSuggestionsReturned(form_field, suggestions,
-                                              /*prefilled_query=*/{});
+    external_delegate().OnSuggestionsReturned(form_field, suggestions);
 
     base::HistogramTester histogram_tester;
     external_delegate().DidAcceptSuggestion(suggestions[5],
@@ -172,8 +169,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndexDisplayedAtLeast) {
   suggestions.resize(20, Suggestion(u"test", SuggestionType::kAddressEntry));
   {
     autofill_manager().OnAskForValuesToFillTest(form, form_field.global_id());
-    external_delegate().OnSuggestionsReturned(form_field, suggestions,
-                                              /*prefilled_query=*/{});
+    external_delegate().OnSuggestionsReturned(form_field, suggestions);
 
     base::HistogramTester histogram_tester;
     external_delegate().DidAcceptSuggestion(suggestions[18],
@@ -241,10 +237,8 @@ TEST_F(SuggestionsListMetricsTest,
   autofill_manager().OnAskForValuesToFillTest(form, field.global_id());
 
   external_delegate().OnSuggestionsReturned(
-      field,
-      {CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
-                                u"user@example.com")},
-      /*prefilled_query=*/{});
+      field, {CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                                       u"user@example.com")});
 
   base::HistogramTester histogram_tester;
   external_delegate().DidAcceptSuggestion(
@@ -271,10 +265,8 @@ TEST_F(SuggestionsListMetricsTest,
   autofill_manager().OnAskForValuesToFillTest(form, field.global_id());
 
   external_delegate().OnSuggestionsReturned(
-      field,
-      {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
-                                u"user@example.com")},
-      /*prefilled_query=*/{});
+      field, {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                                       u"user@example.com")});
 
   base::HistogramTester histogram_tester;
   external_delegate().DidAcceptSuggestion(
@@ -302,12 +294,10 @@ TEST_F(SuggestionsListMetricsTest,
   autofill_manager().OnAskForValuesToFillTest(form, field.global_id());
 
   external_delegate().OnSuggestionsReturned(
-      field,
-      {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
-                                u"address@example.com"),
-       CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
-                                u"auto@example.com")},
-      /*prefilled_query=*/{});
+      field, {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                                       u"address@example.com"),
+              CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                                       u"auto@example.com")});
 
   base::HistogramTester histogram_tester;
   external_delegate().DidAcceptSuggestion(
@@ -337,12 +327,10 @@ TEST_F(SuggestionsListMetricsTest,
   autofill_manager().OnAskForValuesToFillTest(form, field.global_id());
 
   external_delegate().OnSuggestionsReturned(
-      field,
-      {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
-                                u"address@example.com"),
-       CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
-                                u"auto@example.com")},
-      /*prefilled_query=*/{});
+      field, {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                                       u"address@example.com"),
+              CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                                       u"auto@example.com")});
 
   base::HistogramTester histogram_tester;
   external_delegate().DidAcceptSuggestion(
@@ -371,12 +359,10 @@ TEST_F(SuggestionsListMetricsTest,
   autofill_manager().OnAskForValuesToFillTest(form, field.global_id());
 
   external_delegate().OnSuggestionsReturned(
-      field,
-      {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
-                                u"address@example.com"),
-       CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
-                                u"auto@example.com")},
-      /*prefilled_query=*/{});
+      field, {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                                       u"address@example.com"),
+              CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                                       u"auto@example.com")});
 
   base::HistogramTester histogram_tester;
   external_delegate().DidAcceptSuggestion(

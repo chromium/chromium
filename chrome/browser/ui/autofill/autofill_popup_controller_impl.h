@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_H_
 
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -69,8 +68,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
             std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
             AutoselectFirstSuggestion autoselect_first_suggestion,
-            AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss,
-            std::u16string search_bar_initial_value) override;
+            AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) override;
   std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
@@ -124,8 +122,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   base::i18n::TextDirection GetElementTextDirection() const override;
 
   // Returns true if the popup only contains trivial suggestions (e.g.,
-  // separators). This is always `false` for AtMemory because the search bar
-  // itself counts as non-trivial.
+  // separators).
   bool HasEmptySuggestionContent() const;
 
   // Set the Autofill entry values. Exposed to allow tests to set these values

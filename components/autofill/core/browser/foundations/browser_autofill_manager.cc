@@ -2049,8 +2049,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   if (show_suggestions) {
     MaybeShowPrivateInferenceNotice(suggestions);
     // Send Autofill suggestions (could be an empty list).
-    external_delegate_->OnSuggestionsReturned(trigger_field, suggestions,
-                                              /*prefilled_query=*/{});
+    external_delegate_->OnSuggestionsReturned(trigger_field, suggestions);
   }
 }
 

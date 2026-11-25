@@ -97,8 +97,7 @@ class MockAutofillPopupController : public AutofillPopupController {
                std::vector<Suggestion>,
                AutofillSuggestionTriggerSource,
                AutoselectFirstSuggestion,
-               AutofillSuggestionsIgnoreFocusLoss,
-               std::u16string),
+               AutofillSuggestionsIgnoreFocusLoss),
               (override));
   MOCK_METHOD(std::optional<AutofillSuggestionController::UiSessionId>,
               GetUiSessionId,

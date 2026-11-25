@@ -944,7 +944,7 @@ void ChromeAutofillClient::UpdateAutofillSuggestions(
   suggestion_controller_->Show(
       *session_id, suggestions, trigger_source,
       ShouldAutofillPopupAutoselectFirstSuggestion(trigger_source),
-      ignore_focus_loss, /*search_bar_initial_value=*/{});
+      ignore_focus_loss);
 }
 
 void ChromeAutofillClient::HideSuggestions(
@@ -1542,8 +1542,7 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
   suggestion_controller_->Show(
       session_id, open_args.suggestions, open_args.trigger_source,
       ShouldAutofillPopupAutoselectFirstSuggestion(open_args.trigger_source),
-      AutofillSuggestionsIgnoreFocusLoss(false),
-      open_args.search_bar_initial_value);
+      AutofillSuggestionsIgnoreFocusLoss(false));
 
   // When testing, try to keep popup open when the reason to hide is one of:
   // - An external browser frame resize that is extraneous to our testing goals.
