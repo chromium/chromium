@@ -703,6 +703,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnTextSelectionChanged(TextInputManager* text_input_mangager,
                               RenderWidgetHostViewBase* updated_view) override;
 
+  // Writes the selection deferred during a mouse drag, if any, to the
+  // selection clipboard.
+  void FlushPendingSelectionClipboard();
+
   // Detaches |this| from the input method object.
   // is_removed flag is true if this is called while the window is
   // getting removed/destroyed, false, otherwise.
@@ -850,6 +854,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Indicates if there is onging composition text.
   bool has_composition_text_;
+
+  // The focused view whose text selection changed during a mouse drag
+  // captured by this view. Its selection is written to the selection
+  // clipboard on mouse release or capture loss, so a drag only publishes the
+  // final selection.
+  base::WeakPtr<RenderWidgetHostViewBase> pending_selection_clipboard_view_;
 
   // Current tooltip text.
   std::u16string tooltip_;

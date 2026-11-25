@@ -90,6 +90,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
@@ -111,6 +112,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_observer.h"
@@ -8452,6 +8454,71 @@ TEST_F(InputMethodStateAuraTest, SelectedTextCopiedToClipboard) {
         clipboard, ui::ClipboardBuffer::kSelection, /* data_dst = */ nullptr);
     EXPECT_EQ(expected_text, result_text);
   }
+}
+
+// Verifies that a selection made during a mouse drag captured by the view is
+// only written to the selection clipboard on mouse release or capture loss.
+TEST_F(InputMethodStateAuraTest, SelectedTextCopiedToClipboardOnMouseRelease) {
+  if (!ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    return;
+  }
+
+  // Avoid the X11 selection, which is shared with concurrent test processes.
+  ui::Clipboard* clipboard = ui::TestClipboard::CreateForCurrentThread();
+  absl::Cleanup destroy_clipboard = [] {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+  };
+  auto read_selection = [clipboard]() {
+    return ui::clipboard_test_util::ReadText(
+        clipboard, ui::ClipboardBuffer::kSelection, /*data_dst=*/nullptr);
+  };
+  render_widget_host_delegate()->set_focused_widget(
+      RenderWidgetHostImpl::From(views_[0]->GetRenderWidgetHost()));
+  aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
+
+  // Without capture, the selection is written immediately.
+  views_[0]->SelectionChanged(u"t", 0U, gfx::Range(0, 1));
+  EXPECT_EQ(u"t", read_selection());
+
+  clipboard->Clear(ui::ClipboardBuffer::kSelection);
+  aura::client::ParentWindowWithContext(
+      tab_view()->GetNativeView(), aura_test_helper_->GetContext(), gfx::Rect(),
+      display::kInvalidDisplayId);
+  tab_view()->GetNativeView()->SetCapture();
+  views_[0]->SelectionChanged(u"te", 0U, gfx::Range(0, 2));
+  views_[0]->SelectionChanged(u"text", 0U, gfx::Range(0, 4));
+  EXPECT_TRUE(read_selection().empty());
+
+  ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(),
+                         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  tab_view()->OnMouseEvent(&release);
+  EXPECT_EQ(u"text", read_selection());
+
+  // Losing capture mid-drag also flushes the deferred selection.
+  tab_view()->GetNativeView()->SetCapture();
+  views_[0]->SelectionChanged(u"tex", 0U, gfx::Range(0, 3));
+  EXPECT_EQ(u"text", read_selection());
+  tab_view()->GetNativeView()->ReleaseCapture();
+  EXPECT_EQ(u"tex", read_selection());
+
+  // A selection change in an unfocused frame is not written.
+  views_[1]->SelectionChanged(u"stale", 0U, gfx::Range(0, 5));
+  EXPECT_EQ(u"tex", read_selection());
+
+  // The deferred selection is dropped if focus moves to another frame
+  // mid-drag, and the newly focused frame's stale selection is not written.
+  clipboard->Clear(ui::ClipboardBuffer::kSelection);
+  tab_view()->GetNativeView()->SetCapture();
+  views_[0]->SelectionChanged(u"next", 0U, gfx::Range(0, 4));
+  render_widget_host_delegate()->set_focused_widget(
+      RenderWidgetHostImpl::From(views_[1]->GetRenderWidgetHost()));
+  views_[0]->SelectionChanged(u"nexts", 0U, gfx::Range(0, 5));
+  tab_view()->OnMouseEvent(&release);
+  EXPECT_TRUE(read_selection().empty());
+  tab_view()->GetNativeView()->ReleaseCapture();
+  aura::Env::GetInstance()->set_mouse_button_flags(0);
 }
 
 // This test verifies that when any view on the page cancels an ongoing

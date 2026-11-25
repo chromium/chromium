@@ -243,6 +243,20 @@ bool ShouldInputArabicIndicDigits(const ui::KeyEvent& event) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+// Writes `view`'s selected text to the selection clipboard.
+void WriteSelectionClipboard(TextInputManager* text_input_manager,
+                             RenderWidgetHostViewBase* view) {
+  if (!text_input_manager || !text_input_manager->IsRegistered(view)) {
+    return;
+  }
+  const TextInputManager::TextSelection* selection =
+      text_input_manager->GetTextSelection(view);
+  if (selection && selection->selected_text().length()) {
+    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kSelection);
+    clipboard_writer.WriteText(selection->selected_text());
+  }
+}
+
 }  // namespace
 
 #if BUILDFLAG(IS_WIN)
@@ -2533,6 +2547,7 @@ void RenderWidgetHostViewAura::OnCaptureLost() {
     return;
   }
   forward_mouse_buttons_to_parent_ = 0;
+  FlushPendingSelectionClipboard();
   host()->LostCapture();
 }
 
@@ -2675,6 +2690,10 @@ void RenderWidgetHostViewAura::OnMouseEvent(ui::MouseEvent* event) {
     return;
   }
   ScopedInputDispatchPin pin(this);
+  if (event->type() == ui::EventType::kMouseReleased &&
+      (event->changed_button_flags() & ui::EF_LEFT_MOUSE_BUTTON)) {
+    FlushPendingSelectionClipboard();
+  }
 #if BUILDFLAG(IS_WIN)
   if (event->type() == ui::EventType::kMouseMoved) {
     if (event->location() == last_mouse_move_location_ &&
@@ -4016,6 +4035,9 @@ void RenderWidgetHostViewAura::OnTextSelectionChanged(
   if (!focused_view)
     return;
 
+  base::WeakPtr<RenderWidgetHostViewBase> weak_updated_view =
+      updated_view ? updated_view->GetWeakPtr() : nullptr;
+
   // IMF relies on the |OnCaretBoundsChanged| for the surrounding text changed
   // events to IME. Explicitly call |OnCaretBoundsChanged| here so that IMF can
   // know about the surrounding text changes when the caret bounds are not
@@ -4031,16 +4053,35 @@ void RenderWidgetHostViewAura::OnTextSelectionChanged(
     }
   }
 
-  if (ui::Clipboard::IsSupportedClipboardBuffer(
+  if (!ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {
-    const TextInputManager::TextSelection* selection =
-        GetTextInputManager()->GetTextSelection(focused_view);
-    if (selection->selected_text().length()) {
-      // Set the ClipboardBuffer::kSelection to the ui::Clipboard.
-      ui::ScopedClipboardWriter clipboard_writer(
-          ui::ClipboardBuffer::kSelection);
-      clipboard_writer.WriteText(selection->selected_text());
-    }
+    return;
+  }
+
+  // Focus may have changed, or `updated_view` may have been destroyed, inside
+  // the IME callout. Only publish the focused view's own selection.
+  focused_view = GetFocusedViewForTextSelection();
+  if (!weak_updated_view || weak_updated_view.get() != focused_view) {
+    return;
+  }
+
+  // Like native toolkits, only publish the final selection of a mouse drag
+  // captured by this view.
+  if (aura::Env::GetInstance()->IsLeftMouseButtonDown() && window_ &&
+      window_->HasCapture()) {
+    pending_selection_clipboard_view_ = focused_view->GetWeakPtr();
+    return;
+  }
+  pending_selection_clipboard_view_.reset();
+  WriteSelectionClipboard(GetTextInputManager(), focused_view);
+}
+
+void RenderWidgetHostViewAura::FlushPendingSelectionClipboard() {
+  base::WeakPtr<RenderWidgetHostViewBase> view =
+      std::exchange(pending_selection_clipboard_view_, nullptr);
+  // Skip the write if focus moved to another frame during the drag.
+  if (view && view.get() == GetFocusedViewForTextSelection()) {
+    WriteSelectionClipboard(GetTextInputManager(), view.get());
   }
 }
 
