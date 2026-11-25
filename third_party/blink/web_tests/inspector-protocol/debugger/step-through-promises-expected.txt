@@ -1,0 +1,56 @@
+Tests that debugger will step through Promise handlers while not stepping into V8 internal scripts.
+
+Set timer for test function.
+Paused at step-through-promises.js:6:18: #debugger;
+Call stack:
+    0) p1 (step-through-promises.js:6:18)
+    [Promise.then]
+    0) testFunction (step-through-promises.js:3:30)
+    [setTimeout]
+    0) (anonymous) (:0:0)
+
+Executing stepInto...
+Paused at step-through-promises.js:7:14: #}
+Call stack:
+    0) p1 (step-through-promises.js:7:14)
+    [Promise.then]
+    0) testFunction (step-through-promises.js:3:30)
+    [setTimeout]
+    0) (anonymous) (:0:0)
+
+Executing stepInto...
+Paused at step-through-promises.js:11:18: #return window.foo || 1;
+Call stack:
+    0) p2 (step-through-promises.js:11:18)
+    [Promise.then]
+    0) testFunction (step-through-promises.js:8:12)
+    [setTimeout]
+    0) (anonymous) (:0:0)
+
+Executing stepOver...
+Paused at step-through-promises.js:11:41: return window.foo || 1;#
+Call stack:
+    0) p2 (step-through-promises.js:11:41)
+    [Promise.then]
+    0) testFunction (step-through-promises.js:8:12)
+    [setTimeout]
+    0) (anonymous) (:0:0)
+
+Executing stepOver...
+Paused at step-through-promises.js:16:18: #return window.foo || 2;
+Call stack:
+    0) p3 (step-through-promises.js:16:18)
+    [Promise.then]
+    0) testFunction (step-through-promises.js:13:12)
+    [setTimeout]
+    0) (anonymous) (:0:0)
+
+Executing stepOver...
+Paused at step-through-promises.js:16:41: return window.foo || 2;#
+Call stack:
+    0) p3 (step-through-promises.js:16:41)
+    [Promise.then]
+    0) testFunction (step-through-promises.js:13:12)
+    [setTimeout]
+    0) (anonymous) (:0:0)
+
