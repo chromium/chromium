@@ -87,6 +87,10 @@ int GetLiveCaptionsNumberOfLines() {
   return 0;
 }
 
+UIView* GetLiveVoiceCaptionsView() {
+  return nil;
+}
+
 void SetShouldShowSuggestionChips(bool should_show) {}
 
 void SetShouldShowInputPlate(bool should_show) {}

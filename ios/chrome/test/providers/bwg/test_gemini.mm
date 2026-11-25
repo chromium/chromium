@@ -70,6 +70,7 @@ static std::optional<bool> g_last_block_query_submission_while_loading;
 static std::optional<bool>
     g_last_show_page_loading_snackbar_on_opening_invocation;
 static bool g_show_account_snackbar_called = false;
+static UIView* g_mock_live_voice_captions_view = nil;
 
 void ResetGemini() {
   g_current_mode = GeminiViewMode::kUnknown;
@@ -88,6 +89,7 @@ void ResetGemini() {
   g_last_block_query_submission_while_loading.reset();
   g_last_show_page_loading_snackbar_on_opening_invocation.reset();
   g_show_account_snackbar_called = false;
+  g_mock_live_voice_captions_view = nil;
   g_last_start_gemini_overlay_configuration = nil;
   g_last_floaty_view_controller_configuration = nil;
 }
@@ -208,6 +210,14 @@ void SetLiveCaptionsNumberOfLines(int number_of_lines) {}
 
 int GetLiveCaptionsNumberOfLines() {
   return 0;
+}
+
+UIView* GetLiveVoiceCaptionsView() {
+  return g_mock_live_voice_captions_view;
+}
+
+void SetMockLiveVoiceCaptionsView(UIView* view) {
+  g_mock_live_voice_captions_view = view;
 }
 
 void SetShouldShowSuggestionChips(bool should_show) {

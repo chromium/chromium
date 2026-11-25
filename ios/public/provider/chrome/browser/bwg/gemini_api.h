@@ -305,6 +305,10 @@ bool IsLiveStopButtonHidden();
 void SetLiveCaptionsNumberOfLines(int number_of_lines);
 int GetLiveCaptionsNumberOfLines();
 
+// Returns the Gemini Live voice captions view to embed in Chrome's view
+// hierarchy, or `nil` if Live mode is unavailable.
+UIView* GetLiveVoiceCaptionsView();
+
 // Sets whether the suggestion chips should be shown on the floaty.
 void SetShouldShowSuggestionChips(bool should_show);
 
