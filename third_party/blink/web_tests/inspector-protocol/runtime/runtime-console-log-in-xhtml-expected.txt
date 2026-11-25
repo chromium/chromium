@@ -1,0 +1,3 @@
+Tests that Runtime.consoleAPICalled from an inline script in an XHTML document reports accurate line and column numbers.
+239:2:16
+
